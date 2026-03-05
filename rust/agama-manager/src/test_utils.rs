@@ -59,6 +59,7 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         storage.clone(),
         events.clone(),
         progress.clone(),
+        issues.clone(),
         dbus.clone(),
     )
     .await;

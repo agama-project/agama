@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -22,6 +22,7 @@ use crate::{
     client::{self, Client, StorageClient},
     message,
     monitor::{self, Monitor},
+    storage_client,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -46,7 +47,7 @@ pub struct Starter {
     events: event::Sender,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
-    dbus: zbus::Connection,
+    connection: zbus::Connection,
     client: Option<Box<dyn StorageClient + Send + 'static>>,
 }
 
@@ -55,13 +56,13 @@ impl Starter {
         events: event::Sender,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
-        dbus: zbus::Connection,
+        connection: zbus::Connection,
     ) -> Self {
         Self {
             events,
             issues,
             progress,
-            dbus,
+            connection,
             client: None,
         }
     }
@@ -73,17 +74,17 @@ impl Starter {
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
-        let (client, storage_dbus) = match self.client {
+        let (client, storage_client) = match self.client {
             Some(client) => (client, None),
             None => {
-                let storage_dbus = agama_storage_client::service::Starter::new(self.dbus.clone())
+                let storage_client = storage_client::service::Starter::new(self.connection.clone())
                     .start()
                     .await
                     .map_err(client::Error::from)?;
                 (
-                    Box::new(Client::new(storage_dbus.clone()))
+                    Box::new(Client::new(storage_client.clone()))
                         as Box<dyn StorageClient + Send + 'static>,
-                    Some(storage_dbus),
+                    Some(storage_client),
                 )
             }
         };
@@ -91,13 +92,13 @@ impl Starter {
         let service = Service { client };
         let handler = actor::spawn(service);
 
-        if let Some(storage_dbus) = storage_dbus {
+        if let Some(storage_client) = storage_client {
             let monitor = Monitor::new(
                 self.progress,
                 self.issues,
                 self.events,
-                self.dbus,
-                storage_dbus,
+                self.connection,
+                storage_client,
             )
             .await;
             monitor::spawn(monitor)?;
@@ -116,9 +117,9 @@ impl Service {
         events: event::Sender,
         issues: Handler<issue::Service>,
         progress: Handler<progress::Service>,
-        dbus: zbus::Connection,
+        connection: zbus::Connection,
     ) -> Starter {
-        Starter::new(events, issues, progress, dbus)
+        Starter::new(events, issues, progress, connection)
     }
 }
 

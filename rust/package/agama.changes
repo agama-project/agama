@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
-Thu Mar  5 11:46:22 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Thu Mar  5 13:05:27 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve registration and software issues reporting (related to bsc#1258034).
+
+-------------------------------------------------------------------
+Thu Mar  5 12:04:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Integrate zFCP in the new HTTP API (gh#agama-project/agama#3235).
 
 -------------------------------------------------------------------
 Thu Mar  5 07:19:01 UTC 2026 - Ladislav Slezák <lslezak@suse.com>

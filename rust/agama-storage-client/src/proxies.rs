@@ -27,8 +27,8 @@ pub use bootloader::BootloaderProxy;
 mod iscsi;
 pub use iscsi::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged};
 
-mod dasd;
-pub use dasd::{
-    DASDProxy, FormatChanged, FormatFinished, ProgressChanged as DASDProgressChanged,
-    ProgressFinished as DASDProgressFinished, SystemChanged as DASDSystemChanged,
-};
+pub mod dasd;
+pub use dasd::DASDProxy;
+
+pub mod zfcp;
+pub use zfcp::ZFCPProxy;

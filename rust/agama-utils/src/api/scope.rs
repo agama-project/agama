@@ -53,5 +53,8 @@ pub enum Scope {
     #[strum(serialize = "dasd")]
     #[serde(rename = "dasd")]
     DASD,
+    #[strum(serialize = "zfcp")]
+    #[serde(rename = "zfcp")]
+    ZFCP,
     Users,
 }

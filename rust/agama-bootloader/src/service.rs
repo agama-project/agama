@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,16 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::{
+    client::{self, Client},
+    message, storage_client,
+};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::bootloader::Config,
 };
 use async_trait::async_trait;
-
-use crate::{
-    client::{self, Client},
-    message,
-};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -35,8 +34,8 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Client(#[from] client::Error),
-    #[error("Storage D-Bus server error: {0}")]
-    DBusClient(#[from] agama_storage_client::Error),
+    #[error(transparent)]
+    StorageClient(#[from] storage_client::Error),
 }
 
 /// Builds and spawns the bootloader service.
@@ -70,11 +69,10 @@ impl Starter {
         let client = match self.client {
             Some(client) => client,
             None => {
-                let storage_dbus =
-                    agama_storage_client::service::Starter::new(self.connection.clone())
-                        .start()
-                        .await?;
-                Box::new(Client::new(storage_dbus).await?)
+                let storage_client = storage_client::service::Starter::new(self.connection.clone())
+                    .start()
+                    .await?;
+                Box::new(Client::new(storage_client).await?)
             }
         };
         let service = Service { client };

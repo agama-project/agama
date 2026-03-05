@@ -22,7 +22,7 @@ use crate::{
     client::{self, Client, DiscoverResult},
     message,
     monitor::{self, Monitor},
-    storage,
+    storage, storage_client,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -40,8 +40,8 @@ pub enum Error {
     Client(#[from] client::Error),
     #[error(transparent)]
     Monitor(#[from] monitor::Error),
-    #[error("Storage D-Bus server error: {0}")]
-    DBusClient(#[from] agama_storage_client::Error),
+    #[error(transparent)]
+    StorageClient(#[from] storage_client::Error),
 }
 
 pub struct Starter {
@@ -77,11 +77,10 @@ impl Starter {
         let client = match self.client {
             Some(client) => client,
             None => {
-                let storage_dbus =
-                    agama_storage_client::service::Starter::new(self.connection.clone())
-                        .start()
-                        .await?;
-                Box::new(Client::new(storage_dbus).await?)
+                let storage_client = storage_client::service::Starter::new(self.connection.clone())
+                    .start()
+                    .await?;
+                Box::new(Client::new(storage_client).await?)
             }
         };
         let service = Service { client };

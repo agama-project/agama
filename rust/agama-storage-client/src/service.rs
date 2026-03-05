@@ -31,7 +31,7 @@ use tokio::sync::oneshot;
 
 use crate::{
     message,
-    proxies::{self, BootloaderProxy, DASDProxy, ISCSIProxy, Storage1Proxy},
+    proxies::{self, BootloaderProxy, DASDProxy, ISCSIProxy, Storage1Proxy, ZFCPProxy},
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -78,11 +78,20 @@ impl Starter {
             None
         };
 
+        let zfcp_proxy = if Arch::is_s390() {
+            let proxy = proxies::ZFCPProxy::new(&self.dbus).await?;
+            proxy.config().await?;
+            Some(proxy)
+        } else {
+            None
+        };
+
         let service = Service {
             storage_proxy,
             bootloader_proxy,
             iscsi_proxy,
             dasd_proxy,
+            zfcp_proxy,
         };
         let handler = actor::spawn(service);
         Ok(handler)
@@ -94,6 +103,7 @@ pub struct Service {
     bootloader_proxy: BootloaderProxy<'static>,
     iscsi_proxy: ISCSIProxy<'static>,
     dasd_proxy: Option<DASDProxy<'static>>,
+    zfcp_proxy: Option<ZFCPProxy<'static>>,
 }
 
 impl Actor for Service {
@@ -330,6 +340,69 @@ impl MessageHandler<message::dasd::GetConfig> for Service {
 impl MessageHandler<message::dasd::SetConfig> for Service {
     async fn handle(&mut self, message: message::dasd::SetConfig) -> Result<(), Error> {
         if let Some(proxy) = &self.dasd_proxy {
+            let config = serde_json::to_string(&message.config)?;
+            proxy.set_config(&config).await?;
+        }
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::zfcp::Probe> for Service {
+    async fn handle(&mut self, _message: message::zfcp::Probe) -> Result<(), Error> {
+        if let Some(proxy) = &self.zfcp_proxy {
+            proxy.probe().await?;
+        }
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::zfcp::GetSystem> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::zfcp::GetSystem,
+    ) -> Result<Option<serde_json::Value>, Error> {
+        let Some(proxy) = &self.zfcp_proxy else {
+            return Ok(None);
+        };
+
+        let raw_json = proxy.system().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::zfcp::GetConfig> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::zfcp::GetConfig,
+    ) -> Result<Option<agama_utils::api::RawConfig>, Error> {
+        let Some(proxy) = &self.zfcp_proxy else {
+            return Ok(None);
+        };
+
+        let raw_json = proxy.config().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::zfcp::GetIssues> for Service {
+    async fn handle(&mut self, _message: message::zfcp::GetIssues) -> Result<Vec<Issue>, Error> {
+        let Some(proxy) = &self.zfcp_proxy else {
+            return Ok(vec![]);
+        };
+
+        let raw_json = proxy.system().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::zfcp::SetConfig> for Service {
+    async fn handle(&mut self, message: message::zfcp::SetConfig) -> Result<(), Error> {
+        if let Some(proxy) = &self.zfcp_proxy {
             let config = serde_json::to_string(&message.config)?;
             proxy.set_config(&config).await?;
         }
