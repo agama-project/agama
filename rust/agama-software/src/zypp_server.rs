@@ -481,7 +481,6 @@ impl ZyppServer {
 
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
         // do not save the solver testcase in this intermediate step
-        _ = zypp.run_solver(self.only_required, false);
         let _ = zypp.run_solver(self.only_required, false);
 
         // unselect packages including the autoselected dependencies
