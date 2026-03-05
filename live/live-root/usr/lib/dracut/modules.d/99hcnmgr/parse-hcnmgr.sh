@@ -94,8 +94,6 @@ if [ -n "$MAPPINGS" ]; then
     info "parse-hcnmgr: HCN_IP=$HCN_IP HCN_ROUTE=$HCN_ROUTE"
 
     NEW_ARGS=""
-    MOD_CMDLINE=$(getcmdline)
-    CHANGED=0
 
     # Unique bond names
     BOND_NAMES=$(for m in $MAPPINGS; do echo "$m"; done | awk '{print $1}' | sort -u)
@@ -160,14 +158,12 @@ if [ -n "$MAPPINGS" ]; then
 
             if [ $MATCHED -eq 1 ]; then
                 NEW_ARGS="$NEW_ARGS ip=$CURRENT_HCN_IP"
-                CHANGED=1
             else
                 # Fallback if it doesn't match any specific bond but is just an IP
                 if ! strstr "$HCN_IP" ":bond"; then
                     COLONS=$(echo "$HCN_IP" | tr -dc ':' | wc -c)
                     if [ "$COLONS" -eq 0 ]; then
                         NEW_ARGS="$NEW_ARGS ip=$HCN_IP:::::$BONDNAME:none"
-                        CHANGED=1
                     fi
                 fi
             fi
@@ -198,46 +194,21 @@ if [ -n "$MAPPINGS" ]; then
 
             if [ $MATCHED -eq 1 ]; then
                 NEW_ARGS="$NEW_ARGS rd.route=$CURRENT_HCN_ROUTE"
-                CHANGED=1
             else
                 # Fallback if it doesn't match any specific bond but is just a route spec without interface
                 if ! strstr "$HCN_ROUTE" ":bond"; then
                     COLONS=$(echo "$HCN_ROUTE" | tr -dc ':' | wc -c)
                     if [ "$COLONS" -eq 0 ]; then
                         NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE::$BONDNAME"
-                        CHANGED=1
                     elif [ "$COLONS" -eq 1 ]; then
                         NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE:$BONDNAME"
-                        CHANGED=1
                     fi
                 fi
             fi
         fi
-
-        # Replace slaves in existing ip= and rd.route= arguments
-        for slave in $SLAVE_NAMES; do
-            if strstr "$MOD_CMDLINE" "$slave"; then
-                MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$slave\([: ]\|$\)/\1$BONDNAME\2/g")
-                MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$slave\([: ]\|$\)/\1$BONDNAME\2/g")
-                CHANGED=1
-            fi
-        done
-        for mac in $SLAVE_MACS; do
-            mac_dash=$(echo "$mac" | tr ':' '-')
-            if strstr "$MOD_CMDLINE" "$mac"; then
-                MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac\([: ]\|$\)/\1$BONDNAME\2/g")
-                MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$mac\([: ]\|$\)/\1$BONDNAME\2/g")
-                CHANGED=1
-            fi
-            if strstr "$MOD_CMDLINE" "$mac_dash"; then
-                MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac_dash\([: ]\|$\)/\1$BONDNAME\2/g")
-                MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$mac_dash\([: ]\|$\)/\1$BONDNAME\2/g")
-                CHANGED=1
-            fi
-        done
     done
 
-    if [ "$CHANGED" -eq 1 ] || [ -n "$NEW_ARGS" ]; then
+    if [ -n "$NEW_ARGS" ]; then
         info "parse-hcnmgr: writing /etc/cmdline.d/99-hcnmgr.conf with $NEW_ARGS"
         # Write to cmdline.d
         mkdir -p /etc/cmdline.d
@@ -250,7 +221,7 @@ if [ -n "$MAPPINGS" ]; then
             if [ -x "$generator" ]; then
                 info "parse-hcnmgr: calling $generator"
                 # shellcheck disable=SC2086
-                "$generator" -- $MOD_CMDLINE $NEW_ARGS
+                "$generator" -- $NEW_ARGS
                 mkdir -p /run/NetworkManager/initrd
                 : > /run/NetworkManager/initrd/neednet
                 break
