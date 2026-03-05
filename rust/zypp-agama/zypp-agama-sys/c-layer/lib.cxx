@@ -392,7 +392,7 @@ struct Patterns get_patterns(struct Zypp *zypp,
         // pattern info
   };
 
-  for (const auto iter : iterator) {
+  for (const auto &iter : iterator) {
     Pattern &pattern = result.list[result.size];
     auto zypp_pattern = iter->candidateAsKind<zypp::Pattern>();
     pattern.name = strdup(iter->name().c_str());
@@ -434,7 +434,7 @@ struct Products get_products(struct Zypp *zypp,
         // product info
   };
 
-  for (const auto iter : iterator) {
+  for (const auto &iter : iterator) {
     Product &product = result.list[result.size];
     auto zypp_product = iter->candidateAsKind<zypp::Product>();
     product.name = strdup(iter->name().c_str());
