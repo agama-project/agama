@@ -153,7 +153,7 @@ impl Starter {
             issues: self.issues,
             progress: self.progress,
             product: None,
-            kernel_cmdline: cmdline,
+            kernel_cmdline,
             bootloader: self.bootloader,
         };
         service.setup().await?;
