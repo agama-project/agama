@@ -363,12 +363,12 @@ impl MessageHandler<message::zfcp::GetSystem> for Service {
         &mut self,
         _message: message::zfcp::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
-        if let Some(proxy) = &self.zfcp_proxy {
-            let raw_json = proxy.system().await?;
-            Ok(try_from_string(&raw_json)?)
-        } else {
-            Ok(None)
-        }
+        let Some(proxy) = &self.zfcp_proxy else {
+            return Ok(None);
+        };
+
+        let raw_json = proxy.system().await?;
+        Ok(try_from_string(&raw_json)?)
     }
 }
 
@@ -378,24 +378,24 @@ impl MessageHandler<message::zfcp::GetConfig> for Service {
         &mut self,
         _message: message::zfcp::GetConfig,
     ) -> Result<Option<agama_utils::api::RawConfig>, Error> {
-        if let Some(proxy) = &self.zfcp_proxy {
-            let raw_json = proxy.config().await?;
-            Ok(try_from_string(&raw_json)?)
-        } else {
-            Ok(None)
-        }
+        let Some(proxy) = &self.zfcp_proxy else {
+            return Ok(None);
+        };
+
+        let raw_json = proxy.config().await?;
+        Ok(try_from_string(&raw_json)?)
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::zfcp::GetIssues> for Service {
     async fn handle(&mut self, _message: message::zfcp::GetIssues) -> Result<Vec<Issue>, Error> {
-        if let Some(proxy) = &self.zfcp_proxy {
-            let raw_json = proxy.issues().await?;
-            Ok(try_from_string(&raw_json)?)
-        } else {
-            Ok(vec![])
-        }
+        let Some(proxy) = &self.zfcp_proxy else {
+            return Ok(vec![]);
+        };
+
+        let raw_json = proxy.system().await?;
+        Ok(try_from_string(&raw_json)?)
     }
 }
 
