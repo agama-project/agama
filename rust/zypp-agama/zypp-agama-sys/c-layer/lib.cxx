@@ -486,6 +486,10 @@ void add_service(struct Zypp *zypp, const char *alias, const char *url,
   }
 }
 
+bool create_solver_testcase(struct Zypp *zypp, const char *dir) noexcept {
+  return zypp->zypp_pointer->resolver()->createSolverTestcase(dir);
+}
+
 void refresh_service(struct Zypp *zypp, const char *alias,
                      struct Status *status) noexcept {
   if (zypp->repo_manager == NULL) {
