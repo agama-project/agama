@@ -87,8 +87,8 @@ export default function RegistrationExtension({
   extension: AddonInfo;
   config: Addon;
   isUnique: boolean;
-  registrationCallback: Function;
-  noRegistrationCallback: Function;
+  registrationCallback: (addon: Addon) => Promise<object>;
+  noRegistrationCallback: (id: string) => Promise<object>;
   issue: Issue | undefined;
 }) {
   const [regCode, setRegCode] = useState(config?.registrationCode || "");
@@ -104,12 +104,13 @@ export default function RegistrationExtension({
 
   const submit = async (e: React.SyntheticEvent | undefined) => {
     e?.preventDefault();
-    registrationCallback({
+    setLoading(true);
+    await registrationCallback({
       id: extension.id,
       registrationCode: isEmpty(regCode) ? undefined : regCode,
       version: isUnique ? undefined : extension.version,
     });
-    setLoading(true);
+    setLoading(false);
   };
 
   const submitNoRegister = async (e: React.SyntheticEvent | undefined) => {

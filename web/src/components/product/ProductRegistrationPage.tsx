@@ -460,7 +460,7 @@ const Extensions = () => {
         addons: updatedAddons,
       };
 
-      patchConfig({ product: updatedProduct });
+      return patchConfig({ product: updatedProduct });
     },
     [product],
   );
@@ -469,7 +469,7 @@ const Extensions = () => {
     (id: string) => {
       const addons = product?.addons || [];
       const updatedAddons = addons.filter((a) => a.id !== id);
-      patchConfig({
+      return patchConfig({
         product: {
           ...product,
           addons: updatedAddons,
