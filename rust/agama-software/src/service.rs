@@ -131,10 +131,12 @@ impl Starter {
 
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let kernel_cmdline = KernelCmdline::parse().unwrap_or_default();
         let model = match self.model {
             Some(model) => model,
             None => {
-                let zypp_sender = ZyppServer::start(Self::TARGET_DIR, Self::INSTALL_DIR)?;
+                let zypp_sender =
+                    ZyppServer::start(Self::TARGET_DIR, Self::INSTALL_DIR, &kernel_cmdline)?;
                 Arc::new(Mutex::new(Model::new(
                     zypp_sender,
                     find_mandatory_repositories("/"),
@@ -154,7 +156,7 @@ impl Starter {
             issues: self.issues,
             progress: self.progress,
             product: None,
-            kernel_cmdline: KernelCmdline::parse().unwrap_or_default(),
+            kernel_cmdline,
             bootloader: self.bootloader,
         };
         service.setup().await?;

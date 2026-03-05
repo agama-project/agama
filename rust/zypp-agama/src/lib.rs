@@ -16,6 +16,9 @@ use helpers::{status_to_result, status_to_result_void, string_from_ptr};
 
 pub mod callbacks;
 
+// directory where the solver testcase is saved
+const SOLVER_TESTCASE_DIR: &str = "/var/log/zypp/testcase";
+
 #[derive(Debug)]
 pub struct Repository {
     pub enabled: bool,
@@ -580,11 +583,26 @@ impl Zypp {
         }
     }
 
-    pub fn run_solver(&self, only_required: bool) -> ZyppResult<bool> {
+    /// Run the solver
+    /// * `only_required`: if true, only the required packages will be installed, otherwise also
+    ///   recommended and suggested packages will be installed
+    /// * `save_testcase`: if true, the solver testcase will be saved even if the solver run
+    ///   succeeds, on failure it is saved always
+    pub fn run_solver(&self, only_required: bool, save_testcase: bool) -> ZyppResult<bool> {
         unsafe {
             let mut status: Status = Status::default();
             let status_ptr = &mut status as *mut _;
             let r_res = zypp_agama_sys::run_solver(self.ptr, only_required, status_ptr);
+
+            // save the solver test case if the solver run failed or if saving is forced via boot parameter
+            if !r_res || save_testcase {
+                self.create_solver_testcase();
+            } else {
+                // delete the solver testcase directory, it contains the previous error which is
+                // gone, ignore errors (missing directory)
+                let _ = std::fs::remove_dir_all(SOLVER_TESTCASE_DIR);
+            }
+
             helpers::status_to_result(status, r_res)
         }
     }
@@ -645,6 +663,23 @@ impl Zypp {
         }
         progress(100, "Loading repositories finished".to_string());
         Ok(())
+    }
+
+    fn create_solver_testcase(&self) {
+        let c_dir = CString::new(SOLVER_TESTCASE_DIR).unwrap();
+        let start = std::time::Instant::now();
+        unsafe {
+            // libzypp automatically deletes the old content in the directory when running again
+            if zypp_agama_sys::create_solver_testcase(self.ptr, c_dir.as_ptr()) {
+                tracing::info!(
+                    "Solver testcase saved to {}, elapsed time: {:?}",
+                    SOLVER_TESTCASE_DIR,
+                    start.elapsed()
+                );
+            } else {
+                tracing::error!("Failed to create the solver testcase!");
+            }
+        }
     }
 }
 
