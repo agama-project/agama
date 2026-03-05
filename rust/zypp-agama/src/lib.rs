@@ -5,6 +5,7 @@ use std::{
 };
 
 use errors::ZyppResult;
+use tracing::info;
 use zypp_agama_sys::{get_patterns, ProgressCallback, ProgressData, Status, ZyppProgressCallback};
 
 pub mod errors;
@@ -337,6 +338,40 @@ impl Zypp {
         }
     }
 
+    pub fn select_products_from_service(&self, service: &String) -> ZyppResult<()> {
+        unsafe {
+            let mut status: Status = Status::default();
+            let status_ptr = &mut status as *mut _;
+            info!("Selecting products from service {}", service);
+
+            // find products from the requested service
+            let products = zypp_agama_sys::get_products(self.ptr, status_ptr);
+            for i in 0..products.size as usize {
+                let c_product = *(products.list.add(i));
+
+                if string_from_ptr(c_product.service_alias) == *service {
+                    let prod_name = string_from_ptr(c_product.name);
+                    let repo_alias = string_from_ptr(c_product.repo_alias);
+                    info!(
+                        "Selecting product {} from repository {}",
+                        prod_name, repo_alias
+                    );
+                    zypp_agama_sys::resolvable_select(
+                        self.ptr,
+                        c_product.name,
+                        zypp_agama_sys::RESOLVABLE_KIND_RESOLVABLE_PRODUCT,
+                        ResolvableSelected::Installation.into(),
+                        status_ptr,
+                    );
+                }
+            }
+
+            zypp_agama_sys::free_products(&products);
+
+            helpers::status_to_result_void(status)
+        }
+    }
+
     pub fn unselect_resolvable(
         &self,
         name: &str,
@@ -565,6 +600,7 @@ impl Zypp {
     {
         let repos = self.list_repositories()?;
         let enabled_repos: Vec<&Repository> = repos.iter().filter(|r| r.enabled).collect();
+        info!("Found {} enabled repositories", enabled_repos.len());
         // TODO: this step logic for progress can be enclosed to own struct
         let mut percent: f64 = 0.0;
         let percent_step: f64 = 100.0 / (enabled_repos.len() as f64 * 3.0); // 3 substeps
@@ -579,6 +615,7 @@ impl Zypp {
                 return abort_err;
             }
 
+            info!("Refreshing repository {}", &i.alias);
             self.refresh_repository(
                 &i.alias,
                 &callbacks::download_progress::EmptyCallback,
@@ -592,6 +629,7 @@ impl Zypp {
             if !cont {
                 return abort_err;
             }
+            info!("Creating repository cache for {}", &i.alias);
             self.create_repo_cache(&i.alias, callbacks::empty_progress)?;
             percent += percent_step;
             cont = progress(
@@ -601,6 +639,7 @@ impl Zypp {
             if !cont {
                 return abort_err;
             }
+            info!("Loading repository cache for {}", &i.alias);
             self.load_repo_cache(&i.alias)?;
             percent += percent_step;
         }
