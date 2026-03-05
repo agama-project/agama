@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  5 11:46:22 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve registration and software issues reporting (related to bsc#1258034).
+
+-------------------------------------------------------------------
 Thu Mar  5 07:19:01 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Refresh and load the repositories after registration

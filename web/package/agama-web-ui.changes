@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  5 11:46:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve registration and software issues reporting (related to bsc#1258034).
+
+-------------------------------------------------------------------
 Wed Mar  4 09:12:14 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Drop vulnerable dev dependency no longer needed (bsc#1259117).
