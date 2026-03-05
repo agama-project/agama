@@ -4,7 +4,7 @@
 check() {
   # Only support ppc64/ppc64le
   local _arch
-  _arch=$(uname -m)
+  _arch=${DRACUT_ARCH:-$(uname -m)}
   [ "$_arch" = "ppc64" ] || [ "$_arch" = "ppc64le" ] || return 1
   require_binaries hexdump ofpathname pseries_platform || return 1
   return 0
@@ -12,7 +12,7 @@ check() {
 
 # called by dracut
 depends() {
-  echo "network"
+  echo "systemd network-manager"
 }
 
 # called by dracut
@@ -23,6 +23,6 @@ install() {
     inst_simple "$moddir/hcnmgr-initrd.service" "${systemdsystemunitdir}/hcnmgr-initrd.service"
     $SYSTEMCTL -q --root "$initdir" enable hcnmgr-initrd.service
   else
-    inst_hook initqueue 01 "$moddir/parse-hcnmgr.sh"
+    inst_hook initqueue/settled 91 "$moddir/parse-hcnmgr.sh"
   fi
 }

@@ -1,9 +1,9 @@
 [Unit]
 Description=Hybrid Cloud Network Manager
 DefaultDependencies=no
-Wants=nm-initrd.service systemd-udev-trigger.service
+Wants=systemd-udev-trigger.service
 After=systemd-udev-trigger.service
-Before=dracut-initqueue.service nm-initrd.service
+Before=dracut-initqueue.service nm-initrd.service NetworkManager-initrd.service
 ConditionPathExists=/proc/device-tree
 
 [Service]
