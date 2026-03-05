@@ -33,7 +33,6 @@ use agama_utils::{
 use camino::Utf8PathBuf;
 use openssl::x509::X509;
 use suseconnect_agama::{self, ConnectParams, Credentials};
-use tracing::info;
 use url::Url;
 
 use crate::state::Addon;
