@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -27,6 +27,7 @@ export { default as EmailInput } from "./EmailInput";
 export { default as InstallationFinished } from "./InstallationFinished";
 export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallationExit } from "./InstallationExit";
+export { default as InstallerL10nOptions } from "./InstallerL10nOptions";
 export { default as ReviewAndInstallButton } from "./ReviewAndInstallButton";
 export { default as IssuesAlert } from "./IssuesAlert";
 export { default as ListSearch } from "./ListSearch";
@@ -41,8 +42,6 @@ export { default as PasswordInput } from "./PasswordInput";
 export { default as TreeTable } from "./TreeTable";
 export { default as Link } from "./Link";
 export { default as EmptyState } from "./EmptyState";
-export { default as InstallerL10nOptions } from "./InstallerL10nOptions";
-export { default as IssuesDrawer } from "./IssuesDrawer";
 export { default as SelectWrapper } from "./SelectWrapper";
 export { default as NestedContent } from "./NestedContent";
 export { default as SubtleContent } from "./SubtleContent";
