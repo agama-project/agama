@@ -405,7 +405,7 @@ impl ZyppServer {
             );
 
             if let Err(error) = result {
-                let message = "Could not read the repositories".to_string();
+                let message = gettext("Could not read the repositories");
                 issues.software.push(
                     Issue::new("software.load_source", &message).with_details(&error.to_string()),
                 );
@@ -920,7 +920,7 @@ impl ZyppServer {
                 issues.product.push(
                     Issue::new(
                         "system_registration_failed",
-                        "Failed to register the system",
+                        &gettext("Failed to register the system"),
                     )
                     .with_details(&error.to_string()),
                 );

@@ -41,6 +41,7 @@ use agama_utils::{
     progress, question,
 };
 use async_trait::async_trait;
+use gettextrs::gettext;
 use std::{path::PathBuf, process::Command, sync::Arc};
 use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
 use url::Url;
@@ -277,7 +278,7 @@ impl Service {
                 .unwrap_or_else(|e| {
                     let new_issue = Issue::new(
                         "software_proposal_failed",
-                        "Due to an internal error, it was not possible to create a software proposal.",
+                        &gettext("Due to an internal error, it was not possible to create a software proposal."),
                     )
                     .with_details(&e.to_string());
                     WriteIssues {
