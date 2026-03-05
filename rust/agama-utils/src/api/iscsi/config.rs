@@ -24,6 +24,7 @@ use serde_json::Value;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq, utoipa::ToSchema)]
 #[serde(transparent)]
+#[schema(as = iscsi::Config)]
 pub struct Config(pub Value);
 
 impl Merge for Config {

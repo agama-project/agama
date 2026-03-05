@@ -451,6 +451,14 @@ impl ZyppServer {
             };
         }
 
+        // if registered select products from add-on services
+        if let RegistrationStatus::Registered(boxed_registration) = &self.registration {
+            let registration = boxed_registration.as_ref();
+            for name in registration.addon_product_service_names() {
+                zypp.select_products_from_service(&name)?;
+            }
+        }
+
         self.only_required = state.options.only_required;
         tracing::info!("Install only required packages: {}", self.only_required);
         // run the solver to select the dependencies, ignore the errors, the solver runs again later

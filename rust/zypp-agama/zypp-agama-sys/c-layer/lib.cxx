@@ -11,6 +11,7 @@
 #include <zypp-core/Url.h>
 #include <zypp/DiskUsageCounter.h>
 #include <zypp/Pattern.h>
+#include <zypp/Product.h>
 #include <zypp/PublicKey.h>
 #include <zypp/RepoInfo.h>
 #include <zypp/RepoManager.h>
@@ -420,6 +421,40 @@ void free_patterns(const struct Patterns *patterns) noexcept {
     free((void *)patterns->list[i].repo_alias);
   }
   free((void *)patterns->list);
+}
+
+struct Products get_products(struct Zypp *zypp,
+                             struct Status *status) noexcept {
+  auto iterator =
+      zypp->zypp_pointer->pool().proxy().byKind(zypp::ResKind::product);
+
+  Products result = {
+      (struct Product *)malloc(iterator.size() * sizeof(Product)),
+      0 // initialize with zero and increase after each successful add of
+        // product info
+  };
+
+  for (const auto iter : iterator) {
+    Product &product = result.list[result.size];
+    auto zypp_product = iter->candidateAsKind<zypp::Product>();
+    product.name = strdup(iter->name().c_str());
+    product.repo_alias = strdup(zypp_product->repoInfo().alias().c_str());
+    product.service_alias = strdup(zypp_product->repoInfo().service().c_str());
+    result.size++;
+  }
+
+  STATUS_OK(status);
+  return result;
+}
+
+void free_products(const struct Products *products) noexcept {
+  for (unsigned i = 0; i < products->size; ++i) {
+    free((void *)products->list[i].name);
+    free((void *)products->list[i].repo_alias);
+    free((void *)products->list[i].service_alias);
+  }
+
+  free((void *)products->list);
 }
 
 bool run_solver(struct Zypp *zypp, bool only_required,

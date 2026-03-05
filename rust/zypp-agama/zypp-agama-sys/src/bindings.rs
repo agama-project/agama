@@ -521,6 +521,40 @@ const _: () = {
     ["Offset of field: Patterns::list"][::std::mem::offset_of!(Patterns, list) - 0usize];
     ["Offset of field: Patterns::size"][::std::mem::offset_of!(Patterns, size) - 8usize];
 };
+#[doc = " Representation of zypp::Product"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Product {
+    #[doc = "< owned"]
+    pub name: *const ::std::os::raw::c_char,
+    #[doc = "< owned"]
+    pub repo_alias: *const ::std::os::raw::c_char,
+    #[doc = "< owned"]
+    pub service_alias: *const ::std::os::raw::c_char,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of Product"][::std::mem::size_of::<Product>() - 24usize];
+    ["Alignment of Product"][::std::mem::align_of::<Product>() - 8usize];
+    ["Offset of field: Product::name"][::std::mem::offset_of!(Product, name) - 0usize];
+    ["Offset of field: Product::repo_alias"][::std::mem::offset_of!(Product, repo_alias) - 8usize];
+    ["Offset of field: Product::service_alias"]
+        [::std::mem::offset_of!(Product, service_alias) - 16usize];
+};
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Products {
+    #[doc = "< owned, *size* items"]
+    pub list: *mut Product,
+    pub size: ::std::os::raw::c_uint,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of Products"][::std::mem::size_of::<Products>() - 16usize];
+    ["Alignment of Products"][::std::mem::align_of::<Products>() - 8usize];
+    ["Offset of field: Products::list"][::std::mem::offset_of!(Products, list) - 0usize];
+    ["Offset of field: Products::size"][::std::mem::offset_of!(Products, size) - 8usize];
+};
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct Repository {
@@ -616,6 +650,9 @@ unsafe extern "C" {
     #[doc = " Get Pattern details.\n Unknown patterns are simply omitted from the result. Match by\n PatternInfo.name, not by index."]
     pub fn get_patterns(_zypp: *mut Zypp, status: *mut Status) -> Patterns;
     pub fn free_patterns(patterns: *const Patterns);
+    #[doc = " Get Product details."]
+    pub fn get_products(_zypp: *mut Zypp, status: *mut Status) -> Products;
+    pub fn free_products(products: *const Products);
     pub fn import_gpg_key(
         zypp: *mut Zypp,
         pathname: *const ::std::os::raw::c_char,

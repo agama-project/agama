@@ -28,6 +28,7 @@ use std::default::Default;
 /// Network config settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = network::Config)]
 pub struct Config {
     /// Connections to use in the installation
     #[serde(skip_serializing_if = "Option::is_none")]

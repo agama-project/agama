@@ -27,6 +27,7 @@ use serde_with::{serde_as, DisplayFromStr};
 /// Localization-related information of the system where the installer is running.
 #[serde_as]
 #[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[schema(as = l10n::SystemInfo)]
 pub struct SystemInfo {
     /// List of know locales.
     pub locales: Vec<LocaleEntry>,

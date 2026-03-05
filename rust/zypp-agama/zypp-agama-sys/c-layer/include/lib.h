@@ -177,6 +177,24 @@ struct Patterns get_patterns(struct Zypp *_zypp,
                              struct Status *status) noexcept;
 void free_patterns(const struct Patterns *patterns) noexcept;
 
+/// Representation of zypp::Product
+struct Product {
+  // so far we do not need more details about the products
+  const char *name;        ///< owned
+  const char *repo_alias;  ///< owned
+  const char *service_alias;  ///< owned
+};
+
+struct Products {
+  struct Product *list; ///< owned, *size* items
+  unsigned size;
+};
+
+/// Get Product details.
+struct Products get_products(struct Zypp *_zypp,
+                             struct Status *status) noexcept;
+void free_products(const struct Products *products) noexcept;
+
 void import_gpg_key(struct Zypp *zypp, const char *const pathname,
                     struct Status *status) noexcept;
 

@@ -25,6 +25,7 @@ use serde_with::skip_serializing_none;
 #[skip_serializing_none]
 #[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = s390::SystemInfo)]
 pub struct SystemInfo {
     pub dasd: Option<Value>,
 }
