@@ -49,6 +49,7 @@ pub struct SoftwareProposal {
 /// Describes what Agama proposes for the target system.
 #[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = software::Proposal)]
 pub struct Proposal {
     /// Software specific proposal
     #[serde(flatten, skip_serializing_if = "Option::is_none")]

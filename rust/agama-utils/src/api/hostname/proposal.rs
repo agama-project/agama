@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 
 /// Describes what Agama proposes for the target system.
 #[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+#[schema(as = hostname::Proposal)]
 pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub r#static: Option<String>,

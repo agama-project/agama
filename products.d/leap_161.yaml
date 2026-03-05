@@ -72,6 +72,8 @@ software:
     - gnome
     - kde
     - xfce_wayland
+    - lxqt_wayland
+    - openSUSEway
     - multimedia
     - office
     - cockpit

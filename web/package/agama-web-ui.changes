@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar  4 09:12:14 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Drop vulnerable dev dependency no longer needed (bsc#1259117).
+
+-------------------------------------------------------------------
 Tue Mar  3 10:09:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Restores DASD format progress with API v2 event model

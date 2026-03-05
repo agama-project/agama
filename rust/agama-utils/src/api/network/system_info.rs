@@ -27,6 +27,7 @@ use std::default::Default;
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = network::SystemInfo)]
 pub struct SystemInfo {
     pub access_points: Vec<AccessPoint>, // networks or access_points shold be returned
     /// Connections to use in the installation

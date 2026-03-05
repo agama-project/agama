@@ -27,6 +27,7 @@ use std::default::Default;
 /// Network proposal settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = network::Proposal)]
 pub struct Proposal {
     /// Connections to use in the installation
     pub connections: NetworkConnectionsCollection,
