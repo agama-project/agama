@@ -26,6 +26,7 @@ use serde::{Deserialize, Serialize};
 /// Holds the user settings for the installation.
 #[derive(Clone, Debug, Default, Merge, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = users::Config)]
 pub struct Config {
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(rename = "user")]

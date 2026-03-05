@@ -27,6 +27,7 @@ use serde_with::skip_serializing_none;
 /// is running.
 #[skip_serializing_none]
 #[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
+#[schema(as = software::SystemInfo)]
 pub struct SystemInfo {
     /// List of known patterns.
     pub patterns: Vec<Pattern>,

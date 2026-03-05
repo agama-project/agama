@@ -27,6 +27,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 /// Security settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
+#[schema(as = security::Config)]
 pub struct Config {
     /// List of user selected patterns to install.
     #[serde(skip_serializing_if = "Option::is_none")]
