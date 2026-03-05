@@ -107,6 +107,7 @@ impl Starter {
 
             (service, Some(storage_client))
         } else {
+            // Note that unwrap is secure here because the if branch covers any case of None.
             let service = Service {
                 dasd: self.dasd.unwrap(),
                 zfcp: self.zfcp.unwrap(),
