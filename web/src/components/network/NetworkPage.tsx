@@ -28,6 +28,7 @@ import WiredConnectionsList from "./WiredConnectionsList";
 import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 import { _ } from "~/i18n";
 import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
+import DevicesTable from "./DevicesTable";
 
 const NoWifiAvailable = () => (
   <Page.Section>
@@ -44,7 +45,7 @@ const NoWifiAvailable = () => (
  */
 export default function NetworkPage() {
   useNetworkChanges();
-  const { state: networkState } = useSystem();
+  const { state: networkState, devices } = useSystem();
 
   return (
     <Page breadcrumbs={[{ label: _("Network") }]}>
@@ -65,6 +66,11 @@ export default function NetworkPage() {
             ) : (
               <NoWifiAvailable />
             )}
+          </GridItem>
+          <GridItem sm={12} xl={12}>
+            <Page.Section title={_("Devices")}>
+              <DevicesTable devices={devices} />
+            </Page.Section>
           </GridItem>
         </Grid>
       </Page.Content>
