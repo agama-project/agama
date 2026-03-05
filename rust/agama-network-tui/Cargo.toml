@@ -1,0 +1,24 @@
+[package]
+name = "agama-network-tui"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-network = { path = "../agama-network" }
+agama-proxy = { path = "../agama-proxy" }
+agama-utils = { path = "../agama-utils" }
+anyhow = "1.0.98"
+cidr = { version = "0.3.1", features = ["serde"] }
+crossterm = { version = "0.28.1", features = ["event-stream"] }
+gettext-rs = "0.7.2"
+ratatui = "0.29.0"
+serde = { version = "1.0.219", features = ["derive"] }
+tokio = { version = "1.40.0", features = ["full"] }
+tokio-stream = "0.1.17"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+
+[[bin]]
+name = "agama-network-tui"
+path = "src/main.rs"
