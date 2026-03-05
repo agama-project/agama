@@ -342,12 +342,10 @@ impl Zypp {
         unsafe {
             let mut status: Status = Status::default();
             let status_ptr = &mut status as *mut _;
-
             info!("Selecting products from service {}", service);
 
-            // find the repository matching the requested service
+            // find products from the requested service
             let products = zypp_agama_sys::get_products(self.ptr, status_ptr);
-
             for i in 0..products.size as usize {
                 let c_product = *(products.list.add(i));
 
