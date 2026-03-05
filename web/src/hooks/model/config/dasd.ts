@@ -23,11 +23,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { configQuery } from "~/hooks/model/config";
 import { patchConfig, Response } from "~/api";
-
-import type { Config, DASD } from "~/model/config";
 import { extendCollection } from "~/utils";
-
-type addOrUpdateDevicesFn = (devices: DASD.Device[]) => Response;
+import type { Config, DASD } from "~/model/config";
 
 /**
  * Extract DASD config from a config object.
@@ -39,7 +36,7 @@ type addOrUpdateDevicesFn = (devices: DASD.Device[]) => Response;
  * @see {@link https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations#select TanStack Query Select}
  * @see {@link https://tkdodo.eu/blog/react-query-selectors-supercharged#what-is-select Query Selectors Supercharged}
  */
-const dasdSelector = (data: Config | undefined): DASD.Config => data?.dasd;
+const dasdSelector = (data: Config | null): DASD.Config | null => data?.dasd || null;
 
 /**
  * Hook to retrieve DASD configuration object.
@@ -52,7 +49,7 @@ const dasdSelector = (data: Config | undefined): DASD.Config => data?.dasd;
  * }
  * ```
  */
-function useConfig(): DASD.Config | undefined {
+function useConfig(): DASD.Config | null {
   const { data } = useSuspenseQuery({
     ...configQuery,
     select: dasdSelector,
@@ -60,27 +57,24 @@ function useConfig(): DASD.Config | undefined {
   return data;
 }
 
+type addOrUpdateDevicesFn = (devices: DASD.Device[]) => Response;
+
 /**
  * Update or add if does not exist yet given devices to DASD configuration.
- *
- * @remarks
- * Falls back to empty config when useConfig returns undefined.
- *
- * @todo Remove fallback once useConfig returns empty object by default
  */
 function useAddOrUpdateDevices(): addOrUpdateDevicesFn {
-  const config = useConfig() || {};
+  const config = useConfig();
 
-  return (devices: DASD.Device[]) => {
-    const { all: newDevicesConfig } = extendCollection(config.devices, {
+  return (devices: DASD.Device[]): Response => {
+    const { all } = extendCollection(config?.devices, {
       with: devices,
       matching: "channel",
       precedence: "extensionWins",
     });
 
-    return patchConfig({
-      dasd: { ...config, devices: newDevicesConfig },
-    });
+    const newConfig = config ? { ...config, devices: all } : { devices: all };
+
+    return patchConfig({ dasd: newConfig });
   };
 }
 
