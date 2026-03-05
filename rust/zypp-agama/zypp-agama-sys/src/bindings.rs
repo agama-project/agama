@@ -674,6 +674,8 @@ unsafe extern "C" {
     ) -> bool;
     #[doc = " Runs solver\n @param zypp see \\ref init_target\n @param only_required if true, only required packages are installed (ignoring\n recommended packages)\n @param[out] status (will overwrite existing contents)\n @return true if solver pass and false if it found some dependency issues"]
     pub fn run_solver(zypp: *mut Zypp, only_required: bool, status: *mut Status) -> bool;
+    #[doc = " Create a solver testcase, dumps all all solver data (repositories, loaded packages...) to disk\n @param zypp see \\ref init_target\n @param dir directory path where the solver testcase is saved\n @return true if the solver testcase was successfully created"]
+    pub fn create_solver_testcase(zypp: *mut Zypp, dir: *const ::std::os::raw::c_char) -> bool;
     #[doc = " the last call that will free all pointers to zypp holded by agama"]
     pub fn free_zypp(zypp: *mut Zypp);
     #[doc = " repository array in list.\n when no longer needed, use \\ref free_repository_list to release memory\n @param zypp see \\ref init_target\n @param[out] status (will overwrite existing contents)"]

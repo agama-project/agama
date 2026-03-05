@@ -27,6 +27,7 @@ use agama_utils::{
         Issue, Scope,
     },
     helpers::copy_dir_all,
+    kernel_cmdline::KernelCmdline,
     products::ProductSpec,
     progress, question,
 };
@@ -142,6 +143,7 @@ pub struct ZyppServer {
     trusted_keys: Vec<RepoKey>,
     unsigned_repos: Vec<String>,
     only_required: bool,
+    save_solver_testcase: bool,
 }
 
 impl ZyppServer {
@@ -151,6 +153,7 @@ impl ZyppServer {
     pub fn start<P: AsRef<Utf8Path>>(
         root_dir: P,
         install_dir: P,
+        cmdline: &KernelCmdline,
     ) -> ZyppServerResult<UnboundedSender<SoftwareAction>> {
         let (sender, receiver) = mpsc::unbounded_channel();
 
@@ -162,6 +165,7 @@ impl ZyppServer {
             trusted_keys: vec![],
             unsigned_repos: vec![],
             only_required: false,
+            save_solver_testcase: cmdline.get_last("inst.solver_testcase") == Some("1".to_string()),
         };
 
         // drop the returned JoinHandle: the thread will be detached
@@ -462,10 +466,8 @@ impl ZyppServer {
         self.only_required = state.options.only_required;
         tracing::info!("Install only required packages: {}", self.only_required);
         // run the solver to select the dependencies, ignore the errors, the solver runs again later
-        if let Ok(false) = zypp.run_solver(self.only_required) {
-            let message = gettext("There are conflicts in software selection");
-            issues.push(Issue::new("software.conflict", &message));
-        }
+        // do not save the solver testcase in this intermediate step
+        let _ = zypp.run_solver(self.only_required, false);
 
         // unselect packages including the autoselected dependencies
         for (name, r#type, selection) in &state.resolvables.to_vec() {
@@ -475,7 +477,7 @@ impl ZyppServer {
         }
 
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
-        if let Ok(false) = zypp.run_solver(self.only_required) {
+        if let Ok(false) = zypp.run_solver(self.only_required, self.save_solver_testcase) {
             let message = gettext("There are software conflict in software selection");
             issues.push(Issue::new("software.conflict", &message));
         }

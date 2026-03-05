@@ -231,6 +231,12 @@ bool is_package_selected(struct Zypp *zypp, const char *tag,
 bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept;
 
+/// Create a solver testcase, dumps all all solver data (repositories, loaded packages...) to disk
+/// @param zypp see \ref init_target
+/// @param dir directory path where the solver testcase is saved
+/// @return true if the solver testcase was successfully created
+bool create_solver_testcase(struct Zypp *zypp, const char *dir) noexcept;
+
 /// the last call that will free all pointers to zypp holded by agama
 void free_zypp(struct Zypp *zypp) noexcept;
 

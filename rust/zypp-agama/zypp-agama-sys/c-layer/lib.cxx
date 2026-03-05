@@ -392,7 +392,7 @@ struct Patterns get_patterns(struct Zypp *zypp,
         // pattern info
   };
 
-  for (const auto iter : iterator) {
+  for (const auto &iter : iterator) {
     Pattern &pattern = result.list[result.size];
     auto zypp_pattern = iter->candidateAsKind<zypp::Pattern>();
     pattern.name = strdup(iter->name().c_str());
@@ -434,7 +434,7 @@ struct Products get_products(struct Zypp *zypp,
         // product info
   };
 
-  for (const auto iter : iterator) {
+  for (const auto &iter : iterator) {
     Product &product = result.list[result.size];
     auto zypp_product = iter->candidateAsKind<zypp::Product>();
     product.name = strdup(iter->name().c_str());
@@ -484,6 +484,10 @@ void add_service(struct Zypp *zypp, const char *alias, const char *url,
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
   }
+}
+
+bool create_solver_testcase(struct Zypp *zypp, const char *dir) noexcept {
+  return zypp->zypp_pointer->resolver()->createSolverTestcase(dir);
 }
 
 void refresh_service(struct Zypp *zypp, const char *alias,

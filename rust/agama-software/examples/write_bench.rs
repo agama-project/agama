@@ -73,7 +73,9 @@ async fn main() {
         Utf8Path::new(env!("CARGO_MANIFEST_DIR")).join("../zypp-agama/fixtures/zypp_root_tmp");
 
     let install_dir = Utf8PathBuf::from("/mnt");
-    let client = ZyppServer::start(&zypp_root, &install_dir).expect("starting zypp server failed");
+    let cmdline = Default::default();
+    let client =
+        ZyppServer::start(&zypp_root, &install_dir, &cmdline).expect("starting zypp server failed");
 
     // Setup event broadcast channel
     let (event_tx, _event_rx) = broadcast::channel::<Event>(100); // Buffer size 100
