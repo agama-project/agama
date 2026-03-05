@@ -28,6 +28,7 @@ pub mod test_utils;
 mod monitor;
 
 use agama_storage as storage;
+use agama_storage_client as storage_client;
 
 #[cfg(test)]
 mod tests {

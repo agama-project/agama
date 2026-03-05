@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -23,9 +23,11 @@ pub use service::Service;
 
 pub mod client;
 pub mod message;
+pub mod test_utils;
+
 mod monitor;
 
-pub mod test_utils;
+use agama_storage_client as storage_client;
 
 #[cfg(test)]
 mod tests {

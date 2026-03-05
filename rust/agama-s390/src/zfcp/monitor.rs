@@ -20,22 +20,24 @@
 
 use crate::{
     storage,
-    storage_client::proxies::{dasd, DASDProxy},
+    storage_client::{
+        self,
+        proxies::{zfcp, ZFCPProxy},
+    },
 };
 use agama_utils::{
     actor::Handler,
     api::{
         event::{self, Event},
-        s390::dasd::FormatSummary,
         Progress, Scope,
     },
-    progress,
+    issue, progress,
 };
 use serde::Deserialize;
 use serde_json;
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt;
-use zbus::{message, Connection, MatchRule, MessageStream};
+use zbus::{fdo::PropertiesChanged, message, Connection, MatchRule, MessageStream};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -44,11 +46,15 @@ pub enum Error {
     #[error(transparent)]
     Event(#[from] broadcast::error::SendError<Event>),
     #[error(transparent)]
+    Issue(#[from] issue::service::Error),
+    #[error(transparent)]
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     Storage(#[from] storage::service::Error),
+    #[error(transparent)]
+    StorageClient(#[from] storage_client::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -62,7 +68,7 @@ struct ProgressData {
 impl From<ProgressData> for Progress {
     fn from(data: ProgressData) -> Self {
         Progress {
-            scope: Scope::DASD,
+            scope: Scope::ZFCP,
             size: data.size,
             steps: data.steps,
             step: data.step,
@@ -74,72 +80,87 @@ impl From<ProgressData> for Progress {
 pub struct Monitor {
     storage: Handler<storage::Service>,
     progress: Handler<progress::Service>,
+    issues: Handler<issue::Service>,
     events: event::Sender,
     connection: Connection,
+    storage_client: Handler<storage_client::Service>,
 }
 
 impl Monitor {
     pub fn new(
         storage: Handler<storage::Service>,
         progress: Handler<progress::Service>,
+        issues: Handler<issue::Service>,
         events: event::Sender,
         connection: Connection,
+        storage_client: Handler<storage_client::Service>,
     ) -> Self {
         Self {
             storage,
             progress,
+            issues,
             events,
             connection,
+            storage_client,
         }
     }
 
     async fn run(&self) -> Result<(), Error> {
-        let proxy = DASDProxy::new(&self.connection).await?;
+        let proxy = ZFCPProxy::new(&self.connection).await?;
         let rule = MatchRule::builder()
             .msg_type(message::Type::Signal)
             .sender(proxy.inner().destination())?
             .path(proxy.inner().path())?
-            .interface(proxy.inner().interface())?
             .build();
         let mut stream = MessageStream::for_match_rule(rule, &self.connection, None).await?;
+
+        self.update_issues().await?;
 
         while let Some(message) = stream.next().await {
             let message = message?;
 
-            if let Some(signal) = dasd::SystemChanged::from_message(message.clone()) {
-                self.handle_system_changed(signal)?;
+            if let Some(signal) = PropertiesChanged::from_message(message.clone()) {
+                self.handle_properties_changed(signal).await?;
                 continue;
             }
-            if let Some(signal) = dasd::ProgressChanged::from_message(message.clone()) {
+            if let Some(signal) = zfcp::ProgressChanged::from_message(message.clone()) {
                 self.handle_progress_changed(signal).await?;
                 continue;
             }
-            if let Some(signal) = dasd::ProgressFinished::from_message(message.clone()) {
+            if let Some(signal) = zfcp::ProgressFinished::from_message(message.clone()) {
                 self.handle_progress_finished(signal).await?;
                 continue;
             }
-            if let Some(signal) = dasd::FormatChanged::from_message(message.clone()) {
-                self.handle_format_changed(signal)?;
-                continue;
-            }
-            if let Some(signal) = dasd::FormatFinished::from_message(message.clone()) {
-                self.handle_format_finished(signal)?;
-                continue;
-            }
-            tracing::warn!("Unmanaged DASD signal: {message:?}");
+            tracing::warn!("Unmanaged zFCP signal: {message:?}");
         }
 
         Ok(())
     }
 
-    fn handle_system_changed(&self, _signal: dasd::SystemChanged) -> Result<(), Error> {
-        self.events
-            .send(Event::SystemChanged { scope: Scope::DASD })?;
-        self.storage.cast(storage::message::Probe)?;
+    async fn update_issues(&self) -> Result<(), Error> {
+        let issues = self
+            .storage_client
+            .call(storage_client::message::zfcp::GetIssues)
+            .await?;
+        self.issues
+            .cast(issue::message::Set::new(Scope::ZFCP, issues))?;
         Ok(())
     }
 
-    async fn handle_progress_changed(&self, signal: dasd::ProgressChanged) -> Result<(), Error> {
+    async fn handle_properties_changed(&self, signal: PropertiesChanged) -> Result<(), Error> {
+        let args = signal.args()?;
+        if args.changed_properties().get("System").is_some() {
+            self.events
+                .send(Event::SystemChanged { scope: Scope::ZFCP })?;
+            self.storage.cast(storage::message::Probe)?;
+        }
+        if args.changed_properties().get("Issues").is_some() {
+            self.update_issues().await?;
+        }
+        Ok(())
+    }
+
+    async fn handle_progress_changed(&self, signal: zfcp::ProgressChanged) -> Result<(), Error> {
         let args = signal.args()?;
         let progress_data = serde_json::from_str::<ProgressData>(args.progress)?;
         self.progress
@@ -148,22 +169,10 @@ impl Monitor {
         Ok(())
     }
 
-    async fn handle_progress_finished(&self, _signal: dasd::ProgressFinished) -> Result<(), Error> {
+    async fn handle_progress_finished(&self, _signal: zfcp::ProgressFinished) -> Result<(), Error> {
         self.progress
-            .call(progress::message::Finish::new(Scope::DASD))
+            .call(progress::message::Finish::new(Scope::ZFCP))
             .await?;
-        Ok(())
-    }
-
-    fn handle_format_changed(&self, signal: dasd::FormatChanged) -> Result<(), Error> {
-        let args = signal.args()?;
-        let summary = serde_json::from_str::<FormatSummary>(args.summary)?;
-        self.events.send(Event::DASDFormatChanged { summary })?;
-        Ok(())
-    }
-
-    fn handle_format_finished(&self, _signal: dasd::FormatFinished) -> Result<(), Error> {
-        self.events.send(Event::DASDFormatFinished)?;
         Ok(())
     }
 }
@@ -174,7 +183,7 @@ impl Monitor {
 pub fn spawn(monitor: Monitor) -> Result<(), Error> {
     tokio::spawn(async move {
         if let Err(e) = monitor.run().await {
-            tracing::error!("Error running the DASD monitor: {e:?}");
+            tracing::error!("Error running the zFCP monitor: {e:?}");
         }
     });
     Ok(())

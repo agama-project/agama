@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -20,24 +20,21 @@
 
 //! Implements a client to access Agama's D-Bus API related to Bootloader management.
 
-use std::collections::HashMap;
-
-use agama_storage_client::message;
+use crate::storage_client::{self, message};
 use agama_utils::{actor::Handler, api::bootloader::Config};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 /// Errors that can occur when using the Bootloader client.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    /// Error originating from the D-Bus communication.
-    #[error("D-Bus service error: {0}")]
+    #[error(transparent)]
     DBus(#[from] zbus::Error),
-    /// Error parsing or generating JSON data.
-    #[error("Passed json data is not correct: {0}")]
+    #[error(transparent)]
     InvalidJson(#[from] serde_json::Error),
-    #[error("Storage D-Bus server error: {0}")]
-    DBusClient(#[from] agama_storage_client::Error),
+    #[error(transparent)]
+    StorageClient(#[from] storage_client::Error),
 }
 
 /// Trait defining the interface for the Bootloader client.
@@ -72,14 +69,14 @@ pub type ClientResult<T> = Result<T, Error>;
 /// Client to connect to Agama's D-Bus API for Bootloader management.
 #[derive(Clone)]
 pub struct Client {
-    storage_dbus: Handler<agama_storage_client::Service>,
+    storage_client: Handler<storage_client::Service>,
     kernel_args: HashMap<String, String>,
 }
 
 impl Client {
-    pub async fn new(storage_dbus: Handler<agama_storage_client::Service>) -> ClientResult<Client> {
+    pub async fn new(storage_client: Handler<storage_client::Service>) -> ClientResult<Client> {
         Ok(Self {
-            storage_dbus,
+            storage_client,
             kernel_args: HashMap::new(),
         })
     }
@@ -89,7 +86,7 @@ impl Client {
 impl BootloaderClient for Client {
     async fn get_config(&self) -> ClientResult<Config> {
         Ok(self
-            .storage_dbus
+            .storage_client
             .call(message::bootloader::GetConfig)
             .await?)
     }
@@ -103,7 +100,7 @@ impl BootloaderClient for Client {
         // ignore return value as currently it does not fail and who knows what future brings
         // but it should not be part of result and instead transformed to Issue
         let value = serde_json::to_value(&full_config)?;
-        self.storage_dbus
+        self.storage_client
             .call(message::bootloader::SetConfig::new(value))
             .await?;
         Ok(())
