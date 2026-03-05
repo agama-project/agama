@@ -45,12 +45,13 @@ import { _, N_ } from "~/i18n";
 import { Device, DeviceState } from "~/model/network/types";
 
 /**
- * Filter options for narrowing down DASD devices shown in the table.
+ * Filter options for narrowing down network devices shown in the table.
  *
  * All filters are optional and may be combined.
  */
 type DevicesFilters = {
   name?: Device["name"];
+  connection?: string;
   type?: "all" | Device["type"];
   state?: "all" | Device["state"];
 };
@@ -74,7 +75,6 @@ type ActionsProps = {
   devices: Device[];
   /**
    * Persists device config changes to the backend.
-   * Used for activate, deactivate, DIAG toggle, etc.
    */
 
   // FIXME: It should create a new connection with DHCP from the device (quick action)
@@ -83,7 +83,7 @@ type ActionsProps = {
 };
 
 /**
- * Possible DASD devices states.
+ * Possible network devices states.
  *
  * Values use `N_()` for translation extraction. Translate with `_()` at render time.
  *
@@ -111,17 +111,21 @@ const TYPE_OPTIONS = {
 /**
  * Filters an array of devices based on given filters.
  *
- * @param devices - The array of DASD Device objects to filter.
+ * @param devices - The array of network Device objects to filter.
  * @param filters - The filters to apply.
- * @returns The filtered array of DASD Device objects matching all conditions.
+ * @returns The filtered array of network Device objects matching all conditions.
  */
 const filterDevices = (devices: Device[], filters: DevicesFilters): Device[] => {
-  const { name, type, state } = filters;
+  const { name, connection, type, state } = filters;
 
   const conditions: DeviceCondition[] = [];
 
   if (!isEmpty(name)) {
     conditions.push((d) => d.name.toLowerCase().includes(name.toLowerCase()));
+  }
+
+  if (!isEmpty(connection)) {
+    conditions.push((d) => (d.connection ?? "").toLowerCase().includes(connection.toLowerCase()));
   }
 
   if (state && state !== "all") {
@@ -185,9 +189,9 @@ type FiltersToolbarProps = {
 };
 
 /**
- * Renders the filter controls toolbar for the DASD table.
+ * Renders the filter controls toolbar for the network table.
  *
- * Displays status, format, and channel range filters alongside a device count
+ * Displays state and type filters alongside a device count
  * summary. When any filter is active the count switches from "N devices
  * available" to "M of N devices match filters" and a "Clear all filters" link
  * appears.
@@ -227,6 +231,15 @@ const FiltersToolbar = ({
               value={filters.name}
               width="120px"
               onChange={(_, v) => onFilterChange("name", v)}
+            />
+          </ToolbarItem>
+          <ToolbarItem>
+            <TextinputFilter
+              id="device-connection"
+              label={_("Connection")}
+              value={filters.connection}
+              width="120px"
+              onChange={(_, v) => onFilterChange("connection", v)}
             />
           </ToolbarItem>
           <ToolbarItem>
@@ -271,7 +284,7 @@ const FiltersToolbar = ({
   );
 };
 
-/** Internal state shape for the DASD table component. */
+/** Internal state shape for the network table component. */
 type TableState = {
   /** Current sorting state */
   sortedBy: SortedBy;
@@ -291,13 +304,14 @@ const initialState: TableState = {
   sortedBy: { index: 0, direction: "asc" },
   filters: {
     name: "",
+    connection: "",
     state: "all",
     type: "all",
   },
 };
 
 /**
- * Union of all actions that can be dispatched to update the DASD table state.
+ * Union of all actions that can be dispatched to update the network table state.
  **/
 type TableAction =
   | { type: "UPDATE_SORTING"; payload: TableState["sortedBy"] }
@@ -305,9 +319,9 @@ type TableAction =
   | { type: "RESET_FILTERS" };
 
 /**
- * Reducer for the DASD table.
+ * Reducer for the network table.
  *
- * Handles all state transitions driven by `DASDTableAction` dispatches.
+ * Handles all state transitions driven by `TableAction` dispatches.
  */
 const reducer = (state: TableState, action: TableAction): TableState => {
   switch (action.type) {
@@ -326,26 +340,32 @@ const reducer = (state: TableState, action: TableAction): TableState => {
 };
 
 /**
- * Column definitions for the DASD devices table.
+ * Column definitions for the network devices table.
  *
  * Each entry defines the column header label, how its value is derived from a
  * `Device`, and which field drives sorting. Consumed by `SelectableDataTable`.
  */
 const createColumns = () => [
   {
-    // TRANSLATORS: table header for a DASD devices table
+    // TRANSLATORS: table header for a network devices table
     name: _("Name"),
     value: (d: Device) => d.name,
     sortingKey: (d: Device) => d.name,
   },
   {
-    // TRANSLATORS: table header for a DASD devices table
+    // TRANSLATORS: table header for a network devices table
     name: _("State"),
     value: (d: Device) => STATE_OPTIONS[d.state],
     sortingKey: "state",
   },
   {
-    // TRANSLATORS: table header for a DASD devices table
+    // TRANSLATORS: table header for a network devices table
+    name: _("Connection"),
+    value: (d: Device) => d.connection || "-",
+    sortingKey: "connection",
+  },
+  {
+    // TRANSLATORS: table header for a network devices table
     name: _("Type"),
     value: (d: Device) => d.type,
     sortingKey: "type",
@@ -360,8 +380,7 @@ type DevicesTableProps = {
 /**
  * Displays a filterable, sortable, selectable table of network devices.
  *
- * Manages its own UI state (filters, sorting, selection, pending format
- * requests) via a reducer.
+ * Manages its own UI state (filters, sorting, selection) via a reducer.
  */
 export default function DevicesTable({ devices }: DevicesTableProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
