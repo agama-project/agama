@@ -6,6 +6,7 @@ check() {
   local _arch
   _arch=${DRACUT_ARCH:-$(uname -m)}
   [ "$_arch" = "ppc64" ] || [ "$_arch" = "ppc64le" ] || return 1
+  # pseries_platform is required by ofpathname
   require_binaries hexdump ofpathname pseries_platform || return 1
   return 0
 }
@@ -17,7 +18,7 @@ depends() {
 
 # called by dracut
 install() {
-  inst_multiple hcnmgr hexdump ofpathname pseries_platform awk sort wc tr sed grep cat
+  inst_multiple awk sort wc tr sed
   if dracut_module_included "systemd"; then
     inst_simple "$moddir/parse-hcnmgr.sh" "/usr/bin/parse-hcnmgr.sh"
     inst_simple "$moddir/hcnmgr-initrd.service" "${systemdsystemunitdir}/hcnmgr-initrd.service"
