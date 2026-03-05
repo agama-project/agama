@@ -19,11 +19,7 @@ depends() {
 # called by dracut
 install() {
   inst_multiple awk sort wc tr sed
-  if dracut_module_included "systemd"; then
-    inst_simple "$moddir/parse-hcnmgr.sh" "/usr/bin/parse-hcnmgr.sh"
-    inst_simple "$moddir/hcnmgr-initrd.service" "${systemdsystemunitdir}/hcnmgr-initrd.service"
-    $SYSTEMCTL -q --root "$initdir" enable hcnmgr-initrd.service
-  else
-    inst_hook initqueue/settled 91 "$moddir/parse-hcnmgr.sh"
-  fi
+  inst_simple "$moddir/parse-hcnmgr.sh" "/usr/bin/parse-hcnmgr.sh"
+  inst_simple "$moddir/hcnmgr-initrd.service" "${systemdsystemunitdir}/hcnmgr-initrd.service"
+  $SYSTEMCTL -q --root "$initdir" enable hcnmgr-initrd.service
 }
