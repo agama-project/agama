@@ -8,6 +8,11 @@ Thu Mar  5 13:44:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
   (gh#agama-project/agama#3242)
 
 -------------------------------------------------------------------
+Thu Mar  5 12:04:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Integrate zFCP in the new HTTP API (gh#agama-project/agama#3235).
+
+-------------------------------------------------------------------
 Thu Mar  5 07:19:01 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Refresh and load the repositories after registration

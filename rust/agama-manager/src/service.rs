@@ -358,6 +358,7 @@ impl Starter {
                         storage.clone(),
                         self.events.clone(),
                         progress.clone(),
+                        issues.clone(),
                         self.dbus.clone(),
                     )
                     .start()

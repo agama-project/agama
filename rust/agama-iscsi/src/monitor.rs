@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::storage;
-use agama_storage_client::proxies::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged};
+use crate::{
+    storage,
+    storage_client::proxies::{ISCSIProxy, ProgressChanged, ProgressFinished, SystemChanged},
+};
 use agama_utils::{
     actor::Handler,
     api::{

@@ -18,43 +18,34 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! # D-Bus interface proxy for: `org.opensuse.Agama.Storage1.DASD`
+//! # D-Bus interface proxy for: `org.opensuse.Agama.Storage1.ZFCP`
 
 use zbus::proxy;
 
 #[proxy(
     default_service = "org.opensuse.Agama.Storage1",
-    default_path = "/org/opensuse/Agama/Storage1/DASD",
-    interface = "org.opensuse.Agama.Storage1.DASD",
+    default_path = "/org/opensuse/Agama/Storage1/ZFCP",
+    interface = "org.opensuse.Agama.Storage1.ZFCP",
     assume_defaults = true
 )]
-pub trait DASD {
+pub trait ZFCP {
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
+
+    /// System property
+    #[zbus(property)]
+    fn system(&self) -> zbus::Result<String>;
 
     /// Config property
     #[zbus(property)]
     fn config(&self) -> zbus::Result<String>;
 
-    /// System property
-    /// Temporary rename to avoid clashing with the system_changed signal.
-    #[zbus(property, name = "System")]
-    fn dasd_system(&self) -> zbus::Result<String>;
+    /// Issues property
+    #[zbus(property)]
+    fn issues(&self) -> zbus::Result<String>;
 
     /// SetConfig method
     fn set_config(&self, serialized_config: &str) -> zbus::Result<()>;
-
-    /// FormatChanged signal
-    #[zbus(signal)]
-    fn format_changed(&self, summary: &str) -> zbus::Result<()>;
-
-    /// FormatFinished signal
-    #[zbus(signal)]
-    fn format_finished(&self, status: &str) -> zbus::Result<()>;
-
-    /// SystemChanged signal
-    #[zbus(signal)]
-    fn system_changed(&self, system: &str) -> zbus::Result<()>;
 
     /// ProgressChanged signal
     #[zbus(signal)]

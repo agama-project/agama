@@ -33,6 +33,7 @@ use crate::service;
 pub mod bootloader;
 pub mod dasd;
 pub mod iscsi;
+pub mod zfcp;
 
 pub struct CallAction {
     pub action: String,

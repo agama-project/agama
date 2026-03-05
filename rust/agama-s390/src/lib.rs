@@ -24,13 +24,15 @@ pub use service::{Service, Starter};
 pub mod dasd;
 pub mod message;
 pub mod test_utils;
+pub mod zfcp;
 
 use agama_storage as storage;
+use agama_storage_client as storage_client;
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::TestDASDClient;
+    use crate::test_utils::{TestDASDClient, TestZFCPClient};
     use agama_utils::{
         actor::Handler,
         api::{s390::Config, Event},
@@ -42,6 +44,7 @@ mod tests {
     struct Context {
         handler: Handler<Service>,
         dasd: TestDASDClient,
+        zfcp: TestZFCPClient,
     }
 
     impl AsyncTestContext for Context {
@@ -58,19 +61,25 @@ mod tests {
             )
             .await;
             let dasd = TestDASDClient::new();
-            let handler = Service::starter(storage, events, progress, connection)
+            let zfcp = TestZFCPClient::new();
+            let handler = Service::starter(storage, events, progress, issues, connection)
                 .with_dasd(dasd.clone())
+                .with_zfcp(zfcp.clone())
                 .start()
                 .await
-                .expect("Could not start the DASD service");
+                .expect("Could not start the s390 service");
 
-            Context { handler, dasd }
+            Context {
+                handler,
+                dasd,
+                zfcp,
+            }
         }
     }
 
     #[test_context(Context)]
     #[tokio::test]
-    async fn test_probe(ctx: &mut Context) -> Result<(), service::Error> {
+    async fn test_probe_dasd(ctx: &mut Context) -> Result<(), service::Error> {
         ctx.handler.call(message::ProbeDASD).await?;
 
         let state = ctx.dasd.state().await;
@@ -81,9 +90,21 @@ mod tests {
 
     #[test_context(Context)]
     #[tokio::test]
+    async fn test_probe_zfcp(ctx: &mut Context) -> Result<(), service::Error> {
+        ctx.handler.call(message::ProbeZFCP).await?;
+
+        let state = ctx.zfcp.state().await;
+        assert!(state.probed);
+
+        Ok(())
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
     async fn test_get_system(ctx: &mut Context) -> Result<(), service::Error> {
         let system = ctx.handler.call(message::GetSystem).await?;
         assert!(system.dasd.is_some());
+        assert!(system.zfcp.is_some());
 
         Ok(())
     }
@@ -98,6 +119,17 @@ mod tests {
                     "devices": [
                         {
                             "channel": "0.0.0100",
+                            "active": true,
+                            "format": true
+                        }
+                    ]
+                },
+                "zfcp": {
+                    "devices": [
+                        {
+                            "channel": "0.0.1a00",
+                            "wwpn": "0x5005076300c20b8e",
+                            "lun": "0x0001000000000000",
                             "active": true
                         }
                     ]
@@ -111,6 +143,7 @@ mod tests {
 
         let config = ctx.handler.call(message::GetConfig).await?;
         assert!(config.dasd.is_some());
+        assert!(config.zfcp.is_some());
 
         Ok(())
     }

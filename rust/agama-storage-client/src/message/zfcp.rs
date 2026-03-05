@@ -20,39 +20,39 @@
 
 use agama_utils::{
     actor::Message,
-    api::s390::{Config, SystemInfo},
+    api::{Issue, RawConfig},
 };
 
-pub struct ProbeDASD;
+pub struct Probe;
 
-impl Message for ProbeDASD {
-    type Reply = ();
-}
-
-pub struct ProbeZFCP;
-
-impl Message for ProbeZFCP {
+impl Message for Probe {
     type Reply = ();
 }
 
 pub struct GetSystem;
 
 impl Message for GetSystem {
-    type Reply = SystemInfo;
+    type Reply = Option<serde_json::Value>;
 }
 
 pub struct GetConfig;
 
 impl Message for GetConfig {
-    type Reply = Config;
+    type Reply = Option<RawConfig>;
+}
+
+pub struct GetIssues;
+
+impl Message for GetIssues {
+    type Reply = Vec<Issue>;
 }
 
 pub struct SetConfig {
-    pub config: Option<Config>,
+    pub config: Option<RawConfig>,
 }
 
 impl SetConfig {
-    pub fn new(config: Option<Config>) -> Self {
+    pub fn new(config: Option<RawConfig>) -> Self {
         Self { config }
     }
 }
