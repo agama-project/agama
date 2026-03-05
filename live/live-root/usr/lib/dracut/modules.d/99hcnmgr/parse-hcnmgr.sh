@@ -112,13 +112,13 @@ if [ -z "$CMDLINE" ]; then
   [ -r /proc/cmdline ] && CMDLINE=$(cat /proc/cmdline)
 fi
 
-HNV_IP=$(getargs hnv.ip)
-[ -z "$HNV_IP" ] && HNV_IP=$(getargs hvn.ip)
+HCN_IP=$(getargs hcn.ip)
+[ -z "$HCN_IP" ] && HCN_IP=$(getargs hvn.ip)
 
-HNV_ROUTE=$(getargs hnv.route)
-[ -z "$HNV_ROUTE" ] && HNV_ROUTE=$(getargs hvn.route)
+HCN_ROUTE=$(getargs hcn.route)
+[ -z "$HCN_ROUTE" ] && HCN_ROUTE=$(getargs hvn.route)
 
-info "parse-hcnmgr: HNV_IP=$HNV_IP HNV_ROUTE=$HNV_ROUTE"
+info "parse-hcnmgr: HCN_IP=$HCN_IP HCN_ROUTE=$HCN_ROUTE"
 
 NEW_ARGS=""
 MOD_CMDLINE="$CMDLINE"
@@ -160,79 +160,79 @@ for BONDNAME in $BOND_NAMES; do
 
   NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:$BOND_OPTS"
 
-  if [ -n "$HNV_IP" ]; then
+  if [ -n "$HCN_IP" ]; then
     MATCHED=0
-    CURRENT_HNV_IP="$HNV_IP"
+    CURRENT_HCN_IP="$HCN_IP"
 
-    # Check if HNV_IP matches any slave of THIS bond (name or MAC)
+    # Check if HCN_IP matches any slave of THIS bond (name or MAC)
     for s in $SLAVE_NAMES $SLAVE_MACS; do
       [ -z "$s" ] && continue
       s_dash=$(echo "$s" | tr ':' '-')
-      if [ "$HNV_IP" = "$s" ] || [ "$HNV_IP" = "$s_dash" ]; then
-        CURRENT_HNV_IP="$BONDNAME"
+      if [ "$HCN_IP" = "$s" ] || [ "$HCN_IP" = "$s_dash" ]; then
+        CURRENT_HCN_IP="$BONDNAME"
         MATCHED=1
         break
-      elif echo "$HNV_IP" | grep -q ":$s\(:\|$\)"; then
-        CURRENT_HNV_IP=$(echo "$HNV_IP" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
+      elif echo "$HCN_IP" | grep -q ":$s\(:\|$\)"; then
+        CURRENT_HCN_IP=$(echo "$HCN_IP" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
-      elif echo "$HNV_IP" | grep -q ":$s_dash\(:\|$\)"; then
-        CURRENT_HNV_IP=$(echo "$HNV_IP" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
+      elif echo "$HCN_IP" | grep -q ":$s_dash\(:\|$\)"; then
+        CURRENT_HCN_IP=$(echo "$HCN_IP" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
       fi
     done
 
     if [ $MATCHED -eq 1 ]; then
-      NEW_ARGS="$NEW_ARGS ip=$CURRENT_HNV_IP"
+      NEW_ARGS="$NEW_ARGS ip=$CURRENT_HCN_IP"
       CHANGED=1
     else
       # Fallback if it doesn't match any specific bond but is just an IP
-      if ! echo "$HNV_IP" | grep -q ":bond[0-9]"; then
-        COLONS=$(echo "$HNV_IP" | tr -dc ':' | wc -c)
+      if ! echo "$HCN_IP" | grep -q ":bond[0-9]"; then
+        COLONS=$(echo "$HCN_IP" | tr -dc ':' | wc -c)
         if [ "$COLONS" -eq 0 ]; then
-          NEW_ARGS="$NEW_ARGS ip=$HNV_IP:::::$BONDNAME:none"
+          NEW_ARGS="$NEW_ARGS ip=$HCN_IP:::::$BONDNAME:none"
           CHANGED=1
         fi
       fi
     fi
   fi
 
-  if [ -n "$HNV_ROUTE" ]; then
+  if [ -n "$HCN_ROUTE" ]; then
     MATCHED=0
-    CURRENT_HNV_ROUTE="$HNV_ROUTE"
+    CURRENT_HCN_ROUTE="$HCN_ROUTE"
 
-    # Check if HNV_ROUTE matches any slave of THIS bond (name or MAC)
+    # Check if HCN_ROUTE matches any slave of THIS bond (name or MAC)
     for s in $SLAVE_NAMES $SLAVE_MACS; do
       [ -z "$s" ] && continue
       s_dash=$(echo "$s" | tr ':' '-')
-      if [ "$HNV_ROUTE" = "$s" ] || [ "$HNV_ROUTE" = "$s_dash" ]; then
-        CURRENT_HNV_ROUTE="$BONDNAME"
+      if [ "$HCN_ROUTE" = "$s" ] || [ "$HCN_ROUTE" = "$s_dash" ]; then
+        CURRENT_HCN_ROUTE="$BONDNAME"
         MATCHED=1
         break
-      elif echo "$HNV_ROUTE" | grep -q ":$s\(:\|$\)"; then
-        CURRENT_HNV_ROUTE=$(echo "$HNV_ROUTE" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
+      elif echo "$HCN_ROUTE" | grep -q ":$s\(:\|$\)"; then
+        CURRENT_HCN_ROUTE=$(echo "$HCN_ROUTE" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
-      elif echo "$HNV_ROUTE" | grep -q ":$s_dash\(:\|$\)"; then
-        CURRENT_HNV_ROUTE=$(echo "$HNV_ROUTE" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
+      elif echo "$HCN_ROUTE" | grep -q ":$s_dash\(:\|$\)"; then
+        CURRENT_HCN_ROUTE=$(echo "$HCN_ROUTE" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
       fi
     done
 
     if [ $MATCHED -eq 1 ]; then
-      NEW_ARGS="$NEW_ARGS rd.route=$CURRENT_HNV_ROUTE"
+      NEW_ARGS="$NEW_ARGS rd.route=$CURRENT_HCN_ROUTE"
       CHANGED=1
     else
       # Fallback if it doesn't match any specific bond but is just a route spec without interface
-      if ! echo "$HNV_ROUTE" | grep -q ":bond[0-9]"; then
-        COLONS=$(echo "$HNV_ROUTE" | tr -dc ':' | wc -c)
+      if ! echo "$HCN_ROUTE" | grep -q ":bond[0-9]"; then
+        COLONS=$(echo "$HCN_ROUTE" | tr -dc ':' | wc -c)
         if [ "$COLONS" -eq 0 ]; then
-          NEW_ARGS="$NEW_ARGS rd.route=$HNV_ROUTE::$BONDNAME"
+          NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE::$BONDNAME"
           CHANGED=1
         elif [ "$COLONS" -eq 1 ]; then
-          NEW_ARGS="$NEW_ARGS rd.route=$HNV_ROUTE:$BONDNAME"
+          NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE:$BONDNAME"
           CHANGED=1
         fi
       fi
