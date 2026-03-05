@@ -418,17 +418,18 @@ impl ZyppServer {
             zypp_agama::ResolvableSelected::Installation,
         );
         if let Err(error) = result {
+            tracing::info!(
+                "Failed to find the product {} in the repositories: {}",
+                &state.product,
+                &error
+            );
             if state.allow_registration && !self.is_registered() {
-                let message = gettext(
-                    "Failed to find the {} product in the repositories. You might need to register the system.",
-                )
-                .replace("{}", &state.product);
-                issues
-                    .product
-                    .push(Issue::new("missing_registration", &message));
+                let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
+                let issue =
+                    Issue::new("missing_registration", &message).with_details(&error.to_string());
+                issues.product.push(issue);
             } else {
-                let message = gettext("Failed to find the {} product in the repositories.")
-                    .replace("{}", &state.product);
+                let message = gettext("Failed to find the product in the repositories.");
                 let issue =
                     Issue::new("missing_product", &message).with_details(&error.to_string());
                 issues.software.push(issue);
