@@ -72,4 +72,4 @@ function addDevices(config: Config | null, devices: Device[]): Config {
 }
 
 export type * from "~/openapi/config/zfcp";
-export default { addControllers, addDevices };
+export default { addControllers, addDevice, addDevices };
