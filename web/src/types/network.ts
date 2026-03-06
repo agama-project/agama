@@ -294,6 +294,7 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
 };
@@ -329,6 +330,7 @@ class Connection {
     const addresses = connection.addresses?.map(buildAddress) || [];
     return new Connection(id, {
       ...options,
+      status,
       // FIXME: try a better approach for methods/gateway and/or typecasting
       method4: options.method4 as ConnectionMethod,
       method6: options.method6 as ConnectionMethod,

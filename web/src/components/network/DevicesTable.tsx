@@ -40,10 +40,10 @@ import Text from "~/components/core/Text";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
-import { useNetworkActionMutation } from "~/hooks/model/config/network";
+import { useConnections, useConnectionMutation } from "~/hooks/model/config/network";
 import { sortCollection, translateEntries } from "~/utils";
 import { _, N_ } from "~/i18n";
-import { Device, DeviceState } from "~/model/network/types";
+import { Connection, ConnectionStatus, Device, DeviceState } from "~/types/network";
 
 /**
  * Filter options for narrowing down network devices shown in the table.
@@ -396,14 +396,28 @@ type DevicesTableProps = {
  */
 export default function DevicesTable({ devices }: DevicesTableProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { mutateAsync: postAction } = useNetworkActionMutation();
+  const connections = useConnections();
+  const { mutateAsync: mutateConnection } = useConnectionMutation();
 
   const connectNetworkDevice = (device: Device) => {
-    postAction({ connectNetworkDevice: device.name });
+    const existing = connections.find((c) => c.id === device.connection || c.iface === device.name);
+    const connection = existing
+      ? new Connection(existing.id, { ...existing, status: ConnectionStatus.UP })
+      : new Connection(device.name, { iface: device.name, status: ConnectionStatus.UP });
+
+    mutateConnection(connection);
   };
 
   const disconnectNetworkDevice = (device: Device) => {
-    postAction({ disconnectNetworkDevice: device.name });
+    const existing = connections.find((c) => c.id === device.connection || c.iface === device.name);
+
+    if (existing) {
+      const connection = new Connection(existing.id, {
+        ...existing,
+        status: ConnectionStatus.DOWN,
+      });
+      mutateConnection(connection);
+    }
   };
 
   const columns = createColumns();
