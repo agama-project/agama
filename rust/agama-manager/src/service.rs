@@ -510,6 +510,8 @@ impl Service {
         if let Some(locale) = config.locale {
             self.storage
                 .cast(storage::message::SetLocale::new(locale.as_str()))?;
+            self.users
+                .cast(users::message::SetLocale::new(locale.as_str()))?;
         }
         Ok(())
     }
