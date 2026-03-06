@@ -100,8 +100,8 @@ const ConfirmationPopup = ({
 };
 
 /**
- * Renders a PatternFly `EmptyState` block used when no DASD devices are detected
- * on the host machine.
+ * Renders a PatternFly `EmptyState` block used when no product was found in the
+ * repositories.
  */
 const NoProductFound = () => {
   return (
