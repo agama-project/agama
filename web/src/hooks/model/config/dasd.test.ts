@@ -50,7 +50,7 @@ describe("hooks/model/storage/dasd", () => {
   });
 
   describe("useConfig", () => {
-    it("returns only dasd config data", () => {
+    it("returns the DASD config", () => {
       mockConfigQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
         dasd: { devices: [mockDeviceActive] },
@@ -62,15 +62,15 @@ describe("hooks/model/storage/dasd", () => {
       expect(result.current).not.toHaveProperty("product");
     });
 
-    it("returns null when config data is undefined", () => {
-      mockConfigQuery(undefined);
+    it("returns null if there is no config", () => {
+      mockConfigQuery(null);
 
       const { result } = renderHook(() => useConfig());
 
       expect(result.current).toBeNull();
     });
 
-    it("returns null when dasd property is not present", () => {
+    it("returns null if there is no DASD config", () => {
       mockConfigQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
       });

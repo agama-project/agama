@@ -56,7 +56,7 @@ describe("hooks/model/storage/zfcp", () => {
   });
 
   describe("useConfig", () => {
-    it("returns only zfcp config data", () => {
+    it("returns the zFCP config", () => {
       mockConfigQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
         zfcp: { devices: [mockDevice1] },
@@ -65,18 +65,17 @@ describe("hooks/model/storage/zfcp", () => {
       const { result } = renderHook(() => useConfig());
 
       expect(result.current).toEqual({ devices: [mockDevice1] });
-      expect(result.current).not.toHaveProperty("product");
     });
 
-    it("returns null when config data is undefined", () => {
-      mockConfigQuery(undefined);
+    it("returns null if there is no config", () => {
+      mockConfigQuery(null);
 
       const { result } = renderHook(() => useConfig());
 
       expect(result.current).toBeNull();
     });
 
-    it("returns null when zfcp property is not present", () => {
+    it("returns null if there is no zFCP config", () => {
       mockConfigQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
       });

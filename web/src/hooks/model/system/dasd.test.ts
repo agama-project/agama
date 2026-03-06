@@ -24,10 +24,23 @@ import { renderHook } from "@testing-library/react";
 // NOTE: check notes about mockSystemQuery in its documentation
 import { clearMockedQueries, mockSystemQuery } from "~/test-utils/tanstack-query";
 import { useSystem } from "~/hooks/model/system/dasd";
-import type { Device } from "~/model/config/dasd";
+import type { DASD } from "~/model/system";
 
-const mockDeviceOffline: Device = { channel: "0.0.0150", state: "offline" as const };
-const mockDeviceActive: Device = { channel: "0.0.0160", state: "active" as const };
+const dasdSystem: DASD.System = {
+  devices: [
+    {
+      channel: "0.0.0100",
+      deviceName: "dasda",
+      type: "ECKD",
+      diag: false,
+      accessType: "diag",
+      partitionInfo: "1",
+      status: "active",
+      active: true,
+      formatted: true,
+    },
+  ],
+};
 
 describe("~/hooks/model/system/dasd", () => {
   beforeEach(() => {
@@ -35,29 +48,26 @@ describe("~/hooks/model/system/dasd", () => {
   });
 
   describe("useSystem", () => {
-    it("returns only dasd system data, not the full system object", () => {
+    it("returns the DASD system", () => {
       mockSystemQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
-        dasd: {
-          devices: [mockDeviceActive, mockDeviceOffline],
-        },
+        dasd: dasdSystem,
       });
 
       const { result } = renderHook(() => useSystem());
 
-      expect(result.current).toEqual({ devices: [mockDeviceActive, mockDeviceOffline] });
-      expect(result.current).not.toHaveProperty("product");
+      expect(result.current).toEqual(dasdSystem);
     });
 
-    it("returns null when system data is undefined", () => {
-      mockSystemQuery(undefined);
+    it("returns null if there is no system", () => {
+      mockSystemQuery(null);
 
       const { result } = renderHook(() => useSystem());
 
       expect(result.current).toBeNull();
     });
 
-    it("returns null when dasd property is not present", () => {
+    it("returns null if threre is no DASD system", () => {
       mockSystemQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
       });

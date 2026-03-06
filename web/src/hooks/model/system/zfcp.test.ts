@@ -25,17 +25,31 @@ import { clearMockedQueries, mockSystemQuery } from "~/test-utils/tanstack-query
 import { useSystem } from "~/hooks/model/system/zfcp";
 import type { ZFCP } from "~/model/system";
 
-const mockDevice1: ZFCP.Device = {
-  channel: "0.0.5000",
-  wwpn: "0x500507630510c1e3",
-  lun: "0x4010404900000000",
-  active: false,
-};
-const mockDevice2: ZFCP.Device = {
-  channel: "0.0.6000",
-  wwpn: "0x500507630510c1e4",
-  lun: "0x4010404900000001",
-  active: false,
+const zfcpSystem: ZFCP.System = {
+  lunScan: true,
+  controllers: [
+    {
+      channel: "0.0.7000",
+      wwpns: ["0x500507630303c5f9"],
+      lunScan: true,
+      active: true,
+    },
+  ],
+  devices: [
+    {
+      channel: "0.0.7000",
+      wwpn: "0x500507630303c5f9",
+      lun: "0x5022000000000000",
+      active: true,
+      deviceName: "/dev/sda",
+    },
+    {
+      channel: "0.0.5000",
+      wwpn: "0x500507630510c1e3",
+      lun: "0x4010404900000000",
+      active: false,
+    },
+  ],
 };
 
 describe("~/hooks/model/system/zfcp", () => {
@@ -44,29 +58,26 @@ describe("~/hooks/model/system/zfcp", () => {
   });
 
   describe("useSystem", () => {
-    it("returns only zfcp system data, not the full system object", () => {
+    it("returns the zFCP system", () => {
       mockSystemQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
-        zfcp: {
-          devices: [mockDevice1, mockDevice2],
-        },
+        zfcp: zfcpSystem,
       });
 
       const { result } = renderHook(() => useSystem());
 
-      expect(result.current).toEqual({ devices: [mockDevice1, mockDevice2] });
-      expect(result.current).not.toHaveProperty("product");
+      expect(result.current).toEqual(zfcpSystem);
     });
 
-    it("returns null when system data is undefined", () => {
-      mockSystemQuery(undefined);
+    it("returns null if there is no system", () => {
+      mockSystemQuery(null);
 
       const { result } = renderHook(() => useSystem());
 
       expect(result.current).toBeNull();
     });
 
-    it("returns null when zfcp property is not present", () => {
+    it("returns null if there is no zFCP system", () => {
       mockSystemQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
       });
