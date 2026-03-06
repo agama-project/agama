@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -40,6 +40,23 @@ enum SelectedBy {
   REMOVED = "removed",
 }
 
-export type { Proposal, PatternsSelection };
+type ConflictSolutionOption = {
+  id: number;
+  description: string;
+  details: string | null;
+};
 
+type Conflict = {
+  id: number;
+  description: string;
+  details: string | null;
+  solutions: ConflictSolutionOption[];
+};
+
+type ConflictSolution = {
+  conflictId: Conflict["id"];
+  solutionId: ConflictSolutionOption["id"];
+};
+
+export type { Proposal, PatternsSelection, Conflict, ConflictSolution, ConflictSolutionOption };
 export { SelectedBy };

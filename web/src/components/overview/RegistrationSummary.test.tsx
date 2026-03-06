@@ -49,6 +49,7 @@ describe("RegistrationSummary", () => {
       mockProduct({
         id: "Tumbleweed",
         name: "openSUSE Tumbleweed",
+        modes: [],
         icon: "tumbleweed.svg",
         description: "Tumbleweed description...",
         registration: false,
@@ -66,6 +67,7 @@ describe("RegistrationSummary", () => {
       mockProduct({
         id: "Tumbleweed",
         name: "openSUSE Tumbleweed",
+        modes: [],
         icon: "tumbleweed.svg",
         description: "Tumbleweed description...",
         registration: true,

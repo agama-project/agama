@@ -74,9 +74,19 @@ type Mode = {
   description: string;
 };
 
+type LicenseContent = {
+  /** License ID (e.g., "license.sle") */
+  id: string;
+  /** License body */
+  body: string;
+  /** License language (e.g., "en-US") */
+  language: string;
+};
+
 export type {
   System,
   Product,
+  LicenseContent,
   L10n,
   Hardware,
   Hostname,

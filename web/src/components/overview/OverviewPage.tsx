@@ -53,11 +53,9 @@ import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 import { _ } from "~/i18n";
-
-import type { Product } from "~/types/software";
-
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import type { Product } from "~/model/system";
 
 type ConfirmationPopupProps = {
   product: Product;

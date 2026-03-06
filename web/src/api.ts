@@ -27,7 +27,7 @@ import type { Issue } from "~/model/issue";
 import type { Proposal } from "~/model/proposal";
 import type { Question } from "~/model/question";
 import type { Status } from "~/model/status";
-import type { System } from "~/model/system";
+import type { System, LicenseContent } from "~/model/system";
 import type { Action, L10nSystemConfig, DiscoverISCSIConfig } from "~/model/action";
 import type { AxiosResponse } from "axios";
 
@@ -40,6 +40,9 @@ const getConfig = (): Promise<Config | null> => get("/api/v2/config");
 const getExtendedConfig = (): Promise<Config | null> => get("/api/v2/extended_config");
 
 const getSystem = (): Promise<System | null> => get("/api/v2/system");
+
+const getLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
+  get(`/api/v2/licenses/${id}?lang=${lang}`);
 
 const getProposal = (): Promise<Proposal | null> => get("/api/v2/proposal");
 
@@ -88,6 +91,7 @@ export {
   getConfig,
   getExtendedConfig,
   getSystem,
+  getLicense,
   getProposal,
   getIssues,
   getQuestions,

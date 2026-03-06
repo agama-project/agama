@@ -43,8 +43,7 @@ import {
 } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { Page, SubtleContent } from "~/components/core";
-import { ConflictSolutionOption } from "~/types/software";
-import { useConflicts, useConflictsChanges, useConflictsMutation } from "~/queries/software";
+import { ConflictSolutionOption } from "~/model/proposal/software";
 import { isNullish } from "radashi";
 import { sprintf } from "sprintf-js";
 import { SOFTWARE } from "~/routes/paths";
@@ -125,7 +124,7 @@ const ConflictSolutionRadio = ({
  * and eventually apply a solution for given conflict
  */
 const ConflictsForm = ({ conflict }): React.ReactNode => {
-  const { mutate: solve } = useConflictsMutation();
+  // const { mutate: solve } = useConflictsMutation();
   const [error, setError] = useState<string | null>(null);
   const [chosenSolution, setChosenSolution] = useState<ConflictSolutionOption["id"] | undefined>();
 
@@ -134,7 +133,8 @@ const ConflictsForm = ({ conflict }): React.ReactNode => {
 
     if (!isNullish(chosenSolution)) {
       setError(null);
-      solve({ conflictId: conflict.id, solutionId: chosenSolution });
+      /** @todo Adapt to the new API. */
+      // solve({ conflictId: conflict.id, solutionId: chosenSolution });
     } else {
       setError(_("Select a solution to continue"));
     }
@@ -278,8 +278,10 @@ const ConflictsContent = ({ conflicts }) => {
  * Displays either a resolution form or a message when no conflicts are present.
  */
 export default function SoftwareConflictsPage() {
-  useConflictsChanges();
-  const conflicts = useConflicts();
+  /** @todo Adapt to the new API. */
+  // useConflictsChanges();
+  // const conflicts = useConflicts();
+  const conflicts = [];
 
   return (
     <Page
