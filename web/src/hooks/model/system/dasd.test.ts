@@ -49,22 +49,22 @@ describe("~/hooks/model/system/dasd", () => {
       expect(result.current).not.toHaveProperty("product");
     });
 
-    it("returns undefined when system data is undefined", () => {
+    it("returns null when system data is undefined", () => {
       mockSystemQuery(undefined);
 
       const { result } = renderHook(() => useSystem());
 
-      expect(result.current).toBeUndefined();
+      expect(result.current).toBeNull();
     });
 
-    it("returns undefined when dasd property is not present", () => {
+    it("returns null when dasd property is not present", () => {
       mockSystemQuery({
         product: { id: "sle", mode: "standard", registrationCode: "" },
       });
 
       const { result } = renderHook(() => useSystem());
 
-      expect(result.current).toBeUndefined();
+      expect(result.current).toBeNull();
     });
   });
 });
