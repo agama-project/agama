@@ -58,10 +58,8 @@ import {
   probe,
   registerAddon,
   solveConflict,
-  updateConfig,
 } from "~/model/software";
 import { QueryHookOptions } from "~/types/queries";
-import { probe as systemProbe } from "~/model/manager";
 
 /**
  * Query to retrieve software configuration
@@ -153,30 +151,6 @@ const conflictsQuery = () => ({
   queryKey: ["software", "conflicts"],
   queryFn: fetchConflicts,
 });
-
-/**
- * Hook that builds a mutation to update the software configuration
- *
- * @note it would trigger a general probing as a side-effect when mutation
- * includes a product.
- */
-const useConfigMutation = () => {
-  const queryClient = useQueryClient();
-
-  const query = {
-    mutationFn: updateConfig,
-    onSuccess: async (_, config: SoftwareConfig) => {
-      queryClient.invalidateQueries({ queryKey: ["software", "config"] });
-      queryClient.invalidateQueries({ queryKey: ["software", "proposal"] });
-      if (config.product) {
-        queryClient.invalidateQueries({ queryKey: ["software", "selectedProduct"] });
-        await systemProbe();
-        queryClient.invalidateQueries({ queryKey: ["storage"] });
-      }
-    },
-  };
-  return useMutation(query);
-};
 
 /**
  * Hook that builds a mutation for registering an addon
@@ -404,7 +378,6 @@ export {
   configQuery,
   productsQuery,
   useAddons,
-  useConfigMutation,
   useConflicts,
   useConflictsMutation,
   useConflictsChanges,
