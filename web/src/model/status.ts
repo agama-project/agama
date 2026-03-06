@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,23 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-// @todo Move to the new API.
-
-import { get } from "~/http";
-import { InstallerStatus } from "~/types/status";
-
-/**
- * Returns the installer status information
- */
-const fetchInstallerStatus = async (): Promise<InstallerStatus> => {
-  const { phase, isBusy, useIguana, canInstall } = await get("/api/manager/installer");
-  return { phase, isBusy, useIguana, canInstall };
-};
-
-// TODO: remove
-export { fetchInstallerStatus };
-
 type Stage = "installing" | "configuring" | "finished" | "failed";
+
 type Scope =
   | "manager"
   | "l10n"
@@ -47,6 +32,7 @@ type Scope =
   | "iscsi"
   | "dasd"
   | "users";
+
 type Progress = {
   index: number;
   scope: Scope;
