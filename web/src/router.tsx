@@ -30,7 +30,6 @@ import {
   InstallationProgress,
   LoginPage,
 } from "~/components/core";
-import StorageProgress from "~/components/storage/Progress";
 import HostnamePage from "~/components/system/HostnamePage";
 import OverviewPage from "~/components/overview/OverviewPage";
 import l10nRoutes from "~/routes/l10n";
@@ -40,7 +39,7 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { HOSTNAME, ROOT as PATHS, STORAGE } from "./routes/paths";
+import { HOSTNAME, ROOT as PATHS } from "./routes/paths";
 import { N_ } from "~/i18n";
 
 const rootRoutes = () => [
@@ -90,10 +89,6 @@ const protectedRoutes = () => [
       {
         path: PATHS.installationFinished,
         element: <InstallationFinished />,
-      },
-      {
-        path: STORAGE.progress,
-        element: <StorageProgress />,
       },
     ],
   },
