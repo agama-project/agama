@@ -87,6 +87,7 @@ const startInstallation = () => postAction({ install: null });
 
 const finishInstallation = () => postAction({ finish: "reboot" });
 
+<<<<<<< HEAD
 type PasswordCheckResult = {
   success?: number;
   failure?: TranslatedString;
@@ -124,6 +125,7 @@ export {
   startInstallation,
   finishInstallation,
   passwordCheck,
+  postAction,
 };
 
 export type { Response, PasswordCheckResult };

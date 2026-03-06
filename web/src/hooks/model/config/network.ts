@@ -25,7 +25,7 @@ import { Connection, NetworkConfig } from "~/types/network";
 import { Network, Proposal } from "~/model/proposal";
 import { Config } from "~/model/config";
 import { Config as APIConfig } from "~/model/config/network";
-import { patchConfig } from "~/api";
+import { patchConfig, postAction } from "~/api";
 import { configQuery } from "../config";
 import { proposalQuery } from "../proposal";
 
@@ -65,6 +65,20 @@ const useConfigMutation = () => {
   };
   return useMutation(query);
 };
+/**
+ * Hook that builds a mutation to trigger a network action.
+ */
+const useNetworkActionMutation = () => {
+  const queryClient = useQueryClient();
+  const query = {
+    mutationFn: postAction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["proposal"] });
+      queryClient.invalidateQueries({ queryKey: ["system"] });
+    },
+  };
+  return useMutation(query);
+};
 
 const selectConnections = (data: Network.Proposal): Connection[] =>
   data.connections.map((c) => Connection.fromApi(c));
@@ -92,4 +106,11 @@ const useConnection = (name: string) => {
   return connection;
 };
 
-export { useConnectionMutation, useConfigMutation, useConnection, useConnections, useConfig };
+export {
+  useConnectionMutation,
+  useConfigMutation,
+  useConnection,
+  useConnections,
+  useConfig,
+  useNetworkActionMutation,
+};

@@ -40,6 +40,7 @@ import Text from "~/components/core/Text";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
+import { useNetworkActionMutation } from "~/hooks/model/config/network";
 import { sortCollection, translateEntries } from "~/utils";
 import { _, N_ } from "~/i18n";
 import { Device, DeviceState } from "~/model/network/types";
@@ -66,20 +67,21 @@ type DevicesFilters = {
 type DeviceCondition = (device: Device) => boolean;
 
 /**
- * Props shared by `buildActions` and `BulkActionsToolbar`.
+ * Props shared by `buildActions`.
  *
- * Covers both single-device row actions and multi-device bulk actions.
+ * Covers single-device row actions.
  */
 type ActionsProps = {
-  /** Devices to act on. */
-  devices: Device[];
+  /** Device to act on. */
+  device: Device;
   /**
    * Persists device config changes to the backend.
    */
 
   // FIXME: It should create a new connection with DHCP from the device (quick action)
   // addOrUpdateDevices: ReturnType<typeof useAddOrUpdateDevices>;
-  onConnect: (devices: Device[]) => void;
+  onConnectNetworkDevice: (device: Device) => void;
+  onDisconnectNetworkDevice: (device: Device) => void;
 };
 
 /**
@@ -151,19 +153,29 @@ const filterDevices = (devices: Device[], filters: DevicesFilters): Device[] => 
  * device state, which is the right behavior for bulk operations where the
  * selection may contain devices in mixed states.
  */
-const buildActions = ({ devices, onConnect }: ActionsProps) => {
-  return [
+const buildActions = ({
+  device,
+  onConnectNetworkDevice,
+  onDisconnectNetworkDevice,
+}: ActionsProps) => {
+  const actions = [
     {
       id: "connect",
       title: _("Connect"),
-      onClick: () => onConnect(devices),
+      onClick: () => onConnectNetworkDevice(device),
     },
     {
       id: "disconnect",
       title: _("Disconnect"),
-      onClick: () => onConnect(devices),
+      onClick: () => onDisconnectNetworkDevice(device),
     },
   ];
+
+  const keptActions = {
+    connect: [DeviceState.DISCONNECTED, DeviceState.FAILED].includes(device.state),
+    disconnect: [DeviceState.CONNECTED, DeviceState.CONNECTING].includes(device.state),
+  };
+  return actions.filter((a) => keptActions[a.id]);
 };
 
 /** Props for `FiltersToolbar`. */
@@ -384,7 +396,15 @@ type DevicesTableProps = {
  */
 export default function DevicesTable({ devices }: DevicesTableProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { connectDevice } = { connectDevice: (d) => console.log("iconnection", d) };
+  const { mutateAsync: postAction } = useNetworkActionMutation();
+
+  const connectNetworkDevice = (device: Device) => {
+    postAction({ connectNetworkDevice: device.name });
+  };
+
+  const disconnectNetworkDevice = (device: Device) => {
+    postAction({ disconnectNetworkDevice: device.name });
+  };
 
   const columns = createColumns();
 
@@ -429,8 +449,9 @@ export default function DevicesTable({ devices }: DevicesTableProps) {
         updateSorting={onSortingChange}
         itemActions={(d: Device) =>
           buildActions({
-            devices: [d],
-            onConnect: connectDevice,
+            device: d,
+            onConnectNetworkDevice: connectNetworkDevice,
+            onDisconnectNetworkDevice: disconnectNetworkDevice,
           })
         }
         itemActionsLabel={(d: Device) => `Actions for ${d.name}`}
