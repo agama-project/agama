@@ -18,14 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{process::exit, str::FromStr, time::Duration};
+use std::{process::exit, time::Duration};
 
 use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
 use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
-use agama_utils::{
-    api::{status::Stage, FinishMethod},
-    kernel_cmdline::KernelCmdline,
-};
+use agama_utils::{api::status::Stage, kernel_cmdline::KernelCmdline};
 use anyhow::anyhow;
 use tokio::time::sleep;
 
@@ -96,12 +93,7 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
-    let method = args
-        .get("inst.finish")
-        .first()
-        .and_then(|m| FinishMethod::from_str(m).ok())
-        .unwrap_or_default();
-    manager_client.finish(method).await?;
+    manager_client.finish(None).await?;
 
     Ok(())
 }

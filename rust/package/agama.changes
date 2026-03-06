@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar  6 10:28:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Honor inst.finish in interactive installation (jsc#PED-15031).
+
+-------------------------------------------------------------------
 Thu Mar  5 15:27:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve registration and software issues reporting (related to bsc#1258034).

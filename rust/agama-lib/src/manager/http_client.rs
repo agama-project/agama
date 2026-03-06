@@ -67,7 +67,7 @@ impl ManagerHTTPClient {
     /// Finishes the installation.
     ///
     /// * `method`: halt, reboot, stop or poweroff the system.
-    pub async fn finish(&self, method: FinishMethod) -> Result<(), ManagerHTTPClientError> {
+    pub async fn finish(&self, method: Option<FinishMethod>) -> Result<(), ManagerHTTPClientError> {
         let action = api::Action::Finish(method);
         self.client.post_void("/v2/action", &action).await?;
         Ok(())

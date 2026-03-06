@@ -111,12 +111,13 @@ pub enum Commands {
         ///
         /// stop - do not reboot and the Agama backend continues running.
         ///
-        /// reboot - reboot into the installed system.
+        /// reboot - reboot into the installed system. This value is the
+        ///          default. It can be overriden by setting the inst.finish
+        ///          kernel command-line argument.
         ///
         /// halt - halt the installed machine.
         ///
         /// poweroff - power off the installed machine.
-        #[clap(default_value = "reboot")]
         method: Option<FinishMethod>,
     },
 
