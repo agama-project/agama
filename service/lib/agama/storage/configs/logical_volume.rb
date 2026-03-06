@@ -23,6 +23,7 @@ require "agama/storage/configs/size"
 require "agama/storage/configs/with_alias"
 require "agama/storage/configs/with_filesystem"
 require "agama/storage/configs/with_search"
+require "agama/storage/configs/with_delete"
 
 module Agama
   module Storage
@@ -32,6 +33,7 @@ module Agama
         include WithAlias
         include WithFilesystem
         include WithSearch
+        include WithDelete
 
         # @return [String, nil]
         attr_accessor :name
@@ -55,19 +57,10 @@ module Agama
         # @return [Encryption, nil]
         attr_accessor :encryption
 
-        # @return [Boolean]
-        attr_accessor :delete
-        alias_method :delete?, :delete
-
-        # @return [Boolean]
-        attr_accessor :delete_if_needed
-        alias_method :delete_if_needed?, :delete_if_needed
-
         def initialize
+          initialize_delete
           @size = Size.new
           @pool = false
-          @delete = false
-          @delete_if_needed = false
         end
 
         # Whether the config represents a thin logical volume.

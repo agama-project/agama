@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -27,8 +27,11 @@ module Agama
       module ToJSONConversions
         # Mixin for delete conversion to JSON.
         #
-        # The class is also expected to include WithSearch and WithSize.
+        # Including this mixin also includes WithSearch and WithSize.
         module WithDelete
+          include WithSize
+          include WithSearch
+
           # @return [Hash, nil]
           def convert_delete
             return unless convert_delete?
