@@ -68,6 +68,7 @@ impl ConnectionSettingsChangedStream {
         Ok(Self { connection, inner })
     }
 
+    /// Handles an [InterfacesAdded] message and returns an [NmChange] if a connection was added.
     fn handle_added(message: InterfacesAdded) -> Option<NmChange> {
         let args = message.args().ok()?;
         let interfaces: Vec<String> = args
@@ -85,6 +86,7 @@ impl ConnectionSettingsChangedStream {
         None
     }
 
+    /// Handles an [InterfacesRemoved] message and returns an [NmChange] if a connection was removed.
     fn handle_removed(message: InterfacesRemoved) -> Option<NmChange> {
         let args = message.args().ok()?;
 
@@ -99,6 +101,7 @@ impl ConnectionSettingsChangedStream {
         None
     }
 
+    /// Handles a [PropertiesChanged] message and returns an [NmChange] if a connection was updated.
     fn handle_changed(message: PropertiesChanged) -> Option<NmChange> {
         let args = message.args().ok()?;
         let inner = message.message();
@@ -111,6 +114,7 @@ impl ConnectionSettingsChangedStream {
         None
     }
 
+    /// Handles a [Message] and returns an [NmChange] if it is related to connection settings.
     fn handle_message(message: Result<Message, zbus::Error>) -> Option<NmChange> {
         let Ok(message) = message else {
             return None;

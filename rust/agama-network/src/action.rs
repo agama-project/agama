@@ -67,8 +67,7 @@ pub enum Action {
     GetGeneralState(Responder<GeneralState>),
     /// Connection state changed
     ChangeConnectionState(String, ConnectionState),
-    /// It persist existing connections if there is no one to be persisted and the copy of network
-    /// is not disabled
+    /// Persists existing connections if none exist and the network copy is not disabled.
     ProposeDefault(Responder<Result<(), NetworkStateError>>),
     // Copies persistent connections to the target system
     Install(Responder<Result<(), NetworkStateError>>),
@@ -78,7 +77,7 @@ pub enum Action {
     UpdateGeneralState(GeneralState),
     /// Forces a wireless networks scan refresh
     RefreshScan(Responder<Result<(), NetworkAdapterError>>),
-    /// Remove the connection with the given Uuid.
+    /// Remove the connection with the given ID.
     RemoveConnection(String),
     /// Apply the current configuration.
     Apply(Responder<Result<(), NetworkAdapterError>>),

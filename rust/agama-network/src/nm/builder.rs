@@ -36,7 +36,6 @@ use super::{error::NmError, model::NmDeviceState};
 
 /// Builder to create a [Connection] from its corresponding NetworkManager D-Bus representation.
 pub struct ConnectionFromProxyBuilder<'a> {
-    connection: zbus::Connection,
     proxy: &'a ConnectionProxy<'a>,
 }
 /// Builder to create a [Device] from its corresponding NetworkManager D-Bus representation.
@@ -46,11 +45,8 @@ pub struct DeviceFromProxyBuilder<'a> {
 }
 
 impl<'a> ConnectionFromProxyBuilder<'a> {
-    pub fn new(connection: &zbus::Connection, proxy: &'a ConnectionProxy<'a>) -> Self {
-        Self {
-            connection: connection.clone(),
-            proxy,
-        }
+    pub fn new(_connection: &zbus::Connection, proxy: &'a ConnectionProxy<'a>) -> Self {
+        Self { proxy }
     }
     /// Creates a [Connection] starting on the [ConnectionProxy].
     pub async fn build(&self) -> Result<Connection, NmError> {

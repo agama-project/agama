@@ -449,8 +449,8 @@ mod tests {
         let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
         state.add_connection(conn0).unwrap();
         state.remove_connection("eth0".as_ref()).unwrap();
-        let found = state.get_connection("eth0").unwrap();
-        assert!(found.is_removed());
+        let found = state.get_connection("eth0");
+        assert!(found.is_none());
     }
 
     #[test]

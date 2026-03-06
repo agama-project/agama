@@ -208,7 +208,6 @@ impl ActionDispatcher<'_> {
     async fn handle_connection_added(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         let (_, proxy) = self.proxies.find_or_add_connection(&path).await?;
         tracing::info!("New connection was found");
-        dbg!("New connection was found");
         if let Ok(conn) = Self::connection_from_proxy(&self.connection, proxy.clone()).await {
             _ = self.actions_tx.send(Action::NewConnection(Box::new(conn)));
         }
@@ -217,7 +216,7 @@ impl ActionDispatcher<'_> {
         Ok(())
     }
 
-    /// Handles the case where a new connection is removed
+    /// Handles the removal of a connection.
     ///
     /// * `path`: D-Bus object path of the removed connection.
     async fn handle_connection_removed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
