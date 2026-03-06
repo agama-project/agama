@@ -283,6 +283,13 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
+#[async_trait]
+impl MessageHandler<message::SetLocale> for Service {
+    async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
+        Ok(())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -266,14 +266,22 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
-    /// Proposes the default network configuration.
+    /// Propose the default network configuration.
     pub async fn propose_default(&self) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::ProposeDefault(tx))?;
         let result = rx.await?;
         Ok(result?)
     }
+
+    /// Sets the locale.
+    pub fn set_locale(&self, locale: String) -> Result<(), NetworkSystemError> {
+        self.actions.send(Action::SetLocale(locale))?;
+        Ok(())
+    }
+
     /// Copies the persistent network connections to the target system.
+
     pub async fn install(&self) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::Install(tx))?;
@@ -458,6 +466,7 @@ impl Service {
                 let result = self.state.install().await;
                 tx.send(result).unwrap();
             }
+            Action::SetLocale(_) => {}
         }
 
         Ok(None)

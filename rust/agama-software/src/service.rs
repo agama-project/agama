@@ -466,6 +466,13 @@ impl MessageHandler<message::SetResolvables> for Service {
     }
 }
 
+#[async_trait]
+impl MessageHandler<message::SetLocale> for Service {
+    async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
+        Ok(())
+    }
+}
+
 const LIVE_REPO_DIR: &str = "run/initramfs/live/install";
 const DUD_REPO_DIR: &str = "var/lib/agama/dud/repo";
 

@@ -73,3 +73,20 @@ pub struct Finish;
 impl Message for Finish {
     type Reply = ();
 }
+
+#[derive(Clone)]
+pub struct SetLocale {
+    pub locale: String,
+}
+
+impl SetLocale {
+    pub fn new(locale: &str) -> Self {
+        Self {
+            locale: locale.to_string(),
+        }
+    }
+}
+
+impl Message for SetLocale {
+    type Reply = ();
+}
