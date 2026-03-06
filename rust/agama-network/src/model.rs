@@ -343,6 +343,30 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Connects the device with the given name.
+    ///
+    /// It sets the connection associated with the device to UP. If there is no connection,
+    /// it creates a new one and sets it to UP.
+    pub fn connect_device(&mut self, name: &str) -> Result<(), NetworkStateError> {
+        let device = self
+            .get_device(name)
+            .ok_or_else(|| NetworkStateError::UnknownDevice(name.to_string()))?;
+
+        let device_type = device.type_;
+        let connection = self.connections.iter_mut().find(|c| {
+            c.interface.as_deref() == Some(name) || (c.interface.is_none() && c.id == name)
+        });
+
+        if let Some(conn) = connection {
+            conn.set_up();
+        } else {
+            let mut conn = Connection::new(name.to_string(), device_type);
+            conn.set_up();
+            self.add_connection(conn)?;
+        }
+        Ok(())
+    }
+
     /// Sets a controller's ports.
     ///
     /// If the connection is not a controller, returns an error.
@@ -458,6 +482,49 @@ mod tests {
         let mut state = NetworkState::default();
         let error = state.remove_connection("unknown".as_ref()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
+    }
+
+    #[test]
+    fn test_connect_device_unknown() {
+        let mut state = NetworkState::default();
+        let error = state.connect_device("unknown").unwrap_err();
+        assert!(matches!(error, NetworkStateError::UnknownDevice(_)));
+    }
+
+    #[test]
+    fn test_connect_device_new_connection() {
+        let mut state = NetworkState::default();
+        let device = Device {
+            name: "eth0".to_string(),
+            type_: DeviceType::Ethernet,
+            ..Default::default()
+        };
+        state.add_device(device).unwrap();
+        state.connect_device("eth0").unwrap();
+
+        let conn = state.get_connection("eth0").unwrap();
+        assert!(conn.is_up());
+        assert_eq!(conn.config, ConnectionConfig::Ethernet);
+    }
+
+    #[test]
+    fn test_connect_device_existing_connection() {
+        let mut state = NetworkState::default();
+        let device = Device {
+            name: "eth0".to_string(),
+            type_: DeviceType::Ethernet,
+            ..Default::default()
+        };
+        state.add_device(device).unwrap();
+
+        let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn.set_down();
+        state.add_connection(conn).unwrap();
+
+        state.connect_device("eth0").unwrap();
+
+        let conn = state.get_connection("eth0").unwrap();
+        assert!(conn.is_up());
     }
 
     #[test]

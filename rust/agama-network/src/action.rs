@@ -94,6 +94,8 @@ pub enum Action {
     RefreshScan(Responder<Result<(), NetworkAdapterError>>),
     /// Remove the connection with the given Uuid.
     RemoveConnection(String, Responder<Result<(), NetworkStateError>>),
+    /// Connect a network device.
+    ConnectDevice(String, Responder<Result<(), NetworkStateError>>),
     /// Apply the current configuration.
     Apply(Responder<Result<(), NetworkAdapterError>>),
 }

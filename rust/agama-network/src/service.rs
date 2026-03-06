@@ -246,6 +246,17 @@ impl NetworkSystemClient {
         Ok(result?)
     }
 
+    /// Connects the network device with the given name.
+    ///
+    /// * `name`: Device name.
+    pub async fn connect_device(&self, name: &str) -> Result<(), NetworkSystemError> {
+        let (tx, rx) = oneshot::channel();
+        self.actions
+            .send(Action::ConnectDevice(name.to_string(), tx))?;
+        let result = rx.await?;
+        Ok(result?)
+    }
+
     pub async fn set_ports(
         &self,
         uuid: Uuid,
@@ -446,6 +457,10 @@ impl Service {
 
                 tx.send(result).unwrap();
             }
+            Action::ConnectDevice(name, tx) => {
+                let result = self.connect_device_action(name).await;
+                tx.send(result).unwrap();
+            }
             Action::Apply(tx) => {
                 let result = self.apply().await;
                 tx.send(result).unwrap();
@@ -471,6 +486,16 @@ impl Service {
         let conn = Connection::new(name, ty);
         // TODO: handle tree handling problems
         self.state.add_connection(conn.clone())?;
+        Ok(())
+    }
+
+    async fn connect_device_action(&mut self, name: String) -> Result<(), NetworkStateError> {
+        self.state.connect_device(&name)?;
+
+        self.apply()
+            .await
+            .map_err(|e| NetworkStateError::IoError(e.to_string()))?;
+
         Ok(())
     }
 

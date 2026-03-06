@@ -37,6 +37,8 @@ pub enum Action {
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]
     Install,
+    #[serde(rename = "connectNetworkDevice")]
+    ConnectNetworkDevice(String),
     #[serde(rename = "finish")]
     Finish(FinishMethod),
 }

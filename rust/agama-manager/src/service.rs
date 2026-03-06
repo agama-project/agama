@@ -811,6 +811,10 @@ impl MessageHandler<message::RunAction> for Service {
             Action::Install => {
                 self.tasks.cast(tasks::message::Install)?;
             }
+            Action::ConnectNetworkDevice(device_name) => {
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
+                self.network.connect_device(&device_name).await?;
+            }
             Action::Finish(method) => {
                 checks::check_stage(&self.progress, Stage::Finished).await?;
                 let action = FinishAction::new(method);
