@@ -372,7 +372,7 @@ const createColumns = () => [
   },
   {
     // TRANSLATORS: table header for a network devices table
-    name: _("Connection"),
+    name: _("Active Connection"),
     value: (d: Device) => d.connection || "-",
     sortingKey: "connection",
   },
