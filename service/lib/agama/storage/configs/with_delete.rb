@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,20 +19,25 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/boot"
-require "agama/storage/config_solvers/drives_search"
-require "agama/storage/config_solvers/encryption"
-require "agama/storage/config_solvers/filesystem"
-require "agama/storage/config_solvers/md_raids_search"
-require "agama/storage/config_solvers/partitions_search"
-require "agama/storage/config_solvers/volume_groups_search"
-require "agama/storage/config_solvers/logical_volumes_search"
-require "agama/storage/config_solvers/size"
-
 module Agama
   module Storage
-    # Name space for config solvers.
-    module ConfigSolvers
+    module Configs
+      # Mixin for configs with attributes to delete pre-existing devices.
+      module WithDelete
+        # @return [Boolean]
+        attr_accessor :delete
+        alias_method :delete?, :delete
+
+        # @return [Boolean]
+        attr_accessor :delete_if_needed
+        alias_method :delete_if_needed?, :delete_if_needed
+
+        # Sets initial value for attributes related to deleting.
+        def initialize_delete
+          @delete = false
+          @delete_if_needed = false
+        end
+      end
     end
   end
 end

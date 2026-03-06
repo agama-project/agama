@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_model_conversions/base"
 require "agama/storage/config_conversions/from_model_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_model_conversions/with_size"
+require "agama/storage/config_conversions/from_model_conversions/with_search"
 require "agama/storage/configs/logical_volume"
 require "y2storage/disk_size"
 
@@ -33,6 +34,7 @@ module Agama
         class LogicalVolume < Base
           include WithFilesystem
           include WithSize
+          include WithSearch
 
         private
 
@@ -49,6 +51,7 @@ module Agama
           def conversions
             {
               name:        logical_volume_model[:lvName],
+              search:      convert_search,
               filesystem:  convert_filesystem,
               size:        convert_size,
               stripes:     logical_volume_model[:stripes],

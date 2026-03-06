@@ -46,12 +46,13 @@ module Y2Storage
         #   automatically generated if missing?
         #
         #   @see AgamaDevicePlanner#configure_pv
-        Y2Storage::Planned::LvmVg.new(volume_group_name: vg_config.name).tap do |planned|
+        Y2Storage::Planned::LvmVg.new(volume_group_name: vg_config.vg_name).tap do |planned|
           planned.extent_size = vg_config.extent_size
           planned.lvs = planned_lvs(vg_config)
           planned.size_strategy = :use_needed
           planned.pvs_candidate_devices = devices_for_pvs(vg_config)
           configure_pvs_encryption(planned, vg_config)
+          configure_reuse(planned, vg_config)
         end
       end
 
@@ -143,6 +144,7 @@ module Y2Storage
           planned.stripe_size = config.stripe_size
           configure_block_device(planned, config)
           configure_size(planned, config.size)
+          configure_reuse(planned, config)
         end
       end
     end

@@ -577,5 +577,58 @@ describe Agama::Storage::ConfigSolver do
         include_examples "new volume size", logical_volumes_proc
       end
     end
+
+    context "for a reused volume group config" do
+      let(:scenario) { "several_vgs.yaml" }
+
+      let(:config_json) do
+        {
+          volumeGroups: [
+            {
+              search:         { size: { greater: "40 GiB" } },
+              logicalVolumes: logical_volumes
+            }
+          ]
+        }
+      end
+
+      let(:logical_volumes) { nil }
+
+      it "solves the search" do
+        subject.solve(config)
+        vg = config.volume_groups.first
+        expect(vg.search.solved?).to eq(true)
+        expect(vg.search.device.name).to eq("/dev/data")
+      end
+
+      context "for a new logical volume config" do
+        let(:logical_volumes) do
+          [
+            {
+              encryption: encryption,
+              filesystem: filesystem
+            }
+          ]
+        end
+
+        let(:encryption) { nil }
+        let(:filesystem) { nil }
+
+        logical_volume_proc = proc { |c| c.volume_groups.first.logical_volumes.first }
+        include_examples "block device", logical_volume_proc
+      end
+
+      context "for a reused logical volume" do
+        let(:logical_volumes) { [{ search: "*" }] }
+
+        it "solves the search" do
+          subject.solve(config)
+          vg = config.volume_groups.first
+          lv = vg.logical_volumes.first
+          expect(lv.search.solved?).to eq(true)
+          expect(lv.search.device.name).to eq("/dev/data/home")
+        end
+      end
+    end
   end
 end

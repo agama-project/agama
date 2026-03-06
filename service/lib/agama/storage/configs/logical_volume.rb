@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,8 @@
 require "agama/storage/configs/size"
 require "agama/storage/configs/with_alias"
 require "agama/storage/configs/with_filesystem"
+require "agama/storage/configs/with_search"
+require "agama/storage/configs/with_delete"
 
 module Agama
   module Storage
@@ -30,6 +32,8 @@ module Agama
       class LogicalVolume
         include WithAlias
         include WithFilesystem
+        include WithSearch
+        include WithDelete
 
         # @return [String, nil]
         attr_accessor :name
@@ -54,6 +58,7 @@ module Agama
         attr_accessor :encryption
 
         def initialize
+          initialize_delete
           @size = Size.new
           @pool = false
         end

@@ -491,5 +491,298 @@ describe Y2Storage::AgamaProposal do
         expect(pv_vg1.blk_device.type.is?(:luks1)).to eq true
       end
     end
+
+    context "when creating new volumes in an existing volume group" do
+      let(:scenario) { "several_vgs.yaml" }
+
+      let(:config_json) do
+        {
+          boot:         { configure: false },
+          volumeGroups: [
+            {
+              search:         "/dev/data",
+              logicalVolumes: previous_lvs + new_lvs
+            }
+          ]
+        }
+      end
+
+      let(:previous_lvs) { [] }
+      let(:new_lvs) do
+        [
+          {
+            name:       "root",
+            size:       "5 GiB",
+            filesystem: {
+              path: "/",
+              type: "btrfs"
+            }
+          },
+          {
+            name:       "home",
+            size:       { min: home_min },
+            filesystem: {
+              path: "/home",
+              type: "xfs"
+            }
+          }
+        ]
+      end
+
+      context "if the LVs fit into the available space at the VG" do
+        let(:home_min) { "5 GiB" }
+
+        it "adds the new volumes to the volume group keeping the previous ones" do
+          vg_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/data").sid
+          proposal.propose
+
+          vg = proposal.devices.find_by_name("/dev/data")
+          expect(vg.sid).to eq vg_sid
+          # The previous one plus the two new ones
+          expect(vg.lvm_lvs.size).to eq 3
+          paths = vg.lvm_lvs.map(&:filesystem).map(&:mount_path)
+          expect(paths).to contain_exactly(nil, "/", "/home")
+        end
+      end
+
+      context "if the LVs fit into the total size of the VG but not in the available space" do
+        let(:home_min) { "15 GiB" }
+
+        context "and nothing is configured to make space in the VG" do
+          it "raises an error" do
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+          end
+        end
+
+        context "and all previous LVs should be deleted " do
+          let(:previous_lvs) do
+            [
+              { search: "*", delete: true }
+            ]
+          end
+
+          it "adds the new volumes to the volume group deleting the previous ones" do
+            vg_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/data").sid
+            proposal.propose
+
+            vg = proposal.devices.find_by_name("/dev/data")
+            expect(vg.sid).to eq vg_sid
+            expect(vg.lvm_lvs.size).to eq 2
+            paths = vg.lvm_lvs.map(&:filesystem).map(&:mount_path)
+            expect(paths).to contain_exactly("/", "/home")
+          end
+        end
+      end
+
+      context "if the LVs do not fit into the total size of the VG" do
+        let(:home_min) { "150 GiB" }
+
+        context "and nothing is configured to make space in the VG" do
+          it "raises an error" do
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+          end
+        end
+
+        context "and all previous LVs should be deleted " do
+          let(:previous_lvs) do
+            [
+              { search: "*", delete: true }
+            ]
+          end
+
+          it "raises an error" do
+            expect { proposal.propose }.to raise_error(Y2Storage::NoDiskSpaceError)
+          end
+        end
+      end
+    end
+
+    context "when using existing logical volumes" do
+      let(:scenario) { "several_vgs.yaml" }
+
+      let(:config_json) do
+        {
+          boot:         { configure: false },
+          volumeGroups: [
+            {
+              search:         "/dev/data",
+              logicalVolumes: [
+                {
+                  name:       "root",
+                  size:       { min: "5 GiB" },
+                  filesystem: {
+                    path: "/",
+                    type: "btrfs"
+                  }
+                },
+                {
+                  search:     { max: 1 },
+                  filesystem: {
+                    path:            "/home",
+                    reuseIfPossible: true
+                  },
+                  size:       home_size
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      let(:home_size) { nil }
+
+      it "uses the volume group and the logical volume" do
+        initial_vg = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/data")
+        vg_sid = initial_vg.sid
+        fs_sid = initial_vg.lvm_lvs.first.filesystem.sid
+        proposal.propose
+
+        vg = proposal.devices.find_by_name("/dev/data")
+        expect(vg.sid).to eq vg_sid
+        expect(vg.lvm_lvs.size).to eq 2
+        filesystems = vg.lvm_lvs.map(&:filesystem)
+        expect(filesystems.map(&:mount_path)).to contain_exactly("/", "/home")
+        expect(filesystems.map(&:sid)).to include fs_sid
+      end
+
+      it "correctly distributes the available space" do
+        proposal.propose
+
+        vg = proposal.devices.find_by_name("/dev/data")
+        root = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/" }
+        home = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/home" }
+        expect(vg.available_space).to be_zero
+        expect(root.size).to be > 12.GiB
+        expect(home.size).to eq 30.GiB
+      end
+
+      context "if some existing logical volume is chosen for growing" do
+        let(:home_size) { { min: "30 GiB", max: "35 GiB" } }
+
+        it "grows the LV and distributes the remaining space" do
+          proposal.propose
+
+          vg = proposal.devices.find_by_name("/dev/data")
+          root = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/" }
+          home = vg.lvm_lvs.find { |v| v.filesystem.mount_path == "/home" }
+          expect(vg.available_space).to be_zero
+          expect(home.size).to eq 35.GiB
+          expect(root.size).to be > 7.GiB
+          expect(root.size).to be < 8.GiB
+        end
+      end
+    end
+
+    context "when using an existing thin pool and existing logical thin volume" do
+      let(:scenario) { "lvm_with_nested_thin_lvs.xml" }
+
+      let(:config_json) do
+        {
+          boot:         { configure: false },
+          volumeGroups: [
+            {
+              search:         "/dev/vg_b",
+              logicalVolumes: [
+                {
+                  search:     "/dev/vg_b/tv_01",
+                  filesystem: { path: "/" }
+                },
+                {
+                  search: "/dev/vg_b/tpool",
+                  alias:  "pool"
+                },
+                {
+                  name:       "home",
+                  usedPool:   "pool",
+                  size:       "5 GiB",
+                  filesystem: { path: "/home" }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "uses the volume group and the logical volumes" do
+        vg_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vg_b").sid
+        lv_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vg_b/tv_01").sid
+        pool = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vg_b/tpool")
+        pool_sid = pool.sid
+        pool_size = pool.lvm_lvs.size
+        proposal.propose
+
+        vg = proposal.devices.find_by_name("/dev/vg_b")
+        expect(vg.sid).to eq vg_sid
+        expect(vg.thin_pool_lvm_lvs.size).to eq 1
+        pool = vg.thin_pool_lvm_lvs.first
+        expect(pool.sid).to eq pool_sid
+        thin_vols = pool.lvm_lvs
+        expect(thin_vols.size).to eq(pool_size + 1)
+        expect(thin_vols.map(&:sid)).to include lv_sid
+        filesystems = thin_vols.map(&:filesystem).compact
+        expect(filesystems.map(&:mount_path)).to contain_exactly("/", "/home")
+      end
+    end
+
+    context "when adding more PVs to an existing volume group" do
+      let(:scenario) { "several_vgs.yaml" }
+
+      let(:config_json) do
+        {
+          boot:         { configure: false },
+          drives:       [
+            {
+              search:     "/dev/sdc",
+              partitions: [
+                {
+                  size:  "40 GiB",
+                  alias: "pv1"
+                }
+              ]
+            }
+          ],
+          volumeGroups: [
+            {
+              search:          "/dev/data",
+              logicalVolumes:  [
+                {
+                  name:       "root",
+                  size:       { min: "5 GiB" },
+                  filesystem: {
+                    path: "/",
+                    type: "btrfs"
+                  }
+                }
+              ],
+              physicalVolumes: ["pv1"]
+            }
+          ]
+        }
+      end
+
+      it "uses the volume group" do
+        vg_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/data").sid
+        proposal.propose
+
+        vg = proposal.devices.find_by_name("/dev/data")
+        expect(vg.sid).to eq vg_sid
+        expect(vg.lvm_lvs.map(&:filesystem).map(&:mount_path)).to include "/"
+      end
+
+      it "grows the volume group" do
+        proposal.propose
+
+        vg = proposal.devices.find_by_name("/dev/data")
+        expect(vg.lvm_pvs.size).to eq 3
+        expect(vg.size).to be > Y2Storage::DiskSize.GiB(80)
+      end
+
+      it "uses the new volume group space to allocate the logical volumes" do
+        proposal.propose
+
+        lv = proposal.devices.find_by_name("/dev/data/root")
+        expect(lv.size).to be > Y2Storage::DiskSize.GiB(50)
+      end
+    end
   end
 end

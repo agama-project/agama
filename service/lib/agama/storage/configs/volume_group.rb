@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,12 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/with_search"
+
 module Agama
   module Storage
     module Configs
       # Section of the configuration representing a LVM volume group.
       class VolumeGroup
+        include WithSearch
+
         # Base name.
+        #
+        # @see #vg_name
         #
         # @return [String, nil] e.g., "system".
         attr_accessor :name
@@ -58,6 +64,15 @@ module Agama
 
         def logical_volume?(device_alias)
           logical_volumes.find { |l| l.alias?(device_alias) }
+        end
+
+        # Name to be used for the volume group
+        #
+        # For reused devices it comes from the real device, for new devices is set by {#name}.
+        #
+        # @return [String]
+        def vg_name
+          found_device ? found_device.vg_name : name
         end
       end
     end

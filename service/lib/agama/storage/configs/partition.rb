@@ -23,12 +23,15 @@ require "agama/storage/configs/size"
 require "agama/storage/configs/with_alias"
 require "agama/storage/configs/with_filesystem"
 require "agama/storage/configs/with_search"
+require "agama/storage/configs/with_delete"
 
 module Agama
   module Storage
     module Configs
       # Section of the configuration representing a partition
       class Partition
+        include WithDelete
+
         # Partition config meaning "delete all partitions".
         #
         # @return [Configs::Partition]
@@ -53,14 +56,6 @@ module Agama
         include WithFilesystem
         include WithSearch
 
-        # @return [Boolean]
-        attr_accessor :delete
-        alias_method :delete?, :delete
-
-        # @return [Boolean]
-        attr_accessor :delete_if_needed
-        alias_method :delete_if_needed?, :delete_if_needed
-
         # @return [Y2Storage::PartitionId, nil]
         attr_accessor :id
 
@@ -71,9 +66,8 @@ module Agama
         attr_accessor :encryption
 
         def initialize
+          initialize_delete
           @size = Size.new
-          @delete = false
-          @delete_if_needed = false
         end
       end
     end

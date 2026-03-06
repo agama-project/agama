@@ -173,7 +173,6 @@ module Y2Storage
 
       # @see #process_devices
       def process_volume_groups
-        # TODO: Reuse volume groups.
         planned_devices.vgs.map { |v| create_volume_group(v) }
       end
 
@@ -201,10 +200,10 @@ module Y2Storage
       # @param planned [Planned::LvmVg]
       def create_volume_group(planned)
         pv_names = physical_volumes_for(planned.volume_group_name)
-        # TODO: Generate issue if there are no physical volumes.
-        return if pv_names.empty?
+        # TODO: Generate issue if there are no physical volumes for a new VG.
+        return if pv_names.empty? && !planned.reuse?
 
-        creator = Proposal::LvmCreator.new(creator_result.devicegraph)
+        creator = Proposal::LvmCreator.new(creator_result.devicegraph, space_maker.settings)
         new_result = creator.create_volumes(planned, pv_names)
         self.creator_result = creator_result.merge(new_result)
       end

@@ -71,7 +71,7 @@ module Agama
         #
         # @return [Issue, nil]
         def name_issue
-          return if config.name && !config.name.empty?
+          return if config.vg_name && !config.vg_name.empty?
 
           error(
             _("There is a volume group without name"),
