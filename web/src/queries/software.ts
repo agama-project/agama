@@ -23,7 +23,6 @@
 import React from "react";
 import {
   useMutation,
-  useQueries,
   useQuery,
   useQueryClient,
   useSuspenseQueries,
@@ -36,12 +35,10 @@ import {
   License,
   Pattern,
   PatternsSelection,
-  Product,
   RegisteredAddonInfo,
   RegistrationInfo,
   Repository,
   SelectedBy,
-  SoftwareConfig,
   SoftwareProposal,
 } from "~/types/software";
 import {
@@ -59,7 +56,6 @@ import {
   registerAddon,
   solveConflict,
 } from "~/model/software";
-import { QueryHookOptions } from "~/types/queries";
 
 /**
  * Query to retrieve software configuration
@@ -75,15 +71,6 @@ const configQuery = () => ({
 const proposalQuery = () => ({
   queryKey: ["software", "proposal"],
   queryFn: fetchProposal,
-});
-
-/**
- * Query to retrieve selected product
- */
-const selectedProductQuery = () => ({
-  queryKey: ["software", "selectedProduct"],
-  queryFn: () => fetchConfig().then(({ product }) => product),
-  staleTime: Infinity,
 });
 
 /**
@@ -182,34 +169,6 @@ const useRepositoryMutation = (callback: () => void) => {
     },
   };
   return useMutation(query);
-};
-
-/**
- * Returns available products and selected one, if any
- */
-const useProduct = (
-  options?: QueryHookOptions,
-): { products?: Product[]; selectedProduct?: Product } => {
-  const func = options?.suspense ? useSuspenseQueries : useQueries;
-  const [
-    { data: product, isPending: isSelectedProductPending },
-    { data: products, isPending: isProductsPending },
-  ] = func({
-    queries: [selectedProductQuery(), productsQuery()],
-  }) as [{ data: SoftwareConfig; isPending: boolean }, { data: Product[]; isPending: boolean }];
-
-  if (isSelectedProductPending || isProductsPending) {
-    return {
-      products: [],
-      selectedProduct: undefined,
-    };
-  }
-
-  const selectedProduct = products.find((p: Product) => p.id === product);
-  return {
-    products,
-    selectedProduct,
-  };
 };
 
 /**
@@ -383,7 +342,6 @@ export {
   useConflictsChanges,
   useLicenses,
   usePatterns,
-  useProduct,
   useProductChanges,
   useSoftwareProposal,
   useSoftwareProposalChanges,
