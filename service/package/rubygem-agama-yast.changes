@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar  6 13:03:21 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Allow to reuse LVM volume groups, volumes and thin pools
+  (jsc#PED-15104, bsc#1254718 and gh#agama-project/agama#3171).
+
+-------------------------------------------------------------------
 Tue Mar  3 12:35:55 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Provide new D-Bus API for zFCP (gh#agama-project/agama#3184).
