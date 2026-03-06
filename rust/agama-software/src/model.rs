@@ -42,6 +42,19 @@ pub mod state;
 pub use packages::{Resolvable, ResolvableType};
 pub use registration::Registration;
 
+/// Issues found when applying the software configuration.
+#[derive(Debug, Default)]
+pub struct WriteIssues {
+    pub product: Vec<Issue>,
+    pub software: Vec<Issue>,
+}
+
+impl WriteIssues {
+    pub fn is_empty(&self) -> bool {
+        self.product.is_empty() && self.software.is_empty()
+    }
+}
+
 /// Abstract the software-related configuration from the underlying system.
 ///
 /// It offers an API to query and set different software and product elements of a
@@ -73,7 +86,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
         &mut self,
         software: SoftwareState,
         progress: Handler<progress::Service>,
-    ) -> Result<Vec<Issue>, service::Error>;
+    ) -> Result<WriteIssues, service::Error>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -119,7 +132,7 @@ impl ModelAdapter for Model {
         &mut self,
         software: SoftwareState,
         progress: Handler<progress::Service>,
-    ) -> Result<Vec<Issue>, service::Error> {
+    ) -> Result<WriteIssues, service::Error> {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender.send(SoftwareAction::Write {
             state: software,

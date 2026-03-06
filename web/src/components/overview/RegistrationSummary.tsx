@@ -29,6 +29,7 @@ import { REGISTRATION } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { useSystem } from "~/hooks/model/system/software";
 import { useIssues } from "~/hooks/model/issue";
+import { isEmpty } from "radashi";
 
 const RegistrationMessage = ({ code }: { code?: string }) => {
   if (!code) {
@@ -59,8 +60,8 @@ const RegistrationMessage = ({ code }: { code?: string }) => {
  */
 const Content = () => {
   const { registration } = useSystem();
-  const issues = useIssues("software");
-  const hasIssues = issues.find((i) => i.class === "software.missing_registration") !== undefined;
+  const issues = useIssues("product");
+  const hasIssues = !isEmpty(issues);
 
   return (
     <Summary

@@ -20,7 +20,9 @@
 
 use crate::{
     message,
-    model::{software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter},
+    model::{
+        software_selection::SoftwareSelection, state::SoftwareState, ModelAdapter, WriteIssues,
+    },
     zypp_server::{self, SoftwareAction, ZyppServer},
     Model, ResolvableType,
 };
@@ -39,6 +41,7 @@ use agama_utils::{
     progress, question,
 };
 use async_trait::async_trait;
+use gettextrs::gettext;
 use std::{path::PathBuf, process::Command, sync::Arc};
 use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
 use url::Url;
@@ -274,13 +277,25 @@ impl Service {
                 .await
                 .unwrap_or_else(|e| {
                     let new_issue = Issue::new(
-                        "software.proposal_failed",
-                        "It was not possible to create a software proposal",
+                        "software_proposal_failed",
+                        &gettext("Due to an internal error, it was not possible to create a software proposal."),
                     )
                     .with_details(&e.to_string());
-                    vec![new_issue]
+                    WriteIssues {
+                        software: vec![new_issue],
+                        ..Default::default()
+                    }
                 });
-            _ = issues.cast(issue::message::Set::new(Scope::Software, found_issues));
+
+            _ = issues.cast(issue::message::Set::new(
+                Scope::Software,
+                found_issues.software,
+            ));
+
+            _ = issues.cast(issue::message::Set::new(
+                Scope::Product,
+                found_issues.product,
+            ));
 
             Self::update_state(state, my_model, events).await;
         });

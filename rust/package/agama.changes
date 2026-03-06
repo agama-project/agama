@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar  5 15:27:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve registration and software issues reporting (related to bsc#1258034).
+
+-------------------------------------------------------------------
 Thu Mar  5 13:44:46 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Automatically save the solver testcase to /var/log/zypp/testcase/
