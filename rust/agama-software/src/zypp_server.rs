@@ -387,6 +387,7 @@ impl ZyppServer {
             });
 
             if let Err(error) = result {
+                // TRANSLATORS: %s is the alias of the repository.
                 let message = gettext("Could not remove the repository %s")
                     .as_str()
                     .replace("%s", &repo.alias);
@@ -520,6 +521,8 @@ impl ZyppServer {
                     name
                 );
             } else {
+                // TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
+                // and the second %s is the name of the resolvable.
                 let message = gettext("Could not select %s '%s' for installation")
                     .as_str()
                     .replacen("%s", &r#type.to_string(), 1)
