@@ -387,7 +387,9 @@ impl ZyppServer {
             });
 
             if let Err(error) = result {
-                let message = format!("Could not remove the repository {}", repo.alias);
+                let message = gettext("Could not remove the repository %s")
+                    .as_str()
+                    .replace("%s", &repo.alias);
                 issues.software.push(
                     Issue::new("software.remove_repo", &message).with_details(&error.to_string()),
                 );
@@ -518,7 +520,9 @@ impl ZyppServer {
                     name
                 );
             } else {
-                let message = format!("Could not select '{}'", name);
+                let message = gettext("Could not select '%s' for installation")
+                    .as_str()
+                    .replace("%s", name);
                 issues.push(
                     Issue::new("software.select_resolvable", &message)
                         .with_details(&error.to_string()),
