@@ -21,27 +21,21 @@
  */
 
 import { Config, Device } from "~/openapi/config/zfcp";
-import { unique } from "radashi";
+import { replaceOrAppend, unique } from "radashi";
 
 function defaultConfig(): Config {
   return {};
 }
 
-function findDeviceIndex(devices: Device[], device: Device): number {
-  return devices.findIndex(
-    (d) => d.channel === device.channel && d.wwpn === device.wwpn && d.lun === device.lun,
-  );
-}
-
 function addDevice(config: Config, device: Device): Config {
-  const devices = [...(config.devices || [])];
-  const index = findDeviceIndex(devices, device);
-
-  if (index === -1) {
-    return { ...config, devices: [...devices, device] };
-  } else {
-    return { ...config, devices: devices.with(index, device) };
-  }
+  return {
+    ...config,
+    devices: replaceOrAppend(
+      config.devices,
+      device,
+      (d) => d.channel === device.channel && d.wwpn === device.wwpn && d.lun === device.lun,
+    ),
+  };
 }
 
 /** Returns a new config adding the given controllers. */
