@@ -79,6 +79,8 @@ const probeStorageAction = () => postAction({ probeStorage: null });
 
 const discoverISCSIAction = (config: DiscoverISCSIConfig) => postAction({ discoverISCSI: config });
 
+const startInstallation = () => postAction({ install: null });
+
 const finishInstallation = () => postAction({ finish: "reboot" });
 
 export {
@@ -99,6 +101,7 @@ export {
   activateStorageAction,
   probeStorageAction,
   discoverISCSIAction,
+  startInstallation,
   finishInstallation,
 };
 
