@@ -32,7 +32,9 @@ use agama_utils::{
         Action, Config, Event, FinishMethod, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     arch::Arch,
-    issue, licenses,
+    issue,
+    kernel_cmdline::KernelCmdline,
+    licenses,
     products::{self, ProductSpec},
     progress, question,
 };
@@ -40,7 +42,7 @@ use async_trait::async_trait;
 use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
-use std::{collections::HashMap, process::Command, sync::Arc};
+use std::{collections::HashMap, process::Command, str::FromStr, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
@@ -884,16 +886,26 @@ impl MessageHandler<users::message::CheckPassword> for Service {
 
 /// Implements the finish action.
 struct FinishAction {
-    method: FinishMethod,
+    method: Option<FinishMethod>,
 }
 
 impl FinishAction {
-    pub fn new(method: FinishMethod) -> Self {
+    pub fn new(method: Option<FinishMethod>) -> Self {
         Self { method }
     }
 
     pub fn run(self) {
-        let option = match self.method {
+        let method = self.method.unwrap_or_else(|| {
+            let inst_finish_method = KernelCmdline::parse()
+                .ok()
+                .and_then(|a| a.get_last("inst.finish"))
+                .and_then(|m| FinishMethod::from_str(&m).ok());
+            inst_finish_method.unwrap_or_default()
+        });
+
+        tracing::info!("Finishing the installation process ({})", method);
+
+        let option = match method {
             FinishMethod::Halt => Some("-H"),
             FinishMethod::Reboot => Some("-r"),
             FinishMethod::Poweroff => Some("-P"),
@@ -904,7 +916,6 @@ impl FinishAction {
         if let Some(switch) = option {
             command.arg(switch);
         } else {
-            tracing::info!("Stopped as requested");
             return;
         }
 

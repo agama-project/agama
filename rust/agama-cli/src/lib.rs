@@ -143,7 +143,7 @@ async fn install(http_client: BaseHTTPClient, monitor: MonitorClient) -> anyhow:
 async fn finish(
     manager: ManagerHTTPClient,
     monitor: MonitorClient,
-    method: FinishMethod,
+    method: Option<FinishMethod>,
 ) -> anyhow::Result<()> {
     wait_until_idle(monitor.clone()).await?;
 
@@ -299,7 +299,6 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let (client, monitor) = build_clients(api_url, cli.opts.insecure).await?;
             let manager = ManagerHTTPClient::new(client.clone());
             let _ = wait_until_idle(monitor.clone()).await;
-            let method = method.unwrap_or_default();
             finish(manager, monitor, method).await?;
         }
         Commands::Questions(subcommand) => {

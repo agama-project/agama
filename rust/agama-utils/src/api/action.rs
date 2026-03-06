@@ -38,7 +38,7 @@ pub enum Action {
     #[serde(rename = "install")]
     Install,
     #[serde(rename = "finish")]
-    Finish(FinishMethod),
+    Finish(Option<FinishMethod>),
 }
 
 /// Finish method
@@ -58,13 +58,13 @@ pub enum Action {
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum FinishMethod {
-    // Halt the system
+    /// Halt the system
     Halt,
-    // Reboots the system
+    /// Reboots the system
     #[default]
     Reboot,
-    // Do nothing at the end of the installation
+    /// Do nothing at the end of the installation
     Stop,
-    // Poweroff the system
+    /// Poweroff the system
     Poweroff,
 }
