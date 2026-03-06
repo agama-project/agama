@@ -520,8 +520,9 @@ impl ZyppServer {
                     name
                 );
             } else {
-                let message = gettext("Could not select '%s' for installation")
+                let message = gettext("Could not select %s '%s' for installation")
                     .as_str()
+                    .replacen("%s", &r#type.to_string(), 1)
                     .replace("%s", name);
                 issues.push(
                     Issue::new("software.select_resolvable", &message)

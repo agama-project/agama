@@ -18,7 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use gettextrs::gettext;
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 /// Represents a software resolvable.
 #[derive(Clone, Debug, Deserialize, PartialEq, utoipa::ToSchema)]
@@ -38,24 +40,23 @@ impl Resolvable {
 }
 
 /// Software resolvable type (package or pattern).
-#[derive(
-    Clone,
-    Copy,
-    Debug,
-    Deserialize,
-    Serialize,
-    strum::Display,
-    utoipa::ToSchema,
-    PartialEq,
-    Eq,
-    Hash,
-)]
-#[strum(serialize_all = "camelCase")]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, utoipa::ToSchema, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum ResolvableType {
     Package = 0,
     Pattern = 1,
     Product = 2,
+}
+
+impl fmt::Display for ResolvableType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let label = match self {
+            ResolvableType::Package => gettext("package"),
+            ResolvableType::Pattern => gettext("pattern"),
+            ResolvableType::Product => gettext("product"),
+        };
+        write!(f, "{}", label)
+    }
 }
 
 impl From<ResolvableType> for zypp_agama::ResolvableKind {
