@@ -28,7 +28,7 @@ import {
   ConnectionType,
   Device,
   DeviceState,
-} from "~/model/network/types";
+} from "~/types/network";
 
 const createConnection = (
   id: string,

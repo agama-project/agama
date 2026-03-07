@@ -422,18 +422,23 @@ class NetworkConfig {
 
   static fromApi(options: APIConfig) {
     const { connections, state } = options;
-    const conns = connections.map((c) => Connection.fromApi(c));
+    const conns = (connections || []).map((c) => Connection.fromApi(c));
 
     return new NetworkConfig(conns, state);
   }
 
   addOrUpdateConnection(connection: Connection) {
-    const connections = this.connections.map((c) => (c.id === connection.id ? connection : c));
-    this.connections = connections;
+    const index = (this.connections || []).findIndex((c) => c.id === connection.id);
+
+    if (index !== -1) {
+      this.connections![index] = connection;
+    } else {
+      this.connections = [...(this.connections || []), connection];
+    }
   }
 
   toApi(): APIConfig {
-    const connections = this.connections.map((c) => c.toApi());
+    const connections = this.connections?.map((c) => c.toApi()) || [];
 
     return { connections, state: this.state };
   }
@@ -455,14 +460,19 @@ class NetworkProposal {
 
   static fromApi(options: APIProposal) {
     const { connections, state } = options;
-    const conns = connections.map((c) => Connection.fromApi(c));
+    const conns = (connections || []).map((c) => Connection.fromApi(c));
 
     return new NetworkProposal(conns, state);
   }
 
   addOrUpdateConnection(connection: Connection) {
-    const connections = this.connections.map((c) => (c.id === connection.id ? connection : c));
-    this.connections = connections;
+    const index = (this.connections || []).findIndex((c) => c.id === connection.id);
+
+    if (index !== -1) {
+      this.connections[index] = connection;
+    } else {
+      this.connections = [...(this.connections || []), connection];
+    }
   }
 
   toApi(): APIProposal {

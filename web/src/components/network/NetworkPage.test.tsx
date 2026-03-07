@@ -37,6 +37,7 @@ jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
 
 const mockSystem = {
   connections: [],
+  devices: [],
   state: {
     connectivity: true,
     copyNetwork: true,
@@ -48,6 +49,11 @@ const mockSystem = {
 jest.mock("~/hooks/model/system/network", () => ({
   useNetworkChanges: jest.fn(),
   useSystem: () => mockSystem,
+}));
+
+jest.mock("~/hooks/model/config/network", () => ({
+  useConnections: () => [],
+  useConnectionMutation: () => ({ mutateAsync: jest.fn() }),
 }));
 
 describe("NetworkPage", () => {

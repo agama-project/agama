@@ -31,7 +31,7 @@ import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
 import DevicesTable from "./DevicesTable";
 
 const NoWifiAvailable = () => (
-  <Page.Section>
+  <Page.Section aria-label={_("Wi-Fi not supported")}>
     <EmptyState title={_("Wi-Fi not supported")} icon="error">
       {_(
         "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.",
