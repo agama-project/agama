@@ -87,6 +87,9 @@ export default function InstallerOptionsMenu({
     >
       <DropdownList>
         {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
+        <DropdownItem key="download-config" to={ROOT.config} download="agama-config.json">
+          {_("Download config")}
+        </DropdownItem>
         <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
           {_("Download logs")}
         </DropdownItem>
