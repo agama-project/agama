@@ -989,8 +989,8 @@ impl ZyppServer {
     // FIXME: hotfix/workaround for bsc#1259311 - check if a *-release package is selected to install
     // and if so then do not select the product to install, this should be removed after fixing the solver
     fn find_release_package(resolvables: &ResolvablesState) -> Option<String> {
-        for (name, r#type, selection) in &resolvables.to_vec() {
-            if r#type == &ResolvableType::Package
+        for (name, r#type, selection) in resolvables.to_vec() {
+            if r#type == ResolvableType::Package
                 && name.ends_with("-release")
                 // uh, the "lsb-release" package actually does not provide any product...
                 && name != "lsb-release"
