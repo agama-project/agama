@@ -40,23 +40,5 @@ enum SelectedBy {
   REMOVED = "removed",
 }
 
-type ConflictSolutionOption = {
-  id: number;
-  description: string;
-  details: string | null;
-};
-
-type Conflict = {
-  id: number;
-  description: string;
-  details: string | null;
-  solutions: ConflictSolutionOption[];
-};
-
-type ConflictSolution = {
-  conflictId: Conflict["id"];
-  solutionId: ConflictSolutionOption["id"];
-};
-
-export type { Proposal, PatternsSelection, Conflict, ConflictSolution, ConflictSolutionOption };
+export type { Proposal, PatternsSelection };
 export { SelectedBy };
