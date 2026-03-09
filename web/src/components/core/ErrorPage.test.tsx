@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRouteError } from "~/test-utils";
-import ErrorBoundary from "./ErrorBoundary";
+import ErrorPage from "./ErrorPage";
 
 jest.mock("stacktracey", () =>
   jest.fn().mockImplementation(() => ({
@@ -40,7 +40,7 @@ const routeError = (status: number, statusText: string, data: unknown) => ({
   data,
 });
 
-describe("ErrorBoundary", () => {
+describe("ErrorPage", () => {
   describe("when the error is a route error response", () => {
     describe("when it is a 404", () => {
       beforeEach(() => {
@@ -48,12 +48,12 @@ describe("ErrorBoundary", () => {
       });
 
       it("shows the HTTP status and statusText", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         screen.getByText("404 Not Found");
       });
 
       it("does not show a stack trace", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         expect(screen.queryByRole("code")).not.toBeInTheDocument();
       });
     });
@@ -64,7 +64,7 @@ describe("ErrorBoundary", () => {
       });
 
       it("shows the data payload", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         screen.getByText("You do not have access");
       });
     });
@@ -77,17 +77,17 @@ describe("ErrorBoundary", () => {
       });
 
       it("shows the 'Unexpected error' heading", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         screen.getByText("Unexpected error");
       });
 
       it("shows the error message", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         screen.getByText("Something exploded");
       });
 
       it("shows the stack trace", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         screen.getByText(/app\.ts:10.*myFunc/);
       });
     });
@@ -98,17 +98,17 @@ describe("ErrorBoundary", () => {
       });
 
       it("shows the 'Unexpected error' heading", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         screen.getByText("Unexpected error");
       });
 
       it("shows 'Unknown error' as the message", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         screen.getByText("Unknown error");
       });
 
       it("does not show a stack trace", () => {
-        installerRender(<ErrorBoundary />);
+        installerRender(<ErrorPage />);
         expect(screen.queryByRole("code")).not.toBeInTheDocument();
       });
     });

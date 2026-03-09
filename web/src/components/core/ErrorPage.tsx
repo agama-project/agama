@@ -21,14 +21,14 @@
  */
 
 import React from "react";
+import StackTracey from "stacktracey";
 import { isRouteErrorResponse, useRouteError, ErrorResponse } from "react-router";
+import { Content } from "@patternfly/react-core";
+import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";
-import StackTracey from "stacktracey";
-import { Content } from "@patternfly/react-core";
-import NestedContent from "./NestedContent";
 
 /**
  * Rendered when React Router surfaces an `ErrorResponse`.
@@ -101,8 +101,9 @@ function UnexpectedError({ error }: { error: unknown }) {
  * Top-level error boundary rendered by React Router when an unhandled error
  * propagates out of a route's component tree, loader, or action.
  */
-export default function ErrorBoundary() {
+export default function ErrorPage() {
   const error = useRouteError();
+
   return (
     <Page variant="minimal">
       <Page.Content>
