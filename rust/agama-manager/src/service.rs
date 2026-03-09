@@ -508,6 +508,8 @@ impl Service {
             .call(l10n::message::SetSystem::new(config.clone()))
             .await?;
         if let Some(locale) = config.locale {
+            self.software
+                .cast(software::message::SetLocale::new(locale.as_str()))?;
             self.storage
                 .cast(storage::message::SetLocale::new(locale.as_str()))?;
             self.users

@@ -49,7 +49,7 @@ pub struct RepoKey {
 ///
 /// The SoftwareState is built by the [SoftwareStateBuilder] using different
 /// sources (the product specification, the user configuration, etc.).
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SoftwareState {
     pub product: String,
     pub repositories: Vec<Repository>,
@@ -449,7 +449,7 @@ impl SoftwareState {
 }
 
 /// Defines a repository.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Repository {
     pub alias: String,
     pub name: String,
@@ -482,7 +482,7 @@ impl From<&agama_utils::api::software::Repository> for Repository {
 /// Holds states for resolvables.
 ///
 /// Check the [ResolvableSelection] enum for possible states.
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct ResolvablesState(HashMap<(String, ResolvableType), ResolvableSelection>);
 
 impl ResolvablesState {
@@ -595,7 +595,7 @@ impl From<ResolvableSelection> for zypp_agama::ResolvableSelected {
 }
 
 /// Software system options.
-#[derive(Default, Debug)]
+#[derive(Clone, Default, Debug)]
 pub struct SoftwareOptions {
     /// Install only required packages (not recommended ones).
     pub only_required: bool,

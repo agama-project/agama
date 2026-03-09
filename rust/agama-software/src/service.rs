@@ -189,6 +189,7 @@ struct ServiceState {
     config: Config,
     system: SystemInfo,
     proposal: Proposal,
+    state: Option<SoftwareState>,
 }
 
 impl Service {
@@ -242,12 +243,10 @@ impl Service {
     ///
     /// 1. Calculates the [wanted state](SoftwareState) using the current product, configuration,
     ///    system information and product selection.
-    /// 2. Synchronizes the packaging system (through the model adapter).
-    /// 3. Emits issues if something is wrong.
-    /// 4. Updates the service state (system information and proposal).
+    /// 2. Updates the selected product in the model adapter.
     ///
     /// Options from 2 to 4 might take some time, so they run in a separate Tokio task.
-    async fn update_proposal(&mut self) -> Result<(), Error> {
+    async fn calculate_wanted_state(&mut self) -> Result<(), Error> {
         let Some(product) = &self.product else {
             return Ok(());
         };
@@ -259,21 +258,49 @@ impl Service {
             SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
         };
 
-        tracing::info!("Wanted software state: {new_state:?}");
-
         self.update_selinux(&new_state);
+
+        tracing::info!("Wanted software state: {new_state:?}");
+        {
+            let mut state = self.state.write().await;
+            state.state = Some(new_state.clone());
+        }
+
+        {
+            let mut my_model = self.model.lock().await;
+            my_model.set_product(product.clone());
+        }
+
+        Ok(())
+    }
+
+    /// Updates the model to match the wanted state and the proposal.
+    ///
+    /// 1. Synchronizes the packaging system (through the model adapter).
+    /// 2. Emits issues if something is wrong.
+    /// 3. Updates the service state (system information and proposal).
+    async fn update_proposal(&self) -> Result<(), Error> {
+        let wanted_state = {
+            let state = self.state.read().await;
+            state.state.clone()
+        };
+
+        let Some(wanted_state) = wanted_state else {
+            tracing::warn!("No wanted state has been calculated.");
+            return Ok(());
+        };
 
         let model = self.model.clone();
         let progress = self.progress.clone();
         let issues = self.issues.clone();
         let state = self.state.clone();
         let events = self.events.clone();
+        tracing::info!("Synchronizing the wanted software state");
 
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
-            my_model.set_product(product);
             let found_issues = my_model
-                .write(new_state, progress)
+                .write(wanted_state, progress)
                 .await
                 .unwrap_or_else(|e| {
                     let new_issue = Issue::new(
@@ -299,6 +326,7 @@ impl Service {
 
             Self::update_state(state, my_model, events).await;
         });
+
         Ok(())
     }
 
@@ -414,6 +442,10 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             scope: Scope::Software,
         })?;
 
+        // calculate the wanted state
+        self.calculate_wanted_state().await?;
+
+        // and then update the proposal (in a separate task).
         self.update_proposal().await?;
 
         Ok(())
@@ -460,7 +492,7 @@ impl MessageHandler<message::SetResolvables> for Service {
     async fn handle(&mut self, message: message::SetResolvables) -> Result<(), Error> {
         self.selection.set(&message.id, message.resolvables);
         if self.product.is_some() {
-            self.update_proposal().await?;
+            self.calculate_wanted_state().await?;
         }
         Ok(())
     }
@@ -469,6 +501,7 @@ impl MessageHandler<message::SetResolvables> for Service {
 #[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
+        self.update_proposal().await?;
         Ok(())
     }
 }
