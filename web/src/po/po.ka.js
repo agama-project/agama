@@ -1009,7 +1009,7 @@ export default {
     "არასწორი საცავის პარამეტრები"
   ],
   "Ip prefix or netmask": [
-    "IP პრეფიქსი ან ქსელის ნიღაბი"
+    "ip პრეფიქსი ან ქსელის ნიღაბი"
   ],
   "Issue date": [
     "გამოცემის თარიღი"
@@ -1159,7 +1159,7 @@ export default {
     "მეტი მოწყობილობა"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "მონიშნული პროდუქტისთვის მეტი კლავიატურის რუკა შეიძლება, ხელმისაწვდომი იყოს [ლოკალიზაციის] გვერდზე"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
     ""

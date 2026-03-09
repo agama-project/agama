@@ -1009,7 +1009,7 @@ export default {
     "Ogiltiga lagringsinställningar"
   ],
   "Ip prefix or netmask": [
-    "IP prefix eller nätmask"
+    "Ip prefix eller nätmask"
   ],
   "Issue date": [
     "Utgivningsdatum"

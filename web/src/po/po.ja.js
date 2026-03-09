@@ -1480,7 +1480,7 @@ export default {
     "推奨"
   ],
   "Register": [
-    "登録"
+    "登録する"
   ],
   "Register using SUSE server": [
     "SUSE サーバを利用して登録"
@@ -1975,7 +1975,7 @@ export default {
     "btrfs スナップショットの使用可否に応じて、 %s 向けのサイズを動的に調整します。"
   ],
   "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "サイズを %s から %s までの範囲で設定していますが、この最大値の設定は UI ではサポートされていません。"
+    "サイズを %s から %s までの範囲で設定していますが、この最大値の設定は本インターフェイスではサポートされていません。"
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式で単位を付けて入力する必要があります。"
