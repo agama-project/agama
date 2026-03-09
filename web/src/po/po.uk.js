@@ -9,6 +9,9 @@ export default {
   "\"%s\" does not exist or is no longer available.": [
     "\"%s\" не існує або більше не доступна."
   ],
+  "%1$d of %2$d devices match filters": [
+    "%1$d з %2$d пристроїв відповідають фільтрам"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -41,6 +44,9 @@ export default {
     "%1$s, %2$s та [ще %3$d]",
     "%1$s, %2$s та [ще %3$d]",
     "%1$s, %2$s та [ще %3$d]"
+  ],
+  "%d devices available": [
+    "%d пристроїв доступно"
   ],
   "%d mode available": [
     "Доступний %d режим",
@@ -96,9 +102,9 @@ export default {
     "(крок %s з %s)"
   ],
   "1 device selected. Use the actions toolbar to apply changes.": [
-    "",
-    "",
-    ""
+    "Вибрано 1 пристрій. Використовуйте панель інструментів дій, щоб застосувати зміни.",
+    "Вибрано %s пристрої. Використовуйте панель інструментів дій, щоб застосувати зміни.",
+    "Вибрано %s пристроїв. Використовуйте панель інструментів дій, щоб застосувати зміни."
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Для %3$s буде створено розділ %1$s розміром %2$s, якщо це можливо"
@@ -152,6 +158,11 @@ export default {
   "Actions for %s at portal %s": [
     "Дії для %s на порталі %s"
   ],
+  "Actions for the selected device:": [
+    "Дії для вибраного пристрою:",
+    "Дії для %s вибраних пристроїв:",
+    "Дії для %s вибраних пристроїв:"
+  ],
   "Activate": [
     "Активувати"
   ],
@@ -169,6 +180,9 @@ export default {
   ],
   "Activated": [
     "Активовано"
+  ],
+  "Active": [
+    "Активно"
   ],
   "Add": [
     "Додати"
@@ -316,9 +330,6 @@ export default {
   "Before %s": [
     "До %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Перед встановленням необхідно прийняти деякі рішення. Клацніть на кожному розділі, щоб переглянути налаштування."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "До початку встановлення потрібно усунути такі проблеми:"
   ],
@@ -438,6 +449,9 @@ export default {
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Зміни в цих налаштуваннях негайно оновлять розділ «Результат» нижче."
+  ],
+  "Channel": [
+    "Канал"
   ],
   "Channel ID": [
     "Ідентифікатор каналу"
@@ -770,6 +784,9 @@ export default {
   "Do not format %s and keep the data": [
     "Не форматувати %s і зберегти дані"
   ],
+  "Do not register": [
+    "Не реєструвати"
+  ],
   "Do not use": [
     "Не використовувати"
   ],
@@ -954,8 +971,8 @@ export default {
   "Formatted": [
     "Відформатовано"
   ],
-  "Formatting DASD devices": [
-    "Форматування DASD-пристроїв"
+  "Formatting devices": [
+    "Форматування пристроїв"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Повнодискове шифрування (FDE) дає змогу захистити інформацію, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
@@ -1356,6 +1373,9 @@ export default {
   "No": [
     "Ні"
   ],
+  "No DASD devices found in this machine.": [
+    "У цій машині не знайдено пристроїв DASD."
+  ],
   "No Wi-Fi networks were found": [
     "Мережі Wi-Fi не знайдені"
   ],
@@ -1389,8 +1409,17 @@ export default {
   "No devices found": [
     "Пристроїв не знайдено"
   ],
+  "No devices match filters": [
+    "Жоден пристрій не відповідає фільтрам"
+  ],
+  "No devices selected. Select one or more devices to perform bulk actions.": [
+    "Жодних пристроїв не вибрано. Виберіть один або кілька пристроїв, щоб виконати масові дії."
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "Не знайдено таблиці iSCSI Boot Firmware Table (iBFT). Ініціатора можна [налаштувати вручну.]"
+  ],
+  "No information available yet": [
+    "Інформація ще не доступна"
   ],
   "No logical volumes are defined yet": [
     "Логічні томи ще не задано"
@@ -1472,6 +1501,9 @@ export default {
   ],
   "Not supported (%s)": [
     "Не підтримується (%s)"
+  ],
+  "Offline": [
+    "Офлайн"
   ],
   "On boot": [
     "При завантаженні"
@@ -1578,9 +1610,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Потенційна втрата даних, що впливає щонайменше на %s"
   ],
-  "Pre-installation checks": [
-    "Перевірка перед встановленням"
-  ],
   "Prefix length or netmask": [
     "Довжина префікса або маска мережі"
   ],
@@ -1592,6 +1621,9 @@ export default {
   ],
   "Product is already registered": [
     "Продукт вже зареєстровано"
+  ],
+  "Product not found": [
+    "Продукт не знайдено"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Захист інформації, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
@@ -1619,6 +1651,9 @@ export default {
   ],
   "Question": [
     "Питання"
+  ],
+  "Read only": [
+    "Тільки читання"
   ],
   "Read zFCP devices": [
     "Прочитати пристрої zFCP"
@@ -1809,6 +1844,9 @@ export default {
   ],
   "Select device": [
     "Оберіть пристрій"
+  ],
+  "Select devices to perform bulk actions": [
+    "Виберіть пристрої для виконання масових дій"
   ],
   "Select or enter a mount point": [
     "Виберіть або введіть точку монтування"
@@ -2152,6 +2190,9 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Пароль не знадобиться для завантаження та доступу до даних, якщо TPM зможе перевірити цілісність системи. Запечатування TPM вимагає, щоб нова система завантажувалася безпосередньо під час першого запуску."
   ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    "Продукт не знайдено в репозиторіях, тому неможливо продовжити встановлення."
+  ],
   "The product will be registered with \"%s\" hostname": [
     "Продукт буде зареєстрований з назвою хоста «%s»"
   ],
@@ -2233,6 +2274,12 @@ export default {
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Це налаштування для встановлюваного продукту. Мову програми встановлення можна змінити через [панель налаштувань], доступну на верхній панелі."
+  ],
+  "This action will destroy any data stored on the device.": [
+    "Ця дія знищить усі дані, що зберігаються на цьому пристрої."
+  ],
+  "This action will destroy any data stored on the devices listed below.": [
+    "Ця дія призведе до знищення всіх даних, що зберігаються на перелічених нижче пристроях."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Це розширення недоступне на сервері. Попросіть адміністратора сервера віддзеркалити розширення."

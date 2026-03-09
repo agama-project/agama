@@ -318,9 +318,6 @@ export default {
   "Before %s": [
     "Abans: %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Abans d'instal·lar, heu de prendre algunes decisions. Cliqueu a cada secció per revisar-ne la configuració."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
   ],
@@ -955,8 +952,8 @@ export default {
   "Formatted": [
     "Formatat"
   ],
-  "Formatting DASD devices": [
-    "Formatatge de dispositius DASD"
+  "Formatting devices": [
+    "Formatatge de dispositius"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
@@ -1591,9 +1588,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Pèrdua potencial de dades que afecta com a mínim els sistemes següents: %s"
   ],
-  "Pre-installation checks": [
-    "Comprovacions prèvies a la instal·lació"
-  ],
   "Prefix length or netmask": [
     "Longitud del prefix o màscara de xarxa"
   ],
@@ -2159,6 +2153,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "El producte es registrarà amb el nom d'amfitrió %s."

@@ -274,9 +274,6 @@ export default {
   "Before %s": [
     "Ennen %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Joitain valintoja tulee tehdä ennen asennusta. Käy läpi jokainen osio tarkistaaksesi asetukset."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Ennen asennuksen käynnistämistä sinun tulee ratkaista seuraavat ongelmat:"
   ],
@@ -813,9 +810,6 @@ export default {
   ],
   "Formatted": [
     "Alustettu"
-  ],
-  "Formatting DASD devices": [
-    "Alustetaan DASD-laitteita"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Koko levyn salaus (FDE) mahdollistaa uusien tiedostojärjestelmien tietojen, kuten datan, ohjelmistojen ja järjestelmätiedostojen, turvaamisen."
@@ -1378,9 +1372,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Tietoja voidaan menettää ainakin: %s"
   ],
-  "Pre-installation checks": [
-    "Ennen asennusta tehtävät tarkistukset"
-  ],
   "Prefix length or netmask": [
     "Etuliitteen pituus tai verkkomaski"
   ],
@@ -1874,6 +1865,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Salasanaa ei tarvita käynnistämiseen ja tietoihin pääsyyn, jos TPM onnistuu varmistamaan järjestelmän eheyden. TPM-sinetöinti vaatii, että uuteen järjestelmään käynnistetään suoraan ensimmäisellä kerralla."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "Tuote rekisteröidään isäntänimellä ”%s”"
