@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-19 14:08+0000\n"
-"PO-Revision-Date: 2025-07-07 07:59+0000\n"
+"POT-Creation-Date: 2026-03-02 10:15+0000\n"
+"PO-Revision-Date: 2026-03-03 17:04+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/sv/>\n"
+"service-sle-16/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -157,7 +157,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Det uppstod ett problem med att köra ett paketskript."
+msgstr "Det uppstod ett problem när ett paketskript kördes."
 
 #. Callback to handle unsigned files
 #.
@@ -255,7 +255,7 @@ msgstr "Uppdaterar metadata för förråd"
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Beräknar programvaruförslaget"
+msgstr "Beräknar programvaruförslag"
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
@@ -796,8 +796,8 @@ msgstr[1] "Följande valda enheter hittades inte i systemet: %{devices}"
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Definiera en användare, för att ställa in root-lösenordet eller en offentlig "
-"SSH-nyckel krävs"
+"Det krävs att man definierar en användare, ställer in root-lösenordet eller "
+"anger en offentlig SSH-nyckel"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Väljer Linux säkerhetsmoduler"
