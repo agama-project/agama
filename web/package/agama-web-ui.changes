@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  9 19:44:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve error page with filtered, source-mapped stack traces
+  for better error reporting (gh#agama-project/agama#3261).
+
+-------------------------------------------------------------------
 Mon Mar  9 11:05:21 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Remove code to deal with the old HTTP API
