@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 13:04+0000\n"
+"POT-Creation-Date: 2026-03-06 10:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "No"
 msgstr ""
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
 msgstr ""
@@ -140,7 +140,6 @@ msgstr ""
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:102
-#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -150,32 +149,70 @@ msgstr ""
 msgid "Skip"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:317
-msgid "Updating the list of repositories"
+#: agama-software/src/model/packages.rs:54
+msgid "package"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:318
-msgid "Refreshing metadata from the repositories"
+#: agama-software/src/model/packages.rs:55
+msgid "pattern"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:319
-msgid "Calculating the software proposal"
+#: agama-software/src/model/packages.rs:56
+msgid "product"
+msgstr ""
+
+#: agama-software/src/service.rs:281
+msgid ""
+"Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 
 #: agama-software/src/zypp_server.rs:322
+msgid "Updating the list of repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:323
+msgid "Refreshing metadata from the repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:324
+msgid "Calculating the software proposal"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:327
 msgid "Registering the system"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:420
-msgid "The product must be registered"
+#. TRANSLATORS: %s is the alias of the repository.
+#: agama-software/src/zypp_server.rs:391
+msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:458
-msgid "There are conflicts in software selection"
+#: agama-software/src/zypp_server.rs:411
+msgid "Could not read the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:471
-msgid "There are software conflict in software selection"
+#: agama-software/src/zypp_server.rs:434
+msgid ""
+"Failed to find the product in the repositories. You might need to register "
+"the system."
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:439
+msgid "Failed to find the product in the repositories."
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:497
+msgid "There are conflicts in the software selection"
+msgstr ""
+
+#. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
+#. and the second %s is the name of the resolvable.
+#: agama-software/src/zypp_server.rs:526
+msgid "Could not select %s '%s' for installation"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:931
+msgid "Failed to register the system"
 msgstr ""
 
 #: agama-users/src/service.rs:140

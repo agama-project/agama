@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-25 13:04+0000\n"
+"POT-Creation-Date: 2026-03-06 10:32+0000\n"
 "PO-Revision-Date: 2026-01-26 20:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -19,12 +19,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.15.2\n"
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "No"
 msgstr "Ei"
 
-#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:292
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
 msgstr "Kyllä"
@@ -156,33 +156,74 @@ msgstr ""
 msgid "Skip"
 msgstr "Ohita tämä kohta"
 
-#: agama-software/src/zypp_server.rs:317
+#: agama-software/src/model/packages.rs:54
+msgid "package"
+msgstr ""
+
+#: agama-software/src/model/packages.rs:55
+msgid "pattern"
+msgstr ""
+
+#: agama-software/src/model/packages.rs:56
+msgid "product"
+msgstr ""
+
+#: agama-software/src/service.rs:281
+msgid ""
+"Due to an internal error, it was not possible to create a software proposal."
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:322
 msgid "Updating the list of repositories"
 msgstr "Päivitetään ohjelmalähteiden luetteloa"
 
-#: agama-software/src/zypp_server.rs:318
+#: agama-software/src/zypp_server.rs:323
 msgid "Refreshing metadata from the repositories"
 msgstr "Päivitetään metatietoja ohjelmalähteistä"
 
-#: agama-software/src/zypp_server.rs:319
+#: agama-software/src/zypp_server.rs:324
 msgid "Calculating the software proposal"
 msgstr "Lasketaan ohjelmistoehdotusta"
 
-#: agama-software/src/zypp_server.rs:322
+#: agama-software/src/zypp_server.rs:327
 msgid "Registering the system"
 msgstr "Rekisteröidään järjestelmää"
 
-#: agama-software/src/zypp_server.rs:420
-msgid "The product must be registered"
-msgstr "Tuote tulaa olla rekisteröity"
-
-#: agama-software/src/zypp_server.rs:458
-msgid "There are conflicts in software selection"
+#. TRANSLATORS: %s is the alias of the repository.
+#: agama-software/src/zypp_server.rs:391
+msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:471
-msgid "There are software conflict in software selection"
+#: agama-software/src/zypp_server.rs:411
+#, fuzzy
+msgid "Could not read the repositories"
+msgstr "Päivitetään metatietoja ohjelmalähteistä"
+
+#: agama-software/src/zypp_server.rs:434
+msgid ""
+"Failed to find the product in the repositories. You might need to register "
+"the system."
 msgstr ""
+
+#: agama-software/src/zypp_server.rs:439
+#, fuzzy
+msgid "Failed to find the product in the repositories."
+msgstr "Päivitetään ohjelmalähteiden luetteloa"
+
+#: agama-software/src/zypp_server.rs:497
+msgid "There are conflicts in the software selection"
+msgstr ""
+
+#. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
+#. and the second %s is the name of the resolvable.
+#: agama-software/src/zypp_server.rs:526
+msgid "Could not select %s '%s' for installation"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:931
+#, fuzzy
+msgid "Failed to register the system"
+msgstr "Rekisteröidään järjestelmää"
 
 #: agama-users/src/service.rs:140
 msgid ""
@@ -193,3 +234,6 @@ msgstr ""
 #: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr "Ensimmäisen käyttäjän tiedot eivät ole riittävät"
+
+#~ msgid "The product must be registered"
+#~ msgstr "Tuote tulaa olla rekisteröity"
