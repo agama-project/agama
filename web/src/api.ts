@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,6 +21,7 @@
  */
 
 import { get, patch, post, put } from "~/http";
+import { TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Config } from "~/model/config";
 import type { Issue } from "~/model/issue";
@@ -86,6 +87,21 @@ const startInstallation = () => postAction({ install: null });
 
 const finishInstallation = () => postAction({ finish: "reboot" });
 
+type PasswordCheckResult = {
+  success?: number;
+  failure?: TranslatedString;
+};
+
+const passwordCheck = async (password: string): Promise<PasswordCheckResult> => {
+  const response: AxiosResponse<PasswordCheckResult> = await post(
+    "/api/v2/private/password_check",
+    {
+      password,
+    },
+  );
+  return response.data;
+};
+
 export {
   getStatus,
   getConfig,
@@ -107,6 +123,7 @@ export {
   discoverISCSIAction,
   startInstallation,
   finishInstallation,
+  passwordCheck,
 };
 
-export type { Response };
+export type { Response, PasswordCheckResult };
