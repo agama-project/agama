@@ -8,136 +8,138 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-06 10:32+0000\n"
-"PO-Revision-Date: 2026-02-26 19:04+0000\n"
-"Last-Translator: Topalski <fujinami_goops@slmail.me>\n"
-"Language-Team: Bulgarian <https://l10n.opensuse.org/projects/agama/agama-"
-"rust-master/bg/>\n"
-"Language: bg\n"
+"PO-Revision-Date: 2026-03-07 14:04+0000\n"
+"Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
+"Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-rust-"
+"master/sv/>\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.1\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "No"
-msgstr "Не"
+msgstr "Nej"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
-msgstr "Да"
+msgstr "Ja"
 
 #: agama-manager/src/tasks/runner.rs:185
 msgid "Prepare the system"
-msgstr "Подготви системата"
+msgstr "Förbered systemet"
 
 #: agama-manager/src/tasks/runner.rs:186
 msgid "Install software"
-msgstr "Инсталирай софтуер"
+msgstr "Installera programvara"
 
 #: agama-manager/src/tasks/runner.rs:187
 msgid "Configure the system"
-msgstr "Конфигурирай системата"
+msgstr "Konfigurera systemet"
 
 #: agama-manager/src/tasks/runner.rs:285
 msgid "Storing security settings"
-msgstr "Запазване настройки за сигурност"
+msgstr "Lagrar säkerhetsinställningar"
 
 #: agama-manager/src/tasks/runner.rs:286
 msgid "Setting up the hostname"
-msgstr ""
+msgstr "Ställer in värdnamnet"
 
 #: agama-manager/src/tasks/runner.rs:287
 msgid "Setting up the network proxy"
-msgstr ""
+msgstr "Ställer in nätverksproxy"
 
 #: agama-manager/src/tasks/runner.rs:288
 msgid "Importing user files"
-msgstr ""
+msgstr "Importerar användarfiler"
 
 #: agama-manager/src/tasks/runner.rs:289
 msgid "Running user pre-installation scripts"
-msgstr ""
+msgstr "Kör användargenererade förinstallationsskript"
 
 #: agama-manager/src/tasks/runner.rs:290
 msgid "Storing questions settings"
-msgstr ""
+msgstr "Lagrar frågeinställningar"
 
 #: agama-manager/src/tasks/runner.rs:291
 msgid "Storing localization settings"
-msgstr ""
+msgstr "Lagrar lokaliseringsinställningar"
 
 #: agama-manager/src/tasks/runner.rs:292
 msgid "Storing users settings"
-msgstr ""
+msgstr "Lagrar användarinställningar"
 
 #: agama-manager/src/tasks/runner.rs:293
 msgid "Configuring iSCSI devices"
-msgstr ""
+msgstr "Konfigurerar iSCSI-enheter"
 
 #: agama-manager/src/tasks/runner.rs:297
 msgid "Configuring DASD devices"
-msgstr ""
+msgstr "Konfigurerar DASD-enheter"
 
 #: agama-manager/src/tasks/runner.rs:301
 msgid "Setting up the network"
-msgstr ""
+msgstr "Konfigurerar nätverket"
 
 #: agama-manager/src/tasks/runner.rs:306
 msgid "Preparing the software proposal"
-msgstr ""
+msgstr "Förbereder programvaruförslag"
 
 #: agama-manager/src/tasks/runner.rs:307
 msgid "Preparing the storage proposal"
-msgstr ""
+msgstr "Förbereder lagringsförslag"
 
 #: agama-manager/src/tasks/runner.rs:308
 msgid "Storing bootloader settings"
-msgstr ""
+msgstr "Lagrar starthanterare inställningar"
 
 #: agama-network/src/service.rs:518
 msgid "Writing configuration"
-msgstr ""
+msgstr "Skriver konfiguration"
 
 #: agama-network/src/service.rs:519
 msgid "Reading configuration"
-msgstr ""
+msgstr "Läser konfiguration"
 
 #: agama-security/src/service.rs:226
 msgid "Reject"
-msgstr ""
+msgstr "Avslå"
 
 #: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:109
 msgid "Trust"
-msgstr ""
+msgstr "Lita på"
 
 #: agama-security/src/service.rs:227
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
+"Försöker importera ett självsignerat certifikat. Vill du lita på det och "
+"registrera produkten?"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorera"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr ""
+msgstr "Försök igen"
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "Det uppstod ett problem när ett paketskript kördes."
 
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr ""
+msgstr "Fortsätt"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:102
@@ -145,22 +147,24 @@ msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
+"Nyckeln {0} ({1}) med fingeravtryck {2} är okänd. Vill du lita på den här "
+"nyckeln?"
 
 #: agama-software/src/callbacks/security.rs:109
 msgid "Skip"
-msgstr ""
+msgstr "Hoppa över"
 
 #: agama-software/src/model/packages.rs:54
 msgid "package"
-msgstr ""
+msgstr "paket"
 
 #: agama-software/src/model/packages.rs:55
 msgid "pattern"
-msgstr ""
+msgstr "mönster"
 
 #: agama-software/src/model/packages.rs:56
 msgid "product"
-msgstr ""
+msgstr "produkt"
 
 #: agama-software/src/service.rs:281
 msgid ""
@@ -169,28 +173,28 @@ msgstr ""
 
 #: agama-software/src/zypp_server.rs:322
 msgid "Updating the list of repositories"
-msgstr ""
+msgstr "Uppdaterar listan över förråd"
 
 #: agama-software/src/zypp_server.rs:323
 msgid "Refreshing metadata from the repositories"
-msgstr ""
+msgstr "Uppdaterar metadata från förråd"
 
 #: agama-software/src/zypp_server.rs:324
 msgid "Calculating the software proposal"
-msgstr ""
+msgstr "Beräknar programvaruförslag"
 
 #: agama-software/src/zypp_server.rs:327
 msgid "Registering the system"
-msgstr ""
+msgstr "Registrerar systemet"
 
 #. TRANSLATORS: %s is the alias of the repository.
 #: agama-software/src/zypp_server.rs:391
 msgid "Could not remove the repository %s"
-msgstr ""
+msgstr "Kunde ta bort förråd %s"
 
 #: agama-software/src/zypp_server.rs:411
 msgid "Could not read the repositories"
-msgstr ""
+msgstr "Kunde inte läsa från förråd"
 
 #: agama-software/src/zypp_server.rs:434
 msgid ""
@@ -199,28 +203,38 @@ msgid ""
 msgstr ""
 
 #: agama-software/src/zypp_server.rs:439
+#, fuzzy
 msgid "Failed to find the product in the repositories."
-msgstr ""
+msgstr "Uppdaterar listan över förråd"
 
 #: agama-software/src/zypp_server.rs:497
+#, fuzzy
 msgid "There are conflicts in the software selection"
-msgstr ""
+msgstr "Det finns konflikter i programvalen"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
 #: agama-software/src/zypp_server.rs:526
 msgid "Could not select %s '%s' for installation"
-msgstr ""
+msgstr "Kunde inte välja %s '%s' för installation"
 
 #: agama-software/src/zypp_server.rs:931
 msgid "Failed to register the system"
-msgstr ""
+msgstr "Misslyckades att registrera systemet"
 
 #: agama-users/src/service.rs:140
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
+"Det krävs att man definierar en användare, ställer in root-lösenordet eller "
+"anger en offentlig SSH-nyckel"
 
 #: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
-msgstr ""
+msgstr "Informationen om den första användaren är ofullständig"
+
+#~ msgid "The product must be registered"
+#~ msgstr "Produkten måste vara registrerad"
+
+#~ msgid "There are software conflict in software selection"
+#~ msgstr "Det finns programvarukonflikter i programvaruvalen"
