@@ -27,9 +27,10 @@ import ErrorPage from "./ErrorPage";
 
 jest.mock("stacktracey", () =>
   jest.fn().mockImplementation(() => ({
-    withSources: jest.fn().mockReturnThis(),
-    filter: jest.fn().mockReturnThis(),
-    asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
+    withSourcesAsync: jest.fn().mockResolvedValue({
+      filter: jest.fn().mockReturnThis(),
+      asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
+    }),
   })),
 );
 
@@ -76,19 +77,33 @@ describe("ErrorPage", () => {
         mockRouteError(new Error("Something exploded"));
       });
 
-      it("shows the 'Unexpected error' heading", () => {
+      it("shows the 'Unexpected error' heading", async () => {
         installerRender(<ErrorPage />);
         screen.getByText("Unexpected error");
+        await screen.findByText(/app\.ts:10.*myFunc/);
       });
 
-      it("shows the error message", () => {
+      it("shows the error message", async () => {
         installerRender(<ErrorPage />);
         screen.getByText("Something exploded");
+        await screen.findByText(/app\.ts:10.*myFunc/);
       });
 
-      it("shows the stack trace", () => {
+      it("shows a skeleton while the trace is loading", async () => {
         installerRender(<ErrorPage />);
-        screen.getByText(/app\.ts:10.*myFunc/);
+        screen.getByText("Retrieving error details");
+        await screen.findByText(/app\.ts:10.*myFunc/);
+      });
+
+      it("shows the stack trace once loaded", async () => {
+        installerRender(<ErrorPage />);
+        await screen.findByText(/app\.ts:10.*myFunc/);
+      });
+
+      it("hides the skeleton once the trace is loaded", async () => {
+        installerRender(<ErrorPage />);
+        await screen.findByText(/app\.ts:10.*myFunc/);
+        expect(screen.queryByText("Retrieving error details")).not.toBeInTheDocument();
       });
     });
 
@@ -107,8 +122,9 @@ describe("ErrorPage", () => {
         screen.getByText("Unknown error");
       });
 
-      it("does not show a stack trace", () => {
+      it("does not show a skeleton or stack trace", () => {
         installerRender(<ErrorPage />);
+        expect(screen.queryByText("Retrieving error details")).not.toBeInTheDocument();
         expect(screen.queryByRole("code")).not.toBeInTheDocument();
       });
     });

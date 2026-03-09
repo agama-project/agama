@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import StackTracey from "stacktracey";
 import { isRouteErrorResponse, useRouteError, ErrorResponse } from "react-router";
-import { Content } from "@patternfly/react-core";
+import { Content, Skeleton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
@@ -60,7 +60,7 @@ function RouteError({ error }: { error: ErrorResponse }) {
  *
  * The error's `.message` is shown as the primary heading. When the value is a
  * proper `Error` instance, its stack trace is parsed by **StackTracey**,
- * enriched with original source locations via `.withSources()`, stripped of
+ * enriched with original source locations via `.withSourcesAsync()`, stripped of
  * third-party frames, and formatted as a plain-text table via `.asTable()`.
  *
  * ### Dependency note
@@ -72,14 +72,17 @@ function RouteError({ error }: { error: ErrorResponse }) {
  * at almost no cost.
  */
 function UnexpectedError({ error }: { error: unknown }) {
+  const [trace, setTrace] = useState<string | null>(null);
   const message = error instanceof Error ? error.message : _("Unknown error");
-  const trace =
-    error instanceof Error
-      ? new StackTracey(error.stack)
-          .withSources()
-          .filter((x) => !x.thirdParty)
-          .asTable()
-      : null;
+
+  useEffect(() => {
+    if (!(error instanceof Error)) return;
+
+    const stackTracey = new StackTracey(error.stack);
+    stackTracey
+      .withSourcesAsync()
+      .then((stack) => setTrace(stack.filter((x) => !x.thirdParty).asTable()));
+  }, [error]);
 
   return (
     <SplitInfoLayout
@@ -90,7 +93,22 @@ function UnexpectedError({ error }: { error: unknown }) {
           <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
             {message}
           </Text>
-          {trace && <Content component="pre">{trace}</Content>}
+          {error instanceof Error &&
+            (trace ? (
+              <Content component="pre">{trace}</Content>
+            ) : (
+              <NestedContent margin="mtSm">
+                <Stack hasGutter>
+                  <Skeleton
+                    fontSize="sm"
+                    size={90}
+                    screenreaderText={_("Retrieving error details")}
+                  />
+                  <Skeleton fontSize="sm" width="75%" aria-hidden />
+                  <Skeleton fontSize="sm" width="40%" aria-hidden />
+                </Stack>
+              </NestedContent>
+            ))}
         </NestedContent>
       }
     />
