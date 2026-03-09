@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 10:41+0000\n"
-"PO-Revision-Date: 2026-02-13 10:41+0000\n"
+"POT-Creation-Date: 2026-03-03 15:34+0000\n"
+"PO-Revision-Date: 2026-03-04 03:04+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 5.16.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -29,7 +29,7 @@ msgstr ""
 "AutoYaST プロファイル内にサポートされていない要素が見つかりました: %{keys}."
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:64
+#: service/lib/agama/dbus/storage/dasd.rb:66
 msgid "Probing DASD devices"
 msgstr "DASD デバイスを検出しています"
 
@@ -41,12 +41,12 @@ msgstr "DASD デバイスを検出しています"
 #. @raise if there is an unfinished configuration.
 #.
 #. @param config_json [Hash]
-#: service/lib/agama/dbus/storage/dasd.rb:121
+#: service/lib/agama/dbus/storage/dasd.rb:119
 msgid "Configuring DASD"
 msgstr "DASD を設定しています"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/iscsi.rb:98
+#: service/lib/agama/dbus/storage/iscsi.rb:80
 msgid "Configuring iSCSI"
 msgstr "iSCSI を設定しています"
 
@@ -54,44 +54,44 @@ msgstr "iSCSI を設定しています"
 #.
 #. @param serialized_options [String] Serialized dicovery options.
 #. @return [Number] 0 success; 1 failure.
-#: service/lib/agama/dbus/storage/iscsi.rb:122
+#: service/lib/agama/dbus/storage/iscsi.rb:105
 msgid "Performing iSCSI discovery"
 msgstr "iSCSI 検出を実行しています"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:186
 msgid "Preparing bootloader proposal"
 msgstr "ブートローダの提案内容を準備しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:189
 msgid "Preparing the storage devices"
 msgstr "ストレージデバイスを準備しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:192
 msgid "Writing bootloader sysconfig"
 msgstr "ブートローダの sysconfig を書き込んでいます"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
+#: service/lib/agama/dbus/storage/manager.rb:200
 msgid "Finishing installation"
 msgstr "インストールを完了しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:138
+#. Implementation for the API method #Umount.
+#: service/lib/agama/dbus/storage/manager.rb:207
 msgid "Unmounting devices"
 msgstr "マウントを解除しています"
 
-#. Gets and serializes the storage config used to calculate the current proposal.
-#.
-#. @return [String] Serialized config according to the JSON schema.
-#: service/lib/agama/dbus/storage/manager.rb:298
+#. after loading config try to apply it, so proper packages can be requested
+#. TODO: generate also new issue from configuration
+#: service/lib/agama/dbus/storage/manager.rb:236
 msgid "Activating storage devices"
 msgstr "ストレージデバイスを有効化しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:301
+#: service/lib/agama/dbus/storage/manager.rb:239
 msgid "Probing storage devices"
 msgstr "ストレージデバイスを検出しています"
 
-#: service/lib/agama/dbus/storage/manager.rb:304
+#: service/lib/agama/dbus/storage/manager.rb:242
 msgid "Applying storage configuration"
 msgstr "ストレージ設定を適用しています"
 
@@ -441,6 +441,13 @@ msgstr "iSCSI 設定を調整しています"
 msgid "Configuring file systems snapshots"
 msgstr "ファイルシステムのスナップショットを設定しています"
 
+#. Returns an issue if there is no candidate device for installation
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/manager.rb:252
+msgid "There is no suitable device for installation"
+msgstr "インストール先として利用できるデバイスがありません"
+
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
@@ -464,6 +471,55 @@ msgstr "ログをコピーしています"
 #: service/lib/agama/storage/umounter.rb:146
 msgid "Unmounting storage devices"
 msgstr "ストレージデバイスのマウントを解除しています"
+
+#. Activates the controller if it is not active yet.
+#.
+#. @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
+#.
+#. @param controller [Controller]
+#. @return [Boolean] Whether the controller was activated.
+#: service/lib/agama/storage/zfcp/manager.rb:206
+#, c-format
+msgid "The zFCP controller %s cannot be activated"
+msgstr "zFCP コントローラ %s を有効化できません"
+
+#. Activates a device if it is not active yet.
+#.
+#. @param device [Device]
+#. @return [Boolean] Whether the device was activated.
+#: service/lib/agama/storage/zfcp/manager.rb:239
+#, c-format
+msgid "The zFCP device %s cannot be activated"
+msgstr "zFCP デバイス %s を有効化できません"
+
+#. Deactivates a device if it is active.
+#.
+#. @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
+#.
+#. @param device [Device]
+#. @return [Boolean] Whether the device was deactivated.
+#: service/lib/agama/storage/zfcp/manager.rb:277
+#, c-format
+msgid "The zFCP device %s cannot be deactivated"
+msgstr "zFCP デバイス %s を無効化できません"
+
+#. Issue if the controller is missing.
+#.
+#. @param channel [String]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/zfcp/manager.rb:307
+#, c-format
+msgid "Unknown zFCP controller %s"
+msgstr "未知の zFCP コントローラです: %s"
+
+#. Issue if the device is missing.
+#.
+#. @param device_config [Configs::Device]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/zfcp/manager.rb:326
+#, c-format
+msgid "Unknown zFCP LUN %s"
+msgstr "未知の zFCP LUN です: %s"
 
 #~ msgid "Logout iSCSI targets"
 #~ msgstr "iSCSI ターゲットからのログアウト"
@@ -677,9 +733,6 @@ msgstr "ストレージデバイスのマウントを解除しています"
 
 #~ msgid "Adding storage-related packages"
 #~ msgstr "ストレージ関連のパッケージを追加しています"
-
-#~ msgid "No device selected for installation"
-#~ msgstr "インストール先のデバイスを選択していません"
 
 #, perl-brace-format
 #~ msgid "The following selected device is not found in the system: %{devices}"
