@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar  9 09:19:30 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allows download the user config (jsc#PED-15453).
+
+-------------------------------------------------------------------
 Thu Mar  5 11:46:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve registration and software issues reporting (related to bsc#1258034).
