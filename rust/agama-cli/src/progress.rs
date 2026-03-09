@@ -60,7 +60,7 @@ impl ProgressMonitor {
 
         let multibar = indicatif::MultiProgress::new();
         let mut bars: HashMap<Scope, ProgressBar> = HashMap::new();
-        multibar.println("Installaton Tasks:")?;
+        multibar.println("Installation Tasks:")?;
         loop {
             if let Ok(status) = updates.recv().await {
                 if !self.update(&status).await {

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar  9 09:39:13 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Fix typo (bsc#1259357)
+
+-------------------------------------------------------------------
 Fri Mar  6 10:28:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Honor inst.finish in interactive installation (jsc#PED-15031).
