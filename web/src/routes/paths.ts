@@ -53,6 +53,7 @@ const ROOT = {
   installationFinished: "/installation/finished",
   installationExit: "/installation/exit",
   logs: "/api/v2/private/download_logs",
+  config: "/api/v2/config",
 };
 
 const USER = {
