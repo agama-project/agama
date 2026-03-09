@@ -30,6 +30,7 @@ import {
   InstallationProgress,
   LoginPage,
 } from "~/components/core";
+import ErrorBoundary from "./components/core/ErrorBoundary";
 import StorageProgress from "~/components/storage/Progress";
 import HostnamePage from "~/components/system/HostnamePage";
 import OverviewPage from "~/components/overview/OverviewPage";
@@ -112,6 +113,7 @@ const router = () =>
     {
       path: PATHS.root,
       element: <Protected />,
+      ErrorBoundary,
       children: [...protectedRoutes()],
     },
   ]);
