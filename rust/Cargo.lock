@@ -166,6 +166,7 @@ dependencies = [
  "utoipa",
  "uuid",
  "zbus",
+ "zypp-agama",
 ]
 
 [[package]]

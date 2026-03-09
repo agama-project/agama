@@ -30,6 +30,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tempfile::TempDir;
 use utoipa::ToSchema;
+use zypp_agama::SOLVER_TESTCASE_DIR;
 
 const DEFAULT_COMMANDS: [(&str, &str); 2] = [
     // (<command to be executed>, <file name used for storing result of the command>)
@@ -50,7 +51,7 @@ const DEFAULT_PATHS: [&str; 18] = [
     "/var/log/boot.msg",
     "/var/log/udev.log",
     "/var/log/zypp/history",
-    "/var/log/zypp/testcase",
+    SOLVER_TESTCASE_DIR,
     "/run/agama/dbus.log",
     "/run/agama/inst-scripts",
     // config
