@@ -25,13 +25,11 @@ import { Connection, ConnectionStatus, NetworkConfig, NetworkProposal } from "./
 describe("NetworkConfig", () => {
   describe("addOrUpdateConnection", () => {
     it("keeps connections with DELETE status in the array", () => {
-      const config = new NetworkConfig([
-        new Connection("eth0", { status: ConnectionStatus.UP })
-      ]);
-      
+      const config = new NetworkConfig([new Connection("eth0", { status: ConnectionStatus.UP })]);
+
       const toDelete = new Connection("eth0", { status: ConnectionStatus.DELETE });
       config.addOrUpdateConnection(toDelete);
-      
+
       expect(config.connections).toHaveLength(1);
       expect(config.connections[0].status).toBe(ConnectionStatus.DELETE);
     });
@@ -42,12 +40,12 @@ describe("NetworkProposal", () => {
   describe("addOrUpdateConnection", () => {
     it("keeps connections with DELETE status in the array", () => {
       const proposal = new NetworkProposal([
-        new Connection("eth0", { status: ConnectionStatus.UP })
+        new Connection("eth0", { status: ConnectionStatus.UP }),
       ]);
-      
+
       const toDelete = new Connection("eth0", { status: ConnectionStatus.DELETE });
       proposal.addOrUpdateConnection(toDelete);
-      
+
       expect(proposal.connections).toHaveLength(1);
       expect(proposal.connections[0].status).toBe(ConnectionStatus.DELETE);
     });

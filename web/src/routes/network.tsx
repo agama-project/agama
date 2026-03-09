@@ -45,6 +45,10 @@ const routes = (): Route => ({
       element: <IpSettingsForm />,
     },
     {
+      path: PATHS.newConnection,
+      element: <IpSettingsForm />,
+    },
+    {
       path: PATHS.editBindingSettings,
       element: <BindingSettingsForm />,
     },

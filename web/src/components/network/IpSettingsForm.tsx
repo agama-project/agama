@@ -40,7 +40,7 @@ import { Page } from "~/components/core";
 import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import { _ } from "~/i18n";
-import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
+import { IPAddress, Connection, ConnectionMethod, ConnectionStatus } from "~/types/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useConnection } from "~/hooks/model/proposal/network";
 import { NETWORK } from "~/routes/paths";
@@ -50,10 +50,15 @@ const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO
 // FIXME: rename to connedtioneditpage or so?
 // FIXME: improve the layout a bit.
 export default function IpSettingsForm() {
-  const { id } = useParams();
+  const { id: initialId } = useParams();
   const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
-  const connection = useConnection(id);
+  const connectionFromStore = useConnection(initialId!);
+  const [connection] = useState(
+    connectionFromStore ||
+      new Connection(initialId!, { status: ConnectionStatus.UP, persistent: true }),
+  );
+  const [id, setId] = useState(connection.id);
   const [addresses, setAddresses] = useState<IPAddress[]>(connection.addresses);
   const [nameservers, setNameservers] = useState(
     connection.nameservers.map((a) => {
@@ -61,7 +66,7 @@ export default function IpSettingsForm() {
     }),
   );
   const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
-  const [gateway, setGateway] = useState<string>(connection.gateway4);
+  const [gateway, setGateway] = useState<string>(connection.gateway4 || "");
   const [fieldErrors, setFieldErrors] = useState<object>({});
   const [requestError, setRequestError] = useState<string | undefined>();
 
@@ -120,8 +125,9 @@ export default function IpSettingsForm() {
     if (!validate(sanitizedAddresses)) return;
 
     // TODO: deal with DNS servers
-    const updatedConnection = new Connection(connection.id, {
-      ...connection,
+    const { id: _, ...connectionOptions } = connection;
+    const updatedConnection = new Connection(id, {
+      ...connectionOptions,
       addresses: sanitizedAddresses,
       method4: method,
       gateway4: gateway,
@@ -148,8 +154,15 @@ export default function IpSettingsForm() {
 
   const breadcrumbs = [
     { label: _("Network"), path: NETWORK.root },
-    { label: connection.id, path: generatePath(NETWORK.wiredConnection, { id: connection.id }) },
-    { label: _("Edit") },
+    ...(connectionFromStore
+      ? [
+          {
+            label: connectionFromStore.id,
+            path: generatePath(NETWORK.wiredConnection, { id: connectionFromStore.id }),
+          },
+          { label: _("Edit") },
+        ]
+      : [{ label: _("Add connection") }]),
   ];
 
   // TRANSLATORS: manual network configuration mode with a static IP address
@@ -164,6 +177,17 @@ export default function IpSettingsForm() {
         )}
 
         <Form id="editConnectionForm" onSubmit={onSubmitForm}>
+          <FormGroup fieldId="name" label={_("Name")} isRequired>
+            <TextInput
+              id="name"
+              name="name"
+              aria-label={_("Name")}
+              value={id}
+              label={_("Name")}
+              onChange={(_, value) => setId(value)}
+            />
+          </FormGroup>
+
           <FormGroup fieldId="method" label={_("Mode")} isStack>
             <FormSelect
               id="method"

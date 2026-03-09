@@ -52,7 +52,6 @@ import { Connection, ConnectionStatus, Device, DeviceState } from "~/types/netwo
  */
 type DevicesFilters = {
   name?: Device["name"];
-  connection?: string;
   type?: "all" | Device["type"];
   state?: "all" | Device["state"];
 };
@@ -118,16 +117,12 @@ const TYPE_OPTIONS = {
  * @returns The filtered array of network Device objects matching all conditions.
  */
 const filterDevices = (devices: Device[], filters: DevicesFilters): Device[] => {
-  const { name, connection, type, state } = filters;
+  const { name, type, state } = filters;
 
   const conditions: DeviceCondition[] = [];
 
   if (!isEmpty(name)) {
     conditions.push((d) => d.name.toLowerCase().includes(name.toLowerCase()));
-  }
-
-  if (!isEmpty(connection)) {
-    conditions.push((d) => (d.connection ?? "").toLowerCase().includes(connection.toLowerCase()));
   }
 
   if (state && state !== "all") {
@@ -246,15 +241,6 @@ const FiltersToolbar = ({
             />
           </ToolbarItem>
           <ToolbarItem>
-            <TextinputFilter
-              id="device-connection"
-              label={_("Connection")}
-              value={filters.connection}
-              width="120px"
-              onChange={(_, v) => onFilterChange("connection", v)}
-            />
-          </ToolbarItem>
-          <ToolbarItem>
             <SimpleSelector
               label={_("State")}
               value={filters.state}
@@ -316,7 +302,6 @@ const initialState: TableState = {
   sortedBy: { index: 0, direction: "asc" },
   filters: {
     name: "",
-    connection: "",
     state: "all",
     type: "all",
   },
@@ -372,7 +357,7 @@ const createColumns = () => [
   },
   {
     // TRANSLATORS: table header for a network devices table
-    name: _("Active Connection"),
+    name: _("Connection"),
     value: (d: Device) => d.connection || "-",
     sortingKey: "connection",
   },

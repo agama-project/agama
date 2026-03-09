@@ -22,30 +22,20 @@
 
 import React from "react";
 import { Grid, GridItem } from "@patternfly/react-core";
-import { EmptyState, Page } from "~/components/core";
-import WifiNetworksList from "./WifiNetworksList";
-import WiredConnectionsList from "./WiredConnectionsList";
+import { Link, Page } from "~/components/core";
 import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 import { _ } from "~/i18n";
 import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
 import DevicesTable from "./DevicesTable";
-
-const NoWifiAvailable = () => (
-  <Page.Section aria-label={_("Wi-Fi not supported")}>
-    <EmptyState title={_("Wi-Fi not supported")} icon="error">
-      {_(
-        "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.",
-      )}
-    </EmptyState>
-  </Page.Section>
-);
+import ConnectionsTable from "./ConnectionsTable";
+import { NETWORK } from "~/routes/paths";
 
 /**
  * Page component holding Network settings
  */
 export default function NetworkPage() {
   useNetworkChanges();
-  const { state: networkState, devices } = useSystem();
+  const { devices } = useSystem();
 
   return (
     <Page breadcrumbs={[{ label: _("Network") }]}>
@@ -54,20 +44,14 @@ export default function NetworkPage() {
 
         <Grid hasGutter>
           <GridItem sm={12} xl={6}>
-            <Page.Section title={_("Wired connections")}>
-              <WiredConnectionsList aria-label={_("Wired connections")} />
+            <Page.Section
+              title={_("Connections")}
+              actions={<Link to={NETWORK.newConnection}>{_("Add connection")}</Link>}
+            >
+              <ConnectionsTable />
             </Page.Section>
           </GridItem>
           <GridItem sm={12} xl={6}>
-            {networkState.wirelessEnabled ? (
-              <Page.Section title={_("Wi-Fi networks")}>
-                <WifiNetworksList aria-label={_("Wi-Fi networks")} />
-              </Page.Section>
-            ) : (
-              <NoWifiAvailable />
-            )}
-          </GridItem>
-          <GridItem sm={12} xl={12}>
             <Page.Section title={_("Devices")}>
               <DevicesTable devices={devices} />
             </Page.Section>

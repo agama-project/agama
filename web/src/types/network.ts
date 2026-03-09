@@ -92,7 +92,7 @@ enum DeviceState {
 enum ConnectionStatus {
   UP = "up",
   DOWN = "down",
-  DELETE = "delete",
+  DELETE = "removed",
 }
 
 // Current state of the connection.

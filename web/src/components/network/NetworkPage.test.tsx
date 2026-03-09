@@ -27,9 +27,7 @@ import NetworkPage from "~/components/network/NetworkPage";
 
 jest.mock("~/components/network/WifiNetworksList", () => () => <div>WifiNetworksList Mock</div>);
 
-jest.mock("~/components/network/WiredConnectionsList", () => () => (
-  <div>WiredConnectionsList Mock</div>
-));
+jest.mock("~/components/network/ConnectionsTable", () => () => <div>ConnectionsTable Mock</div>);
 
 jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
   <div>NoPersistentConnectionsAlert Mock</div>
@@ -62,9 +60,9 @@ describe("NetworkPage", () => {
     expect(screen.queryByText("NoPersistentConnectionsAlert Mock")).toBeInTheDocument();
   });
 
-  it("renders a section for wired connections", () => {
+  it("renders a section for connections", () => {
     installerRender(<NetworkPage />);
-    expect(screen.queryByText("WiredConnectionsList Mock")).toBeInTheDocument();
+    expect(screen.queryByText("ConnectionsTable Mock")).toBeInTheDocument();
   });
 
   describe("when Wi-Fi support is enabled", () => {

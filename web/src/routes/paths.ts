@@ -29,6 +29,7 @@ const L10N = {
 
 const NETWORK = {
   root: "/network",
+  newConnection: "/network/connections/new",
   editConnection: "/network/connections/:id/edit",
   editBindingSettings: "/network/connections/:id/binding/edit",
   wifiNetwork: "/network/wifi_networks/:ssid",
