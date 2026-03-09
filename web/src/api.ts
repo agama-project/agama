@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,13 +21,14 @@
  */
 
 import { get, patch, post, put } from "~/http";
+import { TranslatedString } from "~/i18n";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Config } from "~/model/config";
 import type { Issue } from "~/model/issue";
 import type { Proposal } from "~/model/proposal";
 import type { Question } from "~/model/question";
 import type { Status } from "~/model/status";
-import type { System } from "~/model/system";
+import type { System, LicenseContent } from "~/model/system";
 import type { Action, L10nSystemConfig, DiscoverISCSIConfig } from "~/model/action";
 import type { AxiosResponse } from "axios";
 
@@ -40,6 +41,9 @@ const getConfig = (): Promise<Config | null> => get("/api/v2/config");
 const getExtendedConfig = (): Promise<Config | null> => get("/api/v2/extended_config");
 
 const getSystem = (): Promise<System | null> => get("/api/v2/system");
+
+const getLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
+  get(`/api/v2/licenses/${id}?lang=${lang}`);
 
 const getProposal = (): Promise<Proposal | null> => get("/api/v2/proposal");
 
@@ -79,13 +83,31 @@ const probeStorageAction = () => postAction({ probeStorage: null });
 
 const discoverISCSIAction = (config: DiscoverISCSIConfig) => postAction({ discoverISCSI: config });
 
+const startInstallation = () => postAction({ install: null });
+
 const finishInstallation = () => postAction({ finish: "reboot" });
+
+type PasswordCheckResult = {
+  success?: number;
+  failure?: TranslatedString;
+};
+
+const passwordCheck = async (password: string): Promise<PasswordCheckResult> => {
+  const response: AxiosResponse<PasswordCheckResult> = await post(
+    "/api/v2/private/password_check",
+    {
+      password,
+    },
+  );
+  return response.data;
+};
 
 export {
   getStatus,
   getConfig,
   getExtendedConfig,
   getSystem,
+  getLicense,
   getProposal,
   getIssues,
   getQuestions,
@@ -99,7 +121,9 @@ export {
   activateStorageAction,
   probeStorageAction,
   discoverISCSIAction,
+  startInstallation,
   finishInstallation,
+  passwordCheck,
 };
 
-export type { Response };
+export type { Response, PasswordCheckResult };

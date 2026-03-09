@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import SmallWarning from "~/components/core/SmallWarning";
-import { checkPassword } from "~/model/users";
+import { passwordCheck } from "~/api";
 import { _, TranslatedString } from "~/i18n";
 
 const MINIMAL_SCORE = 50;
@@ -33,7 +33,7 @@ const PasswordCheck = ({ password }: { password: string }) => {
   useEffect(() => {
     if (!password) return;
 
-    checkPassword(password).then((result) => {
+    passwordCheck(password).then((result) => {
       if (result.failure) {
         setError(result.failure);
       } else if (result.success && result.success < MINIMAL_SCORE) {

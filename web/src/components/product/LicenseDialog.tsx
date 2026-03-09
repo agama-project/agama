@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,8 +23,8 @@
 import React, { useEffect, useState } from "react";
 import { Alert, ModalProps, Stack } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
-import { Product } from "~/types/software";
-import { fetchLicense } from "~/model/software";
+import { Product } from "~/model/system";
+import { getLicense } from "~/api";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { sprintf } from "sprintf-js";
 import supportedLanguages from "~/languages.json";
@@ -56,7 +56,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
 
   useEffect(() => {
     language &&
-      fetchLicense(product.license, language).then(({ body, language: foundLanguage }) => {
+      getLicense(product.license, language).then(({ body, language: foundLanguage }) => {
         setLicense(body);
         setLicenseLanguage(foundLanguage);
       });

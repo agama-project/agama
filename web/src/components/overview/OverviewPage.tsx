@@ -47,17 +47,15 @@ import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import ProductLogo from "~/components/product/ProductLogo";
-import { startInstallation } from "~/model/manager";
+import { startInstallation } from "~/api";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { useDestructiveActions } from "~/hooks/use-destructive-actions";
 import { _ } from "~/i18n";
-
-import type { Product } from "~/types/software";
-
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
+import type { Product } from "~/model/system";
 
 type ConfirmationPopupProps = {
   product: Product;

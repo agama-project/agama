@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -41,5 +41,4 @@ enum SelectedBy {
 }
 
 export type { Proposal, PatternsSelection };
-
 export { SelectedBy };

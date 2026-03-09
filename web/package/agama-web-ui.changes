@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  9 11:05:21 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Remove code to deal with the old HTTP API
+  (gh#agama-project/agama#3258).
+
+-------------------------------------------------------------------
 Mon Mar  9 09:19:30 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Allow downloading the user config (jsc#PED-15453).
