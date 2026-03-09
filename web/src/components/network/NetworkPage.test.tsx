@@ -25,8 +25,6 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
 
-jest.mock("~/components/network/WifiNetworksList", () => () => <div>WifiNetworksList Mock</div>);
-
 jest.mock("~/components/network/ConnectionsTable", () => () => <div>ConnectionsTable Mock</div>);
 
 jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
@@ -63,29 +61,5 @@ describe("NetworkPage", () => {
   it("renders a section for connections", () => {
     installerRender(<NetworkPage />);
     expect(screen.queryByText("ConnectionsTable Mock")).toBeInTheDocument();
-  });
-
-  describe("when Wi-Fi support is enabled", () => {
-    beforeEach(() => {
-      mockSystem.state.wirelessEnabled = true;
-    });
-
-    it("renders the list of Wi-Fi networks", () => {
-      installerRender(<NetworkPage />);
-      expect(screen.queryByText("WifiNetworksList Mock")).toBeInTheDocument();
-    });
-  });
-
-  describe("when Wi-Fi support is disabled", () => {
-    beforeEach(() => {
-      mockSystem.state.wirelessEnabled = false;
-    });
-
-    it("does not render the list of Wi-Fi networks", () => {
-      installerRender(<NetworkPage />);
-      expect(
-        screen.queryByText(/The system does not support Wi-Fi connections/),
-      ).toBeInTheDocument();
-    });
   });
 });
