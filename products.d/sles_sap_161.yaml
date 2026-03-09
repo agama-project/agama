@@ -90,8 +90,10 @@ translations:
         el: Τυπικό
         id: Standar
         ja: 標準
+        ka: სტანდარტული
         kab: Tizeɣt
         ru: Стандартный
+        sv: Standard
         uk: Стандартна
       description:
         bg: Стандартна система
@@ -101,8 +103,10 @@ translations:
         el: Τυπικό σύστημα
         id: Sistem standar
         ja: 標準システム
+        ka: სტანდარტული სისტემა
         kab: Anagraw n tizeɣt
         ru: Стандартная система
+        sv: Standard system
         uk: Стандартна система
     immutable:
       name:
@@ -113,7 +117,9 @@ translations:
         el: Αμετάβλητο
         id: Immutable
         ja: 不変型
+        ka: უცვლადი
         ru: Неизменяемый
+        sv: Oföränderlig
         uk: Незмінний
       description:
         bg: Неизменима система със атомични обновления
@@ -123,7 +129,9 @@ translations:
         el: Αμετάβλητο σύστημα με ατομικές ενημερώσεις
         id: Sistem immutable dengan pembaruan atomik
         ja: 不可分な更新機能を持つ不変型システム
+        ka: უცვლელი სისტემა ატომური განახლებებით
         ru: Неизменяемая система с атомарными обновлениями
+        sv: Oföränderligt system med atomiska uppdateringar
         uk: Незмінна система з атомарними оновленнями
 software:
   installation_repositories: []
