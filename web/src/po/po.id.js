@@ -294,9 +294,6 @@ export default {
   "Before %s": [
     "Sebelum %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Sebelum menginstal, Anda harus membuat beberapa keputusan. Klik pada setiap bagian untuk meninjau pengaturan."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Sebelum memulai penginstalan, Anda perlu mengatasi masalah berikut ini:"
   ],
@@ -924,9 +921,6 @@ export default {
   "Formatted": [
     "Diformat"
   ],
-  "Formatting DASD devices": [
-    "Memformat perangkat DASD"
-  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Enkripsi Disk Penuh (FDE) memungkinkan untuk melindungi informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
@@ -1542,9 +1536,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potensi kehilangan data yang memengaruhi setidaknya %s"
   ],
-  "Pre-installation checks": [
-    "Pemeriksaan pra-instalasi"
-  ],
   "Prefix length or netmask": [
     "Panjang awalan atau netmask"
   ],
@@ -2093,6 +2084,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "Produk akan di-registrasi dengan hostname \"%s\""

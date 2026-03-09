@@ -29,7 +29,7 @@ export default {
     "%1$s %2$s-ზე"
   ],
   "%1$s keyboard - %2$s timezone": [
-    ""
+    "%1$s კლავიატურა - %2$s დროის სარტყელი"
   ],
   "%1$s will be created as a partition at %2$s": [
     "%1$s შეიქმნება დანაყოფის სახით %2$s-ზე",
@@ -60,7 +60,7 @@ export default {
     "%s - %s"
   ],
   "%s and %d others": [
-    ""
+    "%s და კიდევ %d"
   ],
   "%s and %s": [
     "%s და %s"
@@ -286,7 +286,7 @@ export default {
     "LUN-ების ავტომატური სკანირება"
   ],
   "Auto and manual": [
-    ""
+    "ავტო და ხელით"
   ],
   "Automatic": [
     "ავტომატური"
@@ -318,9 +318,6 @@ export default {
   "Before %s": [
     "%s-მდე"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    ""
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "დაყენების დაწყებამდე საჭიროა შემდეგი პრობლემების გადაწყვეტა:"
   ],
@@ -349,7 +346,7 @@ export default {
     "ჩატვირთვის პარამეტრები"
   ],
   "Breadcrumbs": [
-    ""
+    "ნავიგაციის პანელი"
   ],
   "Btrfs": [
     "Btrfs"
@@ -358,13 +355,13 @@ export default {
     "Btrfs სწრაფი ასლებით"
   ],
   "By proceeding, the installation will begin with defined settings.": [
-    ""
+    "თუ გააგრძელებთ, დაყენება აღწერილი პარამეტრებით დაიწყება."
   ],
   "CHAP authentication performed by the target": [
     "სამიზნის მიერ შესრულებული CHAP ავთენტიკაცია"
   ],
   "CPU": [
-    ""
+    "CPU"
   ],
   "Cancel": [
     "გაუქმება"
@@ -654,7 +651,7 @@ export default {
     "DHCP და %s"
   ],
   "DHCP, %s": [
-    ""
+    "DHCP, %s"
   ],
   "DIAG": [
     "დიაგ"
@@ -705,7 +702,7 @@ export default {
     "მიმდინარე შემცველობის წაშლა"
   ],
   "Delete existing data and install %s?": [
-    ""
+    "წაიშალოს არსებული მონაცემები და დავაყენო %s?"
   ],
   "Delete volume group": [
     "ტომების ჯგუფის წაშლა"
@@ -773,6 +770,9 @@ export default {
   "Do not format %s and keep the data": [
     "%s-ის არდაფორმატებადა მონაცემების შენარჩუნება"
   ],
+  "Do not register": [
+    "რეგისტრაციის გარეშე"
+  ],
   "Do not use": [
     "არ გამოიყენო"
   ],
@@ -780,7 +780,7 @@ export default {
     "ჟურნალის გადმოწერა"
   ],
   "Download logs to troubleshoot or share with support.": [
-    ""
+    "ჟურნალის გადმოწერა პრობლემების გადასაჭრელად, ან მხარდაჭერის გუნდთან გასაზიარებლად."
   ],
   "Edit": [
     "ჩასწორება"
@@ -807,7 +807,7 @@ export default {
     "ცარიელი LVM ტომების ჯგუფი %s"
   ],
   "Enable mutual verification": [
-    ""
+    "ორმხრივი გადამოწმების ჩართვა"
   ],
   "Encrypt the system": [
     "სისტემის დაშიფვრა"
@@ -955,8 +955,8 @@ export default {
   "Formatted": [
     "დაფორმატებული"
   ],
-  "Formatting DASD devices": [
-    "DASD მოწყობილობების დაფორმატება"
+  "Formatting devices": [
+    "მოწყობილობების დაფორმატება"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     ""
@@ -1017,7 +1017,7 @@ export default {
     "IP-ის მორგება"
   ],
   "IPs": [
-    ""
+    "IP-ები"
   ],
   "IPv4": [
     "IPv4"
@@ -1032,7 +1032,7 @@ export default {
     "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ ეს და გადახედეთ საცავის პარამეტრებს."
   ],
   "If you are unsure, check and adjust the storage settings.": [
-    ""
+    "თუ დარწმუნებული არ ბრძანებით, შეამოწმეთ და გაასწორეთ საცავის პარამეტრები."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     ""
@@ -1059,7 +1059,7 @@ export default {
     "დაყენება ახლავე"
   ],
   "Install now with potential data loss": [
-    ""
+    "დაყენება ახლავე პოტენციური მონაცემთა კარგვით"
   ],
   "Installation complete": [
     "დაყენება დასრულდა"
@@ -1080,7 +1080,7 @@ export default {
     "დაყენების მორგება"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
-    ""
+    "დაყენების პარამეტრები ავტომატურად განახლდება, რომ დაემთხვეს ახალი პროდუქტის ნაგულისხმევ მნშვნელობებს."
   ],
   "Installation will take %s.": [
     "დაყენებას დასჭირდება %s."
@@ -1104,7 +1104,7 @@ export default {
     "არასწორი საცავის პარამეტრები"
   ],
   "Ip prefix or netmask": [
-    "IP პრეფიქსი ან ქსელის ნიღაბი"
+    "ip პრეფიქსი ან ქსელის ნიღაბი"
   ],
   "Issue date": [
     "გამოცემის თარიღი"
@@ -1161,7 +1161,7 @@ export default {
     "LUN"
   ],
   "LVM": [
-    ""
+    "LVM"
   ],
   "Label": [
     "ჭდე"
@@ -1179,7 +1179,7 @@ export default {
     "დაყენების პროგრამისთვის ზომის შეთავაზების უფლების დართვა"
   ],
   "License acceptance is required to continue.": [
-    ""
+    "გასაგრძელებლად ლიცენზიაზე თანხმობა აუცილებელია."
   ],
   "License acceptance required": [
     "აუცილებელია ლიცენზიაზე დათანხმება"
@@ -1236,7 +1236,7 @@ export default {
     "მაქს. არხი"
   ],
   "Memory": [
-    ""
+    "მეხსიერება"
   ],
   "MiB": [
     "მიბ"
@@ -1245,7 +1245,7 @@ export default {
     "მინ. არხი"
   ],
   "Missing": [
-    ""
+    "ნაკლული"
   ],
   "Mode": [
     "რეჟიმი"
@@ -1257,7 +1257,7 @@ export default {
     "პარამეტრების და ფიზიკური ტომების შეცვლა"
   ],
   "More": [
-    ""
+    "მეტი"
   ],
   "More actions": [
     "მეტი ქმედება"
@@ -1269,7 +1269,7 @@ export default {
     "დაყენების პროგრამის მეტი პარამეტრები"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
-    ""
+    "მონიშნული პროდუქტისთვის მეტი კლავიატურის რუკა შეიძლება, ხელმისაწვდომი იყოს [ლოკალიზაციის] გვერდზე"
   ],
   "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
     ""
@@ -1337,7 +1337,7 @@ export default {
     "სახელი"
   ],
   "Needs about %s": [
-    ""
+    "საჭიროა დაახლ %s"
   ],
   "Network": [
     "ქსელი"
@@ -1373,7 +1373,7 @@ export default {
     "შემცველობა აღმოჩენილი არაა"
   ],
   "No data loss is expected": [
-    ""
+    "მონაცემთა კარგვა მოსალოდნელი არაა"
   ],
   "No device is currently using this connection.": [
     "ამ კავშირს, ამჟამად, არც ერთი მოწყობილობა იყენებს."
@@ -1418,7 +1418,7 @@ export default {
     "სამიზნეები ხელმისაწვდომი არაა"
   ],
   "No targets have been discovered or configured.": [
-    ""
+    "სამიზნეები აღმოჩენილი, ან მორგებული არ ყოფილა."
   ],
   "No targets matches filters": [
     "ფილტრს სამიზნე არ ემთხვევა"
@@ -1430,7 +1430,7 @@ export default {
     "სწორი მისამართის გარეშე."
   ],
   "No valid port.": [
-    ""
+    "სწორი პორტის გარეშე."
   ],
   "No wired connections were found": [
     "მავთულიანი მიერთება აღმოჩენილი არაა"
@@ -1586,25 +1586,25 @@ export default {
     "პორტალი"
   ],
   "Potential data loss": [
-    ""
+    "პოტენციური მონაცემთა კარგვა"
   ],
   "Potential data loss affecting at least %s": [
-    ""
-  ],
-  "Pre-installation checks": [
-    "დაყენებისწინა შემოწმებები"
+    "პოტენციური მონაცემთა კარგვა, რომელიც, მინიმუმ, ეხება სისტემას %s"
   ],
   "Prefix length or netmask": [
     "პრეფიქსის სიგრძე ან ნეტმასკა"
   ],
   "Proceeding may result in data loss": [
-    ""
+    "გაგრძელებამ, შეიძლება, მონაცემთა კარგვა გამოიწვიოს"
   ],
   "Proceeding will delete existing data, including %s": [
-    ""
+    "გაგრძელება წაშლის არსებულ მონაცემებს, %s-ის ჩათვლით"
   ],
   "Product is already registered": [
     "პროდუქტი უკვე რეგისტრირებულია"
+  ],
+  "Product not found": [
+    "პროდუქტი აღმოჩენილი არაა"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     ""
@@ -1643,7 +1643,7 @@ export default {
     "გადატვირთვა"
   ],
   "Reboot to try again.": [
-    ""
+    "თავიდან საცდელად გადატვირთეთ."
   ],
   "Recommended": [
     "რეკომენდებულია"
@@ -1694,11 +1694,11 @@ export default {
     "რეპოზიტორიის ჩატვირთვა ჩავარდა"
   ],
   "Required packages": [
-    ""
+    "აუცილებელი პაკეტები"
   ],
   "Required packages and %s pattern": [
-    "",
-    ""
+    "აუცილებელი პაკეტები და %s ნიმუში",
+    "აუცილებელი პაკეტები და %s ნიმუში"
   ],
   "Rescan devices": [
     "მოწყობილობების თავიდან სკანირება"
@@ -1728,13 +1728,13 @@ export default {
     "გადახედვა და დაყენება"
   ],
   "Root login with SSH key": [
-    ""
+    "Root-ის შესვლა SSH გასაღებით"
   ],
   "Root login with password": [
     "Root-ით შესვლა პაროლით"
   ],
   "Root login with password and SSH key": [
-    ""
+    "Root-ის შესვლა პაროლით და SSH გასაღებით"
   ],
   "Root user": [
     "Root მომხმარებელი"
@@ -1970,7 +1970,7 @@ export default {
     "სტატუსი"
   ],
   "Status filter toggle": [
-    ""
+    "სტატუსის ფილტრის გადრთვა"
   ],
   "Step %1$d of %2$d": [
     "ნაბიჯი %1$d %2$d-დან"
@@ -1988,7 +1988,7 @@ export default {
     "Swap"
   ],
   "Switch to a different mode": [
-    ""
+    "სხვა რეჟიმზე გადართვა"
   ],
   "Switch to a different mode or another product": [
     "გადართვა სხვა პროდუქტზე, ან რეჟიმზე",
@@ -2014,10 +2014,10 @@ export default {
     "სამიზნე"
   ],
   "Target not found": [
-    ""
+    "სამიზნე აღმოჩენილი არაა"
   ],
   "Temporary name that may change after reboot or network changes": [
-    ""
+    "დროებითი სახელი, რომელიც შეიძლება, შეიცვალოს გადატვირთვის, ან ქსელის ცვლილების შემდეგ"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM ჯგუფი '%1$s' დარჩება დისკზე '%2$s'"
@@ -2158,6 +2158,9 @@ export default {
     "პაროლი სუსტია"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
+    ""
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     ""
   ],
   "The product will be registered with \"%s\" hostname": [
@@ -2484,7 +2487,7 @@ export default {
     "გამოიყენება გარდამავლი ჰოსტის სახელი: %s"
   ],
   "View license": [
-    ""
+    "ლიცენზიის ნახვა"
   ],
   "Volume group %s": [
     "ტომების ჯგუფი %s"
@@ -2502,7 +2505,7 @@ export default {
     "WWPN"
   ],
   "Wait until current operations are completed.": [
-    ""
+    "მოითმინეთ, სანამ მიმდინარე ოპერაციები არ დასრულდება."
   ],
   "Waiting for a mount point": [
     "მიმაგრების წერტილის მოლოდინი"
@@ -2553,7 +2556,7 @@ export default {
     "შეგიძლიათ, გადატვირთოთ მანაქანა და შეხვიდეთ ახალ სისტემაში."
   ],
   "You can safely close this window.": [
-    ""
+    "ეს ფანჯარა შეგიძლიათ, უსაფრთხოდ დახუროთ."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     ""
@@ -2565,7 +2568,7 @@ export default {
     ""
   ],
   "You need to fix any invalid settings before proceeding with the installation.": [
-    ""
+    "დაყენების დაწყებამდე ყველა არასწორი პარამეტრი უნდა გაასწოროთ."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     ""
@@ -2595,7 +2598,7 @@ export default {
     "iSCSI"
   ],
   "immutable Btrfs": [
-    ""
+    "უცვლადი Btrfs"
   ],
   "logical volume": [
     "ლოგიკური ტომი"
@@ -2610,7 +2613,7 @@ export default {
     "ჩამოყრა ნაგულისხმევზე"
   ],
   "root": [
-    ""
+    "root"
   ],
   "zFCP": [
     "zFCP"

@@ -236,9 +236,6 @@ export default {
   "Before %s": [
     "Před %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Před zahájením instalace bude nutné provést několik rozhodnutí. Pro kontrolu nastavení klikněte na každou část zvlášt."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Před zahájením instalace vyřešte tyto problémy:"
   ],
@@ -711,9 +708,6 @@ export default {
   ],
   "Formatted": [
     "Formátován"
-  ],
-  "Formatting DASD devices": [
-    "Formátuji zařízení DASD"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Šifrování celého disku (FDE) umožňuje chránit informace uložené na nových souborových systémech, včetně dat, programů a systémových souborů."
@@ -1221,9 +1215,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Možná ztráta dat týkající se alespoň %s"
   ],
-  "Pre-installation checks": [
-    "Kontrola před instalací"
-  ],
   "Prefix length or netmask": [
     "Délka předpony nebo maska sítě"
   ],
@@ -1696,6 +1687,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Dokáže-li čip TPM ověřit integritu systému, nebude heslo pro spuštění systému a přístup k datům potřebné. Zapečetění TPM vyžaduje, aby byl nový systém spuštěn hned při prvním použití."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "Produkt bude zaregistrován se jménem hostitele \"%s\""

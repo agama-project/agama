@@ -255,9 +255,6 @@ export default {
   "Before %s": [
     "变更前为 %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "安装前，您必须做出某些决定。请单击各个部分查看设置。"
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "在开始安装前，您需要解决下列问题："
   ],
@@ -774,9 +771,6 @@ export default {
   "Formatted": [
     "已格式化"
   ],
-  "Formatting DASD devices": [
-    "正在格式化 DASD 设备"
-  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "全盘加密 (FDE) 可用于保护存储在新文件系统中的信息，包括数据、程序以及系统文件。"
   ],
@@ -1290,9 +1284,6 @@ export default {
   "Potential data loss affecting at least %s": [
     ""
   ],
-  "Pre-installation checks": [
-    "安装前检查"
-  ],
   "Prefix length or netmask": [
     "前缀长度或网络掩码"
   ],
@@ -1760,6 +1751,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     ""

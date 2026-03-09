@@ -305,9 +305,6 @@ export default {
   "Before %s": [
     "Πριν %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Πριν την εγκατάσταση, πρέπει να λάβετε κάποιες αποφάσεις. Κάντε κλικ σε κάθε ενότητα για να ελέγξετε τις ρυθμίσεις."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Πριν ξεκινήσετε την εγκατάσταση, πρέπει να επιλύσετε τα ακόλουθα προβλήματα:"
   ],
@@ -939,9 +936,6 @@ export default {
   "Formatted": [
     "Διαμορφωμένο"
   ],
-  "Formatting DASD devices": [
-    "Διαμόρφωση συσκευών DASD"
-  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Η Πλήρης Κρυπτογράφηση Δίσκου (FDE) επιτρέπει την προστασία των πληροφοριών που αποθηκεύονται στα νέα συστήματα αρχείων, συμπεριλαμβανομένων των δεδομένων, των προγραμμάτων και των αρχείων συστήματος."
   ],
@@ -1560,9 +1554,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Πιθανή απώλεια δεδομένων που επηρεάζει τουλάχιστον το %s"
   ],
-  "Pre-installation checks": [
-    "Έλεγχοι προ-εγκατάστασης"
-  ],
   "Prefix length or netmask": [
     "Μήκος προθέματος ή μάσκα δικτύου"
   ],
@@ -2122,6 +2113,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Ο κωδικός πρόσβασης δεν θα απαιτείται για την εκκίνηση και την πρόσβαση στα δεδομένα εάν το TPM μπορεί να επαληθεύσει την ακεραιότητα του συστήματος. Η σφράγιση (sealing) TPM απαιτεί την απευθείας εκκίνηση του νέου συστήματος κατά την πρώτη του εκτέλεση."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "Το προϊόν θα εγγραφεί με το όνομα συστήματος (hostname) «%s»"

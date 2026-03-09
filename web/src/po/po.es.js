@@ -261,9 +261,6 @@ export default {
   "Before %s": [
     "Antes de %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Antes de instalar, tiene que tomar algunas decisiones. Haga clic en cada sección para revisar la configuración."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Antes de comenzar la instalación, debe solucionar los siguientes problemas:"
   ],
@@ -796,9 +793,6 @@ export default {
   ],
   "Formatted": [
     "Formateado"
-  ],
-  "Formatting DASD devices": [
-    "Formatear dispositivos DASD"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "El cifrado completo del disco (FDE) permite proteger la información almacenada en los nuevos sistemas de archivos, incluidos datos, programas y archivos del sistema."
@@ -1337,9 +1331,6 @@ export default {
   "Potential data loss affecting at least %s": [
     ""
   ],
-  "Pre-installation checks": [
-    "Comprobaciones previas a la instalación"
-  ],
   "Prefix length or netmask": [
     "Longitud del prefijo o máscara de red"
   ],
@@ -1821,6 +1812,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "La contraseña no será necesaria para arrancar y acceder a los datos si TPM puede verificar la integridad del sistema. El sellado TPM requiere que el nuevo sistema se arranque directamente en su primera ejecución."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "El producto se registrará con el nombre de host \"%s\""

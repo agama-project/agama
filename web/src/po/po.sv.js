@@ -9,6 +9,9 @@ export default {
   "\"%s\" does not exist or is no longer available.": [
     "\"%s\" existrerar inte eller är inte längre tillgänglig."
   ],
+  "%1$d of %2$d devices match filters": [
+    "%1$d av %2$d enheter av matchar filtret"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -17,6 +20,10 @@ export default {
   ],
   "%1$s and %2$s": [
     "%1$s och %2$s"
+  ],
+  "%1$s and [%2$d more]": [
+    "%1$s och [%2$d mer]",
+    "%1$s och [%2$d mera]"
   ],
   "%1$s at %2$s": [
     "%1$s på %2$s"
@@ -31,8 +38,23 @@ export default {
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
     "%1$s kommer fortfarande att innehålla LVM-gruppen '%2$s' och eventuell partition som behövs för att starta systemet"
   ],
+  "%1$s, %2$s and [%3$d more]": [
+    "%1$s, %2$s och [%3$d mer]",
+    "%1$s, %2$s och [%3$d mera]"
+  ],
+  "%d devices available": [
+    "%d enheter tillgängliga"
+  ],
+  "%d mode available": [
+    "%d läge tillgängligt",
+    "%d lägen tillgängliga"
+  ],
   "%d of %d": [
     "%d av %d"
+  ],
+  "%d other mode available": [
+    "%d annat läge tillgängligt",
+    "%d andra lägen tillgängliga"
   ],
   "%s - %s": [
     "%s - %s"
@@ -42,6 +64,9 @@ export default {
   ],
   "%s and %s": [
     "%s och %s"
+  ],
+  "%s at portal %s does not exist or cannot be reached.": [
+    "%s vid portal %s existerar inte eller kan inte nås."
   ],
   "%s disk": [
     "%s disk"
@@ -70,8 +95,8 @@ export default {
     "(steg %s av %s)"
   ],
   "1 device selected. Use the actions toolbar to apply changes.": [
-    "",
-    ""
+    "1 vald enhet. Använd åtgärdsfältet för att tillämpa ändringarna.",
+    "%s valda enheter. Använd åtgärdsfältet för att tillämpa ändringarna."
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "En %1$s av %2$s kommer att skapas för %3$s om möjligt"
@@ -120,6 +145,13 @@ export default {
   "Actions": [
     "Åtgärder"
   ],
+  "Actions for %s at portal %s": [
+    "Åtgärder för %s vid portal %s"
+  ],
+  "Actions for the selected device:": [
+    "Åtgärder för den valda enheten:",
+    "Åtgärder för det %s valda enheterna:"
+  ],
   "Activate": [
     "Aktivera"
   ],
@@ -137,6 +169,9 @@ export default {
   ],
   "Activated": [
     "Aktiverad"
+  ],
+  "Active": [
+    "Aktiv"
   ],
   "Add": [
     "Lägg till"
@@ -168,6 +203,9 @@ export default {
   "Add or use partition": [
     "Lägg till eller använd en partition"
   ],
+  "Additional CHAP authentication performed by the initiator": [
+    "Ytterligare CHAP-autentisering utförd av initiativtagaren"
+  ],
   "Address": [
     "Adresser"
   ],
@@ -180,6 +218,9 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Justera inställningarna nedan för att få det nya systemet att passa in i det tillgängliga utrymmet."
   ],
+  "All": [
+    "Alla"
+  ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "Alla konflikter har lösts, eller så har inga upptäckts. Du kan tryggt fortsätta med din installation."
   ],
@@ -191,6 +232,9 @@ export default {
   ],
   "All fields are required": [
     "Alla fält krävs"
+  ],
+  "All fields are required.": [
+    "Alla fält krävs."
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alla nätverksanslutningar som hanteras via det här gränssnittet är för närvarande inställda på att endast användas under installationen och kommer inte att kopieras till det installerade systemet"
@@ -274,9 +318,6 @@ export default {
   "Before %s": [
     "Före %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Innan du installerar måste du fatta vissa beslut. Klicka på varje avsnitt för att granska inställningarna."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Innan du startar installationen måste du åtgärda följande problem:"
   ],
@@ -316,14 +357,23 @@ export default {
   "By proceeding, the installation will begin with defined settings.": [
     "Genom att fortsätta startar installationen med definierade inställningar."
   ],
+  "CHAP authentication performed by the target": [
+    "CHAP-autentisering utförd av målet"
+  ],
   "CPU": [
     "Processor"
   ],
   "Cancel": [
     "Avbryt"
   ],
+  "Cancel connection": [
+    "Avbryt anslutning"
+  ],
   "Cannot be changed in remote installation": [
     "Kan inte ändras i fjärrinstallation"
+  ],
+  "Cannot connect": [
+    "Kan inte ansluta"
   ],
   "Cannot format %s": [
     "Kan inte formatera %s"
@@ -355,8 +405,14 @@ export default {
   "Change keyboard layout": [
     "Ändra tangentbordslayout"
   ],
+  "Change mode": [
+    "Ändra läge"
+  ],
   "Change product": [
     "Ändra produkt"
+  ],
+  "Change product or mode": [
+    "Ändra produkt eller läge"
   ],
   "Change selection": [
     "Ändra val"
@@ -376,8 +432,14 @@ export default {
   "Change the file system or mount point": [
     "Ändra filsystemet eller monteringspunkten"
   ],
+  "Change to %s": [
+    "Ändra till %s"
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Ändringar i dessa inställningar kommer omedelbart att uppdatera avsnittet \"Resultat\" nedan."
+  ],
+  "Channel": [
+    "Kanal"
   ],
   "Channel ID": [
     "Kanal-ID"
@@ -388,8 +450,18 @@ export default {
   "Check the following before continuing": [
     "Kontrollera följande innan du fortsätter"
   ],
+  "Check whether Agama server is running.": [
+    "Kontrollera om Agama-servern körs."
+  ],
   "Choose a disk for placing the boot loader": [
     "Välj en disk för att placera uppstartsladdaren"
+  ],
+  "Choose a mode": [
+    "Välj ett läge"
+  ],
+  "Choose a product": [
+    "Välj en produkt",
+    "Välj från %d tillgängliga produkter"
   ],
   "Choose device to bind by MAC": [
     "Välj enhet att binda via MAC"
@@ -414,6 +486,9 @@ export default {
   ],
   "Close": [
     "Stäng"
+  ],
+  "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
+    "Konfiguration läst från iSCSI Boot Firmware Table (iBFT). Initieraren kan inte ändras."
   ],
   "Configuration unreachable or invalid": [
     "Konfigurationen är oåtkomlig eller ogiltig"
@@ -473,6 +548,9 @@ export default {
   "Confirm that you really want to continue.": [
     "Bekräfta att du verkligen vill fortsätta."
   ],
+  "Confirm the product selection.": [
+    "Bekräfta produktval."
+  ],
   "Connect": [
     "Anslut"
   ],
@@ -481,6 +559,9 @@ export default {
   ],
   "Connected": [
     "Ansluten"
+  ],
+  "Connected by the system": [
+    "Ansluten av systemet"
   ],
   "Connected device": [
     "Ansluten enhet"
@@ -496,6 +577,9 @@ export default {
   ],
   "Connection details": [
     "Anslutningsdetaljer"
+  ],
+  "Connection failed": [
+    "Anslutningen misslyckades"
   ],
   "Connection is available to all devices.": [
     "Anslutning är tillgänglig för alla enheter."
@@ -550,6 +634,9 @@ export default {
   ],
   "Current partitions will be kept": [
     "Nuvarande partitioner kommer att behållas"
+  ],
+  "Current selection": [
+    "Nuvarande val"
   ],
   "Custom": [
     "Anpassad"
@@ -656,8 +743,17 @@ export default {
   "Disconnected": [
     "Frånkopplad"
   ],
+  "Disconnected by the system": [
+    "Frånkopplad av systemet"
+  ],
+  "Disconnection failed": [
+    "Frånkoppling misslyckades"
+  ],
   "Discover and connect to iSCSI targets": [
     "Upptäck och anslut till iSCSI mål"
+  ],
+  "Discover targets": [
+    "Upptäck mål"
   ],
   "Disk": [
     "Disk"
@@ -674,6 +770,9 @@ export default {
   "Do not format %s and keep the data": [
     "Formatera inte %s och behåll data"
   ],
+  "Do not register": [
+    "Registrera inte"
+  ],
   "Do not use": [
     "Använd inte"
   ],
@@ -681,13 +780,16 @@ export default {
     "Ladda ner loggar"
   ],
   "Download logs to troubleshoot or share with support.": [
-    ""
+    "Ladda ner loggar för att felsöka eller dela med support."
   ],
   "Edit": [
     "Redigera"
   ],
   "Edit binding settings": [
     "Redigera bindningsinställningar"
+  ],
+  "Edit connection": [
+    "Redigera anslutning"
   ],
   "Edit connection settings": [
     "Redigera anslutningsinställningar"
@@ -705,7 +807,7 @@ export default {
     "Tom LVM volymgrupp %s"
   ],
   "Enable mutual verification": [
-    ""
+    "Aktivera ömsesidig verifiering"
   ],
   "Encrypt the system": [
     "Kryptera systemet"
@@ -853,8 +955,8 @@ export default {
   "Formatted": [
     "Formaterad"
   ],
-  "Formatting DASD devices": [
-    "Formaterar DASD-enheter"
+  "Formatting devices": [
+    "Formaterar enheter"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Heldiskkryptering (FDE) gör det möjligt att skydda informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
@@ -870,6 +972,9 @@ export default {
   ],
   "GiB": [
     "GiB"
+  ],
+  "Go to iSCSI": [
+    "Gå till iSCSI"
   ],
   "Go to network page": [
     "Gå till nätverkssidan"
@@ -938,6 +1043,12 @@ export default {
   "Initiator name": [
     "Initiativtagarens namn"
   ],
+  "Initiator password": [
+    "Initiativtagarens lösenord"
+  ],
+  "Initiator user name": [
+    "Initiativtagarens användarnamn"
+  ],
   "Install": [
     "Installera"
   ],
@@ -950,8 +1061,14 @@ export default {
   "Install now with potential data loss": [
     "Installera nu med potentiell dataförlust"
   ],
+  "Installation complete": [
+    "Installationen slutfördes"
+  ],
   "Installation devices": [
     "Installations enheter"
+  ],
+  "Installation failed": [
+    "Installation misslyckades"
   ],
   "Installation in progress": [
     "Installation pågår"
@@ -963,7 +1080,7 @@ export default {
     "Installationsinställningar"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
-    ""
+    "Installationsinställningarna uppdateras automatiskt för att matcha den nya produktens standardinställningar."
   ],
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
@@ -980,11 +1097,14 @@ export default {
   "Invalid settings": [
     "Ogiltiga inställningar"
   ],
+  "Invalid software selection": [
+    "Ogiltigt programval"
+  ],
   "Invalid storage settings": [
     "Ogiltiga lagringsinställningar"
   ],
   "Ip prefix or netmask": [
-    "IP prefix eller nätmask"
+    "Ip prefix eller nätmask"
   ],
   "Issue date": [
     "Utgivningsdatum"
@@ -1059,7 +1179,10 @@ export default {
     "Låt installationsprogrammet föreslå en vettig storlek"
   ],
   "License acceptance is required to continue.": [
-    ""
+    "Godkännande av licensvillkor krävs för att fortsätta."
+  ],
+  "License acceptance required": [
+    "Licensgodkännande krävs"
   ],
   "Loading": [
     "Laddar"
@@ -1077,7 +1200,7 @@ export default {
     "Lokalisering"
   ],
   "Locked targets cannot be managed from here and do not offer any actions.": [
-    ""
+    "Låsta mål kan inte hanteras härifrån och erbjuder inga åtgärder."
   ],
   "Log in": [
     "Logga in"
@@ -1122,7 +1245,7 @@ export default {
     "Minimum kanal"
   ],
   "Missing": [
-    ""
+    "Saknas"
   ],
   "Mode": [
     "Läge"
@@ -1134,13 +1257,16 @@ export default {
     "Modifiera inställningar och fysiska volymer"
   ],
   "More": [
-    ""
+    "Mer"
   ],
   "More actions": [
     "Mer åtgärder"
   ],
   "More devices": [
     "Mer enheter"
+  ],
+  "More installer options": [
+    "Mer installationsalternativ"
   ],
   "More keymap layout might be available for the selected product at [Localization] page": [
     "Fler tangentbordslayouter kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
@@ -1228,6 +1354,9 @@ export default {
   "No": [
     "Nej"
   ],
+  "No DASD devices found in this machine.": [
+    "Inga DASD-enheter hittades i den här maskinen."
+  ],
   "No Wi-Fi networks were found": [
     "Inga Wi-Fi-nätverk hittades"
   ],
@@ -1261,6 +1390,18 @@ export default {
   "No devices found": [
     "Inga enheter hittades"
   ],
+  "No devices match filters": [
+    "Inga enheter matchar filtren"
+  ],
+  "No devices selected. Select one or more devices to perform bulk actions.": [
+    "Inga enheter valda. Välj en eller flera enheter för att utföra massåtgärder."
+  ],
+  "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
+    "Ingen iSCSI Boot Firmware Table (iBFT) hittades. Initieraren kan [konfigureras manuellt.]"
+  ],
+  "No information available yet": [
+    "Ingen information tillgänglig ännu"
+  ],
   "No logical volumes are defined yet": [
     "Inga logiska volymer är definierade ännu"
   ],
@@ -1273,14 +1414,23 @@ export default {
   "No support is planned.": [
     "Inget stöd är planerat."
   ],
+  "No targets available": [
+    "Inga mål tillgängliga"
+  ],
   "No targets have been discovered or configured.": [
-    ""
+    "Inga mål har upptäckts eller konfigurerats."
+  ],
+  "No targets matches filters": [
+    "Inga mål matchar filterna"
   ],
   "No user defined yet.": [
     "Ingen användare definierad ännu."
   ],
+  "No valid address.": [
+    "Ingen giltig adress."
+  ],
   "No valid port.": [
-    ""
+    "Ingen giltig port."
   ],
   "No wired connections were found": [
     "Inga trådbundna anslutningar hittades"
@@ -1332,6 +1482,9 @@ export default {
   ],
   "Not supported (%s)": [
     "Stöds inte (%s)"
+  ],
+  "Offline": [
+    "Offline"
   ],
   "On boot": [
     "Vid uppstart"
@@ -1414,6 +1567,9 @@ export default {
   "Pending": [
     "Väntar"
   ],
+  "Perform a discovery to find available iSCSI targets.": [
+    "Utför en identifiering för att hitta tillgängliga iSCSI-mål."
+  ],
   "PiB": [
     "PiB"
   ],
@@ -1435,9 +1591,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potentiell dataförlust som påverkar minst %s"
   ],
-  "Pre-installation checks": [
-    "Förinstallationskontroller"
-  ],
   "Prefix length or netmask": [
     "Prefix längd eller nätmask"
   ],
@@ -1450,8 +1603,14 @@ export default {
   "Product is already registered": [
     "Produkten är redan registrerad"
   ],
+  "Product not found": [
+    "Produkt hittades inte"
+  ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Skydd för informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
+  ],
+  "Provide authentication": [
+    "Tillhandahåll autentisering"
   ],
   "Provide email address": [
     "Ange en e-postadress"
@@ -1474,11 +1633,17 @@ export default {
   "Question": [
     "Fråga"
   ],
+  "Read only": [
+    "Läs endast"
+  ],
   "Read zFCP devices": [
     "Läs zFCP-enheter"
   ],
   "Reboot": [
     "Starta om"
+  ],
+  "Reboot to try again.": [
+    "Starta om för att försöka igen."
   ],
   "Recommended": [
     "Rekommenderad"
@@ -1497,6 +1662,9 @@ export default {
   ],
   "Registered": [
     "Registrerad"
+  ],
+  "Registered without a code": [
+    "Registrerad utan en kod"
   ],
   "Registration": [
     "Registrering"
@@ -1556,6 +1724,9 @@ export default {
   "Review and fix": [
     "Granska och åtgärda"
   ],
+  "Review and install": [
+    "Granska och installera"
+  ],
   "Root login with SSH key": [
     "Root-inloggning med SSH-nyckel"
   ],
@@ -1607,6 +1778,9 @@ export default {
   "Select": [
     "Välj"
   ],
+  "Select %s": [
+    "Välj %s"
+  ],
   "Select a device to define partitions or to mount": [
     "Välj en enhet för att definiera partitioner eller för att montera"
   ],
@@ -1616,8 +1790,24 @@ export default {
   "Select a disk to define partitions or to mount": [
     "Välj en disk för att definiera partitioner eller för att montera"
   ],
+  "Select a mode": [
+    "Välj ett läge"
+  ],
+  "Select a mode and confirm your choice.": [
+    "Välj ett läge och bekräfta ditt val."
+  ],
   "Select a product": [
     "Välj en produkt"
+  ],
+  "Select a product and confirm your choice.": [
+    "Välj en produkt och bekräfta ditt val.",
+    "Välj en produkt och bekräfta ditt val i slutet av listan."
+  ],
+  "Select a product mode to continue.": [
+    "Välj ett produktläge för att fortsätta."
+  ],
+  "Select a product to continue.": [
+    "Välj en produkt för att fortsätta."
   ],
   "Select a solution to continue": [
     "Välj en lösning för att fortsätta"
@@ -1633,6 +1823,9 @@ export default {
   ],
   "Select device": [
     "Välj enhet"
+  ],
+  "Select devices to perform bulk actions": [
+    "Välj enheter för att utföra massåtgärder"
   ],
   "Select or enter a mount point": [
     "Välj eller ange en monteringspunkt"
@@ -1777,7 +1970,7 @@ export default {
     "Status"
   ],
   "Status filter toggle": [
-    ""
+    "Statusfilterväxel"
   ],
   "Step %1$d of %2$d": [
     "Steg %1$d av %2$d"
@@ -1795,7 +1988,15 @@ export default {
     "Swap"
   ],
   "Switch to a different mode": [
-    ""
+    "Växla till ett annat läge"
+  ],
+  "Switch to a different mode or another product": [
+    "Ändra till ett annat läge eller en annan produkt",
+    "Ändra till ett annat läge eller någon av dom %d tillgängliga produkterna"
+  ],
+  "Switch to another product": [
+    "Ändra till en annan produkt",
+    "Ändra till en av %d andra tillgängliga produkter"
   ],
   "System Information": [
     "Systeminformation"
@@ -1809,8 +2010,11 @@ export default {
   "Take a moment to review the installation settings below and adjust them as needed.": [
     "Ta en stund för att granska installationsinställningarna nedan och justera dem efter behov."
   ],
+  "Target": [
+    "Mål"
+  ],
   "Target not found": [
-    ""
+    "Målet hittades inte"
   ],
   "Temporary name that may change after reboot or network changes": [
     "Temporärt namn som kan ändras efter omstart eller nätverksändringar"
@@ -1919,6 +2123,9 @@ export default {
   "The initiator name cannot be blank": [
     "Initiatornamnet kan inte vara tomt"
   ],
+  "The installer interface is no longer available.": [
+    "Installationsgränssnittet är inte längre tillgängligt."
+  ],
   "The installer requires [root] user privileges.": [
     "Installationsprogrammet kräver [root] användarrättigheter."
   ],
@@ -1952,6 +2159,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "Produkten kommer att registreras med \"%s\" värdnamn"
@@ -2001,6 +2211,9 @@ export default {
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
     "Systemet stöder inte WiFi-anslutningar, förmodligen på grund av saknad eller inaktiverad hårdvara."
   ],
+  "The system is rebooting": [
+    "Systemet startar om"
+  ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
   ],
@@ -2029,6 +2242,12 @@ export default {
   ],
   "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
     "Det här är inställningarna för produkten som ska installeras. Installationsspråket kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
+  ],
+  "This action will destroy any data stored on the device.": [
+    "Denna åtgärd kommer att förstöra all data som lagras på enheten."
+  ],
+  "This action will destroy any data stored on the devices listed below.": [
+    "Denna åtgärd kommer att förstöra all data som lagras på enheterna som listas nedan."
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Det här tillägget är inte tillgängligt på servern. Be serveradministratören att spegla tillägget."
@@ -2268,7 +2487,7 @@ export default {
     "Använder transient värdnamn: %s"
   ],
   "View license": [
-    ""
+    "Visa licens"
   ],
   "Volume group %s": [
     "Volymgrupp %s"
@@ -2333,8 +2552,11 @@ export default {
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "Du kan fortsätta att installera med de aktuella inställningarna eller så kanske du vill kasta konfigurationen och börja från början med en enkel konfiguration."
   ],
+  "You can reboot the machine to log in to the new system.": [
+    "Du kan starta om maskinen för att logga in på det nya systemet."
+  ],
   "You can safely close this window.": [
-    ""
+    "Du kan säkert stänga det här fönstret."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "Du kan inte ändra den senare. Gå till avsnittet %s om du vill ändra den innan du fortsätter med registreringen."
@@ -2376,7 +2598,7 @@ export default {
     "iSCSI"
   ],
   "immutable Btrfs": [
-    ""
+    "oföränderlig Btrfs"
   ],
   "logical volume": [
     "logisk volym"

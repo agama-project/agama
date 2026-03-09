@@ -315,9 +315,6 @@ export default {
   "Before %s": [
     "Vor %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "Vor der Installation müssen Sie einige Entscheidungen treffen. Klicken Sie auf jeden Abschnitt, um die Einstellungen zu überprüfen."
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden Problemen befassen:"
   ],
@@ -952,9 +949,6 @@ export default {
   "Formatted": [
     "Formatiert"
   ],
-  "Formatting DASD devices": [
-    "DASD-Geräte formatieren"
-  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Die vollständige Festplattenverschlüsselung (FDE) ermöglicht den Schutz der in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programmen und Systemdateien."
   ],
@@ -1585,9 +1579,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potenzieller Datenverlust, von dem mindestens %s betroffen sind"
   ],
-  "Pre-installation checks": [
-    "Prüfungen vor der Installation"
-  ],
   "Prefix length or netmask": [
     "Präfixlänge oder Netzmaske"
   ],
@@ -2150,6 +2141,9 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
+  ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    ""
   ],
   "The product will be registered with \"%s\" hostname": [
     "Das Produkt wird unter dem Hostnamen „%s“ registriert"

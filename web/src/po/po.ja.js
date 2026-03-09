@@ -306,9 +306,6 @@ export default {
   "Before %s": [
     "変更前: %s"
   ],
-  "Before installing, you have to make some decisions. Click on each section to review the settings.": [
-    "インストールを行う前に、あらかじめいくつかの決定をしておかなければなりません。それぞれのセクションを押して設定内容をご確認ください。"
-  ],
   "Before starting the installation, you need to address the following problems:": [
     "インストールを開始する前に、下記の問題に対応する必要があります:"
   ],
@@ -759,6 +756,9 @@ export default {
   "Do not format %s and keep the data": [
     "%s をフォーマットせず既存のデータを維持"
   ],
+  "Do not register": [
+    "登録しない"
+  ],
   "Do not use": [
     "使用しない"
   ],
@@ -939,8 +939,8 @@ export default {
   "Formatted": [
     "フォーマット済み"
   ],
-  "Formatting DASD devices": [
-    "DASD デバイスをフォーマットしています"
+  "Formatting devices": [
+    "デバイスをフォーマットしています"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "完全ディスク暗号化 (Full Disk Encryption; FDE) を使用することで、データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
@@ -1572,9 +1572,6 @@ export default {
   "Potential data loss affecting at least %s": [
     "少なくとも %s に影響する潜在的なデータ削除が発生します"
   ],
-  "Pre-installation checks": [
-    "インストール前チェック"
-  ],
   "Prefix length or netmask": [
     "プレフィクス長またはサブネットマスク"
   ],
@@ -1586,6 +1583,9 @@ export default {
   ],
   "Product is already registered": [
     "製品は既に登録済みです"
+  ],
+  "Product not found": [
+    "製品が見つかりません"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
@@ -1633,7 +1633,7 @@ export default {
     "データを更新しています..."
   ],
   "Register": [
-    "登録"
+    "登録する"
   ],
   "Register using SUSE server": [
     "SUSE サーバを利用して登録"
@@ -2130,6 +2130,9 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
   ],
+  "The product was not found in the repositories so it is not possible to proceed with the installation.": [
+    "リポジトリ内には製品が見つかりませんでした。そのため、インストールを続行することができません。"
+  ],
   "The product will be registered with \"%s\" hostname": [
     "製品をホスト名 \"%s\" で登録します"
   ],
@@ -2164,7 +2167,7 @@ export default {
     "btrfs スナップショットの使用可否に応じて、 %s 向けのサイズを動的に調整します。"
   ],
   "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "サイズを %s から %s までの範囲で設定していますが、この最大値の設定は UI ではサポートされていません。"
+    "サイズを %s から %s までの範囲で設定していますが、この最大値の設定は本インターフェイスではサポートされていません。"
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式で単位を付けて入力する必要があります。"
