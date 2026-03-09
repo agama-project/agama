@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-13 10:41+0000\n"
+"POT-Creation-Date: 2026-03-03 15:34+0000\n"
 "PO-Revision-Date: 2026-02-23 22:04+0000\n"
 "Last-Translator: Efstathios Iosifidis <eiosifidis@yandex.com>\n"
 "Language-Team: Greek <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -28,7 +28,7 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Βρέθηκαν μη υποστηριζόμενα στοιχεία στο προφίλ AutoYaST: %{keys}."
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:64
+#: service/lib/agama/dbus/storage/dasd.rb:66
 msgid "Probing DASD devices"
 msgstr "Ανίχνευση συσκευών DASD"
 
@@ -40,12 +40,12 @@ msgstr "Ανίχνευση συσκευών DASD"
 #. @raise if there is an unfinished configuration.
 #.
 #. @param config_json [Hash]
-#: service/lib/agama/dbus/storage/dasd.rb:121
+#: service/lib/agama/dbus/storage/dasd.rb:119
 msgid "Configuring DASD"
 msgstr "Ρύθμιση παραμέτρων DASD"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/iscsi.rb:98
+#: service/lib/agama/dbus/storage/iscsi.rb:80
 msgid "Configuring iSCSI"
 msgstr "Ρύθμιση παραμέτρων iSCSI"
 
@@ -53,44 +53,44 @@ msgstr "Ρύθμιση παραμέτρων iSCSI"
 #.
 #. @param serialized_options [String] Serialized dicovery options.
 #. @return [Number] 0 success; 1 failure.
-#: service/lib/agama/dbus/storage/iscsi.rb:122
+#: service/lib/agama/dbus/storage/iscsi.rb:105
 msgid "Performing iSCSI discovery"
 msgstr "Εκτέλεση εντοπισμού iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:118
+#: service/lib/agama/dbus/storage/manager.rb:186
 msgid "Preparing bootloader proposal"
 msgstr "Προετοιμασία πρότασης διαχειριστή εκκίνησης"
 
-#: service/lib/agama/dbus/storage/manager.rb:121
+#: service/lib/agama/dbus/storage/manager.rb:189
 msgid "Preparing the storage devices"
 msgstr "Προετοιμασία των συσκευών αποθήκευσης"
 
-#: service/lib/agama/dbus/storage/manager.rb:124
+#: service/lib/agama/dbus/storage/manager.rb:192
 msgid "Writing bootloader sysconfig"
 msgstr "Εγγραφή sysconfig διαχειριστή εκκίνησης"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:132
+#: service/lib/agama/dbus/storage/manager.rb:200
 msgid "Finishing installation"
 msgstr "Ολοκλήρωση εγκατάστασης"
 
-#: service/lib/agama/dbus/storage/manager.rb:138
+#. Implementation for the API method #Umount.
+#: service/lib/agama/dbus/storage/manager.rb:207
 msgid "Unmounting devices"
 msgstr "Αποπροσάρτηση συσκευών"
 
-#. Gets and serializes the storage config used to calculate the current proposal.
-#.
-#. @return [String] Serialized config according to the JSON schema.
-#: service/lib/agama/dbus/storage/manager.rb:298
+#. after loading config try to apply it, so proper packages can be requested
+#. TODO: generate also new issue from configuration
+#: service/lib/agama/dbus/storage/manager.rb:236
 msgid "Activating storage devices"
 msgstr "Ενεργοποίηση συσκευών αποθήκευσης"
 
-#: service/lib/agama/dbus/storage/manager.rb:301
+#: service/lib/agama/dbus/storage/manager.rb:239
 msgid "Probing storage devices"
 msgstr "Ανίχνευση συσκευών αποθήκευσης"
 
-#: service/lib/agama/dbus/storage/manager.rb:304
+#: service/lib/agama/dbus/storage/manager.rb:242
 msgid "Applying storage configuration"
 msgstr "Εφαρμογή ρυθμίσεων αποθήκευσης"
 
@@ -146,8 +146,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:95
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be formatted because it is used by other dev"
-"ice"
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
 msgstr ""
 "Η συσκευή με το ψευδώνυμο '%s' δεν μπορεί να διαμορφωθεί επειδή "
 "χρησιμοποιείται από άλλη συσκευή"
@@ -158,8 +158,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:118
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be partitioned because it is used by other d"
-"evice"
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
 msgstr ""
 "Η συσκευή με το ψευδώνυμο '%s' δεν μπορεί να κατατμηθεί επειδή "
 "χρησιμοποιείται από άλλη συσκευή"
@@ -184,10 +184,11 @@ msgstr "Δεν υπάρχει συσκευή εκκίνησης με το ψευ
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:73
 #, perl-brace-format
-msgid "No passphrase provided (required for using the method '%{crypt_method}')."
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
-"Δεν δόθηκε συνθηματικό (απαιτείται για τη χρήση της μεθόδου '%{crypt_method}"
-"')."
+"Δεν δόθηκε συνθηματικό (απαιτείται για τη χρήση της μεθόδου '%"
+"{crypt_method}')."
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -256,8 +257,8 @@ msgstr "Απαιτούνται τουλάχιστον %s συσκευές για
 #: service/lib/agama/storage/config_checkers/md_raid.rb:171
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be deleted because it is part of the MD RAID %{m"
-"d_raid}"
+"The device '%{member}' cannot be deleted because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 "Η συσκευή '%{member}' δεν μπορεί να διαγραφεί επειδή είναι μέρος του MD RAID "
 "%{md_raid}"
@@ -269,8 +270,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:194
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be resized because it is part of the MD RAID %{m"
-"d_raid}"
+"The device '%{member}' cannot be resized because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 "Η συσκευή '%{member}' δεν μπορεί να αλλάξει μέγεθος επειδή είναι μέρος του "
 "MD RAID %{md_raid}"
@@ -282,8 +283,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:217
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be formatted because it is part of the MD RAID %"
-"{md_raid}"
+"The device '%{member}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
 msgstr ""
 "Η συσκευή '%{member}' δεν μπορεί να διαμορφωθεί επειδή είναι μέρος του MD "
 "RAID %{md_raid}"
@@ -295,8 +296,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:240
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be partitioned because it is part of the MD RAID"
-" %{md_raid}"
+"The device '%{member}' cannot be partitioned because it is part of the MD "
+"RAID %{md_raid}"
 msgstr ""
 "Η συσκευή '%{member}' δεν μπορεί να κατατμηθεί επειδή είναι μέρος του MD "
 "RAID %{md_raid}"
@@ -308,8 +309,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:262
 #, perl-brace-format
 msgid ""
-"The device '%{member}' cannot be used because it is part of the MD RAID %{md_r"
-"aid}"
+"The device '%{member}' cannot be used because it is part of the MD RAID %"
+"{md_raid}"
 msgstr ""
 "Η συσκευή '%{member}' δεν μπορεί να χρησιμοποιηθεί επειδή είναι μέρος του MD "
 "RAID %{md_raid}"
@@ -321,8 +322,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/md_raid.rb:287
 #, perl-brace-format
 msgid ""
-"The device '%{device}' cannot be formatted because it is part of the MD RAID %"
-"{md_raid}"
+"The device '%{device}' cannot be formatted because it is part of the MD RAID "
+"%{md_raid}"
 msgstr ""
 "Η συσκευή '%{device}' δεν μπορεί να διαμορφωθεί επειδή είναι μέρος του MD "
 "RAID %{md_raid}"
@@ -386,8 +387,8 @@ msgstr "Δεν υπάρχει φυσικός τόμος (physical volume) LVM μ
 #: service/lib/agama/storage/config_checkers/volume_group.rb:136
 #, c-format
 msgid ""
-"The list of target devices for the volume group '%s' is mixing reused devices "
-"and new devices"
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
 msgstr ""
 "Η λίστα των συσκευών-στόχων για την ομάδα τόμων '%s' περιέχει ανάμικτα "
 "επαναχρησιμοποιούμενες και νέες συσκευές"
@@ -402,7 +403,8 @@ msgstr ""
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
 #, c-format
-msgid "The device '%s' is used several times as target device for physical volumes"
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
 msgstr ""
 "Η συσκευή '%s' χρησιμοποιείται πολλές φορές ως συσκευή-στόχος για φυσικούς "
 "τόμους"
@@ -412,9 +414,9 @@ msgstr ""
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In case"
-" the device does contain a file system or a storage system that is not support"
-"ed, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
 msgstr ""
 "Δεν ανιχνεύθηκε ούτε σύστημα αρχείων ούτε σύστημα αποθήκευσης στη συσκευή. "
 "Σε περίπτωση που η συσκευή περιέχει σύστημα αρχείων ή σύστημα αποθήκευσης "
@@ -453,6 +455,14 @@ msgstr "Προσαρμογή ρυθμίσεων iSCSI"
 msgid "Configuring file systems snapshots"
 msgstr "Ρύθμιση στιγμιότυπων συστημάτων αρχείων"
 
+#. Returns an issue if there is no candidate device for installation
+#.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/manager.rb:252
+#, fuzzy
+msgid "There is no suitable device for installation"
+msgstr "Δεν υπάρχει συσκευή εκκίνησης με το ψευδώνυμο '%s'"
+
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
@@ -479,3 +489,52 @@ msgstr "Αντιγραφή καταγραφών (logs)"
 #: service/lib/agama/storage/umounter.rb:146
 msgid "Unmounting storage devices"
 msgstr "Αποπροσάρτηση συσκευών αποθήκευσης"
+
+#. Activates the controller if it is not active yet.
+#.
+#. @note: If "allow_lun_scan" is active, then all its LUNs are automatically activated.
+#.
+#. @param controller [Controller]
+#. @return [Boolean] Whether the controller was activated.
+#: service/lib/agama/storage/zfcp/manager.rb:206
+#, c-format
+msgid "The zFCP controller %s cannot be activated"
+msgstr ""
+
+#. Activates a device if it is not active yet.
+#.
+#. @param device [Device]
+#. @return [Boolean] Whether the device was activated.
+#: service/lib/agama/storage/zfcp/manager.rb:239
+#, fuzzy, c-format
+msgid "The zFCP device %s cannot be activated"
+msgstr "Η συσκευή εκκίνησης δεν μπορεί να επιλεγεί αυτόματα"
+
+#. Deactivates a device if it is active.
+#.
+#. @note: If "allow_lun_scan" is active, then the disk cannot be deactivated.
+#.
+#. @param device [Device]
+#. @return [Boolean] Whether the device was deactivated.
+#: service/lib/agama/storage/zfcp/manager.rb:277
+#, fuzzy, c-format
+msgid "The zFCP device %s cannot be deactivated"
+msgstr "Η συσκευή εκκίνησης δεν μπορεί να επιλεγεί αυτόματα"
+
+#. Issue if the controller is missing.
+#.
+#. @param channel [String]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/zfcp/manager.rb:307
+#, c-format
+msgid "Unknown zFCP controller %s"
+msgstr ""
+
+#. Issue if the device is missing.
+#.
+#. @param device_config [Configs::Device]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/zfcp/manager.rb:326
+#, c-format
+msgid "Unknown zFCP LUN %s"
+msgstr ""
