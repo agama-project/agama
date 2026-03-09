@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Mar  9 11:37:06 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Move the location of the dumped solver testcase
+  to /run/agama/testcase, do not save solver testcase when
+  "ZYPP_FULLLOG=1" (in that case libzypp creates the solver
+  testcase automatically in the /var/log/YaST2/autoTestcase/
+  directory) (related to gh#agama-project/agama#3242)
+
+-------------------------------------------------------------------
 Mon Mar  9 09:39:13 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Fix typo (bsc#1259357)
