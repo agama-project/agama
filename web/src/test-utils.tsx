@@ -41,8 +41,7 @@ import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
 import { Question } from "~/model/question";
-
-import type { Product } from "~/types/software";
+import type { Product } from "~/model/system";
 import type { Config as ProductConfig } from "~/model/config/product";
 
 /**

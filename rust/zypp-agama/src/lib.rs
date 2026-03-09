@@ -17,7 +17,7 @@ use helpers::{status_to_result, status_to_result_void, string_from_ptr};
 pub mod callbacks;
 
 // directory where the solver testcase is saved
-const SOLVER_TESTCASE_DIR: &str = "/var/log/zypp/testcase";
+pub const SOLVER_TESTCASE_DIR: &str = "/run/agama/testcase";
 
 #[derive(Debug)]
 pub struct Repository {
@@ -594,8 +594,11 @@ impl Zypp {
             let status_ptr = &mut status as *mut _;
             let r_res = zypp_agama_sys::run_solver(self.ptr, only_required, status_ptr);
 
-            // save the solver test case if the solver run failed or if saving is forced via boot parameter
-            if !r_res || save_testcase {
+            // save the solver testcase if the solver run failed or if saving is forced via boot
+            // parameter, skip when "ZYPP_FULLLOG=1", in that case libzypp creates the solver
+            // testcase automatically in the /var/log/YaST2/autoTestcase/ directory
+            if (!r_res || save_testcase) && std::env::var("ZYPP_FULLLOG").unwrap_or_default() != "1"
+            {
                 self.create_solver_testcase();
             } else {
                 // delete the solver testcase directory, it contains the previous error which is

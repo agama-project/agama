@@ -47,7 +47,7 @@ use crate::{
         state::{self, SoftwareState},
         WriteIssues,
     },
-    state::{Addon, RegistrationState, RepoKey, ResolvableSelection},
+    state::{Addon, RegistrationState, RepoKey, ResolvableSelection, ResolvablesState},
     Registration, ResolvableType,
 };
 
@@ -418,12 +418,22 @@ impl ZyppServer {
         // reset everything to start from scratch
         zypp.reset_resolvables();
 
-        _ = progress.cast(progress::message::Next::new(Scope::Software));
-        let result = zypp.select_resolvable(
-            &state.product,
-            zypp_agama::ResolvableKind::Product,
-            zypp_agama::ResolvableSelected::Installation,
-        );
+        tracing::info!("Selecting base product: {}", &state.product);
+
+        // FIXME: hotfix/workaround for bsc#1259311 - this should be removed after fixing the solver
+        let result = match Self::find_release_package(&state.resolvables) {
+            Some(package) => zypp.select_resolvable(
+                &package,
+                zypp_agama::ResolvableKind::Package,
+                zypp_agama::ResolvableSelected::Installation,
+            ),
+            None => zypp.select_resolvable(
+                &state.product,
+                zypp_agama::ResolvableKind::Product,
+                zypp_agama::ResolvableSelected::Installation,
+            ),
+        };
+
         if let Err(error) = result {
             tracing::info!(
                 "Failed to find the product {} in the repositories: {}",
@@ -974,5 +984,22 @@ impl ZyppServer {
         }
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
         Ok(())
+    }
+
+    // FIXME: hotfix/workaround for bsc#1259311 - check if a *-release package is selected to install
+    // and if so then do not select the product to install, this should be removed after fixing the solver
+    fn find_release_package(resolvables: &ResolvablesState) -> Option<String> {
+        for (name, r#type, selection) in resolvables.to_vec() {
+            if r#type == ResolvableType::Package
+                && name.ends_with("-release")
+                // uh, the "lsb-release" package actually does not provide any product...
+                && name != "lsb-release"
+                && selection.selected()
+            {
+                return Some(name);
+            }
+        }
+
+        None
     }
 }

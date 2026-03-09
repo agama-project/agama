@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,11 +25,11 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import PasswordCheck from "./PasswordCheck";
 
-const mockCheckPasswordFn = jest.fn();
+const mockPasswordCheckFn = jest.fn();
 
-jest.mock("~/model/users", () => ({
-  ...jest.requireActual("~/model/users"),
-  checkPassword: (password) => mockCheckPasswordFn(password),
+jest.mock("~/api", () => ({
+  ...jest.requireActual("~/api"),
+  passwordCheck: (password) => mockPasswordCheckFn(password),
 }));
 
 describe("when the password is empty", () => {
@@ -41,7 +41,7 @@ describe("when the password is empty", () => {
 
 describe("when the password is not valid", () => {
   beforeEach(() => {
-    mockCheckPasswordFn.mockResolvedValueOnce({
+    mockPasswordCheckFn.mockResolvedValueOnce({
       failure: "Shorter than 8 characters",
     });
   });
@@ -54,7 +54,7 @@ describe("when the password is not valid", () => {
 
 describe("when the password is weak", () => {
   beforeEach(() => {
-    mockCheckPasswordFn.mockResolvedValueOnce({
+    mockPasswordCheckFn.mockResolvedValueOnce({
       success: 30,
     });
   });
@@ -67,7 +67,7 @@ describe("when the password is weak", () => {
 
 describe("when the password is strong", () => {
   beforeEach(() => {
-    mockCheckPasswordFn.mockResolvedValueOnce({
+    mockPasswordCheckFn.mockResolvedValueOnce({
       success: 90,
     });
   });

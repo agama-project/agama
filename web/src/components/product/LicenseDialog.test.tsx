@@ -24,14 +24,15 @@ import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { Product } from "~/types/software";
-import * as softwareApi from "~/model/software";
+import { Product } from "~/model/system";
+import * as api from "~/api";
 import { Locale, Keymap } from "~/model/system/l10n";
 import LicenseDialog from "./LicenseDialog";
 
 const sle: Product = {
   id: "SLE",
   name: "SUSE Linux Enterprise",
+  modes: [],
   icon: "sle.svg",
   description: "SLE description",
   registration: true,
@@ -42,7 +43,7 @@ const mockUILanguage = "de-DE";
 let mockLicenseLanguage = "de-DE";
 const product: Product = sle;
 const onCloseFn = jest.fn();
-let mockFetchLicense: jest.SpyInstance;
+let mockGetLicense: jest.SpyInstance;
 
 const locales: Locale[] = [
   { id: "en_US.UTF-8", language: "English", territory: "United States" },
@@ -57,11 +58,6 @@ const keymaps: Keymap[] = [
 jest.mock("~/utils", () => ({
   ...jest.requireActual("~/utils"),
   locationReload: jest.fn(),
-}));
-
-jest.mock("~/api", () => ({
-  ...jest.requireActual("~/api"),
-  configureL10nAction: jest.fn(),
 }));
 
 jest.mock("~/hooks/model/system", () => ({
@@ -84,7 +80,7 @@ jest.mock("~/context/installerL10n", () => ({
 describe("LicenseDialog", () => {
   mockLicenseLanguage = mockUILanguage;
   beforeEach(() => {
-    mockFetchLicense = jest.spyOn(softwareApi, "fetchLicense").mockImplementation(
+    mockGetLicense = jest.spyOn(api, "getLicense").mockImplementation(
       jest.fn().mockImplementation(async () => ({
         body: "El contenido de la licencia",
         language: mockLicenseLanguage,
@@ -95,7 +91,7 @@ describe("LicenseDialog", () => {
   it("loads given product license in the interface language", async () => {
     installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
     await waitFor(() => {
-      expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
+      expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
       screen.getByText("El contenido de la licencia");
     });
   });
@@ -108,7 +104,7 @@ describe("LicenseDialog", () => {
     it("it warns the user that the license is not translated", async () => {
       installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
       await waitFor(() => {
-        expect(mockFetchLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
+        expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
         screen.getByText("El contenido de la licencia");
         screen.getByText("Diese Lizenz ist in Deutsch nicht verfügbar.");
       });

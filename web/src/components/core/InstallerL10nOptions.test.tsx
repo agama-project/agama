@@ -24,7 +24,7 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockProduct, mockRoutes } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
-import { Product } from "~/types/software";
+import { Product } from "~/model/system";
 import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
 import { System } from "~/model/system/network";
@@ -46,6 +46,7 @@ const keymaps: Keymap[] = [
 const tumbleweed: Product = {
   id: "Tumbleweed",
   name: "openSUSE Tumbleweed",
+  modes: [],
   icon: "tumbleweed.svg",
   description: "Tumbleweed description...",
   registration: false,

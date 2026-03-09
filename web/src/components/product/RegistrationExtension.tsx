@@ -32,7 +32,7 @@ import {
   Label,
   Title,
 } from "@patternfly/react-core";
-import { AddonInfo } from "~/types/software";
+import { AddonInfo } from "~/model/system/software";
 import { mask } from "~/utils";
 import { _ } from "~/i18n";
 import RegistrationCodeInput from "./RegistrationCodeInput";

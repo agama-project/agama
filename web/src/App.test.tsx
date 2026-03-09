@@ -24,14 +24,19 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockRoutes } from "~/test-utils";
 import { createClient } from "~/client";
-import { Product } from "~/types/software";
+import { Product } from "~/model/system";
 import { PATHS } from "~/router";
 import { PRODUCT } from "~/routes/paths";
 import App from "./App";
 import type { Config } from "~/model/config";
 import type { Progress, Stage } from "~/model/status";
 
-const tumbleweed: Product = { id: "openSUSE", name: "openSUSE Tumbleweed", registration: false };
+const tumbleweed: Product = {
+  id: "openSUSE",
+  name: "openSUSE Tumbleweed",
+  modes: [],
+  registration: false,
+};
 const mockProgresses: jest.Mock<Progress[]> = jest.fn();
 const mockState: jest.Mock<Stage> = jest.fn();
 const mockSelectedProduct: jest.Mock<Config["product"]> = jest.fn();

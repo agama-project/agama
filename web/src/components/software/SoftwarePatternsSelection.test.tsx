@@ -28,8 +28,6 @@ import testingProposal from "./proposal.test.json";
 import SoftwarePatternsSelection from "./SoftwarePatternsSelection";
 import { patchConfig } from "~/api";
 
-const onConfigMutationMock = { mutate: jest.fn() };
-
 jest.mock("~/hooks/model/system/software", () => ({
   useSystem: () => ({ patterns: testingPatterns }),
 }));
@@ -40,10 +38,6 @@ jest.mock("~/hooks/model/proposal/software", () => ({
 
 jest.mock("~/api", () => ({
   patchConfig: jest.fn(),
-}));
-
-jest.mock("~/queries/software", () => ({
-  useConfigMutation: () => onConfigMutationMock,
 }));
 
 describe("SoftwarePatternsSelection", () => {
