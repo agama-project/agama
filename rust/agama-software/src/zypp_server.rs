@@ -996,7 +996,7 @@ impl ZyppServer {
                 && name != "lsb-release"
                 && selection.selected()
             {
-                return Some(name.clone());
+                return Some(name);
             }
         }
 
