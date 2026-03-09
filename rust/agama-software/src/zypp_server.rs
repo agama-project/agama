@@ -991,16 +991,12 @@ impl ZyppServer {
     fn find_release_package(resolvables: &ResolvablesState) -> Option<String> {
         for (name, r#type, selection) in &resolvables.to_vec() {
             if r#type == &ResolvableType::Package
-            && name.ends_with("-release")
+                && name.ends_with("-release")
                 // uh, the "lsb-release" package actually does not provide any product...
                 && name != "lsb-release"
+                && selection.selected()
             {
-                match selection {
-                    ResolvableSelection::Selected | ResolvableSelection::AutoSelected { .. } => {
-                        return Some(name.clone())
-                    }
-                    ResolvableSelection::Removed => {}
-                }
+                return Some(name.clone());
             }
         }
 
