@@ -31,6 +31,8 @@ jest.mock("stacktracey", () =>
       filter: jest.fn().mockReturnThis(),
       asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
     }),
+    filter: jest.fn().mockReturnThis(),
+    asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
   })),
 );
 
@@ -53,9 +55,9 @@ describe("ErrorPage", () => {
         screen.getByText("404 Not Found");
       });
 
-      it("does not show a stack trace", () => {
+      it("does not show a skeleton", () => {
         installerRender(<ErrorPage />);
-        expect(screen.queryByRole("code")).not.toBeInTheDocument();
+        expect(screen.queryByText("Retrieving error details")).not.toBeInTheDocument();
       });
     });
 
@@ -107,25 +109,43 @@ describe("ErrorPage", () => {
       });
     });
 
+    describe("when withSourcesAsync fails", () => {
+      beforeEach(() => {
+        const StackTracey = require("stacktracey");
+        StackTracey.mockImplementationOnce(() => ({
+          withSourcesAsync: jest.fn().mockRejectedValue(new Error("network error")),
+          filter: jest.fn().mockReturnThis(),
+          asTable: jest.fn().mockReturnValue("app.ts:10  myFunc (no sources)"),
+        }));
+        mockRouteError(new Error("Something exploded"));
+      });
+
+      it("falls back to the raw stack table", async () => {
+        installerRender(<ErrorPage />);
+        await screen.findByText(/app\.ts:10.*myFunc \(no sources\)/);
+      });
+    });
+
     describe("when the thrown value is not an Error instance", () => {
       beforeEach(() => {
-        mockRouteError("a plain string");
+        mockRouteError({ code: 42, reason: "unknown" });
       });
 
-      it("shows the 'Unexpected error' heading", () => {
+      it("shows the 'Something went wrong' heading", async () => {
         installerRender(<ErrorPage />);
-        screen.getByText("Unexpected error");
+        screen.getByText("Something went wrong");
+        await screen.findByText(/\"code\":42/);
       });
 
-      it("shows 'Unknown error' as the message", () => {
+      it("shows 'Unknown error' as the message", async () => {
         installerRender(<ErrorPage />);
         screen.getByText("Unknown error");
+        await screen.findByText(/\"code\":42/);
       });
 
-      it("does not show a skeleton or stack trace", () => {
+      it("shows the JSON-serialised value", async () => {
         installerRender(<ErrorPage />);
-        expect(screen.queryByText("Retrieving error details")).not.toBeInTheDocument();
-        expect(screen.queryByRole("code")).not.toBeInTheDocument();
+        await screen.findByText(/\"code\":42/);
       });
     });
   });

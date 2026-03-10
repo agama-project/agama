@@ -22,6 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import StackTracey from "stacktracey";
+import { isError } from "radashi";
 import { isRouteErrorResponse, useRouteError, ErrorResponse } from "react-router";
 import { Content, Skeleton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
@@ -29,6 +30,64 @@ import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";
+
+/**
+ * Returns first-party frames from a stack, falling back to the full stack
+ * if filtering leaves nothing (e.g. all frames are third-party).
+ */
+const relevantTrace = (stack: StackTracey) => stack.filter((x) => !x.thirdParty) || stack;
+
+/**
+ * Renders a formatted, source-mapped stack trace for any thrown value.
+ *
+ * Uses **StackTracey** to parse and enrich the stack with original source
+ * locations via `.withSourcesAsync()`. {@link relevantFrames} filters out
+ * third-party frames, falling back to the full stack if none remain.
+ * If `.withSourcesAsync()` rejects (e.g. source maps unavailable), the
+ * same filtering is applied to the raw stack instead.
+ *
+ * For non-`Error` values (checked via `isError` from **radashi**), the value
+ * is JSON-serialised and displayed as-is.
+ *
+ * A skeleton placeholder is shown while async resolution is in progress.
+ *
+ * ### Dependency note
+ *
+ * `.asTable()` delegates to `as-table`, which in turn depends only on
+ * `printable-characters` (no further dependencies) — all three packages share
+ * the same author as `stacktracey`. It can be dropped at any point if any
+ * problem is found, but for now it gives us better formatted error messages
+ * at almost no cost.
+ */
+function ErrorTrace({ error }) {
+  const [trace, setTrace] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isError(error)) {
+      const stackTracey = new StackTracey(error);
+      stackTracey
+        .withSourcesAsync()
+        .then((stack) => {
+          setTrace(relevantTrace(stack).asTable());
+        })
+        .catch(() => {
+          setTrace(relevantTrace(stackTracey).asTable());
+        });
+    } else {
+      setTrace(JSON.stringify(error));
+    }
+  }, [error]);
+
+  if (trace) return trace;
+
+  return (
+    <Stack hasGutter>
+      <Skeleton fontSize="sm" size={90} screenreaderText={_("Retrieving error details")} />
+      <Skeleton fontSize="sm" width="75%" aria-hidden />
+      <Skeleton fontSize="sm" width="40%" aria-hidden />
+    </Stack>
+  );
+}
 
 /**
  * Rendered when React Router surfaces an `ErrorResponse`.
@@ -53,62 +112,39 @@ function RouteError({ error }: { error: ErrorResponse }) {
 }
 
 /**
- * Rendered for any error that is not a React Router `ErrorResponse`
+ * Rendered for any error that is not a React Router `ErrorResponse`.
  *
  * Most commonly an unhandled `Error` thrown inside a component, loader, or
  * action.
  *
- * The error's `.message` is shown as the primary heading. When the value is a
- * proper `Error` instance, its stack trace is parsed by **StackTracey**,
- * enriched with original source locations via `.withSourcesAsync()`, stripped of
- * third-party frames, and formatted as a plain-text table via `.asTable()`.
+ * The heading varies depending on the thrown value:
+ * - `"Unexpected error"` for proper `Error` instances (checked via `isError`
+ *   from **radashi**), with the error's `.message` shown below.
+ * - `"Something went wrong"` for any other value (plain objects, strings,
+ *   etc.), with `"Unknown error"` as the message.
  *
- * ### Dependency note
- *
- * `.asTable()` delegates to `as-table`, which in turn depends only on
- * `printable-characters` (no further dependencies), and both are from
- * the same share author as `stacktracey`. It can be dropped at any point if any
- * problem is found, but for now it provided better formatted error messages
- * at almost no cost.
+ * In both cases {@link ErrorTrace} renders below the message, showing a
+ * skeleton placeholder while source-map enrichment is in progress.
  */
 function UnexpectedError({ error }: { error: unknown }) {
-  const [trace, setTrace] = useState<string | null>(null);
-  const message = error instanceof Error ? error.message : _("Unknown error");
-
-  useEffect(() => {
-    if (!(error instanceof Error)) return;
-
-    const stackTracey = new StackTracey(error.stack);
-    stackTracey
-      .withSourcesAsync()
-      .then((stack) => setTrace(stack.filter((x) => !x.thirdParty).asTable()));
-  }, [error]);
+  const isAnError = isError(error);
+  const title = isAnError ? _("Unexpected error") : _("Something went wrong");
+  const message = isAnError ? error.message : _("Unknown error");
 
   return (
     <SplitInfoLayout
       icon="deployed_code_alert"
-      firstRowStart={_("Unexpected error")}
+      firstRowStart={title}
       firstRowEnd={
         <NestedContent margin="mtSm">
           <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
             {message}
           </Text>
-          {error instanceof Error &&
-            (trace ? (
-              <Content component="pre">{trace}</Content>
-            ) : (
-              <NestedContent margin="mtSm">
-                <Stack hasGutter>
-                  <Skeleton
-                    fontSize="sm"
-                    size={90}
-                    screenreaderText={_("Retrieving error details")}
-                  />
-                  <Skeleton fontSize="sm" width="75%" aria-hidden />
-                  <Skeleton fontSize="sm" width="40%" aria-hidden />
-                </Stack>
-              </NestedContent>
-            ))}
+          <Content component="pre">
+            <NestedContent margin="mtSm">
+              <ErrorTrace error={error} />
+            </NestedContent>
+          </Content>
         </NestedContent>
       }
     />
