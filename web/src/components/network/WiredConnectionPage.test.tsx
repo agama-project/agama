@@ -25,6 +25,11 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import WiredConnectionPage from "~/components/network/WiredConnectionPage";
 import { Connection, ConnectionState } from "~/types/network";
+import { useProgress } from "~/hooks/model/progress";
+
+jest.mock("~/hooks/model/progress", () => ({
+  useProgress: jest.fn(),
+}));
 
 const mockConnection: Connection = new Connection("Network 1", {
   state: ConnectionState.activated,
@@ -68,6 +73,24 @@ describe("<WiredConnectionPage />", () => {
     it("renders an informative message", () => {
       installerRender(<WiredConnectionPage />);
       screen.getByText("Connection not found or lost");
+    });
+  });
+
+  describe("when there is an active progress", () => {
+    it("shows the progress backdrop", () => {
+      (useProgress as jest.Mock).mockImplementation((scope) =>
+        scope === "network"
+          ? {
+              scope: "network",
+              step: "Performing some network task",
+              index: 1,
+              size: 1,
+            }
+          : undefined,
+      );
+
+      installerRender(<WiredConnectionPage />);
+      expect(screen.queryByText("Performing some network task")).toBeInTheDocument();
     });
   });
 });

@@ -74,6 +74,7 @@ export default function WifiNetworkPage() {
         { label: _("Wi-Fi") },
         { label: ssid },
       ]}
+      progress={{ scope: "network", ensureRefetched: "system" }}
     >
       <Page.Content>
         {!network && <NetworkNotFound ssid={ssid} />}

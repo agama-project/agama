@@ -38,7 +38,10 @@ export default function NetworkPage() {
   const { devices } = useSystem();
 
   return (
-    <Page breadcrumbs={[{ label: _("Network") }]}>
+    <Page
+      breadcrumbs={[{ label: _("Network") }]}
+      progress={{ scope: "network", ensureRefetched: "system" }}
+    >
       <Page.Content>
         <NoPersistentConnectionsAlert />
 
