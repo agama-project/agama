@@ -25,16 +25,8 @@ import { screen } from "@testing-library/react";
 import { installerRender, mockRouteError } from "~/test-utils";
 import ErrorPage from "./ErrorPage";
 
-jest.mock("stacktracey", () =>
-  jest.fn().mockImplementation(() => ({
-    withSourcesAsync: jest.fn().mockResolvedValue({
-      filter: jest.fn().mockReturnThis(),
-      asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
-    }),
-    filter: jest.fn().mockReturnThis(),
-    asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
-  })),
-);
+jest.mock("stacktracey", () => jest.fn());
+const mockStackTracey = jest.requireMock("stacktracey");
 
 const routeError = (status: number, statusText: string, data: unknown) => ({
   __isRouteError: true,
@@ -44,6 +36,16 @@ const routeError = (status: number, statusText: string, data: unknown) => ({
 });
 
 describe("ErrorPage", () => {
+  beforeEach(() => {
+    mockStackTracey.mockImplementation(() => ({
+      withSourcesAsync: jest.fn().mockResolvedValue({
+        filter: jest.fn().mockReturnThis(),
+        asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
+      }),
+      filter: jest.fn().mockReturnThis(),
+      asTable: jest.fn().mockReturnValue("app.ts:10  myFunc\napp.ts:20  caller"),
+    }));
+  });
   describe("when the error is a route error response", () => {
     describe("when it is a 404", () => {
       beforeEach(() => {
@@ -81,7 +83,7 @@ describe("ErrorPage", () => {
 
       it("shows the JSON-serialised payload", () => {
         installerRender(<ErrorPage />);
-        screen.getByText(/\"field\":\"email\"/);
+        screen.getByText(/"field":"email"/);
       });
     });
   });
@@ -124,8 +126,7 @@ describe("ErrorPage", () => {
 
     describe("when withSourcesAsync fails", () => {
       beforeEach(() => {
-        const StackTracey = require("stacktracey");
-        StackTracey.mockImplementationOnce(() => ({
+        mockStackTracey.mockImplementationOnce(() => ({
           withSourcesAsync: jest.fn().mockRejectedValue(new Error("network error")),
           filter: jest.fn().mockReturnThis(),
           asTable: jest.fn().mockReturnValue("app.ts:10  myFunc (no sources)"),
@@ -147,18 +148,18 @@ describe("ErrorPage", () => {
       it("shows the 'Something went wrong' heading", async () => {
         installerRender(<ErrorPage />);
         screen.getByText("Something went wrong");
-        await screen.findByText(/\"code\":42/);
+        await screen.findByText(/"code":42/);
       });
 
       it("shows 'Unknown error' as the message", async () => {
         installerRender(<ErrorPage />);
         screen.getByText("Unknown error");
-        await screen.findByText(/\"code\":42/);
+        await screen.findByText(/"code":42/);
       });
 
       it("shows the JSON-serialised value", async () => {
         installerRender(<ErrorPage />);
-        await screen.findByText(/\"code\":42/);
+        await screen.findByText(/"code":42/);
       });
     });
   });
