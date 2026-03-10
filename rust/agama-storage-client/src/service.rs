@@ -210,7 +210,9 @@ impl MessageHandler<message::SolveConfigModel> for Service {
 #[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, message: message::SetLocale) -> Result<(), Error> {
-        Ok(self.storage_proxy.set_locale(&message.locale).await?)
+        self.storage_proxy.set_locale(&message.locale).await?;
+        self.storage_proxy.probe().await?;
+        Ok(())
     }
 }
 
