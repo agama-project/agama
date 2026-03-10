@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 10 09:59:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Always add hardware/filesystem/locale proposed packages when
+  running solver (bsc#1258193)
+
+-------------------------------------------------------------------
 Mon Mar  9 11:37:06 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Move the location of the dumped solver testcase
