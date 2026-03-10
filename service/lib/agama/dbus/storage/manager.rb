@@ -71,7 +71,7 @@ module Agama
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_method(:Umount) { umount }
-          dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
+          dbus_method(:SetLocale, "in locale:s") { |locale| configure_locale(locale) }
           dbus_method(
             :SetConfig, "in serialized_product_config:s, in serialized_config:s"
           ) { |p, c| configure(p, c) }
@@ -118,6 +118,15 @@ module Agama
           configure_with_current
 
           finish_progress
+        end
+
+        # Changes the locale.
+        #
+        # If the system was already probed, probe it again in order to
+        # refresh the actions, the list of issues, etc.
+        def configure_locale(locale)
+          backend.configure_locale(locale)
+          probe if backend.probed?
         end
 
         # Configures storage.
