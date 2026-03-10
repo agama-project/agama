@@ -74,6 +74,20 @@ describe Agama::AutoYaST::RootReader do
           "password" => "123456", "sshPublicKey" => "ssh-key 1"
         )
       end
+
+      context "but does not contain password or SSH public key" do
+        let(:root) do
+          {
+            "username"      => "root",
+            "user_password" => nil,
+            "encrypted"     => nil
+          }
+        end
+
+        it "returns an empty hash" do
+          expect(subject.read).to be_empty
+        end
+      end
     end
   end
 end
