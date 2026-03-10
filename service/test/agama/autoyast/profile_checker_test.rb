@@ -34,9 +34,19 @@ describe Agama::AutoYaST::ProfileChecker do
       end
     end
 
-    context "when an unsupported section is included" do
+    context "when an unsupported section with empty value is included" do
       let(:profile) do
         { "auth-client" => {} }
+      end
+
+      it "ignores the unsupported element" do
+        expect(subject.find_unsupported(profile)).to eq([])
+      end
+    end
+
+    context "when an unsupported section is included" do
+      let(:profile) do
+        { "auth-client" => { "some" => "value" } }
       end
 
       it "returns an array with the unsupported element" do
