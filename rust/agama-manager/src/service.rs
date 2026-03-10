@@ -514,6 +514,9 @@ impl Service {
                 .cast(storage::message::SetLocale::new(locale.as_str()))?;
             self.users
                 .cast(users::message::SetLocale::new(locale.as_str()))?;
+            if let Some(s390) = &self.s390 {
+                s390.cast(s390::message::SetLocale::new(locale.as_str()))?;
+            }
         }
         Ok(())
     }
