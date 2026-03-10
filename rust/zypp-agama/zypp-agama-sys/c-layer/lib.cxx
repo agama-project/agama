@@ -466,6 +466,11 @@ bool run_solver(struct Zypp *zypp, bool only_required,
     // needed to get hardware and locale specific provisioning
     // @ma: On a fresh install I'd recommend to set INR if you
     // want HW/Filesystem/Language supporting packages to be selected.
+    // INR is the mode e.g. 'zypper inr' operates in, AKA InstallNewRecommends.
+    // Recommendations of already installed packages are usually not evaluated
+    // again. With INR they are.
+    // The Resolver flag is setIgnoreAlreadyRecommended=0.
+    // (addalreadyrecommended=1 is libsolv world)
     resolver->setIgnoreAlreadyRecommended(false);
     return resolver->resolvePool();
   } catch (zypp::Exception &excpt) {
