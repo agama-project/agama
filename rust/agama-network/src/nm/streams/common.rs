@@ -24,6 +24,7 @@ use crate::nm::error::NmError;
 
 #[derive(Debug, Clone)]
 pub enum NmChange {
+    GeneralStateChanged,
     DeviceAdded(OwnedObjectPath),
     DeviceUpdated(OwnedObjectPath),
     DeviceRemoved(OwnedObjectPath),

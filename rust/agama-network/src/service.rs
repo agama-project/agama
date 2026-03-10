@@ -401,7 +401,15 @@ impl Service {
                 }
             }
             Action::UpdateGeneralState(general_state) => {
-                self.state.general_state = general_state;
+                if self.state.general_state != general_state {
+                    self.state.general_state = general_state;
+                    self.events.send(Event::ProposalChanged {
+                        scope: (Scope::Network),
+                    })?;
+                    self.events.send(Event::SystemChanged {
+                        scope: (Scope::Network),
+                    })?;
+                }
             }
             Action::RemoveConnection(id) => {
                 if let Some(conn) = self.state.get_connection(id.as_ref()) {
@@ -466,8 +474,8 @@ impl Service {
     /// one read from the system.
     pub async fn apply(&mut self) -> Result<(), NetworkAdapterError> {
         let steps = vec![
-            gettext("Writing configuration"),
-            gettext("Reading configuration"),
+            gettext("Writing network configuration"),
+            gettext("Syncing the network service state"),
         ];
 
         let _ = self.progress.cast(progress::message::StartWithSteps::new(

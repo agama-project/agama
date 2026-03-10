@@ -36,13 +36,14 @@ use zbus::zvariant::OwnedObjectPath;
 
 use super::{
     builder::{ConnectionFromProxyBuilder, DeviceFromProxyBuilder},
+    client::NetworkManagerClient,
     dbus::connection_from_dbus,
     error::NmError,
     model::NmConnectionState,
     proxies::{ActiveConnectionProxy, ConnectionProxy, NetworkManagerProxy},
     streams::{
         ActiveConnectionChangedStream, ConnectionSettingsChangedStream, DeviceChangedStream,
-        NmChange,
+        GeneralStateChangedStream, NmChange,
     },
 };
 
@@ -113,10 +114,23 @@ impl Watcher for NetworkManagerWatcher {
 
         // Process the ConnectionSettingsChangedStream in a separate task.
         let connection = self.connection.clone();
+        let tx_clone = tx.clone();
         tokio::spawn(async move {
             let mut stream = ConnectionSettingsChangedStream::new(&connection)
                 .await
                 .unwrap();
+
+            while let Some(change) = stream.next().await {
+                if let Err(e) = tx_clone.send(change) {
+                    tracing::error!("Could not dispatch a network change: {e}");
+                }
+            }
+        });
+
+        // Process the GeneralStateChangedStream in a separate task.
+        let connection = self.connection.clone();
+        tokio::spawn(async move {
+            let mut stream = GeneralStateChangedStream::new(&connection).await.unwrap();
 
             while let Some(change) = stream.next().await {
                 if let Err(e) = tx.send(change) {
@@ -171,6 +185,7 @@ impl ActionDispatcher<'_> {
         self.read_devices().await?;
         while let Some(update) = self.updates_rx.recv().await {
             let result = match update {
+                NmChange::GeneralStateChanged => self.handle_general_state_changed().await,
                 NmChange::ConnectionAdded(path) => self.handle_connection_added(path).await,
                 NmChange::ConnectionRemoved(path) => self.handle_connection_removed(path).await,
                 NmChange::DeviceAdded(path) => self.handle_device_added(path).await,
@@ -198,6 +213,16 @@ impl ActionDispatcher<'_> {
         let nm_proxy = NetworkManagerProxy::new(&self.connection).await?;
         for path in nm_proxy.get_devices().await? {
             self.proxies.find_or_add_device(&path).await?;
+        }
+        Ok(())
+    }
+
+    /// Handles a general state change.
+    async fn handle_general_state_changed(&mut self) -> Result<(), NmError> {
+        tracing::info!("General state was changed");
+        let client = NetworkManagerClient::new(self.connection.clone()).await?;
+        if let Ok(state) = client.general_state().await {
+            _ = self.actions_tx.send(Action::UpdateGeneralState(state));
         }
         Ok(())
     }
