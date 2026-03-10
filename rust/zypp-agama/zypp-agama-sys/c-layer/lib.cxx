@@ -461,8 +461,13 @@ bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept {
   try {
     STATUS_OK(status);
-    zypp->zypp_pointer->resolver()->setOnlyRequires(only_required);
-    return zypp->zypp_pointer->resolver()->resolvePool();
+    auto resolver = zypp->zypp_pointer->resolver();
+    resolver->setOnlyRequires(only_required);
+    // needed to get hardware and locale specific provisioning
+    // @ma: On a fresh install I'd recommend to set INR if you
+    // want HW/Filesystem/Language supporting packages to be selected.
+    resolver->setIgnoreAlreadyRecommended(false);
+    return resolver->resolvePool();
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     return false; // do not matter much as status indicate failure
