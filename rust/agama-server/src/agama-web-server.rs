@@ -81,11 +81,7 @@ struct ServeArgs {
     // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only.
     /// Primary port to listen on
     #[arg(long, default_value = ":::80")]
-    address: String,
-
-    /// Optional secondary address to listen on
-    #[arg(long, default_value = None)]
-    address2: Option<String>,
+    address: Vec<String>,
 
     #[arg(long, default_value = "/etc/agama.d/ssl/key.pem")]
     key: Option<PathBuf>,
@@ -341,13 +337,8 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
         return Err(anyhow::anyhow!("SSL initialization failed"));
     };
 
-    let mut addresses = vec![args.address];
-
-    if let Some(a) = args.address2 {
-        addresses.push(a)
-    }
-
-    let servers: Vec<_> = addresses
+    let servers: Vec<_> = args
+        .address
         .iter()
         .map(|a| {
             tokio::spawn(start_server(

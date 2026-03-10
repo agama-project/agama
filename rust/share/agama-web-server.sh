@@ -23,7 +23,9 @@
 # This script is a wrapper for the Agama web server
 
 # the default options: listen on all interfaces for both HTTP and HTTPS ports
-OPTIONS=(--address :::80 --address2 :::443)
+OPTIONS=(--address :::80 --address :::443)
+# option for localhost access only
+LOCAL_OPTIONS=(--address ::1:80 --address ::1:443)
 
 # check if the "inst.listen_on=" boot option was used
 if grep -q "\binst.listen_on=" /run/agama/cmdline.d/agama.conf; then
@@ -31,30 +33,34 @@ if grep -q "\binst.listen_on=" /run/agama/cmdline.d/agama.conf; then
 
   if [ "$LISTEN_ON" = "localhost" ]; then
     echo "<5>Disabling remote access to the Agama web server"
-    # listen only on the local loopback interface, HTTP port only
-    OPTIONS=(--address ::1:80)
-  elif [ "$LISTEN_ON" = "any" ]; then
+    # listen only on the local loopback interface (HTTP + HTTPS)
+    OPTIONS=("${LOCAL_OPTIONS[@]}")
+  elif [ "$LISTEN_ON" = "all" ]; then
     echo "<5>Listening on all network interfaces"
   else
     # check if the value an IP address (IPv6 or IPv4)
     if echo "$LISTEN_ON" | grep -qE '^[0-9a-fA-F:.]+$|^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+      # run on localhost
+      OPTIONS=("${LOCAL_OPTIONS[@]}")
       echo "<5>Listening on IP address ${LISTEN_ON}"
-      # listen on local loopback (HTTP) + specified IP (HTTPS)
-      OPTIONS=(--address ::1:80 --address2 "${LISTEN_ON}:443")
+      # listen on local loopback (HTTP) + specified IP (HTTP + HTTPS)
+      OPTIONS=+(--address "${LISTEN_ON}:80" --address "${LISTEN_ON}:443")
     else
+      # run on localhost
+      OPTIONS=("${LOCAL_OPTIONS[@]}")
       if ip addr show dev "${LISTEN_ON}" >/dev/null 2>&1; then
         # find the IP address for the specified interface
-        IP_ADDR=$(ip -o -4 addr show dev "${LISTEN_ON}" | awk '{print $4}' | cut -d/ -f1 | head -n1)
-
-        if [ -n "${IP_ADDR}" ]; then
-          echo "<5>Listening on interface ${LISTEN_ON} with IP address ${IP_ADDR}"
-          # listen on local loopback (HTTP) + specified interface (HTTPS)
-          OPTIONS=(--address ::1:80 --address2 "${IP_ADDR}:443")
+        IP_ADDRS=$(ip -o addr show dev "${LISTEN_ON}" | awk '{print $4}' | cut -d/ -f1)
+        if [ -n "${IP_ADDRS}" ]; then
+          for IP in $IP_ADDRS; do
+            echo "<5>Listening on interface ${LISTEN_ON} with IP address ${IP}"
+            OPTIONS+=(--address "${IP}:80" --address "${IP}:443")
+          done
         else
-          echo "<3>IP address for interface ${LISTEN_ON} not found, using defaults"
+          echo "<3>IP address for interface ${LISTEN_ON} not found, enabling local access only"
         fi
       else
-        echo "<3>Interface ${LISTEN_ON} not found, using defaults"
+        echo "<3>Network Interface ${LISTEN_ON} not found, enabling local access only"
       fi
     fi
   fi
@@ -62,4 +68,5 @@ else
   echo "<5>Listening on all network interfaces"
 fi
 
+echo "<5>Starting Agama web server with options: ${OPTIONS[*]}"
 exec /usr/bin/agama-web-server serve "${OPTIONS[@]}"
