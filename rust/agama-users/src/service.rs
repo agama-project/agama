@@ -32,7 +32,7 @@ use agama_utils::{
     issue,
 };
 use async_trait::async_trait;
-use gettextrs::gettext;
+use gettextrs::{gettext, LocaleCategory};
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
@@ -243,5 +243,12 @@ impl MessageHandler<message::CheckPassword> for Service {
     ) -> Result<PasswordCheckResult, Error> {
         let checker = PasswordChecker;
         Ok(checker.check(&message.password)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetLocale> for Service {
+    async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
+        self.update_issues()
     }
 }

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Mar 10 12:16:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Recalculate the issues and actions on language change (gh#agama-project/agama#3262).
+
+-------------------------------------------------------------------
 Tue Mar 10 09:59:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Always add hardware/filesystem/locale proposed packages when

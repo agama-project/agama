@@ -143,3 +143,10 @@ impl MessageHandler<message::SetConfig> for Service {
         Ok(())
     }
 }
+
+#[async_trait]
+impl MessageHandler<message::SetLocale> for Service {
+    async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
+        Ok(())
+    }
+}
