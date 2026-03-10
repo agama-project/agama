@@ -61,14 +61,27 @@ describe("ErrorPage", () => {
       });
     });
 
-    describe("when it carries a data payload", () => {
+    describe("when the data payload is a string", () => {
       beforeEach(() => {
         mockRouteError(routeError(403, "Forbidden", "You do not have access"));
       });
 
-      it("shows the data payload", () => {
+      it("shows the data payload as-is", () => {
         installerRender(<ErrorPage />);
         screen.getByText("You do not have access");
+      });
+    });
+
+    describe("when the data payload is not a string", () => {
+      beforeEach(() => {
+        mockRouteError(
+          routeError(422, "Unprocessable Entity", { field: "email", issue: "invalid" }),
+        );
+      });
+
+      it("shows the JSON-serialised payload", () => {
+        installerRender(<ErrorPage />);
+        screen.getByText(/\"field\":\"email\"/);
       });
     });
   });

@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import StackTracey from "stacktracey";
-import { isError } from "radashi";
+import { isError, isString } from "radashi";
 import { isRouteErrorResponse, useRouteError, ErrorResponse } from "react-router";
 import { Content, Skeleton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
@@ -94,6 +94,9 @@ function ErrorTrace({ error }) {
  *
  * Typically a 4xx/5xx thrown from a loader or action via `json()`, or an
  * automatic 404 for an unmatched route.
+ *
+ * The `data` payload is rendered as-is when it is a string, or
+ * JSON-serialised otherwise.
  */
 function RouteError({ error }: { error: ErrorResponse }) {
   return (
@@ -103,7 +106,7 @@ function RouteError({ error }: { error: ErrorResponse }) {
       firstRowEnd={
         <NestedContent margin="mtSm">
           <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
-            {error.data}
+            {isString(error.data) ? error.data : JSON.stringify(error.data)}
           </Text>
         </NestedContent>
       }
