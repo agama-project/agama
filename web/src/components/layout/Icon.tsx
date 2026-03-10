@@ -37,6 +37,7 @@ import ChevronRight from "@icons/chevron_right.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
+import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import Download from "@icons/download.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
 import Emergency from "@icons/emergency.svg?component";
@@ -85,6 +86,7 @@ const icons = {
   delete: Delete,
   done_all: DoneAll,
   deployed_code_update: DeployedCodeUpdate,
+  deployed_code_alert: DeployedCodeAlert,
   download: Download,
   edit_square: EditSquare,
   emergency: Emergency,

@@ -1,7 +1,14 @@
 -------------------------------------------------------------------
+<<<<<<< i18n
 Tue Mar 10 12:16:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Recalculate the issues and actions on language change (gh#agama-project/agama#3262).
+=======
+Tue Mar 10 09:59:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Always add hardware/filesystem/locale proposed packages when
+  running solver (bsc#1258193)
+>>>>>>> master
 
 -------------------------------------------------------------------
 Mon Mar  9 11:37:06 UTC 2026 - Ladislav Slezák <lslezak@suse.com>

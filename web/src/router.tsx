@@ -24,14 +24,13 @@ import React from "react";
 import { createHashRouter, Outlet } from "react-router";
 import App from "~/App";
 import Protected from "~/Protected";
-import {
-  InstallationExit,
-  InstallationFinished,
-  InstallationProgress,
-  LoginPage,
-} from "~/components/core";
-import HostnamePage from "~/components/system/HostnamePage";
+import ErrorPage from "~/components/core/ErrorPage";
+import InstallationExit from "~/components/core/InstallationExit";
+import InstallationFinished from "~/components/core/InstallationFinished";
+import InstallationProgress from "~/components/core/InstallationProgress";
+import LoginPage from "~/components/core/LoginPage";
 import OverviewPage from "~/components/overview/OverviewPage";
+import HostnamePage from "~/components/system/HostnamePage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
@@ -107,6 +106,7 @@ const router = () =>
     {
       path: PATHS.root,
       element: <Protected />,
+      ErrorBoundary: ErrorPage,
       children: [...protectedRoutes()],
     },
   ]);
