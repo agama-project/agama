@@ -20,56 +20,68 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-# This script is a wrapper for the Agama web server
+# This script is a wrapper for the Agama web server, it evaluates to which
+# addresses the server should listen to.
 
-# the default options: listen on all interfaces for both HTTP and HTTPS ports
-OPTIONS=(--address ":::80,0.0.0.0:80" --address ":::443,0.0.0.0:443")
-# option for localhost access only
+# the default options: listen on all interfaces for both HTTP and HTTPS ports,
+# the IPv4 addresses are fallbacks when IPv6 is disabled with the
+# "ipv6.disable=1" kernel boot option
+DEFAULT_OPTIONS=(--address ":::80,0.0.0.0:80" --address ":::443,0.0.0.0:443")
+# options for localhost access only
 LOCAL_OPTIONS=(--address "::1:80,127.0.0.1:80" --address "::1:443,127.0.0.1:443")
 
 # check if the "inst.listen_on=" boot option was used
-if grep -q "\binst.listen_on=" /run/agama/cmdline.d/agama.conf; then
-  LISTEN_ON=$(grep "\binst.listen_on=" /run/agama/cmdline.d/agama.conf | sed 's/.*\binst.listen_on=\([^[:space:]]\+\)/\1/')
+if grep -q "\binst.listen_on=.\+" /run/agama/cmdline.d/agama.conf; then
+  LISTEN_ON=$(grep "\binst.listen_on=.\+" /run/agama/cmdline.d/agama.conf | sed 's/.*\binst.listen_on=\([^[:space:]]\+\)/\1/')
 
   if [ "$LISTEN_ON" = "localhost" ]; then
-    echo "<5>Disabling remote access to the Agama web server"
-    # listen only on the local loopback interface (HTTP + HTTPS)
     OPTIONS=("${LOCAL_OPTIONS[@]}")
   elif [ "$LISTEN_ON" = "all" ]; then
-    echo "<5>Listening on all network interfaces"
+    OPTIONS=("${DEFAULT_OPTIONS[@]}")
   else
-    # check if the value is an IP address (IPv6, IPv6 link local or IPv4)
-    if echo "$LISTEN_ON" | grep -qE '^[0-9a-fA-F:]+$|^[fF][eE]80|^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
-      # run on localhost
-      OPTIONS=("${LOCAL_OPTIONS[@]}")
-      echo "<5>Listening on IP address ${LISTEN_ON}"
-      OPTIONS+=(--address "${LISTEN_ON}:80" --address "${LISTEN_ON}:443")
-    else
-      # otherwise consider it as an interface name
-      # run on localhost
-      OPTIONS=("${LOCAL_OPTIONS[@]}")
-      if ip addr show dev "${LISTEN_ON}" >/dev/null 2>&1; then
-        # find the IP address for the specified interface
-        IP_ADDRS=$(ip -o addr show dev "${LISTEN_ON}" | awk '{print $4}' | cut -d/ -f1)
-        if [ -n "${IP_ADDRS}" ]; then
-          for IP in $IP_ADDRS; do
-            # append the %device for link local IPv6 addresses
-            if [[ "$IP" == fe80* ]]; then
-              IP="${IP}%${LISTEN_ON}"
-            fi
-            echo "<5>Listening on interface ${LISTEN_ON} with IP address ${IP}"
-            OPTIONS+=(--address "${IP}:80" --address "${IP}:443")
-          done
-        else
-          echo "<3>IP address for interface ${LISTEN_ON} not found, enabling local access only"
-        fi
+    # always run on the localhost
+    OPTIONS=("${LOCAL_OPTIONS[@]}")
+
+    # the string can contain multiple addresses separated by comma
+    # replace commas with spaces to iterate over them
+    ADDRESSES=${LISTEN_ON//,/ }
+    ADDRESSES=("${ADDRESSES[@]}")
+    for ADDRESS in "${ADDRESSES[@]}"; do
+      # check if the value is an IP address (IPv6, IPv6 link local or IPv4)
+      if echo "$ADDRESS" | grep -qE '^[0-9a-fA-F:]+$|^[fF][eE]80|^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+        echo "<5>Listening on IP address ${ADDRESS}"
+        OPTIONS+=(--address "${ADDRESS}:80" --address "${ADDRESS}:443")
       else
-        echo "<3>Network Interface ${LISTEN_ON} not found, enabling local access only"
+        # otherwise assume it is as an interface name
+        if ip addr show dev "${ADDRESS}" >/dev/null 2>&1; then
+          # find the IP address for the specified interface
+          IP_ADDRS=$(ip -o addr show dev "${ADDRESS}" | awk '{print $4}' | cut -d/ -f1)
+          if [ -n "${IP_ADDRS}" ]; then
+            for IP in $IP_ADDRS; do
+              # append the %device for link local IPv6 addresses
+              if [[ "$IP" == fe80* ]]; then
+                IP="${IP}%${ADDRESS}"
+              fi
+              echo "<5>Listening on interface ${ADDRESS} with IP address ${IP}"
+              OPTIONS+=(--address "${IP}:80" --address "${IP}:443")
+            done
+          else
+            echo "<3>IP address for interface ${ADDRESS} not found"
+          fi
+        else
+          echo "<3>Network Interface ${ADDRESS} not found"
+        fi
       fi
-    fi
+    done
   fi
 else
+  OPTIONS=("${DEFAULT_OPTIONS[@]}")
+fi
+
+if [ "${OPTIONS[*]}" = "${DEFAULT_OPTIONS[*]}" ]; then
   echo "<5>Listening on all network interfaces"
+elif [ "${OPTIONS[*]}" = "${LOCAL_OPTIONS[*]}" ]; then
+  echo "<5>Disabling remote access to the Agama web server"
 fi
 
 echo "<5>Starting Agama web server with options: ${OPTIONS[*]}"
