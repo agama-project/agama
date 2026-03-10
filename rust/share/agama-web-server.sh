@@ -38,14 +38,14 @@ if grep -q "\binst.listen_on=" /run/agama/cmdline.d/agama.conf; then
   elif [ "$LISTEN_ON" = "all" ]; then
     echo "<5>Listening on all network interfaces"
   else
-    # check if the value an IP address (IPv6 or IPv4)
-    if echo "$LISTEN_ON" | grep -qE '^[0-9a-fA-F:.]+$|^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+    # check if the value is an IP address (IPv6, IPv6 link local or IPv4)
+    if echo "$LISTEN_ON" | grep -qE '^[0-9a-fA-F:]+$|^[fF][eE]80|^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
       # run on localhost
       OPTIONS=("${LOCAL_OPTIONS[@]}")
       echo "<5>Listening on IP address ${LISTEN_ON}"
-      # listen on local loopback (HTTP) + specified IP (HTTP + HTTPS)
       OPTIONS+=(--address "${LISTEN_ON}:80" --address "${LISTEN_ON}:443")
     else
+      # otherwise consider it as an interface name
       # run on localhost
       OPTIONS=("${LOCAL_OPTIONS[@]}")
       if ip addr show dev "${LISTEN_ON}" >/dev/null 2>&1; then
@@ -53,6 +53,10 @@ if grep -q "\binst.listen_on=" /run/agama/cmdline.d/agama.conf; then
         IP_ADDRS=$(ip -o addr show dev "${LISTEN_ON}" | awk '{print $4}' | cut -d/ -f1)
         if [ -n "${IP_ADDRS}" ]; then
           for IP in $IP_ADDRS; do
+            # append the %device for link local IPv6 addresses
+            if [[ "$IP" == fe80* ]]; then
+              IP="${IP}%${LISTEN_ON}"
+            fi
             echo "<5>Listening on interface ${LISTEN_ON} with IP address ${IP}"
             OPTIONS+=(--address "${IP}:80" --address "${IP}:443")
           done
