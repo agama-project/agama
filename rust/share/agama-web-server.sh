@@ -23,9 +23,9 @@
 # This script is a wrapper for the Agama web server
 
 # the default options: listen on all interfaces for both HTTP and HTTPS ports
-OPTIONS=(--address :::80 --address :::443)
+OPTIONS=(--address :::80,0.0.0.0:80 --address :::443,0.0.0.0:443)
 # option for localhost access only
-LOCAL_OPTIONS=(--address ::1:80 --address ::1:443)
+LOCAL_OPTIONS=(--address ::1:80,127.0.0.1:80 --address ::1:443,127.0.0.1:443)
 
 # check if the "inst.listen_on=" boot option was used
 if grep -q "\binst.listen_on=" /run/agama/cmdline.d/agama.conf; then
