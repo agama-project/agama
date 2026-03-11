@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, fireEvent } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { Connection } from "~/types/network";
@@ -53,45 +53,45 @@ describe("ConnectionsTable", () => {
   });
 
   it("navigates to the wired connection page when 'Show' is clicked for an ethernet connection", () => {
-    installerRender(<ConnectionsTable />);
+    const { user } = installerRender(<ConnectionsTable />);
     const actionsToggle = screen.getByRole("button", { name: /actions for Eth0/i });
-    fireEvent.click(actionsToggle);
+    user.click(actionsToggle);
 
     const showAction = screen.getByText("Show");
-    fireEvent.click(showAction);
+    user.click(showAction);
 
     expect(mockNavigateFn).toHaveBeenCalledWith("/network/wired_connection/Eth0");
   });
 
   it("navigates to the wifi network page when 'Show' is clicked for a wifi connection", () => {
-    installerRender(<ConnectionsTable />);
+    const { user } = installerRender(<ConnectionsTable />);
     const actionsToggle = screen.getByRole("button", { name: /actions for Wifi1/i });
-    fireEvent.click(actionsToggle);
+    user.click(actionsToggle);
 
     const showAction = screen.getByText("Show");
-    fireEvent.click(showAction);
+    user.click(showAction);
 
     expect(mockNavigateFn).toHaveBeenCalledWith("/network/wifi_networks/My%20Wifi");
   });
 
   it("navigates to the edit connection page when 'Edit' is clicked", () => {
-    installerRender(<ConnectionsTable />);
+    const { user } = installerRender(<ConnectionsTable />);
     const actionsToggle = screen.getByRole("button", { name: /actions for Eth0/i });
-    fireEvent.click(actionsToggle);
+    user.click(actionsToggle);
 
     const editAction = screen.getByText("Edit");
-    fireEvent.click(editAction);
+    user.click(editAction);
 
     expect(mockNavigateFn).toHaveBeenCalledWith("/network/connections/Eth0/edit");
   });
 
   it("calls mutateConnection with status DELETE when 'Delete' is clicked", () => {
-    installerRender(<ConnectionsTable />);
+    const { user } = installerRender(<ConnectionsTable />);
     const actionsToggle = screen.getByRole("button", { name: /actions for Eth0/i });
-    fireEvent.click(actionsToggle);
+    user.click(actionsToggle);
 
     const deleteAction = screen.getByText("Delete");
-    fireEvent.click(deleteAction);
+    user.click(deleteAction);
 
     expect(mockMutateAsync).toHaveBeenCalledWith(
       expect.objectContaining({

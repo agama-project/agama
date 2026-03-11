@@ -137,16 +137,7 @@ const filterDevices = (devices: Device[], filters: DevicesFilters): Device[] => 
 };
 
 /**
- * Builds the list of actions available for the given devices.
- *
- * When `filterByDevice` is true, only actions relevant to the current state of
- * `devices[0]` are included (e.g. "Activate" is omitted if the device is
- * already active). This is intended for single-device row actions where showing
- * irrelevant options would be noisy.
- *
- * When false (default), the full set of actions is returned regardless of
- * device state, which is the right behavior for bulk operations where the
- * selection may contain devices in mixed states.
+ * Builds the list of actions available for the given device
  */
 const buildActions = ({
   device,
@@ -196,7 +187,7 @@ type FiltersToolbarProps = {
 };
 
 /**
- * Renders the filter controls toolbar for the network table.
+ * Renders the filter controls toolbar for the network devices table.
  *
  * Displays state and type filters alongside a device count
  * summary. When any filter is active the count switches from "N devices
@@ -373,11 +364,8 @@ type DevicesTableProps = {
   devices: Device[];
 };
 
-// device.iface
 /**
- * Displays a filterable, sortable, selectable table of network devices.
- *
- * Manages its own UI state (filters, sorting, selection) via a reducer.
+ * Renders a network devices table.
  */
 export default function DevicesTable({ devices }: DevicesTableProps) {
   const [state, dispatch] = useReducer(reducer, initialState);

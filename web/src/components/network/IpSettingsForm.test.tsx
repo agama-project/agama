@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, fireEvent, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import IpSettingsForm from "~/components/network/IpSettingsForm";
 
@@ -54,14 +54,15 @@ describe("IpSettingsForm", () => {
     mockParams({ id: "Connection #1" });
     mockUseConnection.mockReturnValue(undefined);
 
-    installerRender(<IpSettingsForm />);
+    const { user } = installerRender(<IpSettingsForm />);
 
     const nameInput = screen.getByLabelText("Name");
-    fireEvent.change(nameInput, { target: { value: "My New Connection" } });
+    await user.clear(nameInput);
+    await user.type(nameInput, "My New Connection");
     expect(nameInput).toHaveValue("My New Connection");
 
     const saveButton = screen.getByRole("button", { name: /save|accept|ok/i });
-    fireEvent.click(saveButton);
+    await user.click(saveButton);
 
     await waitFor(() => {
       expect(mockMutateAsync).toHaveBeenCalledWith(
