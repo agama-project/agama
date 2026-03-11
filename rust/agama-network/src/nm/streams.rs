@@ -21,7 +21,10 @@
 mod common;
 mod connections;
 mod devices;
+mod general;
 
 pub use common::NmChange;
 pub use connections::ActiveConnectionChangedStream;
+pub use connections::ConnectionSettingsChangedStream;
 pub use devices::DeviceChangedStream;
+pub use general::GeneralStateChangedStream;

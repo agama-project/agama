@@ -24,11 +24,14 @@ use crate::nm::error::NmError;
 
 #[derive(Debug, Clone)]
 pub enum NmChange {
+    GeneralStateChanged,
     DeviceAdded(OwnedObjectPath),
     DeviceUpdated(OwnedObjectPath),
     DeviceRemoved(OwnedObjectPath),
     IP4ConfigChanged(OwnedObjectPath),
     IP6ConfigChanged(OwnedObjectPath),
+    ConnectionAdded(OwnedObjectPath),
+    ConnectionRemoved(OwnedObjectPath),
     ActiveConnectionAdded(OwnedObjectPath),
     ActiveConnectionUpdated(OwnedObjectPath),
     ActiveConnectionRemoved(OwnedObjectPath),
