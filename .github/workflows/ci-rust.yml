@@ -118,7 +118,8 @@ jobs:
         key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Run clippy linter
-      run: cargo clippy
+      # deny warnings: clippy or rustc warnings will fail the build
+      run: cargo clippy -- -D warnings
       working-directory: ./rust
 
   tests:
