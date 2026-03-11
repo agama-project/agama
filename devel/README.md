@@ -131,3 +131,33 @@ GitHub variable. It is in JSON format and maps the Git branch name to the OBS pr
 
 The GitHub submission actions check the mapping value for the current branch/tag and if no mapping
 is found the submission is skipped.
+
+## Detailed implementation
+
+- check if needed tools are installed, else terminate (git gh jq osc)
+- check if user is authenticated to gh and osc, else terminate
+
+- modes of operation:
+  - print obsolete projects (those where the branch no longer exists)
+  - cleanup obsolete projects
+  - setup a project for submission (described in the following)
+
+- if setting up a fork, check that OBS_USER and OBS_PASSWORDS are defined,
+  else terminate
+
+- if the OBS project does not exist yet, create it:
+  - branch a **set of packages** from systemsmanagement:Agama:Devel to the target project
+  - disable building for archs: aarch64, i586, ppc64le and s390x (unless `-a` is given)
+  - disable building for targets: Leap 16.x (unless `-t` is given)
+  - for package agama-installer-Leap, disable building for target: images(TW)
+  - enable publishing the packages and images (which is off by default in OBS)
+  - set the project url, title, description: to point to the git repo and branch
+
+- update gh variable OBS_PROJECTS for the repo to include this branch->project
+
+- for each of the set of **CI Workflows** (last major change: PR#2145)
+  - trigger the workflow
+    - if the remote branch already exists, do it
+    - otherwise print the command to do it
+
+- print the URL of the OBS project
