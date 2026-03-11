@@ -42,6 +42,7 @@ const wlan0: Device = {
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.1"],
+  dnsSearchList: [],
   method4: ConnectionMethod.MANUAL,
   method6: ConnectionMethod.AUTO,
   gateway4: "192.168.69.1",

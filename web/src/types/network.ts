@@ -191,6 +191,7 @@ class Device {
   type: ConnectionType;
   addresses: IPAddress[];
   nameservers: string[];
+  dnsSearchList: string[];
   gateway4: string;
   gateway6: string;
   method4: ConnectionMethod;
@@ -208,6 +209,7 @@ class Device {
     return {
       ...newDevice,
       nameservers: ipConfig?.nameservers || [],
+      dnsSearchList: ipConfig?.dnsSearchList || [],
       addresses: buildAddresses(ipConfig?.addresses),
       routes4: buildRoutes(ipConfig?.routes4),
       routes6: buildRoutes(ipConfig?.routes6),
@@ -222,6 +224,7 @@ class Device {
 type IPConfig = {
   addresses: string[];
   nameservers?: string[];
+  dnsSearchList?: string[];
   gateway4?: string;
   gateway6?: string;
   method4: ConnectionMethod;
@@ -252,6 +255,7 @@ type APIConnection = {
   macAddress?: string;
   addresses?: string[];
   nameservers?: string[];
+  dnsSearchList?: string[];
   gateway4?: string;
   gateway6?: string;
   method4: string;
@@ -291,6 +295,7 @@ type ConnectionOptions = {
   macAddress?: string;
   addresses?: IPAddress[];
   nameservers?: string[];
+  dnsSearchList?: string[];
   gateway4?: string;
   gateway6?: string;
   method4?: ConnectionMethod;
@@ -309,6 +314,7 @@ class Connection {
   macAddress?: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
+  dnsSearchList: string[] = [];
   gateway4?: string = "";
   gateway6?: string = "";
   method4: ConnectionMethod = ConnectionMethod.AUTO;
@@ -329,6 +335,7 @@ class Connection {
   static fromApi(connection: APIConnection) {
     const { id, status, interface: iface, ...options } = connection;
     const nameservers = connection.nameservers || [];
+    const dnsSearchList = connection.dnsSearchList || [];
     const addresses = connection.addresses?.map(buildAddress) || [];
     return new Connection(id, {
       ...options,
@@ -339,6 +346,7 @@ class Connection {
       iface,
       addresses,
       nameservers,
+      dnsSearchList,
     });
   }
 

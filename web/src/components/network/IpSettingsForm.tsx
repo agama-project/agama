@@ -39,6 +39,7 @@ import {
 import { Page } from "~/components/core";
 import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
+import DnsSearchDataList from "~/components/network/DnsSearchDataList";
 import { _ } from "~/i18n";
 import { IPAddress, Connection, ConnectionMethod, ConnectionStatus } from "~/types/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
@@ -65,6 +66,11 @@ export default function IpSettingsForm() {
       return { address: a };
     }),
   );
+  const [dnsSearchList, setDnsSearchList] = useState(
+    connection.dnsSearchList.map((domain) => {
+      return { domain };
+    }),
+  );
   const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
   const [gateway, setGateway] = useState<string>(connection.gateway4 || "");
   const [fieldErrors, setFieldErrors] = useState<object>({});
@@ -79,6 +85,9 @@ export default function IpSettingsForm() {
 
   const cleanAddresses = (addresses: IPAddress[]) =>
     addresses.filter((address) => address.address !== "");
+
+  const cleanDnsSearchList = (list: { domain: string }[]) =>
+    list.filter((item) => item.domain !== "");
 
   const cleanError = (field: string) => {
     if (isSetAsInvalid(field)) {
@@ -121,6 +130,7 @@ export default function IpSettingsForm() {
 
     const sanitizedAddresses = cleanAddresses(addresses);
     const sanitizedNameservers = cleanAddresses(nameservers);
+    const sanitizedDnsSearchList = cleanDnsSearchList(dnsSearchList);
 
     if (!validate(sanitizedAddresses)) return;
 
@@ -132,6 +142,7 @@ export default function IpSettingsForm() {
       method4: method,
       gateway4: gateway,
       nameservers: sanitizedNameservers.map((s) => s.address),
+      dnsSearchList: sanitizedDnsSearchList.map((s) => s.domain),
     });
     updateConnection(updatedConnection)
       .then(() => navigate(-1))
@@ -239,6 +250,8 @@ export default function IpSettingsForm() {
           />
 
           <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
+
+          <DnsSearchDataList searchList={dnsSearchList} updateDnsSearchList={setDnsSearchList} />
 
           <ActionGroup>
             <Page.Submit form="editConnectionForm" />

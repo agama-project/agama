@@ -136,6 +136,16 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         </DescriptionListDescription>
       </DescriptionListGroup>
       <DescriptionListGroup>
+        <DescriptionListTerm>{_("DNS Search List")}</DescriptionListTerm>
+        <DescriptionListDescription>
+          <Flex direction={{ default: "column" }}>
+            {device.dnsSearchList.map((domain, idx) => (
+              <FlexItem key={idx}>{domain}</FlexItem>
+            ))}
+          </Flex>
+        </DescriptionListDescription>
+      </DescriptionListGroup>
+      <DescriptionListGroup>
         <DescriptionListTerm>{_("Routes")}</DescriptionListTerm>
         <DescriptionListDescription>
           <Flex direction={{ default: "column" }}>
@@ -252,6 +262,18 @@ const ConnectionDetails = ({ connection }: { connection: Connection }) => {
                 {isEmpty(connection.nameservers)
                   ? _("None set")
                   : connection.nameservers.map((dns, idx) => <FlexItem key={idx}>{dns}</FlexItem>)}
+              </Flex>
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>{_("DNS Search List")}</DescriptionListTerm>
+            <DescriptionListDescription>
+              <Flex direction={{ default: "column" }}>
+                {isEmpty(connection.dnsSearchList)
+                  ? _("None set")
+                  : connection.dnsSearchList.map((domain, idx) => (
+                      <FlexItem key={idx}>{domain}</FlexItem>
+                    ))}
               </Flex>
             </DescriptionListDescription>
           </DescriptionListGroup>

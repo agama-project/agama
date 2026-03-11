@@ -145,6 +145,16 @@ const IpDetails = ({ device, settings }: { device: Device; settings: WifiNetwork
           </DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
+          <DescriptionListTerm>{_("DNS Search List")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              {device.dnsSearchList.map((domain, idx) => (
+                <FlexItem key={idx}>{domain}</FlexItem>
+              ))}
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
           <DescriptionListTerm>{_("Routes")}</DescriptionListTerm>
           <DescriptionListDescription>
             <Flex direction={{ default: "column" }}>
