@@ -50,7 +50,7 @@ module Agama
 
         # Finds a device for booting.
         #
-        # It there is already an entry pointing to that device, it may set an alias for that config
+        # If there is already an entry pointing to that device, it may set an alias for that config
         # entry if needed.
         #
         # If there is no Drive or MdRaid entry, it may add it to the config.
