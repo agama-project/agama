@@ -25,10 +25,7 @@ use std::{
     task::{Context, Poll},
 };
 use tokio_stream::{Stream, StreamMap};
-use zbus::{
-    fdo::PropertiesChanged,
-    Message, MessageStream,
-};
+use zbus::{fdo::PropertiesChanged, Message, MessageStream};
 
 use super::common::{build_properties_changed_stream, NmChange};
 use crate::nm::error::NmError;
