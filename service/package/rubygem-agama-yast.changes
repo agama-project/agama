@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 10 14:10:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not report AutoYaST elements as unsupported if the value is empty
+  (bsc#1259458).
+
+-------------------------------------------------------------------
 Tue Feb 24 16:59:38 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not log the URL password in the "inst.install_url" boot

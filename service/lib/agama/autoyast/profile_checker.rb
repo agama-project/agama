@@ -51,6 +51,8 @@ module Agama
         return [] unless profile.is_a?(Hash)
 
         profile.map do |k, v|
+          next if empty?(v)
+
           current = parent.empty? ? k : "#{parent}#{ProfileDescription::SEPARATOR}#{k}"
 
           children = if v.is_a?(Array)
@@ -62,7 +64,12 @@ module Agama
           end
 
           [current, *children]
-        end.flatten
+        end.flatten.compact
+      end
+
+      # Determine whether the given value is empty.
+      def empty?(value)
+        value.nil? || (value.respond_to?(:empty?) && value.empty?)
       end
     end
   end
