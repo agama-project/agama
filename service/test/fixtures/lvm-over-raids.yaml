@@ -1,0 +1,81 @@
+---
+- disk:
+    name: /dev/vda
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 50 GiB
+        name: /dev/vda1
+    - partition:
+        size: 50 GiB
+        name: /dev/vda2
+    - partition:
+        size: 50 GiB
+        name: /dev/vda3
+- disk:
+    name: /dev/vdb
+    size: 500 GiB
+    partition_table: gpt
+    partitions:
+    - partition:
+        size: 50 GiB
+        name: /dev/vdb1
+    - partition:
+        size: 50 GiB
+        name: /dev/vdb2
+    - partition:
+        size: 50 GiB
+        name: /dev/vdb3
+- disk:
+    name: /dev/vdc
+    size: 500 GiB
+- disk:
+    name: /dev/vdd
+    size: 500 GiB
+- disk:
+    name: /dev/vde
+    size: 500 GiB
+- disk:
+    name: /dev/vdf
+    size: 500 GiB
+- md:
+    name: "/dev/md0"
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda1
+    - md_device:
+        blk_device: /dev/vdb1
+- md:
+    name: "/dev/md1"
+    md_devices:
+    - md_device:
+        blk_device: /dev/vda2
+    - md_device:
+        blk_device: /dev/vdb2
+- md:
+    name: "/dev/md2"
+    md_devices:
+    - md_device:
+        blk_device: /dev/vdc
+    - md_device:
+        blk_device: /dev/vdd
+- md:
+    name: "/dev/md3"
+    md_devices:
+    - md_device:
+        blk_device: /dev/vde
+    - md_device:
+        blk_device: /dev/vdf
+- lvm_vg:
+    vg_name: "vg0"
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/md0"
+    - lvm_pv:
+        blk_device: "/dev/md2"
+- lvm_vg:
+    vg_name: "vg1"
+    lvm_pvs:
+    - lvm_pv:
+        blk_device: "/dev/md3"
