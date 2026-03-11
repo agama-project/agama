@@ -170,7 +170,12 @@ pub struct IpConfig {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[serde(
+        default,
+        skip_serializing_if = "Vec::is_empty",
+        rename = "dnsSearchList",
+        alias = "dnsSearchlist"
+    )]
     pub dns_searchlist: Vec<String>,
     pub ignore_auto_dns: bool,
     #[schema(schema_with = schemas::ip_addr)]
@@ -766,6 +771,36 @@ mod tests {
     fn test_display_bond_mode() {
         let mode = BondMode::try_from(1).unwrap();
         assert_eq!(format!("{}", mode), "active-backup");
+    }
+
+    #[test]
+    fn test_ip_config_dns_searchlist_serialization() {
+        let json = r#"{
+            "method4": "auto",
+            "method6": "auto",
+            "dnsSearchList": ["example.com"],
+            "ignoreAutoDns": false,
+            "linkLocal4": "default"
+        }"#;
+        let config: IpConfig = serde_json::from_str(json).unwrap();
+        assert_eq!(config.dns_searchlist, vec!["example.com"]);
+
+        let serialized = serde_json::to_string(&config).unwrap();
+        assert!(serialized.contains("\"dnsSearchList\":[\"example.com\"]"));
+        assert!(!serialized.contains("\"dnsSearchlist\""));
+    }
+
+    #[test]
+    fn test_ip_config_dns_searchlist_alias() {
+        let json = r#"{
+            "method4": "auto",
+            "method6": "auto",
+            "dnsSearchlist": ["example.org"],
+            "ignoreAutoDns": false,
+            "linkLocal4": "default"
+        }"#;
+        let config: IpConfig = serde_json::from_str(json).unwrap();
+        assert_eq!(config.dns_searchlist, vec!["example.org"]);
     }
 
     #[test]

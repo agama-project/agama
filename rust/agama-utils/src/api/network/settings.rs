@@ -239,7 +239,12 @@ pub struct NetworkConnection {
     #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
     /// List of search domains for DNS resolution
-    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    #[serde(
+        skip_serializing_if = "Vec::is_empty",
+        default,
+        rename = "dnsSearchList",
+        alias = "dnsSearchlist"
+    )]
     pub dns_searchlist: Vec<String>,
     /// Specifies whether to ignore automatically assigned DNS settings
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -320,3 +325,33 @@ pub struct NetworkConnectionWithState {
     pub connection: NetworkConnection,
     pub state: ConnectionState,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_network_connection_dns_searchlist_serialization() {
+        let json = r#"{
+            "id": "eth0",
+            "dnsSearchList": ["example.com"]
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert_eq!(conn.dns_searchlist, vec!["example.com"]);
+
+        let serialized = serde_json::to_string(&conn).unwrap();
+        assert!(serialized.contains("\"dnsSearchList\":[\"example.com\"]"));
+        assert!(!serialized.contains("\"dnsSearchlist\""));
+    }
+
+    #[test]
+    fn test_network_connection_dns_searchlist_alias() {
+        let json = r#"{
+            "id": "eth0",
+            "dnsSearchlist": ["example.org"]
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert_eq!(conn.dns_searchlist, vec!["example.org"]);
+    }
+}
+

@@ -139,6 +139,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
     ) -> Result<IpConfig, NmError> {
         let address_data = ip4_proxy.address_data().await?;
         let nameserver_data = ip4_proxy.nameserver_data().await?;
+        let mut dns_searchlist = ip4_proxy.searches().await?;
         let mut addresses: Vec<IpInet> = vec![];
         let mut nameservers: Vec<IpAddr> = vec![];
 
@@ -158,6 +159,12 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         for nameserver in nameserver_data {
             if let Some(address) = self.nameserver_from_dbus(nameserver) {
                 nameservers.push(address)
+            }
+        }
+
+        for search in ip6_proxy.searches().await? {
+            if !dns_searchlist.contains(&search) {
+                dns_searchlist.push(search);
             }
         }
         // FIXME: Convert from Vec<u8> to [u8; 16] and take into account big vs little endian order,
@@ -188,6 +195,7 @@ impl<'a> DeviceFromProxyBuilder<'a> {
         let mut ip_config = IpConfig {
             addresses,
             nameservers,
+            dns_searchlist,
             routes4,
             routes6,
             ..Default::default()

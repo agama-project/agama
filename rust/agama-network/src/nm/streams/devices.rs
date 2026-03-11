@@ -96,7 +96,13 @@ impl DeviceChangedStream {
     }
 
     fn handle_changed(message: PropertiesChanged) -> Option<NmChange> {
-        const IP_CONFIG_PROPS: &[&str] = &["AddressData", "Gateway", "NameserverData", "RouteData"];
+        const IP_CONFIG_PROPS: &[&str] = &[
+            "AddressData",
+            "Gateway",
+            "NameserverData",
+            "RouteData",
+            "Searches",
+        ];
         const DEVICE_PROPS: &[&str] = &[
             "DeviceType",
             "HwAddress",
