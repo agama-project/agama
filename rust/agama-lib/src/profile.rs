@@ -26,35 +26,49 @@ use std::{fs, io::Write, path::Path, process::Command};
 use tempfile::{tempdir, TempDir};
 use url::Url;
 
+#[derive(thiserror::Error, Debug)]
+pub enum AutoyastError {
+    #[error("I/O error: {0}")]
+    IO(#[from] std::io::Error),
+    #[error("Failed to run the agama-autoyast script: {0}")]
+    Execute(#[source] std::io::Error),
+    #[error("Failed to convert the AutoYaST profile: {0}")]
+    Evaluation(String),
+    #[error("Unsupported AutoYaST format at {0}")]
+    UnsupportedFormat(Url),
+}
+
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
     pub content: String,
 }
 
 impl AutoyastProfileImporter {
-    pub async fn read(url: &Url) -> anyhow::Result<Self> {
+    pub async fn read(url: &Url) -> Result<Self, AutoyastError> {
         let path = url.path();
         if !path.ends_with(".xml") && !path.ends_with(".erb") && !path.ends_with('/') {
-            let msg = format!("Unsupported AutoYaST format at {}", url);
-            return Err(anyhow::Error::msg(msg));
+            return Err(AutoyastError::UnsupportedFormat(url.clone()));
         }
 
         const TMP_DIR_PREFIX: &str = "autoyast";
         const AUTOINST_JSON: &str = "autoinst.json";
 
         let tmp_dir = TempDir::with_prefix(TMP_DIR_PREFIX)?;
-        tokio::process::Command::new("agama-autoyast")
+        let result = tokio::process::Command::new("agama-autoyast")
             .env("YAST_SKIP_PROFILE_FETCH_ERROR", "1")
             .args([url.as_str(), &tmp_dir.path().to_string_lossy()])
-            .status()
+            .output()
             .await
-            .context("Failed to run agama-autoyast")?;
+            .map_err(AutoyastError::Execute)?;
+
+        if !result.status.success() {
+            return Err(AutoyastError::Evaluation(
+                String::from_utf8_lossy(&result.stderr).to_string(),
+            ));
+        }
 
         let autoinst_json = tmp_dir.path().join(AUTOINST_JSON);
-        let content = fs::read_to_string(&autoinst_json).context(format!(
-            "agama-autoyast did not produce {:?}",
-            autoinst_json
-        ))?;
+        let content = fs::read_to_string(&autoinst_json)?;
         Ok(Self { content })
     }
 }
