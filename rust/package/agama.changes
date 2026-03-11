@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Mar 11 15:33:11 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added support for the "inst.listen_on" boot parameter
+  - The "inst.listen_on=localhost" option disables remote access
+  - It is possible to specify IP address (both IPv4 and IPv6)
+    or network interface, accepts comma separated list
+  (jsc#AGM-153)
+
+-------------------------------------------------------------------
 Mon Mar  9 11:37:06 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Move the location of the dumped solver testcase
