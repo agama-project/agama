@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    bootloader, checks, files, hardware, hostname, iscsi, l10n, message, network, proxy, s390,
-    security, software, storage, tasks, users,
+    actions::FinishAction, bootloader, checks, files, hardware, hostname, iscsi, l10n, message,
+    network, proxy, s390, security, software, storage, tasks, users,
 };
 use agama_users::PasswordCheckResult;
 use agama_utils::{
@@ -29,12 +29,10 @@ use agama_utils::{
         self, event,
         manager::{self, LicenseContent},
         status::Stage,
-        Action, Config, Event, FinishMethod, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
+        Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     arch::Arch,
-    issue,
-    kernel_cmdline::KernelCmdline,
-    licenses,
+    issue, licenses,
     products::{self, ProductSpec},
     progress, question,
 };
@@ -42,7 +40,7 @@ use async_trait::async_trait;
 use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
-use std::{collections::HashMap, process::Command, str::FromStr, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
@@ -888,54 +886,5 @@ impl MessageHandler<users::message::CheckPassword> for Service {
         message: users::message::CheckPassword,
     ) -> Result<PasswordCheckResult, Error> {
         Ok(self.users.call(message).await?)
-    }
-}
-
-/// Implements the finish action.
-struct FinishAction {
-    method: Option<FinishMethod>,
-}
-
-impl FinishAction {
-    pub fn new(method: Option<FinishMethod>) -> Self {
-        Self { method }
-    }
-
-    pub fn run(self) {
-        let method = self.method.unwrap_or_else(|| {
-            let inst_finish_method = KernelCmdline::parse()
-                .ok()
-                .and_then(|a| a.get_last("inst.finish"))
-                .and_then(|m| FinishMethod::from_str(&m).ok());
-            inst_finish_method.unwrap_or_default()
-        });
-
-        tracing::info!("Finishing the installation process ({})", method);
-
-        let option = match method {
-            FinishMethod::Halt => Some("-H"),
-            FinishMethod::Reboot => Some("-r"),
-            FinishMethod::Poweroff => Some("-P"),
-            FinishMethod::Stop => None,
-        };
-        let mut command = Command::new("shutdown");
-
-        if let Some(switch) = option {
-            command.arg(switch);
-        } else {
-            return;
-        }
-
-        command.arg("now");
-        match command.output() {
-            Ok(output) => {
-                if !output.status.success() {
-                    tracing::error!("Failed to shutdown the system: {output:?}")
-                }
-            }
-            Err(error) => {
-                tracing::error!("Failed to run the shutdown command: {error}");
-            }
-        }
     }
 }
