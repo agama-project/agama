@@ -114,6 +114,8 @@ enum DeviceType {
   WIRELESS = 2,
   DUMMY = 3,
   BOND = 4,
+  VLAN = 5,
+  BRIDGE = 6,
 }
 
 enum NetworkState {

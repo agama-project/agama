@@ -107,6 +107,9 @@ const STATE_OPTIONS = {
 const TYPE_OPTIONS = {
   ethernet: N_("Ethernet"),
   bond: N_("Bond"),
+  bridge: N_("Bridge"),
+  vlan: N_("Vlan"),
+  wireless: N_("Wireless"),
 };
 
 /**
