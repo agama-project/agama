@@ -42,11 +42,10 @@ if grep -q "\binst.listen_on=.\+" /run/agama/cmdline.d/agama.conf; then
     # always run on the localhost
     OPTIONS=("${LOCAL_OPTIONS[@]}")
 
-    # the string can contain multiple addresses separated by comma
-    # replace commas with spaces to iterate over them
+    # the string can contain multiple addresses separated by comma,
+    # replace commas with spaces and iterate over items
     ADDRESSES=${LISTEN_ON//,/ }
-    ADDRESSES=("${ADDRESSES[@]}")
-    for ADDRESS in "${ADDRESSES[@]}"; do
+    for ADDRESS in $ADDRESSES; do
       # check if the value is an IP address (IPv6, IPv6 link local or IPv4)
       if echo "$ADDRESS" | grep -qE '^[0-9a-fA-F:]+$|^[fF][eE]80|^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
         echo "<5>Listening on IP address ${ADDRESS}"
