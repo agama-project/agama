@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_lib::profile::AutoyastError;
 use agama_transfer::Transfer;
 use anyhow::Context;
 
@@ -47,6 +48,19 @@ impl std::fmt::Display for ProfileServiceError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
         write!(f, "{:#}", &self.source)
+    }
+}
+
+impl From<AutoyastError> for ProfileServiceError {
+    fn from(e: AutoyastError) -> Self {
+        let http_status = match e {
+            AutoyastError::Execute(..) => StatusCode::INTERNAL_SERVER_ERROR,
+            _ => StatusCode::BAD_REQUEST,
+        };
+        Self {
+            source: e.into(),
+            http_status,
+        }
     }
 }
 
@@ -208,15 +222,6 @@ async fn autoyast(body: String) -> Result<String, ProfileServiceError> {
     }
 
     let url = Url::parse(profile.url.as_ref().unwrap()).map_err(anyhow::Error::new)?;
-    let importer_res = AutoyastProfileImporter::read(&url).await;
-    match importer_res {
-        Ok(importer) => Ok(importer.content),
-        Err(error) => {
-            // anyhow can be only displayed, not so nice
-            if format!("{}", error).contains("Failed to run") {
-                return Err(make_internal(error));
-            }
-            Err(error.into())
-        }
-    }
+    let importer = AutoyastProfileImporter::read(&url).await?;
+    Ok(importer.content)
 }
