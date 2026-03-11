@@ -2,7 +2,7 @@
 Wed Mar 11 14:39:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add error reporting when working with AutoYaST profiles (related
-  to bsc#1259485).
+  to bsc#1259434).
 
 -------------------------------------------------------------------
 Fri Jan 30 13:48:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

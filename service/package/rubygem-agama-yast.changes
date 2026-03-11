@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Wed Mar 11 14:38:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add errors to the output of agama-autoyast (related to bsc#1259485).
+- Add errors to the output of agama-autoyast (related to bsc#1259434).
 
 -------------------------------------------------------------------
 Wed Mar 11 06:55:42 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
