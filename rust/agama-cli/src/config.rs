@@ -21,8 +21,13 @@
 use std::{io::Write, path::PathBuf, process::Command};
 
 use agama_lib::{
-    context::InstallationContext, http::BaseHTTPClient, install_settings::InstallSettings,
-    monitor::MonitorClient, profile::ValidationOutcome, utils::FileFormat, Store as SettingsStore,
+    context::InstallationContext,
+    http::{BaseHTTPClient, BaseHTTPClientError},
+    install_settings::InstallSettings,
+    monitor::MonitorClient,
+    profile::ValidationOutcome,
+    utils::FileFormat,
+    Store as SettingsStore,
 };
 use anyhow::{anyhow, Context};
 use clap::Subcommand;
@@ -270,7 +275,10 @@ async fn generate(
 /// Note that this client does not act on this *url*, it passes it as a parameter
 /// to our web backend.
 /// Return well-formed Agama JSON on success.
-async fn autoyast_client(client: &BaseHTTPClient, url: &Uri<String>) -> anyhow::Result<String> {
+async fn autoyast_client(
+    client: &BaseHTTPClient,
+    url: &Uri<String>,
+) -> Result<String, BaseHTTPClientError> {
     // FIXME: how to escape it?
     let api_url = format!("/profile/autoyast?url={}", url);
     let output: Box<serde_json::value::RawValue> = client.post(&api_url, &()).await?;
