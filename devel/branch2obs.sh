@@ -10,12 +10,15 @@ usage () {
   echo "  -a              - keep all original build archs (default: build only x86_64)"
   echo "  -b <branch|tag> - source git branch or tag (default: current git branch)"
   echo "  -p <project>    - target OBS project"
-  echo "                    (default: systemsmanagement:Agama:branches:\$BRANCH"
-  echo "                           or systemsmanagement:Agama:Devel  for master)"
+  echo "                    (default for main repo:"
+  echo "                               systemsmanagement:Agama:branches:\$BRANCH or"
+  echo "                               systemsmanagement:Agama:Devel  for master"
+  echo "                             for forks:"
+  echo "                               home:\$osc_user:Agama:branches:\$BRANCH)"
   echo "  -t              - keep all original build targets (default: disable Leap 16.x)"
   echo
-  echo "  -c              - cleanup (delete) all obsolete projects, exclusive option,"
-  echo "                    all other options are ignored"
+  echo "  -c              - cleanup (delete) all obsolete projects (branch no longer exists);"
+  echo "                    exclusive option, all other options are ignored"
   echo "  -o              - print obsolete projects, similar to -c but only print"
   echo "                    the projects instead of deleting them"
   echo "                    Obsolete are those that don't have a git branch anymore."
@@ -85,6 +88,7 @@ if ! gh auth status --active > /dev/null 2>&1; then
   exit 1
 fi
 
+# "agama-project/agama" or similar for a fork
 repo_slug=$(gh repo view --json nameWithOwner -q ".nameWithOwner")
 
 if [ -n "$CLEANUP" ] || [ -n "$OBSOLETE" ]; then
@@ -145,6 +149,10 @@ if [ "$repo_slug" = "agama-project/agama" ]; then
       PROJECT="systemsmanagement:Agama:branches:${BRANCH}"
     fi
   fi
+  # BTW, var: OBS_USER and secret: OBS_PASSWORD for the main repo
+  # are defined at the organization level, not repo level. See:
+  #     gh variable list -o agama-project
+  #     gh secret   list -o agama-project
 else
   echo "GitHub fork detected"
 
