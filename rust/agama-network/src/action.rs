@@ -96,4 +96,6 @@ pub enum Action {
     RemoveConnection(String, Responder<Result<(), NetworkStateError>>),
     /// Apply the current configuration.
     Apply(Responder<Result<(), NetworkAdapterError>>),
+    /// Sets the locale
+    SetLocale(String),
 }

@@ -180,9 +180,9 @@ void free_patterns(const struct Patterns *patterns) noexcept;
 /// Representation of zypp::Product
 struct Product {
   // so far we do not need more details about the products
-  const char *name;        ///< owned
-  const char *repo_alias;  ///< owned
-  const char *service_alias;  ///< owned
+  const char *name;          ///< owned
+  const char *repo_alias;    ///< owned
+  const char *service_alias; ///< owned
 };
 
 struct Products {
@@ -231,7 +231,8 @@ bool is_package_selected(struct Zypp *zypp, const char *tag,
 bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept;
 
-/// Create a solver testcase, dumps all all solver data (repositories, loaded packages...) to disk
+/// Create a solver testcase, dumps all all solver data (repositories, loaded
+/// packages...) to disk
 /// @param zypp see \ref init_target
 /// @param dir directory path where the solver testcase is saved
 /// @return true if the solver testcase was successfully created

@@ -91,6 +91,16 @@ const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
  */
 const mockParams = (params: ReturnType<typeof useParams>) => (paramsMock = params);
 
+/**
+ * Allows mocking the error returned by useRouteError for testing error boundaries
+ *
+ * @example
+ *   mockRouteError(new Error("Something exploded"));
+ *   mockRouteError({ __isRouteError: true, status: 404, statusText: "Not Found", data: null });
+ */
+const mockRouteErrorFn = jest.fn();
+const mockRouteError = (error: unknown) => mockRouteErrorFn.mockReturnValue(error);
+
 // Centralize the react-router mock here
 jest.mock("react-router", () => ({
   ...jest.requireActual("react-router"),
@@ -106,6 +116,8 @@ jest.mock("react-router", () => ({
     () => {
       to;
     },
+  useRouteError: () => mockRouteErrorFn(),
+  isRouteErrorResponse: (e: unknown) => e instanceof Object && "__isRouteError" in e,
 }));
 
 /**
@@ -386,6 +398,7 @@ export {
   mockNavigateFn,
   mockParams,
   mockRoutes,
+  mockRouteError,
   mockUseRevalidator,
   resetLocalStorage,
   getColumnValues,

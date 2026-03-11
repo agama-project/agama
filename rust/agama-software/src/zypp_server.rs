@@ -47,7 +47,7 @@ use crate::{
         state::{self, SoftwareState},
         WriteIssues,
     },
-    state::{Addon, RegistrationState, RepoKey, ResolvableSelection},
+    state::{Addon, RegistrationState, RepoKey, ResolvableSelection, ResolvablesState},
     Registration, ResolvableType,
 };
 
@@ -418,59 +418,41 @@ impl ZyppServer {
         // reset everything to start from scratch
         zypp.reset_resolvables();
 
-        // FIXME: hotfix/workaround for bsc#1259311 - check if a *-release package is selected to install
-        // and if so then do not select the product to install, this should be removed after fixing the solver
-        let mut selected_release_package: Option<String> = None;
-        for (name, r#type, selection) in &state.resolvables.to_vec() {
-            if r#type == &ResolvableType::Package
-            && name.ends_with("-release")
-                // uh, the "lsb-release" package actually does not provide any product...
-                && name != "lsb-release"
-            {
-                match selection {
-                    ResolvableSelection::Selected | ResolvableSelection::AutoSelected { .. } => {
-                        selected_release_package = Some(name.clone());
-                        break;
-                    }
-                    ResolvableSelection::Removed => {}
-                }
-            }
-        }
+        tracing::info!("Selecting base product: {}", &state.product);
 
-        _ = progress.cast(progress::message::Next::new(Scope::Software));
-        if let Some(release_package) = selected_release_package {
-            tracing::info!(
-                "Release package {} will be installed, not selecting the product {} to install",
-                release_package,
-                &state.product
-            );
-        } else {
-            tracing::info!("Selecting base product: {}", &state.product);
-            let result = zypp.select_resolvable(
+        // FIXME: hotfix/workaround for bsc#1259311 - this should be removed after fixing the solver
+        let result = match Self::find_release_package(&state.resolvables) {
+            Some(package) => zypp.select_resolvable(
+                &package,
+                zypp_agama::ResolvableKind::Package,
+                zypp_agama::ResolvableSelected::Installation,
+            ),
+            None => zypp.select_resolvable(
                 &state.product,
                 zypp_agama::ResolvableKind::Product,
                 zypp_agama::ResolvableSelected::Installation,
-            );
-            if let Err(error) = result {
-                tracing::info!(
-                    "Failed to find the product {} in the repositories: {}",
-                    &state.product,
-                    &error
-                );
-                if state.allow_registration && !self.is_registered() {
-                    let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
-                    let issue = Issue::new("missing_registration", &message)
-                        .with_details(&error.to_string());
-                    issues.product.push(issue);
-                } else {
-                    let message = gettext("Failed to find the product in the repositories.");
-                    let issue =
-                        Issue::new("missing_product", &message).with_details(&error.to_string());
-                    issues.software.push(issue);
-                };
+            ),
+        };
 
-                return Self::send_issues_and_finish(issues, tx, progress);
-            }
+        if let Err(error) = result {
+            tracing::info!(
+                "Failed to find the product {} in the repositories: {}",
+                &state.product,
+                &error
+            );
+            if state.allow_registration && !self.is_registered() {
+                let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
+                let issue =
+                    Issue::new("missing_registration", &message).with_details(&error.to_string());
+                issues.product.push(issue);
+            } else {
+                let message = gettext("Failed to find the product in the repositories.");
+                let issue =
+                    Issue::new("missing_product", &message).with_details(&error.to_string());
+                issues.software.push(issue);
+            };
+
+            return Self::send_issues_and_finish(issues, tx, progress);
         }
 
         for (name, r#type, selection) in &state.resolvables.to_vec() {
@@ -1002,5 +984,22 @@ impl ZyppServer {
         }
         _ = progress.cast(progress::message::Finish::new(Scope::Software));
         Ok(())
+    }
+
+    // FIXME: hotfix/workaround for bsc#1259311 - check if a *-release package is selected to install
+    // and if so then do not select the product to install, this should be removed after fixing the solver
+    fn find_release_package(resolvables: &ResolvablesState) -> Option<String> {
+        for (name, r#type, selection) in resolvables.to_vec() {
+            if r#type == ResolvableType::Package
+                && name.ends_with("-release")
+                // uh, the "lsb-release" package actually does not provide any product...
+                && name != "lsb-release"
+                && selection.selected()
+            {
+                return Some(name);
+            }
+        }
+
+        None
     }
 }

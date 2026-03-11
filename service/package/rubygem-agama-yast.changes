@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 10 12:17:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not automatically update issues con language change. When to
+  update them is handled by agama-web-server (gh#agama-project/agama#3262).
+
+-------------------------------------------------------------------
 Fri Mar  6 13:03:21 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Allow to reuse LVM volume groups, volumes and thin pools
