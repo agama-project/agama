@@ -32,8 +32,7 @@ use agama_utils::{
         Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     arch::Arch,
-    issue,
-    licenses,
+    issue, licenses,
     products::{self, ProductSpec},
     progress, question,
 };
