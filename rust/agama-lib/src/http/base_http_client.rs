@@ -39,7 +39,7 @@ pub enum BaseHTTPClientError {
 }
 
 fn format_backend_error(error: &String) -> String {
-    let message: Result<serde_json::Value, _> = serde_json::from_str(&error);
+    let message: Result<serde_json::Value, _> = serde_json::from_str(error);
 
     match message {
         Ok(message) => {

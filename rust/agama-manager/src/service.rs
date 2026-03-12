@@ -29,11 +29,10 @@ use agama_utils::{
         self, event,
         manager::{self, LicenseContent},
         status::Stage,
-        Action, Config, Event, FinishMethod, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
+        Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     arch::Arch,
     issue,
-    kernel_cmdline::KernelCmdline,
     licenses,
     products::{self, ProductSpec},
     progress, question,
@@ -42,7 +41,7 @@ use async_trait::async_trait;
 use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
-use std::{collections::HashMap, str::FromStr, sync::Arc};
+use std::{collections::HashMap, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
