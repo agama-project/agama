@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::str::FromStr;
+
 use crate::{
-    actions::{InstallAction, SetConfigAction},
+    actions::{FinishAction, InstallAction, SetConfigAction},
     bootloader, files, hostname, iscsi, l10n, proxy, s390, security, service, software, storage,
     tasks::message,
     users,
@@ -27,8 +29,10 @@ use crate::{
 use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Actor, Handler, MessageHandler},
-    api::Scope,
-    issue, progress, question,
+    api::{FinishMethod, Scope},
+    issue,
+    kernel_cmdline::KernelCmdline,
+    progress, question,
 };
 use async_trait::async_trait;
 
@@ -91,6 +95,13 @@ impl MessageHandler<message::Install> for TasksRunner {
             .call(progress::message::Finish::new(Scope::Manager))
             .await;
         tracing::info!("Installation finished");
+
+        //
+        // Finish the installer (using the default option).
+        //
+        let method = FinishMethod::from_kernel_cmdline().unwrap_or(FinishMethod::Stop);
+        let finish = FinishAction::new(method);
+        finish.run();
         Ok(())
     }
 }

@@ -18,14 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{process::Command, str::FromStr, sync::Arc};
+use std::{process::Command, sync::Arc};
 
 use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::Handler,
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
     issue,
-    kernel_cmdline::KernelCmdline,
     products::ProductSpec,
     progress, question,
 };
@@ -343,27 +342,21 @@ impl SetConfigAction {
 }
 
 /// Implements the finish action.
+///
+/// If no FinishMethod is given, it defaults to "Stop" (which basically menans to do nothing).
 pub struct FinishAction {
-    method: Option<FinishMethod>,
+    method: FinishMethod,
 }
 
 impl FinishAction {
-    pub fn new(method: Option<FinishMethod>) -> Self {
+    pub fn new(method: FinishMethod) -> Self {
         Self { method }
     }
 
     pub fn run(self) {
-        let method = self.method.unwrap_or_else(|| {
-            let inst_finish_method = KernelCmdline::parse()
-                .ok()
-                .and_then(|a| a.get_last("inst.finish"))
-                .and_then(|m| FinishMethod::from_str(&m).ok());
-            inst_finish_method.unwrap_or_default()
-        });
+        tracing::info!("Finishing the installation process ({})", self.method);
 
-        tracing::info!("Finishing the installation process ({})", method);
-
-        let option = match method {
+        let option = match self.method {
             FinishMethod::Halt => Some("-H"),
             FinishMethod::Reboot => Some("-r"),
             FinishMethod::Poweroff => Some("-P"),

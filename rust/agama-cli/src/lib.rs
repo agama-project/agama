@@ -147,6 +147,8 @@ async fn finish(
 ) -> anyhow::Result<()> {
     wait_until_idle(monitor.clone()).await?;
 
+    let method = method
+        .unwrap_or_else(|| FinishMethod::from_kernel_cmdline().unwrap_or(FinishMethod::Reboot));
     manager.finish(method).await?;
     Ok(())
 }
