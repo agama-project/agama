@@ -85,6 +85,7 @@ jobs:
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
         clang-devel
+        findutils
         gcc-c++
         git
         libopenssl-3-devel
@@ -116,6 +117,10 @@ jobs:
           ~/.cargo
           rust/target
         key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run Clang Format check for the C/C++ zypp bindings
+      run: make check
+      working-directory: ./rust/zypp-agama/zypp-agama-sys/c-layer
 
     - name: Run clippy linter
       # deny warnings: clippy or rustc warnings will fail the build

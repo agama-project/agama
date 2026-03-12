@@ -11,7 +11,7 @@ clean:
 
 check:
 	git ls-files | grep -E '\.(c|h|cxx|hxx)$$' | \
-	  xargs --verbose clang-format --style=llvm --dry-run
+	  xargs --verbose clang-format --style=llvm -Werror --dry-run
 
 libagama-zypp.a: $(OBJ)
 	$(AR) -crs $@ $^
