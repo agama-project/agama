@@ -38,8 +38,9 @@ struct Zypp {
   zypp::RepoManager *repo_manager;
 };
 
-static struct Zypp the_zypp {
-  .zypp_pointer = NULL, .repo_manager = NULL,
+static struct Zypp the_zypp{
+    .zypp_pointer = NULL,
+    .repo_manager = NULL,
 };
 
 // formatter which actually logs the messages to the systemd journal,
