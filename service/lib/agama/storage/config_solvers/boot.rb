@@ -48,7 +48,12 @@ module Agama
         # @return [Storage::System]
         attr_reader :storage_system
 
-        # Finds a device for booting and sets its alias, if needed.
+        # Finds a device for booting.
+        #
+        # If there is already an entry pointing to that device, it may set an alias for that config
+        # entry if needed.
+        #
+        # If there is no Drive or MdRaid entry, it may add it to the config.
         #
         # A boot device cannot be automatically inferred in the following scenarios:
         #   * The root partition or logical volume is missing.
@@ -69,12 +74,15 @@ module Agama
 
         # Config of the device used for allocating root, directly or indirectly.
         #
-        # The boot device has to be a partitioned drive. If root is not directly created as a
-        # partition of a drive (e.g., as logical volume, as partition of a MD RAID, etc), then the
-        # first partitioned drive used for allocating the device (physical volume or MD member
-        # device) is considered as boot device.
+        # The boot device has to be a partitioned drive or hardware RAID. If root is not directly
+        # created as a partition of a drive (e.g., as logical volume, as partition of a MD RAID,
+        # etc), then the first partitioned drive used for allocating the device (physical volume
+        # or MD member device) is considered as boot device.
         #
-        # The boot device is recursively searched until reaching a drive.
+        # The boot device is recursively searched until reaching a drive or a hardware RAID.
+        #
+        # For reused LVMs or RAIDs, the result may be a new config entry created to point to the
+        # appropriate boot device.
         #
         # @return [Configs::Drive, Configs::MdRaid, nil] nil if the boot device cannot be inferred
         #   from the config.
@@ -130,14 +138,14 @@ module Agama
 
         # Recursively looks for the first partitioned config from the given MD RAID.
         #
+        # If no config is found, it may create and return a new Drive or MdRaid config.
+        #
         # @param md_raid [Configs::MdRaid]
         # @return [Configs::Drive, Configs::MdRaid, nil]
         def partitionable_from_found_md_raid(md_raid)
           return md_raid if storage_system.candidate?(md_raid.found_device)
 
-          # TODO: find the correct underlying disk devices for the MD RAID (note they may lack
-          # a corresponding drive entry at the configuration)
-          nil
+          partitionable_from_found(md_raid.found_device)
         end
 
         # Recursively looks for the first partitioned drive from the given MD RAID.
@@ -151,9 +159,20 @@ module Agama
 
         # Recursively looks for the first partitioned config from the given volume group.
         #
+        # If no config is found, it may create and return a new Drive or MdRaid config.
+        #
         # @param volume_group [Configs::VolumeGroup]
         # @return [Configs::Drive, Configs::MdRaid, nil]
         def partitionable_from_volume_group(volume_group)
+          partitionable_from_volume_group_pvs(volume_group) ||
+            (volume_group.found_device && partitionable_from_found(volume_group.found_device))
+        end
+
+        # Recursively looks for the first partitioned config from the given volume group.
+        #
+        # @param volume_group [Configs::VolumeGroup]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
+        def partitionable_from_volume_group_pvs(volume_group)
           pv_devices = find_devices(volume_group.physical_volumes_devices, is_target: true)
           pvs = find_devices(volume_group.physical_volumes)
 
@@ -211,6 +230,94 @@ module Agama
         # @return [Configs::VolumeGroup, nil]
         def find_volume_group(device_alias)
           config.volume_groups.find { |v| v.logical_volume?(device_alias) }
+        end
+
+        # Finds or creates a config pointing to the bootable device corresponding to the given
+        # RAID or volume group.
+        #
+        # @param device [Y2Storage::Md, Y2Storage::LvmVg]
+        # @return [Configs::Drive, Configs::MdRaid, nil]
+        def partitionable_from_found(device)
+          disks = bootable_devices(device)
+          return if disks.empty?
+
+          config_entry(disks)
+        end
+
+        # Finds all devices that could be used to boot into the given RAID or volume group
+        #
+        # @see #partitionable_from_found
+        #
+        # @param device [Y2Storage::Md, Y2Storage::LvmVg]
+        # @return [Array<Y2Storage::Partitionable>]
+        def bootable_devices(device)
+          device.ancestors.select do |dev|
+            dev.is?(:disk_device) && dev.partition_table? && storage_system.candidate?(dev)
+          end
+        end
+
+        # @see #partitionable_from_found
+        #
+        # @param devices [Array<Y2Storage::Partitionable>] list of candidate RAIDs or disk devices
+        # @return [Configs::Drive, Configs::MdRaid]
+        def config_entry(devices)
+          find_config_entry(devices) || create_config_entry(devices)
+        end
+
+        # Find the first entry in the current configuration that corresponds to any of the given
+        # devices
+        #
+        # @param devices [Array<Y2Storage::Partitionable>] list of candidate RAIDs or disk devices
+        # @return [Configs::Drive, Configs::MdRaid, nil]
+        def find_config_entry(devices)
+          sids = devices.map(&:sid)
+          raid = config.md_raids.find { |d| sids.include?(d.found_device&.sid) }
+          return raid if raid
+
+          config.drives.find { |d| sids.include?(d.found_device.sid) }
+        end
+
+        # Creates a new entry in the config to point to one of the given devices
+        #
+        # @param devices [Array<Y2Storage::Partitionable>] list of candidate RAIDs or disk devices
+        # @return [Configs::Drive, Configs::MdRaid]
+        def create_config_entry(devices)
+          device = preferred_device_to_create_entry(devices)
+          device.is?(:raid) ? create_raid_entry(device) : create_drive_entry(device)
+        end
+
+        # @see #create_config_entry
+        #
+        # @param devices [Array<Y2Storage::Partitionable>]
+        # @return [Y2Storage::Partitionable]
+        def preferred_device_to_create_entry(devices)
+          devices = devices.select { |d| d.is?(:raid) } if devices.any? { |d| d.is?(:raid) }
+          devices.min_by(&:name)
+        end
+
+        # @see #create_config_entry
+        #
+        # @param device [<Y2Storage::Partitionable>] disk device
+        # @return [Configs::Drive]
+        def create_drive_entry(device)
+          config.drives << Configs::Drive.new.tap do |drive|
+            drive.search.name = device.name
+            drive.search.solve(device)
+          end
+          config.drives.last
+        end
+
+        # @see #create_config_entry
+        #
+        # @param device [<Y2Storage::Md>] RAID device
+        # @return [Configs::MdRaid]
+        def create_raid_entry(device)
+          config.md_raids << Configs::MdRaid.new.tap do |md|
+            md.search = Configs::Search.new
+            md.search.name = device.name
+            md.search.solve(device)
+          end
+          config.md_raids.last
         end
       end
     end
