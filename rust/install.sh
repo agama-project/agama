@@ -38,6 +38,7 @@ install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-autoinstall"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-proxy-setup"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-web-server"
+install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-web-server.sh"
 
 install6 -D -p "${SRCDIR}"/share/agama.pam "${DESTDIR}${pamvendordir}"/agama
 
