@@ -218,6 +218,7 @@ echo $PATH
 %license LICENSE
 %{_bindir}/agama-dbus-server
 %{_bindir}/agama-web-server
+%{_bindir}/agama-web-server.sh
 %{_datadir}/dbus-1/agama-services
 %{_pam_vendordir}/agama
 %{_unitdir}/agama-web-server.service
