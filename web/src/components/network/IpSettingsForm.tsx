@@ -21,6 +21,7 @@
  */
 
 import React, { useState } from "react";
+import { isEmpty } from "radashi";
 import { generatePath, useNavigate, useParams } from "react-router";
 import {
   ActionGroup,
@@ -40,7 +41,6 @@ import { Page } from "~/components/core";
 import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import DnsSearchDataList from "~/components/network/DnsSearchDataList";
-import { _ } from "~/i18n";
 import {
   IPAddress,
   Connection,
@@ -52,6 +52,7 @@ import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useConnection } from "~/hooks/model/proposal/network";
 import { NETWORK } from "~/routes/paths";
 import DevicesSelector from "./DevicesSelector";
+import { _ } from "~/i18n";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
@@ -120,7 +121,7 @@ export default function IpSettingsForm() {
   };
 
   const onIfaceChange: FormSelectProps["onChange"] = (_, value) => {
-    setIface(value);
+    setIface(isEmpty(value) ? undefined : value);
   };
 
   const validate = (sanitizedAddresses: IPAddress[]) => {
@@ -215,9 +216,10 @@ export default function IpSettingsForm() {
           <FormGroup fieldId="iface" label={_("Interface")} isStack>
             <DevicesSelector
               id="iface"
-              valueKey="name"
-              value={iface}
               name="iface"
+              value={iface}
+              valueKey="name"
+              includesNone
               onChange={onIfaceChange}
             />
           </FormGroup>

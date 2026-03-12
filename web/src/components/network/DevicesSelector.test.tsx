@@ -133,6 +133,20 @@ describe("DevicesSelector", () => {
     });
   });
 
+  describe("when includesNone is true", () => {
+    it("renders a 'None (unbound)' option as the first option", () => {
+      installerRender(
+        <DevicesSelector valueKey="name" includesNone aria-label="Choose device to bind by name" />,
+      );
+
+      const select = screen.getByRole("combobox", { name: "Choose device to bind by name" });
+      const options = within(select).getAllByRole("option");
+
+      expect(options[0]).toHaveTextContent("None (unbound)");
+      expect(options[0]).toHaveValue("");
+    });
+  });
+
   describe("when disabled", () => {
     it("renders the select as disabled", () => {
       installerRender(

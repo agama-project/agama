@@ -32,6 +32,12 @@ type DevicesSelectorProps = Omit<FormSelectProps, "children" | "ref"> & {
    * The key from the device object whose value should be used for a select value
    */
   valueKey: keyof Device;
+
+  /**
+   * When true, prepends a "None (unbound)" option with a null value, allowing
+   * the user to explicitly leave the connection unbound to any device.
+   */
+  includesNone?: boolean;
 };
 
 /**
@@ -45,6 +51,7 @@ type DevicesSelectorProps = Omit<FormSelectProps, "children" | "ref"> & {
 export default function DevicesSelector({
   value,
   valueKey,
+  includesNone = false,
   ...formSelectProps
 }: DevicesSelectorProps): React.ReactNode {
   const devices = useDevices();
@@ -53,6 +60,7 @@ export default function DevicesSelector({
 
   return (
     <FormSelect value={value} {...formSelectProps}>
+      {includesNone && <FormSelectOption value="" label={_("None (unbound)")} />}
       {devices.map((device, index) => {
         // TRANSLATORS: A label shown in a dropdown for selecting a network
         // device. It combines the device name and MAC address, with the order
