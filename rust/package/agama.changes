@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 12 10:03:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not force to push the "Reboot" button if inst.finish is given
+  (jsc#PED-15031).
+
+-------------------------------------------------------------------
 Tue Mar 10 12:16:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Recalculate the issues and actions on language change (gh#agama-project/agama#3262).

@@ -18,7 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{iscsi, l10n};
+use std::str::FromStr;
+
+use crate::{
+    api::{iscsi, l10n},
+    kernel_cmdline::KernelCmdline,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
@@ -38,12 +43,11 @@ pub enum Action {
     #[serde(rename = "install")]
     Install,
     #[serde(rename = "finish")]
-    Finish(Option<FinishMethod>),
+    Finish(FinishMethod),
 }
 
 /// Finish method
 #[derive(
-    Default,
     Serialize,
     Deserialize,
     Debug,
@@ -61,10 +65,19 @@ pub enum FinishMethod {
     /// Halt the system
     Halt,
     /// Reboots the system
-    #[default]
     Reboot,
     /// Do nothing at the end of the installation
     Stop,
     /// Poweroff the system
     Poweroff,
+}
+
+impl FinishMethod {
+    /// Returns the finish method given in the kernel's command-line (if any).
+    pub fn from_kernel_cmdline() -> Option<Self> {
+        KernelCmdline::parse()
+            .ok()
+            .and_then(|a| a.get_last("inst.finish"))
+            .and_then(|m| FinishMethod::from_str(&m).ok())
+    }
 }
