@@ -77,5 +77,24 @@ describe Agama::AutoYaST::UserReader do
         )
       end
     end
+
+    context "when the password is nil" do
+      let(:user) do
+        {
+          "username"      => "suse",
+          "fullname"      => "SUSE",
+          "user_password" => nil,
+          "encrypted"     => nil
+        }
+      end
+
+      it "does not include password information" do
+        user = subject.read["user"]
+        expect(user).to eq(
+          "userName" => "suse",
+          "fullName" => "SUSE"
+        )
+      end
+    end
   end
 end

@@ -597,8 +597,7 @@ impl Zypp {
             // save the solver testcase if the solver run failed or if saving is forced via boot
             // parameter, skip when "ZYPP_FULLLOG=1", in that case libzypp creates the solver
             // testcase automatically in the /var/log/YaST2/autoTestcase/ directory
-            if (!r_res || save_testcase) && std::env::var("ZYPP_FULLLOG").unwrap_or_default() != "1"
-            {
+            if (!r_res || save_testcase) && !std::env::var("ZYPP_FULLLOG").is_ok_and(|v| v == "1") {
                 self.create_solver_testcase();
             } else {
                 // delete the solver testcase directory, it contains the previous error which is

@@ -1,4 +1,26 @@
 -------------------------------------------------------------------
+Thu Mar 12 13:20:48 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add error reporting when working with AutoYaST profiles (related
+  to bsc#1259434).
+
+-------------------------------------------------------------------
+Thu Mar 12 13:05:51 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added support for the "inst.listen_on" boot parameter
+  - The "inst.listen_on=localhost" option disables remote access
+  - It is possible to specify IP address (both IPv4 and IPv6)
+    or network interface, accepts comma separated list
+  - agama-web-server --address2 option removed, --address can now be repeated
+  (jsc#AGM-153)
+
+-------------------------------------------------------------------
+Thu Mar 12 10:03:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not force to push the "Reboot" button if inst.finish is given
+  (jsc#PED-15031).
+
+-------------------------------------------------------------------
 Tue Mar 10 12:16:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Recalculate the issues and actions on language change (gh#agama-project/agama#3262).

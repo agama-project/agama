@@ -128,7 +128,7 @@ impl Model {
             )));
         }
 
-        self.set_user_group(user_name);
+        self.set_user_group(user_name)?;
         self.set_user_password(user_name, user_password)?;
         self.update_user_fullname(user)
     }

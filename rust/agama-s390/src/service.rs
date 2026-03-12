@@ -90,29 +90,26 @@ impl Starter {
 
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         // Create storage_client only if needed.
-        let (service, storage_client) = if self.dasd.is_none() || self.zfcp.is_none() {
-            let storage_client = storage_client::service::Starter::new(self.connection.clone())
-                .start()
-                .await?;
+        let (service, storage_client) = match (self.dasd, self.zfcp) {
+            (Some(dasd), Some(zfcp)) => {
+                let service = Service { dasd, zfcp };
+                (service, None)
+            }
+            (dasd_opt, zfcp_opt) => {
+                let storage_client = storage_client::service::Starter::new(self.connection.clone())
+                    .start()
+                    .await?;
 
-            let dasd = self
-                .dasd
-                .unwrap_or(Box::new(dasd::Client::new(storage_client.clone())));
+                let dasd =
+                    dasd_opt.unwrap_or_else(|| Box::new(dasd::Client::new(storage_client.clone())));
 
-            let zfcp = self
-                .zfcp
-                .unwrap_or(Box::new(zfcp::Client::new(storage_client.clone())));
+                let zfcp =
+                    zfcp_opt.unwrap_or_else(|| Box::new(zfcp::Client::new(storage_client.clone())));
 
-            let service = Service { dasd, zfcp };
+                let service = Service { dasd, zfcp };
 
-            (service, Some(storage_client))
-        } else {
-            // Note that unwrap is secure here because the if branch covers any case of None.
-            let service = Service {
-                dasd: self.dasd.unwrap(),
-                zfcp: self.zfcp.unwrap(),
-            };
-            (service, None)
+                (service, Some(storage_client))
+            }
         };
 
         let handler = actor::spawn(service);

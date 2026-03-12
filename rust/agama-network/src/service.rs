@@ -281,7 +281,6 @@ impl NetworkSystemClient {
     }
 
     /// Copies the persistent network connections to the target system.
-
     pub async fn install(&self) -> Result<(), NetworkSystemError> {
         let (tx, rx) = oneshot::channel();
         self.actions.send(Action::Install(tx))?;

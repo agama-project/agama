@@ -231,7 +231,7 @@ bool is_package_selected(struct Zypp *zypp, const char *tag,
 bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept;
 
-/// Create a solver testcase, dumps all all solver data (repositories, loaded
+/// Create a solver testcase, dumps all solver data (repositories, loaded
 /// packages...) to disk
 /// @param zypp see \ref init_target
 /// @param dir directory path where the solver testcase is saved

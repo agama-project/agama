@@ -51,10 +51,12 @@ begin
     warn "Did not convert the profile (canceled by the user)."
     exit 2
   end
-rescue Agama::Commands::CouldNotFetchProfile
-  warn "Could not fetch the AutoYaST profile."
+rescue Agama::Commands::CouldNotFetchProfile => e
+  warn "Could not fetch the AutoYaST profile:\n\n"
+  warn e.full_message
   exit 3
-rescue Agama::Commands::CouldNotWriteAgamaConfig
-  warn "Could not write the Agama configuration."
+rescue Agama::Commands::CouldNotWriteAgamaConfig => e
+  warn "Could not write the Agama configuration:\n\n"
+  warn e.full_message
   exit 4
 end
