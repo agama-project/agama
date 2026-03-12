@@ -20,15 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Flex, Grid, GridItem } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
-import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
-import { _ } from "~/i18n";
+import React, { useState } from "react";
+import { Flex, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
+import { Link, NestedContent, Page } from "~/components/core";
+import Text from "~/components/core/Text";
+import NoPersistentConnectionsAlert from "~/components/network/NoPersistentConnectionsAlert";
+import ConnectionsTable from "~/components/network/ConnectionsTable";
+import DevicesTable from "~/components/network/DevicesTable";
 import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
-import DevicesTable from "./DevicesTable";
-import ConnectionsTable from "./ConnectionsTable";
 import { NETWORK } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 /**
  * Page component holding Network settings
@@ -36,6 +37,11 @@ import { NETWORK } from "~/routes/paths";
 export default function NetworkPage() {
   useNetworkChanges();
   const { devices, state } = useSystem();
+  const [tab, setTab] = useState("0");
+
+  const handleTabClick = (e, v) => {
+    setTab(v.toString());
+  };
 
   return (
     <Page
@@ -45,30 +51,50 @@ export default function NetworkPage() {
       <Page.Content>
         <NoPersistentConnectionsAlert />
 
-        <Grid hasGutter>
-          <GridItem sm={12} xl={6}>
-            <Page.Section
-              title={_("Connections")}
-              actions={
-                <Flex alignItems={{ default: "alignItemsCenter" }}>
-                  <Link to={NETWORK.newConnection}>{_("Add connection")}</Link>
-                  {state.wirelessEnabled && (
-                    <Link to={NETWORK.newWiFiConnection} variant="link" isInline>
-                      {_("Connect to Wi-Fi network")}
-                    </Link>
+        <Tabs activeKey={tab} onSelect={handleTabClick} role="region">
+          <Tab eventKey={"0"} title={<TabTitleText>{_("Connections")}</TabTitleText>}>
+            <NestedContent margin="mxSm">
+              <Stack hasGutter>
+                <Text textStyle="textColorSubtle">
+                  {_(
+                    "Manage available connections, connect to Wi-Fi, or add a new connection. Switch to Devices to manage by device.",
                   )}
-                </Flex>
-              }
-            >
-              <ConnectionsTable />
-            </Page.Section>
-          </GridItem>
-          <GridItem sm={12} xl={6}>
-            <Page.Section title={_("Devices")}>
-              <DevicesTable devices={devices} />
-            </Page.Section>
-          </GridItem>
-        </Grid>
+                </Text>
+                <Page.Section
+                  pfCardProps={{ isCompact: true, component: "div" }}
+                  actions={
+                    <Flex alignItems={{ default: "alignItemsCenter" }}>
+                      <Link to={NETWORK.newConnection} variant="plain">
+                        {_("Add connection")}
+                      </Link>
+                      {state.wirelessEnabled && (
+                        <Link to={NETWORK.newWiFiConnection} variant="plain">
+                          {_("Connect to Wi-Fi network")}
+                        </Link>
+                      )}
+                    </Flex>
+                  }
+                >
+                  <ConnectionsTable />
+                </Page.Section>
+              </Stack>
+            </NestedContent>
+          </Tab>
+          <Tab eventKey={"1"} title={<TabTitleText>{_("Devices")}</TabTitleText>}>
+            <NestedContent margin="mxSm">
+              <Stack hasGutter>
+                <Text textStyle="textColorSubtle">
+                  {_(
+                    "Browse available devices and configure their connections. Switch to Connections to manage by connection.",
+                  )}
+                </Text>
+                <Page.Section pfCardProps={{ isCompact: true, component: "div" }}>
+                  <DevicesTable devices={devices} />
+                </Page.Section>
+              </Stack>
+            </NestedContent>
+          </Tab>
+        </Tabs>
       </Page.Content>
     </Page>
   );

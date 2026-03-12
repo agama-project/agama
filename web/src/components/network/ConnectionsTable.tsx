@@ -27,6 +27,7 @@ import { sprintf } from "sprintf-js";
 import {
   Button,
   Content,
+  Divider,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
@@ -232,6 +233,8 @@ export default function ConnectionsTable() {
           </ToolbarGroup>
         </ToolbarContent>
       </Toolbar>
+
+      <Divider />
 
       <SelectableDataTable
         columns={columns}

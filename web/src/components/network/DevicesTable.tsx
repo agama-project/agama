@@ -26,6 +26,7 @@ import { sprintf } from "sprintf-js";
 import {
   Button,
   Content,
+  Divider,
   EmptyState,
   EmptyStateActions,
   EmptyStateBody,
@@ -450,6 +451,8 @@ export default function DevicesTable({ devices }: DevicesTableProps) {
         onFilterChange={onFilterChange}
         onReset={resetFilters}
       />
+
+      <Divider />
 
       <SelectableDataTable
         columns={columns}
