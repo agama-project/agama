@@ -89,7 +89,7 @@ describe("ZFCPPage", () => {
 
     it("renders the issues", () => {
       installerRender(<ZFCPPage />);
-      expect(screen.queryByText(/zFCP error/)).toBeInTheDocument();
+      screen.getByText(/zFCP error/);
     });
   });
 
@@ -100,7 +100,7 @@ describe("ZFCPPage", () => {
 
     it("renders a text explaining zFCP is not available", () => {
       installerRender(<ZFCPPage />);
-      expect(screen.queryByText(/zFCP is not available/)).toBeInTheDocument();
+      screen.getByText(/zFCP is not available/);
       expect(screen.queryByText("devices table")).not.toBeInTheDocument();
     });
   });
@@ -113,12 +113,12 @@ describe("ZFCPPage", () => {
 
     it("renders the controllers section", () => {
       installerRender(<ZFCPPage />);
-      expect(screen.queryByText("zFCP controllers")).toBeInTheDocument();
+      screen.getByText("zFCP controllers");
     });
 
     it("renders a text explaining devices are not available", () => {
       installerRender(<ZFCPPage />);
-      expect(screen.queryByText(/No devices available/)).toBeInTheDocument();
+      screen.getByText(/No devices available/);
       expect(screen.queryByText("devices table")).not.toBeInTheDocument();
     });
   });
@@ -131,12 +131,12 @@ describe("ZFCPPage", () => {
 
     it("renders the controllers section", () => {
       installerRender(<ZFCPPage />);
-      expect(screen.queryByText("zFCP controllers")).toBeInTheDocument();
+      screen.getByText("zFCP controllers");
     });
 
     it("renders the table of devices", () => {
       installerRender(<ZFCPPage />);
-      expect(screen.queryByText("devices table")).toBeInTheDocument();
+      screen.getByText("devices table");
     });
 
     describe("if there are deactivated controllers", () => {
@@ -146,8 +146,8 @@ describe("ZFCPPage", () => {
 
       it("renders an option for activating controllers", () => {
         installerRender(<ZFCPPage />);
-        expect(screen.queryByText(/There is a deactivated zFCP controller/)).toBeInTheDocument();
-        expect(screen.queryByRole("link", { name: "Activate controllers" })).toBeInTheDocument();
+        screen.getByText(/There is a deactivated zFCP controller/);
+        screen.getByRole("link", { name: "Activate controllers" });
       });
     });
 
@@ -158,7 +158,7 @@ describe("ZFCPPage", () => {
 
       it("does not render an option for activating controllers", () => {
         installerRender(<ZFCPPage />);
-        expect(screen.queryByText(/zFCP controllers are already activated/)).toBeInTheDocument();
+        screen.getByText(/zFCP controllers are already activated/);
         expect(
           screen.queryByRole("link", { name: "Activate controllers" }),
         ).not.toBeInTheDocument();

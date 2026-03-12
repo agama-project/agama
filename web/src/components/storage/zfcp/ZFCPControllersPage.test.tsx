@@ -79,7 +79,7 @@ describe("ZFCPControllersPage", () => {
   it("shows an empty state if no controllers are available for activation", () => {
     mockUseControllers.mockReturnValue([controller1]);
     installerRender(<ZFCPControllersPage />);
-    expect(screen.getByText("No controllers available")).toBeInTheDocument();
+    screen.getByText("No controllers available");
   });
 
   describe("when there are controllers to activate", () => {
@@ -89,21 +89,21 @@ describe("ZFCPControllersPage", () => {
 
     it("renders the list of deactivated controllers", () => {
       installerRender(<ZFCPControllersPage />);
-      expect(screen.getByLabelText("0.0.1a11")).toBeInTheDocument();
-      expect(screen.getByLabelText("0.0.1a12")).toBeInTheDocument();
+      screen.getByLabelText("0.0.1a11");
+      screen.getByLabelText("0.0.1a12");
       expect(screen.queryByLabelText("0.0.1a10")).not.toBeInTheDocument();
     });
 
     it("shows LUN scan enabled info", () => {
       mockUseSystem.mockReturnValue({ lunScan: true, controllers: [], devices: [] });
       installerRender(<ZFCPControllersPage />);
-      expect(screen.getByText("Automatic LUN scan is enabled")).toBeInTheDocument();
+      screen.getByText("Automatic LUN scan is enabled");
     });
 
     it("shows LUN scan disabled info", () => {
       mockUseSystem.mockReturnValue({ lunScan: false, controllers: [], devices: [] });
       installerRender(<ZFCPControllersPage />);
-      expect(screen.getByText("Automatic LUN scan is disabled")).toBeInTheDocument();
+      screen.getByText("Automatic LUN scan is disabled");
     });
 
     it("allows selecting and deselecting controllers", async () => {
@@ -161,7 +161,7 @@ describe("ZFCPControllersPage", () => {
       await user.click(acceptButton);
 
       expect(mockUseSetControllers).not.toHaveBeenCalled();
-      expect(screen.getByText("Select the controllers to activate")).toBeInTheDocument();
+      screen.getByText("Select the controllers to activate");
     });
   });
 });
