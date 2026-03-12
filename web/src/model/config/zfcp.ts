@@ -23,23 +23,26 @@
 import { Config, Device } from "~/openapi/config/zfcp";
 import { replaceOrAppend, remove, isEmpty } from "radashi";
 
-function defaultConfig(): Config {
-  return {};
+const DEFAULT_CONFIG: Config = {};
+
+/** Generates a copy of the given config or a default config. */
+function ensureConfig(config: Config | null): Config {
+  return config ? { ...config } : { ...DEFAULT_CONFIG };
 }
 
 /** Returns a new config setting the given controllers. */
 function setControllers(config: Config | null, controllers: string[]): Config {
-  const currentConfig = config || defaultConfig();
-  return { ...currentConfig, controllers };
+  const baseConfig = ensureConfig(config);
+  return { ...baseConfig, controllers };
 }
 
 function addDevice(config: Config | null, device: Device): Config {
-  const currentConfig = config || defaultConfig();
+  const baseConfig = ensureConfig(config);
 
   return {
-    ...currentConfig,
+    ...baseConfig,
     devices: replaceOrAppend(
-      currentConfig.devices,
+      baseConfig.devices,
       device,
       (d) => d.channel === device.channel && d.wwpn === device.wwpn && d.lun === device.lun,
     ),
@@ -54,22 +57,23 @@ function addDevice(config: Config | null, device: Device): Config {
  * list replaces the device from the config.
  */
 function addDevices(config: Config | null, devices: Device[]): Config {
-  const currentConfig = config || defaultConfig();
+  const baseConfig = ensureConfig(config);
 
-  if (isEmpty(devices)) return { ...currentConfig };
+  if (isEmpty(devices)) return baseConfig;
 
-  const [device, ...rest] = devices;
-
-  return addDevices(addDevice(currentConfig, device), rest);
+  return devices.reduce(
+    (newConfig: Config, device: Device): Config => addDevice(newConfig, device),
+    baseConfig,
+  );
 }
 
 function removeDevice(config: Config | null, device: Device): Config {
-  const currentConfig = config || defaultConfig();
+  const baseConfig = ensureConfig(config);
 
   return {
-    ...currentConfig,
+    ...baseConfig,
     devices: remove(
-      currentConfig.devices || [],
+      baseConfig.devices || [],
       (d) => d.channel === device.channel && d.wwpn === device.wwpn && d.lun === device.lun,
     ),
   };
@@ -79,13 +83,14 @@ function removeDevice(config: Config | null, device: Device): Config {
  * Returns a new config removing the given devices.
  */
 function removeDevices(config: Config | null, devices: Device[]): Config {
-  const currentConfig = config || defaultConfig();
+  const baseConfig = ensureConfig(config);
 
-  if (isEmpty(devices) || isEmpty(currentConfig.devices)) return { ...currentConfig };
+  if (isEmpty(devices) || isEmpty(baseConfig.devices)) return baseConfig;
 
-  const [device, ...rest] = devices;
-
-  return removeDevices(removeDevice(currentConfig, device), rest);
+  return devices.reduce(
+    (newConfig: Config, device: Device): Config => removeDevice(newConfig, device),
+    baseConfig,
+  );
 }
 
 export type * from "~/openapi/config/zfcp";
