@@ -22,7 +22,10 @@ use std::{process::exit, time::Duration};
 
 use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
 use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
-use agama_utils::{api::status::Stage, kernel_cmdline::KernelCmdline};
+use agama_utils::{
+    api::{status::Stage, FinishMethod},
+    kernel_cmdline::KernelCmdline,
+};
 use anyhow::anyhow;
 use tokio::time::sleep;
 
@@ -93,7 +96,8 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
-    manager_client.finish(None).await?;
+    let method = FinishMethod::from_kernel_cmdline().unwrap_or(FinishMethod::Reboot);
+    manager_client.finish(method).await?;
 
     Ok(())
 }

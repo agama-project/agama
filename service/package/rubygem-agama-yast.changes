@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 12 08:35:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Infer the boot device, if omitted in the user configuration, when
+  reusing a pre-existing LVM or RAID (bsc#1248504).
+
+-------------------------------------------------------------------
 Tue Mar 10 12:17:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not automatically update issues con language change. When to

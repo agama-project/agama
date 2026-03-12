@@ -626,9 +626,10 @@ impl TryFrom<&str> for Status {
 }
 
 /// Bond mode
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
 pub enum BondMode {
     #[serde(rename = "balance-rr")]
+    #[default]
     RoundRobin = 0,
     #[serde(rename = "active-backup")]
     ActiveBackup = 1,
@@ -642,11 +643,6 @@ pub enum BondMode {
     BalanceTLB = 5,
     #[serde(rename = "balance-alb")]
     BalanceALB = 6,
-}
-impl Default for BondMode {
-    fn default() -> Self {
-        Self::RoundRobin
-    }
 }
 
 impl std::fmt::Display for BondMode {

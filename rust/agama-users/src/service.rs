@@ -32,7 +32,7 @@ use agama_utils::{
     issue,
 };
 use async_trait::async_trait;
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::gettext;
 use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
