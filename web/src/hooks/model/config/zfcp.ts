@@ -36,25 +36,28 @@ function useConfig(): ZFCP.Config | null {
   return data;
 }
 
-type addControllersFn = (controllers: string[]) => Response;
+type SetControllersFn = (controllers: string[]) => Response;
 
-function useAddControllers(): addControllersFn {
+/**
+ * Provides a function for setting the list of zFCP controllers to activate.
+ */
+function useSetControllers(): SetControllersFn {
   const config = useConfig();
 
   return (controllers: string[]): Response => {
-    const newConfig = zfcp.addControllers(config, controllers);
+    const newConfig = zfcp.setControllers(config, controllers);
     return patchConfig({ zfcp: newConfig });
   };
 }
 
-type addDevicesFn = (devices: ZFCP.Device[]) => Response;
+type AddDevicesFn = (devices: ZFCP.Device[]) => Response;
 
 /**
  * Provides a function for adding devices to the zFCP config.
  *
  * If a device already exists in the config, then it is replaced by the new device.
  */
-function useAddDevices(): addDevicesFn {
+function useAddDevices(): AddDevicesFn {
   const config = useConfig();
 
   return (devices: ZFCP.Device[]): Response => {
@@ -63,5 +66,19 @@ function useAddDevices(): addDevicesFn {
   };
 }
 
-export type { addControllersFn, addDevicesFn };
-export { useConfig, useAddControllers, useAddDevices };
+type RemoveDevicesFn = (devices: ZFCP.Device[]) => Response;
+
+/**
+ * Provides a function for removing devices from the zFCP config.
+ */
+function useRemoveDevices(): RemoveDevicesFn {
+  const config = useConfig();
+
+  return (devices: ZFCP.Device[]): Response => {
+    const newConfig = zfcp.removeDevices(config, devices);
+    return patchConfig({ zfcp: newConfig });
+  };
+}
+
+export type { SetControllersFn, AddDevicesFn, RemoveDevicesFn };
+export { useConfig, useSetControllers, useAddDevices, useRemoveDevices };

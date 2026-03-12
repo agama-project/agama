@@ -23,7 +23,12 @@
 import { act, renderHook } from "@testing-library/react";
 import { clearMockedQueries, mockConfigQuery } from "~/test-utils/tanstack-query";
 import { patchConfig } from "~/api";
-import { useConfig, useAddControllers, useAddDevices } from "~/hooks/model/config/zfcp";
+import {
+  useConfig,
+  useSetControllers,
+  useAddDevices,
+  useRemoveDevices,
+} from "~/hooks/model/config/zfcp";
 import type { ZFCP } from "~/model/config";
 
 const mockDevice1: ZFCP.Device = {
@@ -86,12 +91,12 @@ describe("hooks/model/storage/zfcp", () => {
     });
   });
 
-  describe("useAddControllers", () => {
+  describe("useSetControllers", () => {
     describe("when there is not a zFCP config yet", () => {
       it("calls API#patchConfig with a new config including the given controllers", async () => {
         mockConfigQuery(null);
 
-        const { result } = renderHook(() => useAddControllers());
+        const { result } = renderHook(() => useSetControllers());
 
         await act(async () => {
           result.current(["0.0.5000"]);
@@ -103,27 +108,11 @@ describe("hooks/model/storage/zfcp", () => {
       });
     });
 
-    describe("when there is an existing zFCP config without controllers", () => {
-      it("calls API#patchConfig with the given controllers added", async () => {
-        mockConfigQuery({ zfcp: {} });
-
-        const { result } = renderHook(() => useAddControllers());
-
-        await act(async () => {
-          result.current(["0.0.5000"]);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith({
-          zfcp: expect.objectContaining({ controllers: ["0.0.5000"] }),
-        });
-      });
-    });
-
-    describe("when there is an existing zFCP config with controllers", () => {
-      it("adds new controllers to existing ones", async () => {
+    describe("when there is an existing zFCP config", () => {
+      it("replaces the controllers with the given ones", async () => {
         mockConfigQuery({ zfcp: { controllers: ["0.0.5000"] } });
 
-        const { result } = renderHook(() => useAddControllers());
+        const { result } = renderHook(() => useSetControllers());
 
         await act(async () => {
           result.current(["0.0.6000"]);
@@ -131,23 +120,7 @@ describe("hooks/model/storage/zfcp", () => {
 
         expect(mockPatchConfig).toHaveBeenCalledWith({
           zfcp: expect.objectContaining({
-            controllers: ["0.0.5000", "0.0.6000"],
-          }),
-        });
-      });
-
-      it("does not duplicate controllers already present", async () => {
-        mockConfigQuery({ zfcp: { controllers: ["0.0.5000"] } });
-
-        const { result } = renderHook(() => useAddControllers());
-
-        await act(async () => {
-          result.current(["0.0.5000", "0.0.6000"]);
-        });
-
-        expect(mockPatchConfig).toHaveBeenCalledWith({
-          zfcp: expect.objectContaining({
-            controllers: ["0.0.5000", "0.0.6000"],
+            controllers: ["0.0.6000"],
           }),
         });
       });
@@ -235,6 +208,44 @@ describe("hooks/model/storage/zfcp", () => {
           zfcp: expect.objectContaining({
             devices: [updatedDevice, mockDevice2, mockDevice3],
           }),
+        });
+      });
+    });
+  });
+
+  describe("useRemoveDevices", () => {
+    describe("when there is not a zFCP config yet", () => {
+      it("calls API#patchConfig with a new config without devices", async () => {
+        mockConfigQuery(null);
+
+        const { result } = renderHook(() => useRemoveDevices());
+
+        await act(async () => {
+          result.current([mockDevice1]);
+        });
+
+        expect(mockPatchConfig).toHaveBeenCalledWith({
+          zfcp: {},
+        });
+      });
+    });
+
+    describe("when there is an existing zFCP config", () => {
+      it("calls API#patchConfig without the given devices", async () => {
+        mockConfigQuery({
+          zfcp: {
+            devices: [mockDevice1, mockDevice2],
+          },
+        });
+
+        const { result } = renderHook(() => useRemoveDevices());
+
+        await act(async () => {
+          result.current([mockDevice2, mockDevice3]);
+        });
+
+        expect(mockPatchConfig).toHaveBeenCalledWith({
+          zfcp: expect.objectContaining({ devices: [mockDevice1] }),
         });
       });
     });

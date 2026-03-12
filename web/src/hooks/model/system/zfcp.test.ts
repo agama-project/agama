@@ -22,7 +22,7 @@
 
 import { renderHook } from "@testing-library/react";
 import { clearMockedQueries, mockSystemQuery } from "~/test-utils/tanstack-query";
-import { useSystem } from "~/hooks/model/system/zfcp";
+import { useSystem, useControllers, useDevices, useCheckLunScan } from "~/hooks/model/system/zfcp";
 import type { ZFCP } from "~/model/system";
 
 const zfcpSystem: ZFCP.System = {
@@ -60,8 +60,7 @@ describe("~/hooks/model/system/zfcp", () => {
   describe("useSystem", () => {
     it("returns the zFCP system", () => {
       mockSystemQuery({
-        product: { id: "sle", mode: "standard", registrationCode: "" },
-        zfcp: zfcpSystem,
+        zfcp: { ...zfcpSystem },
       });
 
       const { result } = renderHook(() => useSystem());
@@ -78,13 +77,149 @@ describe("~/hooks/model/system/zfcp", () => {
     });
 
     it("returns null if there is no zFCP system", () => {
-      mockSystemQuery({
-        product: { id: "sle", mode: "standard", registrationCode: "" },
-      });
+      mockSystemQuery({});
 
       const { result } = renderHook(() => useSystem());
 
       expect(result.current).toBeNull();
+    });
+  });
+
+  describe("useControllers", () => {
+    it("returns the zFCP controllers", () => {
+      mockSystemQuery({
+        zfcp: { ...zfcpSystem },
+      });
+
+      const { result } = renderHook(() => useControllers());
+
+      expect(result.current).toEqual(zfcpSystem.controllers);
+    });
+
+    it("returns an empty list if there is no system", () => {
+      mockSystemQuery(null);
+
+      const { result } = renderHook(() => useControllers());
+
+      expect(result.current).toEqual([]);
+    });
+
+    it("returns an empty list if there is no zFCP system", () => {
+      mockSystemQuery({});
+
+      const { result } = renderHook(() => useControllers());
+
+      expect(result.current).toEqual([]);
+    });
+
+    it("returns an empty list if there are no zFCP controllers", () => {
+      mockSystemQuery({
+        zfcp: {},
+      });
+
+      const { result } = renderHook(() => useControllers());
+
+      expect(result.current).toEqual([]);
+    });
+  });
+
+  describe("useDevices", () => {
+    it("returns the zFCP devices", () => {
+      mockSystemQuery({
+        zfcp: { ...zfcpSystem },
+      });
+
+      const { result } = renderHook(() => useDevices());
+
+      expect(result.current).toEqual(zfcpSystem.devices);
+    });
+
+    it("returns an empty list if there is no system", () => {
+      mockSystemQuery(null);
+
+      const { result } = renderHook(() => useDevices());
+
+      expect(result.current).toEqual([]);
+    });
+
+    it("returns an empty list if there is no zFCP system", () => {
+      mockSystemQuery({});
+
+      const { result } = renderHook(() => useDevices());
+
+      expect(result.current).toEqual([]);
+    });
+
+    it("returns an empty list if there are no zFCP devices", () => {
+      mockSystemQuery({
+        zfcp: {},
+      });
+
+      const { result } = renderHook(() => useDevices());
+
+      expect(result.current).toEqual([]);
+    });
+  });
+
+  describe("useCheckLunScan", () => {
+    it("returns false if LUN Scan is not active in the system", () => {
+      mockSystemQuery({
+        zfcp: { ...zfcpSystem, lunScan: false },
+      });
+
+      const { result } = renderHook(() => useCheckLunScan());
+
+      expect(result.current("0.0.7000")).toEqual(false);
+    });
+
+    it("returns false if LUN Scan is not supported by the controller", () => {
+      mockSystemQuery({
+        zfcp: {
+          lunScan: true,
+          controllers: [
+            {
+              channel: "0.0.7000",
+              wwpns: ["0x500507630303c5f9"],
+              lunScan: false,
+              active: true,
+            },
+          ],
+        },
+      });
+
+      const { result } = renderHook(() => useCheckLunScan());
+
+      expect(result.current("0.0.7000")).toEqual(false);
+    });
+
+    it("returns false if the controller does not exist", () => {
+      mockSystemQuery({
+        zfcp: { ...zfcpSystem },
+      });
+
+      const { result } = renderHook(() => useCheckLunScan());
+
+      expect(result.current("0.0.8000")).toEqual(false);
+    });
+
+    it("returns true if LUN scan is active and supported by the controller", () => {
+      mockSystemQuery({
+        zfcp: {
+          lunScan: true,
+          controllers: [
+            {
+              channel: "0.0.7000",
+              wwpns: ["0x500507630303c5f9"],
+              lunScan: true,
+              active: true,
+            },
+          ],
+        },
+      });
+
+      const { result } = renderHook(() => useCheckLunScan());
+
+      expect(result.current("0.0.7000")).toEqual(true);
     });
   });
 });

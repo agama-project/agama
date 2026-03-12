@@ -45,6 +45,31 @@ const mockDevice3: Device = {
 const mockInitialConfig: Config = { devices: [mockDevice1] };
 
 describe("model/config/zfcp", () => {
+  describe("#setControllers", () => {
+    it("preserves existing config properties while setting controllers", () => {
+      const initialConfig = {
+        controllers: ["0.0.5000"],
+        futureProperty: "must_be_preserved",
+      } as ConfigStructurePreservationTest;
+      const newConfig = zfcpModel.setControllers(initialConfig, [
+        "0.0.6000",
+      ]) as ConfigStructurePreservationTest;
+      expect(newConfig).not.toBe(initialConfig);
+      expect(newConfig.futureProperty).toBe("must_be_preserved");
+    });
+
+    it("replaces the controllers with the given controllers", () => {
+      const config: Config = { controllers: ["0.0.5000"] };
+      const newConfig = zfcpModel.setControllers(config, ["0.0.6000"]);
+      expect(newConfig.controllers).toEqual(["0.0.6000"]);
+    });
+
+    it("creates a default config if needed", () => {
+      const newConfig = zfcpModel.setControllers(null, ["0.0.5000"]);
+      expect(newConfig).toEqual({ controllers: ["0.0.5000"] });
+    });
+  });
+
   describe("#addDevice", () => {
     it("preserves existing config properties while adding the device", () => {
       const initialConfig = {
@@ -119,54 +144,48 @@ describe("model/config/zfcp", () => {
       expect(newConfig.devices[0]).not.toBe(mockDevice1);
     });
 
-    it("returns a copy of the config when given an empty device list", () => {
+    it("returns a copy of the config when given an empty devices list", () => {
       const newConfig = zfcpModel.addDevices(mockInitialConfig, []);
       expect(newConfig).not.toBe(mockInitialConfig);
       expect(newConfig).toEqual(mockInitialConfig);
     });
 
-    it("creates a default config when given null", () => {
+    it("creates a default config if needed", () => {
       const newConfig = zfcpModel.addDevices(null, [mockDevice1]);
       expect(newConfig.devices).toContain(mockDevice1);
     });
   });
 
-  describe("#addControllers", () => {
-    it("preserves existing config properties while adding controllers", () => {
+  describe.only("#removeDevices", () => {
+    it("preserves existing config properties while removing devices", () => {
       const initialConfig = {
-        controllers: ["0.0.5000"],
+        ...mockInitialConfig,
         futureProperty: "must_be_preserved",
       } as ConfigStructurePreservationTest;
-      const newConfig = zfcpModel.addControllers(initialConfig, [
-        "0.0.6000",
+      const newConfig = zfcpModel.removeDevices(initialConfig, [
+        mockDevice1,
       ]) as ConfigStructurePreservationTest;
       expect(newConfig).not.toBe(initialConfig);
       expect(newConfig.futureProperty).toBe("must_be_preserved");
     });
 
-    it("adds new controllers to an existing list", () => {
-      const config: Config = { controllers: ["0.0.5000"] };
-      const newConfig = zfcpModel.addControllers(config, ["0.0.6000"]);
-      expect(newConfig.controllers).toContain("0.0.5000");
-      expect(newConfig.controllers).toContain("0.0.6000");
+    it("remove multiple devices from the config", () => {
+      const config: Config = { devices: [mockDevice1, mockDevice2, mockDevice3] };
+      const newConfig = zfcpModel.removeDevices(config, [mockDevice1, mockDevice3]);
+      expect(newConfig.devices).not.toContain(mockDevice1);
+      expect(newConfig.devices).toContain(mockDevice2);
+      expect(newConfig.devices).not.toContain(mockDevice3);
     });
 
-    it("deduplicates controllers that already exist", () => {
-      const config: Config = { controllers: ["0.0.5000"] };
-      const newConfig = zfcpModel.addControllers(config, ["0.0.5000", "0.0.6000"]);
-      expect(newConfig.controllers).toHaveLength(2);
-      expect(newConfig.controllers).toEqual(["0.0.5000", "0.0.6000"]);
+    it("returns a copy of the config when given an empty devices list", () => {
+      const newConfig = zfcpModel.removeDevices(mockInitialConfig, []);
+      expect(newConfig).not.toBe(mockInitialConfig);
+      expect(newConfig).toEqual(mockInitialConfig);
     });
 
-    it("creates a default config when given null", () => {
-      const newConfig = zfcpModel.addControllers(null, ["0.0.5000"]);
-      expect(newConfig.controllers).toContain("0.0.5000");
-    });
-
-    it("handles an empty controllers list without changing existing controllers", () => {
-      const config: Config = { controllers: ["0.0.5000"] };
-      const newConfig = zfcpModel.addControllers(config, []);
-      expect(newConfig.controllers).toEqual(["0.0.5000"]);
+    it("creates a default config if needed", () => {
+      const newConfig = zfcpModel.removeDevices(null, [mockDevice1]);
+      expect(newConfig).toEqual({});
     });
   });
 });

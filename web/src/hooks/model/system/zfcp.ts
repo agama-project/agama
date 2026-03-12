@@ -34,4 +34,41 @@ function useSystem(): ZFCP.System | null {
   return data;
 }
 
-export { useSystem };
+const selectControllers = (system: System | null): ZFCP.Controller[] =>
+  system?.zfcp?.controllers || [];
+
+function useControllers(): ZFCP.Controller[] {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
+    select: selectControllers,
+  });
+  return data;
+}
+
+const selectDevices = (system: System | null): ZFCP.Device[] => system?.zfcp?.devices || [];
+
+function useDevices(): ZFCP.Device[] {
+  const { data } = useSuspenseQuery({
+    ...systemQuery,
+    select: selectDevices,
+  });
+  return data;
+}
+
+type CheckLunScanFn = (channel: string) => boolean;
+
+/**
+ * Provides a function to check whether a zFCP controller is performing auto LUN scan.
+ *
+ * Auto LUN scan is available only if it is active in both the system and the controller.
+ */
+function useCheckLunScan(): CheckLunScanFn {
+  const system = useSystem();
+  return (channel: string): boolean =>
+    [system.lunScan, system?.controllers?.find((c) => c.channel === channel)?.lunScan].every(
+      (c) => c === true,
+    );
+}
+
+export type { CheckLunScanFn };
+export { useSystem, useControllers, useDevices, useCheckLunScan };
