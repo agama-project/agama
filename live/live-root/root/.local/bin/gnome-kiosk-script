@@ -24,6 +24,12 @@ fi
 
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS
 
+# Waiting until Agama web server is listening.
+until [ "$(curl --silent --output /dev/null --write-out "%{http_code}" --head http://localhost/)" == "200" ]; do
+  echo "Waiting for agama-web-server"
+  sleep 2
+done
+
 # Do not use --kiosk mode (see bsc#1236073) until SLE16 is updated to next ESR. For Firefox
 # 128.9 which is currently used the bug is valid, for >= 138 should be fixed.
 firefox --profile $HOME/.mozilla/firefox/profile
