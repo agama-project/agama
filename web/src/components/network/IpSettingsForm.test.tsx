@@ -24,6 +24,24 @@ import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import IpSettingsForm from "~/components/network/IpSettingsForm";
+import { ConnectionMethod, ConnectionType, Device, DeviceState } from "~/types/network";
+
+const mockDevice1: Device = {
+  name: "enp1s0",
+  connection: "Network 1",
+  type: ConnectionType.ETHERNET,
+  state: DeviceState.CONNECTED,
+  addresses: [{ address: "192.168.69.201", prefix: 24 }],
+  nameservers: ["192.168.69.100"],
+  dnsSearchList: [],
+  gateway4: "192.168.69.4",
+  gateway6: "192.168.69.6",
+  method4: ConnectionMethod.AUTO,
+  method6: ConnectionMethod.AUTO,
+  macAddress: "AA:11:22:33:44:FF",
+  routes4: [],
+  routes6: [],
+};
 
 const mockMutateAsync = jest.fn().mockResolvedValue({});
 jest.mock("~/hooks/model/config/network", () => ({
@@ -33,6 +51,10 @@ jest.mock("~/hooks/model/config/network", () => ({
 const mockUseConnection = jest.fn();
 jest.mock("~/hooks/model/proposal/network", () => ({
   useConnection: (id: string) => mockUseConnection(id),
+}));
+
+jest.mock("~/hooks/model/system/network", () => ({
+  useDevices: () => [mockDevice1],
 }));
 
 describe("IpSettingsForm", () => {

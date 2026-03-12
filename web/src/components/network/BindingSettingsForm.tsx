@@ -22,66 +22,17 @@
 
 import React, { useReducer } from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
-import {
-  ActionGroup,
-  Content,
-  Form,
-  FormGroup,
-  FormSelect,
-  FormSelectOption,
-  FormSelectProps,
-  Stack,
-} from "@patternfly/react-core";
+import { ActionGroup, Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
 import { Connection, ConnectionBindingMode, Device } from "~/types/network";
+import DevicesSelector from "~/components/network/DevicesSelector";
 import Radio from "~/components/core/RadioEnhanced";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
 import { connectionBindingMode } from "~/utils/network";
 import { useConnection } from "~/hooks/model/proposal/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useDevices } from "~/hooks/model/system/network";
 import { NETWORK } from "~/routes/paths";
-
-type DevicesSelectProps = Omit<FormSelectProps, "children" | "ref"> & {
-  /**
-   * The key from the device object whose value should be used for a select value
-   */
-  valueKey: keyof Device;
-};
-
-/**
- * A specialized `FormSelect` component for displaying and selecting network
- * devices.
- *
- * The options' labels are formatted as "Device Name - MAC Address" or "MAC
- * Address - Device Name" based on the `valueKey` prop, ensuring both key
- * identifiers are visible.
- */
-function DevicesSelect({
-  value,
-  valueKey,
-  ...formSelectProps
-}: DevicesSelectProps): React.ReactNode {
-  const devices = useDevices();
-
-  const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
-
-  return (
-    <FormSelect value={value} {...formSelectProps}>
-      {devices.map((device, index) => {
-        // TRANSLATORS: A label shown in a dropdown for selecting a network
-        // device. It combines the device name and MAC address, with the order
-        // determined by the component settings: some selectors will show the
-        // name first, others the MAC address. I.e. "enp1s0 - CC-7F-C8-FC-7A-A1"
-        // or "CC-7F-C8-FC-7A-A1 - enp1s0". You may change the separator, but
-        // please keep both %s placeholders.
-        const label = sprintf(_("%s - %s"), device[labelAttrs[0]], device[labelAttrs[1]]);
-        return <FormSelectOption key={index} value={device[valueKey]} label={label} />;
-      })}
-    </FormSelect>
-  );
-}
+import { _ } from "~/i18n";
 
 /**
  * Represents the form state.
@@ -190,7 +141,7 @@ export default function BindingSettingsForm() {
               label={_("Bind to device name")}
               body={
                 <Stack hasGutter>
-                  <DevicesSelect
+                  <DevicesSelector
                     aria-label={_("Choose device to bind by name")}
                     valueKey="name"
                     value={state.iface}
@@ -209,7 +160,7 @@ export default function BindingSettingsForm() {
               label={_("Bind to MAC address")}
               body={
                 <Stack hasGutter>
-                  <DevicesSelect
+                  <DevicesSelector
                     aria-label={_("Choose device to bind by MAC")}
                     valueKey="macAddress"
                     value={state.mac}

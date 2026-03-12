@@ -41,10 +41,17 @@ import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
 import DnsSearchDataList from "~/components/network/DnsSearchDataList";
 import { _ } from "~/i18n";
-import { IPAddress, Connection, ConnectionMethod, ConnectionStatus } from "~/types/network";
+import {
+  IPAddress,
+  Connection,
+  ConnectionMethod,
+  ConnectionStatus,
+  ConnectionOptions,
+} from "~/types/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useConnection } from "~/hooks/model/proposal/network";
 import { NETWORK } from "~/routes/paths";
+import DevicesSelector from "./DevicesSelector";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
@@ -72,6 +79,7 @@ export default function IpSettingsForm() {
     }),
   );
   const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
+  const [iface, setIface] = useState<ConnectionOptions["iface"]>(connection.iface);
   const [gateway, setGateway] = useState<string>(connection.gateway4 || "");
   const [fieldErrors, setFieldErrors] = useState<object>({});
   const [requestError, setRequestError] = useState<string | undefined>();
@@ -111,6 +119,10 @@ export default function IpSettingsForm() {
     setMethod(value as ConnectionMethod);
   };
 
+  const onIfaceChange: FormSelectProps["onChange"] = (_, value) => {
+    setIface(value);
+  };
+
   const validate = (sanitizedAddresses: IPAddress[]) => {
     setFieldErrors({});
 
@@ -138,6 +150,7 @@ export default function IpSettingsForm() {
     const { id: _, ...connectionOptions } = connection;
     const updatedConnection = new Connection(id, {
       ...connectionOptions,
+      iface,
       addresses: sanitizedAddresses,
       method4: method,
       gateway4: gateway,
@@ -196,6 +209,16 @@ export default function IpSettingsForm() {
               value={id}
               label={_("Name")}
               onChange={(_, value) => setId(value)}
+            />
+          </FormGroup>
+
+          <FormGroup fieldId="iface" label={_("Interface")} isStack>
+            <DevicesSelector
+              id="iface"
+              valueKey="name"
+              value={iface}
+              name="iface"
+              onChange={onIfaceChange}
             />
           </FormGroup>
 
