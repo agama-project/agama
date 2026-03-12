@@ -5,6 +5,7 @@ Wed Mar 11 15:33:11 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
   - The "inst.listen_on=localhost" option disables remote access
   - It is possible to specify IP address (both IPv4 and IPv6)
     or network interface, accepts comma separated list
+  - agama-web-server --address2 option removed, --address can now be repeated
   (jsc#AGM-153)
 
 -------------------------------------------------------------------
