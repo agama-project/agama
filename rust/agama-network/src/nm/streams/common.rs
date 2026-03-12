@@ -35,6 +35,8 @@ pub enum NmChange {
     ActiveConnectionAdded(OwnedObjectPath),
     ActiveConnectionUpdated(OwnedObjectPath),
     ActiveConnectionRemoved(OwnedObjectPath),
+    AccessPointAdded(OwnedObjectPath, OwnedObjectPath),
+    AccessPointRemoved(OwnedObjectPath, OwnedObjectPath),
 }
 
 pub async fn build_added_and_removed_stream(
@@ -59,6 +61,20 @@ pub async fn build_properties_changed_stream(
         .msg_type(MessageType::Signal)
         .interface("org.freedesktop.DBus.Properties")?
         .member("PropertiesChanged")?
+        .build();
+    let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
+    Ok(stream)
+}
+
+/// Returns a stream of wireless signals to be used by DeviceChangedStream.
+///
+/// It listens for AccessPointAdded and AccessPointRemoved signals.
+pub async fn build_wireless_signals_stream(
+    connection: &zbus::Connection,
+) -> Result<MessageStream, NmError> {
+    let rule = MatchRule::builder()
+        .msg_type(MessageType::Signal)
+        .interface("org.freedesktop.NetworkManager.Device.Wireless")?
         .build();
     let stream = MessageStream::for_match_rule(rule, connection, Some(1)).await?;
     Ok(stream)

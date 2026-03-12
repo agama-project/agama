@@ -40,6 +40,8 @@ pub enum NetworkStateError {
     CannotUpdateConnection(String),
     #[error("Unknown device '{0}'")]
     UnknownDevice(String),
+    #[error("Unknown access point '{0}'")]
+    UnknownAccessPoint(String),
     #[error("Invalid connection UUID: '{0}'")]
     InvalidUuid(String),
     #[error("Invalid IP address: '{0}'")]

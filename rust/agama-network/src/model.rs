@@ -343,6 +343,32 @@ impl NetworkState {
         Ok(())
     }
 
+    pub fn add_access_point(&mut self, ap: AccessPoint) -> Result<(), NetworkStateError> {
+        if let Some(position) = self
+            .access_points
+            .iter()
+            .position(|a| a.hw_address == ap.hw_address)
+        {
+            self.access_points.remove(position);
+        }
+        self.access_points.push(ap);
+
+        Ok(())
+    }
+
+    pub fn remove_access_point(&mut self, hw_address: &str) -> Result<(), NetworkStateError> {
+        let Some(position) = self
+            .access_points
+            .iter()
+            .position(|a| a.hw_address == hw_address)
+        else {
+            return Err(NetworkStateError::UnknownAccessPoint(hw_address.to_string()));
+        };
+
+        self.access_points.remove(position);
+        Ok(())
+    }
+
     /// Sets a controller's ports.
     ///
     /// If the connection is not a controller, returns an error.
@@ -458,6 +484,57 @@ mod tests {
         let mut state = NetworkState::default();
         let error = state.remove_connection("unknown".as_ref()).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
+    }
+
+    #[test]
+    fn test_remove_device() {
+        let mut state = NetworkState::default();
+        let device = Device {
+            name: "eth0".to_string(),
+            ..Default::default()
+        };
+        state.add_device(device).unwrap();
+        state.remove_device("eth0").unwrap();
+        assert!(state.get_device("eth0").is_none());
+    }
+
+    #[test]
+    fn test_add_access_point() {
+        let mut state = NetworkState::default();
+        let ap = AccessPoint {
+            hw_address: "AA:BB:CC:DD:EE:FF".to_string(),
+            ssid: SSID(b"test".to_vec()),
+            ..Default::default()
+        };
+        state.add_access_point(ap.clone()).unwrap();
+        assert_eq!(state.access_points.len(), 1);
+        assert_eq!(state.access_points[0].hw_address, "AA:BB:CC:DD:EE:FF");
+
+        // Adding same AP should replace it (in our implementation we remove and push)
+        let mut ap2 = ap.clone();
+        ap2.strength = 80;
+        state.add_access_point(ap2).unwrap();
+        assert_eq!(state.access_points.len(), 1);
+        assert_eq!(state.access_points[0].strength, 80);
+    }
+
+    #[test]
+    fn test_remove_access_point() {
+        let mut state = NetworkState::default();
+        let ap = AccessPoint {
+            hw_address: "AA:BB:CC:DD:EE:FF".to_string(),
+            ..Default::default()
+        };
+        state.add_access_point(ap).unwrap();
+        state.remove_access_point("AA:BB:CC:DD:EE:FF").unwrap();
+        assert_eq!(state.access_points.len(), 0);
+    }
+
+    #[test]
+    fn test_remove_unknown_access_point() {
+        let mut state = NetworkState::default();
+        let error = state.remove_access_point("unknown").unwrap_err();
+        assert!(matches!(error, NetworkStateError::UnknownAccessPoint(_)));
     }
 
     #[test]
@@ -1740,6 +1817,10 @@ pub enum NetworkChange {
         id: String,
         state: ConnectionState,
     },
+    /// A new access point has been added.
+    AccessPointAdded(AccessPoint),
+    /// An access point has been removed.
+    AccessPointRemoved(String),
 }
 
 #[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]

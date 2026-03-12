@@ -25,9 +25,12 @@ use crate::{
     nm::{
         dbus::connection_from_dbus,
         model::NmDeviceType,
-        proxies::{ConnectionProxy, DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
+        proxies::{AccessPointProxy, ConnectionProxy, DeviceProxy, IP4ConfigProxy, IP6ConfigProxy},
     },
-    types::{ConnectionFlags, Device, DeviceState, DeviceType, IpConfig, IpRoute, MacAddress},
+    types::{
+        AccessPoint, ConnectionFlags, Device, DeviceState, DeviceType, IpConfig, IpRoute,
+        MacAddress, SSID,
+    },
 };
 use cidr::IpInet;
 use std::{collections::HashMap, net::IpAddr, str::FromStr};
@@ -42,6 +45,38 @@ pub struct ConnectionFromProxyBuilder<'a> {
 pub struct DeviceFromProxyBuilder<'a> {
     connection: zbus::Connection,
     proxy: &'a DeviceProxy<'a>,
+}
+
+/// Builder to create an [AccessPoint] from its corresponding NetworkManager D-Bus representation.
+pub struct AccessPointFromProxyBuilder<'a> {
+    device_name: String,
+    proxy: &'a AccessPointProxy<'a>,
+}
+
+impl<'a> AccessPointFromProxyBuilder<'a> {
+    pub fn new(device_name: String, proxy: &'a AccessPointProxy<'a>) -> Self {
+        Self { device_name, proxy }
+    }
+
+    /// Creates an [AccessPoint] starting on the [AccessPointProxy].
+    pub async fn build(&self) -> Result<AccessPoint, NmError> {
+        let ssid = SSID(self.proxy.ssid().await?);
+        let hw_address = self.proxy.hw_address().await?;
+        let strength = self.proxy.strength().await?;
+        let flags = self.proxy.flags().await?;
+        let rsn_flags = self.proxy.rsn_flags().await?;
+        let wpa_flags = self.proxy.wpa_flags().await?;
+
+        Ok(AccessPoint {
+            device: self.device_name.clone(),
+            ssid,
+            hw_address,
+            strength,
+            flags,
+            rsn_flags,
+            wpa_flags,
+        })
+    }
 }
 
 impl<'a> ConnectionFromProxyBuilder<'a> {

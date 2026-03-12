@@ -390,6 +390,22 @@ impl Service {
             Action::GetDevices(tx) => {
                 tx.send(self.state.devices.clone()).unwrap();
             }
+            Action::AddAccessPoint(ap) => {
+                self.state.add_access_point(*ap.clone())?;
+                tracing::info!("Access point added: {:?}", &ap);
+                //self.events.send(Event::SystemChanged {
+                //    scope: (Scope::Network),
+                //})?;
+                return Ok(Some(NetworkChange::AccessPointAdded(*ap)));
+            }
+            Action::RemoveAccessPoint(hw_address) => {
+                self.state.remove_access_point(&hw_address)?;
+                tracing::info!("Access point removed: {:?}", &hw_address);
+                //self.events.send(Event::SystemChanged {
+                //    scope: (Scope::Network),
+                //})?;
+                return Ok(Some(NetworkChange::AccessPointRemoved(hw_address)));
+            }
             Action::UpdateConnection(conn, tx) => {
                 let result = self.state.update_connection(*conn);
                 tx.send(result).unwrap();
@@ -459,7 +475,10 @@ impl Service {
             Ok(state) => {
                 if self.state != state {
                     self.state = state;
-                    self.events.send(Event::ConfigChanged {
+                    self.events.send(Event::ProposalChanged {
+                        scope: (Scope::Network),
+                    })?;
+                    self.events.send(Event::SystemChanged {
                         scope: (Scope::Network),
                     })?;
                 }
