@@ -707,6 +707,13 @@
         "hashedPassword": {
           "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
+        },
+        "sshPublicKeys": {
+          "title": "List of SSH public keys",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": ["fullName", "userName", "password"]
@@ -727,6 +734,13 @@
         "sshPublicKey": {
           "title": "SSH public key",
           "type": "string"
+        },
+	"sshPublicKeys": {
+          "title": "List of SSH public keys",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

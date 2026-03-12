@@ -162,6 +162,10 @@ impl RootUserConfig {
             return false;
         }
 
+        if self.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()) {
+            return false;
+        }
+
         true
     }
 }
@@ -248,6 +252,16 @@ mod test {
             ..Default::default()
         };
         assert!(!root_with_ssh_key_config.is_empty());
+
+        let root_with_ssh_keys = RootUserConfig {
+            ssh_public_keys: Some(vec!["12345678".to_string()]),
+            ..Default::default()
+        };
+        let root_with_ssh_keys_config = Config {
+            root: Some(root_with_ssh_keys),
+            ..Default::default()
+        };
+        assert!(!root_with_ssh_keys_config.is_empty());
     }
 
     #[test]
@@ -293,5 +307,15 @@ mod test {
             }),
         };
         assert!(!empty_password.is_valid());
+
+        let with_ssh_keys = FirstUserConfig {
+            ssh_public_keys: Some(vec!["12345678".to_string()]),
+            ..Default::default()
+        };
+        let with_ssh_keys_config = Config {
+            user: Some(with_ssh_keys),
+            ..Default::default()
+        };
+        assert!(!with_ssh_keys_config.is_empty());
     }
 }
