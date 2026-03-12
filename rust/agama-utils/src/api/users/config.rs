@@ -143,6 +143,9 @@ pub struct RootUserConfig {
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ssh_public_key: Option<String>,
+    #[merge(strategy = merge::option::overwrite_none)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ssh_public_keys: Option<Vec<String>>,
 }
 
 impl RootUserConfig {

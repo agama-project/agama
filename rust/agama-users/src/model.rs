@@ -156,11 +156,18 @@ impl Model {
         }
 
         // store ssh key for root if any
+        let mut ssh_keys = if let Some(ssh_keys) = &root.ssh_public_keys {
+            ssh_keys.iter().collect::<Vec<&String>>()
+        } else {
+            vec![]
+        };
+        // for historical reason and backward compatibility. Originally
+        // there was at most one public SSH key for the root
         if let Some(ref root_ssh_key) = root.ssh_public_key {
-            self.update_authorized_keys(
-                &PathBuf::from("root/.ssh/authorized_keys"),
-                &vec![root_ssh_key],
-            )?;
+            // TODO: deal with possible duplicates?
+            ssh_keys.push(root_ssh_key);
+
+            self.update_authorized_keys(&PathBuf::from("root/.ssh/authorized_keys"), &ssh_keys)?;
             self.enable_sshd_service()?;
             self.open_ssh_port()?;
         }
