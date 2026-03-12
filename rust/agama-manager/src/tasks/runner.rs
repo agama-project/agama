@@ -18,8 +18,6 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::str::FromStr;
-
 use crate::{
     actions::{FinishAction, InstallAction, SetConfigAction},
     bootloader, files, hostname, iscsi, l10n, proxy, s390, security, service, software, storage,
@@ -30,9 +28,7 @@ use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Actor, Handler, MessageHandler},
     api::{FinishMethod, Scope},
-    issue,
-    kernel_cmdline::KernelCmdline,
-    progress, question,
+    issue, progress, question,
 };
 use async_trait::async_trait;
 

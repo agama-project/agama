@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::http::BaseHTTPClient;
+use crate::http::{BaseHTTPClient, BaseHTTPClientError};
 use crate::profile::ValidationOutcome;
 use fluent_uri::Uri;
 use serde::Serialize;
@@ -51,7 +51,7 @@ impl ProfileHTTPClient {
     /// Note that this client does not act on this *url*, it passes it as a parameter
     /// to our web backend.
     /// Return well-formed Agama JSON on success.
-    pub async fn from_autoyast(&self, url: &Uri<String>) -> anyhow::Result<String> {
+    pub async fn from_autoyast(&self, url: &Uri<String>) -> Result<String, BaseHTTPClientError> {
         let mut map = HashMap::new();
 
         map.insert(String::from("url"), url.to_string());

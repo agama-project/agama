@@ -38,11 +38,19 @@ module Agama
         root_user = config.users.find { |u| u.name == "root" }
         return {} unless root_user
 
-        hsh = { "password" => root_user.password.value.to_s }
-        hsh["hashedPassword"] = true if root_user.password.value.encrypted?
+        hsh = {}
+        password = root_user.password
+
+        if password
+          hsh["password"] = password.value.to_s
+          hsh["hashedPassword"] = true if password.value.encrypted?
+        end
 
         public_key = root_user.authorized_keys.first
         hsh["sshPublicKey"] = public_key if public_key
+
+        return {} if hsh.empty?
+
         { "root" => hsh }
       end
 
