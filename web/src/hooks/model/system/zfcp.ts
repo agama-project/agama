@@ -65,7 +65,7 @@ type CheckLunScanFn = (channel: string) => boolean;
 function useCheckLunScan(): CheckLunScanFn {
   const system = useSystem();
   return (channel: string): boolean =>
-    [system.lunScan, system?.controllers?.find((c) => c.channel === channel)?.lunScan].every(
+    [system?.lunScan, system?.controllers?.find((c) => c.channel === channel)?.lunScan].every(
       (c) => c === true,
     );
 }

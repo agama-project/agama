@@ -202,6 +202,14 @@ describe("~/hooks/model/system/zfcp", () => {
       expect(result.current("0.0.8000")).toEqual(false);
     });
 
+    it("returns false if there is no system", () => {
+      mockSystemQuery(null);
+
+      const { result } = renderHook(() => useCheckLunScan());
+
+      expect(result.current("0.0.8000")).toEqual(false);
+    });
+
     it("returns true if LUN scan is active and supported by the controller", () => {
       mockSystemQuery({
         zfcp: {
