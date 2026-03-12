@@ -79,13 +79,9 @@ struct Cli {
 struct ServeArgs {
     // Address/port to listen on. ":::80" listens for both IPv6 and IPv4
     // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only.
-    /// Primary port to listen on
+    /// Address:port to listen to, with comma-separated fallback address:port; can be repeated
     #[arg(long, default_value = ":::80")]
-    address: String,
-
-    /// Optional secondary address to listen on
-    #[arg(long, default_value = None)]
-    address2: Option<String>,
+    address: Vec<String>,
 
     #[arg(long, default_value = "/etc/agama.d/ssl/key.pem")]
     key: Option<PathBuf>,
@@ -273,19 +269,28 @@ async fn handle_http_stream(
     }
 }
 
+async fn find_listener(addresses: String) -> Option<tokio::net::TcpListener> {
+    let addresses = addresses.split(',').collect::<Vec<_>>();
+    for addr in addresses {
+        tracing::info!("Starting Agama web server at {}", addr);
+        // see https://github.com/tokio-rs/axum/blob/main/examples/low-level-openssl/src/main.rs
+        // how to use axum with openSSL
+        match tokio::net::TcpListener::bind(&addr).await {
+            Ok(listener) => {
+                return Some(listener);
+            }
+            Err(error) => {
+                tracing::warn!("Error: could not listen on {}: {}", &addr, error);
+            }
+        }
+    }
+    None
+}
+
 /// Starts the web server
 async fn start_server(address: String, service: Router, ssl_acceptor: SslAcceptor) {
-    tracing::info!("Starting Agama web server at {}", address);
-
-    // see https://github.com/tokio-rs/axum/blob/main/examples/low-level-openssl/src/main.rs
-    // how to use axum with openSSL
-    let listener = tokio::net::TcpListener::bind(&address)
-        .await
-        .unwrap_or_else(|error| {
-            let msg = format!("Error: could not listen on {}: {}", &address, error);
-            tracing::error!(msg);
-            panic!("{}", msg)
-        });
+    let opt_listener = find_listener(address).await;
+    let listener = opt_listener.expect("None of the alternative addresses worked");
 
     pin_mut!(listener);
 
@@ -300,7 +305,7 @@ async fn start_server(address: String, service: Router, ssl_acceptor: SslAccepto
         let (tcp_stream, addr) = listener
             .accept()
             .await
-            .expect("Failed to open port for listening");
+            .expect("Failed to accept connection");
 
         tokio::spawn(async move {
             if is_ssl_stream(&tcp_stream).await {
@@ -341,13 +346,8 @@ async fn serve_command(args: ServeArgs) -> anyhow::Result<()> {
         return Err(anyhow::anyhow!("SSL initialization failed"));
     };
 
-    let mut addresses = vec![args.address];
-
-    if let Some(a) = args.address2 {
-        addresses.push(a)
-    }
-
-    let servers: Vec<_> = addresses
+    let servers: Vec<_> = args
+        .address
         .iter()
         .map(|a| {
             tokio::spawn(start_server(
