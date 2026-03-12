@@ -43,6 +43,7 @@ import { _, formatList } from "~/i18n";
 
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
+import { isEmpty } from "radashi";
 
 const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
@@ -82,16 +83,33 @@ const ModelSummary = ({ model }: { model: ConfigModel.Config }): React.ReactNode
   return <SingleDeviceSummary target={targets[0]} />;
 };
 
+const InvalidZFCP = (): React.ReactNode => {
+  // TRANSLATORS: The text in [] is used as a link.
+  const text = _("Invalid [zFCP] settings");
+  const [textStart, textLink, textEnd] = text.split(/[[\]]/);
+  return (
+    <p>
+      {textStart}
+      <Link to={STORAGE.zfcp.root} variant="link" isInline>
+        {textLink}
+      </Link>
+      {textEnd}
+    </p>
+  );
+};
+
 const Value = () => {
   const availableDevices = useAvailableDevices();
   const model = useConfigModel();
   const issues = useIssues("storage");
+  const zfcpIssues = useIssues("zfcp");
   const configIssues = issues.filter((i) => i.class !== "proposal");
 
-  if (!availableDevices.length) return _("There are no disks available for the installation");
-  if (configIssues.length) {
+  if (isEmpty(availableDevices)) return _("There are no disks available for the installation");
+  if (!isEmpty(configIssues)) {
     return _("Invalid settings");
   }
+  if (!isEmpty(zfcpIssues)) return <InvalidZFCP />;
 
   if (!model) return _("Using an advanced storage configuration");
 
@@ -103,17 +121,18 @@ const Description = () => {
   const staging = useProposalFlattenDevices();
   const actions = useActions();
   const issues = useIssues("storage");
+  const zfcpIssues = useIssues("zfcp");
   const configIssues = issues.filter((i) => i.class !== "proposal");
   const manager = new DevicesManager(system, staging, actions);
 
-  if (configIssues.length) return;
-  if (!actions.length) return _("Failed to calculate a storage layout");
+  if (!isEmpty(configIssues) || !isEmpty(zfcpIssues)) return;
+  if (isEmpty(actions)) return _("Failed to calculate a storage layout");
 
   const deleteActions = manager.actions.filter((a) => a.delete && !a.subvol).length;
   if (!deleteActions) return _("No data loss is expected");
 
   const systems = manager.deletedSystems();
-  if (systems.length) {
+  if (!isEmpty(systems)) {
     return sprintf(
       // TRANSLATORS: %s will be replaced by a formatted list of affected systems
       // like "Windows and openSUSE Tumbleweed".
@@ -155,7 +174,10 @@ const Description = () => {
  */
 export default function StorageSummary() {
   const { loading } = useProgressTracking("storage");
-  const hasIssues = !!useIssues("storage").length;
+  const issues = useIssues("storage");
+  const zfcpIssues = useIssues("zfcp");
+
+  const hasIssues = !isEmpty(issues) || !isEmpty(zfcpIssues);
 
   return (
     <Summary
