@@ -81,6 +81,8 @@ type ActionsProps = {
   // addOrUpdateDevices: ReturnType<typeof useAddOrUpdateDevices>;
   onConnectNetworkDevice: (device: Device) => void;
   onDisconnectNetworkDevice: (device: Device) => void;
+  onRemoveNetworkConnection: (device: Device) => void;
+  hasConnection: boolean;
 };
 
 /**
@@ -146,6 +148,8 @@ const buildActions = ({
   device,
   onConnectNetworkDevice,
   onDisconnectNetworkDevice,
+  onRemoveNetworkConnection,
+  hasConnection,
 }: ActionsProps) => {
   const actions = [
     {
@@ -158,11 +162,17 @@ const buildActions = ({
       title: _("Disconnect"),
       onClick: () => onDisconnectNetworkDevice(device),
     },
+    {
+      id: "remove",
+      title: _("Remove connection"),
+      onClick: () => onRemoveNetworkConnection(device),
+    },
   ];
 
   const keptActions = {
     connect: [DeviceState.DISCONNECTED, DeviceState.FAILED].includes(device.state),
     disconnect: [DeviceState.CONNECTED, DeviceState.CONNECTING].includes(device.state),
+    remove: hasConnection,
   };
   return actions.filter((a) => keptActions[a.id]);
 };
@@ -396,6 +406,18 @@ export default function DevicesTable({ devices }: DevicesTableProps) {
     }
   };
 
+  const removeNetworkConnection = (device: Device) => {
+    const existing = connections.find((c) => c.id === device.connection || c.iface === device.name);
+
+    if (existing) {
+      const connection = new Connection(existing.id, {
+        ...existing,
+        status: ConnectionStatus.DELETE,
+      });
+      mutateConnection(connection);
+    }
+  };
+
   const columns = createColumns();
 
   const onSortingChange = (sortedBy: SortedBy) => {
@@ -442,6 +464,10 @@ export default function DevicesTable({ devices }: DevicesTableProps) {
             device: d,
             onConnectNetworkDevice: connectNetworkDevice,
             onDisconnectNetworkDevice: disconnectNetworkDevice,
+            onRemoveNetworkConnection: removeNetworkConnection,
+            hasConnection: !!(
+              d.connection || connections.some((c) => c.iface === d.name || c.id === d.connection)
+            ),
           })
         }
         itemActionsLabel={(d: Device) => `Actions for ${d.name}`}
