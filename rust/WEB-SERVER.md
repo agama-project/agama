@@ -68,7 +68,7 @@ Some more examples:
 - IPv4, only specific interface: `--address 192.168.1.2:5678` (use the IP
   address of that interface)
 
-The server can listen on several address, you can use the `--address` option
+The server can listen on several addresses, you can use the `--address` option
 multiple times.
 
 ## Trying the server
