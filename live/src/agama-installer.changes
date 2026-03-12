@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 12 16:54:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Make sure Agama started before launching Firefox (gh#agama-project/agama#3273).
+
+-------------------------------------------------------------------
 Wed Mar  4 10:25:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix cd.ikr path when building the s390x ISO (gh#agama-project/agama#3239).

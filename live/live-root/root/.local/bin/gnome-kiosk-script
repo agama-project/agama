@@ -4,7 +4,6 @@
 # which is at the end of the chain and invokes this script.
 
 TOKEN_FILE=/run/agama/token
-TOKEN=$(cat $TOKEN_FILE)
 PREFS=$HOME/.mozilla/firefox/profile/user.js
 
 # read the system locale from EFI if present
@@ -22,6 +21,13 @@ if [ -s  "$LANG_FILE" ]; then
   fi
 fi
 
+# Waiting until Agama web server is listening.
+until [ "$(curl --silent --output /dev/null --write-out "%{http_code}" --head http://localhost/)" == "200" ]; do
+  echo "Waiting for agama-web-server"
+  sleep 2
+done
+
+TOKEN=$(cat $TOKEN_FILE)
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS
 
 # Do not use --kiosk mode (see bsc#1236073) until SLE16 is updated to next ESR. For Firefox
