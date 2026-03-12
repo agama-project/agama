@@ -99,7 +99,7 @@ const STORAGE = {
   dasd: "/storage/dasd",
   zfcp: {
     root: "/storage/zfcp",
-    activateDisk: "/storage/zfcp/active-disk",
+    controllers: "/storage/zfcp/controllers",
   },
 };
 

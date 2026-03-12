@@ -31,6 +31,7 @@ type Scope =
   | "storage"
   | "iscsi"
   | "dasd"
+  | "zfcp"
   | "users";
 
 type Progress = {
