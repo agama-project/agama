@@ -296,12 +296,10 @@ impl NetworkState {
 
     /// Updates a connection with a new one.
     ///
-    /// It uses the `id` to decide which connection to update.
-    ///
-    /// Additionally, it registers the connection to be removed when the changes are applied.
+    /// It uses the `uuid` to decide which connection to update.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
-        let Some(old_conn) = self.get_connection_mut(&conn.id) else {
-            return Err(NetworkStateError::UnknownConnection(conn.id.clone()));
+        let Some(old_conn) = self.get_connection_by_uuid_mut(conn.uuid) else {
+            return Err(NetworkStateError::UnknownConnection(conn.uuid.to_string()));
         };
         *old_conn = conn;
 
@@ -311,9 +309,9 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
-    pub fn remove_connection(&mut self, id: &str) -> Result<(), NetworkStateError> {
-        let Some(position) = self.connections.iter().position(|d| d.id == id) else {
-            return Err(NetworkStateError::UnknownConnection(id.to_string()));
+    pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
+        let Some(position) = self.connections.iter().position(|d| d.uuid == uuid) else {
+            return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
         };
 
         self.connections.remove(position);
@@ -443,22 +441,23 @@ mod tests {
     #[test]
     fn test_update_connection() {
         let mut state = NetworkState::default();
-        let conn0 = Connection {
-            id: "eth0".to_string(),
-            uuid: Uuid::new_v4(),
-            ..Default::default()
-        };
-        state.add_connection(conn0).unwrap();
-
         let uuid = Uuid::new_v4();
-        let conn1 = Connection {
+        let conn0 = Connection {
             id: "eth0".to_string(),
             uuid,
             ..Default::default()
         };
+        state.add_connection(conn0).unwrap();
+
+        let conn1 = Connection {
+            id: "eth0".to_string(),
+            uuid,
+            firewall_zone: Some("public".to_string()),
+            ..Default::default()
+        };
         state.update_connection(conn1).unwrap();
-        let found = state.get_connection("eth0").unwrap();
-        assert_eq!(found.uuid, uuid);
+        let found = state.get_connection_by_uuid(uuid).unwrap();
+        assert_eq!(found.firewall_zone, Some("public".to_string()));
     }
 
     #[test]
@@ -472,17 +471,23 @@ mod tests {
     #[test]
     fn test_remove_connection() {
         let mut state = NetworkState::default();
-        let conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        let uuid = Uuid::new_v4();
+        let conn0 = Connection {
+            id: "eth0".to_string(),
+            uuid,
+            ..Default::default()
+        };
         state.add_connection(conn0).unwrap();
-        state.remove_connection("eth0".as_ref()).unwrap();
-        let found = state.get_connection("eth0");
+        state.remove_connection(uuid).unwrap();
+        let found = state.get_connection_by_uuid(uuid);
         assert!(found.is_none());
     }
 
     #[test]
     fn test_remove_unknown_connection() {
         let mut state = NetworkState::default();
-        let error = state.remove_connection("unknown".as_ref()).unwrap_err();
+        let uuid = Uuid::new_v4();
+        let error = state.remove_connection(uuid).unwrap_err();
         assert!(matches!(error, NetworkStateError::UnknownConnection(_)));
     }
 
@@ -1803,7 +1808,7 @@ pub struct TunConfig {
 #[serde(rename_all = "camelCase")]
 pub enum NetworkChange {
     ConnectionAdded(Connection),
-    ConnectionRemoved(String),
+    ConnectionRemoved(Uuid),
     /// A new device has been added.
     DeviceAdded(Device),
     /// A device has been removed.
@@ -1814,7 +1819,7 @@ pub enum NetworkChange {
     DeviceUpdated(String, Device),
     /// A connection state has changed.
     ConnectionStateChanged {
-        id: String,
+        uuid: Uuid,
         state: ConnectionState,
     },
     /// A new access point has been added.

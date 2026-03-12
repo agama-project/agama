@@ -24,7 +24,9 @@
 //! the NetworkSystem state when devices or active connections change.
 
 use crate::model::Connection;
+use crate::nm::proxies::SettingsProxy;
 use std::collections::{hash_map::Entry, HashMap};
+use std::str::FromStr;
 
 use crate::types::Device;
 use crate::{
@@ -67,6 +69,8 @@ use super::{
 /// * A device is added, changed or removed.
 /// * The status of a device changes.
 /// * The IPv4 or IPv6 configuration changes.
+/// * A connection is added or removed.
+/// * An access point is added or removed.
 pub struct NetworkManagerWatcher {
     connection: zbus::Connection,
 }
@@ -187,6 +191,7 @@ impl ActionDispatcher<'_> {
     /// It runs until the updates channel is closed.
     pub async fn run(&mut self) -> Result<(), NmError> {
         self.read_devices().await?;
+        self.read_connections().await?;
         while let Some(update) = self.updates_rx.recv().await {
             let result = match update {
                 NmChange::GeneralStateChanged => self.handle_general_state_changed().await,
@@ -227,6 +232,15 @@ impl ActionDispatcher<'_> {
         Ok(())
     }
 
+    /// Reads the connections.
+    async fn read_connections(&mut self) -> Result<(), NmError> {
+        let settings_proxy = SettingsProxy::new(&self.connection).await?;
+        for path in settings_proxy.list_connections().await? {
+            self.proxies.find_or_add_connection(&path).await?;
+        }
+        Ok(())
+    }
+
     /// Handles a general state change.
     async fn handle_general_state_changed(&mut self) -> Result<(), NmError> {
         tracing::info!("General state was changed");
@@ -261,8 +275,8 @@ impl ActionDispatcher<'_> {
     /// * `path`: D-Bus object path of the removed connection.
     async fn handle_connection_removed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         tracing::info!("Connection was removed");
-        if let Some((id, _)) = self.proxies.remove_connection(&path) {
-            _ = self.actions_tx.send(Action::RemoveConnection(id));
+        if let Some((uuid, _)) = self.proxies.remove_connection(&path) {
+            _ = self.actions_tx.send(Action::RemoveConnection(uuid));
         }
         Ok(())
     }
@@ -338,12 +352,12 @@ impl ActionDispatcher<'_> {
         path: OwnedObjectPath,
     ) -> Result<(), NmError> {
         let proxy = self.proxies.find_or_add_active_connection(&path).await?;
-        let id = proxy.id().await?;
+        let uuid = Uuid::from_str(&proxy.uuid().await?).map_err(NmError::InvalidNetworkUUID)?;
         let state = proxy.state().await.map(NmConnectionState)?;
         if let Ok(state) = state.try_into() {
             _ = self
                 .actions_tx
-                .send(Action::ChangeConnectionState(id, state));
+                .send(Action::ChangeConnectionState(uuid, state));
         }
         // TODO: report an error if the device cannot get generated
 
@@ -358,12 +372,12 @@ impl ActionDispatcher<'_> {
         path: OwnedObjectPath,
     ) -> Result<(), NmError> {
         if let Some(proxy) = self.proxies.remove_active_connection(&path) {
-            let id = proxy.id().await?;
+            let uuid = Uuid::from_str(&proxy.uuid().await?).map_err(NmError::InvalidNetworkUUID)?;
             let state = proxy.state().await.map(NmConnectionState)?;
             if let Ok(state) = state.try_into() {
                 _ = self
                     .actions_tx
-                    .send(Action::ChangeConnectionState(id, state));
+                    .send(Action::ChangeConnectionState(uuid, state));
             }
         }
 
@@ -428,10 +442,12 @@ impl ActionDispatcher<'_> {
     }
 }
 
+use uuid::Uuid;
+
 /// Ancillary class to track the devices and their related D-Bus objects.
 pub struct ProxiesRegistry<'a> {
     connection: zbus::Connection,
-    connections: HashMap<OwnedObjectPath, (String, ConnectionProxy<'a>)>,
+    connections: HashMap<OwnedObjectPath, (Uuid, ConnectionProxy<'a>)>,
     // the String is the device name like eth0
     devices: HashMap<OwnedObjectPath, (String, DeviceProxy<'a>)>,
     active_connections: HashMap<OwnedObjectPath, ActiveConnectionProxy<'a>>,
@@ -477,7 +493,7 @@ impl<'a> ProxiesRegistry<'a> {
     pub async fn find_or_add_connection(
         &mut self,
         path: &OwnedObjectPath,
-    ) -> Result<&(String, ConnectionProxy<'a>), NmError> {
+    ) -> Result<&(Uuid, ConnectionProxy<'a>), NmError> {
         // Cannot use entry(...).or_insert_with(...) because of the async call.
         match self.connections.entry(path.clone()) {
             Entry::Vacant(entry) => {
@@ -487,7 +503,7 @@ impl<'a> ProxiesRegistry<'a> {
                     .await?;
                 let settings = proxy.get_settings().await?;
                 match connection_from_dbus(settings) {
-                    Ok(conn) => Ok(entry.insert((conn.id, proxy))),
+                    Ok(conn) => Ok(entry.insert((conn.uuid, proxy))),
                     Err(e) => {
                         tracing::warn!("Could not process connection {}: {}", &path, e);
                         Err(e)
@@ -547,7 +563,7 @@ impl<'a> ProxiesRegistry<'a> {
     pub fn remove_connection(
         &mut self,
         path: &OwnedObjectPath,
-    ) -> Option<(String, ConnectionProxy<'_>)> {
+    ) -> Option<(Uuid, ConnectionProxy<'_>)> {
         self.connections.remove(path)
     }
 

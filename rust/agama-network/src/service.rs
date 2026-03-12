@@ -25,6 +25,7 @@ use crate::{
     types::{AccessPoint, Config, Device, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
+use uuid::Uuid;
 use agama_utils::{
     actor::Handler,
     api::{event, Event, Scope},
@@ -410,10 +411,10 @@ impl Service {
                 let result = self.state.update_connection(*conn);
                 tx.send(result).unwrap();
             }
-            Action::ChangeConnectionState(id, state) => {
-                if let Some(conn) = self.state.get_connection_mut(&id) {
+            Action::ChangeConnectionState(uuid, state) => {
+                if let Some(conn) = self.state.get_connection_by_uuid_mut(uuid) {
                     conn.state = state;
-                    return Ok(Some(NetworkChange::ConnectionStateChanged { id, state }));
+                    return Ok(Some(NetworkChange::ConnectionStateChanged { uuid, state }));
                 }
             }
             Action::UpdateGeneralState(general_state) => {
@@ -427,11 +428,11 @@ impl Service {
                     })?;
                 }
             }
-            Action::RemoveConnection(id) => {
-                if let Some(conn) = self.state.get_connection(id.as_ref()) {
+            Action::RemoveConnection(uuid) => {
+                if let Some(conn) = self.state.get_connection_by_uuid(uuid) {
                     if !conn.is_removed() {
                         tracing::info!("Connection {:?} exists, removing it", conn);
-                        self.state.remove_connection(id.as_str())?;
+                        self.state.remove_connection(uuid)?;
                         self.events.send(Event::ConfigChanged {
                             scope: (Scope::Network),
                         })?;
@@ -442,9 +443,9 @@ impl Service {
                         );
                     }
                 } else {
-                    tracing::info!("Connection {} does not exists, skipping it", id);
+                    tracing::info!("Connection {} does not exists, skipping it", uuid);
                 }
-                return Ok(Some(NetworkChange::ConnectionRemoved(id)));
+                return Ok(Some(NetworkChange::ConnectionRemoved(uuid)));
             }
             Action::Apply(tx) => {
                 let result = self.apply().await;
