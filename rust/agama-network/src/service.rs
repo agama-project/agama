@@ -273,7 +273,7 @@ impl Service {
                     _ = self.output.send(update);
                 }
                 Err(error) => {
-                    eprintln!("Could not process the action: {}", error);
+                    tracing::error!("Could not process the action: {}", error);
                 }
                 _ => {}
             }

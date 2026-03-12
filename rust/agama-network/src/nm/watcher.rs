@@ -221,8 +221,13 @@ impl ActionDispatcher<'_> {
     async fn handle_general_state_changed(&mut self) -> Result<(), NmError> {
         tracing::info!("General state was changed");
         let client = NetworkManagerClient::new(self.connection.clone()).await?;
-        if let Ok(state) = client.general_state().await {
-            _ = self.actions_tx.send(Action::UpdateGeneralState(state));
+        match client.general_state().await {
+            Ok(state) => {
+                _ = self.actions_tx.send(Action::UpdateGeneralState(state));
+            }
+            Err(e) => {
+                tracing::warn!("Could not get the general state: {}", e);
+            }
         }
         Ok(())
     }
@@ -520,11 +525,11 @@ impl<'a> ProxiesRegistry<'a> {
     /// * `ip6_config_path`: D-Bus object path of the IPv6 configuration.
     pub async fn find_device_for_ip6(
         &self,
-        ip4_config_path: &OwnedObjectPath,
+        ip6_config_path: &OwnedObjectPath,
     ) -> Option<&(String, DeviceProxy<'_>)> {
         for device in self.devices.values() {
-            if let Ok(path) = device.1.ip4_config().await {
-                if path == *ip4_config_path {
+            if let Ok(path) = device.1.ip6_config().await {
+                if path == *ip6_config_path {
                     return Some(device);
                 }
             }
