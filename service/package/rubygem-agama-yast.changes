@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Mar 12 13:03:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add errors to the output of agama-autoyast (related to bsc#1259434).
+
+-------------------------------------------------------------------
 Thu Mar 12 08:35:23 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Infer the boot device, if omitted in the user configuration, when

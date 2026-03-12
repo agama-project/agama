@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 12 13:03:48 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add error reporting when working with AutoYaST profiles (related
+  to bsc#1259434).
+
+-------------------------------------------------------------------
 Thu Mar 12 10:03:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not force to push the "Reboot" button if inst.finish is given
