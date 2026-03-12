@@ -39,11 +39,14 @@ module Agama
 
         hsh = {
           "userName" => user.name,
-          "fullName" => user.gecos.first.to_s,
-          "password" => user.password.value.to_s
+          "fullName" => user.gecos.first.to_s
         }
 
-        hsh["hashedPassword"] = true if user.password.value.encrypted?
+        password = user.password
+        if password
+          hsh["password"] = password.value.to_s
+          hsh["hashedPassword"] = true if password.value.encrypted?
+        end
 
         { "user" => hsh }
       end
