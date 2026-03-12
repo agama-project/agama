@@ -62,7 +62,7 @@ module Agama
         )
 
         questions_client.ask(question) do |answer|
-          answer == :continue
+          answer.action == :continue
         end
       end
 
