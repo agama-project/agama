@@ -359,9 +359,9 @@ type ZFCPDevicesTableProps = {
 };
 
 /**
- * Displays a filterable, sortable, selectable table of zFCP devices.
+ * Renders a table for configuring zFCP devices.
  *
- * Manages its own UI state (filters, sorting, selection, pending format requests) via a reducer.
+ * Manages its own UI state (filters, sorting) via a reducer.
  */
 export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): React.ReactNode {
   const [state, dispatch] = useReducer(reducer, initialState);
