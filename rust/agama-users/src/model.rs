@@ -146,7 +146,10 @@ impl Model {
 
         // store ssh key for root if any
         if let Some(ref root_ssh_key) = root.ssh_public_key {
-            self.update_authorized_keys(root_ssh_key)?;
+            self.update_authorized_keys(
+                &PathBuf::from("root/.ssh/authorized_keys"),
+                &vec![root_ssh_key],
+            )?;
             self.enable_sshd_service()?;
             self.open_ssh_port()?;
         }
@@ -210,9 +213,13 @@ impl Model {
     }
 
     /// Updates root's authorized_keys file with SSH key
-    fn update_authorized_keys(&self, ssh_key: &str) -> Result<(), service::Error> {
+    fn update_authorized_keys(
+        &self,
+        keys_path: &PathBuf,
+        ssh_keys: &[&String],
+    ) -> Result<(), service::Error> {
         let mode = 0o644;
-        let file_name = self.install_dir.join("root/.ssh/authorized_keys");
+        let file_name = self.install_dir.join(keys_path);
         let mut authorized_keys_file = OpenOptions::new()
             .create(true)
             .append(true)
@@ -223,9 +230,12 @@ impl Model {
         // sets mode also for an existing file
         fs::set_permissions(&file_name, Permissions::from_mode(mode))?;
 
-        writeln!(authorized_keys_file, "{}", ssh_key.trim())?;
-
-        Ok(())
+        ssh_keys
+            .iter()
+            .try_for_each(|ssh_key| -> Result<(), service::Error> {
+                writeln!(authorized_keys_file, "{}", ssh_key.trim())?;
+                Ok(())
+            })
     }
 
     /// Enables sshd service in the target system
