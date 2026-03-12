@@ -156,7 +156,7 @@ describe("model/config/zfcp", () => {
     });
   });
 
-  describe.only("#removeDevices", () => {
+  describe("#removeDevices", () => {
     it("preserves existing config properties while removing devices", () => {
       const initialConfig = {
         ...mockInitialConfig,
