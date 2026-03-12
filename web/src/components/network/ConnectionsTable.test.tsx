@@ -52,47 +52,31 @@ describe("ConnectionsTable", () => {
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
   });
 
-  it("navigates to the wired connection page when 'Show' is clicked for an ethernet connection", () => {
+  it("navigates to the wired connection page when 'Show' is clicked for an ethernet connection", async () => {
     const { user } = installerRender(<ConnectionsTable />);
-    const actionsToggle = screen.getByRole("button", { name: /actions for Eth0/i });
-    user.click(actionsToggle);
-
-    const showAction = screen.getByText("Show");
-    user.click(showAction);
-
+    await user.click(screen.getByRole("button", { name: /actions for Eth0/i }));
+    await user.click(screen.getByText("Show"));
     expect(mockNavigateFn).toHaveBeenCalledWith("/network/wired_connection/Eth0");
   });
 
-  it("navigates to the wifi network page when 'Show' is clicked for a wifi connection", () => {
+  it("navigates to the wifi network page when 'Show' is clicked for a wifi connection", async () => {
     const { user } = installerRender(<ConnectionsTable />);
-    const actionsToggle = screen.getByRole("button", { name: /actions for Wifi1/i });
-    user.click(actionsToggle);
-
-    const showAction = screen.getByText("Show");
-    user.click(showAction);
-
+    await user.click(screen.getByRole("button", { name: /actions for Wifi1/i }));
+    await user.click(screen.getByText("Show"));
     expect(mockNavigateFn).toHaveBeenCalledWith("/network/wifi_networks/My%20Wifi");
   });
 
-  it("navigates to the edit connection page when 'Edit' is clicked", () => {
+  it("navigates to the edit connection page when 'Edit' is clicked", async () => {
     const { user } = installerRender(<ConnectionsTable />);
-    const actionsToggle = screen.getByRole("button", { name: /actions for Eth0/i });
-    user.click(actionsToggle);
-
-    const editAction = screen.getByText("Edit");
-    user.click(editAction);
-
+    await user.click(screen.getByRole("button", { name: /actions for Eth0/i }));
+    await user.click(screen.getByText("Edit"));
     expect(mockNavigateFn).toHaveBeenCalledWith("/network/connections/Eth0/edit");
   });
 
-  it("calls mutateConnection with status DELETE when 'Delete' is clicked", () => {
+  it("calls mutateConnection with status DELETE when 'Delete' is clicked", async () => {
     const { user } = installerRender(<ConnectionsTable />);
-    const actionsToggle = screen.getByRole("button", { name: /actions for Eth0/i });
-    user.click(actionsToggle);
-
-    const deleteAction = screen.getByText("Delete");
-    user.click(deleteAction);
-
+    await user.click(screen.getByRole("button", { name: /actions for Eth0/i }));
+    await user.click(screen.getByText("Delete"));
     expect(mockMutateAsync).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "Eth0",

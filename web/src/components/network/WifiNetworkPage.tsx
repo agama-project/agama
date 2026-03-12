@@ -22,43 +22,13 @@
 
 import React from "react";
 import { useParams } from "react-router";
-import {
-  EmptyState,
-  EmptyStateActions,
-  EmptyStateBody,
-  EmptyStateFooter,
-} from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
-import { Icon } from "~/components/layout";
-import WifiConnectionForm from "./WifiConnectionForm";
-import WifiConnectionDetails from "./WifiConnectionDetails";
-import { useNetworkChanges, useWifiNetworks } from "~/hooks/model/system/network";
+import Page from "~/components/core/Page";
+import WifiConnectionForm from "~/components/network/WifiConnectionForm";
+import WifiConnectionDetails from "~/components/network/WifiConnectionDetails";
 import { DeviceState } from "~/types/network";
-import { PATHS } from "~/routes/network";
-import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
+import { useNetworkChanges, useWifiNetworks } from "~/hooks/model/system/network";
 import { NETWORK } from "~/routes/paths";
-
-const NetworkNotFound = ({ ssid }) => {
-  // TRANSLATORS: %s will be replaced with the network ssid
-  const text = sprintf(_('"%s" does not exist or is no longer available.'), ssid);
-  return (
-    <EmptyState
-      titleText={_("Network not found or lost")}
-      headingLevel="h3"
-      icon={() => <Icon name="error" />}
-    >
-      <EmptyStateBody>{text}</EmptyStateBody>
-      <EmptyStateFooter>
-        <EmptyStateActions>
-          <Link to={PATHS.root} variant="link" isInline>
-            {_("Go to network page")}
-          </Link>
-        </EmptyStateActions>
-      </EmptyStateFooter>
-    </EmptyState>
-  );
-};
+import { _ } from "~/i18n";
 
 export default function WifiNetworkPage() {
   useNetworkChanges();
@@ -77,9 +47,9 @@ export default function WifiNetworkPage() {
       progress={{ scope: "network", ensureRefetched: "system" }}
     >
       <Page.Content>
-        {!network && <NetworkNotFound ssid={ssid} />}
-        {network && !connected && <WifiConnectionForm network={network} />}
-        {network && connected && <WifiConnectionDetails network={network} />}
+        {!network && <WifiConnectionForm />}
+        {network && !connected && <WifiConnectionForm />}
+        {network && connected && <WifiConnectionDetails />}
       </Page.Content>
     </Page>
   );

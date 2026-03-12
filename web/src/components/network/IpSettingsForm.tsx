@@ -179,16 +179,17 @@ export default function IpSettingsForm() {
 
   const breadcrumbs = [
     { label: _("Network"), path: NETWORK.root },
-    ...(connectionFromStore
-      ? [
-          {
-            label: connectionFromStore.id,
-            path: generatePath(NETWORK.wiredConnection, { id: connectionFromStore.id }),
-          },
-          { label: _("Edit") },
-        ]
-      : [{ label: _("Add connection") }]),
-  ];
+    connectionFromStore && {
+      label: connectionFromStore.id,
+      path: generatePath(
+        connectionFromStore.wireless ? NETWORK.wifiConnection : NETWORK.wiredConnection,
+        {
+          id: connectionFromStore.id,
+        },
+      ),
+    },
+    { label: connectionFromStore ? _("Edit") : "New connection" },
+  ].filter(Boolean);
 
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name

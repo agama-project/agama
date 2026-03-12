@@ -24,7 +24,14 @@ import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import IpSettingsForm from "~/components/network/IpSettingsForm";
-import { ConnectionMethod, ConnectionType, Device, DeviceState } from "~/types/network";
+import {
+  Connection,
+  ConnectionMethod,
+  ConnectionType,
+  Device,
+  DeviceState,
+  Wireless,
+} from "~/types/network";
 
 const mockDevice1: Device = {
   name: "enp1s0",
@@ -43,12 +50,18 @@ const mockDevice1: Device = {
   routes6: [],
 };
 
+const mockConnection = new Connection("Network 1", {
+  wireless: new Wireless({ ssid: "Network 1" }),
+});
+
 const mockMutateAsync = jest.fn().mockResolvedValue({});
+
 jest.mock("~/hooks/model/config/network", () => ({
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
 }));
 
 const mockUseConnection = jest.fn();
+
 jest.mock("~/hooks/model/proposal/network", () => ({
   useConnection: (id: string) => mockUseConnection(id),
 }));
@@ -62,52 +75,91 @@ describe("IpSettingsForm", () => {
     jest.clearAllMocks();
   });
 
-  it("renders with a generated ID when adding a new connection", async () => {
-    mockParams({ id: "Connection #1" });
-    mockUseConnection.mockReturnValue(undefined);
+  describe("when adding a new connection", () => {
+    beforeEach(() => {
+      mockParams({ id: "Connection #1" });
+      mockUseConnection.mockReturnValue(undefined);
+    });
 
-    installerRender(<IpSettingsForm />);
+    it("renders with the ID from params", async () => {
+      installerRender(<IpSettingsForm />);
+      const nameInput = screen.getByLabelText("Name");
+      expect(nameInput).toHaveValue("Connection #1");
+    });
 
-    const nameInput = screen.getByLabelText("Name");
-    expect(nameInput).toHaveValue("Connection #1");
-  });
+    it("shows 'New connection' in breadcrumbs", () => {
+      installerRender(<IpSettingsForm />);
+      screen.getByText("New connection");
+    });
 
-  it("allows editing the connection ID", async () => {
-    mockParams({ id: "Connection #1" });
-    mockUseConnection.mockReturnValue(undefined);
+    it("allows editing the connection ID", async () => {
+      const { user } = installerRender(<IpSettingsForm />);
+      const nameInput = screen.getByLabelText("Name");
+      await user.clear(nameInput);
+      await user.type(nameInput, "My New Connection");
+      expect(nameInput).toHaveValue("My New Connection");
+      const saveButton = screen.getByRole("button", { name: /save|accept|ok/i });
+      await user.click(saveButton);
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({ id: "My New Connection" }),
+        );
+      });
+    });
 
-    const { user } = installerRender(<IpSettingsForm />);
-
-    const nameInput = screen.getByLabelText("Name");
-    await user.clear(nameInput);
-    await user.type(nameInput, "My New Connection");
-    expect(nameInput).toHaveValue("My New Connection");
-
-    const saveButton = screen.getByRole("button", { name: /save|accept|ok/i });
-    await user.click(saveButton);
-
-    await waitFor(() => {
-      expect(mockMutateAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: "My New Connection",
-        }),
-      );
+    it("does not send iface when 'None (unbound)' is selected", async () => {
+      const { user } = installerRender(<IpSettingsForm />);
+      const select = screen.getByRole("combobox", { name: "Interface" });
+      await user.selectOptions(select, "None (unbound)");
+      const saveButton = screen.getByRole("button", { name: /save|accept|ok/i });
+      await user.click(saveButton);
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(expect.objectContaining({ iface: undefined }));
+      });
     });
   });
 
-  it("does not send iface when 'None (unbound)' is selected", async () => {
-    mockParams({ id: "Connection #1" });
-    mockUseConnection.mockReturnValue(undefined);
-    const { user } = installerRender(<IpSettingsForm />);
+  describe("when editing an existing wired connection", () => {
+    const existingConnection = new Connection("Network 1");
 
-    const select = screen.getByRole("combobox", { name: "Interface" });
-    await user.selectOptions(select, "None (unbound)");
+    beforeEach(() => {
+      mockParams({ id: "Network 1" });
+      mockUseConnection.mockReturnValue(existingConnection);
+    });
 
-    const saveButton = screen.getByRole("button", { name: /save|accept|ok/i });
-    await user.click(saveButton);
+    it("renders with the existing connection ID", () => {
+      installerRender(<IpSettingsForm />);
+      const nameInput = screen.getByLabelText("Name");
+      expect(nameInput).toHaveValue("Network 1");
+    });
 
-    await waitFor(() => {
-      expect(mockMutateAsync).toHaveBeenCalledWith(expect.objectContaining({ iface: undefined }));
+    it("shows 'Edit' in breadcrumbs", () => {
+      installerRender(<IpSettingsForm />);
+      screen.getByText("Edit");
+    });
+
+    it("links to the wired connection page in breadcrumbs", () => {
+      installerRender(<IpSettingsForm />);
+      const breadcrumbLink = screen.getByRole("link", { name: "Network 1" });
+      expect(breadcrumbLink).toHaveAttribute("href", "/network/wired_connection/Network%201");
+    });
+  });
+
+  describe("when editing an existing wireless connection", () => {
+    beforeEach(() => {
+      mockParams({ id: "Network 1" });
+      mockUseConnection.mockReturnValue(mockConnection);
+    });
+
+    it("shows 'Edit' in breadcrumbs", () => {
+      installerRender(<IpSettingsForm />);
+      screen.getByText("Edit");
+    });
+
+    it("links to the wifi connection page in breadcrumbs", () => {
+      installerRender(<IpSettingsForm />);
+      const breadcrumbLink = screen.getByRole("link", { name: "Network 1" });
+      expect(breadcrumbLink).toHaveAttribute("href", "/network/wifi_networks/Network%201");
     });
   });
 });

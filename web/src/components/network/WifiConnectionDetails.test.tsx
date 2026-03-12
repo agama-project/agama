@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockParams } from "~/test-utils";
 import WifiConnectionDetails from "./WifiConnectionDetails";
 import {
   Connection,
@@ -69,9 +69,18 @@ const mockNetwork = {
   status: WifiNetworkStatus.CONNECTED,
 };
 
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useWifiNetworks: () => [mockNetwork],
+}));
+
 describe("WifiConnectionDetails", () => {
+  beforeEach(() => {
+    mockParams({ id: "Network 1" });
+  });
+
   it("renders the device data", () => {
-    installerRender(<WifiConnectionDetails network={mockNetwork} />);
+    installerRender(<WifiConnectionDetails />);
     const section = screen.getByRole("region", { name: "Device" });
     within(section).getByText("wlan0");
     within(section).getByText("connected");
@@ -79,7 +88,7 @@ describe("WifiConnectionDetails", () => {
   });
 
   it("renders the network data", () => {
-    installerRender(<WifiConnectionDetails network={mockNetwork} />);
+    installerRender(<WifiConnectionDetails />);
     const section = screen.getByRole("region", { name: "Network" });
     within(section).getByText("Network 1");
     within(section).getByText("25%");
@@ -88,29 +97,25 @@ describe("WifiConnectionDetails", () => {
   });
 
   it("renders the IP data", () => {
-    installerRender(<WifiConnectionDetails network={mockNetwork} />);
+    installerRender(<WifiConnectionDetails />);
     const section = screen.getByRole("region", { name: "IP settings" });
     within(section).getByText("IPv4 auto");
     within(section).getByText("IPv6 auto");
-    // IP
     within(section).getByText("192.168.69.201/24");
-    // DNS
     within(section).getByText("192.168.69.100");
-    // Gateway 4
     within(section).getByText("192.168.69.4");
-    // Gateway 6
     within(section).getByText("192.168.69.6");
   });
 
   it("renders link for editing the connection", () => {
-    installerRender(<WifiConnectionDetails network={mockNetwork} />);
+    installerRender(<WifiConnectionDetails />);
     const section = screen.getByRole("region", { name: "IP settings" });
     const editLink = within(section).getByRole("link", { name: "Edit" });
     expect(editLink).toHaveAttribute("href", "/network/connections/Network%201/edit");
   });
 
   it("renders the switch for making connection available only during installation", () => {
-    installerRender(<WifiConnectionDetails network={mockNetwork} />);
+    installerRender(<WifiConnectionDetails />);
     screen.getByText("InstallationOnlySwitch mock");
   });
 });

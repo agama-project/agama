@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
+import { Flex, Grid, GridItem } from "@patternfly/react-core";
 import { Link, Page } from "~/components/core";
 import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
 import { _ } from "~/i18n";
@@ -35,7 +35,7 @@ import { NETWORK } from "~/routes/paths";
  */
 export default function NetworkPage() {
   useNetworkChanges();
-  const { devices } = useSystem();
+  const { devices, state } = useSystem();
 
   return (
     <Page
@@ -49,7 +49,16 @@ export default function NetworkPage() {
           <GridItem sm={12} xl={6}>
             <Page.Section
               title={_("Connections")}
-              actions={<Link to={NETWORK.newConnection}>{_("Add connection")}</Link>}
+              actions={
+                <Flex alignItems={{ default: "alignItemsCenter" }}>
+                  <Link to={NETWORK.newConnection}>{_("Add connection")}</Link>
+                  {state.wirelessEnabled && (
+                    <Link to={NETWORK.newWiFiConnection} variant="link" isInline>
+                      {_("Connect to Wi-Fi network")}
+                    </Link>
+                  )}
+                </Flex>
+              }
             >
               <ConnectionsTable />
             </Page.Section>

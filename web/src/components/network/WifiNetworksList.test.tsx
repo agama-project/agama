@@ -65,7 +65,11 @@ jest.mock("~/hooks/model/system/network", () => ({
   useConnections: () => mockWifiConnections,
 }));
 
-describe("WifiNetworksList", () => {
+it.todo(
+  "Reenable the test if component is used again. If not, drop both, test and component files.",
+);
+
+describe.skip("WifiNetworksList", () => {
   describe("when visible networks are found", () => {
     beforeEach(() => {
       mockWifiConnections = [

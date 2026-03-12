@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -32,12 +32,13 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
-import { generatePath } from "react-router";
+import { generatePath, useParams } from "react-router";
 import { Link, Page } from "~/components/core";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Device, WifiNetwork } from "~/types/network";
-import { NETWORK } from "~/routes/paths";
 import { formatIp } from "~/utils/network";
+import { useWifiNetworks } from "~/hooks/model/system/network";
+import { NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 const NetworkDetails = ({ network }: { network: WifiNetwork }) => {
@@ -169,8 +170,9 @@ const IpDetails = ({ device, settings }: { device: Device; settings: WifiNetwork
   );
 };
 
-export default function WifiConnectionDetails({ network }: { network: WifiNetwork }) {
-  if (!network) return;
+function WifiConnectionPageContent({ id }) {
+  const networks = useWifiNetworks();
+  const network = networks.find((c) => c.ssid === id);
 
   return (
     <Grid hasGutter>
@@ -187,5 +189,24 @@ export default function WifiConnectionDetails({ network }: { network: WifiNetwor
         <InstallationOnlySwitch connection={network.settings} />
       </GridItem>
     </Grid>
+  );
+}
+
+export default function WifiConnectionDetails() {
+  const { id } = useParams();
+
+  return (
+    <Page
+      breadcrumbs={[
+        { label: _("Network"), path: NETWORK.root },
+        { label: _("Wi-Fi connection") },
+        { label: id },
+      ]}
+      progress={{ scope: "network", ensureRefetched: "system" }}
+    >
+      <Page.Content>
+        <WifiConnectionPageContent id={id} />
+      </Page.Content>
+    </Page>
   );
 }

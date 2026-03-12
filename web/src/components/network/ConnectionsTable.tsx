@@ -247,7 +247,7 @@ export default function ConnectionsTable() {
             title: _("Show"),
             onClick: () => {
               const path = c.wireless
-                ? generatePath(NETWORK.wifiNetwork, { ssid: c.wireless.ssid })
+                ? generatePath(NETWORK.wifiConnection, { id: c.wireless.ssid })
                 : generatePath(NETWORK.wiredConnection, { id: c.id });
               navigate(path);
             },
