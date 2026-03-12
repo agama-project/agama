@@ -23,6 +23,16 @@
 # This script is a wrapper for the Agama web server, it evaluates to which
 # addresses the server should listen to.
 
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  echo "Usage: $0"
+  echo
+  echo "  This is a wrapper script for the Agama web server (agama-web-server)."
+  echo
+  echo "  It configures the listening addresses for the web server based on"
+  echo "  the \"inst.listen_on\" boot option."
+  exit 0
+fi
+
 # the default options: listen on all interfaces for both HTTP and HTTPS ports,
 # the IPv4 addresses are fallbacks when IPv6 is disabled with the
 # "ipv6.disable=1" kernel boot option
