@@ -27,11 +27,19 @@ import WifiConnectionForm from "./WifiConnectionForm";
 import { WifiNetworkStatus } from "~/types/network";
 
 const mockUpdateConnection = jest.fn();
+const mockUseWifiNetworks = jest.fn();
+
 jest.mock("~/hooks/model/config/network", () => ({
   ...jest.requireActual("~/hooks/model/config/network"),
   useConnectionMutation: () => ({
     mutateAsync: mockUpdateConnection,
   }),
+}));
+
+jest.mock("~/hooks/model/system/network", () => ({
+  ...jest.requireActual("~/hooks/model/system/network"),
+  useNetworkChanges: jest.fn(),
+  useWifiNetworks: () => mockUseWifiNetworks(),
 }));
 
 const visibleNetwork = {
@@ -50,15 +58,17 @@ const publicNetwork = {
   security: [],
 };
 
-jest.mock("~/hooks/model/system/network", () => ({
-  ...jest.requireActual("~/hooks/model/system/network"),
-  useWifiNetworks: () => [visibleNetwork, publicNetwork],
-}));
-
 describe("WifiConnectionForm", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUpdateConnection.mockResolvedValue(undefined);
+    mockUseWifiNetworks.mockReturnValue([visibleNetwork, publicNetwork]);
+  });
+
+  it("renders an empty state when no networks are found", () => {
+    mockUseWifiNetworks.mockReturnValue([]);
+    installerRender(<WifiConnectionForm />, { withL10n: true });
+    screen.getByText("No Wi-Fi networks were found");
   });
 
   it("renders the network selector", () => {
@@ -69,16 +79,14 @@ describe("WifiConnectionForm", () => {
   describe("when a public network is selected", () => {
     it("warns the user about connecting to an unprotected network", async () => {
       const { user } = installerRender(<WifiConnectionForm />, { withL10n: true });
-      const selector = screen.getByRole("combobox", { name: "Network" });
-      await user.selectOptions(selector, "Public Network");
+      await user.selectOptions(screen.getByRole("combobox", { name: "Network" }), "Public Network");
       screen.getByText("Warning alert:");
       screen.getByText("Not protected network");
     });
 
     it("does not render the security selector", async () => {
       const { user } = installerRender(<WifiConnectionForm />, { withL10n: true });
-      const selector = screen.getByRole("combobox", { name: "Network" });
-      await user.selectOptions(selector, "Public Network");
+      await user.selectOptions(screen.getByRole("combobox", { name: "Network" }), "Public Network");
       expect(screen.queryByRole("combobox", { name: "Security" })).toBeNull();
     });
   });
@@ -118,7 +126,6 @@ describe("WifiConnectionForm", () => {
       const passwordInput = screen.getByLabelText("WPA Password");
       await user.type(passwordInput, "wifi-password");
       await user.click(screen.getByRole("button", { name: "Connect" }));
-
       await waitFor(() => {
         expect(mockUpdateConnection).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -130,7 +137,6 @@ describe("WifiConnectionForm", () => {
           }),
         );
       });
-
       expect(mockNavigateFn).toHaveBeenCalledWith("/network");
     });
   });

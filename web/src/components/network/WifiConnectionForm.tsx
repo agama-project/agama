@@ -26,11 +26,13 @@ import {
   ActionGroup,
   Alert,
   Content,
+  EmptyState,
   Form,
   FormGroup,
   FormSelect,
   FormSelectOption,
 } from "@patternfly/react-core";
+import Icon from "~/components/layout/Icon";
 import { Page, PasswordInput } from "~/components/core";
 import { Connection, WifiNetwork, Wireless } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
@@ -98,7 +100,7 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
   }
 };
 
-export default function WifiConnectionForm() {
+function WifiConnectionFormContent() {
   const navigate = useNavigate();
   const networks = useWifiNetworks();
   const [form, dispatch] = useReducer(formReducer, { ssid: "", security: "", password: "" });
@@ -127,6 +129,69 @@ export default function WifiConnectionForm() {
     navigate(PATHS.root);
   };
 
+  if (networks.length === 0)
+    return (
+      <EmptyState
+        titleText={_("No Wi-Fi networks were found")}
+        icon={() => <Icon name="error" />}
+      />
+    );
+
+  return (
+    <Form id="wifiConnectionForm" onSubmit={accept} aria-label={_("Wi-Fi connection form")}>
+      <FormGroup fieldId="ssid" label={_("Network")}>
+        <WifiNetworksSelector
+          id="ssid"
+          value={form.ssid}
+          onChange={(_, v) => dispatch({ type: "SET_SSID", ssid: v, networks })}
+        />
+      </FormGroup>
+
+      {isPublicNetwork && <PublicNetworkAlert />}
+      {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
+      {!isEmpty(network?.security) && (
+        <FormGroup fieldId="security" label={_("Security")}>
+          <FormSelect
+            id="security"
+            aria-label={_("Security")}
+            value={form.security}
+            onChange={(_, v) => dispatch({ type: "SET_SECURITY", security: v })}
+          >
+            {securityOptions.map((security) => (
+              <FormSelectOption
+                key={security.value}
+                value={security.value}
+                /* eslint-disable agama-i18n/string-literals */
+                label={_(security.label)}
+              />
+            ))}
+          </FormSelect>
+        </FormGroup>
+      )}
+      {form.security === "wpa-psk" && (
+        // TRANSLATORS: WiFi password
+        <FormGroup fieldId="password" label={_("WPA Password")}>
+          <PasswordInput
+            id="password"
+            name="password"
+            aria-label={_("Password")}
+            value={form.password}
+            onChange={(_, v) => dispatch({ type: "SET_PASSWORD", password: v })}
+          />
+        </FormGroup>
+      )}
+      <ActionGroup>
+        <Page.Submit form="wifiConnectionForm">
+          {/* TRANSLATORS: button label, connect to a Wi-Fi network */}
+          {_("Connect")}
+        </Page.Submit>
+        <Page.Back>{_("Cancel")}</Page.Back>
+      </ActionGroup>
+    </Form>
+  );
+}
+
+export default function wifiConnectionForm() {
   return (
     <Page
       breadcrumbs={[
@@ -136,57 +201,7 @@ export default function WifiConnectionForm() {
       progress={{ scope: "network", ensureRefetched: "system" }}
     >
       <Page.Content>
-        {/** TRANSLATORS: accessible name for the WiFi connection form */}
-        <Form id="wifiConnectionForm" onSubmit={accept} aria-label={_("Wi-Fi connection form")}>
-          <FormGroup fieldId="ssid" label={_("Network")}>
-            <WifiNetworksSelector
-              id="ssid"
-              value={form.ssid}
-              onChange={(_, v) => dispatch({ type: "SET_SSID", ssid: v, networks })}
-            />
-          </FormGroup>
-
-          {isPublicNetwork && <PublicNetworkAlert />}
-          {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
-          {!isEmpty(network?.security) && (
-            <FormGroup fieldId="security" label={_("Security")}>
-              <FormSelect
-                id="security"
-                aria-label={_("Security")}
-                value={form.security}
-                onChange={(_, v) => dispatch({ type: "SET_SECURITY", security: v })}
-              >
-                {securityOptions.map((security) => (
-                  <FormSelectOption
-                    key={security.value}
-                    value={security.value}
-                    /* eslint-disable agama-i18n/string-literals */
-                    label={_(security.label)}
-                  />
-                ))}
-              </FormSelect>
-            </FormGroup>
-          )}
-          {form.security === "wpa-psk" && (
-            // TRANSLATORS: WiFi password
-            <FormGroup fieldId="password" label={_("WPA Password")}>
-              <PasswordInput
-                id="password"
-                name="password"
-                aria-label={_("Password")}
-                value={form.password}
-                onChange={(_, v) => dispatch({ type: "SET_PASSWORD", password: v })}
-              />
-            </FormGroup>
-          )}
-          <ActionGroup>
-            <Page.Submit form="wifiConnectionForm">
-              {/* TRANSLATORS: button label, connect to a Wi-Fi network */}
-              {_("Connect")}
-            </Page.Submit>
-            <Page.Back>{_("Cancel")}</Page.Back>
-          </ActionGroup>
-        </Form>
+        <WifiConnectionFormContent />
       </Page.Content>
     </Page>
   );
