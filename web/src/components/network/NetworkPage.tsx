@@ -24,6 +24,7 @@ import React, { useState } from "react";
 import { Flex, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import { Link, NestedContent, Page } from "~/components/core";
 import Text from "~/components/core/Text";
+import Icon from "~/components/layout/Icon";
 import NoPersistentConnectionsAlert from "~/components/network/NoPersistentConnectionsAlert";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import DevicesTable from "~/components/network/DevicesTable";
@@ -63,16 +64,26 @@ export default function NetworkPage() {
                 <Page.Section
                   pfCardProps={{ isCompact: true, component: "div" }}
                   actions={
-                    <Flex alignItems={{ default: "alignItemsCenter" }}>
+                    <>
                       <Link to={NETWORK.newConnection} variant="plain">
-                        {_("Add connection")}
+                        <Flex
+                          gap={{ default: "gapXs" }}
+                          alignItems={{ default: "alignItemsCenter" }}
+                        >
+                          <Icon name="add_circle" /> {_("Add connection")}
+                        </Flex>
                       </Link>
                       {state.wirelessEnabled && (
                         <Link to={NETWORK.newWiFiConnection} variant="plain">
-                          {_("Connect to Wi-Fi network")}
+                          <Flex
+                            gap={{ default: "gapSm" }}
+                            alignItems={{ default: "alignItemsCenter" }}
+                          >
+                            <Icon name="wifi" /> {_("Connect to Wi-Fi network")}
+                          </Flex>
                         </Link>
                       )}
-                    </Flex>
+                    </>
                   }
                 >
                   <ConnectionsTable />
