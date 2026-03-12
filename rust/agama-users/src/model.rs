@@ -128,6 +128,17 @@ impl Model {
             )));
         }
 
+        if let Some(ssh_keys) = &user.ssh_public_keys {
+            // TODO:
+            // 1) enable sshd & open port as in case of root or not?
+            // 2) do some magic about user's home dir path or stay
+            // with hardcoded default?
+            self.update_authorized_keys(
+                &PathBuf::from(format!("/home/{}/.ssh", user_name)),
+                &ssh_keys.iter().collect::<Vec<&String>>(),
+            )?;
+        }
+
         let _ = self.set_user_group(user_name);
         self.set_user_password(user_name, user_password)?;
         self.update_user_fullname(user)

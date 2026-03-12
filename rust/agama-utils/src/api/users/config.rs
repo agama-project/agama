@@ -83,6 +83,9 @@ pub struct FirstUserConfig {
     /// First user's username
     #[merge(strategy = merge::option::overwrite_none)]
     pub user_name: Option<String>,
+    #[merge(strategy = merge::option::overwrite_none)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ssh_public_keys: Option<Vec<String>>,
 }
 
 impl FirstUserConfig {
