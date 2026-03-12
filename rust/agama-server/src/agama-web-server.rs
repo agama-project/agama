@@ -79,7 +79,7 @@ struct Cli {
 struct ServeArgs {
     // Address/port to listen on. ":::80" listens for both IPv6 and IPv4
     // connections unless manually disabled in /proc/sys/net/ipv6/bindv6only.
-    /// Primary port to listen on
+    /// Address:port to listen to, with comma-separated fallback address:port; can be repeated
     #[arg(long, default_value = ":::80")]
     address: Vec<String>,
 
