@@ -34,8 +34,23 @@ pub enum BaseHTTPClientError {
     InvalidURL(#[from] url::ParseError),
     #[error(transparent)]
     InvalidJSON(#[from] serde_json::Error),
-    #[error("Backend call failed with status {0} and text '{1}'")]
+    #[error("Backend responded with code {} and the following message:\n\n{}", .0, format_backend_error(.1))]
     BackendError(u16, String),
+}
+
+fn format_backend_error(error: &String) -> String {
+    let message: Result<serde_json::Value, _> = serde_json::from_str(&error);
+
+    match message {
+        Ok(message) => {
+            if let Some(error) = message.get("error") {
+                error.to_string().replace("\\n", "\n")
+            } else {
+                format!("{:?}", error)
+            }
+        }
+        Err(_) => format!("{:?}", error),
+    }
 }
 
 /// Base that all HTTP clients should use.
