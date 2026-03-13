@@ -275,7 +275,9 @@ if [ -n "$python" ]; then
   echo "Python package: $python"
   python_deps=$(rpm -e "$python" 2>&1 || true)
   # avoid removing python accidentally because of some new unknown dependency
-  python_deps=$(echo "$python_deps" | grep -v -e "Failed dependencies" -e "needed by .* libpython" -e "needed by .* bcache-tools" -e "needed by .* xfsprogs" || true)
+  python_deps=$(echo "$python_deps" | grep -v -e "Failed dependencies" -e "needed by .* libpython" \
+    -e "needed by .* bcache-tools" -e "needed by .* xfsprogs" -e "needed by .* hyper-v" \
+    -e "needed by .* malcontent" -e "needed by .* gnome-shell" || true)
 
   if [ -z "$python_deps" ]; then
     echo "Removing Python..."
@@ -295,10 +297,10 @@ rm -f /usr/lib/zypper/commands/zypper-search-packages
 # delete some FireFox audio codec support
 rm -f /usr/lib64/firefox/libmozavcodec.so
 
-# uninstall libyui-qt and libqt (pulled in by the YaST dependencies),
+# uninstall the libyui packages (pulled in by the YaST dependencies),
 # not present in SLES, do not fail if not installed
-if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
-  rpm -q --whatprovides libyui-qt libyui-qt-pkg | xargs rpm -e --nodeps
+if rpm -q --whatprovides libyui-ncurses libyui-qt libyui-qt-pkg > /dev/null; then
+   rpm -q --whatprovides libyui-ncurses libyui-qt libyui-qt-pkg | xargs rpm -e --nodeps
 fi
 rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
 
@@ -306,6 +308,32 @@ rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
 #
 # Agama does not use sound, added by icewm dependencies
 rpm -e --nodeps alsa alsa-utils alsa-ucm-conf || true
+
+# Delete additional unused packages to decrease the image size
+delete_packages=(
+  dconf libdconf1
+  iso-codes
+  gtk4-tools
+  gnome-control-center
+  gnome-themes-accessibility
+  gweather4-data
+  libavcodec61
+  libvpx11
+  libavutil59
+  librav1e0_8
+)
+
+for package in "${delete_packages[@]}"
+do
+  rpm -e --nodeps "$package" || true
+done
+
+# remove gstreamer and libraries
+rpm -qa | grep -e ^libgst -e ^gstreamer | xargs --no-run-if-empty rpm -e --nodeps
+
+# remove some big files
+rm -f /usr/bin/jsonnet-lint
+rm -f /usr/lib64/firefox/crashreporter
 
 # driver and firmware cleanup
 # Note: openSUSE Tumbleweed Live completely removes firmware for some server
