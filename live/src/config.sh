@@ -15,7 +15,7 @@ suseSetupProduct
 # save the current build data, the %VARIABLES% are replaced by the OBS
 # kiwi_metainfo_helper service before starting the build
 mkdir -p /var/log/build
-cat << EOF > /var/log/build/info
+cat <<EOF >/var/log/build/info
 Build date:    $(LC_ALL=C date -u -d "@${SOURCE_DATE_EPOCH:-$(date +%s)}" "+%F %T %Z")
 Build number:  Build%RELEASE%
 Image profile: $kiwi_profiles
@@ -25,7 +25,7 @@ Source URL:    %SOURCEURL%
 EOF
 
 # for reproducible builds:
-echo -n > /var/log/alternatives.log
+echo -n >/var/log/alternatives.log
 sed -i 's/# AutoInstalled generated.*/# AutoInstalled generated in kiwi reproducible build/' /var/lib/zypp/AutoInstalled # drop timestamp
 rm -f /var/tmp/rpm-tmp.*
 
@@ -49,15 +49,18 @@ if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
   rpm --import /usr/lib/rpm/gnupg/keys/*.asc
 fi
 
-if [ $(rpm -q --provides libzypp | grep -q 'libzypp(econf)'; echo $?) -eq 0 ]; then
-# A new enough version of libzypp is in use which supports UAPI configuration. Configure a drop-in conf
-cat <<EOF > /etc/zypp/zypp.conf.d/90-agama.conf
+if [ $(
+  rpm -q --provides libzypp | grep -q 'libzypp(econf)'
+  echo $?
+) -eq 0 ]; then
+  # A new enough version of libzypp is in use which supports UAPI configuration. Configure a drop-in conf
+  cat <<EOF >/etc/zypp/zypp.conf.d/90-agama.conf
 [main]
 download.connect_timeout = 20
 EOF
 else
-# decrease the libzypp timeout to 20 seconds (the default is 60 seconds)
-sed -i -e "s/^\s*#\s*download.connect_timeout\s*=\s*.*$/download.connect_timeout = 20/" /etc/zypp/zypp.conf
+  # decrease the libzypp timeout to 20 seconds (the default is 60 seconds)
+  sed -i -e "s/^\s*#\s*download.connect_timeout\s*=\s*.*$/download.connect_timeout = 20/" /etc/zypp/zypp.conf
 fi
 
 # activate services
@@ -117,18 +120,18 @@ sed -i 's:# event_activation = 1:event_activation = 0:' /etc/lvm/lvm.conf
 touch /etc/udev/rules.d/64-md-raid-assembly.rules
 
 # the "eurlatgr" is the default font for the English locale
-echo -e "\nFONT=eurlatgr.psfu" >> /etc/vconsole.conf
+echo -e "\nFONT=eurlatgr.psfu" >>/etc/vconsole.conf
 
 # configure self-update in SLES
 if [[ "$kiwi_profiles" == *SLE* ]]; then
   echo "Configuring the installer self-update..."
   # read the self-update configuration variables
   . /usr/lib/live-self-update/conf.sh
-  mkdir -p  "$CONFIG_DIR"
+  mkdir -p "$CONFIG_DIR"
   # the default registration server (SCC) if RMT is not set
-  echo "https://scc.suse.com" > "$CONFIG_DEFAULT_REG_SERVER_FILE"
+  echo "https://scc.suse.com" >"$CONFIG_DEFAULT_REG_SERVER_FILE"
   # fallback URL when contacting SCC/RMT fails or no self-update is returned
-  echo 'https://installer-updates.suse.com/SUSE/Products/SLE-INSTALLER/$os_release_version_id/$arch/product/' > "$CONFIG_FALLBACK_FILE"
+  echo 'https://installer-updates.suse.com/SUSE/Products/SLE-INSTALLER/$os_release_version_id/$arch/product/' >"$CONFIG_FALLBACK_FILE"
 fi
 
 ### setup dracut for live system
@@ -142,20 +145,19 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update hcnmgr initrd-nmtui "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
-echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf
+echo 'add_dracutmodules+=" agama-logging "' >/etc/dracut.conf.d/10-agama-logging.conf
 
 # add the ipmi drivers to the initrd (bsc#1237354)
 extra_drivers=(acpi_ipmi ipmi_devintf ipmi_poweroff ipmi_si ipmi_ssif ipmi_watchdog)
 
-for driver in "${extra_drivers[@]}"
-do
+for driver in "${extra_drivers[@]}"; do
   # check if the driver is present (allow a suffix like .zstd or .xz for optionally compressed drivers)
   if find /lib/modules -type f -name "$driver.ko*" -print0 | grep -qz .; then
     echo "Adding $driver driver to initrd..."
-    echo "add_drivers+=\" $driver \"" >> /etc/dracut.conf.d/10-extra-drivers.conf
+    echo "add_drivers+=\" $driver \"" >>/etc/dracut.conf.d/10-extra-drivers.conf
   else
     echo "Skipping driver $driver, not found in the system"
   fi
@@ -242,12 +244,12 @@ ls -1 -d /usr/lib/locale/*.utf8 | sed -e "s#/usr/lib/locale/##" -e "s#utf8#UTF-8
 # build list of ignore options for "ls" with supported languages like "-I cs -I cs_CZ ..."
 # languages.json is like: { "ca-ES": "Català", "de-DE": "Deutsch", ...}
 # jq prints ca-ES\nde-DE\n...
-readarray -t IGNORE_OPTS < <(jq -r keys[] < /usr/share/agama/web_ui/languages.json | sed -e "s/\(.*\)-\(.*\)/-I\n\\1\n-I\n\1_\2/")
+readarray -t IGNORE_OPTS < <(jq -r keys[] </usr/share/agama/web_ui/languages.json | sed -e "s/\(.*\)-\(.*\)/-I\n\\1\n-I\n\1_\2/")
 # additionally keep the en_US translations
 ls -1 "${IGNORE_OPTS[@]}" -I en_US /usr/share/locale/ | xargs -I% sh -c "echo 'Removing translations %...' && rm -rf /usr/share/locale/%"
 
 # delete locale definitions for unsupported languages (explicitly keep the C and en_US locales)
-readarray -t IGNORE_OPTS < <(jq -r keys[] < /usr/share/agama/web_ui/languages.json | sed -e "s/-/_/" -e "s/$/.utf8/" -e "s/^/-I\n/")
+readarray -t IGNORE_OPTS < <(jq -r keys[] </usr/share/agama/web_ui/languages.json | sed -e "s/-/_/" -e "s/$/.utf8/" -e "s/^/-I\n/")
 ls -1 "${IGNORE_OPTS[@]}" -I "en_US.utf8" -I "C.utf8" /usr/lib/locale/ | xargs -I% sh -c "echo 'Removing locale %...' && rm -rf /usr/lib/locale/%"
 
 # delete unused translations (MO files)
@@ -297,7 +299,7 @@ rm -f /usr/lib64/firefox/libmozavcodec.so
 
 # uninstall libyui-qt and libqt (pulled in by the YaST dependencies),
 # not present in SLES, do not fail if not installed
-if rpm -q --whatprovides libyui-qt libyui-qt-pkg > /dev/null; then
+if rpm -q --whatprovides libyui-qt libyui-qt-pkg >/dev/null; then
   rpm -q --whatprovides libyui-qt libyui-qt-pkg | xargs rpm -e --nodeps
 fi
 rpm -qa | grep ^libQt | xargs --no-run-if-empty rpm -e --nodeps
@@ -331,13 +333,13 @@ du -h -s /lib/modules /lib/firmware
 #
 
 # Stronger compression for the initrd
-echo 'compress="xz -9 --check=crc32 --memlimit-compress=50%"' >> /etc/dracut.conf.d/less-storage.conf
+echo 'compress="xz -9 --check=crc32 --memlimit-compress=50%"' >>/etc/dracut.conf.d/less-storage.conf
 
 # Kernel modules (+ firmware) for X13s
 if [ "$(arch)" == "aarch64" ]; then
-	echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "'  > /etc/dracut.conf.d/x13s_modules.conf
-	echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >> /etc/dracut.conf.d/x13s_modules.conf
-	echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >> /etc/dracut.conf.d/x13s_modules.conf
+  echo 'add_drivers+=" clk-rpmh dispcc-sc8280xp gcc-sc8280xp gpucc-sc8280xp nvmem_qcom-spmi-sdam qcom_hwspinlock qcom_q6v5 qcom_q6v5_pas qnoc-sc8280xp pmic_glink pmic_glink_altmode smp2p spmi-pmic-arb leds-qcom-lpg "' >/etc/dracut.conf.d/x13s_modules.conf
+  echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >>/etc/dracut.conf.d/x13s_modules.conf
+  echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >>/etc/dracut.conf.d/x13s_modules.conf
 fi
 
 # Decompress kernel modules, better for squashfs (boo#1192457)
