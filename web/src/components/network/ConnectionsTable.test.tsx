@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { Connection, ConnectionStatus } from "~/types/network";
@@ -41,13 +41,18 @@ const mockConnections = [
   }),
 ];
 
+const mockDevices = [
+  { name: "eth0", connection: "Wired connection 0", addresses: [] },
+  { name: "wlan0", connection: "Wifi1", addresses: [] },
+];
+
 jest.mock("~/hooks/model/config/network", () => ({
   useConnections: () => mockConnections,
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
 }));
 
 jest.mock("~/hooks/model/system/network", () => ({
-  useDevices: () => [],
+  useDevices: () => mockDevices,
   useSystem: () => ({ state: { wirelessEnabled: true } }),
 }));
 
@@ -55,6 +60,39 @@ describe("ConnectionsTable", () => {
   it("renders the connections in the table", () => {
     installerRender(<ConnectionsTable />);
     expect(screen.getByText("Wired connection 0")).toBeInTheDocument();
+    expect(screen.getByText("Wifi1")).toBeInTheDocument();
+  });
+
+  it("renders the Bind and Device columns", () => {
+    installerRender(<ConnectionsTable />);
+    expect(screen.getByText("interface: eth0")).toBeInTheDocument();
+    expect(screen.getByText("interface: wlan0")).toBeInTheDocument();
+    // Device column for Wired connection 0
+    expect(screen.getAllByText("eth0").length).toBeGreaterThan(0);
+    // Device column for Wifi1
+    expect(screen.getAllByText("wlan0").length).toBeGreaterThan(0);
+  });
+
+  it("renders the Status column", () => {
+    installerRender(<ConnectionsTable />);
+    // Wired connection 0 has status UP
+    expect(screen.getByText("Up")).toBeInTheDocument();
+    // Wifi1 has status DOWN
+    expect(screen.getByText("Down")).toBeInTheDocument();
+  });
+
+  it("filters the connections by status", async () => {
+    const { user } = installerRender(<ConnectionsTable />);
+    // Select Status "Up"
+    await user.click(screen.getByLabelText("Status"));
+    await user.click(screen.getByRole("option", { name: "Up" }));
+    expect(screen.getByText("Wired connection 0")).toBeInTheDocument();
+    expect(screen.queryByText("Wifi1")).not.toBeInTheDocument();
+
+    // Select Status "Down"
+    await user.click(screen.getByLabelText("Status"));
+    await user.click(screen.getByRole("option", { name: "Down" }));
+    expect(screen.queryByText("Wired connection 0")).not.toBeInTheDocument();
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
   });
 

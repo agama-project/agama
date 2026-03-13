@@ -57,6 +57,7 @@ type ConnectionsFilters = {
   name?: string;
   device?: string;
   type?: "all" | "wifi" | "ethernet";
+  status?: "all" | "up" | "down";
 };
 
 /** Internal state shape for the connections table component. */
@@ -73,6 +74,7 @@ const initialState: TableState = {
     name: "",
     device: "",
     type: "all",
+    status: "all",
   },
 };
 
@@ -99,7 +101,7 @@ const filterConnections = (
   connections: Connection[],
   filters: ConnectionsFilters,
 ): Connection[] => {
-  const { name, device, type } = filters;
+  const { name, device, type, status } = filters;
 
   return connections.filter((c) => {
     if (!isEmpty(name) && !c.id.toLowerCase().includes(name.toLowerCase())) {
@@ -116,6 +118,11 @@ const filterConnections = (
       if (type === "wifi" && !isWifi) return false;
       if (type === "ethernet" && isWifi) return false;
     }
+    if (status && status !== "all") {
+      const isUp = c.status === ConnectionStatus.UP;
+      if (status === "up" && !isUp) return false;
+      if (status === "down" && isUp) return false;
+    }
     return true;
   });
 };
@@ -125,6 +132,35 @@ const createColumns = (devices: Device[]) => [
     name: _("Name"),
     value: (c: Connection) => c.id,
     sortingKey: (c: Connection) => c.id,
+  },
+  {
+    name: _("Bind"),
+    value: (c: Connection) => {
+      if (!isEmpty(c.iface)) {
+        return _("by interface");
+      }
+      if (!isEmpty(c.macAddress)) {
+        return _("by MAC");
+      }
+      return "";
+    },
+    sortingKey: (c: Connection) => c.iface || c.macAddress || "",
+  },
+  {
+    name: _("Device"),
+    value: (c: Connection) => {
+      const usingDevices = devices.filter((d) => d.connection === c.id);
+      return usingDevices.map((d) => d.name).join(", ") || "-";
+    },
+    sortingKey: (c: Connection) => {
+      const usingDevices = devices.filter((d) => d.connection === c.id);
+      return usingDevices.map((d) => d.name).join(", ");
+    },
+  },
+  {
+    name: _("Status"),
+    value: (c: Connection) => (c.status === ConnectionStatus.UP ? _("Up") : _("Down")),
+    sortingKey: (c: Connection) => c.status,
   },
   {
     name: _("IP Addresses"),
@@ -235,6 +271,18 @@ export default function ConnectionsTable() {
                 onChange={(_, v) => onFilterChange("type", v)}
               />
             </ToolbarItem>
+            <ToolbarItem>
+              <SimpleSelector
+                label={_("Status")}
+                value={state.filters.status}
+                options={{
+                  all: _("All"),
+                  up: _("Up"),
+                  down: _("Down"),
+                }}
+                onChange={(_, v) => onFilterChange("status", v)}
+              />
+            </ToolbarItem>
           </ToolbarGroup>
           <ToolbarGroup align={{ default: "alignEnd" }}>
             <ToolbarItem>
@@ -267,18 +315,8 @@ export default function ConnectionsTable() {
 
           const actions = [
             {
-              id: "connect",
-              title: _("Connect"),
-              onClick: () => upConnection(c),
-            },
-            {
-              id: "disconnect",
-              title: _("Disconnect"),
-              onClick: () => downConnection(c),
-            },
-            {
-              id: "show",
-              title: _("Show"),
+              id: "details",
+              title: _("Details"),
               onClick: () => {
                 const path = c.wireless
                   ? generatePath(NETWORK.wifiConnection, { id: c.wireless.ssid })
@@ -292,8 +330,27 @@ export default function ConnectionsTable() {
               onClick: () => navigate(generatePath(NETWORK.editConnection, { id: c.id })),
             },
             {
+              id: "separator",
+              isSeparator: true,
+            },
+            {
+              id: "connect",
+              title: _("Set up"),
+              onClick: () => upConnection(c),
+            },
+            {
+              id: "disconnect",
+              title: _("Set down"),
+              onClick: () => downConnection(c),
+            },
+            {
+              id: "separator2",
+              isSeparator: true,
+            },
+            {
               id: "delete",
               title: _("Delete"),
+              isDanger: true,
               onClick: () => deleteConnection(c),
             },
           ];
@@ -301,7 +358,9 @@ export default function ConnectionsTable() {
           const keptActions = {
             connect: c.status === ConnectionStatus.DOWN && canConnect,
             disconnect: c.status === ConnectionStatus.UP,
-            show: true,
+            separator: true,
+            separator2: true,
+            details: true,
             edit: true,
             delete: true,
           };
