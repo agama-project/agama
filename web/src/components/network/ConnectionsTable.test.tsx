@@ -24,15 +24,20 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
-import { Connection } from "~/types/network";
+import { Connection, ConnectionStatus } from "~/types/network";
 
 const mockMutateAsync = jest.fn();
 const mockConnections = [
-  new Connection("Eth0", { iface: "eth0", addresses: [] }),
+  new Connection("Wired connection 0", {
+    iface: "eth0",
+    addresses: [],
+    status: ConnectionStatus.UP,
+  }),
   new Connection("Wifi1", {
     iface: "wlan0",
     wireless: { ssid: "My Wifi", mode: "infrastructure" },
     addresses: [],
+    status: ConnectionStatus.DOWN,
   }),
 ];
 
@@ -48,15 +53,39 @@ jest.mock("~/hooks/model/system/network", () => ({
 describe("ConnectionsTable", () => {
   it("renders the connections in the table", () => {
     installerRender(<ConnectionsTable />);
-    expect(screen.getByText("Eth0")).toBeInTheDocument();
+    expect(screen.getByText("Wired connection 0")).toBeInTheDocument();
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
+  });
+
+  it("calls mutateConnection with status UP when 'Connect' is clicked", async () => {
+    const { user } = installerRender(<ConnectionsTable />);
+    await user.click(screen.getByRole("button", { name: /actions for Wifi1/i }));
+    await user.click(screen.getByText("Connect"));
+    expect(mockMutateAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "Wifi1",
+        status: "up",
+      }),
+    );
+  });
+
+  it("calls mutateConnection with status DOWN when 'Disconnect' is clicked", async () => {
+    const { user } = installerRender(<ConnectionsTable />);
+    await user.click(screen.getByRole("button", { name: /actions for Wired connection 0/i }));
+    await user.click(screen.getByText("Disconnect"));
+    expect(mockMutateAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "Wired connection 0",
+        status: "down",
+      }),
+    );
   });
 
   it("navigates to the wired connection page when 'Show' is clicked for an ethernet connection", async () => {
     const { user } = installerRender(<ConnectionsTable />);
-    await user.click(screen.getByRole("button", { name: /actions for Eth0/i }));
+    await user.click(screen.getByRole("button", { name: /actions for Wired connection 0/i }));
     await user.click(screen.getByText("Show"));
-    expect(mockNavigateFn).toHaveBeenCalledWith("/network/wired_connection/Eth0");
+    expect(mockNavigateFn).toHaveBeenCalledWith("/network/wired_connection/Wired%20connection%200");
   });
 
   it("navigates to the wifi network page when 'Show' is clicked for a wifi connection", async () => {
@@ -68,18 +97,18 @@ describe("ConnectionsTable", () => {
 
   it("navigates to the edit connection page when 'Edit' is clicked", async () => {
     const { user } = installerRender(<ConnectionsTable />);
-    await user.click(screen.getByRole("button", { name: /actions for Eth0/i }));
+    await user.click(screen.getByRole("button", { name: /actions for Wired connection 0/i }));
     await user.click(screen.getByText("Edit"));
-    expect(mockNavigateFn).toHaveBeenCalledWith("/network/connections/Eth0/edit");
+    expect(mockNavigateFn).toHaveBeenCalledWith("/network/connections/Wired%20connection%200/edit");
   });
 
   it("calls mutateConnection with status DELETE when 'Delete' is clicked", async () => {
     const { user } = installerRender(<ConnectionsTable />);
-    await user.click(screen.getByRole("button", { name: /actions for Eth0/i }));
+    await user.click(screen.getByRole("button", { name: /actions for Wired connection 0/i }));
     await user.click(screen.getByText("Delete"));
     expect(mockMutateAsync).toHaveBeenCalledWith(
       expect.objectContaining({
-        id: "Eth0",
+        id: "Wired connection 0",
         status: "removed",
       }),
     );

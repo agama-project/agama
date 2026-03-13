@@ -160,6 +160,22 @@ export default function ConnectionsTable() {
 
   const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
 
+  const upConnection = (connection: Connection) => {
+    const conn = new Connection(connection.id, {
+      ...connection,
+      status: ConnectionStatus.UP,
+    });
+    mutateConnection(conn);
+  };
+
+  const downConnection = (connection: Connection) => {
+    const conn = new Connection(connection.id, {
+      ...connection,
+      status: ConnectionStatus.DOWN,
+    });
+    mutateConnection(conn);
+  };
+
   const deleteConnection = (connection: Connection) => {
     const toDelete = new Connection(connection.id, {
       ...connection,
@@ -244,28 +260,50 @@ export default function ConnectionsTable() {
         variant="compact"
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
-        itemActions={(c: Connection) => [
-          {
-            id: "show",
-            title: _("Show"),
-            onClick: () => {
-              const path = c.wireless
-                ? generatePath(NETWORK.wifiConnection, { id: c.wireless.ssid })
-                : generatePath(NETWORK.wiredConnection, { id: c.id });
-              navigate(path);
+        itemActions={(c: Connection) => {
+          const actions = [
+            {
+              id: "connect",
+              title: _("Connect"),
+              onClick: () => upConnection(c),
             },
-          },
-          {
-            id: "edit",
-            title: _("Edit"),
-            onClick: () => navigate(generatePath(NETWORK.editConnection, { id: c.id })),
-          },
-          {
-            id: "delete",
-            title: _("Delete"),
-            onClick: () => deleteConnection(c),
-          },
-        ]}
+            {
+              id: "disconnect",
+              title: _("Disconnect"),
+              onClick: () => downConnection(c),
+            },
+            {
+              id: "show",
+              title: _("Show"),
+              onClick: () => {
+                const path = c.wireless
+                  ? generatePath(NETWORK.wifiConnection, { id: c.wireless.ssid })
+                  : generatePath(NETWORK.wiredConnection, { id: c.id });
+                navigate(path);
+              },
+            },
+            {
+              id: "edit",
+              title: _("Edit"),
+              onClick: () => navigate(generatePath(NETWORK.editConnection, { id: c.id })),
+            },
+            {
+              id: "delete",
+              title: _("Delete"),
+              onClick: () => deleteConnection(c),
+            },
+          ];
+
+          const keptActions = {
+            connect: c.status === ConnectionStatus.DOWN,
+            disconnect: c.status === ConnectionStatus.UP,
+            show: true,
+            edit: true,
+            delete: true,
+          };
+
+          return actions.filter((a) => keptActions[a.id]);
+        }}
         itemActionsLabel={(c: Connection) => `Actions for ${c.id}`}
         emptyState={
           <EmptyState
