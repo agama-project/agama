@@ -129,14 +129,9 @@ impl Model {
         }
 
         if let Some(ssh_keys) = &user.ssh_public_keys {
-            // TODO:
-            // 1) enable sshd & open port as in case of root or not?
-            // 2) do some magic about user's home dir path or stay
+            // do some magic about user's home dir path or stay
             // with hardcoded default?
-            self.update_authorized_keys(
-                &PathBuf::from(format!("/home/{}/.ssh", user_name)),
-                ssh_keys,
-            )?;
+            self.activate_ssh(&PathBuf::from(format!("/home/{}/.ssh", user_name)), &ssh_keys)?;
         }
 
         let _ = self.set_user_group(user_name);
@@ -162,11 +157,17 @@ impl Model {
             vec![]
         };
 
-        // if some SSH keys were defined
-        // - update root's authorized_keys
-        // - open SSH port and enable SSH service
+        self.activate_ssh(&PathBuf::from("root/.ssh/authorized_keys"), &ssh_keys)?;
+
+        Ok(())
+    }
+
+    fn activate_ssh(&self, path: &PathBuf, ssh_keys: &Vec<String>) -> Result<(), service::Error> {
         if !ssh_keys.is_empty() {
-            self.update_authorized_keys(&PathBuf::from("root/.ssh/authorized_keys"), &ssh_keys)?;
+            // if some SSH keys were defined
+            // - update authorized_keys file
+            // - open SSH port and enable SSH service
+            self.update_authorized_keys(path, ssh_keys)?;
             self.enable_sshd_service()?;
             self.open_ssh_port()?;
         }
