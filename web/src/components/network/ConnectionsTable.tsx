@@ -131,7 +131,15 @@ const filterConnections = (
   });
 };
 
-const boundBy = (connection: Connection) => {
+/**
+ * Returns a hint indicating how a connection is bound to a device,
+ * or `null` if the connection has no binding constraint.
+ *
+ * A connection can be bound either by interface name or by MAC address.
+ * This is used as a supplementary label in the "Device" column of the
+ * network connections table.
+ */
+const bindingHint = (connection: Connection) => {
   if (!isEmpty(connection.iface)) return _("(bound by name)");
   if (!isEmpty(connection.macAddress)) return _("(bound by MAC)");
   return null;
@@ -166,7 +174,7 @@ const createColumns = (devices: Device[]) => [
           <>
             {usingDevices[0].name}{" "}
             <Content component="small">
-              <Text textStyle="textColorSubtle">{boundBy(c)}</Text>
+              <Text textStyle="textColorSubtle">{bindingHint(c)}</Text>
             </Content>
           </>
         );

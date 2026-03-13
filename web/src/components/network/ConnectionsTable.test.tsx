@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { Connection, ConnectionStatus } from "~/types/network";
@@ -49,6 +49,7 @@ const mockConnections = [
 const mockDevices = [
   { name: "eth0", connection: "Wired connection 0", addresses: [] },
   { name: "wlan0", connection: "Wifi1", addresses: [] },
+  { name: "enp2s0", connection: "Mac connection", addresses: [] },
 ];
 
 jest.mock("~/hooks/model/config/network", () => ({
@@ -75,6 +76,20 @@ describe("ConnectionsTable", () => {
     expect(screen.getByText("Connected")).toBeInTheDocument();
     // Wifi1 has status DOWN
     expect(screen.getAllByText("Disconnected").length).toBeGreaterThan(0);
+  });
+
+  it("shows the device name with a binding hint when a connection is bound by interface name", () => {
+    installerRender(<ConnectionsTable />);
+    const row = screen.getByText("Wired connection 0").closest("tr");
+    within(row).getByText("eth0");
+    within(row).getByText("(bound by name)");
+  });
+
+  it("shows the device name with a binding hint when a connection is bound by MAC address", () => {
+    installerRender(<ConnectionsTable />);
+    const row = screen.getByText("Mac connection").closest("tr");
+    within(row).getByText("enp2s0");
+    within(row).getByText("(bound by MAC)");
   });
 
   it("filters the connections by status", async () => {
