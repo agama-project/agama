@@ -38,12 +38,13 @@ import {
   TabTitleText,
 } from "@patternfly/react-core";
 import { generatePath } from "react-router";
-import { Link, Page } from "~/components/core";
+import Text from "~/components/core/Text";
+import { Link, NestedContent, Page } from "~/components/core";
 import InstallationOnlySwitch from "./InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
-import { useDevices } from "~/hooks/model/system/network";
+import { useDevices, useWifiNetworks } from "~/hooks/model/system/network";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
@@ -82,6 +83,45 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
       }
     >
       <Content>{bindingModeFor(connection)}</Content>
+    </Page.Section>
+  );
+};
+
+const NetworkDetails = ({ connection }: { connection: Connection }) => {
+  const networks = useWifiNetworks();
+  const network = networks.find((c) => c.ssid === connection.wireless?.ssid);
+
+  return (
+    <Page.Section title={_("Network")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+      <DescriptionList aria-label={_("Network details")} isHorizontal>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("SSID")}</DescriptionListTerm>
+          <DescriptionListDescription>{connection.wireless.ssid}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Security")}</DescriptionListTerm>
+          <DescriptionListDescription>{connection.wireless.security}</DescriptionListDescription>
+        </DescriptionListGroup>
+        {network && (
+          <>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Status")}</DescriptionListTerm>
+              <DescriptionListDescription>{network.status}</DescriptionListDescription>
+            </DescriptionListGroup>
+            <DescriptionListGroup>
+              <DescriptionListTerm>{_("Signal strength")}</DescriptionListTerm>
+              <DescriptionListDescription>{network.strength}%</DescriptionListDescription>
+            </DescriptionListGroup>
+          </>
+        )}
+      </DescriptionList>
+      {!network && (
+        <NestedContent margin="mLg">
+          <Text isBold textStyle="fontSizeMd">
+            {_("Network not availble")}
+          </Text>
+        </NestedContent>
+      )}
     </Page.Section>
   );
 };
@@ -296,7 +336,11 @@ export default function WiredConnectionDetails({ connection }: { connection: Con
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
-          <BindingSettings connection={connection} />
+          {connection.wireless ? (
+            <NetworkDetails connection={connection} />
+          ) : (
+            <BindingSettings connection={connection} />
+          )}
           <DevicesDetails connection={connection} />
         </Stack>
       </GridItem>
