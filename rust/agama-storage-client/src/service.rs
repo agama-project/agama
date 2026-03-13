@@ -223,7 +223,7 @@ impl MessageHandler<message::SetStorageConfig> for Service {
         message: message::SetStorageConfig,
     ) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let proxy = self.storage_proxy.clone();
-        let result = run_in_background(async move {
+        let response = run_in_background(async move {
             let product = message.product.read().await;
             let product_json = serde_json::to_string(&*product)?;
             let config = message.config.filter(|c| c.has_value());
@@ -232,9 +232,15 @@ impl MessageHandler<message::SetStorageConfig> for Service {
             Ok(())
         });
         Ok(Box::pin(async move {
-            result
-                .await
-                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+            let result = response.await;
+            if let Ok(Err(error)) = &result {
+                tracing::error!(
+                    "Message call to {} reports an error: {:?}",
+                    Self::name(),
+                    error
+                );
+            }
+            result.map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
         }))
     }
 }
