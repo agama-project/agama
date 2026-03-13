@@ -214,8 +214,15 @@ export default function IpSettingsForm() {
               isDisabled={!!connectionFromStore}
             />
           </FormGroup>
-
-          <FormGroup fieldId="iface" label={_("Interface")} isStack>
+          <FormGroup
+            fieldId="iface"
+            label={
+              <>
+                {_("Interface")} <small>{_("(bind by name)")}</small>
+              </>
+            }
+            isStack
+          >
             <DevicesSelector
               id="iface"
               name="iface"

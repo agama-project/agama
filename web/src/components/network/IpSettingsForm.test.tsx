@@ -111,7 +111,7 @@ describe("IpSettingsForm", () => {
 
     it("does not send iface when 'None (unbound)' is selected", async () => {
       const { user } = installerRender(<IpSettingsForm />);
-      const select = screen.getByRole("combobox", { name: "Interface" });
+      const select = screen.getByRole("combobox", { name: /Interface/ });
       await user.selectOptions(select, "None (unbound)");
       const saveButton = screen.getByRole("button", { name: /save|accept|ok/i });
       await user.click(saveButton);
