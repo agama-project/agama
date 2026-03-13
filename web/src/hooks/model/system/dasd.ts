@@ -34,7 +34,7 @@ import type { System, DASD } from "~/model/system";
  * @see {@link https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations#select TanStack Query Select}
  * @see {@link https://tkdodo.eu/blog/react-query-selectors-supercharged#what-is-select Query Selectors Supercharged}
  */
-const dasdSelector = (data: System | null): DASD.System => data?.dasd;
+const dasdSelector = (data: System | null): DASD.System | null => data?.dasd || null;
 
 /**
  * Retrieve DASD system information.

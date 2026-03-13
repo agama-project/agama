@@ -38,7 +38,7 @@ import type { TranslatedString } from "~/i18n";
 type SimpleSelectorProps = {
   label: TranslatedString;
   value: string;
-  options: Record<string, TranslatedString>;
+  options: Record<string, string>;
   onChange: SelectProps["onSelect"];
 };
 

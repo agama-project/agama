@@ -61,10 +61,10 @@ import { _, n_ } from "~/i18n";
 import { useLocation } from "react-router";
 import { useStorageUiState } from "~/context/storage-ui-state";
 import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
-
-import type { Issue } from "~/model/issue";
-
+import { useSystem as useZFCPSystem } from "~/hooks/model/system/zfcp";
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
+import IssuesAlert from "~/components/core/IssuesAlert";
+import type { Issue } from "~/model/issue";
 
 type InvalidConfigEmptyStateProps = {
   issues: Issue[];
@@ -136,8 +136,8 @@ function UnknownConfigEmptyState(): React.ReactNode {
 }
 
 function UnavailableDevicesEmptyState(): React.ReactNode {
-  const isZFCPSupported = false;
   const dasdSystem = useDASDSystem();
+  const zfcpSystem = useZFCPSystem();
 
   const description = _(
     "There are not disks available for the installation. You may need to configure some device.",
@@ -157,7 +157,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
               {_("Connect to iSCSI targets")}
             </Link>
           </SplitItem>
-          {isZFCPSupported && (
+          {zfcpSystem && (
             <SplitItem>
               <Link to={PATHS.zfcp.root} variant="link">
                 {_("Activate zFCP disks")}
@@ -307,6 +307,7 @@ export default function ProposalPage(): React.ReactNode {
   // Hopefully this could be removed in the future. See rationale at UseStorageUiState
   const [resetNeeded, setResetNeeded] = useState(location.state?.resetStorageUiState);
   const { setUiState } = useStorageUiState();
+  const zfcpIssues = useIssues("zfcp");
 
   React.useEffect(() => {
     if (resetNeeded) {
@@ -324,6 +325,7 @@ export default function ProposalPage(): React.ReactNode {
       progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}
     >
       <Page.Content>
+        <IssuesAlert issues={zfcpIssues} />
         <ProposalPageContent />
       </Page.Content>
     </Page>

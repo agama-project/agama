@@ -28,8 +28,9 @@ import type * as Software from "~/openapi/config/software";
 import type * as User from "~/model/config/user";
 import type * as Root from "~/model/config/root";
 import type * as Storage from "~/openapi/config/storage";
-import type * as DASD from "~/openapi/config/dasd";
 import type * as ISCSI from "~/model/config/iscsi";
+import type * as DASD from "~/openapi/config/dasd";
+import type * as ZFCP from "~/openapi/config/zfcp";
 
 type Config = {
   hostname?: Hostname.Config;
@@ -37,11 +38,12 @@ type Config = {
   network?: Network.Config;
   product?: Product.Config;
   storage?: Storage.Config;
-  dasd?: DASD.Config;
   iscsi?: ISCSI.Config;
+  dasd?: DASD.Config;
+  zfcp?: ZFCP.Config;
   software?: Software.Config;
   user?: User.Config;
   root?: Root.Config;
 };
 
-export type { Config, Hostname, Product, L10n, Network, Storage, User, Root, ISCSI, DASD };
+export type { Config, Hostname, Product, L10n, Network, Storage, ISCSI, DASD, ZFCP, User, Root };

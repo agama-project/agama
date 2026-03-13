@@ -21,178 +21,163 @@
  */
 
 import React from "react";
+import { isEmpty } from "radashi";
+import { sprintf } from "sprintf-js";
 import {
-  Button,
+  Content,
+  Divider,
+  EmptyState,
+  EmptyStateBody,
+  Flex,
   Grid,
   GridItem,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
+  Split,
 } from "@patternfly/react-core";
-import { EmptyState, Page } from "~/components/core";
+import Link from "~/components/core/Link";
+import Page from "~/components/core/Page";
+import Text from "~/components/core/Text";
+import SubtleContent from "~/components/core/SubtleContent";
+import ZFCPDevicesTable from "~/components/storage/zfcp/ZFCPDevicesTable";
+import { useControllers, useDevices } from "~/hooks/model/system/zfcp";
+import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
-import {
-  useZFCPConfig,
-  useZFCPControllers,
-  useZFCPControllersChanges,
-  useZFCPDisks,
-  useZFCPDisksChanges,
-} from "~/queries/storage/zfcp";
-import ZFCPDisksTable from "./ZFCPDisksTable";
-import ZFCPControllersTable from "./ZFCPControllersTable";
-import { probeZFCP } from "~/model/storage/zfcp";
-import { STORAGE as PATHS, STORAGE } from "~/routes/paths";
-import { useNavigate } from "react-router";
-import { inactiveLuns } from "~/utils/zfcp";
+import IssuesAlert from "~/components/core/IssuesAlert";
+import { useIssues } from "~/hooks/model/issue";
+import type { ZFCP as System } from "~/model/system";
 
-const LUNScanInfo = () => {
-  const { allowLunScan } = useZFCPConfig();
-  // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-  const lunScanEnabled = _(
-    "Automatic LUN scan is [enabled]. Activating a controller which is " +
-      "running in NPIV mode will automatically configures all its LUNs.",
-  );
-  // TRANSLATORS: the text in the square brackets [] will be displayed in bold
-  const lunScanDisabled = _(
-    "Automatic LUN scan is [disabled]. LUNs have to be manually " +
-      "configured after activating a controller.",
-  );
-
-  const msg = allowLunScan ? lunScanEnabled : lunScanDisabled;
-  const [msgStart, msgBold, msgEnd] = msg.split(/[[\]]/);
-
+/**
+ * Renders a PatternFly `EmptyState` block used when no zFCP controllers are detected on the host
+ * machine.
+ */
+const NoZFCPAvailable = (): React.ReactNode => {
   return (
-    <p>
-      {msgStart}
-      <b>{msgBold}</b>
-      {msgEnd}
-    </p>
-  );
-};
-
-const NoDisksFound = () => {
-  const navigate = useNavigate();
-  const controllers = useZFCPControllers();
-  const activeController = controllers.some((c) => c.active);
-  const body = activeController
-    ? _("Please, try to activate a zFCP disk.")
-    : _("Please, try to activate a zFCP controller.");
-
-  return (
-    <EmptyState
-      title={_("No zFCP disks found.")}
-      icon="warning"
-      variant="sm"
-      actions={
-        activeController && (
-          <Button variant="primary" onClick={() => navigate(PATHS.zfcp.activateDisk)}>
-            {_("Activate zFCP disk")}
-          </Button>
-        )
-      }
-    >
-      {body}
+    <EmptyState headingLevel="h2" titleText={_("zFCP is not available")} variant="sm">
+      <EmptyStateBody>{_("No zFCP controllers found in this machine.")}</EmptyStateBody>
     </EmptyState>
   );
 };
 
-const Disks = () => {
-  const navigate = useNavigate();
-  const disks = useZFCPDisks();
-  const controllers = useZFCPControllers();
-  const isDisabled = inactiveLuns(controllers, disks).length === 0;
-
+/**
+ * Renders a PatternFly `EmptyState` block used when no ZFCP devices are detected on the host
+ * machine.
+ */
+const NoDevicesAvailable = (): React.ReactNode => {
   return (
-    <>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarItem align={{ default: "alignEnd" }}>
-            {/* TRANSLATORS: button label */}
-            <Button onClick={() => navigate(PATHS.zfcp.activateDisk)} isDisabled={isDisabled}>
-              {_("Activate new disk")}
-            </Button>
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
-
-      <ZFCPDisksTable />
-    </>
+    <EmptyState headingLevel="h2" titleText={_("No devices available")} variant="sm">
+      <EmptyStateBody>{_("No zFCP devices found in this machine.")}</EmptyStateBody>
+    </EmptyState>
   );
 };
 
+type ZFCPControllersDescriptionProps = {
+  controllers: System.Controller[];
+};
+
 /**
- * Section for zFCP disks.
+ * Descripton to show in the controllers section.
  */
-const DisksSection = () => {
-  const disks = useZFCPDisks();
+const ZFCPControllersDescription = ({
+  controllers,
+}: ZFCPControllersDescriptionProps): React.ReactNode => {
+  const deactivatedControllers = controllers.filter((c) => !c.active);
+
+  if (!isEmpty(deactivatedControllers)) {
+    const text =
+      deactivatedControllers.length === 1
+        ? _("There is a deactivated zFCP controller.")
+        : sprintf(_("There are %s deactivated zFCP controllers."), deactivatedControllers.length);
+    return <Text>{text}</Text>;
+  }
+
+  return <Text>{_("All the available zFCP controllers are already activated.")}</Text>;
+};
+
+/**
+ * Content switcher for the zFCP controllers.
+ */
+const ZFCPControllersContent = (): React.ReactNode => {
+  const controllers = useControllers();
+  const deactivatedControllers = controllers.filter((c) => !c.active);
 
   return (
-    <Page.Section title={_("Disks")}>
-      {disks.length === 0 ? <NoDisksFound /> : <Disks />}
+    <Page.Section
+      aria-label={_("zFCP controllers")}
+      actions={
+        !isEmpty(deactivatedControllers) && (
+          <Split hasGutter>
+            <Link to={STORAGE.zfcp.controllers} variant="primary">
+              {_("Activate controllers")}
+            </Link>
+          </Split>
+        )
+      }
+    >
+      <Flex direction={{ default: "column" }}>
+        <Content isEditorial>
+          <Flex gap={{ default: "gapXs" }}>
+            <Text isBold>{_("zFCP controllers")}</Text>{" "}
+            <Text component="small">{controllers.map((c) => c.channel).join(", ")}</Text>
+          </Flex>
+        </Content>
+        <SubtleContent>
+          <ZFCPControllersDescription controllers={controllers} />
+        </SubtleContent>
+      </Flex>
     </Page.Section>
   );
 };
 
 /**
- * Section for zFCP controllers.
+ * Content switcher for the zFCP devices.
  */
-const ControllersSection = () => (
-  <Page.Section title={_("Controllers")}>
-    <LUNScanInfo />
-    <ZFCPControllersTable />
-  </Page.Section>
-);
+const ZFCPDevicesContent = (): React.ReactNode => {
+  const devices = useDevices();
 
-const PageContent = () => {
-  const controllers = useZFCPControllers();
+  if (isEmpty(devices)) {
+    return <NoDevicesAvailable />;
+  }
 
-  if (controllers.length === 0) {
-    return (
-      <EmptyState
-        headingLevel="h3"
-        title={_("No zFCP controllers found.")}
-        icon="error"
-        actions={
-          <Button variant="primary" onClick={probeZFCP}>
-            {_("Read zFCP devices")}
-          </Button>
-        }
-      >
-        <div>{_("Please, try to activate a zFCP controller.")}</div>
-      </EmptyState>
-    );
+  return <ZFCPDevicesTable devices={devices} />;
+};
+
+/**
+ * Content switcher for the zFCP page.
+ */
+const ZFCPPageContent = (): React.ReactNode => {
+  const controllers = useControllers();
+
+  if (isEmpty(controllers)) {
+    return <NoZFCPAvailable />;
   }
 
   return (
     <Grid hasGutter>
-      <GridItem sm={12} xl={6}>
-        <ControllersSection />
+      <GridItem sm={12}>
+        <ZFCPControllersContent />
       </GridItem>
-      <GridItem sm={12} xl={6}>
-        <DisksSection />
+      <Divider />
+      <GridItem sm={12}>
+        <ZFCPDevicesContent />
       </GridItem>
     </Grid>
   );
 };
 
 /**
- * Page for managing zFCP devices.
+ * Top-level page component for zFCP storage.
  */
-export default function ZFCPPage() {
-  useZFCPControllersChanges();
-  useZFCPDisksChanges();
+export default function ZFCPPage(): React.ReactNode {
+  const issues = useIssues("zfcp");
 
   return (
-    <Page breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("zFCP") }]}>
+    <Page
+      breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("zFCP") }]}
+      progress={{ scope: "zfcp" }}
+    >
       <Page.Content>
-        <PageContent />
+        <IssuesAlert issues={issues} />
+        <ZFCPPageContent />
       </Page.Content>
-
-      <Page.Actions>
-        <Page.Action variant="secondary" navigateTo={PATHS.root}>
-          {_("Back")}
-        </Page.Action>
-      </Page.Actions>
     </Page>
   );
 }
