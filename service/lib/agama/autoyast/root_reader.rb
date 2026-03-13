@@ -72,7 +72,7 @@ module Agama
         public_key = root_user.authorized_keys.first
 
         hsh["sshPublicKey"] = public_key if public_key
-        hsh["sshPublicKeys"] = root_user.authorized_keys if !root_user.authorized_keys.empty?
+        hsh["sshPublicKeys"] = root_user.authorized_keys unless root_user.authorized_keys.empty?
 
         hsh
       end
