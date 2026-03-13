@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 13 07:49:12 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update the software proposal after changing the resolvables list (bsc#1259533).
+
+-------------------------------------------------------------------
 Thu Mar 12 13:20:48 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add error reporting when working with AutoYaST profiles (related
