@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 13 16:16:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Change network interface to give users more control and
+  interaction with connections (gh#agama-project/agama#3247).
+
+-------------------------------------------------------------------
 Mon Mar  9 19:44:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve error page with filtered, source-mapped stack traces
