@@ -135,7 +135,7 @@ impl Model {
             // with hardcoded default?
             self.update_authorized_keys(
                 &PathBuf::from(format!("/home/{}/.ssh", user_name)),
-                &ssh_keys.iter().collect::<Vec<&String>>(),
+                &ssh_keys,
             )?;
         }
 
@@ -155,18 +155,22 @@ impl Model {
             self.set_user_password("root", root_password)?;
         }
 
-        // store ssh key for root if any
+        // store sshPublicKeys for root if any
         let mut ssh_keys = if let Some(ssh_keys) = &root.ssh_public_keys {
-            ssh_keys.iter().collect::<Vec<&String>>()
+            ssh_keys.to_vec()
         } else {
             vec![]
         };
-        // for historical reason and backward compatibility. Originally
-        // there was at most one public SSH key for the root
-        if let Some(ref root_ssh_key) = root.ssh_public_key {
-            // TODO: deal with possible duplicates?
-            ssh_keys.push(root_ssh_key);
 
+        // store sshPublicKey for backward compatibility.
+        if let Some(ref root_ssh_key) = root.ssh_public_key {
+            ssh_keys.extend(root_ssh_key.to_vec());
+        }
+
+        // if some SSH keys were defined
+        // - update root's authorized_keys
+        // - open SSH port and enable SSH service
+        if !ssh_keys.is_empty() {
             self.update_authorized_keys(&PathBuf::from("root/.ssh/authorized_keys"), &ssh_keys)?;
             self.enable_sshd_service()?;
             self.open_ssh_port()?;
@@ -234,7 +238,7 @@ impl Model {
     fn update_authorized_keys(
         &self,
         keys_path: &PathBuf,
-        ssh_keys: &[&String],
+        ssh_keys: &[String],
     ) -> Result<(), service::Error> {
         let mode = 0o644;
         let file_name = self.install_dir.join(keys_path);

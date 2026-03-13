@@ -732,15 +732,34 @@
           "type": "boolean"
         },
         "sshPublicKey": {
-          "title": "SSH public key",
-          "type": "string"
+          "title": "One or more SSH keys",
+          "anyOf": [
+            {
+              "type": "string",
+              "title": "Single SSH Key"
+            },
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "title": "List of SSH Keys",
+              "minItems": 1
+            }
+          ]
         },
-	"sshPublicKeys": {
-          "title": "List of SSH public keys",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "sshPublicKeys": {
+          "title": "One or more SSH keys",
+          "anyOf": [
+            {
+              "type": "string",
+              "title": "Single SSH Key"
+            },
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "title": "List of SSH Keys",
+              "minItems": 1
+            }
+          ]
         }
       }
     },

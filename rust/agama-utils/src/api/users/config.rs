@@ -128,6 +128,29 @@ fn overwrite_if_not_empty(old: &mut String, new: String) {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, utoipa::ToSchema)]
+#[serde(untagged)]
+pub enum StringOrList {
+    Single(String),
+    List(Vec<String>),
+}
+
+impl StringOrList {
+    pub fn to_vec(&self) -> Vec<String> {
+        match self {
+            StringOrList::Single(s) => vec![s.clone()],
+            StringOrList::List(v) => v.clone(),
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        match self {
+            StringOrList::Single(s) => s.is_empty(),
+            StringOrList::List(v) => v.is_empty(),
+        }
+    }
+}
+
 /// Root user settings
 ///
 /// Holds the settings for the root user.
@@ -142,10 +165,10 @@ pub struct RootUserConfig {
     /// Root SSH public key
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ssh_public_key: Option<String>,
+    pub ssh_public_key: Option<StringOrList>,
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ssh_public_keys: Option<Vec<String>>,
+    pub ssh_public_keys: Option<StringOrList>,
 }
 
 impl RootUserConfig {
