@@ -59,6 +59,7 @@ const mockMutation = jest.fn(() => Promise.resolve());
 jest.mock("~/hooks/model/system/network", () => ({
   ...jest.requireActual("~/hooks/model/system/network"),
   useDevices: () => [mockDevice],
+  useSystem: () => ({ state: { wirelessEnabled: true } }),
 }));
 
 jest.mock("~/hooks/model/proposal/network", () => ({

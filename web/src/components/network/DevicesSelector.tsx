@@ -23,8 +23,8 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import { FormSelect, FormSelectOption, FormSelectProps } from "@patternfly/react-core";
-import { Device } from "~/types/network";
-import { useDevices } from "~/hooks/model/system/network";
+import { ConnectionType, Device } from "~/types/network";
+import { useDevices, useSystem } from "~/hooks/model/system/network";
 import { _ } from "~/i18n";
 
 type DevicesSelectorProps = Omit<FormSelectProps, "children" | "ref"> & {
@@ -55,13 +55,18 @@ export default function DevicesSelector({
   ...formSelectProps
 }: DevicesSelectorProps): React.ReactNode {
   const devices = useDevices();
+  const { state } = useSystem();
+
+  const filteredDevices = state.wirelessEnabled
+    ? devices
+    : devices.filter((d) => d.type !== ConnectionType.WIFI);
 
   const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
 
   return (
     <FormSelect value={value} {...formSelectProps}>
       {includesNone && <FormSelectOption value="" label={_("None (unbound)")} />}
-      {devices.map((device, index) => {
+      {filteredDevices.map((device, index) => {
         // TRANSLATORS: A label shown in a dropdown for selecting a network
         // device. It combines the device name and MAC address, with the order
         // determined by the component settings: some selectors will show the

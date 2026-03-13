@@ -36,6 +36,10 @@ jest.mock("~/hooks/model/config/network", () => ({
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
 }));
 
+jest.mock("~/hooks/model/system/network", () => ({
+  useSystem: () => ({ state: { wirelessEnabled: true } }),
+}));
+
 const devices: Device[] = [
   {
     name: "eth0",

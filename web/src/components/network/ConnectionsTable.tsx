@@ -43,7 +43,7 @@ import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataT
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
 import { useConnections, useConnectionMutation } from "~/hooks/model/config/network";
-import { useDevices } from "~/hooks/model/system/network";
+import { useDevices, useSystem } from "~/hooks/model/system/network";
 import { sortCollection } from "~/utils";
 import { formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
@@ -145,6 +145,7 @@ export default function ConnectionsTable() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const connections = useConnections();
   const devices = useDevices();
+  const { state: systemState } = useSystem();
   const { mutateAsync: mutateConnection } = useConnectionMutation();
   const navigate = useNavigate();
 
@@ -261,6 +262,9 @@ export default function ConnectionsTable() {
         sortedBy={state.sortedBy}
         updateSorting={onSortingChange}
         itemActions={(c: Connection) => {
+          const isWifi = !!c.wireless;
+          const canConnect = !isWifi || systemState.wirelessEnabled;
+
           const actions = [
             {
               id: "connect",
@@ -295,7 +299,7 @@ export default function ConnectionsTable() {
           ];
 
           const keptActions = {
-            connect: c.status === ConnectionStatus.DOWN,
+            connect: c.status === ConnectionStatus.DOWN && canConnect,
             disconnect: c.status === ConnectionStatus.UP,
             show: true,
             edit: true,

@@ -61,15 +61,18 @@ const mockDevice2: Device = {
 };
 
 const mockUseDevicesFn = jest.fn();
+const mockUseSystemFn = jest.fn();
 
 jest.mock("~/hooks/model/system/network", () => ({
   ...jest.requireActual("~/hooks/model/system/network"),
   useDevices: () => mockUseDevicesFn(),
+  useSystem: () => mockUseSystemFn(),
 }));
 
 describe("DevicesSelector", () => {
   beforeEach(() => {
     mockUseDevicesFn.mockReturnValue([mockDevice1, mockDevice2]);
+    mockUseSystemFn.mockReturnValue({ state: { wirelessEnabled: true } });
   });
   describe("when valueKey is 'name'", () => {
     it("renders options with 'name - macAddress' label form and name as value", () => {
@@ -170,6 +173,28 @@ describe("DevicesSelector", () => {
 
       const select = screen.getByRole("combobox", { name: "Choose device to bind by name" });
       expect(within(select).queryAllByRole("option")).toHaveLength(0);
+    });
+  });
+
+  describe("when wirelessEnabled is false", () => {
+    beforeEach(() => {
+      mockUseSystemFn.mockReturnValue({ state: { wirelessEnabled: false } });
+    });
+
+    it("filters out Wi-Fi devices", () => {
+      installerRender(
+        <DevicesSelector valueKey="name" aria-label="Choose device to bind by name" />,
+      );
+
+      const option1 = screen.getByRole("option", {
+        name: `${mockDevice1.name} - ${mockDevice1.macAddress}`,
+      });
+      const option2 = screen.queryByRole("option", {
+        name: `${mockDevice2.name} - ${mockDevice2.macAddress}`,
+      });
+
+      expect(option1).toBeInTheDocument();
+      expect(option2).not.toBeInTheDocument();
     });
   });
 });

@@ -86,7 +86,9 @@ const useState = (): GeneralState => {
 const useWifiNetworks = () => {
   const knownSsids: string[] = [];
 
-  const { devices, connections, accessPoints } = useSystem();
+  const { devices, connections, accessPoints, state } = useSystem();
+
+  if (!state.wirelessEnabled) return [];
 
   return accessPoints
     .filter((ap: AccessPoint) => {

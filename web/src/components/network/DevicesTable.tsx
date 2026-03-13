@@ -42,9 +42,10 @@ import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataT
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
 import { useConnections, useConnectionMutation } from "~/hooks/model/config/network";
+import { useSystem } from "~/hooks/model/system/network";
 import { sortCollection, translateEntries } from "~/utils";
 import { _, N_ } from "~/i18n";
-import { Connection, ConnectionStatus, Device, DeviceState } from "~/types/network";
+import { Connection, ConnectionStatus, ConnectionType, Device, DeviceState } from "~/types/network";
 
 /**
  * Filter options for narrowing down network devices shown in the table.
@@ -84,6 +85,7 @@ type ActionsProps = {
   onDisconnectNetworkDevice: (device: Device) => void;
   onRemoveNetworkConnection: (device: Device) => void;
   hasConnection: boolean;
+  canConnect: boolean;
 };
 
 /**
@@ -151,6 +153,7 @@ const buildActions = ({
   onDisconnectNetworkDevice,
   onRemoveNetworkConnection,
   hasConnection,
+  canConnect,
 }: ActionsProps) => {
   const actions = [
     {
@@ -171,7 +174,7 @@ const buildActions = ({
   ];
 
   const keptActions = {
-    connect: [DeviceState.DISCONNECTED, DeviceState.FAILED].includes(device.state),
+    connect: [DeviceState.DISCONNECTED, DeviceState.FAILED].includes(device.state) && canConnect,
     disconnect: [DeviceState.CONNECTED, DeviceState.CONNECTING].includes(device.state),
     remove: hasConnection,
   };
@@ -384,6 +387,7 @@ type DevicesTableProps = {
 export default function DevicesTable({ devices }: DevicesTableProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const connections = useConnections();
+  const { state: systemState } = useSystem();
   const { mutateAsync: mutateConnection } = useConnectionMutation();
 
   const connectNetworkDevice = (device: Device) => {
@@ -471,6 +475,7 @@ export default function DevicesTable({ devices }: DevicesTableProps) {
             hasConnection: !!(
               d.connection || connections.some((c) => c.iface === d.name || c.id === d.connection)
             ),
+            canConnect: d.type !== ConnectionType.WIFI || systemState.wirelessEnabled,
           })
         }
         itemActionsLabel={(d: Device) => `Actions for ${d.name}`}

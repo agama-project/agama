@@ -68,6 +68,7 @@ jest.mock("~/hooks/model/proposal/network", () => ({
 
 jest.mock("~/hooks/model/system/network", () => ({
   useDevices: () => [mockDevice1],
+  useSystem: () => ({ state: { wirelessEnabled: true } }),
 }));
 
 describe("IpSettingsForm", () => {
