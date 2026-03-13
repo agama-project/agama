@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 13 15:51:57 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Temporary adjustment in the system schema (related to the
+  fix for bsc#1258486).
+
+-------------------------------------------------------------------
 Fri Mar 13 12:22:07 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update the software proposal after changing the resolvables list (bsc#1259533).
