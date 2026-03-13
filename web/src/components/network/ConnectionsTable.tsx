@@ -171,12 +171,10 @@ const createColumns = (devices: Device[]) => [
 
       if (usingDevices.length === 1) {
         return (
-          <>
+          <Text>
             {usingDevices[0].name}{" "}
-            <Content component="small">
-              <Text textStyle="textColorSubtle">{bindingHint(c)}</Text>
-            </Content>
-          </>
+            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{bindingHint(c)}</Text>
+          </Text>
         );
       }
 
