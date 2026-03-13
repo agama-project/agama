@@ -114,7 +114,7 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
   const ipId = useId();
 
   return (
-    <DataListItem id={network.ssid}>
+    <DataListItem id={connection.id}>
       <DataListItemRow>
         <DataListItemCells
           dataListCells={[
@@ -190,7 +190,7 @@ function WifiNetworksList({ showIp = true, ...props }: WifiNetworksListProps) {
 
   return (
     <DataList
-      onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiConnection, { ssid }))}
+      onSelectDataListItem={(_, id) => navigate(generatePath(PATHS.wiredConnection, { id }))}
       {...props}
     >
       {networks.map((n) => (
