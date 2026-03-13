@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { Connection, ConnectionStatus } from "~/types/network";
@@ -36,6 +36,11 @@ const mockConnections = [
   new Connection("Wifi1", {
     iface: "wlan0",
     wireless: { ssid: "My Wifi", mode: "infrastructure" },
+    addresses: [],
+    status: ConnectionStatus.DOWN,
+  }),
+  new Connection("Mac connection", {
+    macAddress: "00:11:22:33:44:55",
     addresses: [],
     status: ConnectionStatus.DOWN,
   }),
@@ -61,12 +66,14 @@ describe("ConnectionsTable", () => {
     installerRender(<ConnectionsTable />);
     expect(screen.getByText("Wired connection 0")).toBeInTheDocument();
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
+    expect(screen.getByText("Mac connection")).toBeInTheDocument();
   });
 
   it("renders the Bind and Device columns", () => {
     installerRender(<ConnectionsTable />);
-    expect(screen.getByText("interface: eth0")).toBeInTheDocument();
-    expect(screen.getByText("interface: wlan0")).toBeInTheDocument();
+    // "by interface" appears twice (Wired connection 0 and Wifi1)
+    expect(screen.getAllByText("by interface").length).toBe(2);
+    expect(screen.getByText("by MAC")).toBeInTheDocument();
     // Device column for Wired connection 0
     expect(screen.getAllByText("eth0").length).toBeGreaterThan(0);
     // Device column for Wifi1
@@ -78,7 +85,7 @@ describe("ConnectionsTable", () => {
     // Wired connection 0 has status UP
     expect(screen.getByText("Up")).toBeInTheDocument();
     // Wifi1 has status DOWN
-    expect(screen.getByText("Down")).toBeInTheDocument();
+    expect(screen.getAllByText("Down").length).toBeGreaterThan(0);
   });
 
   it("filters the connections by status", async () => {
@@ -94,12 +101,30 @@ describe("ConnectionsTable", () => {
     await user.click(screen.getByRole("option", { name: "Down" }));
     expect(screen.queryByText("Wired connection 0")).not.toBeInTheDocument();
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
+    expect(screen.getByText("Mac connection")).toBeInTheDocument();
   });
 
-  it("calls mutateConnection with status UP when 'Connect' is clicked", async () => {
+  it("filters the connections by bind", async () => {
+    const { user } = installerRender(<ConnectionsTable />);
+    // Select Bind "by interface"
+    await user.click(screen.getByLabelText("Bind"));
+    await user.click(screen.getByRole("option", { name: "by interface" }));
+    expect(screen.getByText("Wired connection 0")).toBeInTheDocument();
+    expect(screen.getByText("Wifi1")).toBeInTheDocument();
+    expect(screen.queryByText("Mac connection")).not.toBeInTheDocument();
+
+    // Select Bind "by MAC"
+    await user.click(screen.getByLabelText("Bind"));
+    await user.click(screen.getByRole("option", { name: "by MAC" }));
+    expect(screen.queryByText("Wired connection 0")).not.toBeInTheDocument();
+    expect(screen.queryByText("Wifi1")).not.toBeInTheDocument();
+    expect(screen.getByText("Mac connection")).toBeInTheDocument();
+  });
+
+  it("calls mutateConnection with status UP when 'Set up' is clicked", async () => {
     const { user } = installerRender(<ConnectionsTable />);
     await user.click(screen.getByRole("button", { name: /actions for Wifi1/i }));
-    await user.click(screen.getByText("Connect"));
+    await user.click(screen.getByText("Set up"));
     expect(mockMutateAsync).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "Wifi1",
@@ -108,10 +133,10 @@ describe("ConnectionsTable", () => {
     );
   });
 
-  it("calls mutateConnection with status DOWN when 'Disconnect' is clicked", async () => {
+  it("calls mutateConnection with status DOWN when 'Set down' is clicked", async () => {
     const { user } = installerRender(<ConnectionsTable />);
     await user.click(screen.getByRole("button", { name: /actions for Wired connection 0/i }));
-    await user.click(screen.getByText("Disconnect"));
+    await user.click(screen.getByText("Set down"));
     expect(mockMutateAsync).toHaveBeenCalledWith(
       expect.objectContaining({
         id: "Wired connection 0",
@@ -120,18 +145,18 @@ describe("ConnectionsTable", () => {
     );
   });
 
-  it("navigates to the wired connection page when 'Show' is clicked for an ethernet connection", async () => {
+  it("navigates to the wired connection page when 'Details' is clicked for an ethernet connection", async () => {
     const { user } = installerRender(<ConnectionsTable />);
     await user.click(screen.getByRole("button", { name: /actions for Wired connection 0/i }));
-    await user.click(screen.getByText("Show"));
+    await user.click(screen.getByText("Details"));
     expect(mockNavigateFn).toHaveBeenCalledWith("/network/wired_connection/Wired%20connection%200");
   });
 
-  it("navigates to the wifi network page when 'Show' is clicked for a wifi connection", async () => {
+  it("navigates to the wired connection page when 'Details' is clicked for a wifi connection", async () => {
     const { user } = installerRender(<ConnectionsTable />);
     await user.click(screen.getByRole("button", { name: /actions for Wifi1/i }));
-    await user.click(screen.getByText("Show"));
-    expect(mockNavigateFn).toHaveBeenCalledWith("/network/wifi_networks/My%20Wifi");
+    await user.click(screen.getByText("Details"));
+    expect(mockNavigateFn).toHaveBeenCalledWith("/network/wired_connection/Wifi1");
   });
 
   it("navigates to the edit connection page when 'Edit' is clicked", async () => {

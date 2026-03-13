@@ -181,12 +181,9 @@ export default function IpSettingsForm() {
     { label: _("Network"), path: NETWORK.root },
     connectionFromStore && {
       label: connectionFromStore.id,
-      path: generatePath(
-        connectionFromStore.wireless ? NETWORK.wifiConnection : NETWORK.wiredConnection,
-        {
-          id: connectionFromStore.id,
-        },
-      ),
+      path: generatePath(NETWORK.wiredConnection, {
+        id: connectionFromStore.id,
+      }),
     },
     { label: connectionFromStore ? _("Edit") : "New connection" },
   ].filter(Boolean);

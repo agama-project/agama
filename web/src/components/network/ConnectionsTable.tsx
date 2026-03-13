@@ -58,6 +58,7 @@ type ConnectionsFilters = {
   device?: string;
   type?: "all" | "wifi" | "ethernet";
   status?: "all" | "up" | "down";
+  bind?: "all" | "interface" | "mac";
 };
 
 /** Internal state shape for the connections table component. */
@@ -75,6 +76,7 @@ const initialState: TableState = {
     device: "",
     type: "all",
     status: "all",
+    bind: "all",
   },
 };
 
@@ -101,7 +103,7 @@ const filterConnections = (
   connections: Connection[],
   filters: ConnectionsFilters,
 ): Connection[] => {
-  const { name, device, type, status } = filters;
+  const { name, device, type, status, bind } = filters;
 
   return connections.filter((c) => {
     if (!isEmpty(name) && !c.id.toLowerCase().includes(name.toLowerCase())) {
@@ -123,6 +125,10 @@ const filterConnections = (
       if (status === "up" && !isUp) return false;
       if (status === "down" && isUp) return false;
     }
+    if (bind && bind !== "all") {
+      if (bind === "interface" && isEmpty(c.iface)) return false;
+      if (bind === "mac" && isEmpty(c.macAddress)) return false;
+    }
     return true;
   });
 };
@@ -132,6 +138,16 @@ const createColumns = (devices: Device[]) => [
     name: _("Name"),
     value: (c: Connection) => c.id,
     sortingKey: (c: Connection) => c.id,
+  },
+  {
+    name: _("Type"),
+    value: (c: Connection) => (c.wireless ? _("Wi-Fi") : _("Ethernet")),
+    sortingKey: (c: Connection) => (c.wireless ? "wifi" : "ethernet"),
+  },
+  {
+    name: _("Status"),
+    value: (c: Connection) => (c.status === ConnectionStatus.UP ? _("Up") : _("Down")),
+    sortingKey: (c: Connection) => c.status,
   },
   {
     name: _("Bind"),
@@ -144,7 +160,6 @@ const createColumns = (devices: Device[]) => [
       }
       return "";
     },
-    sortingKey: (c: Connection) => c.iface || c.macAddress || "",
   },
   {
     name: _("Device"),
@@ -158,22 +173,12 @@ const createColumns = (devices: Device[]) => [
     },
   },
   {
-    name: _("Status"),
-    value: (c: Connection) => (c.status === ConnectionStatus.UP ? _("Up") : _("Down")),
-    sortingKey: (c: Connection) => c.status,
-  },
-  {
     name: _("IP Addresses"),
     value: (c: Connection) => {
       const device = devices.find((d) => d.connection === c.id);
       const addresses = device ? device.addresses : c.addresses;
       return addresses.map(formatIp).join(", ") || "-";
     },
-  },
-  {
-    name: _("Type"),
-    value: (c: Connection) => (c.wireless ? _("Wi-Fi") : _("Ethernet")),
-    sortingKey: (c: Connection) => (c.wireless ? "wifi" : "ethernet"),
   },
 ];
 
@@ -283,6 +288,18 @@ export default function ConnectionsTable() {
                 onChange={(_, v) => onFilterChange("status", v)}
               />
             </ToolbarItem>
+            <ToolbarItem>
+              <SimpleSelector
+                label={_("Bind")}
+                value={state.filters.bind}
+                options={{
+                  all: _("All"),
+                  interface: _("by interface"),
+                  mac: _("by MAC"),
+                }}
+                onChange={(_, v) => onFilterChange("bind", v)}
+              />
+            </ToolbarItem>
           </ToolbarGroup>
           <ToolbarGroup align={{ default: "alignEnd" }}>
             <ToolbarItem>
@@ -318,10 +335,8 @@ export default function ConnectionsTable() {
               id: "details",
               title: _("Details"),
               onClick: () => {
-                const path = c.wireless
-                  ? generatePath(NETWORK.wifiConnection, { id: c.wireless.ssid })
-                  : generatePath(NETWORK.wiredConnection, { id: c.id });
-                navigate(path);
+                // FIXME: create a shared connection page and route
+                navigate(generatePath(NETWORK.wiredConnection, { id: c.id }));
               },
             },
             {

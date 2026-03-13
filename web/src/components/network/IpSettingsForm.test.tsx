@@ -166,10 +166,10 @@ describe("IpSettingsForm", () => {
       screen.getByText("Edit");
     });
 
-    it("links to the wifi connection page in breadcrumbs", () => {
+    it("links to the wired connection page in breadcrumbs", () => {
       installerRender(<IpSettingsForm />);
       const breadcrumbLink = screen.getByRole("link", { name: "Network 1" });
-      expect(breadcrumbLink).toHaveAttribute("href", "/network/wifi_networks/Network%201");
+      expect(breadcrumbLink).toHaveAttribute("href", "/network/wired_connection/Network%201");
     });
   });
 });
