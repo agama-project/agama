@@ -301,16 +301,6 @@ impl SetConfigAction {
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
-                self.software
-                    .call(software::message::SetConfig::new(
-                        Arc::clone(product),
-                        config.software.clone(),
-                    ))
-                    .await?;
-
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
                 let future = self
                     .storage
                     .call(storage::message::SetConfig::new(
@@ -327,6 +317,16 @@ impl SetConfigAction {
                 self.bootloader
                     .call(bootloader::message::SetConfig::new(
                         config.bootloader.clone(),
+                    ))
+                    .await?;
+
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
+                self.software
+                    .call(software::message::SetConfig::new(
+                        Arc::clone(product),
+                        config.software.clone(),
                     ))
                     .await?;
             }
