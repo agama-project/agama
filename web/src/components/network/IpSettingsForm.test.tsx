@@ -85,6 +85,7 @@ describe("IpSettingsForm", () => {
       installerRender(<IpSettingsForm />);
       const nameInput = screen.getByLabelText("Name");
       expect(nameInput).toHaveValue("Connection #1");
+      expect(nameInput).toBeEnabled();
     });
 
     it("shows 'New connection' in breadcrumbs", () => {
@@ -127,10 +128,11 @@ describe("IpSettingsForm", () => {
       mockUseConnection.mockReturnValue(existingConnection);
     });
 
-    it("renders with the existing connection ID", () => {
+    it("renders with the existing connection ID and it is disabled", () => {
       installerRender(<IpSettingsForm />);
       const nameInput = screen.getByLabelText("Name");
       expect(nameInput).toHaveValue("Network 1");
+      expect(nameInput).toBeDisabled();
     });
 
     it("shows 'Edit' in breadcrumbs", () => {
@@ -149,6 +151,13 @@ describe("IpSettingsForm", () => {
     beforeEach(() => {
       mockParams({ id: "Network 1" });
       mockUseConnection.mockReturnValue(mockConnection);
+    });
+
+    it("renders with the existing connection ID and it is disabled", () => {
+      installerRender(<IpSettingsForm />);
+      const nameInput = screen.getByLabelText("Name");
+      expect(nameInput).toHaveValue("Network 1");
+      expect(nameInput).toBeDisabled();
     });
 
     it("shows 'Edit' in breadcrumbs", () => {

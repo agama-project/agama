@@ -211,6 +211,7 @@ export default function IpSettingsForm() {
               value={id}
               label={_("Name")}
               onChange={(_, value) => setId(value)}
+              isDisabled={!!connectionFromStore}
             />
           </FormGroup>
 
