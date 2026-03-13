@@ -54,9 +54,7 @@
   "$defs": {
     "encryptionMethod": {
       "title": "Encryption method",
-      "enum": [
-        "luks1", "luks2", "pervasiveLuks2", "tpmFde", "protectedSwap", "secureSwap", "randomSwap"
-      ]
+      "enum": ["luks2", "tpmFde"]
     },
     "volume": {
       "type": "object",
