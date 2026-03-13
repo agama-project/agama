@@ -27,14 +27,7 @@ export type FilesystemType =
   | "xfs";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
 export type PartitionTableType = "gpt" | "msdos" | "dasd";
-export type EncryptionMethod =
-  | "luks1"
-  | "luks2"
-  | "pervasiveLuks2"
-  | "tpmFde"
-  | "protectedSwap"
-  | "secureSwap"
-  | "randomSwap";
+export type EncryptionMethod = "luks2" | "tpmFde";
 
 /**
  * API description of the system
