@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
