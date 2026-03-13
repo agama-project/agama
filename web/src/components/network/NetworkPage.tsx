@@ -47,9 +47,7 @@ export default function NetworkPage() {
         <NoPersistentConnectionsAlert />
         <Stack hasGutter>
           <Text textStyle="textColorSubtle">
-            {_(
-              "Manage available connections, connect to Wi-Fi, or add a new connection. Switch to Devices to manage by device.",
-            )}
+            {_("Manage available connections, connect to Wi-Fi, or add a new connection.")}
           </Text>
           <Page.Section
             pfCardProps={{ isCompact: true, component: "div", isFullHeight: false }}
