@@ -360,7 +360,9 @@ impl NetworkState {
             .iter()
             .position(|a| a.hw_address == hw_address)
         else {
-            return Err(NetworkStateError::UnknownAccessPoint(hw_address.to_string()));
+            return Err(NetworkStateError::UnknownAccessPoint(
+                hw_address.to_string(),
+            ));
         };
 
         self.access_points.remove(position);

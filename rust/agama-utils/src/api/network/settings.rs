@@ -354,4 +354,3 @@ mod tests {
         assert_eq!(conn.dns_searchlist, vec!["example.org"]);
     }
 }
-
