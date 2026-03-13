@@ -92,18 +92,7 @@ type ControllerOptionLabelProps = {
 const ControllerOptionLabel = ({ controller }: ControllerOptionLabelProps): React.ReactNode => {
   const checkLunScan = useCheckLunScan();
 
-  return (
-    <Split hasGutter>
-      <SplitItem>
-        <Text>{controller.channel}</Text>
-      </SplitItem>
-      {checkLunScan(controller.channel) && (
-        <SplitItem>
-          <Text component="small">{_("Performs auto LUN scan")}</Text>
-        </SplitItem>
-      )}
-    </Split>
-  );
+  return checkLunScan(controller.channel) ? _("Performs auto LUN scan") : null;
 };
 
 /**
@@ -156,13 +145,16 @@ const ZFCPControllersForm = (): React.ReactNode => {
       <Form onSubmit={onSubmit}>
         {error && <Alert variant="warning" isInline title={error} />}
         {deactivatedControllers.map((controller, index) => {
+          const channel = controller.channel;
+
           return (
             <FormGroup key={index}>
               <Checkbox
-                id={`controller-${controller.channel}`}
-                label={<ControllerOptionLabel controller={controller} />}
-                isChecked={selectedControllers.includes(controller.channel)}
-                onChange={() => toggleController(controller.channel)}
+                id={`controller-${channel}`}
+                label={<Text textStyle="fontSizeLg">{channel}</Text>}
+                description={<ControllerOptionLabel controller={controller} />}
+                isChecked={selectedControllers.includes(channel)}
+                onChange={() => toggleController(channel)}
               />
             </FormGroup>
           );
