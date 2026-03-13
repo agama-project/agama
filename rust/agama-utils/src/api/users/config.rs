@@ -313,6 +313,7 @@ mod test {
         assert!(!empty_password.is_valid());
 
         let with_ssh_keys = FirstUserConfig {
+            user_name: Some("firstuser".to_string()),
             ssh_public_keys: Some(vec!["12345678".to_string()]),
             ..Default::default()
         };
