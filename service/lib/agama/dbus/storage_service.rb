@@ -25,6 +25,7 @@ require "agama/dbus/storage/iscsi"
 require "agama/dbus/storage/manager"
 require "agama/storage/manager"
 require "agama/storage/iscsi/adapter"
+require "agama/task_runner"
 require "yast"
 require "y2storage/inhibitors"
 
@@ -112,7 +113,7 @@ module Agama
 
       # @return [Agama::DBus::Storage::Manager]
       def manager_object
-        @manager_object ||= Agama::DBus::Storage::Manager.new(manager, logger: logger)
+        @manager_object ||= Agama::DBus::Storage::Manager.new(manager, task_runner, logger: logger)
       end
 
       # @return [Agama::DBus::Storage::ISCSI]
@@ -129,7 +130,7 @@ module Agama
         require "agama/storage/dasd/manager"
         require "agama/dbus/storage/dasd"
         manager = Agama::Storage::DASD::Manager.new(logger: logger)
-        @dasd_object = Agama::DBus::Storage::DASD.new(manager, logger: logger)
+        @dasd_object = Agama::DBus::Storage::DASD.new(manager, task_runner, logger: logger)
       end
 
       # @return [Agama::DBus::Storage::ZFCP, nil]
@@ -147,6 +148,11 @@ module Agama
       # @return [Agama::Storage::Manager]
       def manager
         @manager ||= Agama::Storage::Manager.new(logger: logger)
+      end
+
+      # @return [Agama::TaskRunner]
+      def task_runner
+        @task_runner ||= Agama::TaskRunner.new
       end
     end
   end

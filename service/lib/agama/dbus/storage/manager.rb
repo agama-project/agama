@@ -36,7 +36,7 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
         extend Yast::I18n
         include Yast::I18n
         include WithIssues
@@ -45,12 +45,14 @@ module Agama
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
 
-        # @param backend [Agama::Storage::Manager]
+        # @param manager [Agama::Storage::Manager]
+        # @param task_runner [Agama::TaskRunner]
         # @param logger [Logger, nil]
-        def initialize(backend, logger: nil)
+        def initialize(manager, task_runner, logger: nil)
           textdomain "agama"
           super(PATH, logger: logger)
-          @backend = backend
+          @manager = manager
+          @task_runner = task_runner
           @serialized_system = serialize_system
           @serialized_config = serialize_config
           @serialized_config_model = serialize_config_model
@@ -71,7 +73,7 @@ module Agama
           dbus_method(:Install) { install }
           dbus_method(:Finish) { finish }
           dbus_method(:Umount) { umount }
-          dbus_method(:SetLocale, "in locale:s") { |locale| backend.configure_locale(locale) }
+          dbus_method(:SetLocale, "in locale:s") { |locale| manager.configure_locale(locale) }
           dbus_method(
             :SetConfig, "in serialized_product_config:s, in serialized_config:s"
           ) { |p, c| configure(p, c) }
@@ -88,35 +90,40 @@ module Agama
         end
 
         # Implementation for the API method #Activate.
+        #
+        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see
+        # {#run_activate_task} and {#run_probe_task}.
         def activate
           logger.info("Activating storage")
 
           start_progress(3, ACTIVATING_STEP)
-          backend.reset_activation if backend.activated?
-          backend.activate
+          run_activate_task(reset: manager.activated?)
 
           next_progress_step(PROBING_STEP)
           perform_probe
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
-
+        ensure
           finish_progress
         end
 
         # Implementation for the API method #Probe.
+        #
+        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see
+        # {#run_activate_task} and {#run_probe_task}..
         def probe
           logger.info("Probing storage")
 
           start_progress(3, ACTIVATING_STEP)
-          backend.activate unless backend.activated?
+          run_activate_task unless manager.activated?
 
           next_progress_step(PROBING_STEP)
           perform_probe
 
           next_progress_step(CONFIGURING_STEP)
           configure_with_current
-
+        ensure
           finish_progress
         end
 
@@ -126,6 +133,8 @@ module Agama
         # { "storage": ... } or { "legacyAutoyastStorage": ... }.
         #
         # @raise If the config is not valid.
+        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see
+        # {#run_activate_task} and {#run_probe_task}.
         #
         # @param serialized_product_config [String] Serialized product config.
         # @param serialized_config [String] Serialized storage config.
@@ -134,23 +143,23 @@ module Agama
           config_json = JSON.parse(serialized_config, symbolize_names: true)
 
           # Do not configure if there is nothing to change.
-          return if backend.configured?(product_config_json, config_json)
+          return if manager.configured?(product_config_json, config_json)
 
           logger.info("Configuring storage")
           product_config = Agama::Config.new(product_config_json)
-          backend.update_product_config(product_config) if backend.product_config != product_config
+          manager.update_product_config(product_config) if manager.product_config != product_config
 
           start_progress(3, ACTIVATING_STEP)
-          backend.activate unless backend.activated?
+          run_activate_task unless manager.activated?
 
           next_progress_step(PROBING_STEP)
-          backend.probe unless backend.probed?
+          run_probe_task unless manager.probed?
 
           update_serialized_system
 
           next_progress_step(CONFIGURING_STEP)
           calculate_proposal(config_json)
-
+        ensure
           finish_progress
         end
 
@@ -184,13 +193,13 @@ module Agama
         # Implementation for the API method #Install.
         def install
           start_progress(3, _("Preparing bootloader proposal"))
-          backend.bootloader.configure
+          manager.bootloader.configure
 
           next_progress_step(_("Preparing the storage devices"))
-          backend.install
+          manager.install
 
           next_progress_step(_("Writing bootloader sysconfig"))
-          backend.bootloader.install
+          manager.bootloader.install
 
           finish_progress
         end
@@ -198,14 +207,14 @@ module Agama
         # Implementation for the API method #Finish.
         def finish
           start_progress(1, _("Finishing installation"))
-          backend.finish
+          manager.finish
           finish_progress
         end
 
         # Implementation for the API method #Umount.
         def umount
           start_progress(1, _("Unmounting devices"))
-          backend.umount
+          manager.umount
           finish_progress
         end
 
@@ -224,7 +233,7 @@ module Agama
         # @return [Integer] 0 success; 1 error
         def configure_bootloader(serialized_config)
           logger.info("Setting bootloader config: #{serialized_config}")
-          backend.bootloader.config.load_json(serialized_config)
+          manager.bootloader.config.load_json(serialized_config)
           # after loading config try to apply it, so proper packages can be requested
           # TODO: generate also new issue from configuration
           calculate_bootloader
@@ -243,18 +252,40 @@ module Agama
         private_constant :CONFIGURING_STEP
 
         # @return [Agama::Storage::Manager]
-        attr_reader :backend
+        attr_reader :manager
+
+        # @return [Agama::TaskRunner]
+        attr_reader :task_runner
 
         def register_progress_callbacks
           on_progress_change { self.ProgressChanged(serialize_progress) }
           on_progress_finish { self.ProgressFinished }
         end
 
+        # Runs a sync task for activating the system.
+        #
+        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see {TaskRunner}.
+        #
+        # @param reset [Boolean] Whether to reset a previous activation.
+        def run_activate_task(reset: false)
+          task_runner.run("Activate storage") do
+            manager.reset_activation if reset
+            manager.activate
+          end
+        end
+
+        # Runs a sync task for probing the system.
+        #
+        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see {TaskRunner}.
+        def run_probe_task
+          task_runner.run("Probe storage") { manager.probe }
+        end
+
         # Probes storage and updates the associated info.
         #
         # @see #update_system_info
         def perform_probe
-          backend.probe
+          run_probe_task
           update_serialized_system
         end
 
@@ -264,7 +295,7 @@ module Agama
         def configure_with_current
           return unless proposal.storage_json
 
-          calculate_proposal(backend.config_json)
+          calculate_proposal(manager.config_json)
           # The storage proposal with the current settings is not explicitly requested. It is
           # automatically calculated as side effect of calling to probe or activate. All the
           # dependant steps has to be automatically done too, for example, reconfiguring bootloader.
@@ -277,8 +308,8 @@ module Agama
         #
         # @param config_json [Hash, nil]
         def calculate_proposal(config_json = nil)
-          backend.configure(config_json)
-          backend.add_packages if backend.proposal.success?
+          manager.configure(config_json)
+          manager.add_packages if manager.proposal.success?
 
           update_serialized_config
           update_serialized_config_model
@@ -289,7 +320,7 @@ module Agama
         # Performs the bootloader configuration applying the current config.
         def calculate_bootloader
           logger.info("Configuring bootloader")
-          backend.bootloader.configure
+          manager.bootloader.configure
           update_serialized_bootloader_config
         end
 
@@ -353,7 +384,7 @@ module Agama
         #
         # @return [String]
         def serialize_system
-          return serialize_nil unless backend.probed?
+          return serialize_nil unless manager.probed?
 
           json = {
             devices:            devices_json(:probed),
@@ -390,7 +421,7 @@ module Agama
         #
         # @return [String]
         def serialize_proposal
-          return serialize_nil unless backend.proposal.success?
+          return serialize_nil unless manager.proposal.success?
 
           json = {
             devices: devices_json(:staging),
@@ -403,14 +434,14 @@ module Agama
         #
         # @return [String]
         def serialize_issues
-          super(backend.issues)
+          super(manager.issues)
         end
 
         # Generates the serialized JSON of the bootloader config.
         #
         # @return [String]
         def serialize_bootloader_config
-          backend.bootloader.config.to_json
+          manager.bootloader.config.to_json
         end
 
         # Representation of the null JSON.
@@ -438,7 +469,7 @@ module Agama
         #   * :delete [Boolean]
         #   * :resize [Boolean]
         def actions_json
-          backend.actions.map do |action|
+          manager.actions.map do |action|
             {
               device: action.device_sid,
               text:   action.text,
@@ -455,7 +486,7 @@ module Agama
         #
         # @return [Array<Hash>]
         def system_issues_json
-          backend.system_issues.map { |i| issue_json(i) }
+          manager.system_issues.map { |i| issue_json(i) }
         end
 
         # @see Storage::System#available_drives
@@ -515,12 +546,12 @@ module Agama
 
         # @return [Agama::Storage::Proposal]
         def proposal
-          backend.proposal
+          manager.proposal
         end
 
         # @return [Agama::Config]
         def product_config
-          backend.product_config
+          manager.product_config
         end
 
         # @return [Agama::VolumeTemplatesBuilder]
