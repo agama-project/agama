@@ -21,8 +21,13 @@ development project.
 ### Used tools
 
 The script requires the `git`, `gh`, `jq` and `osc` command line tools to be installed. The `osc`
-and `gh` tools need to be configured/authenticated against OBS respective GitHub. Do not worry the
+and `gh` tools need to be configured/authenticated against OBS and GitHub, respectively. Do not worry the
 script checks for that.
+
+Use the following commands if you don't want to remember your usernames:
+
+    GH_USER=$(gh auth status | sed -n 's/.*Logged in to github.com account \([^[:space:]]*\) .*/\1/;T;p;q')
+    OBS_USER=$(osc user | sed "s/^\([^:]*\):.*$/\\1/")
 
 ### GitHub configuration
 
@@ -33,29 +38,29 @@ to change anything.
 You need to create the `OBS_USER` action variable containing your OBS login name. You can do that
 from command line running command
 
-    gh -R <gh_user>/agama variable set OBS_USER --body <obs_user>
+    gh -R ${GH_USER?}/agama variable set OBS_USER --body ${OBS_USER?}
 
-where `gh_user` is your GitHub login name and `obs_user` your OBS login name.
+where `$GH_USER` is your GitHub login name and `$OBS_USER` your OBS login name.
 
 Alternatively you can create the variable manually by visiting URL
 
-    https://github.com/<gh_user>/agama/settings/variables/actions/new
+    xdg-open https://github.com/${GH_USER?}/agama/settings/variables/actions/new
 
-where `gh_user` is your GitHub login name. On that page create variable `OBS_USER` with your OBS
+where `$GH_USER` is your GitHub login name. On that page create variable `OBS_USER` with your OBS
 login name.
 
 Similarly we need to enter the OBS password, but as this is sensitive private value we use GitHub
 secret for that. From command line run this command
 
-    gh -R <gh_user>/agama secret set OBS_PASSWORD
+    gh -R ${GH_USER?}/agama secret set OBS_PASSWORD
 
-where `gh_user` is your GitHub login name. The command will interactively ask for the password.
+where `$GH_USER` is your GitHub login name. The command will interactively ask for the password.
 
 Or you can create the secret in browser going to this page
 
-    https://github.com/<gh_user>/agama/settings/secrets/actions/new`
+    xdg-open https://github.com/${GH_USER?}/agama/settings/secrets/actions/new`
 
-where `gh_user` is your GitHub login name. Create a new secret with name `OBS_PASSWORD` and
+where `$GH_USER` is your GitHub login name. Create a new secret with name `OBS_PASSWORD` and
 enter your OBS password as the value.
 
 ### Testing builds
@@ -83,7 +88,7 @@ project for submitting.
   - `git checkout master`
   - Update the ISO version in `live/src/agama-installer.kiwi`, use the `pre` suffix to distinguish
     between a development version and the final version. I.e. for Beta3 change the version from `12`
-    to `13pre`.
+    to `13.pre`.
   - Push the changes
     - `git commit -a`
     - `git push`
