@@ -21,9 +21,12 @@
  */
 
 import React from "react";
+import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
+import { Content } from "@patternfly/react-core";
 import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
+import Text from "~/components/core/Text";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
 import {
@@ -43,7 +46,6 @@ import { _, formatList } from "~/i18n";
 
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
-import { isEmpty } from "radashi";
 
 const findDriveDevice = (drive: ConfigModel.Drive, devices: Storage.Device[]) =>
   devices.find((d) => d.name === drive.name);
@@ -88,13 +90,13 @@ const InvalidZFCP = (): React.ReactNode => {
   const text = _("Invalid [zFCP] settings");
   const [textStart, textLink, textEnd] = text.split(/[[\]]/);
   return (
-    <p>
+    <Content>
       {textStart}
       <Link to={STORAGE.zfcp.root} variant="link" isInline>
-        {textLink}
+        <Text isBold>{textLink}</Text>
       </Link>
       {textEnd}
-    </p>
+    </Content>
   );
 };
 
