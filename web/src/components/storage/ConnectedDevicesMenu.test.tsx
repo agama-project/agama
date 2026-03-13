@@ -38,6 +38,12 @@ jest.mock("~/hooks/model/system/dasd", () => ({
   useSystem: () => mockUseDASDSystem(),
 }));
 
+const mockUseZFCPSystem = jest.fn();
+jest.mock("~/hooks/model/system/zfcp", () => ({
+  ...jest.requireActual("~/hooks/model/system/zfcp"),
+  useSystem: () => mockUseZFCPSystem(),
+}));
+
 async function openMenu() {
   const { user } = installerRender(<ConnectedDevicesMenu />);
   const button = screen.getByRole("button", { name: "More storage options" });
@@ -68,11 +74,9 @@ it("allows users to configure iSCSI", async () => {
 });
 
 describe("if zFCP is not supported", () => {
-  /*
   beforeEach(() => {
-    mockUseZFCPSupported.mockReturnValue(false);
+    mockUseZFCPSystem.mockReturnValue(null);
   });
-  */
 
   it("does not allow users to configure zFCP", async () => {
     const { menu } = await openMenu();
@@ -81,12 +85,10 @@ describe("if zFCP is not supported", () => {
   });
 });
 
-describe.skip("if zFCP is supported", () => {
-  /*
+describe("if zFCP is supported", () => {
   beforeEach(() => {
-    mockUseZFCPSupported.mockReturnValue(true);
+    mockUseZFCPSystem.mockReturnValue({});
   });
-  */
 
   it("allows users to configure zFCP", async () => {
     const { user, menu } = await openMenu();
@@ -98,7 +100,7 @@ describe.skip("if zFCP is supported", () => {
 
 describe("if DASD is not supported", () => {
   beforeEach(() => {
-    mockUseDASDSystem.mockReturnValue(undefined);
+    mockUseDASDSystem.mockReturnValue(null);
   });
 
   it("does not allow users to configure DASD", async () => {
