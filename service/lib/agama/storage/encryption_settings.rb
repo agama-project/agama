@@ -65,6 +65,20 @@ module Agama
         encryption_methods.reject { |m| m.respond_to?(:possible?) && !m.possible? }
       end
 
+      # Identifier used for the given encryption method in the system API.
+      #
+      # This method may disappear in the future after normalizing the ids for encryption methods.
+      # Those ids currently use inconsistent format (camelCase vs snake_case) and are not unified
+      # between the Agama configuration and the system API.
+      #
+      # @param method [Y2Storage::EncryptionMethod::Base]
+      # @return [String]
+      def self.method_id(method)
+        return "tpmFde" if method.is?(:tpm_fde)
+
+        method.id.to_s
+      end
+
       # Constructor
       def initialize
         # LUKS2 with PBKDF2 is the most sensible option nowadays:
