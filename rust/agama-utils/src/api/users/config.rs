@@ -195,7 +195,7 @@ impl RootUserConfig {
 
 #[cfg(test)]
 mod test {
-    use super::{Config, FirstUserConfig, RootUserConfig, UserPassword, StringOrList};
+    use super::{Config, FirstUserConfig, RootUserConfig, StringOrList, UserPassword};
 
     #[test]
     fn test_parse_user_password() {
