@@ -31,8 +31,6 @@ import {
   EmptyState,
   EmptyStateBody,
   Checkbox,
-  Split,
-  SplitItem,
 } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import { STORAGE } from "~/routes/paths";
