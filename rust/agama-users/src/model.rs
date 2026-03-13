@@ -156,16 +156,11 @@ impl Model {
         }
 
         // store sshPublicKeys for root if any
-        let mut ssh_keys = if let Some(ssh_keys) = &root.ssh_public_keys {
+        let ssh_keys = if let Some(ssh_keys) = &root.ssh_public_key {
             ssh_keys.to_vec()
         } else {
             vec![]
         };
-
-        // store sshPublicKey for backward compatibility.
-        if let Some(ref root_ssh_key) = root.ssh_public_key {
-            ssh_keys.extend(root_ssh_key.to_vec());
-        }
 
         // if some SSH keys were defined
         // - update root's authorized_keys

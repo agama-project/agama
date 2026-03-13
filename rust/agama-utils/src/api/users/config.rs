@@ -166,12 +166,9 @@ pub struct RootUserConfig {
     /// Root SSH public key
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(alias = "ssh_public_keys")]
     #[schema(inline)]
     pub ssh_public_key: Option<StringOrList>,
-    #[merge(strategy = merge::option::overwrite_none)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(inline)]
-    pub ssh_public_keys: Option<StringOrList>,
 }
 
 impl RootUserConfig {
@@ -184,11 +181,7 @@ impl RootUserConfig {
             return false;
         }
 
-        if self.ssh_public_key.as_ref().is_some_and(|p| !p.is_empty()) {
-            return false;
-        }
-
-        if self.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()) {
+        if self.ssh_public_key.as_ref().is_some_and(|k| !k.is_empty()) {
             return false;
         }
 
@@ -280,7 +273,7 @@ mod test {
         assert!(!root_with_ssh_key_config.is_empty());
 
         let root_with_ssh_keys = RootUserConfig {
-            ssh_public_keys: Some(StringOrList::List(vec!["12345678".to_string()])),
+            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
             ..Default::default()
         };
         let root_with_ssh_keys_config = Config {
