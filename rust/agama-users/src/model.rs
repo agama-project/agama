@@ -132,7 +132,7 @@ impl Model {
             .ssh_public_key
             .as_ref()
             .map(|k| k.to_vec())
-            .unwrap_or_else(|| vec![]);
+            .unwrap_or_default();
         // do some magic about user's home dir path or stay
         // with hardcoded default?
         self.activate_ssh(
@@ -161,14 +161,14 @@ impl Model {
             .ssh_public_key
             .as_ref()
             .map(|k| k.to_vec())
-            .unwrap_or_else(|| vec![]);
+            .unwrap_or_default();
 
         self.activate_ssh(&PathBuf::from("root/.ssh/authorized_keys"), &ssh_keys)?;
 
         Ok(())
     }
 
-    fn activate_ssh(&self, path: &PathBuf, ssh_keys: &Vec<String>) -> Result<(), service::Error> {
+    fn activate_ssh(&self, path: &PathBuf, ssh_keys: &[String]) -> Result<(), service::Error> {
         if !ssh_keys.is_empty() {
             // if some SSH keys were defined
             // - update authorized_keys file
