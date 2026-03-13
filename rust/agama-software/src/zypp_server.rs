@@ -200,11 +200,19 @@ impl ZyppServer {
                 break;
             };
 
-            if let Err(error) = self.dispatch(action, &zypp) {
-                tracing::error!("Software dispatch error: {:?}", error);
-            }
+            match self.dispatch(action, &zypp) {
+                Ok(false) => {
+                    break;
+                }
+                Err(error) => {
+                    tracing::error!("Software dispatch error: {:?}", error);
+                }
+                _ => {}
+            };
         }
 
+        // drop explicitly zypp to release lock ASAP
+        drop(zypp);
         Ok(())
     }
 
@@ -213,7 +221,7 @@ impl ZyppServer {
         &mut self,
         action: SoftwareAction,
         zypp: &zypp_agama::Zypp,
-    ) -> Result<(), ZyppDispatchError> {
+    ) -> Result<bool, ZyppDispatchError> {
         match action {
             SoftwareAction::Write {
                 state,
@@ -242,12 +250,14 @@ impl ZyppServer {
             }
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx)?;
+                // stop server after finish action to release zypp lock ASAP.
+                return Ok(false);
             }
             SoftwareAction::GetProposal(product_spec, sender) => {
                 self.proposal(product_spec, sender, zypp)?
             }
         }
-        Ok(())
+        Ok(true)
     }
 
     // Install rpms

@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Mar 13 12:22:07 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update the software proposal after changing the resolvables list (bsc#1259533).
+
+-------------------------------------------------------------------
+Fri Mar 13 10:54:49 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Release zypp lock after software finish to allow run zypper
+  in post install scripts (bsc#1258188)
+
+-------------------------------------------------------------------
 Thu Mar 12 13:20:48 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add error reporting when working with AutoYaST profiles (related

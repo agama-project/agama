@@ -492,7 +492,14 @@ impl MessageHandler<message::SetResolvables> for Service {
     async fn handle(&mut self, message: message::SetResolvables) -> Result<(), Error> {
         self.selection.set(&message.id, message.resolvables);
         if self.product.is_some() {
+            // calculate the wanted state
             self.calculate_wanted_state().await?;
+
+            // and then update the proposal (in a separate task).
+            // FIXME: it is perhaps too much, as it only needs to run the solver.
+            // However, given that ZyppServer only runs one message at a time, the requests
+            // will be queued, so it should be a safe operation.
+            self.update_proposal().await?;
         }
         Ok(())
     }
