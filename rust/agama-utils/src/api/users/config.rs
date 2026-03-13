@@ -129,6 +129,7 @@ fn overwrite_if_not_empty(old: &mut String, new: String) {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, utoipa::ToSchema)]
+#[schema(as = StringOrList)]
 #[serde(untagged)]
 pub enum StringOrList {
     Single(String),
@@ -165,9 +166,11 @@ pub struct RootUserConfig {
     /// Root SSH public key
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(inline)]
     pub ssh_public_key: Option<StringOrList>,
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schema(inline)]
     pub ssh_public_keys: Option<StringOrList>,
 }
 

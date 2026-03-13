@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::api::users::config::{RootUserConfig, StringOrList};
 use utoipa::openapi::{Components, Info, InfoBuilder, OpenApi, OpenApiBuilder, Paths};
 
 mod config;
@@ -34,7 +35,19 @@ pub trait ApiDocBuilder {
 
     fn paths(&self) -> Paths;
 
-    fn components(&self) -> Components;
+    fn components(&self) -> Components {
+        let mut builder = utoipa::openapi::schema::ComponentsBuilder::new();
+        let mut schemas = Vec::new();
+
+        <RootUserConfig as utoipa::ToSchema>::schemas(&mut schemas);
+        <StringOrList as utoipa::ToSchema>::schemas(&mut schemas);
+
+        for (name, schema) in schemas {
+            builder = builder.schema(name, schema);
+        }
+
+        builder.build()
+    }
 
     fn info(&self) -> Info {
         InfoBuilder::new()
