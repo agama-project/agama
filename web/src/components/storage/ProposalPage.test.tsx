@@ -65,6 +65,7 @@ const mockUseConfigModel = jest.fn();
 const mockUseProposal = jest.fn();
 const mockUseIssues = jest.fn();
 const mockUseDASDSystem = jest.fn();
+const mockUseZFCPSystem = jest.fn();
 
 jest.mock("~/hooks/model/system/storage", () => ({
   ...jest.requireActual("~/hooks/model/system/storage"),
@@ -94,6 +95,11 @@ jest.mock("~/hooks/model/issue", () => ({
 jest.mock("~/hooks/model/system/dasd", () => ({
   ...jest.requireActual("~/hooks/model/system/dasd"),
   useSystem: () => mockUseDASDSystem(),
+}));
+
+jest.mock("~/hooks/model/system/zfcp", () => ({
+  ...jest.requireActual("~/hooks/model/system/zfcp"),
+  useSystem: () => mockUseZFCPSystem(),
 }));
 
 jest.mock("./ProposalFailedInfo", () => () => <div>proposal failed info</div>);
@@ -133,9 +139,9 @@ describe("if there are no devices", () => {
   });
 
   describe("if zFCP is not supported", () => {
-    // beforeEach(() => {
-    //   mockUseZFCPSupported.mockReturnValue(false);
-    // });
+    beforeEach(() => {
+      mockUseZFCPSystem.mockReturnValue(null);
+    });
 
     it("does not render an option for activating zFCP", () => {
       installerRender(<ProposalPage />);
@@ -145,7 +151,7 @@ describe("if there are no devices", () => {
 
   describe("if DASD is not supported", () => {
     beforeEach(() => {
-      mockUseDASDSystem.mockReturnValue(undefined);
+      mockUseDASDSystem.mockReturnValue(null);
     });
 
     it("does not render an option for activating DASD", () => {
@@ -154,10 +160,10 @@ describe("if there are no devices", () => {
     });
   });
 
-  describe.skip("if zFCP is supported", () => {
-    // beforeEach(() => {
-    //   mockUseZFCPSupported.mockReturnValue(true);
-    // });
+  describe("if zFCP is supported", () => {
+    beforeEach(() => {
+      mockUseZFCPSystem.mockReturnValue({});
+    });
 
     it("renders an option for activating zFCP", () => {
       installerRender(<ProposalPage />);

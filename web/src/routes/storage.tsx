@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { redirect } from "react-router";
 import { N_ } from "~/i18n";
 import { Route } from "~/types/routes";
 import BootSelectionPage from "~/components/storage/BootSelectionPage";
@@ -34,14 +33,11 @@ import PartitionPage from "~/components/storage/PartitionPage";
 import LvmPage from "~/components/storage/LvmPage";
 import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
-import ZFCPDiskActivationPage from "~/components/storage/zfcp/ZFCPDiskActivationPage";
+import ZFCPControllersPage from "~/components/storage/zfcp/ZFCPControllersPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
 import TargetLoginPage from "~/components/storage/iscsi/TargetLoginPage";
 import DiscoverFormPage from "~/components/storage/iscsi/DiscoverFormPage";
 import DeviceSelectorPage from "~/components/storage/DeviceSelectorPage";
-// FIXME: adapt to new API
-// import { supportedDASD, probeDASD } from "~/model/storage/dasd";
-import { probeZFCP, supportedZFCP } from "~/model/storage/zfcp";
 import { STORAGE as PATHS } from "~/routes/paths";
 import InitiatorFormPage from "~/components/storage/iscsi/InitiatorFormPage";
 
@@ -117,28 +113,15 @@ const routes = (): Route => ({
       path: PATHS.dasd,
       element: <DASDPage />,
       handle: { name: N_("DASD") },
-      // FIXME: adapt to new API
-      // loader: async () => {
-      //   if (!supportedDASD()) return redirect(PATHS.root);
-      //   return probeDASD();
-      // },
     },
     {
       path: PATHS.zfcp.root,
       element: <ZFCPPage />,
       handle: { name: N_("ZFCP") },
-      loader: async () => {
-        if (!supportedZFCP()) return redirect(PATHS.root);
-        return probeZFCP();
-      },
     },
     {
-      path: PATHS.zfcp.activateDisk,
-      element: <ZFCPDiskActivationPage />,
-      loader: async () => {
-        if (!supportedZFCP()) return redirect(PATHS.root);
-        return probeZFCP();
-      },
+      path: PATHS.zfcp.controllers,
+      element: <ZFCPControllersPage />,
     },
   ],
 });

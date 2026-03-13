@@ -27,12 +27,13 @@ import { STORAGE } from "~/routes/paths";
 import Icon from "~/components/layout/Icon";
 import MenuButton from "~/components/core/MenuButton";
 import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
+import { useSystem as useZFCPSystem } from "~/hooks/model/system/zfcp";
 import { _ } from "~/i18n";
 
 export default function ConnectedDevicesMenu() {
   const navigate = useNavigate();
-  const isZFCPSupported = false;
   const dasdSystem = useDASDSystem();
+  const zfcpSystem = useZFCPSystem();
 
   return (
     <MenuButton
@@ -55,7 +56,7 @@ export default function ConnectedDevicesMenu() {
         >
           {_("Configure iSCSI")}
         </MenuButton.Item>,
-        isZFCPSupported && (
+        zfcpSystem && (
           <MenuButton.Item
             key="zfcp-link"
             onClick={() => navigate(STORAGE.zfcp.root)}

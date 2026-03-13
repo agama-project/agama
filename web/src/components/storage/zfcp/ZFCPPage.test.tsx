@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -23,63 +23,146 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import { ZFCPPage } from "~/components/storage/zfcp";
-import { ZFCPDisk, ZFCPController, ZFCPConfig } from "~/types/zfcp";
+import { clearMockedQueries } from "~/test-utils/tanstack-query";
+import ZFCPPage from "./ZFCPPage";
+import type { Issue } from "~/model/issue";
+import type { ZFCP as System } from "~/model/system";
 
-const mockZFCPConfig: ZFCPConfig = {
-  allowLunScan: false,
+const issue: Issue = {
+  description: "zFCP error",
+  class: "something",
+  scope: "zfcp",
 };
-const mockZFCPDisk: ZFCPDisk[] = [
-  {
-    name: "/dev/sda",
-    channel: "0.0.fa00",
-    wwpn: "0x500507630b181216",
-    lun: "0x4020404900000000",
-  },
-  {
-    name: "/dev/sdb",
-    channel: "0.0.fc00",
-    wwpn: "0x500507630b101216",
-    lun: "0x0001000000000000",
-  },
-];
 
-const mockZFCPControllers: ZFCPController[] = [
-  {
-    id: "1",
-    channel: "0.0.fa00",
-    lunScan: false,
-    active: true,
-    lunsMap: {
-      "0x500507630b181216": ["0x4020404900000000"],
-      "0x500507680d7e284a": [],
-      "0x500507680d0e284a": [],
-    },
-  },
-  {
-    id: "2",
-    channel: "0.0.fc00",
-    lunScan: false,
-    active: true,
-    lunsMap: {
-      "0x500507680d7e284b": [],
-      "0x500507680d0e284b": [],
-      "0x500507630b101216": ["0x0000000000000000", "0x0001000000000000"],
-    },
-  },
-];
+const controller1: System.Controller = {
+  channel: "0.0.7000",
+  wwpns: ["0x500507630303c5f9"],
+  lunScan: true,
+  active: true,
+};
 
-jest.mock("~/queries/storage/zfcp", () => ({
-  useZFCPDisks: () => mockZFCPDisk,
-  useZFCPDisksChanges: () => null,
-  useZFCPControllers: () => mockZFCPControllers,
-  useZFCPControllersChanges: () => null,
-  useZFCPConfig: () => mockZFCPConfig,
+const controller2: System.Controller = {
+  channel: "0.0.8000",
+  wwpns: ["0x500507630303c5f9"],
+  lunScan: true,
+  active: false,
+};
+
+const device1: System.Device = {
+  channel: "0.0.7000",
+  wwpn: "0x500507630303c5f9",
+  lun: "0x5022000000000000",
+  active: true,
+  deviceName: "/dev/sda",
+};
+
+const mockUseControllers = jest.fn();
+const mockUseDevices = jest.fn();
+const mockUseIssues = jest.fn();
+
+jest.mock("~/hooks/model/system/zfcp", () => ({
+  ...jest.requireActual("~/hooks/model/system/zfcp"),
+  useControllers: () => mockUseControllers(),
+  useDevices: () => mockUseDevices(),
 }));
 
-it("renders two sections: Controllers and Disks", () => {
-  installerRender(<ZFCPPage />);
+jest.mock("~/hooks/model/issue", () => ({
+  ...jest.requireActual("~/hooks/model/issue"),
+  useIssues: () => mockUseIssues(),
+}));
 
-  screen.findByRole("heading", { name: "Controllers" });
-  screen.findByRole("heading", { name: "Disks" });
+jest.mock("./ZFCPDevicesTable", () => () => <div>devices table</div>);
+
+describe("ZFCPPage", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    clearMockedQueries();
+    mockUseControllers.mockReturnValue([]);
+    mockUseDevices.mockReturnValue([]);
+    mockUseIssues.mockReturnValue([]);
+  });
+
+  describe("if there are issues", () => {
+    beforeEach(() => {
+      mockUseIssues.mockReturnValue([issue]);
+    });
+
+    it("renders the issues", () => {
+      installerRender(<ZFCPPage />);
+      screen.getByText(/zFCP error/);
+    });
+  });
+
+  describe("if there are not controllers", () => {
+    beforeEach(() => {
+      mockUseControllers.mockReturnValue([]);
+    });
+
+    it("renders a text explaining zFCP is not available", () => {
+      installerRender(<ZFCPPage />);
+      screen.getByText(/zFCP is not available/);
+      expect(screen.queryByText("devices table")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("if there are not devices", () => {
+    beforeEach(() => {
+      mockUseControllers.mockReturnValue([controller1]);
+      mockUseDevices.mockReturnValue([]);
+    });
+
+    it("renders the controllers section", () => {
+      installerRender(<ZFCPPage />);
+      screen.getByText("zFCP controllers");
+    });
+
+    it("renders a text explaining devices are not available", () => {
+      installerRender(<ZFCPPage />);
+      screen.getByText(/No devices available/);
+      expect(screen.queryByText("devices table")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("if there are devices", () => {
+    beforeEach(() => {
+      mockUseControllers.mockReturnValue([controller1]);
+      mockUseDevices.mockReturnValue([device1]);
+    });
+
+    it("renders the controllers section", () => {
+      installerRender(<ZFCPPage />);
+      screen.getByText("zFCP controllers");
+    });
+
+    it("renders the table of devices", () => {
+      installerRender(<ZFCPPage />);
+      screen.getByText("devices table");
+    });
+
+    describe("if there are deactivated controllers", () => {
+      beforeEach(() => {
+        mockUseControllers.mockReturnValue([controller2]);
+      });
+
+      it("renders an option for activating controllers", () => {
+        installerRender(<ZFCPPage />);
+        screen.getByText(/There is a deactivated zFCP controller/);
+        screen.getByRole("link", { name: "Activate controllers" });
+      });
+    });
+
+    describe("if there are not deactivated controllers", () => {
+      beforeEach(() => {
+        mockUseControllers.mockReturnValue([controller1]);
+      });
+
+      it("does not render an option for activating controllers", () => {
+        installerRender(<ZFCPPage />);
+        screen.getByText(/zFCP controllers are already activated/);
+        expect(
+          screen.queryByRole("link", { name: "Activate controllers" }),
+        ).not.toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -29,7 +29,7 @@ import {
   useFlattenDevices as useProposalFlattenDevices,
   useActions,
 } from "~/hooks/model/proposal/storage";
-import { useIssues } from "~/hooks/model/issue";
+import * as issueHooks from "~/hooks/model/issue";
 import { STORAGE } from "~/routes/paths";
 import StorageSummary from "./StorageSummary";
 
@@ -40,7 +40,8 @@ const mockUseDevicesFn: jest.Mock<ReturnType<typeof useDevices>> = jest.fn();
 const mockUseProposalFlattenDevicesFn: jest.Mock<ReturnType<typeof useProposalFlattenDevices>> =
   jest.fn();
 const mockUseActionsFn: jest.Mock<ReturnType<typeof useActions>> = jest.fn();
-const mockUseIssuesFn: jest.Mock<ReturnType<typeof useIssues>> = jest.fn();
+const mockStorageIssuesFn: jest.Mock<ReturnType<typeof issueHooks.useIssues>> = jest.fn();
+const mockZFCPIssuesFn: jest.Mock<ReturnType<typeof issueHooks.useIssues>> = jest.fn();
 
 // Mock all the hooks
 jest.mock("~/hooks/model/storage/config-model", () => ({
@@ -61,10 +62,11 @@ jest.mock("~/hooks/model/proposal/storage", () => ({
   useActions: () => mockUseActionsFn(),
 }));
 
-jest.mock("~/hooks/model/issue", () => ({
-  ...jest.requireActual("~/hooks/model/issue"),
-  useIssues: () => mockUseIssuesFn(),
-}));
+jest.spyOn(issueHooks, "useIssues").mockImplementation((scope) => {
+  if (scope === "storage") return mockStorageIssuesFn();
+  if (scope === "zfcp") return mockZFCPIssuesFn();
+  return [];
+});
 
 // Mock device for tests
 const mockDevice = {
@@ -99,7 +101,8 @@ describe("StorageSummary", () => {
     mockUseFlattenDevicesFn.mockReturnValue([]);
     mockUseProposalFlattenDevicesFn.mockReturnValue([]);
     mockUseActionsFn.mockReturnValue([]);
-    mockUseIssuesFn.mockReturnValue([]);
+    mockStorageIssuesFn.mockReturnValue([]);
+    mockZFCPIssuesFn.mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -170,16 +173,29 @@ describe("StorageSummary", () => {
     });
 
     it("shows invalid settings warning when config issues exist", () => {
-      mockUseIssuesFn.mockReturnValue([
+      mockStorageIssuesFn.mockReturnValue([
         {
-          description: "Fake Issue",
+          description: "Fake issue",
           class: "generic",
-          details: "Fake Issue details",
+          details: "Fake issue details",
           scope: "storage",
         },
       ]);
       installerRender(<StorageSummary />);
       screen.getByText("Invalid settings");
+    });
+
+    it("shows invalid ZFCP settings warning when ZFCP issues exist", () => {
+      mockZFCPIssuesFn.mockReturnValue([
+        {
+          description: "Fake issue",
+          class: "generic",
+          scope: "zfcp",
+        },
+      ]);
+      installerRender(<StorageSummary />);
+      screen.getByText(/Invalid/);
+      screen.getByText(/zFCP/);
     });
 
     it("shows advanced configuration message when model is unavailable", () => {
@@ -189,7 +205,7 @@ describe("StorageSummary", () => {
     });
 
     it("ignores proposal class issues when checking config validity", () => {
-      mockUseIssuesFn.mockReturnValue([
+      mockStorageIssuesFn.mockReturnValue([
         {
           description: "Fake Issue",
           class: "proposal",
@@ -254,7 +270,7 @@ describe("StorageSummary", () => {
     });
 
     it("hides description when config issues exist", () => {
-      mockUseIssuesFn.mockReturnValue([
+      mockStorageIssuesFn.mockReturnValue([
         {
           description: "Fake Issue",
           class: "generic",
