@@ -498,7 +498,7 @@ module Agama
         def encryption_methods
           Agama::Storage::EncryptionSettings
             .available_methods
-            .map { |m| m.id.to_s }
+            .map { |m| Agama::Storage::EncryptionSettings.method_id(m) }
         end
 
         # Default volumes to be used as templates
