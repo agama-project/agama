@@ -37,7 +37,7 @@ module Agama
         user = config.users.find { |u| !u.system? && !u.root? }
         return {} unless user
 
-        hsh = basic_user_info
+        hsh = basic_user_info(user)
 
         password = user.password
         if password

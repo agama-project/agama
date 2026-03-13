@@ -46,7 +46,7 @@ module Agama
           hsh["hashedPassword"] = true if password.value.encrypted?
         end
 
-        hsh.merge(setup_ssh(root))
+        hsh = hsh.merge(setup_ssh(root_user))
 
         return {} if hsh.empty?
 
