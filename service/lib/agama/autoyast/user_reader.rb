@@ -48,6 +48,8 @@ module Agama
           hsh["hashedPassword"] = true if password.value.encrypted?
         end
 
+        hsh["sshPublicKeys"] user.authorized_keys if !user.authorized_keys.empty?
+
         { "user" => hsh }
       end
 
