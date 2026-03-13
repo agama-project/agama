@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,27 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-import { LUNInfo, ZFCPController, ZFCPDisk } from "~/types/zfcp";
-
-const inactiveLuns = (controllers: ZFCPController[], disks: ZFCPDisk[]): LUNInfo[] => {
-  const result: LUNInfo[] = [];
-  for (const controller of controllers) {
-    for (const [wwpn, luns] of Object.entries(controller.lunsMap)) {
-      for (const lun of luns) {
-        if (
-          !disks.some((d) => d.lun === lun && d.wwpn === wwpn && d.channel === controller.channel)
-        ) {
-          result.push({
-            channel: controller.channel,
-            wwpn,
-            lun,
-          });
-        }
-      }
-    }
-  }
-
-  return result;
-};
-
-export { inactiveLuns };
+export type * from "~/openapi/system/zfcp";

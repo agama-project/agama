@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-type Scope = "localization" | "product" | "software" | "storage" | "users" | "iscsi";
+type Scope = "localization" | "product" | "software" | "storage" | "users" | "iscsi" | "zfcp";
 
 type Issue = {
   scope: Scope;

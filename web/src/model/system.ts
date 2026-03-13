@@ -26,8 +26,9 @@ import type * as L10n from "~/model/system/l10n";
 import type * as Network from "~/model/system/network";
 import type * as Software from "~/model/system/software";
 import type * as Storage from "~/model/system/storage";
-import type * as DASD from "~/model/system/dasd";
 import type * as ISCSI from "~/model/system/iscsi";
+import type * as DASD from "~/model/system/dasd";
+import type * as ZFCP from "~/model/system/zfcp";
 
 type System = {
   hardware?: Hardware.System;
@@ -37,8 +38,9 @@ type System = {
   products?: Product[];
   software?: Software.System;
   storage?: Storage.System;
-  dasd?: DASD.System;
   iscsi?: ISCSI.System;
+  dasd?: DASD.System;
+  zfcp?: ZFCP.System;
 };
 
 type Product = {
@@ -96,4 +98,5 @@ export type {
   Storage,
   ISCSI,
   DASD,
+  ZFCP,
 };
