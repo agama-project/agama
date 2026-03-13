@@ -24,7 +24,6 @@ import React from "react";
 import { FormSelect, FormSelectOption, FormSelectProps } from "@patternfly/react-core";
 import { WifiNetwork, WifiNetworkStatus } from "~/types/network";
 import { useNetworkChanges, useWifiNetworks } from "~/hooks/model/system/network";
-import { _ } from "~/i18n";
 
 type WifiNetworksSelectorProps = Omit<FormSelectProps, "children" | "ref">;
 

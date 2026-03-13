@@ -190,7 +190,7 @@ function WifiNetworksList({ showIp = true, ...props }: WifiNetworksListProps) {
 
   return (
     <DataList
-      onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiNetwork, { ssid }))}
+      onSelectDataListItem={(_, ssid) => navigate(generatePath(PATHS.wifiConnection, { ssid }))}
       {...props}
     >
       {networks.map((n) => (
