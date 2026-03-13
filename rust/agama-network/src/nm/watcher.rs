@@ -236,7 +236,10 @@ impl ActionDispatcher<'_> {
     async fn read_connections(&mut self) -> Result<(), NmError> {
         let settings_proxy = SettingsProxy::new(&self.connection).await?;
         for path in settings_proxy.list_connections().await? {
-            self.proxies.find_or_add_connection(&path).await?;
+            match self.proxies.find_or_add_connection(&path).await {
+                Ok((uuid, _)) => tracing::info!("Adding connection {}", &uuid),
+                Err(e) => tracing::info!("Cannot add connection {} because {:?}", &path, &e),
+            }
         }
         Ok(())
     }

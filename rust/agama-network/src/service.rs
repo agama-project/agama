@@ -25,7 +25,6 @@ use crate::{
     types::{AccessPoint, Config, Device, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
-use uuid::Uuid;
 use agama_utils::{
     actor::Handler,
     api::{event, Event, Scope},
@@ -413,7 +412,15 @@ impl Service {
             }
             Action::ChangeConnectionState(uuid, state) => {
                 if let Some(conn) = self.state.get_connection_by_uuid_mut(uuid) {
-                    conn.state = state;
+                    if conn.state != state {
+                        tracing::info!(
+                            "Changed connection {} state: ({} -> {})",
+                            conn.id,
+                            conn.state,
+                            state
+                        );
+                        conn.state = state;
+                    }
                     return Ok(Some(NetworkChange::ConnectionStateChanged { uuid, state }));
                 }
             }
