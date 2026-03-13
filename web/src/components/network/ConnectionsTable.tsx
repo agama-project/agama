@@ -58,7 +58,6 @@ type ConnectionsFilters = {
   device?: string;
   type?: "all" | "wifi" | "ethernet";
   status?: "all" | "up" | "down";
-  bind?: "all" | "interface" | "mac";
 };
 
 /** Internal state shape for the connections table component. */
@@ -76,7 +75,6 @@ const initialState: TableState = {
     device: "",
     type: "all",
     status: "all",
-    bind: "all",
   },
 };
 
@@ -103,34 +101,40 @@ const filterConnections = (
   connections: Connection[],
   filters: ConnectionsFilters,
 ): Connection[] => {
-  const { name, device, type, status, bind } = filters;
+  const { name, device, type, status } = filters;
 
   return connections.filter((c) => {
     if (!isEmpty(name) && !c.id.toLowerCase().includes(name.toLowerCase())) {
       return false;
     }
+
     if (
       !isEmpty(device) &&
       !(c.iface || c.macAddress || "").toLowerCase().includes(device.toLowerCase())
     ) {
       return false;
     }
+
     if (type && type !== "all") {
       const isWifi = !!c.wireless;
       if (type === "wifi" && !isWifi) return false;
       if (type === "ethernet" && isWifi) return false;
     }
+
     if (status && status !== "all") {
       const isUp = c.status === ConnectionStatus.UP;
       if (status === "up" && !isUp) return false;
       if (status === "down" && isUp) return false;
     }
-    if (bind && bind !== "all") {
-      if (bind === "interface" && isEmpty(c.iface)) return false;
-      if (bind === "mac" && isEmpty(c.macAddress)) return false;
-    }
+
     return true;
   });
+};
+
+const boundBy = (connection: Connection) => {
+  if (!isEmpty(connection.iface)) return _("(bound by name)");
+  if (!isEmpty(connection.macAddress)) return _("(bound by MAC)");
+  return null;
 };
 
 const createColumns = (devices: Device[]) => [
@@ -146,26 +150,29 @@ const createColumns = (devices: Device[]) => [
   },
   {
     name: _("Status"),
-    value: (c: Connection) => (c.status === ConnectionStatus.UP ? _("Up") : _("Down")),
+    value: (c: Connection) =>
+      c.status === ConnectionStatus.UP ? _("Connected") : _("Disconnected"),
     sortingKey: (c: Connection) => c.status,
-  },
-  {
-    name: _("Bind"),
-    value: (c: Connection) => {
-      if (!isEmpty(c.iface)) {
-        return _("by interface");
-      }
-      if (!isEmpty(c.macAddress)) {
-        return _("by MAC");
-      }
-      return "";
-    },
   },
   {
     name: _("Device"),
     value: (c: Connection) => {
       const usingDevices = devices.filter((d) => d.connection === c.id);
-      return usingDevices.map((d) => d.name).join(", ") || "-";
+
+      if (isEmpty(usingDevices)) return "-";
+
+      if (usingDevices.length === 1) {
+        return (
+          <>
+            {usingDevices[0].name}{" "}
+            <Content component="small">
+              <Text textStyle="textColorSubtle">{boundBy(c)}</Text>
+            </Content>
+          </>
+        );
+      }
+
+      return usingDevices.map((d) => d.name).join(", ");
     },
     sortingKey: (c: Connection) => {
       const usingDevices = devices.filter((d) => d.connection === c.id);
@@ -288,18 +295,6 @@ export default function ConnectionsTable() {
                 onChange={(_, v) => onFilterChange("status", v)}
               />
             </ToolbarItem>
-            <ToolbarItem>
-              <SimpleSelector
-                label={_("Bind")}
-                value={state.filters.bind}
-                options={{
-                  all: _("All"),
-                  interface: _("by interface"),
-                  mac: _("by MAC"),
-                }}
-                onChange={(_, v) => onFilterChange("bind", v)}
-              />
-            </ToolbarItem>
           </ToolbarGroup>
           <ToolbarGroup align={{ default: "alignEnd" }}>
             <ToolbarItem>
@@ -350,12 +345,12 @@ export default function ConnectionsTable() {
             },
             {
               id: "connect",
-              title: _("Set up"),
+              title: _("Connect"),
               onClick: () => upConnection(c),
             },
             {
               id: "disconnect",
-              title: _("Set down"),
+              title: _("Disconnect"),
               onClick: () => downConnection(c),
             },
             {
