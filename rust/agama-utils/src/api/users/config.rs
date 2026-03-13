@@ -195,7 +195,7 @@ impl RootUserConfig {
 
 #[cfg(test)]
 mod test {
-    use super::{Config, FirstUserConfig, RootUserConfig, UserPassword};
+    use super::{Config, FirstUserConfig, RootUserConfig, UserPassword, StringOrList};
 
     #[test]
     fn test_parse_user_password() {
@@ -267,7 +267,7 @@ mod test {
         assert!(root_with_empty_password_config.is_empty());
 
         let root_with_ssh_key = RootUserConfig {
-            ssh_public_key: Some("12345678".to_string()),
+            ssh_public_key: Some(StringOrList::Single("12345678".to_string())),
             ..Default::default()
         };
         let root_with_ssh_key_config = Config {
@@ -277,7 +277,7 @@ mod test {
         assert!(!root_with_ssh_key_config.is_empty());
 
         let root_with_ssh_keys = RootUserConfig {
-            ssh_public_keys: Some(vec!["12345678".to_string()]),
+            ssh_public_keys: Some(StringOrList::List(vec!["12345678".to_string()])),
             ..Default::default()
         };
         let root_with_ssh_keys_config = Config {

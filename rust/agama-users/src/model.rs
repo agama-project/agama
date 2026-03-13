@@ -135,7 +135,7 @@ impl Model {
             // with hardcoded default?
             self.update_authorized_keys(
                 &PathBuf::from(format!("/home/{}/.ssh", user_name)),
-                &ssh_keys,
+                ssh_keys,
             )?;
         }
 
