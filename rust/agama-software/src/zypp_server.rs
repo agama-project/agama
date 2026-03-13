@@ -250,6 +250,7 @@ impl ZyppServer {
             }
             SoftwareAction::Finish(tx) => {
                 self.finish(zypp, tx)?;
+                // stop server after finish action to release zypp lock ASAP.
                 return Ok(false);
             }
             SoftwareAction::GetProposal(product_spec, sender) => {
