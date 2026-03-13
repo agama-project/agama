@@ -323,9 +323,11 @@ export default function ConnectionsTable() {
         updateSorting={onSortingChange}
         itemActions={(c: Connection) => {
           const isWifi = !!c.wireless;
+          const isConnected = c.status === ConnectionStatus.UP;
+          const isDisconnected = c.status === ConnectionStatus.DOWN;
           const canConnect = !isWifi || systemState.wirelessEnabled;
 
-          const actions = [
+          return [
             {
               id: "details",
               title: _("Details"),
@@ -336,25 +338,29 @@ export default function ConnectionsTable() {
             },
             {
               id: "edit",
-              title: _("Edit"),
+              title: _("Edit connection"),
               onClick: () => navigate(generatePath(NETWORK.editConnection, { id: c.id })),
             },
+            !isWifi && {
+              id: "editBinding",
+              title: _("Edit binding"),
+              onClick: () => navigate(generatePath(NETWORK.editBindingSettings, { id: c.id })),
+            },
             {
-              id: "separator",
               isSeparator: true,
             },
-            {
-              id: "connect",
-              title: _("Connect"),
-              onClick: () => upConnection(c),
-            },
-            {
+            isDisconnected &&
+              canConnect && {
+                id: "connect",
+                title: _("Connect"),
+                onClick: () => upConnection(c),
+              },
+            isConnected && {
               id: "disconnect",
               title: _("Disconnect"),
               onClick: () => downConnection(c),
             },
             {
-              id: "separator2",
               isSeparator: true,
             },
             {
@@ -363,19 +369,7 @@ export default function ConnectionsTable() {
               isDanger: true,
               onClick: () => deleteConnection(c),
             },
-          ];
-
-          const keptActions = {
-            connect: c.status === ConnectionStatus.DOWN && canConnect,
-            disconnect: c.status === ConnectionStatus.UP,
-            separator: true,
-            separator2: true,
-            details: true,
-            edit: true,
-            delete: true,
-          };
-
-          return actions.filter((a) => keptActions[a.id]);
+          ].filter(Boolean);
         }}
         itemActionsLabel={(c: Connection) => `Actions for ${c.id}`}
         emptyState={
