@@ -128,11 +128,17 @@ impl Model {
             )));
         }
 
-        if let Some(ssh_keys) = &user.ssh_public_keys {
-            // do some magic about user's home dir path or stay
-            // with hardcoded default?
-            self.activate_ssh(&PathBuf::from(format!("/home/{}/.ssh", user_name)), &ssh_keys)?;
-        }
+        let ssh_keys = user
+            .ssh_public_key
+            .as_ref()
+            .map(|k| k.to_vec())
+            .unwrap_or_else(|| vec![]);
+        // do some magic about user's home dir path or stay
+        // with hardcoded default?
+        self.activate_ssh(
+            &PathBuf::from(format!("/home/{}/.ssh", user_name)),
+            &ssh_keys,
+        )?;
 
         let _ = self.set_user_group(user_name);
         self.set_user_password(user_name, user_password)?;
@@ -151,11 +157,11 @@ impl Model {
         }
 
         // store sshPublicKeys for root if any
-        let ssh_keys = if let Some(ssh_keys) = &root.ssh_public_key {
-            ssh_keys.to_vec()
-        } else {
-            vec![]
-        };
+        let ssh_keys = root
+            .ssh_public_key
+            .as_ref()
+            .map(|k| k.to_vec())
+            .unwrap_or_else(|| vec![]);
 
         self.activate_ssh(&PathBuf::from("root/.ssh/authorized_keys"), &ssh_keys)?;
 

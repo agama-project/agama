@@ -708,6 +708,13 @@
           "title": "Flag for hashed password (true) or plain text password (false or not defined)",
           "type": "boolean"
         },
+        "sshPublicKey": {
+          "title": "List of SSH public keys",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "sshPublicKeys": {
           "title": "List of SSH public keys",
           "type": "array",
