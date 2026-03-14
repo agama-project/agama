@@ -295,7 +295,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_keys: None,
+            ssh_public_key: None,
         };
         assert!(valid_user.is_valid());
 
@@ -306,7 +306,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_keys: None,
+            ssh_public_key: None,
         };
         assert!(!empty_user_name.is_valid());
 
@@ -317,7 +317,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_keys: None,
+            ssh_public_key: None,
         };
         assert!(!empty_full_name.is_valid());
 
@@ -328,13 +328,13 @@ mod test {
                 password: "".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_keys: None,
+            ssh_public_key: None,
         };
         assert!(!empty_password.is_valid());
 
         let with_ssh_keys = FirstUserConfig {
             user_name: Some("firstuser".to_string()),
-            ssh_public_keys: Some(vec!["12345678".to_string()]),
+            ssh_public_key: Some(vec!["12345678".to_string()]),
             ..Default::default()
         };
         let with_ssh_keys_config = Config {
