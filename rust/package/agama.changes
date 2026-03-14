@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Sat Mar 14 20:15:07 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-15434
+  - support for multiple SSH keys for root even first user in
+    agama profile
+  - both sshPublicKey and sshPublicKeys aliases are available and
+    handled in the same way
+
+-------------------------------------------------------------------
 Fri Mar 13 15:51:57 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Temporary adjustment in the system schema (related to the
