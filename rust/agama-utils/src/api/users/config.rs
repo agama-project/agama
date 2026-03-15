@@ -83,6 +83,11 @@ pub struct FirstUserConfig {
     /// First user's username
     #[merge(strategy = merge::option::overwrite_none)]
     pub user_name: Option<String>,
+    #[merge(strategy = merge::option::overwrite_none)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(alias = "ssh_public_keys")]
+    #[schema(inline)]
+    pub ssh_public_key: Option<StringOrList>,
 }
 
 impl FirstUserConfig {
@@ -125,6 +130,30 @@ fn overwrite_if_not_empty(old: &mut String, new: String) {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, utoipa::ToSchema)]
+#[schema(as = StringOrList)]
+#[serde(untagged)]
+pub enum StringOrList {
+    Single(String),
+    List(Vec<String>),
+}
+
+impl StringOrList {
+    pub fn to_vec(&self) -> Vec<String> {
+        match self {
+            StringOrList::Single(s) => vec![s.clone()],
+            StringOrList::List(v) => v.clone(),
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        match self {
+            StringOrList::Single(s) => s.is_empty(),
+            StringOrList::List(v) => v.is_empty(),
+        }
+    }
+}
+
 /// Root user settings
 ///
 /// Holds the settings for the root user.
@@ -139,7 +168,9 @@ pub struct RootUserConfig {
     /// Root SSH public key
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ssh_public_key: Option<String>,
+    #[serde(alias = "ssh_public_keys")]
+    #[schema(inline)]
+    pub ssh_public_key: Option<StringOrList>,
 }
 
 impl RootUserConfig {
@@ -152,7 +183,7 @@ impl RootUserConfig {
             return false;
         }
 
-        if self.ssh_public_key.as_ref().is_some_and(|p| !p.is_empty()) {
+        if self.ssh_public_key.as_ref().is_some_and(|k| !k.is_empty()) {
             return false;
         }
 
@@ -162,7 +193,7 @@ impl RootUserConfig {
 
 #[cfg(test)]
 mod test {
-    use super::{Config, FirstUserConfig, RootUserConfig, UserPassword};
+    use super::{Config, FirstUserConfig, RootUserConfig, StringOrList, UserPassword};
 
     #[test]
     fn test_parse_user_password() {
@@ -234,7 +265,7 @@ mod test {
         assert!(root_with_empty_password_config.is_empty());
 
         let root_with_ssh_key = RootUserConfig {
-            ssh_public_key: Some("12345678".to_string()),
+            ssh_public_key: Some(StringOrList::Single("12345678".to_string())),
             ..Default::default()
         };
         let root_with_ssh_key_config = Config {
@@ -242,6 +273,16 @@ mod test {
             ..Default::default()
         };
         assert!(!root_with_ssh_key_config.is_empty());
+
+        let root_with_ssh_keys = RootUserConfig {
+            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
+            ..Default::default()
+        };
+        let root_with_ssh_keys_config = Config {
+            root: Some(root_with_ssh_keys),
+            ..Default::default()
+        };
+        assert!(!root_with_ssh_keys_config.is_empty());
     }
 
     #[test]
@@ -255,6 +296,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
+            ssh_public_key: None,
         };
         assert!(valid_user.is_valid());
 
@@ -265,6 +307,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
+            ssh_public_key: None,
         };
         assert!(!empty_user_name.is_valid());
 
@@ -275,6 +318,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
+            ssh_public_key: None,
         };
         assert!(!empty_full_name.is_valid());
 
@@ -285,7 +329,19 @@ mod test {
                 password: "".to_string(),
                 hashed_password: false,
             }),
+            ssh_public_key: None,
         };
         assert!(!empty_password.is_valid());
+
+        let with_ssh_keys = FirstUserConfig {
+            user_name: Some("firstuser".to_string()),
+            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
+            ..Default::default()
+        };
+        let with_ssh_keys_config = Config {
+            first_user: Some(with_ssh_keys),
+            ..Default::default()
+        };
+        assert!(!with_ssh_keys_config.is_empty());
     }
 }

@@ -37,16 +37,15 @@ module Agama
         user = config.users.find { |u| !u.system? && !u.root? }
         return {} unless user
 
-        hsh = {
-          "userName" => user.name,
-          "fullName" => user.gecos.first.to_s
-        }
+        hsh = basic_user_info(user)
 
         password = user.password
         if password
           hsh["password"] = password.value.to_s
           hsh["hashedPassword"] = true if password.value.encrypted?
         end
+
+        hsh["sshPublicKeys"] = user.authorized_keys unless user.authorized_keys.empty?
 
         { "user" => hsh }
       end
@@ -62,6 +61,13 @@ module Agama
         reader = Y2Users::Autoinst::Reader.new(profile)
         result = reader.read
         @config = result.config
+      end
+
+      def basic_user_info(user)
+        {
+          "userName" => user.name,
+          "fullName" => user.gecos.first.to_s
+        }
       end
     end
   end

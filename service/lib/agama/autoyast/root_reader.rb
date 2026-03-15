@@ -46,8 +46,7 @@ module Agama
           hsh["hashedPassword"] = true if password.value.encrypted?
         end
 
-        public_key = root_user.authorized_keys.first
-        hsh["sshPublicKey"] = public_key if public_key
+        hsh = hsh.merge(setup_ssh(root_user))
 
         return {} if hsh.empty?
 
@@ -65,6 +64,17 @@ module Agama
         reader = Y2Users::Autoinst::Reader.new(profile)
         result = reader.read
         @config = result.config
+      end
+
+      def setup_ssh(root_user)
+        hsh = {}
+
+        public_key = root_user.authorized_keys.first
+
+        hsh["sshPublicKey"] = public_key if public_key
+        hsh["sshPublicKeys"] = root_user.authorized_keys unless root_user.authorized_keys.empty?
+
+        hsh
       end
     end
   end
