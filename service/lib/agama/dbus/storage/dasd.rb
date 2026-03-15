@@ -37,11 +37,13 @@ module Agama
         private_constant :PATH
 
         # @param manager [Agama::Storage::DASD::Manager]
+        # @param task_runner [Agama::TaskRunner]
         # @param logger [Logger, nil]
-        def initialize(manager, logger: nil)
+        def initialize(manager, task_runner, logger: nil)
           textdomain "agama"
           super(PATH, logger: logger)
           @manager = manager
+          @task_runner = task_runner
           @serialized_system = serialize_system
           @serialized_config = serialize_config
           register_callbacks
@@ -72,6 +74,8 @@ module Agama
         # Applies the given serialized DASD config.
         #
         # @todo Raise error if the config is not valid.
+        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see
+        # {#run_configure_task}.
         #
         # @param serialized_config [String] Serialized DASD config according to the JSON schema.
         def configure(serialized_config)
@@ -83,13 +87,20 @@ module Agama
           # Do not configure if there is nothing to change.
           return if manager.configured?(config_json)
 
-          perform_configuration(config_json)
+          logger.info("Configuring DASD")
+          start_progress(1, _("Configuring DASD"))
+          run_configure_task(config_json)
+        ensure
+          finish_progress
         end
 
       private
 
         # @return [Agama::Storage::DASD::Manager]
         attr_reader :manager
+
+        # @return [Agama::TaskRunner]
+        attr_reader :task_runner
 
         def register_callbacks
           on_progress_change { self.ProgressChanged(serialize_progress) }
@@ -102,25 +113,19 @@ module Agama
           manager.on_format_finish { |process_status| self.FormatFinished(process_status.to_s) }
         end
 
-        # Performs the configuration process in a separate thread.
+        # Runs an async task for configuring the system.
         #
         # The configuration could take long time  (e.g., formatting devices). It is important to not
         # block the service in order to make possible to attend other requests.
         #
-        # @raise if there is an unfinished configuration.
+        # @raise [Agama::TaskRunner::BusyError] If another async task is running, see {TaskRunner}.
         #
         # @param config_json [Hash]
-        def perform_configuration(config_json)
-          raise "Previous configuration is not finished yet" if @configuration_thread&.alive?
-
-          logger.info("Configuring DASD")
-
-          @configuration_thread = Thread.new do
-            start_progress(1, _("Configuring DASD"))
+        def run_configure_task(config_json)
+          task_runner.async_run("Configure DASD") do
             manager.configure(config_json)
             update_serialized_system
             update_serialized_config
-            finish_progress
           end
         end
 

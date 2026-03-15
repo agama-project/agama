@@ -237,7 +237,15 @@ impl<A: Actor> Handler<A> {
         self.sender
             .send(Box::new(message))
             .map_err(|_| Error::Send(A::name()))?;
-        rx.await.map_err(|_| Error::Response(A::name()))?
+        let response = rx.await;
+        if let Ok(Err(error)) = &response {
+            tracing::error!(
+                "Message call to {} reports an error: {:?}",
+                A::name(),
+                error
+            );
+        }
+        response.map_err(|_| Error::Response(A::name()))?
     }
 
     /// Sends a message and does not wait for the answer.
