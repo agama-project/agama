@@ -133,8 +133,7 @@ impl Model {
             .as_ref()
             .map(|k| k.to_vec())
             .unwrap_or_default();
-        // do some magic about user's home dir path or stay
-        // with hardcoded default?
+
         self.activate_ssh(
             &PathBuf::from(format!("/home/{}/.ssh", user_name)),
             &ssh_keys,

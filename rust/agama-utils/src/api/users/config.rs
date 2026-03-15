@@ -86,7 +86,8 @@ pub struct FirstUserConfig {
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(alias = "ssh_public_keys")]
-    pub ssh_public_key: Option<Vec<String>>,
+    #[schema(inline)]
+    pub ssh_public_key: Option<StringOrList>,
 }
 
 impl FirstUserConfig {
@@ -334,7 +335,7 @@ mod test {
 
         let with_ssh_keys = FirstUserConfig {
             user_name: Some("firstuser".to_string()),
-            ssh_public_key: Some(vec!["12345678".to_string()]),
+            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
             ..Default::default()
         };
         let with_ssh_keys_config = Config {
