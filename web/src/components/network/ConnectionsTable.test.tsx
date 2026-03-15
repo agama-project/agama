@@ -67,7 +67,7 @@ describe("ConnectionsTable", () => {
     installerRender(<ConnectionsTable />);
     expect(screen.getByText("Wired connection 0")).toBeInTheDocument();
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
-    expect(screen.getByText("Mac connection")).toBeInTheDocument();
+    expect(screen.getByText("MAC connection")).toBeInTheDocument();
   });
 
   it("renders the Status column", () => {
@@ -105,7 +105,7 @@ describe("ConnectionsTable", () => {
     await user.click(screen.getByRole("option", { name: "Down" }));
     expect(screen.queryByText("Wired connection 0")).not.toBeInTheDocument();
     expect(screen.getByText("Wifi1")).toBeInTheDocument();
-    expect(screen.getByText("Mac connection")).toBeInTheDocument();
+    expect(screen.getByText("MAC connection")).toBeInTheDocument();
   });
 
   it("calls mutateConnection with status UP when 'Connect' is clicked", async () => {

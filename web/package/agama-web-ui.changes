@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Mar 13 16:16:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
-- Change network interface to give users more control and
+- Change network web user interface to offer more control and
   interaction with connections (gh#agama-project/agama#3247).
 
 -------------------------------------------------------------------
