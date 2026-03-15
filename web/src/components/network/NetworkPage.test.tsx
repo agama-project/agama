@@ -25,18 +25,10 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import NetworkPage from "~/components/network/NetworkPage";
 
-jest.mock("~/components/network/WifiNetworksList", () => () => <div>WifiNetworksList Mock</div>);
-
-jest.mock("~/components/network/WiredConnectionsList", () => () => (
-  <div>WiredConnectionsList Mock</div>
-));
-
-jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
-  <div>NoPersistentConnectionsAlert Mock</div>
-));
-
+const mockProgressFn = jest.fn();
 const mockSystem = {
   connections: [],
+  devices: [],
   state: {
     connectivity: true,
     copyNetwork: true,
@@ -45,43 +37,63 @@ const mockSystem = {
   },
 };
 
+jest.mock("~/components/network/ConnectionsTable", () => () => <div>ConnectionsTable Mock</div>);
+
+jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
+  <div>NoPersistentConnectionsAlert Mock</div>
+));
+
+jest.mock("~/hooks/model/progress", () => ({
+  useProgress: () => mockProgressFn(),
+}));
+
 jest.mock("~/hooks/model/system/network", () => ({
   useNetworkChanges: jest.fn(),
   useSystem: () => mockSystem,
 }));
 
+jest.mock("~/hooks/model/config/network", () => ({
+  useConnections: () => [],
+  useConnectionMutation: () => ({ mutateAsync: jest.fn() }),
+}));
+
 describe("NetworkPage", () => {
+  beforeEach(() => {
+    mockProgressFn.mockReturnValue(undefined);
+  });
+
   it("mounts alert for all connections status", () => {
     installerRender(<NetworkPage />);
     expect(screen.queryByText("NoPersistentConnectionsAlert Mock")).toBeInTheDocument();
   });
 
-  it("renders a section for wired connections", () => {
+  it("renders a section for connections", () => {
     installerRender(<NetworkPage />);
-    expect(screen.queryByText("WiredConnectionsList Mock")).toBeInTheDocument();
+    expect(screen.queryByText("ConnectionsTable Mock")).toBeInTheDocument();
   });
 
-  describe("when Wi-Fi support is enabled", () => {
-    beforeEach(() => {
-      mockSystem.state.wirelessEnabled = true;
+  it("shows the progress backdrop when there is an active progress", () => {
+    mockProgressFn.mockReturnValue({
+      scope: "network",
+      step: "Performing some network task",
+      index: 1,
+      size: 1,
     });
 
-    it("renders the list of Wi-Fi networks", () => {
-      installerRender(<NetworkPage />);
-      expect(screen.queryByText("WifiNetworksList Mock")).toBeInTheDocument();
-    });
+    installerRender(<NetworkPage />);
+    expect(screen.queryByText("Performing some network task")).toBeInTheDocument();
   });
 
-  describe("when Wi-Fi support is disabled", () => {
-    beforeEach(() => {
-      mockSystem.state.wirelessEnabled = false;
-    });
+  it("does not render the 'Connect to Wi-Fi network' link when wireless is disabled", () => {
+    installerRender(<NetworkPage />);
+    expect(
+      screen.queryByRole("link", { name: "Connect to Wi-Fi network" }),
+    ).not.toBeInTheDocument();
+  });
 
-    it("does not render the list of Wi-Fi networks", () => {
-      installerRender(<NetworkPage />);
-      expect(
-        screen.queryByText(/The system does not support Wi-Fi connections/),
-      ).toBeInTheDocument();
-    });
+  it("renders the 'Connect to Wi-Fi network' link when wireless is enabled", () => {
+    mockSystem.state.wirelessEnabled = true;
+    installerRender(<NetworkPage />);
+    expect(screen.getByRole("link", { name: "Connect to Wi-Fi network" })).toBeInTheDocument();
   });
 });

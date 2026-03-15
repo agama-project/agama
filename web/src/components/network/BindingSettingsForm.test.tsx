@@ -40,6 +40,7 @@ const mockDevice: Device = {
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.100"],
+  dnsSearchList: [],
   gateway4: "192.168.69.4",
   gateway6: "192.168.69.6",
   method4: ConnectionMethod.AUTO,
@@ -58,6 +59,7 @@ const mockMutation = jest.fn(() => Promise.resolve());
 jest.mock("~/hooks/model/system/network", () => ({
   ...jest.requireActual("~/hooks/model/system/network"),
   useDevices: () => [mockDevice],
+  useSystem: () => ({ state: { wirelessEnabled: true } }),
 }));
 
 jest.mock("~/hooks/model/proposal/network", () => ({

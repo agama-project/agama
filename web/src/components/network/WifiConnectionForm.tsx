@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,24 +20,27 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer } from "react";
+import { isEmpty } from "radashi";
 import {
   ActionGroup,
   Alert,
   Content,
+  EmptyState,
   Form,
   FormGroup,
   FormSelect,
   FormSelectOption,
-  Spinner,
 } from "@patternfly/react-core";
+import Icon from "~/components/layout/Icon";
 import { Page, PasswordInput } from "~/components/core";
-import { Connection, ConnectionState, WifiNetwork, Wireless } from "~/types/network";
-import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
-import { N_, _ } from "~/i18n";
-import { useConnections } from "~/hooks/model/system/network";
+import { Connection, WifiNetwork, Wireless } from "~/types/network";
+import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
+import WifiNetworksSelector from "./WifiNetworksSelector";
+import { useNavigate } from "react-router";
+import { PATHS } from "~/routes/network";
+import { N_, _ } from "~/i18n";
 
 const securityOptions = [
   // TRANSLATORS: WiFi authentication mode
@@ -49,7 +52,7 @@ const securityOptions = [
 const securityFrom = (supported: string[]) => {
   if (supported.includes("WPA2")) return "wpa-psk";
   if (supported.includes("WPA1")) return "wpa-psk";
-  return "";
+  return "none";
 };
 
 const PublicNetworkAlert = () => {
@@ -62,132 +65,144 @@ const PublicNetworkAlert = () => {
   );
 };
 
-const ConnectingAlert = () => {
-  return (
-    <Alert
-      isPlain
-      customIcon={<Spinner size="md" aria-hidden />}
-      title={_("Setting up connection")}
-    >
-      <Content component="p">{_("It may take some time.")}</Content>
-      <Content component="p">
-        {_("Details will appear after the connection is successfully established.")}
-      </Content>
-    </Alert>
-  );
+type FormState = {
+  ssid: string;
+  security: string;
+  password: string;
 };
 
-const ConnectionError = ({ ssid, isPublicNetwork }) => {
-  // TRANSLATORS: %s will be replaced by network ssid.
-  const title = sprintf(_("Could not connect to %s"), ssid);
-  return (
-    <Alert variant="warning" isInline title={title}>
-      {!isPublicNetwork && (
-        <Content component="p">{_("Check the authentication parameters.")}</Content>
-      )}
-    </Alert>
-  );
+type FormAction =
+  | { type: "INITIALIZE"; networks: WifiNetwork[] }
+  | { type: "SET_SSID"; ssid: string; networks: WifiNetwork[] }
+  | { type: "SET_SECURITY"; security: string }
+  | { type: "SET_PASSWORD"; password: string };
+
+const formReducer = (state: FormState, action: FormAction): FormState => {
+  switch (action.type) {
+    case "INITIALIZE": {
+      const network = action.networks[0];
+      return network
+        ? { ssid: network.ssid, security: securityFrom(network.security), password: "" }
+        : state;
+    }
+    case "SET_SSID": {
+      const network = action.networks.find((n) => n.ssid === action.ssid);
+      return {
+        ssid: action.ssid,
+        security: network ? securityFrom(network.security) : "",
+        password: "",
+      };
+    }
+    case "SET_SECURITY":
+      return { ...state, security: action.security };
+    case "SET_PASSWORD":
+      return { ...state, password: action.password };
+  }
 };
 
-// FIXME: improve error handling. The errors props should have a key/value error
-//  and the component should show all of them, if any
-export default function WifiConnectionForm({ network }: { network: WifiNetwork }) {
-  const connections = useConnections();
-  const connection = connections.find((c) => c.id === network.ssid);
-  const settings = network.settings?.wireless || new Wireless();
-  const [error, setError] = useState(false);
-  const [security, setSecurity] = useState<string>(
-    settings?.security || securityFrom(network?.security || []),
-  );
-  const [password, setPassword] = useState<string>(settings.password || "");
-  const [isActivating, setIsActivating] = useState<boolean>(false);
-  const [isConnecting, setIsConnecting] = useState<boolean>(
-    connection?.state === ConnectionState.activating,
-  );
+function WifiConnectionFormContent() {
+  const navigate = useNavigate();
+  const networks = useWifiNetworks();
+  const [form, dispatch] = useReducer(formReducer, { ssid: "", security: "", password: "" });
   const { mutateAsync: updateConnection } = useConnectionMutation();
 
   useEffect(() => {
-    if (!isActivating) return;
-
-    if (connection.state === ConnectionState.deactivated) {
-      setError(true);
-      setIsConnecting(false);
-      setIsActivating(false);
+    if (!isEmpty(networks) && !form.ssid) {
+      dispatch({ type: "INITIALIZE", networks });
     }
-  }, [isActivating, connection?.state]);
+  }, [networks, form.ssid]);
 
-  useEffect(() => {
-    if (isConnecting && connection?.state === ConnectionState.activating) {
-      setIsActivating(true);
-    }
-  }, [isConnecting, connection]);
+  const network = networks.find((n) => n.ssid === form.ssid);
+  const isPublicNetwork = isEmpty(network?.security);
 
   const accept = async (e) => {
     e.preventDefault();
-    // FIXME: do not mutate the original object!
-    const nextConnection = network.settings || new Connection(network.ssid);
-    nextConnection.wireless = new Wireless({
-      ssid: network.ssid,
-      security: security || "none",
-      password,
-      hidden: false,
+    const nextConnection = new Connection(form.ssid, {
+      wireless: new Wireless({
+        ssid: form.ssid,
+        security: form.security || "none",
+        password: form.password,
+        hidden: false,
+      }),
     });
-    updateConnection(nextConnection).catch(() => setError(true));
-    setError(false);
-    setIsConnecting(true);
+    updateConnection(nextConnection);
+    navigate(PATHS.root);
   };
 
-  const isPublicNetwork = isEmpty(network.security);
-
-  if (isConnecting) return <ConnectingAlert />;
+  if (networks.length === 0)
+    return (
+      <EmptyState
+        titleText={_("No Wi-Fi networks were found")}
+        icon={() => <Icon name="error" />}
+      />
+    );
 
   return (
-    <>
-      {isPublicNetwork && <PublicNetworkAlert />}
-      {/** TRANSLATORS: accessible name for the WiFi connection form */}
-      <Form id="wifiConnectionForm" onSubmit={accept} aria-label={_("Wi-Fi connection form")}>
-        {error && <ConnectionError ssid={network.ssid} isPublicNetwork={isPublicNetwork} />}
+    <Form id="wifiConnectionForm" onSubmit={accept} aria-label={_("Wi-Fi connection form")}>
+      <FormGroup fieldId="ssid" label={_("Network")}>
+        <WifiNetworksSelector
+          id="ssid"
+          value={form.ssid}
+          onChange={(_, v) => dispatch({ type: "SET_SSID", ssid: v, networks })}
+        />
+      </FormGroup>
 
-        {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
-        {!isEmpty(network.security) && (
-          <FormGroup fieldId="security" label={_("Security")}>
-            <FormSelect
-              id="security"
-              aria-label={_("Security")}
-              value={security}
-              onChange={(_, v) => setSecurity(v)}
-            >
-              {securityOptions.map((security) => (
-                <FormSelectOption
-                  key={security.value}
-                  value={security.value}
-                  /* eslint-disable agama-i18n/string-literals */
-                  label={_(security.label)}
-                />
-              ))}
-            </FormSelect>
-          </FormGroup>
-        )}
-        {security === "wpa-psk" && (
-          // TRANSLATORS: WiFi password
-          <FormGroup fieldId="password" label={_("WPA Password")}>
-            <PasswordInput
-              id="password"
-              name="password"
-              aria-label={_("Password")}
-              value={password}
-              onChange={(_, v) => setPassword(v)}
-            />
-          </FormGroup>
-        )}
-        <ActionGroup>
-          <Page.Submit form="wifiConnectionForm">
-            {/* TRANSLATORS: button label, connect to a Wi-Fi network */}
-            {_("Connect")}
-          </Page.Submit>
-          <Page.Back>{_("Cancel")}</Page.Back>
-        </ActionGroup>
-      </Form>
-    </>
+      {isPublicNetwork && <PublicNetworkAlert />}
+      {/* TRANSLATORS: Wifi security configuration (password protected or not) */}
+      {!isEmpty(network?.security) && (
+        <FormGroup fieldId="security" label={_("Security")}>
+          <FormSelect
+            id="security"
+            aria-label={_("Security")}
+            value={form.security}
+            onChange={(_, v) => dispatch({ type: "SET_SECURITY", security: v })}
+          >
+            {securityOptions.map((security) => (
+              <FormSelectOption
+                key={security.value}
+                value={security.value}
+                /* eslint-disable agama-i18n/string-literals */
+                label={_(security.label)}
+              />
+            ))}
+          </FormSelect>
+        </FormGroup>
+      )}
+      {form.security === "wpa-psk" && (
+        // TRANSLATORS: WiFi password
+        <FormGroup fieldId="password" label={_("WPA Password")}>
+          <PasswordInput
+            id="password"
+            name="password"
+            aria-label={_("Password")}
+            value={form.password}
+            onChange={(_, v) => dispatch({ type: "SET_PASSWORD", password: v })}
+          />
+        </FormGroup>
+      )}
+      <ActionGroup>
+        <Page.Submit form="wifiConnectionForm">
+          {/* TRANSLATORS: button label, connect to a Wi-Fi network */}
+          {_("Connect")}
+        </Page.Submit>
+        <Page.Back>{_("Cancel")}</Page.Back>
+      </ActionGroup>
+    </Form>
+  );
+}
+
+export default function wifiConnectionForm() {
+  return (
+    <Page
+      breadcrumbs={[
+        { label: _("Network"), path: PATHS.root },
+        { label: _("New Wi-Fi connection") },
+      ]}
+      progress={{ scope: "network", ensureRefetched: "system" }}
+    >
+      <Page.Content>
+        <WifiConnectionFormContent />
+      </Page.Content>
+    </Page>
   );
 }

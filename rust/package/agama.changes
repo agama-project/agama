@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Fri Mar 13 16:17:33 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Extend the network service to monitor connections, access points,
+  and general state changes, ensuring awareness of external 
+  modifications to the network.
+- Notify about System or Proposal changes when applying the 
+  configuration and added progress reporting.
+- Notify about System changes when devices change
+  (gh#agama-project/agama#3244, gh#agama-project/agama#3247,
+  gh#agama-project/agama#3276).
+
+-------------------------------------------------------------------
 Tue Mar 10 09:59:45 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Always add hardware/filesystem/locale proposed packages when

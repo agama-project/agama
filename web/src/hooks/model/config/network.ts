@@ -24,7 +24,6 @@ import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-q
 import { Connection, NetworkConfig } from "~/types/network";
 import { Network, Proposal } from "~/model/proposal";
 import { Config } from "~/model/config";
-import { Config as APIConfig } from "~/model/config/network";
 import { patchConfig } from "~/api";
 import { configQuery } from "../config";
 import { proposalQuery } from "../proposal";
@@ -37,12 +36,17 @@ import { proposalQuery } from "../proposal";
 const useConnectionMutation = () => {
   const queryClient = useQueryClient();
   const query = {
-    mutationFn: (newConnection: Connection) => {
-      const config: APIConfig = { connections: [newConnection.toApi()] };
-      const networkConfig: Config = { network: config };
-      return patchConfig(networkConfig);
+    mutationFn: async (newConnection: Connection) => {
+      const currentConfig = (await queryClient.fetchQuery(configQuery)) || {};
+      const networkConfig = NetworkConfig.fromApi(currentConfig.network || {});
+
+      networkConfig.addOrUpdateConnection(newConnection);
+
+      const config: Config = { ...currentConfig, network: networkConfig.toApi() };
+      return patchConfig(config);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["config"] });
       queryClient.invalidateQueries({ queryKey: ["proposal"] });
       queryClient.invalidateQueries({ queryKey: ["system"] });
     },
@@ -59,6 +63,7 @@ const useConfigMutation = () => {
   const query = {
     mutationFn: patchConfig,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["config"] });
       queryClient.invalidateQueries({ queryKey: ["proposal"] });
       queryClient.invalidateQueries({ queryKey: ["system"] });
     },

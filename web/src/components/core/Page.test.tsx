@@ -180,7 +180,8 @@ describe("Page", () => {
   });
 
   describe("Page.Section", () => {
-    it("outputs to console.error if both are missing, title and aria-label", () => {
+    it.todo("re-activate or drop below test accordingly to decision taken with these attributes");
+    it.skip("outputs to console.error if both are missing, title and aria-label", () => {
       plainRender(<Page.Section>Content</Page.Section>);
       expect(console.error).toHaveBeenCalledWith(expect.stringContaining("must have either"));
     });

@@ -21,52 +21,56 @@
  */
 
 import React from "react";
-import { Grid, GridItem } from "@patternfly/react-core";
-import { EmptyState, Page } from "~/components/core";
-import WifiNetworksList from "./WifiNetworksList";
-import WiredConnectionsList from "./WiredConnectionsList";
-import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
-import { _ } from "~/i18n";
+import { Flex, Stack } from "@patternfly/react-core";
+import { Link, Page } from "~/components/core";
+import Text from "~/components/core/Text";
+import Icon from "~/components/layout/Icon";
+import NoPersistentConnectionsAlert from "~/components/network/NoPersistentConnectionsAlert";
+import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
-
-const NoWifiAvailable = () => (
-  <Page.Section>
-    <EmptyState title={_("Wi-Fi not supported")} icon="error">
-      {_(
-        "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.",
-      )}
-    </EmptyState>
-  </Page.Section>
-);
+import { NETWORK } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 /**
  * Page component holding Network settings
  */
 export default function NetworkPage() {
   useNetworkChanges();
-  const { state: networkState } = useSystem();
+  const { state } = useSystem();
 
   return (
-    <Page breadcrumbs={[{ label: _("Network") }]}>
+    <Page
+      breadcrumbs={[{ label: _("Network") }]}
+      progress={{ scope: "network", ensureRefetched: "system" }}
+    >
       <Page.Content>
         <NoPersistentConnectionsAlert />
-
-        <Grid hasGutter>
-          <GridItem sm={12} xl={6}>
-            <Page.Section title={_("Wired connections")}>
-              <WiredConnectionsList aria-label={_("Wired connections")} />
-            </Page.Section>
-          </GridItem>
-          <GridItem sm={12} xl={6}>
-            {networkState.wirelessEnabled ? (
-              <Page.Section title={_("Wi-Fi networks")}>
-                <WifiNetworksList aria-label={_("Wi-Fi networks")} />
-              </Page.Section>
-            ) : (
-              <NoWifiAvailable />
-            )}
-          </GridItem>
-        </Grid>
+        <Stack hasGutter>
+          <Text textStyle="textColorSubtle">
+            {_("Manage available connections, connect to Wi-Fi, or add a new connection.")}
+          </Text>
+          <Page.Section
+            pfCardProps={{ isCompact: true, component: "div", isFullHeight: false }}
+            actions={
+              <>
+                <Link to={NETWORK.newConnection} variant="plain">
+                  <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+                    <Icon name="add_circle" /> {_("Add connection")}
+                  </Flex>
+                </Link>
+                {state.wirelessEnabled && (
+                  <Link to={NETWORK.newWiFiConnection} variant="plain">
+                    <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
+                      <Icon name="wifi" /> {_("Connect to Wi-Fi network")}
+                    </Flex>
+                  </Link>
+                )}
+              </>
+            }
+          >
+            <ConnectionsTable />
+          </Page.Section>
+        </Stack>
       </Page.Content>
     </Page>
   );

@@ -33,7 +33,10 @@ use zbus::{
     Message, MessageStream,
 };
 
-use super::common::{build_added_and_removed_stream, build_properties_changed_stream, NmChange};
+use super::common::{
+    build_added_and_removed_stream, build_properties_changed_stream, build_wireless_signals_stream,
+    NmChange,
+};
 use crate::nm::error::NmError;
 
 /// Stream of device-related events.
@@ -63,6 +66,10 @@ impl DeviceChangedStream {
         inner.insert(
             "properties",
             build_properties_changed_stream(&connection).await?,
+        );
+        inner.insert(
+            "wireless",
+            build_wireless_signals_stream(&connection).await?,
         );
         Ok(Self { connection, inner })
     }
@@ -96,7 +103,13 @@ impl DeviceChangedStream {
     }
 
     fn handle_changed(message: PropertiesChanged) -> Option<NmChange> {
-        const IP_CONFIG_PROPS: &[&str] = &["AddressData", "Gateway", "NameserverData", "RouteData"];
+        const IP_CONFIG_PROPS: &[&str] = &[
+            "AddressData",
+            "Gateway",
+            "NameserverData",
+            "RouteData",
+            "Searches",
+        ];
         const DEVICE_PROPS: &[&str] = &[
             "DeviceType",
             "HwAddress",
@@ -153,6 +166,25 @@ impl DeviceChangedStream {
 
         if let Some(changed) = PropertiesChanged::from_message(message.clone()) {
             return Self::handle_changed(changed);
+        }
+
+        let header = message.header();
+        let interface = header.interface()?;
+        if interface == "org.freedesktop.NetworkManager.Device.Wireless" {
+            let path = OwnedObjectPath::from(header.path()?.to_owned());
+            let member = header.member()?;
+
+            match member.as_str() {
+                "AccessPointAdded" => {
+                    let ap_path: OwnedObjectPath = message.body().deserialize().ok()?;
+                    return Some(NmChange::AccessPointAdded(path, ap_path));
+                }
+                "AccessPointRemoved" => {
+                    let ap_path: OwnedObjectPath = message.body().deserialize().ok()?;
+                    return Some(NmChange::AccessPointRemoved(path, ap_path));
+                }
+                _ => {}
+            }
         }
 
         None

@@ -54,6 +54,10 @@ pub enum Action {
     GetConnections(Responder<Vec<Connection>>),
     /// Gets all scanned access points
     GetAccessPoints(Responder<Vec<AccessPoint>>),
+    /// Adds a new access point.
+    AddAccessPoint(Box<AccessPoint>),
+    /// Removes an access point by its hardware address.
+    RemoveAccessPoint(String),
     /// Adds a new device.
     AddDevice(Box<Device>),
     /// Updates a device by its `name`.
@@ -66,7 +70,7 @@ pub enum Action {
     GetDevices(Responder<Vec<Device>>),
     GetGeneralState(Responder<GeneralState>),
     /// Connection state changed
-    ChangeConnectionState(String, ConnectionState),
+    ChangeConnectionState(Uuid, ConnectionState),
     /// Persists existing connections if none exist and the network copy is not disabled.
     ProposeDefault(Responder<Result<(), NetworkStateError>>),
     // Copies persistent connections to the target system
@@ -77,8 +81,8 @@ pub enum Action {
     UpdateGeneralState(GeneralState),
     /// Forces a wireless networks scan refresh
     RefreshScan(Responder<Result<(), NetworkAdapterError>>),
-    /// Remove the connection with the given ID.
-    RemoveConnection(String),
+    /// Remove the connection with the given UUID.
+    RemoveConnection(Uuid),
     /// Apply the current configuration.
     Apply(Responder<Result<(), NetworkAdapterError>>),
 }

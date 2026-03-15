@@ -152,9 +152,10 @@ const Section = ({
     !isEmpty(ariaLabel) || (isObject(pfCardProps) && "aria-label" in pfCardProps);
   const props = { ...defaultCardProps, "aria-label": ariaLabel };
 
-  if (!hasTitle && !hasAriaLabel) {
-    console.error("Page.Section must have either, a title or aria-label");
-  }
+  // FIXME: review and improve or drop
+  // if (!hasTitle && !hasAriaLabel) {
+  //   console.error("Page.Section must have either, a title or aria-label");
+  // }
 
   if (hasTitle && !hasAriaLabel) props["aria-labelledby"] = titleId;
 

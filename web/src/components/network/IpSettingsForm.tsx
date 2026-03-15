@@ -21,6 +21,7 @@
  */
 
 import React, { useState } from "react";
+import { isEmpty } from "radashi";
 import { generatePath, useNavigate, useParams } from "react-router";
 import {
   ActionGroup,
@@ -39,29 +40,48 @@ import {
 import { Page } from "~/components/core";
 import AddressesDataList from "~/components/network/AddressesDataList";
 import DnsDataList from "~/components/network/DnsDataList";
-import { _ } from "~/i18n";
-import { IPAddress, Connection, ConnectionMethod } from "~/types/network";
+import DnsSearchDataList from "~/components/network/DnsSearchDataList";
+import {
+  IPAddress,
+  Connection,
+  ConnectionMethod,
+  ConnectionStatus,
+  ConnectionOptions,
+} from "~/types/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useConnection } from "~/hooks/model/proposal/network";
 import { NETWORK } from "~/routes/paths";
+import DevicesSelector from "./DevicesSelector";
+import { _ } from "~/i18n";
 
 const usingDHCP = (method: ConnectionMethod) => method === ConnectionMethod.AUTO;
 
 // FIXME: rename to connedtioneditpage or so?
 // FIXME: improve the layout a bit.
 export default function IpSettingsForm() {
-  const { id } = useParams();
+  const { id: initialId } = useParams();
   const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
-  const connection = useConnection(id);
+  const connectionFromStore = useConnection(initialId!);
+  const [connection] = useState(
+    connectionFromStore ||
+      new Connection(initialId!, { status: ConnectionStatus.UP, persistent: true }),
+  );
+  const [id, setId] = useState(connection.id);
   const [addresses, setAddresses] = useState<IPAddress[]>(connection.addresses);
   const [nameservers, setNameservers] = useState(
     connection.nameservers.map((a) => {
       return { address: a };
     }),
   );
+  const [dnsSearchList, setDnsSearchList] = useState(
+    connection.dnsSearchList.map((domain) => {
+      return { domain };
+    }),
+  );
   const [method, setMethod] = useState<ConnectionMethod>(connection.method4);
-  const [gateway, setGateway] = useState<string>(connection.gateway4);
+  const [iface, setIface] = useState<ConnectionOptions["iface"]>(connection.iface);
+  const [gateway, setGateway] = useState<string>(connection.gateway4 || "");
   const [fieldErrors, setFieldErrors] = useState<object>({});
   const [requestError, setRequestError] = useState<string | undefined>();
 
@@ -74,6 +94,9 @@ export default function IpSettingsForm() {
 
   const cleanAddresses = (addresses: IPAddress[]) =>
     addresses.filter((address) => address.address !== "");
+
+  const cleanDnsSearchList = (list: { domain: string }[]) =>
+    list.filter((item) => item.domain !== "");
 
   const cleanError = (field: string) => {
     if (isSetAsInvalid(field)) {
@@ -97,6 +120,10 @@ export default function IpSettingsForm() {
     setMethod(value as ConnectionMethod);
   };
 
+  const onIfaceChange: FormSelectProps["onChange"] = (_, value) => {
+    setIface(isEmpty(value) ? undefined : value);
+  };
+
   const validate = (sanitizedAddresses: IPAddress[]) => {
     setFieldErrors({});
 
@@ -116,16 +143,20 @@ export default function IpSettingsForm() {
 
     const sanitizedAddresses = cleanAddresses(addresses);
     const sanitizedNameservers = cleanAddresses(nameservers);
+    const sanitizedDnsSearchList = cleanDnsSearchList(dnsSearchList);
 
     if (!validate(sanitizedAddresses)) return;
 
     // TODO: deal with DNS servers
-    const updatedConnection = new Connection(connection.id, {
-      ...connection,
+    const { id: _, ...connectionOptions } = connection;
+    const updatedConnection = new Connection(id, {
+      ...connectionOptions,
+      iface,
       addresses: sanitizedAddresses,
       method4: method,
       gateway4: gateway,
       nameservers: sanitizedNameservers.map((s) => s.address),
+      dnsSearchList: sanitizedDnsSearchList.map((s) => s.domain),
     });
     updateConnection(updatedConnection)
       .then(() => navigate(-1))
@@ -148,9 +179,14 @@ export default function IpSettingsForm() {
 
   const breadcrumbs = [
     { label: _("Network"), path: NETWORK.root },
-    { label: connection.id, path: generatePath(NETWORK.wiredConnection, { id: connection.id }) },
-    { label: _("Edit") },
-  ];
+    connectionFromStore && {
+      label: connectionFromStore.id,
+      path: generatePath(NETWORK.wiredConnection, {
+        id: connectionFromStore.id,
+      }),
+    },
+    { label: connectionFromStore ? _("Edit") : "New connection" },
+  ].filter(Boolean);
 
   // TRANSLATORS: manual network configuration mode with a static IP address
   // %s is replaced by the connection name
@@ -164,6 +200,36 @@ export default function IpSettingsForm() {
         )}
 
         <Form id="editConnectionForm" onSubmit={onSubmitForm}>
+          <FormGroup fieldId="name" label={_("Name")} isRequired>
+            <TextInput
+              id="name"
+              name="name"
+              aria-label={_("Name")}
+              value={id}
+              label={_("Name")}
+              onChange={(_, value) => setId(value)}
+              isDisabled={!!connectionFromStore}
+            />
+          </FormGroup>
+          <FormGroup
+            fieldId="iface"
+            label={
+              <>
+                {_("Interface")} <small>{_("(bind by name)")}</small>
+              </>
+            }
+            isStack
+          >
+            <DevicesSelector
+              id="iface"
+              name="iface"
+              value={iface}
+              valueKey="name"
+              includesNone
+              onChange={onIfaceChange}
+            />
+          </FormGroup>
+
           <FormGroup fieldId="method" label={_("Mode")} isStack>
             <FormSelect
               id="method"
@@ -215,6 +281,8 @@ export default function IpSettingsForm() {
           />
 
           <DnsDataList servers={nameservers} updateDnsServers={setNameservers} />
+
+          <DnsSearchDataList searchList={dnsSearchList} updateDnsSearchList={setDnsSearchList} />
 
           <ActionGroup>
             <Page.Submit form="editConnectionForm" />

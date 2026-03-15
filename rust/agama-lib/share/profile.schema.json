@@ -365,12 +365,20 @@
                   "type": "string"
                 }
               },
-              "dnsSearchlist": {
+              "dnsSearchList": {
                 "type": "array",
                 "items": {
                   "description": "DNS search domains",
                   "type": "string"
                 }
+              },
+              "dnsSearchlist": {
+                "type": "array",
+                "items": {
+                  "description": "DNS search domains",
+                  "type": "string"
+                },
+                "deprecated": true
               },
               "ignoreAutoDns": {
                 "description": "Whether DNS options provided via DHCP are used or not",

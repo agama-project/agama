@@ -92,7 +92,7 @@ enum DeviceState {
 enum ConnectionStatus {
   UP = "up",
   DOWN = "down",
-  DELETE = "delete",
+  DELETE = "removed",
 }
 
 // Current state of the connection.
@@ -114,6 +114,8 @@ enum DeviceType {
   WIRELESS = 2,
   DUMMY = 3,
   BOND = 4,
+  VLAN = 5,
+  BRIDGE = 6,
 }
 
 enum NetworkState {
@@ -189,6 +191,7 @@ class Device {
   type: ConnectionType;
   addresses: IPAddress[];
   nameservers: string[];
+  dnsSearchList: string[];
   gateway4: string;
   gateway6: string;
   method4: ConnectionMethod;
@@ -206,6 +209,7 @@ class Device {
     return {
       ...newDevice,
       nameservers: ipConfig?.nameservers || [],
+      dnsSearchList: ipConfig?.dnsSearchList || [],
       addresses: buildAddresses(ipConfig?.addresses),
       routes4: buildRoutes(ipConfig?.routes4),
       routes6: buildRoutes(ipConfig?.routes6),
@@ -220,6 +224,7 @@ class Device {
 type IPConfig = {
   addresses: string[];
   nameservers?: string[];
+  dnsSearchList?: string[];
   gateway4?: string;
   gateway6?: string;
   method4: ConnectionMethod;
@@ -250,6 +255,7 @@ type APIConnection = {
   macAddress?: string;
   addresses?: string[];
   nameservers?: string[];
+  dnsSearchList?: string[];
   gateway4?: string;
   gateway6?: string;
   method4: string;
@@ -289,11 +295,13 @@ type ConnectionOptions = {
   macAddress?: string;
   addresses?: IPAddress[];
   nameservers?: string[];
+  dnsSearchList?: string[];
   gateway4?: string;
   gateway6?: string;
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
 };
@@ -306,6 +314,7 @@ class Connection {
   macAddress?: string;
   addresses: IPAddress[] = [];
   nameservers: string[] = [];
+  dnsSearchList: string[] = [];
   gateway4?: string = "";
   gateway6?: string = "";
   method4: ConnectionMethod = ConnectionMethod.AUTO;
@@ -326,15 +335,18 @@ class Connection {
   static fromApi(connection: APIConnection) {
     const { id, status, interface: iface, ...options } = connection;
     const nameservers = connection.nameservers || [];
+    const dnsSearchList = connection.dnsSearchList || [];
     const addresses = connection.addresses?.map(buildAddress) || [];
     return new Connection(id, {
       ...options,
+      status,
       // FIXME: try a better approach for methods/gateway and/or typecasting
       method4: options.method4 as ConnectionMethod,
       method6: options.method6 as ConnectionMethod,
       iface,
       addresses,
       nameservers,
+      dnsSearchList,
     });
   }
 
@@ -420,18 +432,23 @@ class NetworkConfig {
 
   static fromApi(options: APIConfig) {
     const { connections, state } = options;
-    const conns = connections.map((c) => Connection.fromApi(c));
+    const conns = (connections || []).map((c) => Connection.fromApi(c));
 
     return new NetworkConfig(conns, state);
   }
 
   addOrUpdateConnection(connection: Connection) {
-    const connections = this.connections.map((c) => (c.id === connection.id ? connection : c));
-    this.connections = connections;
+    const index = (this.connections || []).findIndex((c) => c.id === connection.id);
+
+    if (index !== -1) {
+      this.connections![index] = connection;
+    } else {
+      this.connections = [...(this.connections || []), connection];
+    }
   }
 
   toApi(): APIConfig {
-    const connections = this.connections.map((c) => c.toApi());
+    const connections = this.connections?.map((c) => c.toApi()) || [];
 
     return { connections, state: this.state };
   }
@@ -453,14 +470,19 @@ class NetworkProposal {
 
   static fromApi(options: APIProposal) {
     const { connections, state } = options;
-    const conns = connections.map((c) => Connection.fromApi(c));
+    const conns = (connections || []).map((c) => Connection.fromApi(c));
 
     return new NetworkProposal(conns, state);
   }
 
   addOrUpdateConnection(connection: Connection) {
-    const connections = this.connections.map((c) => (c.id === connection.id ? connection : c));
-    this.connections = connections;
+    const index = (this.connections || []).findIndex((c) => c.id === connection.id);
+
+    if (index !== -1) {
+      this.connections[index] = connection;
+    } else {
+      this.connections = [...(this.connections || []), connection];
+    }
   }
 
   toApi(): APIProposal {

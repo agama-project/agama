@@ -54,7 +54,7 @@ impl GeneralStateChangedStream {
     }
 
     fn handle_changed(message: PropertiesChanged) -> Option<NmChange> {
-        const GENERAL_PROPS: &[&str] = &["Connectivity", "WirelessEnabled"];
+        const GENERAL_PROPS: &[&str] = &["Connectivity", "WirelessEnabled", "NetworkingEnabled"];
 
         let args = message.args().ok()?;
         let inner = message.message();

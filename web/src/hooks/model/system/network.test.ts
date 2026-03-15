@@ -28,7 +28,7 @@ import {
   ConnectionType,
   Device,
   DeviceState,
-} from "~/model/network/types";
+} from "~/types/network";
 
 const createConnection = (
   id: string,
@@ -49,6 +49,7 @@ const createDevice = (overrides: Partial<Device> = {}): Device => ({
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.1.100", prefix: 24 }],
   nameservers: [],
+  dnsSearchList: [],
   gateway4: "192.168.1.1",
   gateway6: "",
   method4: ConnectionMethod.AUTO,

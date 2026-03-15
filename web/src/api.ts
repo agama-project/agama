@@ -124,6 +124,7 @@ export {
   startInstallation,
   finishInstallation,
   passwordCheck,
+  postAction,
 };
 
 export type { Response, PasswordCheckResult };

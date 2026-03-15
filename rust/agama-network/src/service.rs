@@ -273,7 +273,7 @@ impl Service {
                     _ = self.output.send(update);
                 }
                 Err(error) => {
-                    eprintln!("Could not process the action: {}", error);
+                    tracing::error!("Could not process the action: {}", error);
                 }
                 _ => {}
             }
@@ -390,14 +390,38 @@ impl Service {
             Action::GetDevices(tx) => {
                 tx.send(self.state.devices.clone()).unwrap();
             }
+            Action::AddAccessPoint(ap) => {
+                self.state.add_access_point(*ap.clone())?;
+                tracing::info!("Access point added: {:?}", &ap);
+                //self.events.send(Event::SystemChanged {
+                //    scope: (Scope::Network),
+                //})?;
+                return Ok(Some(NetworkChange::AccessPointAdded(*ap)));
+            }
+            Action::RemoveAccessPoint(hw_address) => {
+                self.state.remove_access_point(&hw_address)?;
+                tracing::info!("Access point removed: {:?}", &hw_address);
+                //self.events.send(Event::SystemChanged {
+                //    scope: (Scope::Network),
+                //})?;
+                return Ok(Some(NetworkChange::AccessPointRemoved(hw_address)));
+            }
             Action::UpdateConnection(conn, tx) => {
                 let result = self.state.update_connection(*conn);
                 tx.send(result).unwrap();
             }
-            Action::ChangeConnectionState(id, state) => {
-                if let Some(conn) = self.state.get_connection_mut(&id) {
-                    conn.state = state;
-                    return Ok(Some(NetworkChange::ConnectionStateChanged { id, state }));
+            Action::ChangeConnectionState(uuid, state) => {
+                if let Some(conn) = self.state.get_connection_by_uuid_mut(uuid) {
+                    if conn.state != state {
+                        tracing::info!(
+                            "Changed connection {} state: ({} -> {})",
+                            conn.id,
+                            conn.state,
+                            state
+                        );
+                        conn.state = state;
+                    }
+                    return Ok(Some(NetworkChange::ConnectionStateChanged { uuid, state }));
                 }
             }
             Action::UpdateGeneralState(general_state) => {
@@ -411,11 +435,11 @@ impl Service {
                     })?;
                 }
             }
-            Action::RemoveConnection(id) => {
-                if let Some(conn) = self.state.get_connection(id.as_ref()) {
+            Action::RemoveConnection(uuid) => {
+                if let Some(conn) = self.state.get_connection_by_uuid(uuid) {
                     if !conn.is_removed() {
                         tracing::info!("Connection {:?} exists, removing it", conn);
-                        self.state.remove_connection(id.as_str())?;
+                        self.state.remove_connection(uuid)?;
                         self.events.send(Event::ConfigChanged {
                             scope: (Scope::Network),
                         })?;
@@ -426,9 +450,9 @@ impl Service {
                         );
                     }
                 } else {
-                    tracing::info!("Connection {} does not exists, skipping it", id);
+                    tracing::info!("Connection {} does not exists, skipping it", uuid);
                 }
-                return Ok(Some(NetworkChange::ConnectionRemoved(id)));
+                return Ok(Some(NetworkChange::ConnectionRemoved(uuid)));
             }
             Action::Apply(tx) => {
                 let result = self.apply().await;
@@ -459,7 +483,10 @@ impl Service {
             Ok(state) => {
                 if self.state != state {
                     self.state = state;
-                    self.events.send(Event::ConfigChanged {
+                    self.events.send(Event::ProposalChanged {
+                        scope: (Scope::Network),
+                    })?;
+                    self.events.send(Event::SystemChanged {
                         scope: (Scope::Network),
                     })?;
                 }
