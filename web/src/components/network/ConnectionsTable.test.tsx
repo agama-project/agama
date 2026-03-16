@@ -39,7 +39,7 @@ const mockConnections = [
     addresses: [],
     status: ConnectionStatus.DOWN,
   }),
-  new Connection("Mac connection", {
+  new Connection("MAC connection", {
     macAddress: "00:11:22:33:44:55",
     addresses: [],
     status: ConnectionStatus.DOWN,
@@ -49,7 +49,7 @@ const mockConnections = [
 const mockDevices = [
   { name: "eth0", connection: "Wired connection 0", addresses: [] },
   { name: "wlan0", connection: "Wifi1", addresses: [] },
-  { name: "enp2s0", connection: "Mac connection", addresses: [] },
+  { name: "enp2s0", connection: "MAC connection", addresses: [] },
 ];
 
 jest.mock("~/hooks/model/config/network", () => ({
@@ -87,7 +87,7 @@ describe("ConnectionsTable", () => {
 
   it("shows the device name with a binding hint when a connection is bound by MAC address", () => {
     installerRender(<ConnectionsTable />);
-    const row = screen.getByText("Mac connection").closest("tr");
+    const row = screen.getByText("MAC connection").closest("tr");
     within(row).getByText("enp2s0");
     within(row).getByText("(bound by MAC)");
   });
