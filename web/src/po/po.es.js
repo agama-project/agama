@@ -1009,7 +1009,7 @@ export default {
     "Configuración de almacenamiento no válida"
   ],
   "Ip prefix or netmask": [
-    "Prefijo IP o máscara de red"
+    "Prefijo Ip o máscara de red"
   ],
   "Issue date": [
     "Fecha de emisión"
@@ -2337,7 +2337,7 @@ export default {
     "Se conectará a una red pública sin cifrado. Es posible que sus datos no estén seguros."
   ],
   "Your system is rebooting": [
-    "El sistema se está reiniciando"
+    "Su sistema se está reiniciando"
   ],
   "ZFCP": [
     "ZFCP"

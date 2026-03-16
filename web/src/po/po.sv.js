@@ -1293,7 +1293,7 @@ export default {
     "Inga trådbundna anslutningar hittades"
   ],
   "No zFCP controllers found.": [
-    "Inga zFCP-kontroller hittades."
+    "Inga zFCP-styrenheter hittades."
   ],
   "No zFCP disks found.": [
     "Inga zFCP-diskar hittades."
