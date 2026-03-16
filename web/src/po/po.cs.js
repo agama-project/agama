@@ -40,9 +40,9 @@ export default {
     "%s logo"
   ],
   "%s will be created as a logical volume": [
-    "",
-    "",
-    ""
+    "%s bude vytvořen jako logický svazek",
+    "%s budou vytvořeny jako logické svazky",
+    "%s budou vytvořeny jako logické svazky"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s bude obsahovat nakonfigurované skupiny LVM a oddíl potřebný pro spuštění systému"
@@ -80,11 +80,17 @@ export default {
   "Activate": [
     "Aktivace"
   ],
+  "Activate and format DASD devices": [
+    "Aktivovat a formátovat DASD zařízení"
+  ],
   "Activate new disk": [
     "Aktivace nového disku"
   ],
   "Activate zFCP disk": [
     "Aktivovat disk zFCP"
+  ],
+  "Activate zFCP disks": [
+    "Aktivovat disky zFCP"
   ],
   "Activated": [
     "Aktivováno"
@@ -94,6 +100,9 @@ export default {
   ],
   "Add DNS": [
     "Přidat DNS"
+  ],
+  "Add LVM volume group": [
+    "Přidat novou skupinu LVM svazků"
   ],
   "Add an address": [
     "Přidat adresu"
@@ -154,6 +163,9 @@ export default {
   ],
   "Applying changes": [
     "Aplikování změn"
+  ],
+  "As a new partition on %s": [
+    "Jako nový oddíl na %s"
   ],
   "At least one address must be provided for selected mode": [
     "Pro zvolený režim musí být uvedena alespoň jedna adresa"
@@ -230,6 +242,9 @@ export default {
   "Bind to device name": [
     "Navázat na název zařízení"
   ],
+  "Binding": [
+    "Vazba"
+  ],
   "Binding settings for '%s'": [
     "Nastavení navázání pro ‘%s'"
   ],
@@ -294,7 +309,7 @@ export default {
     "ID kanálu"
   ],
   "Check the authentication parameters.": [
-    "Zkontrolujte přihlašovací údaje"
+    "Zkontrolujte přihlašovací údaje."
   ],
   "Check the following before continuing": [
     "Před pokračování zkontrolujte následující"
@@ -316,6 +331,9 @@ export default {
   ],
   "Clear all filters": [
     "Vymazat všechny filtry"
+  ],
+  "Clear selected mount point": [
+    "Vymazat vybraný přípojný bod"
   ],
   "Close": [
     "Zavřít"
@@ -340,6 +358,18 @@ export default {
   ],
   "Configure device %s": [
     "Konfigurovat zařízení %s"
+  ],
+  "Configure device menu": [
+    "Konfigurovat nabídku zařízení"
+  ],
+  "Configure iSCSI": [
+    "Konfigurovat iSCSI"
+  ],
+  "Configure partition at %s": [
+    "Konfigurovat oddíl na %s"
+  ],
+  "Configure zFCP": [
+    "Konfigurovat zFCP"
   ],
   "Configured for installation only": [
     "Konfigurováno pouze pro instalaci"
@@ -380,6 +410,9 @@ export default {
   "Connected devices": [
     "Připojená zařízení"
   ],
+  "Connected devices tabs": [
+    "Karty připojených zařízení"
+  ],
   "Connecting to %s": [
     "Připojování k %s"
   ],
@@ -390,10 +423,10 @@ export default {
     "Spojení je dostupné pro všechna zařízení."
   ],
   "Connection is bound to MAC address %s.": [
-    "Spojení je svázáno s MAC adresou %s"
+    "Spojení je vázáno s MAC adresou %s."
   ],
   "Connection is bound to device %s.": [
-    "Spojení je svázáno se zařízením %s"
+    "Spojení je vázáno se zařízením %s."
   ],
   "Connection not found or lost": [
     "Spojení nenalezeno nebo ztraceno"
@@ -418,6 +451,12 @@ export default {
   ],
   "Could not log in. Please, make sure that the password is correct.": [
     "Nelze se přhlásit. Zkontrolujte správnost hesla."
+  ],
+  "Create LVM volume group on %s": [
+    "Vytvořit skupinu svazků LVM na %s"
+  ],
+  "Create another LVM volume group on %s": [
+    "Vytvořit další skupinu svazků LVM na %s"
   ],
   "Create user": [
     "Vytvořit uživatele"
@@ -449,6 +488,18 @@ export default {
   "Deactivated": [
     "Deaktivováno"
   ],
+  "Default file system for %s": [
+    "Výchozí souborový systém pro %s"
+  ],
+  "Default file system for generic logical volumes": [
+    "Výchozí souborový systém pro obecně připojené svazky"
+  ],
+  "Default file system for generic mount paths": [
+    "Výchozí souborový systém pro obecně připojené cesty"
+  ],
+  "Default file system for generic partitions": [
+    "Výchozí souborový systém pro obecné oddíly"
+  ],
   "Define a new LVM on the disk": [
     "Definovat nové LVM na disku"
   ],
@@ -472,6 +523,9 @@ export default {
   ],
   "Description": [
     "Popis"
+  ],
+  "Destroy current data and format device as": [
+    "Odstranit stávající data a formátovat jako"
   ],
   "Destroy current data and format partition as": [
     "Zahodit současná data a naformátovat oddíl jako"
@@ -506,6 +560,9 @@ export default {
   "Discover": [
     "Objevit"
   ],
+  "Discover and connect to iSCSI targets": [
+    "Vyhledat a připojit se k cílům iSCSI"
+  ],
   "Discover iSCSI Targets": [
     "Najít cílové stanice iSCSI"
   ],
@@ -535,6 +592,9 @@ export default {
   ],
   "Edit %s": [
     "Upravit %s"
+  ],
+  "Edit binding settings": [
+    "Upravit nastavení vazby"
   ],
   "Edit connection %s": [
     "Upravit připojení %s"
@@ -575,11 +635,14 @@ export default {
   "Enter a name": [
     "Zadejte jméno"
   ],
+  "Enter a name for the volume group.": [
+    "Zadejte název pro skupinu svazků."
+  ],
   "ExFAT": [
     ""
   ],
   "Example: %s": [
-    ""
+    "Například: %s"
   ],
   "Excellent signal": [
     "Výborný signál"
@@ -597,14 +660,14 @@ export default {
     ""
   ],
   "Extend the installation beyond the currently selected device": [
-    "",
-    "",
-    ""
+    "Rozšířit instalaci nad rámec aktuálně vybraného zařízení",
+    "Rozšířit instalaci nad rámec aktuálních %d zařízení",
+    "Rozšířit instalaci nad rámec aktuálních %d zařízení"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "",
-    "",
-    ""
+    "Rozšířit instalaci nad rámec aktuálně vybraného disku",
+    "Rozšířit instalaci nad rámec aktuálních %d disků",
+    "Rozšířit instalaci nad rámec aktuálních %d disků"
   ],
   "Extensions": [
     "Rozšíření"
@@ -620,6 +683,9 @@ export default {
   ],
   "File system": [
     "Typ systému souborů"
+  ],
+  "File system label": [
+    "Jmenovka souborového systému"
   ],
   "Filesystems": [
     "Souborové systémy"
@@ -662,6 +728,9 @@ export default {
   ],
   "Format disk %s": [
     "Formátovat disk %s"
+  ],
+  "Format logical volume as": [
+    "Formátovat logický svazek jako"
   ],
   "Format partition as": [
     "Formátovat oddíl jako"
@@ -712,6 +781,9 @@ export default {
   ],
   "Hide details": [
     "Skrýt podrobnosti"
+  ],
+  "Hostname": [
+    "Název hostitele"
   ],
   "Hostname could not be updated": [
     ""
@@ -900,7 +972,7 @@ export default {
     "Nechat instalátor navrhnout vhodnout velikost"
   ],
   "Loading": [
-    "Načítání..."
+    "Načítání"
   ],
   "Loading data...": [
     "Načítání dat ..."
@@ -971,6 +1043,19 @@ export default {
   "More languages might be available for the selected product at [Localization] page": [
     "Více jazyků pro vybraný produkt může být dostupných na stránce [Lokalizace]"
   ],
+  "Moreover, the following partition will be created.": [
+    "Navíc bude vytvořen následující oddíl.",
+    "Navíc budou vytvořeny následující oddíly.",
+    "Navíc budou vytvořeny následující oddíly."
+  ],
+  "Moreover, the following partition will be mounted.": [
+    "Navíc bude připojen následující oddíl.",
+    "Navíc budou připojeny následující oddíly.",
+    "Navíc budou připojeny následující oddíly."
+  ],
+  "Moreover, the following partitions will be created or mounted": [
+    "Navíc budou vytvořeny nebo připojeny následující oddíly"
+  ],
   "Mount Point": [
     "Přípojný bod"
   ],
@@ -982,6 +1067,12 @@ export default {
   ],
   "Mount point": [
     "Přípojný bod"
+  ],
+  "Mount point mode": [
+    "Mód přípojného bodu"
+  ],
+  "Mount point options": [
+    "Možnosti přípojného bodu"
   ],
   "Move mount points": [
     "Přesunout přípojné body"
@@ -1135,6 +1226,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Oddíly pro zavádění budou přiděleny na instalačním disku."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "V případě potřeby budou vytvořeny oddíly pro systém."
   ],
   "Partitions will be used and created for %s": [
     ""
@@ -1414,6 +1508,9 @@ export default {
   "Size limits must be numbers optionally followed by a unit like GiB or GB": [
     "Limity velikosti musí být nějaká čísla, která mohou být následována jednotkou jako GiB nebo GB"
   ],
+  "Size mode": [
+    "Režim velikosti"
+  ],
   "Skip to content": [
     "Přeskočit na obsah"
   ],
@@ -1559,6 +1656,16 @@ export default {
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Poslední krok konfigurace modulu TPM (Trusted Platform Module) pro automatické otevírání šifrovaných zařízení se provede při prvním spuštění nového systému. Aby to fungovalo, musí se počítač spustit přímo novým zavaděčem."
   ],
+  "The following partition will be created.": [
+    "Následující oddíl bude vytvořen.",
+    "Následující oddíly budou vytvořeny.",
+    "Následující oddíly budou vytvořeny."
+  ],
+  "The following partition will be mounted.": [
+    "Následující oddíl bude připojen.",
+    "Následující oddíly budou připojeny.",
+    "Následující oddíly budou připojeny."
+  ],
   "The following partitions will be created or mounted": [
     "Následující oddíly budou vytvořeny nebo připojeny"
   ],
@@ -1664,6 +1771,9 @@ export default {
   "There are not disks available for the installation. You may need to configure some device.": [
     "Pro instalaci nesou dostupné žádné disky. Možná bude potřeba nakonfigurovat nějaká zařízení."
   ],
+  "There are not usable partitions": [
+    "K dispozici nejsou žádné použitelné oddíly"
+  ],
   "There is %d destructive action planned affecting %s": [
     "",
     "",
@@ -1762,8 +1872,26 @@ export default {
   "Upload, paste, or drop an SSH public key": [
     "Nahrání, vložení nebo přetažení veřejného klíče SSH"
   ],
+  "Use": [
+    "Použít"
+  ],
   "Use RAID %s": [
     "Použít RAID %s"
+  ],
+  "Use RAID %s for LVM and additional partitions": [
+    "Použít RAID %s pro LVM a další oddíly"
+  ],
+  "Use RAID %s for LVM, additional partitions and booting": [
+    "Použít RAID %s pro LVM, další oddíly a zavádění systému"
+  ],
+  "Use RAID %s for additional partitions": [
+    "Použít RAID %s pro další oddíly"
+  ],
+  "Use RAID %s for additional partitions and booting": [
+    "Použít RAID %s pro další oddíly a zavádění systému"
+  ],
+  "Use RAID %s to configure boot partitions": [
+    "Použít RAID %s ke konfiguraci oddílů pro zavádění"
   ],
   "Use RAID %s to host LVM": [
     "Použít RAID %s pro zavedení LVM"
@@ -1792,6 +1920,21 @@ export default {
   "Use disk %s": [
     "Použít disk %s"
   ],
+  "Use disk %s for LVM and additional partitions": [
+    "Použít disk %s pro LVM a další oddíly"
+  ],
+  "Use disk %s for LVM, additional partitions and booting": [
+    "Použít disk %s pro LVM, další oddíly a zavádění systému"
+  ],
+  "Use disk %s for additional partitions": [
+    "Použít disk %s pro další oddíly"
+  ],
+  "Use disk %s for additional partitions and booting": [
+    "Použít disk %s pro další oddíly a zavádění systému"
+  ],
+  "Use disk %s to configure boot partitions": [
+    "Použít disk %s pro konfiguraci zaváděcích oddílů"
+  ],
   "Use disk %s to host LVM": [
     "Použij disk %s pro zavedení LVM"
   ],
@@ -1800,6 +1943,12 @@ export default {
   ],
   "Use disk %s to install": [
     "Použij disk %s k instalaci"
+  ],
+  "Use disk %s to install and boot": [
+    "Použít disk %s k instalaci a zavádění systému"
+  ],
+  "Use disk %s to install and host LVM": [
+    "Použít disk %s k instalaci a pro LVM"
   ],
   "Use disk %s to install, host LVM and boot": [
     "Použij disk %s pro instalaci, zavedení LVM a spuštění"
@@ -1839,6 +1988,12 @@ export default {
   ],
   "Using a hashed password.": [
     ""
+  ],
+  "Using an existing partition": [
+    "Použít stávající oddíl"
+  ],
+  "Using partition %s": [
+    "Používá se oddíl %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Skupina svazků ‘%s’ již existuje. Zadejte jiný název."
