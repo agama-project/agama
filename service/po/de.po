@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-02 10:15+0000\n"
-"PO-Revision-Date: 2025-08-01 13:59+0000\n"
-"Last-Translator: Gemineo <vistatec@gemineo.de>\n"
+"POT-Creation-Date: 2026-03-12 11:51+0000\n"
+"PO-Revision-Date: 2026-03-15 08:04+0000\n"
+"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/de/>\n"
+"service-sle-16/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -258,7 +258,7 @@ msgstr "Repositorys-Metadaten werden aktualisiert"
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Software-Vorschlag wird berechnet"
+msgstr "Softwareangebot wird berechnet"
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
