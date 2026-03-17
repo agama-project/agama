@@ -98,7 +98,7 @@ describe Agama::AutoYaST::Converter do
       it "exports the root password and/or public SSH key" do
         result = subject.to_agama(profile)
         expect(result["root"]).to include("password" => "nots3cr3t",
-          "sshPublicKey" => "ssh-rsa ...")
+          "sshPublicKeys" => ["ssh-rsa ..."])
       end
     end
 

@@ -72,7 +72,6 @@ describe Agama::AutoYaST::RootReader do
         root = subject.read["root"]
         expect(root).to eq(
           "password"      => "123456",
-          "sshPublicKey"  => "ssh-key 1",
           "sshPublicKeys" => ["ssh-key 1", "ssh-key 2"]
         )
       end
