@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Mar 17 14:49:14 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-15434
+  - fixed autoyast_compat.json to cover earlier patch which
+    extended capabilities of sshPublicKey / sshPublicKeys
+  - fixed AY root_reader. authorized_keys are converted as an array
+    into sshPublicKeys now (no first key only anymore)
+
+-------------------------------------------------------------------
 Tue Mar 17 12:15:22 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19

@@ -666,7 +666,7 @@
         "agama": "user.hashedPassword",
         "notes": "If set to true, it uses \"hashedPassword\" instead of \"password\""
       },
-      { "key": "authorized_keys", "support": "yes", "agama": "root.sshPublicKey" }
+      { "key": "authorized_keys", "support": "yes", "agama": "root.sshPublicKeys" }
     ]
   },
   { "key": "zfcp", "support": "yes" }
