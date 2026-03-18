@@ -28,6 +28,11 @@ module Agama
     module Clients
       # Base for HTTP clients.
       class Base
+        # Default timeout for HTTP requests (in seconds).
+        # Installation tasks like writing files or running scripts can take a long time,
+        # especially after Snapper configuration which might trigger a Btrfs quota scan.
+        DEFAULT_TIMEOUT = 300
+
         def initialize(logger)
           @base_url = "http://localhost/api/"
           @logger = logger
@@ -37,7 +42,10 @@ module Agama
         # @param path[String] path relatived to `api`` endpoint.
         # @param data[#to_json] data to send in request
         def post(path, data)
-          response = Net::HTTP.post(uri(path), data.to_json, headers)
+          uri = uri(path)
+          request = Net::HTTP::Post.new(uri.request_uri, headers)
+          request.body = data.to_json
+          response = call_server(uri, request)
           return unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
@@ -47,7 +55,9 @@ module Agama
         # @param path[String] path relatived to `api`` endpoint.
         # @return [Net::HTTPResponse, nil] Net::HTTPResponse if it is not an Net::HTTPClientError
         def get(path)
-          response = Net::HTTP.get(uri(path), headers)
+          uri = uri(path)
+          request = Net::HTTP::Get.new(uri.request_uri, headers)
+          response = call_server(uri, request)
           return response unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
@@ -57,13 +67,26 @@ module Agama
         # @param path[String] path relatived to `api`` endpoint.
         # @param data[#to_json] data to send in request
         def put(path, data)
-          response = Net::HTTP.put(uri(path), data.to_json, headers)
+          uri = uri(path)
+          request = Net::HTTP::Put.new(uri.request_uri, headers)
+          request.body = data.to_json
+          response = call_server(uri, request)
           return unless response.is_a?(Net::HTTPClientError)
 
           @logger.warn "server returned #{response.code} with body: #{response.body}"
         end
 
       protected
+
+        # Calls the server with the given request.
+        # @param uri [URI]
+        # @param request [Net::HTTPRequest]
+        # @return [Net::HTTPResponse]
+        def call_server(uri, request)
+          Net::HTTP.start(uri.host, uri.port, read_timeout: DEFAULT_TIMEOUT) do |http|
+            http.request(request)
+          end
+        end
 
         def uri(path)
           URI.join(@base_url, path)

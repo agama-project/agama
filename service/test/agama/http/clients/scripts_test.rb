@@ -32,11 +32,19 @@ describe Agama::HTTP::Clients::Scripts do
 
   describe "#run" do
     it "calls the end-point to run the scripts" do
-      url = URI("http://localhost/api/scripts/run")
-      expect(Net::HTTP).to receive(:post).with(url, "post".to_json, {
-        "Content-Type": "application/json",
-        Authorization:  "Bearer 123456"
-      })
+      http_double = instance_double(Net::HTTP)
+      expect(Net::HTTP).to receive(:start)
+        .with("localhost", 80, read_timeout: 300)
+        .and_yield(http_double)
+
+      expect(http_double).to receive(:request) do |request|
+        expect(request).to be_an_instance_of(Net::HTTP::Post)
+        expect(request.path).to eq("/api/scripts/run")
+        expect(request.body).to eq("post".to_json)
+        expect(request["Content-Type"]).to eq("application/json")
+        expect(request["Authorization"]).to eq("Bearer 123456")
+      end
+
       scripts.run("post")
     end
   end
