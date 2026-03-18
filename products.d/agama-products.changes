@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 18 10:10:26 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Always use an empty array for optional_patterns in products
+  definitions (gh#agama-project/agama#3295).
+
+-------------------------------------------------------------------
 Mon Mar  2 16:10:19 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update translations (gh#agama-project/agama#3228).
