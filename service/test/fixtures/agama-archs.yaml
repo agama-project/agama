@@ -65,7 +65,7 @@ Leap:
       - https://download.opensuse.org/distribution/leap/15.4/repo/oss/
     mandatory_patterns:
       - enhanced_base # For now lets pick some minimal one
-    optional_patterns: null # no optional pattern shared
+    optional_patterns: [] # no optional pattern shared
     base_product: Leap
 
   security:
@@ -93,7 +93,7 @@ Leap Micro:
       - https://download.opensuse.org/distribution/leap-micro/5.2/product/repo/Leap-Micro-5.2-x86_64-Media/
     mandatory_patterns:
       - microos-base
-    optional_patterns: null # no optional pattern shared
+    optional_patterns: [] # no optional pattern shared
     base_product: Leap-Micro
 
   security:

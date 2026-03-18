@@ -113,7 +113,7 @@ software:
   mandatory_patterns:
     - enhanced_base
     - bootloader
-  optional_patterns: null # no optional pattern shared
+  optional_patterns: [] # no optional pattern shared
   user_patterns:
     - cockpit
     - sles_sap_minimal_sap
