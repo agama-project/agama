@@ -41,42 +41,53 @@ module Agama
         # send POST request with given data and path.
         # @param path[String] path relatived to `api`` endpoint.
         # @param data[#to_json] data to send in request
+        # @return [String, nil] response body or nil if it is not a success
         def post(path, data)
           uri = uri(path)
           request = Net::HTTP::Post.new(uri.request_uri, headers)
           request.body = data.to_json
           response = call_server(uri, request)
-          return unless response.is_a?(Net::HTTPClientError)
+          return response.body if response.is_a?(Net::HTTPSuccess)
 
-          @logger.warn "server returned #{response.code} with body: #{response.body}"
+          log_error(response)
+          nil
         end
 
         # send GET request with given path.
         # @param path[String] path relatived to `api`` endpoint.
-        # @return [Net::HTTPResponse, nil] Net::HTTPResponse if it is not an Net::HTTPClientError
+        # @return [String, nil] response body or nil if it is not a success
         def get(path)
           uri = uri(path)
           request = Net::HTTP::Get.new(uri.request_uri, headers)
           response = call_server(uri, request)
-          return response unless response.is_a?(Net::HTTPClientError)
+          return response.body if response.is_a?(Net::HTTPSuccess)
 
-          @logger.warn "server returned #{response.code} with body: #{response.body}"
+          log_error(response)
+          nil
         end
 
         # send PUT request with given data and path.
         # @param path[String] path relatived to `api`` endpoint.
         # @param data[#to_json] data to send in request
+        # @return [String, nil] response body or nil if it is not a success
         def put(path, data)
           uri = uri(path)
           request = Net::HTTP::Put.new(uri.request_uri, headers)
           request.body = data.to_json
           response = call_server(uri, request)
-          return unless response.is_a?(Net::HTTPClientError)
+          return response.body if response.is_a?(Net::HTTPSuccess)
 
-          @logger.warn "server returned #{response.code} with body: #{response.body}"
+          log_error(response)
+          nil
         end
 
       protected
+
+        # Log an error response.
+        # @param response [Net::HTTPResponse]
+        def log_error(response)
+          @logger.warn "server returned #{response.code} with body: #{response.body}"
+        end
 
         # Calls the server with the given request.
         # @param uri [URI]
