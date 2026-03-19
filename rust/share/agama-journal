@@ -1,0 +1,140 @@
+#!/bin/bash
+#
+# Copyright (c) [2026] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+# Helper script which prints the messages from the systemd journal with
+# additional details like code location.
+
+# All script arguments are passed to journalctl, you can use it to filter the
+# displayed messages, e.g. filter by unit with '-u sshd.service', filter by time
+# with '--since "5 minutes ago"' or show only errors and higher priority with
+# '-p err'..
+
+# The timestamps are printed in the local time, to print the UTC time
+# run with TZ=UTC. Hint: You can set any time zone, e.g. TZ=America/New_York.
+
+# It accepts special "--input-file <file>" parameter to load the data from
+# previously saved journal in JSON format.
+
+
+# Use colors if the output goes to a terminal
+if [ -t 1 ]; then
+  USE_COLORS="true"
+else
+  USE_COLORS="false"
+fi
+
+SHOW_MICROSECONDS="false"
+INPUT_FILE=""
+JOURNAL_ARGS=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+		# Allow using a JSON file as input
+    --input-file)
+      INPUT_FILE="$2"
+      shift 2
+      ;;
+    --microseconds)
+      SHOW_MICROSECONDS="true"
+      shift
+      ;;
+    *)
+      JOURNAL_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+process_logs() {
+  if [ -n "$INPUT_FILE" ]; then
+    cat "$INPUT_FILE"
+  else
+    journalctl -o json "$@"
+  fi | jq --unbuffered --arg use_colors "$USE_COLORS" --arg show_microseconds "$SHOW_MICROSECONDS" -r '
+  # Helper function to map syslog priority number to a single letter
+  def get_priority:
+    {
+      "0": "M", # Emergency
+      "1": "A", # Alert
+      "2": "C", # Critical
+      "3": "E", # Error
+      "4": "W", # Warning
+      "5": "N", # Notice
+      "6": "I", # Informational
+      "7": "D"  # Debug
+    }[tostring] // .;
+
+  # Helper function to get color based on priority
+  def get_color:
+    {
+      "0": "\u001b[1;91m", # Emergency - Bold Bright Red
+      "1": "\u001b[1;91m", # Alert - Bold Bright Red
+      "2": "\u001b[1;91m", # Critical - Bold Bright Red
+      "3": "\u001b[1;31m", # Error - Bold Red
+      "4": "\u001b[93m", # Warning - Bright Yellow
+      "5": "\u001b[1m",  # Notice - Bold white
+      "6": "",           # Informational - Default
+      "7": "\u001b[90m"  # Debug - Grey
+    }[tostring] // "";
+
+  # Helper function to format timestamp
+  def format_timestamp:
+	  # The journal time is in microseconds
+    (tonumber / 1000000 | strflocaltime("%b %e %H:%M:%S"))
+      + (if $show_microseconds == "true" then "." + (tostring | .[-6:]) else "" end);
+
+  # Helper function to build the source code location string
+  def format_location:
+    [ .CODE_FILE, .CODE_LINE, .CODE_FUNC ]
+    | map(select(. != null and . != ""))
+    | if length > 0 then "[" + join(":") + "]" else empty end;
+
+  # Helper function to combine syslog identifier and PID
+  def format_syslog_pid:
+    [
+      (.SYSLOG_IDENTIFIER | select(. != null and . != "")),
+      (._PID | select(. != null and . != "") | "[" + tostring + "]:")
+    ]
+    | join("")
+    | select(. != "");
+
+  # Join the requested fields into a single line
+  (.PRIORITY | get_color) as $color |
+  [
+    (.__REALTIME_TIMESTAMP | select(. != null and . != "") | format_timestamp),
+    (.PRIORITY | select(. != null and . != "") | "<" + get_priority + ">"),
+    format_syslog_pid,
+		(.ZYPP_GROUP | select(. != null and . != "") | "[" + tostring + "]"),
+    format_location,
+    (.MESSAGE | select(. != null and . != "") | tostring | if $use_colors == "true" and $color != "" then $color + . + "\u001b[0m" else . end)
+  ]
+  # Remove any missing/empty values and join them with a space
+  | map(select(. != null and . != ""))
+  | join(" ")
+'
+}
+
+if [ "$USE_COLORS" = "true" ] && [ -n "$PAGER" ]; then
+  process_logs "${JOURNAL_ARGS[@]}" | $PAGER
+else
+  process_logs "${JOURNAL_ARGS[@]}"
+fi

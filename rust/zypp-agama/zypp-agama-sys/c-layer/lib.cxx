@@ -100,7 +100,7 @@ struct AgamaFormatter : public zypp::base::LogControl::LineFormater {
     // see "man sd_journal_send_with_location"
     sd_journal_send_with_location(
         file.c_str(), line.c_str(), zypp_func, "PRIORITY=%i", level,
-        "MESSAGE=[%s] %s", zypp_group.c_str(), zypp_message.c_str(),
+        "MESSAGE=%s", zypp_message.c_str(),
         // some custom data to allow easy filtering of the libzypp messages
         "COMPONENT=libzypp", "ZYPP_GROUP=%s", zypp_group.c_str(),
         "ZYPP_LEVEL=%i", zypp_level, NULL);

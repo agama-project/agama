@@ -24,7 +24,6 @@ use serde::Serialize;
 use std::fs;
 use std::fs::File;
 use std::io;
-use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -32,9 +31,11 @@ use tempfile::TempDir;
 use utoipa::ToSchema;
 use zypp_agama::SOLVER_TESTCASE_DIR;
 
-const DEFAULT_COMMANDS: [(&str, &str); 2] = [
+const DEFAULT_COMMANDS: [(&str, &str); 4] = [
     // (<command to be executed>, <file name used for storing result of the command>)
-    ("journalctl", "journald"),
+    ("journalctl -o json", "journal_json"),
+    ("agama-journal", "journal"),
+    ("agama-zypp-journal", "libzypp"),
     ("rpm -qa", "rpm-qa"),
 ];
 
@@ -178,19 +179,34 @@ impl LogItem for LogCmd {
     fn store(&self) -> Result<(), io::Error> {
         let cmd_parts = self.cmd.split_whitespace().collect::<Vec<&str>>();
         let file_path = self.to();
-        let output = Command::new(cmd_parts[0])
-            .args(cmd_parts[1..].iter())
-            .output()?;
 
-        if !output.stdout.is_empty() {
-            let mut file_stdout = File::create(format!("{}.out.log", file_path.display()))?;
+        let mut stdout_name = file_path.clone();
+        stdout_name.set_extension("out.log");
 
-            file_stdout.write_all(&output.stdout)?;
+        let mut stderr_name = file_path.clone();
+        stderr_name.set_extension("err.log");
+
+        let file_stdout = File::create(&stdout_name)?;
+        let file_stderr = File::create(&stderr_name)?;
+
+        let status = Command::new(cmd_parts[0])
+            .args(&cmd_parts[1..])
+            .stdout(file_stdout)
+            .stderr(file_stderr)
+            .status()?;
+
+        tracing::info!(
+            "Command {} finished with status: {}",
+            self.cmd,
+            status.code().unwrap_or_default()
+        );
+
+        // delete the created files if they are empty
+        if fs::metadata(&stdout_name)?.len() == 0 {
+            let _ = fs::remove_file(&stdout_name);
         }
-        if !output.stderr.is_empty() {
-            let mut file_stderr = File::create(format!("{}.err.log", file_path.display()))?;
-
-            file_stderr.write_all(&output.stderr)?;
+        if fs::metadata(&stderr_name)?.len() == 0 {
+            let _ = fs::remove_file(&stderr_name);
         }
 
         Ok(())

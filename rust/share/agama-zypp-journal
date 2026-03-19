@@ -1,0 +1,119 @@
+#!/bin/bash
+#
+# Copyright (c) [2026] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
+# Helper script which extracts the libzypp messages from the systemd journal
+# and prints them in the YaST y2log compatible format.
+
+# All script arguments are passed to journalctl, you can use it to filter the
+# displayed messages, e.g. by date with '--since "5 minutes ago"' or show only
+# errors and higher priority with '-p err'.
+
+# It accepts special "--input-file <file>" parameter to load the data from
+# previously saved journal in JSON format.
+
+
+# Use colors if the output goes to a terminal
+if [ -t 1 ]; then
+  USE_COLORS="true"
+else
+  USE_COLORS="false"
+fi
+
+INPUT_FILE=""
+JOURNAL_ARGS=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+		# Allow using a JSON file as input
+    --input-file)
+      INPUT_FILE="$2"
+      shift 2
+      ;;
+    *)
+      JOURNAL_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+process_logs() {
+  if [ -n "$INPUT_FILE" ]; then
+    cat "$INPUT_FILE"
+  else
+    journalctl -u agama-web-server.service -o json "$@"
+  fi | jq --unbuffered --arg use_colors "$USE_COLORS" -r '
+  # Helper function to get color based on priority
+  def get_color:
+    {
+      "5": "\u001b[1;91m", # Internal error - Bold Bright Red
+      "4": "\u001b[1;95m", # Security error - Bold Bright Magenta
+      "3": "\u001b[1;31m", # Error - Bold Red
+      "2": "\u001b[93m",   # Warning - Bright Yellow
+      "1": "",             # Milestone - Default
+      "0": "\u001b[90m"    # Debug - Grey
+    }[tostring] // "\u001b[35m"; # Missing or unknown - Magenta
+
+  # Helper function to format timestamp (uses UTC)
+  def format_timestamp:
+	  # The journal time is in microseconds
+    (tonumber / 1000000 | strflocaltime("%Y-%m-%d %H:%M:%S"));
+
+  # Helper function to build the source code location string
+  def format_location:
+    [
+      (.CODE_FILE | select(. != null and . != "") | tostring),
+      (.CODE_FUNC | select(. != null and . != "") | "(" + tostring + ")"),
+      (.CODE_LINE | select(. != null and . != "") | ":" + tostring)
+    ]
+    | join("");
+
+  # Helper function to combine hostname and PID
+  def format_syslog_pid:
+    [
+      ._HOSTNAME,
+      (._PID | select(. != null and . != "") | "(" + tostring + ")")
+    ]
+    | join("")
+    | select(. != "");
+
+  select(.COMPONENT == "libzypp") |
+  # Join the requested fields into a single line
+  (.ZYPP_LEVEL | get_color) as $color |
+  [
+    (.__REALTIME_TIMESTAMP | select(. != null and . != "") | format_timestamp),
+    (.ZYPP_LEVEL | select(. != null and . != "") | "<" + tostring + ">"),
+    format_syslog_pid,
+    "[" + .ZYPP_GROUP + "]",
+    format_location,
+    (.MESSAGE | select(. != null and . != "") | tostring | if $use_colors == "true" and $color != "" then $color + . + "\u001b[0m" else . end)
+  ]
+  # Remove any missing/empty values and join them with a space
+  | map(select(. != null and . != ""))
+  | join(" ")
+'
+}
+
+if [ "$USE_COLORS" = "true" ] && [ -n "$PAGER" ]; then
+  process_logs "${JOURNAL_ARGS[@]}" | $PAGER
+else
+  process_logs "${JOURNAL_ARGS[@]}"
+fi
