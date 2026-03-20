@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 20 07:25:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Replace plymouth with blog-plymouth on s390x (bsc#1254326)
+
+-------------------------------------------------------------------
 Tue Mar 17 12:15:24 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19
