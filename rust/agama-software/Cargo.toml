@@ -5,7 +5,6 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-agama-bootloader = { path = "../agama-bootloader" }
 agama-l10n = { path = "../agama-l10n" }
 agama-utils = { path = "../agama-utils" }
 agama-security = { path = "../agama-security" }

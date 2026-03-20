@@ -26,7 +26,6 @@ use crate::{
     zypp_server::{self, SoftwareAction, ZyppServer},
     Model, ResolvableType,
 };
-use agama_bootloader;
 use agama_security as security;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -92,7 +91,6 @@ pub struct Starter {
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
     security: Handler<security::Service>,
-    bootloader: Handler<agama_bootloader::Service>,
 }
 
 impl Starter {
@@ -102,7 +100,6 @@ impl Starter {
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
         security: Handler<security::Service>,
-        bootloader: Handler<agama_bootloader::Service>,
     ) -> Self {
         Self {
             model: None,
@@ -111,7 +108,6 @@ impl Starter {
             progress,
             questions,
             security,
-            bootloader,
         }
     }
 
@@ -158,7 +154,6 @@ impl Starter {
             progress: self.progress,
             product: None,
             kernel_cmdline,
-            bootloader: self.bootloader,
         };
         service.setup().await?;
         Ok(actor::spawn(service))
@@ -181,7 +176,6 @@ pub struct Service {
     product: Option<Arc<RwLock<ProductSpec>>>,
     selection: SoftwareSelection,
     kernel_cmdline: KernelCmdline,
-    bootloader: Handler<agama_bootloader::Service>,
 }
 
 #[derive(Default)]
@@ -199,9 +193,8 @@ impl Service {
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
         security: Handler<security::Service>,
-        bootloader: Handler<agama_bootloader::Service>,
     ) -> Starter {
-        Starter::new(events, issues, progress, questions, security, bootloader)
+        Starter::new(events, issues, progress, questions, security)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
