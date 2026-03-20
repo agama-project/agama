@@ -123,7 +123,6 @@ pub async fn run(
         ConfigCommands::Load { url_or_path } => {
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
-            // FIXME: invalid profile still gets loaded
             validate(&http_client, CliInput::Full(contents.clone())).await?;
             let result = InstallSettings::from_json(&contents, &InstallationContext::from_env()?)?;
             tokio::spawn(async move {
@@ -179,12 +178,13 @@ async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Res
     match validity {
         ValidationOutcome::Valid => {
             eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
+            Ok(())
         }
         ValidationOutcome::NotValid(_) => {
             eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
+            Err(anyhow::anyhow!("The profile is not valid"))
         }
     }
-    Ok(())
 }
 
 fn is_autoyast(url_or_path: &CliInput) -> bool {
@@ -243,7 +243,7 @@ async fn generate(
             // invalid before InstallSettings processing: print profile and validation result
             println!("{}", &profile_json);
             eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
-            return Ok(());
+            return Err(anyhow::anyhow!("The profile is not valid"));
         }
         ValidationOutcome::Valid => {}
     }
@@ -257,6 +257,7 @@ async fn generate(
     match validity {
         ValidationOutcome::Valid => {
             eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
+            Ok(())
         }
         ValidationOutcome::NotValid(_) => {
             let red_x = style("\u{2717}").bold().red();
@@ -265,10 +266,9 @@ async fn generate(
                 "{} Internal error: the profile was made invalid by InstallSettings round trip",
                 red_x
             );
+            Err(anyhow::anyhow!("The profile is not valid"))
         }
     }
-
-    Ok(())
 }
 
 /// Process AutoYaST profile (*url* ending with .xml, .erb, or dir/) by doing a HTTP client request.
@@ -354,7 +354,6 @@ async fn edit(
     let status = command.status().context(format!("Running {:?}", command))?;
     // TODO: do nothing if the content of the file is unchanged
     if status.success() {
-        // FIXME: invalid profile still gets loaded
         let contents =
             std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
         validate(&http_client, CliInput::Full(contents)).await?;
