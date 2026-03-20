@@ -217,26 +217,6 @@ impl Service {
         Ok(())
     }
 
-    fn update_selinux(&self, state: &SoftwareState) {
-        let selinux_selected = state.resolvables.to_vec().iter().any(|(name, typ, state)| {
-            typ == &ResolvableType::Pattern && name == "selinux" && state.selected()
-        });
-
-        let value = if selinux_selected {
-            "security=selinux"
-        } else {
-            "security="
-        };
-        let message = agama_bootloader::message::SetKernelArg {
-            id: "selinux".to_string(),
-            value: value.to_string(),
-        };
-        let res = self.bootloader.cast(message);
-        if res.is_err() {
-            tracing::warn!("Failed to send to bootloader new selinux state: {:?}", res);
-        }
-    }
-
     /// Updates the proposal and the service state.
     ///
     /// This function performs the following actions:
@@ -257,8 +237,6 @@ impl Service {
             let state = self.state.read().await;
             SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
         };
-
-        self.update_selinux(&new_state);
 
         tracing::info!("Wanted software state: {new_state:?}");
         {
@@ -510,6 +488,26 @@ impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         self.update_proposal().await?;
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::IsPatternSelected> for Service {
+    async fn handle(&mut self, message: message::IsPatternSelected) -> Result<bool, Error> {
+        let state = self.state.read().await;
+        let Some(software_state) = &state.state else {
+            return Ok(false);
+        };
+
+        let selected = software_state
+            .resolvables
+            .to_vec()
+            .iter()
+            .any(|(name, typ, state)| {
+                typ == &ResolvableType::Pattern && name == &message.name && state.selected()
+            });
+
+        Ok(selected)
     }
 }
 
