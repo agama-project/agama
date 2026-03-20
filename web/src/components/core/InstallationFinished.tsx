@@ -43,7 +43,7 @@ const TpmAlert = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
 
   return (
-    <Alert title={title} variant="danger">
+    <Alert isInline title={title} variant="danger">
       <Stack hasGutter>
         <Divider />
         <Content isEditorial className={textStyles.fontSizeXl}>

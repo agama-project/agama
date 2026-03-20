@@ -57,7 +57,7 @@ const securityFrom = (supported: string[]) => {
 
 const PublicNetworkAlert = () => {
   return (
-    <Alert title={_("Not protected network")} variant="warning">
+    <Alert isInline title={_("Not protected network")} variant="warning">
       <Content component="p">
         {_("You will connect to a public network without encryption. Your data may not be secure.")}
       </Content>

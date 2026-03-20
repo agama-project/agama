@@ -128,8 +128,11 @@
         <!-- image cleanup tool -->
         <package name="image-janitor"/>
         <!-- plymouth bsc#1248507 -->
-        <package name="plymouth" />
-        <package name="plymouth-dracut" />
+        <package name="plymouth" arch="aarch64,x86_64,ppc64le" />
+        <package name="plymouth-dracut" arch="aarch64,x86_64,ppc64le" />
+        <!-- and s390 specific plymouth bsc#1248507 -->
+        <package name="blog-plymouth" arch="s390x" />
+
     </packages>
 
     <!-- packages for local installation (desktop, browser, etc.) -->
@@ -155,7 +158,7 @@
         <package name="openSUSE-build-key"/>
         <package name="patterns-openSUSE-base"/>
         <package name="staging-build-key"/>
-        <package name="plymouth-branding-openSUSE" />
+        <package name="plymouth-branding-openSUSE" arch="aarch64,x86_64,ppc64le" />
     </packages>
     <!-- additional packages for the Leap distributions -->
     <packages type="image" profiles="Leap_16.1">

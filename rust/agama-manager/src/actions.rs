@@ -294,12 +294,9 @@ impl SetConfigAction {
                 .await?;
         }
 
-        if let Some(network) = config.network.clone() {
-            self.progress
-                .call(progress::message::Next::new(Scope::Manager))
-                .await?;
-            self.network.update_config(network).await?;
-            self.network.apply().await?;
+        // FIXME: report the error in a proper way.
+        if let Err(error) = self.set_network(&config).await {
+            tracing::error!("Failed to set up the network: {error}");
         }
 
         match &product {
@@ -342,6 +339,20 @@ impl SetConfigAction {
                 tracing::info!("No product is selected.");
             }
         }
+
+        Ok(())
+    }
+
+    async fn set_network(&self, config: &Config) -> Result<(), service::Error> {
+        let Some(network) = config.network.clone() else {
+            return Ok(());
+        };
+
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
+        self.network.update_config(network).await?;
+        self.network.apply().await?;
 
         Ok(())
     }

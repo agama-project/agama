@@ -48,7 +48,7 @@ export default function PotentialDataLossAlert({
   }
 
   return (
-    <Alert title={title} variant="danger">
+    <Alert isInline title={title} variant="danger">
       <Stack hasGutter>
         {!isCompact && (
           <List>

@@ -158,6 +158,7 @@ export default function ProgressBackdrop({
           <CardTitle>
             <Alert
               isPlain
+              isInline
               customIcon={<></>}
               title={
                 <Flex

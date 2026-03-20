@@ -37,7 +37,7 @@ export default function NoPersistentConnectionsAlert() {
   if (persistentConnections !== 0) return;
 
   return (
-    <Alert variant="custom" title={_("Installed system may not have network connections")}>
+    <Alert isInline variant="custom" title={_("Installed system may not have network connections")}>
       {_(
         "All network connections managed through this interface are currently set to be \
 used only during installation and will not be copied to the installed system",

@@ -32,6 +32,7 @@ export default function IssuesAlert({ issues }) {
 
   return (
     <Alert
+      isInline
       variant="warning"
       title={_("Before starting the installation, you need to address the following problems:")}
     >

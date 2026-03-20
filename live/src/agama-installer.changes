@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 20 07:25:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Replace plymouth with blog-plymouth on s390x (bsc#1254326)
+
+-------------------------------------------------------------------
 Wed Mar 18 15:30:54 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Ensure that systemd-gpt-auto-generator is disabled to avoid

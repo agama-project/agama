@@ -129,7 +129,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             let valid = validate(&http_client, CliInput::Full(contents.clone()), false).await?;
 
             if !matches!(valid, ValidationOutcome::Valid) {
-                return Ok(());
+                return Err(anyhow!("The profile is not valid"));
             }
 
             let model: api::Config = serde_json::from_str(&contents)?;
@@ -138,12 +138,16 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             monitor_progress(monitor).await?;
         }
         ConfigCommands::Validate { url_or_path, local } => {
-            let _ = if !local {
+            let validity = if !local {
                 let http_client = build_http_client(api_url, opts.insecure, true).await?;
-                validate(&http_client, url_or_path, false).await
+                validate(&http_client, url_or_path, false).await?
             } else {
-                validate_local(url_or_path, opts.insecure)
+                validate_local(url_or_path, opts.insecure)?
             };
+
+            if !matches!(validity, ValidationOutcome::Valid) {
+                return Err(anyhow!("The profile is not valid"));
+            }
         }
         ConfigCommands::Generate { url_or_path } => {
             let http_client = build_http_client(api_url, opts.insecure, true).await?;
@@ -293,7 +297,7 @@ async fn generate(
         println!("{}", &profile_json);
         let _ = validation_msg(&validity);
 
-        return Ok(());
+        return Err(anyhow!("The profile is not valid"));
     }
 
     let config = api::Config::from_json(&profile_json, &context.source)?;
@@ -303,10 +307,9 @@ async fn generate(
     let validity = validate(client, CliInput::Full(config_json.clone()), false).await?;
 
     if matches!(validity, ValidationOutcome::NotValid(_)) {
-        eprintln!(
-            "{} Internal error: the profile was made invalid by InstallSettings round trip",
-            style("\u{2717}").bold().red()
-        );
+        return Err(anyhow!(
+            "Internal error: the profile became invalid during Config round trip"
+        ));
     }
 
     Ok(())
@@ -364,10 +367,14 @@ async fn edit(
     let status = command.status().context(format!("Running {:?}", command))?;
     // TODO: do nothing if the content of the file is unchanged
     if status.success() {
-        // FIXME: invalid profile still gets loaded
         let updated =
             std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
-        validate(http_client, CliInput::Full(updated.clone()), false).await?;
+        let validity = validate(http_client, CliInput::Full(updated.clone()), false).await?;
+
+        if !matches!(validity, ValidationOutcome::Valid) {
+            return Err(anyhow!("The profile is not valid"));
+        }
+
         return Ok(serde_json::from_str(&updated)?);
     }
 

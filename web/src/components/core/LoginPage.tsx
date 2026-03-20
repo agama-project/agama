@@ -99,7 +99,7 @@ user privileges.",
                 />
               </FormGroup>
               {authError && (
-                <Alert component="div" variant="danger" title={error.title}>
+                <Alert isInline variant="danger" title={error.title}>
                   {error.description}
                 </Alert>
               )}

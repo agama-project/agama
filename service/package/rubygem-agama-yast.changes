@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 19 21:12:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- AutoYaST support: use the connection "device" as fallback for network
+  connections with no "name" (gh#agama-project/agama#3306).
+
+-------------------------------------------------------------------
 Wed Mar 18 23:44:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Remove empty strings when importing an AutoYaST profile

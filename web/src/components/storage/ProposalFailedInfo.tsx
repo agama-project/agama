@@ -82,7 +82,7 @@ const Description = () => {
  */
 export default function ProposalFailedInfo() {
   return (
-    <Alert variant="warning" title={_("Failed to calculate a storage layout")}>
+    <Alert isInline variant="warning" title={_("Failed to calculate a storage layout")}>
       <Description />
     </Alert>
   );

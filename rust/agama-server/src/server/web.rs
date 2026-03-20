@@ -210,12 +210,10 @@ async fn get_config(State(state): State<ServerState>) -> ServerResult<Json<Confi
     put,
     path = "/config",
     context_path = "/api/v2",
+    request_body(content = Value, description = "Configuration to apply."),
     responses(
         (status = 200, description = "The configuration was replaced. Other operations can be running in background."),
         (status = 400, description = "Not possible to replace the configuration.")
-    ),
-    params(
-        ("config" = Value, description = "Configuration to apply.")
     )
 )]
 async fn put_config(State(state): State<ServerState>, Json(json): Json<Value>) -> ServerResult<()> {
@@ -232,12 +230,10 @@ async fn put_config(State(state): State<ServerState>, Json(json): Json<Value>) -
     patch,
     path = "/config",
     context_path = "/api/v2",
+    request_body(content = Patch, description = "Changes in the configuration."),
     responses(
         (status = 200, description = "The configuration was patched. Other operations can be running in background."),
         (status = 400, description = "Not possible to patch the configuration.")
-    ),
-    params(
-        ("patch" = Patch, description = "Changes in the configuration.")
     )
 )]
 async fn patch_config(
@@ -410,13 +406,11 @@ async fn get_license(
     post,
     path = "/action",
     context_path = "/api/v2",
+    request_body(content = Action, description = "Description of the action to run."),
     responses(
         (status = 200, description = "Action successfully ran."),
         (status = 400, description = "Not possible to run the action.", body = Object),
         (status = 422, description = "Action blocked by backend state", body = Object)
-    ),
-    params(
-        ("action" = Action, description = "Description of the action to run."),
     )
 )]
 async fn run_action(

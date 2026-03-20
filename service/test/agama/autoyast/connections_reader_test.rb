@@ -49,6 +49,32 @@ describe Agama::AutoYaST::ConnectionsReader do
       end
     end
 
+    context "when the connection has a \"device\"" do
+      let(:interfaces) do
+        [{ "device" => "eth1" }]
+      end
+
+      it "uses the \"device\" as \"id\" and \"interface\"" do
+        connections = subject.read["connections"]
+        conn = connections.first
+        expect(conn["id"]).to eq("eth1")
+        expect(conn["interface"]).to eq("eth1")
+      end
+    end
+
+    context "when the connection has a \"name\"" do
+      let(:interfaces) do
+        [{ "name" => "eth0" }]
+      end
+
+      it "uses the \"name\" as \"id\"" do
+        connections = subject.read["connections"]
+        conn = connections.first
+        expect(conn["id"]).to eq("eth0")
+        expect(conn["interface"]).to be_nil
+      end
+    end
+
     context "when bootproto is set to DHCP" do
       it "sets method4 to 'auto'" do
         connections = subject.read["connections"]

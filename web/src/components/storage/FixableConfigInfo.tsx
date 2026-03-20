@@ -51,7 +51,7 @@ export default function FixableConfigInfo({ issues }: FixableConfigInfoProps) {
   );
 
   return (
-    <Alert variant="warning" title={title}>
+    <Alert isInline variant="warning" title={title}>
       <Description issues={issues} />
     </Alert>
   );

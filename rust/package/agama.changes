@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Fri Mar 20 08:46:19 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Return error code when using "agama config generate",
+  "agama config load" or "agama config validate" does not validate
+  the given profile (bsc#1256951, gh#agama-project/agama#3304).
+
+-------------------------------------------------------------------
+Fri Mar 20 07:54:46 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix incorrect openAPI parameters (gh#agama-project/agama#3299).
+  - Do not define params for POST '/api/v2/action'
+  - Do not define params for PUT and PATCH '/api/v2/config
+
+-------------------------------------------------------------------
+Thu Mar 19 21:11:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Continue loading the configuration even if there is a network setup
+  error (gh#agama-project/agama#3306).
+
+-------------------------------------------------------------------
 Wed Mar 18 22:29:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Report problems when writing files and scripts (gh#agama-project/agama#3301).

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 19 16:35:10 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Restore PF/Alert default styles, removing some custom overrides
+  (gh#agama-project/agama#3305).
+
+-------------------------------------------------------------------
 Wed Mar 18 22:29:48 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Initial support for questions with details (gh#agama-project/agama#3301).

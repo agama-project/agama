@@ -36,7 +36,7 @@ export default function UnsupportedModelInfo(): React.ReactNode {
   if (config) return null;
 
   return (
-    <Alert variant="info" title={_("Unable to modify the settings")}>
+    <Alert isInline variant="info" title={_("Unable to modify the settings")}>
       <Stack hasGutter>
         <StackItem>
           <Content component="p">
