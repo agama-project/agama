@@ -348,6 +348,13 @@ impl SetConfigAction {
         Ok(())
     }
 
+    // Enables/Disables SELinux in the installed system.
+    //
+    // If the "selinux" pattern is selected, set the "security=selinux" boot
+    // kernel parameter.
+    //
+    // NOTE: this logic should live in another place, like "agama-security".
+    // It is temporarily here to fix bsc#1259890.
     async fn set_selinux(&self) -> Result<(), service::Error> {
         let selinux_selected = self
             .software
