@@ -133,3 +133,18 @@ impl SetLocale {
 impl Message for SetLocale {
     type Reply = ();
 }
+
+#[derive(Clone)]
+pub struct IsPatternSelected {
+    pub name: String,
+}
+
+impl Message for IsPatternSelected {
+    type Reply = bool;
+}
+
+impl IsPatternSelected {
+    pub fn new(name: String) -> Self {
+        Self { name }
+    }
+}

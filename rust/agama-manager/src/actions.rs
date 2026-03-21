@@ -304,6 +304,18 @@ impl SetConfigAction {
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
+                self.software
+                    .call(software::message::SetConfig::new(
+                        Arc::clone(product),
+                        config.software.clone(),
+                    ))
+                    .await?;
+
+                self.set_selinux().await?;
+
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
                 let future = self
                     .storage
                     .call(storage::message::SetConfig::new(
@@ -320,16 +332,6 @@ impl SetConfigAction {
                 self.bootloader
                     .call(bootloader::message::SetConfig::new(
                         config.bootloader.clone(),
-                    ))
-                    .await?;
-
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
-                self.software
-                    .call(software::message::SetConfig::new(
-                        Arc::clone(product),
-                        config.software.clone(),
                     ))
                     .await?;
             }
@@ -353,6 +355,38 @@ impl SetConfigAction {
             .await?;
         self.network.update_config(network).await?;
         self.network.apply().await?;
+
+        Ok(())
+    }
+
+    // Enables/Disables SELinux in the installed system.
+    //
+    // If the "selinux" pattern is selected, set the "security=selinux" boot
+    // kernel parameter.
+    //
+    // NOTE: this logic should live in another place, like "agama-security".
+    // It is temporarily here to fix bsc#1259890.
+    async fn set_selinux(&self) -> Result<(), service::Error> {
+        let selinux_selected = self
+            .software
+            .call(software::message::IsPatternSelected::new(
+                "selinux".to_string(),
+            ))
+            .await?;
+
+        let value = if selinux_selected {
+            "security=selinux"
+        } else {
+            "security="
+        };
+        let message = agama_bootloader::message::SetKernelArg {
+            id: "selinux".to_string(),
+            value: value.to_string(),
+        };
+
+        if let Err(error) = self.bootloader.cast(message) {
+            tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
+        }
 
         Ok(())
     }

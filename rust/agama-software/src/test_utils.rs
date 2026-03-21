@@ -27,7 +27,7 @@ use agama_utils::{
     },
     issue,
     products::ProductSpec,
-    progress, question, test,
+    progress, question,
 };
 use async_trait::async_trait;
 
@@ -90,9 +90,7 @@ pub async fn start_service(
     questions: Handler<question::Service>,
 ) -> Handler<Service> {
     let security = start_security_service(questions.clone()).await;
-    let dbus = test::dbus::connection().await.unwrap();
-    let bootloader = agama_bootloader::test_utils::start_service(issues.clone(), dbus).await;
-    Service::starter(events, issues, progress, questions, security, bootloader)
+    Service::starter(events, issues, progress, questions, security)
         .with_model(TestModel {})
         .start()
         .await
