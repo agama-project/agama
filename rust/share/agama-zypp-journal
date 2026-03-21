@@ -43,7 +43,7 @@ JOURNAL_ARGS=()
 
 while [ $# -gt 0 ]; do
   case "$1" in
-		# Allow using a JSON file as input
+    # Allow using a JSON file as input
     --input-file)
       INPUT_FILE="$2"
       shift 2
@@ -74,7 +74,7 @@ process_logs() {
 
   # Helper function to format timestamp (uses UTC)
   def format_timestamp:
-	  # The journal time is in microseconds
+    # The journal time is in microseconds
     (tonumber / 1000000 | strflocaltime("%Y-%m-%d %H:%M:%S"));
 
   # Helper function to build the source code location string
@@ -95,14 +95,14 @@ process_logs() {
     | join("")
     | select(. != "");
 
-  select(.COMPONENT == "libzypp") |
+  select(.COMPONENT == "libzypp" or .COMPONENT == "zypp-agama-sys") |
   # Join the requested fields into a single line
   (.ZYPP_LEVEL | get_color) as $color |
   [
     (.__REALTIME_TIMESTAMP | select(. != null and . != "") | format_timestamp),
-    (.ZYPP_LEVEL | select(. != null and . != "") | "<" + tostring + ">"),
+    (((.ZYPP_LEVEL | select(. != null and . != "") | tostring) // "1") | "<" + tostring + ">"),
     format_syslog_pid,
-    "[" + .ZYPP_GROUP + "]",
+    "[" + ((.ZYPP_GROUP | select(. != null and . != "") | tostring) // "zypp-agama-sys") + "]",
     format_location,
     (.MESSAGE | select(. != null and . != "") | tostring | if $use_colors == "true" and $color != "" then $color + . + "\u001b[0m" else . end)
   ]

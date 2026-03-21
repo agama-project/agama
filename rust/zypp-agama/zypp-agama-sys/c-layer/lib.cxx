@@ -33,6 +33,16 @@ extern "C" {
 
 #include <systemd/sd-journal.h>
 
+// helper macro for logging the code location from where libzypp is called
+#define LOG_LOCATION(message)                                          \
+  do {                                                                 \
+    std::string line("CODE_LINE=");                                    \
+    line.append(std::to_string(__LINE__));                             \
+    sd_journal_send_with_location("CODE_FILE=" __FILE__, line.c_str(), \
+      __func__, "PRIORITY=%i", LOG_NOTICE, "MESSAGE=%s", (message),    \
+      "COMPONENT=zypp-agama-sys", NULL);                               \
+  } while (0)
+
 struct Zypp {
   zypp::ZYpp::Ptr zypp_pointer;
   zypp::RepoManager *repo_manager;
@@ -119,6 +129,7 @@ struct AgamaLogger : public zypp::base::LogControl::LineWriter {
 };
 
 void free_zypp(struct Zypp *zypp) noexcept {
+  LOG_LOCATION("Dropping libzypp");
   // ensure that target is unloaded otherwise nasty things can happen if new
   // zypp is created in different thread
   zypp->zypp_pointer->getTarget()->unload();
@@ -129,6 +140,7 @@ void free_zypp(struct Zypp *zypp) noexcept {
 }
 
 static zypp::ZYpp::Ptr zypp_ptr() {
+  LOG_LOCATION("Initializing libzypp");
   sd_journal_print(LOG_NOTICE, "Redirecting libzypp logs to systemd journal");
 
   // log to systemd journal using our specific formatter
@@ -146,6 +158,10 @@ static zypp::ZYpp::Ptr zypp_ptr() {
 
 void switch_target(struct Zypp *zypp, const char *root,
                    struct Status *status) noexcept {
+  std::string message("Switching target to: ");
+  message.append(root);
+  LOG_LOCATION(message.c_str());
+
   const std::string root_str(root);
   try {
     zypp->zypp_pointer->initializeTarget(root_str,
@@ -179,6 +195,8 @@ bool commit(struct Zypp *zypp, struct Status *status,
             struct DownloadResolvableCallbacks *download_callbacks,
             struct SecurityCallbacks *security_callbacks,
             struct InstallCallbacks *install_callbacks) noexcept {
+  LOG_LOCATION("Starting package installation");
+
   try {
     set_zypp_resolvable_download_callbacks(download_callbacks);
     set_zypp_security_callbacks(security_callbacks);
@@ -205,6 +223,10 @@ bool commit(struct Zypp *zypp, struct Status *status,
 // target and merge it in rust
 struct Zypp *init_target(const char *root, struct Status *status,
                          ProgressCallback progress, void *user_data) noexcept {
+  std::string message("Initializing target: ");
+  message.append(root);
+  LOG_LOCATION(message.c_str());
+
   if (the_zypp.zypp_pointer != NULL) {
     STATUS_ERROR(status, "Cannot have two init_target concurrently, "
                          "libzypp not ready for this. Call free_zypp first.");
@@ -314,6 +336,10 @@ transactby_from(enum RESOLVABLE_SELECTED who) {
 void resolvable_select(struct Zypp *_zypp, const char *name,
                        enum RESOLVABLE_KIND kind, enum RESOLVABLE_SELECTED who,
                        struct Status *status) noexcept {
+  std::string message("Selecting resolvable: ");
+  message.append(name);
+  LOG_LOCATION(message.c_str());
+
   if (who == RESOLVABLE_SELECTED::NOT_SELECTED) {
     STATUS_OK(status);
     return;
@@ -336,6 +362,10 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
                          enum RESOLVABLE_KIND kind,
                          enum RESOLVABLE_SELECTED who,
                          struct Status *status) noexcept {
+  std::string message("Unselecting resolvable: ");
+  message.append(name);
+  LOG_LOCATION(message.c_str());
+
   STATUS_OK(status);
   if (who == RESOLVABLE_SELECTED::NOT_SELECTED) {
     return;
@@ -354,7 +384,8 @@ void resolvable_unselect(struct Zypp *_zypp, const char *name,
 }
 
 void resolvable_reset_all(struct Zypp *_zypp) noexcept {
-  MIL << "Resetting status of all resolvables" << std::endl;
+  LOG_LOCATION("Resetting status of all resolvables");
+
   for (auto &item : zypp::ResPool::instance())
     item.statusReset();
 }
@@ -384,6 +415,8 @@ static RESOLVABLE_SELECTED convert_selected(zypp::ResStatus status) {
 
 struct Patterns get_patterns(struct Zypp *zypp,
                              struct Status *status) noexcept {
+  LOG_LOCATION("Getting patterns");
+
   auto iterator =
       zypp->zypp_pointer->pool().proxy().byKind(zypp::ResKind::pattern);
 
@@ -426,6 +459,7 @@ void free_patterns(const struct Patterns *patterns) noexcept {
 
 struct Products get_products(struct Zypp *zypp,
                              struct Status *status) noexcept {
+  LOG_LOCATION("Getting products");
   auto iterator =
       zypp->zypp_pointer->pool().proxy().byKind(zypp::ResKind::product);
 
@@ -460,6 +494,7 @@ void free_products(const struct Products *products) noexcept {
 
 bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept {
+  LOG_LOCATION("Running solver");
   try {
     STATUS_OK(status);
     auto resolver = zypp->zypp_pointer->resolver();
@@ -482,6 +517,20 @@ bool run_solver(struct Zypp *zypp, bool only_required,
 
 void add_service(struct Zypp *zypp, const char *alias, const char *url,
                  struct Status *status) noexcept {
+  std::string message("Adding service: ");
+  message.append(alias);
+  message.append(" (");
+  try {
+    // create libzypp Url to hide the password
+    zypp::Url z_url(url);
+    message.append(zypp::Url(url).asString());
+  } catch (zypp::Exception &excpt) {
+    // log original string if the Url is invalid
+    message.append(url);
+  }
+  message.append(")");
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -498,11 +547,19 @@ void add_service(struct Zypp *zypp, const char *alias, const char *url,
 }
 
 bool create_solver_testcase(struct Zypp *zypp, const char *dir) noexcept {
+  std::string message("Creating solver testcase in directory ");
+  message.append(dir);
+  LOG_LOCATION(message.c_str());
+
   return zypp->zypp_pointer->resolver()->createSolverTestcase(dir);
 }
 
 void refresh_service(struct Zypp *zypp, const char *alias,
                      struct Status *status) noexcept {
+  std::string message("Refreshing service: ");
+  message.append(alias);
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -526,6 +583,10 @@ void refresh_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status,
                         struct DownloadProgressCallbacks *callbacks,
                         struct SecurityCallbacks *security_callbacks) noexcept {
+  std::string message("Refreshing repository: ");
+  message.append(alias);
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -566,6 +627,7 @@ bool is_local_url(const char *url, struct Status *status) noexcept {
 }
 
 unsigned packages_to_install(struct Zypp *zypp) noexcept {
+  LOG_LOCATION("Getting number of packages to install");
   return zypp::ResPool::instance()
       .byStatus(&zypp::ResStatus::isToBeInstalled)
       .size();
@@ -573,6 +635,14 @@ unsigned packages_to_install(struct Zypp *zypp) noexcept {
 
 static bool package_check(Zypp *zypp, const char *tag, bool selected,
                           Status *status) noexcept {
+  std::string message("Checking package: ");
+  message.append(tag);
+  if (selected)
+    message.append(" (selected)");
+  else
+    message.append(" (available)");
+  LOG_LOCATION(message.c_str());
+
   try {
     std::string s_tag(tag);
     if (s_tag.empty()) {
@@ -615,6 +685,21 @@ bool is_package_selected(Zypp *zypp, const char *tag, Status *status) noexcept {
 void add_repository(struct Zypp *zypp, const char *alias, const char *url,
                     struct Status *status, ZyppProgressCallback callback,
                     void *user_data) noexcept {
+  std::string message("Adding repository: ");
+  message.append(alias);
+  message.append(" (");
+  try {
+    // create libzypp Url to hide the password
+    zypp::Url z_url(url);
+    message.append(zypp::Url(url).asString());
+  }
+  catch (zypp::Exception &excpt) {
+    // log original string if the Url is invalid
+    message.append(url);
+  }
+  message.append(")");
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -634,6 +719,10 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
 
 void disable_repository(struct Zypp *zypp, const char *alias,
                         struct Status *status) noexcept {
+  std::string message("Disabling repository: ");
+  message.append(alias);
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -650,6 +739,22 @@ void disable_repository(struct Zypp *zypp, const char *alias,
 
 void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
                         struct Status *status) noexcept {
+
+  std::string message("Setting repository url: ");
+  message.append(alias);
+  message.append(" (");
+  try {
+    // create libzypp Url to hide the password
+    zypp::Url z_url(url);
+    message.append(zypp::Url(url).asString());
+  }
+  catch (zypp::Exception &excpt) {
+    // log original string if the Url is invalid
+    message.append(url);
+  }
+  message.append(")");
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -668,6 +773,10 @@ void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
 void remove_repository(struct Zypp *zypp, const char *alias,
                        struct Status *status, ZyppProgressCallback callback,
                        void *user_data) noexcept {
+  std::string message("Removing repository: ");
+  message.append(alias);
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -687,6 +796,8 @@ void remove_repository(struct Zypp *zypp, const char *alias,
 
 struct RepositoryList list_repositories(struct Zypp *zypp,
                                         struct Status *status) noexcept {
+  LOG_LOCATION("Listing repositories");
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return {0, NULL};
@@ -715,6 +826,10 @@ struct RepositoryList list_repositories(struct Zypp *zypp,
 
 void load_repository_cache(struct Zypp *zypp, const char *alias,
                            struct Status *status) noexcept {
+  std::string message("Loading repository cache: ");
+  message.append(alias);
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
   }
@@ -739,6 +854,10 @@ void build_repository_cache(struct Zypp *zypp, const char *alias,
                             struct Status *status,
                             ZyppProgressCallback callback,
                             void *user_data) noexcept {
+  std::string message("Building repository cache: ");
+  message.append(alias);
+  LOG_LOCATION(message.c_str());
+
   if (zypp->repo_manager == NULL) {
     STATUS_ERROR(status, "Internal Error: Repo manager is not initialized.");
     return;
@@ -762,6 +881,10 @@ void build_repository_cache(struct Zypp *zypp, const char *alias,
 
 void import_gpg_key(struct Zypp *zypp, const char *const pathname,
                     struct Status *status) noexcept {
+  std::string message("Importing GPG key: ");
+  message.append(pathname);
+  LOG_LOCATION(message.c_str());
+
   try {
     zypp::filesystem::Pathname path(pathname);
     zypp::PublicKey key(path);
@@ -779,6 +902,8 @@ void import_gpg_key(struct Zypp *zypp, const char *const pathname,
 void get_space_usage(struct Zypp *zypp, struct Status *status,
                      struct MountPoint *mount_points,
                      unsigned mount_points_size) noexcept {
+  LOG_LOCATION("Getting disk space usage");
+
   try {
     zypp::DiskUsageCounter::MountPointSet mount_points_set;
     for (unsigned i = 0; i < mount_points_size; ++i) {
