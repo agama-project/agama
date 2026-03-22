@@ -40,7 +40,7 @@ extern "C" {
     line.append(std::to_string(__LINE__));                             \
     sd_journal_send_with_location("CODE_FILE=" __FILE__, line.c_str(), \
       __func__, "PRIORITY=%i", LOG_NOTICE, "MESSAGE=%s", (message),    \
-      "COMPONENT=zypp-agama-sys", NULL);                               \
+      "COMPONENT=zypp-agama-sys", "ZYPP_GROUP=zypp-agama-sys", NULL);  \
   } while (0)
 
 struct Zypp {

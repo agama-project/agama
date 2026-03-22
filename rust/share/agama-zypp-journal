@@ -102,7 +102,7 @@ process_logs() {
     (.__REALTIME_TIMESTAMP | select(. != null and . != "") | format_timestamp),
     (((.ZYPP_LEVEL | select(. != null and . != "") | tostring) // "1") | "<" + tostring + ">"),
     format_syslog_pid,
-    "[" + ((.ZYPP_GROUP | select(. != null and . != "") | tostring) // "zypp-agama-sys") + "]",
+    "[" + ((.ZYPP_GROUP | select(. != null and . != "") | tostring) + "]",
     format_location,
     (.MESSAGE | select(. != null and . != "") | tostring | if $use_colors == "true" and $color != "" then $color + . + "\u001b[0m" else . end)
   ]
