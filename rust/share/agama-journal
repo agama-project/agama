@@ -48,7 +48,7 @@ JOURNAL_ARGS=()
 
 while [ $# -gt 0 ]; do
   case "$1" in
-		# Allow using a JSON file as input
+    # Allow using a JSON file as input
     --input-file)
       INPUT_FILE="$2"
       shift 2
@@ -70,19 +70,6 @@ process_logs() {
   else
     journalctl -o json "$@"
   fi | jq --unbuffered --arg use_colors "$USE_COLORS" --arg show_microseconds "$SHOW_MICROSECONDS" -r '
-  # Helper function to map syslog priority number to a single letter
-  def get_priority:
-    {
-      "0": "M", # Emergency
-      "1": "A", # Alert
-      "2": "C", # Critical
-      "3": "E", # Error
-      "4": "W", # Warning
-      "5": "N", # Notice
-      "6": "I", # Informational
-      "7": "D"  # Debug
-    }[tostring] // .;
-
   # Helper function to get color based on priority
   def get_color:
     {
@@ -98,15 +85,19 @@ process_logs() {
 
   # Helper function to format timestamp
   def format_timestamp:
-	  # The journal time is in microseconds
+    # The journal time is in microseconds
     (tonumber / 1000000 | strflocaltime("%b %e %H:%M:%S"))
       + (if $show_microseconds == "true" then "." + (tostring | .[-6:]) else "" end);
 
   # Helper function to build the source code location string
   def format_location:
-    [ .CODE_FILE, .CODE_LINE, .CODE_FUNC ]
-    | map(select(. != null and . != ""))
-    | if length > 0 then "[" + join(":") + "]" else empty end;
+    [
+      (.CODE_FILE | select(. != null and . != "") | tostring),
+      (.CODE_FUNC | select(. != null and . != "") | "(" + tostring + ")"),
+      (.CODE_LINE | select(. != null and . != "") | ":" + tostring + ":")
+    ]
+    | join("")
+    | select(. != "");
 
   # Helper function to combine syslog identifier and PID
   def format_syslog_pid:
@@ -121,10 +112,10 @@ process_logs() {
   (.PRIORITY | get_color) as $color |
   [
     (.__REALTIME_TIMESTAMP | select(. != null and . != "") | format_timestamp),
-    (.PRIORITY | select(. != null and . != "") | "<" + get_priority + ">"),
+    (.PRIORITY | select(. != null and . != "") | "<" + tostring + ">"),
     format_syslog_pid,
-		(.ZYPP_GROUP | select(. != null and . != "") | "[" + tostring + "]"),
     format_location,
+    (.ZYPP_GROUP | select(. != null and . != "") | "[" + tostring + "]"),
     (.MESSAGE | select(. != null and . != "") | tostring | if $use_colors == "true" and $color != "" then $color + . + "\u001b[0m" else . end)
   ]
   # Remove any missing/empty values and join them with a space

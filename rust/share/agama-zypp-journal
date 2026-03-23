@@ -100,9 +100,9 @@ process_logs() {
   (.ZYPP_LEVEL | get_color) as $color |
   [
     (.__REALTIME_TIMESTAMP | select(. != null and . != "") | format_timestamp),
-    (((.ZYPP_LEVEL | select(. != null and . != "") | tostring) // "1") | "<" + tostring + ">"),
+    (((.ZYPP_LEVEL | select(. != null and . != "") | tostring) // "?") | "<" + tostring + ">"),
     format_syslog_pid,
-    "[" + ((.ZYPP_GROUP | select(. != null and . != "") | tostring) + "]",
+    "[" + ((.ZYPP_GROUP | select(. != null and . != "") | tostring) // .COMPONENT) + "]",
     format_location,
     (.MESSAGE | select(. != null and . != "") | tostring | if $use_colors == "true" and $color != "" then $color + . + "\u001b[0m" else . end)
   ]
