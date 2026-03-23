@@ -156,7 +156,7 @@ mod tests {
             .await
             .unwrap();
 
-        ctx.handler.call(message::WriteFiles).await.unwrap();
+        ctx.handler.call(message::Finish).await.unwrap();
 
         // Check that the file exists
         let expected_path = ctx.tmp_dir.path().join("etc/README.md");

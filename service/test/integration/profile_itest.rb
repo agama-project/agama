@@ -4,6 +4,7 @@
 # TODO: remember to set up and test the --host option after all
 
 require "cheetah"
+require "json"
 require "webrick"
 
 # @param filename relative to git repo root
@@ -72,6 +73,15 @@ shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_mat
       expect(stdout).to include(stdout_match)
       expect(stderr).to include(stderr_match)
     end
+  end
+end
+
+shared_examples "JSON output structurally matches trivial_tw" do
+  it "JSON output structurally matches trivial_tw" do
+    parsed_output = JSON.parse(output)
+    expect(parsed_output["product"]["id"]).to eq "Tumbleweed"
+    expect(parsed_output["software"]["patterns"]).to eq ["base"]
+    expect(parsed_output["software"]["packages"]).to eq []
   end
 end
 
@@ -203,23 +213,6 @@ describe "agama config" do
   describe "generate (autoyast):" do
     let(:command) { ["agama", "config", "generate"] }
 
-    let(:output_match) do
-      json = <<~JSON
-        {
-          "software": {
-            "patterns": [
-              "base"
-            ],
-            "packages": []
-          },
-          "product": {
-            "id": "Tumbleweed"
-          }
-        }
-      JSON
-      json
-    end
-
     # I want to test that YaST special schemes like label:
     # are handled, but unable to make them work in my testing environment
     xcontext "XML, with a YaST special URL" do
@@ -229,32 +222,29 @@ describe "agama config" do
 
     context "XML, with path" do
       let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml" }
-
-      it "output matches" do
+      let(:output) do
         path = fixture(filename)
-        output = Cheetah.run(*command, path, stdout: :capture)
-        expect(output).to include(output_match)
+        Cheetah.run(*command, path, stdout: :capture)
       end
+      include_examples "JSON output structurally matches trivial_tw"
     end
 
     context "XML, with file:/// URL" do
       let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml" }
-
-      it "output matches" do
+      let(:output) do
         url = "file://" + abs_fixture(filename)
-        output = Cheetah.run(*command, url, stdout: :capture)
-        expect(output).to include(output_match)
+        Cheetah.run(*command, url, stdout: :capture)
       end
+      include_examples "JSON output structurally matches trivial_tw"
     end
 
     context "ERB, with file:/// URL" do
       let(:filename) { "service/test/fixtures/profiles/trivial_tw.xml.erb" }
-
-      it "output matches" do
+      let(:output) do
         url = "file://" + abs_fixture(filename)
-        output = Cheetah.run(*command, url, stdout: :capture)
-        expect(output).to include(output_match)
+        Cheetah.run(*command, url, stdout: :capture)
       end
+      include_examples "JSON output structurally matches trivial_tw"
     end
 
     # I get a deadlock because two processes want the libstorage lock. why?

@@ -77,3 +77,26 @@ pub fn create_log_file(path: &Path) -> io::Result<File> {
         .open(path)?;
     Ok(file)
 }
+
+/// Convenience function to enable a service
+pub fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) {
+    let mut command = std::process::Command::new("chroot");
+    command
+        .arg(root_dir.as_ref())
+        .args(["systemctl", "enable", name]);
+
+    match command.output() {
+        Ok(output) => {
+            if output.status.success() {
+                tracing::info!("Enabled the {name} service");
+            } else {
+                tracing::error!("Failed to enable the {name} service: {output:?}")
+            }
+        }
+        Err(error) => {
+            tracing::error!(
+                "Failed to run the command to enable the {name} service command: {error}"
+            );
+        }
+    }
+}

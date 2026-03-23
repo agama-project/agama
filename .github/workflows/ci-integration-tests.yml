@@ -120,5 +120,6 @@ jobs:
       if: failure() && !github.event.repository.fork && github.event_name != 'workflow_dispatch'
       with:
         channel: "#yast"
-        nickname: github-action
+        nickname: agama-team-bot
+        sasl_password: ${{ secrets.AGAMA_TEAM_BOT_PASSWORD }}
         message: "Agama integration test failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

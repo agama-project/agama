@@ -118,7 +118,7 @@ const NetworkDetails = ({ connection }: { connection: Connection }) => {
       {!network && (
         <NestedContent margin="mLg">
           <Text isBold textStyle="fontSizeMd">
-            {_("Network not availble")}
+            {_("Network not available")}
           </Text>
         </NestedContent>
       )}

@@ -62,9 +62,9 @@ impl Message for RunScripts {
 }
 
 #[derive(Clone)]
-pub struct WriteFiles;
+pub struct Finish;
 
-impl Message for WriteFiles {
+impl Message for Finish {
     type Reply = ();
 }
 

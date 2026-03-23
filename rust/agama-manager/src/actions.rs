@@ -113,7 +113,7 @@ impl InstallAction {
             .await?;
         self.l10n.call(l10n::message::Install).await?;
         self.software.call(software::message::Finish).await?;
-        self.files.call(files::message::WriteFiles).await?;
+        self.files.call(files::message::Finish).await?;
         self.network.install().await?;
         self.proxy.call(proxy::message::Finish).await?;
         self.hostname.call(hostname::message::Install).await?;

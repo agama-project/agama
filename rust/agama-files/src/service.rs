@@ -33,6 +33,7 @@ use agama_utils::{
         },
         question::QuestionSpec,
     },
+    command::enable_service,
     progress,
     question::{self, ask_question, AskError},
 };
@@ -293,11 +294,17 @@ impl MessageHandler<message::RunScripts> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::WriteFiles> for Service {
-    async fn handle(&mut self, _message: message::WriteFiles) -> Result<(), Error> {
+impl MessageHandler<message::Finish> for Service {
+    async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         for file in &self.files {
             self.write_file(file).await?;
         }
+
+        let scripts = self.scripts.lock().await;
+        if !scripts.by_group(ScriptsGroup::Init).is_empty() {
+            enable_service(&self.install_dir, "agama-scripts");
+        }
+
         Ok(())
     }
 }
