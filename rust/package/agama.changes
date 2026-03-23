@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar 20 08:46:19 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Return error code when using "agama config generate",
+  "agama config load" or "agama config validate" does not validate
+  the given profile (bsc#1256951, gh#agama-project/agama#3304).
+
+-------------------------------------------------------------------
 Wed Mar 11 14:39:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add error reporting when working with AutoYaST profiles (related
