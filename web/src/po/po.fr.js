@@ -10,7 +10,7 @@ export default {
     ""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" n’existe pas ou n’est plus disponible."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "Exemple : %s"
   ],
   "Excellent signal": [
     "Signal excellent"
@@ -1957,7 +1957,7 @@ export default {
     "Le mot de passe ne sera pas nécessaire pour démarrer et accéder aux données si le TPM peut vérifier l'intégrité du système. Le verrouillage du TPM requiert que le nouveau système soit démarré directement lors de sa première exécution."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Le produit sera enregistré avec le nom d’hôte \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "La taille de %1$s sera ajustée dynamiquement en fonction de la quantité de mémoire vive du système et de la présence d'un système de fichiers distinct pour %2$s."
