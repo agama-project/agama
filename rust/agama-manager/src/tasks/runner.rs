@@ -20,11 +20,10 @@
 
 use crate::{
     actions::{FinishAction, InstallAction, SetConfigAction},
-    bootloader, files, hostname, iscsi, l10n, proxy, s390, security, service, software, storage,
+    bootloader, files, hostname, iscsi, l10n, network, proxy, s390, security, service, software, storage,
     tasks::message,
     users,
 };
-use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Actor, Handler, MessageHandler},
     api::{FinishMethod, Scope},
@@ -45,7 +44,7 @@ pub struct TasksRunner {
     pub iscsi: Handler<iscsi::Service>,
     pub issues: Handler<issue::Service>,
     pub l10n: Handler<l10n::Service>,
-    pub network: NetworkSystemClient,
+    pub network: Handler<network::Service>,
     pub progress: Handler<progress::Service>,
     pub proxy: Handler<proxy::Service>,
     pub questions: Handler<question::Service>,

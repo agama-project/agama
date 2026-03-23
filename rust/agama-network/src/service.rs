@@ -19,35 +19,35 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    action::Action,
     error::NetworkStateError,
+    message,
     model::{Connection, GeneralState, NetworkChange, NetworkState, StateConfig},
-    types::{AccessPoint, Config, Device, Proposal, SystemInfo},
+    types::{Config, Device, Proposal, SystemInfo},
     Adapter, NetworkAdapterError, NetworkManagerAdapter,
 };
 use agama_utils::{
-    actor::Handler,
+    actor::{self, Actor, Handler, MessageHandler},
     api::{event, Event, Scope},
     progress,
 };
+use async_trait::async_trait;
 use gettextrs::gettext;
-use std::error::Error;
-use tokio::sync::{
-    broadcast::{self, Receiver},
-    mpsc::{self, error::SendError, UnboundedReceiver, UnboundedSender},
-    oneshot::{self, error::RecvError},
-};
+use tokio::sync::broadcast;
 
 #[derive(thiserror::Error, Debug)]
 pub enum NetworkSystemError {
     #[error("Network state error: {0}")]
     State(#[from] NetworkStateError),
-    #[error("Could not talk to the network system: {0}")]
-    InputError(#[from] SendError<Action>),
-    #[error("Could not read an answer from the network system: {0}")]
-    OutputError(#[from] RecvError),
     #[error("Network backend error: {0}")]
     AdapterError(#[from] NetworkAdapterError),
+    #[error(transparent)]
+    Actor(#[from] actor::Error),
+    #[error(transparent)]
+    Event(#[from] broadcast::error::SendError<Event>),
+    #[error(transparent)]
+    Progress(#[from] progress::service::Error),
+    #[error(transparent)]
+    Generic(#[from] anyhow::Error),
 }
 
 /// Starts the network service
@@ -63,7 +63,8 @@ impl Starter {
     /// This function does not start the system. To get it running, you must call
     /// the [start](Self::start) method.
     ///
-    /// * `adapter`: networking configuration adapter.
+    /// * `events`: channel to emit generic events.
+    /// * `progress`: handler to the progress service.
     pub fn new(events: event::Sender, progress: Handler<progress::Service>) -> Self {
         Self {
             adapter: None,
@@ -74,20 +75,17 @@ impl Starter {
 
     /// Uses the given adapter.
     ///
-    /// By default, the network service relies on systemd. However, it might be useful
+    /// By default, the network service relies on NetworkManager. However, it might be useful
     /// to replace it in some scenarios (e.g., when testing).
     ///
-    /// * `adapter`: model to use. It must implement the [ModelAdapter] trait.
+    /// * `adapter`: adapter to use. It must implement the [Adapter] trait.
     pub fn with_adapter<T: Adapter + Send + 'static>(mut self, adapter: T) -> Self {
         self.adapter = Some(Box::new(adapter));
         self
     }
 
-    /// Starts the network configuration service and returns a client for communication purposes.
-    ///
-    /// This function starts the server (using [Service]) on a separate
-    /// task. All the communication is performed through the returned [NetworkSystemClient].
-    pub async fn start(self) -> Result<NetworkSystemClient, NetworkSystemError> {
+    /// Starts the network configuration service and returns a handler to communicate with it.
+    pub async fn start(self) -> Result<Handler<Service>, NetworkSystemError> {
         let adapter = match self.adapter {
             Some(adapter) => adapter,
             None => Box::new(
@@ -98,161 +96,27 @@ impl Starter {
         };
 
         let state = adapter.read(StateConfig::default()).await?;
-        let (actions_tx, actions_rx) = mpsc::unbounded_channel();
         let (updates_tx, _updates_rx) = broadcast::channel(1024);
-        if let Some(watcher) = adapter.watcher() {
-            let actions_tx_clone = actions_tx.clone();
+        let watcher = adapter.watcher();
+
+        let service = Service {
+            events: self.events,
+            progress: self.progress,
+            state,
+            output: updates_tx,
+            adapter,
+        };
+
+        let handler = actor::spawn(service);
+
+        if let Some(watcher) = watcher {
+            let handler_clone = handler.clone();
             tokio::spawn(async move {
-                watcher.run(actions_tx_clone).await.unwrap();
+                watcher.run(handler_clone).await.unwrap();
             });
         }
 
-        let updates_tx_clone = updates_tx.clone();
-        tokio::spawn(async move {
-            let mut server = Service {
-                events: self.events,
-                progress: self.progress,
-                state,
-                input: actions_rx,
-                output: updates_tx_clone,
-                adapter,
-            };
-
-            server.listen().await;
-        });
-
-        Ok(NetworkSystemClient {
-            actions: actions_tx,
-            updates: updates_tx,
-        })
-    }
-}
-
-/// Client to interact with the Service once it is running.
-///
-/// It hides the details of the message-passing behind a convenient API.
-#[derive(Clone)]
-pub struct NetworkSystemClient {
-    actions: UnboundedSender<Action>,
-    updates: broadcast::Sender<NetworkChange>,
-}
-
-// TODO: add a NetworkSystemError type
-impl NetworkSystemClient {
-    pub fn subscribe(&self) -> Receiver<NetworkChange> {
-        self.updates.subscribe()
-    }
-
-    /// Returns the general state.
-    pub async fn get_state(&self) -> Result<GeneralState, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetGeneralState(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Updates the network general state.
-    pub fn update_state(&self, state: GeneralState) -> Result<(), NetworkSystemError> {
-        self.actions.send(Action::UpdateGeneralState(state))?;
-        Ok(())
-    }
-
-    /// Returns the collection of network devices.
-    pub async fn get_devices(&self) -> Result<Vec<Device>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetDevices(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Returns the collection of network connections.
-    pub async fn get_connections(&self) -> Result<Vec<Connection>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetConnections(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Returns the cofiguration from the current network state as a [Config].
-    pub async fn get_config(&self) -> Result<Config, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetConfig(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Returns the cofiguration from the current network state as a [Proposal].
-    pub async fn get_proposal(&self) -> Result<Proposal, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetProposal(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Updates the current network state based on the configuration given.
-    pub async fn update_config(&self, config: Config) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::UpdateConfig(Box::new(config.clone()), tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
-    /// Reads the current system network configuration returning it directly
-    pub async fn get_system(&self) -> Result<SystemInfo, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetSystem(tx))?;
-        Ok(rx.await?)
-    }
-
-    /// Returns the connection with the given ID.
-    ///
-    /// * `id`: Connection ID.
-    pub async fn get_connection(&self, id: &str) -> Result<Option<Connection>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions
-            .send(Action::GetConnection(id.to_string(), tx))?;
-        let result = rx.await?;
-        Ok(result)
-    }
-
-    pub async fn apply(&self) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::Apply(tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
-    /// Propose the default network configuration.
-    pub async fn propose_default(&self) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::ProposeDefault(tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
-    /// Sets the locale.
-    pub fn set_locale(&self, locale: String) -> Result<(), NetworkSystemError> {
-        self.actions.send(Action::SetLocale(locale))?;
-        Ok(())
-    }
-
-    /// Copies the persistent network connections to the target system.
-    pub async fn install(&self) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::Install(tx))?;
-        let result = rx.await?;
-        Ok(result?)
-    }
-
-    /// Returns the collection of access points.
-    pub async fn get_access_points(&self) -> Result<Vec<AccessPoint>, NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::GetAccessPoints(tx))?;
-        let access_points = rx.await?;
-        Ok(access_points)
-    }
-
-    pub async fn wifi_scan(&self) -> Result<(), NetworkSystemError> {
-        let (tx, rx) = oneshot::channel();
-        self.actions.send(Action::RefreshScan(tx)).unwrap();
-        let result = rx.await?;
-        Ok(result?)
+        Ok(handler)
     }
 }
 
@@ -260,7 +124,6 @@ pub struct Service {
     events: event::Sender,
     progress: Handler<progress::Service>,
     state: NetworkState,
-    input: UnboundedReceiver<Action>,
     output: broadcast::Sender<NetworkChange>,
     adapter: Box<dyn Adapter + Send + 'static>,
 }
@@ -270,213 +133,8 @@ impl Service {
         Starter::new(events, progress)
     }
 
-    /// Process incoming actions.
-    ///
-    /// This function is expected to be executed on a separate thread.
-    pub async fn listen(&mut self) {
-        while let Some(action) = self.input.recv().await {
-            match self.dispatch_action(action).await {
-                Ok(Some(update)) => {
-                    _ = self.output.send(update);
-                }
-                Err(error) => {
-                    tracing::error!("Could not process the action: {}", error);
-                }
-                _ => {}
-            }
-        }
-    }
-
-    /// Dispatch an action.
-    pub async fn dispatch_action(
-        &mut self,
-        action: Action,
-    ) -> Result<Option<NetworkChange>, Box<dyn Error>> {
-        match action {
-            Action::RefreshScan(tx) => {
-                let state = self
-                    .adapter
-                    .read(StateConfig {
-                        access_points: true,
-                        ..Default::default()
-                    })
-                    .await?;
-                self.state.general_state = state.general_state;
-                self.state.access_points = state.access_points;
-                tx.send(Ok(())).unwrap();
-            }
-            Action::GetAccessPoints(tx) => {
-                tx.send(self.state.access_points.clone()).unwrap();
-            }
-            Action::NewConnection(conn) => {
-                if let Some(conn) = self.state.get_connection(&conn.id) {
-                    tracing::info!("Connection {:?} already exists, skipping it", conn);
-                    return Ok(None);
-                } else {
-                    tracing::info!("New connection to be added {:?}, forcing re-read", &conn);
-                    self.force_state_read().await?;
-                    self.events.send(Event::SystemChanged {
-                        scope: (Scope::Network),
-                    })?;
-                    self.events.send(Event::ProposalChanged {
-                        scope: (Scope::Network),
-                    })?;
-                    return Ok(Some(NetworkChange::ConnectionAdded(Box::new(*conn))));
-                }
-            }
-            Action::GetGeneralState(tx) => {
-                let config = self.state.general_state.clone();
-                tx.send(config.clone()).unwrap();
-            }
-            Action::GetConnection(id, tx) => {
-                let conn = self.state.get_connection(id.as_ref());
-                tx.send(conn.cloned()).unwrap();
-            }
-            Action::GetConnectionByUuid(uuid, tx) => {
-                let conn = self.state.get_connection_by_uuid(uuid);
-                tx.send(conn.cloned()).unwrap();
-            }
-            Action::GetSystem(tx) => {
-                let result = self.read().await?.try_into()?;
-                tx.send(result).unwrap();
-            }
-            Action::GetConfig(tx) => {
-                let config: Config = self.state.clone().try_into()?;
-                tx.send(config).unwrap();
-            }
-            Action::GetProposal(tx) => {
-                let config: Proposal = self.state.clone().try_into()?;
-                tx.send(config).unwrap();
-            }
-            Action::UpdateConfig(config, tx) => {
-                let result = self.state.update_state(*config);
-                tx.send(result).unwrap();
-            }
-            Action::GetConnections(tx) => {
-                let connections = self
-                    .state
-                    .connections
-                    .clone()
-                    .into_iter()
-                    .filter(|c| !c.is_removed())
-                    .collect();
-
-                tx.send(connections).unwrap();
-            }
-
-            Action::GetDevice(name, tx) => {
-                let device = self.state.get_device(name.as_str());
-                tx.send(device.cloned()).unwrap();
-            }
-            Action::AddDevice(device) => {
-                self.state.add_device(*device.clone())?;
-                self.events.send(Event::SystemChanged {
-                    scope: (Scope::Network),
-                })?;
-                return Ok(Some(NetworkChange::DeviceAdded(*device)));
-            }
-            Action::UpdateDevice(name, device) => {
-                if let Some(old_device) = self.state.get_device(&name) {
-                    if old_device == device.as_ref() {
-                        return Ok(None);
-                    }
-                }
-                self.state.update_device(&name, *device.clone())?;
-                self.events.send(Event::SystemChanged {
-                    scope: (Scope::Network),
-                })?;
-                return Ok(Some(NetworkChange::DeviceUpdated(name, *device)));
-            }
-            Action::RemoveDevice(name) => {
-                self.state.remove_device(&name)?;
-                self.events.send(Event::SystemChanged {
-                    scope: (Scope::Network),
-                })?;
-                return Ok(Some(NetworkChange::DeviceRemoved(name)));
-            }
-            Action::GetDevices(tx) => {
-                tx.send(self.state.devices.clone()).unwrap();
-            }
-            Action::AddAccessPoint(ap) => {
-                self.state.add_access_point(*ap.clone())?;
-                tracing::info!("Access point added: {:?}", &ap);
-                //self.events.send(Event::SystemChanged {
-                //    scope: (Scope::Network),
-                //})?;
-                return Ok(Some(NetworkChange::AccessPointAdded(*ap)));
-            }
-            Action::RemoveAccessPoint(hw_address) => {
-                self.state.remove_access_point(&hw_address)?;
-                tracing::info!("Access point removed: {:?}", &hw_address);
-                //self.events.send(Event::SystemChanged {
-                //    scope: (Scope::Network),
-                //})?;
-                return Ok(Some(NetworkChange::AccessPointRemoved(hw_address)));
-            }
-            Action::UpdateConnection(conn, tx) => {
-                let result = self.state.update_connection(*conn);
-                tx.send(result).unwrap();
-            }
-            Action::ChangeConnectionState(uuid, state) => {
-                if let Some(conn) = self.state.get_connection_by_uuid_mut(uuid) {
-                    if conn.state != state {
-                        tracing::info!(
-                            "Changed connection {} state: ({} -> {})",
-                            conn.id,
-                            conn.state,
-                            state
-                        );
-                        conn.state = state;
-                    }
-                    return Ok(Some(NetworkChange::ConnectionStateChanged { uuid, state }));
-                }
-            }
-            Action::UpdateGeneralState(general_state) => {
-                if self.state.general_state != general_state {
-                    self.state.general_state = general_state;
-                    self.events.send(Event::ProposalChanged {
-                        scope: (Scope::Network),
-                    })?;
-                    self.events.send(Event::SystemChanged {
-                        scope: (Scope::Network),
-                    })?;
-                }
-            }
-            Action::RemoveConnection(uuid) => {
-                if let Some(conn) = self.state.get_connection_by_uuid(uuid) {
-                    if !conn.is_removed() {
-                        tracing::info!("Connection {:?} exists, removing it", conn);
-                        self.state.remove_connection(uuid)?;
-                        self.events.send(Event::ConfigChanged {
-                            scope: (Scope::Network),
-                        })?;
-                    } else {
-                        tracing::info!(
-                            "Connection {:?} is marked to be removed, skipping it",
-                            conn
-                        );
-                    }
-                } else {
-                    tracing::info!("Connection {} does not exists, skipping it", uuid);
-                }
-                return Ok(Some(NetworkChange::ConnectionRemoved(uuid)));
-            }
-            Action::Apply(tx) => {
-                let result = self.apply().await;
-                tx.send(result).unwrap();
-            }
-            Action::ProposeDefault(tx) => {
-                let result = self.state.propose_default();
-                tx.send(result).unwrap();
-            }
-            Action::Install(tx) => {
-                let result = self.state.install().await;
-                tx.send(result).unwrap();
-            }
-            Action::SetLocale(_) => {}
-        }
-
-        Ok(None)
+    pub fn subscribe(&self) -> broadcast::Receiver<NetworkChange> {
+        self.output.subscribe()
     }
 
     /// Reads the system network configuration.
@@ -552,5 +210,345 @@ impl Service {
         })?;
 
         result
+    }
+
+    fn send_update(&self, update: NetworkChange) {
+        _ = self.output.send(update);
+    }
+}
+
+impl Actor for Service {
+    type Error = NetworkSystemError;
+}
+
+#[async_trait]
+impl MessageHandler<message::RefreshScan> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::RefreshScan,
+    ) -> Result<Result<(), NetworkAdapterError>, NetworkSystemError> {
+        let state = self
+            .adapter
+            .read(StateConfig {
+                access_points: true,
+                ..Default::default()
+            })
+            .await?;
+        self.state.general_state = state.general_state;
+        self.state.access_points = state.access_points;
+        Ok(Ok(()))
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::NewConnection> for Service {
+    async fn handle(&mut self, message: message::NewConnection) -> Result<(), NetworkSystemError> {
+        if let Some(conn) = self.state.get_connection(&message.connection.id) {
+            tracing::info!("Connection {:?} already exists, skipping it", conn);
+        } else {
+            tracing::info!(
+                "New connection to be added {:?}, forcing re-read",
+                &message.connection
+            );
+            self.force_state_read().await?;
+            self.events.send(Event::SystemChanged {
+                scope: (Scope::Network),
+            })?;
+            self.events.send(Event::ProposalChanged {
+                scope: (Scope::Network),
+            })?;
+            self.send_update(NetworkChange::ConnectionAdded(message.connection));
+        }
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetGeneralState> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetGeneralState,
+    ) -> Result<GeneralState, NetworkSystemError> {
+        Ok(self.state.general_state.clone())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetConnection> for Service {
+    async fn handle(
+        &mut self,
+        message: message::GetConnection,
+    ) -> Result<Option<Connection>, NetworkSystemError> {
+        Ok(self.state.get_connection(message.id.as_ref()).cloned())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetConnectionByUuid> for Service {
+    async fn handle(
+        &mut self,
+        message: message::GetConnectionByUuid,
+    ) -> Result<Option<Connection>, NetworkSystemError> {
+        Ok(self.state.get_connection_by_uuid(message.uuid).cloned())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetSystem> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetSystem,
+    ) -> Result<SystemInfo, NetworkSystemError> {
+        let result = self.read().await?.try_into()?;
+        Ok(result)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetConfig> for Service {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, NetworkSystemError> {
+        let config: Config = self.state.clone().try_into()?;
+        Ok(config)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetProposal> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetProposal,
+    ) -> Result<Proposal, NetworkSystemError> {
+        let config: Proposal = self.state.clone().try_into()?;
+        Ok(config)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetConfig> for Service {
+    async fn handle(
+        &mut self,
+        message: message::SetConfig,
+    ) -> Result<Result<(), NetworkSystemError>, NetworkSystemError> {
+        if let Err(e) = self.state.update_state(*message.config) {
+            return Ok(Err(e.into()));
+        }
+        Ok(self.apply().await.map_err(Into::into))
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetConnections> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetConnections,
+    ) -> Result<Vec<Connection>, NetworkSystemError> {
+        let connections = self
+            .state
+            .connections
+            .clone()
+            .into_iter()
+            .filter(|c| !c.is_removed())
+            .collect();
+        Ok(connections)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetDevice> for Service {
+    async fn handle(
+        &mut self,
+        message: message::GetDevice,
+    ) -> Result<Option<Device>, NetworkSystemError> {
+        Ok(self.state.get_device(message.name.as_str()).cloned())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::AddDevice> for Service {
+    async fn handle(&mut self, message: message::AddDevice) -> Result<(), NetworkSystemError> {
+        self.state.add_device(*message.device.clone())?;
+        self.events.send(Event::SystemChanged {
+            scope: (Scope::Network),
+        })?;
+        self.send_update(NetworkChange::DeviceAdded(*message.device));
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::UpdateDevice> for Service {
+    async fn handle(&mut self, message: message::UpdateDevice) -> Result<(), NetworkSystemError> {
+        if let Some(old_device) = self.state.get_device(&message.name) {
+            if old_device == message.device.as_ref() {
+                return Ok(());
+            }
+        }
+        self.state
+            .update_device(&message.name, *message.device.clone())?;
+        self.events.send(Event::SystemChanged {
+            scope: (Scope::Network),
+        })?;
+        self.send_update(NetworkChange::DeviceUpdated(message.name, *message.device));
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::RemoveDevice> for Service {
+    async fn handle(&mut self, message: message::RemoveDevice) -> Result<(), NetworkSystemError> {
+        self.state.remove_device(&message.name)?;
+        self.events.send(Event::SystemChanged {
+            scope: (Scope::Network),
+        })?;
+        self.send_update(NetworkChange::DeviceRemoved(message.name));
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetDevices> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetDevices,
+    ) -> Result<Vec<Device>, NetworkSystemError> {
+        Ok(self.state.devices.clone())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::AddAccessPoint> for Service {
+    async fn handle(&mut self, message: message::AddAccessPoint) -> Result<(), NetworkSystemError> {
+        self.state.add_access_point(*message.access_point.clone())?;
+        tracing::info!("Access point added: {:?}", &message.access_point);
+        self.send_update(NetworkChange::AccessPointAdded(*message.access_point));
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::RemoveAccessPoint> for Service {
+    async fn handle(
+        &mut self,
+        message: message::RemoveAccessPoint,
+    ) -> Result<(), NetworkSystemError> {
+        self.state.remove_access_point(&message.hw_address)?;
+        tracing::info!("Access point removed: {:?}", &message.hw_address);
+        self.send_update(NetworkChange::AccessPointRemoved(message.hw_address));
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::UpdateConnection> for Service {
+    async fn handle(
+        &mut self,
+        message: message::UpdateConnection,
+    ) -> Result<Result<(), NetworkStateError>, NetworkSystemError> {
+        Ok(self.state.update_connection(*message.connection))
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::ChangeConnectionState> for Service {
+    async fn handle(
+        &mut self,
+        message: message::ChangeConnectionState,
+    ) -> Result<(), NetworkSystemError> {
+        if let Some(conn) = self.state.get_connection_by_uuid_mut(message.uuid) {
+            if conn.state != message.state {
+                tracing::info!(
+                    "Changed connection {} state: ({} -> {})",
+                    conn.id,
+                    conn.state,
+                    message.state
+                );
+                conn.state = message.state;
+            }
+            self.send_update(NetworkChange::ConnectionStateChanged {
+                uuid: message.uuid,
+                state: message.state,
+            });
+        }
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::UpdateGeneralState> for Service {
+    async fn handle(
+        &mut self,
+        message: message::UpdateGeneralState,
+    ) -> Result<(), NetworkSystemError> {
+        if self.state.general_state != message.state {
+            self.state.general_state = message.state;
+            self.events.send(Event::ProposalChanged {
+                scope: (Scope::Network),
+            })?;
+            self.events.send(Event::SystemChanged {
+                scope: (Scope::Network),
+            })?;
+        }
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::RemoveConnection> for Service {
+    async fn handle(
+        &mut self,
+        message: message::RemoveConnection,
+    ) -> Result<(), NetworkSystemError> {
+        if let Some(conn) = self.state.get_connection_by_uuid(message.uuid) {
+            if !conn.is_removed() {
+                tracing::info!("Connection {:?} exists, removing it", conn);
+                self.state.remove_connection(message.uuid)?;
+                self.events.send(Event::ConfigChanged {
+                    scope: (Scope::Network),
+                })?;
+            } else {
+                tracing::info!("Connection {:?} is marked to be removed, skipping it", conn);
+            }
+        } else {
+            tracing::info!("Connection {} does not exists, skipping it", message.uuid);
+        }
+        self.send_update(NetworkChange::ConnectionRemoved(message.uuid));
+        Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Apply> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::Apply,
+    ) -> Result<Result<(), NetworkAdapterError>, NetworkSystemError> {
+        Ok(self.apply().await)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::ProposeDefault> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::ProposeDefault,
+    ) -> Result<Result<(), NetworkStateError>, NetworkSystemError> {
+        Ok(self.state.propose_default())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::Install> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::Install,
+    ) -> Result<Result<(), NetworkStateError>, NetworkSystemError> {
+        Ok(self.state.install().await)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetLocale> for Service {
+    async fn handle(&mut self, _message: message::SetLocale) -> Result<(), NetworkSystemError> {
+        Ok(())
     }
 }
