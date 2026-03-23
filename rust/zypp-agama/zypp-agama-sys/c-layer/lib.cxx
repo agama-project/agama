@@ -34,13 +34,14 @@ extern "C" {
 #include <systemd/sd-journal.h>
 
 // helper macro for logging the code location from where libzypp is called
-#define LOG_LOCATION(message)                                          \
-  do {                                                                 \
-    std::string line("CODE_LINE=");                                    \
-    line.append(std::to_string(__LINE__));                             \
-    sd_journal_send_with_location("CODE_FILE=" __FILE__, line.c_str(), \
-      __func__, "PRIORITY=%i", LOG_NOTICE, "MESSAGE=%s", (message),    \
-      "COMPONENT=zypp-agama-sys", NULL);  \
+#define LOG_LOCATION(message)                                                  \
+  do {                                                                         \
+    std::string line("CODE_LINE=");                                            \
+    line.append(std::to_string(__LINE__));                                     \
+    sd_journal_send_with_location("CODE_FILE=" __FILE__, line.c_str(),         \
+                                  __func__, "PRIORITY=%i", LOG_NOTICE,         \
+                                  "MESSAGE=%s", (message),                     \
+                                  "COMPONENT=zypp-agama-sys", NULL);           \
   } while (0)
 
 struct Zypp {
@@ -48,9 +49,8 @@ struct Zypp {
   zypp::RepoManager *repo_manager;
 };
 
-static struct Zypp the_zypp{
-    .zypp_pointer = NULL,
-    .repo_manager = NULL,
+static struct Zypp the_zypp {
+  .zypp_pointer = NULL, .repo_manager = NULL,
 };
 
 // formatter which actually logs the messages to the systemd journal,
@@ -692,8 +692,7 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
     // create libzypp Url to hide the password
     zypp::Url z_url(url);
     message.append(zypp::Url(url).asString());
-  }
-  catch (zypp::Exception &excpt) {
+  } catch (zypp::Exception &excpt) {
     // log original string if the Url is invalid
     message.append(url);
   }
@@ -747,8 +746,7 @@ void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
     // create libzypp Url to hide the password
     zypp::Url z_url(url);
     message.append(zypp::Url(url).asString());
-  }
-  catch (zypp::Exception &excpt) {
+  } catch (zypp::Exception &excpt) {
     // log original string if the Url is invalid
     message.append(url);
   }
