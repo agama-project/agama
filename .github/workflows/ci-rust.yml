@@ -119,7 +119,7 @@ jobs:
         key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Run Clang Format check for the C/C++ zypp bindings
-      run: make check
+      run: make check || (make format; echo "Suggested changes:"; git diff; exit 1)
       working-directory: ./rust/zypp-agama/zypp-agama-sys/c-layer
 
     - name: Run clippy linter
