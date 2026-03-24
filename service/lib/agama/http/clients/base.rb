@@ -105,7 +105,7 @@ module Agama
 
         def headers
           {
-            "Content-Type" => "application/json",
+            "Content-Type"  => "application/json",
             "Authorization" => "Bearer #{auth_token}"
           }
         end
