@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Mar 24 13:01:38 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Include more details when saving the journal log
+- Save separate libzypp.out.log file in the old y2log format
+  for libzypp debugging
+- Store the complete journal log in JSON format to include hidden
+  fields and more details
+- gh#agama-project/agama#3309
+
+-------------------------------------------------------------------
 Fri Mar 20 16:56:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Enable agama-scripts service if needed (bsc#1259899).
