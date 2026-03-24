@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 24 17:21:07 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not print the Agama URLs on the console when remote access
+  has been disabled using the "inst.listen_on=localhost" boot
+  parameter (related to jsc#AGM-153, gh#agama-project/agama#3269)
+
+-------------------------------------------------------------------
 Fri Mar 20 07:25:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Replace plymouth with blog-plymouth on s390x (bsc#1254326)

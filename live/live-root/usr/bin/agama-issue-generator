@@ -21,6 +21,10 @@
 # issues
 CERT_ISSUE=/run/issue.d/50-agama-ssl-certificate.issue
 
+if grep -q "\binst.listen_on=localhost\b" /run/agama/cmdline.d/agama.conf; then
+  LOCAL_ONLY=1
+fi
+
 # a helper function which generates the Agama welcome message displayed at the
 # console
 generate_welcome() {
@@ -44,6 +48,11 @@ generate_ssh_fingerprints() {
 # a helper function which generates the Agama SSL certificate fingerprints
 # displayed at the console
 generate_certificate_fingerprints() {
+  if [ "$LOCAL_ONLY" = "1" ]; then
+    echo "Remote access to the Agama installer is disabled, not generating Agama SSL fingerprints"
+    exit 0
+  fi
+
   AGAMA_CERT=/etc/agama.d/ssl/cert.pem
 
   # delete the previous file if it is there
@@ -106,6 +115,11 @@ be used remotely.\\\\e{reset}\n\n" > "$DISCONNECTED_ISSUE"
 # a helper function which generates the mDNS URL for accessing the Agama server
 # displayed at the console
 generate_avahi_url() {
+  if [ "$LOCAL_ONLY" = "1" ]; then
+    echo "Remote access to the Agama installer is disabled, skipping Avahi URL generation"
+    exit 0
+  fi
+
   # track the name, update the issue file only if the name is changed
   OLDNAME=""
 
@@ -276,6 +290,13 @@ build_addresses() {
 # a helper function which generates the URLs for accessing the Agama server
 # displayed at the console
 generate_network_url() {
+  if [ "$LOCAL_ONLY" = "1" ]; then
+    echo "Remote access to the Agama installer is disabled, skipping network URL generation"
+    # display a warning message
+    printf "\\\\e{brown}Remote access to the Agama installer is disabled, it can be used only locally.\\\\e{reset}\n\n" > "$DISCONNECTED_ISSUE"
+    exit 0
+  fi
+
   # build a message with the current URLs
   build_addresses
 
