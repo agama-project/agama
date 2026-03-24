@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 24 07:13:47 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Increase the Net::HTTP read_timeout to 300 seconds to mitigates
+  timeouts during installation tasks (e.g., running scripts or                                                                                                                                                │
+  writing files) (bsc#1259745).
+
+-------------------------------------------------------------------
 Wed Mar 11 14:38:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add errors to the output of agama-autoyast (related to bsc#1259434).
