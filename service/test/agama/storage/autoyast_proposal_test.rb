@@ -121,7 +121,7 @@ describe Agama::Storage::Proposal do
           expect(efi).to have_attributes(
             filesystem_type:       Y2Storage::Filesystems::Type::VFAT,
             filesystem_mountpoint: "/boot/efi",
-            size:                  1.GiB
+            size:                  512.MiB
           )
 
           expect(root).to have_attributes(
@@ -266,7 +266,7 @@ describe Agama::Storage::Proposal do
           filesystem_type:       Y2Storage::Filesystems::Type::VFAT,
           filesystem_mountpoint: "/boot/efi",
           id:                    Y2Storage::PartitionId::ESP,
-          size:                  1.GiB
+          size:                  512.MiB
         )
       end
 
