@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Mar 23 09:50:28 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Replace plymouth with blog-plymouth on s390x (bsc#1254326)
+
+-------------------------------------------------------------------
 Fri Jan 30 14:41:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Disable self-update for SLE 16 QU1 and later (bsc#1257502).

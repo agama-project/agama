@@ -14,7 +14,7 @@ Tumbleweed:
       - https://download.opensuse.org/update/tumbleweed/
     mandatory_patterns:
       - enhanced_base # only pattern that is shared among all roles on TW
-    optional_patterns: null # no optional pattern shared
+    optional_patterns: [] # no optional pattern shared
     base_product: openSUSE
 
   security:
