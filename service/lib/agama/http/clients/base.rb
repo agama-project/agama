@@ -28,6 +28,11 @@ module Agama
     module Clients
       # Base for HTTP clients.
       class Base
+        # Default timeout for HTTP requests (in seconds).
+        # Installation tasks like writing files or running scripts can take a long time,
+        # especially after Snapper configuration which might trigger a Btrfs quota scan.
+        DEFAULT_TIMEOUT = 300
+
         def initialize(logger)
           @base_url = "http://localhost/api/"
           @logger = logger
@@ -36,43 +41,72 @@ module Agama
         # send POST request with given data and path.
         # @param path[String] path relatived to `api`` endpoint.
         # @param data[#to_json] data to send in request
+        # @return [String, nil] response body or nil if it is not a success
         def post(path, data)
-          response = Net::HTTP.post(uri(path), data.to_json, headers)
-          return unless response.is_a?(Net::HTTPClientError)
+          uri = uri(path)
+          request = Net::HTTP::Post.new(uri.request_uri, headers)
+          request.body = data.to_json
+          response = call_server(uri, request)
+          return response.body if response.is_a?(Net::HTTPSuccess)
 
-          @logger.warn "server returned #{response.code} with body: #{response.body}"
+          log_error(response)
+          nil
         end
 
         # send GET request with given path.
         # @param path[String] path relatived to `api`` endpoint.
-        # @return [Net::HTTPResponse, nil] Net::HTTPResponse if it is not an Net::HTTPClientError
+        # @return [String, nil] response body or nil if it is not a success
         def get(path)
-          response = Net::HTTP.get(uri(path), headers)
-          return response unless response.is_a?(Net::HTTPClientError)
+          uri = uri(path)
+          request = Net::HTTP::Get.new(uri.request_uri, headers)
+          response = call_server(uri, request)
+          return response.body if response.is_a?(Net::HTTPSuccess)
 
-          @logger.warn "server returned #{response.code} with body: #{response.body}"
+          log_error(response)
+          nil
         end
 
         # send PUT request with given data and path.
         # @param path[String] path relatived to `api`` endpoint.
         # @param data[#to_json] data to send in request
+        # @return [String, nil] response body or nil if it is not a success
         def put(path, data)
-          response = Net::HTTP.put(uri(path), data.to_json, headers)
-          return unless response.is_a?(Net::HTTPClientError)
+          uri = uri(path)
+          request = Net::HTTP::Put.new(uri.request_uri, headers)
+          request.body = data.to_json
+          response = call_server(uri, request)
+          return response.body if response.is_a?(Net::HTTPSuccess)
 
-          @logger.warn "server returned #{response.code} with body: #{response.body}"
+          log_error(response)
+          nil
         end
 
       protected
+
+        # Log an error response.
+        # @param response [Net::HTTPResponse]
+        def log_error(response)
+          @logger.warn "server returned #{response.code} with body: #{response.body}"
+        end
+
+        # Calls the server with the given request.
+        # @param uri [URI]
+        # @param request [Net::HTTPRequest]
+        # @return [Net::HTTPResponse]
+        def call_server(uri, request)
+          Net::HTTP.start(uri.host, uri.port, read_timeout: DEFAULT_TIMEOUT) do |http|
+            http.request(request)
+          end
+        end
 
         def uri(path)
           URI.join(@base_url, path)
         end
 
         def headers
-          @headers = {
-            "Content-Type": "application/json",
-            Authorization:  "Bearer #{auth_token}"
+          {
+            "Content-Type"  => "application/json",
+            "Authorization" => "Bearer #{auth_token}"
           }
         end
 

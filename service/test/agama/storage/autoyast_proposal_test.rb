@@ -37,6 +37,8 @@ describe Agama::Storage::Proposal do
   before do
     mock_storage(devicegraph: scenario)
     allow(Y2Storage::Arch).to receive(:new).and_return(arch)
+    # This environment is enforced by Agama
+    allow(Y2Storage::StorageEnv.instance).to receive(:no_bls_bootloader).and_return true
   end
 
   let(:scenario) { "windows-linux-pc.yml" }
