@@ -44,6 +44,19 @@ extern "C" {
                                   "COMPONENT=zypp-agama-sys", NULL);           \
   } while (0)
 
+// helper function to hide the password in URL
+std::string filter_url(const char *url) {
+  std::string result(url);
+  try {
+    zypp::Url z_url(url);
+    // asString() by default does not include the password
+    result = z_url.asString();
+  } catch (const zypp::Exception &excpt) {
+    // if the URL is invalid, just return the original string
+  }
+  return result;
+}
+
 struct Zypp {
   zypp::ZYpp::Ptr zypp_pointer;
   zypp::RepoManager *repo_manager;
@@ -521,14 +534,7 @@ void add_service(struct Zypp *zypp, const char *alias, const char *url,
   std::string message("Adding service: ");
   message.append(alias);
   message.append(" (");
-  try {
-    // create libzypp Url to hide the password
-    zypp::Url z_url(url);
-    message.append(zypp::Url(url).asString());
-  } catch (zypp::Exception &excpt) {
-    // log original string if the Url is invalid
-    message.append(url);
-  }
+  message.append(filter_url(url));
   message.append(")");
   LOG_LOCATION(message.c_str());
 
@@ -689,14 +695,7 @@ void add_repository(struct Zypp *zypp, const char *alias, const char *url,
   std::string message("Adding repository: ");
   message.append(alias);
   message.append(" (");
-  try {
-    // create libzypp Url to hide the password
-    zypp::Url z_url(url);
-    message.append(zypp::Url(url).asString());
-  } catch (zypp::Exception &excpt) {
-    // log original string if the Url is invalid
-    message.append(url);
-  }
+  message.append(filter_url(url));
   message.append(")");
   LOG_LOCATION(message.c_str());
 
@@ -743,14 +742,7 @@ void set_repository_url(struct Zypp *zypp, const char *alias, const char *url,
   std::string message("Setting repository url: ");
   message.append(alias);
   message.append(" (");
-  try {
-    // create libzypp Url to hide the password
-    zypp::Url z_url(url);
-    message.append(zypp::Url(url).asString());
-  } catch (zypp::Exception &excpt) {
-    // log original string if the Url is invalid
-    message.append(url);
-  }
+  message.append(filter_url(url));
   message.append(")");
   LOG_LOCATION(message.c_str());
 
