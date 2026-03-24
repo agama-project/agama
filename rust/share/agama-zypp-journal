@@ -100,7 +100,7 @@ process_logs() {
   (.ZYPP_LEVEL | get_color) as $color |
   [
     (.__REALTIME_TIMESTAMP | select(. != null and . != "") | format_timestamp),
-    (((.ZYPP_LEVEL | select(. != null and . != "") | tostring) // "?") | "<" + tostring + ">"),
+    (((.ZYPP_LEVEL | select(. != null and . != "") | tostring) // "1") | "<" + tostring + ">"),
     format_syslog_pid,
     "[" + ((.ZYPP_GROUP | select(. != null and . != "") | tostring) // .COMPONENT) + "]",
     format_location,
