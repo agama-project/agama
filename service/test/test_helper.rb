@@ -21,7 +21,6 @@
 
 require "yast"
 require "yast/rspec"
-require "y2storage"
 
 SRC_PATH = File.expand_path("../lib", __dir__)
 FIXTURES_PATH = File.expand_path("fixtures", __dir__)
