@@ -48,6 +48,10 @@ RSpec.configure do |c|
   c.before do
     allow(Agama::ProductReader).to receive(:new)
       .and_return(double(load_products: []))
+
+    # Avoid calling system code (invalid SCR instance errors) when checking
+    # if TPM-FDE is possible.
+    allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(false)
   end
 end
 
