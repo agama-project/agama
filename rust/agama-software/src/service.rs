@@ -198,6 +198,9 @@ impl Service {
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
+        // initialize initial state of service. It is important to be sure that for first computation of
+        // wanted state, the state will already include system info including predefined repositories (bsc#1260056)
+        Self::update_state(self.state.clone(), self.model.lock().await, self.events.clone()).await;
         Ok(())
     }
 
