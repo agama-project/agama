@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar 23 15:32:40 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fix overzealous check preventing the usage of ifNotFound:create
+  in the storage section (fixes gh#agama-project/agama#2985).
+
+-------------------------------------------------------------------
 Thu Mar 19 21:12:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - AutoYaST support: use the connection "device" as fallback for network
@@ -9,6 +15,13 @@ Wed Mar 18 23:44:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Remove empty strings when importing an AutoYaST profile
   (gh#agama-project/agama#3302).
+
+-------------------------------------------------------------------
+Tue Mar 17 14:49:14 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-15434
+  - fixed AY root_reader. authorized_keys are converted as an array
+    into sshPublicKeys now (no first key only anymore)
 
 -------------------------------------------------------------------
 Tue Mar 17 12:15:21 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

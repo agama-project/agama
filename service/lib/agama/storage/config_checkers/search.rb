@@ -67,7 +67,7 @@ module Agama
 
         # @return [Issue, nil]
         def not_found_issue
-          return if search.device || search.skip_device?
+          return if search.device || search.create_device? || search.skip_device?
 
           if search.name
             # TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").

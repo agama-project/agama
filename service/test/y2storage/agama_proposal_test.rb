@@ -562,6 +562,9 @@ describe Y2Storage::AgamaProposal do
           part.search = Agama::Storage::Configs::Search.new.tap do |search|
             search.if_not_found = if_not_found
           end
+          part.filesystem = Agama::Storage::Configs::Filesystem.new.tap do |fs|
+            fs.path = "/foo"
+          end
         end
       end
 
@@ -592,6 +595,26 @@ describe Y2Storage::AgamaProposal do
           expect(proposal.issues_list).to include an_object_having_attributes(
             description: "Mandatory partition not found"
           )
+        end
+      end
+
+      context "if if_not_found is set to :create" do
+        let(:if_not_found) { :create }
+
+        it "calculates a proposal if possible" do
+          proposal.propose
+          expect(proposal.failed?).to eq false
+        end
+
+        it "does not register any issue about missing partitions" do
+          proposal.propose
+          expect(proposal.issues_list).to be_empty
+        end
+
+        it "creates the missing partition" do
+          proposal.propose
+          expect(proposal.devices.partitions.map(&:filesystem))
+            .to include an_object_having_attributes(mount_path: "/foo")
         end
       end
     end
@@ -1135,6 +1158,63 @@ describe Y2Storage::AgamaProposal do
               )
             )
           end
+        end
+      end
+    end
+
+    # Regression test for https://github.com/agama-project/agama/issues/2985
+    context "when searching or creating a partition" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:config_json) do
+        {
+          drives: [
+            {
+              partitions: [
+                {
+                  search:     {
+                    condition:  {
+                      number: partition_nr
+                    },
+                    ifNotFound: :create
+                  },
+                  filesystem: {
+                    path: "/",
+                    type: "ext3"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      context "if the partition already exists" do
+        let(:partition_nr) { 3 }
+
+        it "reuses the partition" do
+          vda3_sid = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda3").sid
+
+          devicegraph = proposal.propose
+
+          vda3 = devicegraph.find_device(vda3_sid)
+          expect(vda3).to_not be_nil
+          expect(vda3.filesystem.mount_path).to eq("/")
+        end
+      end
+
+      context "if the partition does not exist" do
+        let(:partition_nr) { 5 }
+
+        it "creates a new partition" do
+          parts = Y2Storage::StorageManager.instance.probed.find_by_name("/dev/vda").partitions.size
+
+          devicegraph = proposal.propose
+
+          vda = devicegraph.find_by_name("/dev/vda")
+          expect(vda.partitions.size).to eq(parts + 1)
+          expect(vda.partitions.map(&:filesystem))
+            .to include an_object_having_attributes(mount_path: "/")
         end
       end
     end
