@@ -101,6 +101,12 @@ const useZFCPControllersChanges = () => {
       ) {
         return;
       }
+      // In the de message the luns_map is missed, therefore, specially
+      // when a Controller is activated we only get the id, channel,
+      // lunScan and active values, the luns_map is always empty.
+      // Therefore, we might retrieve the luns for the modified
+      // controller. By now we are invalidating the whole query which is
+      // more inefficient but good enough for (bsc#1247445)
       queryClient.setQueryData(
         zfcpControllersQuery.queryKey,
         (prev: ZFCPController[] | undefined) => {
@@ -120,6 +126,8 @@ const useZFCPControllersChanges = () => {
         },
       );
 
+      // Invalidate the whole query for retrieving the controllers luns_map. See
+      // comment above
       queryClient.invalidateQueries({ queryKey: ["zfcp", "controllers"] });
     });
   }, [client, queryClient]);
