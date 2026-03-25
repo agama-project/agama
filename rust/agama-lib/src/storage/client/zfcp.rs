@@ -114,14 +114,20 @@ impl ZFCPClient<'_> {
         for (path, ifaces) in managed_objects {
             if let Some(properties) = ifaces.get("org.opensuse.Agama.Storage1.ZFCP.Controller") {
                 let id = extract_id_from_path(&path)?.to_string();
+                let active = get_property(properties, "Active")?;
+                let luns_map = if active {
+                    self.get_luns_map(id.as_str()).await?
+                } else {
+                    Default::default()
+                };
                 devices.push((
                     path,
                     ZFCPController {
                         id: id.clone(),
                         channel: get_property(properties, "Channel")?,
                         lun_scan: get_property(properties, "LUNScan")?,
-                        active: get_property(properties, "Active")?,
-                        luns_map: self.get_luns_map(id.as_str()).await?,
+                        active,
+                        luns_map,
                     },
                 ))
             }
