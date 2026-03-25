@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 25 19:18:18 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Update the OBS systemsmanagement:Agama:Devel GPG key,
+  the old one has expired (gh#agama-project/agama#3334)
+
+-------------------------------------------------------------------
 Tue Mar 24 17:21:07 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not print the Agama URLs on the console when remote access
