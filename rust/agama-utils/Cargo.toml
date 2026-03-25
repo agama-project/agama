@@ -4,9 +4,13 @@ version = "0.1.0"
 rust-version.workspace = true
 edition.workspace = true
 
+[features]
+default = ["curl"]
+curl = ["dep:agama-transfer"]
+
 [dependencies]
 agama-locale-data = { path = "../agama-locale-data" }
-agama-transfer = { path = "../agama-transfer" }
+agama-transfer = { path = "../agama-transfer", optional = true }
 anyhow = { version = "1.0.98" }
 async-trait = "0.1.89"
 camino = "1.2.1"
