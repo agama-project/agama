@@ -197,7 +197,12 @@ function create_qr_codes() {
       REST_ADDRESSES=("${IP4ADDR[@]:$QR_NUM:$SZ}")
     else
       QR_ADDRESSES=()
-      REST_ADDRESSES=("${ADDRESSES[@]}")
+      REST_ADDRESSES=()
+      IP6ADDR=()
+      # put IPv6 addresses into a separate list to display [] around them
+      for ADDR in "${ADDRESSES[@]}"; do
+        [[ "$ADDR" =~ : ]] && IP6ADDR+=("$ADDR") || REST_ADDRESSES+=("$ADDR")
+      done
     fi
 
     if [ -n "${REST_ADDRESSES[*]}" ]; then
@@ -208,6 +213,7 @@ function create_qr_codes() {
     fi
 
     if [ -z "${QR_ADDRESSES[*]}" ]; then
+      echo >> "$URL_ISSUES"
       return 0
     fi
 
@@ -241,6 +247,7 @@ function create_qr_codes() {
 
     cat "$QR_RESULT" >> "$URL_ISSUES"
     echo "$LABEL" >> "$URL_ISSUES"
+    echo >> "$URL_ISSUES"
 
     # delete the temporary files
     rm -f "$QR_TEMP" "$QR_RESULT_COPY" "$QR_RESULT"
