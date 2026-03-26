@@ -2,8 +2,8 @@
 Description=Agama automatic profile runner
 # it needs agama web service as it calls CLI which uses its API
 # other dependencies are transitive
-After=agama-web-server.service
-BindsTo=agama-web-server.service
+After=agama-web-server-remote.service
+After=agama-web-server-local.service
 
 [Service]
 ExecStart=/usr/bin/agama-autoinstall

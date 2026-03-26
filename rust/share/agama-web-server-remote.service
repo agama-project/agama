@@ -1,0 +1,25 @@
+# NOTE: When touching this file you might very likely need to do the same
+# change also in the agama-web-server-local.service file as well.
+
+[Unit]
+Description=Agama Web Server (Remote and local access)
+# agama-hostname might change the host name which is used when creating
+# a self signed certificate, run it before the web server
+After=network-online.target agama.service agama-hostname.service
+Conflicts=agama-web-server-local.service
+BindsTo=agama.service
+
+[Service]
+EnvironmentFile=-/run/agama/environment.conf
+Environment="AGAMA_LOG=debug,zbus=info"
+Type=notify
+# listen on all interfaces, the server is accessible locally and remotely
+ExecStart=/usr/bin/agama-web-server serve --address ":::80,0.0.0.0:80" --address ":::443,0.0.0.0:443"
+PIDFile=/run/agama/web.pid
+User=root
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
+# create alias for backward compatibility
+Alias=agama-web-server.service

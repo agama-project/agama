@@ -5,7 +5,8 @@ Description=Agama kernel cmdline processing
 After=network-online.target
 
 # before starting the Agama servers so they read configuration parsed
-Before=agama-web-server.service
+Before=agama-web-server-remote.service
+Before=agama-web-server-local.service
 Before=agama.service
 
 [Service]

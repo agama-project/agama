@@ -59,7 +59,7 @@ process_logs() {
   if [ -n "$INPUT_FILE" ]; then
     cat "$INPUT_FILE"
   else
-    journalctl -u agama-web-server.service -o json "$@"
+    journalctl -u agama-web-server-remote.service -o json "$@"
   fi | jq --unbuffered --arg use_colors "$USE_COLORS" -r '
   # Helper function to get color based on priority
   def get_color:

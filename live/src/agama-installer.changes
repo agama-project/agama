@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Wed Apr  1 11:56:34 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- The "agama-web-server" systemd service has been replaced by
+  the "agama-web-server-local" and "agama-web-server-remote"
+  services
+- The remote access can be disabled with the
+  "systemd.mask=agama-web-server-remote.service
+  systemd.wants=agama-web-server-local.service" boot options
+  (jsc#AGM-153)
+
+-------------------------------------------------------------------
 Tue Mar 31 14:28:52 UTC 2026 - Shawn Dunn <sfalken@opensuse.org>
 
 - Add userChrome.css to simplify the firefox UI

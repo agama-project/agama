@@ -38,7 +38,6 @@ install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-autoinstall"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-proxy-setup"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/target/${RUST_TARGET}/agama-web-server"
-install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-web-server.sh"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-journal"
 install -D -t "${DESTDIR}${bindir}" "${SRCDIR}/share/agama-zypp-journal"
 
@@ -58,7 +57,8 @@ install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-autoinstall.service
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-proxy-setup.service
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-scripts.service
-install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server.service
+install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server-local.service
+install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server-remote.service
 
 # create the licenses directory
 install -d -m 0755 "${DESTDIR}${datadir}"/agama/eula

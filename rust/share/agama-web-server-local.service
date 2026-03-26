@@ -1,15 +1,20 @@
+# NOTE: When touching this file you might very likely need to do the same
+# change also in the agama-web-server-remote.service file as well.
+
 [Unit]
-Description=Agama Web Server
+Description=Agama Web Server (Local access only)
 # agama-hostname might change the host name which is used when creating
 # a self signed certificate, run it before the web server
 After=network-online.target agama.service agama-hostname.service
+Conflicts=agama-web-server-remote.service
 BindsTo=agama.service
 
 [Service]
 EnvironmentFile=-/run/agama/environment.conf
 Environment="AGAMA_LOG=debug,zbus=info"
 Type=notify
-ExecStart=/usr/bin/agama-web-server.sh
+# listen only on the loopback interface, the server cannot be accessed remotely
+ExecStart=/usr/bin/agama-web-server serve --address "::1:80,127.0.0.1:80" --address "::1:443,127.0.0.1:443"
 PIDFile=/run/agama/web.pid
 User=root
 TimeoutStopSec=5
