@@ -2005,7 +2005,7 @@ export default {
     "La configuració d'emmagatzematge usa elements no compatibles amb aquesta interfície."
   ],
   "The system does not support Wi-Fi connections, probably because of missing or disabled hardware.": [
-    "El sistema no admet connexions de wifi, probablement a causa de maquinari que manca o que està inhabilitat."
+    "El sistema no admet connexions sense fil, probablement a causa de maquinari que manca o que està inhabilitat."
   ],
   "The system will use %s as its default language.": [
     "El sistema usarà el %s com a llengua per defecte."
@@ -2301,7 +2301,7 @@ export default {
     "Senyal dèbil"
   ],
   "Wi-Fi connection form": [
-    "Formulari de connexió per WiFi"
+    "Formulari de connexió sense fil"
   ],
   "Wi-Fi networks": [
     "Connexions sense fil"
