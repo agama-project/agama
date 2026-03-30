@@ -1360,7 +1360,7 @@ export default {
   "Network details": [
     "ქსელის დეტალები"
   ],
-  "Network not availble": [
+  "Network not available": [
     "ქსელი ხელმისაწვდომი არაა"
   ],
   "New": [

@@ -1360,7 +1360,7 @@ export default {
   "Network details": [
     "Detalls de la xarxa"
   ],
-  "Network not availble": [
+  "Network not available": [
     "Xarxa no disponible"
   ],
   "New": [
