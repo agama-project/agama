@@ -37,11 +37,12 @@ module Agama
         # @param storage_system [Storage::System]
         # @param config [Agama::Storage::Config]
         # @param logger [Logger]
-        def initialize(product_config, storage_system, config, logger)
+        def initialize(product_config, storage_system, config, bootloader_config, logger)
           textdomain "agama"
 
           super(product_config, storage_system, logger)
           @config = config
+          @bootloader_config = bootloader_config
         end
 
         # @see Base#calculate
@@ -71,8 +72,9 @@ module Agama
           Y2Storage::AgamaProposal.new(
             config,
             storage_system,
-            product_config: product_config,
-            issues_list:    []
+            product_config:    product_config,
+            bootloader_config: @bootloader_config,
+            issues_list:       []
           )
         end
       end

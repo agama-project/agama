@@ -36,7 +36,9 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
-      class Manager < BaseObject
+      class Manager < BaseObject # rubocop:disable Metrics/ClassLength
+        # The class is long due to declarations (D-BUS, JSON and progress reporting).
+
         extend Yast::I18n
         include Yast::I18n
         include WithIssues
@@ -226,10 +228,16 @@ module Agama
         def configure_bootloader(serialized_config)
           logger.info("Setting bootloader config: #{serialized_config}")
           config_json = JSON.parse(serialized_config, symbolize_names: true)
+          reconfigure_storage = manager.configured_for_bootloader?(config_json)
           manager.update_bootloader_config(config_json)
+
           # after loading config try to apply it, so proper packages can be requested
           # TODO: generate also new issue from configuration
-          calculate_bootloader
+          if reconfigure_storage
+            configure_with_current
+          else
+            calculate_bootloader
+          end
           0
         end
 
