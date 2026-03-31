@@ -45,17 +45,16 @@ module Agama
       #
       # It proposes the bootloader configuration based on the current system and storage
       # configuration. It also applies the user configuration and installs the needed packages.
-      def configure
+      #
+      # @param product_config [Agama::Config]
+      def configure(product_config)
         # TODO: get value from product ( probably for TW and maybe Leap?)
         ::Bootloader::OsProber.package_available = false
         # reset disk to always read the recent storage configuration
         ::Yast::BootStorage.reset_disks
         # reset bootloader factory cache as we want here to reapply config from scratch
         ::Bootloader::BootloaderFactory.clear_cache
-        # propose values first. Propose bootloader from factory and do not use
-        # current as agama has /etc/sysconfig/bootloader with efi, so it
-        # will lead to wrong one.
-        bootloader = ::Bootloader::BootloaderFactory.proposed
+        bootloader = bootloader_object(product_config)
         ::Bootloader::BootloaderFactory.current = bootloader
         bootloader.propose
         # then also apply changes to that proposal
@@ -169,6 +168,25 @@ module Agama
         else
           @logger.error "unexpected value for stop_on_boot_menu #{@config.stop_on_boot_menu}"
         end
+      end
+
+      # Bootloader object from yast2-bootloader to use during configuration
+      #
+      # @param product_config [Agama::Config]
+      def bootloader_object(product_config)
+        ::Bootloader::BootloaderFactory.bootloader_by_name(bootloader_name(product_config))
+      end
+
+      # Name of the bootloader at ::Bootloader::BootloaderFactory
+      #
+      # @param product_config [Agama::Config]
+      # @return [String]
+      def bootloader_name(product_config)
+        solved = @config.copy
+        BootloaderConfigSolver.new(product_config).solve(solved)
+        return "grub2-efi" if solved.type.is?(:grub2) && ::Bootloader::Systeminfo.efi?
+
+        solved.type.to_s
       end
     end
   end

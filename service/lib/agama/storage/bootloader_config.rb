@@ -19,10 +19,19 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/copyable"
+
 module Agama
   module Storage
     # Representation of the bootloader settings, also affecting the storage proposal
     class BootloaderConfig
+      include Copyable
+
+      # Type of bootloader to install
+      #
+      # @return [BootloaderType, nil] if nil, the type is decided by Agama
+      attr_accessor :type
+
       # Whether bootloader should update persistent RAM.
       # If kept as nil then default will be used.
       #

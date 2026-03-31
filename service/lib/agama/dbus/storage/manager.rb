@@ -185,13 +185,13 @@ module Agama
         # Implementation for the API method #Install.
         def install
           start_progress(3, _("Preparing bootloader proposal"))
-          manager.bootloader.configure
+          manager.configure_bootloader
 
           next_progress_step(_("Preparing the storage devices"))
           manager.install
 
           next_progress_step(_("Writing bootloader sysconfig"))
-          manager.bootloader.install
+          manager.install_bootloader
 
           finish_progress
         end
@@ -226,7 +226,7 @@ module Agama
         def configure_bootloader(serialized_config)
           logger.info("Setting bootloader config: #{serialized_config}")
           config_json = JSON.parse(serialized_config, symbolize_names: true)
-          manager.bootloader.config.load_json(config_json)
+          manager.update_bootloader_config(config_json)
           # after loading config try to apply it, so proper packages can be requested
           # TODO: generate also new issue from configuration
           calculate_bootloader
@@ -333,7 +333,7 @@ module Agama
         # Performs the bootloader configuration applying the current config.
         def calculate_bootloader
           logger.info("Configuring bootloader")
-          manager.bootloader.configure
+          manager.configure_bootloader
           update_serialized_bootloader_config
         end
 
@@ -455,7 +455,7 @@ module Agama
         #
         # @return [String]
         def serialize_bootloader_config
-          JSON.pretty_generate(manager.bootloader.config.to_json)
+          JSON.pretty_generate(manager.bootloader_config.to_json)
         end
 
         # Representation of the null JSON.

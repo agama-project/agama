@@ -192,6 +192,34 @@ module Agama
         probing_issues + [candidate_devices_issue].compact
       end
 
+      # Current bootloader configuration
+      #
+      # @return [BootloaderConfig]
+      def bootloader_config
+        bootloader.config
+      end
+
+      # Updates the bootloader configuration
+      #
+      # @param config_json [Hash]
+      def update_bootloader_config(config_json)
+        bootloader.config.load_json(config_json)
+      end
+
+      # Configures the bootloader
+      #
+      # @see Bootloader#configure
+      def configure_bootloader
+        bootloader.configure(product_config)
+      end
+
+      # Installs the bootloader
+      #
+      # @see Bootloader#install
+      def install_bootloader
+        bootloader.install
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
