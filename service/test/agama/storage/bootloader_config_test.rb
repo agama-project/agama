@@ -28,11 +28,11 @@ describe Agama::Storage::BootloaderConfig do
 
   describe "#to_json" do
     before do
-      config.load_json({ "stopOnBootMenu" => true }.to_json)
+      config.load_json({ stopOnBootMenu: true })
     end
 
     it "serializes its content with keys as camelCase" do
-      expect(config.to_json).to eq "{\"stopOnBootMenu\":true}"
+      expect(config.to_json).to eq({ stopOnBootMenu: true })
     end
 
     it "can serialize in a way that #load_json can restore it" do
@@ -44,22 +44,22 @@ describe Agama::Storage::BootloaderConfig do
     end
 
     it "exports only what was previously set" do
-      expect(config.to_json).to eq "{\"stopOnBootMenu\":true}"
-      config.load_json({ "timeout" => 10, "extraKernelParams" => "verbose" }.to_json)
-      expect(config.to_json).to eq "{\"timeout\":10,\"extraKernelParams\":\"verbose\"}"
+      expect(config.to_json).to eq({ stopOnBootMenu: true })
+      config.load_json({ timeout: 10, extraKernelParams: "verbose" })
+      expect(config.to_json).to eq({ timeout: 10, extraKernelParams: "verbose" })
     end
   end
 
   describe "#load_json" do
     it "loads config from given json" do
-      content = "{\"stopOnBootMenu\":true,\"updateNvram\":true}"
+      content = { stopOnBootMenu: true, updateNvram: true }
       config.load_json(content)
       expect(config.stop_on_boot_menu).to eq true
       expect(config.update_nvram).to eq true
     end
 
     it "remembers which keys are set" do
-      content = "{\"timeout\":10}"
+      content = { timeout: 10 }
       config.load_json(content)
       expect(config.keys_to_export).to eq([:timeout])
     end

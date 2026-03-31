@@ -225,7 +225,8 @@ module Agama
         # @return [Integer] 0 success; 1 error
         def configure_bootloader(serialized_config)
           logger.info("Setting bootloader config: #{serialized_config}")
-          manager.bootloader.config.load_json(serialized_config)
+          config_json = JSON.parse(serialized_config, symbolize_names: true)
+          manager.bootloader.config.load_json(config_json)
           # after loading config try to apply it, so proper packages can be requested
           # TODO: generate also new issue from configuration
           calculate_bootloader
@@ -454,7 +455,7 @@ module Agama
         #
         # @return [String]
         def serialize_bootloader_config
-          manager.bootloader.config.to_json
+          JSON.pretty_generate(manager.bootloader.config.to_json)
         end
 
         # Representation of the null JSON.

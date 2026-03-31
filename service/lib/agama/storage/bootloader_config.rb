@@ -19,8 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "json"
-
 module Agama
   module Storage
     # Representation of the bootloader settings, also affecting the storage proposal
@@ -70,9 +68,9 @@ module Agama
         @scoped_kernel_params = {}
       end
 
-      # Serializes the config to JSON.
+      # Converts the config to a JSON hash.
       #
-      # @return [String]
+      # @return [Hash]
       def to_json(*_args)
         result = {}
 
@@ -81,19 +79,17 @@ module Agama
         result[:timeout] = timeout if keys_to_export.include?(:timeout)
         result[:updateNvram] = update_nvram if keys_to_export.include?(:update_nvram)
         if keys_to_export.include?(:extra_kernel_params)
-          result[:extraKernelParams] =
-            @extra_kernel_params
+          result[:extraKernelParams] = @extra_kernel_params
         end
 
-        result.to_json
+        result
       end
 
-      # Loads the config from a JSON string.
+      # Loads the configuration from a hash according to the JSON schema.
       #
-      # @param serialized_config [String]
+      # @param hsh [Hash]
       # @return [Config] self
-      def load_json(serialized_config)
-        hsh = JSON.parse(serialized_config, symbolize_names: true)
+      def load_json(hsh)
         update_attribute(hsh, :timeout, :timeout, conflicts: :stop_on_boot_menu)
         update_attribute(hsh, :stopOnBootMenu, :stop_on_boot_menu, conflicts: :timeout)
         update_attribute(hsh, :extraKernelParams, :extra_kernel_params)
