@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-12 11:51+0000\n"
-"PO-Revision-Date: 2026-02-16 23:04+0000\n"
-"Last-Translator: Agurzil usaka <massi90.anzar@gmail.com>\n"
+"POT-Creation-Date: 2026-03-25 11:51+0000\n"
+"PO-Revision-Date: 2026-03-27 22:04+0000\n"
+"Last-Translator: Amger ugurzil <amger_ugurzil@proton.me>\n"
 "Language-Team: Kabyle <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/kab/>\n"
 "Language: kab\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.16\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -319,12 +319,12 @@ msgstr "Adsil SHA1: "
 
 #: service/lib/agama/ssl/certificate_details.rb:34
 msgid "SHA256 Fingerprint: "
-msgstr ""
+msgstr "Adsil umḍin SHA256: "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:46
 msgid "Common Name (CN): "
-msgstr ""
+msgstr "Isem amezdi (CN): "
 
 #. label followed by the SSL certificate identification
 #: service/lib/agama/ssl/certificate_details.rb:48
@@ -376,13 +376,13 @@ msgstr ""
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/boot.rb:75
 msgid "The boot device cannot be automatically selected"
-msgstr ""
+msgstr "Ibenk n usenker ulamek ara yettwafren s wudem awurman"
 
 #. TRANSLATORS: %s is replaced by a device alias (e.g., "boot").
 #: service/lib/agama/storage/config_checkers/boot.rb:86
 #, c-format
 msgid "There is no boot device with alias '%s'"
-msgstr ""
+msgstr "Ulac ibenk n usenker s tzaẓlut n '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
@@ -566,13 +566,13 @@ msgstr "ibenk"
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/volume_group.rb:76
 msgid "There is a volume group without name"
-msgstr ""
+msgstr "Yella ugraw n yiblaɣen war isem"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:106
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
-msgstr ""
+msgstr "Ulac ableɣ LVM afekkan s tzaẓlut n '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:133
@@ -581,12 +581,14 @@ msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
 "devices and new devices"
 msgstr ""
+"Tabdart n yibenkan anican i wegraw n ubleɣ '%s' texleḍ ibenkan yettwasqedcen "
+"tikkelt nniḍen akked ibenkan imaynuten"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:153
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
-msgstr ""
+msgstr "Ulac ibenk anican i yiblaɣen ifekkanen LVM s tzaẓlut n '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
@@ -646,7 +648,7 @@ msgstr "Aswel n tuṭṭfiwin n unagraw n yifuyla"
 #. Step to copy the installation logs
 #: service/lib/agama/storage/finisher.rb:254
 msgid "Copying logs"
-msgstr ""
+msgstr "Anɣal n yiɣmisen"
 
 #. Executes post-installation scripts
 #: service/lib/agama/storage/finisher.rb:288
@@ -661,7 +663,7 @@ msgstr ""
 #. Step to unmount the target file-systems
 #: service/lib/agama/storage/finisher.rb:346
 msgid "Unmounting storage devices"
-msgstr ""
+msgstr "Tukksa userkeb n yibenkan n usekles"
 
 #. Applies the target configs.
 #.
@@ -735,7 +737,7 @@ msgstr "Ur izmir ara ad isiḍen asbeddi n usekles ameɣtu s twila tamirant"
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:356
 msgid "A problem ocurred while calculating the storage setup"
-msgstr ""
+msgstr "Yeḍra-d wugur deg usiḍen n twila n usekles"
 
 #. Returns an issue if there is no target device.
 #.
