@@ -925,7 +925,7 @@ export default {
     ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "თუ გნებავთ, გამორთოთ ეს შემოწმება, ბირთვის ბრძანების სტრიქონში მიუთითეთ \"inst.ay_check=0\""
   ],
   "In progress": [
     "მიმდინარეობს"
@@ -1347,7 +1347,7 @@ export default {
     "ხელმისაწვდომია, მხოლოდ, მაშინ, თუ მითითებულია ავთენტიკაცია სამიზნით"
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
-    ""
+    "გამოყენებული იქნება, მხოლოდ, თავიდან გამოყენებული დანაყოფები და ადგილი, რომელიც დანაყოფებზე მინიჭებული არაა."
   ],
   "Only reused partitions will be used.": [
     "გამოყენებული იქნება, მხოლოდ, თავიდან გამოყენებული დანაყოფები."

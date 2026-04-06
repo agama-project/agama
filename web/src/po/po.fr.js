@@ -7,10 +7,10 @@ export default {
     " Sélection du fuseau horaire"
   ],
   "\"%s\"": [
-    ""
+    "« %s »"
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" n’existe pas ou n’est plus disponible."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "Exemple : %s"
   ],
   "Excellent signal": [
     "Signal excellent"
@@ -925,7 +925,7 @@ export default {
     "Si vous continuez, les partitions de votre disque dur seront modifiées selon les paramètres d'installation fournis."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Si vous voulez désactiver cette vérification, veuillez spécifier \"inst.ay_check=0\" sur la ligne de commande du noyau"
   ],
   "In progress": [
     "En cours"
@@ -1393,6 +1393,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Les partitions pour le démarrage seront allouées sur le disque d'installation."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Des partitions pour l’hôte « système » seront créées si nécessaire."
   ],
   "Partitions will be used and created for %s": [
     "Des partitions seront créées et utilisées pour %s"
@@ -1957,7 +1960,7 @@ export default {
     "Le mot de passe ne sera pas nécessaire pour démarrer et accéder aux données si le TPM peut vérifier l'intégrité du système. Le verrouillage du TPM requiert que le nouveau système soit démarré directement lors de sa première exécution."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Le produit sera enregistré avec le nom d’hôte \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "La taille de %1$s sera ajustée dynamiquement en fonction de la quantité de mémoire vive du système et de la présence d'un système de fichiers distinct pour %2$s."
