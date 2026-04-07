@@ -193,15 +193,6 @@ software:
   optional_packages: []
   base_product: SLES_SAP
 
-security:
-  lsm: selinux
-  available_lsms:
-    selinux:
-      patterns:
-        - selinux
-    none:
-      patterns: null
-
 modes:
   - id: standard
     # ------------------------------------------------------------------------------
