@@ -212,6 +212,8 @@ pub struct ProductTemplate {
     #[serde(default)]
     pub storage: StorageSpec,
     #[serde(default)]
+    pub boot: BootSpec,
+    #[serde(default)]
     pub modes: Vec<ProductModeSpec>,
 }
 
@@ -255,6 +257,7 @@ impl ProductTemplate {
             license: self.license.clone(),
             software,
             storage,
+            boot: self.boot.clone(),
         })
     }
 
@@ -289,6 +292,7 @@ pub struct ProductSpec {
     pub license: Option<String>,
     pub software: SoftwareSpec,
     pub storage: StorageSpec,
+    pub boot: BootSpec,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize, Merge)]
@@ -396,6 +400,13 @@ pub struct StorageSpec {
     #[serde(default)]
     #[merge(strategy = merge::vec::append)]
     pub volume_templates: Vec<VolumeSpec>,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge)]
+pub struct BootSpec {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub default_efi_bootloader: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -532,6 +543,12 @@ mod test {
         assert_eq!(
             preselected,
             Some(&UserPattern::Preselected(expected_pattern))
+        );
+
+        let boot = &tw.boot;
+        assert_eq!(
+            boot.default_efi_bootloader.as_ref().unwrap(),
+            "systemd-boot"
         );
     }
 
