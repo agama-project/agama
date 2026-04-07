@@ -19,6 +19,7 @@ dependencies = [
  "anyhow",
  "tempfile",
  "tokio",
+ "tracing",
  "url",
 ]
 
@@ -151,6 +152,7 @@ dependencies = [
  "httpmock",
  "jsonschema",
  "jsonwebtoken",
+ "libsystemd",
  "log",
  "percent-encoding",
  "reqwest",
@@ -163,6 +165,8 @@ dependencies = [
  "tokio-stream",
  "tokio-tungstenite 0.26.2",
  "tracing",
+ "tracing-journald",
+ "tracing-subscriber",
  "url",
  "utoipa",
  "uuid",
@@ -242,18 +246,16 @@ dependencies = [
 name = "agama-proxy"
 version = "0.1.0"
 dependencies = [
+ "agama-lib",
  "agama-utils",
  "anyhow",
  "async-trait",
  "gettext-rs",
- "libsystemd",
  "strum",
  "tempfile",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
- "tracing-journald",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -314,7 +316,6 @@ dependencies = [
  "http-body-util",
  "hyper 1.8.1",
  "hyper-util",
- "libsystemd",
  "openssl",
  "pam",
  "pin-project",
@@ -332,8 +333,6 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "tracing-journald",
- "tracing-subscriber",
  "url",
  "utoipa",
  "zbus",

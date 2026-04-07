@@ -21,12 +21,15 @@
 use std::{process::exit, time::Duration};
 
 use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
-use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
+use agama_lib::{
+    auth::AuthToken, http::BaseHTTPClient, logging::init_logging, manager::ManagerHTTPClient,
+};
 use agama_utils::{
     api::{status::Stage, FinishMethod},
     kernel_cmdline::KernelCmdline,
 };
 use anyhow::anyhow;
+use anyhow::Context;
 use tokio::time::sleep;
 
 const API_URL: &str = "http://localhost/api";
@@ -43,6 +46,8 @@ pub fn insecure_from(cmdline: &KernelCmdline, key: &str) -> bool {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    init_logging().context("Could not initialize the logger")?;
+
     let args = KernelCmdline::parse()?;
     let http = build_base_client()?;
     let manager_client = ManagerHTTPClient::new(http.clone());
@@ -51,9 +56,9 @@ async fn main() -> anyhow::Result<()> {
     let script_insecure = insecure_from(&args, "inst.script_insecure");
     let mut runner = ScriptsRunner::new(http.clone(), "/run/agama/inst-scripts", script_insecure);
     for url in scripts {
-        println!("Running script from {}", &url);
+        tracing::info!("Running script from {}", &url);
         if let Err(error) = runner.run(&url).await {
-            eprintln!("Error running the script from {url}: {}", error);
+            tracing::error!("Error running the script from {url}: {}", error);
         }
     }
 
@@ -61,17 +66,23 @@ async fn main() -> anyhow::Result<()> {
     let loader = ConfigAutoLoader::new(http.clone(), auto_insecure)?;
     let urls = args.get("inst.auto");
     if let Err(error) = loader.load(&urls).await {
-        eprintln!("Skipping the auto-installation: {error}");
+        if urls.is_empty() {
+            tracing::info!("No configuration found in the predefined locations");
+            return Ok(());
+        }
+
+        tracing::error!("Skipping the auto-installation: {error}");
         return Ok(());
     }
 
     if let Some(should_install) = args.get("inst.install").first() {
         if should_install == "0" {
-            println!("Skipping the auto-installation on user's request (inst.install=0)");
+            tracing::info!("Not starting the auto-installation on user's request (inst.install=0)");
             return Ok(());
         }
     }
 
+    tracing::info!("Waiting for the installer to get ready");
     // wait till config is properly set.
     loop {
         sleep(Duration::from_secs(1)).await;
@@ -81,6 +92,7 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
+    tracing::info!("Starting the auto-installation");
     manager_client.install().await?;
 
     // wait till install is done.
@@ -91,7 +103,7 @@ async fn main() -> anyhow::Result<()> {
             break;
         }
         if status.stage == Stage::Failed {
-            eprintln!("Installation failed");
+            tracing::error!("Installation failed");
             exit(1);
         }
     }

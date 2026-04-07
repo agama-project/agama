@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Apr  7 16:55:22 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically try loading the autoinstallation profile from the
+  root of the installation medium (jsc#PED-16010)
+- Use journal logging with more details in the autoinstallation
+  CLI tool (log to stdout when running manually)
+
+-------------------------------------------------------------------
 Tue Mar 24 13:01:38 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Include more details when saving the journal log

@@ -30,8 +30,6 @@ tower-http = { version = "0.6.2", features = [
     "trace",
     "set-header",
 ] }
-tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
-tracing-journald = "0.3.0"
 tracing = "0.1.40"
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
 tower = { version = "0.5.2", features = ["util"] }
@@ -51,7 +49,6 @@ tokio-openssl = "0.6.5"
 futures-util = { version = "0.3.30", default-features = false, features = [
     "alloc",
 ] }
-libsystemd = "0.7.0"
 gethostname = "1.0.0"
 tokio-util = "0.7.12"
 url = "2.5.2"

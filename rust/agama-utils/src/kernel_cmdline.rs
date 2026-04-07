@@ -49,7 +49,7 @@ impl KernelCmdline {
     /// * `content`: file containing the kernel's cmdline arguments.
     pub fn parse_file<P: std::fmt::Display + AsRef<Path>>(file: P) -> std::io::Result<Self> {
         let content = std::fs::read_to_string(&file)
-            .inspect_err(|e| tracing::warn!("Could not read cmdline args file {e}",))?;
+            .inspect_err(|e| tracing::warn!("Could not read cmdline args file: {e}",))?;
         Ok(Self::parse_str(&content))
     }
 
