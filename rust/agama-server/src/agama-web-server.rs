@@ -25,12 +25,12 @@ use std::{
 };
 
 use agama_l10n::helpers as l10n_helpers;
-use agama_lib::{auth::AuthToken, connection_to, logging::init_logging};
+use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
     cert::Certificate,
     web::{self},
 };
-use agama_utils::api::event::Receiver;
+use agama_utils::{api::event::Receiver, logging::init_logging};
 use anyhow::Context;
 use axum::{
     extract::Request as AxumRequest,

@@ -152,7 +152,6 @@ dependencies = [
  "httpmock",
  "jsonschema",
  "jsonwebtoken",
- "libsystemd",
  "log",
  "percent-encoding",
  "reqwest",
@@ -165,8 +164,6 @@ dependencies = [
  "tokio-stream",
  "tokio-tungstenite 0.26.2",
  "tracing",
- "tracing-journald",
- "tracing-subscriber",
  "url",
  "utoipa",
  "uuid",
@@ -246,7 +243,6 @@ dependencies = [
 name = "agama-proxy"
 version = "0.1.0"
 dependencies = [
- "agama-lib",
  "agama-utils",
  "anyhow",
  "async-trait",
@@ -429,12 +425,14 @@ version = "0.1.0"
 dependencies = [
  "agama-locale-data",
  "agama-transfer",
+ "anyhow",
  "async-trait",
  "camino",
  "cidr",
  "fluent-uri 0.4.1",
  "fs-err",
  "gettext-rs",
+ "libsystemd",
  "macaddr",
  "merge",
  "regex",
@@ -449,6 +447,8 @@ dependencies = [
  "tokio",
  "tokio-test",
  "tracing",
+ "tracing-journald",
+ "tracing-subscriber",
  "url",
  "utoipa",
  "uuid",

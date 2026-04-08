@@ -21,12 +21,11 @@
 use std::{process::exit, time::Duration};
 
 use agama_autoinstall::{ConfigAutoLoader, ScriptsRunner};
-use agama_lib::{
-    auth::AuthToken, http::BaseHTTPClient, logging::init_logging, manager::ManagerHTTPClient,
-};
+use agama_lib::{auth::AuthToken, http::BaseHTTPClient, manager::ManagerHTTPClient};
 use agama_utils::{
     api::{status::Stage, FinishMethod},
     kernel_cmdline::KernelCmdline,
+    logging::init_logging,
 };
 use anyhow::anyhow;
 use anyhow::Context;

@@ -47,7 +47,6 @@ pub mod auth;
 pub mod error;
 pub mod http;
 pub use agama_utils::issue;
-pub mod logging;
 pub mod logs;
 pub mod manager;
 pub mod monitor;

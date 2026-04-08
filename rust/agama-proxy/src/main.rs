@@ -18,8 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::logging::init_logging;
 use agama_proxy::model::ProxyConfig;
+use agama_utils::logging::init_logging;
 use anyhow::Context;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
