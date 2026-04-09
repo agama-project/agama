@@ -930,7 +930,7 @@
     },
     "encryptionSwap": {
       "description": "Swap encryptions.",
-      "enum": ["protected_swap", "secure_swap", "random_swap"]
+      "enum": ["protected_swap", "secure_swap", "random_swap", "protectedSwap", "secureSwap", "randomSwap"]
     },
     "encryptionPassword": {
       "description": "Password to use when creating a new encryption device.",
