@@ -65,7 +65,13 @@ export type EncryptionPbkdFunction = "pbkdf2" | "argon2i" | "argon2id";
 /**
  * Swap encryptions.
  */
-export type EncryptionSwap = "protected_swap" | "secure_swap" | "random_swap";
+export type EncryptionSwap =
+  | "protected_swap"
+  | "secure_swap"
+  | "random_swap"
+  | "protectedSwap"
+  | "secureSwap"
+  | "randomSwap";
 export type FilesystemType = FilesystemTypeAny | FilesystemTypeBtrfs;
 export type FilesystemTypeAny =
   | "bcachefs"

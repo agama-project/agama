@@ -248,6 +248,72 @@ shared_examples "with encryption" do
         expect(encryption.label).to be_nil
       end
     end
+
+    context "if 'encryption' is 'random_swap' (snake_case)" do
+      let(:encryption) { "random_swap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::RANDOM_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'randomSwap' (camelCase)" do
+      let(:encryption) { "randomSwap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::RANDOM_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'protected_swap' (snake_case)" do
+      let(:encryption) { "protected_swap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::PROTECTED_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'protectedSwap' (camelCase)" do
+      let(:encryption) { "protectedSwap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::PROTECTED_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'secure_swap' (snake_case)" do
+      let(:encryption) { "secure_swap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::SECURE_SWAP)
+      end
+    end
+
+    context "if 'encryption' is 'secureSwap' (camelCase)" do
+      let(:encryption) { "secureSwap" }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::SECURE_SWAP)
+      end
+    end
   end
 end
 
