@@ -21,7 +21,7 @@
 use crate::error::NetworkStateError;
 use crate::model::{Connection, GeneralState};
 use crate::types::{AccessPoint, ConnectionState, Device, Proposal, SystemInfo};
-use crate::{NetworkAdapterError, NetworkSystemError};
+use crate::NetworkAdapterError;
 use agama_utils::actor::Message;
 use agama_utils::api::network::Config;
 use uuid::Uuid;
@@ -67,7 +67,7 @@ pub struct SetConfig {
 }
 
 impl Message for SetConfig {
-    type Reply = Result<(), NetworkSystemError>;
+    type Reply = ();
 }
 
 pub struct GetSystem;
@@ -155,13 +155,13 @@ impl Message for ChangeConnectionState {
 pub struct ProposeDefault;
 
 impl Message for ProposeDefault {
-    type Reply = Result<(), NetworkStateError>;
+    type Reply = ();
 }
 
 pub struct Install;
 
 impl Message for Install {
-    type Reply = Result<(), NetworkStateError>;
+    type Reply = ();
 }
 
 pub struct UpdateConnection {
@@ -197,7 +197,7 @@ impl Message for RemoveConnection {
 pub struct Apply;
 
 impl Message for Apply {
-    type Reply = Result<(), NetworkAdapterError>;
+    type Reply = ();
 }
 
 #[derive(Clone)]

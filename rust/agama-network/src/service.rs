@@ -325,14 +325,11 @@ impl MessageHandler<message::GetProposal> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    async fn handle(
-        &mut self,
-        message: message::SetConfig,
-    ) -> Result<Result<(), NetworkSystemError>, NetworkSystemError> {
-        if let Err(e) = self.state.update_state(*message.config) {
-            return Ok(Err(e.into()));
-        }
-        Ok(self.apply().await.map_err(Into::into))
+    async fn handle(&mut self, message: message::SetConfig) -> Result<(), NetworkSystemError> {
+        self.state.update_state(*message.config)?;
+
+        self.apply().await?;
+        Ok(())
     }
 }
 
@@ -518,11 +515,9 @@ impl MessageHandler<message::RemoveConnection> for Service {
 
 #[async_trait]
 impl MessageHandler<message::Apply> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::Apply,
-    ) -> Result<Result<(), NetworkAdapterError>, NetworkSystemError> {
-        Ok(self.apply().await)
+    async fn handle(&mut self, _message: message::Apply) -> Result<(), NetworkSystemError> {
+        self.apply().await?;
+        Ok(())
     }
 }
 
@@ -531,18 +526,17 @@ impl MessageHandler<message::ProposeDefault> for Service {
     async fn handle(
         &mut self,
         _message: message::ProposeDefault,
-    ) -> Result<Result<(), NetworkStateError>, NetworkSystemError> {
-        Ok(self.state.propose_default())
+    ) -> Result<(), NetworkSystemError> {
+        self.state.propose_default()?;
+        Ok(())
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::Install> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::Install,
-    ) -> Result<Result<(), NetworkStateError>, NetworkSystemError> {
-        Ok(self.state.install().await)
+    async fn handle(&mut self, _message: message::Install) -> Result<(), NetworkSystemError> {
+        self.state.install().await?;
+        Ok(())
     }
 }
 
