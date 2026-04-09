@@ -169,3 +169,10 @@ impl SetLocale {
 impl Message for SetLocale {
     type Reply = ();
 }
+
+#[derive(Clone)]
+pub struct GetEncryptionMethods;
+
+impl Message for GetEncryptionMethods {
+    type Reply = Vec<String>;
+}

@@ -141,6 +141,7 @@ pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
         .route("/private/resolvables/:id", put(set_resolvables))
         .route("/private/download_logs", get(download_logs))
         .route("/private/password_check", post(check_password))
+        .route("/private/encryption_methods", get(get_encryption_methods))
         .with_state(state))
 }
 
@@ -585,4 +586,21 @@ async fn check_password(
         .call(users::message::CheckPassword::new(password.password))
         .await?;
     Ok(Json(result))
+}
+
+/// Returns the available encryption methods for the current system and product.
+#[utoipa::path(
+    get,
+    path = "/private/encryption_methods",
+    context_path = "/api/v2",
+    responses(
+        (status = 200, description = "Available encryption methods", body = Vec<String>),
+        (status = 400, description = "Could not retrieve encryption methods")
+    )
+)]
+async fn get_encryption_methods(
+    State(state): State<ServerState>,
+) -> Result<Json<Vec<String>>, Error> {
+    let methods = state.manager.call(message::GetEncryptionMethods).await?;
+    Ok(Json(methods))
 }

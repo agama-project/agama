@@ -167,3 +167,10 @@ impl SolveStorageModel {
 impl Message for SolveStorageModel {
     type Reply = Option<Value>;
 }
+
+/// Gets the available encryption methods.
+pub struct GetEncryptionMethods;
+
+impl Message for GetEncryptionMethods {
+    type Reply = Vec<String>;
+}

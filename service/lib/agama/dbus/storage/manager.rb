@@ -83,6 +83,7 @@ module Agama
           dbus_method(
             :SolveConfigModel, "in serialized_model:s, out result:s"
           ) { |m| solve_config_model(m) }
+          dbus_method(:GetEncryptionMethods, "out methods:s") { encryption_methods }
           dbus_signal(:SystemChanged, "serialized_system:s")
           dbus_signal(:ProposalChanged, "serialized_proposal:s")
           dbus_signal(:ProgressChanged, "serialized_progress:s")
@@ -180,6 +181,16 @@ module Agama
           model_json = JSON.parse(serialized_model, symbolize_names: true)
           solved_model_json = proposal.solve_model(model_json)
           JSON.pretty_generate(solved_model_json)
+        end
+
+        # Gets the available encryption methods for the current system and product.
+        #
+        # @return [String] Serialized list of encryption method IDs.
+        def encryption_methods
+          methods = Agama::Storage::EncryptionSettings
+            .available_methods
+            .map { |m| Agama::Storage::EncryptionSettings.method_id(m) }
+          JSON.pretty_generate(methods)
         end
 
         # Implementation for the API method #Install.
@@ -406,7 +417,6 @@ module Agama
             candidateMdRaids:   candidate_md_raids,
             issues:             system_issues_json,
             productMountPoints: product_mount_points,
-            encryptionMethods:  encryption_methods,
             volumeTemplates:    volume_templates
           }
           JSON.pretty_generate(json)
@@ -533,15 +543,6 @@ module Agama
             .all
             .map(&:mount_path)
             .reject(&:empty?)
-        end
-
-        # Reads the list of possible encryption methods for the current system and product.
-        #
-        # @return [Array<String>]
-        def encryption_methods
-          Agama::Storage::EncryptionSettings
-            .available_methods
-            .map { |m| Agama::Storage::EncryptionSettings.method_id(m) }
         end
 
         # Default volumes to be used as templates

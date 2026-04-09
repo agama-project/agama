@@ -238,3 +238,13 @@ impl MessageHandler<message::SetLocale> for Service {
         Ok(())
     }
 }
+
+#[async_trait]
+impl MessageHandler<message::GetEncryptionMethods> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetEncryptionMethods,
+    ) -> Result<Vec<String>, Error> {
+        Ok(self.client.get_encryption_methods().await?)
+    }
+}

@@ -58,10 +58,6 @@ export interface System {
    */
   productMountPoints?: string[];
   /**
-   * Possible encryption methods for the current system and product
-   */
-  encryptionMethods?: EncryptionMethod[];
-  /**
    * Volumes defined by the product as templates
    */
   volumeTemplates?: Volume[];

@@ -21,8 +21,9 @@
  */
 
 import { useCallback } from "react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { systemQuery } from "~/hooks/model/system";
+import { getEncryptionMethods } from "~/api";
 import { flatDevices, findDevices, findDeviceByName } from "~/model/system/storage";
 import type { System, Storage } from "~/model/system";
 
@@ -36,15 +37,15 @@ function useSystem(): Storage.System | null {
   return data;
 }
 
-const selectEncryptionMethods = (data: System | null): Storage.EncryptionMethod[] =>
-  data?.storage?.encryptionMethods || [];
+const encryptionMethodsQuery = queryOptions({
+  queryKey: ["encryption-methods"],
+  queryFn: () => getEncryptionMethods(),
+  staleTime: Infinity,
+});
 
 function useEncryptionMethods(): Storage.EncryptionMethod[] {
-  const { data } = useSuspenseQuery({
-    ...systemQuery,
-    select: selectEncryptionMethods,
-  });
-  return data;
+  const { data } = useSuspenseQuery(encryptionMethodsQuery);
+  return (data || []) as Storage.EncryptionMethod[];
 }
 
 const enum DeviceGroup {

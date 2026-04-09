@@ -169,6 +169,17 @@ impl MessageHandler<message::GetIssues> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::GetEncryptionMethods> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::GetEncryptionMethods,
+    ) -> Result<Vec<String>, Error> {
+        let raw_json = self.storage_proxy.get_encryption_methods().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetConfigFromModel> for Service {
     async fn handle(
         &mut self,

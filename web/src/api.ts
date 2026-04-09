@@ -59,6 +59,8 @@ const solveStorageModel = (model: ConfigModel.Config): Promise<ConfigModel.Confi
   return get(`/api/v2/private/solve_storage_model?model=${json}`);
 };
 
+const getEncryptionMethods = (): Promise<string[]> => get("/api/v2/private/encryption_methods");
+
 const putConfig = (config: Config): Response => put("/api/v2/config", config);
 
 const putStorageModel = (model: ConfigModel.Config) => put("/api/v2/private/storage_model", model);
@@ -114,6 +116,7 @@ export {
   getQuestions,
   getStorageModel,
   solveStorageModel,
+  getEncryptionMethods,
   putConfig,
   putStorageModel,
   patchConfig,

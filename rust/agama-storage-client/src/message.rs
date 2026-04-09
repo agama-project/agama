@@ -90,6 +90,12 @@ impl Message for GetIssues {
     type Reply = Vec<Issue>;
 }
 
+pub struct GetEncryptionMethods;
+
+impl Message for GetEncryptionMethods {
+    type Reply = Vec<String>;
+}
+
 pub struct GetConfigFromModel {
     pub model: serde_json::Value,
 }

@@ -866,6 +866,20 @@ impl MessageHandler<message::SolveStorageModel> for Service {
     }
 }
 
+#[async_trait]
+impl MessageHandler<message::GetEncryptionMethods> for Service {
+    /// Gets the available encryption methods.
+    async fn handle(
+        &mut self,
+        _message: message::GetEncryptionMethods,
+    ) -> Result<Vec<String>, Error> {
+        Ok(self
+            .storage
+            .call(storage::message::GetEncryptionMethods)
+            .await?)
+    }
+}
+
 // FIXME: write a macro to forward a message.
 #[async_trait]
 impl MessageHandler<software::message::SetResolvables> for Service {

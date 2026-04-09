@@ -165,6 +165,10 @@ impl StorageClient for TestClient {
     async fn set_locale(&self, _locale: String) -> Result<(), Error> {
         Ok(())
     }
+
+    async fn get_encryption_methods(&self) -> Result<Vec<String>, Error> {
+        Ok(vec!["luks2".to_string()])
+    }
 }
 
 /// Starts a testing storage service.

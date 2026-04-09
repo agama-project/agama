@@ -68,6 +68,7 @@ pub trait StorageClient {
     ) -> Result<BoxFuture<Result<(), Error>>, Error>;
     async fn solve_config_model(&self, model: Value) -> Result<Option<Value>, Error>;
     async fn set_locale(&self, locale: String) -> Result<(), Error>;
+    async fn get_encryption_methods(&self) -> Result<Vec<String>, Error>;
 }
 
 /// D-Bus client for the storage service
@@ -163,5 +164,13 @@ impl StorageClient for Client {
             .call(message::SetLocale::new(locale))
             .await?;
         Ok(())
+    }
+
+    async fn get_encryption_methods(&self) -> Result<Vec<String>, Error> {
+        let value = self
+            .storage_client
+            .call(message::GetEncryptionMethods)
+            .await?;
+        Ok(value)
     }
 }
