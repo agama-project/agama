@@ -6,7 +6,8 @@ After=agama-hostname.service
 [Service]
 TTYPath=/dev/tty8
 StandardInput=tty
-ExecStart=/usr/bin/bash
+# run as login shell to set the defaults from /etc/profile
+ExecStart=/usr/bin/bash --login
 # start it again after crashing or accidentally closing the shell via "exit" or Ctrl+D
 Restart=always
 Type=exec

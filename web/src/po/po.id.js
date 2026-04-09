@@ -1341,9 +1341,6 @@ export default {
   "Network details": [
     "Rincian jaringan"
   ],
-  "Network not availble": [
-    "Jaringan tidak tersedia"
-  ],
   "New": [
     "Baru"
   ],

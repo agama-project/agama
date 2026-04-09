@@ -1348,9 +1348,6 @@ export default {
   "Network details": [
     "Netzwerkdetails"
   ],
-  "Network not availble": [
-    "Netzwerk nicht verfügbar"
-  ],
   "New": [
     "Neu"
   ],

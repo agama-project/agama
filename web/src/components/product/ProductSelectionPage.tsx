@@ -50,7 +50,7 @@ import {
   StackItem,
   Title,
 } from "@patternfly/react-core";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, useNavigate, useSearchParams } from "react-router";
 import { InstallerL10nOptions, Link, Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
@@ -750,15 +750,21 @@ const ProductSelectionContent = () => {
 /**
  * Main page component for product selection.
  *
- * Redirects to root if the system is already registered.
+ * Redirects to root if:
+ *   - the system is already registered.
+ *   - the product is already selected and the UI get into this page automatically
+ *     (the query param "byUser" is not set). See bsc#1260465.
  * Otherwise, renders the product selection interface allowing users to:
  *   - Choose from available products
  *   - View current product information (when changing products)
  */
 export default function ProductSelectionPage() {
+  const currentProduct = useProductInfo();
   const { registration } = useSystemSoftware();
+  const [searchParams] = useSearchParams();
 
-  if (registration) return <Navigate to={ROOT.root} />;
+  const redirectOnProduct = currentProduct?.id && searchParams.get("byUser") === null;
+  if (registration || redirectOnProduct) return <Navigate to={ROOT.root} />;
 
   return <ProductSelectionContent />;
 }

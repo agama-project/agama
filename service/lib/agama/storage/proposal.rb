@@ -312,7 +312,7 @@ module Agama
       # @return [Issue]
       def exception_issue(error)
         Issue.new(
-          _("A problem ocurred while calculating the storage setup"),
+          _("A problem occurred while calculating the storage setup"),
           kind:    IssueClasses::PROPOSAL,
           details: error.message
         )

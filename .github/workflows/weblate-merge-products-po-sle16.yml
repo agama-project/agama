@@ -48,14 +48,14 @@ jobs:
           git config --global user.email "yast-devel@opensuse.org"
 
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: agama
           # checkout the SLE-16 branch
           ref: SLE-16
 
       - name: Checkout Agama-weblate sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate

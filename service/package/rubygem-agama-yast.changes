@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr  8 09:28:31 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix for diskless installation making a proposal when
+  there is at least the product configuration notifying the
+  system and proposal state (bsc#1260378).
+
+-------------------------------------------------------------------
 Mon Mar 23 16:29:40 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Implement setting kernel parameters for systemd boot

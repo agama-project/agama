@@ -1341,7 +1341,7 @@ export default {
   "Network details": [
     "ネットワークの詳細"
   ],
-  "Network not availble": [
+  "Network not available": [
     "ネットワークが利用できません"
   ],
   "New": [

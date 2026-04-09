@@ -78,6 +78,26 @@ apply_updates() {
   rm "$NEWROOT"/etc/resolv.conf
 }
 
+# Read ID + VERSION_ID from /etc/os-release and set dist = "$ID$VERSION_ID".
+#
+# For rolling releases as in Tumbleweed or Slowroll, ignore VERSION_ID as it
+# changes too often.
+get_dist() {
+  dist=
+  if [ -f "/etc/os-release" ] ; then
+    . "/etc/os-release"
+    if [ -n "$ID" -a -n "$VERSION_ID" ] ; then
+      # Tumbleweed and Slowroll use a date (e.g. "20261231") as VERSION_ID.
+      # In this case, do not include it.
+      if [[ "$VERSION_ID" =~ ^[0-9]{8}$ ]] ; then
+        dist="$ID"
+      else
+        dist="$ID$VERSION_ID"
+      fi
+    fi
+  fi
+}
+
 # Applies an update from an RPM package
 #
 # It extracts the RPM content and adjust the alternative links.
@@ -110,17 +130,19 @@ apply_dud_update() {
 
   echo "Apply update from a Driver Update Disk archive"
 
-  # FIXME: do not ignore the dist (e.g., "tw" in "x86_64-tw").
-
   # notes:
   # (1) there can be several updates in a single archive; each with a
   #     prefix directory consisting of a number
   # (2) there can be ARCH-DIST subdirs with multiple dists - pick one and
   #     ignore the others
+
+  get_dist
+  # fallback: no dist info -> match any
+  [ -z "$dist" ] && dist='*'
   arch=$(uname -m)
   for base_dir in "${dir}"/linux/suse "${dir}"/[0-9]*/linux/suse; do
     [ -d "$base_dir" ] || continue
-    for dud_root in "${base_dir}/${arch}"-*; do
+    for dud_root in "${base_dir}/${arch}"-$dist; do
       [ -d "$dud_root" ] || continue
       install_update "${dud_root}/inst-sys"
       copy_packages "$dud_root" "$DUD_RPM_REPOSITORY"

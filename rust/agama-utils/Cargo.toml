@@ -7,6 +7,7 @@ edition.workspace = true
 [dependencies]
 agama-locale-data = { path = "../agama-locale-data" }
 agama-transfer = { path = "../agama-transfer" }
+anyhow = { version = "1.0.98" }
 async-trait = "0.1.89"
 camino = "1.2.1"
 serde = { version = "1.0.228", features = ["derive"] }
@@ -20,7 +21,10 @@ zbus = "5.7.1"
 zvariant = "5.5.2"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
 regex = "1.12.2"
-tracing = "0.1.41"
+libsystemd = "0.7.2"
+tracing = "0.1.44"
+tracing-journald = "0.3.2"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
 serde_yaml = "0.9.34"
 uuid = { version = "1.10.0", features = ["v4"] }
 cidr = { version = "0.3.1", features = ["serde"] }

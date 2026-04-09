@@ -9,6 +9,9 @@ export default {
   "\"%s\" does not exist or is no longer available.": [
     "\"%s\" neexistuje nebo už není dostupná."
   ],
+  "%1$d of %2$d connections match filters": [
+    "Filtrům odpovídá %1$d z %2$d připojení"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -30,6 +33,9 @@ export default {
     "%1$s, %2$s a [%3$d další]",
     "%1$s, %2$s a [%3$d další]",
     "%1$s, %2$s a [%3$d dalších]"
+  ],
+  "%d connections available": [
+    "%d dostupných připojení"
   ],
   "%d mode available": [
     "dostupný %d mód",
@@ -79,10 +85,10 @@ export default {
     ""
   ],
   "(bound by MAC)": [
-    ""
+    "(vázáno na MAC)"
   ],
   "(bound by name)": [
-    ""
+    "(vázáno na název)"
   ],
   "(step %s of %s)": [
     "(krok %s z %s)"
@@ -149,6 +155,9 @@ export default {
   "Add another address": [
     "Přidat další adresu"
   ],
+  "Add another search domain": [
+    "Přidat další vyhledávací doménu"
+  ],
   "Add device menu": [
     "Nabídka přidat zařízení"
   ],
@@ -159,7 +168,7 @@ export default {
     "Přidat nebo použít oddíl"
   ],
   "Add search domain": [
-    ""
+    "Přidat vyhledávací doménu"
   ],
   "Address": [
     "Adresa"
@@ -172,6 +181,9 @@ export default {
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
     "Upravte nastavení níže, aby bylo možné nový systém nasadit na dostupné volné místo."
+  ],
+  "All": [
+    "Vše"
   ],
   "All fields are required": [
     "Všechna pole jsou povinná"
@@ -520,7 +532,7 @@ export default {
     "DNS"
   ],
   "DNS Search List": [
-    ""
+    "Seznam vyhledávání DNS"
   ],
   "Deactivate": [
     "Deaktivace"
@@ -613,10 +625,10 @@ export default {
     "Neregistrujte"
   ],
   "Domain": [
-    ""
+    "Doména"
   ],
   "Down": [
-    ""
+    "Dolů"
   ],
   "Download config": [
     "Stáhnout konfiguraci"
@@ -632,6 +644,9 @@ export default {
   ],
   "Edit binding settings": [
     "Upravit nastavení vazby"
+  ],
+  "Edit connection": [
+    "Upravit připojení"
   ],
   "Edit connection settings": [
     "Upravit nastavení připojení"
@@ -674,6 +689,9 @@ export default {
   ],
   "Enter a name for the volume group.": [
     "Zadejte název pro skupinu svazků."
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     ""
@@ -1129,6 +1147,9 @@ export default {
   "Network details": [
     "Detaily síťě"
   ],
+  "Network not available": [
+    "Síť není dostupná"
+  ],
   "New": [
     "Nový"
   ],
@@ -1140,6 +1161,9 @@ export default {
   ],
   "No additional software was selected.": [
     "Nebyl vybrán žádný další software."
+  ],
+  "No connections match filters": [
+    "Žádné připojení neodpovídá filtru."
   ],
   "No content found": [
     "Nebyl nalezen žádný obsah"
@@ -1179,6 +1203,9 @@ export default {
   ],
   "None": [
     "Žádné"
+  ],
+  "None (unbound)": [
+    "Žádné (nepřiřazeno)"
   ],
   "None of the keymaps match the filter.": [
     "Žádná z map kláves neodpovídá filtru."
@@ -1912,7 +1939,7 @@ export default {
     "Nevyužitý prostor"
   ],
   "Up": [
-    ""
+    "Nahoru"
   ],
   "Up to %s can be recovered by shrinking the device.": [
     "Zmenšením zařízení lze obnovit až %s."

@@ -37,7 +37,7 @@ jobs:
     steps:
 
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         # checkout only the "devel" subdirectory
         sparse-checkout: |

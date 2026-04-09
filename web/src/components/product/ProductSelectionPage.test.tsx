@@ -22,7 +22,14 @@
 
 import React, { act } from "react";
 import { screen, waitFor, within } from "@testing-library/react";
-import { installerRender, mockNavigateFn, mockProduct, mockProductConfig } from "~/test-utils";
+import {
+  installerRender,
+  mockNavigateFn,
+  mockProduct,
+  mockProductConfig,
+  mockRoutes,
+  unmockRoutes,
+} from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
@@ -97,6 +104,8 @@ jest.mock("~/hooks/model/system/software", () => ({
 
 describe("ProductSelectionPage", () => {
   beforeEach(() => {
+    mockRoutes("/products?byUser");
+
     mockUseSystemFn.mockReturnValue({
       products: [tumbleweed, microOs],
     });
@@ -123,6 +132,7 @@ describe("ProductSelectionPage", () => {
     screen.getByRole("radio", { name: productWithModes.name });
 
     // Selected product without modes, excluded from the list
+    mockRoutes("/products?byUser");
     mockProduct(tumbleweed);
     rerender(<ProductSelectionPage />);
     expect(screen.queryByRole("radio", { name: tumbleweed.name })).toBeNull();
@@ -130,6 +140,7 @@ describe("ProductSelectionPage", () => {
     screen.getByRole("radio", { name: productWithModes.name });
 
     // Selected product with modes, included in the list
+    mockRoutes("/products?byUser");
     mockProduct(productWithModes);
     rerender(<ProductSelectionPage />);
     screen.queryByRole("radio", { name: tumbleweed.name });
@@ -214,10 +225,31 @@ describe("ProductSelectionPage", () => {
     await screen.findByText("Navigating to /");
   });
 
-  it("renders the Cancel button when a product is already seelected ", () => {
-    mockProduct(microOs);
-    installerRender(<ProductSelectionPage />, { withL10n: true });
-    screen.getByRole("link", { name: "Cancel" });
+  describe("when a product is already selected", () => {
+    beforeEach(() => {
+      mockProduct(tumbleweed);
+      mockUseConfigFn.mockReturnValue({ ...oldConfig, product: { id: tumbleweed.id } });
+    });
+
+    it("redirects to root when the byUser param is not set", () => {
+      unmockRoutes();
+      mockRoutes("/products");
+      installerRender(<ProductSelectionPage />, { withL10n: true });
+      expect(screen.queryByText("Navigating to /")).toBeInTheDocument();
+    });
+
+    it("does not redirect when the byUser params is set", () => {
+      mockRoutes("/products?byUser");
+      installerRender(<ProductSelectionPage />, { withL10n: true });
+      expect(screen.queryByText("Navigating to /")).toBeNull();
+      expect(screen.queryByRole("heading", { name: "Change product" })).toBeInTheDocument();
+    });
+
+    it("renders the Cancel button", () => {
+      mockProduct(microOs);
+      installerRender(<ProductSelectionPage />, { withL10n: true });
+      screen.getByRole("link", { name: "Cancel" });
+    });
   });
 
   it("does not render the Cancel button if product no selected yet", () => {

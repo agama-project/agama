@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-19 07:21+0000\n"
-"PO-Revision-Date: 2026-03-12 18:04+0000\n"
+"POT-Creation-Date: 2026-03-23 06:09+0000\n"
+"PO-Revision-Date: 2026-03-25 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/cs/>\n"
@@ -30,14 +30,14 @@ msgid "Yes"
 msgstr "Ano"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:197
+#: agama-files/src/service.rs:198
 msgid "Failed to retrieve the script %s. Do you want to try again?"
-msgstr ""
+msgstr "Nepodařilo se načíst skript %s. Chcete to zkusit znovu?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:221
+#: agama-files/src/service.rs:222
 msgid "Failed to write the file %s. Do you want to try again?"
-msgstr ""
+msgstr "Nepodařilo se zapsat do souboru %s. Chcete to zkusit znovu?"
 
 #: agama-manager/src/actions.rs:86
 msgid "Prepare the system"
@@ -108,13 +108,12 @@ msgid "Storing bootloader settings"
 msgstr "Ukládá se nastavení zavaděče"
 
 #: agama-network/src/service.rs:512
-#, fuzzy
 msgid "Writing network configuration"
-msgstr "Zapisuji konfiguraci"
+msgstr "Zapisuji síťové nastavení"
 
 #: agama-network/src/service.rs:513
 msgid "Syncing the network service state"
-msgstr ""
+msgstr "Synchronizace stavu síťové služby"
 
 #: agama-security/src/service.rs:226
 msgid "Reject"
@@ -176,7 +175,7 @@ msgstr "vzor"
 msgid "product"
 msgstr "produkt"
 
-#: agama-software/src/service.rs:308
+#: agama-software/src/service.rs:279
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Kvůli vnitřní chybě nebylo možné vytvořit návrh softwaru."

@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Wed Apr  1 14:46:08 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Run the shell at tty8 as a login shell (to initialize some
+  environment variables like $PAGER from /etc/profile)
+  (gh#agama-project/agama#3354)
+
+-------------------------------------------------------------------
+Tue Mar 31 14:28:52 UTC 2026 - Shawn Dunn <sfalken@opensuse.org>
+
+- Add userChrome.css to simplify the firefox UI
+  (gh#agama-project/agama#3343)
+- Force user selection of download location for config/logs
+
+-------------------------------------------------------------------
+Mon Mar 30 14:06:56 UTC 2026 - Steffen Winterfeldt <snwint@suse.com>
+
+- apply driver update only to the product it is intended for (bsc#1261030)
+
+-------------------------------------------------------------------
 Wed Mar 25 19:18:18 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Update the OBS systemsmanagement:Agama:Devel GPG key,

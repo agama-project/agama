@@ -23,10 +23,16 @@ use agama_lib::http::BaseHTTPClient;
 use anyhow::anyhow;
 
 /// List of pre-defined locations for profiles.
-const PREDEFINED_LOCATIONS: [&str; 6] = [
+const PREDEFINED_LOCATIONS: [&str; 9] = [
+    // OEM drive (pre-installed systems)
     "label://OEMDRV/autoinst.jsonnet",
     "label://OEMDRV/autoinst.json",
     "label://OEMDRV/autoinst.xml",
+    // root of the installation medium
+    "file:///run/initramfs/live/autoinst.jsonnet",
+    "file:///run/initramfs/live/autoinst.json",
+    "file:///run/initramfs/live/autoinst.xml",
+    // root filesystem (squashfs image)
     "file:///autoinst.jsonnet",
     "file:///autoinst.json",
     "file:///autoinst.xml",
@@ -75,14 +81,14 @@ impl ConfigAutoLoader {
     /// Loads configuration files specified by the user.
     async fn load_user_config(&self, loader: ConfigLoader, urls: &[String]) -> anyhow::Result<()> {
         for url in urls {
-            println!("Loading configuration from {url}");
+            tracing::info!("Loading configuration from {url}");
             while let Err(error) = loader.load(url).await {
-                eprintln!("Could not load configuration from {url}: {error}");
+                tracing::error!("Could not load configuration from {url}: {error}");
                 if !self.should_retry(url, &error.to_string()).await? {
                     return Err(error);
                 }
             }
-            println!("Configuration loaded from {url}");
+            tracing::info!("Configuration loaded from {url}");
         }
         Ok(())
     }
@@ -92,10 +98,10 @@ impl ConfigAutoLoader {
         for url in PREDEFINED_LOCATIONS {
             match loader.load(url).await {
                 Ok(()) => {
-                    println!("Configuration loaded from {url}");
+                    tracing::info!("Configuration loaded from {url}");
                     return Ok(());
                 }
-                Err(_) => println!("Could not load the configuration from {url}"),
+                Err(_) => tracing::info!("No config loaded from {url}"),
             }
         }
         Err(anyhow!("No configuration was found"))

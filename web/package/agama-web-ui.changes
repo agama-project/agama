@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  7 14:19:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Redirect to the overview page after selecting the product during
+  an auto-installation (gh#agama-project/agama#3365).
+
+-------------------------------------------------------------------
 Tue Mar 24 14:45:14 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Allow downloading logs and config from the installation finished

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-19 07:21+0000\n"
+"POT-Creation-Date: 2026-03-23 06:09+0000\n"
 "PO-Revision-Date: 2026-03-21 13:04+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -30,14 +30,14 @@ msgid "Yes"
 msgstr "Ja"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:197
+#: agama-files/src/service.rs:198
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr ""
 "Das Abrufen des Skripts %s ist fehlgeschlagen. Möchten Sie es erneut "
 "versuchen?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:221
+#: agama-files/src/service.rs:222
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 "Das Schreiben der Datei %s ist fehlgeschlagen. Möchten Sie es erneut "
@@ -180,7 +180,7 @@ msgstr "Muster"
 msgid "product"
 msgstr "Produkt"
 
-#: agama-software/src/service.rs:308
+#: agama-software/src/service.rs:279
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
