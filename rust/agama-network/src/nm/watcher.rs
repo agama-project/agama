@@ -88,10 +88,7 @@ impl NetworkManagerWatcher {
 
 #[async_trait]
 impl Watcher for NetworkManagerWatcher {
-    async fn run(
-        self: Box<Self>,
-        handler: Handler<Service>,
-    ) -> Result<(), NetworkAdapterError> {
+    async fn run(self: Box<Self>, handler: Handler<Service>) -> Result<(), NetworkAdapterError> {
         let (tx, rx) = unbounded_channel();
 
         // Process the DeviceChangedStream in a separate task.
@@ -268,7 +265,9 @@ impl ActionDispatcher<'_> {
         let (_, proxy) = self.proxies.find_or_add_connection(&path).await?;
         tracing::info!("New connection was found");
         if let Ok(connection) = Self::connection_from_proxy(&self.connection, proxy.clone()).await {
-            _ = self.handler.cast(message::NewConnection { connection: Box::new(connection) });
+            _ = self.handler.cast(message::NewConnection {
+                connection: Box::new(connection),
+            });
         }
         // TODO: report an error if the device cannot get generated
 
@@ -292,7 +291,9 @@ impl ActionDispatcher<'_> {
     async fn handle_device_added(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         let (_, proxy) = self.proxies.find_or_add_device(&path).await?;
         if let Ok(device) = Self::device_from_proxy(&self.connection, proxy.clone()).await {
-            _ = self.handler.cast(message::AddDevice { device: Box::new(device) });
+            _ = self.handler.cast(message::AddDevice {
+                device: Box::new(device),
+            });
         }
         // TODO: report an error if the device cannot get generated
 
@@ -306,9 +307,10 @@ impl ActionDispatcher<'_> {
         let (old_name, proxy) = self.proxies.find_or_add_device(&path).await?;
         let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
         let new_name = device.name.clone();
-        _ = self
-            .handler
-            .cast(message::UpdateDevice { name: old_name.to_string(), device: Box::new(device) });
+        _ = self.handler.cast(message::UpdateDevice {
+            name: old_name.to_string(),
+            device: Box::new(device),
+        });
         self.proxies.update_device_name(&path, &new_name);
         Ok(())
     }
@@ -329,9 +331,10 @@ impl ActionDispatcher<'_> {
     async fn handle_ip4_config_changed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, proxy)) = self.proxies.find_device_for_ip4(&path).await {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
-            _ = self
-                .handler
-                .cast(message::UpdateDevice { name: name.to_string(), device: Box::new(device) });
+            _ = self.handler.cast(message::UpdateDevice {
+                name: name.to_string(),
+                device: Box::new(device),
+            });
         }
         Ok(())
     }
@@ -342,9 +345,10 @@ impl ActionDispatcher<'_> {
     async fn handle_ip6_config_changed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, proxy)) = self.proxies.find_device_for_ip6(&path).await {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
-            _ = self
-                .handler
-                .cast(message::UpdateDevice { name: name.to_string(), device: Box::new(device) });
+            _ = self.handler.cast(message::UpdateDevice {
+                name: name.to_string(),
+                device: Box::new(device),
+            });
         }
         Ok(())
     }
@@ -402,7 +406,9 @@ impl ActionDispatcher<'_> {
         let device_name = name.clone();
         let (_, proxy) = self.proxies.find_or_add_access_point(&ap_path).await?;
         if let Ok(access_point) = Self::access_point_from_proxy(device_name, proxy.clone()).await {
-            _ = self.handler.cast(message::AddAccessPoint { access_point: Box::new(access_point) });
+            _ = self.handler.cast(message::AddAccessPoint {
+                access_point: Box::new(access_point),
+            });
         }
         Ok(())
     }

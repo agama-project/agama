@@ -20,7 +20,8 @@
 
 use crate::{
     actions::{FinishAction, InstallAction, SetConfigAction},
-    bootloader, files, hostname, iscsi, l10n, network, proxy, s390, security, service, software, storage,
+    bootloader, files, hostname, iscsi, l10n, network, proxy, s390, security, service, software,
+    storage,
     tasks::message,
     users,
 };

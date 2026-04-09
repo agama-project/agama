@@ -24,8 +24,8 @@ use agama_utils::{actor::Handler, api::event, progress};
 use async_trait::async_trait;
 
 use crate::{
-    adapter::Watcher, model::StateConfig, Adapter, NetworkAdapterError, NetworkState,
-    Service, Starter,
+    adapter::Watcher, model::StateConfig, Adapter, NetworkAdapterError, NetworkState, Service,
+    Starter,
 };
 
 /// Network adapter for tests.
