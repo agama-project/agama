@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Apr  9 14:26:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Support camelCase encryption method names (randomSwap,
+  protectedSwap, secureSwap) in addition to snake_case for
+  backward compatibility (gh#agama-project/agama#3369).
+- Move encryption methods from the /system endpoint to
+  /private/encryption_methods (gh#agama-project/agama#3369).
+
+-------------------------------------------------------------------
 Tue Apr  7 16:55:22 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Automatically try loading the autoinstallation profile from the

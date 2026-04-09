@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Apr  9 14:26:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Expose encryption methods as a D-Bus property (gh#agama-project/agama#3369).
+- Support camelCase encryption method names (randomSwap,
+  protectedSwap, secureSwap) in addition to snake_case for
+  backward compatibility.
+
+-------------------------------------------------------------------
 Wed Apr  8 09:28:31 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix for diskless installation making a proposal when

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr  9 14:26:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update TypeScript types to support camelCase encryption
+  method names (randomSwap, protectedSwap, secureSwap) in addition
+  to snake_case (gh#agama-project/agama#3369).
+
+-------------------------------------------------------------------
 Tue Apr  7 14:19:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Redirect to the overview page after selecting the product during
