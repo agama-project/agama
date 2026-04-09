@@ -32,9 +32,6 @@ pub trait Storage1 {
     /// Finish method
     fn finish(&self) -> zbus::Result<()>;
 
-    /// GetEncryptionMethods method
-    fn get_encryption_methods(&self) -> zbus::Result<String>;
-
     /// GetConfigFromModel method
     fn get_config_from_model(&self, model: &str) -> zbus::Result<String>;
 
@@ -71,6 +68,10 @@ pub trait Storage1 {
     /// ConfigModel property
     #[zbus(property)]
     fn config_model(&self) -> zbus::Result<String>;
+
+    /// EncryptionMethods property
+    #[zbus(property)]
+    fn encryption_methods(&self) -> zbus::Result<String>;
 
     /// Issues property
     #[zbus(property)]

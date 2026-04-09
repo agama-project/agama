@@ -174,7 +174,7 @@ impl MessageHandler<message::GetEncryptionMethods> for Service {
         &mut self,
         _message: message::GetEncryptionMethods,
     ) -> Result<Vec<String>, Error> {
-        let raw_json = self.storage_proxy.get_encryption_methods().await?;
+        let raw_json = self.storage_proxy.encryption_methods().await?;
         Ok(try_from_string(&raw_json)?)
     }
 }

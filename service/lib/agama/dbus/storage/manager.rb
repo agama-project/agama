@@ -59,6 +59,7 @@ module Agama
           @serialized_proposal = serialize_proposal
           @serialized_issues = serialize_issues
           @serialized_bootloader_config = serialize_bootloader_config
+          @serialized_encryption_methods = serialize_encryption_methods
           register_progress_callbacks
         end
 
@@ -68,6 +69,8 @@ module Agama
           dbus_reader_attr_accessor :serialized_config_model, "s", dbus_name: "ConfigModel"
           dbus_reader_attr_accessor :serialized_proposal, "s", dbus_name: "Proposal"
           dbus_reader_attr_accessor :serialized_issues, "s", dbus_name: "Issues"
+          dbus_reader_attr_accessor :serialized_encryption_methods, "s",
+            dbus_name: "EncryptionMethods"
           dbus_method(:Activate) { activate }
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
@@ -83,7 +86,6 @@ module Agama
           dbus_method(
             :SolveConfigModel, "in serialized_model:s, out result:s"
           ) { |m| solve_config_model(m) }
-          dbus_method(:GetEncryptionMethods, "out methods:s") { encryption_methods }
           dbus_signal(:SystemChanged, "serialized_system:s")
           dbus_signal(:ProposalChanged, "serialized_proposal:s")
           dbus_signal(:ProgressChanged, "serialized_progress:s")
@@ -183,10 +185,10 @@ module Agama
           JSON.pretty_generate(solved_model_json)
         end
 
-        # Gets the available encryption methods for the current system and product.
+        # Generates the serialized JSON of the available encryption methods.
         #
         # @return [String] Serialized list of encryption method IDs.
-        def encryption_methods
+        def serialize_encryption_methods
           methods = Agama::Storage::EncryptionSettings
             .available_methods
             .map { |m| Agama::Storage::EncryptionSettings.method_id(m) }
