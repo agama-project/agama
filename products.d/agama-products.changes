@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr  2 13:11:03 UTC 2026 - Jiri Srain <jsrain@suse.com>
+
+- Install by default the enhanced_base pattern for immutable mode
+  still allowing users to unselect it and stay with immutable_base
+  only
+
+-------------------------------------------------------------------
 Tue Mar 17 12:15:23 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 19

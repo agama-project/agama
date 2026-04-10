@@ -100,7 +100,7 @@ export default function ChangeProductOption({
       : {};
 
   return (
-    <Component to={to} {...props}>
+    <Component to={`${to}?byUser`} {...props}>
       <Wrapper {...wrapperProps}>
         {showIcon && <Icon name="edit_square" />} {getLabel()}
       </Wrapper>

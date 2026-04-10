@@ -1360,8 +1360,8 @@ export default {
   "Network details": [
     "Nätverksdetaljer"
   ],
-  "Network not availble": [
-    "Nätverk är inte tillgängligt"
+  "Network not available": [
+    "Nätverk inte tillgängligt"
   ],
   "New": [
     "Ny"

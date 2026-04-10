@@ -21,7 +21,6 @@
 pub mod cert;
 pub mod dbus;
 pub mod error;
-pub mod logs;
 pub mod profile;
 pub mod web;
 pub use web::service;

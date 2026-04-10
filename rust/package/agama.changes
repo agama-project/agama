@@ -5,6 +5,24 @@ Fri Apr 10 13:46:02 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
   to disable remote access to the Agama web server (jsc#AGM-153)
 
 -------------------------------------------------------------------
+Fri Apr 10 08:02:40 UTC 2026 - Lidong Zhong <lidong.zhong@suse.com>
+
+- Run scripts from /var/lib/agama/scripts (bsc#1261787).
+
+-------------------------------------------------------------------
+Thu Apr  9 06:53:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix OpenAPI specification for PATCH /config (gh#agama-project/agama#3368).
+
+-------------------------------------------------------------------
+Tue Apr  7 16:55:22 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically try loading the autoinstallation profile from the
+  root of the installation medium (jsc#PED-16010)
+- Use journal logging with more details in the autoinstallation
+  CLI tool (log to stdout when running manually)
+
+-------------------------------------------------------------------
 Tue Mar 24 13:01:38 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Include more details when saving the journal log

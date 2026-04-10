@@ -79,7 +79,7 @@ describe("ChangeProductOption", () => {
     it("renders a link by default for navigating to product selection page", () => {
       installerRender(<ChangeProductOption />);
       const link = screen.getByRole("link", { name: "Change product" });
-      expect(link).toHaveAttribute("href", PATHS.changeProduct);
+      expect(link).toHaveAttribute("href", `${PATHS.changeProduct}?byUser`);
     });
 
     it("renders a menu item when component prop is 'dropdownitem'", () => {

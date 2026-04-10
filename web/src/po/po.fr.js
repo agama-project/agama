@@ -4,7 +4,7 @@ export default {
     "language": "fr"
   },
   "\"%s\"": [
-    ""
+    "« %s »"
   ],
   "\"%s\" does not exist or is no longer available.": [
     "\"%s\" n’existe pas ou n’est plus disponible."
@@ -1201,6 +1201,9 @@ export default {
   ],
   "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
     "Les partitions à démarrer seront configurées si nécessaire sur le disque d’installation. Actuellement %1$s, en fonction de l’emplacement du système de fichiers %2$s."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Des partitions pour l’hôte « système » seront créées si nécessaire."
   ],
   "Partitions will be used and created for %s": [
     "Des partitions seront créées et utilisées pour %s"

@@ -1379,7 +1379,7 @@ export default {
   "Network details": [
     "Відомості про мережу"
   ],
-  "Network not availble": [
+  "Network not available": [
     "Мережа недоступна"
   ],
   "New": [

@@ -22,22 +22,17 @@ use crate::api::config::Config;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    Json(#[from] serde_json::Error),
-}
-
 /// Patch for the config.
 #[derive(Deserialize, Serialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Patch {
     /// Update for the current config.
+    #[schema(value_type = Option<Config>)]
     pub update: Option<Value>,
 }
 
 impl Patch {
-    pub fn with_update(config: &Config) -> Result<Self, Error> {
+    pub fn with_update(config: &Config) -> Result<Self, serde_json::Error> {
         Ok(Self {
             update: Some(serde_json::to_value(config)?),
         })

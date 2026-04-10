@@ -334,8 +334,14 @@ export default {
   "Change keyboard layout": [
     "Cambia mappagura della tastiera"
   ],
+  "Change mode": [
+    "Cambia modalità"
+  ],
   "Change product": [
     "Cambia prodotto"
+  ],
+  "Change product or mode": [
+    "Cambia prodotto o modalità"
   ],
   "Change selection": [
     "Modifica la selezione"
@@ -602,7 +608,7 @@ export default {
     "Scarica i logs"
   ],
   "Download logs to troubleshoot or share with support.": [
-    ""
+    "Scarica i file di log per esaminare il problema o condividerli con il supporto."
   ],
   "Edit": [
     "Modifica"
@@ -855,6 +861,15 @@ export default {
   ],
   "Install now with potential data loss": [
     ""
+  ],
+  "Installation complete": [
+    "Installazione completata"
+  ],
+  "Installation failed": [
+    "Installazione fallita"
+  ],
+  "Installation in progress": [
+    "Installazione in corso"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     ""
@@ -1291,7 +1306,7 @@ export default {
     "Riavvia"
   ],
   "Reboot to try again.": [
-    ""
+    "Riavvia per riprovare."
   ],
   "Recommended": [
     "Consigliato"
@@ -1356,6 +1371,9 @@ export default {
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
     ""
+  ],
+  "Retrieving error details": [
+    "Recupero dettagli errore"
   ],
   "Reused partitions will not be shrunk": [
     "Le partizioni riutilizzate non verranno ridotte"
@@ -1769,6 +1787,9 @@ export default {
   "The storage configuration uses elements not supported by this interface.": [
     "La configurazione di memorizzazione usa elementi non supportati da questa interfaccia."
   ],
+  "The system is rebooting": [
+    "Il sistema si sta riavviando"
+  ],
   "The whole device will be used for %s": [
     "L'intero dispositivo verrà utilizzato per %s"
   ],
@@ -1850,13 +1871,13 @@ export default {
     "Scollegato"
   ],
   "Unexpected error": [
-    ""
+    "Errore inaspettato"
   ],
   "Unknown": [
     ""
   ],
   "Unknown error": [
-    ""
+    "Errore sconosciuto"
   ],
   "Unselect": [
     "Deseleziona"
@@ -2074,8 +2095,11 @@ export default {
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
     "È possibile procedere con l'installazione utilizzando le impostazioni attuali oppure, se lo si desidera, è possibile ignorare la configurazione e iniziare da zero con una semplice."
   ],
+  "You can reboot the machine to log in to the new system.": [
+    "Riavvia la macchina e connettiti al tuo nuovo sistema."
+  ],
   "You can safely close this window.": [
-    ""
+    "Puoi chiudere con sicurezza questa finestra."
   ],
   "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
     "Non sarà possibile modificarlo in seguito. Vai alla sezione %s se desideri modificarlo prima di procedere con la registrazione."

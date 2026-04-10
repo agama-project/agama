@@ -84,6 +84,11 @@ const mockUseRevalidator = jest.fn();
 const mockRoutes = (...routes) => initialRoutes.mockReturnValueOnce(routes);
 
 /**
+ * Removes the mocked routes.
+ */
+const unmockRoutes = () => initialRoutes.mockReset();
+
+/**
  * Allows mocking useParams react-router-dom hook for testing purpose
  *
  * @example
@@ -112,9 +117,9 @@ jest.mock("react-router", () => ({
   Outlet: () => <>Outlet Content</>,
   useRevalidator: () => mockUseRevalidator,
   useLinkClickHandler:
-    ({ to }) =>
-    () => {
-      to;
+    (to, options) => (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      event.preventDefault();
+      mockNavigateFn(to, options);
     },
   useRouteError: () => mockRouteErrorFn(),
   isRouteErrorResponse: (e: unknown) => e instanceof Object && "__isRouteError" in e,
@@ -398,6 +403,7 @@ export {
   mockNavigateFn,
   mockParams,
   mockRoutes,
+  unmockRoutes,
   mockRouteError,
   mockUseRevalidator,
   resetLocalStorage,

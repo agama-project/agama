@@ -21,7 +21,7 @@
 use std::time::Duration;
 
 use agama_utils::api::{
-    patch::{self, Patch},
+    patch::Patch,
     question::{
         Answer, AnswerRule, Config as QuestionsConfig, Policy, Question, QuestionSpec,
         UpdateQuestion,
@@ -39,7 +39,7 @@ pub enum QuestionsHTTPClientError {
     #[error("Unknown question with ID {0}")]
     UnknownQuestion(u32),
     #[error(transparent)]
-    Patch(#[from] patch::Error),
+    Json(#[from] serde_json::Error),
 }
 
 pub struct HTTPClient {
