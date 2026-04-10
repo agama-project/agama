@@ -65,7 +65,7 @@ systemctl enable sshd.service
 systemctl enable NetworkManager.service
 systemctl enable avahi-daemon.service
 systemctl enable agama.service
-systemctl enable agama-web-server-remote.service
+systemctl enable agama-web-server.service
 systemctl enable agama-dbus-monitor.service
 systemctl enable agama-autoinstall.service
 systemctl enable agama-hostname.service

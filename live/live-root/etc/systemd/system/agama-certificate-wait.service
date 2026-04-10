@@ -1,8 +1,7 @@
 [Unit]
 Description=Postpone login prompt after the SSL fingerprint issue is generated
 
-After=agama-web-server-remote.service
-After=agama-web-server-local.service
+After=agama-web-server.service
 
 # copied from YaST2-Second-Stage.service
 Before=getty@tty1.service

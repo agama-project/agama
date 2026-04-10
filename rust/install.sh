@@ -57,8 +57,7 @@ install -D -t "${DESTDIR}${libexecdir}" "${SRCDIR}"/share/agama-scripts.sh
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-autoinstall.service
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-proxy-setup.service
 install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-scripts.service
-install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server-local.service
-install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server-remote.service
+install6 -D -t "${DESTDIR}${unitdir}" "${SRCDIR}"/share/agama-web-server.service
 
 # create the licenses directory
 install -d -m 0755 "${DESTDIR}${datadir}"/agama/eula

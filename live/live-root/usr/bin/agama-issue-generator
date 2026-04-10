@@ -21,8 +21,7 @@
 # issues
 CERT_ISSUE=/run/issue.d/50-agama-ssl-certificate.issue
 
-REMOTE_ENABLED=$(systemctl is-enabled agama-web-server-remote.service)
-if [ "$REMOTE_ENABLED" = "masked-runtime" ]; then
+if grep -q "\binst.remote=0\b" /run/agama/cmdline.d/agama.conf; then
   LOCAL_ONLY=1
 else
   LOCAL_ONLY=0

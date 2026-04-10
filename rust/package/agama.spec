@@ -249,8 +249,7 @@ echo $PATH
 %{_bindir}/agama-zypp-journal
 %{_bindir}/agama-proxy-setup
 %{_pam_vendordir}/agama
-%{_unitdir}/agama-web-server-local.service
-%{_unitdir}/agama-web-server-remote.service
+%{_unitdir}/agama-web-server.service
 %{_unitdir}/agama-proxy-setup.service
 %dir %{_datadir}/agama/eula
 
