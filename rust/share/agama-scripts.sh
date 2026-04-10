@@ -22,7 +22,7 @@
 
 # This script runs the user-defined Agama init scripts.
 
-: "${SCRIPTS_DIR:=/var/log/agama-installation/scripts/init}"
+: "${SCRIPTS_DIR:=/var/lib/agama/scripts/init}"
 
 systemctl disable agama-scripts.service
 
