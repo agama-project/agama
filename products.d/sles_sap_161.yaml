@@ -334,6 +334,9 @@ modes:
         - immutable_base
       mandatory_packages:
         - SLES_SAP_immutable-release
+      user_patterns:
+        - enhanced_base
+          selected: true
 
     storage:
       space_policy: delete

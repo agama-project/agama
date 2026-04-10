@@ -31,7 +31,6 @@ use anyhow::{anyhow, Context};
 use clap::Subcommand;
 use console::style;
 use fluent_uri::Uri;
-use serde_json::json;
 use tempfile::Builder;
 use tokio::time::sleep;
 
@@ -175,10 +174,7 @@ async fn patch_config(
     http_client: &BaseHTTPClient,
     model: &api::Config,
 ) -> Result<(), anyhow::Error> {
-    let model_json = json!(model);
-    let patch = api::Patch {
-        update: Some(model_json),
-    };
+    let patch = api::Patch::with_update(model)?;
     http_client.patch_void("/v2/config", &patch).await?;
     Ok(())
 }

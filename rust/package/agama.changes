@@ -7,6 +7,11 @@ Thu Apr  9 14:26:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Move encryption methods from the /system endpoint to
   /private/encryption_methods (gh#agama-project/agama#3369).
 
+-------------------------------------------------------------------  
+Thu Apr  9 06:53:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix OpenAPI specification for PATCH /config (gh#agama-project/agama#3368).
+
 -------------------------------------------------------------------
 Tue Apr  7 16:55:22 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
