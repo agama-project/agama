@@ -256,6 +256,7 @@ module Agama
 
         def run
           FileUtils.mkdir_p(logs_dir, mode: 0o700)
+          FileUtils.mkdir_p(var_dir, mode: 0o700)
           collect_logs
           copy_scripts
         end
@@ -265,7 +266,7 @@ module Agama
         def copy_scripts
           return unless Dir.exist?(SCRIPTS_DIR)
 
-          FileUtils.cp_r(SCRIPTS_DIR, logs_dir)
+          FileUtils.cp_r(SCRIPTS_DIR, var_dir)
         end
 
         def collect_logs
@@ -278,6 +279,12 @@ module Agama
         def logs_dir
           @logs_dir ||= File.join(
             Yast::Installation.destdir, "var", "log", "agama-installation"
+          )
+        end
+
+        def var_dir
+          @var_dir ||= File.join(
+            Yast::Installation.destdir, "var", "lib", "agama"
           )
         end
       end

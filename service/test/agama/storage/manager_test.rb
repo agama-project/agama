@@ -534,8 +534,7 @@ describe Agama::Storage::Manager do
 
       it "copies the artifacts to the installed system" do
         storage.finish
-        expect(File).to exist(File.join(tmp_dir, "mnt", "var", "log", "agama-installation",
-          "scripts"))
+        expect(File).to exist(File.join(tmp_dir, "mnt", "var", "lib", "agama", "scripts"))
       end
     end
   end

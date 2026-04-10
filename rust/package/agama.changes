@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Apr 10 06:21:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Run scripts from /var/lib/agama/scripts (bsc#1261787).
+
+-------------------------------------------------------------------
 Tue Mar 24 10:57:02 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Add the zFCP controller internal id to the device when some
