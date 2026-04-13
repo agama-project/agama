@@ -32,7 +32,7 @@ const BINDING_MODE_OPTIONS = [
     label: N_("Any"),
     // TRANSLATORS: description for the "Any" binding mode. The connection is
     // not limited to a specific device.
-    description: N_("Available for all devices"),
+    description: N_("The connection is available for all devices"),
   },
   {
     value: "iface",
@@ -40,7 +40,7 @@ const BINDING_MODE_OPTIONS = [
     label: N_("Chosen by name"),
     // TRANSLATORS: description for the "Chosen by name" binding mode. The
     // "device name" refers to the interface name (e.g. eth0).
-    description: N_("Restricted to a specific device name"),
+    description: N_("Identify the connection device by its name in the system"),
   },
   {
     value: "mac",
@@ -48,7 +48,7 @@ const BINDING_MODE_OPTIONS = [
     label: N_("Chosen by MAC"),
     // TRANSLATORS: description for the "Chosen by MAC" binding mode. MAC is the
     // hardware address, persisting across interface renames.
-    description: N_("Restricted to a specific device and follows it even if renamed"),
+    description: N_("Identify the connection device by its physical address"),
   },
 ];
 

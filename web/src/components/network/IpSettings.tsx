@@ -45,10 +45,18 @@ const modeOptions = () => [
   {
     value: "unset",
     // TRANSLATORS: option label for automatic IP configuration.
-    label: N_("Automatic"),
+    label: N_("Default (automatic)"),
     // TRANSLATORS: description for the "Automatic" IP mode. Address and gateway
     // come from the network.
-    description: N_("Address and gateway from the network"),
+    description: N_("Omitted configuration with address and gateway assigned from the network"),
+  },
+  {
+    value: "auto",
+    // TRANSLATORS: option label for advanced IP configuration combining automatic and optional static settings.
+    label: N_("Explicit (automatic)"),
+    // TRANSLATORS: description for the "Advanced" IP mode. Uses automatic
+    // addressing with optional static addresses and gateway.
+    description: N_("Configuration from the network plus optional addresses and gateway"),
   },
   {
     value: "manual",
@@ -56,15 +64,7 @@ const modeOptions = () => [
     label: N_("Manual"),
     // TRANSLATORS: description for the "Manual" IP mode. Requires static
     // addresses with an optional gateway.
-    description: N_("Fixed addresses with optional gateway"),
-  },
-  {
-    value: "auto",
-    // TRANSLATORS: option label for advanced IP configuration combining automatic and optional static settings.
-    label: N_("Advanced"),
-    // TRANSLATORS: description for the "Advanced" IP mode. Uses automatic
-    // addressing with optional static addresses and gateway.
-    description: N_("Automatic plus optional addresses and gateway"),
+    description: N_("Fixed addresses and gateway"),
   },
 ];
 

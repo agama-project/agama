@@ -479,7 +479,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
             <field.CheckboxField
               label={
                 // TRANSLATORS: checkbox label for custom DNS server configuration.
-                _("Use custom DNS")
+                _("Use custom DNS servers")
               }
             />
           )}
