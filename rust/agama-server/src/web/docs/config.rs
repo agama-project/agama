@@ -179,6 +179,7 @@ pub fn components() -> Components {
         .schema_from::<agama_utils::api::network::NetworkConnection>()
         .schema_from::<agama_utils::api::network::NetworkConnectionWithState>()
         .schema_from::<agama_utils::api::network::NetworkConnectionsCollection>()
+        .schema_from::<agama_utils::api::network::NetworkConnectionsWithStateCollection>()
         .schema_from::<agama_utils::api::network::StateSettings>()
         .schema_from::<agama_utils::api::network::VlanSettings>()
         .schema_from::<agama_utils::api::network::WirelessSettings>()
