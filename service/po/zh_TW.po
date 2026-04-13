@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 11:51+0000\n"
+"POT-Creation-Date: 2026-04-10 10:37+0000\n"
 "PO-Revision-Date: 2025-08-05 04:59+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (Taiwan) <https://l10n.opensuse.org/projects/agama/"
@@ -651,17 +651,17 @@ msgid "Copying logs"
 msgstr "正在複製記錄"
 
 #. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:288
+#: service/lib/agama/storage/finisher.rb:295
 msgid "Running user-defined scripts"
 msgstr "正在執行使用者定義的程序檔"
 
 #. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:327
+#: service/lib/agama/storage/finisher.rb:334
 msgid "Deploying user-defined files"
 msgstr "正在部署使用者定義的檔案"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:346
+#: service/lib/agama/storage/finisher.rb:353
 msgid "Unmounting storage devices"
 msgstr "正在卸載儲存裝置"
 
