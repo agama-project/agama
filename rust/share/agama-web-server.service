@@ -9,7 +9,8 @@ BindsTo=agama.service
 EnvironmentFile=-/run/agama/environment.conf
 Environment="AGAMA_LOG=debug,zbus=info"
 Type=notify
-ExecStart=/usr/bin/agama-web-server.sh
+# listen only on the loopback interface if the inst.remote=0 boot option is set
+ExecStart=/usr/bin/bash -c "grep -q '\\binst.remote=0\\b' /run/agama/cmdline.d/agama.conf && exec /usr/bin/agama-web-server serve --address ::1:80,127.0.0.1:80 --address ::1:443,127.0.0.1:443 || exec /usr/bin/agama-web-server serve --address :::80,0.0.0.0:80 --address :::443,0.0.0.0:443"
 PIDFile=/run/agama/web.pid
 User=root
 TimeoutStopSec=5
