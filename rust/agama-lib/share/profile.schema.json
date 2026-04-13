@@ -333,12 +333,19 @@
               "method4": {
                 "title": "IPv4 configuration method",
                 "type": "string",
-                "enum": ["auto", "manual", "link-local", "disabled"]
+                "enum": ["auto", "manual", "link-local", "shared", "disabled"]
               },
               "method6": {
                 "title": "IPv6 configuration method",
                 "type": "string",
-                "enum": ["auto", "manual", "link-local", "disabled"]
+                "enum": [
+                  "auto",
+                  "manual",
+                  "dhcp",
+                  "link-local",
+                  "shared",
+                  "disabled"
+                ]
               },
               "gateway4": {
                 "title": "Connection gateway address",

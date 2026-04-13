@@ -22,18 +22,17 @@
 //!
 //! This library implements the network configuration service for Agama.
 
-pub mod action;
 pub mod adapter;
 pub mod error;
+pub mod message;
 pub mod model;
 mod nm;
 mod service;
 pub mod types;
 
-pub use action::Action;
 pub use adapter::{Adapter, NetworkAdapterError};
 pub use model::NetworkState;
 pub use nm::NetworkManagerAdapter;
-pub use service::{NetworkSystemClient, NetworkSystemError, Service, Starter};
+pub use service::{NetworkSystemError, Service, Starter};
 
 pub mod test_utils;

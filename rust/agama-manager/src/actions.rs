@@ -20,7 +20,6 @@
 
 use std::{process::Command, sync::Arc};
 
-use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::Handler,
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
@@ -32,8 +31,8 @@ use gettextrs::gettext;
 use tokio::sync::RwLock;
 
 use crate::{
-    bootloader, checks, files, hostname, iscsi, l10n, proxy, s390, security, service, software,
-    storage, users,
+    bootloader, checks, files, hostname, iscsi, l10n, network, proxy, s390, security, service,
+    software, storage, users,
 };
 
 /// Implements the installation process.
@@ -43,7 +42,7 @@ pub struct InstallAction {
     pub hostname: Handler<hostname::Service>,
     pub issues: Handler<issue::Service>,
     pub l10n: Handler<l10n::Service>,
-    pub network: NetworkSystemClient,
+    pub network: Handler<network::Service>,
     pub proxy: Handler<proxy::Service>,
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
@@ -114,7 +113,7 @@ impl InstallAction {
         self.l10n.call(l10n::message::Install).await?;
         self.software.call(software::message::Finish).await?;
         self.files.call(files::message::Finish).await?;
-        self.network.install().await?;
+        self.network.call(network::message::Install).await?;
         self.proxy.call(proxy::message::Finish).await?;
         self.hostname.call(hostname::message::Install).await?;
         self.users.call(users::message::Install).await?;
@@ -160,7 +159,7 @@ pub struct SetConfigAction {
     pub hostname: Handler<hostname::Service>,
     pub iscsi: Handler<iscsi::Service>,
     pub l10n: Handler<l10n::Service>,
-    pub network: NetworkSystemClient,
+    pub network: Handler<network::Service>,
     pub proxy: Handler<proxy::Service>,
     pub progress: Handler<progress::Service>,
     pub questions: Handler<question::Service>,
@@ -353,8 +352,11 @@ impl SetConfigAction {
         self.progress
             .call(progress::message::Next::new(Scope::Manager))
             .await?;
-        self.network.update_config(network).await?;
-        self.network.apply().await?;
+        self.network
+            .call(network::message::SetConfig {
+                config: Box::new(network),
+            })
+            .await?;
 
         Ok(())
     }

@@ -31,12 +31,14 @@ use std::str::FromStr;
 use crate::types::Device;
 use crate::{
     adapter::Watcher,
+    message,
     nm::proxies::{AccessPointProxy, DeviceProxy},
-    Action, NetworkAdapterError,
+    NetworkAdapterError, Service,
 };
+use agama_utils::actor::Handler;
 use anyhow::anyhow;
 use async_trait::async_trait;
-use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
+use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 use tokio_stream::StreamExt;
 use zbus::zvariant::OwnedObjectPath;
 
@@ -86,10 +88,7 @@ impl NetworkManagerWatcher {
 
 #[async_trait]
 impl Watcher for NetworkManagerWatcher {
-    async fn run(
-        self: Box<Self>,
-        actions: UnboundedSender<Action>,
-    ) -> Result<(), NetworkAdapterError> {
+    async fn run(self: Box<Self>, handler: Handler<Service>) -> Result<(), NetworkAdapterError> {
         let (tx, rx) = unbounded_channel();
 
         // Process the DeviceChangedStream in a separate task.
@@ -149,7 +148,7 @@ impl Watcher for NetworkManagerWatcher {
 
         // Turn the changes into actions in a separate task.
         let connection = self.connection.clone();
-        let mut dispatcher = ActionDispatcher::new(connection, rx, actions);
+        let mut dispatcher = ActionDispatcher::new(connection, rx, handler);
         dispatcher
             .run()
             .await
@@ -164,7 +163,7 @@ struct ActionDispatcher<'a> {
     connection: zbus::Connection,
     proxies: ProxiesRegistry<'a>,
     updates_rx: UnboundedReceiver<NmChange>,
-    actions_tx: UnboundedSender<Action>,
+    handler: Handler<Service>,
 }
 
 impl ActionDispatcher<'_> {
@@ -172,17 +171,17 @@ impl ActionDispatcher<'_> {
     ///
     /// * `connection`: D-Bus connection to NetworkManager.
     /// * `updates_rx`: Channel to receive the updates.
-    /// * `actions_tx`: Channel to dispatch the network actions.
+    /// * `handler`: Handler to dispatch the network actions.
     pub fn new(
         connection: zbus::Connection,
         updates_rx: UnboundedReceiver<NmChange>,
-        actions_tx: UnboundedSender<Action>,
+        handler: Handler<Service>,
     ) -> Self {
         Self {
             proxies: ProxiesRegistry::new(&connection),
             connection,
             updates_rx,
-            actions_tx,
+            handler,
         }
     }
 
@@ -250,7 +249,7 @@ impl ActionDispatcher<'_> {
         let client = NetworkManagerClient::new(self.connection.clone()).await?;
         match client.general_state().await {
             Ok(state) => {
-                _ = self.actions_tx.send(Action::UpdateGeneralState(state));
+                _ = self.handler.cast(message::UpdateGeneralState { state });
             }
             Err(e) => {
                 tracing::warn!("Could not get the general state: {}", e);
@@ -265,8 +264,10 @@ impl ActionDispatcher<'_> {
     async fn handle_connection_added(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         let (_, proxy) = self.proxies.find_or_add_connection(&path).await?;
         tracing::info!("New connection was found");
-        if let Ok(conn) = Self::connection_from_proxy(&self.connection, proxy.clone()).await {
-            _ = self.actions_tx.send(Action::NewConnection(Box::new(conn)));
+        if let Ok(connection) = Self::connection_from_proxy(&self.connection, proxy.clone()).await {
+            _ = self.handler.cast(message::NewConnection {
+                connection: Box::new(connection),
+            });
         }
         // TODO: report an error if the device cannot get generated
 
@@ -279,7 +280,7 @@ impl ActionDispatcher<'_> {
     async fn handle_connection_removed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         tracing::info!("Connection was removed");
         if let Some((uuid, _)) = self.proxies.remove_connection(&path) {
-            _ = self.actions_tx.send(Action::RemoveConnection(uuid));
+            _ = self.handler.cast(message::RemoveConnection { uuid });
         }
         Ok(())
     }
@@ -290,7 +291,9 @@ impl ActionDispatcher<'_> {
     async fn handle_device_added(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         let (_, proxy) = self.proxies.find_or_add_device(&path).await?;
         if let Ok(device) = Self::device_from_proxy(&self.connection, proxy.clone()).await {
-            _ = self.actions_tx.send(Action::AddDevice(Box::new(device)));
+            _ = self.handler.cast(message::AddDevice {
+                device: Box::new(device),
+            });
         }
         // TODO: report an error if the device cannot get generated
 
@@ -304,9 +307,10 @@ impl ActionDispatcher<'_> {
         let (old_name, proxy) = self.proxies.find_or_add_device(&path).await?;
         let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
         let new_name = device.name.clone();
-        _ = self
-            .actions_tx
-            .send(Action::UpdateDevice(old_name.to_string(), Box::new(device)));
+        _ = self.handler.cast(message::UpdateDevice {
+            name: old_name.to_string(),
+            device: Box::new(device),
+        });
         self.proxies.update_device_name(&path, &new_name);
         Ok(())
     }
@@ -316,7 +320,7 @@ impl ActionDispatcher<'_> {
     /// * `path`: D-Bus object path of the removed device.
     async fn handle_device_removed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, _)) = self.proxies.remove_device(&path) {
-            _ = self.actions_tx.send(Action::RemoveDevice(name));
+            _ = self.handler.cast(message::RemoveDevice { name });
         }
         Ok(())
     }
@@ -327,9 +331,10 @@ impl ActionDispatcher<'_> {
     async fn handle_ip4_config_changed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, proxy)) = self.proxies.find_device_for_ip4(&path).await {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
-            _ = self
-                .actions_tx
-                .send(Action::UpdateDevice(name.to_string(), Box::new(device)));
+            _ = self.handler.cast(message::UpdateDevice {
+                name: name.to_string(),
+                device: Box::new(device),
+            });
         }
         Ok(())
     }
@@ -340,9 +345,10 @@ impl ActionDispatcher<'_> {
     async fn handle_ip6_config_changed(&mut self, path: OwnedObjectPath) -> Result<(), NmError> {
         if let Some((name, proxy)) = self.proxies.find_device_for_ip6(&path).await {
             let device = Self::device_from_proxy(&self.connection, proxy.clone()).await?;
-            _ = self
-                .actions_tx
-                .send(Action::UpdateDevice(name.to_string(), Box::new(device)));
+            _ = self.handler.cast(message::UpdateDevice {
+                name: name.to_string(),
+                device: Box::new(device),
+            });
         }
         Ok(())
     }
@@ -359,8 +365,8 @@ impl ActionDispatcher<'_> {
         let state = proxy.state().await.map(NmConnectionState)?;
         if let Ok(state) = state.try_into() {
             _ = self
-                .actions_tx
-                .send(Action::ChangeConnectionState(uuid, state));
+                .handler
+                .cast(message::ChangeConnectionState { uuid, state });
         }
         // TODO: report an error if the device cannot get generated
 
@@ -379,8 +385,8 @@ impl ActionDispatcher<'_> {
             let state = proxy.state().await.map(NmConnectionState)?;
             if let Ok(state) = state.try_into() {
                 _ = self
-                    .actions_tx
-                    .send(Action::ChangeConnectionState(uuid, state));
+                    .handler
+                    .cast(message::ChangeConnectionState { uuid, state });
             }
         }
 
@@ -399,8 +405,10 @@ impl ActionDispatcher<'_> {
         let (name, _) = self.proxies.find_or_add_device(&device_path).await?;
         let device_name = name.clone();
         let (_, proxy) = self.proxies.find_or_add_access_point(&ap_path).await?;
-        if let Ok(ap) = Self::access_point_from_proxy(device_name, proxy.clone()).await {
-            _ = self.actions_tx.send(Action::AddAccessPoint(Box::new(ap)));
+        if let Ok(access_point) = Self::access_point_from_proxy(device_name, proxy.clone()).await {
+            _ = self.handler.cast(message::AddAccessPoint {
+                access_point: Box::new(access_point),
+            });
         }
         Ok(())
     }
@@ -415,7 +423,7 @@ impl ActionDispatcher<'_> {
         ap_path: OwnedObjectPath,
     ) -> Result<(), NmError> {
         if let Some((hw_address, _)) = self.proxies.remove_access_point(&ap_path) {
-            _ = self.actions_tx.send(Action::RemoveAccessPoint(hw_address));
+            _ = self.handler.cast(message::RemoveAccessPoint { hw_address });
         }
         Ok(())
     }

@@ -31,6 +31,9 @@ use std::net::IpAddr;
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 
+#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+pub struct NetworkConnectionsWithStateCollection(pub Vec<NetworkConnectionWithState>);
+
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
@@ -319,7 +322,7 @@ impl NetworkConnection {
 //
 // TODO: If the client ignores the additional "state" field, this struct
 // does not need to be here.
-#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
 pub struct NetworkConnectionWithState {
     #[serde(flatten)]
     pub connection: NetworkConnection,

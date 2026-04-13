@@ -38,7 +38,6 @@ use agama_utils::{
 };
 use async_trait::async_trait;
 use merge::Merge;
-use network::NetworkSystemClient;
 use serde_json::Value;
 use std::{collections::HashMap, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
@@ -107,7 +106,7 @@ pub struct Starter {
     hostname: Option<Handler<hostname::Service>>,
     iscsi: Option<Handler<iscsi::Service>>,
     l10n: Option<Handler<l10n::Service>>,
-    network: Option<NetworkSystemClient>,
+    network: Option<Handler<network::Service>>,
     proxy: Option<Handler<proxy::Service>>,
     security: Option<Handler<security::Service>>,
     software: Option<Handler<software::Service>>,
@@ -163,7 +162,7 @@ impl Starter {
         self
     }
 
-    pub fn with_network(mut self, network: NetworkSystemClient) -> Self {
+    pub fn with_network(mut self, network: Handler<network::Service>) -> Self {
         self.network = Some(network);
         self
     }
@@ -421,7 +420,7 @@ pub struct Service {
     proxy: Handler<proxy::Service>,
     l10n: Handler<l10n::Service>,
     software: Handler<software::Service>,
-    network: NetworkSystemClient,
+    network: Handler<network::Service>,
     storage: Handler<storage::Service>,
     issues: Handler<issue::Service>,
     progress: Handler<progress::Service>,
@@ -465,8 +464,8 @@ impl Service {
 
     // Configure the network according to defaults
     async fn network_default(&mut self) -> Result<(), Error> {
-        self.network.propose_default().await?;
-        self.network.apply().await?;
+        self.network.call(network::message::ProposeDefault).await?;
+        self.network.call(network::message::Apply).await?;
         Ok(())
     }
 
@@ -630,7 +629,7 @@ impl MessageHandler<message::GetSystem> for Service {
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
-        let network = self.network.get_system().await?;
+        let network = self.network.call(network::message::GetSystem).await?;
 
         let s390 = if let Some(s390) = &self.s390 {
             Some(s390.call(s390::message::GetSystem).await?)
@@ -679,7 +678,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let security = self.config.security.clone();
         let proxy = self.proxy.call(proxy::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
-        let network = self.network.get_config().await?;
+        let network = self.network.call(network::message::GetConfig).await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 
@@ -749,7 +748,7 @@ impl MessageHandler<message::GetProposal> for Service {
         let hostname = self.hostname.call(hostname::message::GetProposal).await?;
         let l10n = self.l10n.call(l10n::message::GetProposal).await?;
         let storage = self.storage.call(storage::message::GetProposal).await?;
-        let network = self.network.get_proposal().await?;
+        let network = self.network.call(network::message::GetProposal).await?;
         let users = self.users.call(users::message::GetProposal).await?;
 
         // If the software service is busy, it will not answer.

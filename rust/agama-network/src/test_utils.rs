@@ -24,8 +24,8 @@ use agama_utils::{actor::Handler, api::event, progress};
 use async_trait::async_trait;
 
 use crate::{
-    adapter::Watcher, model::StateConfig, Adapter, NetworkAdapterError, NetworkState,
-    NetworkSystemClient, Starter,
+    adapter::Watcher, model::StateConfig, Adapter, NetworkAdapterError, NetworkState, Service,
+    Starter,
 };
 
 /// Network adapter for tests.
@@ -53,7 +53,7 @@ impl Adapter for TestAdapter {
 pub async fn start_service(
     events: event::Sender,
     progress: Handler<progress::Service>,
-) -> NetworkSystemClient {
+) -> Handler<Service> {
     let adapter = TestAdapter;
 
     Starter::new(events, progress)

@@ -1556,6 +1556,32 @@ impl TryFrom<ConnectionCollection> for NetworkConnectionsCollection {
     }
 }
 
+impl TryFrom<ConnectionCollection> for NetworkConnectionsWithStateCollection {
+    type Error = NetworkStateError;
+
+    fn try_from(collection: ConnectionCollection) -> Result<Self, Self::Error> {
+        let network_connections = collection
+            .iter()
+            .filter(|c| c.controller.is_none())
+            .map(|c| {
+                let mut conn = NetworkConnection::try_from(c.clone()).unwrap();
+                if let Some(ref mut bond) = conn.bond {
+                    bond.ports = collection.ports_for(c.uuid);
+                }
+                if let Some(ref mut bridge) = conn.bridge {
+                    bridge.ports = collection.ports_for(c.uuid);
+                };
+                NetworkConnectionWithState {
+                    connection: conn,
+                    state: c.state,
+                }
+            })
+            .collect();
+
+        Ok(NetworkConnectionsWithStateCollection(network_connections))
+    }
+}
+
 impl TryFrom<NetworkConnectionsCollection> for ConnectionCollection {
     type Error = NetworkStateError;
 
@@ -1625,7 +1651,7 @@ impl TryFrom<NetworkState> for SystemInfo {
     type Error = NetworkStateError;
 
     fn try_from(state: NetworkState) -> Result<Self, Self::Error> {
-        let connections: NetworkConnectionsCollection =
+        let connections: NetworkConnectionsWithStateCollection =
             ConnectionCollection(state.connections).try_into()?;
 
         Ok(SystemInfo {
