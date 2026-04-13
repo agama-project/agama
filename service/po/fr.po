@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 11:51+0000\n"
+"POT-Creation-Date: 2026-04-10 10:37+0000\n"
 "PO-Revision-Date: 2025-08-04 09:59+0000\n"
 "Last-Translator: Sophie Leroy <sophie@stoquart.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
@@ -704,17 +704,17 @@ msgid "Copying logs"
 msgstr "Les journaux sont en cours de copie"
 
 #. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:288
+#: service/lib/agama/storage/finisher.rb:295
 msgid "Running user-defined scripts"
 msgstr "Les scripts définis par l'utilisateur sont en cours d'exécution"
 
 #. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:327
+#: service/lib/agama/storage/finisher.rb:334
 msgid "Deploying user-defined files"
 msgstr "Les fichiers définis par l'utilisateur sont en cours de déploiement"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:346
+#: service/lib/agama/storage/finisher.rb:353
 msgid "Unmounting storage devices"
 msgstr "Les périphériques de stockage sont en cours de démontage"
 

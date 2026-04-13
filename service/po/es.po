@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 11:51+0000\n"
+"POT-Creation-Date: 2026-04-10 10:37+0000\n"
 "PO-Revision-Date: 2025-08-09 13:59+0000\n"
 "Last-Translator: Javier Llorente <javier@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -691,17 +691,17 @@ msgid "Copying logs"
 msgstr "Copiando registros"
 
 #. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:288
+#: service/lib/agama/storage/finisher.rb:295
 msgid "Running user-defined scripts"
 msgstr "Ejecutando comandos definidos por el usuario"
 
 #. Executes post-installation scripts
-#: service/lib/agama/storage/finisher.rb:327
+#: service/lib/agama/storage/finisher.rb:334
 msgid "Deploying user-defined files"
 msgstr "Implementando los archivos definidos por el usuario"
 
 #. Step to unmount the target file-systems
-#: service/lib/agama/storage/finisher.rb:346
+#: service/lib/agama/storage/finisher.rb:353
 msgid "Unmounting storage devices"
 msgstr "Desmontando dispositivos de almacenamiento"
 
