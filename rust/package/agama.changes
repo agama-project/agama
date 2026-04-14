@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 14 13:51:47 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Automatically try loading the autoinstallation profile from the
+  root of the installation medium (jsc#PED-16010)
+
+-------------------------------------------------------------------
 Fri Apr 10 06:21:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Run scripts from /var/lib/agama/scripts (bsc#1261787).

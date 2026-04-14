@@ -23,10 +23,16 @@ use agama_lib::http::BaseHTTPClient;
 use anyhow::anyhow;
 
 /// List of pre-defined locations for profiles.
-const PREDEFINED_LOCATIONS: [&str; 6] = [
+const PREDEFINED_LOCATIONS: [&str; 9] = [
+    // OEM drive (pre-installed systems)
     "label://OEMDRV/autoinst.jsonnet",
     "label://OEMDRV/autoinst.json",
     "label://OEMDRV/autoinst.xml",
+    // root of the installation medium
+    "file:///run/initramfs/live/autoinst.jsonnet",
+    "file:///run/initramfs/live/autoinst.json",
+    "file:///run/initramfs/live/autoinst.xml",
+    // root filesystem (squashfs image)
     "file:///autoinst.jsonnet",
     "file:///autoinst.json",
     "file:///autoinst.xml",
