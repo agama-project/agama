@@ -173,7 +173,7 @@ module Agama
         # Ensures keys are strings.
         partitioning = JSON.parse(partitioning.to_json)
         @strategy = ProposalStrategies::Autoyast
-          .new(product_config, storage_system, partitioning, logger)
+          .new(product_config, storage_system, partitioning, bootloader_config.copy, logger)
         calculate
       end
 

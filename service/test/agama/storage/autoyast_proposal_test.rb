@@ -38,8 +38,6 @@ describe Agama::Storage::Proposal do
   before do
     mock_storage(devicegraph: scenario)
     allow(Y2Storage::Arch).to receive(:new).and_return(arch)
-    # This environment is enforced by Agama
-    allow(Y2Storage::StorageEnv.instance).to receive(:no_bls_bootloader).and_return true
   end
 
   let(:scenario) { "windows-linux-pc.yml" }
@@ -143,6 +141,32 @@ describe Agama::Storage::Proposal do
         it "registers no issues" do
           subject.calculate_autoyast(partitioning)
           expect(subject.issues).to be_empty
+        end
+
+        context "in an EFI system with grub2 as the product's default EFI bootloader" do
+          it "proposes the expected EFI partition" do
+            subject.calculate_autoyast(partitioning)
+
+            efi = staging.find_by_name("/dev/sda").partitions.min_by(&:number)
+            expect(efi.size).to eq 512.MiB
+          end
+        end
+
+        # TODO: Actually this also depends on the value of "preferred_bootloader" at
+        # Yast::ProductFeatures, but let's assume all distributions has the same value
+        # than Tumbleweed currently uses.
+        context "in an EFI system with systemd-boot as the product's default EFI bootloader" do
+          before do
+            config.data["boot"] ||= {}
+            config.data["boot"]["default_efi_bootloader"] = "systemd-boot"
+          end
+
+          it "proposes the expected EFI partition" do
+            subject.calculate_autoyast(partitioning)
+
+            efi = staging.find_by_name("/dev/sda").partitions.min_by(&:number)
+            expect(efi.size).to eq 1.GiB
+          end
         end
       end
 
