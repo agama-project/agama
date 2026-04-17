@@ -46,15 +46,20 @@ module Y2Storage
         @bootloader_config = bootloader_config
       end
 
-      # Partitions needed in order to be able to boot the system
+      # Candidate sets of partitions needed in order to be able to boot the system
       #
       # @raise [NotBootableError] if adding partitions is not enough to make the system bootable
       #
       # @param planned_devices [Array<Planned::Device>] devices that are already planned to be
       #   added to the starting devicegraph.
-      # @return [Array<Planned::Partition>]
-      def partitions(planned_devices)
-        strategy(planned_devices).needed_partitions(:min)
+      # @return [Array<Array<Planned::Partition>>]
+      def plans(planned_devices)
+        return [[]] unless config.boot.configure?
+
+        strategy = strategy(planned_devices)
+        [:desired, :min].map do |target|
+          strategy.needed_partitions(target)
+        end
       rescue BootRequirementsStrategies::Error => e
         raise NotBootableError, e.message
       end
