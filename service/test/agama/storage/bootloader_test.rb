@@ -22,55 +22,169 @@
 require_relative "../../test_helper"
 
 require "agama/storage/bootloader"
+require "agama/storage/bootloader_type"
+require "agama/config"
 require "bootloader/grub2"
 require "bootloader/systemdboot"
-
-describe Agama::Storage::Bootloader::Config do
-  subject(:config) { described_class.new }
-
-  describe "#to_json" do
-    before do
-      config.load_json({ "stopOnBootMenu" => true }.to_json)
-    end
-
-    it "serializes its content with keys as camelCase" do
-      expect(config.to_json).to eq "{\"stopOnBootMenu\":true}"
-    end
-
-    it "can serialize in a way that #load_json can restore it" do
-      config.stop_on_boot_menu = false
-      json = config.to_json
-      config.stop_on_boot_menu = true
-      config.load_json(json)
-      expect(config.stop_on_boot_menu).to eq false
-    end
-
-    it "exports only what was previously set" do
-      expect(config.to_json).to eq "{\"stopOnBootMenu\":true}"
-      config.load_json({ "timeout" => 10, "extraKernelParams" => "verbose" }.to_json)
-      expect(config.to_json).to eq "{\"timeout\":10,\"extraKernelParams\":\"verbose\"}"
-    end
-  end
-
-  describe "#load_json" do
-    it "loads config from given json" do
-      content = "{\"stopOnBootMenu\":true,\"updateNvram\":true}"
-      config.load_json(content)
-      expect(config.stop_on_boot_menu).to eq true
-      expect(config.update_nvram).to eq true
-    end
-
-    it "remembers which keys are set" do
-      content = "{\"timeout\":10}"
-      config.load_json(content)
-      expect(config.keys_to_export).to eq([:timeout])
-    end
-  end
-end
 
 describe Agama::Storage::Bootloader do
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:agama_bootloader) { described_class.new(logger) }
+  let(:product_config) { instance_double(Agama::Config, data: product_data) }
+  let(:product_data) { {} }
+  let(:bootloader_obj) { instance_double(::Bootloader::Grub2, name: "grub2", propose: nil) }
+  let(:http_client) { instance_double(Agama::HTTP::Clients::Main) }
+
+  before do
+    allow(Yast::BootStorage).to receive(:reset_disks)
+    allow(::Bootloader::OsProber).to receive(:package_available=)
+    allow(::Bootloader::BootloaderFactory).to receive(:clear_cache)
+    allow(::Bootloader::BootloaderFactory).to receive(:current=)
+    allow(::Bootloader::BootloaderFactory).to receive(:current).and_return(bootloader_obj)
+    allow(bootloader_obj).to receive(:packages).and_return([])
+    allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
+    allow(http_client).to receive(:set_resolvables)
+  end
+
+  describe "#configure" do
+    context "when bootloader type is not set" do
+      context "on an EFI system" do
+        before do
+          allow(::Bootloader::Systeminfo).to receive(:efi?).and_return(true)
+          allow(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+            .and_return(bootloader_obj)
+        end
+
+        context "with x86_64 architecture" do
+          before do
+            allow(Yast::Arch).to receive(:x86_64).and_return(true)
+            allow(Yast::Arch).to receive(:i386).and_return(false)
+            allow(Yast::Arch).to receive(:aarch64).and_return(false)
+            allow(Yast::Arch).to receive(:arm).and_return(false)
+            allow(Yast::Arch).to receive(:riscv64).and_return(false)
+          end
+
+          it "calls bootloader_by_name with 'grub2-efi'" do
+            expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+              .with("grub2-efi")
+              .and_return(bootloader_obj)
+
+            agama_bootloader.configure(product_config)
+          end
+
+          context "when product specifies systemd-boot" do
+            let(:product_data) { { "boot" => { "default_efi_bootloader" => "systemd-boot" } } }
+
+            it "calls bootloader_by_name with 'systemd-boot'" do
+              expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+                .with("systemd-boot")
+                .and_return(bootloader_obj)
+
+              agama_bootloader.configure(product_config)
+            end
+          end
+
+          context "when product specifies grub2-bls" do
+            let(:product_data) { { "boot" => { "default_efi_bootloader" => "grub2-bls" } } }
+
+            it "calls bootloader_by_name with 'grub2-bls'" do
+              expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+                .with("grub2-bls")
+                .and_return(bootloader_obj)
+
+              agama_bootloader.configure(product_config)
+            end
+          end
+        end
+      end
+
+      context "on a non-EFI system" do
+        before do
+          allow(::Bootloader::Systeminfo).to receive(:efi?).and_return(false)
+          allow(Yast::Arch).to receive(:x86_64).and_return(true)
+          allow(Yast::Arch).to receive(:i386).and_return(false)
+          allow(Yast::Arch).to receive(:aarch64).and_return(false)
+          allow(Yast::Arch).to receive(:arm).and_return(false)
+          allow(Yast::Arch).to receive(:riscv64).and_return(false)
+          allow(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+            .and_return(bootloader_obj)
+        end
+
+        it "calls bootloader_by_name with 'grub2'" do
+          expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+            .with("grub2")
+            .and_return(bootloader_obj)
+
+          agama_bootloader.configure(product_config)
+        end
+      end
+    end
+
+    context "when bootloader type is explicitly set" do
+      before do
+        allow(::Bootloader::Systeminfo).to receive(:efi?).and_return(true)
+        allow(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+          .and_return(bootloader_obj)
+      end
+
+      context "to systemd-boot" do
+        before do
+          agama_bootloader.config.type = Agama::Storage::BootloaderType::SYSTEMD_BOOT
+        end
+
+        it "calls bootloader_by_name with 'systemd-boot'" do
+          expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+            .with("systemd-boot")
+            .and_return(bootloader_obj)
+
+          agama_bootloader.configure(product_config)
+        end
+      end
+
+      context "to grub2 on EFI" do
+        before do
+          agama_bootloader.config.type = Agama::Storage::BootloaderType::GRUB2
+        end
+
+        it "calls bootloader_by_name with 'grub2-efi'" do
+          expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+            .with("grub2-efi")
+            .and_return(bootloader_obj)
+
+          agama_bootloader.configure(product_config)
+        end
+      end
+
+      context "to grub2 on non-EFI" do
+        before do
+          allow(::Bootloader::Systeminfo).to receive(:efi?).and_return(false)
+          agama_bootloader.config.type = Agama::Storage::BootloaderType::GRUB2
+        end
+
+        it "calls bootloader_by_name with 'grub2'" do
+          expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+            .with("grub2")
+            .and_return(bootloader_obj)
+
+          agama_bootloader.configure(product_config)
+        end
+      end
+
+      context "to none" do
+        before do
+          agama_bootloader.config.type = Agama::Storage::BootloaderType::NONE
+        end
+
+        it "calls bootloader_by_name with 'none'" do
+          expect(::Bootloader::BootloaderFactory).to receive(:bootloader_by_name)
+            .with("none")
+            .and_return(bootloader_obj)
+
+          agama_bootloader.configure(product_config)
+        end
+      end
+    end
+  end
 
   describe "#write_extra_kernel_params" do
     let(:extra_params) { "splash=silent quiet" }

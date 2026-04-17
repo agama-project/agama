@@ -150,17 +150,8 @@ software:
   optional_packages: []
   base_product: openSUSE
 
-security:
-  lsm: selinux
-  available_lsms:
-    apparmor:
-      patterns:
-        - apparmor
-    selinux:
-      patterns:
-        - selinux
-    none:
-      patterns: null
+boot:
+  default_efi_bootloader: "systemd-boot"
 
 storage:
   boot_strategy: BLS

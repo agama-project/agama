@@ -232,6 +232,74 @@ describe Y2Storage::AgamaProposal do
       end
     end
 
+    context "on an EFI system" do
+      let(:config) { default_config }
+
+      before do
+        allow_any_instance_of(Y2Storage::Arch).to receive(:efiboot?).and_return(true)
+        allow(Yast::Arch).to receive(:x86_64).and_return(true)
+        allow(Yast::Arch).to receive(:i386).and_return(false)
+        allow(Yast::Arch).to receive(:aarch64).and_return(false)
+        allow(Yast::Arch).to receive(:arm).and_return(false)
+        allow(Yast::Arch).to receive(:riscv64).and_return(false)
+        # Bypass the global mock
+        allow(Y2Storage::BootRequirementsStrategies::Analyzer)
+          .to receive(:bls_bootloader_proposed?).and_call_original
+      end
+
+      context "when the product configures systemd-boot as default EFI bootloader" do
+        let(:product_data) do
+          super().merge(
+            "boot" => {
+              "default_efi_bootloader" => "systemd-boot"
+            }
+          )
+        end
+
+        it "proposes the corresponding boot partitions" do
+          proposal.propose
+          efi_partition = proposal.devices.partitions.find do |part|
+            part.filesystem&.mount_path == "/boot/efi"
+          end
+
+          expect(efi_partition).to_not be_nil
+          expect(efi_partition.size).to eq(1.GiB)
+        end
+      end
+
+      context "when the product configures grub2 as default EFI bootloader" do
+        let(:product_data) do
+          super().merge(
+            "boot" => {
+              "default_efi_bootloader" => "grub2"
+            }
+          )
+        end
+
+        it "proposes the corresponding boot partitions" do
+          proposal.propose
+          efi_partition = proposal.devices.partitions.find do |part|
+            part.filesystem&.mount_path == "/boot/efi"
+          end
+
+          expect(efi_partition).to_not be_nil
+          expect(efi_partition.size).to eq(512.MiB)
+        end
+      end
+
+      context "when the product does not specify a default EFI bootloader" do
+        it "proposes the corresponding boot partitions for the default case" do
+          proposal.propose
+          efi_partition = proposal.devices.partitions.find do |part|
+            part.filesystem&.mount_path == "/boot/efi"
+          end
+
+          expect(efi_partition).to_not be_nil
+          expect(efi_partition.size).to eq(512.MiB)
+        end
+      end
+    end
+
     context "when only 'default' partitions is specified" do
       let(:scenario) { "empty-hd-50GiB.yaml" }
 

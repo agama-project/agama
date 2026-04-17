@@ -59,15 +59,6 @@ software:
   optional_packages: []
   base_product: Leap-Micro
 
-security:
-  lsm: selinux
-  available_lsms:
-    selinux:
-      patterns:
-        - selinux
-    none:
-      patterns: null
-
 storage:
   space_policy: delete
   volumes:

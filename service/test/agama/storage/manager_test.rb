@@ -238,39 +238,6 @@ describe Agama::Storage::Manager do
       expect(storage.product_config).to eq(config)
       expect(storage.proposal.product_config).to eq(config)
     end
-
-    context "if the product does not require bls boot explicitly" do
-      before do
-        allow(ENV).to receive(:[]=)
-      end
-
-      let(:config) { Agama::Config.new({}) }
-
-      it "sets env YAST_NO_BLS_BOOT to yes " do
-        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
-        storage.update_product_config(config)
-      end
-    end
-
-    context "if the product requires bls boot explicitly" do
-      before do
-        allow(ENV).to receive(:[]=)
-        allow(ENV).to receive(:[]).with("YAST_NO_BLS_BOOT").and_return("0")
-      end
-
-      let(:config) do
-        Agama::Config.new({
-          "storage" => {
-            "boot_strategy" => "BLS"
-          }
-        })
-      end
-
-      it "keeps initial env YAST_NO_BLS_BOOT" do
-        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "0")
-        storage.update_product_config(config)
-      end
-    end
   end
 
   describe "#configured?" do

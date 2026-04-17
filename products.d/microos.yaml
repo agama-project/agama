@@ -160,15 +160,6 @@ software:
   optional_packages: []
   base_product: MicroOS
 
-security:
-  lsm: selinux
-  available_lsms:
-    selinux:
-      patterns:
-        - microos_selinux
-    none:
-      patterns: null
-
 storage:
   space_policy: delete
   volumes:

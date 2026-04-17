@@ -113,18 +113,6 @@ software:
   optional_packages: []
   base_product: openSUSE
 
-security:
-  lsm: apparmor
-  available_lsms:
-    apparmor:
-      patterns:
-        - apparmor
-    selinux:
-      patterns:
-        - selinux
-    none:
-      patterns: null
-
 storage:
   boot_strategy: BLS
   space_policy: delete

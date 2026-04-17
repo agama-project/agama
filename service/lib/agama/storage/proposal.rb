@@ -26,6 +26,7 @@ require "agama/storage/config_conversions"
 require "agama/storage/config_json_generator"
 require "agama/storage/config_solver"
 require "agama/storage/model_support_checker"
+require "agama/storage/bootloader_config"
 require "agama/storage/proposal_strategies"
 require "agama/storage/issue_classes"
 require "agama/storage/system"
@@ -42,12 +43,17 @@ module Agama
       # @return [Agama::Config]
       attr_accessor :product_config
 
+      # @return [Agama::Storage::BootloaderConfig]
+      attr_accessor :bootloader_config
+
       # @param product_config [Agama::Config] Agama config
+      # @param bootloader_config [BootloaderConfig] Bootloader config
       # @param logger [Logger]
-      def initialize(product_config, logger: nil)
+      def initialize(product_config, bootloader_config: nil, logger: nil)
         textdomain "agama"
 
         @product_config = product_config
+        @bootloader_config = bootloader_config || BootloaderConfig.new
         @logger = logger || Logger.new($stdout)
       end
 
@@ -150,7 +156,9 @@ module Agama
         logger.info("Calculating proposal with agama strategy: #{config.inspect}")
         reset
         @source_config = config.copy
-        @strategy = ProposalStrategies::Agama.new(product_config, storage_system, config, logger)
+        @strategy = ProposalStrategies::Agama.new(
+          product_config, storage_system, config, bootloader_config.copy, logger
+        )
         calculate
       end
 
@@ -165,7 +173,7 @@ module Agama
         # Ensures keys are strings.
         partitioning = JSON.parse(partitioning.to_json)
         @strategy = ProposalStrategies::Autoyast
-          .new(product_config, storage_system, partitioning, logger)
+          .new(product_config, storage_system, partitioning, bootloader_config.copy, logger)
         calculate
       end
 

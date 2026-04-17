@@ -99,18 +99,6 @@ software:
   optional_packages: []
   base_product: Leap
 
-security:
-  lsm: selinux
-  available_lsms:
-    apparmor:
-      patterns:
-        - apparmor
-    selinux:
-      patterns:
-        - selinux
-    none:
-      patterns: null
-
 storage:
   space_policy: delete
   volumes:
