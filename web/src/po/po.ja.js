@@ -70,13 +70,13 @@ export default {
     "ファイルシステムはデバイス全体を使用する"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "新しい %2$s に対しては少なくとも %1$s を使用します"
+    "新しい %2$s に対して少なくとも %1$s を使用します"
   ],
   "A generic size of %1$s will be used for the new %2$s": [
-    "新しい %2$s に対しては一般的なサイズ %1$s を使用します"
+    "新しい %2$s に対して一般的なサイズ %1$s を使用します"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "新しい %3$s に対しては一般的なサイズ %1$s から %2$s の範囲を使用します"
+    "新しい %3$s に対して一般的なサイズ %1$s から %2$s の範囲を使用します"
   ],
   "A new partition will be created for %s": [
     "%s に対して新しいパーティションを作成する"
@@ -379,7 +379,7 @@ export default {
     "名前でデバイスを識別します"
   ],
   "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
-    "接続とネットワークデバイスとの関連づけ方式を指定してください。これにより、接続が使用するデバイスを制御することができます。"
+    "接続とネットワークデバイスとの関連づけ方式を指定してください。これにより、接続時に使用するデバイスを制御することができます。"
   ],
   "Clear": [
     "消去"
@@ -1645,10 +1645,10 @@ export default {
     "起動用のパーティションを設定するディスクの選択"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "新しいシステムのインストール先となる領域を確保するため、各パーティションに対してすべきことを選択します。"
+    "新しいシステムのインストール先となる領域を確保するため、各パーティションに対してやるべきことを選択します。"
   ],
   "Select what to do with each partition.": [
-    "パーティションの設定作業を独自に実施します。"
+    "それぞれのパーティションに対してやるべきことを選択してください。"
   ],
   "Selected disk cannot be changed": [
     "選択済みのディスクは変更できません"
