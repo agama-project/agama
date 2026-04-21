@@ -216,6 +216,10 @@ bool commit(struct Zypp *zypp, struct Status *status,
     set_zypp_security_callbacks(security_callbacks);
     set_zypp_install_callbacks(install_callbacks);
     zypp::ZYppCommitPolicy policy;
+    // set that agama prefers local rpms over downloaded ones
+    // useful for usecase where user use full iso and register
+    // Result is that local ones are used unless there are remote updates.
+    zypp::ZConfig::instance().set_default_download_media_prefer_download(false);
     // enable preload of rpms to speed up installation
     policy.downloadMode(zypp::DownloadInAdvance);
     zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
