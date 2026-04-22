@@ -83,6 +83,10 @@ impl BootloaderClient for TestClient {
         Ok(state.config.clone())
     }
 
+    async fn get_system(&self) -> Result<Option<serde_json::Value>, Error> {
+        Ok(None)
+    }
+
     async fn set_config(&self, config: &Config) -> Result<(), Error> {
         let mut state = self.state.lock().await;
         state.config = config.clone();

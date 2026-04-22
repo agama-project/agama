@@ -19,11 +19,18 @@
 // find current contact information at www.suse.com.
 
 use agama_utils::{actor::Message, api::bootloader::Config};
+use serde_json::Value;
 
 pub struct GetConfig;
 
 impl Message for GetConfig {
     type Reply = Config;
+}
+
+pub struct GetSystem;
+
+impl Message for GetSystem {
+    type Reply = Option<Value>;
 }
 
 pub struct SetConfig<T> {
