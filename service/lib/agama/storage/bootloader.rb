@@ -21,6 +21,7 @@
 
 require "agama/http/clients"
 require "agama/storage/bootloader_config"
+require "agama/storage/bootloader_config_solver"
 require "agama/storage/bootloader_prober"
 require "bootloader/bootloader_factory"
 require "bootloader/os_prober"

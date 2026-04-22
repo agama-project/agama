@@ -75,7 +75,13 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:actions).and_return([])
     allow(backend).to receive(:proposal).and_return(proposal)
     allow(backend).to receive(:bootloader).and_return(bootloader)
+    allow(backend).to receive(:bootloader_probed?).and_return(false)
+    allow(backend).to receive(:available_bootloaders).and_return([])
+    allow(backend).to receive(:bootloader_config).and_return({})
+    allow(backend).to receive(:probe_bootloader)
     allow(bootloader).to receive(:config)
+    allow(bootloader).to receive(:probed?).and_return(false)
+    allow(bootloader).to receive(:probe)
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
@@ -1333,6 +1339,94 @@ describe Agama::DBus::Storage::Manager do
             description: /boot device cannot be automatically/i
           )
         )
+      end
+    end
+  end
+
+  describe "#serialized_bootloader_system" do
+    context "if the bootloader has not been probed yet" do
+      before do
+        allow(backend).to receive(:bootloader_probed?).and_return(false)
+      end
+
+      it "returns 'null'" do
+        expect(subject.serialized_bootloader_system).to eq("null")
+      end
+    end
+
+    context "if the bootloader has been probed" do
+      before do
+        allow(backend).to receive(:bootloader_probed?).and_return(true)
+        allow(backend).to receive(:available_bootloaders).and_return(available_bootloaders)
+      end
+
+      describe "serialized_bootloader_system[:availableBootloaders]" do
+        context "if there are no available bootloaders" do
+          let(:available_bootloaders) { [] }
+
+          it "returns an empty list" do
+            expect(parse(subject.serialized_bootloader_system)[:availableBootloaders]).to eq([])
+          end
+        end
+
+        context "if there are available bootloaders" do
+          let(:available_bootloaders) { [grub2, grub2_bls, systemd_boot] }
+
+          let(:grub2) do
+            Agama::Storage::Bootloaders::Grub2.new(tpm: false)
+          end
+
+          let(:grub2_bls) do
+            Agama::Storage::Bootloaders::Grub2BLS.new(tpm: true)
+          end
+
+          let(:systemd_boot) do
+            Agama::Storage::Bootloaders::SystemdBoot.new(tpm: true)
+          end
+
+          it "returns a list with information for each bootloader" do
+            all_bootloaders = parse(subject.serialized_bootloader_system)[:availableBootloaders]
+            expect(all_bootloaders.size).to eq(3)
+            expect(all_bootloaders).to all(be_a(Hash))
+
+            grub2_info, grub2_bls_info, systemd_boot_info = all_bootloaders
+
+            expect(grub2_info).to eq({
+              name:           "grub2",
+              encryptionAuth: ["password"]
+            })
+
+            expect(grub2_bls_info).to eq({
+              name:           "grub2BLS",
+              encryptionAuth: ["password", "tpm"]
+            })
+
+            expect(systemd_boot_info).to eq({
+              name:           "systemdBoot",
+              encryptionAuth: ["password", "tpm"]
+            })
+          end
+        end
+
+        context "if a bootloader is not available" do
+          let(:available_bootloaders) { [grub2] }
+
+          let(:grub2) do
+            Agama::Storage::Bootloaders::Grub2.new(tpm: false)
+          end
+
+          it "does not include the bootloader" do
+            all_bootloaders = parse(subject.serialized_bootloader_system)[:availableBootloaders]
+            expect(all_bootloaders.size).to eq(1)
+
+            grub2_info = all_bootloaders.first
+
+            expect(grub2_info).to eq({
+              name:           "grub2",
+              encryptionAuth: ["password"]
+            })
+          end
+        end
       end
     end
   end
