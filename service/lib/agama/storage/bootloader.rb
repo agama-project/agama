@@ -47,15 +47,14 @@ module Agama
 
       def probe
         @probed = true
-        bootloader_prober.probe
+        @available_bootloaders = BootloaderProber.new.probe
       end
 
+      # Available bootloaders in the system.
+      #
+      # @return [Array<Bootloaders::Base>]
       def available_bootloaders
-        bootloader_prober.bootloaders
-      end
-
-      def encryption_auth_methods(bootloader)
-        bootloader_prober.encryption_auth_methods(bootloader)
+        @available_bootloaders || []
       end
 
       # Calculates proposal.
@@ -92,10 +91,6 @@ module Agama
       end
 
     private
-
-      def bootloader_prober
-        @bootloader_prober ||= BootloaderProber.new
-      end
 
       def install_packages
         bootloader = ::Bootloader::BootloaderFactory.current

@@ -116,7 +116,7 @@ module Agama
         bootloader_config.type == boot_config_json[:type]
       end
 
-      # Probes the devices and bootloader.
+      # Probes the devices.
       def probe
         callbacks = Y2Storage::Callbacks::UserProbe.new
         Y2Storage::StorageManager.instance.probe(callbacks)
@@ -212,12 +212,16 @@ module Agama
         bootloader.probed?
       end
 
-      def available_bootloaders
-        bootloader.available_bootloaders
+      # Probes the available bootloaders.
+      def probe_bootloader
+        bootloader.probe
       end
 
-      def bootloader_encryption_auth_methods(bootloader)
-        self.bootloader.encryption_auth_methods(bootloader)
+      # Available bootloaders in the system.
+      #
+      # @ return [Array<Bootloaders::Base>]
+      def available_bootloaders
+        bootloader.available_bootloaders
       end
 
       # Current bootloader configuration
@@ -225,10 +229,6 @@ module Agama
       # @return [BootloaderConfig]
       def bootloader_config
         bootloader.config
-      end
-
-      def probe_bootloader
-        bootloader.probe
       end
 
       # Updates the bootloader configuration

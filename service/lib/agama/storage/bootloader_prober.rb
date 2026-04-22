@@ -19,86 +19,48 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/bootloaders"
 require "y2storage/storage_manager"
+require "y2storage/encryption_processes/fde_tools"
 require "yast"
 
-Yast.import "BootStorage"
 Yast.import "Arch"
 
 module Agama
   module Storage
     # Class for probing bootloaders available in the system.
     class BootloaderProber
-      module Bootloader
-        GRUB2 = :grub2
-        GRUB2_BLS = :grub2_bls
-        SYSTEMD_BOOT = :systemd_boot
-      end
-
-      module EncryptionAuthMethod
-        PASSWORD = :password
-        TPM = :tpm
-      end
-
+      # @return [Array<Bootloaders::Base>]
       def probe
-        probe_bootloaders
-        probe_grub2_tpm
-        probe_bls_tpm
-      end
+        grub2 = Bootloaders::Grub2.new(tpm: grub2_tpm?)
 
-      def bootloaders
-        @bootloaders || []
-      end
+        return [grub2] if raspberry_pi? || arch.s390? || arch.ppc?
 
-      def encryption_auth_methods(bootloader)
-        return grub2_encryption_auth_methods if bootloader == Bootloader::GRUB2
+        if arch.x86? || Yast::Arch.aarch64
+          tpm = bls_tpm?
+          grub2_bls = Bootloaders::Grub2BLS.new(tpm: tpm)
+          systemd_boot = Bootloaders::SystemdBoot.new(tpm: tpm)
 
-        return bls_encryption_auth_methods if bls_bootloader?(bootloader)
+          return [grub2, grub2_bls, systemd_boot]
+        end
 
         []
       end
 
     private
 
-      def probe_bootloaders
-        @bootloaders =
-          if raspberry_pi? || arch.s390? || arch.ppc?
-            [Bootloader::GRUB2]
-          elsif arch.x86? || Yast::Arch.aarch64
-            [Bootloader::GRUB2, Bootloader::GRUB2_BLS, Bootloader::SYSTEMD_BOOT]
-          end
-      end
-
-      def probe_grub2_tpm
-        @grup2_tpm = arch.efiboot? && EncryptionProcesses::FdeTools.new.tpm_present?
-      end
-
-      def probe_bls_tpm
-        @bls_tpm = arch.efiboot? && Yast::Arch.has_tpm2
-      end
-
-      def grub2_encryption_auth_methods
-        methods = [EncryptionAuthMethod::PASSWORD]
-        methods << EncryptionAuthMethod::TPM if grub2_tpm?
-        methods
-      end
-
-      def bls_encryption_auth_methods
-        methods = [EncryptionAuthMethod::PASSWORD]
-        methods << EncryptionAuthMethod::TPM if bls_tpm?
-        methods
-      end
-
-      def bls_bootloader?(bootloader)
-        [Bootloader::GRUB2_BLS, Bootloader::SYSTEMD_BOOT].includes?(bootloader)
-      end
-
+      # Whether TPM is usable for grub2.
+      #
+      # @return [Boolean]
       def grub2_tpm?
-        !!@grup2_tpm
+        arch.efiboot? && Y2Storage::EncryptionProcesses::FdeTools.new.tpm_present?
       end
 
+      # Whether TPM is usable for a BLS bootloader.
+      #
+      # @return [Boolean]
       def bls_tpm?
-        !!@bls_tpm
+        arch.efiboot? && Yast::Arch.has_tpm2
       end
 
       # Whether the system is a Raspberry Pi.

@@ -23,7 +23,7 @@ require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_issues"
 require "agama/dbus/with_progress"
-require "agama/storage/bootloader_prober"
+require "agama/storage/bootloaders"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
@@ -537,24 +537,50 @@ module Agama
           manager.system_issues.map { |i| issue_json(i) }
         end
 
+        # List of available bootloaders in JSON format.
+        #
+        # @see #serialize_bootloader_system
+        #
+        # @return [Array<Hash>]
         def available_bootloaders_json
-          manager.available_bootloaders.map do |bootloader|
-            {
-              name:           bootloader_name_json(bootloader),
-              encryptionAuth: manager.bootloader_encryption_auth_methods(bootloader)
-            }
+          manager.available_bootloaders.map { |b| bootloader_json(b) }
+        end
+
+        # Bootloader in JSON format.
+        #
+        # @param bootloader [Agama::Storage::Bootloaders::Base]
+        # @return [Hash]
+        def bootloader_json(bootloader)
+          {
+            name:           bootloader_name_json(bootloader),
+            encryptionAuth: bootloader_encryption_auth_json(bootloader)
+          }
+        end
+
+        # Name of the bootloader according to the values of the JSON schema.
+        #
+        # @param bootloader [Agama::Storage::Bootloaders::Base]
+        # @return [String]
+        def bootloader_name_json(bootloader)
+          case bootloader
+          when Agama::Storage::Bootloaders::Grub2
+            "grub2"
+          when Agama::Storage::Bootloaders::Grub2BLS
+            "grub2BLS"
+          when Agama::Storage::Bootloaders::SystemdBoot
+            "systemdBoot"
           end
         end
 
-        def bootloader_name_json(bootloader)
-          case bootloader
-          when BootloaderProber::Bootloader::GRUB2_BLS
-            "grub2BLS"
-          when BootloaderProber::Bootloader::SYSTEMD_BOOT
-            "systemdBoot"
-          else
-            bootloader
-          end
+        # Encryption authentication methods according to the values of the JSON schema.
+        #
+        # @param bootloader [Agama::Storage::Bootloaders::Base]
+        # @return [Array<String>]
+        def bootloader_encryption_auth_json(bootloader)
+          auth_methods = []
+          auth_methods << "password" if bootloader.password_encryption_auth?
+          auth_methods << "tpm" if bootloader.tpm_encryption_auth?
+          auth_methods
         end
 
         # @see Storage::System#available_drives
