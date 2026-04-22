@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,12 +19,12 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
-require "bootloader/bootloader_factory"
-require "bootloader/os_prober"
-
 require "agama/http/clients"
 require "agama/storage/bootloader_config"
+require "agama/storage/bootloader_prober"
+require "bootloader/bootloader_factory"
+require "bootloader/os_prober"
+require "yast"
 
 Yast.import "BootStorage"
 
@@ -39,6 +39,23 @@ module Agama
       def initialize(logger)
         @config = BootloaderConfig.new
         @logger = logger
+      end
+
+      def probed?
+        !!@probed
+      end
+
+      def probe
+        @probed = true
+        bootloader_prober.probe
+      end
+
+      def available_bootloaders
+        bootloader_prober.bootloaders
+      end
+
+      def encryption_auth_methods(bootloader)
+        bootloader_prober.encryption_auth_methods(bootloader)
       end
 
       # Calculates proposal.
@@ -75,6 +92,10 @@ module Agama
       end
 
     private
+
+      def bootloader_prober
+        @bootloader_prober ||= BootloaderProber.new
+      end
 
       def install_packages
         bootloader = ::Bootloader::BootloaderFactory.current

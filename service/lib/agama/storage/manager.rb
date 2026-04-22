@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -116,7 +116,7 @@ module Agama
         bootloader_config.type == boot_config_json[:type]
       end
 
-      # Probes the devices.
+      # Probes the devices and bootloader.
       def probe
         callbacks = Y2Storage::Callbacks::UserProbe.new
         Y2Storage::StorageManager.instance.probe(callbacks)
@@ -205,11 +205,30 @@ module Agama
         probing_issues + [candidate_devices_issue].compact
       end
 
+      # Whether bootloader was probed.
+      #
+      # @return [Boolean]
+      def bootloader_probed?
+        bootloader.probed?
+      end
+
+      def available_bootloaders
+        bootloader.available_bootloaders
+      end
+
+      def bootloader_encryption_auth_methods(bootloader)
+        self.bootloader.encryption_auth_methods(bootloader)
+      end
+
       # Current bootloader configuration
       #
       # @return [BootloaderConfig]
       def bootloader_config
         bootloader.config
+      end
+
+      def probe_bootloader
+        bootloader.probe
       end
 
       # Updates the bootloader configuration

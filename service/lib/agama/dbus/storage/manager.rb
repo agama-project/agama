@@ -23,6 +23,7 @@ require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_issues"
 require "agama/dbus/with_progress"
+require "agama/storage/bootloader_prober"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
@@ -60,6 +61,7 @@ module Agama
           @serialized_config_model = serialize_config_model
           @serialized_proposal = serialize_proposal
           @serialized_issues = serialize_issues
+          @serialized_bootloader_system = serialize_bootloader_system
           @serialized_bootloader_config = serialize_bootloader_config
           register_progress_callbacks
         end
@@ -103,7 +105,7 @@ module Agama
             manager.activate
 
             next_progress_step(PROBING_STEP)
-            perform_probe
+            perform_probe(force: true)
 
             next_progress_step(CONFIGURING_STEP)
             configure_with_current
@@ -123,7 +125,7 @@ module Agama
             manager.activate unless manager.activated?
 
             next_progress_step(PROBING_STEP)
-            perform_probe
+            perform_probe(force: true)
 
             next_progress_step(CONFIGURING_STEP)
             configure_with_current
@@ -213,6 +215,7 @@ module Agama
         end
 
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
+          dbus_reader_attr_accessor :serialized_bootloader_system, "s", dbus_name: "System"
           dbus_reader_attr_accessor :serialized_bootloader_config, "s", dbus_name: "Config"
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             configure_bootloader(serialized_config)
@@ -277,9 +280,7 @@ module Agama
           manager.activate unless manager.activated?
 
           next_progress_step(PROBING_STEP)
-          manager.probe unless manager.probed?
-
-          update_serialized_system
+          perform_probe
 
           next_progress_step(CONFIGURING_STEP)
           calculate_proposal(config_json)
@@ -287,12 +288,16 @@ module Agama
           finish_progress
         end
 
-        # Probes storage and updates the associated info.
+        # Probes and updates the associated info.
         #
-        # @see #update_system_info
-        def perform_probe
-          manager.probe
+        # @param force [Boolean] Forces storage reprobe.
+        def perform_probe(force: false)
+          manager.probe if force || !manager.probed?
           update_serialized_system
+
+          # Reprobing bootloader is not needed because its information does not change.
+          manager.probe_bootloader if !manager.bootloader_probed?
+          update_serialized_bootloader_system
         end
 
         # Configures storage using the current config.
@@ -392,6 +397,15 @@ module Agama
           self.serialized_issues = serialized_issues
         end
 
+        # Updates the bootloader system info if needed.
+        def update_serialized_bootloader_system
+          serialized_bootloader_system = serialize_bootloader_system
+          return if self.serialized_bootloader_system == serialized_bootloader_system
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.serialized_bootloader_system = serialized_bootloader_system
+        end
+
         # Updates the bootloader config if needed.
         def update_serialized_bootloader_config
           serialized_bootloader_config = serialize_bootloader_config
@@ -459,6 +473,18 @@ module Agama
           super(manager.issues)
         end
 
+        # Generates the serialized JSON of the bootloader system.
+        #
+        # @return [String]
+        def serialize_bootloader_system
+          return serialize_nil unless manager.bootloader_probed?
+
+          json = {
+            availableBootloaders: available_bootloaders_json
+          }
+          JSON.pretty_generate(json)
+        end
+
         # Generates the serialized JSON of the bootloader config.
         #
         # @return [String]
@@ -509,6 +535,26 @@ module Agama
         # @return [Array<Hash>]
         def system_issues_json
           manager.system_issues.map { |i| issue_json(i) }
+        end
+
+        def available_bootloaders_json
+          manager.available_bootloaders.map do |bootloader|
+            {
+              name:           bootloader_name_json(bootloader),
+              encryptionAuth: manager.bootloader_encryption_auth_methods(bootloader)
+            }
+          end
+        end
+
+        def bootloader_name_json(bootloader)
+          case bootloader
+          when BootloaderProber::Bootloader::GRUB2_BLS
+            "grub2BLS"
+          when BootloaderProber::Bootloader::SYSTEMD_BOOT
+            "systemdBoot"
+          else
+            bootloader
+          end
         end
 
         # @see Storage::System#available_drives
