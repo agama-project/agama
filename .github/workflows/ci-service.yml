@@ -109,6 +109,24 @@ jobs:
       run: bundle config set --local with 'development' && bundle install && bundle add ostruct &&
         bundle add cgi && bundle add fiddle
 
+    # "gem build" might create broken symlinks so we replaced them with a copy of the file,
+    # ensure that all copies are the same (see bsc#1261340)
+    - name: Check that the copied files are the same
+      run: |
+        cmp InstFunctions.rb ../../modules/InstFunctions.rb
+        cmp Package.rb ../../manager/modules/Package.rb
+        cmp PackagesProposal.rb ../../manager/modules/PackagesProposal.rb
+      working-directory: service/lib/agama/dbus/y2dir/storage/modules
+
+    - name: Check that no symlinks are used
+      run: |
+        result=$(find ./lib -type l)
+        if [ -n "$result" ];then
+          echo -e "Found symlinks:\n$result"
+          echo "Avoid using symlinks, see https://bugzilla.suse.com/show_bug.cgi?id=1261340"
+          exit 1
+        fi
+
     - name: Check collecting translatable strings
       run: |
         rake pot
