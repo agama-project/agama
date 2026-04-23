@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 23 09:00:08 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Add the connection state to the network system configuration
+  and extend the enum for IPv6 method (gh#agama-project/agama#3377)
+
+-------------------------------------------------------------------
 Mon Apr 20 11:00:37 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Properly initialize the GPG callbacks during registration so the
