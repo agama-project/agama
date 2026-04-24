@@ -28,14 +28,11 @@ describe Agama::Storage::BootloaderProber do
 
   let(:storage_manager) { instance_double(Y2Storage::StorageManager) }
   let(:storage_arch) { instance_double(Y2Storage::Arch) }
-  let(:fde_tools) { instance_double(Y2Storage::EncryptionProcesses::FdeTools) }
 
   before do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(storage_manager)
     allow(storage_manager).to receive(:arch).and_return(storage_arch)
-    allow(Y2Storage::EncryptionProcesses::FdeTools).to receive(:new)
-      .and_return(fde_tools)
-    allow(fde_tools).to receive(:tpm_present?).and_return(false)
+    allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(false)
     allow(Yast::Arch).to receive(:has_tpm2).and_return(false)
   end
 
@@ -47,6 +44,7 @@ describe Agama::Storage::BootloaderProber do
         allow(File).to receive(:read).with("/proc/device-tree/model")
           .and_return("Raspberry Pi 4 Model B")
         allow(storage_arch).to receive(:efiboot?).and_return(false)
+        allow(storage_arch).to receive(:x86?).and_return(false)
       end
 
       it "returns only grub2" do
@@ -96,7 +94,7 @@ describe Agama::Storage::BootloaderProber do
 
         context "with TPM2 support" do
           before do
-            allow(fde_tools).to receive(:tpm_present?).and_return(true)
+            allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
             allow(Yast::Arch).to receive(:has_tpm2).and_return(true)
           end
 
@@ -114,7 +112,7 @@ describe Agama::Storage::BootloaderProber do
 
         context "without TPM2 support" do
           before do
-            allow(fde_tools).to receive(:tpm_present?).and_return(false)
+            allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(false)
             allow(Yast::Arch).to receive(:has_tpm2).and_return(false)
           end
 
@@ -180,9 +178,10 @@ describe Agama::Storage::BootloaderProber do
         allow(Yast::Arch).to receive(:aarch64).and_return(false)
       end
 
-      it "returns empty array" do
+      it "returns only grub2" do
         bootloaders = subject.probe
-        expect(bootloaders).to be_empty
+        expect(bootloaders.size).to eq(1)
+        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Grub2)
       end
     end
   end

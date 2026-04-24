@@ -21,7 +21,7 @@
 
 require "agama/storage/bootloaders"
 require "y2storage/storage_manager"
-require "y2storage/encryption_processes/fde_tools"
+require "y2storage/encryption_method"
 require "yast"
 
 Yast.import "Arch"
@@ -33,18 +33,12 @@ module Agama
       # @return [Array<Bootloaders::Base>]
       def probe
         grub2 = Bootloaders::Grub2.new(tpm: grub2_tpm?)
+        return [grub2] if raspberry_pi? || !(arch.x86? || Yast::Arch.aarch64)
 
-        return [grub2] if raspberry_pi? || arch.s390? || arch.ppc?
-
-        if arch.x86? || Yast::Arch.aarch64
-          tpm = bls_tpm?
-          grub2_bls = Bootloaders::Grub2BLS.new(tpm: tpm)
-          systemd_boot = Bootloaders::SystemdBoot.new(tpm: tpm)
-
-          return [grub2, grub2_bls, systemd_boot]
-        end
-
-        []
+        tpm = bls_tpm?
+        grub2_bls = Bootloaders::Grub2BLS.new(tpm: tpm)
+        systemd_boot = Bootloaders::SystemdBoot.new(tpm: tpm)
+        [grub2, grub2_bls, systemd_boot]
       end
 
     private
@@ -53,7 +47,7 @@ module Agama
       #
       # @return [Boolean]
       def grub2_tpm?
-        arch.efiboot? && Y2Storage::EncryptionProcesses::FdeTools.new.tpm_present?
+        Y2Storage::EncryptionMethod::TPM_FDE.possible?
       end
 
       # Whether TPM is usable for a BLS bootloader.
@@ -63,6 +57,9 @@ module Agama
         arch.efiboot? && Yast::Arch.has_tpm2
       end
 
+      # FIXME: This method is duplicated at Y2Storage::Proposal::BootPlanner and also in
+      #   yast-storage-ng.
+      #
       # Whether the system is a Raspberry Pi.
       #
       # @return [Boolean]
