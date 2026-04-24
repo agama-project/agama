@@ -18,17 +18,20 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::monitor::InstallationStatus;
+use agama_lib::monitor::{InstallationStatus, MonitorClient};
 use agama_utils::api::{status::Stage, Scope};
+use anyhow::Result;
+use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use gettextrs::gettext;
 use ratatui::{
+    backend::CrosstermBackend,
     layout::Rect,
     style::{Color, Modifier, Style},
     text::{Line, Span},
     widgets::Paragraph,
-    Frame,
+    Frame, Terminal,
 };
-use std::collections::HashMap;
+use std::{collections::HashMap, io, time::Duration};
 
 use super::ui;
 
@@ -60,6 +63,67 @@ impl MonitorApp {
     /// Updates the installation status
     pub fn update_status(&mut self, new_status: InstallationStatus) {
         self.status = new_status;
+    }
+
+    /// Runs the monitor TUI event loop
+    ///
+    /// # Arguments
+    ///
+    /// * `terminal` - The terminal to draw on
+    /// * `monitor` - The monitor client to receive updates from
+    /// * `stop_on_idle` - Whether to stop monitoring when installation finishes
+    pub async fn run(
+        &mut self,
+        terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
+        monitor: MonitorClient,
+        stop_on_idle: bool,
+    ) -> Result<()> {
+        let mut updates = monitor.subscribe();
+
+        // Initial render
+        terminal.draw(|f| self.draw(f))?;
+
+        // Main event loop - WebSocket-driven, no timers
+        loop {
+            tokio::select! {
+                // WebSocket status updates - trigger full redraw
+                // This includes any changes to: status, issues, questions, progresses, system info
+                Ok(new_status) = updates.recv() => {
+                    self.update_status(new_status);
+                    terminal.draw(|f| self.draw(f))?;
+
+                    // Check exit conditions
+                    if stop_on_idle && self.should_exit() {
+                        break;
+                    }
+                }
+
+                // Keyboard and terminal events (poll with short timeout)
+                _ = tokio::time::sleep(Duration::from_millis(100)) => {
+                    if event::poll(Duration::from_millis(0))? {
+                        match event::read()? {
+                            Event::Key(key) => {
+                                match (key.code, key.modifiers) {
+                                    (KeyCode::Char('q'), _) |
+                                    (KeyCode::Esc, _) |
+                                    (KeyCode::Char('c'), KeyModifiers::CONTROL) => {
+                                        break;
+                                    }
+                                    _ => {}
+                                }
+                            }
+                            Event::Resize(_, _) => {
+                                // Terminal resize - trigger redraw
+                                terminal.draw(|f| self.draw(f))?;
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(())
     }
 
     /// Returns the current busy state

@@ -32,12 +32,12 @@ use agama_lib::{
 };
 use anyhow::Result;
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyModifiers},
+    event::{DisableMouseCapture, EnableMouseCapture},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use ratatui::{backend::CrosstermBackend, Terminal};
-use std::{io, time::Duration};
+use std::io;
 
 use app::MonitorApp;
 
@@ -82,50 +82,9 @@ pub async fn run(
 
     // Setup terminal
     let mut terminal = setup_terminal()?;
-    let mut updates = monitor.subscribe();
 
-    // Initial render
-    terminal.draw(|f| app.draw(f))?;
-
-    // Main event loop - WebSocket-driven, no timers
-    let result = loop {
-        tokio::select! {
-            // WebSocket status updates - trigger full redraw
-            // This includes any changes to: status, issues, questions, progresses, system info
-            Ok(new_status) = updates.recv() => {
-                app.update_status(new_status);
-                terminal.draw(|f| app.draw(f))?;
-
-                // Check exit conditions
-                if stop_on_idle && app.should_exit() {
-                    break Ok(());
-                }
-            }
-
-            // Keyboard and terminal events (poll with short timeout)
-            _ = tokio::time::sleep(Duration::from_millis(100)) => {
-                if event::poll(Duration::from_millis(0))? {
-                    match event::read()? {
-                        Event::Key(key) => {
-                            match (key.code, key.modifiers) {
-                                (KeyCode::Char('q'), _) |
-                                (KeyCode::Esc, _) |
-                                (KeyCode::Char('c'), KeyModifiers::CONTROL) => {
-                                    break Ok(());
-                                }
-                                _ => {}
-                            }
-                        }
-                        Event::Resize(_, _) => {
-                            // Terminal resize - trigger redraw
-                            terminal.draw(|f| app.draw(f))?;
-                        }
-                        _ => {}
-                    }
-                }
-            }
-        }
-    };
+    // Run the app
+    let result = app.run(&mut terminal, monitor, stop_on_idle).await;
 
     // Cleanup
     restore_terminal(&mut terminal)?;
