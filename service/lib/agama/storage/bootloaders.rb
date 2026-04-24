@@ -27,6 +27,4 @@ module Agama
   end
 end
 
-require "agama/storage/bootloaders/grub2"
-require "agama/storage/bootloaders/grub2_bls"
-require "agama/storage/bootloaders/systemd_boot"
+require "agama/storage/bootloaders/bootloader"

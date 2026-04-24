@@ -19,7 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/bootloaders"
+require "agama/storage/bootloaders/bootloader"
+require "agama/storage/bootloader_type"
 require "y2storage/storage_manager"
 require "y2storage/encryption_method"
 require "yast"
@@ -30,14 +31,14 @@ module Agama
   module Storage
     # Class for probing bootloaders available in the system.
     class BootloaderProber
-      # @return [Array<Bootloaders::Base>]
+      # @return [Array<Bootloaders::Bootloader>]
       def probe
-        grub2 = Bootloaders::Grub2.new(tpm: grub2_tpm?)
+        grub2 = Bootloaders::Bootloader.new(BootloaderType::GRUB2, tpm: grub2_tpm?)
         return [grub2] if raspberry_pi? || !(arch.x86? || Yast::Arch.aarch64)
 
         tpm = bls_tpm?
-        grub2_bls = Bootloaders::Grub2BLS.new(tpm: tpm)
-        systemd_boot = Bootloaders::SystemdBoot.new(tpm: tpm)
+        grub2_bls = Bootloaders::Bootloader.new(BootloaderType::GRUB2_BLS, tpm: tpm)
+        systemd_boot = Bootloaders::Bootloader.new(BootloaderType::SYSTEMD_BOOT, tpm: tpm)
         [grub2, grub2_bls, systemd_boot]
       end
 

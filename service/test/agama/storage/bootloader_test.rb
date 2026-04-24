@@ -65,8 +65,8 @@ describe Agama::Storage::Bootloader do
 
   describe "#probe" do
     let(:bootloader_prober) { instance_double(Agama::Storage::BootloaderProber) }
-    let(:grub2) { instance_double(Agama::Storage::Bootloaders::Grub2) }
-    let(:systemd_boot) { instance_double(Agama::Storage::Bootloaders::SystemdBoot) }
+    let(:grub2) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
+    let(:systemd_boot) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
     let(:probed_bootloaders) { [grub2, systemd_boot] }
 
     before do
@@ -87,9 +87,9 @@ describe Agama::Storage::Bootloader do
 
   describe "#available_bootloaders" do
     let(:bootloader_prober) { instance_double(Agama::Storage::BootloaderProber) }
-    let(:grub2) { instance_double(Agama::Storage::Bootloaders::Grub2) }
-    let(:grub2_bls) { instance_double(Agama::Storage::Bootloaders::Grub2BLS) }
-    let(:systemd_boot) { instance_double(Agama::Storage::Bootloaders::SystemdBoot) }
+    let(:grub2) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
+    let(:grub2_bls) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
+    let(:systemd_boot) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
 
     it "returns empty array when probe has not been called" do
       expect(agama_bootloader.available_bootloaders).to eq([])

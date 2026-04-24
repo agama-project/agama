@@ -219,7 +219,7 @@ module Agama
 
       # Available bootloaders in the system.
       #
-      # @ return [Array<Bootloaders::Base>]
+      # @ return [Array<Bootloaders::Bootloader>]
       def available_bootloaders
         bootloader.available_bootloaders
       end

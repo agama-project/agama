@@ -50,7 +50,8 @@ describe Agama::Storage::BootloaderProber do
       it "returns only grub2" do
         bootloaders = subject.probe
         expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Grub2)
+        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Bootloader)
+        expect(bootloaders.first.type).to eq(Agama::Storage::BootloaderType::GRUB2)
       end
     end
 
@@ -66,7 +67,8 @@ describe Agama::Storage::BootloaderProber do
       it "returns only grub2" do
         bootloaders = subject.probe
         expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Grub2)
+        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Bootloader)
+        expect(bootloaders.first.type).to eq(Agama::Storage::BootloaderType::GRUB2)
       end
     end
 
@@ -82,7 +84,8 @@ describe Agama::Storage::BootloaderProber do
       it "returns only grub2" do
         bootloaders = subject.probe
         expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Grub2)
+        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Bootloader)
+        expect(bootloaders.first.type).to eq(Agama::Storage::BootloaderType::GRUB2)
       end
     end
 
@@ -101,11 +104,14 @@ describe Agama::Storage::BootloaderProber do
           it "returns grub2, grub2_bls, and systemd_boot with TPM" do
             bootloaders = subject.probe
             expect(bootloaders.size).to eq(3)
-            expect(bootloaders[0]).to be_a(Agama::Storage::Bootloaders::Grub2)
+            expect(bootloaders[0]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+            expect(bootloaders[0].type).to eq(Agama::Storage::BootloaderType::GRUB2)
             expect(bootloaders[0].tpm_encryption_auth?).to eq(true)
-            expect(bootloaders[1]).to be_a(Agama::Storage::Bootloaders::Grub2BLS)
+            expect(bootloaders[1]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+            expect(bootloaders[1].type).to eq(Agama::Storage::BootloaderType::GRUB2_BLS)
             expect(bootloaders[1].tpm_encryption_auth?).to eq(true)
-            expect(bootloaders[2]).to be_a(Agama::Storage::Bootloaders::SystemdBoot)
+            expect(bootloaders[2]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+            expect(bootloaders[2].type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
             expect(bootloaders[2].tpm_encryption_auth?).to eq(true)
           end
         end
@@ -119,11 +125,14 @@ describe Agama::Storage::BootloaderProber do
           it "returns grub2, grub2_bls, and systemd_boot without TPM" do
             bootloaders = subject.probe
             expect(bootloaders.size).to eq(3)
-            expect(bootloaders[0]).to be_a(Agama::Storage::Bootloaders::Grub2)
+            expect(bootloaders[0]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+            expect(bootloaders[0].type).to eq(Agama::Storage::BootloaderType::GRUB2)
             expect(bootloaders[0].tpm_encryption_auth?).to eq(false)
-            expect(bootloaders[1]).to be_a(Agama::Storage::Bootloaders::Grub2BLS)
+            expect(bootloaders[1]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+            expect(bootloaders[1].type).to eq(Agama::Storage::BootloaderType::GRUB2_BLS)
             expect(bootloaders[1].tpm_encryption_auth?).to eq(false)
-            expect(bootloaders[2]).to be_a(Agama::Storage::Bootloaders::SystemdBoot)
+            expect(bootloaders[2]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+            expect(bootloaders[2].type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
             expect(bootloaders[2].tpm_encryption_auth?).to eq(false)
           end
         end
@@ -137,11 +146,14 @@ describe Agama::Storage::BootloaderProber do
         it "returns grub2, grub2_bls, and systemd_boot without TPM" do
           bootloaders = subject.probe
           expect(bootloaders.size).to eq(3)
-          expect(bootloaders[0]).to be_a(Agama::Storage::Bootloaders::Grub2)
+          expect(bootloaders[0]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+          expect(bootloaders[0].type).to eq(Agama::Storage::BootloaderType::GRUB2)
           expect(bootloaders[0].tpm_encryption_auth?).to eq(false)
-          expect(bootloaders[1]).to be_a(Agama::Storage::Bootloaders::Grub2BLS)
+          expect(bootloaders[1]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+          expect(bootloaders[1].type).to eq(Agama::Storage::BootloaderType::GRUB2_BLS)
           expect(bootloaders[1].tpm_encryption_auth?).to eq(false)
-          expect(bootloaders[2]).to be_a(Agama::Storage::Bootloaders::SystemdBoot)
+          expect(bootloaders[2]).to be_a(Agama::Storage::Bootloaders::Bootloader)
+          expect(bootloaders[2].type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
           expect(bootloaders[2].tpm_encryption_auth?).to eq(false)
         end
       end
@@ -181,7 +193,8 @@ describe Agama::Storage::BootloaderProber do
       it "returns only grub2" do
         bootloaders = subject.probe
         expect(bootloaders.size).to eq(1)
-        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Grub2)
+        expect(bootloaders.first).to be_a(Agama::Storage::Bootloaders::Bootloader)
+        expect(bootloaders.first.type).to eq(Agama::Storage::BootloaderType::GRUB2)
       end
     end
   end

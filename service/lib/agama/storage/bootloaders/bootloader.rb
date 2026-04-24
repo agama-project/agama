@@ -19,25 +19,40 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/bootloaders/base"
+require "agama/storage/bootloader_type"
 
 module Agama
   module Storage
     module Bootloaders
-      # Class representing grub2 bootloader.
-      class Grub2 < Base
-        # @param tpm [Boolean] Whether TPM is available for grub2.
-        def initialize(tpm: false)
-          super()
+      # Class representing a bootloader.
+      class Bootloader
+        # @return [BootloaderType] Type of the bootloader
+        attr_reader :type
+
+        # @param type [BootloaderType] Type of the bootloader.
+        # @param tpm [Boolean] Whether TPM is available for the bootloader.
+        def initialize(type, tpm: false)
+          @type = type
           @tpm = tpm
         end
 
-        # @see Base
+        # Name of the bootloader.
+        #
+        # @return [String]
+        def name
+          type.value
+        end
+
+        # Whether the bootloader is able to manage a password for encryption authentication.
+        #
+        # @return [Boolean]
         def password_encryption_auth?
           true
         end
 
-        # @see Base
+        # Whether the bootloader is able to use TPM for encryption authentication.
+        #
+        # @return [Boolean]
         def tpm_encryption_auth?
           @tpm
         end
