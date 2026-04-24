@@ -26,6 +26,12 @@ impl Message for GetConfig {
     type Reply = bootloader::Config;
 }
 
+pub struct GetSystem;
+
+impl Message for GetSystem {
+    type Reply = Option<serde_json::Value>;
+}
+
 pub struct SetConfig {
     pub config: serde_json::Value,
 }

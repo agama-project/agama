@@ -59,7 +59,7 @@ describe Agama::Storage::Manager do
     allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     # mock writting config as proposal call can do storage probing, which fails in CI
-    allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
+    allow_any_instance_of(Agama::Storage::BootloaderManager).to receive(:write_config)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
     stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
       File.join(tmp_dir, "run", "agama", "scripts"))

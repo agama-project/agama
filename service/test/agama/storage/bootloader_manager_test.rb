@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,13 +21,14 @@
 
 require_relative "../../test_helper"
 
-require "agama/storage/bootloader"
+require "agama/storage/bootloader_manager"
 require "agama/storage/bootloader_type"
+require "agama/storage/bootloader_prober"
 require "agama/config"
 require "bootloader/grub2"
 require "bootloader/systemdboot"
 
-describe Agama::Storage::Bootloader do
+describe Agama::Storage::BootloaderManager do
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:agama_bootloader) { described_class.new(logger) }
   let(:product_config) { instance_double(Agama::Config, data: product_data) }
@@ -44,6 +45,63 @@ describe Agama::Storage::Bootloader do
     allow(bootloader_obj).to receive(:packages).and_return([])
     allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(http_client).to receive(:set_resolvables)
+  end
+
+  describe "#probed?" do
+    it "returns false initially" do
+      expect(agama_bootloader.probed?).to eq(false)
+    end
+
+    it "returns true after probe is called" do
+      bootloader_prober = instance_double(Agama::Storage::BootloaderProber)
+      allow(Agama::Storage::BootloaderProber).to receive(:new).and_return(bootloader_prober)
+      allow(bootloader_prober).to receive(:probe).and_return([])
+
+      agama_bootloader.probe
+      expect(agama_bootloader.probed?).to eq(true)
+    end
+  end
+
+  describe "#probe" do
+    let(:bootloader_prober) { instance_double(Agama::Storage::BootloaderProber) }
+    let(:grub2) { instance_double(Agama::Storage::Bootloader) }
+    let(:systemd_boot) { instance_double(Agama::Storage::Bootloader) }
+    let(:probed_bootloaders) { [grub2, systemd_boot] }
+
+    before do
+      allow(Agama::Storage::BootloaderProber).to receive(:new).and_return(bootloader_prober)
+      allow(bootloader_prober).to receive(:probe).and_return(probed_bootloaders)
+    end
+
+    it "sets probed flag to true" do
+      agama_bootloader.probe
+      expect(agama_bootloader.probed?).to eq(true)
+    end
+
+    it "stores available bootloaders" do
+      agama_bootloader.probe
+      expect(agama_bootloader.available_bootloaders).to eq(probed_bootloaders)
+    end
+  end
+
+  describe "#available_bootloaders" do
+    let(:bootloader_prober) { instance_double(Agama::Storage::BootloaderProber) }
+    let(:grub2) { instance_double(Agama::Storage::Bootloader) }
+    let(:grub2_bls) { instance_double(Agama::Storage::Bootloader) }
+    let(:systemd_boot) { instance_double(Agama::Storage::Bootloader) }
+
+    it "returns empty array when probe has not been called" do
+      expect(agama_bootloader.available_bootloaders).to eq([])
+    end
+
+    it "returns probed bootloaders after probe is called" do
+      probed_bootloaders = [grub2, grub2_bls, systemd_boot]
+      allow(Agama::Storage::BootloaderProber).to receive(:new).and_return(bootloader_prober)
+      allow(bootloader_prober).to receive(:probe).and_return(probed_bootloaders)
+
+      agama_bootloader.probe
+      expect(agama_bootloader.available_bootloaders).to eq(probed_bootloaders)
+    end
   end
 
   describe "#configure" do

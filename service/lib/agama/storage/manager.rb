@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,7 +23,7 @@ require "agama/config"
 require "agama/http/clients"
 require "agama/issue"
 require "agama/storage/actions_generator"
-require "agama/storage/bootloader"
+require "agama/storage/bootloader_manager"
 require "agama/storage/callbacks"
 require "agama/storage/configurator"
 require "agama/storage/finisher"
@@ -49,7 +49,7 @@ module Agama
       # @return [Hash, nil]
       attr_reader :config_json
 
-      # @return [Bootloader]
+      # @return [BootloaderManager]
       attr_reader :bootloader
 
       # @return [Array<Issue>]
@@ -58,7 +58,7 @@ module Agama
       # @param logger [Logger, nil]
       def initialize(logger: nil)
         @logger = logger || Logger.new($stdout)
-        @bootloader = Bootloader.new(logger)
+        @bootloader = BootloaderManager.new(logger)
         @issues = []
         update_product_config(Agama::Config.new)
       end
@@ -205,6 +205,25 @@ module Agama
         probing_issues + [candidate_devices_issue].compact
       end
 
+      # Whether bootloader was probed.
+      #
+      # @return [Boolean]
+      def bootloader_probed?
+        bootloader.probed?
+      end
+
+      # Probes the available bootloaders.
+      def probe_bootloader
+        bootloader.probe
+      end
+
+      # Available bootloaders in the system.
+      #
+      # @ return [Array<Bootloader>]
+      def available_bootloaders
+        bootloader.available_bootloaders
+      end
+
       # Current bootloader configuration
       #
       # @return [BootloaderConfig]
@@ -221,14 +240,14 @@ module Agama
 
       # Configures the bootloader
       #
-      # @see Bootloader#configure
+      # @see BootloaderManager#configure
       def configure_bootloader
         bootloader.configure(product_config)
       end
 
       # Installs the bootloader
       #
-      # @see Bootloader#install
+      # @see BootloaderManager#install
       def install_bootloader
         bootloader.install
       end
