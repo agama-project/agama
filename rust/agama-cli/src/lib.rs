@@ -56,6 +56,7 @@ mod context;
 mod error;
 mod events;
 mod logs;
+mod monitor;
 mod progress;
 mod questions;
 
@@ -338,7 +339,7 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
         }
         Commands::Monitor => {
             let (http, ws) = build_clients(api_url, cli.opts.insecure).await?;
-            show_progress(http, ws, false).await?;
+            monitor::run(http, ws, false).await?;
         }
         Commands::Events { pretty } => {
             let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
