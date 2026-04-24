@@ -23,7 +23,7 @@ require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_issues"
 require "agama/dbus/with_progress"
-require "agama/storage/bootloaders/bootloader"
+require "agama/storage/bootloader"
 require "agama/storage/config_conversions"
 require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
@@ -548,7 +548,7 @@ module Agama
 
         # Bootloader in JSON format.
         #
-        # @param bootloader [Agama::Storage::Bootloaders::Bootloader]
+        # @param bootloader [Agama::Storage::Bootloader]
         # @return [Hash]
         def bootloader_json(bootloader)
           {
@@ -559,7 +559,7 @@ module Agama
 
         # Name of the bootloader according to the values of the JSON schema.
         #
-        # @param bootloader [Agama::Storage::Bootloaders::Bootloader]
+        # @param bootloader [Agama::Storage::Bootloader]
         # @return [String]
         def bootloader_name_json(bootloader)
           bootloader.name
@@ -567,7 +567,7 @@ module Agama
 
         # Encryption authentication methods according to the values of the JSON schema.
         #
-        # @param bootloader [Agama::Storage::Bootloaders::Bootloader]
+        # @param bootloader [Agama::Storage::Bootloader]
         # @return [Array<String>]
         def bootloader_encryption_auth_json(bootloader)
           auth_methods = []

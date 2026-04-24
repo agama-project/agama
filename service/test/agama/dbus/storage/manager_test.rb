@@ -1373,19 +1373,19 @@ describe Agama::DBus::Storage::Manager do
           let(:available_bootloaders) { [grub2, grub2_bls, systemd_boot] }
 
           let(:grub2) do
-            Agama::Storage::Bootloaders::Bootloader.new(
+            Agama::Storage::Bootloader.new(
               Agama::Storage::BootloaderType::GRUB2, tpm: false
             )
           end
 
           let(:grub2_bls) do
-            Agama::Storage::Bootloaders::Bootloader.new(
+            Agama::Storage::Bootloader.new(
               Agama::Storage::BootloaderType::GRUB2_BLS, tpm: true
             )
           end
 
           let(:systemd_boot) do
-            Agama::Storage::Bootloaders::Bootloader.new(
+            Agama::Storage::Bootloader.new(
               Agama::Storage::BootloaderType::SYSTEMD_BOOT, tpm: true
             )
           end
@@ -1418,7 +1418,7 @@ describe Agama::DBus::Storage::Manager do
           let(:available_bootloaders) { [grub2] }
 
           let(:grub2) do
-            Agama::Storage::Bootloaders::Bootloader.new(
+            Agama::Storage::Bootloader.new(
               Agama::Storage::BootloaderType::GRUB2, tpm: false
             )
           end

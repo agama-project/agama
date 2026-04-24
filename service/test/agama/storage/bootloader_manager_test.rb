@@ -24,7 +24,6 @@ require_relative "../../test_helper"
 require "agama/storage/bootloader_manager"
 require "agama/storage/bootloader_type"
 require "agama/storage/bootloader_prober"
-require "agama/storage/bootloaders"
 require "agama/config"
 require "bootloader/grub2"
 require "bootloader/systemdboot"
@@ -65,8 +64,8 @@ describe Agama::Storage::BootloaderManager do
 
   describe "#probe" do
     let(:bootloader_prober) { instance_double(Agama::Storage::BootloaderProber) }
-    let(:grub2) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
-    let(:systemd_boot) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
+    let(:grub2) { instance_double(Agama::Storage::Bootloader) }
+    let(:systemd_boot) { instance_double(Agama::Storage::Bootloader) }
     let(:probed_bootloaders) { [grub2, systemd_boot] }
 
     before do
@@ -87,9 +86,9 @@ describe Agama::Storage::BootloaderManager do
 
   describe "#available_bootloaders" do
     let(:bootloader_prober) { instance_double(Agama::Storage::BootloaderProber) }
-    let(:grub2) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
-    let(:grub2_bls) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
-    let(:systemd_boot) { instance_double(Agama::Storage::Bootloaders::Bootloader) }
+    let(:grub2) { instance_double(Agama::Storage::Bootloader) }
+    let(:grub2_bls) { instance_double(Agama::Storage::Bootloader) }
+    let(:systemd_boot) { instance_double(Agama::Storage::Bootloader) }
 
     it "returns empty array when probe has not been called" do
       expect(agama_bootloader.available_bootloaders).to eq([])

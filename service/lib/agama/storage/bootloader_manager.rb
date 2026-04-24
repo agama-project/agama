@@ -53,7 +53,7 @@ module Agama
 
       # Available bootloaders in the system.
       #
-      # @return [Array<Bootloaders::Bootloader>]
+      # @return [Array<Bootloader>]
       def available_bootloaders
         @available_bootloaders || []
       end
