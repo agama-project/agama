@@ -43,7 +43,7 @@ use url::Url;
 use crate::{
     auth::run as run_auth_cmd, auth_tokens_file::AuthTokensFile, commands::Commands,
     config::run as run_config_cmd, error::CliError, events::run as run_events_cmd,
-    logs::run as run_logs_cmd, progress::ProgressMonitor, questions::run as run_questions_cmd,
+    logs::run as run_logs_cmd, questions::run as run_questions_cmd,
 };
 
 mod auth;
@@ -57,7 +57,6 @@ mod error;
 mod events;
 mod logs;
 mod monitor;
-mod progress;
 mod questions;
 
 use context::InstallationContext;
@@ -291,7 +290,7 @@ pub async fn show_progress(
     ws: WebSocketClient,
     stop_on_idle: bool,
 ) -> anyhow::Result<()> {
-    ProgressMonitor::run(http, ws, stop_on_idle).await?;
+    monitor::run(http, ws, stop_on_idle).await?;
 
     Ok(())
 }

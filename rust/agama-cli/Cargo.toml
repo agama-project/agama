@@ -12,7 +12,6 @@ agama-utils = { path = "../agama-utils" }
 agama-transfer = { path = "../agama-transfer" }
 serde_json = "1.0.128"
 gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
-indicatif = "0.17.8"
 thiserror = "2.0.12"
 console = "0.15.8"
 anyhow = "1.0.89"
