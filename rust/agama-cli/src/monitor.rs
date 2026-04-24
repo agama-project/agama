@@ -78,7 +78,7 @@ pub async fn run(
     let (monitor, initial_status) = Monitor::connect(websocket, &http_client).await?;
 
     // Create app state
-    let mut app = MonitorApp::new(&http_client, initial_status).await?;
+    let mut app = MonitorApp::new(initial_status);
 
     // Setup terminal
     let mut terminal = setup_terminal()?;
@@ -91,10 +91,9 @@ pub async fn run(
     let result = loop {
         tokio::select! {
             // WebSocket status updates - trigger full redraw
-            // This includes any changes to: status, issues, questions, progresses
-            // Also refreshes product name from config
+            // This includes any changes to: status, issues, questions, progresses, system info
             Ok(new_status) = updates.recv() => {
-                app.update_status(new_status).await?;
+                app.update_status(new_status);
                 terminal.draw(|f| app.draw(f))?;
 
                 // Check exit conditions

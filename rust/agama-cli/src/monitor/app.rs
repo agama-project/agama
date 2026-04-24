@@ -18,13 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::{
-    http::BaseHTTPClient,
-    manager::ManagerHTTPClient,
-    monitor::InstallationStatus,
-};
-use agama_utils::api::{status::Stage, Config, Scope};
-use anyhow::Result;
+use agama_lib::monitor::InstallationStatus;
+use agama_utils::api::{status::Stage, Scope};
 use gettextrs::gettext;
 use ratatui::{
     layout::Rect,
@@ -33,58 +28,14 @@ use ratatui::{
     widgets::Paragraph,
     Frame,
 };
-use serde::Deserialize;
 use std::collections::HashMap;
 
 use super::ui;
 
-/// Minimal struct to deserialize product information from /v2/system
-#[derive(Debug, Deserialize)]
-struct ProductInfo {
-    id: String,
-    name: String,
-}
-
-/// Minimal struct to deserialize hardware info from /v2/system
-#[derive(Debug, Deserialize)]
-struct HardwareInfo {
-    model: Option<String>,
-}
-
-/// Minimal struct to deserialize hostname info from /v2/system
-#[derive(Debug, Deserialize)]
-struct HostnameInfo {
-    hostname: String,
-}
-
-/// Minimal struct to deserialize /v2/system response
-/// Based on openapi.json SystemInfo schema
-#[derive(Debug, Deserialize)]
-struct MinimalSystemInfo {
-    /// List of known products
-    products: Vec<ProductInfo>,
-    /// Hardware information
-    hardware: HardwareInfo,
-    /// Hostname information
-    hostname: HostnameInfo,
-}
-
 /// Application state for the monitor TUI
 pub struct MonitorApp {
-    /// System hostname
-    pub hostname: String,
-    /// Agama server IP/host
-    pub ip: String,
-    /// Machine type/model
-    pub machine: String,
-    /// Product name
-    pub product_name: String,
-    /// Current installation status
+    /// Current installation status (includes system info)
     pub status: InstallationStatus,
-    /// HTTP client for fetching updates
-    http_client: BaseHTTPClient,
-    /// Cached system info (products list)
-    products: Vec<ProductInfo>,
 }
 
 /// Represents the busy state of the installation
@@ -101,156 +52,14 @@ pub enum BusyState {
 }
 
 impl MonitorApp {
-    /// Creates a new MonitorApp by fetching system information
-    pub async fn new(http_client: &BaseHTTPClient, status: InstallationStatus) -> Result<Self> {
-        // Extract IP from HTTP client base URL
-        let ip = http_client
-            .base_url
-            .host_str()
-            .unwrap_or("localhost")
-            .to_string();
-
-        // Fetch system info from API
-        let system_info: MinimalSystemInfo = http_client.get("/v2/system").await?;
-
-        // Extract hostname
-        let hostname = system_info.hostname.hostname;
-
-        // Extract machine model (hide if unknown)
-        let machine = system_info
-            .hardware
-            .model
-            .unwrap_or_else(|| "Unknown Machine".to_string());
-
-        // Fetch config to get selected product
-        let config: Config = http_client.get("/v2/config").await?;
-
-        // Determine product name
-        let product_name = if let Some(software) = &config.software {
-            if let Some(product) = &software.product {
-                if let Some(product_id) = &product.id {
-                    // Look up product name from system_info products list
-                    system_info
-                        .products
-                        .iter()
-                        .find(|p| &p.id == product_id)
-                        .map(|p| p.name.clone())
-                        .unwrap_or_else(|| {
-                            if status.status.stage == Stage::Configuring
-                                && !status.status.progresses.is_empty()
-                            {
-                                gettext("Selecting a product")
-                            } else {
-                                gettext("Product not selected")
-                            }
-                        })
-                } else if status.status.stage == Stage::Configuring
-                    && !status.status.progresses.is_empty()
-                {
-                    gettext("Selecting a product")
-                } else {
-                    gettext("Product not selected")
-                }
-            } else if status.status.stage == Stage::Configuring
-                && !status.status.progresses.is_empty()
-            {
-                gettext("Selecting a product")
-            } else {
-                gettext("Product not selected")
-            }
-        } else if status.status.stage == Stage::Configuring && !status.status.progresses.is_empty()
-        {
-            gettext("Selecting a product")
-        } else {
-            gettext("Product not selected")
-        };
-
-        Ok(Self {
-            hostname,
-            ip,
-            machine,
-            product_name,
-            status,
-            http_client: http_client.clone(),
-            products: system_info.products,
-        })
+    /// Creates a new MonitorApp from the initial status
+    pub fn new(status: InstallationStatus) -> Self {
+        Self { status }
     }
 
-    /// Updates the installation status and refreshes product name and issues if needed
-    pub async fn update_status(&mut self, new_status: InstallationStatus) -> Result<()> {
+    /// Updates the installation status
+    pub fn update_status(&mut self, new_status: InstallationStatus) {
         self.status = new_status;
-
-        // Re-fetch product name and issues in case the config changed
-        // This ensures that when a product is selected, the issues list is refreshed
-        // even if the backend hasn't sent an IssuesChanged event yet
-        self.refresh_product_name_and_issues().await?;
-
-        Ok(())
-    }
-
-    /// Refreshes the product name and issues from the current config
-    ///
-    /// This is called after each status update to detect config changes.
-    /// When the product changes, issues are also refreshed to ensure they
-    /// reflect the validation state of the new product selection.
-    async fn refresh_product_name_and_issues(&mut self) -> Result<()> {
-        let config: Config = self.http_client.get("/v2/config").await?;
-
-        // Determine the new product name
-        let new_product_name = if let Some(software) = &config.software {
-            if let Some(product) = &software.product {
-                if let Some(product_id) = &product.id {
-                    // Look up product name from cached products list
-                    self.products
-                        .iter()
-                        .find(|p| &p.id == product_id)
-                        .map(|p| p.name.clone())
-                        .unwrap_or_else(|| {
-                            if self.status.status.stage == Stage::Configuring
-                                && !self.status.status.progresses.is_empty()
-                            {
-                                gettext("Selecting a product")
-                            } else {
-                                gettext("Product not selected")
-                            }
-                        })
-                } else if self.status.status.stage == Stage::Configuring
-                    && !self.status.status.progresses.is_empty()
-                {
-                    gettext("Selecting a product")
-                } else {
-                    gettext("Product not selected")
-                }
-            } else if self.status.status.stage == Stage::Configuring
-                && !self.status.status.progresses.is_empty()
-            {
-                gettext("Selecting a product")
-            } else {
-                gettext("Product not selected")
-            }
-        } else if self.status.status.stage == Stage::Configuring
-            && !self.status.status.progresses.is_empty()
-        {
-            gettext("Selecting a product")
-        } else {
-            gettext("Product not selected")
-        };
-
-        // If the product name changed, refresh issues as well
-        // This handles the case where the backend hasn't sent an IssuesChanged event yet
-        if new_product_name != self.product_name {
-            self.product_name = new_product_name;
-
-            // Re-fetch issues to ensure they reflect the new product selection
-            let manager = ManagerHTTPClient::new(self.http_client.clone());
-            if let Ok(issues) = manager.issues().await {
-                self.status.issues = issues;
-            }
-        } else {
-            self.product_name = new_product_name;
-        }
-
-        Ok(())
     }
 
     /// Returns the current busy state
@@ -321,10 +130,18 @@ impl MonitorApp {
         };
 
         // Build right side: hostname @ IP | machine (hide machine if unknown)
-        let right = if self.machine == "Unknown Machine" {
-            format!(" {} @ {} ", self.hostname, self.ip)
+        let right = if self.status.system_info.machine == "Unknown Machine" {
+            format!(
+                " {} @ {} ",
+                self.status.system_info.hostname, self.status.system_info.ip
+            )
         } else {
-            format!(" {} @ {} | {} ", self.hostname, self.ip, self.machine)
+            format!(
+                " {} @ {} | {} ",
+                self.status.system_info.hostname,
+                self.status.system_info.ip,
+                self.status.system_info.machine
+            )
         };
 
         // Calculate gap
@@ -364,7 +181,7 @@ impl MonitorApp {
 
     /// Renders the product name
     fn render_product(&self, f: &mut Frame, area: Rect) {
-        let paragraph = Paragraph::new(format!(" {}", self.product_name))
+        let paragraph = Paragraph::new(format!(" {}", self.status.system_info.product_name))
             .style(Style::default().add_modifier(Modifier::BOLD));
         f.render_widget(paragraph, area);
     }
