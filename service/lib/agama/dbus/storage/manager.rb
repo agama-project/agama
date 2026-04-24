@@ -552,17 +552,9 @@ module Agama
         # @return [Hash]
         def bootloader_json(bootloader)
           {
-            name:           bootloader_name_json(bootloader),
+            name:           bootloader.name,
             encryptionAuth: bootloader_encryption_auth_json(bootloader)
           }
-        end
-
-        # Name of the bootloader according to the values of the JSON schema.
-        #
-        # @param bootloader [Agama::Storage::Bootloader]
-        # @return [String]
-        def bootloader_name_json(bootloader)
-          bootloader.name
         end
 
         # Encryption authentication methods according to the values of the JSON schema.
