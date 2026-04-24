@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,16 +28,18 @@ module Agama
       class ToModel
         # @param config [Storage::Config]
         # @param product_config [Agama::Config, nil] Agama config
-        def initialize(config, product_config = nil)
+        # @param bootloader_config [Storage::BooloaderConfig, nil] Bootloader config
+        def initialize(config, product_config: nil, bootloader_config: nil)
           @config = config
           @product_config = product_config
+          @bootloader_config = bootloader_config
         end
 
         # Performs the conversion to config model according to the JSON schema.
         #
         # @return [Hash]
         def convert
-          ToModelConversions::Config.new(config, product_config).convert
+          ToModelConversions::Config.new(config, product_config, bootloader_config).convert
         end
 
       private
@@ -47,6 +49,9 @@ module Agama
 
         # @return [Agama::Config, nil]
         attr_reader :product_config
+
+        # @return [Agama::Storage::BootloaderConfig, nil]
+        attr_reader :bootloader_config
       end
     end
   end

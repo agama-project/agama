@@ -1029,11 +1029,12 @@ describe Agama::DBus::Storage::Manager do
         expect(subject.serialized_config_model).to eq(
           serialize({
             boot:         {
-              configure: true,
-              device:    {
+              configure:  true,
+              device:     {
                 default: true,
                 name:    "/dev/sda"
-              }
+              },
+              bootloader: "grub2"
             },
             drives:       [
               {

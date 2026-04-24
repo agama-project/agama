@@ -20,12 +20,13 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../config_context"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/to_model_conversions/config"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
   include_context "config"
 
-  subject { described_class.new(config, product_config) }
+  subject { described_class.new(config, product_config, bootloader_config) }
 
   let(:config_json) do
     {
@@ -35,6 +36,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
       volumeGroups: volume_groups
     }
   end
+
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
 
   let(:boot) { nil }
   let(:drives) { nil }

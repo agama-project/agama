@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -355,10 +355,11 @@ describe Agama::Storage::Proposal do
           expect(subject.model_json).to eq(
             {
               boot:         {
-                configure: true,
-                device:    {
+                configure:  true,
+                device:     {
                   default: true
-                }
+                },
+                bootloader: "grub2"
               },
               drives:       [
                 {
@@ -399,11 +400,12 @@ describe Agama::Storage::Proposal do
           expect(subject.model_json).to eq(
             {
               boot:         {
-                configure: true,
-                device:    {
+                configure:  true,
+                device:     {
                   default: true,
                   name:    "/dev/sda"
-                }
+                },
+                bootloader: "grub2"
               },
               encryption:   {
                 method:   "luks1",

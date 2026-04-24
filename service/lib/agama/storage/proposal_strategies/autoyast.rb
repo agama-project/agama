@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,6 +30,9 @@ module Agama
       # Strategy used by the Agama proposal for backwards compatibility with AutoYaST.
       class Autoyast < Base
         include Yast::I18n
+
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
 
         # @param product_config [Config] Product config
         # @param storage_system [Storage::System]

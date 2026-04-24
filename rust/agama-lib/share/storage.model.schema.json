@@ -26,7 +26,8 @@
       "required": ["configure"],
       "properties": {
         "configure": { "type": "boolean" },
-        "device": { "$ref": "#/$defs/bootDevice" }
+        "device": { "$ref": "#/$defs/bootDevice" },
+        "bootloader": { "enum": ["grub2", "grub2-bls", "systemd-boot"] }
       }
     },
     "bootDevice": {
