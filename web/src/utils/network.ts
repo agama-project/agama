@@ -39,14 +39,20 @@ import {
  * Returns the type for the given connection.
  */
 const connectionType = (connection: Connection): ConnectionType => {
-  const { wireless, bond } = connection;
+  const { wireless, bond, bridge } = connection;
   if (wireless) {
     return ConnectionType.WIFI;
   } else if (bond) {
     return ConnectionType.BOND;
+  } else if (bridge) {
+    return ConnectionType.BRIDGE;
   } else {
     return ConnectionType.ETHERNET;
   }
+};
+
+const isVirtual = (type: ConnectionType): boolean => {
+  return [ConnectionType.BOND, ConnectionType.BRIDGE].includes(type);
 };
 
 /**
@@ -359,6 +365,7 @@ export {
   intToIPString,
   ipPrefixFor,
   isValidIp,
+  isVirtual,
   isValidIpPrefix,
   securityFromFlags,
   stringToIPInt,

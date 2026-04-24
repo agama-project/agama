@@ -157,6 +157,57 @@ const BondDetails = ({ connection }: { connection: Connection }) => {
   );
 };
 
+const BridgeDetails = ({ connection }: { connection: Connection }) => {
+  return (
+    <Page.Section title={_("Bridge")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+      <DescriptionList aria-label={_("Bridge details")} isHorizontal>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("STP")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.bridge?.stp ? _("Enabled") : _("Disabled")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Priority")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.bridge?.priority ?? _("None set")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Forward delay")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.bridge?.forwardDelay ?? _("None set")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Hello time")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.bridge?.helloTime ?? _("None set")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Max message age")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.bridge?.maxMessageAge ?? _("None set")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Bridge ports")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              {isEmpty(connection.bridge?.ports)
+                ? _("None set")
+                : connection.bridge?.ports.map((port, idx) => (
+                    <FlexItem key={idx}>{port}</FlexItem>
+                  ))}
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    </Page.Section>
+  );
+};
+
 const DeviceDetails = ({ device }: { device: Device }) => {
   return (
     <DescriptionList
@@ -381,6 +432,8 @@ export default function ConnectionDetails({ connection }: { connection: Connecti
             <NetworkDetails connection={connection} />
           ) : connection.bond ? (
             <BondDetails connection={connection} />
+          ) : connection.bridge ? (
+            <BridgeDetails connection={connection} />
           ) : (
             <BindingSettings connection={connection} />
           )}

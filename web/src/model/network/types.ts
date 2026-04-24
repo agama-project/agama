@@ -251,6 +251,7 @@ type APIRoute = {
 
 type APIConnection = {
   bond?: Bond;
+  bridge?: Bridge;
   id: string;
   interface?: string;
   macAddress?: string;
@@ -281,6 +282,15 @@ type Bond = {
   options?: string[];
 };
 
+type Bridge = {
+  forwardDelay?: number;
+  priority?: number;
+  maxMessageAge?: number;
+  ports?: string[];
+  helloTime?: number;
+  stp?: boolean;
+};
+
 class Wireless {
   ssid: string;
   password?: string;
@@ -309,6 +319,7 @@ type ConnectionOptions = {
   method6?: ConnectionMethod;
   wireless?: Wireless;
   bond?: Bond;
+  bridge?: Bridge;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
@@ -329,6 +340,7 @@ class Connection {
   method6: ConnectionMethod = ConnectionMethod.AUTO;
   wireless?: Wireless;
   bond?: Bond;
+  bridge?: Bridge;
   persistent: boolean;
 
   constructor(id: string, options?: ConnectionOptions) {

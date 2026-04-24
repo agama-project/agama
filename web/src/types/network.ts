@@ -332,6 +332,15 @@ type Bond = {
   ports: string[];
 };
 
+type Bridge = {
+  forwardDelay: number;
+  priority: number;
+  maxMessageAge: number;
+  ports: string[];
+  helloTime: number;
+  stp: boolean;
+};
+
 type ConnectionOptions = {
   iface?: string;
   macAddress?: string;
@@ -344,6 +353,7 @@ type ConnectionOptions = {
   method6?: ConnectionMethod;
   wireless?: Wireless;
   bond?: Bond;
+  bridge?: Bridge;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
@@ -374,6 +384,7 @@ class Connection {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   bond?: Bond;
+  bridge?: Bridge;
   wireless?: Wireless;
   persistent: boolean;
 

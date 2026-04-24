@@ -31,6 +31,7 @@ import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import IpSettings from "~/components/network/IpSettings";
 import BondSettings from "~/components/network/BondSettings";
+import BridgeSettings from "~/components/network/BridgeSettings";
 import BindingModeSelector from "~/components/network/BindingModeSelector";
 import DeviceSelector from "~/components/network/DeviceSelector";
 import {
@@ -58,6 +59,7 @@ import {
   isValidIPv6Address,
   isValidNameserver,
   isValidDNSSearchDomain,
+  isVirtual,
 } from "~/utils/network";
 import { _ } from "~/i18n";
 
@@ -121,10 +123,16 @@ export const connectionFormOptions = formOptions({
     customDns: false,
     customDnsSearch: false,
     bindingMode: "none" as ConnectionBindingMode,
-    bondIface: "",
+    virtualIface: "",
     bondMode: BondMode.BALANCE_ROUND_ROBIN as BondMode,
     bondOptions: [] as string[],
     bondPorts: [] as string[],
+    bridgeStp: true,
+    bridgePriority: 32768,
+    bridgeForwardDelay: 15,
+    bridgeHelloTime: 2,
+    bridgeMaxMessageAge: 20,
+    bridgePorts: [] as string[],
   },
 });
 
@@ -183,10 +191,16 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     dnsSearchList: unique(connection.dnsSearchList),
     customDns: connection.nameservers.length > 0,
     customDnsSearch: connection.dnsSearchList.length > 0,
-    bondIface: connection.iface,
+    virtualIface: connection.iface,
     bondMode: connection.bond?.mode ?? BondMode.BALANCE_ROUND_ROBIN,
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
     bondPorts: connection.bond?.ports ?? [],
+    bridgeStp: connection.bridge?.stp ?? true,
+    bridgePriority: connection.bridge?.priority ?? 32768,
+    bridgeForwardDelay: connection.bridge?.forwardDelay ?? 15,
+    bridgeHelloTime: connection.bridge?.helloTime ?? 2,
+    bridgeMaxMessageAge: connection.bridge?.maxMessageAge ?? 20,
+    bridgePorts: connection.bridge?.ports ?? [],
   };
 }
 
@@ -329,8 +343,8 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
       // TRANSLATORS: validation error for the DNS search domains field.
       _("Some DNS search domains are invalid"),
     ),
-    bondIface:
-      formValues.type === ConnectionType.BOND && !formValues.bondIface.trim()
+    virtualIface:
+      formValues.type === ConnectionType.BOND && !formValues.virtualIface.trim()
         ? // TRANSLATORS: validation error for the bond device name field.
           _("Device name is required")
         : undefined,
@@ -355,6 +369,11 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
             "The 'primary' option is only valid for 'active-backup', 'balance-tlb', and 'balance-alb' modes",
           )
         : undefined,
+    bridgePorts:
+      formValues.type === ConnectionType.BRIDGE && formValues.bridgePorts.length === 0
+        ? // TRANSLATORS: validation error for the bridge ports field.
+          _("At least one bridge port is required")
+        : undefined,
   });
 
   if (!isEmpty(fieldErrors)) return fieldErrors;
@@ -376,8 +395,8 @@ function buildConnection(formValues: FormValues): Connection {
 
   let iface = "";
 
-  if (formValues.type === ConnectionType.BOND) {
-    iface = formValues.bondIface;
+  if (isVirtual(formValues.type)) {
+    iface = formValues.virtualIface;
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;
   }
@@ -398,6 +417,17 @@ function buildConnection(formValues: FormValues): Connection {
             mode: formValues.bondMode,
             options: formValues.bondOptions.join(" "),
             ports: formValues.bondPorts,
+          }
+        : undefined,
+    bridge:
+      formValues.type === ConnectionType.BRIDGE
+        ? {
+            stp: formValues.bridgeStp,
+            priority: formValues.bridgePriority,
+            forwardDelay: formValues.bridgeForwardDelay,
+            helloTime: formValues.bridgeHelloTime,
+            maxMessageAge: formValues.bridgeMaxMessageAge,
+            ports: formValues.bridgePorts,
           }
         : undefined,
   });
@@ -469,7 +499,8 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
     listeners: isEditing ? undefined : { onMount: ({ formApi }) => syncName(formApi) },
   });
 
-  const typeOptions = () => ConnectionType.options([ConnectionType.BOND, ConnectionType.ETHERNET]);
+  const typeOptions = () =>
+    ConnectionType.options([ConnectionType.BOND, ConnectionType.BRIDGE, ConnectionType.ETHERNET]);
 
   return (
     <form.AppForm>
@@ -570,6 +601,12 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
             type === ConnectionType.BOND && <BondSettings form={form} isEditing={isEditing} />
+          }
+        </form.Subscribe>
+
+        <form.Subscribe selector={(s) => s.values.type}>
+          {(type) =>
+            type === ConnectionType.BRIDGE && <BridgeSettings form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 

@@ -139,6 +139,85 @@ describe("ConnectionForm", () => {
     });
   });
 
+  describe("Bridge connection", () => {
+    it("shows bridge fields when type is Bridge", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+      await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
+      screen.getByLabelText("Priority");
+      screen.getByLabelText("Forward delay");
+      screen.getByLabelText("Hello time");
+      screen.getByLabelText("Max message age");
+      screen.getByText("Bridge ports");
+    });
+
+    it("resets the device name when switching from Bridge back to Ethernet", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      // Switch to Bridge
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+      expect(await screen.findByLabelText("Device name")).toHaveValue("br0");
+
+      // Switch back to Ethernet
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Ethernet" }));
+
+      // It should not show the Bridge's device name field anymore
+      expect(screen.queryByDisplayValue("br0")).not.toBeInTheDocument();
+      // Binding mode should be back to "Any" (default)
+      expect(screen.getByLabelText("Device")).toHaveTextContent("Any");
+    });
+
+    it("submits with bridge settings", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+
+      const ifaceInput = screen.getByLabelText("Device name");
+      await user.clear(ifaceInput);
+      await user.type(ifaceInput, "br1");
+
+      const priorityInput = screen.getByLabelText("Priority");
+      await user.clear(priorityInput);
+      await user.type(priorityInput, "16384");
+
+      const delayInput = screen.getByLabelText("Forward delay");
+      await user.clear(delayInput);
+      await user.type(delayInput, "10");
+
+      // STP is enabled by default, let's disable it and verify that STP-related fields are hidden
+      await user.click(screen.getByLabelText("Enable Spanning Tree Protocol (STP)"));
+      expect(screen.queryByLabelText("Priority")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Forward delay")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Hello time")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Max message age")).not.toBeInTheDocument();
+
+      // Add a port
+      await user.type(screen.getByLabelText("Bridge ports"), "enp1s0");
+      await user.keyboard("{Enter}");
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            iface: "br1",
+            bridge: expect.objectContaining({
+              stp: false,
+              priority: 16384,
+              forwardDelay: 10,
+              ports: ["enp1s0"],
+            }),
+          }),
+        );
+      });
+    });
+  });
+
   describe("Device binding", () => {
     it("does not show device or MAC fields when mode is Any", () => {
       installerRender(<ConnectionForm />);
