@@ -20,7 +20,7 @@
       "required": ["name", "encryptionAuth"],
       "properties": {
         "name": {
-          "enum": ["grub2", "grub2BLS", "systemdBoot"]
+          "enum": ["grub2", "grub2-bls", "systemd-boot"]
         },
         "encryptionAuth": {
           "description": "Encryption authentication methods that can be managed by the bootloader in this system.",

@@ -566,9 +566,9 @@ module Agama
           when Agama::Storage::Bootloaders::Grub2
             "grub2"
           when Agama::Storage::Bootloaders::Grub2BLS
-            "grub2BLS"
+            "grub2-bls"
           when Agama::Storage::Bootloaders::SystemdBoot
-            "systemdBoot"
+            "systemd-boot"
           end
         end
 

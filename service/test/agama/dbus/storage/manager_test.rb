@@ -1397,12 +1397,12 @@ describe Agama::DBus::Storage::Manager do
             })
 
             expect(grub2_bls_info).to eq({
-              name:           "grub2BLS",
+              name:           "grub2-bls",
               encryptionAuth: ["password", "tpm"]
             })
 
             expect(systemd_boot_info).to eq({
-              name:           "systemdBoot",
+              name:           "systemd-boot",
               encryptionAuth: ["password", "tpm"]
             })
           end
