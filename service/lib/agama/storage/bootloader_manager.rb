@@ -32,7 +32,7 @@ Yast.import "BootStorage"
 module Agama
   module Storage
     # Represents bootloader specific functionality
-    class Bootloader
+    class BootloaderManager
       # @return [BootloaderConfig]
       attr_reader :config
 

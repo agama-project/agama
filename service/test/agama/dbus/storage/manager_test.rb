@@ -57,7 +57,7 @@ describe Agama::DBus::Storage::Manager do
 
   let(:config_data) { {} }
 
-  let(:bootloader) { instance_double(Agama::Storage::Bootloader) }
+  let(:bootloader) { instance_double(Agama::Storage::BootloaderManager) }
 
   before do
     allow_any_instance_of(DBus::Object).to receive(:emit)

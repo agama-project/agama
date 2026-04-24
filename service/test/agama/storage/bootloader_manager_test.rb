@@ -21,7 +21,7 @@
 
 require_relative "../../test_helper"
 
-require "agama/storage/bootloader"
+require "agama/storage/bootloader_manager"
 require "agama/storage/bootloader_type"
 require "agama/storage/bootloader_prober"
 require "agama/storage/bootloaders"
@@ -29,7 +29,7 @@ require "agama/config"
 require "bootloader/grub2"
 require "bootloader/systemdboot"
 
-describe Agama::Storage::Bootloader do
+describe Agama::Storage::BootloaderManager do
   let(:logger) { Logger.new($stdout, level: :warn) }
   let(:agama_bootloader) { described_class.new(logger) }
   let(:product_config) { instance_double(Agama::Config, data: product_data) }
