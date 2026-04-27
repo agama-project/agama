@@ -216,13 +216,6 @@ bool commit(struct Zypp *zypp, struct Status *status,
     set_zypp_security_callbacks(security_callbacks);
     set_zypp_install_callbacks(install_callbacks);
     zypp::ZYppCommitPolicy policy;
-    // set that agama prefers local rpms over downloaded ones
-    // useful for usecase where user use full iso and register
-    // Result is that local ones are used unless there are remote updates.
-    zypp::ZConfig::instance().set_download_media_prefer_download(false);
-    MIL << "Prefer download to local packages: "
-        << zypp::ZConfig::instance().download_media_prefer_download()
-        << std::endl;
 
     // enable preload of rpms to speed up installation
     policy.downloadMode(zypp::DownloadInAdvance);
@@ -287,6 +280,16 @@ struct Zypp *init_target(const char *root, struct Status *status,
     if (progress != NULL)
       progress("Reading Installed Packages", 1, 2, user_data);
     zypp->zypp_pointer->target()->load();
+
+    // set that agama prefers local rpms over downloaded ones
+    // useful for usecase where user use full iso and register
+    // Result is that local ones are used unless there are remote updates.
+    zypp::ZConfig::instance().set_download_media_prefer_download(false);
+    MIL << "Prefer download to local packages: "
+        << (zypp::ZConfig::instance().download_media_prefer_download()
+                ? "true"
+                : "false")
+        << std::endl;
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);
     the_zypp.zypp_pointer = NULL;
