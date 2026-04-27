@@ -64,12 +64,8 @@ export const ConnectionType = {
     types.map((type) => ({ value: type, label: ConnectionType.label(type) })),
 
   /** Returns true if the connection type is virtual */
-  isVirtual: (type: ConnectionType): boolean =>
-    [
-      connectionTypeValues.BOND,
-      connectionTypeValues.BRIDGE,
-      connectionTypeValues.VLAN,
-    ].includes(type),
+  isVirtual: (type: keyof typeof ConnectionType): boolean =>
+    [ConnectionType.BOND, ConnectionType.BRIDGE, ConnectionType.VLAN].includes(type),
 };
 
 /**

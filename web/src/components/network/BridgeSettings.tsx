@@ -26,8 +26,6 @@ import { connectionFormOptions } from "~/components/network/ConnectionForm";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { _, formatList } from "~/i18n";
-import Text from "../core/Text";
-import { Flex } from "@patternfly/react-core";
 
 type BridgeSettingsProps = {
   isEditing?: boolean;

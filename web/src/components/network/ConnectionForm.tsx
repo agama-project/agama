@@ -376,7 +376,7 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
     bridgePriority:
       formValues.type === ConnectionType.BRIDGE &&
       formValues.bridgeStp &&
-      (formValues.bridgePriority === "" ||
+      (formValues.bridgePriority === undefined ||
         formValues.bridgePriority < 0 ||
         formValues.bridgePriority > 61440)
         ? // TRANSLATORS: validation error for the bridge priority field.
@@ -385,7 +385,7 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
     bridgeForwardDelay:
       formValues.type === ConnectionType.BRIDGE &&
       formValues.bridgeStp &&
-      (formValues.bridgeForwardDelay === "" ||
+      (formValues.bridgeForwardDelay === undefined ||
         formValues.bridgeForwardDelay < 4 ||
         formValues.bridgeForwardDelay > 30)
         ? // TRANSLATORS: validation error for the bridge forward delay field.
@@ -394,7 +394,7 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
     bridgeHelloTime:
       formValues.type === ConnectionType.BRIDGE &&
       formValues.bridgeStp &&
-      (formValues.bridgeHelloTime === "" ||
+      (formValues.bridgeHelloTime === undefined ||
         formValues.bridgeHelloTime < 1 ||
         formValues.bridgeHelloTime > 10)
         ? // TRANSLATORS: validation error for the bridge hello time field.
@@ -403,7 +403,7 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
     bridgeMaxMessageAge:
       formValues.type === ConnectionType.BRIDGE &&
       formValues.bridgeStp &&
-      (formValues.bridgeMaxMessageAge === "" ||
+      (formValues.bridgeMaxMessageAge === undefined ||
         formValues.bridgeMaxMessageAge < 6 ||
         formValues.bridgeMaxMessageAge > 40)
         ? // TRANSLATORS: validation error for the bridge max message age field.
