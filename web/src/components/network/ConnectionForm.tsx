@@ -59,7 +59,6 @@ import {
   isValidIPv6Address,
   isValidNameserver,
   isValidDNSSearchDomain,
-  isVirtual,
 } from "~/utils/network";
 import { _ } from "~/i18n";
 
@@ -344,8 +343,8 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
       _("Some DNS search domains are invalid"),
     ),
     virtualIface:
-      formValues.type === ConnectionType.BOND && !formValues.virtualIface.trim()
-        ? // TRANSLATORS: validation error for the bond device name field.
+      ConnectionType.isVirtual(formValues.type) && !formValues.virtualIface.trim()
+        ? // TRANSLATORS: validation error for the device name field.
           _("Device name is required")
         : undefined,
     bondMode:
@@ -374,6 +373,42 @@ function validateConnectionForm(formValues: FormValues): FormFieldErrors | undef
         ? // TRANSLATORS: validation error for the bridge ports field.
           _("At least one bridge port is required")
         : undefined,
+    bridgePriority:
+      formValues.type === ConnectionType.BRIDGE &&
+      formValues.bridgeStp &&
+      (formValues.bridgePriority === "" ||
+        formValues.bridgePriority < 0 ||
+        formValues.bridgePriority > 61440)
+        ? // TRANSLATORS: validation error for the bridge priority field.
+          _("Priority must be between 0 and 61440")
+        : undefined,
+    bridgeForwardDelay:
+      formValues.type === ConnectionType.BRIDGE &&
+      formValues.bridgeStp &&
+      (formValues.bridgeForwardDelay === "" ||
+        formValues.bridgeForwardDelay < 4 ||
+        formValues.bridgeForwardDelay > 30)
+        ? // TRANSLATORS: validation error for the bridge forward delay field.
+          _("Forward delay must be between 4 and 30 seconds")
+        : undefined,
+    bridgeHelloTime:
+      formValues.type === ConnectionType.BRIDGE &&
+      formValues.bridgeStp &&
+      (formValues.bridgeHelloTime === "" ||
+        formValues.bridgeHelloTime < 1 ||
+        formValues.bridgeHelloTime > 10)
+        ? // TRANSLATORS: validation error for the bridge hello time field.
+          _("Hello time must be between 1 and 10 seconds")
+        : undefined,
+    bridgeMaxMessageAge:
+      formValues.type === ConnectionType.BRIDGE &&
+      formValues.bridgeStp &&
+      (formValues.bridgeMaxMessageAge === "" ||
+        formValues.bridgeMaxMessageAge < 6 ||
+        formValues.bridgeMaxMessageAge > 40)
+        ? // TRANSLATORS: validation error for the bridge max message age field.
+          _("Max message age must be between 6 and 40 seconds")
+        : undefined,
   });
 
   if (!isEmpty(fieldErrors)) return fieldErrors;
@@ -395,7 +430,7 @@ function buildConnection(formValues: FormValues): Connection {
 
   let iface = "";
 
-  if (isVirtual(formValues.type)) {
+  if (ConnectionType.isVirtual(formValues.type)) {
     iface = formValues.virtualIface;
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;

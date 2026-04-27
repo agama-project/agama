@@ -159,7 +159,9 @@ describe("ConnectionForm", () => {
       // Switch to Bridge
       await user.click(screen.getByLabelText("Type"));
       await user.click(screen.getByRole("option", { name: "Bridge" }));
-      expect(await screen.findByLabelText("Device name")).toHaveValue("br0");
+      const deviceNameField = await screen.findByLabelText("Device name");
+      await user.type(deviceNameField, "br0");
+      expect(deviceNameField).toHaveValue("br0");
 
       // Switch back to Ethernet
       await user.click(screen.getByLabelText("Type"));
@@ -764,6 +766,72 @@ describe("ConnectionForm", () => {
           ).not.toBeInTheDocument();
           expect(mockMutateAsync).toHaveBeenCalled();
         });
+      });
+    });
+
+    describe("Bridge", () => {
+      it("shows an error when no device name is defined", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+
+        const ifaceInput = await screen.findByLabelText("Device name");
+        await user.clear(ifaceInput);
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Device name is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows an error when no bridge ports are selected", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+        await user.type(await screen.findByLabelText("Device name"), "br0");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("At least one bridge port is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows errors when bridge STP settings are out of range", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+        await user.type(await screen.findByLabelText("Device name"), "br0");
+        await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
+
+        const priorityInput = screen.getByLabelText("Priority");
+        await user.clear(priorityInput);
+        await user.type(priorityInput, "70000");
+
+        const delayInput = screen.getByLabelText("Forward delay");
+        await user.clear(delayInput);
+        await user.type(delayInput, "2");
+
+        const helloInput = screen.getByLabelText("Hello time");
+        await user.clear(helloInput);
+        await user.type(helloInput, "11");
+
+        const maxAgeInput = screen.getByLabelText("Max message age");
+        await user.clear(maxAgeInput);
+        await user.type(maxAgeInput, "5");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Priority must be between 0 and 61440");
+        await screen.findByText("Forward delay must be between 4 and 30 seconds");
+        await screen.findByText("Hello time must be between 1 and 10 seconds");
+        await screen.findByText("Max message age must be between 6 and 40 seconds");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
       });
     });
   });

@@ -62,6 +62,14 @@ export const ConnectionType = {
   /** Returns options for a dropdown/select component */
   options: (types: ConnectionType[]): { value: ConnectionType; label: string }[] =>
     types.map((type) => ({ value: type, label: ConnectionType.label(type) })),
+
+  /** Returns true if the connection type is virtual */
+  isVirtual: (type: ConnectionType): boolean =>
+    [
+      connectionTypeValues.BOND,
+      connectionTypeValues.BRIDGE,
+      connectionTypeValues.VLAN,
+    ].includes(type),
 };
 
 /**

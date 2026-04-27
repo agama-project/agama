@@ -51,10 +51,6 @@ const connectionType = (connection: Connection): ConnectionType => {
   }
 };
 
-const isVirtual = (type: ConnectionType): boolean => {
-  return [ConnectionType.BOND, ConnectionType.BRIDGE].includes(type);
-};
-
 /**
  * Check if an IP is valid
  *
@@ -365,7 +361,6 @@ export {
   intToIPString,
   ipPrefixFor,
   isValidIp,
-  isVirtual,
   isValidIpPrefix,
   securityFromFlags,
   stringToIPInt,

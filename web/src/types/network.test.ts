@@ -20,7 +20,29 @@
  * find current contact information at www.suse.com.
  */
 
-import { Connection, ConnectionStatus, NetworkConfig, NetworkProposal } from "./network";
+import {
+  Connection,
+  ConnectionStatus,
+  ConnectionType,
+  NetworkConfig,
+  NetworkProposal,
+} from "./network";
+
+describe("ConnectionType", () => {
+  describe("isVirtual", () => {
+    it("returns true for BOND, BRIDGE, and VLAN types", () => {
+      expect(ConnectionType.isVirtual(ConnectionType.BOND)).toBe(true);
+      expect(ConnectionType.isVirtual(ConnectionType.BRIDGE)).toBe(true);
+      expect(ConnectionType.isVirtual(ConnectionType.VLAN)).toBe(true);
+    });
+
+    it("returns false for ETHERNET, WIFI, and LOOPBACK types", () => {
+      expect(ConnectionType.isVirtual(ConnectionType.ETHERNET)).toBe(false);
+      expect(ConnectionType.isVirtual(ConnectionType.WIFI)).toBe(false);
+      expect(ConnectionType.isVirtual(ConnectionType.LOOPBACK)).toBe(false);
+    });
+  });
+});
 
 describe("NetworkConfig", () => {
   describe("addOrUpdateConnection", () => {
