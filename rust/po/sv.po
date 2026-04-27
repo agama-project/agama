@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-17 16:58+0000\n"
+"POT-Creation-Date: 2026-04-24 14:37+0000\n"
 "PO-Revision-Date: 2026-04-18 09:04+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -217,7 +217,7 @@ msgid "Reject"
 msgstr "Avslå"
 
 #: agama-security/src/service.rs:226
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Lita på"
 
@@ -249,7 +249,7 @@ msgid "Continue"
 msgstr "Fortsätt"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
-#: agama-software/src/callbacks/security.rs:102
+#: agama-software/src/callbacks/security.rs:104
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -257,19 +257,19 @@ msgstr ""
 "Nyckeln {0} ({1}) med fingeravtryck {2} är okänd. Vill du lita på den här "
 "nyckeln?"
 
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
 msgstr "Hoppa över"
 
-#: agama-software/src/model/packages.rs:54
+#: agama-software/src/model/packages.rs:55
 msgid "package"
 msgstr "paket"
 
-#: agama-software/src/model/packages.rs:55
+#: agama-software/src/model/packages.rs:56
 msgid "pattern"
 msgstr "mönster"
 
-#: agama-software/src/model/packages.rs:56
+#: agama-software/src/model/packages.rs:57
 msgid "product"
 msgstr "produkt"
 
@@ -296,36 +296,36 @@ msgid "Registering the system"
 msgstr "Registrerar systemet"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:401
+#: agama-software/src/zypp_server.rs:407
 msgid "Could not remove the repository %s"
 msgstr "Kunde ta bort förråd %s"
 
-#: agama-software/src/zypp_server.rs:421
+#: agama-software/src/zypp_server.rs:427
 msgid "Could not read the repositories"
 msgstr "Kunde inte läsa från förråd"
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:460
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "Misslyckades att hitta produkt i förråd. Du kan behöva registrera systemet."
 
-#: agama-software/src/zypp_server.rs:459
+#: agama-software/src/zypp_server.rs:465
 msgid "Failed to find the product in the repositories."
 msgstr "Misslyckades att hitta produkt i förråd."
 
-#: agama-software/src/zypp_server.rs:517
+#: agama-software/src/zypp_server.rs:523
 msgid "There are conflicts in the software selection"
 msgstr "Det finns konflikter i programvaruval"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:546
+#: agama-software/src/zypp_server.rs:552
 msgid "Could not select %s '%s' for installation"
 msgstr "Kunde inte välja %s '%s' för installation"
 
-#: agama-software/src/zypp_server.rs:951
+#: agama-software/src/zypp_server.rs:968
 msgid "Failed to register the system"
 msgstr "Misslyckades att registrera systemet"
 

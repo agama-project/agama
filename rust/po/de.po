@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-17 16:58+0000\n"
+"POT-Creation-Date: 2026-04-24 14:37+0000\n"
 "PO-Revision-Date: 2026-04-19 16:04+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -220,7 +220,7 @@ msgid "Reject"
 msgstr "Ablehnen"
 
 #: agama-security/src/service.rs:226
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Vertrauen"
 
@@ -252,7 +252,7 @@ msgid "Continue"
 msgstr "Fortsetzen"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
-#: agama-software/src/callbacks/security.rs:102
+#: agama-software/src/callbacks/security.rs:104
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -260,19 +260,19 @@ msgstr ""
 "Der Schlüssel {0} ({1}) mit dem Fingerabdruck {2} ist unbekannt. Möchten Sie "
 "diesem Schlüssel vertrauen?"
 
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
 msgstr "Überspringen"
 
-#: agama-software/src/model/packages.rs:54
+#: agama-software/src/model/packages.rs:55
 msgid "package"
 msgstr "Paket"
 
-#: agama-software/src/model/packages.rs:55
+#: agama-software/src/model/packages.rs:56
 msgid "pattern"
 msgstr "Muster"
 
-#: agama-software/src/model/packages.rs:56
+#: agama-software/src/model/packages.rs:57
 msgid "product"
 msgstr "Produkt"
 
@@ -299,37 +299,37 @@ msgid "Registering the system"
 msgstr "System wird registriert"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:401
+#: agama-software/src/zypp_server.rs:407
 msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:421
+#: agama-software/src/zypp_server.rs:427
 #, fuzzy
 msgid "Could not read the repositories"
 msgstr "Metadaten aus den Repositorien wird aktualisiert"
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:460
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:459
+#: agama-software/src/zypp_server.rs:465
 #, fuzzy
 msgid "Failed to find the product in the repositories."
 msgstr "Liste der Repositorien wird aktualisiert"
 
-#: agama-software/src/zypp_server.rs:517
+#: agama-software/src/zypp_server.rs:523
 msgid "There are conflicts in the software selection"
 msgstr "Es gibt Konflikte bei der Softwareauswahl"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:546
+#: agama-software/src/zypp_server.rs:552
 msgid "Could not select %s '%s' for installation"
 msgstr "%s ‚%s‘ konnte nicht für die Installation ausgewählt werden"
 
-#: agama-software/src/zypp_server.rs:951
+#: agama-software/src/zypp_server.rs:968
 msgid "Failed to register the system"
 msgstr "Das System konnte nicht registriert werden"
 

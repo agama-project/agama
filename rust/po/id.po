@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-17 16:58+0000\n"
-"PO-Revision-Date: 2026-03-20 04:04+0000\n"
+"POT-Creation-Date: 2026-04-24 14:37+0000\n"
+"PO-Revision-Date: 2026-04-20 09:04+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "rust-master/id/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 5.17\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
@@ -30,102 +30,100 @@ msgid "Yes"
 msgstr "Ya"
 
 #: agama-cli/src/progress.rs:116
-#, fuzzy
 msgid "Calculating the installation proposal:"
-msgstr "Menghitung usulan perangkat lunak"
+msgstr "Menghitung proposal instalasi:"
 
 #: agama-cli/src/progress.rs:118
-#, fuzzy
 msgid "Installing the system:"
-msgstr "Mendaftarkan sistem"
+msgstr "Menginstal sistem:"
 
 #: agama-cli/src/progress.rs:217
 msgid "Installation is ready to start."
-msgstr ""
+msgstr "Instalasi siap dimulai."
 
 #: agama-cli/src/progress.rs:220
 msgid "Waiting to start installation"
-msgstr ""
+msgstr "Menunggu untuk memulai instalasi"
 
 #: agama-cli/src/progress.rs:228
 msgid "Installation successfully finished"
-msgstr ""
+msgstr "Instalasi berhasil diselesaikan"
 
 #: agama-cli/src/progress.rs:229
-#, fuzzy
 msgid "Installation failed"
-msgstr "Instal perangkat lunak"
+msgstr "Instalasi gagal"
 
 #: agama-cli/src/progress.rs:242
 msgid ""
 "There are unanswered questions. Please use `agama questions` command or web "
 "interface to answer them:"
 msgstr ""
+"Ada pertanyaan yang belum dijawab. Harap gunakan perintah `agama questions` "
+"atau antarmuka web untuk menjawabnya:"
 
 #: agama-cli/src/progress.rs:254
 msgid "Installer is failed to calculate the installation proposal."
-msgstr ""
+msgstr "Penginstal gagal menghitung proposal instalasi."
 
 #: agama-cli/src/progress.rs:258
 msgid "There are these issues blocking installation:"
-msgstr ""
+msgstr "Ada masalah-masalah berikut yang menghalangi instalasi:"
 
 #: agama-cli/src/progress.rs:271
 msgid "Details"
-msgstr ""
+msgstr "Detail"
 
 #: agama-cli/src/progress.rs:281
 msgid "Manager"
-msgstr ""
+msgstr "Manajer"
 
 #: agama-cli/src/progress.rs:282
 msgid "Network"
-msgstr ""
+msgstr "Jaringan"
 
 #: agama-cli/src/progress.rs:283
 msgid "Hostname"
-msgstr ""
+msgstr "Nama Host"
 
 #: agama-cli/src/progress.rs:284
 msgid "Localization"
-msgstr ""
+msgstr "Pelokalan"
 
 #: agama-cli/src/progress.rs:285
-#, fuzzy
 msgid "Product"
-msgstr "produk"
+msgstr "Produk"
 
 #: agama-cli/src/progress.rs:286
 msgid "Software"
-msgstr ""
+msgstr "Perangkat Lunak"
 
 #: agama-cli/src/progress.rs:287
 msgid "Storage"
-msgstr ""
+msgstr "Penyimpanan"
 
 #: agama-cli/src/progress.rs:288
 msgid "Files"
-msgstr ""
+msgstr "Berkas"
 
 #: agama-cli/src/progress.rs:289
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: agama-cli/src/progress.rs:290
 msgid "DASD"
-msgstr ""
+msgstr "DASD"
 
 #: agama-cli/src/progress.rs:291
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #: agama-cli/src/progress.rs:292
 msgid "Users"
-msgstr ""
+msgstr "Pengguna"
 
 #: agama-cli/src/progress.rs:342
 msgid "Current step"
-msgstr ""
+msgstr "Langkah saat ini"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:198
@@ -218,7 +216,7 @@ msgid "Reject"
 msgstr "Tolak"
 
 #: agama-security/src/service.rs:226
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Percayai"
 
@@ -250,7 +248,7 @@ msgid "Continue"
 msgstr "Lanjutkan"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
-#: agama-software/src/callbacks/security.rs:102
+#: agama-software/src/callbacks/security.rs:104
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -258,19 +256,19 @@ msgstr ""
 "Kunci {0} ({1}) dengan sidik jari {2} tidak dikenal. Apakah Anda ingin "
 "mempercayai kunci ini?"
 
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
 msgstr "Lewati"
 
-#: agama-software/src/model/packages.rs:54
+#: agama-software/src/model/packages.rs:55
 msgid "package"
 msgstr "paket"
 
-#: agama-software/src/model/packages.rs:55
+#: agama-software/src/model/packages.rs:56
 msgid "pattern"
 msgstr "pola"
 
-#: agama-software/src/model/packages.rs:56
+#: agama-software/src/model/packages.rs:57
 msgid "product"
 msgstr "produk"
 
@@ -298,36 +296,36 @@ msgid "Registering the system"
 msgstr "Mendaftarkan sistem"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:401
+#: agama-software/src/zypp_server.rs:407
 msgid "Could not remove the repository %s"
 msgstr "Tidak dapat menghapus repositori %s"
 
-#: agama-software/src/zypp_server.rs:421
+#: agama-software/src/zypp_server.rs:427
 msgid "Could not read the repositories"
 msgstr "Tidak dapat membaca repositori"
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:460
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "Gagal menemukan produk di repositori. Anda mungkin perlu mendaftarkan sistem."
 
-#: agama-software/src/zypp_server.rs:459
+#: agama-software/src/zypp_server.rs:465
 msgid "Failed to find the product in the repositories."
 msgstr "Gagal menemukan produk di repositori."
 
-#: agama-software/src/zypp_server.rs:517
+#: agama-software/src/zypp_server.rs:523
 msgid "There are conflicts in the software selection"
 msgstr "Terdapat konflik dalam pemilihan perangkat lunak"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:546
+#: agama-software/src/zypp_server.rs:552
 msgid "Could not select %s '%s' for installation"
 msgstr "Tidak dapat memilih %s '%s' untuk instalasi"
 
-#: agama-software/src/zypp_server.rs:951
+#: agama-software/src/zypp_server.rs:968
 msgid "Failed to register the system"
 msgstr "Gagal mendaftarkan sistem"
 
