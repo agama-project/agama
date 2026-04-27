@@ -27,6 +27,7 @@ use crate::api::{
 };
 use fluent_uri::Uri;
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
@@ -39,7 +40,7 @@ pub enum Error {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {

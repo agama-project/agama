@@ -20,6 +20,7 @@
 
 //! This module includes the struct that represent a service progress step.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Scope to distinguish each service.
@@ -35,7 +36,7 @@ use serde::{Deserialize, Serialize};
     strum::Display,
     Deserialize,
     Serialize,
-    utoipa::ToSchema,
+    JsonSchema,
     PartialEq,
 )]
 #[strum(serialize_all = "camelCase")]

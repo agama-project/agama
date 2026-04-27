@@ -71,7 +71,7 @@ install6 -D -t "${DESTDIR}${datadir}"/zsh/site-functions "${SRCDIR}"/out/shell/_
 install6 -D -t "${DESTDIR}${datadir}"/fish/vendor_completions.d "${SRCDIR}"/out/shell/"${NAME}".fish
 
 # install OpenAPI specification
-install6 -D -t "${DESTDIR}${datadir}"/agama "${SRCDIR}"/out/openapi.json
+install6 -D -t "${DESTDIR}${datadir}"/agama "${SRCDIR}"/out/openapi.*
 
 # install translations
 make -C "${SRCDIR}/po" install DESTDIR="${DESTDIR}" datadir="${datadir}"

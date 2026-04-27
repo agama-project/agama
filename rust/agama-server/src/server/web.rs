@@ -38,15 +38,19 @@ use agama_utils::{
     },
     progress, question,
 };
+use aide::axum::routing::{get_with, post_with, put};
+use aide::axum::ApiRouter;
+use aide::transform::TransformOperation;
 use axum::{
     body::Body,
     extract::{Path, Query, State},
     http::HeaderValue,
     response::{IntoResponse, Response},
-    routing::{get, post, put},
-    Json, Router,
+    routing::{get, post},
+    Json,
 };
 use hyper::{header, HeaderMap, StatusCode};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tokio_util::io::ReaderStream;
@@ -104,7 +108,7 @@ impl ServerState {
 pub async fn server_service(
     events: event::Sender,
     dbus: zbus::Connection,
-) -> Result<Router, ServiceError> {
+) -> Result<ApiRouter, ServiceError> {
     let questions = question::start(events.clone())
         .await
         .map_err(anyhow::Error::msg)?;
@@ -115,43 +119,45 @@ pub async fn server_service(
     let state = ServerState::new(manager, questions);
     server_with_state(state)
 }
-pub fn server_with_state(state: ServerState) -> Result<Router, ServiceError> {
-    Ok(Router::new()
-        .route("/status", get(get_status))
-        .route("/system", get(get_system))
-        .route("/extended_config", get(get_extended_config))
-        .route(
+
+/// Sets up and returns the axum service for the manager module with the given state
+///
+/// * `state`: server state.
+pub fn server_with_state(state: ServerState) -> Result<ApiRouter, ServiceError> {
+    Ok(ApiRouter::new()
+        .api_route("/status", get_with(get_status, get_status_docs))
+        .api_route("/system", get_with(get_system, get_system_docs))
+        .api_route(
+            "/extended_config",
+            get_with(get_extended_config, get_extended_config_docs),
+        )
+        .api_route(
             "/config",
-            get(get_config).put(put_config).patch(patch_config),
+            get_with(get_config, get_config_docs)
+                .put_with(put_config, put_config_docs)
+                .patch_with(patch_config, patch_config_docs),
         )
-        .route("/proposal", get(get_proposal))
-        .route("/action", post(run_action))
-        .route("/issues", get(get_issues))
-        .route(
+        .api_route("/proposal", get_with(get_proposal, get_proposal_docs))
+        .api_route("/action", post_with(run_action, run_action_docs))
+        .api_route("/issues", get_with(get_issues, get_issues_docs))
+        .api_route(
             "/questions",
-            get(get_questions).post(ask_question).patch(update_question),
+            get_with(get_questions, get_questions_docs)
+                .post_with(ask_question, ask_question_docs)
+                .patch_with(update_question, update_question_docs),
         )
-        .route("/licenses/{id}", get(get_license))
+        .api_route("/licenses/{id}", get_with(get_license, get_license_docs))
+        .route("/resolvables/{id}", put(set_resolvables))
         .route(
             "/private/storage_model",
             get(get_storage_model).put(set_storage_model),
         )
         .route("/private/solve_storage_model", get(solve_storage_model))
-        .route("/private/resolvables/{id}", put(set_resolvables))
         .route("/private/download_logs", get(download_logs))
         .route("/private/password_check", post(check_password))
         .with_state(state))
 }
 
-#[utoipa::path(
-    get,
-    path = "/status",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Status of the installation.", body = Status),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_status(State(state): State<ServerState>) -> Result<Json<Status>, Response> {
     let status = state
         .manager
@@ -161,16 +167,22 @@ async fn get_status(State(state): State<ServerState>) -> Result<Json<Status>, Re
     Ok(Json(status))
 }
 
+fn get_status_docs(op: TransformOperation) -> TransformOperation {
+    op.id("getInstallerStatus")
+        .summary("Get installer status")
+        .description(
+            "Returns the current status of the installation process, including the current \
+            stage and the progress of the ongoing actions. This endpoint can be polled to monitor \
+            installation progress.",
+        )
+        .tag("System & Monitoring")
+        .response_with::<200, Json<Status>, _>(|res| res.description("Status of the installation"))
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Returns the information about the system.
-#[utoipa::path(
-    get,
-    path = "/system",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "System information.", body = SystemInfo),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_system(State(state): State<ServerState>) -> Result<Json<SystemInfo>, Response> {
     let system = state
         .manager
@@ -180,16 +192,24 @@ async fn get_system(State(state): State<ServerState>) -> Result<Json<SystemInfo>
     Ok(Json(system))
 }
 
+fn get_system_docs(op: TransformOperation) -> TransformOperation {
+    op.id("getSystemInfo")
+        .summary("Get system information")
+        .description(
+            "Returns detailed information about the installation system including hardware \
+            details, platform information, and system capabilities. It includes Agama specific \
+            information like the list of available products for installation.",
+        )
+        .tag("System & Monitoring")
+        .response_with::<200, Json<SystemInfo>, _>(|res| {
+            res.description("System information retrieved successfully")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Returns the extended configuration.
-#[utoipa::path(
-    get,
-    path = "/extended_config",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Extended configuration", body = Config),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_extended_config(State(state): State<ServerState>) -> Result<Json<Config>, Response> {
     let config = state
         .manager
@@ -199,16 +219,24 @@ async fn get_extended_config(State(state): State<ServerState>) -> Result<Json<Co
     Ok(Json(config))
 }
 
+fn get_extended_config_docs(op: TransformOperation) -> TransformOperation {
+    op.id("getExtendedConfiguration")
+        .summary("Get extended configuration")
+        .description(
+            "Returns the extended configuration including computed defaults and \
+            system-generated values. Use this endpoint to see the complete configuration \
+            including values not explicitly set by the user.",
+        )
+        .tag("Configuration")
+        .response_with::<200, Json<Config>, _>(|res| {
+            res.description("Extended configuration retrieved successfully")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Returns the configuration.
-#[utoipa::path(
-    get,
-    path = "/config",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Configuration.", body = Config),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_config(State(state): State<ServerState>) -> Result<Json<Config>, Response> {
     let config = state
         .manager
@@ -218,20 +246,22 @@ async fn get_config(State(state): State<ServerState>) -> Result<Json<Config>, Re
     Ok(Json(config))
 }
 
+fn get_config_docs(op: TransformOperation) -> TransformOperation {
+    op.id("getConfiguration")
+        .summary("Get configuration")
+        .description("Returns the current user-defined configuration.")
+        .tag("Configuration")
+        .response_with::<200, Json<Config>, _>(|res| {
+            res.description("Configuration retrieved successfully")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Updates the configuration.
 ///
 /// Replaces the whole configuration. If some value is missing, it will be removed.
-#[utoipa::path(
-    put,
-    path = "/config",
-    context_path = "/api/v2",
-    request_body(content = Value, description = "Configuration to apply."),
-    responses(
-        (status = 200, description = "The configuration was replaced. Other operations can be running in background."),
-        (status = 400, description = "Invalid configuration schema or malformed JSON.", body = ErrorResponse),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn put_config(
     State(state): State<ServerState>,
     Json(json): Json<Value>,
@@ -248,20 +278,28 @@ async fn put_config(
     Ok(())
 }
 
+fn put_config_docs(op: TransformOperation) -> TransformOperation {
+    op.id("updateConfiguration")
+        .summary("Update configuration")
+        .description(
+            "Replaces the entire configuration. Any fields not included in the request \
+            will be removed from the configuration. For partial updates, use PATCH instead. \
+            The request body should be a JSON object conforming to the Config schema.",
+        )
+        .tag("Configuration")
+        .input::<Json<Config>>() // Override the auto-detected Json<Value> with Config schema
+        .response::<200, ()>()
+        .response_with::<400, Json<ErrorResponse>, _>(|res| {
+            res.description("Invalid configuration schema or malformed JSON")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Patches the configuration.
 ///
 /// It only changes the specified values, keeping the rest as they are.
-#[utoipa::path(
-    patch,
-    path = "/config",
-    context_path = "/api/v2",
-    request_body(content = Patch, description = "Changes in the configuration."),
-    responses(
-        (status = 200, description = "The configuration was patched. Other operations can be running in background."),
-        (status = 400, description = "Invalid configuration schema or malformed JSON.", body = ErrorResponse),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn patch_config(
     State(state): State<ServerState>,
     Json(patch): Json<Patch>,
@@ -280,17 +318,25 @@ async fn patch_config(
     Ok(())
 }
 
+fn patch_config_docs(op: TransformOperation) -> TransformOperation {
+    op.id("patchConfiguration")
+        .summary("Patch configuration")
+        .description(
+            "Partially updates the configuration. Only the specified fields will be changed, \
+            all other fields remain unchanged. This is the preferred method for making \
+            incremental configuration changes.",
+        )
+        .tag("Configuration")
+        .response::<200, ()>()
+        .response_with::<400, Json<ErrorResponse>, _>(|res| {
+            res.description("Invalid configuration schema or malformed JSON")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Returns how the target system is configured (proposal).
-#[utoipa::path(
-    get,
-    path = "/proposal",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Proposal successfully retrieved.", body = Proposal),
-        (status = 404, description = "Proposal not available yet."),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Response> {
     let proposal = state
         .manager
@@ -300,16 +346,25 @@ async fn get_proposal(State(state): State<ServerState>) -> Result<Response, Resp
     Ok(to_option_response(proposal))
 }
 
+fn get_proposal_docs(op: TransformOperation) -> TransformOperation {
+    op.id("getInstallationProposal")
+        .summary("Get installation proposal")
+        .description(
+            "Returns the proposed configuration for the target system. The proposal is \
+            generated based on the current configuration and represents how the system \
+            will be configured when installed.",
+        )
+        .tag("Configuration")
+        .response_with::<200, Json<Proposal>, _>(|res| {
+            res.description("Proposal successfully retrieved")
+        })
+        .response::<404, ()>()
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Returns the list of issues.
-#[utoipa::path(
-    get,
-    path = "/issues",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Agama issues", body = Vec<IssueWithScope>),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_issues(
     State(state): State<ServerState>,
 ) -> Result<Json<Vec<IssueWithScope>>, Response> {
@@ -332,16 +387,24 @@ async fn get_issues(
     Ok(Json(issues))
 }
 
+fn get_issues_docs(op: TransformOperation) -> TransformOperation {
+    op.id("listIssues")
+        .summary("List issues")
+        .description(
+            "Returns the list of all current issues detected during the installation process. \
+            Issues represent problems or warnings that may need to be addressed before \
+            proceeding with the installation.",
+        )
+        .tag("Issues & Questions")
+        .response_with::<200, Json<Vec<IssueWithScope>>, _>(|res| {
+            res.description("List of issues with their scopes")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Returns the issues for each scope.
-#[utoipa::path(
-    get,
-    path = "/questions",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Agama questions", body = HashMap<u32, QuestionSpec>),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_questions(State(state): State<ServerState>) -> Result<Json<Vec<Question>>, Response> {
     let questions = state
         .questions
@@ -351,17 +414,24 @@ async fn get_questions(State(state): State<ServerState>) -> Result<Json<Vec<Ques
     Ok(Json(questions))
 }
 
+fn get_questions_docs(op: TransformOperation) -> TransformOperation {
+    op.id("listQuestions")
+        .summary("List questions")
+        .description(
+            "Returns all pending questions that require user input. Questions represent \
+            interactive prompts where the installer needs additional information or \
+            decisions from the user.",
+        )
+        .tag("Issues & Questions")
+        .response_with::<200, Json<Vec<Question>>, _>(|res| {
+            res.description("List of pending questions")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Registers a new question.
-#[utoipa::path(
-    post,
-    path = "/questions",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "New question's ID", body = u32),
-        (status = 400, description = "Malformed JSON.", body = ErrorResponse),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn ask_question(
     State(state): State<ServerState>,
     Json(question): Json<QuestionSpec>,
@@ -374,18 +444,24 @@ async fn ask_question(
     Ok(Json(question))
 }
 
+fn ask_question_docs(op: TransformOperation) -> TransformOperation {
+    op.id("createQuestion")
+        .summary("Create question")
+        .description(
+            "Registers a new question for user interaction. The question will be added to \
+            the list of pending questions and can be answered or deleted later.",
+        )
+        .tag("Issues & Questions")
+        .response_with::<200, Json<Question>, _>(|res| {
+            res.description("Question created successfully")
+        })
+        .response_with::<400, Json<ErrorResponse>, _>(|res| res.description("Malformed JSON"))
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Updates the question collection by answering or removing a question.
-#[utoipa::path(
-    patch,
-    path = "/questions",
-    context_path = "/api/v2",
-    request_body = UpdateQuestion,
-    responses(
-        (status = 200, description = "The question was answered or deleted"),
-        (status = 400, description = "Malformed JSON.", body = ErrorResponse),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn update_question(
     State(state): State<ServerState>,
     Json(operation): Json<UpdateQuestion>,
@@ -409,30 +485,42 @@ async fn update_question(
     Ok(())
 }
 
-#[derive(Deserialize, utoipa::IntoParams)]
+fn update_question_docs(op: TransformOperation) -> TransformOperation {
+    op.id("updateQuestion")
+        .summary("Update question")
+        .description(
+            "Updates the question collection by answering or removing a question. Use this \
+            endpoint to provide an answer to a pending question or to dismiss it.",
+        )
+        .tag("Issues & Questions")
+        .response::<200, ()>()
+        .response_with::<400, Json<ErrorResponse>, _>(|res| res.description("Malformed JSON"))
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
+#[derive(Deserialize, JsonSchema)]
 struct LicenseQuery {
+    /// License language
     lang: Option<String>,
+}
+
+#[derive(Deserialize, JsonSchema)]
+#[schemars(inline)]
+// Needed by aide to document path params (see https://github.com/tamasfe/aide/discussions/281).
+struct LicenseParams {
+    /// License identifier (e.g., "license.final")
+    id: String,
 }
 
 /// Returns the license content.
 ///
 /// Optionally it can receive a language tag (RFC 5646). Otherwise, it returns
 /// the license in English.
-#[utoipa::path(
-    get,
-    path = "/licenses/{id}",
-    context_path = "/api/software",
-    params(LicenseQuery),
-    responses(
-        (status = 200, description = "License with the given ID", body = LicenseContent),
-        (status = 400, description = "The specified language tag is not valid", body = ErrorResponse),
-        (status = 404, description = "There is not license with the given ID"),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_license(
     State(state): State<ServerState>,
-    Path(id): Path<String>,
+    Path(license): Path<LicenseParams>,
     Query(query): Query<LicenseQuery>,
 ) -> Result<Response, Response> {
     let lang = query.lang.unwrap_or("en".to_string());
@@ -443,7 +531,7 @@ async fn get_license(
 
     let license = state
         .manager
-        .call(message::GetLicense::new(id.to_string(), lang))
+        .call(message::GetLicense::new(license.id.to_string(), lang))
         .await
         .map_err(|e| Error::from(e).internal_server_error())?;
     if let Some(license) = license {
@@ -453,17 +541,27 @@ async fn get_license(
     }
 }
 
-#[utoipa::path(
-    post,
-    path = "/action",
-    context_path = "/api/v2",
-    request_body(content = Action, description = "Description of the action to run."),
-    responses(
-        (status = 200, description = "Action successfully ran."),
-        (status = 422, description = "Action blocked by backend state", body = ErrorResponse),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
+fn get_license_docs(op: TransformOperation) -> TransformOperation {
+    op.id("getLicenseById")
+        .summary("Get license by ID")
+        .description(
+            "Returns the content of a specific license. Optionally accepts a language tag \
+            (RFC 5646) via the 'lang' query parameter. If no language is specified, the \
+            license is returned in English.",
+        )
+        .tag("System & Monitoring")
+        .response_with::<200, Json<LicenseContent>, _>(|res| {
+            res.description("License retrieved successfully")
+        })
+        .response_with::<400, Json<ErrorResponse>, _>(|res| {
+            res.description("The specified language tag is not valid")
+        })
+        .response::<404, ()>()
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 async fn run_action(
     State(state): State<ServerState>,
     Json(action): Json<Action>,
@@ -482,16 +580,25 @@ async fn run_action(
     Ok(())
 }
 
+fn run_action_docs(op: TransformOperation) -> TransformOperation {
+    op.id("executeAction")
+        .summary("Execute action")
+        .description(
+            "Executes an installation action such as starting the installation process or \
+            probing hardware. Some actions may be blocked if there are pending issues or \
+            if the system is busy.",
+        )
+        .tag("Actions")
+        .response::<200, ()>()
+        .response_with::<422, Json<ErrorResponse>, _>(|res| {
+            res.description("Action blocked by backend state (e.g., pending issues or system busy)")
+        })
+        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+            res.description("Internal server error")
+        })
+}
+
 /// Returns how the target system is configured (proposal).
-#[utoipa::path(
-    get,
-    path = "/private/storage_model",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Storage model was successfully retrieved."),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn get_storage_model(
     State(state): State<ServerState>,
 ) -> Result<Json<Option<Value>>, Response> {
@@ -503,17 +610,6 @@ async fn get_storage_model(
     Ok(Json(model))
 }
 
-#[utoipa::path(
-    put,
-    request_body = String,
-    path = "/private/storage_model",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "Set the storage model"),
-        (status = 400, description = "Malformed JSON.", body = ErrorResponse),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn set_storage_model(
     State(state): State<ServerState>,
     Json(model): Json<Value>,
@@ -527,16 +623,6 @@ async fn set_storage_model(
 }
 
 /// Solves a storage config model.
-#[utoipa::path(
-    get,
-    path = "/private/solve_storage_model",
-    context_path = "/api/v2",
-    params(query::SolveStorageModel),
-    responses(
-        (status = 200, description = "Solve the storage model", body = String),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn solve_storage_model(
     State(state): State<ServerState>,
     Query(params): Query<query::SolveStorageModel>,
@@ -549,14 +635,6 @@ async fn solve_storage_model(
     Ok(Json(solved_model))
 }
 
-#[utoipa::path(
-    put,
-    path = "/resolvables/{id}",
-    context_path = "/api/v2",
-    responses(
-        (status = 200, description = "The resolvables list was updated.")
-    )
-)]
 async fn set_resolvables(
     State(state): State<ServerState>,
     Path(id): Path<String>,
@@ -580,17 +658,6 @@ fn to_option_response<T: Serialize>(value: Option<T>) -> Response {
 }
 
 /// Solves a storage config model.
-#[utoipa::path(
-    get,
-    path = "/private/download_logs",
-    context_path = "/api/v2",
-    params(query::SolveStorageModel),
-    responses(
-        (status = 200, description = "Compressed Agama logs", content_type="application/octet-stream", body = String),
-        (status = 500, description = "Cannot collect the logs"),
-        (status = 507, description = "Server is probably out of space"),
-    )
-)]
 async fn download_logs() -> impl IntoResponse {
     let mut headers = HeaderMap::new();
     let err_response = (headers.clone(), Body::empty());
@@ -632,22 +699,11 @@ async fn download_logs() -> impl IntoResponse {
     }
 }
 
-#[derive(Deserialize, utoipa::ToSchema)]
+#[derive(Deserialize, JsonSchema)]
 pub struct PasswordParams {
     password: String,
 }
 
-#[utoipa::path(
-    post,
-    path = "/private/password_check",
-    context_path = "/api/v2",
-    description = "Performs a quality check on a given password",
-    responses(
-        (status = 200, description = "The password was checked", body = String),
-        (status = 400, description = "Malformed JSON.", body = ErrorResponse),
-        (status = 500, description = "Internal server error.", body = ErrorResponse)
-    )
-)]
 async fn check_password(
     State(state): State<ServerState>,
     Json(password): Json<PasswordParams>,

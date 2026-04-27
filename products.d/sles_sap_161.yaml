@@ -149,6 +149,7 @@ translations:
         ru: Неизменяемая система с атомарными обновлениями
         sv: Oföränderligt system med atomiska uppdateringar
         uk: Незмінна система з атомарними оновленнями
+desktop_selection: optional
 software:
   installation_repositories: []
   installation_labels:
@@ -179,7 +180,8 @@ software:
     - kvm_tools
     - lamp_server
     - mail_server
-    - gnome
+    - name: gnome
+      desktop: true
     - gnome_internet
     - devel_basis
     - devel_kernel

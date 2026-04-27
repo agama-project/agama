@@ -20,6 +20,7 @@
 //! Representation of the software settings
 
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::collections::HashMap;
@@ -29,8 +30,8 @@ use url::Url;
 ///
 /// This configuration is provided by the user, so all the values are optional.
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
-#[schema(as = software::UserConfig)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
+#[schemars(rename = "software.UserConfig")]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
@@ -42,7 +43,7 @@ pub struct Config {
 
 /// Addon settings for registration
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct AddonConfig {
     pub id: String,
@@ -55,7 +56,7 @@ pub struct AddonConfig {
 
 /// Software settings for installation
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct ProductConfig {
@@ -80,7 +81,7 @@ impl ProductConfig {
 
 /// Software settings for installation
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct SoftwareConfig {
@@ -94,7 +95,7 @@ pub struct SoftwareConfig {
     pub only_required: Option<bool>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(untagged)]
 pub enum PatternsConfig {
     PatternsList(Vec<String>),
@@ -111,7 +112,7 @@ impl Default for PatternsConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, JsonSchema)]
 pub struct PatternsMap {
     pub add: Option<Vec<String>>,
     pub remove: Option<Vec<String>>,
@@ -149,7 +150,7 @@ impl SoftwareConfig {
 
 /// Parameters for creating new a repository
 #[skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct RepositoryConfig {
     /// repository alias. Has to be unique

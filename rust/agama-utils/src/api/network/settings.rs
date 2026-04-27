@@ -24,15 +24,16 @@ use super::types::{ConnectionState, DeviceState, DeviceType, Status};
 use crate::openapi::schemas;
 use cidr::IpInet;
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 use std::net::IpAddr;
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
 
 /// Network settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkSettings {
     pub connections: NetworkConnectionsCollection,
@@ -41,7 +42,7 @@ pub struct NetworkSettings {
 /// Network general settings for the installation like enabling wireless, networking and
 /// allowing to enable or disable the copy of the network settings to the
 /// target system
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct StateSettings {
@@ -55,7 +56,7 @@ pub struct StateSettings {
     pub copy_network: Option<bool>,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct MatchSettings {
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
     pub driver: Vec<String>,
@@ -77,7 +78,7 @@ impl MatchSettings {
 }
 
 /// Wireless configuration
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct WirelessSettings {
     /// Password of the wireless network
@@ -115,7 +116,7 @@ pub struct WirelessSettings {
     pub pmf: i32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct BondSettings {
     pub mode: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -134,7 +135,7 @@ impl Default for BondSettings {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Default)]
 pub struct BridgeSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
@@ -150,7 +151,7 @@ pub struct BridgeSettings {
     pub ports: Vec<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct VlanSettings {
     pub parent: String,
     pub id: u32,
@@ -159,7 +160,7 @@ pub struct VlanSettings {
 }
 
 /// IEEE 802.1x (EAP) settings
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct IEEE8021XSettings {
     /// List of EAP methods used
@@ -203,7 +204,7 @@ pub struct IEEE8021XSettings {
     pub peap_label: bool,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, JsonSchema)]
 pub struct NetworkDevice {
     pub id: String,
     pub type_: DeviceType,
@@ -211,7 +212,7 @@ pub struct NetworkDevice {
 }
 
 /// Represents the configuration details for a network connection
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct NetworkConnection {
     /// Unique identifier for the network connection
@@ -221,22 +222,19 @@ pub struct NetworkConnection {
     pub method4: Option<String>,
     /// Gateway IP address for the IPv4 connection
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(schema_with = schemas::ip_addr_ref)]
     pub gateway4: Option<IpAddr>,
     /// IPv6 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub method6: Option<String>,
     /// Gateway IP address for the IPv6 connection
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(schema_with = schemas::ip_addr_ref)]
     pub gateway6: Option<IpAddr>,
     /// List of assigned IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    #[schema(schema_with = schemas::ip_inet_array)]
+    #[schemars(with = "schemas::IpInetSchema")]
     pub addresses: Vec<IpInet>,
     /// List of DNS server IP addresses
     #[serde(skip_serializing_if = "Vec::is_empty", default)]
-    #[schema(schema_with = schemas::ip_addr_array)]
     pub nameservers: Vec<IpAddr>,
     /// List of search domains for DNS resolution
     #[serde(
@@ -319,7 +317,7 @@ impl NetworkConnection {
 //
 // TODO: If the client ignores the additional "state" field, this struct
 // does not need to be here.
-#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
 pub struct NetworkConnectionWithState {
     #[serde(flatten)]
     pub connection: NetworkConnection,

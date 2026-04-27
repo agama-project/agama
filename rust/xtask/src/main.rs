@@ -4,7 +4,6 @@ mod tasks {
     use std::{fs::File, io::Write};
 
     use agama_cli::Cli;
-    use agama_server::web::docs;
     use clap::CommandFactory;
     use clap_complete::aot;
     use clap_markdown::MarkdownOptions;
@@ -57,13 +56,33 @@ mod tasks {
     }
 
     /// Generate Agama's OpenAPI specification.
-    pub fn generate_openapi() -> std::io::Result<()> {
-        let openapi = docs::build();
-        let json = openapi.to_pretty_json()?;
-        let path = output_dir()?.join("openapi.json");
-        let mut file = File::create(&path)?;
-        file.write_all(json.as_bytes())?;
-        println!("Generate the OpenAPI specification at {}.", path.display());
+    pub async fn generate_openapi() -> std::io::Result<()> {
+        use agama_server::web::docs;
+
+        let out_dir = output_dir()?;
+
+        // Generate JSON format (includes post-processing for aide serialization quirks)
+        let json_value = docs::build_json().await.map_err(std::io::Error::other)?;
+
+        let json = serde_json::to_string_pretty(&json_value)?;
+        let json_path = out_dir.join("openapi.json");
+        let mut json_file = File::create(&json_path)?;
+        json_file.write_all(json.as_bytes())?;
+        println!(
+            "Generated OpenAPI specification (JSON) at {}.",
+            json_path.display()
+        );
+
+        // Generate YAML format
+        let yaml = serde_yaml::to_string(&json_value).map_err(std::io::Error::other)?;
+        let yaml_path = out_dir.join("openapi.yaml");
+        let mut yaml_file = File::create(&yaml_path)?;
+        yaml_file.write_all(yaml.as_bytes())?;
+        println!(
+            "Generated OpenAPI specification (YAML) at {}.",
+            yaml_path.display()
+        );
+
         Ok(())
     }
 }
@@ -76,7 +95,8 @@ fn output_dir() -> std::io::Result<PathBuf> {
     Ok(out_dir)
 }
 
-fn main() -> std::io::Result<()> {
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
     let Some(task) = env::args().nth(1) else {
         eprintln!("You must specify a xtask");
         std::process::exit(1);
@@ -86,7 +106,7 @@ fn main() -> std::io::Result<()> {
         "completions" => tasks::generate_completions(),
         "markdown" => tasks::generate_markdown(),
         "manpages" => tasks::generate_manpages(),
-        "openapi" => tasks::generate_openapi(),
+        "openapi" => tasks::generate_openapi().await,
         other => {
             eprintln!("Unknown task '{}'", other);
             std::process::exit(1);

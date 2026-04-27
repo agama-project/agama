@@ -1,4 +1,31 @@
 -------------------------------------------------------------------
+Fri Apr 24 14:16:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Expose the product-level `desktop_selection` option and the
+  pattern-level `desktop` property through the API so the web UI
+  can group desktop environments and alert when none is picked
+  (gh#agama-project/agama#3390, gh#agama-project/agama#3403).
+
+-------------------------------------------------------------------
+Fri Apr 24 08:37:21 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend the OpenAPI specification (gh#agama-project/agama#3414):
+  - Add missing summaries, operation IDs and descriptions to each
+    path.
+  - Use tags to classify the paths.
+  - Add missing schemas.
+  - Add authentication paths and security the specification.
+  - Update "cargo xtask openapi" to generate the specification in
+    JSON and YAML formats.
+  - Replace utoipa with aide to generate the documentation.
+
+-------------------------------------------------------------------
+Tue Apr 21 07:27:36 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- network: Add ignore_auto_routes[46] and never_default[46]
+  (gh#agama-project/agama#3404)
+
+-------------------------------------------------------------------
 Mon Apr 20 11:00:37 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Properly initialize the GPG callbacks during registration so the

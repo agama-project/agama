@@ -47,6 +47,96 @@ const { useAppForm, withForm } = createFormHook({
 });
 
 /**
+ * Options accepted by useAppForm, derived via `Parameters` to stay in sync with
+ * TanStack Form's API automatically.
+ */
+type AppFormOptions = Parameters<typeof useAppForm>[0];
+
+/**
+ * Specific options for {@link usePristineSafeForm}, not part of useAppForm.
+ */
+type PristineSafeFormOwnOptions = {
+  /** Called after every submission, whether the form was dirty or pristine. */
+  onSubmitComplete?: () => void;
+};
+
+/**
+ * Options accepted by {@link usePristineSafeForm}, built on top of
+ * {@link AppFormOptions} and {@link PristineSafeFormOwnOptions}.
+ */
+type PristineSafeFormOptions = AppFormOptions & PristineSafeFormOwnOptions;
+
+/**
+ * Form hook built on top of useAppForm that skips business logic when pristine.
+ *
+ * Optimizes form submission by checking if the form has changes before executing
+ * validation and business logic. Always executes onSubmitComplete regardless of
+ * pristine state, making it ideal for forms that need guaranteed completion logic
+ * (e.g., navigation, cleanup, modal dismissal).
+ *
+ * Behavior:
+ * - When pristine: skips validators.onSubmitAsync and onSubmit business logic
+ * - When dirty: executes all validators and handlers normally
+ * - Always: executes onSubmitComplete
+ *
+ * Use this pattern to separate concerns:
+ * - validators.onSubmitAsync: validation logic (skipped when pristine)
+ * - onSubmit: business logic like data persistence (skipped when pristine)
+ * - onSubmitComplete: completion logic like navigation (always executed)
+ *
+ * TypeScript does not support exact object types natively (see link below).
+ * Because this hook destructures known keys and forwards the rest to useAppForm
+ * via `...rest`, unknown properties would be silently passed through to
+ * useAppForm without complaint, potentially causing subtle bugs. A plain `T
+ * extends PristineSafeFormOptions` would not catch this: TypeScript infers T
+ * from the call site and includes the extra keys in T's shape. The intersection
+ * with `Record<Exclude<keyof T, keyof PristineSafeFormOptions>, never>` forces
+ * any key in T not present in PristineSafeFormOptions to be typed as `never`.
+ * Passing an unknown property then produces a type error ("Type X is not
+ * assignable to type never"), while keeping T generic ensures the return type
+ * is fully inferred from the options passed in.
+ *
+ * @see https://github.com/microsoft/TypeScript/issues/12936
+ *
+ * @example
+ * const form = usePristineSafeForm({
+ *   defaultValues: { patterns: {} },
+ *   validators: {
+ *     onSubmitAsync: async ({ value }) => validatePatterns(value),
+ *   },
+ *   onSubmit: async ({ value }) => {
+ *     await patchConfig(value);
+ *   },
+ *   onSubmitComplete: () => navigate(SOFTWARE.root),
+ * });
+ */
+function usePristineSafeForm<T extends PristineSafeFormOptions>(
+  options: T & Record<Exclude<keyof T, keyof PristineSafeFormOptions>, never>,
+) {
+  const { onSubmitComplete, ...useAppFormOptions } = options as PristineSafeFormOptions;
+  const { validators, onSubmit, ...rest } = useAppFormOptions as AppFormOptions;
+
+  return useAppForm({
+    ...rest,
+    validators: {
+      ...validators,
+      onSubmitAsync: async (ctx) => {
+        const { onSubmitAsync } = validators ?? {};
+        if (ctx.formApi.state.isDirty && typeof onSubmitAsync === "function") {
+          return onSubmitAsync(ctx);
+        }
+      },
+    },
+    onSubmit: async (ctx) => {
+      if (ctx.formApi.state.isDirty) {
+        await onSubmit?.(ctx);
+      }
+      onSubmitComplete?.();
+    },
+  });
+}
+
+/**
  * Merges runtime-derived values into a `formOptions` object's `defaultValues`.
  *
  * Use this when some defaults depend on runtime data (e.g. values from a hook)
@@ -70,4 +160,11 @@ function mergeFormDefaults<T extends { defaultValues: Record<string, unknown> }>
   return { ...opts, defaultValues: { ...opts.defaultValues, ...runtimeDefaults } };
 }
 
-export { useAppForm, withForm, mergeFormDefaults, useFieldContext, useFormContext };
+export {
+  useAppForm,
+  usePristineSafeForm,
+  withForm,
+  mergeFormDefaults,
+  useFieldContext,
+  useFormContext,
+};

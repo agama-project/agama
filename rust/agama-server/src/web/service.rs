@@ -22,24 +22,20 @@ use super::http::{login, login_from_query, logout, session};
 use super::{config::ServiceConfig, state::ServiceState};
 use agama_lib::auth::TokenClaims;
 use agama_utils::api::event;
+use aide::axum::ApiRouter;
 use axum::http::HeaderValue;
 use axum::middleware::Next;
 use axum::{
     body::Body,
     extract::Request,
     middleware,
-    response::{IntoResponse, Response},
+    response::Response,
     routing::{get, post},
-    Router,
 };
 use hyper::header::CACHE_CONTROL;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
-use std::{
-    convert::Infallible,
-    path::{Path, PathBuf},
-};
-use tower::Service;
 use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::{compression::CompressionLayer, services::ServeDir, trace::TraceLayer};
 use tracing::span::Id;
@@ -57,7 +53,7 @@ use tracing::Span;
 pub struct MainServiceBuilder {
     config: ServiceConfig,
     events: event::Sender,
-    api_router: Router<ServiceState>,
+    api_router: ApiRouter<ServiceState>,
     public_dir: PathBuf,
 }
 
@@ -70,7 +66,7 @@ impl MainServiceBuilder {
     where
         P: AsRef<Path>,
     {
-        let api_router = Router::new().route("/ws", get(super::ws::ws_handler));
+        let api_router = ApiRouter::new().route("/ws", get(super::ws::ws_handler));
         let config = ServiceConfig::default();
 
         Self {
@@ -89,19 +85,15 @@ impl MainServiceBuilder {
     ///
     /// * `path`: Path to mount the service under `/api`.
     /// * `service`: Service to mount on the given `path`.
-    pub fn add_service<T>(self, path: &str, service: T) -> Self
-    where
-        T: Service<Request, Error = Infallible> + Clone + Send + Sync + 'static,
-        T::Response: IntoResponse,
-        T::Future: Send + 'static,
-    {
+    pub fn add_service(self, path: &str, service: impl Into<ApiRouter<()>>) -> Self {
         Self {
-            api_router: self.api_router.nest_service(path, service),
+            api_router: self.api_router.nest_api_service(path, service),
             ..self
         }
     }
 
-    pub fn build(self) -> Router {
+    /// Builds the service router.
+    pub fn build(self) -> ApiRouter {
         let state = ServiceState {
             config: self.config,
             events: self.events,
@@ -120,7 +112,7 @@ impl MainServiceBuilder {
         tracing::info!("Serving static files from {}", self.public_dir.display());
         let serve = ServeDir::new(self.public_dir).precompressed_gzip();
 
-        Router::new()
+        ApiRouter::new()
             .route("/login", get(login_from_query))
             .nest("/api", api_router)
             .fallback_service(serve)

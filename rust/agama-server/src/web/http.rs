@@ -22,6 +22,7 @@
 
 use super::{auth::AuthError, state::ServiceState};
 use agama_lib::auth::{AuthToken, TokenClaims};
+use aide::OperationIo;
 use axum::{
     extract::{Query, State},
     http::{header, HeaderMap, HeaderValue, StatusCode},
@@ -29,48 +30,35 @@ use axum::{
     Json,
 };
 use pam::Client;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
 
-#[derive(Serialize, ToSchema)]
+#[derive(Serialize, JsonSchema)]
 pub struct PingResponse {
     /// API status
     status: String,
 }
 
-#[utoipa::path(
-    get,
-    path = "/ping",
-    context_path = "/api",
-    responses(
-        (status = 200, description = "The API is working", body = PingResponse)
-    )
-)]
 pub async fn ping() -> Json<PingResponse> {
     Json(PingResponse {
         status: "success".to_string(),
     })
 }
 
-#[derive(Serialize, utoipa::ToSchema)]
+#[derive(Serialize, JsonSchema, OperationIo)]
+#[aide(output)]
 pub struct AuthResponse {
     /// Bearer token to use on subsequent calls
     token: String,
 }
 
-#[derive(Deserialize, utoipa::ToSchema)]
+#[derive(Deserialize, JsonSchema, OperationIo)]
+#[aide(input)]
 pub struct LoginRequest {
     /// User password
     pub password: String,
 }
 
-#[utoipa::path(post,
-    path = "/auth",
-    context_path = "/api",
-    responses(
-        (status = 200, description = "The user has been successfully authenticated.", body = AuthResponse)
-    )
-)]
 pub async fn login(
     State(state): State<ServiceState>,
     Json(login): Json<LoginRequest>,
@@ -96,7 +84,7 @@ pub async fn login(
     Ok((headers, content))
 }
 
-#[derive(Clone, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Deserialize, JsonSchema)]
 pub struct LoginFromQueryParams {
     /// Token to use for authentication.
     token: String,
@@ -104,9 +92,6 @@ pub struct LoginFromQueryParams {
     lang: Option<String>,
 }
 
-#[utoipa::path(get, path = "/login", responses(
-    (status = 307, description = "Injects the authentication cookie if correct and redirects to the web UI")
-))]
 pub async fn login_from_query(
     State(state): State<ServiceState>,
     Query(params): Query<LoginFromQueryParams>,
@@ -142,9 +127,6 @@ pub async fn login_from_query(
     (StatusCode::TEMPORARY_REDIRECT, headers)
 }
 
-#[utoipa::path(delete, path = "/api/auth", responses(
-    (status = 204, description = "The user has been logged out.")
-))]
 pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError> {
     let mut headers = HeaderMap::new();
     let cookie = "agamaToken=deleted; HttpOnly; Expires=Thu, 01 Jan 1970 00:00:00 GMT".to_string();
@@ -156,10 +138,6 @@ pub async fn logout(_claims: TokenClaims) -> Result<impl IntoResponse, AuthError
 }
 
 /// Check whether the user is authenticated.
-#[utoipa::path(get, path = "/api/auth", responses(
-    (status = 200, description = "The user is authenticated."),
-    (status = 400, description = "The user is not authenticated.")
-))]
 pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
     Ok(())
 }

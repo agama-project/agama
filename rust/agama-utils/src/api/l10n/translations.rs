@@ -18,11 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// Represents a set of translations for a given entry.
-#[derive(Clone, Default, Debug, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Translations {
     /// Translated descriptions, by locale.

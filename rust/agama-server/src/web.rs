@@ -26,7 +26,7 @@
 
 use crate::{profile::web::profile_service, server::server_service};
 use agama_utils::api::event;
-use axum::Router;
+use aide::axum::ApiRouter;
 
 mod auth;
 mod config;
@@ -53,7 +53,7 @@ pub async fn service<P>(
     events: event::Sender,
     dbus: zbus::Connection,
     web_ui_dir: P,
-) -> Result<Router, ServiceError>
+) -> Result<ApiRouter, ServiceError>
 where
     P: AsRef<Path>,
 {

@@ -91,6 +91,7 @@ translations:
     zh_CN: openSUSE 的纯滚动发布版本，持续包含所有最新“稳定”版本的软件，而不依赖于严格的定时发布周期。该版本为追求最新稳定软件的用户而生。
     zh_TW: openSUSE 的純滾動發行版本，包含所有軟體的最新 "穩定"
       版本，而不是依賴於僵化的定期發行週期。這個專案是為了那些希望使用最新穩定軟體的使用者而設計。
+desktop_selection: suggested
 software:
   installation_repositories:
     - url: https://download.opensuse.org/tumbleweed/repo/oss/
@@ -131,13 +132,20 @@ software:
     - enhanced_base # only pattern that is shared among all roles on TW
   optional_patterns: [] # no optional pattern shared
   user_patterns:
-    - basic_desktop
-    - xfce_wayland
-    - kde
-    - gnome
-    - lxqt_wayland
-    - openSUSEway
-    - hyprland
+    - name: basic_desktop
+      desktop: true
+    - name: xfce_wayland
+      desktop: true
+    - name: kde
+      desktop: true
+    - name: gnome
+      desktop: true
+    - name: lxqt_wayland
+      desktop: true
+    - name: openSUSEway
+      desktop: true
+    - name: hyprland
+      desktop: true
     - multimedia
     - office
     - name: selinux

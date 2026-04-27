@@ -19,10 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::api::scope::Scope;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IssueWithScope {
     pub scope: Scope,
@@ -34,7 +35,7 @@ pub type IssueMap = HashMap<Scope, Vec<Issue>>;
 
 // NOTE: in order to compare two issues, it should be enough to compare the description
 // and the details.
-#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, Hash, utoipa::ToSchema)]
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, Hash, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Issue {
     pub class: String,

@@ -31,6 +31,7 @@ use agama_server::{
     web::{self},
 };
 use agama_utils::{api::event::Receiver, logging::init_logging};
+use aide::axum::ApiRouter;
 use anyhow::Context;
 use axum::{
     extract::Request as AxumRequest,
@@ -215,7 +216,7 @@ async fn handle_https_stream(
     tls_acceptor: SslAcceptor,
     addr: std::net::SocketAddr,
     tcp_stream: tokio::net::TcpStream,
-    service: axum::Router,
+    service: ApiRouter,
 ) {
     // handle HTTPS connection
     let ssl = Ssl::new(tls_acceptor.context()).unwrap();
@@ -242,7 +243,7 @@ async fn handle_https_stream(
 async fn handle_http_stream(
     addr: std::net::SocketAddr,
     tcp_stream: tokio::net::TcpStream,
-    service: axum::Router,
+    service: ApiRouter,
     redirector_service: axum::Router,
 ) {
     let stream = TokioIo::new(tcp_stream);
@@ -287,7 +288,7 @@ async fn find_listener(addresses: String) -> Option<tokio::net::TcpListener> {
 }
 
 /// Starts the web server
-async fn start_server(address: String, service: Router, ssl_acceptor: SslAcceptor) {
+async fn start_server(address: String, service: ApiRouter, ssl_acceptor: SslAcceptor) {
     let opt_listener = find_listener(address).await;
     let listener = opt_listener.expect("None of the alternative addresses worked");
 

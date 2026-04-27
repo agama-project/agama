@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,11 +19,12 @@
 // find current contact information at www.suse.com.
 
 use crate::api::{l10n::Translations, manager::License};
+use schemars::JsonSchema;
 use serde::Serialize;
 
 /// Global information of the system where the installer is running.
-#[derive(Clone, Debug, Default, Serialize, utoipa::ToSchema)]
-#[schema(as = manager::SystemInfo)]
+#[derive(Clone, Debug, Default, Serialize, JsonSchema)]
+#[schemars(rename = "manager.SystemInfo")]
 pub struct SystemInfo {
     /// List of known products.
     pub products: Vec<Product>,
@@ -34,7 +35,7 @@ pub struct SystemInfo {
 }
 
 /// Represents a software product
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Product {
     /// Product ID (eg., "ALP", "Tumbleweed", etc.)
@@ -49,6 +50,9 @@ pub struct Product {
     pub registration: bool,
     /// License ID
     pub license: Option<String>,
+    /// Desktop selection mode
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub desktop_selection: Option<DesktopSelection>,
     /// Translations
     #[serde(skip_serializing_if = "Option::is_none")]
     pub translations: Option<Translations>,
@@ -57,7 +61,15 @@ pub struct Product {
     pub modes: Vec<ProductMode>,
 }
 
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+/// Desktop selection mode for a product
+#[derive(Clone, Debug, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum DesktopSelection {
+    Optional,
+    Suggested,
+}
+
+#[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 pub struct ProductMode {
     pub id: String,
     pub name: String,
@@ -65,7 +77,7 @@ pub struct ProductMode {
 }
 
 /// Represents the hardware information of the underlying system.
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Default, Debug, Serialize, JsonSchema)]
 pub struct HardwareInfo {
     /// CPU description.
     pub cpu: Option<String>,

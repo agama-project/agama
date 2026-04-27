@@ -19,12 +19,13 @@
 // find current contact information at www.suse.com.
 
 pub use agama_utils::api::network::*;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::str::{self};
 use thiserror::Error;
 
 // https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMSettingsConnectionFlags
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, JsonSchema)]
 pub enum ConnectionFlags {
     None = 0,
     Unsaved = 0x01,
@@ -52,7 +53,7 @@ impl TryFrom<u32> for ConnectionFlags {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, JsonSchema)]
 pub enum AddFlags {
     None = 0,
     ToDisk = 0x1,
@@ -60,7 +61,7 @@ pub enum AddFlags {
     BlockAutoconnect = 0x20,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, utoipa::ToSchema)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, JsonSchema)]
 pub enum UpdateFlags {
     None = 0,
     ToDisk = 0x1,

@@ -71,6 +71,7 @@ const USER = {
 
 const SOFTWARE = {
   root: "/software",
+  desktopSelection: "/software/desktops/select",
   patternsSelection: "/software/patterns/select",
   conflicts: "/software/conflicts",
 };

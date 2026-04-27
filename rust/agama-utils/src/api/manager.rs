@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -21,5 +21,5 @@
 mod license;
 pub use license::{InvalidLanguageCode, LanguageTag, License, LicenseContent};
 
-mod system_info;
+pub mod system_info;
 pub use system_info::{HardwareInfo, Product, ProductMode, SystemInfo};
