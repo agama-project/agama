@@ -44,16 +44,9 @@
       "additionalProperties": false,
       "required": ["method"],
       "properties": {
-        "method": { "$ref": "#/$defs/encryptionMethod" },
-        "password": { "type": "string" }
+        "password": { "type": "string" },
+        "tpm": { "type": "boolean" }
       }
-    },
-    "encryptionMethod": {
-      "enum": [
-        "luks1",
-        "luks2",
-        "tpmFde"
-      ]
     },
     "drive": {
       "type": "object",

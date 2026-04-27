@@ -34,10 +34,12 @@ module Agama
         class Config < Base
           # @param model_json [Hash]
           # @param product_config [Agama::Config]
+          # @param bootloader_config [Storage::BooloaderConfig]
           # @param storage_system [Storage::System]
-          def initialize(model_json, product_config, storage_system)
+          def initialize(model_json, product_config, bootloader_config, storage_system)
             super(model_json)
             @product_config = product_config
+            @bootloader_config = bootloader_config
             @storage_system = storage_system
           end
 
@@ -45,6 +47,9 @@ module Agama
 
           # @return [Agama::Config]
           attr_reader :product_config
+
+          # @return [Storage::BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @return [Storage::System]
           attr_reader :storage_system
@@ -93,7 +98,7 @@ module Agama
           # @return [Configs::Drive]
           def convert_drive(drive_model)
             FromModelConversions::Drive
-              .new(drive_model, product_config, model_json[:encryption])
+              .new(drive_model, product_config, bootloader_config, model_json[:encryption])
               .convert
           end
 
@@ -111,7 +116,7 @@ module Agama
           # @return [Configs::raid]
           def convert_raid(raid_model)
             FromModelConversions::MdRaid
-              .new(raid_model, product_config, model_json[:encryption])
+              .new(raid_model, product_config, bootloader_config, model_json[:encryption])
               .convert
           end
 
@@ -129,9 +134,13 @@ module Agama
           #
           # @return [Configs::VolumeGroup]
           def convert_volume_group(volume_group_model, targets)
-            FromModelConversions::VolumeGroup
-              .new(volume_group_model, product_config, targets, model_json[:encryption])
-              .convert
+            FromModelConversions::VolumeGroup.new(
+              volume_group_model,
+              product_config,
+              bootloader_config,
+              targets,
+              model_json[:encryption]
+            ).convert
           end
 
           # Add missing drives to the model.

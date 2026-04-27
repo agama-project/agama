@@ -24,12 +24,15 @@ require_relative "./examples"
 require "agama/storage/config_conversions/from_model_conversions/drive"
 require "agama/storage/configs/drive"
 require "agama/storage/configs/search"
+require "agama/storage/bootloader_config"
 
 describe Agama::Storage::ConfigConversions::FromModelConversions::Drive do
   include_context "from model conversions"
 
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
+
   subject do
-    described_class.new(model_json, product_config)
+    described_class.new(model_json, product_config, bootloader_config)
   end
 
   describe "#convert" do

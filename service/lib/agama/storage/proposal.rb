@@ -135,9 +135,13 @@ module Agama
 
         bootloader_config = self.bootloader_config(solved: true)
 
-        config = ConfigConversions::FromModel
-          .new(model_json, product_config: product_config, storage_system: storage_system)
-          .convert
+        config = ConfigConversions::FromModel.new(
+          model_json,
+          product_config:    product_config,
+          bootloader_config: bootloader_config,
+          storage_system:    storage_system
+        ).convert
+
         ConfigSolver.new(product_config, storage_system).solve(config)
 
         ConfigConversions::ToModel.new(config,
@@ -240,6 +244,14 @@ module Agama
         @storage_system ||= Storage::System.new
       end
 
+      # Bootloader config used for calculating the proposal.
+      #
+      # @param solved [Boolean] Whether to get solved config.
+      # @return [Storage::BootloaderConfig]
+      def bootloader_config(solved: false)
+        solved && calculated? ? strategy.bootloader_config : source_bootloader_config
+      end
+
     private
 
       # @return [Logger]
@@ -278,14 +290,6 @@ module Agama
         return unless strategy.is_a?(ProposalStrategies::Agama)
 
         solved ? strategy.config : source_config
-      end
-
-      # Bootloader config used for calculating the proposal.
-      #
-      # @param solved [Boolean] Whether to get solved config.
-      # @return [Storage::BootloaderConfig]
-      def bootloader_config(solved: false)
-        solved && calculated? ? strategy.bootloader_config : source_bootloader_config
       end
 
       # Whether the config model supports all features of the given config.

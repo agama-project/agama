@@ -37,11 +37,15 @@ module Agama
 
           # @param model_json [Hash]
           # @param product_config [Agama::Config]
+          # @param bootloader_config [Storage::BootloaderConfig]
           # @param targets [Array<Configs::Drive, Configs::MdRaid>]
           # @param encryption_model [Hash, nil]
-          def initialize(model_json, product_config, targets, encryption_model = nil)
+          def initialize(
+            model_json, product_config, bootloader_config, targets, encryption_model = nil
+          )
             super(model_json)
             @product_config = product_config
+            @bootloader_config = bootloader_config
             @targets = targets
             @encryption_model = encryption_model
           end
@@ -52,6 +56,9 @@ module Agama
 
           # @return [Agama::Config]
           attr_reader :product_config
+
+          # @return [Storage::BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @return [Array<Configs::Drive, Configs::MdRaid>]
           attr_reader :targets
@@ -100,7 +107,7 @@ module Agama
           def convert_physical_volumes_encryption
             return unless encryption_model
 
-            FromModelConversions::Encryption.new(encryption_model).convert
+            FromModelConversions::Encryption.new(encryption_model, bootloader_config).convert
           end
 
           # @param name [String]

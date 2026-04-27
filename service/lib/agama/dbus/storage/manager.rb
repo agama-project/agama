@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_issues"
 require "agama/dbus/with_progress"
@@ -32,6 +31,7 @@ require "agama/storage/volume_conversions"
 require "dbus"
 require "json"
 require "yast"
+require "y2storage/storage_manager"
 
 module Agama
   module DBus
@@ -168,8 +168,9 @@ module Agama
 
           config = Agama::Storage::ConfigConversions::FromModel.new(
             model_json,
-            product_config: product_config,
-            storage_system: proposal.storage_system
+            product_config:    product_config,
+            bootloader_config: proposal.bootloader_config(solved: true),
+            storage_system:    proposal.storage_system
           ).convert
 
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
