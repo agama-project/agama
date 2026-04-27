@@ -355,9 +355,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs με στιγμιότυπα"
   ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "Προχωρώντας, η εγκατάσταση θα ξεκινήσει με τις καθορισμένες ρυθμίσεις."
-  ],
   "CHAP authentication performed by the target": [
     "Πιστοποίηση CHAP που εκτελείται από τον στόχο (target)"
   ],
@@ -414,9 +411,6 @@ export default {
   ],
   "Change product or mode": [
     "Αλλαγή προϊόντος ή λειτουργίας"
-  ],
-  "Change selection": [
-    "Αλλαγή επιλογής"
   ],
   "Change the file system or mount point": [
     "Αλλαγή του συστήματος αρχείων ή του σημείου προσάρτησης"
@@ -600,6 +594,9 @@ export default {
   "Create user": [
     "Δημιουργία χρήστη"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "Τρέχον %1$s στο %2$s"
   ],
@@ -686,6 +683,9 @@ export default {
   ],
   "Description": [
     "Περιγραφή"
+  ],
+  "Desktops": [
+    ""
   ],
   "Destroy current data and format device as": [
     "Καταστροφή τρεχόντων δεδομένων και διαμόρφωση συσκευής ως"
@@ -893,9 +893,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Φιλτράρισμα βάσει γλώσσας, περιοχής ή κωδικού locale"
   ],
-  "Filter by pattern title or description": [
-    "Φιλτράρισμα βάσει τίτλου ή περιγραφής προτύπου"
-  ],
   "Filter by territory, time zone code or UTC offset": [
     "Φιλτράρισμα βάσει περιοχής, κωδικού ζώνης ώρας ή απόκλισης UTC"
   ],
@@ -971,6 +968,9 @@ export default {
   "Good signal": [
     "Καλό σήμα"
   ],
+  "Graphical desktop environments for the system.": [
+    ""
+  ],
   "Hide": [
     "Απόκρυψη"
   ],
@@ -1020,14 +1020,15 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Εάν χρησιμοποιήθηκε τοπικό μέσο για την εκτέλεση της εγκατάστασης, αφαιρέστε το πριν την επόμενη εκκίνηση."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Αν δεν είστε σίγουροι, ακυρώστε και ελέγξτε τις ρυθμίσεις αποθήκευσης."
-  ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Εάν δεν είστε σίγουροι, ελέγξτε και προσαρμόστε τις ρυθμίσεις αποθήκευσης."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Εάν θέλετε να απενεργοποιήσετε αυτόν τον έλεγχο, προσδιορίστε «inst.ay_check=0» στη γραμμή εντολών του πυρήνα"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "",
+    ""
   ],
   "Initiator": [
     "Initiator"
@@ -1188,9 +1189,6 @@ export default {
   "Loading data...": [
     "Φόρτωση δεδομένων..."
   ],
-  "Loading the installation repositories...": [
-    "Φόρτωση των αποθετηρίων εγκατάστασης..."
-  ],
   "Localization": [
     "Τοπικοποίηση"
   ],
@@ -1334,9 +1332,6 @@ export default {
   "Name": [
     "Όνομα"
   ],
-  "Needs about %s": [
-    "Χρειάζεται περίπου %s"
-  ],
   "Network": [
     "Δίκτυο"
   ],
@@ -1357,9 +1352,6 @@ export default {
   ],
   "No additional partitions will be created": [
     "Δεν θα δημιουργηθούν πρόσθετες κατατμήσεις"
-  ],
-  "No additional software was selected.": [
-    "Δεν επιλέχθηκε πρόσθετο λογισμικό."
   ],
   "No content found": [
     "Δεν βρέθηκε περιεχόμενο"
@@ -1423,9 +1415,6 @@ export default {
   ],
   "None of the locales match the filter.": [
     "Κανένα locale δεν ταιριάζει με το φίλτρο."
-  ],
-  "None of the patterns match the filter.": [
-    "Κανένα από τα πρότυπα δεν ταιριάζει με το φίλτρο."
   ],
   "None of the time zones match the filter.": [
     "Καμία ζώνη ώρας δεν ταιριάζει με το φίλτρο."
@@ -1535,6 +1524,9 @@ export default {
   "Passwords do not match": [
     "Τα συνθηματικά δεν ταιριάζουν"
   ],
+  "Patterns": [
+    ""
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "Εκτελέστε έναν εντοπισμό για να βρείτε διαθέσιμους στόχους iSCSI."
   ],
@@ -1640,15 +1632,8 @@ export default {
   "Remove the configuration for this disk": [
     "Αφαίρεση της διαμόρφωσης για αυτόν τον δίσκο"
   ],
-  "Repository load failed": [
-    "Η φόρτωση του αποθετηρίου απέτυχε"
-  ],
-  "Required packages": [
-    "Απαιτούμενα πακέτα"
-  ],
-  "Required packages and %s pattern": [
-    "Απαιτούμενα πακέτα και %s πρότυπο (pattern)",
-    "Απαιτούμενα πακέτα και %s πρότυπα (patterns)"
+  "Required space with current selection: [%s]": [
+    ""
   ],
   "Rescan devices": [
     "Επανασάρωση συσκευών"
@@ -1731,6 +1716,9 @@ export default {
   "Select %s": [
     "Επιλογή %s"
   ],
+  "Select a desktop environment to get a graphical interface.": [
+    ""
+  ],
   "Select a disk": [
     "Επιλέξτε έναν δίσκο"
   ],
@@ -1762,6 +1750,9 @@ export default {
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
     ""
   ],
+  "Select one or more to extend the system.": [
+    ""
+  ],
   "Select or enter a mount point": [
     "Επιλέξτε ή εισαγάγετε ένα σημείο προσάρτησης"
   ],
@@ -1782,9 +1773,6 @@ export default {
   ],
   "Selected disk cannot be changed": [
     "Ο επιλεγμένος δίσκος δεν μπορεί να αλλάξει"
-  ],
-  "Selected patterns": [
-    "Επιλεγμένα πρότυπα"
   ],
   "Server URL": [
     "URL διακομιστή"
@@ -1864,9 +1852,6 @@ export default {
   ],
   "Some existing partitions may be shrunk": [
     "Ορισμένες υπάρχουσες κατατμήσεις ενδέχεται να συρρικνωθούν"
-  ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Ορισμένα αποθετήρια εγκατάστασης δεν μπόρεσαν να φορτωθούν. Το σύστημα δεν μπορεί να εγκατασταθεί χωρίς αυτά."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "Ορισμένα από τα στοιχεία στο προφίλ AutoYaST δεν υποστηρίζονται."
@@ -2046,9 +2031,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Οι ακόλουθες κατατμήσεις θα δημιουργηθούν ή θα προσαρτηθούν"
   ],
-  "The following software patterns are selected for installation:": [
-    "Τα ακόλουθα πρότυπα λογισμικού έχουν επιλεγεί για εγκατάσταση:"
-  ],
   "The initiator name cannot be blank": [
     "Το όνομα του initiator δεν μπορεί να είναι κενό"
   ],
@@ -2134,6 +2116,9 @@ export default {
   "The system is rebooting": [
     "Το σύστημα κάνει επανεκκίνηση"
   ],
+  "The system will boot to a command-line interface.": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Ολόκληρη η συσκευή θα χρησιμοποιηθεί για %s"
   ],
@@ -2202,9 +2187,6 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Για να διασφαλιστεί ότι το νέο σύστημα μπορεί να εκκινήσει, ο εγκαταστάτης ενδέχεται να χρειαστεί να δημιουργήσει ή να ρυθμίσει ορισμένες κατατμήσεις στον κατάλληλο δίσκο."
   ],
-  "Try again": [
-    "Δοκιμάστε ξανά"
-  ],
   "Try to deactivate again": [
     ""
   ],
@@ -2225,9 +2207,6 @@ export default {
   ],
   "Unknown error": [
     ""
-  ],
-  "Unselect": [
-    "Αποεπιλογή"
   ],
   "Unselect or activate them and try it again.": [
     "Αποεπιλέξτε ή ενεργοποιήστε τις και δοκιμάστε ξανά."
@@ -2381,9 +2360,6 @@ export default {
   ],
   "Use these same settings for the selected product": [
     "Χρήση των ίδιων ρυθμίσεων για το επιλεγμένο προϊόν"
-  ],
-  "Used space": [
-    "Χρησιμοποιούμενος χώρος"
   ],
   "User name": [
     "Όνομα χρήστη"

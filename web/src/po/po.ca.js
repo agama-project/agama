@@ -431,9 +431,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs amb instantànies"
   ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "En continuar, la instal·lació començarà amb els paràmetres definits."
-  ],
   "CHAP authentication performed by the target": [
     "Autenticació de CHAP feta per la destinació"
   ],
@@ -490,9 +487,6 @@ export default {
   ],
   "Change product or mode": [
     "Canvieu el producte o el mode"
-  ],
-  "Change selection": [
-    "Canvia la selecció"
   ],
   "Change the device to configure": [
     "Canvieu el dispositiu per configurar"
@@ -715,6 +709,9 @@ export default {
   "Create user": [
     "Crea un usuari"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "%1$s actual a %2$s"
   ],
@@ -813,6 +810,9 @@ export default {
   ],
   "Description": [
     "Descripció"
+  ],
+  "Desktops": [
+    ""
   ],
   "Destroy current data and format device as": [
     "Destrueix les dades actuals i formata el dispositiu com a"
@@ -1041,9 +1041,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Filtra per llengua, territori o codi local"
   ],
-  "Filter by pattern title or description": [
-    "Filtra per títol o descripció del patró"
-  ],
   "Filter by territory, time zone code or UTC offset": [
     "Filtra per territori, codi de zona horària o desplaçament d'UTC"
   ],
@@ -1122,6 +1119,9 @@ export default {
   "Good signal": [
     "Senyal bo"
   ],
+  "Graphical desktop environments for the system.": [
+    ""
+  ],
   "Hide": [
     "Amaga"
   ],
@@ -1189,14 +1189,15 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Si no ho teniu clar, cancel·leu-ho i reviseu la configuració d'emmagatzematge."
-  ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Si no ho teniu clar, comproveu i ajusteu la configuració de l'emmagatzematge."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "",
+    ""
   ],
   "Initiator": [
     "Iniciador"
@@ -1375,9 +1376,6 @@ export default {
   "Loading data...": [
     "Carregant dades..."
   ],
-  "Loading the installation repositories...": [
-    "Carregant els repositoris d'instal·lació..."
-  ],
   "Localization": [
     "Localització"
   ],
@@ -1542,9 +1540,6 @@ export default {
   "Name is required": [
     "Cal el nom"
   ],
-  "Needs about %s": [
-    "Necessita aproximadament %s"
-  ],
   "Network": [
     "Xarxa"
   ],
@@ -1586,9 +1581,6 @@ export default {
   ],
   "No additional partitions will be created": [
     "No es crearan particions addicionals"
-  ],
-  "No additional software was selected.": [
-    "No s'ha seleccionat cap programari addicional."
   ],
   "No connections match filters": [
     "Cap connexió coincideix amb els filtres"
@@ -1682,9 +1674,6 @@ export default {
   ],
   "None of the locales match the filter.": [
     "Cap de les llengües coincideix amb el filtre."
-  ],
-  "None of the patterns match the filter.": [
-    "Cap dels patrons coincideix amb el filtre."
   ],
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
@@ -1802,6 +1791,9 @@ export default {
   ],
   "Passwords do not match": [
     "Les contrasenyes no coincideixen."
+  ],
+  "Patterns": [
+    ""
   ],
   "Perform a discovery to find available iSCSI targets.": [
     "Fa una descoberta per trobar destinacions d'iSCSI disponibles."
@@ -1926,15 +1918,8 @@ export default {
   "Remove the configuration for this volume group": [
     "Suprimeix la configuració per a aquest grup de volums"
   ],
-  "Repository load failed": [
-    "Ha fallat carregar el repositori."
-  ],
-  "Required packages": [
-    "Paquets requerits"
-  ],
-  "Required packages and %s pattern": [
-    "Paquets necessaris i %s patró",
-    "Paquets necessaris i %s patrons"
+  "Required space with current selection: [%s]": [
+    ""
   ],
   "Rescan devices": [
     "Torna a escanejar els dispositius"
@@ -2023,6 +2008,9 @@ export default {
   "Select %s": [
     "Selecciona %s"
   ],
+  "Select a desktop environment to get a graphical interface.": [
+    ""
+  ],
   "Select a device": [
     "Seleccioneu un dispositiu"
   ],
@@ -2098,9 +2086,6 @@ export default {
   ],
   "Selected disk cannot be changed": [
     "El disc seleccionat no es pot canviar"
-  ],
-  "Selected patterns": [
-    "Patrons seleccionats"
   ],
   "Selected volume group cannot be changed": [
     "No es pot canviar el grup de volums seleccionat"
@@ -2192,9 +2177,6 @@ export default {
   ],
   "Some existing partitions may be shrunk": [
     "Algunes particions existents es poden encongir"
-  ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
   ],
   "Some logical volumes may be deleted": [
     "Alguns volums lògics es poden suprimir"
@@ -2395,9 +2377,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Es crearan o muntaran les particions següents:"
   ],
-  "The following software patterns are selected for installation:": [
-    "S'han seleccionat els patrons de programari següents per a la instal·lació:"
-  ],
   "The initiator name cannot be blank": [
     "El nom de l'iniciador no pot estar en blanc"
   ],
@@ -2482,6 +2461,9 @@ export default {
   ],
   "The system is rebooting": [
     "El sistema es reinicia"
+  ],
+  "The system will boot to a command-line interface.": [
+    ""
   ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"
@@ -2569,9 +2551,6 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
   ],
-  "Try again": [
-    "Torna-ho a provar"
-  ],
   "Try to activate again": [
     "Torna a provar l'activació"
   ],
@@ -2595,9 +2574,6 @@ export default {
   ],
   "Unknown error": [
     "Error desconegut"
-  ],
-  "Unselect": [
-    "Desmarca"
   ],
   "Unselect or activate them and try it again.": [
     "Desmarqueu-los o activeu-los i torneu-ho a provar."
@@ -2754,9 +2730,6 @@ export default {
   ],
   "Use these same settings for the selected product": [
     "Usa aquests mateixos paràmetres per al producte seleccionat"
-  ],
-  "Used space": [
-    "Espai usat"
   ],
   "User name": [
     "Nom d'usuari"

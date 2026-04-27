@@ -431,9 +431,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs სწრაფი ასლებით"
   ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "თუ გააგრძელებთ, დაყენება აღწერილი პარამეტრებით დაიწყება."
-  ],
   "CHAP authentication performed by the target": [
     "სამიზნის მიერ შესრულებული CHAP ავთენტიკაცია"
   ],
@@ -490,9 +487,6 @@ export default {
   ],
   "Change product or mode": [
     "პროდუქტის, ან რეჟიმის შეცვლა"
-  ],
-  "Change selection": [
-    "მონიშნულის შეცვლა"
   ],
   "Change the device to configure": [
     "შეცვალეთ დისკი მოსარგებად"
@@ -715,6 +709,9 @@ export default {
   "Create user": [
     "მომხმარებლის შექმნა"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "მიმდინარე %1$s მოწყობილობაზე %2$s"
   ],
@@ -813,6 +810,9 @@ export default {
   ],
   "Description": [
     "აღწერა"
+  ],
+  "Desktops": [
+    ""
   ],
   "Destroy current data and format device as": [
     "არსებული მონაცემების განადგურება და დანაყოფის დაფორმატება, როგორც"
@@ -1041,9 +1041,6 @@ export default {
   "Filter by language, territory or locale code": [
     "ფილტრი ენით, ტერიტორიით, ან ლოკალის კოდით"
   ],
-  "Filter by pattern title or description": [
-    "გაფილტვრა ნიმუშის სახელით ან აღწერით"
-  ],
   "Filter by territory, time zone code or UTC offset": [
     "გაფილტვრა ტერიტორიით, დროის სარტყლით, ან UTC წანაცვლებით"
   ],
@@ -1122,6 +1119,9 @@ export default {
   "Good signal": [
     "კარგი სიგნალი"
   ],
+  "Graphical desktop environments for the system.": [
+    ""
+  ],
   "Hide": [
     "დამალვა"
   ],
@@ -1189,14 +1189,15 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     ""
   ],
-  "If unsure, cancel and review storage settings.": [
-    "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ ეს და გადახედეთ საცავის პარამეტრებს."
-  ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "თუ დარწმუნებული არ ბრძანებით, შეამოწმეთ და გაასწორეთ საცავის პარამეტრები."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "თუ გნებავთ, გამორთოთ ეს შემოწმება, მიუთითეთ ბირთვის ბრძანების სტრიქონში \"inst_ay_check=0\""
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "",
+    ""
   ],
   "Initiator": [
     "ინიციატორი"
@@ -1375,9 +1376,6 @@ export default {
   "Loading data...": [
     "მონაცემების ჩატვირთვა..."
   ],
-  "Loading the installation repositories...": [
-    "დაყენების რეპოზიტორიების ჩატვირთვა..."
-  ],
   "Localization": [
     "ლოკალიზაცია"
   ],
@@ -1542,9 +1540,6 @@ export default {
   "Name is required": [
     "სახელი აუცილებელია"
   ],
-  "Needs about %s": [
-    "საჭიროა დაახლ %s"
-  ],
   "Network": [
     "ქსელი"
   ],
@@ -1586,9 +1581,6 @@ export default {
   ],
   "No additional partitions will be created": [
     "დამატებითი დანაყოფები არ შეიქმნება"
-  ],
-  "No additional software was selected.": [
-    "დამატებითი პროგრამები არ არჩეულა."
   ],
   "No connections match filters": [
     "ფილტრს კავშირი არ ემთხვევა"
@@ -1682,9 +1674,6 @@ export default {
   ],
   "None of the locales match the filter.": [
     "ლოკალების რაოდენობა, რომელიც ფილტრს ემთხვევა."
-  ],
-  "None of the patterns match the filter.": [
-    "ფილტრს შაბლონებიდან არც ერთი ემთხვევა."
   ],
   "None of the time zones match the filter.": [
     "ფილტრს დროის სარტყლებიდან არცერთი ემთხვევა."
@@ -1802,6 +1791,9 @@ export default {
   ],
   "Passwords do not match": [
     "პაროლები არ ემთხვევა"
+  ],
+  "Patterns": [
+    ""
   ],
   "Perform a discovery to find available iSCSI targets.": [
     "განახორციელეთ აღმოჩენა, რომ იპოვოთ ხელმისაწვდომი iSCSI სამიზნეები."
@@ -1926,15 +1918,8 @@ export default {
   "Remove the configuration for this volume group": [
     "ამ ტომების ჯგუფის კონფიგურაციის წაშლა"
   ],
-  "Repository load failed": [
-    "რეპოზიტორიის ჩატვირთვა ჩავარდა"
-  ],
-  "Required packages": [
-    "აუცილებელი პაკეტები"
-  ],
-  "Required packages and %s pattern": [
-    "აუცილებელი პაკეტები და %s ნიმუში",
-    "აუცილებელი პაკეტები და %s ნიმუში"
+  "Required space with current selection: [%s]": [
+    ""
   ],
   "Rescan devices": [
     "მოწყობილობების თავიდან სკანირება"
@@ -2023,6 +2008,9 @@ export default {
   "Select %s": [
     "%s-ის არჩევა"
   ],
+  "Select a desktop environment to get a graphical interface.": [
+    ""
+  ],
   "Select a device": [
     "აირჩიეთ მოწყობილობა"
   ],
@@ -2069,6 +2057,9 @@ export default {
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
     ""
   ],
+  "Select one or more to extend the system.": [
+    ""
+  ],
   "Select or enter a mount point": [
     "აირჩიეთ, ან შეიყვანეთ მიმაგრების წერტილი"
   ],
@@ -2098,9 +2089,6 @@ export default {
   ],
   "Selected disk cannot be changed": [
     "არჩეული დისკის შეცვლა შეუძლებელია"
-  ],
-  "Selected patterns": [
-    "მონიშნული ნიმუშები"
   ],
   "Selected volume group cannot be changed": [
     "არჩეული ტომების ჯგუფის შეცვლა შეუძლებელია"
@@ -2192,9 +2180,6 @@ export default {
   ],
   "Some existing partitions may be shrunk": [
     "ზოგიერთი არსებული დანაყოფი, შეიძლება, დაპატარავდეს"
-  ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    ""
   ],
   "Some logical volumes may be deleted": [
     "შეიძლება წაიშალოს რამდენიმე ლოგიკური ტომი"
@@ -2395,9 +2380,6 @@ export default {
   "The following partitions will be created or mounted": [
     "შემდეგი დანაყოფები შეიქმნება, ან მიმაგრდება"
   ],
-  "The following software patterns are selected for installation:": [
-    "დაყენებისთვის არჩეულია შემდეგი პროგრამის შაბლონები:"
-  ],
   "The initiator name cannot be blank": [
     "ინიციატორის სახელი არ შეიძლება, ცარიელი იყოს"
   ],
@@ -2482,6 +2464,9 @@ export default {
   ],
   "The system is rebooting": [
     "მიმდინარეობს სისტემის გადატვირთვა"
+  ],
+  "The system will boot to a command-line interface.": [
+    ""
   ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
@@ -2569,9 +2554,6 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     ""
   ],
-  "Try again": [
-    "თავიდან სცადეთ"
-  ],
   "Try to activate again": [
     "გააქტიურების თავიდან ცდა"
   ],
@@ -2595,9 +2577,6 @@ export default {
   ],
   "Unknown error": [
     "უცნობი შეცდომა"
-  ],
-  "Unselect": [
-    "მონიშვნის მოხსნა"
   ],
   "Unselect or activate them and try it again.": [
     "მოხსენით მონიშვნა, ან გაააქტიურეთ ისინი და თავიდან სცადეთ."
@@ -2754,9 +2733,6 @@ export default {
   ],
   "Use these same settings for the selected product": [
     "იგივე პარამეტრების გამოყენება მონიშნული პროდუქტისთვის"
-  ],
-  "Used space": [
-    "გამოყენებული ადგილი"
   ],
   "User name": [
     "მომხმარებლის სახელი"

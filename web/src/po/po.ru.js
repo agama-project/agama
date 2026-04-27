@@ -362,9 +362,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs с моментальными снимками"
   ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "При продолжении установка начнется с заданными параметрами."
-  ],
   "CHAP authentication performed by the target": [
     "Аутентификация CHAP, выполняемая целью"
   ],
@@ -421,9 +418,6 @@ export default {
   ],
   "Change product or mode": [
     "Изменить продукт или режим"
-  ],
-  "Change selection": [
-    "Изменить выбор"
   ],
   "Change the file system or mount point": [
     "Изменить файловую систему или точку монтирования"
@@ -609,6 +603,9 @@ export default {
   "Create user": [
     "Создать пользователя"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "Текущий %1$s на %2$s"
   ],
@@ -695,6 +692,9 @@ export default {
   ],
   "Description": [
     "Описание"
+  ],
+  "Desktops": [
+    ""
   ],
   "Destroy current data and format device as": [
     "Уничтожить текущие данные и отформатировать устройство как"
@@ -901,9 +901,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Фильтр по языку, территории или коду локали"
   ],
-  "Filter by pattern title or description": [
-    "Фильтр по названию или описанию шаблона"
-  ],
   "Filter by territory, time zone code or UTC offset": [
     "Фильтр по территории, коду часового пояса или смещению UTC"
   ],
@@ -979,6 +976,9 @@ export default {
   "Good signal": [
     "Хороший сигнал"
   ],
+  "Graphical desktop environments for the system.": [
+    ""
+  ],
   "Hide": [
     "Скрыть"
   ],
@@ -1023,14 +1023,16 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Если для запуска этой программы установки использовался локальный носитель, извлеките его перед следующей загрузкой."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Если не уверены, отмените и проверьте параметры хранилища."
-  ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Если не уверены, проверьте и настройте параметры хранилища."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Если хотите отключить эту проверку, укажите «inst.ay_check=0» в командной строке ядра"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "",
+    "",
+    ""
   ],
   "Initiator": [
     "Инициатор"
@@ -1191,9 +1193,6 @@ export default {
   "Loading data...": [
     "Загрузка данных..."
   ],
-  "Loading the installation repositories...": [
-    "Загрузка репозиториев установки..."
-  ],
   "Localization": [
     "Локализация"
   ],
@@ -1336,9 +1335,6 @@ export default {
   "Name": [
     "Имя"
   ],
-  "Needs about %s": [
-    "Требуется около %s"
-  ],
   "Network": [
     "Сеть"
   ],
@@ -1359,9 +1355,6 @@ export default {
   ],
   "No additional partitions will be created": [
     "Дополнительные разделы не будут созданы"
-  ],
-  "No additional software was selected.": [
-    "Никакого дополнительного программного обеспечения выбрано не было."
   ],
   "No content found": [
     "Содержимое не найдено"
@@ -1425,9 +1418,6 @@ export default {
   ],
   "None of the locales match the filter.": [
     "Ни одна из локалей не соответствует фильтру."
-  ],
-  "None of the patterns match the filter.": [
-    "Ни один из шаблонов не соответствует фильтру."
   ],
   "None of the time zones match the filter.": [
     "Ни один из часовых поясов не соответствует фильтру."
@@ -1537,6 +1527,9 @@ export default {
   "Passwords do not match": [
     "Пароли не совпадают"
   ],
+  "Patterns": [
+    ""
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "Выполните обнаружение, чтобы найти доступные iSCSI-цели."
   ],
@@ -1642,16 +1635,8 @@ export default {
   "Remove the configuration for this disk": [
     "Удалить конфигурацию для этого диска"
   ],
-  "Repository load failed": [
-    "Не удалось загрузить репозиторий"
-  ],
-  "Required packages": [
-    "Необходимые пакеты"
-  ],
-  "Required packages and %s pattern": [
-    "Необходимые пакеты и %s шаблон",
-    "Необходимые пакеты и %s шаблона",
-    "Необходимые пакеты и %s шаблонов"
+  "Required space with current selection: [%s]": [
+    ""
   ],
   "Rescan devices": [
     "Сканировать у-ва повторно"
@@ -1734,6 +1719,9 @@ export default {
   "Select %s": [
     "Выбрать %s"
   ],
+  "Select a desktop environment to get a graphical interface.": [
+    ""
+  ],
   "Select a disk": [
     "Выберите диск"
   ],
@@ -1786,9 +1774,6 @@ export default {
   ],
   "Selected disk cannot be changed": [
     "Выбранный диск не может быть изменен"
-  ],
-  "Selected patterns": [
-    "Выбранные шаблоны"
   ],
   "Server URL": [
     "URL сервера"
@@ -1869,9 +1854,6 @@ export default {
   ],
   "Some existing partitions may be shrunk": [
     "Некоторые существующие разделы могут быть уменьшены"
-  ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Не удалось загрузить некоторые установочные репозитории. Без них система не может быть установлена."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "Некоторые элементы в профиле AutoYaST не поддерживаются."
@@ -2058,9 +2040,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Будут созданы или смонтированы следующие разделы"
   ],
-  "The following software patterns are selected for installation:": [
-    "Для установки выбраны следующие образцы программного обеспечения:"
-  ],
   "The initiator name cannot be blank": [
     "Имя инициатора не может быть пустым"
   ],
@@ -2147,6 +2126,9 @@ export default {
   "The system is rebooting": [
     "Система перезапускается"
   ],
+  "The system will boot to a command-line interface.": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Всё устройство будет использовано для %s"
   ],
@@ -2217,9 +2199,6 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Чтобы обеспечить загрузку новой системы, программе установки может потребоваться создать или настроить некоторые разделы на соответствующем диске."
   ],
-  "Try again": [
-    "Повторить попытку"
-  ],
   "Try to deactivate again": [
     ""
   ],
@@ -2240,9 +2219,6 @@ export default {
   ],
   "Unknown error": [
     ""
-  ],
-  "Unselect": [
-    "Отменить выбор"
   ],
   "Unselect or activate them and try it again.": [
     "Отмените выбор или активируйте их, а затем попробуйте снова."
@@ -2396,9 +2372,6 @@ export default {
   ],
   "Use these same settings for the selected product": [
     "Исп. эти же настройки для выбранного продукта"
-  ],
-  "Used space": [
-    "Используемое"
   ],
   "User name": [
     "Имя пользователя"

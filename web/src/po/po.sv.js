@@ -431,9 +431,6 @@ export default {
   "Btrfs with snapshots": [
     "Btrfs med ögonblicksavbilder"
   ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "Genom att fortsätta startar installationen med definierade inställningar."
-  ],
   "CHAP authentication performed by the target": [
     "CHAP-autentisering utförd av målet"
   ],
@@ -490,9 +487,6 @@ export default {
   ],
   "Change product or mode": [
     "Ändra produkt eller läge"
-  ],
-  "Change selection": [
-    "Ändra val"
   ],
   "Change the device to configure": [
     "Ändra enhet som ska konfigureras"
@@ -715,6 +709,9 @@ export default {
   "Create user": [
     "Skapa användare"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "Nuvarande %1$s på %2$s"
   ],
@@ -813,6 +810,9 @@ export default {
   ],
   "Description": [
     "Beskrivning"
+  ],
+  "Desktops": [
+    ""
   ],
   "Destroy current data and format device as": [
     "Förstör nuvarande data och formatera enheten som"
@@ -1041,9 +1041,6 @@ export default {
   "Filter by language, territory or locale code": [
     "Filtrera efter språk, territorium eller lokalkod"
   ],
-  "Filter by pattern title or description": [
-    "Filtrera efter mönstertitel eller beskrivning"
-  ],
   "Filter by territory, time zone code or UTC offset": [
     "Filtrera efter område, tidszonskod eller UTC-förskjutning"
   ],
@@ -1122,6 +1119,9 @@ export default {
   "Good signal": [
     "Bra signal"
   ],
+  "Graphical desktop environments for the system.": [
+    ""
+  ],
   "Hide": [
     "Dölj"
   ],
@@ -1189,14 +1189,15 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Om du är osäker, avbryt och granska lagringsinställningarna."
-  ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Om du är osäker, kontrollera och justera lagringsinställningarna."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Om du vill inaktivera den här kontrollen, ange \"inst.ay_check=0\" på kärnans kommandorad"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "",
+    ""
   ],
   "Initiator": [
     "Initiativtagare"
@@ -1375,9 +1376,6 @@ export default {
   "Loading data...": [
     "Laddar data..."
   ],
-  "Loading the installation repositories...": [
-    "Laddar installationsförråd..."
-  ],
   "Localization": [
     "Lokalisering"
   ],
@@ -1542,9 +1540,6 @@ export default {
   "Name is required": [
     "Namn krävs"
   ],
-  "Needs about %s": [
-    "Behöver runt %s"
-  ],
   "Network": [
     "Nätverk"
   ],
@@ -1586,9 +1581,6 @@ export default {
   ],
   "No additional partitions will be created": [
     "Inga ytterligare partitioner kommer att skapas"
-  ],
-  "No additional software was selected.": [
-    "Ingen ytterligare programvara valdes."
   ],
   "No connections match filters": [
     "Inga anslutningar matchar filtren"
@@ -1682,9 +1674,6 @@ export default {
   ],
   "None of the locales match the filter.": [
     "Inget av lokalerna matchar filtret."
-  ],
-  "None of the patterns match the filter.": [
-    "Inget av mönstren matchar filtret."
   ],
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
@@ -1802,6 +1791,9 @@ export default {
   ],
   "Passwords do not match": [
     "Lösenorden matchar inte"
+  ],
+  "Patterns": [
+    ""
   ],
   "Perform a discovery to find available iSCSI targets.": [
     "Utför en identifiering för att hitta tillgängliga iSCSI-mål."
@@ -1926,15 +1918,8 @@ export default {
   "Remove the configuration for this volume group": [
     "Ta bort konfigurationen för den här volymgruppen"
   ],
-  "Repository load failed": [
-    "Det gick inte att ladda förråd"
-  ],
-  "Required packages": [
-    "Obligatoriska paket"
-  ],
-  "Required packages and %s pattern": [
-    "Obligatoriskt paket och %s mönster",
-    "Obligatoriska paket och flera %s mönster"
+  "Required space with current selection: [%s]": [
+    ""
   ],
   "Rescan devices": [
     "Skanna om enheter"
@@ -2023,6 +2008,9 @@ export default {
   "Select %s": [
     "Välj %s"
   ],
+  "Select a desktop environment to get a graphical interface.": [
+    ""
+  ],
   "Select a device": [
     "Välj en enhet"
   ],
@@ -2098,9 +2086,6 @@ export default {
   ],
   "Selected disk cannot be changed": [
     "Vald disk kan inte ändras"
-  ],
-  "Selected patterns": [
-    "Valda mönster"
   ],
   "Selected volume group cannot be changed": [
     "Vald volymgrupp kan inte ändras"
@@ -2192,9 +2177,6 @@ export default {
   ],
   "Some existing partitions may be shrunk": [
     "Vissa befintliga partitioner kan krympas"
-  ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Vissa installationsförråd kunde inte laddas. Utan dem kan systemet inte installeras."
   ],
   "Some logical volumes may be deleted": [
     "Vissa logiska volymer kan komma att raderas"
@@ -2395,9 +2377,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Följande partitioner kommer att skapas eller monteras"
   ],
-  "The following software patterns are selected for installation:": [
-    "Följande programvarumönster är valda för installation:"
-  ],
   "The initiator name cannot be blank": [
     "Initiatornamnet kan inte vara tomt"
   ],
@@ -2482,6 +2461,9 @@ export default {
   ],
   "The system is rebooting": [
     "Systemet startar om"
+  ],
+  "The system will boot to a command-line interface.": [
+    ""
   ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
@@ -2569,9 +2551,6 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."
   ],
-  "Try again": [
-    "Försök igen"
-  ],
   "Try to activate again": [
     "Försök att aktivera igen"
   ],
@@ -2595,9 +2574,6 @@ export default {
   ],
   "Unknown error": [
     "Okänt fel"
-  ],
-  "Unselect": [
-    "Avmarkera"
   ],
   "Unselect or activate them and try it again.": [
     "Avmarkera eller aktivera dem och försök igen."
@@ -2754,9 +2730,6 @@ export default {
   ],
   "Use these same settings for the selected product": [
     "Använd samma inställningar för den valda produkten"
-  ],
-  "Used space": [
-    "Använt utrymme"
   ],
   "User name": [
     "Användarnamn"
