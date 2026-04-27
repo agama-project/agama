@@ -220,6 +220,10 @@ bool commit(struct Zypp *zypp, struct Status *status,
     // useful for usecase where user use full iso and register
     // Result is that local ones are used unless there are remote updates.
     zypp::ZConfig::instance().set_download_media_prefer_download(false);
+    MIL << "Prefer download to local packages: "
+        << zypp::ZConfig::instance().download_media_prefer_download()
+        << std::endl;
+
     // enable preload of rpms to speed up installation
     policy.downloadMode(zypp::DownloadInAdvance);
     zypp::ZYppCommitResult result = zypp->zypp_pointer->commit(policy);
