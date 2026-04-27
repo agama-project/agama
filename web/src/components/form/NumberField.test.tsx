@@ -25,11 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 
-function NumberFieldForm({
-  defaultValue = 0,
-}: {
-  defaultValue?: number;
-}) {
+function NumberFieldForm({ defaultValue = 0 }: { defaultValue?: number }) {
   const form = useAppForm({ defaultValues: { val: defaultValue } });
 
   return (
