@@ -7,9 +7,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 10:37+0000\n"
-"PO-Revision-Date: 2026-03-07 12:04+0000\n"
-"Last-Translator: Alexander Johansen <alexader612@gmail.com>\n"
+"POT-Creation-Date: 2026-04-23 16:12+0000\n"
+"PO-Revision-Date: 2026-04-25 17:04+0000\n"
+"Last-Translator: openSUSE Weblate user 1416 "
+"<alejoh@users.noreply.l10n.opensuse.org>\n"
 "Language-Team: Norwegian Bokmål <https://l10n.opensuse.org/projects/agama/"
 "agama-service-sle-16/nb_NO/>\n"
 "Language: nb_NO\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 5.17\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -69,36 +70,38 @@ msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
+"Forsøker å importere et selvsignert sertifikat. Ønsker du å stole på det og "
+"registrere produktet?"
 
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:48
 msgid "Try again"
-msgstr ""
+msgstr "Prøv igjen"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:54
 msgid "Continue anyway"
-msgstr ""
+msgstr "Fortsett uansett"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:60
 msgid "Abort installation"
-msgstr ""
+msgstr "Avbryt installasjonen"
 
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
 msgid "Skip"
-msgstr ""
+msgstr "Hopp over"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:72
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:78
 msgid "No"
-msgstr ""
+msgstr "Nei"
 
 #. Callback to accept a file without a checksum
 #.
@@ -346,7 +349,7 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:74
 #, c-format
 msgid "The device with alias '%s' is used by more than one device"
-msgstr ""
+msgstr "Enheten med alias '%s' blir brukt av flere enn én enhet"
 
 #. Issue when the device has both filesystem and a user.
 #.
@@ -357,6 +360,8 @@ msgid ""
 "The device with alias '%s' cannot be formatted because it is used by other "
 "device"
 msgstr ""
+"Enheten med alias '%s' kan ikke bli formatert fordi den blir brukt av en "
+"annen enhet"
 
 #. Issue when the device has both partitions and a user.
 #.
@@ -367,6 +372,8 @@ msgid ""
 "The device with alias '%s' cannot be partitioned because it is used by other "
 "device"
 msgstr ""
+"Enheten med alias '%s' kan ikke partisjoneres fordi den blir brukt av en "
+"annen enhet"
 
 #. Error if a boot device is required and unknown.
 #.
