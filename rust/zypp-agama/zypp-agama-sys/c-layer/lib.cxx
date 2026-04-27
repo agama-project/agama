@@ -281,9 +281,12 @@ struct Zypp *init_target(const char *root, struct Status *status,
       progress("Reading Installed Packages", 1, 2, user_data);
     zypp->zypp_pointer->target()->load();
 
-    // set that agama prefers local rpms over downloaded ones
-    // useful for usecase where user use full iso and register
-    // Result is that local ones are used unless there are remote updates.
+    // Prefer the local medium to download, useful when registering the system
+    // with the Full installation medium, then it works like a local cache.
+    // However, if the SCC contains updated packages then they will be preferred
+    // to the local medium.
+    // This needs to be done before the solver run as the solver chooses the
+    // right package to install according to this flag.
     zypp::ZConfig::instance().set_download_media_prefer_download(false);
     MIL << "Prefer download to local packages: "
         << (zypp::ZConfig::instance().download_media_prefer_download()
