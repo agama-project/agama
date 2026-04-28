@@ -124,7 +124,7 @@ pub struct SystemInfo {
     /// Machine type/model
     pub machine: String,
     /// Product name
-    pub product_name: String,
+    pub product_name: Option<String>,
 }
 
 /// Extended status information with combination of status, issues and questions
@@ -138,6 +138,12 @@ pub struct InstallationStatus {
     pub questions: Vec<api::question::Question>,
     /// System information (hostname, IP, machine, product)
     pub system_info: SystemInfo,
+}
+
+impl InstallationStatus {
+    pub fn has_product(&self) -> bool {
+        self.system_info.product_name.is_some()
+    }
 }
 
 /// It allows connecting to the Agama monitor to get the status or listen for changes.
@@ -269,20 +275,17 @@ impl Monitor {
     }
 
     /// Determines the product name from config and available products
-    fn determine_product_name(config: &Config, products: &[ProductInfo]) -> String {
-        if let Some(software) = &config.software {
-            if let Some(product) = &software.product {
-                if let Some(product_id) = &product.id {
-                    // Look up product name from products list
-                    return products
-                        .iter()
-                        .find(|p| &p.id == product_id)
-                        .map(|p| p.name.clone())
-                        .unwrap_or_else(|| "Product not selected".to_string());
-                }
-            }
-        }
-        "Product not selected".to_string()
+    fn determine_product_name(config: &Config, products: &[ProductInfo]) -> Option<String> {
+        let product_id = config
+            .software
+            .as_ref()
+            .and_then(|p| p.product.as_ref())
+            .and_then(|p| p.id.clone())?;
+
+        products
+            .iter()
+            .find(|p| &p.id == &product_id)
+            .map(|p| p.name.clone())
     }
 
     /// Refreshes the product name in the status

@@ -21,7 +21,7 @@
 //! UI rendering modules for the monitor TUI
 
 use agama_lib::monitor::InstallationStatus;
-use agama_utils::api::{status::Stage, Scope};
+use agama_utils::api::{status::Stage, Issue, Scope};
 use gettextrs::gettext;
 use ratatui::{
     buffer::Buffer,
@@ -215,6 +215,8 @@ pub fn render_content(status: &InstallationStatus, area: Rect, buf: &mut Buffer)
         render_questions(status, area, buf);
     } else if status.status.stage.is_last() {
         render_final_status(status, area, buf);
+    } else if !status.has_product() {
+        render_no_product(area, buf);
     } else if !status.status.progresses.is_empty() {
         render_progress(status, area, buf);
     } else if !status.issues.is_empty() {
@@ -297,6 +299,35 @@ fn render_final_status(status: &InstallationStatus, area: Rect, buf: &mut Buffer
             Style::default().add_modifier(Modifier::DIM),
         )),
     ];
+
+    Paragraph::new(lines).render(content_area, buf);
+}
+
+fn render_no_product(area: Rect, buf: &mut Buffer) {
+    let content_area = Rect {
+        x: area.x + 1,
+        y: area.y,
+        width: area.width.saturating_sub(2),
+        height: area.height,
+    };
+
+    let mut lines = vec![
+        Line::from(""),
+        Line::from(Span::styled(
+            gettext("Action needed:"),
+            Style::default().add_modifier(Modifier::BOLD),
+        )),
+        Line::from(""),
+    ];
+
+    lines.push(Line::from(vec![
+        Span::raw(" "),
+        Span::styled("•", Style::default().fg(Color::Magenta)),
+        Span::styled(
+            " No product has been selected yet.",
+            Style::default().add_modifier(Modifier::DIM),
+        ),
+    ]));
 
     Paragraph::new(lines).render(content_area, buf);
 }
