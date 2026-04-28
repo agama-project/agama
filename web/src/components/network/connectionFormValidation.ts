@@ -223,7 +223,7 @@ function validateBondFields(formValues: FormValues): Partial<FormFieldErrors> {
 
   return {
     // TRANSLATORS: validation error for the bond device name field.
-    bondIface: !formValues.bondIface.trim() ? _("Device name is required") : undefined,
+    virtualIface: !formValues.virtualIface.trim() ? _("Device name is required") : undefined,
     // TRANSLATORS: validation error for the bond mode field.
     bondMode: !formValues.bondMode.trim() ? _("Bond mode is required") : undefined,
     bondPorts:
