@@ -21,14 +21,12 @@
 use agama_lib::monitor::{InstallationStatus, MonitorClient};
 use anyhow::Result;
 use crossterm::event::{self, Event, KeyCode, KeyModifiers};
-use ratatui::{
-    backend::CrosstermBackend,
-    buffer::Buffer,
-    layout::Rect,
-    widgets::Widget,
-    Terminal,
+use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
+use std::{
+    fs::File,
+    io::{self, Write},
+    time::Duration,
 };
-use std::{io, time::Duration};
 
 use super::ui;
 

@@ -28,7 +28,7 @@ use ratatui::{
     layout::{Constraint, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Paragraph, Widget},
+    widgets::{Gauge, List, Paragraph, Widget},
 };
 use std::collections::HashMap;
 
@@ -67,10 +67,10 @@ pub fn create_layout(area: Rect) -> MonitorLayout {
     let content_height = area.height.saturating_sub(content_start);
 
     let chunks = Layout::vertical([
-        Constraint::Length(1),         // Status bar
-        Constraint::Length(1),         // Gap
-        Constraint::Length(1),         // Product name
-        Constraint::Length(1),         // Separator
+        Constraint::Length(1),              // Status bar
+        Constraint::Length(1),              // Gap
+        Constraint::Length(1),              // Product name
+        Constraint::Length(1),              // Separator
         Constraint::Length(content_height), // Content + hints (non-sticky)
     ])
     .split(area);
@@ -402,35 +402,19 @@ fn render_progress(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
     };
     Paragraph::new(lines).render(text_area, buf);
 
-    // Render progress bar with percentage at the end
-    let bar_width = content_area.width.saturating_sub(4);
-    let filled_width = ((percent as f64 / 100.0) * bar_width as f64) as u16;
-    let empty_width = bar_width.saturating_sub(filled_width);
-
-    // Build progress bar manually for better control
-    let percent_text = format!(" {}% ", percent);
-    let bar_line = Line::from(vec![
-        Span::raw("  "),
-        Span::styled("█".repeat(filled_width as usize), Style::default().fg(color)),
-        Span::styled(
-            "░".repeat(empty_width as usize),
-            Style::default().fg(Color::DarkGray),
-        ),
-        Span::styled(
-            &percent_text,
-            Style::default()
-                .fg(Color::White)
-                .add_modifier(Modifier::BOLD),
-        ),
-    ]);
+    // Render progress bar using Gauge widget
+    let gauge = Gauge::default()
+        .gauge_style(Style::default().fg(color))
+        .percent(percent)
+        .label(format!("{}%", percent));
 
     let bar_area = Rect {
-        x: content_area.x,
+        x: content_area.x + 2,
         y: content_area.y + 3,
-        width: content_area.width,
+        width: content_area.width.saturating_sub(2),
         height: 1,
     };
-    Paragraph::new(bar_line).render(bar_area, buf);
+    gauge.render(bar_area, buf);
 
     // Render progress details below the bar
     let mut current_y = content_area.y + 5;
