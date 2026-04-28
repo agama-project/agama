@@ -20,12 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  Connection,
-  ConnectionStatus,
-  NetworkConfig,
-  NetworkProposal,
-} from "./network";
+import { Connection, ConnectionStatus, NetworkConfig, NetworkProposal } from "./network";
 import { CONNECTION_TYPE, isVirtual } from "~/utils/network";
 
 describe("isVirtual", () => {
