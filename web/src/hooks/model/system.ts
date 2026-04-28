@@ -60,3 +60,4 @@ export * as storage from "~/hooks/model/system/storage";
 export * as iscsi from "~/hooks/model/system/iscsi";
 export * as dasd from "~/hooks/model/system/dasd";
 export * as zfcp from "~/hooks/model/system/zfcp";
+export * as bootloader from "~/hooks/model/system/bootloader";
