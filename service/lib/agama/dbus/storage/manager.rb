@@ -553,7 +553,7 @@ module Agama
         # @return [Hash]
         def bootloader_json(bootloader)
           {
-            name:           bootloader.name,
+            type:           bootloader.type.value,
             encryptionAuth: bootloader_encryption_auth_json(bootloader)
           }
         end

@@ -19,15 +19,16 @@
       "additionalProperties": false,
       "required": ["name", "encryptionAuth"],
       "properties": {
-        "name": {
-          "enum": ["grub2", "grub2-bls", "systemd-boot"]
-        },
+        "type": { "$ref": "#/$defs/bootloaderType" },
         "encryptionAuth": {
           "description": "Encryption authentication methods that can be managed by the bootloader in this system.",
           "type": "array",
           "items": { "$ref": "#/$defs/encryptionAuthMethod" }
         }
       }
+    },
+    "bootloaderType": {
+      "enum": ["grub2", "grub2-bls", "systemd-boot"]
     },
     "encryptionAuthMethod": {
       "enum": ["password", "tpm"]

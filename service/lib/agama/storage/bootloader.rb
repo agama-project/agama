@@ -35,13 +35,6 @@ module Agama
         @tpm = tpm
       end
 
-      # Name of the bootloader.
-      #
-      # @return [String]
-      def name
-        type.value
-      end
-
       # Whether the bootloader is able to manage a password for encryption authentication.
       #
       # @return [Boolean]
