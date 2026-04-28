@@ -28,22 +28,22 @@ import {
   ConnectionMethod,
   ConnectionState,
   ConnectionStatus,
-  ConnectionType,
   DeviceState,
 } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 import ConnectionForm from "~/components/network/ConnectionForm";
 
 const mockDevice1 = {
   name: "enp1s0",
   macAddress: "00:11:22:33:44:55",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
 };
 
 const mockDevice2 = {
   name: "enp2s0",
   macAddress: "AA:BB:CC:DD:EE:FF",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.DISCONNECTED,
 };
 

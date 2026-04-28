@@ -24,12 +24,13 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import DevicesSelector from "./DevicesSelector";
-import { ConnectionMethod, ConnectionType, Device, DeviceState } from "~/types/network";
+import { ConnectionMethod, Device, DeviceState } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 
 const mockDevice1: Device = {
   name: "enp1s0",
   connection: "Network 1",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.100"],
@@ -46,7 +47,7 @@ const mockDevice1: Device = {
 const mockDevice2: Device = {
   name: "wlan0",
   connection: "Network 2",
-  type: ConnectionType.WIFI,
+  type: CONNECTION_TYPE.WIFI,
   state: DeviceState.DISCONNECTED,
   addresses: [{ address: "192.168.1.50", prefix: 24 }],
   nameservers: [],

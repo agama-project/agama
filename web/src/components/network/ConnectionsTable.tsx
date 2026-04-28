@@ -45,7 +45,7 @@ import SimpleSelector from "~/components/core/SimpleSelector";
 import { useConnections, useConnectionMutation } from "~/hooks/model/config/network";
 import { useDevices, useSystem } from "~/hooks/model/system/network";
 import { sortCollection } from "~/utils";
-import { connectionType, formatIp } from "~/utils/network";
+import { connectionType, CONNECTION_TYPE, connectionTypeLabel, formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
 import { Connection, ConnectionStatus, ConnectionType, Device } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
@@ -151,7 +151,7 @@ const createColumns = (devices: Device[]) => [
   },
   {
     name: _("Type"),
-    value: (c: Connection) => ConnectionType.label(connectionType(c)),
+    value: (c: Connection) => connectionTypeLabel(connectionType(c)),
     sortingKey: (c: Connection) => connectionType(c),
   },
   {
@@ -281,10 +281,10 @@ export default function ConnectionsTable() {
                 value={state.filters.type}
                 options={{
                   all: _("All"),
-                  [ConnectionType.WIFI]: ConnectionType.label(ConnectionType.WIFI),
-                  [ConnectionType.ETHERNET]: ConnectionType.label(ConnectionType.ETHERNET),
-                  [ConnectionType.BOND]: ConnectionType.label(ConnectionType.BOND),
-                  [ConnectionType.BRIDGE]: ConnectionType.label(ConnectionType.BRIDGE),
+                  [CONNECTION_TYPE.WIFI]: connectionTypeLabel(CONNECTION_TYPE.WIFI),
+                  [CONNECTION_TYPE.ETHERNET]: connectionTypeLabel(CONNECTION_TYPE.ETHERNET),
+                  [CONNECTION_TYPE.BOND]: connectionTypeLabel(CONNECTION_TYPE.BOND),
+                  [CONNECTION_TYPE.BRIDGE]: connectionTypeLabel(CONNECTION_TYPE.BRIDGE),
                 }}
                 onChange={(_, v) => onFilterChange("type", v)}
               />

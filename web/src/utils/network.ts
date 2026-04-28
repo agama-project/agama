@@ -34,6 +34,41 @@ import {
   Route,
   SecurityProtocols,
 } from "~/types/network";
+import { _, N_ } from "~/i18n";
+
+/**
+ * Connection type constants.
+ *
+ * TypeScript enforces that all values match the ConnectionType union.
+ */
+export const CONNECTION_TYPE = {
+  ETHERNET: "ethernet",
+  WIFI: "wireless",
+  LOOPBACK: "loopback",
+  BOND: "bond",
+  BRIDGE: "bridge",
+  VLAN: "vlan",
+  UNKNOWN: "unknown",
+} as const satisfies Record<string, ConnectionType>;
+
+/**
+ * Translatable labels for connection types.
+ */
+const CONNECTION_TYPE_LABELS: Record<ConnectionType, string> = {
+  [CONNECTION_TYPE.ETHERNET]: N_("Ethernet"),
+  [CONNECTION_TYPE.WIFI]: N_("Wi-Fi"),
+  [CONNECTION_TYPE.LOOPBACK]: N_("Loopback"),
+  [CONNECTION_TYPE.BOND]: N_("Bond"),
+  [CONNECTION_TYPE.BRIDGE]: N_("Bridge"),
+  [CONNECTION_TYPE.VLAN]: N_("VLAN"),
+  [CONNECTION_TYPE.UNKNOWN]: N_("Unknown"),
+};
+
+/**
+ * Returns the translated label for a connection type.
+ */
+// eslint-disable-next-line agama-i18n/string-literals
+const connectionTypeLabel = (type: ConnectionType): string => _(CONNECTION_TYPE_LABELS[type]);
 
 /**
  * Returns the type for the given connection.
@@ -41,13 +76,13 @@ import {
 const connectionType = (connection: Connection): ConnectionType => {
   const { wireless, bond, bridge } = connection;
   if (wireless) {
-    return ConnectionType.WIFI;
+    return CONNECTION_TYPE.WIFI;
   } else if (bond) {
-    return ConnectionType.BOND;
+    return CONNECTION_TYPE.BOND;
   } else if (bridge) {
-    return ConnectionType.BRIDGE;
+    return CONNECTION_TYPE.BRIDGE;
   } else {
-    return ConnectionType.ETHERNET;
+    return CONNECTION_TYPE.ETHERNET;
   }
 };
 
@@ -355,6 +390,7 @@ export {
   connectionAddresses,
   connectionBindingMode,
   connectionType,
+  connectionTypeLabel,
   ensureIPPrefix,
   formatIp,
   generateConnectionName,

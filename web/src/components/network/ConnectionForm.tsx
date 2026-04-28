@@ -23,7 +23,7 @@
 import React from "react";
 import { formOptions } from "@tanstack/react-form";
 import { generatePath, useNavigate, useParams } from "react-router";
-import { isEmpty, shake, unique } from "radashi";
+import { unique } from "radashi";
 import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
@@ -50,17 +50,17 @@ import {
   buildAddress,
   connectionBindingMode,
   connectionType,
+  CONNECTION_TYPE,
+  connectionTypeLabel,
   ensureIPPrefix,
   formatIp,
   generateConnectionName,
-  isValidIPv4,
-  isValidIPv6,
   isValidIPv4Address,
-  isValidIPv6Address,
   isValidNameserver,
   isValidDNSSearchDomain,
 } from "~/utils/network";
 import { _ } from "~/i18n";
+import { validateConnectionForm } from "./connectionFormValidation";
 
 /**
  * Form IP mode values.
@@ -104,11 +104,14 @@ const MODE_TO_METHOD: Record<FormIpMode, ConnectionMethod> = {
  *
  * Sub-components spread these options in their `withForm` definition so
  * TanStack Form can infer the field types, enabling type-safe props.
+ *
+ * Note: Type casts widen literal defaults to their union types, allowing
+ * fields to accept any value from the union, not just the initial value.
  */
 export const connectionFormOptions = formOptions({
   defaultValues: {
     name: "",
-    type: ConnectionType.ETHERNET as ConnectionType,
+    type: CONNECTION_TYPE.ETHERNET as ConnectionType,
     iface: "",
     ifaceMac: "",
     ipv4Mode: FormIpMode.AUTO as FormIpMode,
@@ -136,7 +139,11 @@ export const connectionFormOptions = formOptions({
 });
 
 type FormValues = typeof connectionFormOptions.defaultValues;
-type FormFieldErrors = Partial<Record<keyof FormValues, string>>;
+
+/**
+ * Connection types supported by this form.
+ */
+const SUPPORTED_CONNECTION_TYPES = [CONNECTION_TYPE.ETHERNET, CONNECTION_TYPE.BOND] as const;
 
 /**
  * Infers the form IPvX mode from a stored {@link ConnectionMethod} and addresses.
@@ -204,217 +211,6 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
 }
 
 /**
- * Returns an error when the given list is active and has invalid or missing entries.
- * Returns undefined when inactive or when all entries are valid.
- *
- * @param active - Whether the list should be validated at all.
- * @param emptyMsg - Error to return when the list is empty. Omit for optional
- *   lists where entries are not required but must be valid when provided.
- */
-function validateActiveList(
-  active: boolean,
-  values: string[],
-  isValid: (v: string) => boolean,
-  emptyMsg: string | undefined,
-  invalidMsg: string,
-): string | undefined {
-  if (!active) return undefined;
-  if (emptyMsg !== undefined && values.length === 0) return emptyMsg;
-  if (values.some((v) => !isValid(v))) return invalidMsg;
-}
-
-/**
- * Returns an error for an IP addresses list based on the current IP mode.
- *
- * - MANUAL: addresses are required and must be valid.
- * - ADVANCED_AUTO: addresses are required and must be valid.
- * - AUTO: no validation.
- */
-function validateIpAddresses(
-  mode: FormIpMode,
-  addresses: string[],
-  isValid: (v: string) => boolean,
-  emptyMsg: string,
-  invalidMsg: string,
-): string | undefined {
-  const required = ADDRESS_REQUIRED_MODES.includes(mode);
-  const active = required || addresses.length > 0;
-  return validateActiveList(
-    active,
-    addresses,
-    isValid,
-    required ? emptyMsg : undefined,
-    invalidMsg,
-  );
-}
-
-/**
- * Returns an error for a gateway value under its protocol mode.
- *
- * - MANUAL: gateway is required and must be valid.
- * - ADVANCED_AUTO: gateway is optional but must be valid when provided.
- * - AUTO: no validation.
- */
-function validateGateway(
-  mode: FormIpMode,
-  gateway: string,
-  validAddresses: string[],
-  isValid: (v: string) => boolean,
-  emptyMsg: string,
-  invalidMsg: string,
-): string | undefined {
-  if (mode === FormIpMode.MANUAL) {
-    if (!gateway) return emptyMsg;
-    return isValid(gateway) ? undefined : invalidMsg;
-  }
-  if (mode === FormIpMode.ADVANCED_AUTO && gateway) {
-    return isValid(gateway) ? undefined : invalidMsg;
-  }
-}
-
-/**
- * Validates the connection form values.
- *
- * Returns a map of field errors when validation fails, or undefined when all
- * values are valid. Validation is intentionally done here rather than in
- * per-field onSubmit validators — see the {@link ConnectionForm} remarks.
- */
-function validateConnectionForm(formValues: FormValues): FormFieldErrors | undefined {
-  const validAddresses4 = formValues.addresses4.filter(isValidIPv4Address);
-  const validAddresses6 = formValues.addresses6.filter(isValidIPv6Address);
-
-  const fieldErrors = shake({
-    // TRANSLATORS: validation error for the connection name field.
-    name: !formValues.name.trim() ? _("Name is required") : undefined,
-    addresses4: validateIpAddresses(
-      formValues.ipv4Mode,
-      formValues.addresses4,
-      isValidIPv4Address,
-      // TRANSLATORS: validation error for the IPv4 addresses field.
-      _("At least one IPv4 address is required"),
-      // TRANSLATORS: validation error for the IPv4 addresses field.
-      _("Some IPv4 addresses are invalid"),
-    ),
-    addresses6: validateIpAddresses(
-      formValues.ipv6Mode,
-      formValues.addresses6,
-      isValidIPv6Address,
-      // TRANSLATORS: validation error for the IPv6 addresses field.
-      _("At least one IPv6 address is required"),
-      // TRANSLATORS: validation error for the IPv6 addresses field.
-      _("Some IPv6 addresses are invalid"),
-    ),
-    gateway4: validateGateway(
-      formValues.ipv4Mode,
-      formValues.gateway4,
-      validAddresses4,
-      isValidIPv4,
-      // TRANSLATORS: validation error for the IPv4 gateway field.
-      _("IPv4 gateway is required"),
-      // TRANSLATORS: validation error for the IPv4 gateway field.
-      _("Invalid IPv4 gateway"),
-    ),
-    gateway6: validateGateway(
-      formValues.ipv6Mode,
-      formValues.gateway6,
-      validAddresses6,
-      isValidIPv6,
-      // TRANSLATORS: validation error for the IPv6 gateway field.
-      _("IPv6 gateway is required"),
-      // TRANSLATORS: validation error for the IPv6 gateway field.
-      _("Invalid IPv6 gateway"),
-    ),
-    nameservers: validateActiveList(
-      formValues.customDns,
-      formValues.nameservers,
-      isValidNameserver,
-      // TRANSLATORS: validation error for the DNS servers field.
-      _("At least one DNS server is required"),
-      // TRANSLATORS: validation error for the DNS servers field.
-      _("Some DNS server addresses are invalid"),
-    ),
-    dnsSearchList: validateActiveList(
-      formValues.customDnsSearch,
-      formValues.dnsSearchList,
-      isValidDNSSearchDomain,
-      // TRANSLATORS: validation error for the DNS search domains field.
-      _("At least one DNS search domain is required"),
-      // TRANSLATORS: validation error for the DNS search domains field.
-      _("Some DNS search domains are invalid"),
-    ),
-    virtualIface:
-      ConnectionType.isVirtual(formValues.type) && !formValues.virtualIface.trim()
-        ? // TRANSLATORS: validation error for the device name field.
-          _("Device name is required")
-        : undefined,
-    bondMode:
-      formValues.type === ConnectionType.BOND && !formValues.bondMode.trim()
-        ? // TRANSLATORS: validation error for the bond mode field.
-          _("Bond mode is required")
-        : undefined,
-    bondPorts:
-      formValues.type === ConnectionType.BOND && formValues.bondPorts.length === 0
-        ? // TRANSLATORS: validation error for the bond ports field.
-          _("At least one bond port is required")
-        : undefined,
-    bondOptions:
-      formValues.type === ConnectionType.BOND &&
-      ![BondMode.ACTIVE_BACKUP, BondMode.BALANCE_TLB, BondMode.BALANCE_ALB].includes(
-        formValues.bondMode,
-      ) &&
-      formValues.bondOptions.some((o) => o.startsWith("primary="))
-        ? // TRANSLATORS: validation error for the bond options field when the 'primary' option is used in an invalid mode.
-          _(
-            "The 'primary' option is only valid for 'active-backup', 'balance-tlb', and 'balance-alb' modes",
-          )
-        : undefined,
-    bridgePorts:
-      formValues.type === ConnectionType.BRIDGE && formValues.bridgePorts.length === 0
-        ? // TRANSLATORS: validation error for the bridge ports field.
-          _("At least one bridge port is required")
-        : undefined,
-    bridgePriority:
-      formValues.type === ConnectionType.BRIDGE &&
-      formValues.bridgeStp &&
-      (formValues.bridgePriority === undefined ||
-        formValues.bridgePriority < 0 ||
-        formValues.bridgePriority > 61440)
-        ? // TRANSLATORS: validation error for the bridge priority field.
-          _("Priority must be between 0 and 61440")
-        : undefined,
-    bridgeForwardDelay:
-      formValues.type === ConnectionType.BRIDGE &&
-      formValues.bridgeStp &&
-      (formValues.bridgeForwardDelay === undefined ||
-        formValues.bridgeForwardDelay < 4 ||
-        formValues.bridgeForwardDelay > 30)
-        ? // TRANSLATORS: validation error for the bridge forward delay field.
-          _("Forward delay must be between 4 and 30 seconds")
-        : undefined,
-    bridgeHelloTime:
-      formValues.type === ConnectionType.BRIDGE &&
-      formValues.bridgeStp &&
-      (formValues.bridgeHelloTime === undefined ||
-        formValues.bridgeHelloTime < 1 ||
-        formValues.bridgeHelloTime > 10)
-        ? // TRANSLATORS: validation error for the bridge hello time field.
-          _("Hello time must be between 1 and 10 seconds")
-        : undefined,
-    bridgeMaxMessageAge:
-      formValues.type === ConnectionType.BRIDGE &&
-      formValues.bridgeStp &&
-      (formValues.bridgeMaxMessageAge === undefined ||
-        formValues.bridgeMaxMessageAge < 6 ||
-        formValues.bridgeMaxMessageAge > 40)
-        ? // TRANSLATORS: validation error for the bridge max message age field.
-          _("Max message age must be between 6 and 40 seconds")
-        : undefined,
-  });
-
-  if (!isEmpty(fieldErrors)) return fieldErrors;
-}
-
-/**
  * Builds a {@link Connection} from the validated form values.
  *
  * Addresses in formValues already have prefixes (added by ArrayField's
@@ -447,7 +243,7 @@ function buildConnection(formValues: FormValues): Connection {
     nameservers: formValues.customDns ? formValues.nameservers : [],
     dnsSearchList: formValues.customDnsSearch ? formValues.dnsSearchList : [],
     bond:
-      formValues.type === ConnectionType.BOND
+      formValues.type === CONNECTION_TYPE.BOND
         ? {
             mode: formValues.bondMode,
             options: formValues.bondOptions.join(" "),
@@ -534,9 +330,6 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
     listeners: isEditing ? undefined : { onMount: ({ formApi }) => syncName(formApi) },
   });
 
-  const typeOptions = () =>
-    ConnectionType.options([ConnectionType.BOND, ConnectionType.BRIDGE, ConnectionType.ETHERNET]);
-
   return (
     <form.AppForm>
       <Form
@@ -584,7 +377,10 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
                     // TRANSLATORS: checkbox label for custom DNS server configuration.
                     _("Type")
                   }
-                  options={typeOptions()}
+                  options={SUPPORTED_CONNECTION_TYPES.map((type) => ({
+                    value: type,
+                    label: connectionTypeLabel(type),
+                  }))}
                 />
               )}
             </form.AppField>
@@ -604,7 +400,9 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
-            ([ConnectionType.ETHERNET, ConnectionType.WIFI] as ConnectionType[]).includes(type) && (
+            ([CONNECTION_TYPE.ETHERNET, CONNECTION_TYPE.WIFI] as ConnectionType[]).includes(
+              type,
+            ) && (
               <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
                 <BindingModeSelector form={form} />
 
@@ -635,7 +433,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
-            type === ConnectionType.BOND && <BondSettings form={form} isEditing={isEditing} />
+            type === CONNECTION_TYPE.BOND && <BondSettings form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 

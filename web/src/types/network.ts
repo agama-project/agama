@@ -21,7 +21,6 @@
  */
 
 import { isBoolean, isEmpty, isObject } from "radashi";
-import { _, N_ } from "~/i18n";
 import {
   buildAddress,
   buildAddresses,
@@ -30,43 +29,17 @@ import {
   securityFromFlags,
 } from "~/utils/network";
 
-const connectionTypeValues = {
-  ETHERNET: "ethernet",
-  WIFI: "wireless",
-  LOOPBACK: "loopback",
-  BOND: "bond",
-  BRIDGE: "bridge",
-  VLAN: "vlan",
-  UNKNOWN: "unknown",
-} as const;
-
-export type ConnectionType = (typeof connectionTypeValues)[keyof typeof connectionTypeValues];
-
-const connectionTypeLabels: Record<ConnectionType, string> = {
-  [connectionTypeValues.ETHERNET]: N_("Ethernet"),
-  [connectionTypeValues.WIFI]: N_("Wi-Fi"),
-  [connectionTypeValues.LOOPBACK]: N_("Loopback"),
-  [connectionTypeValues.BOND]: N_("Bond"),
-  [connectionTypeValues.BRIDGE]: N_("Bridge"),
-  [connectionTypeValues.VLAN]: N_("VLAN"),
-  [connectionTypeValues.UNKNOWN]: N_("Unknown"),
-};
-
-export const ConnectionType = {
-  ...connectionTypeValues,
-
-  /** Returns the translated label for the connection type */
-  // eslint-disable-next-line agama-i18n/string-literals
-  label: (type: ConnectionType): string => _(connectionTypeLabels[type]),
-
-  /** Returns options for a dropdown/select component */
-  options: (types: ConnectionType[]): { value: ConnectionType; label: string }[] =>
-    types.map((type) => ({ value: type, label: ConnectionType.label(type) })),
-
-  /** Returns true if the connection type is virtual */
-  isVirtual: (type: keyof typeof ConnectionType): boolean =>
-    [ConnectionType.BOND, ConnectionType.BRIDGE, ConnectionType.VLAN].includes(type),
-};
+/**
+ * Union type of all connection type string values.
+ */
+export type ConnectionType =
+  | "ethernet"
+  | "wireless"
+  | "loopback"
+  | "bond"
+  | "bridge"
+  | "vlan"
+  | "unknown";
 
 /**
  * Enum for AccessPoint flags

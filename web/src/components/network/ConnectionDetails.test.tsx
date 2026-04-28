@@ -28,10 +28,10 @@ import {
   Connection,
   ConnectionMethod,
   ConnectionState,
-  ConnectionType,
   Device,
   DeviceState,
 } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 
 jest.mock("~/components/network/InstallationOnlySwitch", () => () => (
   <div>InstallationOnlySwitch mock</div>
@@ -40,7 +40,7 @@ jest.mock("~/components/network/InstallationOnlySwitch", () => () => (
 const mockDevice: Device = {
   name: "enp1s0",
   connection: "Network #1",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.100"],
@@ -56,7 +56,7 @@ const mockDevice: Device = {
 const mockAnotherDevice: Device = {
   name: "enp1s1",
   connection: "Network #1",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.101", prefix: 24 }],
   nameservers: ["192.168.69.50"],

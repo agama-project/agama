@@ -25,20 +25,21 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { connectionFormOptions } from "~/components/network/ConnectionForm";
-import { ConnectionType, DeviceState } from "~/types/network";
+import { DeviceState } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 import BondSettings from "./BondSettings";
 
 const mockDevice1 = {
   name: "enp1s0",
   macAddress: "00:11:22:33:44:55",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
 };
 
 const mockDevice2 = {
   name: "enp2s0",
   macAddress: "AA:BB:CC:DD:EE:FF",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.DISCONNECTED,
 };
 
@@ -58,7 +59,7 @@ function TestForm({
     defaultValues: {
       ...connectionFormOptions.defaultValues,
       name: "test-bond",
-      type: ConnectionType.BOND,
+      type: CONNECTION_TYPE.BOND,
       ...defaultValues,
     },
   });
