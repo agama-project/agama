@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 use std::default::Default;
 
 /// Network config settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Merge, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 #[schema(as = network::Config)]
 pub struct Config {

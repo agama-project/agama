@@ -61,6 +61,7 @@ impl Default for StateConfig {
 
 #[derive(Default, Clone, Debug, PartialEq)]
 pub struct NetworkState {
+    pub user_config: Option<Config>,
     pub general_state: GeneralState,
     pub access_points: Vec<AccessPoint>,
     pub devices: Vec<Device>,
@@ -76,12 +77,14 @@ impl NetworkState {
     /// * `devices`: devices to include in the state.
     /// * `connections`: connections to include in the state.
     pub fn new(
+        user_config: Option<Config>,
         general_state: GeneralState,
         access_points: Vec<AccessPoint>,
         devices: Vec<Device>,
         connections: Vec<Connection>,
     ) -> Self {
         Self {
+            user_config,
             general_state,
             access_points,
             devices,
@@ -262,6 +265,13 @@ impl NetworkState {
     ///
     /// If the general state is provided it will sets the options given.
     pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
+        if self.user_config.as_ref() == Some(&config) {
+            tracing::info!("There is no user config change");
+            return Ok(());
+        }
+
+        let updated_config = config.clone();
+
         if let Some(connections) = config.connections {
             let mut collection: ConnectionCollection = connections.clone().try_into()?;
             for conn in collection.iter_mut() {
@@ -304,6 +314,9 @@ impl NetworkState {
                 self.general_state.copy_network = copy_network;
             }
         }
+
+        self.user_config = Some(updated_config);
+
         Ok(())
     }
 
