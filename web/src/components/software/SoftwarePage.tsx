@@ -46,7 +46,7 @@ import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/software";
-import { useSystem } from "~/hooks/model/system/software";
+import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { isPatternSelected } from "~/utils/software";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
@@ -77,6 +77,19 @@ const NothingSelected = ({
         </Link>
       </EmptyStateActions>
     </EmptyStateFooter>
+  </EmptyState>
+);
+
+/**
+ * Informational empty state shown when no desktop patterns are available.
+ */
+const NoDesktopsAvailable = () => (
+  // TRANSLATORS: empty state title when no desktop environments are available
+  <EmptyState headingLevel="h4" titleText={_("No desktops available")} variant="sm">
+    <EmptyStateBody>
+      {/* TRANSLATORS: explanation shown when the product has no desktop environments */}
+      {_("This product does not provide desktop environments.")}
+    </EmptyStateBody>
   </EmptyState>
 );
 
@@ -244,7 +257,7 @@ const SoftwareSection = ({
       }
       description={description}
       pfCardProps={{ isFullHeight: false }}
-      actions={!noneSelected && <Link to={selectionPath}>{buttonText}</Link>}
+      actions={!noneSelected && totalCount > 0 && <Link to={selectionPath}>{buttonText}</Link>}
     >
       <SelectedPatternsList patterns={patterns} selection={selection} emptyContent={emptyContent} />
     </Page.Section>
@@ -270,7 +283,7 @@ However, you can add additional software once the installation is finished.",
  * Main content of the software page.
  */
 const SoftwarePageContent = () => {
-  const { patterns } = useSystem();
+  const { all: patterns, desktops: allDesktops, other: allOtherPatterns } = useAvailablePatterns();
   const proposal = useProposal();
   const issues = useIssues("software");
 
@@ -283,7 +296,6 @@ const SoftwarePageContent = () => {
     ? xbytes(proposal.usedSpace * 1024, { iec: true })
     : undefined;
 
-  const [allDesktops, allOtherPatterns] = fork(patterns, (p) => p.desktop);
   const selectedPatterns = patterns.filter((p) => isPatternSelected(proposal.patterns, p.name));
   const [desktops, otherPatterns] = fork(selectedPatterns, (p) => p.desktop);
 
@@ -313,13 +325,17 @@ const SoftwarePageContent = () => {
               selection={proposal.patterns}
               selectionPath={PATHS.desktopSelection}
               emptyContent={
-                <NothingSelected
-                  to={PATHS.desktopSelection}
-                  // TRANSLATORS: hint shown when no desktop environment has been chosen
-                  body={_("Select a desktop environment to get a graphical interface.")}
-                  // TRANSLATORS: button to go to the desktop environment selection page
-                  buttonText={_("Select a desktop")}
-                />
+                allDesktops.length === 0 ? (
+                  <NoDesktopsAvailable />
+                ) : (
+                  <NothingSelected
+                    to={PATHS.desktopSelection}
+                    // TRANSLATORS: hint shown when no desktop environment has been chosen
+                    body={_("Select a desktop environment to get a graphical interface.")}
+                    // TRANSLATORS: button to go to the desktop environment selection page
+                    buttonText={_("Select a desktop")}
+                  />
+                )
               }
             />
           </GridItem>

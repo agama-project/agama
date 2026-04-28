@@ -24,6 +24,7 @@ import React from "react";
 import { Alert, Content } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import Interpolate from "~/components/core/Interpolate";
+import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { SOFTWARE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -33,8 +34,15 @@ import { _ } from "~/i18n";
  * having to cancel the current flow manually.
  *
  * Intended for confirmation dialogs on products that suggest a desktop.
+ *
+ * Returns `null` when no desktop patterns are available, preventing the alert
+ * from suggesting an action that is impossible to complete.
  */
 export default function NoDesktopAlert() {
+  const { desktops } = useAvailablePatterns();
+
+  if (desktops.length === 0) return null;
+
   return (
     <Alert
       isInline

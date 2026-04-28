@@ -34,7 +34,7 @@ import {
 import { group, sort } from "radashi";
 import { sprintf } from "sprintf-js";
 import { formOptions } from "@tanstack/react-form";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import SubtleContent from "~/components/core/SubtleContent";
@@ -42,7 +42,7 @@ import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
 import { SelectedBy } from "~/model/proposal/software";
 import { patchConfig } from "~/api";
-import { useSystem } from "~/hooks/model/system/software";
+import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { usePristineSafeForm } from "~/hooks/form";
 import { filterPatterns, groupPatterns, isPatternSelected, sortGroupNames } from "~/utils/software";
@@ -251,7 +251,7 @@ const PatternCheckbox = ({
  */
 function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
   const navigate = useNavigate();
-  const { patterns: systemPatterns } = useSystem();
+  const { all: systemPatterns, [scope]: scopedPatterns } = useAvailablePatterns();
   const proposal = useProposal();
   const selection = proposal?.patterns || {};
   const [searchValue, setSearchValue] = useState("");
@@ -275,18 +275,6 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
       setFilterHeight(filterRef.current.offsetHeight);
     }
   }, [searchValue]);
-
-  let scopedPatterns: Pattern[];
-  switch (scope) {
-    case "desktops":
-      scopedPatterns = systemPatterns.filter((p) => p.desktop);
-      break;
-    case "other":
-      scopedPatterns = systemPatterns.filter((p) => !p.desktop);
-      break;
-    default:
-      scopedPatterns = systemPatterns;
-  }
 
   // Build initial form values: each pattern name -> selected boolean
   const initialValues = scopedPatterns.reduce((acc, pattern) => {
@@ -326,9 +314,12 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
     onSubmitComplete: () => navigate(SOFTWARE.root),
   });
 
-  // Initial empty screen guard: patterns load very quickly, but on the very
-  // first render the system list may be empty. Avoid flashing an empty page.
-  if (scopedPatterns.length === 0 && searchValue === "") return null;
+  // Redirect to main software page when no patterns are available for the
+  // current scope. This handles users landing via direct URL or cached links
+  // when desktop patterns don't exist.
+  if (scopedPatterns.length === 0 && searchValue === "") {
+    return <Navigate to={SOFTWARE.root} replace />;
+  }
 
   // Build the canonical category list from the unfiltered scope so categories
   // never disappear as the user types.

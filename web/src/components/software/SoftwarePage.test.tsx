@@ -29,6 +29,9 @@ import SoftwarePage from "./SoftwarePage";
 
 const mockProposal = jest.fn();
 
+const desktops = testingPatterns.filter((p) => p.desktop);
+const other = testingPatterns.filter((p) => !p.desktop);
+
 jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
@@ -41,7 +44,11 @@ jest.mock("~/hooks/model/proposal/software", () => ({
 }));
 
 jest.mock("~/hooks/model/system/software", () => ({
-  useSystem: () => ({ patterns: testingPatterns }),
+  useAvailablePatterns: () => ({
+    all: testingPatterns,
+    desktops,
+    other,
+  }),
 }));
 
 describe("SoftwarePage", () => {

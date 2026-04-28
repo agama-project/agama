@@ -25,7 +25,11 @@ import { renderHook } from "@testing-library/react";
 import { clearMockedQueries, mockQuery, mockSystemQuery } from "~/test-utils/tanstack-query";
 import { SelectedBy } from "~/model/proposal/software";
 import type { Product, Software } from "~/model/system";
-import { useIsDesktopMissing, useSelectedPatterns } from "~/hooks/model/system/software";
+import {
+  useAvailablePatterns,
+  useIsDesktopMissing,
+  useSelectedPatterns,
+} from "~/hooks/model/system/software";
 
 const gnomePattern: Software.Pattern = {
   name: "gnome",
@@ -45,6 +49,28 @@ const basePattern: Software.Pattern = {
   description: "YaST tools for basic system administration.",
   order: 1220,
   icon: "./yast",
+  preselected: false,
+  desktop: false,
+};
+
+const kdePattern: Software.Pattern = {
+  name: "kde",
+  category: "Graphical Environments",
+  summary: "KDE Plasma Desktop",
+  description: "The KDE desktop environment",
+  order: 1020,
+  icon: "./kde",
+  preselected: false,
+  desktop: true,
+};
+
+const lampPattern: Software.Pattern = {
+  name: "lamp_server",
+  category: "Server Functions",
+  summary: "Web and LAMP Server",
+  description: "Apache, MySQL, and PHP",
+  order: 2010,
+  icon: "./lamp",
   preselected: false,
   desktop: false,
 };
@@ -81,6 +107,66 @@ function mockScenario(product: Product, patterns: Software.Pattern[], selection:
   mockQuery(["extendedConfig"], { product: { id: product.id } });
   mockQuery(["proposal"], { software: { patterns: selection, usedSpace: 0 } });
 }
+
+describe("useAvailablePatterns", () => {
+  beforeEach(() => {
+    clearMockedQueries();
+  });
+
+  it("returns all patterns in the 'all' property", () => {
+    mockScenario(tumbleweed, [gnomePattern, kdePattern, basePattern, lampPattern], {});
+
+    const { result } = renderHook(() => useAvailablePatterns());
+
+    expect(result.current.all).toEqual([gnomePattern, kdePattern, basePattern, lampPattern]);
+  });
+
+  it("returns desktop patterns into 'desktops' property", () => {
+    mockScenario(tumbleweed, [gnomePattern, kdePattern, basePattern, lampPattern], {});
+
+    const { result } = renderHook(() => useAvailablePatterns());
+
+    expect(result.current.desktops).toEqual([gnomePattern, kdePattern]);
+  });
+
+  it("returns non-desktop patterns into 'other' property", () => {
+    mockScenario(tumbleweed, [gnomePattern, kdePattern, basePattern, lampPattern], {});
+
+    const { result } = renderHook(() => useAvailablePatterns());
+
+    expect(result.current.other).toEqual([basePattern, lampPattern]);
+  });
+
+  it("returns empty arrays when no patterns are available", () => {
+    mockScenario(tumbleweed, [], {});
+
+    const { result } = renderHook(() => useAvailablePatterns());
+
+    expect(result.current.all).toEqual([]);
+    expect(result.current.desktops).toEqual([]);
+    expect(result.current.other).toEqual([]);
+  });
+
+  it("returns empty 'desktops' when only non-desktop patterns exist", () => {
+    mockScenario(sles, [basePattern, lampPattern], {});
+
+    const { result } = renderHook(() => useAvailablePatterns());
+
+    expect(result.current.all).toEqual([basePattern, lampPattern]);
+    expect(result.current.desktops).toEqual([]);
+    expect(result.current.other).toEqual([basePattern, lampPattern]);
+  });
+
+  it("returns empty 'other' when only desktop patterns exist", () => {
+    mockScenario(tumbleweed, [gnomePattern, kdePattern], {});
+
+    const { result } = renderHook(() => useAvailablePatterns());
+
+    expect(result.current.all).toEqual([gnomePattern, kdePattern]);
+    expect(result.current.desktops).toEqual([gnomePattern, kdePattern]);
+    expect(result.current.other).toEqual([]);
+  });
+});
 
 describe("useIsDesktopMissing", () => {
   beforeEach(() => {
@@ -126,6 +212,14 @@ describe("useIsDesktopMissing", () => {
       mockScenario(tumbleweed, [gnomePattern, basePattern], {
         gnome: SelectedBy.USER,
       });
+
+      const { result } = renderHook(() => useIsDesktopMissing());
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns false if no desktop patterns are available", () => {
+      mockScenario(tumbleweed, [basePattern, lampPattern], {});
 
       const { result } = renderHook(() => useIsDesktopMissing());
 

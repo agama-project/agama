@@ -42,8 +42,15 @@ const patternsWithPreselected = [
   },
 ];
 
+const desktops = patternsWithPreselected.filter((p) => p.desktop);
+const other = patternsWithPreselected.filter((p) => !p.desktop);
+
 jest.mock("~/hooks/model/system/software", () => ({
-  useSystem: () => ({ patterns: patternsWithPreselected }),
+  useAvailablePatterns: () => ({
+    all: patternsWithPreselected,
+    desktops,
+    other,
+  }),
 }));
 
 jest.mock("~/hooks/model/proposal/software", () => ({

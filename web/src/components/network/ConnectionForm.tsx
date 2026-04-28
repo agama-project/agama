@@ -327,6 +327,9 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
       },
     },
     onSubmit: () => navigate(-1),
+    // On mount, auto-fill the name field (e.g., "Ethernet", "Bond 2") since
+    // defaultValues can't access systemConns for duplicates. Changing the type
+    // updates the name via the type field's onChange listener.
     listeners: isEditing ? undefined : { onMount: ({ formApi }) => syncName(formApi) },
   });
 

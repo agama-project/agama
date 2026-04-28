@@ -23,7 +23,11 @@ import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockProgresses } from "~/test-utils";
 import { useProposal } from "~/hooks/model/proposal/software";
-import { useIsDesktopMissing, useSelectedPatterns } from "~/hooks/model/system/software";
+import {
+  useAvailablePatterns,
+  useIsDesktopMissing,
+  useSelectedPatterns,
+} from "~/hooks/model/system/software";
 import { useIssues } from "~/hooks/model/issue";
 import { SOFTWARE } from "~/routes/paths";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -31,6 +35,7 @@ import SoftwareSummary from "./SoftwareSummary";
 
 const mockUseProposalFn: jest.Mock<ReturnType<typeof useProposal>> = jest.fn();
 const mockUseSelectedPatternsFn: jest.Mock<ReturnType<typeof useSelectedPatterns>> = jest.fn();
+const mockUseAvailablePatternsFn: jest.Mock<ReturnType<typeof useAvailablePatterns>> = jest.fn();
 const mockUseIsDesktopMissingFn: jest.Mock<ReturnType<typeof useIsDesktopMissing>> = jest.fn();
 const mockUseIssuesFn: jest.Mock<ReturnType<typeof useIssues>> = jest.fn();
 
@@ -40,6 +45,7 @@ jest.mock("~/hooks/model/proposal/software", () => ({
 
 jest.mock("~/hooks/model/system/software", () => ({
   useSelectedPatterns: () => mockUseSelectedPatternsFn(),
+  useAvailablePatterns: () => mockUseAvailablePatternsFn(),
   useIsDesktopMissing: () => mockUseIsDesktopMissingFn(),
 }));
 
@@ -76,6 +82,11 @@ describe("SoftwareSummary", () => {
     mockUseIssuesFn.mockReturnValue([]);
     mockUseProposalFn.mockReturnValue({ usedSpace: 6239191, patterns: {} }); // ~5.95 GiB
     mockUseSelectedPatternsFn.mockReturnValue([]);
+    mockUseAvailablePatternsFn.mockReturnValue({
+      all: [gnome, yast2Basis],
+      desktops: [gnome],
+      other: [yast2Basis],
+    });
     mockUseIsDesktopMissingFn.mockReturnValue(false);
   });
 

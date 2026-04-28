@@ -53,8 +53,8 @@ const patternsCount = (qty: number): string =>
  * Renders the headline text for the software summary.
  *
  * Priority order:
- *   1. "No desktop selected" hint when the product suggests one and none is
- *      selected.
+ *   1. "No desktop selected" hint when the product suggests one, desktops are
+ *      available, but none is selected.
  *   2. The selected desktop's summary when exactly one is selected.
  *   3. "N desktops selected" when more than one desktop is selected.
  *   4. "Using N additional patterns" when the user picked non-desktop

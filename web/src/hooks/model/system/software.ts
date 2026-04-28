@@ -21,6 +21,7 @@
  */
 
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { fork } from "radashi";
 import { systemQuery } from "~/hooks/model/system";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useProductInfo } from "~/hooks/model/config/product";
@@ -35,6 +36,26 @@ function useSystem(): Software.System | null {
     select: selectSystem,
   });
   return data;
+}
+
+type AvailablePatterns = {
+  all: Software.Pattern[];
+  desktops: Software.Pattern[];
+  other: Software.Pattern[];
+};
+
+/**
+ * Retrieves all available patterns categorized by type.
+ *
+ * Returns three lists:
+ * - `all`: every pattern available in the system
+ * - `desktops`: patterns flagged as desktop environments
+ * - `other`: non-desktop patterns
+ */
+function useAvailablePatterns(): AvailablePatterns {
+  const { patterns } = useSystem();
+  const [desktops, other] = fork(patterns, (p) => p.desktop);
+  return { all: patterns, desktops, other };
 }
 
 /**
@@ -59,15 +80,18 @@ function useSelectedPatterns() {
  * Use this to decide whether to hint the user in UI surfaces such as the
  * software summary or the installation confirmation. Returns `false` for
  * products that do not declare `desktopSelection` or declare it as
- * `"optional"`.
+ * `"optional"`, and also returns `false` when no desktop patterns are
+ * available (can't be missing if none exist).
  */
 function useIsDesktopMissing(): boolean {
   const product = useProductInfo();
   const selectedPatterns = useSelectedPatterns();
+  const { desktops: availableDesktops } = useAvailablePatterns();
 
   if (product?.desktopSelection !== "suggested") return false;
+  if (availableDesktops.length === 0) return false;
 
   return !selectedPatterns.some((p) => p.desktop);
 }
 
-export { useSystem, useSelectedPatterns, useIsDesktopMissing };
+export { useSystem, useSelectedPatterns, useAvailablePatterns, useIsDesktopMissing };

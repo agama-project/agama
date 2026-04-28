@@ -147,12 +147,12 @@ pub fn server_with_state(state: ServerState) -> Result<ApiRouter, ServiceError> 
                 .patch_with(update_question, update_question_docs),
         )
         .api_route("/licenses/{id}", get_with(get_license, get_license_docs))
-        .route("/resolvables/{id}", put(set_resolvables))
         .route(
             "/private/storage_model",
             get(get_storage_model).put(set_storage_model),
         )
         .route("/private/solve_storage_model", get(solve_storage_model))
+        .route("/private/resolvables/{id}", put(set_resolvables))
         .route("/private/download_logs", get(download_logs))
         .route("/private/password_check", post(check_password))
         .with_state(state))
