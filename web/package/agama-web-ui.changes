@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Tue Apr 28 15:21:05 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Tue Apr 28 14:21:05 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for configuring a network bridge using the UI
   (gh#agama-project/agama#3435).
