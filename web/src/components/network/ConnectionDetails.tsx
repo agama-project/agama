@@ -188,7 +188,7 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
         <DescriptionListGroup>
           <DescriptionListTerm>{_("Max message age")}</DescriptionListTerm>
           <DescriptionListDescription>
-            {connection.bridge?.maxMessageAge ?? _("None set")}
+            {connection.bridge?.maxAge ?? _("None set")}
           </DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>

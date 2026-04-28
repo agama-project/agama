@@ -126,15 +126,16 @@ export const connectionFormOptions = formOptions({
     customDns: false,
     customDnsSearch: false,
     bindingMode: "none" as ConnectionBindingMode,
-    virtualIface: "",
+    bondIface: "",
     bondMode: BondMode.BALANCE_ROUND_ROBIN as BondMode,
     bondOptions: [] as string[],
     bondPorts: [] as string[],
+    bridgeIface: "",
     bridgeStp: true,
     bridgePriority: 32768,
     bridgeForwardDelay: 15,
     bridgeHelloTime: 2,
-    bridgeMaxMessageAge: 20,
+    bridgeMaxAge: 20,
     bridgePorts: [] as string[],
   },
 });
@@ -202,15 +203,16 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     dnsSearchList: unique(connection.dnsSearchList),
     customDns: connection.nameservers.length > 0,
     customDnsSearch: connection.dnsSearchList.length > 0,
-    virtualIface: connection.iface,
+    bondIface: connection.iface,
     bondMode: connection.bond?.mode ?? BondMode.BALANCE_ROUND_ROBIN,
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
     bondPorts: connection.bond?.ports ?? [],
+    bridgeIface: connection.iface,
     bridgeStp: connection.bridge?.stp ?? true,
     bridgePriority: connection.bridge?.priority ?? 32768,
     bridgeForwardDelay: connection.bridge?.forwardDelay ?? 15,
     bridgeHelloTime: connection.bridge?.helloTime ?? 2,
-    bridgeMaxMessageAge: connection.bridge?.maxMessageAge ?? 20,
+    bridgeMaxAge: connection.bridge?.maxAge ?? 20,
     bridgePorts: connection.bridge?.ports ?? [],
   };
 }
@@ -230,9 +232,8 @@ function buildConnection(formValues: FormValues): Connection {
     : [];
 
   let iface = "";
-
   if (isVirtual(formValues.type)) {
-    iface = formValues.virtualIface;
+    iface = formValues[`${formValues.type}Iface`];
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;
   }
@@ -262,7 +263,7 @@ function buildConnection(formValues: FormValues): Connection {
             priority: formValues.bridgePriority,
             forwardDelay: formValues.bridgeForwardDelay,
             helloTime: formValues.bridgeHelloTime,
-            maxMessageAge: formValues.bridgeMaxMessageAge,
+            maxAge: formValues.bridgeMaxAge,
             ports: formValues.bridgePorts,
           }
         : undefined,

@@ -59,7 +59,7 @@ const BondSettings = withForm({
 
     return (
       <>
-        <form.AppField name="virtualIface">
+        <form.AppField name="bondIface">
           {(field) =>
             isEditing ? (
               <field.ReadOnlyField label={_("Device name")} />

@@ -55,9 +55,9 @@ export const CONNECTION_TYPE = {
  * Returns true if the given connection type is virtual.
  */
 const isVirtual = (type: ConnectionType): boolean =>
-  ([CONNECTION_TYPE.BOND, CONNECTION_TYPE.BRIDGE, CONNECTION_TYPE.VLAN] as ConnectionType[]).includes(
-    type,
-  );
+  (
+    [CONNECTION_TYPE.BOND, CONNECTION_TYPE.BRIDGE, CONNECTION_TYPE.VLAN] as ConnectionType[]
+  ).includes(type);
 
 /**
  * Translatable labels for connection types.

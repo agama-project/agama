@@ -36,7 +36,7 @@
  */
 
 import { sprintf } from "sprintf-js";
-import { isEmpty, shake } from "radashi";
+import { inRange, isEmpty, shake } from "radashi";
 import { BondMode } from "~/types/network";
 import {
   CONNECTION_TYPE,
@@ -223,7 +223,7 @@ function validateBondFields(formValues: FormValues): Partial<FormFieldErrors> {
 
   return {
     // TRANSLATORS: validation error for the bond device name field.
-    virtualIface: !formValues.virtualIface.trim() ? _("Device name is required") : undefined,
+    bondIface: !formValues.bondIface.trim() ? _("Device name is required") : undefined,
     // TRANSLATORS: validation error for the bond mode field.
     bondMode: !formValues.bondMode.trim() ? _("Bond mode is required") : undefined,
     bondPorts:
@@ -236,49 +236,52 @@ function validateBondFields(formValues: FormValues): Partial<FormFieldErrors> {
 }
 
 /**
+ * Validates bridge STP specific fields
+ */
+function validateBridgeStp(formValues: FormValues): Partial<FormFieldErrors> {
+  if (!formValues.bridgeStp) return {};
+
+  return {
+    // For radashi inRange the start is inclusive but the end of the range is exclusive,
+    // therefore, take care of adding 1 to the end range.
+    // TRANSLATORS: validation error for the bridge priority field.
+    bridgePriority: inRange(formValues.bridgePriority, 0, 61441)
+      ? undefined
+      : _("Priority must be between 0 and 61440"),
+    // TRANSLATORS: validation error for the bridge forward delay field.
+    bridgeForwardDelay: inRange(formValues.bridgeForwardDelay, 4, 31)
+      ? undefined
+      : _("Forward delay must be between 4 and 30 seconds"),
+    // TRANSLATORS: validation error for the bridge hello time field.
+    bridgeHelloTime: inRange(formValues.bridgeHelloTime, 1, 11)
+      ? undefined
+      : _("Hello time must be between 1 and 10 seconds"),
+
+    // TRANSLATORS: validation error for the bridge max message age field.
+    bridgeMaxAge: inRange(formValues.bridgeMaxAge, 6, 41)
+      ? undefined
+      : _("Max message age must be between 6 and 40 seconds"),
+  };
+}
+
+/**
  * Validates bridge-specific fields.
  */
 function validateBridgeFields(formValues: FormValues): Partial<FormFieldErrors> {
   if (formValues.type !== CONNECTION_TYPE.BRIDGE) return {};
 
-  const {
-    virtualIface,
-    bridgePorts,
-    bridgePriority,
-    bridgeForwardDelay,
-    bridgeHelloTime,
-    bridgeMaxMessageAge,
-    bridgeStp,
-  } = formValues;
+  const { bridgeIface, bridgePorts } = formValues;
 
   const errors: Partial<FormFieldErrors> = {
     // TRANSLATORS: validation error for the bridge device name field.
-    virtualIface: !virtualIface.trim() ? _("Device name is required") : undefined,
+    bridgeIface: !bridgeIface.trim() ? _("Device name is required") : undefined,
     bridgePorts:
       bridgePorts.length === 0
         ? // TRANSLATORS: validation error for the bridge ports field.
           _("At least one bridge port is required")
         : undefined,
+    ...validateBridgeStp(formValues),
   };
-
-  if (bridgeStp) {
-    if (bridgePriority < 0 || bridgePriority > 61440) {
-      // TRANSLATORS: validation error for the bridge priority field.
-      errors.bridgePriority = _("Priority must be between 0 and 61440");
-    }
-    if (bridgeForwardDelay < 4 || bridgeForwardDelay > 30) {
-      // TRANSLATORS: validation error for the bridge forward delay field.
-      errors.bridgeForwardDelay = _("Forward delay must be between 4 and 30 seconds");
-    }
-    if (bridgeHelloTime < 1 || bridgeHelloTime > 10) {
-      // TRANSLATORS: validation error for the bridge hello time field.
-      errors.bridgeHelloTime = _("Hello time must be between 1 and 10 seconds");
-    }
-    if (bridgeMaxMessageAge < 6 || bridgeMaxMessageAge > 40) {
-      // TRANSLATORS: validation error for the bridge max message age field.
-      errors.bridgeMaxMessageAge = _("Max message age must be between 6 and 40 seconds");
-    }
-  }
 
   return errors;
 }

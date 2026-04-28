@@ -49,7 +49,7 @@ const BridgeSettings = withForm({
 
     return (
       <>
-        <form.AppField name="virtualIface">
+        <form.AppField name="bridgeIface">
           {(field) =>
             isEditing ? (
               <field.ReadOnlyField label={_("Device name")} />
@@ -147,7 +147,7 @@ const BridgeSettings = withForm({
                     />
                   )}
                 </form.AppField>
-                <form.AppField name="bridgeMaxMessageAge">
+                <form.AppField name="bridgeMaxAge">
                   {(field) => (
                     <field.NumberField
                       label={

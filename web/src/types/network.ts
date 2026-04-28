@@ -312,7 +312,7 @@ type Bond = {
 type Bridge = {
   forwardDelay: number;
   priority: number;
-  maxMessageAge: number;
+  maxAge: number;
   ports: string[];
   helloTime: number;
   stp: boolean;
