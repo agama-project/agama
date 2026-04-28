@@ -55,6 +55,7 @@ import {
   ensureIPPrefix,
   formatIp,
   generateConnectionName,
+  isVirtual,
   isValidIPv4Address,
   isValidNameserver,
   isValidDNSSearchDomain,
@@ -143,7 +144,11 @@ type FormValues = typeof connectionFormOptions.defaultValues;
 /**
  * Connection types supported by this form.
  */
-const SUPPORTED_CONNECTION_TYPES = [CONNECTION_TYPE.ETHERNET, CONNECTION_TYPE.BOND] as const;
+const SUPPORTED_CONNECTION_TYPES = [
+  CONNECTION_TYPE.ETHERNET,
+  CONNECTION_TYPE.BOND,
+  CONNECTION_TYPE.BRIDGE,
+] as const;
 
 /**
  * Infers the form IPvX mode from a stored {@link ConnectionMethod} and addresses.
@@ -226,7 +231,7 @@ function buildConnection(formValues: FormValues): Connection {
 
   let iface = "";
 
-  if (ConnectionType.isVirtual(formValues.type)) {
+  if (isVirtual(formValues.type)) {
     iface = formValues.virtualIface;
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;
@@ -251,7 +256,7 @@ function buildConnection(formValues: FormValues): Connection {
           }
         : undefined,
     bridge:
-      formValues.type === ConnectionType.BRIDGE
+      formValues.type === CONNECTION_TYPE.BRIDGE
         ? {
             stp: formValues.bridgeStp,
             priority: formValues.bridgePriority,
@@ -442,7 +447,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
-            type === ConnectionType.BRIDGE && <BridgeSettings form={form} isEditing={isEditing} />
+            type === CONNECTION_TYPE.BRIDGE && <BridgeSettings form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 

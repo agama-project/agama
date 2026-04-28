@@ -49,7 +49,15 @@ export const CONNECTION_TYPE = {
   BRIDGE: "bridge",
   VLAN: "vlan",
   UNKNOWN: "unknown",
-} as const satisfies Record<string, ConnectionType>;
+} as const;
+
+/**
+ * Returns true if the given connection type is virtual.
+ */
+const isVirtual = (type: ConnectionType): boolean =>
+  ([CONNECTION_TYPE.BOND, CONNECTION_TYPE.BRIDGE, CONNECTION_TYPE.VLAN] as ConnectionType[]).includes(
+    type,
+  );
 
 /**
  * Translatable labels for connection types.
@@ -396,6 +404,7 @@ export {
   generateConnectionName,
   intToIPString,
   ipPrefixFor,
+  isVirtual,
   isValidIp,
   isValidIpPrefix,
   securityFromFlags,

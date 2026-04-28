@@ -236,6 +236,54 @@ function validateBondFields(formValues: FormValues): Partial<FormFieldErrors> {
 }
 
 /**
+ * Validates bridge-specific fields.
+ */
+function validateBridgeFields(formValues: FormValues): Partial<FormFieldErrors> {
+  if (formValues.type !== CONNECTION_TYPE.BRIDGE) return {};
+
+  const {
+    virtualIface,
+    bridgePorts,
+    bridgePriority,
+    bridgeForwardDelay,
+    bridgeHelloTime,
+    bridgeMaxMessageAge,
+    bridgeStp,
+  } = formValues;
+
+  const errors: Partial<FormFieldErrors> = {
+    // TRANSLATORS: validation error for the bridge device name field.
+    virtualIface: !virtualIface.trim() ? _("Device name is required") : undefined,
+    bridgePorts:
+      bridgePorts.length === 0
+        ? // TRANSLATORS: validation error for the bridge ports field.
+          _("At least one bridge port is required")
+        : undefined,
+  };
+
+  if (bridgeStp) {
+    if (bridgePriority < 0 || bridgePriority > 61440) {
+      // TRANSLATORS: validation error for the bridge priority field.
+      errors.bridgePriority = _("Priority must be between 0 and 61440");
+    }
+    if (bridgeForwardDelay < 4 || bridgeForwardDelay > 30) {
+      // TRANSLATORS: validation error for the bridge forward delay field.
+      errors.bridgeForwardDelay = _("Forward delay must be between 4 and 30 seconds");
+    }
+    if (bridgeHelloTime < 1 || bridgeHelloTime > 10) {
+      // TRANSLATORS: validation error for the bridge hello time field.
+      errors.bridgeHelloTime = _("Hello time must be between 1 and 10 seconds");
+    }
+    if (bridgeMaxMessageAge < 6 || bridgeMaxMessageAge > 40) {
+      // TRANSLATORS: validation error for the bridge max message age field.
+      errors.bridgeMaxMessageAge = _("Max message age must be between 6 and 40 seconds");
+    }
+  }
+
+  return errors;
+}
+
+/**
  * Validates the connection form values.
  *
  * Returns a map of field errors when validation fails, or undefined when all
@@ -245,6 +293,7 @@ export function validateConnectionForm(formValues: FormValues): FormFieldErrors 
   const fieldErrors = shake({
     ...validateCommonFields(formValues),
     ...validateBondFields(formValues),
+    ...validateBridgeFields(formValues),
   });
 
   if (!isEmpty(fieldErrors)) return fieldErrors;
