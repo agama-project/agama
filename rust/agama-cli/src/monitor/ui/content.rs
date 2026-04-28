@@ -32,28 +32,39 @@ use ratatui::{
 };
 use std::collections::HashMap;
 
-/// Renders the content area based on current state
-pub fn render_content(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
-    // Priority order (matching mockup logic):
-    // 1. Questions (highest priority)
-    // 2. Final status (finished/failed)
-    // 3. Progress (installation/configuration)
-    // 4. Issues (blocking installation)
+/// Content area widget
+pub struct Content<'a> {
+    status: &'a InstallationStatus,
+}
 
-    // 5. Default stage message
+impl<'a> Content<'a> {
+    pub fn new(status: &'a InstallationStatus) -> Self {
+        Self { status }
+    }
+}
 
-    if !status.questions.is_empty() {
-        render_questions(status, area, buf);
-    } else if status.status.stage.is_last() {
-        render_final_status(status, area, buf);
-    } else if !status.has_product() {
-        render_no_product(area, buf);
-    } else if !status.status.progresses.is_empty() {
-        render_progress(status, area, buf);
-    } else if !status.issues.is_empty() {
-        render_issues(status, area, buf);
-    } else {
-        render_stage(status, area, buf);
+impl Widget for Content<'_> {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        // Priority order (matching mockup logic):
+        // 1. Questions (highest priority)
+        // 2. Final status (finished/failed)
+        // 3. Progress (installation/configuration)
+        // 4. Issues (blocking installation)
+        // 5. Default stage message
+
+        if !self.status.questions.is_empty() {
+            render_questions(self.status, area, buf);
+        } else if self.status.status.stage.is_last() {
+            render_final_status(self.status, area, buf);
+        } else if !self.status.has_product() {
+            render_no_product(area, buf);
+        } else if !self.status.status.progresses.is_empty() {
+            render_progress(self.status, area, buf);
+        } else if !self.status.issues.is_empty() {
+            render_issues(self.status, area, buf);
+        } else {
+            render_stage(self.status, area, buf);
+        }
     }
 }
 

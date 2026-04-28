@@ -27,9 +27,9 @@ mod product;
 mod separator;
 mod status_bar;
 
-pub use content::render_content;
-pub use hints::render_hints;
+pub use content::Content;
+pub use hints::Hints;
 pub use layout::create_layout;
-pub use product::render_product;
-pub use separator::render_separator;
-pub use status_bar::render_status_bar;
+pub use product::Product;
+pub use separator::Separator;
+pub use status_bar::StatusBar;

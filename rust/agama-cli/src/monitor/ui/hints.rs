@@ -28,14 +28,18 @@ use ratatui::{
     widgets::{Paragraph, Widget},
 };
 
-/// Renders keyboard hints
-pub fn render_hints(area: Rect, buf: &mut Buffer) {
-    let hints = vec![
-        Span::styled("q", Style::default().add_modifier(Modifier::BOLD)),
-        Span::raw(" / "),
-        Span::styled("Ctrl-C", Style::default().add_modifier(Modifier::BOLD)),
-        Span::styled(" exit", Style::default().add_modifier(Modifier::DIM)),
-    ];
+/// Keyboard hints widget
+pub struct Hints;
 
-    Paragraph::new(Line::from(hints)).render(area, buf);
+impl Widget for Hints {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        let hints = vec![
+            Span::styled("q", Style::default().add_modifier(Modifier::BOLD)),
+            Span::raw(" / "),
+            Span::styled("Ctrl-C", Style::default().add_modifier(Modifier::BOLD)),
+            Span::styled(" exit", Style::default().add_modifier(Modifier::DIM)),
+        ];
+
+        Paragraph::new(Line::from(hints)).render(area, buf);
+    }
 }

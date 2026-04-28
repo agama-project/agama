@@ -27,10 +27,14 @@ use ratatui::{
     widgets::{Paragraph, Widget},
 };
 
-/// Renders a separator line
-pub fn render_separator(area: Rect, buf: &mut Buffer) {
-    let separator = "─".repeat(area.width as usize);
-    Paragraph::new(separator)
-        .style(Style::default().add_modifier(Modifier::DIM))
-        .render(area, buf);
+/// Separator line widget
+pub struct Separator;
+
+impl Widget for Separator {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        let separator = "─".repeat(area.width as usize);
+        Paragraph::new(separator)
+            .style(Style::default().add_modifier(Modifier::DIM))
+            .render(area, buf);
+    }
 }

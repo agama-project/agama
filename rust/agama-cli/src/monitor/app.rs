@@ -116,15 +116,14 @@ impl Widget for &mut MonitorApp {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let layout = ui::create_layout(area);
 
-        // Render each section by drawing into the buffer
-        // We'll use helper widgets for each section
-        ui::render_status_bar(&self.status, layout.status_bar, buf);
+        // Render each section using widget structs
+        ui::StatusBar::new(&self.status).render(layout.status_bar, buf);
         if let Some(product_name) = &self.status.system_info.product_name {
-            ui::render_product(&product_name, layout.product, buf);
+            ui::Product::new(&product_name).render(layout.product, buf);
         }
-        ui::render_separator(layout.separator, buf);
-        ui::render_content(&self.status, layout.content, buf);
-        ui::render_separator(layout.hints_separator, buf);
-        ui::render_hints(layout.hints, buf);
+        ui::Separator.render(layout.separator, buf);
+        ui::Content::new(&self.status).render(layout.content, buf);
+        ui::Separator.render(layout.hints_separator, buf);
+        ui::Hints.render(layout.hints, buf);
     }
 }

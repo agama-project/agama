@@ -27,9 +27,21 @@ use ratatui::{
     widgets::{Paragraph, Widget},
 };
 
-/// Renders the product name
-pub fn render_product(product_name: &str, area: Rect, buf: &mut Buffer) {
-    Paragraph::new(format!(" {}", product_name))
-        .style(Style::default().add_modifier(Modifier::BOLD))
-        .render(area, buf);
+/// Product name widget
+pub struct Product<'a> {
+    name: &'a str,
+}
+
+impl<'a> Product<'a> {
+    pub fn new(name: &'a str) -> Self {
+        Self { name }
+    }
+}
+
+impl Widget for Product<'_> {
+    fn render(self, area: Rect, buf: &mut Buffer) {
+        Paragraph::new(format!(" {}", self.name))
+            .style(Style::default().add_modifier(Modifier::BOLD))
+            .render(area, buf);
+    }
 }
