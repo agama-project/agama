@@ -20,7 +20,7 @@
 
 //! Representation of the network settings
 
-use super::types::{ConnectionState, DeviceState, DeviceType, Status};
+use super::types::{ConnectionState, DeviceState, DeviceType, Ipv4Method, Ipv6Method, Status};
 use crate::openapi::schemas;
 use cidr::IpInet;
 use merge::Merge;
@@ -221,14 +221,14 @@ pub struct NetworkConnection {
     pub id: String,
     /// IPv4 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub method4: Option<String>,
+    pub method4: Option<Ipv4Method>,
     /// Gateway IP address for the IPv4 connection
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(schema_with = schemas::ip_addr_ref)]
     pub gateway4: Option<IpAddr>,
     /// IPv6 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub method6: Option<String>,
+    pub method6: Option<Ipv6Method>,
     /// Gateway IP address for the IPv6 connection
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schema(schema_with = schemas::ip_addr_ref)]

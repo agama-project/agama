@@ -818,15 +818,8 @@ impl TryFrom<NetworkConnection> for Connection {
         let id = conn.clone().id;
         let mut connection = Connection::new(id, conn.device_type());
 
-        if let Some(method) = conn.clone().method4 {
-            let method: Ipv4Method = method.parse().unwrap();
-            connection.ip_config.method4 = method;
-        }
-
-        if let Some(method) = conn.method6 {
-            let method: Ipv6Method = method.parse().unwrap();
-            connection.ip_config.method6 = method;
-        }
+        connection.ip_config.method4 = conn.method4;
+        connection.ip_config.method6 = conn.method6;
 
         if let Some(status) = conn.status {
             connection.status = status;
@@ -888,8 +881,8 @@ impl TryFrom<Connection> for NetworkConnection {
     fn try_from(conn: Connection) -> Result<Self, Self::Error> {
         let id = conn.clone().id;
         let custom_mac = conn.custom_mac_address.to_string();
-        let method4 = Some(conn.ip_config.method4.to_string());
-        let method6 = Some(conn.ip_config.method6.to_string());
+        let method4 = conn.ip_config.method4;
+        let method6 = conn.ip_config.method6;
         let mac_address = conn.mac_address.map(|mac| mac.to_string());
         let custom_mac_address = (!custom_mac.is_empty()).then_some(custom_mac);
         let nameservers = conn.ip_config.nameservers;

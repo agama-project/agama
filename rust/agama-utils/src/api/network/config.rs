@@ -51,7 +51,7 @@ mod tests {
         let mut updated = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
                 id: "eth0".to_string(),
-                method4: Some("dhcp".to_string()),
+                method4: Some(Ipv4Method::Auto),
                 addresses: vec![],
                 nameservers: vec![],
                 dns_searchlist: vec![],
@@ -71,7 +71,7 @@ mod tests {
             connections: Some(NetworkConnectionsCollection(vec![
                 NetworkConnection {
                     id: "eth1".to_string(),
-                    method4: Some("static".to_string()),
+                    method4: Some(Ipv4Method::Manual),
                     addresses: vec!["192.168.1.10/24".parse().unwrap()],
                     nameservers: vec!["8.8.8.8".parse().unwrap()],
                     dns_searchlist: vec!["example.com".to_string()],
@@ -80,7 +80,7 @@ mod tests {
                 },
                 NetworkConnection {
                     id: "wifi0".to_string(),
-                    method4: Some("dhcp".to_string()),
+                    method4: Some(Ipv4Method::Auto),
                     wireless: Some(WirelessSettings {
                         ssid: "MyWiFi".to_string(),
                         security: "wpa2".to_string(),
