@@ -51,7 +51,7 @@ pub struct Theme {
 impl Default for Theme {
     /// Returns the default monochrome theme
     fn default() -> Self {
-        Self::monochrome()
+        Self::suse_green()
     }
 }
 
@@ -96,6 +96,26 @@ impl Theme {
             error_bg: Color::Red,
 
             accent: Color::Cyan,
+        }
+    }
+
+    pub fn suse_green() -> Self {
+        Self {
+            background: Color::Rgb(48, 48, 48), // Dark gray
+
+            busy_fg: Color::Black,
+            busy_bg: Color::Rgb(48, 186, 120), // SUSE green
+
+            idle_fg: Color::White,
+            idle_bg: Color::Rgb(48, 48, 48), // Dark gray
+
+            warning_fg: Color::Black,
+            warning_bg: Color::Rgb(255, 180, 0), // Orange
+
+            error_fg: Color::White,
+            error_bg: Color::Rgb(204, 0, 0), // Red
+
+            accent: Color::Rgb(48, 186, 120), // SUSE green
         }
     }
 }
