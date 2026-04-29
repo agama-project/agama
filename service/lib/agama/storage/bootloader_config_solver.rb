@@ -19,9 +19,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/cmdline_args"
 require "agama/storage/bootloader_type"
-require "yast"
 require "bootloader/systeminfo"
+require "yast"
 
 module Agama
   module Storage
@@ -45,8 +46,8 @@ module Agama
         return if config.type
 
         config.type =
-          if bls?
-            product_bls_type || DEFAULT_BLS_TYPE
+          if bls_compliant_system?
+            kernel_bls_type || product_bls_type || DEFAULT_BLS_TYPE
           else
             DEFAULT_TYPE
           end
@@ -71,18 +72,40 @@ module Agama
       BLS_ARCHS = [:x86_64, :i386, :aarch64, :arm, :riscv64].freeze
       private_constant :BLS_ARCHS
 
+      # Whether the usage of a BLS-compliant bootloader is supported
+      #
+      # @return [Boolean]
+      def bls_compliant_system?
+        return false unless ::Bootloader::Systeminfo.efi?
+
+        BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
+      end
+
       # @return [BootloaderType, nil]
       def product_bls_type
         BootloaderType.find(product_config.data.dig("boot", "default_efi_bootloader"))
       end
 
-      # Whether the usage of a BLS-compliant bootloader is supported
+      # Bootloader type indicated in the kernel options.
       #
-      # @return [Boolean]
-      def bls?
-        return false unless ::Bootloader::Systeminfo.efi?
+      # This is only used for the systemd-boot preview and will be dropped once the config allows
+      # changing the bootloader
+      #
+      # @return [BootloaderType, nil] nil if "systemd_boot_preview" kernel option is not set.
+      def kernel_bls_type
+        arg_value = kernel_args.data["systemd_boot_preview"]
 
-        BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
+        return nil unless [true, "1", "yes"].include?(arg_value)
+
+        BootloaderType::SYSTEMD_BOOT
+      end
+
+      # Kernel arguments.
+      #
+      # The class {CmdlineArgs} is still used here because it is only needed for the systemd-boot
+      #   preview. This will be dropped once the config allows changing the bootloader.
+      def kernel_args
+        @kernel_args ||= CmdlineArgs.read_from_kernel
       end
     end
   end
