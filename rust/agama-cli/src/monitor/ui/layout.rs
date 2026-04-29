@@ -41,9 +41,6 @@ const HINTS_HEIGHT: u16 = 1;
 pub struct MonitorLayout {
     /// Status bar (row 1)
     pub status_bar: Rect,
-    /// Empty gap (row 2) - used for visual spacing
-    #[allow(dead_code)]
-    pub gap: Rect,
     /// Product name (row 3)
     pub product: Rect,
     /// Separator line (row 4)
@@ -89,7 +86,6 @@ pub fn create_layout(area: Rect) -> MonitorLayout {
 
     MonitorLayout {
         status_bar: chunks[0],
-        gap: chunks[1],
         product: chunks[2],
         separator: chunks[3],
         content: content_and_hints[0],
