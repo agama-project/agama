@@ -29,6 +29,15 @@ use ratatui::{
 
 use crate::monitor::{theme::Theme, ui::scope_to_string};
 
+/// Left indentation for progress widget content
+const PROGRESS_INDENT: u16 = 3;
+/// Height of progress widget without scope label
+const PROGRESS_HEIGHT_NO_SCOPE: u16 = 3;
+/// Height of progress widget with scope label
+const PROGRESS_HEIGHT_WITH_SCOPE: u16 = 5;
+/// Vertical spacing after scope label
+const SCOPE_LABEL_SPACING: u16 = 2;
+
 pub struct ProgressWidget<'a> {
     with_scope: bool,
     progress: &'a api::Progress,
@@ -46,9 +55,9 @@ impl<'a> ProgressWidget<'a> {
 
     pub fn height(&'a self) -> u16 {
         if self.with_scope {
-            5 as u16
+            PROGRESS_HEIGHT_WITH_SCOPE
         } else {
-            3 as u16
+            PROGRESS_HEIGHT_NO_SCOPE
         }
     }
 }
@@ -56,8 +65,8 @@ impl<'a> ProgressWidget<'a> {
 impl<'a> Widget for ProgressWidget<'a> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let mut content_area = Rect {
-            x: area.x + 3,
-            width: area.width.saturating_sub(3),
+            x: area.x + PROGRESS_INDENT,
+            width: area.width.saturating_sub(PROGRESS_INDENT),
             ..area
         };
 
@@ -67,7 +76,7 @@ impl<'a> Widget for ProgressWidget<'a> {
                 Style::default().add_modifier(Modifier::DIM),
             ))
             .render(area, buf);
-            content_area.y += 2;
+            content_area.y += SCOPE_LABEL_SPACING;
         }
 
         let [gauge_area, _, details_area] = Layout::vertical([

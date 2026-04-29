@@ -26,6 +26,9 @@ use std::{io, time::Duration};
 
 use super::{theme::Theme, ui};
 
+/// Polling interval for keyboard events (milliseconds)
+const EVENT_POLL_INTERVAL_MS: u64 = 100;
+
 /// Application state for the monitor TUI
 pub struct MonitorApp {
     /// Current installation status (includes system info)
@@ -82,7 +85,7 @@ impl MonitorApp {
                 }
 
                 // Keyboard and terminal events (poll with short timeout)
-                _ = tokio::time::sleep(Duration::from_millis(100)) => {
+                _ = tokio::time::sleep(Duration::from_millis(EVENT_POLL_INTERVAL_MS)) => {
                     if event::poll(Duration::from_millis(0))? {
                         match event::read()? {
                             Event::Key(key) => {

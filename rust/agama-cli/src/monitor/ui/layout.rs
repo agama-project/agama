@@ -22,6 +22,21 @@
 
 use ratatui::layout::{Constraint, Layout, Rect};
 
+/// Height of the status bar row
+const STATUS_BAR_HEIGHT: u16 = 1;
+/// Height of the gap between status bar and product name
+const GAP_HEIGHT: u16 = 1;
+/// Height of the product name row
+const PRODUCT_HEIGHT: u16 = 1;
+/// Height of the separator line
+const SEPARATOR_HEIGHT: u16 = 1;
+/// Total height of the header (status bar + gap + product + separator)
+const HEADER_HEIGHT: u16 = STATUS_BAR_HEIGHT + GAP_HEIGHT + PRODUCT_HEIGHT + SEPARATOR_HEIGHT;
+/// Height of the hints separator line
+const HINTS_SEPARATOR_HEIGHT: u16 = 1;
+/// Height of the hints row
+const HINTS_HEIGHT: u16 = 1;
+
 /// Layout areas for the monitor UI
 pub struct MonitorLayout {
     /// Status bar (row 1)
@@ -51,25 +66,24 @@ pub struct MonitorLayout {
 /// - Middle: Dynamic content (progress, issues, messages) - with air gaps
 /// - Footer: Hints separator and keyboard hints (non-sticky, immediately below content)
 pub fn create_layout(area: Rect) -> MonitorLayout {
-    // Calculate content height: total - (status + gap + product + separator)
+    // Calculate content height: total - header
     // Leave room for hints at bottom but don't make them sticky
-    let content_start = 4;
-    let content_height = area.height.saturating_sub(content_start);
+    let content_height = area.height.saturating_sub(HEADER_HEIGHT);
 
     let chunks = Layout::vertical([
-        Constraint::Length(1),              // Status bar
-        Constraint::Length(1),              // Gap
-        Constraint::Length(1),              // Product name
-        Constraint::Length(1),              // Separator
+        Constraint::Length(STATUS_BAR_HEIGHT),
+        Constraint::Length(GAP_HEIGHT),
+        Constraint::Length(PRODUCT_HEIGHT),
+        Constraint::Length(SEPARATOR_HEIGHT),
         Constraint::Length(content_height), // Content + hints (non-sticky)
     ])
     .split(area);
 
     // Split content area to have hints at bottom (but not screen-sticky)
     let content_and_hints = Layout::vertical([
-        Constraint::Min(1),    // Content area (flexible)
-        Constraint::Length(1), // Hints separator
-        Constraint::Length(1), // Hints footer
+        Constraint::Min(1),                         // Content area (flexible)
+        Constraint::Length(HINTS_SEPARATOR_HEIGHT), // Hints separator
+        Constraint::Length(HINTS_HEIGHT),           // Hints footer
     ])
     .split(chunks[4]);
 
