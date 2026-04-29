@@ -1,4 +1,4 @@
-// Copyright (c) [2024-2025] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -22,14 +22,36 @@
 
 mod content;
 mod hints;
+mod issues;
 mod layout;
 mod product;
+mod progress;
 mod separator;
 mod status_bar;
 
+use agama_utils::api::Scope;
 pub use content::Content;
+use gettextrs::gettext;
 pub use hints::Hints;
 pub use layout::create_layout;
 pub use product::Product;
 pub use separator::Separator;
 pub use status_bar::StatusBar;
+
+/// Converts a Scope to a human-readable string
+pub fn scope_to_string(scope: &Scope) -> String {
+    match scope {
+        Scope::Manager => gettext("Manager"),
+        Scope::Network => gettext("Network"),
+        Scope::Hostname => gettext("Hostname"),
+        Scope::L10n => gettext("Localization"),
+        Scope::Product => gettext("Product"),
+        Scope::Software => gettext("Software"),
+        Scope::Storage => gettext("Storage"),
+        Scope::Files => gettext("Files"),
+        Scope::ISCSI => gettext("iSCSI"),
+        Scope::DASD => gettext("DASD"),
+        Scope::ZFCP => gettext("zFCP"),
+        Scope::Users => gettext("Users"),
+    }
+}
