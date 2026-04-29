@@ -520,6 +520,33 @@ void free_products(const struct Products *products) noexcept {
   free((void *)products->list);
 }
 
+void select_locale(struct Zypp *_zypp, const char *language,
+                   const char *country) noexcept {
+  LOG_LOCATION("Selecting locale packages");
+
+  if (strlen(country) == 0) {
+    WAR << "Locale language not specified" << std::endl;
+    return;
+  }
+
+  MIL << "Locale to install: " << language << std::endl;
+  zypp::LocaleSet locales;
+  zypp::Locale locale(language);
+  locales.insert(locale);
+
+  if (strlen(country) > 0) {
+    std::string locale_str(language);
+    locale_str.append("_");
+    locale_str.append(country);
+    MIL << "Locale to install: " << locale_str << std::endl;
+
+    zypp::Locale full_locale = zypp::Locale(locale_str);
+    locales.insert(full_locale);
+  }
+
+  zypp::sat::Pool::instance().setRequestedLocales(locales);
+}
+
 bool run_solver(struct Zypp *zypp, bool only_required,
                 struct Status *status) noexcept {
   LOG_LOCATION("Running solver");

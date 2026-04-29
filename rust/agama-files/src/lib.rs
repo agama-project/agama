@@ -31,6 +31,7 @@ pub use runner::ScriptsRunner;
 mod tests {
     use std::path::PathBuf;
 
+    use agama_l10n::test_utils::start_service as start_l10n_service;
     use agama_software::test_utils::start_service as start_software_service;
     use agama_utils::{
         actor::Handler,
@@ -70,9 +71,12 @@ mod tests {
             let issues = issue::Service::starter(events_tx.clone()).start();
             let progress = progress::Service::starter(events_tx.clone()).start();
             let questions = question::start(events_tx.clone()).await.unwrap();
+            let l10n = start_l10n_service(events_tx.clone(), issues.clone()).await;
+
             let software = start_software_service(
                 events_tx.clone(),
                 issues,
+                l10n,
                 progress.clone(),
                 questions.clone(),
             )

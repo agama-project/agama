@@ -404,6 +404,14 @@ impl Zypp {
         }
     }
 
+    pub fn select_locale(&self, language: String, country: String) {
+        unsafe {
+            let c_language = CString::new(language).unwrap();
+            let c_country = CString::new(country).unwrap();
+            zypp_agama_sys::select_locale(self.ptr, c_language.as_ptr(), c_country.as_ptr());
+        }
+    }
+
     pub fn is_package_selected(&self, tag: &str) -> ZyppResult<bool> {
         unsafe {
             let mut status: Status = Status::default();
