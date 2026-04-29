@@ -154,33 +154,4 @@ describe("InstallationFinished", () => {
       });
     });
   });
-
-  describe("when running storage config in guided mode", () => {
-    describe("when TPM is set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(
-          mockStorageConfig("guided", {
-            method: "tpm_fde",
-            password: "n0tS3cr3t",
-          }),
-        );
-      });
-
-      it("shows the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        await screen.findAllByText(/TPM/);
-      });
-    });
-
-    describe("when TPM is not set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
-      });
-
-      it("does not show the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
-      });
-    });
-  });
 });

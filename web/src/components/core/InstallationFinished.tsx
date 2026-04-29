@@ -36,6 +36,7 @@ import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useExtendedConfig } from "~/hooks/model/config";
 import { _ } from "~/i18n";
+import { Storage } from "~/model/config";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
@@ -66,26 +67,28 @@ the machine needs to boot directly to the new boot loader.",
   );
 };
 
-// TODO: define some utility method to get the device used as root (drive, partition, logical volume).
-// TODO: use type checking for config.
-function usingTpm(config): boolean {
-  if (!config) {
-    return null;
-  }
-
-  if (config.guided) return config.guided.encryption;
+// FIXME:
+//  The check to detect whether root is encrypted using tpmFde is incomplete:
+//  * The root logical volume might not be encrypted but the PVs.
+//  * Partitions from MD RAIDs are not considered.
+function usingTpm(config?: Storage.Config): boolean {
+  if (!config) return false;
 
   const { drives = [], volumeGroups = [] } = config;
 
   const devices = [
     ...drives,
-    ...drives.flatMap((d) => d.partitions || []),
+    ...drives.flatMap((d) => ("partitions" in d ? d.partitions : [])),
     ...volumeGroups.flatMap((v) => v.logicalVolumes || []),
   ];
 
-  const root = devices.find((d) => d.filesystem?.path === "/");
+  const root = devices.find((d) => "filesystem" in d && d.filesystem?.path === "/");
+  if (!root) return false;
 
-  return root?.encryption?.tpmFde !== undefined;
+  const encryption = "encryption" in root ? root.encryption : null;
+  if (!encryption) return false;
+
+  return typeof encryption === "object" && "tpmFde" in encryption;
 }
 
 function InstallationFinished() {
