@@ -26,21 +26,25 @@ use gettextrs::gettext;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Layout, Rect},
-    style::{Color, Modifier, Style},
+    style::{Modifier, Style},
     text::{Line, Span},
     widgets::{Paragraph, Widget, Wrap},
 };
 
-use crate::monitor::ui::{issues::IssuesList, progress::ProgressWidget};
+use crate::monitor::{
+    theme::Theme,
+    ui::{issues::IssuesList, progress::ProgressWidget},
+};
 
 /// Represents the main content of the monitor
 pub struct Content<'a> {
     status: &'a InstallationStatus,
+    theme: &'a Theme,
 }
 
 impl<'a> Content<'a> {
-    pub fn new(status: &'a InstallationStatus) -> Self {
-        Self { status }
+    pub fn new(status: &'a InstallationStatus, theme: &'a Theme) -> Self {
+        Self { status, theme }
     }
 }
 
@@ -59,9 +63,9 @@ impl Widget for Content<'_> {
         } else if !self.status.questions.is_empty() {
             render_questions(self.status, area, buf);
         } else if !self.status.has_product() {
-            render_no_product(area, buf);
+            render_no_product(self.theme, area, buf);
         } else if !self.status.status.progresses.is_empty() {
-            render_progress(self.status, area, buf);
+            render_progress(self.status, self.theme, area, buf);
         } else if !self.status.issues.is_empty() {
             render_issues(self.status, area, buf);
         } else {
@@ -140,7 +144,7 @@ fn render_final_status(status: &InstallationStatus, area: Rect, buf: &mut Buffer
     Paragraph::new(lines).render(content_area, buf);
 }
 
-fn render_no_product(area: Rect, buf: &mut Buffer) {
+fn render_no_product(theme: &Theme, area: Rect, buf: &mut Buffer) {
     let content_area = Rect {
         x: area.x + 1,
         y: area.y,
@@ -159,7 +163,7 @@ fn render_no_product(area: Rect, buf: &mut Buffer) {
 
     lines.push(Line::from(vec![
         Span::raw(" "),
-        Span::styled("•", Style::default().fg(Color::Magenta)),
+        Span::styled("•", Style::default().fg(theme.accent)),
         Span::styled(
             " No product has been selected yet.",
             Style::default().add_modifier(Modifier::DIM),
@@ -170,7 +174,7 @@ fn render_no_product(area: Rect, buf: &mut Buffer) {
 }
 
 /// Renders installation progress
-fn render_progress(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
+fn render_progress(status: &InstallationStatus, theme: &Theme, area: Rect, buf: &mut Buffer) {
     let content_area = Rect {
         x: area.x + 1,
         y: area.y,
@@ -201,7 +205,7 @@ fn render_progress(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
     }
 
     for progress in &detail_progresses {
-        let widget = ProgressWidget::new(progress, !has_master_progress);
+        let widget = ProgressWidget::new(progress, !has_master_progress, theme);
         let height = widget.height() + 1;
         let area = Rect {
             y: current_y,

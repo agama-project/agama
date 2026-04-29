@@ -22,23 +22,25 @@ use agama_utils::api;
 use ratatui::{
     buffer::Buffer,
     layout::{Constraint, Layout, Rect},
-    style::{Color, Modifier, Style},
+    style::{Modifier, Style},
     text::{Line, Span},
     widgets::{Gauge, Widget},
 };
 
-use crate::monitor::ui::scope_to_string;
+use crate::monitor::{theme::Theme, ui::scope_to_string};
 
 pub struct ProgressWidget<'a> {
     with_scope: bool,
     progress: &'a api::Progress,
+    theme: &'a Theme,
 }
 
 impl<'a> ProgressWidget<'a> {
-    pub fn new(progress: &'a api::Progress, with_scope: bool) -> Self {
+    pub fn new(progress: &'a api::Progress, with_scope: bool, theme: &'a Theme) -> Self {
         Self {
             progress,
             with_scope,
+            theme,
         }
     }
 
@@ -82,7 +84,7 @@ impl<'a> Widget for ProgressWidget<'a> {
         };
 
         Gauge::default()
-            .gauge_style(Style::default().fg(Color::Cyan))
+            .gauge_style(Style::default().fg(self.theme.accent))
             .percent(percent)
             .label("")
             .render(gauge_area, buf);

@@ -25,19 +25,22 @@ use agama_utils::api::status::Stage;
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
-    style::{Color, Modifier, Style},
+    style::{Modifier, Style},
     text::{Line, Span},
     widgets::{Paragraph, Widget},
 };
 
+use crate::monitor::theme::Theme;
+
 /// Status bar widget
 pub struct StatusBar<'a> {
     status: &'a InstallationStatus,
+    theme: &'a Theme,
 }
 
 impl<'a> StatusBar<'a> {
-    pub fn new(status: &'a InstallationStatus) -> Self {
-        Self { status }
+    pub fn new(status: &'a InstallationStatus, theme: &'a Theme) -> Self {
+        Self { status, theme }
     }
 }
 
@@ -68,18 +71,19 @@ impl Widget for StatusBar<'_> {
         };
 
         // Build left side: BUSY/IDLE badge + PHASE badge
+        let theme = &self.theme;
         let (busy_text, busy_color, busy_bg) = match busy_state {
-            BusyState::Busy => (" BUSY ", Color::Black, Color::Yellow),
-            BusyState::Waiting => (" IDLE ", Color::White, Color::Magenta),
-            BusyState::Failed => (" FAIL ", Color::White, Color::Red),
-            BusyState::Idle => (" IDLE ", Color::Black, Color::Green),
+            BusyState::Busy => (" BUSY ", theme.busy_fg, theme.busy_bg),
+            BusyState::Waiting => (" IDLE ", theme.warning_fg, theme.warning_bg),
+            BusyState::Failed => (" FAIL ", theme.error_fg, theme.error_bg),
+            BusyState::Idle => (" IDLE ", theme.idle_fg, theme.idle_bg),
         };
 
         let (phase_text, phase_color, phase_bg) = match self.status.status.stage {
-            Stage::Installing => (" INSTALLING ", Color::Black, Color::Green),
-            Stage::Configuring => (" CONFIGURING ", Color::White, Color::Cyan),
-            Stage::Finished => (" FINISHED ", Color::Black, Color::Green),
-            Stage::Failed => (" FAILED ", Color::White, Color::Red),
+            Stage::Installing => (" INSTALLING ", theme.busy_fg, theme.busy_bg),
+            Stage::Configuring => (" CONFIGURING ", theme.idle_fg, theme.idle_bg),
+            Stage::Finished => (" FINISHED ", theme.idle_fg, theme.idle_bg),
+            Stage::Failed => (" FAILED ", theme.error_fg, theme.error_bg),
         };
 
         // Build right side: hostname @ IP | machine (hide machine if unknown)
@@ -118,18 +122,18 @@ impl Widget for StatusBar<'_> {
                     .bg(phase_bg)
                     .add_modifier(Modifier::BOLD),
             ),
-            Span::styled(" ".repeat(gap), Style::default().bg(Color::DarkGray)),
+            Span::styled(" ".repeat(gap), Style::default().bg(theme.background)),
             Span::styled(
                 right,
                 Style::default()
-                    .fg(Color::White)
-                    .bg(Color::DarkGray)
+                    .fg(theme.idle_fg)
+                    .bg(theme.background)
                     .add_modifier(Modifier::BOLD),
             ),
         ]);
 
         Paragraph::new(line)
-            .style(Style::default().bg(Color::DarkGray))
+            .style(Style::default().bg(theme.background))
             .render(area, buf);
     }
 }

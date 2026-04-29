@@ -24,6 +24,7 @@
 //! It uses ratatui for rendering and is driven by WebSocket updates from the backend.
 
 mod app;
+mod theme;
 mod ui;
 
 use agama_lib::{

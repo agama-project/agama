@@ -20,9 +20,7 @@
 
 //! Layout management for the monitor TUI
 
-use ratatui::{
-    layout::{Constraint, Layout, Rect},
-};
+use ratatui::layout::{Constraint, Layout, Rect};
 
 /// Layout areas for the monitor UI
 pub struct MonitorLayout {

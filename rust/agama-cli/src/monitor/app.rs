@@ -24,18 +24,23 @@ use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use std::{io, time::Duration};
 
-use super::ui;
+use super::{theme::Theme, ui};
 
 /// Application state for the monitor TUI
 pub struct MonitorApp {
     /// Current installation status (includes system info)
     pub status: InstallationStatus,
+    /// UI color theme
+    pub theme: Theme,
 }
 
 impl MonitorApp {
     /// Creates a new MonitorApp from the initial status
     pub fn new(status: InstallationStatus) -> Self {
-        Self { status }
+        Self {
+            status,
+            theme: Theme::default(),
+        }
     }
 
     /// Updates the installation status
@@ -117,12 +122,12 @@ impl Widget for &mut MonitorApp {
         let layout = ui::create_layout(area);
 
         // Render each section using widget structs
-        ui::StatusBar::new(&self.status).render(layout.status_bar, buf);
+        ui::StatusBar::new(&self.status, &self.theme).render(layout.status_bar, buf);
         if let Some(product_name) = &self.status.system_info.product_name {
             ui::Product::new(&product_name).render(layout.product, buf);
         }
         ui::Separator.render(layout.separator, buf);
-        ui::Content::new(&self.status).render(layout.content, buf);
+        ui::Content::new(&self.status, &self.theme).render(layout.content, buf);
         ui::Separator.render(layout.hints_separator, buf);
         ui::Hints.render(layout.hints, buf);
     }
