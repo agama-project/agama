@@ -31,7 +31,7 @@ use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
     monitor::Monitor,
 };
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
@@ -41,6 +41,7 @@ use ratatui::{backend::CrosstermBackend, Terminal};
 use std::io;
 
 use app::MonitorApp;
+use theme::Theme;
 
 /// Sets up the terminal for fullscreen TUI mode
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
@@ -63,6 +64,23 @@ fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Re
     Ok(())
 }
 
+/// Parses a theme name and returns the corresponding Theme
+///
+/// # Arguments
+///
+/// * `name` - Theme name ("monochrome", "colored", or "suse_green")
+fn parse_theme(name: &str) -> Result<Theme> {
+    match name.to_lowercase().as_str() {
+        "monochrome" => Ok(Theme::monochrome()),
+        "colored" => Ok(Theme::colored()),
+        "suse_green" | "suse-green" => Ok(Theme::suse_green()),
+        _ => Err(anyhow!(
+            "Unknown theme '{}'. Valid options: monochrome, colored, suse_green",
+            name
+        )),
+    }
+}
+
 /// Starts the TUI monitor
 ///
 /// # Arguments
@@ -70,16 +88,21 @@ fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Re
 /// * `http_client` - The HTTP client to communicate with the Agama service
 /// * `websocket` - The WebSocket client to listen for events
 /// * `stop_on_idle` - Whether to stop monitoring when Agama becomes idle
+/// * `theme_name` - Name of the color theme to use
 pub async fn run(
     http_client: BaseHTTPClient,
     websocket: WebSocketClient,
     stop_on_idle: bool,
+    theme_name: &str,
 ) -> Result<()> {
+    // Parse the theme
+    let theme = parse_theme(theme_name)?;
+
     // Connect to monitor and get initial status
     let (monitor, initial_status) = Monitor::connect(websocket, &http_client).await?;
 
-    // Create app state
-    let mut app = MonitorApp::new(initial_status);
+    // Create app state with selected theme
+    let mut app = MonitorApp::with_theme(initial_status, theme);
 
     // Setup terminal
     let mut terminal = setup_terminal()?;

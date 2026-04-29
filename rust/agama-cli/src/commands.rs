@@ -122,7 +122,17 @@ pub enum Commands {
     },
 
     /// Monitors the Agama service.
-    Monitor,
+    Monitor {
+        /// Color theme to use. Possible values:
+        ///
+        /// monochrome - black, white, and shades of gray (default)
+        ///
+        /// colored - colorful theme with green, yellow, cyan, etc.
+        ///
+        /// suse_green - SUSE branded theme with green accents
+        #[arg(short, long, default_value = "suse_green")]
+        theme: String,
+    },
 
     /// Display Agama events.
     Events {

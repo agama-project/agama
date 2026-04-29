@@ -46,6 +46,11 @@ impl MonitorApp {
         }
     }
 
+    /// Creates a new MonitorApp with a specific theme
+    pub fn with_theme(status: InstallationStatus, theme: Theme) -> Self {
+        Self { status, theme }
+    }
+
     /// Updates the installation status
     pub fn update_status(&mut self, new_status: InstallationStatus) {
         self.status = new_status;

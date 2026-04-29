@@ -101,7 +101,7 @@ async fn probe(http: BaseHTTPClient, ws: WebSocketClient) -> anyhow::Result<()> 
     let probe = tokio::spawn(async move {
         let _ = manager_client.probe().await;
     });
-    show_progress(http, ws, true).await?;
+    show_progress(http, ws, true, "suse_green").await?;
     Ok(probe.await?)
 }
 
@@ -130,7 +130,7 @@ async fn install(http_client: BaseHTTPClient, mut ws: WebSocketClient) -> anyhow
     // wait a bit before start monitoring
     sleep(Duration::from_secs(1)).await;
 
-    let res = show_progress(http_client, ws, true).await;
+    let res = show_progress(http_client, ws, true, "suse_green").await;
     if let Err(e) = res {
         eprintln!("Failed to show progress: {:?}", e);
     }
@@ -285,12 +285,14 @@ async fn build_clients(
 ///
 /// * `monitor`: monitor client.
 /// * `stop_on_idle`: stop displaying the progress when Agama becomes idle.
+/// * `theme`: color theme name to use.
 pub async fn show_progress(
     http: BaseHTTPClient,
     ws: WebSocketClient,
     stop_on_idle: bool,
+    theme: &str,
 ) -> anyhow::Result<()> {
-    monitor::run(http, ws, stop_on_idle).await?;
+    monitor::run(http, ws, stop_on_idle, theme).await?;
 
     Ok(())
 }
@@ -336,9 +338,9 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
         }
-        Commands::Monitor => {
+        Commands::Monitor { theme } => {
             let (http, ws) = build_clients(api_url, cli.opts.insecure).await?;
-            monitor::run(http, ws, false).await?;
+            monitor::run(http, ws, false, &theme).await?;
         }
         Commands::Events { pretty } => {
             let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
