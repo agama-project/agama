@@ -33,7 +33,7 @@ use ratatui::{
 
 use crate::monitor::{
     theme::Theme,
-    ui::{issues::IssuesList, progress::ProgressWidget},
+    ui::{issues::IssuesList, progress::Progress},
 };
 
 /// Represents the main content of the monitor.
@@ -179,7 +179,7 @@ impl<'a> Content<'a> {
         }
 
         for progress in &detail_progresses {
-            let widget = ProgressWidget::new(progress, !has_master_progress, self.theme);
+            let widget = Progress::new(progress, !has_master_progress, self.theme);
             let height = widget.height() + 1;
             let area = Rect {
                 y: current_y,

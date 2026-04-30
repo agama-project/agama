@@ -38,13 +38,13 @@ const PROGRESS_HEIGHT_WITH_SCOPE: u16 = 5;
 /// Vertical spacing after scope label
 const SCOPE_LABEL_SPACING: u16 = 2;
 
-pub struct ProgressWidget<'a> {
+pub struct Progress<'a> {
     with_scope: bool,
     progress: &'a api::Progress,
     theme: &'a Theme,
 }
 
-impl<'a> ProgressWidget<'a> {
+impl<'a> Progress<'a> {
     pub fn new(progress: &'a api::Progress, with_scope: bool, theme: &'a Theme) -> Self {
         Self {
             progress,
@@ -62,7 +62,7 @@ impl<'a> ProgressWidget<'a> {
     }
 }
 
-impl<'a> Widget for ProgressWidget<'a> {
+impl<'a> Widget for Progress<'a> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let mut content_area = Rect {
             x: area.x + PROGRESS_INDENT,
