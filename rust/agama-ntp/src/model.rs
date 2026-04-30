@@ -110,7 +110,7 @@ impl ModelAdapter for Model {
             std::fs::create_dir_all(parent)?;
         }
 
-        let content = generate_chrony_config(config.sources.as_deref().unwrap_or(&[]));
+        let content = generate_chrony_config(&config.sources);
         std::fs::write(&path, content)?;
 
         self.reload_chrony()?;
@@ -124,7 +124,7 @@ impl ModelAdapter for Model {
             std::fs::create_dir_all(parent)?;
         }
 
-        let content = generate_chrony_config(config.sources.as_deref().unwrap_or(&[]));
+        let content = generate_chrony_config(&config.sources);
         std::fs::write(path, content)?;
         Ok(())
     }
@@ -226,12 +226,12 @@ mod tests {
         let model = Model::new().with_workdir(tempdir.path());
 
         let config = Config {
-            sources: Some(vec![Source {
+            sources: vec![Source {
                 source_type: SourceType::Pool,
                 address: "ntp.example.com".to_string(),
                 iburst: true,
                 offline: false,
-            }]),
+            }],
         };
 
         model.write_config(&config).unwrap();
@@ -250,12 +250,12 @@ mod tests {
         let model = Model::new().with_install_dir(tempdir.path());
 
         let config = Config {
-            sources: Some(vec![Source {
+            sources: vec![Source {
                 source_type: SourceType::Server,
                 address: "ntp.server.com".to_string(),
                 iburst: false,
                 offline: true,
-            }]),
+            }],
         };
 
         model.install(&config).unwrap();

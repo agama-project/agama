@@ -27,9 +27,17 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 #[schemars(rename = "ntp.Config")]
 pub struct Config {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[merge(strategy = merge::option::overwrite_none)]
-    pub sources: Option<Vec<Source>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    #[merge(strategy = overwrite_non_empty)]
+    pub sources: Vec<Source>,
+}
+
+fn overwrite_non_empty<T>(left: &mut Vec<T>, mut right: Vec<T>) {
+    if !right.is_empty() {
+        left.clear();
+        left.append(&mut right);
+    }
 }
 
 /// NTP source configuration.
@@ -61,7 +69,7 @@ mod tests {
     #[test]
     fn test_config_serialization() {
         let config = Config {
-            sources: Some(vec![
+            sources: vec![
                 Source {
                     source_type: SourceType::Pool,
                     address: "0.opensuse.pool.ntp.org".to_string(),
@@ -74,7 +82,7 @@ mod tests {
                     iburst: false,
                     offline: true,
                 },
-            ]),
+            ],
         };
 
         let json = serde_json::to_string(&config).unwrap();
@@ -104,5 +112,59 @@ mod tests {
         let source: Source = serde_json::from_str(json).unwrap();
         assert_eq!(source.iburst, false);
         assert_eq!(source.offline, false);
+    }
+
+    #[test]
+    fn test_empty_sources_not_serialized() {
+        let config = Config {
+            sources: vec![],
+        };
+        let json = serde_json::to_string(&config).unwrap();
+        assert_eq!(json, "{}");
+    }
+
+    #[test]
+    fn test_merge_overwrite_non_empty() {
+        let mut config1 = Config {
+            sources: vec![Source {
+                source_type: SourceType::Pool,
+                address: "old.ntp.org".to_string(),
+                iburst: true,
+                offline: false,
+            }],
+        };
+
+        let config2 = Config {
+            sources: vec![Source {
+                source_type: SourceType::Server,
+                address: "new.ntp.org".to_string(),
+                iburst: false,
+                offline: true,
+            }],
+        };
+
+        config1.merge(config2);
+        assert_eq!(config1.sources.len(), 1);
+        assert_eq!(config1.sources[0].address, "new.ntp.org");
+    }
+
+    #[test]
+    fn test_merge_empty_keeps_original() {
+        let mut config1 = Config {
+            sources: vec![Source {
+                source_type: SourceType::Pool,
+                address: "original.ntp.org".to_string(),
+                iburst: true,
+                offline: false,
+            }],
+        };
+
+        let config2 = Config {
+            sources: vec![],
+        };
+
+        config1.merge(config2);
+        assert_eq!(config1.sources.len(), 1);
+        assert_eq!(config1.sources[0].address, "original.ntp.org");
     }
 }

@@ -189,12 +189,12 @@ mod tests {
             .unwrap();
 
         let test_config = Config {
-            sources: Some(vec![Source {
+            sources: vec![Source {
                 source_type: SourceType::Pool,
                 address: "ntp.example.com".to_string(),
                 iburst: true,
                 offline: false,
-            }]),
+            }],
         };
 
         handler
@@ -221,12 +221,12 @@ mod tests {
             .unwrap();
 
         let test_config = Config {
-            sources: Some(vec![Source {
+            sources: vec![Source {
                 source_type: SourceType::Server,
                 address: "ntp.server.com".to_string(),
                 iburst: false,
                 offline: true,
-            }]),
+            }],
         };
 
         handler
