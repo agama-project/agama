@@ -292,7 +292,7 @@ impl Monitor {
 
         products
             .iter()
-            .find(|p| &p.id == &product_id)
+            .find(|p| p.id == product_id)
             .map(|p| p.name.clone())
     }
 

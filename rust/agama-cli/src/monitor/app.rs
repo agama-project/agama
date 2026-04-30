@@ -27,8 +27,6 @@ use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
 
-/// Polling interval for keyboard events (milliseconds)
-
 enum Message {
     Update(InstallationStatus),
     TerminalEvent(Event),
@@ -155,7 +153,7 @@ impl Widget for &mut MonitorApp {
         // Render each section using widget structs
         ui::StatusBar::new(&self.status, &self.theme).render(layout.status_bar, buf);
         if let Some(product_name) = &self.status.system_info.product_name {
-            ui::Product::new(&product_name).render(layout.product, buf);
+            ui::Product::new(product_name).render(layout.product, buf);
         }
         ui::Separator.render(layout.separator, buf);
         ui::Content::new(&self.status, &self.theme).render(layout.content, buf);

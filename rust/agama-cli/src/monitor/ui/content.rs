@@ -200,7 +200,7 @@ fn render_progress(status: &InstallationStatus, theme: &Theme, area: Rect, buf: 
             width: content_area.width,
             height: 3,
         };
-        render_manager_progress(&progress, area, buf);
+        render_manager_progress(progress, area, buf);
         current_y += 2;
     }
 
