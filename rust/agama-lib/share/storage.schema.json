@@ -929,7 +929,7 @@
       }
     },
     "encryptionSwap": {
-      "description": "Swap encryptions.",
+      "description": "Swap encryptions. The snake case names are deprecated.",
       "enum": ["protected_swap", "secure_swap", "random_swap", "protectedSwap", "secureSwap", "randomSwap"]
     },
     "encryptionPassword": {
