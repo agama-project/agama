@@ -186,6 +186,62 @@ describe("ConnectionDetails", () => {
     });
   });
 
+  describe("Bridge details", () => {
+    it("renders bridge details when STP is enabled", () => {
+      const connection = new Connection("br0", {
+        bridge: {
+          stp: true,
+          priority: 16384,
+          forwardDelay: 10,
+          helloTime: 2,
+          maxAge: 20,
+          ports: ["enp1s0", "enp1s1"],
+        },
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bridge" });
+
+      within(section).getByText("Enabled");
+      within(section).getByText("16384");
+      within(section).getByText("10");
+      within(section).getByText("2");
+      within(section).getByText("20");
+      within(section).getByText("enp1s0");
+      within(section).getByText("enp1s1");
+    });
+
+    it("renders bridge details when STP is disabled", () => {
+      const connection = new Connection("br0", {
+        bridge: {
+          stp: false,
+          ports: ["enp1s0"],
+          priority: 32768,
+          forwardDelay: 15,
+          helloTime: 2,
+          maxAge: 20,
+        },
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bridge" });
+
+      within(section).getByText("Disabled");
+      within(section).getByText("enp1s0");
+    });
+
+    it("renders 'None set' for optional fields when missing", () => {
+      const connection = new Connection("br0", {
+        bridge: {
+          stp: false,
+          ports: [],
+        } as any,
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bridge" });
+
+      within(section).queryAllByText("None set");
+    });
+  });
+
   describe("Connected devices", () => {
     describe("when there is none device connected", () => {
       beforeEach(() => {

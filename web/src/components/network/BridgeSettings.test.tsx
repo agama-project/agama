@@ -106,7 +106,10 @@ describe("BridgeSettings", () => {
   });
 
   it("shows STP options when STP is enabled", async () => {
-    installerRender(<TestForm />);
+    const { user } = installerRender(<TestForm />);
+
+    const stpCheckbox = await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
+    await user.click(stpCheckbox);
 
     expect(await screen.findByLabelText("Priority")).toBeInTheDocument();
     expect(await screen.findByLabelText("Forward delay")).toBeInTheDocument();
@@ -115,10 +118,7 @@ describe("BridgeSettings", () => {
   });
 
   it("hides STP options when STP is disabled", async () => {
-    const { user } = installerRender(<TestForm />);
-
-    const stpCheckbox = await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
-    await user.click(stpCheckbox);
+    installerRender(<TestForm />);
 
     expect(screen.queryByLabelText("Priority")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Forward delay")).not.toBeInTheDocument();

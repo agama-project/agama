@@ -145,7 +145,15 @@ describe("ConnectionForm", () => {
 
       await user.click(screen.getByLabelText("Type"));
       await user.click(screen.getByRole("option", { name: "Bridge" }));
-      await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
+      const stpCheckbox = await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
+      expect(stpCheckbox).not.toBeChecked();
+
+      // STP fields should not be visible by default
+      expect(screen.queryByLabelText("Priority")).not.toBeInTheDocument();
+
+      // Enable STP to see the fields
+      await user.click(stpCheckbox);
+
       screen.getByLabelText("Priority");
       screen.getByLabelText("Forward delay");
       screen.getByLabelText("Hello time");
@@ -183,6 +191,10 @@ describe("ConnectionForm", () => {
       await user.clear(ifaceInput);
       await user.type(ifaceInput, "br1");
 
+      // STP is disabled by default. Let's enable it to set some values.
+      const stpCheckbox = screen.getByLabelText("Enable Spanning Tree Protocol (STP)");
+      await user.click(stpCheckbox);
+
       const priorityInput = screen.getByLabelText("Priority");
       await user.clear(priorityInput);
       await user.type(priorityInput, "16384");
@@ -191,8 +203,8 @@ describe("ConnectionForm", () => {
       await user.clear(delayInput);
       await user.type(delayInput, "10");
 
-      // STP is enabled by default, let's disable it and verify that STP-related fields are hidden
-      await user.click(screen.getByLabelText("Enable Spanning Tree Protocol (STP)"));
+      // Now disable it and verify that STP-related fields are hidden
+      await user.click(stpCheckbox);
       expect(screen.queryByLabelText("Priority")).not.toBeInTheDocument();
       expect(screen.queryByLabelText("Forward delay")).not.toBeInTheDocument();
       expect(screen.queryByLabelText("Hello time")).not.toBeInTheDocument();
@@ -210,8 +222,8 @@ describe("ConnectionForm", () => {
             iface: "br1",
             bridge: expect.objectContaining({
               stp: false,
-              priority: 16384,
-              forwardDelay: 10,
+              priority: undefined,
+              forwardDelay: undefined,
               ports: ["enp1s0"],
             }),
           }),
@@ -808,6 +820,9 @@ describe("ConnectionForm", () => {
         await user.type(await screen.findByLabelText("Name"), "test-bridge");
         await user.type(await screen.findByLabelText("Device name"), "br0");
         await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
+
+        // Enable STP to see the fields
+        await user.click(screen.getByLabelText("Enable Spanning Tree Protocol (STP)"));
 
         const priorityInput = screen.getByLabelText("Priority");
         await user.clear(priorityInput);
