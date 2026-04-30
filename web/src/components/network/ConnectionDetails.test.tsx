@@ -226,6 +226,18 @@ describe("ConnectionDetails", () => {
 
       within(section).getByText("Disabled");
       within(section).getByText("enp1s0");
+
+      // STP-related fields should be hidden
+      expect(within(section).queryByText("Priority")).not.toBeInTheDocument();
+      expect(within(section).queryByText("Forward delay")).not.toBeInTheDocument();
+      expect(within(section).queryByText("Hello time")).not.toBeInTheDocument();
+      expect(within(section).queryByText("Max message age")).not.toBeInTheDocument();
+
+      // Values should also not be present
+      expect(within(section).queryByText("32768")).not.toBeInTheDocument();
+      expect(within(section).queryByText("15")).not.toBeInTheDocument();
+      expect(within(section).queryByText("2")).not.toBeInTheDocument();
+      expect(within(section).queryByText("20")).not.toBeInTheDocument();
     });
 
     it("renders 'None set' for optional fields when missing", () => {
