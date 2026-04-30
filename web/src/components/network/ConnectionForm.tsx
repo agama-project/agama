@@ -131,7 +131,7 @@ export const connectionFormOptions = formOptions({
     bondOptions: [] as string[],
     bondPorts: [] as string[],
     bridgeIface: "",
-    bridgeStp: true,
+    bridgeStp: false,
     bridgePriority: 32768,
     bridgeForwardDelay: 15,
     bridgeHelloTime: 2,
@@ -237,6 +237,7 @@ function buildConnection(formValues: FormValues): Connection {
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;
   }
+  const stp = formValues.type === CONNECTION_TYPE.BRIDGE ? formValues.bridgeStp : undefined;
 
   return new Connection(formValues.name, {
     iface,
@@ -257,13 +258,13 @@ function buildConnection(formValues: FormValues): Connection {
           }
         : undefined,
     bridge:
-      formValues.type === CONNECTION_TYPE.BRIDGE
+      stp !== undefined
         ? {
-            stp: formValues.bridgeStp,
-            priority: formValues.bridgePriority,
-            forwardDelay: formValues.bridgeForwardDelay,
-            helloTime: formValues.bridgeHelloTime,
-            maxAge: formValues.bridgeMaxAge,
+            stp,
+            priority: stp ? formValues.bridgePriority : undefined,
+            forwardDelay: stp ? formValues.bridgeForwardDelay : undefined,
+            helloTime: stp ? formValues.bridgeHelloTime : undefined,
+            maxAge: stp ? formValues.bridgeMaxAge : undefined,
             ports: formValues.bridgePorts,
           }
         : undefined,
