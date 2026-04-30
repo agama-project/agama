@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,9 +22,14 @@
 require "logger"
 
 module Agama
+  # TODO: Drop this class. The command line arguments are already parsed by the rust code, see
+  #   rust/agama-utils/src/kernel_cmdline.rs.
+  #
+  #   The arguments should be passed to the D-Bus service, similar to setting a locale.
+  #
   # This class is responsible for reading Agama kernel cmdline options
   class CmdlineArgs
-    CMDLINE_PATH = "/proc/cmdline"
+    KERNEL_CMDLINE_FILE = "/run/agama/cmdline.d/agama.conf"
     CMDLINE_PREFIX = "inst."
 
     attr_accessor :config_url
@@ -37,8 +42,8 @@ module Agama
       @data = data
     end
 
-    def self.read
-      read_from("/run/agama/cmdline.d/agama.conf")
+    def self.read_from_kernel
+      read_from(KERNEL_CMDLINE_FILE)
     end
 
     # Reads the kernel command line options
