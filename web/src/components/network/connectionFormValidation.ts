@@ -243,7 +243,7 @@ function validateBridgeStp(formValues: FormValues): Partial<FormFieldErrors> {
 
   return {
     // For radashi inRange the start is inclusive but the end of the range is exclusive,
-    // therefore, take care of adding 1 to the end range.
+    // therefore, take care of adding 1 more to the end range.
     // TRANSLATORS: validation error for the bridge priority field.
     bridgePriority: inRange(formValues.bridgePriority, 0, 61441)
       ? undefined
