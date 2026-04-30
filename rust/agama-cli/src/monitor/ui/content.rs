@@ -53,8 +53,8 @@ impl Widget for Content<'_> {
     ///
     /// 1. The final status if the installation finished.
     /// 2. The list of questions if any.
-    /// 3. A warning if no product is selected.
-    /// 4. The progress (if any).
+    /// 3. The progress (if any).
+    /// 4. A warning if no product is selected.
     /// 5. The list of issues if any.
     /// 6. A default message informing the user that Agama is ready.
     fn render(self, area: Rect, buf: &mut Buffer) {
@@ -218,7 +218,7 @@ fn render_progress(status: &InstallationStatus, theme: &Theme, area: Rect, buf: 
     }
 }
 
-/// Renders blocking issues
+/// Renders blocking issues.
 fn render_issues(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
     let layout = Layout::vertical([Constraint::Length(2), Constraint::Fill(1)]);
 
@@ -239,7 +239,7 @@ fn render_issues(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
     list.render(issues_area, buf);
 }
 
-/// Renders current stage message
+/// Renders current stage message.
 fn render_stage(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
     let content_area = Rect {
         x: area.x + 1,
@@ -267,6 +267,7 @@ fn render_stage(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
     Paragraph::new(lines).render(content_area, buf);
 }
 
+/// Renders the progress for the manager scope.
 fn render_manager_progress(progress: &api::Progress, area: Rect, buf: &mut Buffer) {
     let step_label = format!(
         "{} {} {} {}",

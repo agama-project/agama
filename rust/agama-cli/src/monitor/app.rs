@@ -27,8 +27,11 @@ use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
 
+/// Application messages.
 enum Message {
+    /// Agama status update.
     Update(InstallationStatus),
+    /// Terminal event.
     TerminalEvent(Event),
 }
 
@@ -45,7 +48,7 @@ pub struct MonitorApp {
 }
 
 impl MonitorApp {
-    /// Creates a new MonitorApp from the initial status
+    /// Creates a new MonitorApp from the initial status.
     pub fn new(status: InstallationStatus) -> Self {
         Self {
             status,
@@ -55,18 +58,19 @@ impl MonitorApp {
         }
     }
 
-    /// Creates a new MonitorApp with a specific theme
+    /// Creates a new MonitorApp with a specific theme.
     pub fn with_theme(mut self, theme: Theme) -> Self {
         self.theme = theme;
         self
     }
 
+    /// Sets the monitor to stop after going idle (no running progress).
     pub fn with_stop_on_idle(mut self, stop: bool) -> Self {
         self.stop_on_idle = stop;
         self
     }
 
-    /// Updates the installation status
+    /// Updates the installation status.
     pub fn update_status(&mut self, new_status: InstallationStatus) {
         if (self.stop_on_idle && new_status.is_idle()) || new_status.has_finished() {
             self.exit = true;
@@ -74,13 +78,14 @@ impl MonitorApp {
         self.status = new_status;
     }
 
-    /// Runs the monitor TUI event loop
+    /// Runs the monitor TUI event loop.
     ///
-    /// # Arguments
+    /// This method spawns two tokio tasks to read the events coming from the
+    /// MonitorClient and the console events from crossterm. This approach
+    /// helps to improve the responsiveness of the application.
     ///
     /// * `terminal` - The terminal to draw on
     /// * `monitor` - The monitor client to receive updates from
-    /// * `stop_on_idle` - Whether to stop monitoring when installation finishes
     pub async fn run(
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
@@ -128,7 +133,8 @@ impl MonitorApp {
         Ok(())
     }
 
-    pub fn handle_key_event(&mut self, key_event: KeyEvent) {
+    /// Handle terminal key events.
+    fn handle_key_event(&mut self, key_event: KeyEvent) {
         if key_event.kind != KeyEventKind::Press {
             return;
         }
