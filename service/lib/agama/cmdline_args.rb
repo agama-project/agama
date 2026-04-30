@@ -58,7 +58,7 @@ module Agama
         next unless option.start_with?(CMDLINE_PREFIX)
 
         key, value = option.split("=", 2)
-        key.delete_prefix!(CMDLINE_PREFIX).downcase!
+        key.delete_prefix!(CMDLINE_PREFIX)
         # Omit config_url from Config options
         next args.config_url = value if key == "config_url"
 

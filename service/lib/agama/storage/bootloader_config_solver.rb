@@ -95,7 +95,7 @@ module Agama
       def kernel_bls_type
         arg_value = kernel_args.data["systemd_boot_preview"]
 
-        return nil unless [true, "1", "yes"].include?(arg_value)
+        return unless arg_value == "1"
 
         BootloaderType::SYSTEMD_BOOT
       end

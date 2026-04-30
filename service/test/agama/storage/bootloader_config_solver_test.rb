@@ -116,25 +116,14 @@ describe Agama::Storage::BootloaderConfigSolver do
             end
           end
 
-          context "when systemd_boot_preview kernel parameter is set to 'yes'" do
+          context "when systemd_boot_preview kernel parameter has invalid value" do
             let(:cmdline_args) do
               instance_double(Agama::CmdlineArgs, data: { "systemd_boot_preview" => "yes" })
             end
 
-            it "sets the type to SYSTEMD_BOOT" do
+            it "ignores the parameter and uses product/default bootloader" do
               solver.solve(bootloader_config)
-              expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
-            end
-          end
-
-          context "when systemd_boot_preview kernel parameter is set to true" do
-            let(:cmdline_args) do
-              instance_double(Agama::CmdlineArgs, data: { "systemd_boot_preview" => true })
-            end
-
-            it "sets the type to SYSTEMD_BOOT" do
-              solver.solve(bootloader_config)
-              expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
+              expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
             end
           end
 
