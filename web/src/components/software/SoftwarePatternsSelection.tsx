@@ -317,7 +317,7 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
   // Redirect to main software page when no patterns are available for the
   // current scope. This handles users landing via direct URL or cached links
   // when desktop patterns don't exist.
-  if (scopedPatterns.length === 0 && searchValue === "") {
+  if (scopedPatterns.length === 0) {
     return <Navigate to={SOFTWARE.root} replace />;
   }
 

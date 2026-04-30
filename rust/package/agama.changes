@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 30 09:04:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: add new `agama status` command that prints current state of
+  agama with textual or json output format
+  (gh#agama-project/agama#3442)
+
+-------------------------------------------------------------------
 Tue Apr 28 11:02:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the path to the /private/resolvables/{id} endpoint (bsc#1262995).

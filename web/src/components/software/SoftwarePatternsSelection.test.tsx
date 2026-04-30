@@ -45,12 +45,10 @@ const patternsWithPreselected = [
 const desktops = patternsWithPreselected.filter((p) => p.desktop);
 const other = patternsWithPreselected.filter((p) => !p.desktop);
 
+const mockAvailablePatterns = jest.fn();
+
 jest.mock("~/hooks/model/system/software", () => ({
-  useAvailablePatterns: () => ({
-    all: patternsWithPreselected,
-    desktops,
-    other,
-  }),
+  useAvailablePatterns: () => mockAvailablePatterns(),
 }));
 
 jest.mock("~/hooks/model/proposal/software", () => ({
@@ -68,6 +66,14 @@ jest.mock("~/api", () => ({
 }));
 
 describe("SoftwarePatternsSelection", () => {
+  beforeEach(() => {
+    mockAvailablePatterns.mockReturnValue({
+      all: patternsWithPreselected,
+      desktops,
+      other,
+    });
+  });
+
   it("renders one h3 per category, in order", async () => {
     installerRender(<SoftwarePatternsSelection />);
     const headings = await screen.findAllByRole("heading", { level: 3 });
@@ -521,5 +527,17 @@ describe("SoftwarePatternsSelection scope", () => {
         },
       },
     });
+  });
+
+  it("redirects to main software page when no patterns are available for the scope", () => {
+    mockAvailablePatterns.mockReturnValue({
+      all: other,
+      desktops: [],
+      other,
+    });
+
+    installerRender(<SoftwarePatternsSelection scope="desktops" />);
+
+    screen.getByText("Navigating to /software");
   });
 });

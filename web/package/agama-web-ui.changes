@@ -1,8 +1,16 @@
 -------------------------------------------------------------------
-Tue Apr 28 14:21:05 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Thu Apr 30 13:01:05 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for configuring a network bridge using the UI
   (gh#agama-project/agama#3435).
+
+-------------------------------------------------------------------
+Tue Apr 28 15:43:35 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show contextual hints when software selection is unavailable and
+  handle empty states when no patterns are available
+  (gh#agama-project/agama#3441, related to gh#agama-project/agama#3436
+  and gh#agama-project/agama#3420).
 
 -------------------------------------------------------------------
 Mon Apr 27 11:00:16 UTC 2026 - David Diaz <dgonzalez@suse.com>

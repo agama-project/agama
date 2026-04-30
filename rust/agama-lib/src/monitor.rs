@@ -54,6 +54,7 @@
 use std::fmt;
 
 use agama_utils::api::{self, Event};
+use serde::Serialize;
 use tokio::sync::{broadcast, Mutex};
 
 use crate::{
@@ -84,7 +85,7 @@ impl fmt::Display for MonitorBackendError {
 }
 
 /// Extended status information with combination of status, issues and questions
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct InstallationStatus {
     /// Current installation status.
     pub status: api::Status,
@@ -129,6 +130,25 @@ pub struct Monitor {
 }
 
 impl Monitor {
+    pub async fn get_installation_status(
+        http_client: &BaseHTTPClient,
+    ) -> Result<InstallationStatus, MonitorError> {
+        let manager = ManagerHTTPClient::new(http_client.clone());
+        let questions = questions::http_client::HTTPClient::new(http_client.clone());
+        let questions = questions.get_questions().await?;
+        let questions = questions
+            .into_iter()
+            .filter(|q| q.answer.is_none())
+            .collect();
+
+        let installation_status = InstallationStatus {
+            status: manager.status().await?,
+            issues: manager.issues().await?,
+            questions,
+        };
+        Ok(installation_status)
+    }
+
     /// Connects and monitors to an Agama service.
     ///
     /// * `http_client`: HTTP client to talk to the service.
@@ -144,19 +164,8 @@ impl Monitor {
         let client = MonitorClient {
             updates: updates.clone(),
         };
-        let manager = ManagerHTTPClient::new(http_client.clone());
-        let questions = questions::http_client::HTTPClient::new(http_client.clone());
-        let questions = questions.get_questions().await?;
-        let questions = questions
-            .into_iter()
-            .filter(|q| q.answer.is_none())
-            .collect();
 
-        let initial_status = InstallationStatus {
-            status: manager.status().await?,
-            issues: manager.issues().await?,
-            questions,
-        };
+        let initial_status = Self::get_installation_status(http_client).await?;
 
         let mut monitor = Monitor {
             ws_client: websocket_client,

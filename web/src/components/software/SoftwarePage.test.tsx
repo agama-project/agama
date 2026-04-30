@@ -28,6 +28,7 @@ import testingProposal from "./proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
 const mockProposal = jest.fn();
+const mockAvailablePatterns = jest.fn();
 
 const desktops = testingPatterns.filter((p) => p.desktop);
 const other = testingPatterns.filter((p) => !p.desktop);
@@ -44,16 +45,17 @@ jest.mock("~/hooks/model/proposal/software", () => ({
 }));
 
 jest.mock("~/hooks/model/system/software", () => ({
-  useAvailablePatterns: () => ({
-    all: testingPatterns,
-    desktops,
-    other,
-  }),
+  useAvailablePatterns: () => mockAvailablePatterns(),
 }));
 
 describe("SoftwarePage", () => {
   beforeEach(() => {
     mockProposal.mockReturnValue(testingProposal);
+    mockAvailablePatterns.mockReturnValue({
+      all: testingPatterns,
+      desktops,
+      other,
+    });
   });
 
   it("renders the Desktops section with the selected desktop", () => {
@@ -199,6 +201,40 @@ describe("SoftwarePage", () => {
     it("renders an informative message", () => {
       installerRender(<SoftwarePage />);
       screen.getByText("No information available yet");
+    });
+  });
+
+  describe("when the product provides no desktops", () => {
+    beforeEach(() => {
+      mockAvailablePatterns.mockReturnValue({
+        all: other,
+        desktops: [],
+        other,
+      });
+    });
+
+    it("shows an informative empty state instead of selection UI", () => {
+      installerRender(<SoftwarePage />);
+      screen.getByText("No desktops available");
+      screen.getByText("This product does not provide desktop environments.");
+      expect(screen.queryByRole("link", { name: /Select a desktop/ })).toBeNull();
+    });
+  });
+
+  describe("when the product provides no additional patterns", () => {
+    beforeEach(() => {
+      mockAvailablePatterns.mockReturnValue({
+        all: desktops,
+        desktops,
+        other: [],
+      });
+    });
+
+    it("shows an informative empty state instead of selection UI", () => {
+      installerRender(<SoftwarePage />);
+      screen.getByText("No additional patterns available");
+      screen.getByText("This product does not provide additional patterns.");
+      expect(screen.queryByRole("link", { name: /Select patterns/ })).toBeNull();
     });
   });
 });
