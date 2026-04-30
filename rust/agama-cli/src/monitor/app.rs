@@ -20,14 +20,19 @@
 
 use agama_lib::monitor::{InstallationStatus, MonitorClient};
 use anyhow::Result;
-use crossterm::event::{self, Event, KeyCode, KeyModifiers};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use std::{io, time::Duration};
+use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
 
 /// Polling interval for keyboard events (milliseconds)
-const EVENT_POLL_INTERVAL_MS: u64 = 100;
+
+enum Message {
+    Update(InstallationStatus),
+    TerminalEvent(Event),
+}
 
 /// Application state for the monitor TUI
 pub struct MonitorApp {
@@ -35,6 +40,10 @@ pub struct MonitorApp {
     pub status: InstallationStatus,
     /// UI color theme
     pub theme: Theme,
+    /// Exit in the next iteration
+    exit: bool,
+    /// Stop on idle
+    stop_on_idle: bool,
 }
 
 impl MonitorApp {
@@ -43,16 +52,27 @@ impl MonitorApp {
         Self {
             status,
             theme: Theme::default(),
+            exit: false,
+            stop_on_idle: false,
         }
     }
 
     /// Creates a new MonitorApp with a specific theme
-    pub fn with_theme(status: InstallationStatus, theme: Theme) -> Self {
-        Self { status, theme }
+    pub fn with_theme(mut self, theme: Theme) -> Self {
+        self.theme = theme;
+        self
+    }
+
+    pub fn with_stop_on_idle(mut self, stop: bool) -> Self {
+        self.stop_on_idle = stop;
+        self
     }
 
     /// Updates the installation status
     pub fn update_status(&mut self, new_status: InstallationStatus) {
+        if (self.stop_on_idle && new_status.is_idle()) || new_status.has_finished() {
+            self.exit = true;
+        }
         self.status = new_status;
     }
 
@@ -67,59 +87,62 @@ impl MonitorApp {
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
         monitor: MonitorClient,
-        stop_on_idle: bool,
     ) -> Result<()> {
-        let mut updates = monitor.subscribe();
+        let (tx, mut rx) = mpsc::channel(16);
 
-        // Initial render
-        terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
+        let tx_clone = tx.clone();
+        tokio::task::spawn(async move {
+            let mut updates = monitor.subscribe();
+            while let Ok(new_status) = updates.recv().await {
+                _ = tx_clone.send(Message::Update(new_status)).await;
+            }
+        });
 
-        // Main event loop - WebSocket-driven, no timers
-        loop {
-            tokio::select! {
-                // WebSocket status updates - trigger full redraw
-                // This includes any changes to: status, issues, questions, progresses, system info
-                Ok(new_status) = updates.recv() => {
-                    self.update_status(new_status);
-                    terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
-
-                    // Check exit conditions
-                    if stop_on_idle && self.should_exit() {
-                        break;
+        let handle = tokio::task::spawn(async move {
+            loop {
+                match crossterm::event::poll(Duration::from_millis(100)) {
+                    Ok(true) => {
+                        if let Ok(event) = crossterm::event::read() {
+                            _ = tx.send(Message::TerminalEvent(event)).await;
+                        }
                     }
+                    Err(_) => break,
+                    _ => {}
                 }
+            }
+        });
 
-                // Keyboard and terminal events (poll with short timeout)
-                _ = tokio::time::sleep(Duration::from_millis(EVENT_POLL_INTERVAL_MS)) => {
-                    if event::poll(Duration::from_millis(0))? {
-                        match event::read()? {
-                            Event::Key(key) => {
-                                match (key.code, key.modifiers) {
-                                    (KeyCode::Char('q'), _) |
-                                    (KeyCode::Esc, _) |
-                                    (KeyCode::Char('c'), KeyModifiers::CONTROL) => {
-                                        break;
-                                    }
-                                    _ => {}
-                                }
-                            }
-                            Event::Resize(_, _) => {
-                                // Terminal resize - trigger redraw
-                                terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
-                            }
-                            _ => {}
+        while !self.exit {
+            terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
+            if let Some(message) = rx.recv().await {
+                match message {
+                    Message::Update(update) => self.update_status(update),
+                    Message::TerminalEvent(event) => {
+                        if let Event::Key(key_event) = event {
+                            self.handle_key_event(key_event);
                         }
                     }
                 }
             }
         }
 
+        handle.abort();
         Ok(())
     }
 
-    /// Returns true if the app should exit
-    pub fn should_exit(&self) -> bool {
-        self.status.status.stage.is_last()
+    pub fn handle_key_event(&mut self, key_event: KeyEvent) {
+        if key_event.kind != KeyEventKind::Press {
+            return;
+        }
+
+        match (key_event.code, key_event.modifiers) {
+            (KeyCode::Char('q'), _)
+            | (KeyCode::Esc, _)
+            | (KeyCode::Char('c'), KeyModifiers::CONTROL) => {
+                self.exit = true;
+            }
+            _ => {}
+        }
     }
 }
 

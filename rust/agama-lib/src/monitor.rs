@@ -144,6 +144,14 @@ impl InstallationStatus {
     pub fn has_product(&self) -> bool {
         self.system_info.product_name.is_some()
     }
+
+    pub fn is_idle(&self) -> bool {
+        self.status.progresses.is_empty()
+    }
+
+    pub fn has_finished(&self) -> bool {
+        self.status.stage.is_last()
+    }
 }
 
 /// It allows connecting to the Agama monitor to get the status or listen for changes.

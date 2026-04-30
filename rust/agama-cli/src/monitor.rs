@@ -102,15 +102,23 @@ pub async fn run(
     let (monitor, initial_status) = Monitor::connect(websocket, &http_client).await?;
 
     // Create app state with selected theme
-    let mut app = MonitorApp::with_theme(initial_status, theme);
+    let mut app = MonitorApp::new(initial_status)
+        .with_theme(theme)
+        .with_stop_on_idle(stop_on_idle);
 
     // Setup terminal
     let mut terminal = setup_terminal()?;
 
     // Run the app
-    let result = app.run(&mut terminal, monitor, stop_on_idle).await;
+    let result = app.run(&mut terminal, monitor).await;
 
     // Cleanup
     restore_terminal(&mut terminal)?;
-    result
+
+    if let Err(error) = result {
+        eprintln!("Error running the monitor: {error}");
+    }
+
+    // Forces crossterm loop to finish.
+    std::process::exit(0);
 }

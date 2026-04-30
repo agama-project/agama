@@ -62,10 +62,10 @@ impl Widget for Content<'_> {
             render_final_status(self.status, area, buf);
         } else if !self.status.questions.is_empty() {
             render_questions(self.status, area, buf);
-        } else if !self.status.has_product() {
-            render_no_product(self.theme, area, buf);
         } else if !self.status.status.progresses.is_empty() {
             render_progress(self.status, self.theme, area, buf);
+        } else if !self.status.has_product() {
+            render_no_product(self.theme, area, buf);
         } else if !self.status.issues.is_empty() {
             render_issues(self.status, area, buf);
         } else {
