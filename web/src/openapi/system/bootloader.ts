@@ -17,7 +17,7 @@ export interface System {
   availableBootloaders: Bootloader[];
 }
 export interface Bootloader {
-  type?: BootloaderType;
+  type: BootloaderType;
   /**
    * Encryption authentication methods that can be managed by the bootloader in this system.
    */

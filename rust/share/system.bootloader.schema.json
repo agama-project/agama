@@ -17,7 +17,7 @@
     "bootloader": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "encryptionAuth"],
+      "required": ["type", "encryptionAuth"],
       "properties": {
         "type": { "$ref": "#/$defs/bootloaderType" },
         "encryptionAuth": {
