@@ -99,7 +99,7 @@ impl<'a> Content<'a> {
             ),
             Stage::Failed => (
                 gettext("Installation failed."),
-                gettext("Check the logs for more information or try again."),
+                gettext("Use the \"agama logs\" command to collect the logs."),
             ),
             _ => return,
         };
