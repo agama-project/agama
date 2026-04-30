@@ -208,7 +208,7 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
     bondPorts: connection.bond?.ports ?? [],
     bridgeIface: connection.iface,
-    bridgeStp: connection.bridge?.stp ?? true,
+    bridgeStp: connection.bridge?.stp ?? false,
     bridgePriority: connection.bridge?.priority ?? 32768,
     bridgeForwardDelay: connection.bridge?.forwardDelay ?? 15,
     bridgeHelloTime: connection.bridge?.helloTime ?? 2,
@@ -559,8 +559,14 @@ function ConnectionNotFound() {
 
 function EditConnectionForm() {
   const { id } = useParams();
-  const { connections: configConns } = useConfig();
-  const { connections: systemConns } = useSystem();
+
+  // We have to be careful with the merge as there could be values from a
+  // removed connection which is not valid anymore.
+  let { connections: configConns } = useConfig();
+  configConns = configConns.filter((c) => c.status !== "removed");
+  let { connections: systemConns } = useSystem();
+  systemConns = systemConns.filter((c) => c.status !== "removed");
+
   // Merge config and system connections so the form reflects the user's
   // explicit settings (config) while filling gaps from the live system state.
   // Config wins for single values: e.g. configConn.method4 === undefined

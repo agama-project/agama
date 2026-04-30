@@ -72,7 +72,7 @@ const useConfigMutation = () => {
 };
 
 const selectConnections = (data: Network.Proposal): Connection[] =>
-  data.connections.map((c) => Connection.fromApi(c));
+  data.connections.filter((c) => c.status !== "removed").map((c) => Connection.fromApi(c));
 
 const useConfig = (): NetworkConfig => {
   const { data } = useSuspenseQuery({
