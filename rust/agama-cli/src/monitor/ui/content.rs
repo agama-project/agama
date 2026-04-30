@@ -36,7 +36,10 @@ use crate::monitor::{
     ui::{issues::IssuesList, progress::ProgressWidget},
 };
 
-/// Represents the main content of the monitor
+/// Represents the main content of the monitor.
+///
+/// It implements some logic to decide what to show: the progress, the list of issues,
+/// the list of questions, etc.
 pub struct Content<'a> {
     status: &'a InstallationStatus,
     theme: &'a Theme,
@@ -45,6 +48,220 @@ pub struct Content<'a> {
 impl<'a> Content<'a> {
     pub fn new(status: &'a InstallationStatus, theme: &'a Theme) -> Self {
         Self { status, theme }
+    }
+
+    /// Renders questions
+    fn render_questions(&self, area: Rect, buf: &mut Buffer) {
+        let content_area = Rect {
+            x: area.x + 1,
+            y: area.y,
+            width: area.width.saturating_sub(2),
+            height: area.height,
+        };
+
+        let mut lines = vec![
+            Line::from(""),
+            Line::from(Span::styled(
+                gettext("There are pending questions:"),
+                Style::default().add_modifier(Modifier::BOLD),
+            )),
+            Line::from(""),
+        ];
+
+        for question in &self.status.questions {
+            lines.push(Line::from(format!("  - {}", question.spec.text)));
+        }
+
+        lines.push(Line::from(""));
+        lines.push(Line::from(Span::styled(
+            gettext("Please use the web interface (recommended) or the \"agama questions\" command to answer them."),
+            Style::default().add_modifier(Modifier::DIM),
+        )));
+
+        Paragraph::new(lines)
+            .wrap(Wrap { trim: false })
+            .render(content_area, buf);
+    }
+
+    /// Renders final status (finished or failed)
+    fn render_final_status(&self, area: Rect, buf: &mut Buffer) {
+        let content_area = Rect {
+            x: area.x + 1,
+            y: area.y,
+            width: area.width.saturating_sub(2),
+            height: area.height,
+        };
+
+        let (title, message) = match self.status.status.stage {
+            Stage::Finished => (
+                gettext("Installation complete."),
+                gettext("You can reboot the machine to log in to the new system."),
+            ),
+            Stage::Failed => (
+                gettext("Installation failed."),
+                gettext("Check the logs for more information or try again."),
+            ),
+            _ => return,
+        };
+
+        let lines = vec![
+            Line::from(""),
+            Line::from(Span::styled(
+                title,
+                Style::default().add_modifier(Modifier::BOLD),
+            )),
+            Line::from(""),
+            Line::from(Span::styled(
+                message,
+                Style::default().add_modifier(Modifier::DIM),
+            )),
+        ];
+
+        Paragraph::new(lines).render(content_area, buf);
+    }
+
+    /// Renders a message about not product being selected.
+    fn render_no_product(&self, area: Rect, buf: &mut Buffer) {
+        let content_area = Rect {
+            x: area.x + 1,
+            y: area.y,
+            width: area.width.saturating_sub(2),
+            height: area.height,
+        };
+
+        let mut lines = vec![
+            Line::from(""),
+            Line::from(Span::styled(
+                gettext("Action needed:"),
+                Style::default().add_modifier(Modifier::BOLD),
+            )),
+            Line::from(""),
+        ];
+
+        lines.push(Line::from(vec![
+            Span::from("  - "),
+            Span::from(gettext("No product has been selected yet.")),
+        ]));
+
+        Paragraph::new(lines).render(content_area, buf);
+    }
+
+    /// Renders installation progress.
+    fn render_progress(&self, area: Rect, buf: &mut Buffer) {
+        let content_area = Rect {
+            x: area.x + 1,
+            y: area.y,
+            width: area.width.saturating_sub(2),
+            height: area.height,
+        };
+
+        // Separate progresses into master (Manager) and details (others)
+        let (master_progresses, detail_progresses): (Vec<_>, Vec<_>) = self
+            .status
+            .status
+            .progresses
+            .iter()
+            .partition(|p| p.scope == Scope::Manager);
+
+        let mut current_y = content_area.y + 1;
+
+        let mut has_master_progress = false;
+        if let Some(progress) = master_progresses.first() {
+            has_master_progress = true;
+            let area = Rect {
+                x: content_area.x,
+                y: content_area.y,
+                width: content_area.width,
+                height: 3,
+            };
+            self.render_manager_progress(progress, area, buf);
+            current_y += 2;
+        }
+
+        for progress in &detail_progresses {
+            let widget = ProgressWidget::new(progress, !has_master_progress, self.theme);
+            let height = widget.height() + 1;
+            let area = Rect {
+                y: current_y,
+                width: area.width.saturating_sub(3),
+                height,
+                ..content_area
+            };
+            current_y += height;
+            widget.render(area, buf);
+        }
+    }
+
+    /// Renders blocking issues.
+    fn render_issues(&self, area: Rect, buf: &mut Buffer) {
+        let layout = Layout::vertical([Constraint::Length(2), Constraint::Fill(1)]);
+
+        let [title_area, issues_area] = layout.areas(Rect {
+            x: area.x + 1,
+            y: area.y + 1,
+            width: area.width.saturating_sub(2),
+            height: area.height,
+        });
+
+        let lines = vec![Line::from(Span::styled(
+            gettext("Action needed:"),
+            Style::default().add_modifier(Modifier::BOLD),
+        ))];
+        Paragraph::new(lines).render(title_area, buf);
+
+        let list = IssuesList::new(&self.status.issues);
+        list.render(issues_area, buf);
+    }
+
+    /// Renders current stage message.
+    fn render_stage(&self, area: Rect, buf: &mut Buffer) {
+        let content_area = Rect {
+            x: area.x + 1,
+            y: area.y,
+            width: area.width.saturating_sub(2),
+            height: area.height,
+        };
+
+        // This is called when there are no progresses, no issues, and no questions
+        // So if we're in Configuring, we're ready to install
+        let message = match self.status.status.stage {
+            Stage::Configuring => gettext("Ready for installation."),
+            Stage::Installing => gettext("Waiting to start installation..."),
+            _ => return,
+        };
+
+        let lines = vec![
+            Line::default(),
+            Line::from(Span::styled(
+                message,
+                Style::default().add_modifier(Modifier::DIM),
+            )),
+        ];
+
+        Paragraph::new(lines).render(content_area, buf);
+    }
+
+    /// Renders the progress for the manager scope.
+    fn render_manager_progress(&self, progress: &api::Progress, area: Rect, buf: &mut Buffer) {
+        let step_label = format!(
+            "{} {} {} {}",
+            gettext("Step"),
+            progress.index,
+            gettext("of"),
+            progress.size
+        );
+
+        // Manager progress (with some air gap)
+        let lines = vec![
+            Line::from(""),
+            Line::from(Span::styled(
+                format!("{}: {}", step_label, progress.step),
+                Style::default().add_modifier(Modifier::DIM),
+            )),
+            Line::from(""),
+        ];
+
+        Paragraph::new(lines).render(area, buf);
     }
 }
 
@@ -59,233 +276,17 @@ impl Widget for Content<'_> {
     /// 6. A default message informing the user that Agama is ready.
     fn render(self, area: Rect, buf: &mut Buffer) {
         if self.status.status.stage.is_last() {
-            render_final_status(self.status, area, buf);
+            self.render_final_status(area, buf);
         } else if !self.status.questions.is_empty() {
-            render_questions(self.status, area, buf);
+            self.render_questions(area, buf);
         } else if !self.status.status.progresses.is_empty() {
-            render_progress(self.status, self.theme, area, buf);
+            self.render_progress(area, buf);
         } else if !self.status.has_product() {
-            render_no_product(self.theme, area, buf);
+            self.render_no_product(area, buf);
         } else if !self.status.issues.is_empty() {
-            render_issues(self.status, area, buf);
+            self.render_issues(area, buf);
         } else {
-            render_stage(self.status, area, buf);
+            self.render_stage(area, buf);
         }
     }
-}
-
-/// Renders questions
-fn render_questions(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
-    let content_area = Rect {
-        x: area.x + 1,
-        y: area.y,
-        width: area.width.saturating_sub(2),
-        height: area.height,
-    };
-
-    let mut lines = vec![
-        Line::from(""),
-        Line::from(Span::styled(
-            gettext("There are pending questions:"),
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Line::from(""),
-    ];
-
-    for question in &status.questions {
-        lines.push(Line::from(format!("- {}", question.spec.text)));
-    }
-
-    lines.push(Line::from(""));
-    lines.push(Line::from(Span::styled(
-        gettext("Please use the web interface or `agama questions` command to answer them."),
-        Style::default().add_modifier(Modifier::DIM),
-    )));
-
-    Paragraph::new(lines)
-        .wrap(Wrap { trim: false })
-        .render(content_area, buf);
-}
-
-/// Renders final status (finished or failed)
-fn render_final_status(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
-    let content_area = Rect {
-        x: area.x + 1,
-        y: area.y,
-        width: area.width.saturating_sub(2),
-        height: area.height,
-    };
-
-    let (title, message) = match status.status.stage {
-        Stage::Finished => (
-            gettext("Installation complete."),
-            gettext("You can reboot the machine to log in to the new system."),
-        ),
-        Stage::Failed => (
-            gettext("Installation failed."),
-            gettext("Check the logs for more information or try again."),
-        ),
-        _ => return,
-    };
-
-    let lines = vec![
-        Line::from(""),
-        Line::from(Span::styled(
-            title,
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Line::from(""),
-        Line::from(Span::styled(
-            message,
-            Style::default().add_modifier(Modifier::DIM),
-        )),
-    ];
-
-    Paragraph::new(lines).render(content_area, buf);
-}
-
-fn render_no_product(theme: &Theme, area: Rect, buf: &mut Buffer) {
-    let content_area = Rect {
-        x: area.x + 1,
-        y: area.y,
-        width: area.width.saturating_sub(2),
-        height: area.height,
-    };
-
-    let mut lines = vec![
-        Line::from(""),
-        Line::from(Span::styled(
-            gettext("Action needed:"),
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Line::from(""),
-    ];
-
-    lines.push(Line::from(vec![
-        Span::raw(" "),
-        Span::styled("•", Style::default().fg(theme.accent)),
-        Span::styled(
-            " No product has been selected yet.",
-            Style::default().add_modifier(Modifier::DIM),
-        ),
-    ]));
-
-    Paragraph::new(lines).render(content_area, buf);
-}
-
-/// Renders installation progress
-fn render_progress(status: &InstallationStatus, theme: &Theme, area: Rect, buf: &mut Buffer) {
-    let content_area = Rect {
-        x: area.x + 1,
-        y: area.y,
-        width: area.width.saturating_sub(2),
-        height: area.height,
-    };
-
-    // Separate progresses into master (Manager) and details (others)
-    let (master_progresses, detail_progresses): (Vec<_>, Vec<_>) = status
-        .status
-        .progresses
-        .iter()
-        .partition(|p| p.scope == Scope::Manager);
-
-    let mut current_y = content_area.y + 1;
-
-    let mut has_master_progress = false;
-    if let Some(progress) = master_progresses.first() {
-        has_master_progress = true;
-        let area = Rect {
-            x: content_area.x,
-            y: content_area.y,
-            width: content_area.width,
-            height: 3,
-        };
-        render_manager_progress(progress, area, buf);
-        current_y += 2;
-    }
-
-    for progress in &detail_progresses {
-        let widget = ProgressWidget::new(progress, !has_master_progress, theme);
-        let height = widget.height() + 1;
-        let area = Rect {
-            y: current_y,
-            width: area.width.saturating_sub(3),
-            height,
-            ..content_area
-        };
-        current_y += height;
-        widget.render(area, buf);
-    }
-}
-
-/// Renders blocking issues.
-fn render_issues(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
-    let layout = Layout::vertical([Constraint::Length(2), Constraint::Fill(1)]);
-
-    let [title_area, issues_area] = layout.areas(Rect {
-        x: area.x + 1,
-        y: area.y + 1,
-        width: area.width.saturating_sub(2),
-        height: area.height,
-    });
-
-    let lines = vec![Line::from(Span::styled(
-        gettext("Action needed:"),
-        Style::default().add_modifier(Modifier::BOLD),
-    ))];
-    Paragraph::new(lines).render(title_area, buf);
-
-    let list = IssuesList::new(&status.issues);
-    list.render(issues_area, buf);
-}
-
-/// Renders current stage message.
-fn render_stage(status: &InstallationStatus, area: Rect, buf: &mut Buffer) {
-    let content_area = Rect {
-        x: area.x + 1,
-        y: area.y,
-        width: area.width.saturating_sub(2),
-        height: area.height,
-    };
-
-    // This is called when there are no progresses, no issues, and no questions
-    // So if we're in Configuring, we're ready to install
-    let message = match status.status.stage {
-        Stage::Configuring => gettext("Ready for installation."),
-        Stage::Installing => gettext("Waiting to start installation..."),
-        _ => return,
-    };
-
-    let lines = vec![
-        Line::default(),
-        Line::from(Span::styled(
-            message,
-            Style::default().add_modifier(Modifier::DIM),
-        )),
-    ];
-
-    Paragraph::new(lines).render(content_area, buf);
-}
-
-/// Renders the progress for the manager scope.
-fn render_manager_progress(progress: &api::Progress, area: Rect, buf: &mut Buffer) {
-    let step_label = format!(
-        "{} {} {} {}",
-        gettext("Step"),
-        progress.index,
-        gettext("of"),
-        progress.size
-    );
-
-    // Manager progress (with some air gap)
-    let lines = vec![
-        Line::from(""),
-        Line::from(Span::styled(
-            format!("{}: {}", step_label, progress.step),
-            Style::default().add_modifier(Modifier::DIM),
-        )),
-        Line::from(""),
-    ];
-
-    Paragraph::new(lines).render(area, buf);
 }
