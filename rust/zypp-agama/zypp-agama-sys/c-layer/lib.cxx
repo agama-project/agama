@@ -524,7 +524,7 @@ void select_locale(struct Zypp *_zypp, const char *language,
                    const char *country) noexcept {
   LOG_LOCATION("Selecting locale packages");
 
-  if (strlen(country) == 0) {
+  if (strlen(language) == 0) {
     WAR << "Locale language not specified" << std::endl;
     return;
   }
