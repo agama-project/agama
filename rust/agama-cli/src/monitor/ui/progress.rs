@@ -38,6 +38,7 @@ const PROGRESS_HEIGHT_WITH_SCOPE: u16 = 5;
 /// Vertical spacing after scope label
 const SCOPE_LABEL_SPACING: u16 = 2;
 
+/// A widget to display the progress of Agama services.
 pub struct Progress<'a> {
     with_scope: bool,
     progress: &'a api::Progress,
@@ -45,6 +46,11 @@ pub struct Progress<'a> {
 }
 
 impl<'a> Progress<'a> {
+    /// Builds a new progress widget.
+    ///
+    /// * `progress`: a struct containing the progress to print.
+    /// * `with_scope`: whether to display the scope.
+    /// * `theme`: UI theme to apply.
     pub fn new(progress: &'a api::Progress, with_scope: bool, theme: &'a Theme) -> Self {
         Self {
             progress,
@@ -53,6 +59,9 @@ impl<'a> Progress<'a> {
         }
     }
 
+    /// Height of the widget.
+    ///
+    /// The height of this widget can be calculated in advance.
     pub fn height(&'a self) -> u16 {
         if self.with_scope {
             PROGRESS_HEIGHT_WITH_SCOPE

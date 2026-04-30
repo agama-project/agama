@@ -46,6 +46,10 @@ pub struct Content<'a> {
 }
 
 impl<'a> Content<'a> {
+    /// Creates a new content widget.
+    ///
+    /// * `status`: current installation status.
+    /// * `theme`: UI theme to apply.
     pub fn new(status: &'a InstallationStatus, theme: &'a Theme) -> Self {
         Self { status, theme }
     }
