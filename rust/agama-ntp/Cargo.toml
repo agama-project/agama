@@ -1,0 +1,15 @@
+[package]
+name = "agama-ntp"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-utils = { version = "0.1.0", path = "../agama-utils" }
+async-trait = "0.1.89"
+thiserror = "2.0.18"
+tracing = "0.1.44"
+
+[dev-dependencies]
+tempfile = "3.13.0"
+tokio = { version = "1.49.0", features = ["full"] }

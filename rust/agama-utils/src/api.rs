@@ -61,6 +61,7 @@ pub mod iscsi;
 pub mod l10n;
 pub mod manager;
 pub mod network;
+pub mod ntp;
 pub mod proxy;
 pub mod query;
 pub mod question;

@@ -195,6 +195,7 @@ dependencies = [
  "agama-iscsi",
  "agama-l10n",
  "agama-network",
+ "agama-ntp",
  "agama-proxy",
  "agama-s390",
  "agama-security",
@@ -239,6 +240,18 @@ dependencies = [
  "tracing",
  "uuid",
  "zbus",
+]
+
+[[package]]
+name = "agama-ntp"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "async-trait",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
