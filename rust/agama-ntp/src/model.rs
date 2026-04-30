@@ -76,9 +76,7 @@ impl Model {
     }
 
     fn reload_chrony(&self) -> Result<(), Error> {
-        let output = Command::new("chronyc")
-            .args(["reload", "sources"])
-            .output();
+        let output = Command::new("chronyc").args(["reload", "sources"]).output();
 
         match output {
             Ok(result) => {
@@ -236,7 +234,10 @@ mod tests {
 
         model.write_config(&config).unwrap();
 
-        let written_path = tempdir.path().join(CHRONY_CONFIG_DIR).join(CHRONY_CONFIG_FILE);
+        let written_path = tempdir
+            .path()
+            .join(CHRONY_CONFIG_DIR)
+            .join(CHRONY_CONFIG_FILE);
         assert!(written_path.exists());
 
         let content = std::fs::read_to_string(&written_path).unwrap();
@@ -260,7 +261,10 @@ mod tests {
 
         model.install(&config).unwrap();
 
-        let install_path = tempdir.path().join(CHRONY_CONFIG_DIR).join(CHRONY_CONFIG_FILE);
+        let install_path = tempdir
+            .path()
+            .join(CHRONY_CONFIG_DIR)
+            .join(CHRONY_CONFIG_FILE);
         assert!(install_path.exists());
 
         let content = std::fs::read_to_string(&install_path).unwrap();

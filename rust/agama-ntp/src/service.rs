@@ -54,9 +54,7 @@ impl Starter {
     }
 
     pub fn with_install_dir<P: AsRef<Path>>(mut self, install_dir: P) -> Self {
-        self.model = Box::new(
-            model::Model::new().with_install_dir(install_dir)
-        );
+        self.model = Box::new(model::Model::new().with_install_dir(install_dir));
         self
     }
 
@@ -98,10 +96,7 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
-    async fn handle(
-        &mut self,
-        message: message::SetConfig<api::ntp::Config>,
-    ) -> Result<(), Error> {
+    async fn handle(&mut self, message: message::SetConfig<api::ntp::Config>) -> Result<(), Error> {
         if let Some(config) = &message.config {
             if let Err(e) = self.model.write_config(config) {
                 tracing::error!("Failed to write NTP configuration: {}", e);

@@ -21,7 +21,9 @@
 use crate::{
     actions::{FinishAction, InstallAction, SetConfigAction},
     bootloader, files, hostname, iscsi, l10n, ntp, proxy, s390, security, service, software,
-    storage, tasks::message, users,
+    storage,
+    tasks::message,
+    users,
 };
 use agama_network::NetworkSystemClient;
 use agama_utils::{

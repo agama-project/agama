@@ -116,9 +116,7 @@ mod tests {
 
     #[test]
     fn test_empty_sources_not_serialized() {
-        let config = Config {
-            sources: vec![],
-        };
+        let config = Config { sources: vec![] };
         let json = serde_json::to_string(&config).unwrap();
         assert_eq!(json, "{}");
     }
@@ -159,9 +157,7 @@ mod tests {
             }],
         };
 
-        let config2 = Config {
-            sources: vec![],
-        };
+        let config2 = Config { sources: vec![] };
 
         config1.merge(config2);
         assert_eq!(config1.sources.len(), 1);
