@@ -22,11 +22,14 @@
 require_relative "./examples"
 require "agama/storage/config_conversions/from_model_conversions/partition"
 require "agama/storage/configs/partition"
+require "agama/storage/bootloader_config"
 require "y2storage/partition_id"
 
 describe Agama::Storage::ConfigConversions::FromModelConversions::Partition do
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
+
   subject do
-    described_class.new(model_json)
+    described_class.new(model_json, bootloader_config)
   end
 
   describe "#convert" do

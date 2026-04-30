@@ -158,7 +158,7 @@ module Agama
           def convert_volume(volume, encryption_model = nil)
             return FromModelConversions::LogicalVolume.new(volume).convert if convert_lvm?
 
-            FromModelConversions::Partition.new(volume, encryption_model).convert
+            FromModelConversions::Partition.new(volume, bootloader_config, encryption_model).convert
           end
 
           # Volume config class depending on the conversion.

@@ -1029,11 +1029,12 @@ describe Agama::DBus::Storage::Manager do
         expect(subject.serialized_config_model).to eq(
           serialize({
             boot:         {
-              configure: true,
-              device:    {
+              configure:  true,
+              device:     {
                 default: true,
                 name:    "/dev/sda"
-              }
+              },
+              bootloader: "grub2"
             },
             drives:       [
               {
@@ -1398,17 +1399,17 @@ describe Agama::DBus::Storage::Manager do
             grub2_info, grub2_bls_info, systemd_boot_info = all_bootloaders
 
             expect(grub2_info).to eq({
-              name:           "grub2",
+              type:           "grub2",
               encryptionAuth: ["password"]
             })
 
             expect(grub2_bls_info).to eq({
-              name:           "grub2-bls",
+              type:           "grub2-bls",
               encryptionAuth: ["password", "tpm"]
             })
 
             expect(systemd_boot_info).to eq({
-              name:           "systemd-boot",
+              type:           "systemd-boot",
               encryptionAuth: ["password", "tpm"]
             })
           end
@@ -1430,7 +1431,7 @@ describe Agama::DBus::Storage::Manager do
             grub2_info = all_bootloaders.first
 
             expect(grub2_info).to eq({
-              name:           "grub2",
+              type:           "grub2",
               encryptionAuth: ["password"]
             })
           end

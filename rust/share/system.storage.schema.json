@@ -41,11 +41,6 @@
       "type": "array",
       "items": { "type": "string" }
     },
-    "encryptionMethods": {
-      "description": "Possible encryption methods for the current system and product",
-      "type": "array",
-      "items": { "$ref": "#/$defs/encryptionMethod" }
-    },
     "volumeTemplates": {
       "description": "Volumes defined by the product as templates",
       "type": "array",

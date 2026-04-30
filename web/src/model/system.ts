@@ -29,6 +29,7 @@ import type * as Storage from "~/model/system/storage";
 import type * as ISCSI from "~/model/system/iscsi";
 import type * as DASD from "~/model/system/dasd";
 import type * as ZFCP from "~/model/system/zfcp";
+import type * as Bootloader from "~/model/system/bootloader";
 
 type System = {
   hardware?: Hardware.System;
@@ -41,6 +42,7 @@ type System = {
   iscsi?: ISCSI.System;
   dasd?: DASD.System;
   zfcp?: ZFCP.System;
+  bootloader?: Bootloader.System;
 };
 
 type Product = {
@@ -99,4 +101,5 @@ export type {
   ISCSI,
   DASD,
   ZFCP,
+  Bootloader,
 };

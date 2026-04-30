@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -355,10 +355,11 @@ describe Agama::Storage::Proposal do
           expect(subject.model_json).to eq(
             {
               boot:         {
-                configure: true,
-                device:    {
+                configure:  true,
+                device:     {
                   default: true
-                }
+                },
+                bootloader: "grub2"
               },
               drives:       [
                 {
@@ -399,15 +400,16 @@ describe Agama::Storage::Proposal do
           expect(subject.model_json).to eq(
             {
               boot:         {
-                configure: true,
-                device:    {
+                configure:  true,
+                device:     {
                   default: true,
                   name:    "/dev/sda"
-                }
+                },
+                bootloader: "grub2"
               },
               encryption:   {
-                method:   "luks1",
-                password: "12345"
+                password: "12345",
+                tpm:      false
               },
               drives:       [
                 {
@@ -723,6 +725,63 @@ describe Agama::Storage::Proposal do
 
       it "returns false" do
         expect(subject.guided?).to eq(false)
+      end
+    end
+  end
+
+  describe "#bootloader_config" do
+    let(:source_bootloader_config) do
+      config = Agama::Storage::BootloaderConfig.new
+      config.type = Agama::Storage::BootloaderType::GRUB2
+      config
+    end
+
+    subject(:proposal) do
+      described_class.new(product_config, bootloader_config: source_bootloader_config,
+        logger: logger)
+    end
+
+    context "when no proposal has been calculated yet" do
+      it "returns the source bootloader config when solved is false" do
+        result = subject.bootloader_config(solved: false)
+        expect(result).to be(source_bootloader_config)
+        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+      end
+
+      it "returns the source bootloader config when solved is true" do
+        result = subject.bootloader_config(solved: true)
+        expect(result).to be(source_bootloader_config)
+        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+      end
+
+      it "returns the source bootloader config when solved is not specified" do
+        result = subject.bootloader_config
+        expect(result).to be(source_bootloader_config)
+        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+      end
+    end
+
+    context "when a proposal has been calculated" do
+      before do
+        subject.calculate_agama(achivable_config)
+      end
+
+      it "returns the source bootloader config when solved is false" do
+        result = subject.bootloader_config(solved: false)
+        expect(result).to be(source_bootloader_config)
+        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+      end
+
+      it "returns the solved bootloader config when solved is true" do
+        result = subject.bootloader_config(solved: true)
+        expect(result).to be_a(Agama::Storage::BootloaderConfig)
+        expect(result).to_not be(source_bootloader_config)
+      end
+
+      it "returns the source bootloader config when solved is not specified" do
+        result = subject.bootloader_config
+        expect(result).to be(source_bootloader_config)
+        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
       end
     end
   end

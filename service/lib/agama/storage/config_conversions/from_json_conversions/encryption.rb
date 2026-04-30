@@ -130,7 +130,9 @@ module Agama
             return {} unless encryption_json.is_a?(String)
 
             # TODO: Report issue if the schema admits an unknown method.
-            method = Y2Storage::EncryptionMethod.find(encryption_json.to_sym)
+            # Normalize camelCase to snake_case (y2storage uses "random_swap", "tmp_fde", etc.).
+            normalized = encryption_json.gsub(/([a-z])([A-Z])/, '\1_\2').downcase
+            method = Y2Storage::EncryptionMethod.find(normalized.to_sym)
             return {} unless method
 
             {

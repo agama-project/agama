@@ -25,12 +25,24 @@ import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useEncryptionMethods } from "~/hooks/model/system/storage";
+import { useAvailableBootloaders } from "~/hooks/model/system/bootloader";
 import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-model";
 import { isEmpty } from "radashi";
 import { _ } from "~/i18n";
-import type { ConfigModel } from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Bootloader } from "~/model/system/bootloader";
+
+const isTpmAvailable = (
+  availableBootloaders: Bootloader[],
+  currentType?: ConfigModel.BootloaderType,
+) => {
+  if (!currentType) return false;
+
+  const bootloader = availableBootloaders.find((b) => b.type === currentType);
+  const encryptionAuth = bootloader?.encryptionAuth || [];
+  return encryptionAuth.includes("tpm");
+};
 
 /**
  * Renders a form that allows the user change encryption settings
@@ -38,14 +50,14 @@ import { STORAGE } from "~/routes/paths";
 export default function EncryptionSettingsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const methods = useEncryptionMethods();
+  const availableBootloaders = useAvailableBootloaders();
   const configModel = useConfigModel();
   const setEncryption = useSetEncryption();
 
   const [errors, setErrors] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [tpm, setTpm] = useState(false);
   const [password, setPassword] = useState("");
-  const [method, setMethod] = useState<ConfigModel.EncryptionMethod>("luks2");
 
   const passwordRef = useRef<HTMLInputElement>();
   const formId = "encryptionSettingsForm";
@@ -53,17 +65,14 @@ export default function EncryptionSettingsPage() {
   useEffect(() => {
     if (configModel?.encryption) {
       setIsEnabled(true);
-      setMethod(configModel.encryption.method);
+      setTpm(configModel.encryption.tpm || false);
       setPassword(configModel.encryption.password || "");
     }
   }, [configModel]);
 
   const changePassword = (_, v: string) => setPassword(v);
 
-  const changeMethod = (_, useTPM: boolean) => {
-    const method = useTPM ? "tpmFde" : "luks2";
-    setMethod(method);
-  };
+  const changeTpm = (_, useTpm: boolean) => setTpm(useTpm);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -83,7 +92,7 @@ export default function EncryptionSettingsPage() {
       return;
     }
 
-    const commit = () => (isEnabled ? setEncryption({ method, password }) : setEncryption(null));
+    const commit = () => (isEnabled ? setEncryption({ password, tpm }) : setEncryption(null));
 
     commit();
     navigate({ pathname: "..", search: location.search });
@@ -99,7 +108,7 @@ TPM can verify the integrity of the system. TPM sealing requires the new system 
 directly on its first run.",
   );
 
-  const isTpmAvailable = methods.includes("tpmFde");
+  const tpmAvailable = isTpmAvailable(availableBootloaders, configModel?.boot?.bootloader);
 
   return (
     <Page
@@ -138,13 +147,13 @@ at the new file systems, including data, programs, and system files.",
                 showErrors={false}
               />
               <PasswordCheck password={password} />
-              {isTpmAvailable && (
+              {tpmAvailable && (
                 <Checkbox
-                  id="tpmEncryptionMethod"
+                  id="tpm"
                   label={tpmLabel}
                   description={tpmExplanation}
-                  isChecked={method === "tpmFde"}
-                  onChange={changeMethod}
+                  isChecked={tpm}
+                  onChange={changeTpm}
                 />
               )}
             </NestedContent>

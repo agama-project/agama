@@ -19,19 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2storage/storage_manager"
 require "agama/dbus/base_object"
 require "agama/dbus/with_issues"
 require "agama/dbus/with_progress"
 require "agama/storage/bootloader"
 require "agama/storage/config_conversions"
-require "agama/storage/encryption_settings"
 require "agama/storage/volume_templates_builder"
 require "agama/storage/devicegraph_conversions"
 require "agama/storage/volume_conversions"
 require "dbus"
 require "json"
 require "yast"
+require "y2storage/storage_manager"
 
 module Agama
   module DBus
@@ -168,8 +167,9 @@ module Agama
 
           config = Agama::Storage::ConfigConversions::FromModel.new(
             model_json,
-            product_config: product_config,
-            storage_system: proposal.storage_system
+            product_config:    product_config,
+            bootloader_config: proposal.bootloader_config(solved: true),
+            storage_system:    proposal.storage_system
           ).convert
 
           config_json = { storage: Agama::Storage::ConfigConversions::ToJSON.new(config).convert }
@@ -430,7 +430,6 @@ module Agama
             candidateMdRaids:      candidate_md_raids,
             issues:                system_issues_json,
             productMountPoints:    product_mount_points,
-            encryptionMethods:     encryption_methods,
             volumeTemplates:       volume_templates
           }
           JSON.pretty_generate(json)
@@ -552,7 +551,7 @@ module Agama
         # @return [Hash]
         def bootloader_json(bootloader)
           {
-            name:           bootloader.name,
+            type:           bootloader.type.value,
             encryptionAuth: bootloader_encryption_auth_json(bootloader)
           }
         end
@@ -606,15 +605,6 @@ module Agama
             .all
             .map(&:mount_path)
             .reject(&:empty?)
-        end
-
-        # Reads the list of possible encryption methods for the current system and product.
-        #
-        # @return [Array<String>]
-        def encryption_methods
-          Agama::Storage::EncryptionSettings
-            .available_methods
-            .map { |m| Agama::Storage::EncryptionSettings.method_id(m) }
         end
 
         # Default volumes to be used as templates

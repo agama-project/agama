@@ -26,7 +26,8 @@
       "required": ["configure"],
       "properties": {
         "configure": { "type": "boolean" },
-        "device": { "$ref": "#/$defs/bootDevice" }
+        "device": { "$ref": "#/$defs/bootDevice" },
+        "bootloader": { "$ref": "#/$defs/bootloaderType" }
       }
     },
     "bootDevice": {
@@ -38,21 +39,17 @@
         "name": { "type": "string" }
       }
     },
+    "bootloaderType": {
+      "enum": ["grub2", "grub2-bls", "systemd-boot"]
+    },
     "encryption": {
       "type": "object",
       "additionalProperties": false,
       "required": ["method"],
       "properties": {
-        "method": { "$ref": "#/$defs/encryptionMethod" },
-        "password": { "type": "string" }
+        "password": { "type": "string" },
+        "tpm": { "type": "boolean" }
       }
-    },
-    "encryptionMethod": {
-      "enum": [
-        "luks1",
-        "luks2",
-        "tpmFde"
-      ]
     },
     "drive": {
       "type": "object",

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,9 +33,13 @@ module Agama
         attr_reader :config
         alias_method :settings, :config
 
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
+
         # @param product_config [Agama::Config]
         # @param storage_system [Storage::System]
-        # @param config [Agama::Storage::Config]
+        # @param config [Storage::Config]
+        # @param bootloader_config [Storage::BootloaderConfig]
         # @param logger [Logger]
         def initialize(product_config, storage_system, config, bootloader_config, logger)
           textdomain "agama"

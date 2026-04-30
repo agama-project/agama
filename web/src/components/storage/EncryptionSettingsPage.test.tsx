@@ -29,20 +29,33 @@ import type { ConfigModel } from "~/model/storage/config-model";
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
 const mockLuks2Config: ConfigModel.Config = {
+  boot: {
+    configure: true,
+    bootloader: "grub2",
+  },
   encryption: {
-    method: "luks2",
     password: "12345",
+    tpm: false,
   },
 };
 
 const mockTpmConfig: ConfigModel.Config = {
+  boot: {
+    configure: true,
+    bootloader: "grub2-bls",
+  },
   encryption: {
-    method: "tpmFde",
     password: "12345",
+    tpm: true,
   },
 };
 
-const mockNoEncryptionConfig: ConfigModel.Config = {};
+const mockNoEncryptionConfig: ConfigModel.Config = {
+  boot: {
+    configure: true,
+    bootloader: "grub2",
+  },
+};
 
 jest.mock("~/hooks/model/system", () => ({
   useSystem: () => ({
@@ -54,9 +67,9 @@ jest.mock("~/hooks/model/system", () => ({
   }),
 }));
 
-const mockUseEncryptionMethods = jest.fn();
-jest.mock("~/hooks/model/system/storage", () => ({
-  useEncryptionMethods: () => mockUseEncryptionMethods(),
+const mockUseAvailableBootloaders = jest.fn();
+jest.mock("~/hooks/model/system/bootloader", () => ({
+  useAvailableBootloaders: () => mockUseAvailableBootloaders(),
 }));
 
 const mockUseConfigModel = jest.fn();
@@ -68,7 +81,11 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 
 describe("EncryptionSettingsPage", () => {
   beforeEach(() => {
-    mockUseEncryptionMethods.mockReturnValue(["luks2", "tpmFde"]);
+    mockUseAvailableBootloaders.mockReturnValue([
+      { type: "grub2", encryptionAuth: ["password"] },
+      { type: "grub2-bls", encryptionAuth: ["password", "tpm"] },
+      { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
+    ]);
     mockSetEncryption.mockClear();
     mockUseConfigModel.mockClear();
   });
@@ -89,7 +106,7 @@ describe("EncryptionSettingsPage", () => {
       await user.type(passwordConfirmationInput, "12345");
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
-      expect(mockSetEncryption).toHaveBeenCalledWith({ method: "luks2", password: "12345" });
+      expect(mockSetEncryption).toHaveBeenCalledWith({ password: "12345", tpm: false });
     });
   });
 
@@ -123,13 +140,16 @@ describe("EncryptionSettingsPage", () => {
       await user.click(tpmCheckbox);
       expect(tpmCheckbox).not.toBeChecked();
       await user.click(acceptButton);
-      expect(mockSetEncryption).toHaveBeenCalledWith({ method: "luks2", password: "12345" });
+      expect(mockSetEncryption).toHaveBeenCalledWith({ password: "12345", tpm: false });
     });
   });
 
   describe("when TPM is not available", () => {
     beforeEach(() => {
-      mockUseEncryptionMethods.mockReturnValue(["luks1", "luks2"]);
+      mockUseAvailableBootloaders.mockReturnValue([
+        { type: "grub2", encryptionAuth: ["password"] },
+      ]);
+      mockUseConfigModel.mockReturnValue(mockLuks2Config);
     });
 
     it("does not offer TPM", () => {

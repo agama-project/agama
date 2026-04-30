@@ -63,9 +63,15 @@ export type EncryptionCipher = string;
 export type EncryptionKeySize = number;
 export type EncryptionPbkdFunction = "pbkdf2" | "argon2i" | "argon2id";
 /**
- * Swap encryptions.
+ * Swap encryptions. The snake case names are deprecated.
  */
-export type EncryptionSwap = "protected_swap" | "secure_swap" | "random_swap";
+export type EncryptionSwap =
+  | "protected_swap"
+  | "secure_swap"
+  | "random_swap"
+  | "protectedSwap"
+  | "secureSwap"
+  | "randomSwap";
 export type FilesystemType = FilesystemTypeAny | FilesystemTypeBtrfs;
 export type FilesystemTypeAny =
   | "bcachefs"

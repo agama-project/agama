@@ -27,7 +27,6 @@ export type FilesystemType =
   | "xfs";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
 export type PartitionTableType = "gpt" | "msdos" | "dasd";
-export type EncryptionMethod = "luks2" | "tpmFde";
 
 /**
  * API description of the system
@@ -61,10 +60,6 @@ export interface System {
    * Meaningful mount points for the current product
    */
   productMountPoints?: string[];
-  /**
-   * Possible encryption methods for the current system and product
-   */
-  encryptionMethods?: EncryptionMethod[];
   /**
    * Volumes defined by the product as templates
    */

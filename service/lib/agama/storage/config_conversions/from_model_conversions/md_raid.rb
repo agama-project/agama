@@ -41,10 +41,12 @@ module Agama
 
           # @param model_json [Hash]
           # @param product_config [Agama::Config]
+          # @param bootloader_config [Storage::BootloaderConfig]
           # @param encryption_model [Hash, nil]
-          def initialize(model_json, product_config, encryption_model = nil)
+          def initialize(model_json, product_config, bootloader_config, encryption_model = nil)
             super(model_json)
             @product_config = product_config
+            @bootloader_config = bootloader_config
             @encryption_model = encryption_model
           end
 
@@ -54,6 +56,9 @@ module Agama
 
           # @return [Agama::Config]
           attr_reader :product_config
+
+          # @return [Storage::BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @return [Hash, nil]
           attr_reader :encryption_model
