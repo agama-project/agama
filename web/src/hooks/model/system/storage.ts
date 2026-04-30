@@ -36,17 +36,6 @@ function useSystem(): Storage.System | null {
   return data;
 }
 
-const selectEncryptionMethods = (data: System | null): Storage.EncryptionMethod[] =>
-  data?.storage?.encryptionMethods || [];
-
-function useEncryptionMethods(): Storage.EncryptionMethod[] {
-  const { data } = useSuspenseQuery({
-    ...systemQuery,
-    select: selectEncryptionMethods,
-  });
-  return data;
-}
-
 const enum DeviceGroup {
   AvailableDrives = "availableDrives",
   CandidateDrives = "candidateDrives",
@@ -220,7 +209,6 @@ function useIssues() {
 
 export {
   useSystem,
-  useEncryptionMethods,
   useAvailableDrives,
   useCandidateDrives,
   useAvailableMdRaids,

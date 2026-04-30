@@ -149,7 +149,7 @@ at the new file systems, including data, programs, and system files.",
               <PasswordCheck password={password} />
               {tpmAvailable && (
                 <Checkbox
-                  id="tpmEncryptionMethod"
+                  id="tpm"
                   label={tpmLabel}
                   description={tpmExplanation}
                   isChecked={tpm}
