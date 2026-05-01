@@ -275,12 +275,16 @@ impl NetworkState {
         if let Some(connections) = config.connections {
             let mut collection: ConnectionCollection = connections.clone().try_into()?;
             for conn in collection.iter_mut() {
-                if let Some(current_conn) = self.get_connection(conn.id.as_str()) {
-                    // Replaced the UUID with a real one
-                    conn.uuid = current_conn.uuid;
-                    self.update_connection(conn.to_owned())?;
+                if let Some(current_conn) = self.get_connection(conn.id.as_str()).cloned() {
+                    if let Some(net_conn) = connections.0.iter().find(|nc| nc.id == conn.id) {
+                        let mut updated = current_conn.clone();
+                        updated.merge_network_connection(net_conn.clone())?;
+                        if updated != current_conn {
+                            self.update_connection(updated)?;
+                        }
+                    }
                 } else {
-                    self.add_connection(conn.to_owned())?;
+                    self.add_connection(conn.clone())?;
                 }
             }
 
@@ -294,8 +298,8 @@ impl NetworkState {
                         ports = model.ports;
                     }
 
-                    if let Some(controller) = self.get_connection(conn.id.as_str()) {
-                        self.set_ports(&controller.clone(), ports)?;
+                    if let Some(controller) = self.get_connection(conn.id.as_str()).cloned() {
+                        self.set_ports(&controller, ports)?;
                     }
                 }
             }
@@ -753,6 +757,98 @@ impl Connection {
 
     pub fn is_up(&self) -> bool {
         self.status == Status::Up
+    }
+
+    /// Merges the current connection with the configuration provided.
+    pub fn merge_network_connection(
+        &mut self,
+        conn: NetworkConnection,
+    ) -> Result<(), NetworkStateError> {
+        if let Some(method4) = conn.method4 {
+            self.ip_config.method4 = Some(method4);
+        }
+        if let Some(method6) = conn.method6 {
+            self.ip_config.method6 = Some(method6);
+        }
+
+        if let Some(status) = conn.status {
+            self.status = status;
+        }
+
+        if let Some(autoconnect) = conn.autoconnect {
+            self.autoconnect = autoconnect;
+        }
+
+        if let Some(persistent) = conn.persistent {
+            self.persistent = persistent;
+        }
+
+        if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
+            self.ip_config.ignore_auto_dns = ignore_auto_dns;
+        }
+
+        if let Some(vlan_config) = conn.vlan {
+            let config = VlanConfig::try_from(vlan_config)?;
+            self.config = config.into();
+        }
+        if let Some(wireless_config) = conn.wireless {
+            let config = WirelessConfig::try_from(wireless_config)?;
+            self.config = config.into();
+        }
+
+        if let Some(bond_config) = conn.bond {
+            let config = BondConfig::try_from(bond_config)?;
+            self.config = config.into();
+        }
+        if let Some(bridge_config) = conn.bridge {
+            let config = BridgeConfig::try_from(bridge_config)?;
+            self.config = config.into();
+        }
+
+        if let Some(ieee_8021x_config) = conn.ieee_8021x {
+            self.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config)?);
+        }
+
+        if let Some(mac) = conn.mac_address {
+            self.mac_address = MacAddr6::from_str(mac.as_str()).ok();
+        }
+
+        if let Some(mac) = conn.custom_mac_address {
+            if let Ok(m) = MacAddress::from_str(&mac) {
+                self.custom_mac_address = m;
+            }
+        }
+
+        if let Some(ms) = conn.match_settings {
+            self.match_config.driver = ms.driver;
+            self.match_config.interface = ms.interface;
+            self.match_config.path = ms.path;
+            self.match_config.kernel = ms.kernel;
+        }
+
+        if !conn.addresses.is_empty() {
+            self.ip_config.addresses = conn.addresses;
+        }
+        if !conn.nameservers.is_empty() {
+            self.ip_config.nameservers = conn.nameservers;
+        }
+        if !conn.dns_searchlist.is_empty() {
+            self.ip_config.dns_searchlist = conn.dns_searchlist;
+        }
+        if let Some(gateway4) = conn.gateway4 {
+            self.ip_config.gateway4 = Some(gateway4);
+        }
+        if let Some(gateway6) = conn.gateway6 {
+            self.ip_config.gateway6 = Some(gateway6);
+        }
+        if let Some(interface) = conn.interface {
+            self.interface = Some(interface);
+        }
+        if conn.mtu != 0 {
+            self.mtu = conn.mtu;
+        }
+
+        Ok(())
     }
 
     pub fn is_down(&self) -> bool {
