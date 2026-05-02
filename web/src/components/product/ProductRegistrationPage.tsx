@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   ActionGroup,
   Alert,
@@ -34,6 +34,8 @@ import {
   Flex,
   Form,
   FormGroup,
+  HelperText,
+  HelperTextItem,
   SelectList,
   SelectOption,
   TextInput,
@@ -41,6 +43,7 @@ import {
   ListItem,
   Divider,
   Title,
+  Stack,
 } from "@patternfly/react-core";
 import {
   IssuesAlert,
@@ -62,7 +65,6 @@ import { useSystem } from "~/hooks/model/system/software";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { patchConfig, putConfig } from "~/api";
-import type { Issue } from "~/model/issue";
 import type { Addon } from "~/model/config/product";
 import { useConfig } from "~/hooks/model/config";
 
@@ -270,6 +272,7 @@ function RegistrationEmail({
 }
 
 const RegistrationFormSection = () => {
+  const loadingHintId = useId();
   const [server, setServer] = useState<ServerOption>("default");
   const [url, setUrl] = useState("");
   const [key, setKey] = useState("");
@@ -278,11 +281,14 @@ const RegistrationFormSection = () => {
   const [provideEmail, setProvideEmail] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const config = useConfig();
   const product = useProduct();
   const issues = useIssues("product");
   const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
+  const { registration } = useSystem();
+  const prevRegistrationRef = useRef(registration);
+  const prevRegistrationIssueRef = useRef(registrationIssue);
 
   const resetForm = useCallback(() => {
     setServer("default");
@@ -306,6 +312,17 @@ const RegistrationFormSection = () => {
     }
   }, [product]);
 
+  useEffect(() => {
+    if (!loading) return;
+
+    const registrationChanged = registration !== prevRegistrationRef.current;
+    const issueChanged = registrationIssue !== prevRegistrationIssueRef.current;
+
+    if (registrationChanged || issueChanged) {
+      setLoading(false);
+    }
+  }, [loading, registration, registrationIssue]);
+
   const changeServer = (value: ServerOption) => {
     if (value !== "default") setProvideKey(!isEmpty(key));
     setServer(value);
@@ -321,7 +338,7 @@ const RegistrationFormSection = () => {
     setProvideEmail(value);
   };
 
-  const submit = async (e: React.SyntheticEvent) => {
+  const submit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setRequestError(null);
 
@@ -336,6 +353,9 @@ const RegistrationFormSection = () => {
 
     if (!isEmpty(errors)) return;
 
+    prevRegistrationRef.current = registration;
+    prevRegistrationIssueRef.current = registrationIssue;
+    setLoading(true);
     putConfig({
       ...config,
       product: {
@@ -348,10 +368,13 @@ const RegistrationFormSection = () => {
     });
   };
 
-  const submitNoRegister = async (e: React.SyntheticEvent) => {
+  const submitNoRegister = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setRequestError(null);
     resetForm();
+    prevRegistrationRef.current = registration;
+    prevRegistrationIssueRef.current = registrationIssue;
+    setLoading(true);
     putConfig({
       ...config,
       product: {
@@ -365,6 +388,12 @@ const RegistrationFormSection = () => {
 
   return (
     <Form id={FORM_ID} onSubmit={submit}>
+      {!loading && registrationIssue && (
+        <Alert variant="warning" title={registrationIssue.description}>
+          {registrationIssue.details && <p>{registrationIssue.details}</p>}
+        </Alert>
+      )}
+
       {requestError && <Alert variant="warning" isInline title={requestError} />}
 
       {!isEmpty(errors) && (
@@ -397,16 +426,33 @@ const RegistrationFormSection = () => {
       />
 
       <ActionGroup>
-        <Flex alignItems={{ default: "alignItemsCenter" }}>
-          <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
-            {_("Register")}
-          </Button>
-          {registrationIssue && (
-            <Button variant="link" type="submit" isInline onClick={submitNoRegister}>
-              {_("Do not register")}
+        <Stack hasGutter>
+          <Flex>
+            <Button
+              variant="primary"
+              type="submit"
+              form={FORM_ID}
+              isInline
+              isLoading={loading}
+              isDisabled={loading}
+              aria-describedby={loading ? loadingHintId : undefined}
+            >
+              {_("Register")}
             </Button>
+            {!loading && registrationIssue && (
+              <Button variant="link" type="submit" isInline onClick={submitNoRegister}>
+                {_("Do not register")}
+              </Button>
+            )}
+          </Flex>
+          {loading && (
+            <HelperText id={loadingHintId} isLiveRegion>
+              <HelperTextItem variant="indeterminate">
+                {_("Registration in progress")}
+              </HelperTextItem>
+            </HelperText>
           )}
-        </Flex>
+        </Stack>
       </ActionGroup>
     </Form>
   );
@@ -511,28 +557,16 @@ const Extensions = () => {
   );
 };
 
-const RegistrationIssueAlert = ({ issue }: { issue: Issue }) => {
-  return (
-    <Alert variant="warning" title={issue.description}>
-      {issue.details && <p>{issue.details}</p>}
-    </Alert>
-  );
-};
-
 export default function ProductRegistrationPage() {
   const { registration } = useSystem();
   const issues = useIssues("product");
-  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
+  const nonRegistrationIssues = issues.filter((i) => i.class !== "system_registration_failed");
 
   return (
     <Page breadcrumbs={[{ label: _("Registration") }]}>
       <Page.Content>
         {!registration && <HostnameAlert />}
-        {registrationIssue ? (
-          <RegistrationIssueAlert issue={registrationIssue} />
-        ) : (
-          <IssuesAlert issues={issues} />
-        )}
+        {!registration && <IssuesAlert issues={nonRegistrationIssues} />}
         {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
         {registration && <Extensions />}
       </Page.Content>

@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, within, waitFor } from "@testing-library/react";
 import { installerRender, mockProduct, mockProductConfig } from "~/test-utils";
 import ProductRegistrationPage from "./ProductRegistrationPage";
 import { Product } from "~/model/system";
@@ -554,6 +554,206 @@ describe("ProductRegistrationPage", () => {
           });
         });
       });
+    });
+  });
+
+  describe("loading state", () => {
+    beforeEach(() => {
+      mockSelectedProduct = sle;
+      mockProduct(sle);
+      mockRegistrationInfo = undefined;
+    });
+
+    it("shows loading state when submitting registration", async () => {
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+      await user.click(submitButton);
+
+      // Button should be disabled and have aria-describedby
+      expect(submitButton).toBeDisabled();
+      expect(submitButton).toHaveAttribute("aria-describedby");
+
+      // Loading hint should be visible
+      screen.getByText("Registration in progress");
+    });
+
+    it("hides 'Do not register' button during loading", async () => {
+      mockIssues = [
+        {
+          scope: "software",
+          class: "system_registration_failed",
+          description: "Unauthorized code",
+        },
+      ];
+
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+
+      // "Do not register" button should be visible initially
+      const doNotRegisterButton = screen.getByRole("button", { name: "Do not register" });
+      expect(doNotRegisterButton).toBeInTheDocument();
+
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.clear(registrationCodeInput);
+      await user.type(registrationCodeInput, "ANOTHER-CODE-1234-5678");
+      await user.click(submitButton);
+
+      // "Do not register" button should be hidden during loading
+      expect(screen.queryByRole("button", { name: "Do not register" })).not.toBeInTheDocument();
+    });
+
+    it("hides registration issue alert during loading", async () => {
+      mockIssues = [
+        {
+          scope: "software",
+          class: "system_registration_failed",
+          description: "Unauthorized code",
+        },
+      ];
+
+      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+
+      // Issue should be visible initially
+      screen.getByText("Unauthorized code");
+
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.clear(registrationCodeInput);
+      await user.type(registrationCodeInput, "ANOTHER-CODE-1234-5678");
+      await user.click(submitButton);
+
+      // Issue alert should be hidden during loading
+      expect(screen.queryByText("Unauthorized code")).not.toBeInTheDocument();
+    });
+
+    it("stops loading when registration succeeds", async () => {
+      const { user, rerender } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
+      await user.click(submitButton);
+
+      // Should be loading
+      expect(submitButton).toBeDisabled();
+      screen.getByText("Registration in progress");
+
+      // Simulate backend response: registration succeeds
+      mockRegistrationInfo = {
+        code: "INTERNAL-USE-ONLY-1234-5678",
+        email: "",
+        addons: [],
+      };
+
+      rerender(<ProductRegistrationPage />);
+
+      // Should stop loading and show registered product section
+      await waitFor(() => {
+        expect(screen.queryByText("Registration in progress")).not.toBeInTheDocument();
+      });
+
+      // Should show registered product info
+      screen.getByText(/has been registered/);
+    });
+
+    it("stops loading when registration fails", async () => {
+      const { user, rerender } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+      const registrationCodeInput = screen.getByLabelText("Registration code");
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      await user.type(registrationCodeInput, "INVALID-CODE");
+      await user.click(submitButton);
+
+      // Should be loading
+      expect(submitButton).toBeDisabled();
+      screen.getByText("Registration in progress");
+
+      // Simulate backend response: registration fails
+      mockIssues = [
+        {
+          scope: "software",
+          class: "system_registration_failed",
+          description: "Invalid registration code",
+        },
+      ];
+
+      rerender(<ProductRegistrationPage />);
+
+      // Should stop loading
+      await waitFor(() => {
+        expect(screen.queryByText("Registration in progress")).not.toBeInTheDocument();
+      });
+
+      // Should show error
+      screen.getByText("Invalid registration code");
+
+      // "Do not register" button should reappear
+      screen.getByRole("button", { name: "Do not register" });
+    });
+
+    it("re-enables button when backend returns same registration issue object", async () => {
+      const sameIssue = {
+        scope: "software" as const,
+        class: "system_registration_failed",
+        description: "Unauthorized code",
+      };
+
+      mockIssues = [sameIssue];
+
+      const { user, rerender } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+      const submitButton = screen.getByRole("button", { name: "Register" });
+
+      // First attempt
+      await user.click(submitButton);
+
+      // Backend responds with issue
+      rerender(<ProductRegistrationPage />);
+
+      // Button should be enabled again
+      expect(submitButton).not.toBeDisabled();
+      screen.getByText("Unauthorized code");
+
+      // Second attempt - will get same issue object back (same reference)
+      await user.click(submitButton);
+
+      // Backend responds with exact same issue object again
+      rerender(<ProductRegistrationPage />);
+
+      // Button should re-enable because we captured ref before submission
+      expect(submitButton).not.toBeDisabled();
+      screen.getByText("Unauthorized code");
+    });
+
+    it("does not show registration issue in general issues alert", () => {
+      mockIssues = [
+        {
+          scope: "product",
+          class: "system_registration_failed",
+          description: "Failed to register",
+        },
+        {
+          scope: "product",
+          class: "some_other_issue",
+          description: "Some other problem",
+        },
+      ];
+
+      installerRender(<ProductRegistrationPage />, { withL10n: true });
+
+      // Registration issue should appear in form
+      screen.getByText("Failed to register");
+
+      // General issues alert should show other issues
+      screen.getByText("Some other problem");
+
+      // Should not show registration issue twice
+      const failedToRegisterElements = screen.getAllByText("Failed to register");
+      expect(failedToRegisterElements).toHaveLength(1);
     });
   });
 });
