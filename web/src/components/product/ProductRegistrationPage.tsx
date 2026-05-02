@@ -525,7 +525,7 @@ export default function ProductRegistrationPage() {
   const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
 
   return (
-    <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>
+    <Page breadcrumbs={[{ label: _("Registration") }]}>
       <Page.Content>
         {!registration && <HostnameAlert />}
         {registrationIssue ? (
