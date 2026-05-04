@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  4 10:46:08 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix zypp tests to work with new rpm with more tight permissions
+  (bsc#1254914)
+
+-------------------------------------------------------------------
 Thu Apr 30 09:04:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - CLI: add new `agama status` command that prints current state of
