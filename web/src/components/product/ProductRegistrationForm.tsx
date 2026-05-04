@@ -170,7 +170,7 @@ export default function ProductRegistrationForm() {
         }}
       >
         {!loading && registrationIssue && (
-          <Alert variant="warning" title={registrationIssue.description}>
+          <Alert isInline variant="warning" title={registrationIssue.description}>
             {registrationIssue.details && <p>{registrationIssue.details}</p>}
           </Alert>
         )}
