@@ -35,8 +35,6 @@ import userEvent from "@testing-library/user-event";
 import { render, renderHook, within } from "@testing-library/react";
 import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
-import { InstallerClientProvider } from "~/context/installer";
-import { InstallerL10nProvider } from "~/context/installerL10n";
 import { StorageUiStateProvider } from "~/context/storage-ui-state";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
@@ -275,7 +273,35 @@ jest.mock("~/hooks/model/question", () => ({
   useQuestions: () => mockUseQuestions(),
 }));
 
-const Providers = ({ children, withL10n }) => {
+/**
+ * Loads actual UI translation files for testing.
+ *
+ * Extracts the language code from the locale and loads the corresponding PO
+ * file.
+ *
+ * @param locale - RFC 5646 language tag (e.g., "de-DE", "es-ES") or language
+ *   code (e.g., "de", "es")
+ *
+ * @example
+ *   await loadTranslations("de-DE");
+ *   await loadTranslations("es");
+ */
+const loadTranslations = async (locale: string) => {
+  const [language] = locale.split("-");
+
+  try {
+    const agama = await import("~/agama");
+    const po = await import(`~/po/po.${language}.js`);
+    agama.default.locale(po.default);
+  } catch (error) {
+    console.error(
+      `Failed to load translations for locale "${locale}" (language: ${language}):`,
+      error,
+    );
+  }
+};
+
+const Providers = ({ children }) => {
   const ws = new DummyWSClient();
   const client = createClient(new URL("https://localhost"), ws);
 
@@ -289,24 +315,6 @@ const Providers = ({ children, withL10n }) => {
     client.onClose = noop;
   }
 
-  if (withL10n) {
-    // FIXME
-    // const fetchConfig = async (): Promise<System> => ({
-    //   l10n: {
-    //     keymap: "us",
-    //     timezone: "Europe/Berlin",
-    //     locale: "en_US",
-    //   },
-    // });
-    return (
-      <InstallerClientProvider client={client}>
-        <InstallerL10nProvider initialLanguage="en-US">
-          <StorageUiStateProvider>{children}</StorageUiStateProvider>
-        </InstallerL10nProvider>
-      </InstallerClientProvider>
-    );
-  }
-
   return <StorageUiStateProvider>{children}</StorageUiStateProvider>;
 };
 
@@ -316,12 +324,12 @@ const Providers = ({ children, withL10n }) => {
  *
  * @see #plainRender for rendering without installer providers
  */
-const installerRender = (ui: React.ReactNode, options: { withL10n?: boolean } = {}) => {
+const installerRender = (ui: React.ReactNode, options = {}) => {
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <Providers withL10n={options.withL10n}>
+      <Providers>
         <MemoryRouter initialEntries={initialRoutes()}>{children}</MemoryRouter>
       </Providers>
     </QueryClientProvider>
@@ -448,5 +456,6 @@ export {
   mockProduct,
   mockProductConfig,
   mockL10n,
+  loadTranslations,
   mockQuestions,
 };
