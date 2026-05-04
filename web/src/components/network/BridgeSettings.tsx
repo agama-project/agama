@@ -23,6 +23,7 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
+import NestedContent from "~/components/core/NestedContent";
 import { connectionFormOptions } from "~/components/network/ConnectionForm";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
@@ -97,7 +98,7 @@ const BridgeSettings = withForm({
         <form.Subscribe selector={(s) => s.values.bridgeStp}>
           {(bridgeStp) =>
             bridgeStp && (
-              <>
+              <NestedContent margin="mxLg">
                 <form.AppField name="bridgePriority">
                   {(field) => (
                     <field.NumberField
@@ -167,7 +168,7 @@ const BridgeSettings = withForm({
                     />
                   )}
                 </form.AppField>
-              </>
+              </NestedContent>
             )
           }
         </form.Subscribe>
