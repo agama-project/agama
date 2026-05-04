@@ -144,6 +144,8 @@ const BridgeSettings = withForm({
                         // TRANSLATORS: helper text for the bridge hello time field.
                         _("Interval between sending BPDU packets. Range: 1 - 10 seconds. E.g., 2.")
                       }
+                      min={1}
+                      max={10}
                     />
                   )}
                 </form.AppField>
@@ -160,6 +162,8 @@ const BridgeSettings = withForm({
                           "Time to store BPDU info before discarding it. Range: 6 - 40 seconds. E.g., 20.",
                         )
                       }
+                      min={6}
+                      max={40}
                     />
                   )}
                 </form.AppField>
