@@ -210,7 +210,7 @@ export default function ProductRegistrationForm() {
                   {(field) => (
                     <field.TextField
                       label={_("Server URL")}
-                      helperText={sprintf(_("Example: %s"), "https://example.com")}
+                      helperText={sprintf(_("E.g., %s"), "https://example.com")}
                       size={30}
                     />
                   )}
