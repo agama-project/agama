@@ -212,6 +212,41 @@ jest.mock("~/hooks/model/config/product", () => ({
 }));
 
 /**
+ * Internal mock for manipulating installer L10n
+ */
+const mockChangeUIKeymap = jest.fn().mockResolvedValue(true);
+const mockChangeUILanguage = jest.fn().mockResolvedValue(true);
+
+const mockUseInstallerL10n = jest.fn().mockReturnValue({
+  keymap: "us",
+  language: "en-US",
+  changeKeymap: mockChangeUIKeymap,
+  changeLanguage: mockChangeUILanguage,
+});
+
+/**
+ * Allows mocking useInstallerL10n for testing purpose.
+ * Merges with current mock values, so you only need to override what changes.
+ *
+ * @example
+ *   mockL10n({ language: "de-DE" })
+ */
+const mockL10n = (l10n: {
+  keymap?: string;
+  language?: string;
+  changeKeymap?: jest.Mock;
+  changeLanguage?: jest.Mock;
+}) => {
+  const current = mockUseInstallerL10n.getMockImplementation()?.() || mockUseInstallerL10n();
+  mockUseInstallerL10n.mockReturnValue({ ...current, ...l10n });
+};
+
+jest.mock("~/context/installerL10n", () => ({
+  ...jest.requireActual("~/context/installerL10n"),
+  useInstallerL10n: () => mockUseInstallerL10n(),
+}));
+
+/**
  * Internal mock for manipulating questions
  */
 const mockUseQuestions: jest.Mock<Question[]> = jest.fn().mockReturnValue([]);
@@ -412,5 +447,6 @@ export {
   mockStage,
   mockProduct,
   mockProductConfig,
+  mockL10n,
   mockQuestions,
 };
