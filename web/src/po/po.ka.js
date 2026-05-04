@@ -26,7 +26,7 @@ export default {
     "%1$s შეიქმნება დანაყოფების სახით %2$s-ზე"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    ""
+    "%1$s, მხოლოდ, შეიცავს LVM ჯგუფს '%2$s' და ყველა დანაყოფს, რომელიც ჩატვირთვისთვისაა საჭირო"
   ],
   "%d of %d": [
     "%d %d-დან"
@@ -54,7 +54,7 @@ export default {
     "%s შეიქმნება ლოგიკური ტომების სახით"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    ""
+    "%s მაინც შეიცავს მორგებულ LVM ჯგუფებს და დანაყოფს, რომელიც საჭიროა ჩასატვირთად"
   ],
   "%s with %d partitions": [
     "%s %d დანაყოფით"

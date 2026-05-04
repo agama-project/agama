@@ -163,7 +163,7 @@ export default {
     "アドレスデータの一覧"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "新しいシステムが利用可能な領域内に収まるように設定を調整してください。"
+    "新しいシステムが利用可能な容量内に収まるように設定を調整してください。"
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     "すべての競合が解決されたか、競合が検出されませんでした。セットアップを安全に続行できます。"
@@ -793,7 +793,7 @@ export default {
     "領域の検出"
   ],
   "Find space in %s": [
-    "%s 内での領域検出"
+    "%s 内での容量検出"
   ],
   "Finish": [
     "完了"
@@ -1873,7 +1873,7 @@ export default {
     "登録コード無しで拡張の登録を行いました。"
   ],
   "The final size can be bigger in order to fill the extra free space.": [
-    "最終的なサイズは、連続した空き領域にあわせて拡大される可能性があります。"
+    "最終的なサイズは、連続した空き容量にあわせて拡大される可能性があります。"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
