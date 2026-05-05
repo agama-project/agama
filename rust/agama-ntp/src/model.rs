@@ -21,13 +21,16 @@
 use agama_utils::api::ntp::{Config, Source, SourceType};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::{fs, io, process};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Failed to write and apply the configuration: {0}")]
-    Io(#[from] std::io::Error),
+    #[error("Failed to write chronyd configuration")]
+    WriteConfig(#[source] io::Error),
     #[error("Failed to reload chronyd")]
-    Reload(String),
+    Reload(#[source] io::Error),
+    #[error("Failed to enable the chronyd service")]
+    EnableService(#[source] io::Error),
 }
 
 const CHRONY_CONFIG_DIR: &str = "etc/chrony.d";
@@ -78,14 +81,30 @@ impl Model {
     fn reload_chrony(&self) -> Result<(), Error> {
         let output = Command::new("chronyc")
             .args(["reload", "sources"])
-            .output()?;
+            .output()
+            .map_err(Error::Reload)?;
 
         if output.status.success() {
             return Ok(());
         }
 
         let stderr = String::from_utf8_lossy(&output.stderr);
-        Err(Error::Reload(stderr.to_string()))
+        Err(Error::Reload(io::Error::other(stderr.to_string())))
+    }
+
+    fn enable_service(&self) -> Result<(), Error> {
+        let mut command = process::Command::new("chroot");
+        let command = command
+            .arg(&self.install_dir)
+            .args(["systemctl", "enable", "chronyd"]);
+        let output = command.output().map_err(Error::EnableService)?;
+
+        if output.status.success() {
+            Ok(())
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            Err(Error::EnableService(io::Error::other(stderr.to_string())))
+        }
     }
 }
 
@@ -100,11 +119,11 @@ impl ModelAdapter for Model {
         let path = self.config_path();
 
         if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)?;
+            fs::create_dir_all(parent).map_err(Error::WriteConfig)?;
         }
 
         let content = generate_chrony_config(&config.sources);
-        std::fs::write(&path, content)?;
+        fs::write(&path, content).map_err(Error::WriteConfig)?;
 
         self.reload_chrony()?;
         Ok(())
@@ -114,11 +133,13 @@ impl ModelAdapter for Model {
         let path = self.install_config_path();
 
         if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)?;
+            fs::create_dir_all(parent).map_err(Error::WriteConfig)?;
         }
 
         let content = generate_chrony_config(&config.sources);
-        std::fs::write(path, content)?;
+        fs::write(path, content).map_err(Error::WriteConfig)?;
+
+        self.enable_service()?;
         Ok(())
     }
 }
