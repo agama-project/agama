@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  5 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Move product availability issues to software scope
+  (gh#agama-project/agama#3456).
+
+-------------------------------------------------------------------
 Tue Apr 28 11:02:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the path to the /private/resolvables/{id} endpoint (bsc#1262995).
