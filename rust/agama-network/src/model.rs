@@ -273,18 +273,16 @@ impl NetworkState {
         let updated_config = config.clone();
 
         if let Some(connections) = config.connections {
-            let mut collection: ConnectionCollection = connections.clone().try_into()?;
-            for conn in collection.iter_mut() {
-                if let Some(current_conn) = self.get_connection(conn.id.as_str()).cloned() {
-                    if let Some(net_conn) = connections.0.iter().find(|nc| nc.id == conn.id) {
-                        let mut updated = current_conn.clone();
-                        updated.merge_network_connection(net_conn.clone())?;
-                        if updated != current_conn {
-                            self.update_connection(updated)?;
-                        }
+            for net_conn in &connections.0 {
+                if let Some(current_conn) = self.get_connection(&net_conn.id).cloned() {
+                    let mut updated = current_conn.clone();
+                    updated.merge_network_connection(net_conn.clone())?;
+                    if updated != current_conn {
+                        self.update_connection(updated)?;
                     }
                 } else {
-                    self.add_connection(conn.clone())?;
+                    let conn: Connection = net_conn.clone().try_into()?;
+                    self.add_connection(conn)?;
                 }
             }
 

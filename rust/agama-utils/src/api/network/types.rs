@@ -434,6 +434,7 @@ impl Ipv4Method {
     pub fn to_nm_string(&self) -> String {
         match self {
             Ipv4Method::LinkLocal => "link-local".to_string(),
+            Ipv4Method::Auto => "auto".to_string(),
             _ => self.to_string(),
         }
     }

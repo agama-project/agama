@@ -447,7 +447,14 @@ fn ip_config_to_ipv4_dbus<'a>(
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        ("method", ip_config.method4.unwrap_or_default().to_nm_string().into()),
+        (
+            "method",
+            ip_config
+                .method4
+                .unwrap_or(Ipv4Method::Auto)
+                .to_nm_string()
+                .into(),
+        ),
         ("link-local", (link_local as i32).into()),
     ]);
 
@@ -548,7 +555,14 @@ fn ip_config_to_ipv6_dbus<'a>(
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        ("method", ip_config.method6.unwrap_or_default().to_nm_string().into()),
+        (
+            "method",
+            ip_config
+                .method6
+                .unwrap_or(Ipv6Method::Auto)
+                .to_nm_string()
+                .into(),
+        ),
     ]);
 
     if !ip_config.routes6.is_empty() {
