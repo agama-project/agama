@@ -17,7 +17,7 @@ pin-project = "1.1.10"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_with = "3.12.0"
 thiserror = "2.0.12"
-tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "time"] }
 tokio-stream = "0.1.17"
 tracing = "0.1.41"
 utoipa = { version = "5.3.1", features = ["uuid"] }
