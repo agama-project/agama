@@ -20,7 +20,7 @@
 
 use agama_utils::api::ntp::{Config, Source};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Output};
 use std::{fs, io, process};
 
 #[derive(thiserror::Error, Debug)]
@@ -88,8 +88,7 @@ impl Model {
             return Ok(());
         }
 
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        Err(Error::Reload(io::Error::other(stderr.to_string())))
+        Err(Error::Reload(command_output_to_error(&output)))
     }
 
     fn enable_service(&self) -> Result<(), Error> {
@@ -100,11 +99,10 @@ impl Model {
         let output = command.output().map_err(Error::EnableService)?;
 
         if output.status.success() {
-            Ok(())
-        } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            Err(Error::EnableService(io::Error::other(stderr.to_string())))
+            return Ok(());
         }
+
+        Err(Error::Reload(command_output_to_error(&output)))
     }
 }
 
@@ -136,6 +134,7 @@ impl ModelAdapter for Model {
             fs::create_dir_all(parent).map_err(Error::WriteConfig)?;
         }
 
+        // FIXME: copying the configuration would be enough.
         let content = generate_chrony_config(&config.sources);
         fs::write(path, content).map_err(Error::WriteConfig)?;
 
@@ -165,9 +164,35 @@ fn generate_chrony_config(sources: &[Source]) -> String {
     lines.join("\n")
 }
 
+// Errors from chronyc are logged to stdout. This ancillary function turns an Output object into a
+// std::io::Error::Other error.
+fn command_output_to_error(output: &Output) -> io::Error {
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    let message = format!(
+        "stdout={}; stderr={}; exit={}",
+        stdout, stderr, output.status
+    );
+    io::Error::other(message)
+}
+
 #[cfg(test)]
 mod tests {
+    use agama_utils::api::ntp::SourceType;
+    use test_context::{test_context, TestContext};
+
     use super::*;
+
+    struct Context;
+
+    impl TestContext for Context {
+        fn setup() -> Self {
+            let old_path = std::env::var("PATH").unwrap();
+            let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
+            std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
+            Self
+        }
+    }
 
     #[test]
     fn test_generate_chrony_config_empty() {
@@ -223,8 +248,9 @@ mod tests {
         assert_eq!(config, expected);
     }
 
+    #[test_context(Context)]
     #[test]
-    fn test_model_write_config() {
+    fn test_model_write_config(_ctx: &mut Context) {
         let tempdir = tempfile::tempdir().unwrap();
         let model = Model::new().with_workdir(tempdir.path());
 
@@ -250,8 +276,8 @@ mod tests {
         assert!(content.contains("pool ntp.example.com iburst"));
     }
 
-    #[test]
-    fn test_model_install() {
+    #[test_context(Context)]
+    fn test_model_install(_ctx: &mut Context) {
         let tempdir = tempfile::tempdir().unwrap();
         let model = Model::new().with_install_dir(tempdir.path());
 
