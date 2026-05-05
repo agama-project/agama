@@ -307,8 +307,9 @@ module Agama
       def calculate_agama_from_json(config_json)
         config = ConfigConversions::FromJSON.new(
           config_json,
-          default_paths:   product_config.default_paths,
-          mandatory_paths: product_config.mandatory_paths
+          bootloader_config: bootloader_config(solved: true),
+          default_paths:     product_config.default_paths,
+          mandatory_paths:   product_config.mandatory_paths
         ).convert
 
         calculate_agama(config)
