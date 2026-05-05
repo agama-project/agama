@@ -151,6 +151,8 @@ const BridgeSettings = withForm({
                         // TRANSLATORS: helper text for the bridge hello time field.
                         _("Protocol message interval (1-10 seconds).")
                       }
+                      min={1}
+                      max={10}
                     />
                   )}
                 </form.AppField>
@@ -165,6 +167,8 @@ const BridgeSettings = withForm({
                         // TRANSLATORS: helper text for the bridge max message age field.
                         _("Protocol message retention time (6-40 seconds).")
                       }
+                      min={6}
+                      max={40}
                     />
                   )}
                 </form.AppField>
