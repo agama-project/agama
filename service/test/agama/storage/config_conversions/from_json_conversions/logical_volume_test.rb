@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,6 +21,7 @@
 
 require_relative "../../../../test_helper"
 require_relative "./examples"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
 require "agama/storage/configs/logical_volume"
 require "y2storage/refinements"
@@ -29,8 +30,16 @@ using Y2Storage::Refinements::SizeCasts
 
 describe Agama::Storage::ConfigConversions::FromJSONConversions::LogicalVolume do
   subject do
-    described_class.new(logical_volume_json)
+    described_class.new(logical_volume_json, bootloader_config)
   end
+
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap do |config|
+      config.type = bootloader_type
+    end
+  end
+
+  let(:bootloader_type) { nil }
 
   describe "#convert" do
     let(:logical_volume_json) do

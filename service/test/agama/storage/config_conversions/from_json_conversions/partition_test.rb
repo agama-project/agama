@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,14 +21,23 @@
 
 require_relative "../../../../test_helper"
 require_relative "./examples"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/partition"
 require "agama/storage/configs/partition"
 require "y2storage/partition_id"
 
 describe Agama::Storage::ConfigConversions::FromJSONConversions::Partition do
   subject do
-    described_class.new(partition_json)
+    described_class.new(partition_json, bootloader_config)
   end
+
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap do |config|
+      config.type = bootloader_type
+    end
+  end
+
+  let(:bootloader_type) { nil }
 
   describe "#convert" do
     let(:partition_json) do

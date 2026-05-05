@@ -32,9 +32,19 @@ module Agama
       module FromJSONConversions
         # Volume group conversion from JSON hash according to schema.
         class VolumeGroup < Base
+          include WithSearch
+
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
         private
 
-          include WithSearch
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
 
           alias_method :volume_group_json, :config_json
 
@@ -82,7 +92,7 @@ module Agama
             encryption_json = generate_json[:encryption]
             return unless encryption_json
 
-            FromJSONConversions::Encryption.new(encryption_json).convert
+            FromJSONConversions::Encryption.new(encryption_json, bootloader_config).convert
           end
 
           # JSON of the physical volume with a 'generate'.
@@ -114,7 +124,7 @@ module Agama
           # @param logical_volume_json [Hash]
           # @return [Configs::LogicalVolume]
           def convert_logical_volume(logical_volume_json)
-            FromJSONConversions::LogicalVolume.new(logical_volume_json).convert
+            FromJSONConversions::LogicalVolume.new(logical_volume_json, bootloader_config).convert
           end
         end
       end

@@ -891,6 +891,10 @@
             "label": {
               "description": "LUKS2 label.",
               "type": "string"
+            },
+            "tpm": {
+              "description": "Whether to use TPM unlocking.",
+              "type": "boolean"
             }
           }
         }

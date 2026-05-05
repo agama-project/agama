@@ -26,16 +26,18 @@ module Agama
       # Constructor, to be used internally by the class
       #
       # @param value [String] see {#value}
-      def initialize(value)
+      # @param bls [Boolean] Whether it is a BLS bootloader.
+      def initialize(value, bls: false)
         @value = value
+        @bls = bls
       end
 
       # Instance of the function to be always returned by the class
       GRUB2 = new("grub2")
       # Instance of the function to be always returned by the class
-      SYSTEMD_BOOT = new("systemd-boot")
+      SYSTEMD_BOOT = new("systemd-boot", bls: true)
       # Instance of the function to be always returned by the class
-      GRUB2_BLS = new("grub2-bls")
+      GRUB2_BLS = new("grub2-bls", bls: true)
       # Instance of the function to be always returned by the class
       NONE = new("none")
 
@@ -58,12 +60,18 @@ module Agama
 
       # @return [String] value to represent the type in the config
       attr_reader :value
-
       alias_method :to_s, :value
 
       # @return [Symbol]
       def to_sym
         value.to_sym
+      end
+
+      # Whether it is a BLS bootloader.
+      #
+      # @return [Boolean]
+      def bls?
+        !!@bls
       end
 
       # Checks whether the object corresponds to any of the given enum values.

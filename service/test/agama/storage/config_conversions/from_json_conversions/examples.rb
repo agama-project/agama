@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,11 +20,13 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
+require "agama/storage/bootloader_type"
 require "agama/storage/configs/encryption"
 require "agama/storage/configs/filesystem"
 require "agama/storage/configs/partition"
 require "agama/storage/configs/search"
 require "y2storage/encryption_method"
+require "y2storage/encryption_method/tpm_bls"
 require "y2storage/filesystems/mount_by_type"
 require "y2storage/filesystems/type"
 require "y2storage/pbkd_function"
@@ -227,7 +229,7 @@ shared_examples "with encryption" do
       end
     end
 
-    context "if 'encryption' is 'tmpFde'" do
+    context "if 'encryption' is 'tpmFde'" do
       let(:encryption) do
         {
           tpmFde: {
@@ -246,6 +248,64 @@ shared_examples "with encryption" do
         expect(encryption.pbkd_function).to be_nil
         expect(encryption.cipher).to be_nil
         expect(encryption.label).to be_nil
+      end
+    end
+
+    context "if 'encryption' is implicit 'tpmFde' (LUKS2 with TPM and no BLS bootloader)" do
+      let(:encryption) do
+        {
+          luks2: {
+            tpm:          true,
+            password:     "12345",
+            keySize:      256,
+            pbkdFunction: "argon2i",
+            cipher:       "twofish",
+            label:        "test"
+          }
+        }
+      end
+
+      let(:bootloader_type) { Agama::Storage::BootloaderType::GRUB2 }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::TPM_FDE)
+        expect(encryption.password).to eq("12345")
+        expect(encryption.key_size).to eq(256)
+        expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
+        expect(encryption.cipher).to eq("twofish")
+        expect(encryption.label).to eq("test")
+      end
+    end
+
+    context "if 'encryption' is 'tpmBls' (LUKS2 with TPM and BLS bootloader)" do
+      let(:encryption) do
+        {
+          luks2: {
+            tpm:          true,
+            password:     "12345",
+            keySize:      256,
+            pbkdFunction: "argon2i",
+            cipher:       "twofish",
+            label:        "test"
+          }
+        }
+      end
+
+      let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method.is?(:tpm_bls)).to eq(true)
+        expect(encryption.password).to eq("12345")
+        expect(encryption.key_size).to eq(256)
+        expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
+        expect(encryption.cipher).to eq("twofish")
+        expect(encryption.label).to eq("test")
       end
     end
 
