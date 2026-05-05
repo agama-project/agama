@@ -113,6 +113,7 @@ impl MainServiceBuilder {
         let serve = ServeDir::new(self.public_dir).precompressed_gzip();
 
         ApiRouter::new()
+            .route_layer(middleware::from_fn(version_header))
             .route("/login", get(login_from_query))
             .nest("/api", api_router)
             .fallback_service(serve)
@@ -154,4 +155,11 @@ async fn auth_middleware(claims: TokenClaims, mut request: Request, next: Next) 
     request.extensions_mut().insert(Arc::new(claims.client_id));
     let response = next.run(request).await;
     response
+}
+
+async fn version_header(req: Request, next: Next) -> Response {
+    let mut res = next.run(req).await;
+    res.headers_mut()
+        .insert("X-API-Version", HeaderValue::from_str("2").unwrap());
+    res
 }
