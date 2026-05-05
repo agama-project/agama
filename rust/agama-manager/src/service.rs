@@ -269,11 +269,6 @@ impl Starter {
             None => proxy::Service::starter(self.events.clone()).start()?,
         };
 
-        let ntp = match self.ntp {
-            Some(ntp) => ntp,
-            None => ntp::Service::starter(self.events.clone()).start()?,
-        };
-
         let l10n = match self.l10n {
             Some(l10n) => l10n,
             None => {
@@ -315,6 +310,11 @@ impl Starter {
                 .start()
                 .await?
             }
+        };
+
+        let ntp = match self.ntp {
+            Some(ntp) => ntp,
+            None => ntp::Service::starter(self.events.clone(), software.clone()).start()?,
         };
 
         let iscsi = match self.iscsi {

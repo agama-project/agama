@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_software::{Resolvable, ResolvableType};
 use agama_utils::api::ntp::{Config, Source};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
@@ -41,6 +42,7 @@ const DEFAULT_INSTALL_DIR: &str = "/mnt";
 pub trait ModelAdapter: Send + 'static {
     fn write_config(&self, config: &Config) -> Result<(), Error>;
     fn install(&self, config: &Config) -> Result<(), Error>;
+    fn resolvables(&self) -> Vec<Resolvable>;
 }
 
 pub struct Model {
@@ -140,6 +142,10 @@ impl ModelAdapter for Model {
 
         self.enable_service()?;
         Ok(())
+    }
+
+    fn resolvables(&self) -> Vec<Resolvable> {
+        vec![Resolvable::new("chrony", ResolvableType::Package)]
     }
 }
 

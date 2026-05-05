@@ -246,6 +246,7 @@ dependencies = [
 name = "agama-ntp"
 version = "0.1.0"
 dependencies = [
+ "agama-software",
  "agama-utils",
  "async-trait",
  "tempfile",

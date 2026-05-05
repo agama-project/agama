@@ -21,6 +21,7 @@
 use crate::{message, model};
 use std::path::Path;
 
+use agama_software::{self as software};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{self, event},
@@ -38,13 +39,15 @@ pub enum Error {
 pub struct Starter {
     _events: event::Sender,
     model: Box<dyn model::ModelAdapter>,
+    software: Handler<software::Service>,
 }
 
 impl Starter {
-    pub fn new(events: event::Sender) -> Starter {
+    pub fn new(events: event::Sender, software: Handler<software::Service>) -> Starter {
         Self {
             _events: events,
             model: Box::new(model::Model::new()),
+            software,
         }
     }
 
@@ -62,6 +65,7 @@ impl Starter {
         let service = Service {
             config: None,
             model: self.model,
+            software: self.software,
         };
 
         let handler = actor::spawn(service);
@@ -70,13 +74,15 @@ impl Starter {
 }
 
 pub struct Service {
+    // FIXME: is this the right place to keep the configuration?
     config: Option<api::ntp::Config>,
     model: Box<dyn model::ModelAdapter>,
+    software: Handler<software::Service>,
 }
 
 impl Service {
-    pub fn starter(events: event::Sender) -> Starter {
-        Starter::new(events)
+    pub fn starter(events: event::Sender, software: Handler<software::Service>) -> Starter {
+        Starter::new(events, software)
     }
 }
 
@@ -101,6 +107,15 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
             if let Err(e) = self.model.write_config(config) {
                 tracing::error!("Failed to write NTP configuration: {}", e);
             }
+
+            self.software
+                .call(agama_software::message::SetResolvables::new(
+                    "agama-ntp".to_string(),
+                    self.model.resolvables(),
+                ))
+                .await
+                .unwrap();
+
             self.config = Some(config.clone());
         }
         Ok(())
@@ -129,12 +144,22 @@ impl MessageHandler<message::SetLocale> for Service {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use agama_utils::api::ntp::{Config, Source, SourceType};
+    use agama_software::{test_utils::start_service as start_software_service, Resolvable};
+
+    use agama_utils::{
+        api::{
+            ntp::{Config, Source, SourceType},
+            Event,
+        },
+        issue, progress, question,
+    };
     use std::sync::{Arc, Mutex};
+    use test_context::{test_context, AsyncTestContext};
+    use tokio::sync::broadcast;
 
     #[derive(Clone)]
     struct MockModel {
-        write_called: Arc<Mutex<bool>>,
+        write_config_called: Arc<Mutex<bool>>,
         install_called: Arc<Mutex<bool>>,
         last_config: Arc<Mutex<Option<Config>>>,
     }
@@ -142,7 +167,7 @@ mod tests {
     impl MockModel {
         fn new() -> Self {
             Self {
-                write_called: Arc::new(Mutex::new(false)),
+                write_config_called: Arc::new(Mutex::new(false)),
                 install_called: Arc::new(Mutex::new(false)),
                 last_config: Arc::new(Mutex::new(None)),
             }
@@ -151,7 +176,7 @@ mod tests {
 
     impl model::ModelAdapter for MockModel {
         fn write_config(&self, config: &Config) -> Result<(), model::Error> {
-            *self.write_called.lock().unwrap() = true;
+            *self.write_config_called.lock().unwrap() = true;
             *self.last_config.lock().unwrap() = Some(config.clone());
             Ok(())
         }
@@ -161,28 +186,56 @@ mod tests {
             *self.last_config.lock().unwrap() = Some(config.clone());
             Ok(())
         }
+
+        fn resolvables(&self) -> Vec<Resolvable> {
+            vec![]
+        }
     }
 
-    #[tokio::test]
-    async fn test_get_config_empty() {
-        let (sender, _receiver) = tokio::sync::broadcast::channel(100);
-        let handler = Service::starter(sender).start().unwrap();
+    struct Context {
+        handler: Handler<Service>,
+        _events_rx: event::Receiver,
+        model: MockModel,
+    }
 
-        let config = handler.call(message::GetConfig).await.unwrap();
+    impl AsyncTestContext for Context {
+        async fn setup() -> Context {
+            let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
+            let issues = issue::Service::starter(events_tx.clone()).start();
+            let progress = progress::Service::starter(events_tx.clone()).start();
+            let questions = question::start(events_tx.clone()).await.unwrap();
+            let software = start_software_service(
+                events_tx.clone(),
+                issues,
+                progress.clone(),
+                questions.clone(),
+            )
+            .await;
+
+            let model = MockModel::new();
+            let handler = Service::starter(events_tx, software)
+                .with_model(Box::new(model.clone()))
+                .start()
+                .unwrap();
+
+            Context {
+                handler,
+                _events_rx,
+                model,
+            }
+        }
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_get_config_empty(ctx: &mut Context) {
+        let config = ctx.handler.call(message::GetConfig).await.unwrap();
         assert!(config.is_none());
     }
 
+    #[test_context(Context)]
     #[tokio::test]
-    async fn test_set_and_get_config() {
-        let (sender, _receiver) = tokio::sync::broadcast::channel(100);
-        let mock_model = MockModel::new();
-        let mock_clone = mock_model.clone();
-
-        let handler = Service::starter(sender)
-            .with_model(Box::new(mock_model))
-            .start()
-            .unwrap();
-
+    async fn test_set_and_get_config(ctx: &mut Context) {
         let test_config = Config {
             sources: vec![Source {
                 source_type: SourceType::Pool,
@@ -192,29 +245,20 @@ mod tests {
             }],
         };
 
-        handler
+        ctx.handler
             .call(message::SetConfig::new(Some(test_config.clone())))
             .await
             .unwrap();
 
-        assert!(*mock_clone.write_called.lock().unwrap());
+        assert!(*ctx.model.write_config_called.lock().unwrap());
 
-        let retrieved = handler.call(message::GetConfig).await.unwrap();
-        assert!(retrieved.is_some());
+        let retrieved = ctx.handler.call(message::GetConfig).await.unwrap();
         assert_eq!(retrieved.unwrap(), test_config);
     }
 
+    #[test_context(Context)]
     #[tokio::test]
-    async fn test_finish() {
-        let (sender, _receiver) = tokio::sync::broadcast::channel(100);
-        let mock_model = MockModel::new();
-        let mock_clone = mock_model.clone();
-
-        let handler = Service::starter(sender)
-            .with_model(Box::new(mock_model))
-            .start()
-            .unwrap();
-
+    async fn test_finish(ctx: &mut Context) {
         let test_config = Config {
             sources: vec![Source {
                 source_type: SourceType::Server,
@@ -224,13 +268,13 @@ mod tests {
             }],
         };
 
-        handler
+        ctx.handler
             .call(message::SetConfig::new(Some(test_config)))
             .await
             .unwrap();
 
-        handler.call(message::Finish).await.unwrap();
+        ctx.handler.call(message::Finish).await.unwrap();
 
-        assert!(*mock_clone.install_called.lock().unwrap());
+        assert!(*ctx.model.install_called.lock().unwrap());
     }
 }
