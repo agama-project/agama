@@ -22,6 +22,8 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
+import Interpolate from "~/components/core/Interpolate";
+import NestedContent from "~/components/core/NestedContent";
 import { connectionFormOptions } from "~/components/network/ConnectionForm";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
@@ -96,7 +98,7 @@ const BridgeSettings = withForm({
         <form.Subscribe selector={(s) => s.values.bridgeStp}>
           {(bridgeStp) =>
             bridgeStp && (
-              <>
+              <NestedContent margin="mxLg">
                 <form.AppField name="bridgePriority">
                   {(field) => (
                     <field.NumberField
@@ -105,10 +107,17 @@ const BridgeSettings = withForm({
                         _("Priority")
                       }
                       helperText={
-                        // TRANSLATORS: helper text for the bridge priority field.
-                        _(
-                          "Determines the root bridge. Lower values have higher priority. Range: 0 - 61440. E.g., 32768.",
-                        )
+                        <Interpolate
+                          sentence={
+                            // TRANSLATORS: Helper text for the bridge priority
+                            // field. Text inside square brackets [] is
+                            // semantically and visually emphasized. Keep the
+                            // brackets.
+                            _("Root bridge selection (0-61440). [Lower is higher priority].")
+                          }
+                        >
+                          {(text) => <strong>{text}</strong>}
+                        </Interpolate>
                       }
                       min={0}
                       max={61440}
@@ -124,9 +133,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge forward delay field.
-                        _(
-                          "Time spent in listening and learning states. Range: 4 - 30 seconds. E.g., 15.",
-                        )
+                        _("Listening and learning time (4-30 seconds).")
                       }
                       min={4}
                       max={30}
@@ -142,7 +149,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge hello time field.
-                        _("Interval between sending BPDU packets. Range: 1 - 10 seconds. E.g., 2.")
+                        _("Protocol message interval (1-10 seconds).")
                       }
                     />
                   )}
@@ -156,14 +163,12 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge max message age field.
-                        _(
-                          "Time to store BPDU info before discarding it. Range: 6 - 40 seconds. E.g., 20.",
-                        )
+                        _("Protocol message retention time (6-40 seconds).")
                       }
                     />
                   )}
                 </form.AppField>
-              </>
+              </NestedContent>
             )
           }
         </form.Subscribe>
