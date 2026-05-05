@@ -456,17 +456,16 @@ impl ZyppServer {
                 &state.product,
                 &error
             );
-            if state.allow_registration && !self.is_registered() {
+
+            let issue = if state.allow_registration && !self.is_registered() {
                 let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
-                let issue =
-                    Issue::new("missing_registration", &message).with_details(&error.to_string());
-                issues.product.push(issue);
+                Issue::new("missing_registration", &message).with_details(&error.to_string())
             } else {
                 let message = gettext("Failed to find the product in the repositories.");
-                let issue =
-                    Issue::new("missing_product", &message).with_details(&error.to_string());
-                issues.software.push(issue);
+                Issue::new("missing_product", &message).with_details(&error.to_string())
             };
+
+            issues.software.push(issue);
 
             return Self::send_issues_and_finish(issues, tx, progress);
         }
