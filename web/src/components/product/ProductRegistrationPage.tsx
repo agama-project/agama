@@ -21,6 +21,8 @@
  */
 
 import React, { useCallback, useState } from "react";
+import { sprintf } from "sprintf-js";
+import { isEmpty } from "radashi";
 import {
   Alert,
   Button,
@@ -34,20 +36,23 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { IssuesAlert, Link, NestedContent, Page } from "~/components/core";
-import RegistrationExtension from "./RegistrationExtension";
-import ProductRegistrationForm from "./ProductRegistrationForm";
-import { HOSTNAME } from "~/routes/paths";
-import { isEmpty } from "radashi";
-import { mask } from "~/utils";
-import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
+import Interpolate from "~/components/core/Interpolate";
+import Text from "~/components/core/Text";
+import RegistrationExtension from "~/components/product/RegistrationExtension";
+import ProductRegistrationForm from "~/components/product/ProductRegistrationForm";
 import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
-import { patchConfig } from "~/api";
-import type { Addon } from "~/model/config/product";
 import { useConfig } from "~/hooks/model/config";
+import { HOSTNAME } from "~/routes/paths";
+import { patchConfig } from "~/api";
+import { mask } from "~/utils";
+import { _ } from "~/i18n";
+
+import type { Addon } from "~/model/config/product";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const RegisteredProductSection = () => {
   const product = useProductInfo();
@@ -100,23 +105,37 @@ const HostnameAlert = () => {
   const { hostname: transientHostname, static: staticHostname } = hostnameProposal;
   const hostname = isEmpty(staticHostname) ? transientHostname : staticHostname;
 
-  // TRANSLATORS: %s will be replaced with the hostname value
-  const title = sprintf(_('The product will be registered with "%s" hostname'), hostname);
-
-  // TRANSLATORS: %s will be replaced with the section name
-  const [descStart, descEnd] = _(
-    "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.",
-  ).split("%s");
-
-  const link = (
-    <Link variant="link" to={HOSTNAME.root} isInline>
-      {_("hostname")}
-    </Link>
-  );
+  const title = _("Hostname cannot be changed after registration");
 
   return (
     <Alert isInline title={title} variant="custom">
-      {descStart} {link} {descEnd}
+      {!isEmpty(hostname) && (
+        <Content isEditorial className={spacingStyles.mbXs}>
+          <Interpolate
+            sentence={
+              // TRANSLATORS: %s will be replaced with the hostname value
+              _("Configured as %s.")
+            }
+          >
+            {() => <Text isBold>{hostname}</Text>}
+          </Interpolate>
+        </Content>
+      )}
+      <Content component="small">
+        <Interpolate
+          sentence={
+            // TRANSLATORS: text in square brackets is the section name and will be
+            // rendered as a link. Keep the brackets
+            _("To change it, visit the [hostname] section before registering.")
+          }
+        >
+          {(section) => (
+            <Link variant="link" to={HOSTNAME.root} isInline>
+              {section}
+            </Link>
+          )}
+        </Interpolate>
+      </Content>
     </Alert>
   );
 };
@@ -197,12 +216,15 @@ const Extensions = () => {
 export default function ProductRegistrationPage() {
   const { registration } = useSystem();
   const issues = useIssues("product");
+  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
   const nonRegistrationIssues = issues.filter((i) => i.class !== "system_registration_failed");
+  // Avoid repeating the alert after registration attempt
+  const showHostnameAlert = !registration && !registrationIssue;
 
   return (
     <Page breadcrumbs={[{ label: _("Registration") }]}>
       <Page.Content>
-        {!registration && <HostnameAlert />}
+        {showHostnameAlert && <HostnameAlert />}
         {!registration && <IssuesAlert issues={nonRegistrationIssues} />}
         {!registration ? <ProductRegistrationForm /> : <RegisteredProductSection />}
         {registration && <Extensions />}

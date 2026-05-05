@@ -123,7 +123,9 @@ describe("ProductRegistrationPage", () => {
       it("renders a custom alert using the transient hostname", () => {
         installerRender(<ProductRegistrationPage />);
 
-        screen.getByText('The product will be registered with "testing-node" hostname');
+        screen.getByText("Hostname cannot be changed after registration");
+        screen.getByText("Configured as", { exact: false });
+        screen.getByText("testing-node");
         screen.getByRole("link", { name: "hostname" });
       });
     });
@@ -136,7 +138,9 @@ describe("ProductRegistrationPage", () => {
       it("renders a custom alert using the static hostname", () => {
         installerRender(<ProductRegistrationPage />);
 
-        screen.getByText('The product will be registered with "testing-server" hostname');
+        screen.getByText("Hostname cannot be changed after registration");
+        screen.getByText("Configured as", { exact: false });
+        screen.getByText("testing-server");
         screen.getByRole("link", { name: "hostname" });
       });
     });
@@ -369,5 +373,23 @@ describe("ProductRegistrationPage", () => {
 
     // General issues alert should show other issues
     screen.getByText("Some other problem");
+  });
+
+  it("hides hostname alert after failed registration attempt", () => {
+    mockSelectedProduct = sle;
+    mockProduct(sle);
+    mockRegistrationInfo = undefined;
+    mockIssues = [
+      {
+        scope: "product",
+        class: "system_registration_failed",
+        description: "Failed to register",
+      },
+    ];
+
+    installerRender(<ProductRegistrationPage />);
+
+    // Hostname alert should not be shown after registration attempt
+    expect(screen.queryByText("Hostname cannot be changed after registration")).toBeNull();
   });
 });
