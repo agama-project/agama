@@ -54,8 +54,9 @@ pub struct Source {
 }
 
 /// NTP source type (pool, server, or peer).
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema, strum::Display)]
 #[serde(rename_all = "lowercase")]
+#[strum(serialize_all = "lowercase")]
 pub enum SourceType {
     Pool,
     Server,
