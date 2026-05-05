@@ -308,7 +308,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
     if (formApi.getFieldMeta("name")?.isDirty) return;
 
-    const existingIds = new Set(systemConns.map((c) => c.id));
+    const existingIds = new Set((systemConns || []).map((c) => c.id));
     formApi.setFieldValue("name", generateConnectionName(type, existingIds), {
       dontUpdateMeta: true,
       dontRunListeners: true,
@@ -563,9 +563,9 @@ function EditConnectionForm() {
   // We have to be careful with the merge as there could be values from a
   // removed connection which is not valid anymore.
   let { connections: configConns } = useConfig();
-  configConns = configConns.filter((c) => c.status !== "removed");
+  configConns = (configConns || []).filter((c) => c.status !== "removed");
   let { connections: systemConns } = useSystem();
-  systemConns = systemConns.filter((c) => c.status !== "removed");
+  systemConns = (systemConns || []).filter((c) => c.status !== "removed");
 
   // Merge config and system connections so the form reflects the user's
   // explicit settings (config) while filling gaps from the live system state.
@@ -576,7 +576,7 @@ function EditConnectionForm() {
   //
   // Arrays (addresses, nameservers, etc.) are concatenated so users can see
   // existing system values even when config has empty arrays.
-  const { all: connections } = extendCollection(configConns || [], {
+  const { all: connections } = extendCollection(configConns, {
     with: systemConns,
     mergeArrays: true,
   });
