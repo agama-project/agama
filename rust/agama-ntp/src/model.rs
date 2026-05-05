@@ -24,14 +24,14 @@ use std::process::Command;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("Failed to write configuration: {0}")]
+    #[error("Failed to write and apply the configuration: {0}")]
     Io(#[from] std::io::Error),
     #[error("Failed to reload chronyd")]
-    ReloadFailed,
+    Reload(String),
 }
 
 const CHRONY_CONFIG_DIR: &str = "etc/chrony.d";
-const CHRONY_CONFIG_FILE: &str = "99-agama.conf";
+const CHRONY_CONFIG_FILE: &str = "99-installer.conf";
 const DEFAULT_WORKDIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
@@ -76,21 +76,16 @@ impl Model {
     }
 
     fn reload_chrony(&self) -> Result<(), Error> {
-        let output = Command::new("chronyc").args(["reload", "sources"]).output();
+        let output = Command::new("chronyc")
+            .args(["reload", "sources"])
+            .output()?;
 
-        match output {
-            Ok(result) => {
-                if !result.status.success() {
-                    let stderr = String::from_utf8_lossy(&result.stderr);
-                    tracing::warn!("chronyc reload sources failed: {}", stderr);
-                }
-                Ok(())
-            }
-            Err(e) => {
-                tracing::warn!("Failed to execute chronyc: {}", e);
-                Ok(())
-            }
+        if output.status.success() {
+            return Ok(());
         }
+
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        Err(Error::Reload(stderr.to_string()))
     }
 }
 
