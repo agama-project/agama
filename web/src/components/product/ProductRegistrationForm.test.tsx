@@ -21,13 +21,14 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { installerRender, mockProduct, mockProductConfig, mockL10n } from "~/test-utils";
 import { Product } from "~/model/system";
 import { RegistrationInfo } from "~/model/system/software";
 import { Config } from "~/model/config";
 import { putConfig } from "~/api";
 import { Issue } from "~/model/issue";
+import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import ProductRegistrationForm from "./ProductRegistrationForm";
 
 const sle: Product = {
@@ -40,6 +41,13 @@ const sle: Product = {
 let mockRegistrationInfo: RegistrationInfo | undefined;
 let mockConfig: Config;
 let mockIssues: Issue[] = [];
+
+jest.mock("~/hooks/use-track-queries-refetch", () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
+const mockUseTrackQueriesRefetch = jest.mocked(useTrackQueriesRefetch);
 
 jest.mock("~/hooks/model/system/software", () => ({
   useSystem: () => ({ registration: mockRegistrationInfo }),
@@ -65,6 +73,15 @@ describe("ProductRegistrationForm", () => {
     mockProduct(sle);
     mockL10n({ keymap: "us", language: "en-US" });
     mockRegistrationInfo = undefined;
+
+    // Set up default mock for useTrackQueriesRefetch - called twice (system + issues)
+    mockUseTrackQueriesRefetch.mockReturnValue({
+      startTracking: jest.fn(),
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it("allows registering the product without an email address", async () => {
@@ -273,34 +290,22 @@ describe("ProductRegistrationForm", () => {
       });
     });
 
-    it("stops loading when registration succeeds", async () => {
-      const { user, rerender } = installerRender(<ProductRegistrationForm />);
-      const registrationCodeInput = screen.getByLabelText("Registration code");
-      const submitButton = screen.getByRole("button", { name: "Register" });
-
-      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-      await user.click(submitButton);
-
-      await waitFor(() => {
-        expect(submitButton).toBeDisabled();
-      });
-      screen.getByText("Registration in progress");
-
-      mockRegistrationInfo = {
-        code: "INTERNAL-USE-ONLY-1234-5678",
-        email: "",
-        addons: [],
-      };
-
-      rerender(<ProductRegistrationForm />);
-
-      await waitFor(() => {
-        expect(screen.queryByText("Registration in progress")).not.toBeInTheDocument();
-      });
-    });
-
+    // The component uses useTrackQueriesRefetch to track the system query.
+    // Mock the hook to capture the callback, which gets called when the tracked
+    // query refetches. In real usage, the backend sends a SystemChanged event
+    // after putConfig (success or failure), triggering the query to refetch with
+    // fresh data (dataUpdatedAt > startTracking timestamp). The callback then
+    // fires, stopping the loading state. Here simulate that by manually invoking
+    // the callback after updating mockIssues.
     it("stops loading when registration fails", async () => {
-      const { user, rerender } = installerRender(<ProductRegistrationForm />);
+      let mockCallback: (startedAt: number, completedAt: number) => void;
+
+      mockUseTrackQueriesRefetch.mockImplementation((keys, callback) => {
+        mockCallback = callback;
+        return { startTracking: jest.fn() };
+      });
+
+      const { user } = installerRender(<ProductRegistrationForm />);
       const registrationCodeInput = screen.getByLabelText("Registration code");
       const submitButton = screen.getByRole("button", { name: "Register" });
 
@@ -320,7 +325,11 @@ describe("ProductRegistrationForm", () => {
         },
       ];
 
-      rerender(<ProductRegistrationForm />);
+      // Simulate query refetch completion by calling the callback
+      const startedAt = Date.now();
+      act(() => {
+        mockCallback(startedAt, startedAt + 100);
+      });
 
       await waitFor(() => {
         expect(screen.queryByText("Registration in progress")).not.toBeInTheDocument();

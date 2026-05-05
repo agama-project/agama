@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useId, useState } from "react";
 import { formOptions } from "@tanstack/react-form";
 import {
   ActionGroup,
@@ -35,12 +35,12 @@ import {
 import LabelText from "~/components/form/LabelText";
 import { isEmpty, shake } from "radashi";
 import { sprintf } from "sprintf-js";
-import { useSystem } from "~/hooks/model/system/software";
 import { useProduct } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { putConfig } from "~/api";
 import { useConfig } from "~/hooks/model/config";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
+import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { _ } from "~/i18n";
 
 type ServerOption = "default" | "custom";
@@ -97,9 +97,11 @@ export default function ProductRegistrationForm() {
   const product = useProduct();
   const issues = useIssues("product");
   const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
-  const { registration } = useSystem();
-  const prevRegistrationRef = useRef(registration);
-  const prevRegistrationIssueRef = useRef(registrationIssue);
+
+  // Track system query which refetches after putConfig completes (success or failure).
+  // On success: parent sees new registration data and unmounts this component.
+  // On failure: stops loading to show the error alert.
+  const { startTracking } = useTrackQueriesRefetch(["system"], () => setLoading(false));
 
   const form = useAppForm({
     ...mergeFormDefaults(registrationFormOptions, {
@@ -118,8 +120,7 @@ export default function ProductRegistrationForm() {
       const isUrlRequired = value.server !== "default";
       const isCodeRequired = value.server === "default";
 
-      prevRegistrationRef.current = registration;
-      prevRegistrationIssueRef.current = registrationIssue;
+      startTracking();
       setLoading(true);
       putConfig({
         ...config,
@@ -134,22 +135,10 @@ export default function ProductRegistrationForm() {
     },
   });
 
-  useEffect(() => {
-    if (!loading) return;
-
-    const registrationChanged = registration !== prevRegistrationRef.current;
-    const issueChanged = registrationIssue !== prevRegistrationIssueRef.current;
-
-    if (registrationChanged || issueChanged) {
-      setLoading(false);
-    }
-  }, [loading, registration, registrationIssue]);
-
   const submitNoRegister = (e: React.SyntheticEvent) => {
     e.preventDefault();
     form.reset();
-    prevRegistrationRef.current = registration;
-    prevRegistrationIssueRef.current = registrationIssue;
+    startTracking();
     setLoading(true);
     putConfig({
       ...config,
