@@ -42,6 +42,8 @@ pub enum NmError {
     UnsupportedDeviceType(u32),
     #[error("Unsupported connection state: '{0}'")]
     UnsupportedConnectionState(u32),
+    #[error("Unsupported connectivity state: '{0}'")]
+    UnsupportedConnectivityState(u32),
     #[error("Unsupported security protocol: '{0}'")]
     UnsupportedSecurityProtocol(String),
     #[error("Unsupported wireless mode: '{0}'")]

@@ -44,6 +44,7 @@ pub struct Config {
 mod tests {
     use super::*;
     use crate::api::network::settings::{NetworkConnection, WirelessSettings}; // Import necessary types
+    use crate::api::network::types::{ConnectivityState, Ipv4Method};
 
     #[test]
     fn test_merge_network_config() {
@@ -59,7 +60,7 @@ mod tests {
                 ..Default::default()
             }])),
             state: Some(StateSettings {
-                connectivity: Some(true),
+                connectivity: Some(ConnectivityState::Full),
                 wireless_enabled: Some(true),
                 networking_enabled: Some(true),
                 copy_network: None,
@@ -90,7 +91,7 @@ mod tests {
                 },
             ])),
             state: Some(StateSettings {
-                connectivity: Some(false),       // This should NOT overwrite updated's true
+                connectivity: Some(ConnectivityState::None),     // This should NOT overwrite updated's true
                 wireless_enabled: None,          // This should NOT overwrite updated's true
                 networking_enabled: Some(false), // This should NOT overwrite updated's true
                 copy_network: Some(true),        // This SHOULD overwrite updated's None
@@ -109,7 +110,7 @@ mod tests {
 
         // Assertions for state (StateSettings has overwrite_none strategy)
         let merged_state = updated.state.unwrap();
-        assert_eq!(merged_state.connectivity, Some(true)); // from updated, not overwritten by original.Some(false)
+        assert_eq!(merged_state.connectivity, Some(ConnectivityState::Full)); // from updated, not overwritten by original.Some(false)
         assert_eq!(merged_state.wireless_enabled, Some(true)); // from updated, not overwritten by original.None
         assert_eq!(merged_state.networking_enabled, Some(true)); // from updated, not overwritten by original.Some(false)
         assert_eq!(merged_state.copy_network, Some(true)); // from original, overwritten updated.None
@@ -155,7 +156,7 @@ mod tests {
                 ..Default::default()
             }])),
             state: Some(StateSettings {
-                connectivity: Some(true),
+                connectivity: Some(ConnectivityState::Full),
                 ..Default::default()
             }),
         };

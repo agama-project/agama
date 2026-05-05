@@ -693,7 +693,7 @@ pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GeneralState {
     pub hostname: String,
-    pub connectivity: bool,
+    pub connectivity: ConnectivityState,
     pub copy_network: bool,
     pub wireless_enabled: bool,
     pub networking_enabled: bool, // pub network_state: NMSTATE

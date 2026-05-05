@@ -282,8 +282,9 @@
           "type": "object",
           "properties": {
             "connectivity": {
-              "title": "Whether the user is able to access the Internet",
-              "type": "boolean",
+              "title": "Network connectivity state",
+              "type": "string",
+              "enum": ["unknown", "none", "portal", "limited", "full"],
               "readOnly": true
             },
             "copyNetwork": {

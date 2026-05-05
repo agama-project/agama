@@ -20,7 +20,9 @@
 
 //! Representation of the network settings
 
-use super::types::{ConnectionState, DeviceState, DeviceType, Ipv4Method, Ipv6Method, Status};
+use super::types::{
+    ConnectionState, ConnectivityState, DeviceState, DeviceType, Ipv4Method, Ipv6Method, Status,
+};
 use crate::openapi::schemas;
 use cidr::IpInet;
 use merge::Merge;
@@ -49,7 +51,7 @@ pub struct NetworkSettings {
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct StateSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub connectivity: Option<bool>,
+    pub connectivity: Option<ConnectivityState>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless_enabled: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -587,6 +587,36 @@ pub enum ConnectionState {
     Deactivated,
 }
 
+/// Network connectivity state.
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    utoipa::ToSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum ConnectivityState {
+    #[default]
+    /// The connectivity state is unknown.
+    Unknown,
+    /// No connectivity.
+    None,
+    /// The network is behind a captive portal and cannot reach the full internet.
+    Portal,
+    /// The network is connected but it has no access to the full internet.
+    Limited,
+    /// The network is connected and it has access to the full internet.
+    Full,
+}
+
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum Status {

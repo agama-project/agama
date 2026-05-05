@@ -29,7 +29,7 @@
 use crate::{
     model::{SecurityProtocol, WirelessMode},
     nm::error::NmError,
-    types::{ConnectionState, DeviceType, Ipv4Method, Ipv6Method},
+    types::{ConnectionState, ConnectivityState, DeviceType, Ipv4Method, Ipv6Method},
 };
 use std::fmt;
 use std::str::FromStr;
@@ -188,6 +188,37 @@ impl TryFrom<NmConnectionState> for ConnectionState {
             NmConnectionState(3) => Ok(ConnectionState::Deactivating),
             NmConnectionState(4) => Ok(ConnectionState::Deactivated),
             NmConnectionState(_) => Err(NmError::UnsupportedConnectionState(value.into())),
+        }
+    }
+}
+
+/// Connectivity state
+#[derive(Debug, Default, Clone, Copy)]
+pub struct NmConnectivityState(pub u32);
+
+impl From<NmConnectivityState> for u32 {
+    fn from(value: NmConnectivityState) -> u32 {
+        value.0
+    }
+}
+
+impl fmt::Display for NmConnectivityState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl TryFrom<NmConnectivityState> for ConnectivityState {
+    type Error = NmError;
+
+    fn try_from(value: NmConnectivityState) -> Result<Self, Self::Error> {
+        match value {
+            NmConnectivityState(0) => Ok(ConnectivityState::Unknown),
+            NmConnectivityState(1) => Ok(ConnectivityState::None),
+            NmConnectivityState(2) => Ok(ConnectivityState::Portal),
+            NmConnectivityState(3) => Ok(ConnectivityState::Limited),
+            NmConnectivityState(4) => Ok(ConnectivityState::Full),
+            NmConnectivityState(_) => Err(NmError::UnsupportedConnectivityState(value.into())),
         }
     }
 }

@@ -29,7 +29,7 @@ use super::dbus::{
     merge_dbus_connections,
 };
 use super::error::NmError;
-use super::model::{NmConnectionState, NmDeviceType};
+use super::model::{NmConnectionState, NmConnectivityState, NmDeviceType};
 use super::proxies::{
     AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
     SettingsProxy, WirelessProxy,
@@ -70,8 +70,7 @@ impl<'a> NetworkManagerClient<'a> {
         let networking_enabled = self.nm_proxy.networking_enabled().await?;
         // TODO:: Allow to set global DNS configuration
         // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
-        // Fixme: save as NMConnectivityState enum
-        let connectivity = self.nm_proxy.connectivity().await? == 4;
+        let connectivity = NmConnectivityState(self.nm_proxy.connectivity().await?).try_into()?;
         let copy_network = !Path::new(NOT_COPY_NETWORK_PATH).exists();
 
         Ok(GeneralState {
