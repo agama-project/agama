@@ -21,27 +21,27 @@
  */
 
 import React, { useEffect, useId, useRef, useState } from "react";
+import { formOptions } from "@tanstack/react-form";
 import {
   ActionGroup,
   Alert,
   Button,
-  Flex,
+  Content,
   Form,
   HelperText,
   HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
-import { formOptions } from "@tanstack/react-form";
 import LabelText from "~/components/form/LabelText";
 import { isEmpty, shake } from "radashi";
 import { sprintf } from "sprintf-js";
-import { _ } from "~/i18n";
 import { useSystem } from "~/hooks/model/system/software";
 import { useProduct } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { putConfig } from "~/api";
 import { useConfig } from "~/hooks/model/config";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
+import { _ } from "~/i18n";
 
 type ServerOption = "default" | "custom";
 
@@ -170,8 +170,22 @@ export default function ProductRegistrationForm() {
         }}
       >
         {!loading && registrationIssue && (
-          <Alert isInline variant="warning" title={registrationIssue.description}>
-            {registrationIssue.details && <p>{registrationIssue.details}</p>}
+          <Alert
+            isInline
+            variant="danger"
+            title={registrationIssue.description}
+            actionLinks={
+              <Button variant="control" isInline onClick={submitNoRegister}>
+                {
+                  // TRANSLATORS: button to dismiss the error alert and clear the registration data
+                  _("Dismiss and clear data below")
+                }
+              </Button>
+            }
+          >
+            {registrationIssue.details && (
+              <Content component="p">{registrationIssue.details}</Content>
+            )}
           </Alert>
         )}
 
@@ -244,23 +258,16 @@ export default function ProductRegistrationForm() {
 
         <ActionGroup>
           <Stack hasGutter>
-            <Flex>
-              <Button
-                variant="primary"
-                type="submit"
-                isInline
-                isLoading={loading}
-                isDisabled={loading}
-                aria-describedby={loading ? loadingHintId : undefined}
-              >
-                {_("Register")}
-              </Button>
-              {!loading && registrationIssue && (
-                <Button variant="link" type="submit" isInline onClick={submitNoRegister}>
-                  {_("Do not register")}
-                </Button>
-              )}
-            </Flex>
+            <Button
+              variant="primary"
+              type="submit"
+              isInline
+              isLoading={loading}
+              isDisabled={loading}
+              aria-describedby={loading ? loadingHintId : undefined}
+            >
+              {_("Register")}
+            </Button>
             {loading && (
               <HelperText id={loadingHintId} isLiveRegion>
                 <HelperTextItem variant="indeterminate">

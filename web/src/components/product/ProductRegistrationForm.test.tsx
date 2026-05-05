@@ -212,14 +212,14 @@ describe("ProductRegistrationForm", () => {
     it("renders errors returned by the registration server", async () => {
       installerRender(<ProductRegistrationForm />);
 
-      screen.getByText("Warning alert:");
+      screen.getByText("Danger alert:");
       screen.getByText("Unauthorized code");
     });
 
-    it("allows forgetting the registration information", async () => {
+    it("allows dismissing the error and clearing the registration data", async () => {
       const { user } = installerRender(<ProductRegistrationForm />);
 
-      const button = screen.getByRole("button", { name: "Do not register" });
+      const button = screen.getByRole("button", { name: "Dismiss and clear data below" });
       await user.click(button);
       expect(putConfig).toHaveBeenCalledWith({
         ...mockConfig,
@@ -246,32 +246,6 @@ describe("ProductRegistrationForm", () => {
       });
 
       screen.getByText("Registration in progress");
-    });
-
-    it("hides 'Do not register' button during loading", async () => {
-      mockIssues = [
-        {
-          scope: "software",
-          class: "system_registration_failed",
-          description: "Unauthorized code",
-        },
-      ];
-
-      const { user } = installerRender(<ProductRegistrationForm />);
-
-      const doNotRegisterButton = screen.getByRole("button", { name: "Do not register" });
-      expect(doNotRegisterButton).toBeInTheDocument();
-
-      const registrationCodeInput = screen.getByLabelText("Registration code");
-      const submitButton = screen.getByRole("button", { name: "Register" });
-
-      await user.clear(registrationCodeInput);
-      await user.type(registrationCodeInput, "ANOTHER-CODE-1234-5678");
-      await user.click(submitButton);
-
-      await waitFor(() => {
-        expect(screen.queryByRole("button", { name: "Do not register" })).not.toBeInTheDocument();
-      });
     });
 
     it("hides registration issue alert during loading", async () => {
@@ -354,7 +328,7 @@ describe("ProductRegistrationForm", () => {
 
       screen.getByText("Invalid registration code");
 
-      screen.getByRole("button", { name: "Do not register" });
+      screen.getByRole("button", { name: "Dismiss and clear data below" });
     });
 
     it("re-enables button when backend returns same registration issue object", async () => {
