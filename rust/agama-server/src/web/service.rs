@@ -86,8 +86,16 @@ impl MainServiceBuilder {
     /// * `path`: Path to mount the service under `/api`.
     /// * `service`: Service to mount on the given `path`.
     pub fn add_service(self, path: &str, service: impl Into<ApiRouter<()>>) -> Self {
+        // root nesting is not allowed, so merge instead
+        let router = if path == "/" {
+            let service: ApiRouter<ServiceState> = service.into().with_state(());
+            self.api_router.merge(service)
+        } else {
+            self.api_router.nest_api_service(path, service)
+        };
+
         Self {
-            api_router: self.api_router.nest_api_service(path, service),
+            api_router: router,
             ..self
         }
     }
@@ -113,10 +121,10 @@ impl MainServiceBuilder {
         let serve = ServeDir::new(self.public_dir).precompressed_gzip();
 
         ApiRouter::new()
-            .route_layer(middleware::from_fn(version_header))
             .route("/login", get(login_from_query))
             .nest("/api", api_router)
             .fallback_service(serve)
+            .route_layer(middleware::from_fn(version_header))
             .layer(
                 TraceLayer::new_for_http()
                     .on_request(|request: &Request<Body>, span: &Span| {
