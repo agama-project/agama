@@ -35,9 +35,9 @@ const SELECTORS = {
 type Component = keyof typeof SELECTORS;
 
 /**
- * Options for the {@link useSelectKeyboard} hook.
+ * Options for the {@link useComboboxKeyboard} hook.
  */
-type UseSelectKeyboardOptions = {
+type UseComboboxKeyboardOptions = {
   /**
    * Type of PatternFly component.
    * - "select": PatternFly Select component (default)
@@ -56,9 +56,9 @@ type UseSelectKeyboardOptions = {
 };
 
 /**
- * Return value of the {@link useSelectKeyboard} hook.
+ * Return value of the {@link useComboboxKeyboard} hook.
  */
-type UseSelectKeyboardReturn = {
+type UseComboboxKeyboardReturn = {
   /** Whether the menu is currently open. */
   isOpen: boolean;
   /** Function to programmatically open or close the menu. */
@@ -70,38 +70,44 @@ type UseSelectKeyboardReturn = {
 };
 
 /**
- * Hook for W3C-compliant keyboard navigation in PatternFly dropdown components.
+ * Hook providing W3C-aligned keyboard navigation for PatternFly Select and
+ * Menu-based dropdown components.
  *
- * Implements arrow-key-to-open behavior for dropdown menus. For Select components,
- * this follows the W3C ARIA Authoring Practices Guide (APG) Select-Only Combobox
- * pattern, which allows arrow keys to open the menu when closed while maintaining
- * the explore-then-commit interaction.
+ * Currently implements arrow-key-to-open behavior based on the W3C ARIA
+ * Authoring Practices Guide (APG) Select-Only Combobox pattern:
  *
- * ## Why this pattern exists
+ *   - ArrowDown opens a closed popup and focuses the first item
+ *   - ArrowUp opens a closed popup and focuses the last item
  *
- * **For sighted users:** Lets users explore options without triggering unwanted
- * changes. In reactive forms where selections control field visibility, users can
- * read all option descriptions before causing the form to reconfigure.
+ * The interaction follows an explore-then-commit model, allowing users to
+ * navigate options without immediately changing the current value or triggering
+ * actions.
  *
- * **For screen reader users:** Prevents accidental value changes while exploring
- * options. Users can hear all descriptions before committing, rather than changing
- * the value with each arrow press.
+ * This improves usability for:
  *
- * **Arrow keys open the menu but don't commit** - users must press Enter/Space
- * to confirm their choice (for Select) or click an action (for Menu). This is
- * faster than requiring Enter/Space to open while remaining safer.
+ *   - Sighted users exploring reactive forms without causing unintended updates
+ *   - Screen reader users reviewing options before committing a selection
+ *   - Keyboard users by avoiding the extra Enter/Space step to open menus
  *
  * @remarks
- * The hook provides a keyboard handler that:
- * - Opens the menu and focuses the first item when ↓ is pressed on a closed toggle
- * - Opens the menu and focuses the last item when ↑ is pressed on a closed toggle
- * - Delegates to PatternFly's default arrow navigation when the menu is already open
+ * This hook is intended to become the shared keyboard accessibility layer for
+ * PatternFly dropdown components that behave like comboboxes or listboxes.
  *
- * Can optionally manage internal state or work with external state management.
+ * The current implementation focuses on the closed combobox interaction model
+ * from the APG Select-Only Combobox pattern. Additional APG-recommended
+ * behaviors for both combobox and listbox popup patterns may be added over time
+ * as PatternFly component APIs and internal infrastructure permit.
+ *
+ * Additional APG behaviors for both closed combobox and listbox popup patterns
+ * may be implemented over time as PatternFly infrastructure and component APIs
+ * allow.
+ *
+ * The hook can either manage its own open state or integrate with externally
+ * managed state.
  *
  * @example Basic usage (internal state)
  * ```tsx
- * const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard();
+ * const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
  *
  * <Select
  *   ref={menuRef}
@@ -117,7 +123,8 @@ type UseSelectKeyboardReturn = {
  * @example With external state
  * ```tsx
  * const [isOpen, setIsOpen] = useState(false);
- * const { menuRef, onToggleKeydown } = useSelectKeyboard({
+ *
+ * const { menuRef, onToggleKeydown } = useComboboxKeyboard({
  *   component: "menu",
  *   isOpen,
  *   setIsOpen
@@ -130,9 +137,9 @@ type UseSelectKeyboardReturn = {
  *
  * @see https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/
  */
-export const useSelectKeyboard = (
-  options: UseSelectKeyboardOptions = {},
-): UseSelectKeyboardReturn => {
+export const useComboboxKeyboard = (
+  options: UseComboboxKeyboardOptions = {},
+): UseComboboxKeyboardReturn => {
   const { component = "select", isOpen: externalIsOpen, setIsOpen: externalSetIsOpen } = options;
 
   const menuRef = useRef<HTMLDivElement>(null);

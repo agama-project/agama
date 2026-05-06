@@ -32,7 +32,7 @@ import {
 } from "@patternfly/react-core";
 
 import Text from "~/components/core/Text";
-import { useSelectKeyboard } from "~/hooks/use-select-keyboard";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 
 import type { TranslatedString } from "~/i18n";
 
@@ -50,7 +50,7 @@ type SimpleSelectorProps = {
  * options. The selected value is passed to the parent via the `onChange`
  * callback along with the event originating the action.
  *
- * Uses {@link useSelectKeyboard} hook for W3C-compliant keyboard navigation:
+ * Uses {@link useComboboxKeyboard} hook for W3C-compliant keyboard navigation:
  * arrow keys open the menu and focus first/last item when closed.
  *
  * @privateRemarks
@@ -59,7 +59,7 @@ type SimpleSelectorProps = {
  */
 export default function SimpleSelector({ label, value, options, onChange }: SimpleSelectorProps) {
   const id = useId();
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard();
+  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
   const onToggle = () => setIsOpen(!isOpen);
 
   const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (

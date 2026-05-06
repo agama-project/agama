@@ -30,11 +30,11 @@ import {
   MenuToggleElement,
 } from "@patternfly/react-core";
 import { installerRender } from "~/test-utils";
-import { useSelectKeyboard } from "./use-select-keyboard";
+import { useComboboxKeyboard } from "./use-combobox-keyboard";
 
 // Test component that uses the hook with a PatternFly Select
 function TestSelect({ onSelect = jest.fn() }) {
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard();
+  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
   const [selected, setSelected] = useState("option1");
 
   return (
@@ -67,7 +67,7 @@ function TestSelect({ onSelect = jest.fn() }) {
   );
 }
 
-describe("useSelectKeyboard", () => {
+describe("useComboboxKeyboard", () => {
   it("opens menu and focuses first item when ArrowDown is pressed on closed toggle", async () => {
     const { user } = installerRender(<TestSelect />);
 
@@ -148,7 +148,7 @@ describe("useSelectKeyboard", () => {
     // Test component that manages its own state and passes it to the hook
     function TestSelectWithExternalState() {
       const [isOpen, setIsOpen] = useState(false);
-      const { menuRef, onToggleKeydown } = useSelectKeyboard({ isOpen, setIsOpen });
+      const { menuRef, onToggleKeydown } = useComboboxKeyboard({ isOpen, setIsOpen });
       const [selected, setSelected] = useState("option1");
 
       return (

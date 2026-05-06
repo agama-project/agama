@@ -34,7 +34,7 @@ import {
   MenuItemProps,
   MenuToggleProps,
 } from "@patternfly/react-core";
-import { useSelectKeyboard } from "~/hooks/use-select-keyboard";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { _, TranslatedString } from "~/i18n";
 import { useLocation, useNavigate } from "react-router";
 
@@ -133,7 +133,7 @@ export function MenuButtonItem({
 /**
  * Dropdown menu button with support for drilldown menus and keyboard navigation.
  *
- * Uses {@link useSelectKeyboard} hook for arrow-key-to-open behavior: pressing ↓/↑
+ * Uses {@link useComboboxKeyboard} hook for arrow-key-to-open behavior: pressing ↓/↑
  * on a closed toggle opens the menu and focuses the first/last item.
  */
 export default function MenuButton({
@@ -146,7 +146,7 @@ export default function MenuButton({
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
   const toggleRef = useRef();
   const rootId = useMenuId();
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard({
+  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard({
     component: "menu",
   });
   const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);

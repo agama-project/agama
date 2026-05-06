@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Select, MenuToggle, MenuToggleElement, SelectProps } from "@patternfly/react-core";
-import { useSelectKeyboard } from "~/hooks/use-select-keyboard";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { TranslatedString } from "~/i18n";
 
 export type SelectWrapperProps = {
@@ -40,7 +40,7 @@ export type SelectWrapperProps = {
  *
  * Abstracts the toggle setup by building it internally based on the received props.
  *
- * Uses {@link useSelectKeyboard} hook for W3C-compliant keyboard navigation:
+ * Uses {@link useComboboxKeyboard} hook for W3C-compliant keyboard navigation:
  * arrow keys open the menu and focus first/last item when closed.
  *
  * @see https://www.patternfly.org/components/menus/select/
@@ -54,7 +54,7 @@ export default function SelectWrapper({
   children,
   toggleName,
 }: SelectWrapperProps): React.ReactElement {
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard();
+  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
 
   const onSelect = (
     _: React.MouseEvent<Element, MouseEvent> | undefined,

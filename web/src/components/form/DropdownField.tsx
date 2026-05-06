@@ -29,7 +29,7 @@ import {
   SelectList,
   SelectOption,
 } from "@patternfly/react-core";
-import { useSelectKeyboard } from "~/hooks/use-select-keyboard";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { useFieldContext } from "~/hooks/form-contexts";
 
 export type DropdownOption<T> = {
@@ -80,7 +80,7 @@ type DropdownFieldProps<T> = {
  *
  * The W3C pattern does allow a middle ground — pressing ↓/↑ on a closed
  * toggle should open the menu and focus the first or last item without
- * committing a value. This component implements that via {@link useSelectKeyboard}.
+ * committing a value. This component implements that via {@link useComboboxKeyboard}.
  *
  * @see useFieldContext for field component conventions.
  *
@@ -101,7 +101,7 @@ export default function DropdownField<T extends string>({
   children,
 }: DropdownFieldProps<T>) {
   const field = useFieldContext<T>();
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard();
+  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
 
   const selectedOption = options.find(({ value }) => value === field.state.value);
 
