@@ -36,6 +36,7 @@ import BindingModeSelector from "~/components/network/BindingModeSelector";
 import DeviceSelector from "~/components/network/DeviceSelector";
 import {
   BondMode,
+  Bridge,
   Connection,
   ConnectionBindingMode,
   ConnectionMethod,

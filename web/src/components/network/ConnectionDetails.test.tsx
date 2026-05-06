@@ -154,13 +154,13 @@ describe("ConnectionDetails", () => {
   });
 
   describe("Binding settings section", () => {
-    it("renders information aobut the binding mode (all)", () => {
+    it("renders information about the binding mode (all)", () => {
       installerRender(<ConnectionDetails connection={new Connection("Network #1")} />);
       const section = screen.getByRole("region", { name: "Binding" });
       within(section).getByText("Connection is available to all devices.");
     });
 
-    it("renders information aobut the binding mode (to MAC)", () => {
+    it("renders information about the binding mode (to MAC)", () => {
       installerRender(
         <ConnectionDetails
           connection={new Connection("Network #1", { macAddress: "AA:11:22:33:44:FF" })}
@@ -170,7 +170,7 @@ describe("ConnectionDetails", () => {
       within(section).getByText("Connection is bound to MAC address AA:11:22:33:44:FF.");
     });
 
-    it("renders information aobut the binding mode (to device)", () => {
+    it("renders information about the binding mode (to device)", () => {
       installerRender(
         <ConnectionDetails connection={new Connection("Network #1", { iface: "enp1s0" })} />,
       );

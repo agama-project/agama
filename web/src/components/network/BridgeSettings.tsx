@@ -39,7 +39,7 @@ const stpOptions = () => [
     // TRANSLATORS: option label for the bridge STP configuration to use the system default.
     label: N_("Default"),
     // TRANSLATORS: description for the default bridge STP configuration.
-    description: N_("Use system-wide defaults (effectively enabled)"),
+    description: N_("Enable STP with default settings"),
   },
   {
     value: BridgeStpMode.ENABLED,
@@ -152,9 +152,7 @@ const BridgeSettings = withForm({
                             // field. Text inside square brackets [] is
                             // semantically and visually emphasized. Keep the
                             // brackets.
-                            _(
-                              "Root bridge selection (0-61440). [Lower is higher priority]. Default is 32768.",
-                            )
+                            _("Root bridge selection (0-61440). [Lower is higher priority].")
                           }
                         >
                           {(text) => <strong>{text}</strong>}
@@ -178,7 +176,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge forward delay field.
-                        _("Listening and learning time (4-30 seconds). Default is 15 seconds.")
+                        _("Listening and learning time (4-30 seconds).")
                       }
                       min={4}
                       max={30}
@@ -198,7 +196,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge hello time field.
-                        _("Protocol message interval (1-10 seconds). Default is 2 seconds.")
+                        _("Protocol message interval (1-10 seconds).")
                       }
                       min={1}
                       max={10}
@@ -218,7 +216,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge max message age field.
-                        _("Protocol message retention time (6-40 seconds). Default is 20 seconds.")
+                        _("Protocol message retention time (6-40 seconds).")
                       }
                       min={6}
                       max={40}
