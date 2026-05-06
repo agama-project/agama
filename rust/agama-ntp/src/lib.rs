@@ -36,6 +36,7 @@ mod tests {
         },
         issue, progress, question,
     };
+    use async_trait::async_trait;
     use std::sync::{Arc, Mutex};
     use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
@@ -59,14 +60,15 @@ mod tests {
         }
     }
 
+    #[async_trait]
     impl model::ModelAdapter for MockModel {
-        fn write_config(&self, config: &Config) -> Result<(), model::Error> {
+        async fn write_config(&self, config: &Config) -> Result<(), model::Error> {
             *self.write_config_called.lock().unwrap() = true;
             *self.last_config.lock().unwrap() = Some(config.clone());
             Ok(())
         }
 
-        fn install(&self, config: &Config) -> Result<(), model::Error> {
+        async fn install(&self, config: &Config) -> Result<(), model::Error> {
             *self.install_called.lock().unwrap() = true;
             *self.last_config.lock().unwrap() = Some(config.clone());
             Ok(())
@@ -74,6 +76,14 @@ mod tests {
 
         fn resolvables(&self) -> Vec<Resolvable> {
             vec![]
+        }
+
+        async fn sync(&self) -> Result<(), model::Error> {
+            Ok(())
+        }
+
+        async fn remove_config(&self) -> Result<(), model::Error> {
+            Ok(())
         }
     }
 

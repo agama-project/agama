@@ -40,7 +40,7 @@ pub enum Error {
 
 pub struct Starter {
     _events: event::Sender,
-    model: Box<dyn model::ModelAdapter>,
+    model: Box<dyn model::ModelAdapter + Send + 'static>,
     software: Handler<software::Service>,
 }
 
@@ -120,17 +120,23 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<api::ntp::Config>) -> Result<(), Error> {
         if let Some(config) = &message.config {
-            if let Err(e) = self.model.write_config(config) {
+            if let Err(e) = self.model.write_config(config).await {
                 tracing::error!("Failed to write NTP configuration: {e}");
             }
+
             self.set_resolvables(self.model.resolvables()).await;
         } else {
-            if let Err(e) = self.model.remove_config() {
+            if let Err(e) = self.model.remove_config().await {
                 tracing::error!("Failed to remove the NTP configuration: {e}");
             }
             self.set_resolvables(vec![]).await;
         }
 
+        if self.config != message.config {
+            if let Err(e) = self.model.sync().await {
+                tracing::error!("Failed to synchronize with the NTP server: {e}");
+            }
+        }
         self.config = message.config;
         Ok(())
     }
@@ -140,7 +146,7 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         if let Some(config) = &self.config {
-            if let Err(e) = self.model.install(config) {
+            if let Err(e) = self.model.install(config).await {
                 tracing::error!("Failed to install NTP configuration: {}", e);
             }
         }

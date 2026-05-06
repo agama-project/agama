@@ -20,9 +20,11 @@
 
 use agama_software::{Resolvable, ResolvableType};
 use agama_utils::api::ntp::{Config, Source};
+use async_trait::async_trait;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
-use std::{fs, io, process};
+use std::process::Output;
+use std::{fs, io};
+use tokio::process::Command;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -34,23 +36,32 @@ pub enum Error {
     EnableService(#[source] io::Error),
     #[error("Failed to clean-up the chronyd configuration")]
     RemoveConfig(#[source] io::Error),
+    #[error("Failed to synchronize with the NTP server")]
+    Sync(#[source] io::Error),
 }
 
 const CHRONY_CONFIG_DIR: &str = "etc/chrony.d";
 const CHRONY_CONFIG_FILE: &str = "99-installer.conf";
+const CHRONY_MAX_TRIES: &str = "1";
 const DEFAULT_WORKDIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
+#[async_trait]
 pub trait ModelAdapter: Send + 'static {
     /// Apply the configuration to the current system.
     ///
     /// - `config`: configuration to apply.
-    fn write_config(&self, config: &Config) -> Result<(), Error>;
+    async fn write_config(&self, config: &Config) -> Result<(), Error>;
+
+    /// Synchronize the time using the current configuration.
+    ///
+    /// Wait until the synchronization is done.
+    async fn sync(&self) -> Result<(), Error>;
 
     /// Write the configuration to the target system.
     ///
     /// - `config`: configuration to apply.
-    fn install(&self, config: &Config) -> Result<(), Error>;
+    async fn install(&self, config: &Config) -> Result<(), Error>;
 
     /// Return the list of required resolvables.
     fn resolvables(&self) -> Vec<Resolvable> {
@@ -58,9 +69,7 @@ pub trait ModelAdapter: Send + 'static {
     }
 
     /// Remove the configuration from the current system.
-    fn remove_config(&self) -> Result<(), Error> {
-        Ok(())
-    }
+    async fn remove_config(&self) -> Result<(), Error>;
 }
 
 pub struct Model {
@@ -98,12 +107,13 @@ impl Model {
             .join(CHRONY_CONFIG_FILE)
     }
 
-    fn reload_chrony(&self) -> Result<(), Error> {
+    async fn reload_chrony(&self) -> Result<(), Error> {
         tracing::info!("Reloading chronyc sources");
 
         let output = Command::new("chronyc")
             .args(["reload", "sources"])
             .output()
+            .await
             .map_err(Error::Reload)?;
 
         if output.status.success() {
@@ -113,14 +123,14 @@ impl Model {
         Err(Error::Reload(command_output_to_error(&output)))
     }
 
-    fn enable_service(&self) -> Result<(), Error> {
+    async fn enable_service(&self) -> Result<(), Error> {
         tracing::info!("Enabling chronyd service on target system");
 
-        let mut command = process::Command::new("chroot");
+        let mut command = Command::new("chroot");
         let command = command
             .arg(&self.install_dir)
             .args(["systemctl", "enable", "chronyd"]);
-        let output = command.output().map_err(Error::EnableService)?;
+        let output = command.output().await.map_err(Error::EnableService)?;
 
         if output.status.success() {
             return Ok(());
@@ -136,8 +146,9 @@ impl Default for Model {
     }
 }
 
+#[async_trait]
 impl ModelAdapter for Model {
-    fn write_config(&self, config: &Config) -> Result<(), Error> {
+    async fn write_config(&self, config: &Config) -> Result<(), Error> {
         let path = self.config_path();
 
         if let Some(parent) = path.parent() {
@@ -147,11 +158,28 @@ impl ModelAdapter for Model {
         let content = generate_chrony_config(&config.sources);
         fs::write(&path, content).map_err(Error::WriteConfig)?;
 
-        self.reload_chrony()?;
+        self.reload_chrony().await?;
         Ok(())
     }
 
-    fn install(&self, config: &Config) -> Result<(), Error> {
+    async fn sync(&self) -> Result<(), Error> {
+        tracing::info!("Synchronizing with NTP");
+
+        // Limit the attempts to avoid getting blocked.
+        let output = Command::new("chronyc")
+            .args(["waitsync", CHRONY_MAX_TRIES])
+            .output()
+            .await
+            .map_err(Error::Sync)?;
+
+        if output.status.success() {
+            return Ok(());
+        }
+
+        Err(Error::Sync(command_output_to_error(&output)))
+    }
+
+    async fn install(&self, config: &Config) -> Result<(), Error> {
         let path = self.install_config_path();
 
         if let Some(parent) = path.parent() {
@@ -162,7 +190,7 @@ impl ModelAdapter for Model {
         let content = generate_chrony_config(&config.sources);
         fs::write(path, content).map_err(Error::WriteConfig)?;
 
-        self.enable_service()?;
+        self.enable_service().await?;
         Ok(())
     }
 
@@ -170,7 +198,7 @@ impl ModelAdapter for Model {
         vec![Resolvable::new("chrony", ResolvableType::Package)]
     }
 
-    fn remove_config(&self) -> Result<(), Error> {
+    async fn remove_config(&self) -> Result<(), Error> {
         let path = self.config_path();
 
         if fs::exists(&path).map_err(Error::RemoveConfig)? {
@@ -219,14 +247,14 @@ mod tests {
     use std::fs::File;
 
     use agama_utils::api::ntp::SourceType;
-    use test_context::{test_context, TestContext};
+    use test_context::{test_context, AsyncTestContext};
 
     use super::*;
 
     struct Context;
 
-    impl TestContext for Context {
-        fn setup() -> Self {
+    impl AsyncTestContext for Context {
+        async fn setup() -> Self {
             let old_path = std::env::var("PATH").unwrap();
             let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
             std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
@@ -289,8 +317,8 @@ mod tests {
     }
 
     #[test_context(Context)]
-    #[test]
-    fn test_model_write_config(_ctx: &mut Context) {
+    #[tokio::test]
+    async fn test_model_write_config(_ctx: &mut Context) {
         let tempdir = tempfile::tempdir().unwrap();
         let model = Model::new().with_workdir(tempdir.path());
 
@@ -303,7 +331,7 @@ mod tests {
             }],
         };
 
-        model.write_config(&config).unwrap();
+        model.write_config(&config).await.unwrap();
 
         let written_path = tempdir
             .path()
@@ -317,7 +345,8 @@ mod tests {
     }
 
     #[test_context(Context)]
-    fn test_model_install(_ctx: &mut Context) {
+    #[tokio::test]
+    async fn test_model_install(_ctx: &mut Context) {
         let tempdir = tempfile::tempdir().unwrap();
         let model = Model::new().with_install_dir(tempdir.path());
 
@@ -330,7 +359,7 @@ mod tests {
             }],
         };
 
-        model.install(&config).unwrap();
+        model.install(&config).await.unwrap();
 
         let install_path = tempdir
             .path()
@@ -343,8 +372,8 @@ mod tests {
     }
 
     #[test_context(Context)]
-    #[test]
-    fn test_model_remove_config(_ctx: &mut Context) {
+    #[tokio::test]
+    async fn test_model_remove_config(_ctx: &mut Context) {
         let tempdir = tempfile::tempdir().unwrap();
         let model = Model::new().with_workdir(tempdir.path());
 
@@ -357,6 +386,7 @@ mod tests {
         assert!(written_path.exists());
         model
             .remove_config()
+            .await
             .expect("Failed to remove the chrony configuration");
         assert!(!written_path.exists());
     }
