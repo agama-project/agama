@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,6 +25,10 @@ import { screen, within } from "@testing-library/react";
 import { installerRender, mockNavigateFn } from "~/test-utils";
 import MenuButton, { CustomToggleProps, MenuButtonItem } from "~/components/core/MenuButton";
 import { _ } from "~/i18n";
+
+// NOTE: Keyboard navigation tests (arrow keys open menu) are not duplicated here because:
+//   - The behavior is comprehensively tested in use-select-keyboard.test.tsx
+//   - These tests focus on menu functionality and drilldown behavior
 
 it("toggles the menu state on click", async () => {
   const { user } = installerRender(

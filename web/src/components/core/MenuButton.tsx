@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import {
   MenuItemProps,
   MenuToggleProps,
 } from "@patternfly/react-core";
+import { useSelectKeyboard } from "~/hooks/use-select-keyboard";
 import { _, TranslatedString } from "~/i18n";
 import { useLocation, useNavigate } from "react-router";
 
@@ -127,6 +128,12 @@ export function MenuButtonItem({
   );
 }
 
+/**
+ * Dropdown menu button with support for drilldown menus and keyboard navigation.
+ *
+ * Uses {@link useSelectKeyboard} hook for arrow-key-to-open behavior: pressing ↓/↑
+ * on a closed toggle opens the menu and focuses the first/last item.
+ */
 export default function MenuButton({
   items = [],
   menuProps = {},
@@ -134,10 +141,14 @@ export default function MenuButton({
   customToggle,
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
-  const menuRef = useRef();
   const toggleRef = useRef();
   const rootId = useMenuId();
   const [isOpen, setIsOpen] = useState(false);
+  const { menuRef, onToggleKeydown } = useSelectKeyboard({
+    component: "menu",
+    isOpen,
+    setIsOpen,
+  });
   const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
   const [drilldownPath, setDrilldownPath] = React.useState<string[]>([]);
   const [activeMenu, setActiveMenu] = React.useState<string>(rootId);
@@ -198,7 +209,12 @@ export default function MenuButton({
     }
   };
 
-  const baseToggleProps = { ref: toggleRef, onClick: toggle, isExpanded: isOpen };
+  const baseToggleProps = {
+    ref: toggleRef,
+    onClick: toggle,
+    onKeyDown: onToggleKeydown,
+    isExpanded: isOpen,
+  };
 
   return (
     <MenuContainer
