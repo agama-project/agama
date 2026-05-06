@@ -877,7 +877,7 @@ export default {
     "Sembunyikan detail"
   ],
   "Hostname": [
-    "Nama host"
+    "Nama Host"
   ],
   "Hostname could not be updated": [
     "Nama host tidak dapat diperbarui"
@@ -1729,7 +1729,7 @@ export default {
     "Lewati ke sebelumnya"
   ],
   "Software": [
-    "Perangkat lunak"
+    "Perangkat Lunak"
   ],
   "Software %s": [
     "Perangkat Lunak %s"
