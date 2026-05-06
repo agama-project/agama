@@ -152,7 +152,9 @@ const BridgeSettings = withForm({
                             // field. Text inside square brackets [] is
                             // semantically and visually emphasized. Keep the
                             // brackets.
-                            _("Root bridge selection (0-61440). [Lower is higher priority].")
+                            _(
+                              "Root bridge selection (0-61440). [Lower is higher priority]. Default is 32768.",
+                            )
                           }
                         >
                           {(text) => <strong>{text}</strong>}
@@ -176,7 +178,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge forward delay field.
-                        _("Listening and learning time (4-30 seconds).")
+                        _("Listening and learning time (4-30 seconds). Default is 15 seconds.")
                       }
                       min={4}
                       max={30}
@@ -196,7 +198,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge hello time field.
-                        _("Protocol message interval (1-10 seconds).")
+                        _("Protocol message interval (1-10 seconds). Default is 2 seconds.")
                       }
                       min={1}
                       max={10}
@@ -216,7 +218,7 @@ const BridgeSettings = withForm({
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge max message age field.
-                        _("Protocol message retention time (6-40 seconds).")
+                        _("Protocol message retention time (6-40 seconds). Default is 20 seconds.")
                       }
                       min={6}
                       max={40}
