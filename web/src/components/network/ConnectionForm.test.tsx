@@ -522,6 +522,27 @@ describe("ConnectionForm", () => {
       expect(screen.getByRole("checkbox", { name: "Use custom DNS search domains" })).toBeChecked();
     });
 
+    it("infers STP as Enabled when stp is missing but other STP options are present", async () => {
+      mockUseSystem.mockReturnValue({
+        connections: [
+          buildConnection("br0", {
+            bridge: {
+              ports: ["enp1s0"],
+              priority: 32768,
+              // stp is missing
+            },
+          }),
+        ],
+      });
+      mockParams({ id: "br0" });
+
+      installerRender(<ConnectionForm />);
+
+      const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
+      expect(stpSelector).toHaveTextContent("Enabled");
+      expect(screen.getByLabelText(/Priority/)).toBeInTheDocument();
+    });
+
     it("submits the updated connection when accepting the form", async () => {
       mockUseSystem.mockReturnValue({
         connections: [buildConnection("eth0", { nameservers: ["8.8.8.8"] })],

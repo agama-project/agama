@@ -179,6 +179,29 @@ function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]):
 }
 
 /**
+ * Infers the bridge STP mode from the stored {@link Bridge} configuration.
+ *
+ * If `stp` is explicitly defined, that value is used.
+ * If `stp` is absent but other STP-related options are present, it's
+ * inferred as ENABLED. Otherwise, it defaults to DEFAULT (system default).
+ */
+function inferBridgeStp(bridge: Bridge | undefined): BridgeStpMode {
+  if (!bridge) return BridgeStpMode.DEFAULT;
+
+  if (bridge.stp !== undefined) {
+    return bridge.stp ? BridgeStpMode.ENABLED : BridgeStpMode.DISABLED;
+  }
+
+  const hasStpOptions =
+    bridge.priority !== undefined ||
+    bridge.forwardDelay !== undefined ||
+    bridge.helloTime !== undefined ||
+    bridge.maxAge !== undefined;
+
+  return hasStpOptions ? BridgeStpMode.ENABLED : BridgeStpMode.DEFAULT;
+}
+
+/**
  * Maps an existing {@link Connection} to initial form values for editing.
  */
 function connectionToFormValues(connection: Connection): Partial<FormValues> {
@@ -219,12 +242,7 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
     bondPorts: connection.bond?.ports ?? [],
     bridgeIface: connection.iface,
-    // When bridge config is absent, the system treats STP as enabled by default,
-    // but Agama allows keeping it 'unset' (DEFAULT) to use these system defaults.
-    bridgeStp: (() => {
-      if (connection.bridge?.stp === undefined) return BridgeStpMode.DEFAULT;
-      return connection.bridge.stp ? BridgeStpMode.ENABLED : BridgeStpMode.DISABLED;
-    })(),
+    bridgeStp: inferBridgeStp(connection.bridge),
     bridgePriority: connection.bridge?.priority,
     bridgeForwardDelay: connection.bridge?.forwardDelay,
     bridgeHelloTime: connection.bridge?.helloTime,

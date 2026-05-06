@@ -316,7 +316,7 @@ type Bridge = {
   maxAge?: number;
   ports: string[];
   helloTime?: number;
-  stp: boolean;
+  stp?: boolean;
 };
 
 type ConnectionOptions = {
