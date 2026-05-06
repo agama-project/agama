@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed May  6 08:54:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- HTTP API:
+  - remove v2 part of path
+  - add new X-API-Version response header with value 2
+  - move /profile path to /private/profile
+  (gh#agama-project/agama#3461)
+
+-------------------------------------------------------------------
 Mon May  4 10:46:08 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - fix zypp tests to work with new rpm with more tight permissions
