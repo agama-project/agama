@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Select, MenuToggle, MenuToggleElement, SelectProps } from "@patternfly/react-core";
+import { useSelectKeyboard } from "~/hooks/use-select-keyboard";
 import { TranslatedString } from "~/i18n";
 
 export type SelectWrapperProps = {
@@ -39,6 +40,9 @@ export type SelectWrapperProps = {
  *
  * Abstracts the toggle setup by building it internally based on the received props.
  *
+ * Uses {@link useSelectKeyboard} hook for W3C-compliant keyboard navigation:
+ * arrow keys open the menu and focus first/last item when closed.
+ *
  * @see https://www.patternfly.org/components/menus/select/
  */
 export default function SelectWrapper({
@@ -50,11 +54,7 @@ export default function SelectWrapper({
   children,
   toggleName,
 }: SelectWrapperProps): React.ReactElement {
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const onToggleClick = () => {
-    setIsOpen(!isOpen);
-  };
+  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard();
 
   const onSelect = (
     _: React.MouseEvent<Element, MouseEvent> | undefined,
@@ -69,7 +69,7 @@ export default function SelectWrapper({
       <MenuToggle
         id={id}
         ref={toggleRef}
-        onClick={onToggleClick}
+        onClick={() => setIsOpen(!isOpen)}
         isExpanded={isOpen}
         isDisabled={isDisabled}
         {...(toggleName && { "aria-label": toggleName })}
@@ -81,10 +81,12 @@ export default function SelectWrapper({
 
   return (
     <Select
+      ref={menuRef}
       isOpen={isOpen}
       selected={value}
       onSelect={onSelect}
-      onOpenChange={(isOpen) => setIsOpen(isOpen)}
+      onOpenChange={setIsOpen}
+      onToggleKeydown={onToggleKeydown}
       toggle={toggle}
       shouldFocusToggleOnSelect
     >
