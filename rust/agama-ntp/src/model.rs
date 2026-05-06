@@ -32,6 +32,8 @@ pub enum Error {
     Reload(#[source] io::Error),
     #[error("Failed to enable the chronyd service")]
     EnableService(#[source] io::Error),
+    #[error("Failed to clean-up the chronyd configuration")]
+    RemoveConfig(#[source] io::Error),
 }
 
 const CHRONY_CONFIG_DIR: &str = "etc/chrony.d";
@@ -40,9 +42,25 @@ const DEFAULT_WORKDIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
 pub trait ModelAdapter: Send + 'static {
+    /// Apply the configuration to the current system.
+    ///
+    /// - `config`: configuration to apply.
     fn write_config(&self, config: &Config) -> Result<(), Error>;
+
+    /// Write the configuration to the target system.
+    ///
+    /// - `config`: configuration to apply.
     fn install(&self, config: &Config) -> Result<(), Error>;
-    fn resolvables(&self) -> Vec<Resolvable>;
+
+    /// Return the list of required resolvables.
+    fn resolvables(&self) -> Vec<Resolvable> {
+        vec![]
+    }
+
+    /// Remove the configuration from the current system.
+    fn remove_config(&self) -> Result<(), Error> {
+        Ok(())
+    }
 }
 
 pub struct Model {
@@ -81,6 +99,8 @@ impl Model {
     }
 
     fn reload_chrony(&self) -> Result<(), Error> {
+        tracing::info!("Reloading chronyc sources");
+
         let output = Command::new("chronyc")
             .args(["reload", "sources"])
             .output()
@@ -94,6 +114,8 @@ impl Model {
     }
 
     fn enable_service(&self) -> Result<(), Error> {
+        tracing::info!("Enabling chronyd service on target system");
+
         let mut command = process::Command::new("chroot");
         let command = command
             .arg(&self.install_dir)
@@ -147,6 +169,16 @@ impl ModelAdapter for Model {
     fn resolvables(&self) -> Vec<Resolvable> {
         vec![Resolvable::new("chrony", ResolvableType::Package)]
     }
+
+    fn remove_config(&self) -> Result<(), Error> {
+        let path = self.config_path();
+
+        if fs::exists(&path).map_err(Error::RemoveConfig)? {
+            fs::remove_file(&path).map_err(Error::RemoveConfig)?;
+        }
+
+        Ok(())
+    }
 }
 
 fn generate_chrony_config(sources: &[Source]) -> String {
@@ -184,6 +216,8 @@ fn command_output_to_error(output: &Output) -> io::Error {
 
 #[cfg(test)]
 mod tests {
+    use std::fs::File;
+
     use agama_utils::api::ntp::SourceType;
     use test_context::{test_context, TestContext};
 
@@ -306,5 +340,24 @@ mod tests {
 
         let content = std::fs::read_to_string(&install_path).unwrap();
         assert!(content.contains("server ntp.server.com offline"));
+    }
+
+    #[test_context(Context)]
+    #[test]
+    fn test_model_remove_config(_ctx: &mut Context) {
+        let tempdir = tempfile::tempdir().unwrap();
+        let model = Model::new().with_workdir(tempdir.path());
+
+        let config_dir = tempdir.path().join(CHRONY_CONFIG_DIR);
+        let written_path = config_dir.join(CHRONY_CONFIG_FILE);
+        std::fs::create_dir_all(&config_dir)
+            .expect("Failed to create the directory for chrony configuration");
+        File::create(&written_path).unwrap();
+
+        assert!(written_path.exists());
+        model
+            .remove_config()
+            .expect("Failed to remove the chrony configuration");
+        assert!(!written_path.exists());
     }
 }

@@ -21,7 +21,7 @@
 use crate::{message, model};
 use std::path::Path;
 
-use agama_software::{self as software};
+use agama_software::{self as software, Resolvable};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{self, event},
@@ -34,6 +34,8 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Model(#[from] model::Error),
+    #[error(transparent)]
+    Software(#[from] software::service::Error),
 }
 
 pub struct Starter {
@@ -84,6 +86,20 @@ impl Service {
     pub fn starter(events: event::Sender, software: Handler<software::Service>) -> Starter {
         Starter::new(events, software)
     }
+
+    async fn set_resolvables(&mut self, resolvables: Vec<Resolvable>) {
+        let result = self
+            .software
+            .call(agama_software::message::SetResolvables::new(
+                "agama-ntp".to_string(),
+                resolvables,
+            ))
+            .await;
+
+        if let Err(e) = result {
+            tracing::error!("Failed to set resolvables for agama-ntp: {e}");
+        }
+    }
 }
 
 impl Actor for Service {
@@ -105,19 +121,17 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<api::ntp::Config>) -> Result<(), Error> {
         if let Some(config) = &message.config {
             if let Err(e) = self.model.write_config(config) {
-                tracing::error!("Failed to write NTP configuration: {}", e);
+                tracing::error!("Failed to write NTP configuration: {e}");
             }
-
-            self.software
-                .call(agama_software::message::SetResolvables::new(
-                    "agama-ntp".to_string(),
-                    self.model.resolvables(),
-                ))
-                .await
-                .unwrap();
-
-            self.config = Some(config.clone());
+            self.set_resolvables(self.model.resolvables()).await;
+        } else {
+            if let Err(e) = self.model.remove_config() {
+                tracing::error!("Failed to remove the NTP configuration: {e}");
+            }
+            self.set_resolvables(vec![]).await;
         }
+
+        self.config = message.config;
         Ok(())
     }
 }
