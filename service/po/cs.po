@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-14 10:21+0000\n"
+"POT-Creation-Date: 2026-04-20 09:45+0000\n"
 "PO-Revision-Date: 2026-03-12 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -87,42 +87,6 @@ msgstr "Sonduji úložná zařízení"
 #: service/lib/agama/dbus/storage/manager.rb:243
 msgid "Applying storage configuration"
 msgstr "Aplikuji konfiguraci úložiště"
-
-#. TRANSLATORS: SSL certificate details
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Certificate:"
-msgstr "Certifikát:"
-
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Issued To"
-msgstr "Vydán komu"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "Issued By"
-msgstr "Vydán kým"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "SHA1 Fingerprint: "
-msgstr "SHA1 otisk: "
-
-#: service/lib/agama/ssl/certificate_details.rb:34
-msgid "SHA256 Fingerprint: "
-msgstr "SHA256 otisk: "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:46
-msgid "Common Name (CN): "
-msgstr "Běžný název (CN): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:48
-msgid "Organization (O): "
-msgstr "Organizace (O): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:50
-msgid "Organization Unit (OU): "
-msgstr "Organizační jednotka (OU): "
 
 #. Issue when the device has several users.
 #.
@@ -585,6 +549,30 @@ msgstr "Neznámý řadič zFCP %s"
 #, c-format
 msgid "Unknown zFCP LUN %s"
 msgstr "Neznámé zFCP LUN %s"
+
+#~ msgid "Certificate:"
+#~ msgstr "Certifikát:"
+
+#~ msgid "Issued To"
+#~ msgstr "Vydán komu"
+
+#~ msgid "Issued By"
+#~ msgstr "Vydán kým"
+
+#~ msgid "SHA1 Fingerprint: "
+#~ msgstr "SHA1 otisk: "
+
+#~ msgid "SHA256 Fingerprint: "
+#~ msgstr "SHA256 otisk: "
+
+#~ msgid "Common Name (CN): "
+#~ msgstr "Běžný název (CN): "
+
+#~ msgid "Organization (O): "
+#~ msgstr "Organizace (O): "
+
+#~ msgid "Organization Unit (OU): "
+#~ msgstr "Organizační jednotka (OU): "
 
 #, perl-brace-format
 #~ msgid ""

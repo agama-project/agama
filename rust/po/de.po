@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-17 16:58+0000\n"
+"POT-Creation-Date: 2026-04-30 13:33+0000\n"
 "PO-Revision-Date: 2026-04-19 16:04+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -39,7 +39,7 @@ msgstr "Softwareangebot wird berechnet:"
 msgid "Installing the system:"
 msgstr "System wird installiert:"
 
-#: agama-cli/src/progress.rs:217
+#: agama-cli/src/progress.rs:217 agama-cli/src/status.rs:77
 msgid "Installation is ready to start."
 msgstr "Installation ist startbereit."
 
@@ -124,6 +124,51 @@ msgstr "Benutzer"
 #: agama-cli/src/progress.rs:342
 msgid "Current step"
 msgstr "Aktueller Schritt"
+
+#: agama-cli/src/status.rs:75
+#, fuzzy
+msgid "Installation failed."
+msgstr "Installation fehlgeschlagen"
+
+#: agama-cli/src/status.rs:76
+#, fuzzy
+msgid "Installation finished successfully."
+msgstr "Installation erfolgreich abgeschlossen"
+
+#: agama-cli/src/status.rs:78
+#, fuzzy
+msgid "Installation is in progress."
+msgstr "Installation ist startbereit."
+
+#: agama-cli/src/status.rs:79
+#, fuzzy
+msgid "Installation is being proposed."
+msgstr "Installation ist startbereit."
+
+#: agama-cli/src/status.rs:80
+msgid ""
+"There are unanswered questions. Please use `agama questions` command or web "
+"interface to answer them."
+msgstr ""
+
+#: agama-cli/src/status.rs:81
+msgid ""
+"The installer failed to calculate the installation proposal. There are "
+"issues blocking the installation."
+msgstr ""
+
+#: agama-cli/src/status.rs:111
+#, fuzzy
+msgid "Details:"
+msgstr "Details"
+
+#: agama-cli/src/status.rs:113
+msgid "Open questions:"
+msgstr ""
+
+#: agama-cli/src/status.rs:119
+msgid "Blocking issues:"
+msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:198
@@ -220,7 +265,7 @@ msgid "Reject"
 msgstr "Ablehnen"
 
 #: agama-security/src/service.rs:226
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr "Vertrauen"
 
@@ -252,7 +297,7 @@ msgid "Continue"
 msgstr "Fortsetzen"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
-#: agama-software/src/callbacks/security.rs:102
+#: agama-software/src/callbacks/security.rs:104
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -260,76 +305,76 @@ msgstr ""
 "Der Schlüssel {0} ({1}) mit dem Fingerabdruck {2} ist unbekannt. Möchten Sie "
 "diesem Schlüssel vertrauen?"
 
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
 msgstr "Überspringen"
 
-#: agama-software/src/model/packages.rs:54
+#: agama-software/src/model/packages.rs:55
 msgid "package"
 msgstr "Paket"
 
-#: agama-software/src/model/packages.rs:55
+#: agama-software/src/model/packages.rs:56
 msgid "pattern"
 msgstr "Muster"
 
-#: agama-software/src/model/packages.rs:56
+#: agama-software/src/model/packages.rs:57
 msgid "product"
 msgstr "Produkt"
 
-#: agama-software/src/service.rs:279
+#: agama-software/src/service.rs:287
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 "Aufgrund eines internen Fehlers konnte kein Softwareangebot erstellt werden."
 
-#: agama-software/src/zypp_server.rs:332
+#: agama-software/src/zypp_server.rs:336
 msgid "Updating the list of repositories"
 msgstr "Liste der Repositorien wird aktualisiert"
 
-#: agama-software/src/zypp_server.rs:333
+#: agama-software/src/zypp_server.rs:337
 msgid "Refreshing metadata from the repositories"
 msgstr "Metadaten aus den Repositorien wird aktualisiert"
 
-#: agama-software/src/zypp_server.rs:334
+#: agama-software/src/zypp_server.rs:338
 msgid "Calculating the software proposal"
 msgstr "Softwareangebot wird berechnet"
 
-#: agama-software/src/zypp_server.rs:337
+#: agama-software/src/zypp_server.rs:341
 msgid "Registering the system"
 msgstr "System wird registriert"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:401
+#: agama-software/src/zypp_server.rs:411
 msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:421
+#: agama-software/src/zypp_server.rs:431
 #, fuzzy
 msgid "Could not read the repositories"
 msgstr "Metadaten aus den Repositorien wird aktualisiert"
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:464
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:459
+#: agama-software/src/zypp_server.rs:469
 #, fuzzy
 msgid "Failed to find the product in the repositories."
 msgstr "Liste der Repositorien wird aktualisiert"
 
-#: agama-software/src/zypp_server.rs:517
+#: agama-software/src/zypp_server.rs:532
 msgid "There are conflicts in the software selection"
 msgstr "Es gibt Konflikte bei der Softwareauswahl"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:546
+#: agama-software/src/zypp_server.rs:561
 msgid "Could not select %s '%s' for installation"
 msgstr "%s ‚%s‘ konnte nicht für die Installation ausgewählt werden"
 
-#: agama-software/src/zypp_server.rs:951
+#: agama-software/src/zypp_server.rs:977
 msgid "Failed to register the system"
 msgstr "Das System konnte nicht registriert werden"
 
