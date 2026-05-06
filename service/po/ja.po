@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 10:37+0000\n"
-"PO-Revision-Date: 2026-01-20 00:04+0000\n"
+"POT-Creation-Date: 2026-04-23 16:12+0000\n"
+"PO-Revision-Date: 2026-05-01 10:04+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 5.17.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -761,7 +761,7 @@ msgstr "ブートローダの sysconfig を書き込んでいます"
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:345
 msgid "Cannot calculate a valid storage setup with the current configuration"
-msgstr "現在の設定では適切なストレージ設定を算出できません"
+msgstr "現在の設定では適切なストレージ設定を作成できません"
 
 #. Issue to communicate a generic Y2Storage error.
 #.

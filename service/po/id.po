@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 10:37+0000\n"
-"PO-Revision-Date: 2026-01-22 04:04+0000\n"
+"POT-Creation-Date: 2026-04-23 16:12+0000\n"
+"PO-Revision-Date: 2026-04-20 10:04+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/id/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 5.17\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -574,7 +574,7 @@ msgstr "Perangkat wajib %s tidak ditemukan"
 #: service/lib/agama/storage/config_checkers/search.rb:77
 #, c-format
 msgid "Mandatory %s not found"
-msgstr "Wajib %s tidak ditemukan"
+msgstr "%s yang wajib tidak ditemukan"
 
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:85
