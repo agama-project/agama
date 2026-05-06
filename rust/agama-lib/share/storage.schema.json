@@ -851,7 +851,7 @@
         { "$ref": "#/$defs/encryptionLuks1" },
         { "$ref": "#/$defs/encryptionLuks2" },
         { "$ref": "#/$defs/encryptionPervasiveLuks2" },
-        { "$ref": "#/$defs/encryptionTPM" },
+        { "$ref": "#/$defs/encryptionTpmFde" },
         { "$ref": "#/$defs/encryptionSwap" }
       ]
     },
@@ -893,8 +893,9 @@
               "type": "string"
             },
             "tpm": {
-              "description": "Whether to use TPM unlocking.",
-              "type": "boolean"
+              "description": "Whether to use TPM2 unlocking.",
+              "type": "boolean",
+              "default": false
             }
           }
         }
@@ -916,7 +917,8 @@
         }
       }
     },
-    "encryptionTPM": {
+    "encryptionTpmFde": {
+      "deprecated": true,
       "description": "TPM-Based Full Disk Encryption.",
       "type": "object",
       "additionalProperties": false,
