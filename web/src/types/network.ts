@@ -311,11 +311,11 @@ type Bond = {
 };
 
 type Bridge = {
-  forwardDelay: number;
-  priority: number;
-  maxAge: number;
+  forwardDelay?: number;
+  priority?: number;
+  maxAge?: number;
   ports: string[];
-  helloTime: number;
+  helloTime?: number;
   stp: boolean;
 };
 
@@ -598,6 +598,8 @@ export {
 export type {
   APIAccessPoint,
   APIConnection,
+  Bond,
+  Bridge,
   ConnectionBindingMode,
   ConnectionOptions,
   APIDevice,

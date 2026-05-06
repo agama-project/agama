@@ -245,7 +245,7 @@ describe("ConnectionDetails", () => {
         bridge: {
           stp: false,
           ports: [],
-        } as unknown as Connection["bridge"],
+        },
       });
       installerRender(<ConnectionDetails connection={connection} />);
       const section = screen.getByRole("region", { name: "Bridge" });

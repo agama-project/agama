@@ -173,27 +173,21 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
           <>
             <DescriptionListGroup>
               <DescriptionListTerm>{_("Priority")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                {connection.bridge?.priority ?? _("None set")}
-              </DescriptionListDescription>
+              <DescriptionListDescription>{connection.bridge.priority}</DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>{_("Forward delay")}</DescriptionListTerm>
               <DescriptionListDescription>
-                {connection.bridge?.forwardDelay ?? _("None set")}
+                {connection.bridge.forwardDelay}
               </DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>{_("Hello time")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                {connection.bridge?.helloTime ?? _("None set")}
-              </DescriptionListDescription>
+              <DescriptionListDescription>{connection.bridge.helloTime}</DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>{_("Max message age")}</DescriptionListTerm>
-              <DescriptionListDescription>
-                {connection.bridge?.maxAge ?? _("None set")}
-              </DescriptionListDescription>
+              <DescriptionListDescription>{connection.bridge.maxAge}</DescriptionListDescription>
             </DescriptionListGroup>
           </>
         )}
@@ -201,7 +195,7 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
           <DescriptionListTerm>{_("Bridge ports")}</DescriptionListTerm>
           <DescriptionListDescription>
             <Flex direction={{ default: "column" }}>
-              {isEmpty(connection.bridge?.ports)
+              {isEmpty(connection.bridge.ports)
                 ? _("None set")
                 : connection.bridge?.ports.map((port, idx) => (
                     <FlexItem key={idx}>{port}</FlexItem>
