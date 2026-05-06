@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -43,11 +43,16 @@ shared_context "config" do
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
+      .new(config_json,
+        bootloader_config: bootloader_config,
+        default_paths:     default_paths,
+        mandatory_paths:   mandatory_paths)
       .convert
   end
 
   let(:config_json) { nil }
+
+  let(:bootloader_config) { nil }
 
   before do
     mock_storage(devicegraph: scenario)

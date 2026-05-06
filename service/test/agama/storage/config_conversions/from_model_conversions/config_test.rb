@@ -539,7 +539,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
           }
         end
 
-        it "sets #encryption with SYSTEMD_FDE method to the newly formatted partitions" do
+        it "sets #encryption with TPM_BLS method to the newly formatted partitions" do
           config = subject.convert
           partitions = config.partitions
           new_partitions = partitions.reject(&:search)
@@ -549,17 +549,17 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
 
           expect(new_non_boot_partitions.map do |p|
                    p.encryption.method.id
-                 end).to all(eq(:systemd_fde))
+                 end).to all(eq(:tpm_bls))
           expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
         end
 
-        it "sets #encryption with SYSTEMD_FDE method for the automatically created physical " \
+        it "sets #encryption with TPM_BLS method for the automatically created physical " \
            "volumes" do
           config = subject.convert
           volume_group = config.volume_groups.first
           target_encryption = volume_group.physical_volumes_encryption
 
-          expect(target_encryption.method.id).to eq(:systemd_fde)
+          expect(target_encryption.method.id).to eq(:tpm_bls)
           expect(target_encryption.password).to eq("12345")
         end
       end
@@ -578,7 +578,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
           }
         end
 
-        it "sets #encryption with SYSTEMD_FDE method to the newly formatted partitions" do
+        it "sets #encryption with TPM_BLS method to the newly formatted partitions" do
           config = subject.convert
           partitions = config.partitions
           new_partitions = partitions.reject(&:search)
@@ -588,17 +588,17 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
 
           expect(new_non_boot_partitions.map do |p|
                    p.encryption.method.id
-                 end).to all(eq(:systemd_fde))
+                 end).to all(eq(:tpm_bls))
           expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
         end
 
-        it "sets #encryption with SYSTEMD_FDE method for the automatically created physical " \
+        it "sets #encryption with TPM_BLS method for the automatically created physical " \
            "volumes" do
           config = subject.convert
           volume_group = config.volume_groups.first
           target_encryption = volume_group.physical_volumes_encryption
 
-          expect(target_encryption.method.id).to eq(:systemd_fde)
+          expect(target_encryption.method.id).to eq(:tpm_bls)
           expect(target_encryption.password).to eq("12345")
         end
       end

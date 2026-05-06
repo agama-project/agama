@@ -21,6 +21,7 @@
 
 require_relative "../../storage_helpers"
 require_relative "./examples"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/logical_volume"
 require "agama/storage/config_conversions/to_model_conversions/logical_volume"
 require "agama/storage/volume_templates_builder"
@@ -33,9 +34,11 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::LogicalVolume do
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSONConversions::LogicalVolume
-      .new(config_json)
+      .new(config_json, bootloader_config)
       .convert
   end
+
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
 
   let(:config_json) do
     {

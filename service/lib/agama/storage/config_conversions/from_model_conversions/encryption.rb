@@ -60,13 +60,13 @@ module Agama
             tpm = model_json[:tpm] || false
             bootloader_type = bootloader_config.type
 
-            return Y2Storage::EncryptionMethod::TPM_FDE if tpm && bootloader_type&.is?("grub2")
-
-            if tpm && bootloader_type&.is?("grub2-bls", "systemd-boot")
-              return Y2Storage::EncryptionMethod::SYSTEMD_FDE
+            if tpm && bootloader_type&.bls?
+              Y2Storage::EncryptionMethod::TPM_BLS
+            elsif tpm
+              Y2Storage::EncryptionMethod::TPM_FDE
+            else
+              Y2Storage::EncryptionMethod::LUKS2
             end
-
-            Y2Storage::EncryptionMethod::LUKS2
           end
         end
       end
