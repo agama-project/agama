@@ -32,6 +32,7 @@ describe Agama::Storage::BootloaderProber do
     allow(Y2Storage::StorageManager).to receive(:instance).and_return(storage_manager)
     allow(storage_manager).to receive(:arch).and_return(storage_arch)
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(false)
+    allow(Y2Storage::EncryptionMethod::TPM_BLS).to receive(:possible?).and_return(false)
     allow(Yast::Arch).to receive(:has_tpm2).and_return(false)
   end
 
@@ -97,6 +98,7 @@ describe Agama::Storage::BootloaderProber do
         context "with TPM2 support" do
           before do
             allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
+            allow(Y2Storage::EncryptionMethod::TPM_BLS).to receive(:possible?).and_return(true)
             allow(Yast::Arch).to receive(:has_tpm2).and_return(true)
           end
 
@@ -118,6 +120,7 @@ describe Agama::Storage::BootloaderProber do
         context "without TPM2 support" do
           before do
             allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(false)
+            allow(Y2Storage::EncryptionMethod::TPM_BLS).to receive(:possible?).and_return(false)
             allow(Yast::Arch).to receive(:has_tpm2).and_return(false)
           end
 
