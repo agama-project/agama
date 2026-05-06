@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useMemo, useRef, useState } from "react";
+import React, { useId, useMemo, useRef } from "react";
 import {
   MenuToggle,
   DrilldownMenu,
@@ -143,11 +143,8 @@ export default function MenuButton({
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
   const toggleRef = useRef();
   const rootId = useMenuId();
-  const [isOpen, setIsOpen] = useState(false);
-  const { menuRef, onToggleKeydown } = useSelectKeyboard({
+  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useSelectKeyboard({
     component: "menu",
-    isOpen,
-    setIsOpen,
   });
   const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
   const [drilldownPath, setDrilldownPath] = React.useState<string[]>([]);
