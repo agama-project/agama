@@ -143,4 +143,55 @@ describe("useSelectKeyboard", () => {
     // Original selection should remain
     screen.getByRole("button", { name: "option1" });
   });
+
+  describe("with external state management", () => {
+    // Test component that manages its own state and passes it to the hook
+    function TestSelectWithExternalState() {
+      const [isOpen, setIsOpen] = useState(false);
+      const { menuRef, onToggleKeydown } = useSelectKeyboard({ isOpen, setIsOpen });
+      const [selected, setSelected] = useState("option1");
+
+      return (
+        <Select
+          ref={menuRef}
+          isOpen={isOpen}
+          selected={selected}
+          onSelect={(_, value) => {
+            if (typeof value === "string") setSelected(value);
+            setIsOpen(false);
+          }}
+          onOpenChange={setIsOpen}
+          onToggleKeydown={onToggleKeydown}
+          shouldFocusToggleOnSelect
+          toggle={(ref: React.Ref<MenuToggleElement>) => (
+            <MenuToggle ref={ref} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
+              {selected}
+            </MenuToggle>
+          )}
+        >
+          <SelectList>
+            <SelectOption value="option1">Option 1</SelectOption>
+            <SelectOption value="option2">Option 2</SelectOption>
+          </SelectList>
+        </Select>
+      );
+    }
+
+    it("works with external isOpen state", async () => {
+      const { user } = installerRender(<TestSelectWithExternalState />);
+
+      const toggle = screen.getByRole("button", { name: "option1" });
+      toggle.focus();
+
+      await user.keyboard("{ArrowDown}");
+
+      // Menu should be open
+      expect(toggle).toHaveAttribute("aria-expanded", "true");
+      screen.getByRole("listbox");
+
+      // First option should be focused
+      const firstOption = screen.getByRole("option", { name: "Option 1" });
+      expect(firstOption).toHaveFocus();
+    });
+  });
 });
