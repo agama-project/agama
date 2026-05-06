@@ -33,7 +33,7 @@ export type SelectWrapperProps = {
   isDisabled?: boolean;
   // Accessible name for the toggle
   toggleName?: TranslatedString;
-} & Omit<SelectProps, "toggle" | "onChange">;
+} & Omit<SelectProps, "toggle" | "onChange" | "onToggleKeydown">;
 
 /**
  * Wrapper to simplify the usage of PF/Menu/Select
