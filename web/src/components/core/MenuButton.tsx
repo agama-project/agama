@@ -72,6 +72,8 @@ export type MenuButtonProps = {
   };
   customToggle?: React.ReactElement<CustomToggleProps>;
   toggleProps?: MenuToggleProps;
+  /** Disable opening menu with arrow keys when closed */
+  disableArrowKeyOpen?: boolean;
 };
 
 export function MenuButtonItem({
@@ -139,6 +141,7 @@ export default function MenuButton({
   menuProps = {},
   toggleProps = {},
   customToggle,
+  disableArrowKeyOpen = false,
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
   const toggleRef = useRef();
@@ -209,7 +212,7 @@ export default function MenuButton({
   const baseToggleProps = {
     ref: toggleRef,
     onClick: toggle,
-    onKeyDown: onToggleKeydown,
+    onKeyDown: disableArrowKeyOpen ? undefined : onToggleKeydown,
     isExpanded: isOpen,
   };
 

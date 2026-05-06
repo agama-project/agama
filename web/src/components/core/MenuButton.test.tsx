@@ -305,3 +305,19 @@ it("allows receiving a fully custom toggle", async () => {
   await user.click(item1);
   expect(item1).toHaveAttribute("aria-current", "true");
 });
+
+it("allows disabling arrow key opening", async () => {
+  const { user } = installerRender(
+    <MenuButton menuProps={{ "aria-label": _("test menu") }} disableArrowKeyOpen>
+      {"test"}
+    </MenuButton>,
+  );
+
+  const button = screen.getByRole("button", { name: "test" });
+  await user.tab();
+  expect(button).toHaveFocus();
+  await user.keyboard("[ArrowDown]");
+  expect(button).toHaveAttribute("aria-expanded", "false");
+  const menu = screen.queryByRole("menu", { name: "test menu" });
+  expect(menu).not.toBeInTheDocument();
+});
