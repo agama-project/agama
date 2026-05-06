@@ -111,18 +111,18 @@ describe("BridgeSettings", () => {
     const stpCheckbox = await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
     await user.click(stpCheckbox);
 
-    expect(await screen.findByLabelText("Priority")).toBeInTheDocument();
-    expect(await screen.findByLabelText("Forward delay")).toBeInTheDocument();
-    expect(await screen.findByLabelText("Hello time")).toBeInTheDocument();
-    expect(await screen.findByLabelText("Max message age")).toBeInTheDocument();
+    expect(await screen.findByLabelText(/Priority/)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/Forward delay/)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/Hello time/)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/Max message age/)).toBeInTheDocument();
   });
 
   it("hides STP options when STP is disabled", async () => {
     installerRender(<TestForm />);
 
-    expect(screen.queryByLabelText("Priority")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Forward delay")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Hello time")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Max message age")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Forward delay/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Hello time/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Max message age/)).not.toBeInTheDocument();
   });
 });

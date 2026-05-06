@@ -149,15 +149,15 @@ describe("ConnectionForm", () => {
       expect(stpCheckbox).not.toBeChecked();
 
       // STP fields should not be visible by default
-      expect(screen.queryByLabelText("Priority")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
 
       // Enable STP to see the fields
       await user.click(stpCheckbox);
 
-      screen.getByLabelText("Priority");
-      screen.getByLabelText("Forward delay");
-      screen.getByLabelText("Hello time");
-      screen.getByLabelText("Max message age");
+      screen.getByLabelText(/Priority/);
+      screen.getByLabelText(/Forward delay/);
+      screen.getByLabelText(/Hello time/);
+      screen.getByLabelText(/Max message age/);
       screen.getByText("Bridge ports");
     });
 
@@ -195,20 +195,20 @@ describe("ConnectionForm", () => {
       const stpCheckbox = screen.getByLabelText("Enable Spanning Tree Protocol (STP)");
       await user.click(stpCheckbox);
 
-      const priorityInput = screen.getByLabelText("Priority");
+      const priorityInput = screen.getByLabelText(/Priority/);
       await user.clear(priorityInput);
       await user.type(priorityInput, "16384");
 
-      const delayInput = screen.getByLabelText("Forward delay");
+      const delayInput = screen.getByLabelText(/Forward delay/);
       await user.clear(delayInput);
       await user.type(delayInput, "10");
 
       // Now disable it and verify that STP-related fields are hidden
       await user.click(stpCheckbox);
-      expect(screen.queryByLabelText("Priority")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("Forward delay")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("Hello time")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("Max message age")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Forward delay/)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Hello time/)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Max message age/)).not.toBeInTheDocument();
 
       // Add a port
       await user.type(screen.getByLabelText("Bridge ports"), "enp1s0");
@@ -824,19 +824,19 @@ describe("ConnectionForm", () => {
         // Enable STP to see the fields
         await user.click(screen.getByLabelText("Enable Spanning Tree Protocol (STP)"));
 
-        const priorityInput = screen.getByLabelText("Priority");
+        const priorityInput = screen.getByLabelText(/Priority/);
         await user.clear(priorityInput);
         await user.type(priorityInput, "70000");
 
-        const delayInput = screen.getByLabelText("Forward delay");
+        const delayInput = screen.getByLabelText(/Forward delay/);
         await user.clear(delayInput);
         await user.type(delayInput, "2");
 
-        const helloInput = screen.getByLabelText("Hello time");
+        const helloInput = screen.getByLabelText(/Hello time/);
         await user.clear(helloInput);
         await user.type(helloInput, "11");
 
-        const maxAgeInput = screen.getByLabelText("Max message age");
+        const maxAgeInput = screen.getByLabelText(/Max message age/);
         await user.clear(maxAgeInput);
         await user.type(maxAgeInput, "5");
 
@@ -847,6 +847,41 @@ describe("ConnectionForm", () => {
         await screen.findByText("Hello time must be between 1 and 10 seconds");
         await screen.findByText("Max message age must be between 6 and 40 seconds");
         expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("allows empty STP settings when STP is enabled", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+        await user.type(await screen.findByLabelText("Device name"), "br0");
+        await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
+
+        // Enable STP
+        await user.click(screen.getByLabelText("Enable Spanning Tree Protocol (STP)"));
+
+        // Clear all STP fields
+        await user.clear(screen.getByLabelText(/Priority/));
+        await user.clear(screen.getByLabelText(/Forward delay/));
+        await user.clear(screen.getByLabelText(/Hello time/));
+        await user.clear(screen.getByLabelText(/Max message age/));
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await waitFor(() => {
+          expect(mockMutateAsync).toHaveBeenCalledWith(
+            expect.objectContaining({
+              bridge: expect.objectContaining({
+                stp: true,
+                priority: undefined,
+                forwardDelay: undefined,
+                helloTime: undefined,
+                maxAge: undefined,
+              }),
+            }),
+          );
+        });
       });
     });
   });

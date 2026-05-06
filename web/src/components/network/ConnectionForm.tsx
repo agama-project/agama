@@ -132,10 +132,10 @@ export const connectionFormOptions = formOptions({
     bondPorts: [] as string[],
     bridgeIface: "",
     bridgeStp: false,
-    bridgePriority: 32768,
-    bridgeForwardDelay: 15,
-    bridgeHelloTime: 2,
-    bridgeMaxAge: 20,
+    bridgePriority: undefined,
+    bridgeForwardDelay: undefined,
+    bridgeHelloTime: undefined,
+    bridgeMaxAge: undefined,
     bridgePorts: [] as string[],
   },
 });
@@ -209,10 +209,10 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     bondPorts: connection.bond?.ports ?? [],
     bridgeIface: connection.iface,
     bridgeStp: connection.bridge?.stp ?? false,
-    bridgePriority: connection.bridge?.priority ?? 32768,
-    bridgeForwardDelay: connection.bridge?.forwardDelay ?? 15,
-    bridgeHelloTime: connection.bridge?.helloTime ?? 2,
-    bridgeMaxAge: connection.bridge?.maxAge ?? 20,
+    bridgePriority: connection.bridge?.priority,
+    bridgeForwardDelay: connection.bridge?.forwardDelay,
+    bridgeHelloTime: connection.bridge?.helloTime,
+    bridgeMaxAge: connection.bridge?.maxAge,
     bridgePorts: connection.bridge?.ports ?? [],
   };
 }
@@ -237,8 +237,6 @@ function buildConnection(formValues: FormValues): Connection {
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;
   }
-  const stp = formValues.type === CONNECTION_TYPE.BRIDGE ? formValues.bridgeStp : undefined;
-
   return new Connection(formValues.name, {
     iface,
     macAddress: formValues.bindingMode === "mac" ? formValues.ifaceMac : "",
@@ -258,13 +256,13 @@ function buildConnection(formValues: FormValues): Connection {
           }
         : undefined,
     bridge:
-      stp !== undefined
+      formValues.type === CONNECTION_TYPE.BRIDGE
         ? {
-            stp,
-            priority: stp ? formValues.bridgePriority : undefined,
-            forwardDelay: stp ? formValues.bridgeForwardDelay : undefined,
-            helloTime: stp ? formValues.bridgeHelloTime : undefined,
-            maxAge: stp ? formValues.bridgeMaxAge : undefined,
+            stp: formValues.bridgeStp,
+            priority: formValues.bridgePriority,
+            forwardDelay: formValues.bridgeForwardDelay,
+            helloTime: formValues.bridgeHelloTime,
+            maxAge: formValues.bridgeMaxAge,
             ports: formValues.bridgePorts,
           }
         : undefined,

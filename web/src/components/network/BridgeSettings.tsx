@@ -24,6 +24,7 @@ import React from "react";
 import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
+import LabelText from "~/components/form/LabelText";
 import { connectionFormOptions } from "~/components/network/ConnectionForm";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
@@ -103,8 +104,12 @@ const BridgeSettings = withForm({
                   {(field) => (
                     <field.NumberField
                       label={
-                        // TRANSLATORS: label for the bridge priority field.
-                        _("Priority")
+                        <LabelText suffix={_("(optional)")}>
+                          {
+                            // TRANSLATORS: label for the bridge priority field.
+                            _("Priority")
+                          }
+                        </LabelText>
                       }
                       helperText={
                         <Interpolate
@@ -128,8 +133,12 @@ const BridgeSettings = withForm({
                   {(field) => (
                     <field.NumberField
                       label={
-                        // TRANSLATORS: label for the bridge forward delay field.
-                        _("Forward delay")
+                        <LabelText suffix={_("(optional)")}>
+                          {
+                            // TRANSLATORS: label for the bridge forward delay field.
+                            _("Forward delay")
+                          }
+                        </LabelText>
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge forward delay field.
@@ -144,8 +153,12 @@ const BridgeSettings = withForm({
                   {(field) => (
                     <field.NumberField
                       label={
-                        // TRANSLATORS: label for the bridge hello time field.
-                        _("Hello time")
+                        <LabelText suffix={_("(optional)")}>
+                          {
+                            // TRANSLATORS: label for the bridge hello time field.
+                            _("Hello time")
+                          }
+                        </LabelText>
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge hello time field.
@@ -160,8 +173,12 @@ const BridgeSettings = withForm({
                   {(field) => (
                     <field.NumberField
                       label={
-                        // TRANSLATORS: label for the bridge max message age field.
-                        _("Max message age")
+                        <LabelText suffix={_("(optional)")}>
+                          {
+                            // TRANSLATORS: label for the bridge max message age field.
+                            _("Max message age")
+                          }
+                        </LabelText>
                       }
                       helperText={
                         // TRANSLATORS: helper text for the bridge max message age field.

@@ -58,7 +58,7 @@ export default function NumberField({ label, helperText, min, max }: NumberField
         min={min}
         max={max}
         validated={error ? "error" : "default"}
-        onChange={(_, value) => field.handleChange(value === "" ? "" : Number(value))}
+        onChange={(_, value) => field.handleChange(value === "" ? undefined : Number(value))}
       />
       {(error || helperText) && (
         <FormHelperText>
