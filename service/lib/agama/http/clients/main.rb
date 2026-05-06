@@ -27,7 +27,7 @@ module Agama
       # HTTP client to interact with the HTTP API.
       class Main < Base
         def install
-          post("v2/action", '"install"')
+          post("action", '"install"')
         end
 
         # Sets a list of resolvables for installation.
@@ -39,7 +39,7 @@ module Agama
           data = resolvables.map do |name|
             { "name" => name, "type" => type.to_s }
           end
-          put("v2/private/resolvables/#{unique_id}", data)
+          put("private/resolvables/#{unique_id}", data)
         end
       end
     end

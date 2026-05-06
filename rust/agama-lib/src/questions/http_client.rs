@@ -52,7 +52,7 @@ impl HTTPClient {
     }
 
     pub async fn get_questions(&self) -> Result<Vec<Question>, QuestionsHTTPClientError> {
-        Ok(self.client.get("/v2/questions").await?)
+        Ok(self.client.get("/questions").await?)
     }
 
     /// Creates question and return newly created question including id
@@ -60,7 +60,7 @@ impl HTTPClient {
         &self,
         question: &QuestionSpec,
     ) -> Result<Question, QuestionsHTTPClientError> {
-        Ok(self.client.post("/v2/questions", question).await?)
+        Ok(self.client.post("/questions", question).await?)
     }
 
     pub async fn get_question(
@@ -103,7 +103,7 @@ impl HTTPClient {
 
         let patch = Patch::with_update(&config)?;
 
-        self.client.patch_void("/v2/config", &patch).await?;
+        self.client.patch_void("/config", &patch).await?;
         Ok(())
     }
 
@@ -121,13 +121,13 @@ impl HTTPClient {
         };
 
         let patch = Patch::with_update(&config)?;
-        self.client.patch_void("/v2/config", &patch).await?;
+        self.client.patch_void("/config", &patch).await?;
         Ok(())
     }
 
     pub async fn delete_question(&self, id: u32) -> Result<(), QuestionsHTTPClientError> {
         let update = UpdateQuestion::Delete { id };
-        self.client.patch_void("/v2/questions", &update).await?;
+        self.client.patch_void("/questions", &update).await?;
         Ok(())
     }
 }
@@ -151,7 +151,7 @@ mod test {
         let client = questions_client(server.url("/api"));
 
         let mock = server.mock(|when, then| {
-            when.method(GET).path("/api/v2/questions");
+            when.method(GET).path("/api/questions");
             then.status(200)
                 .header("content-type", "application/json")
                 .body(
