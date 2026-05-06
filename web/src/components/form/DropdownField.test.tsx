@@ -44,6 +44,10 @@ function TestForm({ defaultValue = "default" }: { defaultValue?: string }) {
   );
 }
 
+// NOTE: Keyboard navigation tests (arrow keys open menu, explore-then-commit) are
+// not duplicated here because:
+//   - The behavior is comprehensively tested in use-select-keyboard.test.tsx
+//   - These tests focus on TanStack Form integration and rendering behavior
 describe("DropdownField", () => {
   it("renders the label", () => {
     installerRender(<TestForm />);
