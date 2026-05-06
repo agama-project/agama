@@ -145,14 +145,15 @@ describe("ConnectionForm", () => {
 
       await user.click(screen.getByLabelText("Type"));
       await user.click(screen.getByRole("option", { name: "Bridge" }));
-      const stpCheckbox = await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
-      expect(stpCheckbox).not.toBeChecked();
+      const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
+      expect(stpSelector).toHaveTextContent("Default");
 
       // STP fields should not be visible by default
       expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
 
       // Enable STP to see the fields
-      await user.click(stpCheckbox);
+      await user.click(stpSelector);
+      await user.click(screen.getByRole("option", { name: /^Enabled/ }));
 
       screen.getByLabelText(/Priority/);
       screen.getByLabelText(/Forward delay/);
@@ -191,9 +192,10 @@ describe("ConnectionForm", () => {
       await user.clear(ifaceInput);
       await user.type(ifaceInput, "br1");
 
-      // STP is disabled by default. Let's enable it to set some values.
-      const stpCheckbox = screen.getByLabelText("Enable Spanning Tree Protocol (STP)");
-      await user.click(stpCheckbox);
+      // STP is default by default. Let's enable it to set some values.
+      const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+      await user.click(stpSelector);
+      await user.click(screen.getByRole("option", { name: /^Enabled/ }));
 
       const priorityInput = screen.getByLabelText(/Priority/);
       await user.clear(priorityInput);
@@ -204,7 +206,8 @@ describe("ConnectionForm", () => {
       await user.type(delayInput, "10");
 
       // Now disable it and verify that STP-related fields are hidden
-      await user.click(stpCheckbox);
+      await user.click(stpSelector);
+      await user.click(screen.getByRole("option", { name: /^Disabled/ }));
       expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
       expect(screen.queryByLabelText(/Forward delay/)).not.toBeInTheDocument();
       expect(screen.queryByLabelText(/Hello time/)).not.toBeInTheDocument();
@@ -224,6 +227,39 @@ describe("ConnectionForm", () => {
               stp: false,
               priority: undefined,
               forwardDelay: undefined,
+              ports: ["enp1s0"],
+            }),
+          }),
+        );
+      });
+    });
+
+    it("submits with undefined STP when STP is set to Default", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+
+      const ifaceInput = screen.getByLabelText("Device name");
+      await user.clear(ifaceInput);
+      await user.type(ifaceInput, "br1");
+
+      // STP is already default by default.
+      const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+      expect(stpSelector).toHaveTextContent("Default");
+
+      // Add a port
+      await user.type(screen.getByLabelText("Bridge ports"), "enp1s0");
+      await user.keyboard("{Enter}");
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            iface: "br1",
+            bridge: expect.objectContaining({
+              stp: undefined,
               ports: ["enp1s0"],
             }),
           }),
@@ -698,7 +734,7 @@ describe("ConnectionForm", () => {
         const { user } = installerRender(<ConnectionForm />);
         await user.type(screen.getByLabelText("Name"), "Test");
         await user.click(screen.getByLabelText("IPv4 Settings"));
-        await user.click(screen.getByRole("option", { name: /^Automatic \+ manual/ }));
+        await user.click(screen.getByRole("option", { name: /^Manual/ }));
         await user.type(screen.getByLabelText("IPv4 Addresses"), "not-an-ip{Enter}");
         await user.click(screen.getByRole("button", { name: "Accept" }));
         await screen.findByText(/Invalid IPv4 address/);
@@ -822,7 +858,9 @@ describe("ConnectionForm", () => {
         await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
 
         // Enable STP to see the fields
-        await user.click(screen.getByLabelText("Enable Spanning Tree Protocol (STP)"));
+        const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+        await user.click(stpSelector);
+        await user.click(screen.getByRole("option", { name: /^Enabled/ }));
 
         const priorityInput = screen.getByLabelText(/Priority/);
         await user.clear(priorityInput);
@@ -859,7 +897,9 @@ describe("ConnectionForm", () => {
         await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
 
         // Enable STP
-        await user.click(screen.getByLabelText("Enable Spanning Tree Protocol (STP)"));
+        const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+        await user.click(stpSelector);
+        await user.click(screen.getByRole("option", { name: /^Enabled/ }));
 
         // Clear all STP fields
         await user.clear(screen.getByLabelText(/Priority/));

@@ -100,6 +100,17 @@ const MODE_TO_METHOD: Record<FormIpMode, ConnectionMethod> = {
 };
 
 /**
+ * Bridge STP (Spanning Tree Protocol) mode values.
+ */
+export const BridgeStpMode = {
+  DEFAULT: "default",
+  ENABLED: "enabled",
+  DISABLED: "disabled",
+} as const;
+
+export type BridgeStpMode = (typeof BridgeStpMode)[keyof typeof BridgeStpMode];
+
+/**
  * Shared form options for ConnectionForm and its `withForm` based
  * sub-components
  *
@@ -131,7 +142,7 @@ export const connectionFormOptions = formOptions({
     bondOptions: [] as string[],
     bondPorts: [] as string[],
     bridgeIface: "",
-    bridgeStp: false,
+    bridgeStp: BridgeStpMode.DEFAULT as BridgeStpMode,
     bridgePriority: undefined,
     bridgeForwardDelay: undefined,
     bridgeHelloTime: undefined,
@@ -208,7 +219,12 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
     bondPorts: connection.bond?.ports ?? [],
     bridgeIface: connection.iface,
-    bridgeStp: connection.bridge?.stp ?? false,
+    // When bridge config is absent, the system treats STP as enabled by default,
+    // but Agama allows keeping it 'unset' (DEFAULT) to use these system defaults.
+    bridgeStp: (() => {
+      if (connection.bridge?.stp === undefined) return BridgeStpMode.DEFAULT;
+      return connection.bridge.stp ? BridgeStpMode.ENABLED : BridgeStpMode.DISABLED;
+    })(),
     bridgePriority: connection.bridge?.priority,
     bridgeForwardDelay: connection.bridge?.forwardDelay,
     bridgeHelloTime: connection.bridge?.helloTime,
@@ -258,11 +274,24 @@ function buildConnection(formValues: FormValues): Connection {
     bridge:
       formValues.type === CONNECTION_TYPE.BRIDGE
         ? {
-            stp: formValues.bridgeStp,
-            priority: formValues.bridgePriority,
-            forwardDelay: formValues.bridgeForwardDelay,
-            helloTime: formValues.bridgeHelloTime,
-            maxAge: formValues.bridgeMaxAge,
+            stp: (() => {
+              if (formValues.bridgeStp === BridgeStpMode.DEFAULT) return undefined;
+              return formValues.bridgeStp === BridgeStpMode.ENABLED;
+            })(),
+            priority:
+              formValues.bridgeStp === BridgeStpMode.ENABLED
+                ? formValues.bridgePriority
+                : undefined,
+            forwardDelay:
+              formValues.bridgeStp === BridgeStpMode.ENABLED
+                ? formValues.bridgeForwardDelay
+                : undefined,
+            helloTime:
+              formValues.bridgeStp === BridgeStpMode.ENABLED
+                ? formValues.bridgeHelloTime
+                : undefined,
+            maxAge:
+              formValues.bridgeStp === BridgeStpMode.ENABLED ? formValues.bridgeMaxAge : undefined,
             ports: formValues.bridgePorts,
           }
         : undefined,

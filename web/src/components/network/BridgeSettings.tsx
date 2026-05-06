@@ -25,10 +25,37 @@ import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import { connectionFormOptions } from "~/components/network/ConnectionForm";
+import { connectionFormOptions, BridgeStpMode } from "~/components/network/ConnectionForm";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
-import { _, formatList } from "~/i18n";
+import { _, N_, formatList } from "~/i18n";
+
+/**
+ * STP mode options for the selector.
+ */
+const stpOptions = () => [
+  {
+    value: BridgeStpMode.DEFAULT,
+    // TRANSLATORS: option label for the bridge STP configuration to use the system default.
+    label: N_("Default"),
+    // TRANSLATORS: description for the default bridge STP configuration.
+    description: N_("Use system-wide defaults (effectively enabled)"),
+  },
+  {
+    value: BridgeStpMode.ENABLED,
+    // TRANSLATORS: option label for enabling bridge STP.
+    label: N_("Enabled"),
+    // TRANSLATORS: description for enabling bridge STP.
+    description: N_("Explicitly enable STP with custom settings"),
+  },
+  {
+    value: BridgeStpMode.DISABLED,
+    // TRANSLATORS: option label for disabling bridge STP.
+    label: N_("Disabled"),
+    // TRANSLATORS: description for disabling bridge STP.
+    description: N_("Explicitly disable STP"),
+  },
+];
 
 type BridgeSettingsProps = {
   isEditing?: boolean;
@@ -88,17 +115,24 @@ const BridgeSettings = withForm({
 
         <form.AppField name="bridgeStp">
           {(field) => (
-            <field.CheckboxField
+            <field.DropdownField
               label={
                 // TRANSLATORS: label for the bridge STP (Spanning Tree Protocol) field.
-                _("Enable Spanning Tree Protocol (STP)")
+                _("Spanning Tree Protocol (STP)")
               }
+              options={stpOptions().map(({ value, label, description }) => ({
+                value,
+                // eslint-disable-next-line agama-i18n/string-literals
+                label: _(label),
+                // eslint-disable-next-line agama-i18n/string-literals
+                description: _(description),
+              }))}
             />
           )}
         </form.AppField>
         <form.Subscribe selector={(s) => s.values.bridgeStp}>
           {(bridgeStp) =>
-            bridgeStp && (
+            bridgeStp === BridgeStpMode.ENABLED && (
               <NestedContent margin="mxLg">
                 <form.AppField name="bridgePriority">
                   {(field) => (

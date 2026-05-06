@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions } from "~/components/network/ConnectionForm";
+import { connectionFormOptions, BridgeStpMode } from "~/components/network/ConnectionForm";
 import { DeviceState } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import BridgeSettings from "./BridgeSettings";
@@ -78,7 +78,8 @@ describe("BridgeSettings", () => {
     await screen.findByText("Bridge ports");
     screen.getByRole("textbox", { name: "Bridge ports" });
     screen.getByText(/Available devices: enp1s0 and enp2s0/);
-    await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
+    const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
+    expect(stpSelector).toHaveTextContent("Default");
   });
 
   it("displays bridge ports", async () => {
@@ -108,8 +109,9 @@ describe("BridgeSettings", () => {
   it("shows STP options when STP is enabled", async () => {
     const { user } = installerRender(<TestForm />);
 
-    const stpCheckbox = await screen.findByLabelText("Enable Spanning Tree Protocol (STP)");
-    await user.click(stpCheckbox);
+    const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
+    await user.click(stpSelector);
+    await user.click(screen.getByRole("option", { name: /^Enabled/ }));
 
     expect(await screen.findByLabelText(/Priority/)).toBeInTheDocument();
     expect(await screen.findByLabelText(/Forward delay/)).toBeInTheDocument();
@@ -117,8 +119,17 @@ describe("BridgeSettings", () => {
     expect(await screen.findByLabelText(/Max message age/)).toBeInTheDocument();
   });
 
-  it("hides STP options when STP is disabled", async () => {
+  it("hides STP options when STP is default", async () => {
     installerRender(<TestForm />);
+
+    expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Forward delay/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Hello time/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Max message age/)).not.toBeInTheDocument();
+  });
+
+  it("hides STP options when STP is disabled", async () => {
+    installerRender(<TestForm defaultValues={{ bridgeStp: BridgeStpMode.DISABLED }} />);
 
     expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/Forward delay/)).not.toBeInTheDocument();
