@@ -144,9 +144,9 @@ export default function MenuButton({
   disableArrowKeyOpen = false,
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
-  const toggleRef = useRef();
+  const pfToggleRef = useRef();
   const rootId = useMenuId();
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard({
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard({
     component: "menu",
   });
   const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
@@ -210,7 +210,7 @@ export default function MenuButton({
   };
 
   const baseToggleProps = {
-    ref: toggleRef,
+    ref: getToggleRef(pfToggleRef),
     onClick: toggle,
     onKeyDown: disableArrowKeyOpen ? undefined : onToggleKeydown,
     isExpanded: isOpen,
@@ -220,7 +220,7 @@ export default function MenuButton({
     <MenuContainer
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      toggleRef={toggleRef}
+      toggleRef={pfToggleRef}
       popperProps={{ direction: "down", enableFlip: false, ...menuProps.popperProps }}
       toggle={
         React.isValidElement(customToggle) ? (

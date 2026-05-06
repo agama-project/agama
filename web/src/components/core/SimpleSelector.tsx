@@ -59,11 +59,11 @@ type SimpleSelectorProps = {
  */
 export default function SimpleSelector({ label, value, options, onChange }: SimpleSelectorProps) {
   const id = useId();
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
   const onToggle = () => setIsOpen(!isOpen);
 
-  const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle id={id} ref={toggleRef} onClick={onToggle} isExpanded={isOpen}>
+  const toggle = (pfToggleRef: React.Ref<MenuToggleElement>) => (
+    <MenuToggle id={id} ref={getToggleRef(pfToggleRef)} onClick={onToggle} isExpanded={isOpen}>
       {options[value]}
     </MenuToggle>
   );

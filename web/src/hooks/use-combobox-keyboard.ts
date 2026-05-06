@@ -21,6 +21,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import type { MenuToggleElement } from "@patternfly/react-core";
 
 /**
  * Selectors for finding focusable items in PatternFly dropdown components.
@@ -65,6 +66,27 @@ type UseComboboxKeyboardReturn = {
   setIsOpen: (isOpen: boolean) => void;
   /** Ref to attach to the PatternFly component (forwards to underlying Menu). */
   menuRef: React.RefObject<HTMLDivElement>;
+  /**
+   * Merges PatternFly's toggle ref with the hook's internal focus restoration ref.
+   *
+   * Creates a ref callback that forwards to both PatternFly's ref (for dropdown
+   * functionality) and the hook's internal ref (for focus restoration).
+   *
+   * @param pfToggleRef - The ref provided by PatternFly's toggle render prop
+   * @returns A ref callback that forwards to both refs
+   *
+   * @example
+   * ```tsx
+   * toggle={(pfRef) => (
+   *   <MenuToggle ref={getToggleRef(pfRef)}>
+   *     {value}
+   *   </MenuToggle>
+   * )}
+   * ```
+   */
+  getToggleRef: (
+    pfToggleRef?: React.Ref<MenuToggleElement>,
+  ) => React.RefCallback<MenuToggleElement>;
   /** Keyboard event handler to attach to the component's onToggleKeydown or onKeyDown prop. */
   onToggleKeydown: (event: React.KeyboardEvent | KeyboardEvent) => void;
 };
@@ -107,14 +129,18 @@ type UseComboboxKeyboardReturn = {
  *
  * @example Basic usage (internal state)
  * ```tsx
- * const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
+ * const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
  *
  * <Select
  *   ref={menuRef}
  *   isOpen={isOpen}
  *   onOpenChange={setIsOpen}
  *   onToggleKeydown={onToggleKeydown}
- *   toggle={...}
+ *   toggle={(pfRef) => (
+ *     <MenuToggle ref={getToggleRef(pfRef)} onClick={() => setIsOpen(!isOpen)}>
+ *       {value}
+ *     </MenuToggle>
+ *   )}
  * >
  *   <SelectList>...</SelectList>
  * </Select>
@@ -124,7 +150,7 @@ type UseComboboxKeyboardReturn = {
  * ```tsx
  * const [isOpen, setIsOpen] = useState(false);
  *
- * const { menuRef, onToggleKeydown } = useComboboxKeyboard({
+ * const { menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard({
  *   component: "menu",
  *   isOpen,
  *   setIsOpen
@@ -143,6 +169,7 @@ export const useComboboxKeyboard = (
   const { component = "select", isOpen: externalIsOpen, setIsOpen: externalSetIsOpen } = options;
 
   const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<MenuToggleElement | null>(null);
   const openedWithArrowUp = useRef(false);
   const prevIsOpen = useRef(false);
 
@@ -168,6 +195,14 @@ export const useComboboxKeyboard = (
         openedWithArrowUp.current = false;
       }, 0);
     }
+
+    // When menu closes, restore focus to the toggle button
+    if (prevIsOpen.current === true && isOpen === false) {
+      setTimeout(() => {
+        toggleRef.current?.focus();
+      }, 0);
+    }
+
     prevIsOpen.current = isOpen;
   }, [isOpen, selector]);
 
@@ -181,5 +216,27 @@ export const useComboboxKeyboard = (
     }
   };
 
-  return { isOpen, setIsOpen, menuRef, onToggleKeydown };
+  /**
+   * Creates a ref callback that forwards to both PatternFly's ref and the hook's internal ref.
+   *
+   * PatternFly needs the ref for dropdown positioning and click-outside detection.
+   * The hook needs the ref to restore focus to the toggle when the menu closes.
+   */
+  const getToggleRef = (pfToggleRef?: React.Ref<MenuToggleElement>) => {
+    return (element: MenuToggleElement | null) => {
+      // Forward to PatternFly's ref (could be callback or object ref)
+      if (pfToggleRef) {
+        if (typeof pfToggleRef === "function") {
+          pfToggleRef(element);
+        } else {
+          (pfToggleRef as React.MutableRefObject<MenuToggleElement | null>).current = element;
+        }
+      }
+
+      // Save to internal ref for focus restoration
+      toggleRef.current = element;
+    };
+  };
+
+  return { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown };
 };

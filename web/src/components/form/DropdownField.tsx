@@ -101,7 +101,7 @@ export default function DropdownField<T extends string>({
   children,
 }: DropdownFieldProps<T>) {
   const field = useFieldContext<T>();
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
   const selectedOption = options.find(({ value }) => value === field.state.value);
 
@@ -118,10 +118,10 @@ export default function DropdownField<T extends string>({
         onOpenChange={setIsOpen}
         onToggleKeydown={onToggleKeydown}
         shouldFocusToggleOnSelect
-        toggle={(ref: React.Ref<MenuToggleElement>) => (
+        toggle={(pfToggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             id={field.name}
-            ref={ref}
+            ref={getToggleRef(pfToggleRef)}
             onClick={() => setIsOpen(!isOpen)}
             isExpanded={isOpen}
             isDisabled={isDisabled}

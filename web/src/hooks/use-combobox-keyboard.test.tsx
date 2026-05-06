@@ -34,7 +34,7 @@ import { useComboboxKeyboard } from "./use-combobox-keyboard";
 
 // Test component that uses the hook with a PatternFly Select
 function TestSelect({ onSelect = jest.fn() }) {
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
   const [selected, setSelected] = useState("option1");
 
   return (
@@ -52,8 +52,12 @@ function TestSelect({ onSelect = jest.fn() }) {
       onOpenChange={setIsOpen}
       onToggleKeydown={onToggleKeydown}
       shouldFocusToggleOnSelect
-      toggle={(ref: React.Ref<MenuToggleElement>) => (
-        <MenuToggle ref={ref} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
+      toggle={(pfToggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          ref={getToggleRef(pfToggleRef)}
+          onClick={() => setIsOpen(!isOpen)}
+          isExpanded={isOpen}
+        >
           {selected}
         </MenuToggle>
       )}
@@ -144,11 +148,30 @@ describe("useComboboxKeyboard", () => {
     screen.getByRole("button", { name: "option1" });
   });
 
+  it("restores focus to toggle when menu closes after selection", async () => {
+    const { user } = installerRender(<TestSelect />);
+
+    const toggle = screen.getByRole("button", { name: "option1" });
+    toggle.focus();
+
+    // Open menu with ArrowDown
+    await user.keyboard("{ArrowDown}");
+
+    // Navigate to second option
+    await user.keyboard("{ArrowDown}");
+
+    // Select the option with Enter
+    await user.keyboard("{Enter}");
+
+    // Focus should be restored to the toggle button
+    expect(toggle).toHaveFocus();
+  });
+
   describe("with external state management", () => {
     // Test component that manages its own state and passes it to the hook
     function TestSelectWithExternalState() {
       const [isOpen, setIsOpen] = useState(false);
-      const { menuRef, onToggleKeydown } = useComboboxKeyboard({ isOpen, setIsOpen });
+      const { menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard({ isOpen, setIsOpen });
       const [selected, setSelected] = useState("option1");
 
       return (
@@ -163,8 +186,12 @@ describe("useComboboxKeyboard", () => {
           onOpenChange={setIsOpen}
           onToggleKeydown={onToggleKeydown}
           shouldFocusToggleOnSelect
-          toggle={(ref: React.Ref<MenuToggleElement>) => (
-            <MenuToggle ref={ref} onClick={() => setIsOpen(!isOpen)} isExpanded={isOpen}>
+          toggle={(pfToggleRef: React.Ref<MenuToggleElement>) => (
+            <MenuToggle
+              ref={getToggleRef(pfToggleRef)}
+              onClick={() => setIsOpen(!isOpen)}
+              isExpanded={isOpen}
+            >
               {selected}
             </MenuToggle>
           )}

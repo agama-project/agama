@@ -54,7 +54,7 @@ export default function SelectWrapper({
   children,
   toggleName,
 }: SelectWrapperProps): React.ReactElement {
-  const { isOpen, setIsOpen, menuRef, onToggleKeydown } = useComboboxKeyboard();
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
   const onSelect = (
     _: React.MouseEvent<Element, MouseEvent> | undefined,
@@ -64,11 +64,11 @@ export default function SelectWrapper({
     onChange && nextValue !== value && onChange(nextValue as string);
   };
 
-  const toggle = (toggleRef: React.Ref<MenuToggleElement>) => {
+  const toggle = (pfToggleRef: React.Ref<MenuToggleElement>) => {
     return (
       <MenuToggle
         id={id}
-        ref={toggleRef}
+        ref={getToggleRef(pfToggleRef)}
         onClick={() => setIsOpen(!isOpen)}
         isExpanded={isOpen}
         isDisabled={isDisabled}
