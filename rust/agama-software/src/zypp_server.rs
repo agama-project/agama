@@ -22,7 +22,7 @@ use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
-        self,
+        self, l10n,
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Scope,
     },
@@ -120,6 +120,7 @@ pub enum SoftwareAction {
     Write {
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        l10n: Option<l10n::Proposal>,
         question: Handler<question::Service>,
         security: Handler<security::Service>,
         tx: oneshot::Sender<ZyppServerResult<WriteIssues>>,
@@ -226,6 +227,7 @@ impl ZyppServer {
             SoftwareAction::Write {
                 state,
                 progress,
+                l10n,
                 question,
                 security: security_srv,
                 tx,
@@ -234,6 +236,7 @@ impl ZyppServer {
                 self.write(
                     state,
                     progress,
+                    l10n,
                     question,
                     security_srv,
                     &mut security_callback,
@@ -321,6 +324,7 @@ impl ZyppServer {
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        l10n: Option<l10n::Proposal>,
         _questions: Handler<question::Service>,
         security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
@@ -494,6 +498,11 @@ impl ZyppServer {
                 // by dependencies
                 ResolvableSelection::Removed => {}
             };
+        }
+
+        if let Some(proposal) = l10n {
+            let locale = proposal.locale;
+            zypp.select_locale(locale.language, locale.territory);
         }
 
         // if registered select products from add-on services

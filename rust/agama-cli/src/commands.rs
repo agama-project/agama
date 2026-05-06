@@ -25,7 +25,15 @@ use crate::config::ConfigCommands;
 use crate::logs::LogsCommands;
 use crate::questions::QuestionsCommands;
 use crate::FinishMethod;
-use clap::Subcommand;
+use clap::{Subcommand, ValueEnum};
+
+#[derive(ValueEnum, Debug, Clone)]
+pub enum Format {
+    /// json format suitable for machine processing
+    Json,
+    /// textual format that is optimized to be read for humans, can change in future and can be localized
+    Text,
+}
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
@@ -121,8 +129,15 @@ pub enum Commands {
         method: Option<FinishMethod>,
     },
 
-    /// Monitors the Agama service.
+    /// Continuously monitors the Agama service until it finishes.
     Monitor,
+
+    /// Prints the current state of the installation (e.g., waiting, blocked, running, or finished).
+    Status {
+        /// Specify in which format status will be shown
+        #[arg(long, value_enum, default_value_t = Format::Text)]
+        format: Format,
+    },
 
     /// Display Agama events.
     Events {

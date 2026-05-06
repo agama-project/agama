@@ -404,6 +404,14 @@ impl Zypp {
         }
     }
 
+    pub fn select_locale(&self, language: String, country: String) {
+        unsafe {
+            let c_language = CString::new(language).unwrap();
+            let c_country = CString::new(country).unwrap();
+            zypp_agama_sys::select_locale(self.ptr, c_language.as_ptr(), c_country.as_ptr());
+        }
+    }
+
     pub fn is_package_selected(&self, tag: &str) -> ZyppResult<bool> {
         unsafe {
             let mut status: Status = Status::default();
@@ -764,7 +772,8 @@ mod tests {
     use std::process::Command;
 
     fn setup() {
-        // empty now
+        let root = get_fixture_root().unwrap();
+        init_rpmdb(&root).unwrap();
     }
 
     fn progress_cb(_text: String, _step: u32, _total: u32) {
@@ -779,12 +788,22 @@ mod tests {
         Ok(())
     }
 
+    fn get_fixture_root() -> Result<String, Box<dyn Error>> {
+        let cwd = std::env::current_dir()?;
+        let root_buf = cwd.join("fixtures/zypp_root");
+        root_buf
+            .try_exists()
+            .expect("run this from the dir that has fixtures/");
+        Ok(root_buf.to_str().expect("CWD is not UTF-8").to_string())
+    }
+
     #[test]
     fn init_target() -> Result<(), Box<dyn Error>> {
         // run just single test to avoid threads as it cause zypp to be locked to one of those threads
         {
+            let root = get_fixture_root()?;
             setup();
-            let result = Zypp::init_target("/", progress_cb);
+            let result = Zypp::init_target(&root, progress_cb);
             assert!(result.is_ok());
         }
         {
@@ -795,9 +814,9 @@ mod tests {
         }
         {
             setup();
-
+            let root = get_fixture_root()?;
             // double init of target
-            let z1 = Zypp::init_target("/", progress_cb);
+            let z1 = Zypp::init_target(&root, progress_cb);
             let z2 = Zypp::init_target("/mnt", progress_cb);
             assert!(z2.is_err());
 
@@ -807,15 +826,8 @@ mod tests {
         {
             // list repositories test
             setup();
-            let cwd = std::env::current_dir()?;
-            let root_buf = cwd.join("fixtures/zypp_root");
-            root_buf
-                .try_exists()
-                .expect("run this from the dir that has fixtures/");
-            let root = root_buf.to_str().expect("CWD is not UTF-8");
-
-            init_rpmdb(root)?;
-            let zypp = Zypp::init_target(root, progress_cb)?;
+            let root = get_fixture_root()?;
+            let zypp = Zypp::init_target(&root, progress_cb)?;
             let repos = zypp.list_repositories()?;
             assert!(repos.len() == 1);
         }

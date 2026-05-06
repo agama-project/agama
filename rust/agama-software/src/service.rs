@@ -26,6 +26,7 @@ use crate::{
     zypp_server::{self, SoftwareAction, ZyppServer},
     Model, ResolvableType,
 };
+use agama_l10n;
 use agama_security as security;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
@@ -88,6 +89,7 @@ pub struct Starter {
     model: Option<Arc<Mutex<dyn ModelAdapter + Send + 'static>>>,
     events: event::Sender,
     issues: Handler<issue::Service>,
+    l10n: Handler<agama_l10n::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
     security: Handler<security::Service>,
@@ -97,6 +99,7 @@ impl Starter {
     pub fn new(
         events: event::Sender,
         issues: Handler<issue::Service>,
+        l10n: Handler<agama_l10n::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
         security: Handler<security::Service>,
@@ -105,6 +108,7 @@ impl Starter {
             model: None,
             events,
             issues,
+            l10n,
             progress,
             questions,
             security,
@@ -151,6 +155,7 @@ impl Starter {
             state,
             events: self.events,
             issues: self.issues,
+            l10n: self.l10n,
             progress: self.progress,
             product: None,
             kernel_cmdline,
@@ -170,6 +175,7 @@ impl Starter {
 pub struct Service {
     model: Arc<Mutex<dyn ModelAdapter + Send + 'static>>,
     issues: Handler<issue::Service>,
+    l10n: Handler<agama_l10n::Service>,
     progress: Handler<progress::Service>,
     events: event::Sender,
     state: Arc<RwLock<ServiceState>>,
@@ -190,11 +196,12 @@ impl Service {
     pub fn starter(
         events: event::Sender,
         issues: Handler<issue::Service>,
+        l10n: Handler<agama_l10n::Service>,
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
         security: Handler<security::Service>,
     ) -> Starter {
-        Starter::new(events, issues, progress, questions, security)
+        Starter::new(events, issues, l10n, progress, questions, security)
     }
 
     pub async fn setup(&mut self) -> Result<(), Error> {
@@ -264,6 +271,7 @@ impl Service {
         let model = self.model.clone();
         let progress = self.progress.clone();
         let issues = self.issues.clone();
+        let l10n = self.l10n.clone();
         let state = self.state.clone();
         let events = self.events.clone();
         tracing::info!("Synchronizing the wanted software state");
@@ -271,7 +279,7 @@ impl Service {
         tokio::task::spawn(async move {
             let mut my_model = model.lock().await;
             let found_issues = my_model
-                .write(wanted_state, progress)
+                .write(wanted_state, l10n, progress)
                 .await
                 .unwrap_or_else(|e| {
                     let new_issue = Issue::new(

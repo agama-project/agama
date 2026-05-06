@@ -34,47 +34,46 @@ import type { AxiosResponse } from "axios";
 
 type Response = Promise<AxiosResponse>;
 
-const getStatus = (): Promise<Status | null> => get("/api/v2/status");
+const getStatus = (): Promise<Status | null> => get("/api/status");
 
-const getConfig = (): Promise<Config | null> => get("/api/v2/config");
+const getConfig = (): Promise<Config | null> => get("/api/config");
 
-const getExtendedConfig = (): Promise<Config | null> => get("/api/v2/extended_config");
+const getExtendedConfig = (): Promise<Config | null> => get("/api/extended_config");
 
-const getSystem = (): Promise<System | null> => get("/api/v2/system");
+const getSystem = (): Promise<System | null> => get("/api/system");
 
 const getLicense = (id: string, lang: string = "en"): Promise<LicenseContent> =>
-  get(`/api/v2/licenses/${id}?lang=${lang}`);
+  get(`/api/licenses/${id}?lang=${lang}`);
 
-const getProposal = (): Promise<Proposal | null> => get("/api/v2/proposal");
+const getProposal = (): Promise<Proposal | null> => get("/api/proposal");
 
-const getIssues = (): Promise<Issue[]> => get("/api/v2/issues");
+const getIssues = (): Promise<Issue[]> => get("/api/issues");
 
-const getQuestions = (): Promise<Question[]> => get("/api/v2/questions");
+const getQuestions = (): Promise<Question[]> => get("/api/questions");
 
-const getStorageModel = (): Promise<ConfigModel.Config | null> =>
-  get("/api/v2/private/storage_model");
+const getStorageModel = (): Promise<ConfigModel.Config | null> => get("/api/private/storage_model");
 
 const solveStorageModel = (model: ConfigModel.Config): Promise<ConfigModel.Config | null> => {
   const json = encodeURIComponent(JSON.stringify(model));
-  return get(`/api/v2/private/solve_storage_model?model=${json}`);
+  return get(`/api/private/solve_storage_model?model=${json}`);
 };
 
-const putConfig = (config: Config): Response => put("/api/v2/config", config);
+const putConfig = (config: Config): Response => put("/api/config", config);
 
-const putStorageModel = (model: ConfigModel.Config) => put("/api/v2/private/storage_model", model);
+const putStorageModel = (model: ConfigModel.Config) => put("/api/private/storage_model", model);
 
-const patchConfig = (config: Config) => patch("/api/v2/config", { update: config });
+const patchConfig = (config: Config) => patch("/api/config", { update: config });
 
 const patchQuestion = (question: Question): Response => {
   const {
     id,
     answer: { action, value },
   } = question;
-  return patch(`/api/v2/questions`, { answer: { id, action, value } });
+  return patch(`/api/questions`, { answer: { id, action, value } });
 };
 
 /** @todo Inform the user when the action fails. */
-const postAction = (action: Action) => post("/api/v2/action", action).catch(console.error);
+const postAction = (action: Action) => post("/api/action", action).catch(console.error);
 
 const configureL10nAction = (config: L10nSystemConfig) => postAction({ configureL10n: config });
 
@@ -94,12 +93,9 @@ type PasswordCheckResult = {
 };
 
 const passwordCheck = async (password: string): Promise<PasswordCheckResult> => {
-  const response: AxiosResponse<PasswordCheckResult> = await post(
-    "/api/v2/private/password_check",
-    {
-      password,
-    },
-  );
+  const response: AxiosResponse<PasswordCheckResult> = await post("/api/private/password_check", {
+    password,
+  });
   return response.data;
 };
 

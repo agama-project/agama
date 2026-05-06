@@ -1,8 +1,30 @@
 -------------------------------------------------------------------
-Mon May  5 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Mon May  6 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Move product availability issues to software scope
   (gh#agama-project/agama#3456).
+
+-------------------------------------------------------------------
+Wed May  6 08:54:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- HTTP API:
+  - remove v2 part of path
+  - add new X-API-Version response header with value 2
+  - move /profile path to /private/profile
+  (gh#agama-project/agama#3461)
+
+-------------------------------------------------------------------
+Mon May  4 10:46:08 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix zypp tests to work with new rpm with more tight permissions
+  (bsc#1254914)
+
+-------------------------------------------------------------------
+Thu Apr 30 09:04:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: add new `agama status` command that prints current state of
+  agama with textual or json output format
+  (gh#agama-project/agama#3442)
 
 -------------------------------------------------------------------
 Tue Apr 28 11:02:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-14 10:21+0000\n"
+"POT-Creation-Date: 2026-04-20 09:45+0000\n"
 "PO-Revision-Date: 2026-03-11 08:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -87,42 +87,6 @@ msgstr "Havaitaan tallennuslaitteita"
 #: service/lib/agama/dbus/storage/manager.rb:243
 msgid "Applying storage configuration"
 msgstr "Otetaan talletustilamääritys käyttöön"
-
-#. TRANSLATORS: SSL certificate details
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Certificate:"
-msgstr "Varmenne:"
-
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Issued To"
-msgstr "Myönnetty kohteelle"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "Issued By"
-msgstr "Julkaisija"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "SHA1 Fingerprint: "
-msgstr "SHA1-sormenjälki: "
-
-#: service/lib/agama/ssl/certificate_details.rb:34
-msgid "SHA256 Fingerprint: "
-msgstr "SHA256-sormenjälki: "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:46
-msgid "Common Name (CN): "
-msgstr "Yleinen nimi (CN): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:48
-msgid "Organization (O): "
-msgstr "Organisaatio (O): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:50
-msgid "Organization Unit (OU): "
-msgstr "Organisaatioyksikkö (OU): "
 
 #. Issue when the device has several users.
 #.
@@ -575,6 +539,30 @@ msgstr "Tuntematon zFCP-ohjain %s"
 #, c-format
 msgid "Unknown zFCP LUN %s"
 msgstr "Tuntematon zFCP LUN %s"
+
+#~ msgid "Certificate:"
+#~ msgstr "Varmenne:"
+
+#~ msgid "Issued To"
+#~ msgstr "Myönnetty kohteelle"
+
+#~ msgid "Issued By"
+#~ msgstr "Julkaisija"
+
+#~ msgid "SHA1 Fingerprint: "
+#~ msgstr "SHA1-sormenjälki: "
+
+#~ msgid "SHA256 Fingerprint: "
+#~ msgstr "SHA256-sormenjälki: "
+
+#~ msgid "Common Name (CN): "
+#~ msgstr "Yleinen nimi (CN): "
+
+#~ msgid "Organization (O): "
+#~ msgstr "Organisaatio (O): "
+
+#~ msgid "Organization Unit (OU): "
+#~ msgstr "Organisaatioyksikkö (OU): "
 
 #, perl-brace-format
 #~ msgid ""

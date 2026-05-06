@@ -85,6 +85,7 @@ pub trait ModelAdapter: Send + Sync + 'static {
     async fn write(
         &mut self,
         software: SoftwareState,
+        l10n: Handler<agama_l10n::Service>,
         progress: Handler<progress::Service>,
     ) -> Result<WriteIssues, service::Error>;
 }
@@ -131,12 +132,19 @@ impl ModelAdapter for Model {
     async fn write(
         &mut self,
         software: SoftwareState,
+        l10n: Handler<agama_l10n::Service>,
         progress: Handler<progress::Service>,
     ) -> Result<WriteIssues, service::Error> {
         let (tx, rx) = oneshot::channel();
+        let l10n_proposal = l10n
+            .call(agama_l10n::message::GetProposal)
+            .await
+            .unwrap_or_default();
+
         self.zypp_sender.send(SoftwareAction::Write {
             state: software,
             progress,
+            l10n: l10n_proposal,
             security: self.security.clone(),
             question: self.question.clone(),
             tx,
