@@ -290,6 +290,7 @@ impl ProgressMonitor {
             Scope::DASD => gettext("DASD"),
             Scope::ZFCP => gettext("zFCP"),
             Scope::Users => gettext("Users"),
+            Scope::Ntp => gettext("NTP"),
         }
     }
 

@@ -33,6 +33,7 @@ pub use agama_hostname as hostname;
 pub use agama_iscsi as iscsi;
 pub use agama_l10n as l10n;
 pub use agama_network as network;
+pub use agama_ntp as ntp;
 pub use agama_proxy as proxy;
 pub use agama_s390 as s390;
 pub use agama_security as security;

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May  7 06:03:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for synchronizing and configuring the NTP service
+  using an Agama configuration file (jsc#PED-15144).
+
+-------------------------------------------------------------------
 Wed May  6 08:54:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - HTTP API:
