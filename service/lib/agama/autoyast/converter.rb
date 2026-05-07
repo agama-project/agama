@@ -34,6 +34,7 @@ require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
 require "agama/autoyast/zfcp_reader"
+require "agama/autoyast/ntp_client_reader"
 
 module Agama
   module AutoYaST
@@ -64,7 +65,8 @@ module Agama
           SoftwareReader.new(profile).read,
           StorageReader.new(profile).read,
           UserReader.new(profile).read,
-          ZFCPReader.new(profile).read
+          ZFCPReader.new(profile).read,
+          NtpClientReader.new(profile).read
         ].inject(:merge)
       end
     end
