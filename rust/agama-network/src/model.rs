@@ -25,8 +25,8 @@
 use crate::error::NetworkStateError;
 use crate::types::*;
 
-use agama_utils::openapi::schemas;
 use macaddr::MacAddr6;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none, DisplayFromStr};
 use std::{
@@ -702,14 +702,15 @@ pub struct GeneralState {
 /// Represents a known network connection.
 #[serde_as]
 #[skip_serializing_none]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Connection {
     pub id: String,
     pub uuid: Uuid,
-    #[schema(schema_with = schemas::mac_addr6)]
+    #[schemars(with = "Option<String>")]
     pub mac_address: Option<MacAddr6>,
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub custom_mac_address: MacAddress,
     pub firewall_zone: Option<String>,
     pub mtu: u32,
@@ -1035,7 +1036,7 @@ impl TryFrom<Connection> for NetworkConnection {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum ConnectionConfig {
     #[default]
     Ethernet,
@@ -1052,7 +1053,7 @@ pub enum ConnectionConfig {
     OvsInterface(OvsInterfaceConfig),
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum PortConfig {
     #[default]
     None,
@@ -1085,7 +1086,7 @@ impl From<WirelessConfig> for ConnectionConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct MatchConfig {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub driver: Vec<String>,
@@ -1097,7 +1098,7 @@ pub struct MatchConfig {
     pub kernel: Vec<String>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum VlanProtocol {
     #[default]
     IEEE802_1Q,
@@ -1130,7 +1131,7 @@ impl fmt::Display for VlanProtocol {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct VlanConfig {
     pub parent: String,
     pub id: u32,
@@ -1138,11 +1139,12 @@ pub struct VlanConfig {
 }
 
 #[serde_as]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct WirelessConfig {
     pub mode: WirelessMode,
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub ssid: SSID,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
@@ -1151,7 +1153,7 @@ pub struct WirelessConfig {
     pub band: Option<WirelessBand>,
     pub channel: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schema(schema_with = schemas::mac_addr6)]
+    #[schemars(with = "Option<String>")]
     pub bssid: Option<macaddr::MacAddr6>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wep_security: Option<WEPSecurity>,
@@ -1315,7 +1317,7 @@ impl TryFrom<WirelessConfig> for WirelessSettings {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum WirelessMode {
     Unknown = 0,
     AdHoc = 1,
@@ -1353,7 +1355,7 @@ impl fmt::Display for WirelessMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum SecurityProtocol {
     #[default]
     WEP, // No encryption or WEP ("none")
@@ -1399,7 +1401,7 @@ impl TryFrom<&str> for SecurityProtocol {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum GroupAlgorithm {
     Wep40,
     Wep104,
@@ -1437,7 +1439,7 @@ impl fmt::Display for GroupAlgorithm {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum PairwiseAlgorithm {
     Tkip,
     Ccmp,
@@ -1469,7 +1471,7 @@ impl fmt::Display for PairwiseAlgorithm {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum WPAProtocolVersion {
     Wpa,
     Rsn,
@@ -1501,7 +1503,7 @@ impl fmt::Display for WPAProtocolVersion {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct WEPSecurity {
     pub auth_alg: WEPAuthAlg,
     pub wep_key_type: WEPKeyType,
@@ -1510,7 +1512,7 @@ pub struct WEPSecurity {
     pub wep_key_index: u32,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum WEPKeyType {
     #[default]
     Unknown = 0,
@@ -1531,7 +1533,7 @@ impl TryFrom<u32> for WEPKeyType {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum WEPAuthAlg {
     #[default]
     Unset,
@@ -1566,7 +1568,7 @@ impl fmt::Display for WEPAuthAlg {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub enum WirelessBand {
     A,  // 5GHz
     BG, // 2.4GHz
@@ -1594,7 +1596,7 @@ impl TryFrom<&str> for WirelessBand {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub struct BondOptions(pub HashMap<String, String>);
 
 impl TryFrom<&str> for BondOptions {
@@ -1627,7 +1629,7 @@ impl fmt::Display for BondOptions {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct BondConfig {
     pub mode: BondMode,
     pub options: BondOptions,
@@ -1836,7 +1838,7 @@ impl TryFrom<BondConfig> for BondSettings {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct BridgeConfig {
     pub stp: Option<bool>,
     pub priority: Option<u32>,
@@ -1889,7 +1891,7 @@ impl TryFrom<BridgeConfig> for BridgeSettings {
         })
     }
 }
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct BridgePortConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub priority: Option<u32>,
@@ -1897,14 +1899,14 @@ pub struct BridgePortConfig {
     pub path_cost: Option<u32>,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct InfinibandConfig {
     pub p_key: Option<i32>,
     pub parent: Option<String>,
     pub transport_mode: InfinibandTransportMode,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum InfinibandTransportMode {
     #[default]
     Datagram,
@@ -1937,14 +1939,14 @@ impl fmt::Display for InfinibandTransportMode {
     }
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum TunMode {
     #[default]
     Tun = 1,
     Tap = 2,
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct TunConfig {
     pub mode: TunMode,
     pub group: Option<String>,
@@ -1976,7 +1978,7 @@ pub enum NetworkChange {
     AccessPointRemoved(String),
 }
 
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct IEEE8021XConfig {
     pub eap: Vec<EAPMethod>,
     pub phase2_auth: Option<Phase2AuthMethod>,
@@ -2065,7 +2067,7 @@ impl TryFrom<IEEE8021XConfig> for IEEE8021XSettings {
 #[error("Invalid eap method: {0}")]
 pub struct InvalidEAPMethod(String);
 
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum EAPMethod {
     LEAP,
     MD5,
@@ -2112,7 +2114,7 @@ impl fmt::Display for EAPMethod {
 #[error("Invalid phase2-auth method: {0}")]
 pub struct InvalidPhase2AuthMethod(String);
 
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum Phase2AuthMethod {
     PAP,
     CHAP,
@@ -2158,14 +2160,14 @@ impl fmt::Display for Phase2AuthMethod {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsBridgeConfig {
     pub mcast_snooping_enable: Option<bool>,
     pub rstp_enable: Option<bool>,
     pub stp_enable: Option<bool>,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsPortConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<u16>,
@@ -2208,7 +2210,7 @@ impl fmt::Display for OvsInterfaceType {
         write!(f, "{}", value)
     }
 }
-#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub enum OvsInterfaceType {
     #[default]
     Empty,
@@ -2218,10 +2220,10 @@ pub enum OvsInterfaceType {
     Dpdk,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsInterfaceConfig {
     pub interface_type: OvsInterfaceType,
 }
 
-#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, utoipa::ToSchema)]
+#[derive(Debug, Default, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct OvsBridgePortConfig {}

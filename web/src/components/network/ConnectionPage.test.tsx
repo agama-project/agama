@@ -23,9 +23,9 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
-import WiredConnectionPage from "~/components/network/WiredConnectionPage";
-import { Connection, ConnectionState } from "~/types/network";
 import { useProgress } from "~/hooks/model/progress";
+import { Connection, ConnectionState } from "~/types/network";
+import ConnectionPage from "~/components/network/ConnectionPage";
 
 jest.mock("~/hooks/model/progress", () => ({
   useProgress: jest.fn(),
@@ -35,9 +35,7 @@ const mockConnection: Connection = new Connection("Network 1", {
   state: ConnectionState.activated,
 });
 
-jest.mock("~/components/network/WiredConnectionDetails", () => () => (
-  <div>WiredConnectionDetails Mock</div>
-));
+jest.mock("~/components/network/ConnectionDetails", () => () => <div>ConnectionDetails Mock</div>);
 
 jest.mock("~/components/network/NoPersistentConnectionsAlert", () => () => (
   <div>NoPersistentConnectionsAlert Mock</div>
@@ -48,9 +46,9 @@ jest.mock("~/hooks/model/proposal/network", () => ({
   useConnections: () => [mockConnection],
 }));
 
-describe("<WiredConnectionPage />", () => {
+describe("<ConnectionPage />", () => {
   it("mounts alert for all connections status", () => {
-    installerRender(<WiredConnectionPage />);
+    installerRender(<ConnectionPage />);
     screen.getByText("NoPersistentConnectionsAlert Mock");
   });
 
@@ -60,8 +58,8 @@ describe("<WiredConnectionPage />", () => {
     });
 
     it("mounts component for rendering connection details", () => {
-      installerRender(<WiredConnectionPage />);
-      screen.getByText("WiredConnectionDetails Mock");
+      installerRender(<ConnectionPage />);
+      screen.getByText("ConnectionDetails Mock");
     });
   });
 
@@ -71,7 +69,7 @@ describe("<WiredConnectionPage />", () => {
     });
 
     it("renders an informative message", () => {
-      installerRender(<WiredConnectionPage />);
+      installerRender(<ConnectionPage />);
       screen.getByText("Connection not found or lost");
     });
   });
@@ -89,7 +87,7 @@ describe("<WiredConnectionPage />", () => {
           : undefined,
       );
 
-      installerRender(<WiredConnectionPage />);
+      installerRender(<ConnectionPage />);
       expect(screen.queryByText("Performing some network task")).toBeInTheDocument();
     });
   });

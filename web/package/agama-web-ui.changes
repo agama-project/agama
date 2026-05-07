@@ -1,4 +1,51 @@
 -------------------------------------------------------------------
+Tue Apr 28 15:43:35 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show contextual hints when software selection is unavailable and
+  handle empty states when no patterns are available
+  (gh#agama-project/agama#3441, related to gh#agama-project/agama#3436
+  and gh#agama-project/agama#3420).
+
+-------------------------------------------------------------------
+Mon Apr 27 11:00:16 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Handle desktop selection when no desktop environments are available
+  (gh#agama-project/agama#3436, related to gh#agama-project/agama#3420).
+
+-------------------------------------------------------------------
+Sun Apr 26 21:35:13 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for configuring a network bond using the UI
+  (gh#agama-project/agama#3412).
+
+-------------------------------------------------------------------
+Fri Apr 24 15:21:18 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Sort software patterns by their order field within each category
+  (gh#agama-project/agama#3425).
+
+-------------------------------------------------------------------
+Thu Apr 23 15:59:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Revamp the software selection page to separate desktop
+  environments from additional patterns and migrate it to a proper
+  form with explicit Accept/Cancel
+  (gh#agama-project/agama#3389, gh#agama-project/agama#3396).
+- Hint users when no desktop is selected on products that suggest
+  one: surface the choice in the installation summary and link
+  from confirmation alerts to the relevant section
+  (gh#agama-project/agama#3409).
+- Polish the patterns selection page with sticky headers, filter
+  feedback and a subtler auto-selected badge
+  (gh#agama-project/agama#3417).
+
+-------------------------------------------------------------------
+Thu Apr 23 11:53:49 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix "Accept" button when connecting to iscsi target
+  (gh#agama-project/agama#3418)
+
+-------------------------------------------------------------------
 Tue Apr 14 17:36:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 20

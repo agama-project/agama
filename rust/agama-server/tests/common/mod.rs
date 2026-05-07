@@ -18,11 +18,11 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use aide::axum::ApiRouter;
 use axum::{
     body::{to_bytes, Body},
     extract::Request,
     response::Response,
-    Router,
 };
 use tower::ServiceExt;
 
@@ -36,14 +36,14 @@ pub async fn body_to_string(body: Body) -> String {
 ///
 /// It hides the details of the communication with the server.
 pub struct Client {
-    router: Router,
+    router: ApiRouter,
 }
 
 impl Client {
     /// Creates a new client.
     ///
     /// * `router`: service router.
-    pub fn new(router: Router) -> Self {
+    pub fn new(router: ApiRouter) -> Self {
         Self { router }
     }
 

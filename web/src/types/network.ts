@@ -30,6 +30,18 @@ import {
 } from "~/utils/network";
 
 /**
+ * Union type of all connection type string values.
+ */
+export type ConnectionType =
+  | "ethernet"
+  | "wireless"
+  | "loopback"
+  | "bond"
+  | "bridge"
+  | "vlan"
+  | "unknown";
+
+/**
  * Enum for AccessPoint flags
  *
  * https://networkmanager.dev/docs/api/latest/nm-dbus-types.html#NM80211ApFlags
@@ -68,14 +80,14 @@ enum ApSecurityFlags {
  */
 type ConnectionBindingMode = "none" | "iface" | "mac";
 
-enum ConnectionType {
-  ETHERNET = "ethernet",
-  WIFI = "wireless",
-  LOOPBACK = "loopback",
-  BOND = "bond",
-  BRIDGE = "bridge",
-  VLAN = "vlan",
-  UNKNOWN = "unknown",
+enum BondMode {
+  BALANCE_ROUND_ROBIN = "balance-rr",
+  ACTIVE_BACKUP = "active-backup",
+  BALANCE_XOR = "balance-xor",
+  BROADCAST = "broadcast",
+  LACP = "802.3ad",
+  BALANCE_TLB = "balance-tlb",
+  BALANCE_ALB = "balance-alb",
 }
 
 enum DeviceState {
@@ -251,6 +263,7 @@ type APIRoute = {
 
 type APIConnection = {
   id: string;
+  bond?: Bond;
   interface?: string;
   macAddress?: string;
   addresses?: string[];
@@ -290,6 +303,12 @@ class Wireless {
   }
 }
 
+type Bond = {
+  mode: BondMode;
+  options: string;
+  ports: string[];
+};
+
 type ConnectionOptions = {
   iface?: string;
   macAddress?: string;
@@ -301,6 +320,7 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  bond?: Bond;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
@@ -330,6 +350,7 @@ class Connection {
   gateway6?: string = "";
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
+  bond?: Bond;
   wireless?: Wireless;
   persistent: boolean;
 
@@ -545,11 +566,11 @@ export {
   AccessPoint,
   ApFlags,
   ApSecurityFlags,
+  BondMode,
   Connection,
   ConnectionState,
   ConnectionStatus,
   ConnectionMethod,
-  ConnectionType,
   Device,
   DeviceState,
   DeviceType,

@@ -280,6 +280,7 @@ impl Starter {
                 software::Service::starter(
                     self.events.clone(),
                     issues.clone(),
+                    l10n.clone(),
                     progress.clone(),
                     self.questions.clone(),
                     security.clone(),

@@ -21,4 +21,4 @@
  */
 
 export { default as NetworkPage } from "./NetworkPage";
-export { default as WiredConnectionPage } from "./WiredConnectionPage";
+export { default as ConnectionPage } from "./ConnectionPage";

@@ -85,6 +85,7 @@ translations:
       之间，旨在让用户无需在“稳定版”和新版软件包之间抉择。
     zh_TW: 一個具實驗性質且稍慢的 openSUSE 滾動發行版本，其更新頻率低於 Tumbleweed、高於 Leap，讓使用者無需在 "穩定性"
       與新套件之間做出選擇。
+desktop_selection: suggested
 software:
   installation_repositories:
     - url: https://download.opensuse.org/slowroll/repo/oss/
@@ -99,8 +100,10 @@ software:
   optional_patterns: []
   user_patterns:
     - basic-desktop
-    - gnome
-    - kde
+    - name: gnome
+      desktop: true
+    - name: kde
+      desktop: true
     - yast2_basis
     - yast2_desktop
     - yast2_server

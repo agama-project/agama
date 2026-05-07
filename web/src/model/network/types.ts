@@ -114,6 +114,8 @@ enum DeviceType {
   WIRELESS = 2,
   DUMMY = 3,
   BOND = 4,
+  VLAN = 5,
+  BRIDGE = 6,
 }
 
 enum NetworkState {
@@ -248,6 +250,7 @@ type APIRoute = {
 };
 
 type APIConnection = {
+  bond?: Bond;
   id: string;
   interface?: string;
   macAddress?: string;
@@ -270,6 +273,12 @@ type WirelessOptions = {
   security?: string;
   hidden?: boolean;
   mode?: string;
+};
+
+type Bond = {
+  ports?: string[];
+  mode?: string[];
+  options?: string[];
 };
 
 class Wireless {
@@ -299,6 +308,7 @@ type ConnectionOptions = {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   wireless?: Wireless;
+  bond?: Bond;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
@@ -318,6 +328,7 @@ class Connection {
   method4: ConnectionMethod = ConnectionMethod.AUTO;
   method6: ConnectionMethod = ConnectionMethod.AUTO;
   wireless?: Wireless;
+  bond?: Bond;
   persistent: boolean;
 
   constructor(id: string, options?: ConnectionOptions) {

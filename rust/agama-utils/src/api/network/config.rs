@@ -22,13 +22,14 @@
 
 use crate::api::network::{NetworkConnectionsCollection, StateSettings};
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 
 /// Network config settings for installation
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Merge, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schema(as = network::Config)]
+#[schemars(rename = "network.Config")]
 pub struct Config {
     /// Connections to use in the installation
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -91,10 +92,10 @@ mod tests {
                 },
             ])),
             state: Some(StateSettings {
-                connectivity: Some(ConnectivityState::None),     // This should NOT overwrite updated's true
-                wireless_enabled: None,          // This should NOT overwrite updated's true
+                connectivity: Some(ConnectivityState::None), // This should NOT overwrite updated's true
+                wireless_enabled: None, // This should NOT overwrite updated's true
                 networking_enabled: Some(false), // This should NOT overwrite updated's true
-                copy_network: Some(true),        // This SHOULD overwrite updated's None
+                copy_network: Some(true), // This SHOULD overwrite updated's None
             }),
         };
 

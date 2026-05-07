@@ -28,22 +28,22 @@ import {
   ConnectionMethod,
   ConnectionState,
   ConnectionStatus,
-  ConnectionType,
   DeviceState,
 } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 import ConnectionForm from "~/components/network/ConnectionForm";
 
 const mockDevice1 = {
   name: "enp1s0",
   macAddress: "00:11:22:33:44:55",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
 };
 
 const mockDevice2 = {
   name: "enp2s0",
   macAddress: "AA:BB:CC:DD:EE:FF",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.DISCONNECTED,
 };
 
@@ -88,6 +88,55 @@ describe("ConnectionForm", () => {
     screen.getByText("IPv6 Settings");
     screen.getByText("Use custom DNS servers");
     screen.getByText("Use custom DNS search domains");
+
+    // Bond settings should not be visible for Ethernet
+    expect(screen.queryByLabelText("Bond mode")).not.toBeInTheDocument();
+    expect(screen.queryByText("Bond ports")).not.toBeInTheDocument();
+  });
+
+  it("prefills the name based on the selected type", async () => {
+    const { user } = installerRender(<ConnectionForm />);
+
+    // Default is Ethernet
+    expect(screen.getByLabelText("Name")).toHaveValue("Ethernet");
+
+    // Switch to Bond
+    await user.click(screen.getByLabelText("Type"));
+    await user.click(screen.getByRole("option", { name: "Bond" }));
+    expect(screen.getByLabelText("Name")).toHaveValue("Bond");
+  });
+
+  describe("Bond connection", () => {
+    it("shows bond fields when type is Bond", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByText("Bond"));
+      await screen.findByLabelText("Bond mode");
+      screen.getByText("Bond ports");
+    });
+
+    it("preserves user input when switching between connection types", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      // Switch to Bond and enter a device name
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByText("Bond"));
+      const deviceNameField = await screen.findByLabelText("Device name");
+      await user.type(deviceNameField, "bond0");
+      expect(deviceNameField).toHaveValue("bond0");
+
+      // Switch to Ethernet and select a binding mode
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByText("Ethernet"));
+      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByRole("option", { name: /^Chosen by name/ }));
+
+      // Switch back to Bond - the device name should be preserved
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByText("Bond"));
+      expect(await screen.findByLabelText("Device name")).toHaveValue("bond0");
+    });
   });
 
   describe("Device binding", () => {
@@ -190,17 +239,6 @@ describe("ConnectionForm", () => {
     screen.getByText("IPv4 Addresses");
     screen.getByLabelText("IPv4 Gateway (optional)");
     expect(screen.queryByText("IPv6 Addresses")).not.toBeInTheDocument();
-  });
-
-  it("shows an error when addresses are invalid in automatic + manual mode", async () => {
-    const { user } = installerRender(<ConnectionForm />);
-    await user.type(screen.getByLabelText("Name"), "Test");
-    await user.click(screen.getByLabelText("IPv4 Settings"));
-    await user.click(screen.getByRole("option", { name: /^Automatic \+ manual/ }));
-    await user.type(screen.getByLabelText("IPv4 Addresses"), "not-an-ip{Enter}");
-    await user.click(screen.getByRole("button", { name: "Accept" }));
-    await screen.findByText(/Invalid IPv4 address/);
-    expect(mockMutateAsync).not.toHaveBeenCalled();
   });
 
   it("submits empty addresses when both settings are automatic", async () => {
@@ -558,6 +596,96 @@ describe("ConnectionForm", () => {
           expect.objectContaining({ dnsSearchList: [] }),
         ),
       );
+    });
+  });
+
+  describe("validation", () => {
+    describe("IP Settings", () => {
+      it("shows an error when IPv4 addresses are invalid", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+        await user.type(screen.getByLabelText("Name"), "Test");
+        await user.click(screen.getByLabelText("IPv4 Settings"));
+        await user.click(screen.getByRole("option", { name: /^Automatic \+ manual/ }));
+        await user.type(screen.getByLabelText("IPv4 Addresses"), "not-an-ip{Enter}");
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+        await screen.findByText(/Invalid IPv4 address/);
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("Bond", () => {
+      it("shows an error when no device name is defined", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("Bond"));
+        await user.type(await screen.findByLabelText("Name"), "test-bond");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Device name is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows an error when no bond ports are selected", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("Bond"));
+        await user.type(await screen.findByLabelText("Name"), "test-bond");
+        await user.type(await screen.findByLabelText("Device name"), "bond0");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("At least one bond port is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows an error when 'primary' option is used with an invalid bond mode", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("Bond"));
+        await user.type(await screen.findByLabelText("Name"), "test-bond");
+        await user.type(await screen.findByLabelText("Device name"), "bond0");
+
+        // Default mode is balance-rr, which does not support 'primary'
+        await user.type(screen.getByLabelText("Bond options"), "primary=enp1s0{enter}");
+        await user.type(screen.getByRole("textbox", { name: "Bond ports" }), "enp1s0{enter}");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText(
+          "The 'primary' option is only valid for 'active-backup', 'balance-tlb', and 'balance-alb' modes",
+        );
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("allows 'primary' option with active-backup mode", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("Bond"));
+        await user.type(await screen.findByLabelText("Name"), "test-bond");
+        await user.type(await screen.findByLabelText("Device name"), "bond0");
+
+        await user.click(screen.getByLabelText("Bond mode"));
+        await user.click(screen.getByRole("option", { name: /active-backup/ }));
+
+        await user.type(screen.getByLabelText("Bond options"), "primary=enp1s0{enter}");
+        await user.type(screen.getByRole("textbox", { name: "Bond ports" }), "enp1s0{enter}");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await waitFor(() => {
+          expect(
+            screen.queryByText(
+              "The 'primary' option is only valid for 'active-backup', 'balance-tlb', and 'balance-alb' modes",
+            ),
+          ).not.toBeInTheDocument();
+          expect(mockMutateAsync).toHaveBeenCalled();
+        });
+      });
     });
   });
 });

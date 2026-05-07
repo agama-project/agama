@@ -28,6 +28,7 @@ import React from "react";
 import Add from "@icons/add.svg?component";
 import AddCircle from "@icons/add_circle.svg?component";
 import Apps from "@icons/apps.svg?component";
+import AppsOutage from "@icons/apps_outage.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
@@ -78,6 +79,7 @@ const icons = {
   add: Add,
   add_circle: AddCircle,
   apps: Apps,
+  apps_outage: AppsOutage,
   app_registration: AppRegistration,
   arrow_drop_down: ArrowDropDown,
   backspace: Backspace,

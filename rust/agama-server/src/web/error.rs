@@ -20,16 +20,18 @@
 
 //! Shared error handling utilities for HTTP API responses.
 
+use aide::OperationIo;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
 };
+use schemars::JsonSchema;
 use serde::Serialize;
-use utoipa::ToSchema;
 
 /// Error response returned by API endpoints
-#[derive(Serialize, ToSchema)]
+#[derive(Serialize, JsonSchema, OperationIo)]
+#[aide(output)]
 pub struct ErrorResponse {
     /// Error message
     pub error: String,

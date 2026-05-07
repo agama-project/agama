@@ -28,15 +28,15 @@ import {
   Connection,
   ConnectionMethod,
   ConnectionState,
-  ConnectionType,
   Device,
   DeviceState,
 } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 
 const mockDevice: Device = {
   name: "enp1s0",
   connection: "Network 1",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.100"],

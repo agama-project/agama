@@ -55,6 +55,11 @@ describe("Text", () => {
     expect(screen.getByText("Installer")).toHaveClass(a11yStyles.screenReader);
   });
 
+  it("sets aria-hidden when srHidden is true", () => {
+    plainRender(<Text srHidden>Installer</Text>);
+    expect(screen.getByText("Installer")).toHaveAttribute("aria-hidden", "true");
+  });
+
   it("applies screenReader class when srOn is 'default'", () => {
     plainRender(<Text srOn="default">Installer</Text>);
     expect(screen.getByText("Installer")).toHaveClass(a11yStyles.screenReader);

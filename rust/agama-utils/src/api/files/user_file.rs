@@ -20,6 +20,7 @@
 
 //! Implements a data model for Files configuration.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::{io, num::ParseIntError, path::Path, process};
 
@@ -43,7 +44,7 @@ pub enum Error {
 }
 
 /// Represents individual settings for single file deployment
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct UserFile {
     /// File content or URL.

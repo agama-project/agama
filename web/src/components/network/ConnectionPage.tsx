@@ -32,10 +32,10 @@ import { Link, Page } from "~/components/core";
 import { useConnections } from "~/hooks/model/proposal/network";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
-import WiredConnectionDetails from "./WiredConnectionDetails";
-import { Icon } from "../layout";
+import ConnectionDetails from "~/components/network/ConnectionDetails";
+import { Icon } from "~/components/layout";
 import { NETWORK } from "~/routes/paths";
-import NoPersistentConnectionsAlert from "./NoPersistentConnectionsAlert";
+import NoPersistentConnectionsAlert from "~/components/network/NoPersistentConnectionsAlert";
 
 const ConnectionNotFound = ({ id }) => {
   // TRANSLATORS: %s will be replaced with connection id
@@ -59,13 +59,13 @@ const ConnectionNotFound = ({ id }) => {
   );
 };
 
-// TODO: evaluate whether this page and WiredConnectionDetails should merge config
+// TODO: evaluate whether this page and ConnectionDetails should merge config
 // and system connections (like EditConnectionForm does) so that displayed values
 // reflect what the user actually configured. Currently useConnections reads from
 // the proposal source, which always reports e.g. method4: "auto" even when the
 // config has no method set. If merging is not adopted here, ConnectionForm should
 // be made consistent and drop its own merge too.
-export default function WiredConnectionPage() {
+export default function ConnectionPage() {
   const { id } = useParams();
   const connections = useConnections();
   const connection = connections.find((c) => c.id === id);
@@ -78,7 +78,7 @@ export default function WiredConnectionPage() {
       <Page.Content>
         <NoPersistentConnectionsAlert />
         {connection ? (
-          <WiredConnectionDetails connection={connection} />
+          <ConnectionDetails connection={connection} />
         ) : (
           <ConnectionNotFound id={id} />
         )}

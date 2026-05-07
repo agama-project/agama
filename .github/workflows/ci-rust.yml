@@ -259,6 +259,7 @@ jobs:
     - name: Install required packages
       run: zypper --non-interactive install --allow-downgrade
         clang-devel
+        dbus-1-daemon
         gcc-c++
         git
         libopenssl-3-devel
@@ -267,6 +268,7 @@ jobs:
         make
         openssl-3
         pam-devel
+        python-langtable-data
         python3-openapi_spec_validator
         rustup
 

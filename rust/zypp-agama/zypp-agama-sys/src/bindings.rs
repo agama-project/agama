@@ -653,6 +653,12 @@ unsafe extern "C" {
     #[doc = " Get Product details."]
     pub fn get_products(_zypp: *mut Zypp, status: *mut Status) -> Products;
     pub fn free_products(products: *const Products);
+    #[doc = " Select locale packages to install"]
+    pub fn select_locale(
+        _zypp: *mut Zypp,
+        language: *const ::std::os::raw::c_char,
+        country: *const ::std::os::raw::c_char,
+    );
     pub fn import_gpg_key(
         zypp: *mut Zypp,
         pathname: *const ::std::os::raw::c_char,

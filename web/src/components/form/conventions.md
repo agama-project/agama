@@ -167,6 +167,27 @@ of users: that just adds an unnecessary click.
 **Examples:** "Use custom DNS" checkbox reveals the DNS servers field. "Use
 custom DNS search domains" checkbox reveals the DNS search domains field.
 
+## Read-only information
+
+Use `ReadOnlyField` to display contextual information alongside editable fields
+without using disabled inputs.
+
+Disabled inputs have accessibility limitations: they cannot receive focus, their
+values cannot be selected or copied, and they signal to the user that a field
+might become editable under different circumstances. When information should
+never be edited in the current context, it is clearer and more accessible to
+display it as read-only text rather than a disabled input.
+
+**Example:** When editing an existing connection, the connection type is shown
+with `ReadOnlyField` because the type cannot be changed after creation.
+Displaying it as a disabled input would suggest it might become editable, which
+is misleading.
+
+The label and value are read sequentially by screen readers, which provides
+clear context without requiring programmatic label association.
+
+---
+
 ## Accessibility notes
 
 ### Fields without a visible label

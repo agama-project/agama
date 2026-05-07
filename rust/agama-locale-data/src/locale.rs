@@ -21,12 +21,13 @@
 //! Defines useful types to deal with localization values
 
 use regex::Regex;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 use std::{fmt::Display, str::FromStr};
 use thiserror::Error;
 
-#[derive(Debug, Clone, Serialize, PartialEq, Eq, PartialOrd, Ord, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
 pub struct TimezoneId(String);
 
 impl Default for TimezoneId {
@@ -60,9 +61,7 @@ impl FromStr for TimezoneId {
     }
 }
 
-#[derive(
-    Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, utoipa::ToSchema,
-)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema)]
 pub struct LocaleId {
     // ISO-639
     pub language: String,
@@ -136,9 +135,7 @@ static KEYMAP_ID_REGEX: OnceLock<Regex> = OnceLock::new();
 /// let id_with_dashes: KeymapId = "es-ast".parse().unwrap();
 /// assert_eq!(id, id_with_dashes);
 /// ```
-#[derive(
-    Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, utoipa::ToSchema,
-)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema)]
 pub struct KeymapId {
     /// Keyboard layout (e.g., "es" in "es(ast)")
     pub layout: String,

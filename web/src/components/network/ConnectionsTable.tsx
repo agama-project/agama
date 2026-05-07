@@ -45,9 +45,9 @@ import SimpleSelector from "~/components/core/SimpleSelector";
 import { useConnections, useConnectionMutation } from "~/hooks/model/config/network";
 import { useDevices, useSystem } from "~/hooks/model/system/network";
 import { sortCollection } from "~/utils";
-import { formatIp } from "~/utils/network";
+import { connectionType, CONNECTION_TYPE, connectionTypeLabel, formatIp } from "~/utils/network";
 import { _ } from "~/i18n";
-import { Connection, ConnectionStatus, Device } from "~/types/network";
+import { Connection, ConnectionStatus, ConnectionType, Device } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
 
 /**
@@ -56,7 +56,7 @@ import { NETWORK } from "~/routes/paths";
 type ConnectionsFilters = {
   name?: string;
   device?: string;
-  type?: "all" | "wifi" | "ethernet";
+  type?: "all" | ConnectionType;
   status?: "all" | "up" | "down";
 };
 
@@ -116,9 +116,7 @@ const filterConnections = (
     }
 
     if (type && type !== "all") {
-      const isWifi = !!c.wireless;
-      if (type === "wifi" && !isWifi) return false;
-      if (type === "ethernet" && isWifi) return false;
+      if (connectionType(c) !== type) return false;
     }
 
     if (status && status !== "all") {
@@ -153,8 +151,8 @@ const createColumns = (devices: Device[]) => [
   },
   {
     name: _("Type"),
-    value: (c: Connection) => (c.wireless ? _("Wi-Fi") : _("Ethernet")),
-    sortingKey: (c: Connection) => (c.wireless ? "wifi" : "ethernet"),
+    value: (c: Connection) => connectionTypeLabel(connectionType(c)),
+    sortingKey: (c: Connection) => connectionType(c),
   },
   {
     name: _("Status"),
@@ -283,8 +281,9 @@ export default function ConnectionsTable() {
                 value={state.filters.type}
                 options={{
                   all: _("All"),
-                  wifi: _("Wi-Fi"),
-                  ethernet: _("Ethernet"),
+                  [CONNECTION_TYPE.WIFI]: connectionTypeLabel(CONNECTION_TYPE.WIFI),
+                  [CONNECTION_TYPE.ETHERNET]: connectionTypeLabel(CONNECTION_TYPE.ETHERNET),
+                  [CONNECTION_TYPE.BOND]: connectionTypeLabel(CONNECTION_TYPE.BOND),
                 }}
                 onChange={(_, v) => onFilterChange("type", v)}
               />
@@ -337,20 +336,12 @@ export default function ConnectionsTable() {
             {
               id: "details",
               title: _("Details"),
-              onClick: () => {
-                // FIXME: create a shared connection page and route
-                navigate(generatePath(NETWORK.wiredConnection, { id: c.id }));
-              },
+              onClick: () => navigate(generatePath(NETWORK.connection.details, { id: c.id })),
             },
             {
               id: "edit",
               title: _("Edit connection"),
-              onClick: () => navigate(generatePath(NETWORK.editConnection, { id: c.id })),
-            },
-            !isWifi && {
-              id: "editBinding",
-              title: _("Edit binding"),
-              onClick: () => navigate(generatePath(NETWORK.editBindingSettings, { id: c.id })),
+              onClick: () => navigate(generatePath(NETWORK.connection.edit, { id: c.id })),
             },
             {
               isSeparator: true,

@@ -53,6 +53,7 @@ translations:
       SUSE Linux Enterprise Server.
     zh_CN: 基于 SUSE Linux Enterprise Server 构建的社区发行版的最新版本。
     zh_TW: 根據最新 SUSE Linux Enterprise Server 打造的最新社群版發行版本。
+desktop_selection: suggested
 software:
   installation_repositories:
     - url: https://download.opensuse.org/distribution/leap/16.1/repo/oss/$basearch
@@ -69,11 +70,16 @@ software:
     - enhanced_base # only pattern that is shared among all roles on Leap
   optional_patterns: [] # no optional pattern shared
   user_patterns:
-    - gnome
-    - kde
-    - xfce_wayland
-    - lxqt_wayland
-    - openSUSEway
+    - name: gnome
+      desktop: true
+    - name: kde
+      desktop: true
+    - name: xfce_wayland
+      desktop: true
+    - name: lxqt_wayland
+      desktop: true
+    - name: openSUSEway
+      desktop: true
     - multimedia
     - office
     - cockpit

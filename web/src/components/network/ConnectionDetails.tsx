@@ -40,7 +40,7 @@ import {
 import { generatePath } from "react-router";
 import Text from "~/components/core/Text";
 import { Link, NestedContent, Page } from "~/components/core";
-import InstallationOnlySwitch from "./InstallationOnlySwitch";
+import InstallationOnlySwitch from "~/components/network/InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";
 import { NETWORK } from "~/routes/paths";
@@ -74,7 +74,7 @@ const BindingSettings = ({ connection }: { connection: Connection }) => {
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
         <Link
-          to={generatePath(NETWORK.editBindingSettings, {
+          to={generatePath(NETWORK.connection.editBinding, {
             id: connection.id,
           })}
         >
@@ -126,6 +126,37 @@ const NetworkDetails = ({ connection }: { connection: Connection }) => {
   );
 };
 
+const BondDetails = ({ connection }: { connection: Connection }) => {
+  return (
+    <Page.Section title={_("Bond")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+      <DescriptionList aria-label={_("Bond details")} isHorizontal>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Bond mode")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.bond?.mode || _("None set")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Bond options")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {isEmpty(connection.bond?.options) ? _("None set") : connection.bond?.options}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Bond ports")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            <Flex direction={{ default: "column" }}>
+              {isEmpty(connection.bond?.ports)
+                ? _("None set")
+                : connection.bond?.ports.map((port, idx) => <FlexItem key={idx}>{port}</FlexItem>)}
+            </Flex>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    </Page.Section>
+  );
+};
+
 const DeviceDetails = ({ device }: { device: Device }) => {
   return (
     <DescriptionList
@@ -150,8 +181,14 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         <DescriptionListTerm>{_("Gateway")}</DescriptionListTerm>
         <DescriptionListDescription>
           <Flex direction={{ default: "column" }}>
-            <FlexItem>{device.gateway4}</FlexItem>
-            <FlexItem>{device.gateway6}</FlexItem>
+            {isEmpty(device.gateway4) && isEmpty(device.gateway6) ? (
+              _("None set")
+            ) : (
+              <>
+                {device.gateway4 && <FlexItem>{device.gateway4}</FlexItem>}
+                {device.gateway6 && <FlexItem>{device.gateway6}</FlexItem>}
+              </>
+            )}
           </Flex>
         </DescriptionListDescription>
       </DescriptionListGroup>
@@ -159,9 +196,9 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         <DescriptionListTerm>{_("IP Addresses")}</DescriptionListTerm>
         <DescriptionListDescription>
           <Flex direction={{ default: "column" }}>
-            {device.addresses.map((ip, idx) => (
-              <FlexItem key={idx}>{formatIp(ip)}</FlexItem>
-            ))}
+            {isEmpty(device.addresses)
+              ? _("None set")
+              : device.addresses.map((ip, idx) => <FlexItem key={idx}>{formatIp(ip)}</FlexItem>)}
           </Flex>
         </DescriptionListDescription>
       </DescriptionListGroup>
@@ -169,19 +206,19 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         <DescriptionListTerm>{_("DNS")}</DescriptionListTerm>
         <DescriptionListDescription>
           <Flex direction={{ default: "column" }}>
-            {device.nameservers.map((dns, idx) => (
-              <FlexItem key={idx}>{dns}</FlexItem>
-            ))}
+            {isEmpty(device.nameservers)
+              ? _("None set")
+              : device.nameservers.map((dns, idx) => <FlexItem key={idx}>{dns}</FlexItem>)}
           </Flex>
         </DescriptionListDescription>
       </DescriptionListGroup>
       <DescriptionListGroup>
-        <DescriptionListTerm>{_("DNS Search List")}</DescriptionListTerm>
+        <DescriptionListTerm>{_("DNS search domains")}</DescriptionListTerm>
         <DescriptionListDescription>
           <Flex direction={{ default: "column" }}>
-            {device.dnsSearchList.map((domain, idx) => (
-              <FlexItem key={idx}>{domain}</FlexItem>
-            ))}
+            {isEmpty(device.dnsSearchList)
+              ? _("None set")
+              : device.dnsSearchList.map((domain, idx) => <FlexItem key={idx}>{domain}</FlexItem>)}
           </Flex>
         </DescriptionListDescription>
       </DescriptionListGroup>
@@ -189,9 +226,11 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         <DescriptionListTerm>{_("Routes")}</DescriptionListTerm>
         <DescriptionListDescription>
           <Flex direction={{ default: "column" }}>
-            {device.routes4.map((route, idx) => (
-              <FlexItem key={idx}>{formatIp(route.destination)}</FlexItem>
-            ))}
+            {isEmpty(device.routes4)
+              ? _("None set")
+              : device.routes4.map((route, idx) => (
+                  <FlexItem key={idx}>{formatIp(route.destination)}</FlexItem>
+                ))}
           </Flex>
         </DescriptionListDescription>
       </DescriptionListGroup>
@@ -246,14 +285,14 @@ const DevicesDetails = ({ connection }: { connection: Connection }) => {
   );
 };
 
-const ConnectionDetails = ({ connection }: { connection: Connection }) => {
+const SettingsCard = ({ connection }: { connection: Connection }) => {
   const gateways = [connection.gateway4, connection.gateway6];
   return (
     <Page.Section
       title={_("Settings")}
       pfCardProps={{ isPlain: false, isFullHeight: false }}
       actions={
-        <Link to={generatePath(NETWORK.editConnection, { id: connection.id })}>
+        <Link to={generatePath(NETWORK.connection.edit, { id: connection.id })}>
           {_("Edit connection settings")}
         </Link>
       }
@@ -279,7 +318,9 @@ const ConnectionDetails = ({ connection }: { connection: Connection }) => {
               <Flex direction={{ default: "column" }}>
                 {gateways.every((g) => isEmpty(g))
                   ? _("None set")
-                  : gateways.map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
+                  : gateways
+                      .filter((g) => !isEmpty(g))
+                      .map((g, i) => <FlexItem key={i}>{g}</FlexItem>)}
               </Flex>
             </DescriptionListDescription>
           </DescriptionListGroup>
@@ -306,7 +347,7 @@ const ConnectionDetails = ({ connection }: { connection: Connection }) => {
             </DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>
-            <DescriptionListTerm>{_("DNS Search List")}</DescriptionListTerm>
+            <DescriptionListTerm>{_("DNS search domains")}</DescriptionListTerm>
             <DescriptionListDescription>
               <Flex direction={{ default: "column" }}>
                 {isEmpty(connection.dnsSearchList)
@@ -326,18 +367,20 @@ const ConnectionDetails = ({ connection }: { connection: Connection }) => {
   );
 };
 
-export default function WiredConnectionDetails({ connection }: { connection: Connection }) {
+export default function ConnectionDetails({ connection }: { connection: Connection }) {
   return (
     <Grid hasGutter>
       <GridItem md={6}>
         <Stack hasGutter>
-          <ConnectionDetails connection={connection} />
+          <SettingsCard connection={connection} />
         </Stack>
       </GridItem>
       <GridItem md={6} order={{ default: "1", md: "2" }}>
         <Stack hasGutter>
           {connection.wireless ? (
             <NetworkDetails connection={connection} />
+          ) : connection.bond ? (
+            <BondDetails connection={connection} />
           ) : (
             <BindingSettings connection={connection} />
           )}

@@ -21,6 +21,7 @@
 use crate::error::ProfileError;
 use anyhow::Context;
 use log::info;
+use schemars::JsonSchema;
 use serde_json;
 use std::{
     env, fs,
@@ -86,7 +87,7 @@ impl AutoyastProfileImporter {
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
 pub enum ValidationOutcome {
     Valid,
     NotValid(Vec<String>),

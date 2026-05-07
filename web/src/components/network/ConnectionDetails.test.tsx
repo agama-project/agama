@@ -23,15 +23,15 @@
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import WiredConnectionDetails from "./WiredConnectionDetails";
+import ConnectionDetails from "~/components/network/ConnectionDetails";
 import {
   Connection,
   ConnectionMethod,
   ConnectionState,
-  ConnectionType,
   Device,
   DeviceState,
 } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 
 jest.mock("~/components/network/InstallationOnlySwitch", () => () => (
   <div>InstallationOnlySwitch mock</div>
@@ -40,7 +40,7 @@ jest.mock("~/components/network/InstallationOnlySwitch", () => () => (
 const mockDevice: Device = {
   name: "enp1s0",
   connection: "Network #1",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.201", prefix: 24 }],
   nameservers: ["192.168.69.100"],
@@ -56,7 +56,7 @@ const mockDevice: Device = {
 const mockAnotherDevice: Device = {
   name: "enp1s1",
   connection: "Network #1",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.69.101", prefix: 24 }],
   nameservers: ["192.168.69.50"],
@@ -87,10 +87,10 @@ jest.mock("~/hooks/model/system/network", () => ({
   useDevices: () => networkDevices(),
 }));
 
-describe("WiredConnectionDetails", () => {
+describe("ConnectionDetails", () => {
   describe("Settings", () => {
     it("renders the connection settings (DCHP)", () => {
-      installerRender(<WiredConnectionDetails connection={mockConnection} />);
+      installerRender(<ConnectionDetails connection={mockConnection} />);
       const section = screen.getByRole("region", { name: "Settings" });
 
       within(section).getByText("IPv4 auto");
@@ -104,7 +104,7 @@ describe("WiredConnectionDetails", () => {
         state: ConnectionState.activated,
         iface: "enp1s0",
       });
-      installerRender(<WiredConnectionDetails connection={connection} />);
+      installerRender(<ConnectionDetails connection={connection} />);
       const section = screen.getByRole("region", { name: "Settings" });
 
       within(section).getByText("IPv4 None set");
@@ -113,7 +113,7 @@ describe("WiredConnectionDetails", () => {
 
     it("renders the connection settings (static)", () => {
       installerRender(
-        <WiredConnectionDetails
+        <ConnectionDetails
           connection={
             new Connection("Network #1", {
               state: ConnectionState.activated,
@@ -140,13 +140,13 @@ describe("WiredConnectionDetails", () => {
     });
 
     it("renders the switch for making connection available only during installation", () => {
-      installerRender(<WiredConnectionDetails connection={mockConnection} />);
+      installerRender(<ConnectionDetails connection={mockConnection} />);
       const section = screen.getByRole("region", { name: "Settings" });
       within(section).getByText("InstallationOnlySwitch mock");
     });
 
     it("renders link for editing connection", () => {
-      installerRender(<WiredConnectionDetails connection={mockConnection} />);
+      installerRender(<ConnectionDetails connection={mockConnection} />);
       const section = screen.getByRole("region", { name: "Settings" });
       const editLink = within(section).getByRole("link", { name: "Edit connection settings" });
       expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/edit");
@@ -155,14 +155,14 @@ describe("WiredConnectionDetails", () => {
 
   describe("Binding settings section", () => {
     it("renders information aobut the binding mode (all)", () => {
-      installerRender(<WiredConnectionDetails connection={new Connection("Network #1")} />);
+      installerRender(<ConnectionDetails connection={new Connection("Network #1")} />);
       const section = screen.getByRole("region", { name: "Binding" });
       within(section).getByText("Connection is available to all devices.");
     });
 
     it("renders information aobut the binding mode (to MAC)", () => {
       installerRender(
-        <WiredConnectionDetails
+        <ConnectionDetails
           connection={new Connection("Network #1", { macAddress: "AA:11:22:33:44:FF" })}
         />,
       );
@@ -172,14 +172,14 @@ describe("WiredConnectionDetails", () => {
 
     it("renders information aobut the binding mode (to device)", () => {
       installerRender(
-        <WiredConnectionDetails connection={new Connection("Network #1", { iface: "enp1s0" })} />,
+        <ConnectionDetails connection={new Connection("Network #1", { iface: "enp1s0" })} />,
       );
       const section = screen.getByRole("region", { name: "Binding" });
       within(section).getByText("Connection is bound to device enp1s0.");
     });
 
     it("renders a link to for editing binding settings", () => {
-      installerRender(<WiredConnectionDetails connection={mockConnection} />);
+      installerRender(<ConnectionDetails connection={mockConnection} />);
       const section = screen.getByRole("region", { name: "Binding" });
       const editLink = within(section).getByRole("link", { name: "Edit binding settings" });
       expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/binding/edit");
@@ -193,7 +193,7 @@ describe("WiredConnectionDetails", () => {
       });
 
       it("renders information about no devices using the connection", () => {
-        installerRender(<WiredConnectionDetails connection={mockConnection} />);
+        installerRender(<ConnectionDetails connection={mockConnection} />);
         const section = screen.getByRole("region", { name: "Connected devices" });
         within(section).getByText("No device is currently using this connection.");
       });
@@ -205,7 +205,7 @@ describe("WiredConnectionDetails", () => {
       });
 
       it("renders title in singluar along with device data", () => {
-        installerRender(<WiredConnectionDetails connection={mockConnection} />);
+        installerRender(<ConnectionDetails connection={mockConnection} />);
         const section = screen.getByRole("region", { name: "Connected device" });
         within(section).getByText("enp1s0");
         within(section).getByText("AA:11:22:33:44::FF");
@@ -222,7 +222,7 @@ describe("WiredConnectionDetails", () => {
       });
 
       it("renders title in plurarl and devices data in tabs", async () => {
-        const { user } = installerRender(<WiredConnectionDetails connection={mockConnection} />);
+        const { user } = installerRender(<ConnectionDetails connection={mockConnection} />);
         const section = screen.getByRole("region", { name: "Connected devices" });
         const enp1s0DeviceTab = within(section).getByRole("tab", { name: "enp1s0" });
         const enp1s1DeviceTab = within(section).getByRole("tab", { name: "enp1s1" });

@@ -53,13 +53,13 @@ export default function NetworkPage() {
             pfCardProps={{ isCompact: true, component: "div", isFullHeight: false }}
             actions={
               <>
-                <Link to={NETWORK.newConnection} variant="plain">
+                <Link to={NETWORK.connection.new} variant="plain">
                   <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
                     <Icon name="add_circle" /> {_("Add connection")}
                   </Flex>
                 </Link>
                 {state.wirelessEnabled && (
-                  <Link to={NETWORK.newWiFiConnection} variant="plain">
+                  <Link to={NETWORK.wifi.new} variant="plain">
                     <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
                       <Icon name="wifi" /> {_("Connect to Wi-Fi network")}
                     </Flex>

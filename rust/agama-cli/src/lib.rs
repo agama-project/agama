@@ -31,6 +31,7 @@ use agama_lib::{
     error::ServiceError,
     http::{BaseHTTPClient, WebSocketClient},
     manager::ManagerHTTPClient,
+    monitor::Monitor,
 };
 use agama_transfer::Transfer;
 use agama_utils::api::{self, status::Stage, FinishMethod, IssueWithScope};
@@ -41,9 +42,15 @@ use tokio::time::sleep;
 use url::Url;
 
 use crate::{
-    auth::run as run_auth_cmd, auth_tokens_file::AuthTokensFile, commands::Commands,
-    config::run as run_config_cmd, error::CliError, events::run as run_events_cmd,
-    logs::run as run_logs_cmd, progress::ProgressMonitor, questions::run as run_questions_cmd,
+    auth::run as run_auth_cmd,
+    auth_tokens_file::AuthTokensFile,
+    commands::{Commands, Format},
+    config::run as run_config_cmd,
+    error::CliError,
+    events::run as run_events_cmd,
+    logs::run as run_logs_cmd,
+    progress::ProgressMonitor,
+    questions::run as run_questions_cmd,
 };
 
 mod auth;
@@ -58,8 +65,10 @@ mod events;
 mod logs;
 mod progress;
 mod questions;
+mod status;
 
 use context::InstallationContext;
+use status::StatusReport;
 
 /// Agama's CLI global options
 #[derive(Args, Clone)]
@@ -155,6 +164,20 @@ async fn finish(
         .unwrap_or_else(|| FinishMethod::from_kernel_cmdline().unwrap_or(FinishMethod::Reboot));
     let manager = ManagerHTTPClient::new(http);
     manager.finish(method).await?;
+    Ok(())
+}
+
+async fn print_status(http: &BaseHTTPClient, format: Format) -> anyhow::Result<()> {
+    let status = Monitor::get_installation_status(http).await?;
+    let report = StatusReport::new(status);
+    match format {
+        Format::Json => {
+            println!("{}", serde_json::to_string_pretty(&report)?);
+        }
+        Format::Text => {
+            println!("{}", report);
+        }
+    }
     Ok(())
 }
 
@@ -339,6 +362,10 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
         Commands::Monitor => {
             let (http, ws) = build_clients(api_url, cli.opts.insecure).await?;
             show_progress(http, ws, false).await?;
+        }
+        Commands::Status { format } => {
+            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
+            print_status(&client, format).await?;
         }
         Commands::Events { pretty } => {
             let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
