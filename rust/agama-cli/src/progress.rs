@@ -157,12 +157,18 @@ impl ProgressMonitor {
         let mut receiver = self.monitor.subscribe();
         loop {
             let new_status = receiver.recv().await;
-            let Ok(new_status) = new_status else {
-                return Err(anyhow::Error::msg("Communication with agama server failed"));
-            };
 
-            if !self.handle_status_update(new_status).await? {
-                break;
+            match new_status {
+                Ok(new_status) => {
+                    if !self.handle_status_update(new_status).await? {
+                        break;
+                    }
+                }
+                Err(e) => {
+                    return Err(anyhow::Error::msg(format!(
+                        "Communication with the Agama server failed: {e}"
+                    )));
+                }
             }
         }
 
