@@ -70,25 +70,27 @@ describe("HostnamePage", () => {
       mockPatchConfig.mockResolvedValue(true);
     });
 
-    it("does not render a custom alert with current value and mode", () => {
+    it("shows Static mode selected with hostname input", () => {
       installerRender(<HostnamePage />);
-      expect(screen.queryByText("Custom alert:")).toBeNull();
-      expect(screen.queryByText(/agama-server/)).toBeNull();
+
+      screen.getByLabelText("Mode");
+      const hostnameInput = screen.getByRole("textbox", { name: "Value" });
+      expect(hostnameInput).toHaveValue("agama-server");
     });
 
-    it("allows unsetting the static hostname", async () => {
+    it("allows switching to transient mode", async () => {
       const { user } = installerRender(<HostnamePage />);
 
-      const setHostnameCheckbox = screen.getByRole("checkbox", { name: "Use static hostname" });
-      const hostnameInput = screen.getByRole("textbox", { name: "Static hostname" });
+      const modeToggle = screen.getByLabelText("Mode");
+      await user.click(modeToggle);
+
+      const transientOption = screen.getByRole("option", { name: /Transient/ });
+      await user.click(transientOption);
+
+      expect(screen.queryByRole("textbox", { name: "Value" })).not.toBeInTheDocument();
+      screen.getByText(/agama-node/);
+
       const acceptButton = screen.getByRole("button", { name: "Accept" });
-
-      expect(setHostnameCheckbox).toBeChecked();
-      expect(hostnameInput).toHaveValue("agama-server");
-
-      await user.click(setHostnameCheckbox);
-      expect(setHostnameCheckbox).not.toBeChecked();
-
       await user.click(acceptButton);
 
       expect(mockPatchConfig).toHaveBeenCalledWith({
@@ -105,26 +107,29 @@ describe("HostnamePage", () => {
       mockPatchConfig.mockResolvedValue(true);
     });
 
-    it("renders a custom alert with current value and mode", () => {
+    it("shows Transient mode selected with current hostname info", () => {
       installerRender(<HostnamePage />);
-      screen.getByText("Custom alert:");
+
+      screen.getByLabelText("Mode");
       screen.getByText(/agama-node/);
-      screen.getByText(/is dynamic/);
+      screen.getByText(/may change/);
     });
 
     it("allows setting the static hostname", async () => {
       const { user } = installerRender(<HostnamePage />);
-      const setHostnameCheckbox = screen.getByRole("checkbox", { name: "Use static hostname" });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
-      expect(setHostnameCheckbox).not.toBeChecked();
 
-      await user.click(setHostnameCheckbox);
+      const modeToggle = screen.getByLabelText("Mode");
+      await user.click(modeToggle);
 
-      expect(setHostnameCheckbox).toBeChecked();
-      const hostnameInput = screen.getByRole("textbox", { name: "Static hostname" });
+      const staticOption = screen.getByRole("option", { name: /Static/ });
+      await user.click(staticOption);
+
+      const hostnameInput = screen.getByRole("textbox", { name: "Value" });
       expect(hostnameInput).toHaveValue("");
 
       await user.type(hostnameInput, "testing-server");
+
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
       expect(mockPatchConfig).toHaveBeenCalledWith({
@@ -136,15 +141,18 @@ describe("HostnamePage", () => {
 
     it("renders an error when static hostname is selected but left empty", async () => {
       const { user } = installerRender(<HostnamePage />);
-      const setHostnameCheckbox = screen.getByRole("checkbox", { name: "Use static hostname" });
-      const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-      await user.click(setHostnameCheckbox);
+      const modeToggle = screen.getByLabelText("Mode");
+      await user.click(modeToggle);
+
+      const staticOption = screen.getByRole("option", { name: /Static/ });
+      await user.click(staticOption);
+
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
       expect(mockPatchConfig).not.toHaveBeenCalled();
-      screen.getByText("Warning alert:");
-      screen.getByText("Enter a hostname.");
+      screen.getByText("Enter a hostname value.");
     });
 
     it("renders an error if the update request fails", async () => {
@@ -159,7 +167,7 @@ describe("HostnamePage", () => {
         hostname: { static: "" },
       });
 
-      screen.getByText("Warning alert:");
+      screen.getByText("Danger alert:");
       screen.getByText(/Hostname could not be updated/);
     });
   });
@@ -198,8 +206,8 @@ describe("HostnamePage", () => {
     it("renders an alert to let user know that changes will not have effect in the registration", () => {
       installerRender(<HostnamePage />);
       screen.getByText("Info alert:");
-      screen.getByText("Product is already registered");
-      screen.getByText(/will not change the currently registered hostname/);
+      screen.getByText("Registered hostname will not change");
+      screen.getByText(/will not affect the hostname stored at the registration server/);
     });
   });
 });
