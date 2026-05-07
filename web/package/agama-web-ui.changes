@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May  7 18:39:05 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Simplify hostname configuration UX by replacing the checkbox-driven
+  approach with a mode selector (gh#agama-project/agama#3475).
+
+-------------------------------------------------------------------
 Tue Apr 28 15:43:35 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Show contextual hints when software selection is unavailable and
