@@ -31,10 +31,12 @@ import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import IpSettings from "~/components/network/IpSettings";
 import BondSettings from "~/components/network/BondSettings";
+import BridgeSettings from "~/components/network/BridgeSettings";
 import BindingModeSelector from "~/components/network/BindingModeSelector";
 import DeviceSelector from "~/components/network/DeviceSelector";
 import {
   BondMode,
+  Bridge,
   Connection,
   ConnectionBindingMode,
   ConnectionMethod,
@@ -54,6 +56,7 @@ import {
   ensureIPPrefix,
   formatIp,
   generateConnectionName,
+  isVirtual,
   isValidIPv4Address,
   isValidNameserver,
   isValidDNSSearchDomain,
@@ -98,6 +101,17 @@ const MODE_TO_METHOD: Record<FormIpMode, ConnectionMethod> = {
 };
 
 /**
+ * Bridge STP (Spanning Tree Protocol) mode values.
+ */
+export const BridgeStpMode = {
+  DEFAULT: "default",
+  ENABLED: "enabled",
+  DISABLED: "disabled",
+} as const;
+
+export type BridgeStpMode = (typeof BridgeStpMode)[keyof typeof BridgeStpMode];
+
+/**
  * Shared form options for ConnectionForm and its `withForm` based
  * sub-components
  *
@@ -128,6 +142,13 @@ export const connectionFormOptions = formOptions({
     bondMode: BondMode.BALANCE_ROUND_ROBIN as BondMode,
     bondOptions: [] as string[],
     bondPorts: [] as string[],
+    bridgeIface: "",
+    bridgeStp: BridgeStpMode.DEFAULT as BridgeStpMode,
+    bridgePriority: undefined,
+    bridgeForwardDelay: undefined,
+    bridgeHelloTime: undefined,
+    bridgeMaxAge: undefined,
+    bridgePorts: [] as string[],
   },
 });
 
@@ -136,7 +157,11 @@ type FormValues = typeof connectionFormOptions.defaultValues;
 /**
  * Connection types supported by this form.
  */
-const SUPPORTED_CONNECTION_TYPES = [CONNECTION_TYPE.ETHERNET, CONNECTION_TYPE.BOND] as const;
+const SUPPORTED_CONNECTION_TYPES = [
+  CONNECTION_TYPE.ETHERNET,
+  CONNECTION_TYPE.BOND,
+  CONNECTION_TYPE.BRIDGE,
+] as const;
 
 /**
  * Infers the form IPvX mode from a stored {@link ConnectionMethod} and addresses.
@@ -152,6 +177,29 @@ function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]):
   if (method === ConnectionMethod.MANUAL) return FormIpMode.MANUAL;
 
   return addresses.length > 0 ? FormIpMode.ADVANCED_AUTO : FormIpMode.AUTO;
+}
+
+/**
+ * Infers the bridge STP mode from the stored {@link Bridge} configuration.
+ *
+ * If `stp` is explicitly defined, that value is used.
+ * If `stp` is absent but other STP-related options are present, it's
+ * inferred as ENABLED. Otherwise, it defaults to DEFAULT (system default).
+ */
+function inferBridgeStp(bridge: Bridge | undefined): BridgeStpMode {
+  if (!bridge) return BridgeStpMode.DEFAULT;
+
+  if (bridge.stp !== undefined) {
+    return bridge.stp ? BridgeStpMode.ENABLED : BridgeStpMode.DISABLED;
+  }
+
+  const hasStpOptions =
+    bridge.priority !== undefined ||
+    bridge.forwardDelay !== undefined ||
+    bridge.helloTime !== undefined ||
+    bridge.maxAge !== undefined;
+
+  return hasStpOptions ? BridgeStpMode.ENABLED : BridgeStpMode.DEFAULT;
 }
 
 /**
@@ -194,6 +242,13 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     bondMode: connection.bond?.mode ?? BondMode.BALANCE_ROUND_ROBIN,
     bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
     bondPorts: connection.bond?.ports ?? [],
+    bridgeIface: connection.iface,
+    bridgeStp: inferBridgeStp(connection.bridge),
+    bridgePriority: connection.bridge?.priority,
+    bridgeForwardDelay: connection.bridge?.forwardDelay,
+    bridgeHelloTime: connection.bridge?.helloTime,
+    bridgeMaxAge: connection.bridge?.maxAge,
+    bridgePorts: connection.bridge?.ports ?? [],
   };
 }
 
@@ -212,13 +267,11 @@ function buildConnection(formValues: FormValues): Connection {
     : [];
 
   let iface = "";
-
-  if (formValues.type === CONNECTION_TYPE.BOND) {
-    iface = formValues.bondIface;
+  if (isVirtual(formValues.type)) {
+    iface = formValues[`${formValues.type}Iface`];
   } else if (formValues.bindingMode === "iface") {
     iface = formValues.iface;
   }
-
   return new Connection(formValues.name, {
     iface,
     macAddress: formValues.bindingMode === "mac" ? formValues.ifaceMac : "",
@@ -235,6 +288,30 @@ function buildConnection(formValues: FormValues): Connection {
             mode: formValues.bondMode,
             options: formValues.bondOptions.join(" "),
             ports: formValues.bondPorts,
+          }
+        : undefined,
+    bridge:
+      formValues.type === CONNECTION_TYPE.BRIDGE
+        ? {
+            stp: (() => {
+              if (formValues.bridgeStp === BridgeStpMode.DEFAULT) return undefined;
+              return formValues.bridgeStp === BridgeStpMode.ENABLED;
+            })(),
+            priority:
+              formValues.bridgeStp === BridgeStpMode.ENABLED
+                ? formValues.bridgePriority
+                : undefined,
+            forwardDelay:
+              formValues.bridgeStp === BridgeStpMode.ENABLED
+                ? formValues.bridgeForwardDelay
+                : undefined,
+            helloTime:
+              formValues.bridgeStp === BridgeStpMode.ENABLED
+                ? formValues.bridgeHelloTime
+                : undefined,
+            maxAge:
+              formValues.bridgeStp === BridgeStpMode.ENABLED ? formValues.bridgeMaxAge : undefined,
+            ports: formValues.bridgePorts,
           }
         : undefined,
   });
@@ -277,7 +354,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
     if (formApi.getFieldMeta("name")?.isDirty) return;
 
-    const existingIds = new Set(systemConns.map((c) => c.id));
+    const existingIds = new Set(systemConns?.map((c) => c.id));
     formApi.setFieldValue("name", generateConnectionName(type, existingIds), {
       dontUpdateMeta: true,
       dontRunListeners: true,
@@ -416,6 +493,12 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
           }
         </form.Subscribe>
 
+        <form.Subscribe selector={(s) => s.values.type}>
+          {(type) =>
+            type === CONNECTION_TYPE.BRIDGE && <BridgeSettings form={form} isEditing={isEditing} />
+          }
+        </form.Subscribe>
+
         <IpSettings form={form} protocol="ipv4" />
 
         <IpSettings form={form} protocol="ipv6" />
@@ -522,8 +605,14 @@ function ConnectionNotFound() {
 
 function EditConnectionForm() {
   const { id } = useParams();
-  const { connections: configConns } = useConfig();
-  const { connections: systemConns } = useSystem();
+
+  let { connections: configConns = [] } = useConfig();
+  let { connections: systemConns = [] } = useSystem();
+  // Filter out removed connections before merging to avoid carrying over
+  // stale entries that may still exist in persisted config or system state.
+  configConns = configConns.filter((c) => c.status !== "removed");
+  systemConns = systemConns.filter((c) => c.status !== "removed");
+
   // Merge config and system connections so the form reflects the user's
   // explicit settings (config) while filling gaps from the live system state.
   // Config wins for single values: e.g. configConn.method4 === undefined
@@ -533,7 +622,7 @@ function EditConnectionForm() {
   //
   // Arrays (addresses, nameservers, etc.) are concatenated so users can see
   // existing system values even when config has empty arrays.
-  const { all: connections } = extendCollection(configConns || [], {
+  const { all: connections } = extendCollection(configConns, {
     with: systemConns,
     mergeArrays: true,
   });
