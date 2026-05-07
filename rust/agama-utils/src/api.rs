@@ -39,13 +39,17 @@ pub use issue::{Issue, IssueMap, IssueWithScope};
 mod system_info;
 pub use system_info::SystemInfo;
 
+#[cfg(feature = "curl")]
 pub mod config;
+#[cfg(feature = "curl")]
 pub use config::Config;
 
 mod raw_config;
 pub use raw_config::RawConfig;
 
+#[cfg(feature = "curl")]
 pub mod patch;
+#[cfg(feature = "curl")]
 pub use patch::Patch;
 
 mod proposal;
@@ -55,6 +59,7 @@ mod action;
 pub use {action::Action, action::FinishMethod};
 
 pub mod bootloader;
+#[cfg(feature = "curl")]
 pub mod files;
 pub mod hostname;
 pub mod iscsi;
