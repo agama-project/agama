@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May  7 08:19:56 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1264099
+  - use --enable-vt-switch option conditionally only if gnome-kiosk
+    supports it
+
+-------------------------------------------------------------------
 Wed May  6 14:11:57 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Removed development GPG keys (bsc#1262143)
