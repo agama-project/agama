@@ -47,7 +47,7 @@ export type Encryption =
   | EncryptionLuks1
   | EncryptionLuks2
   | EncryptionPervasiveLuks2
-  | EncryptionTPM
+  | EncryptionTpmFde
   | EncryptionSwap;
 /**
  * Password to use when creating a new encryption device.
@@ -287,6 +287,10 @@ export interface EncryptionLuks2 {
      * LUKS2 label.
      */
     label?: string;
+    /**
+     * Whether to use TPM2 unlocking.
+     */
+    tpm?: boolean;
   };
 }
 /**
@@ -298,9 +302,10 @@ export interface EncryptionPervasiveLuks2 {
   };
 }
 /**
+ * @deprecated
  * TPM-Based Full Disk Encryption.
  */
-export interface EncryptionTPM {
+export interface EncryptionTpmFde {
   tpmFde: {
     password: EncryptionPassword;
   };
