@@ -26,6 +26,7 @@ require "agama/autoyast/hostname_reader"
 require "agama/autoyast/iscsi_reader"
 require "agama/autoyast/localization_reader"
 require "agama/autoyast/network_reader"
+require "agama/autoyast/ntp_client_reader"
 require "agama/autoyast/product_reader"
 require "agama/autoyast/root_reader"
 require "agama/autoyast/scripts_reader"
@@ -34,7 +35,6 @@ require "agama/autoyast/software_reader"
 require "agama/autoyast/storage_reader"
 require "agama/autoyast/user_reader"
 require "agama/autoyast/zfcp_reader"
-require "agama/autoyast/ntp_client_reader"
 
 module Agama
   module AutoYaST
@@ -57,6 +57,7 @@ module Agama
           HostnameReader.new(profile).read,
           IscsiReader.new(profile).read,
           LocalizationReader.new(profile).read,
+          NtpClientReader.new(profile).read,
           NetworkReader.new(profile).read,
           ProductReader.new(profile).read,
           RootReader.new(profile).read,
@@ -65,8 +66,7 @@ module Agama
           SoftwareReader.new(profile).read,
           StorageReader.new(profile).read,
           UserReader.new(profile).read,
-          ZFCPReader.new(profile).read,
-          NtpClientReader.new(profile).read
+          ZFCPReader.new(profile).read
         ].inject(:merge)
       end
     end
