@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 07 00:00:00 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Improve keyboard accessibility for dropdown components by enabling
+  arrow keys to open closed menus following the W3C Select-Only
+  Combobox pattern (gh#agama-project/agama#3468).
+
+-------------------------------------------------------------------
 Tue Apr 28 15:43:35 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Show contextual hints when software selection is unavailable and
