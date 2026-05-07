@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -107,7 +107,7 @@ module Y2Storage
         .solve(config)
 
       issues = Agama::Storage::ConfigChecker
-        .new(config, product_config)
+        .new(config, bootloader_config: bootloader_config, product_config: product_config)
         .issues
 
       issues_list.concat(issues)

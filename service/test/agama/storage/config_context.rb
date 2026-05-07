@@ -21,6 +21,7 @@
 
 require_relative "./product_config_context"
 require_relative "./storage_helpers"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
 require "agama/storage/system"
@@ -52,13 +53,17 @@ shared_context "config" do
 
   let(:config_json) { nil }
 
-  let(:bootloader_config) { nil }
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
 
   before do
     mock_storage(devicegraph: scenario)
 
     # To speed-up the tests. Use #allow_any_instance because #allow introduces marshaling problems
     allow_any_instance_of(Y2Storage::EncryptionMethod::TpmFde)
+      .to(receive(:possible?))
+      .and_return(true)
+
+    allow_any_instance_of(Y2Storage::EncryptionMethod::TpmBls)
       .to(receive(:possible?))
       .and_return(true)
 

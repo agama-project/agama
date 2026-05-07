@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -31,7 +31,8 @@ module Agama
         include Yast::I18n
 
         # @param config [Configs::VolumeGroup]
-        def initialize(config)
+        # @param bootloader_config [Storage::BootloaderConfig]
+        def initialize(config, bootloader_config)
           super
 
           textdomain "agama"
@@ -50,7 +51,7 @@ module Agama
         # @see Encryption#issues
         #
         # @return [Issue, nil]
-        def wrong_method_issue
+        def wrong_device_method_issue
           method = encryption.method
           return if method.nil? || valid_method?(method)
 
@@ -58,7 +59,7 @@ module Agama
             format(
               # TRANSLATORS: 'method' is the identifier of the method to encrypt the device
               #   (e.g., 'luks1').
-              _("'%{method}' is not a suitable method to encrypt the physical volumes."),
+              _("%{method} is not suitable to encrypt the physical volumes."),
               method: method.to_human_string
             ),
             kind: IssueClasses::Config::WRONG_ENCRYPTION_METHOD
@@ -74,7 +75,8 @@ module Agama
             Y2Storage::EncryptionMethod::LUKS1,
             Y2Storage::EncryptionMethod::LUKS2,
             Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,
-            Y2Storage::EncryptionMethod::TPM_FDE
+            Y2Storage::EncryptionMethod::TPM_FDE,
+            Y2Storage::EncryptionMethod::TPM_BLS
           ]
 
           valid_methods.include?(method)
