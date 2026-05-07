@@ -9,7 +9,7 @@ OPTS="";
 
 # We need to invoke gnome-kiosk with option --enable-vt-switch for versions >= 50.
 # Otherwise switching to virtual console will be blocked by default. bsc#1261932
-if [[ $(gnome-kiosk --help 2> /dev/null | grep 'enable-vt-switch') ]]; then
+if gnome-kiosk --help 2> /dev/null | grep -q 'enable-vt-switch'; then
     OPTS="--enable-vt-switch";
 fi;
 
