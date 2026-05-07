@@ -22,6 +22,8 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { systemQuery } from "~/hooks/model/system";
+import bootloaderSystem from "~/model/system/bootloader";
+import { isNullish } from "radashi";
 import type { System, Bootloader } from "~/model/system";
 
 const selectSystem = (system: System | null): Bootloader.System | null =>
@@ -35,15 +37,13 @@ function useSystem(): Bootloader.System | null {
   return data;
 }
 
-const selectAvaialbleBootloaders = (system: System | null): Bootloader.Bootloader[] =>
-  system?.bootloader?.availableBootloaders ?? [];
+type IsTpmAvailableFn = (type: Bootloader.BootloaderType) => boolean;
 
-function useAvailableBootloaders(): Bootloader.Bootloader[] {
-  const { data } = useSuspenseQuery({
-    ...systemQuery,
-    select: selectAvaialbleBootloaders,
-  });
-  return data;
+function useIsTpmAvailable(): IsTpmAvailableFn {
+  const system = useSystem();
+
+  return (type: Bootloader.BootloaderType): boolean =>
+    !isNullish(system) && bootloaderSystem.isTpmAvailable(system, type);
 }
 
-export { useSystem, useAvailableBootloaders };
+export { useSystem, useIsTpmAvailable };

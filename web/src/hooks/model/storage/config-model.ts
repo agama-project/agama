@@ -26,6 +26,7 @@ import { useSystem } from "~/hooks/model/system/storage";
 import { solveStorageModel, getStorageModel, putStorageModel } from "~/api";
 import configModel from "~/model/storage/config-model";
 import { findDeviceByName } from "~/model/system/storage";
+import { isNullish } from "radashi";
 import type {
   ConfigModel,
   Data,
@@ -347,6 +348,17 @@ function useConvertDevice() {
   };
 }
 
+const selectIsGrub2WithTpm = (config: ConfigModel.Config | null): boolean =>
+  !isNullish(config) && configModel.isGrub2WithTpm(config);
+
+function useIsGrub2WithTpm(): boolean {
+  const { data } = useSuspenseQuery({
+    ...configModelQuery,
+    select: selectIsGrub2WithTpm,
+  });
+  return data;
+}
+
 export {
   STORAGE_MODEL_KEY,
   useConfigModel,
@@ -378,4 +390,5 @@ export {
   useSetFilesystem,
   useSetSpacePolicy,
   useConvertDevice,
+  useIsGrub2WithTpm,
 };

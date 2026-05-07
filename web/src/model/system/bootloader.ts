@@ -20,4 +20,17 @@
  * find current contact information at www.suse.com.
  */
 
+import type { System, BootloaderType } from "~/openapi/system/bootloader";
+
+function isTpmAvailable(system: System, type: BootloaderType): boolean {
+  const bootloader = system.availableBootloaders.find((b) => b.type === type);
+  const encryptionAuth = bootloader?.encryptionAuth || [];
+  return encryptionAuth.includes("tpm");
+}
+
+function isBls(type: BootloaderType): boolean {
+  return ["grub2-bls", "systemd-boot"].includes(type);
+}
+
+export default { isTpmAvailable, isBls };
 export type * from "~/openapi/system/bootloader";

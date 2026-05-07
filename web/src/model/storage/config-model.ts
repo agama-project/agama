@@ -30,7 +30,7 @@ import logicalVolume from "~/model/storage/config-model/logical-volume";
 import device from "~/model/storage/config-model/device";
 import volume from "~/model/storage/config-model/volume";
 import { compact } from "~/utils";
-import { sift } from "radashi";
+import { isNullish, sift } from "radashi";
 import type * as ConfigModel from "~/openapi/storage/config-model";
 import type * as Partitionable from "~/model/storage/config-model/partitionable";
 import type * as Data from "~/model/storage/config-model/data";
@@ -105,6 +105,19 @@ function hasAdditionalDevices(config: ConfigModel.Config): boolean {
   return !onlyToBoot;
 }
 
+function getBootloader(config: ConfigModel.Config): ConfigModel.BootloaderType | null {
+  return config.boot?.bootloader ?? null;
+}
+
+function isGrub2WithTpm(config: ConfigModel.Config): boolean {
+  const bootloader = getBootloader(config);
+  const encryption = config.encryption;
+
+  if (isNullish(bootloader) || isNullish(encryption)) return false;
+
+  return bootloader === "grub2" && encryption.tpm === true;
+}
+
 export default {
   clone,
   usedMountPaths,
@@ -123,5 +136,7 @@ export default {
   logicalVolume,
   device,
   volume,
+  getBootloader,
+  isGrub2WithTpm,
 };
 export type { ConfigModel, Data, Partitionable, DeviceCollection, Device, Volume };
