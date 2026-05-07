@@ -106,12 +106,12 @@ describe("BridgeSettings", () => {
     expect(screen.queryByLabelText("Device name")).not.toBeInTheDocument();
   });
 
-  it("shows STP options when STP is enabled", async () => {
+  it("shows STP options when STP is enabled with manual settings", async () => {
     const { user } = installerRender(<TestForm />);
 
     const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
     await user.click(stpSelector);
-    await user.click(screen.getByRole("option", { name: /^Enabled/ }));
+    await user.click(screen.getByRole("option", { name: /^Custom/ }));
 
     expect(await screen.findByLabelText(/Priority/)).toBeInTheDocument();
     expect(await screen.findByLabelText(/Forward delay/)).toBeInTheDocument();

@@ -39,21 +39,21 @@ const stpOptions = () => [
     // TRANSLATORS: option label for the bridge STP configuration to use the system default.
     label: N_("Default"),
     // TRANSLATORS: description for the default bridge STP configuration.
-    description: N_("Enable STP with default settings"),
+    description: N_("Enabled with the system default settings"),
   },
   {
     value: BridgeStpMode.ENABLED,
     // TRANSLATORS: option label for enabling bridge STP.
-    label: N_("Enabled"),
-    // TRANSLATORS: description for enabling bridge STP.
-    description: N_("Explicitly enable STP with custom settings"),
+    label: N_("Custom"),
+    // TRANSLATORS: description for enabling bridge STP with manual settings.
+    description: N_("Explicitly enabled with manual settings"),
   },
   {
     value: BridgeStpMode.DISABLED,
     // TRANSLATORS: option label for disabling bridge STP.
     label: N_("Disabled"),
     // TRANSLATORS: description for disabling bridge STP.
-    description: N_("Explicitly disable STP"),
+    description: N_("Not used by this bridge"),
   },
 ];
 

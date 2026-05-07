@@ -153,7 +153,7 @@ describe("ConnectionForm", () => {
 
       // Enable STP to see the fields
       await user.click(stpSelector);
-      await user.click(screen.getByRole("option", { name: /^Enabled/ }));
+      await user.click(screen.getByRole("option", { name: /^Custom/ }));
 
       screen.getByLabelText(/Priority/);
       screen.getByLabelText(/Forward delay/);
@@ -195,7 +195,7 @@ describe("ConnectionForm", () => {
       // STP is default by default. Let's enable it to set some values.
       const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
       await user.click(stpSelector);
-      await user.click(screen.getByRole("option", { name: /^Enabled/ }));
+      await user.click(screen.getByRole("option", { name: /^Custom/ }));
 
       const priorityInput = screen.getByLabelText(/Priority/);
       await user.clear(priorityInput);
@@ -539,7 +539,7 @@ describe("ConnectionForm", () => {
       installerRender(<ConnectionForm />);
 
       const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
-      expect(stpSelector).toHaveTextContent("Enabled");
+      expect(stpSelector).toHaveTextContent("Custom");
       expect(screen.getByLabelText(/Priority/)).toBeInTheDocument();
     });
 
@@ -881,7 +881,7 @@ describe("ConnectionForm", () => {
         // Enable STP to see the fields
         const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
         await user.click(stpSelector);
-        await user.click(screen.getByRole("option", { name: /^Enabled/ }));
+        await user.click(screen.getByRole("option", { name: /^Custom/ }));
 
         const priorityInput = screen.getByLabelText(/Priority/);
         await user.clear(priorityInput);
@@ -920,7 +920,7 @@ describe("ConnectionForm", () => {
         // Enable STP
         const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
         await user.click(stpSelector);
-        await user.click(screen.getByRole("option", { name: /^Enabled/ }));
+        await user.click(screen.getByRole("option", { name: /^Custom/ }));
 
         // Clear all STP fields
         await user.clear(screen.getByLabelText(/Priority/));

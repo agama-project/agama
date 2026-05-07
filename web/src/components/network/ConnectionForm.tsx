@@ -354,7 +354,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
     if (formApi.getFieldMeta("name")?.isDirty) return;
 
-    const existingIds = new Set((systemConns || []).map((c) => c.id));
+    const existingIds = new Set(systemConns?.map((c) => c.id));
     formApi.setFieldValue("name", generateConnectionName(type, existingIds), {
       dontUpdateMeta: true,
       dontRunListeners: true,
@@ -610,8 +610,8 @@ function EditConnectionForm() {
   let { connections: systemConns = [] } = useSystem();
   // Filter out removed connections before merging to avoid carrying over
   // stale entries that may still exist in persisted config or system state.
-  configConns = configConns.filter((c) => c.status !== "removed";
-  systemConns = systemConns.filter((c) => c.status !== "removed";
+  configConns = configConns.filter((c) => c.status !== "removed");
+  systemConns = systemConns.filter((c) => c.status !== "removed");
 
   // Merge config and system connections so the form reflects the user's
   // explicit settings (config) while filling gaps from the live system state.
