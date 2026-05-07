@@ -606,12 +606,12 @@ function ConnectionNotFound() {
 function EditConnectionForm() {
   const { id } = useParams();
 
-  // We have to be careful with the merge as there could be values from a
-  // removed connection which is not valid anymore.
-  let { connections: configConns } = useConfig();
-  configConns = (configConns || []).filter((c) => c.status !== "removed");
-  let { connections: systemConns } = useSystem();
-  systemConns = (systemConns || []).filter((c) => c.status !== "removed");
+  let { connections: configConns = [] } = useConfig();
+  let { connections: systemConns = [] } = useSystem();
+  // Filter out removed connections before merging to avoid carrying over
+  // stale entries that may still exist in persisted config or system state.
+  configConns = configConns.filter((c) => c.status !== "removed";
+  systemConns = systemConns.filter((c) => c.status !== "removed";
 
   // Merge config and system connections so the form reflects the user's
   // explicit settings (config) while filling gaps from the live system state.
