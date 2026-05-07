@@ -25,23 +25,31 @@ import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useAvailableBootloaders } from "~/hooks/model/system/bootloader";
+import { useIsTpmAvailable } from "~/hooks/model/system/bootloader";
 import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
 import { isEmpty } from "radashi";
-import { _ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 import { STORAGE } from "~/routes/paths";
-import type { ConfigModel } from "~/model/storage/config-model";
-import type { Bootloader } from "~/model/system/bootloader";
+import bootloaderSystem from "~/model/system/bootloader";
+import type { BootloaderType } from "~/model/system/bootloader";
 
-const isTpmAvailable = (
-  availableBootloaders: Bootloader[],
-  currentType?: ConfigModel.BootloaderType,
-) => {
-  if (!currentType) return false;
+const TPM_EXPLANATION = N_(
+  "The password will not be needed to boot and access the data if the TPM can verify the \
+integrity of the system.",
+);
 
-  const bootloader = availableBootloaders.find((b) => b.type === currentType);
-  const encryptionAuth = bootloader?.encryptionAuth || [];
-  return encryptionAuth.includes("tpm");
+// TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and
+// then choosing 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a
+// form) but keep it clear.
+const TPM_FDE_INSTRUCTIONS = N_(
+  "TPM sealing requires the new system to be booted directly on its first run.",
+);
+
+const tpmText = (type: BootloaderType | null): string => {
+  return type && bootloaderSystem.isBls(type)
+    ? _(TPM_EXPLANATION)
+    : [_(TPM_EXPLANATION), _(TPM_FDE_INSTRUCTIONS)].join(" ");
 };
 
 /**
@@ -50,9 +58,9 @@ const isTpmAvailable = (
 export default function EncryptionSettingsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const availableBootloaders = useAvailableBootloaders();
-  const configModel = useConfigModel();
+  const config = useConfigModel();
   const setEncryption = useSetEncryption();
+  const isTpmAvailable = useIsTpmAvailable();
 
   const [errors, setErrors] = useState([]);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -63,12 +71,12 @@ export default function EncryptionSettingsPage() {
   const formId = "encryptionSettingsForm";
 
   useEffect(() => {
-    if (configModel?.encryption) {
+    if (config?.encryption) {
       setIsEnabled(true);
-      setTpm(configModel.encryption.tpm || false);
-      setPassword(configModel.encryption.password || "");
+      setTpm(config.encryption.tpm || false);
+      setPassword(config.encryption.password || "");
     }
-  }, [configModel]);
+  }, [config]);
 
   const changePassword = (_, v: string) => setPassword(v);
 
@@ -98,17 +106,11 @@ export default function EncryptionSettingsPage() {
     navigate({ pathname: "..", search: location.search });
   };
 
+  const bootloaderType = config ? configModel.getBootloader(config) : null;
+  const tpmAvailable = bootloaderType && isTpmAvailable(bootloaderType);
   // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
   const tpmLabel = _("Use the Trusted Platform Module (TPM) to decrypt automatically on each boot");
-  // TRANSLATORS: The word 'directly' is key here. For example, booting to the installer media and then choosing
-  // 'Boot from Hard Disk' from there will not work. Keep it sort (this is a hint in a form) but keep it clear.
-  const tpmExplanation = _(
-    "The password will not be needed to boot and access the data if the \
-TPM can verify the integrity of the system. TPM sealing requires the new system to be booted \
-directly on its first run.",
-  );
-
-  const tpmAvailable = isTpmAvailable(availableBootloaders, configModel?.boot?.bootloader);
+  const tpmDescription = tpmText(bootloaderType);
 
   return (
     <Page
@@ -140,7 +142,7 @@ at the new file systems, including data, programs, and system files.",
             <NestedContent margin="mxLg">
               <PasswordAndConfirmationInput
                 inputRef={passwordRef}
-                initialValue={configModel?.encryption?.password}
+                initialValue={config?.encryption?.password}
                 value={password}
                 onChange={changePassword}
                 isDisabled={!isEnabled}
@@ -151,7 +153,7 @@ at the new file systems, including data, programs, and system files.",
                 <Checkbox
                   id="tpm"
                   label={tpmLabel}
-                  description={tpmExplanation}
+                  description={tpmDescription}
                   isChecked={tpm}
                   onChange={changeTpm}
                 />

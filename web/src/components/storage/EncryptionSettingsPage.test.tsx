@@ -25,6 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
 import type { ConfigModel } from "~/model/storage/config-model";
+import type { Bootloader } from "~/model/system";
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
@@ -57,20 +58,25 @@ const mockNoEncryptionConfig: ConfigModel.Config = {
   },
 };
 
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({
-    l10n: {
-      keymap: "us",
-      timezone: "Europe/Berlin",
-      locale: "en_US",
-    },
-  }),
-}));
+const mockSystemData: Bootloader.System = {
+  availableBootloaders: [
+    { type: "grub2", encryptionAuth: ["password", "tpm"] },
+    { type: "grub2-bls", encryptionAuth: ["password", "tpm"] },
+    { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
+  ],
+};
 
-const mockUseAvailableBootloaders = jest.fn();
-jest.mock("~/hooks/model/system/bootloader", () => ({
-  useAvailableBootloaders: () => mockUseAvailableBootloaders(),
-}));
+// Mock useSystem to provide bootloader data. useIsTpmAvailable uses the real
+// bootloaderSystem.isTpmAvailable logic with this mocked data.
+jest.mock("~/hooks/model/system/bootloader", () => {
+  const bootloaderSystemModule = jest.requireActual("~/model/system/bootloader").default;
+
+  return {
+    useSystem: () => mockSystemData,
+    useIsTpmAvailable: () => (type: Bootloader.BootloaderType) =>
+      bootloaderSystemModule.isTpmAvailable(mockSystemData, type),
+  };
+});
 
 const mockUseConfigModel = jest.fn();
 const mockSetEncryption = jest.fn();
@@ -81,11 +87,11 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 
 describe("EncryptionSettingsPage", () => {
   beforeEach(() => {
-    mockUseAvailableBootloaders.mockReturnValue([
-      { type: "grub2", encryptionAuth: ["password"] },
+    mockSystemData.availableBootloaders = [
+      { type: "grub2", encryptionAuth: ["password", "tpm"] },
       { type: "grub2-bls", encryptionAuth: ["password", "tpm"] },
       { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
-    ]);
+    ];
     mockSetEncryption.mockClear();
     mockUseConfigModel.mockClear();
   });
@@ -146,15 +152,85 @@ describe("EncryptionSettingsPage", () => {
 
   describe("when TPM is not available", () => {
     beforeEach(() => {
-      mockUseAvailableBootloaders.mockReturnValue([
+      mockSystemData.availableBootloaders = [
         { type: "grub2", encryptionAuth: ["password"] },
-      ]);
+        { type: "grub2-bls", encryptionAuth: ["password"] },
+        { type: "systemd-boot", encryptionAuth: ["password"] },
+      ];
       mockUseConfigModel.mockReturnValue(mockLuks2Config);
     });
 
     it("does not offer TPM", () => {
       installerRender(<EncryptionSettingsPage />);
       expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).toBeNull();
+    });
+  });
+
+  describe("TPM explanation text", () => {
+    describe("with BLS bootloader (grub2-bls)", () => {
+      beforeEach(() => {
+        mockUseConfigModel.mockReturnValue({
+          boot: {
+            configure: true,
+            bootloader: "grub2-bls",
+          },
+          encryption: {
+            password: "12345",
+            tpm: false,
+          },
+        });
+      });
+
+      it("shows only the basic TPM explanation without FDE boot instructions", () => {
+        installerRender(<EncryptionSettingsPage />, { withL10n: true });
+        screen.getByRole("checkbox", { name: /Use.*TPM/ });
+        screen.getByText(/password will not be needed to boot/);
+        expect(screen.queryByText(/booted directly on its first run/)).not.toBeInTheDocument();
+      });
+    });
+
+    describe("with BLS bootloader (systemd-boot)", () => {
+      beforeEach(() => {
+        mockUseConfigModel.mockReturnValue({
+          boot: {
+            configure: true,
+            bootloader: "systemd-boot",
+          },
+          encryption: {
+            password: "12345",
+            tpm: false,
+          },
+        });
+      });
+
+      it("shows only the basic TPM explanation without FDE boot instructions", () => {
+        installerRender(<EncryptionSettingsPage />, { withL10n: true });
+        screen.getByRole("checkbox", { name: /Use.*TPM/ });
+        screen.getByText(/password will not be needed to boot/);
+        expect(screen.queryByText(/booted directly on its first run/)).not.toBeInTheDocument();
+      });
+    });
+
+    describe("with non-BLS bootloader (grub2)", () => {
+      beforeEach(() => {
+        mockUseConfigModel.mockReturnValue({
+          boot: {
+            configure: true,
+            bootloader: "grub2",
+          },
+          encryption: {
+            password: "12345",
+            tpm: false,
+          },
+        });
+      });
+
+      it("shows the full TPM explanation including FDE boot instructions", () => {
+        installerRender(<EncryptionSettingsPage />, { withL10n: true });
+        screen.getByRole("checkbox", { name: /Use.*TPM/ });
+        screen.getByText(/password will not be needed to boot/);
+        screen.getByText(/booted directly on its first run/);
+      });
     });
   });
 });
