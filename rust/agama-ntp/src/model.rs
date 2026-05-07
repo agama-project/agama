@@ -20,6 +20,7 @@
 
 use agama_software::{Resolvable, ResolvableType};
 use agama_utils::api::ntp::{Config, Source};
+use agama_utils::command::enable_service;
 use async_trait::async_trait;
 use std::path::{Path, PathBuf};
 use std::process::Output;
@@ -43,6 +44,7 @@ pub enum Error {
 const CHRONY_CONFIG_DIR: &str = "etc/chrony.d";
 const CHRONY_CONFIG_FILE: &str = "99-installer.conf";
 const CHRONY_MAX_TRIES: &str = "1";
+const CHRONY_SERVICE_NAME: &str = "chronyd";
 const DEFAULT_WORKDIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
 
@@ -122,22 +124,6 @@ impl Model {
 
         Err(Error::Reload(command_output_to_error(&output)))
     }
-
-    async fn enable_service(&self) -> Result<(), Error> {
-        tracing::info!("Enabling chronyd service on target system");
-
-        let mut command = Command::new("chroot");
-        let command = command
-            .arg(&self.install_dir)
-            .args(["systemctl", "enable", "chronyd"]);
-        let output = command.output().await.map_err(Error::EnableService)?;
-
-        if output.status.success() {
-            return Ok(());
-        }
-
-        Err(Error::Reload(command_output_to_error(&output)))
-    }
 }
 
 impl Default for Model {
@@ -190,7 +176,7 @@ impl ModelAdapter for Model {
         let content = generate_chrony_config(&config.sources);
         fs::write(path, content).map_err(Error::WriteConfig)?;
 
-        self.enable_service().await?;
+        enable_service(&self.install_dir, CHRONY_SERVICE_NAME);
         Ok(())
     }
 
