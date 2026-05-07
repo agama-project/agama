@@ -57,8 +57,8 @@ const ROOT = {
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
   installationExit: "/installation/exit",
-  logs: "/api/v2/private/download_logs",
-  config: "/api/v2/config",
+  logs: "/api/private/download_logs",
+  config: "/api/config",
 };
 
 const USER = {

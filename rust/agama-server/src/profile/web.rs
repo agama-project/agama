@@ -22,9 +22,8 @@ use crate::web::error::ErrorResponse;
 use agama_lib::profile::AutoyastError;
 use agama_transfer::Transfer;
 
-use agama_lib::{
-    error::ServiceError,
-    profile::{AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome},
+use agama_lib::profile::{
+    AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome,
 };
 use aide::axum::ApiRouter;
 use axum::{
@@ -90,12 +89,11 @@ impl IntoResponse for ProfileError {
 }
 
 /// Sets up and returns the axum service for the auto-installation profile.
-pub async fn profile_service() -> Result<ApiRouter, ServiceError> {
-    let router = ApiRouter::new()
+pub async fn profile_service() -> ApiRouter {
+    ApiRouter::new()
         .route("/evaluate", post(evaluate))
         .route("/validate", post(validate))
-        .route("/autoyast", post(autoyast));
-    Ok(router)
+        .route("/autoyast", post(autoyast))
 }
 
 /// For flexibility, the profile operations take the input as either of:

@@ -34,12 +34,12 @@ module Agama
         # @param question [Agama::Question]
         # @return [Question, nil] created question or nil if the request failed
         def add(question)
-          response = post("v2/questions", question.to_api)
+          response = post("questions", question.to_api)
           response ? Question.from_api(JSON.parse(response.body)) : nil
         end
 
         def questions
-          JSON.parse(get("v2/questions")).map { |q| Question.from_api(q) }
+          JSON.parse(get("questions")).map { |q| Question.from_api(q) }
         end
 
         # Deletes the given question
@@ -48,7 +48,7 @@ module Agama
         # @return [void]
         def delete(id)
           payload = { "delete" => { "id" => id } }
-          patch("v2/questions", payload)
+          patch("questions", payload)
         end
 
         # Waits until specified question is answered

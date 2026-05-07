@@ -96,6 +96,7 @@ translations:
         ja: 標準
         ka: სტანდარტული
         kab: Tizeɣt
+        nb_NO: Standard
         ru: Стандартный
         sv: Standard
         uk: Стандартна
@@ -130,6 +131,7 @@ translations:
         it: Immutabile
         ja: 不変型
         ka: უცვლადი
+        nb_NO: Immutable
         ru: Неизменяемый
         sv: Oföränderlig
         uk: Незмінний
@@ -146,6 +148,7 @@ translations:
         it: Sistema immutabile con aggiornamenti atomici
         ja: 不可分な更新機能を持つ不変型システム
         ka: უცვლელი სისტემა ატომური განახლებებით
+        nb_NO: Et uforanderlig system med atomiske oppdateringer
         ru: Неизменяемая система с атомарными обновлениями
         sv: Oföränderligt system med atomiska uppdateringar
         uk: Незмінна система з атомарними оновленнями
