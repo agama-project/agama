@@ -37,23 +37,23 @@ const bondModeOptions = () =>
     label: m,
   }));
 
-type BondSettingsProps = {
+type BondFieldsProps = {
   isEditing?: boolean;
 };
 
 /**
- * Bond settings block for a connection form.
+ * Bond fields for a connection form.
  *
  * Shows bond mode, options, and ports when the connection type is BOND.
  * Also shows the device name field for new bond connections.
  *
  * Receives a typed form instance via `withForm`.
  */
-const BondSettings = withForm({
+const BondFields = withForm({
   ...connectionFormOptions,
   props: {
     isEditing: false,
-  } as BondSettingsProps,
+  } as BondFieldsProps,
   render: function Render({ form, isEditing }) {
     const devices = useDevices();
 
@@ -122,4 +122,4 @@ const BondSettings = withForm({
   },
 });
 
-export default BondSettings;
+export default BondFields;

@@ -29,9 +29,9 @@ import Page from "~/components/core/Page";
 import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
-import IpSettings from "./IpSettings";
-import BondSettings from "./BondSettings";
-import BridgeSettings from "./BridgeSettings";
+import IpFields from "./IpFields";
+import BondFields from "./BondFields";
+import BridgeFields from "./BridgeFields";
 import BindingModeSelector from "./BindingModeSelector";
 import DeviceSelector from "./DeviceSelector";
 import {
@@ -489,19 +489,19 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
-            type === CONNECTION_TYPE.BOND && <BondSettings form={form} isEditing={isEditing} />
+            type === CONNECTION_TYPE.BOND && <BondFields form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
-            type === CONNECTION_TYPE.BRIDGE && <BridgeSettings form={form} isEditing={isEditing} />
+            type === CONNECTION_TYPE.BRIDGE && <BridgeFields form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 
-        <IpSettings form={form} protocol="ipv4" />
+        <IpFields form={form} protocol="ipv4" />
 
-        <IpSettings form={form} protocol="ipv6" />
+        <IpFields form={form} protocol="ipv6" />
 
         <form.AppField name="customDns">
           {(field) => (

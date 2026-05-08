@@ -27,7 +27,7 @@ import { useAppForm } from "~/hooks/form";
 import { connectionFormOptions } from "./ConnectionForm";
 import { DeviceState } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
-import BondSettings from "./BondSettings";
+import BondFields from "./BondFields";
 
 const mockDevice1 = {
   name: "enp1s0",
@@ -66,12 +66,12 @@ function TestForm({
 
   return (
     <form.AppForm>
-      <BondSettings form={form} isEditing={isEditing} />
+      <BondFields form={form} isEditing={isEditing} />
     </form.AppForm>
   );
 }
 
-describe("BondSettings", () => {
+describe("BondFields", () => {
   it("renders bond fields", async () => {
     installerRender(<TestForm />);
 

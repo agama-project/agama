@@ -63,12 +63,12 @@ const modeOptions = () => [
   },
 ];
 
-type IpSettingsProps = {
+type IpFieldsProps = {
   protocol: "ipv4" | "ipv6";
 };
 
 /**
- * Protocol-specific IP settings block for a connection form.
+ * Protocol-specific IP fields for a connection form.
  *
  * Shows a selector with three options: Automatic, Manual, and Advanced.
  *
@@ -82,11 +82,11 @@ type IpSettingsProps = {
  * each label self-sufficient for both audiences, as recommended by WCAG 2.4.6.
  * @see https://www.w3.org/WAI/WCAG21/Understanding/headings-and-labels.html
  */
-const IpSettings = withForm({
+const IpFields = withForm({
   ...connectionFormOptions,
   props: {
     protocol: "ipv4",
-  } as IpSettingsProps,
+  } as IpFieldsProps,
   render: function Render({ form, protocol }) {
     const isIPv4 = protocol === "ipv4";
     // TRANSLATORS: label for the IPv4 or IPv6 settings dropdown.
@@ -174,4 +174,4 @@ const IpSettings = withForm({
   },
 });
 
-export default IpSettings;
+export default IpFields;
