@@ -347,7 +347,7 @@
               "method4": {
                 "title": "IPv4 configuration method",
                 "type": "string",
-                "enum": ["auto", "manual", "linkLocal", "disabled"]
+                "enum": ["auto", "manual", "link-local", "disabled"]
               },
               "method6": {
                 "title": "IPv6 configuration method",
@@ -356,7 +356,7 @@
                   "auto",
                   "manual",
                   "dhcp",
-                  "linkLocal",
+                  "link-local",
                   "shared",
                   "disabled"
                 ]

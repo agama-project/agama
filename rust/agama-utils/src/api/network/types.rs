@@ -425,23 +425,11 @@ pub struct UnknownIpMethod(String);
 pub enum Ipv4Method {
     Disabled = 0,
     #[default]
-    #[strum(serialize = "auto", serialize = "dhcp")]
     Auto = 1,
-    #[strum(serialize = "manual", serialize = "static")]
     Manual = 2,
-    #[strum(serialize = "linkLocal", serialize = "link-local")]
+    #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Shared = 4,
-}
-
-impl Ipv4Method {
-    pub fn to_nm_string(&self) -> String {
-        match self {
-            Ipv4Method::LinkLocal => "link-local".to_string(),
-            Ipv4Method::Auto => "auto".to_string(),
-            _ => self.to_string(),
-        }
-    }
 }
 
 #[derive(
@@ -463,22 +451,12 @@ pub enum Ipv6Method {
     Disabled = 0,
     #[default]
     Auto = 1,
-    #[strum(serialize = "manual", serialize = "static")]
     Manual = 2,
-    #[strum(serialize = "linkLocal", serialize = "link-local")]
+    #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Ignore = 4,
     Dhcp = 5,
     Shared = 6,
-}
-
-impl Ipv6Method {
-    pub fn to_nm_string(&self) -> String {
-        match self {
-            Ipv6Method::LinkLocal => "link-local".to_string(),
-            _ => self.to_string(),
-        }
-    }
 }
 
 impl From<UnknownIpMethod> for zbus::fdo::Error {

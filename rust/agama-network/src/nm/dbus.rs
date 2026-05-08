@@ -452,7 +452,7 @@ fn ip_config_to_ipv4_dbus<'a>(
             ip_config
                 .method4
                 .unwrap_or(Ipv4Method::Auto)
-                .to_nm_string()
+                .to_string()
                 .into(),
         ),
         ("link-local", (link_local as i32).into()),
@@ -568,7 +568,7 @@ fn ip_config_to_ipv6_dbus<'a>(
             ip_config
                 .method6
                 .unwrap_or(Ipv6Method::Auto)
-                .to_nm_string()
+                .to_string()
                 .into(),
         ),
     ]);
