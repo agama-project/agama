@@ -27,10 +27,7 @@ mod app;
 mod theme;
 mod ui;
 
-use agama_lib::{
-    http::{BaseHTTPClient, WebSocketClient},
-    monitor::Monitor,
-};
+use agama_lib::http::{BaseHTTPClient, WebSocketClient};
 use anyhow::{anyhow, Result};
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
@@ -40,8 +37,9 @@ use crossterm::{
 use ratatui::{backend::CrosstermBackend, Terminal};
 use std::io;
 
-use app::MonitorApp;
 use theme::Theme;
+
+use crate::monitor::app::MonitorAppBuilder;
 
 /// Sets up the terminal for fullscreen TUI mode
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
@@ -98,19 +96,21 @@ pub async fn run(
     // Parse the theme
     let theme = parse_theme(theme_name)?;
 
-    // Connect to monitor and get initial status
-    let (monitor, initial_status) = Monitor::connect(websocket, &http_client).await?;
+    // // Connect to monitor and get initial status
+    // let (monitor, initial_status) = Monitor::connect(websocket, &http_client).await?;
 
     // Create app state with selected theme
-    let mut app = MonitorApp::new(initial_status, http_client)
+    let mut app = MonitorAppBuilder::new(http_client, websocket)
         .with_theme(theme)
-        .with_stop_on_idle(stop_on_idle);
+        .with_stop_on_idle(stop_on_idle)
+        .build()
+        .await?;
 
     // Setup terminal
     let mut terminal = setup_terminal()?;
 
     // Run the app
-    let result = app.run(&mut terminal, monitor).await;
+    let result = app.run(&mut terminal).await;
 
     // Cleanup
     restore_terminal(&mut terminal)?;

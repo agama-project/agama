@@ -19,8 +19,8 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    http::BaseHTTPClient,
-    monitor::{InstallationStatus, MonitorClient},
+    http::{BaseHTTPClient, WebSocketClient},
+    monitor::{InstallationStatus, Monitor, MonitorClient},
 };
 use anyhow::Result;
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
@@ -52,35 +52,22 @@ struct MinimalSystemInfo {
     products: Vec<ProductInfo>,
 }
 
-/// Application state for the monitor TUI
-pub struct MonitorApp {
-    /// Current installation status (includes system info)
-    pub status: InstallationStatus,
-    /// Product names
-    product_names: HashMap<String, String>,
-    /// UI color theme
+pub struct MonitorAppBuilder {
+    pub http_client: BaseHTTPClient,
+    pub websocket_client: WebSocketClient,
     pub theme: Theme,
-    /// Exit in the next iteration
-    exit: bool,
-    /// Stop on idle
-    stop_on_idle: bool,
-    /// Base HTTP client
-    http_client: BaseHTTPClient,
+    pub stop_on_idle: bool,
 }
 
-impl MonitorApp {
-    /// Creates a new MonitorApp from the initial status.
-    pub fn new(status: InstallationStatus, http_client: BaseHTTPClient) -> Self {
+impl MonitorAppBuilder {
+    pub fn new(http_client: BaseHTTPClient, websocket_client: WebSocketClient) -> Self {
         Self {
-            status,
-            theme: Theme::default(),
-            exit: false,
-            stop_on_idle: false,
             http_client,
-            product_names: Default::default(),
+            websocket_client,
+            theme: Theme::default(),
+            stop_on_idle: false,
         }
     }
-
     /// Creates a new MonitorApp with a specific theme.
     pub fn with_theme(mut self, theme: Theme) -> Self {
         self.theme = theme;
@@ -93,6 +80,48 @@ impl MonitorApp {
         self
     }
 
+    pub async fn build(self) -> Result<MonitorApp> {
+        let product_names = self.get_product_names().await?;
+        let (monitor, status) = Monitor::connect(self.websocket_client, &self.http_client).await?;
+
+        Ok(MonitorApp {
+            monitor,
+            status,
+            theme: self.theme,
+            stop_on_idle: self.stop_on_idle,
+            exit: false,
+            product_names,
+        })
+    }
+
+    async fn get_product_names(&self) -> Result<HashMap<String, String>> {
+        let info: MinimalSystemInfo = self.http_client.get("/system").await?;
+        let product_names = info
+            .products
+            .iter()
+            .map(|i| (i.id.clone(), i.name.clone()))
+            .collect();
+        Ok(product_names)
+    }
+}
+
+/// Application state for the monitor TUI
+pub struct MonitorApp {
+    /// Current installation status (includes system info)
+    status: InstallationStatus,
+    /// Product names
+    product_names: HashMap<String, String>,
+    /// UI color theme
+    theme: Theme,
+    /// Exit in the next iteration
+    exit: bool,
+    /// Stop on idle
+    stop_on_idle: bool,
+    /// Monitor client
+    monitor: MonitorClient,
+}
+
+impl MonitorApp {
     /// Updates the installation status.
     pub fn update_status(&mut self, new_status: InstallationStatus) {
         if (self.stop_on_idle && new_status.is_idle()) || new_status.has_finished() {
@@ -112,15 +141,12 @@ impl MonitorApp {
     pub async fn run(
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
-        monitor: MonitorClient,
     ) -> Result<()> {
-        self.update_product_names().await?;
-
         let (tx, mut rx) = mpsc::channel(16);
         let tx_clone = tx.clone();
+        let mut updates = self.monitor.subscribe();
 
         tokio::task::spawn(async move {
-            let mut updates = monitor.subscribe();
             while let Ok(new_status) = updates.recv().await {
                 _ = tx_clone.send(Message::Update(new_status)).await;
             }
@@ -172,16 +198,6 @@ impl MonitorApp {
             }
             _ => {}
         }
-    }
-
-    async fn update_product_names(&mut self) -> Result<()> {
-        let info: MinimalSystemInfo = self.http_client.get("/system").await?;
-        self.product_names = info
-            .products
-            .iter()
-            .map(|i| (i.id.clone(), i.name.clone()))
-            .collect();
-        Ok(())
     }
 }
 
