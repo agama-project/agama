@@ -29,6 +29,7 @@ import SoftwarePage from "./SoftwarePage";
 
 const mockProposal = jest.fn();
 const mockAvailablePatterns = jest.fn();
+const mockUseIssues = jest.fn();
 
 const desktops = testingPatterns.filter((p) => p.desktop);
 const other = testingPatterns.filter((p) => !p.desktop);
@@ -37,7 +38,7 @@ jest.mock("~/components/layout/Header", () => () => <div>Header Mock</div>);
 jest.mock("~/components/questions/Questions", () => () => <div>Questions Mock</div>);
 
 jest.mock("~/hooks/model/issue", () => ({
-  useIssues: () => [],
+  useIssues: (scope) => mockUseIssues(scope),
 }));
 
 jest.mock("~/hooks/model/proposal/software", () => ({
@@ -56,6 +57,7 @@ describe("SoftwarePage", () => {
       desktops,
       other,
     });
+    mockUseIssues.mockReturnValue([]);
   });
 
   it("renders the Desktops section with the selected desktop", () => {
@@ -235,6 +237,50 @@ describe("SoftwarePage", () => {
       screen.getByText("No additional patterns available");
       screen.getByText("This product does not provide additional patterns.");
       expect(screen.queryByRole("link", { name: /Select patterns/ })).toBeNull();
+    });
+  });
+
+  describe("software issues", () => {
+    it("filters out product availability issues", () => {
+      mockUseIssues.mockReturnValue([
+        {
+          scope: "software",
+          class: "missing_registration",
+          description: "Product registration is required",
+        },
+        {
+          scope: "software",
+          class: "missing_product",
+          description: "Product is not available",
+        },
+        {
+          scope: "software",
+          class: "other_issue",
+          description: "Some other software issue",
+        },
+      ]);
+
+      installerRender(<SoftwarePage />);
+
+      // Product availability issues should not be shown (handled by PatternSelectionUnavailable)
+      expect(screen.queryByText("Product registration is required")).not.toBeInTheDocument();
+      expect(screen.queryByText("Product is not available")).not.toBeInTheDocument();
+
+      // Other software issues should be shown
+      screen.getByText("Some other software issue");
+    });
+
+    it("shows general software issues", () => {
+      mockUseIssues.mockReturnValue([
+        {
+          scope: "software",
+          class: "dependency_issue",
+          description: "Dependency conflict detected",
+        },
+      ]);
+
+      installerRender(<SoftwarePage />);
+      screen.getByText("Dependency conflict detected");
     });
   });
 });

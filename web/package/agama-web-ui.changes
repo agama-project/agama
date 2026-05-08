@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May  5 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the overall UX of the product registration page and
+  decouple it from software progress (gh#agama-project/agama#3456).
+
+-------------------------------------------------------------------
 Thu Apr 30 13:01:05 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for configuring a network bridge using the UI
