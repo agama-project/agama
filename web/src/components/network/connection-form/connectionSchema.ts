@@ -21,10 +21,12 @@
  */
 
 import { formOptions } from "@tanstack/react-form";
-import { commonDefaults } from "./commonFieldsSchema";
-import { ipDefaults } from "./ipFieldsSchema";
-import { bondDefaults } from "./bondFieldsSchema";
-import { bridgeDefaults } from "./bridgeFieldsSchema";
+import * as v from "valibot";
+import { CONNECTION_TYPE } from "~/utils/network";
+import { commonDefaults, commonSchema } from "./commonFieldsSchema";
+import { ipDefaults, ipSchema } from "./ipFieldsSchema";
+import { bondDefaults, bondSchema } from "./bondFieldsSchema";
+import { bridgeDefaults, bridgeSchema } from "./bridgeFieldsSchema";
 
 /**
  * Complete default values for ConnectionForm.
@@ -36,6 +38,18 @@ export const connectionDefaults = {
   ...bondDefaults,
   ...bridgeDefaults,
 };
+
+/**
+ * Valibot schemas composed by connection type.
+ * Each type combines common and IP schemas with any type-specific schemas.
+ *
+ * Returns a function to defer i18n initialization.
+ */
+export const schemaByType = () => ({
+  [CONNECTION_TYPE.ETHERNET]: v.intersect([commonSchema(), ipSchema()]),
+  [CONNECTION_TYPE.BOND]: v.intersect([commonSchema(), ipSchema(), bondSchema()]),
+  [CONNECTION_TYPE.BRIDGE]: v.intersect([commonSchema(), ipSchema(), bridgeSchema()]),
+});
 
 /**
  * Shared form options for ConnectionForm and its sub-components.

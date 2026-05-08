@@ -20,8 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
+import * as v from "valibot";
 import { ConnectionType, ConnectionBindingMode } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
+import { _ } from "~/i18n";
 
 /**
  * Default values for common connection fields.
@@ -33,3 +35,18 @@ export const commonDefaults = {
   ifaceMac: "",
   bindingMode: "none" as ConnectionBindingMode,
 };
+
+/**
+ * Validation schema for common connection fields.
+ *
+ * Returns a function to defer i18n initialization.
+ */
+export const commonSchema = () =>
+  v.object({
+    // TRANSLATORS: validation error for the connection name field.
+    name: v.pipe(v.string(), v.minLength(1, _("Name is required"))),
+    type: v.string(),
+    iface: v.string(),
+    ifaceMac: v.string(),
+    bindingMode: v.string(),
+  });
