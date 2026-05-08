@@ -86,18 +86,8 @@ jest.mock("~/hooks/model/config/product", () => ({
   useProductInfo: (): ReturnType<typeof useProductInfo> => tumbleweed,
 }));
 
-jest.mock("~/context/installerL10n", () => ({
-  InstallerL10nProvider: ({ children }) => <>{children}</>,
-  useInstallerL10n: () => ({
-    keymap: "us",
-    language: "de-DE",
-  }),
-}));
-
 const renderQuestion = () =>
-  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />, {
-    withL10n: true,
-  });
+  installerRender(<LuksActivationQuestion question={question} answerCallback={answerFn} />);
 
 describe("LuksActivationQuestion", () => {
   beforeEach(() => {

@@ -25,12 +25,18 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 
+import type { TextInputProps } from "@patternfly/react-core";
+
 function TextFieldForm({
   defaultValue = "",
   helperText,
+  type,
+  size,
 }: {
   defaultValue?: string;
   helperText?: string;
+  type?: TextInputProps["type"];
+  size?: number;
 }) {
   const form = useAppForm({ defaultValues: { text: defaultValue } });
 
@@ -47,7 +53,9 @@ function TextFieldForm({
           name="text"
           validators={{ onSubmit: ({ value }) => (!value ? "Text is required" : undefined) }}
         >
-          {(field) => <field.TextField label="My label" helperText={helperText} />}
+          {(field) => (
+            <field.TextField label="My label" helperText={helperText} type={type} size={size} />
+          )}
         </form.AppField>
         <button type="submit">Submit</button>
       </form>
@@ -75,7 +83,7 @@ describe("TextField", () => {
   it("shows a validation error after a failed submit", async () => {
     const { user } = installerRender(<TextFieldForm />);
     await user.click(screen.getByRole("button", { name: "Submit" }));
-    expect(await screen.findByText("Text is required")).toBeInTheDocument();
+    await screen.findByText("Text is required");
   });
 
   describe("helperText", () => {
@@ -92,8 +100,36 @@ describe("TextField", () => {
     it("shows both helper text and error when there is an error", async () => {
       const { user } = installerRender(<TextFieldForm helperText="E.g., example@example.com" />);
       await user.click(screen.getByRole("button", { name: "Submit" }));
-      await screen.findByText("Text is required");
       screen.getByText("E.g., example@example.com");
+      await screen.findByText("Text is required");
+    });
+  });
+
+  describe("type prop", () => {
+    it("sets the input type to password when type is password", () => {
+      installerRender(<TextFieldForm type="password" />);
+      const input = screen.getByLabelText("My label");
+      expect(input).toHaveAttribute("type", "password");
+    });
+
+    it("sets the input type to email when type is email", () => {
+      installerRender(<TextFieldForm type="email" />);
+      const input = screen.getByLabelText("My label");
+      expect(input).toHaveAttribute("type", "email");
+    });
+
+    it("defaults to text type when type is not provided", () => {
+      installerRender(<TextFieldForm />);
+      const input = screen.getByLabelText("My label");
+      expect(input).toHaveAttribute("type", "text");
+    });
+  });
+
+  describe("size prop", () => {
+    it("sets the input size when provided", () => {
+      installerRender(<TextFieldForm size={20} />);
+      const input = screen.getByLabelText("My label");
+      expect(input).toHaveAttribute("size", "20");
     });
   });
 });

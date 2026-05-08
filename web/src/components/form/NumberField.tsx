@@ -31,23 +31,21 @@ import {
 import Text from "~/components/core/Text";
 import { useFieldContext } from "~/hooks/form-contexts";
 
-import type { TextInputProps } from "@patternfly/react-core";
-
-type TextFieldProps = {
+type NumberFieldProps = {
   label: React.ReactNode;
   helperText?: React.ReactNode;
-  type?: TextInputProps["type"];
-  size?: number;
+  min?: number;
+  max?: number;
 };
 
 /**
- * A text input tied to a TanStack Form field via `useFieldContext`.
+ * A numeric input tied to a TanStack Form field via `useFieldContext`.
  * Must be used inside a `form.AppField` render prop.
  *
  * @see useFieldContext for field component conventions.
  */
-export default function TextField({ label, helperText, type, size }: TextFieldProps) {
-  const field = useFieldContext<string>();
+export default function NumberField({ label, helperText, min, max }: NumberFieldProps) {
+  const field = useFieldContext<number | "">();
   const error = field.state.meta.errors[0];
 
   return (
@@ -55,11 +53,12 @@ export default function TextField({ label, helperText, type, size }: TextFieldPr
       <TextInput
         id={field.name}
         name={field.name}
-        type={type}
-        size={size}
         value={field.state.value}
+        type="number"
+        min={min}
+        max={max}
         validated={error ? "error" : "default"}
-        onChange={(_, value) => field.handleChange(value)}
+        onChange={(_, value) => field.handleChange(value === "" ? undefined : Number(value))}
       />
       {(error || helperText) && (
         <FormHelperText>

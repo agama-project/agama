@@ -31,22 +31,19 @@ import {
 import Text from "~/components/core/Text";
 import { useFieldContext } from "~/hooks/form-contexts";
 
-import type { TextInputProps } from "@patternfly/react-core";
-
-type TextFieldProps = {
+type EmailFieldProps = {
   label: React.ReactNode;
   helperText?: React.ReactNode;
-  type?: TextInputProps["type"];
   size?: number;
 };
 
 /**
- * A text input tied to a TanStack Form field via `useFieldContext`.
+ * An email input tied to a TanStack Form field via `useFieldContext`.
  * Must be used inside a `form.AppField` render prop.
  *
  * @see useFieldContext for field component conventions.
  */
-export default function TextField({ label, helperText, type, size }: TextFieldProps) {
+export default function EmailField({ label, helperText, size }: EmailFieldProps) {
   const field = useFieldContext<string>();
   const error = field.state.meta.errors[0];
 
@@ -55,7 +52,7 @@ export default function TextField({ label, helperText, type, size }: TextFieldPr
       <TextInput
         id={field.name}
         name={field.name}
-        type={type}
+        type="email"
         size={size}
         value={field.state.value}
         validated={error ? "error" : "default"}
