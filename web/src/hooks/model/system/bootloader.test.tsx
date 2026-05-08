@@ -23,7 +23,7 @@
 import React from "react";
 import { renderHook } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useSystem, useIsTpmAvailable } from "./bootloader";
+import { useSystem } from "./bootloader";
 import type { System } from "~/model/system";
 import type { Bootloader } from "~/model/system";
 
@@ -84,68 +84,6 @@ describe("bootloader hooks", () => {
       const { result } = renderHook(() => useSystem(), { wrapper });
 
       expect(result.current).toBeNull();
-    });
-  });
-
-  describe("useIsTpmAvailable", () => {
-    it("returns function that checks TPM availability", () => {
-      const bootloaderSystem: Bootloader.System = {
-        availableBootloaders: [
-          { type: "grub2", encryptionAuth: ["password", "tpm"] },
-          { type: "grub2-bls", encryptionAuth: ["password"] },
-          { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
-        ],
-      };
-
-      const system: System = {
-        bootloader: bootloaderSystem,
-      };
-
-      queryClient.setQueryData(["system"], system);
-
-      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
-
-      expect(result.current("grub2")).toBe(true);
-      expect(result.current("grub2-bls")).toBe(false);
-      expect(result.current("systemd-boot")).toBe(true);
-    });
-
-    it("returns function that returns false when system is null", () => {
-      queryClient.setQueryData(["system"], null);
-
-      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
-
-      expect(result.current("grub2")).toBe(false);
-      expect(result.current("grub2-bls")).toBe(false);
-      expect(result.current("systemd-boot")).toBe(false);
-    });
-
-    it("returns function that returns false when bootloader system is null", () => {
-      const system: System = {};
-
-      queryClient.setQueryData(["system"], system);
-
-      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
-
-      expect(result.current("grub2")).toBe(false);
-      expect(result.current("grub2-bls")).toBe(false);
-      expect(result.current("systemd-boot")).toBe(false);
-    });
-
-    it("returns function that returns false for non-existent bootloader type", () => {
-      const bootloaderSystem: Bootloader.System = {
-        availableBootloaders: [{ type: "grub2", encryptionAuth: ["password", "tpm"] }],
-      };
-
-      const system: System = {
-        bootloader: bootloaderSystem,
-      };
-
-      queryClient.setQueryData(["system"], system);
-
-      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
-
-      expect(result.current("systemd-boot")).toBe(false);
     });
   });
 });

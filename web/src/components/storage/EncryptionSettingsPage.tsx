@@ -25,14 +25,14 @@ import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useIsTpmAvailable } from "~/hooks/model/system/bootloader";
+import { useIsTpmAvailable } from "~/hooks/model/bootloader";
 import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { isEmpty } from "radashi";
 import { _, N_ } from "~/i18n";
 import { STORAGE } from "~/routes/paths";
 import bootloaderSystem from "~/model/system/bootloader";
-import type { BootloaderType } from "~/model/system/bootloader";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 const TPM_EXPLANATION = N_(
   "The password will not be needed to boot and access the data if the TPM can verify the \
@@ -46,8 +46,10 @@ const TPM_FDE_INSTRUCTIONS = N_(
   "TPM sealing requires the new system to be booted directly on its first run.",
 );
 
-const tpmText = (type: BootloaderType | null): string => {
-  return type && bootloaderSystem.isBls(type)
+const generateTpmDescription = (config: ConfigModel.Config | null): string => {
+  const bootloaderType = config ? configModel.getBootloader(config) : null;
+
+  return bootloaderType && bootloaderSystem.isBls(bootloaderType)
     ? _(TPM_EXPLANATION)
     : [_(TPM_EXPLANATION), _(TPM_FDE_INSTRUCTIONS)].join(" ");
 };
@@ -106,11 +108,9 @@ export default function EncryptionSettingsPage() {
     navigate({ pathname: "..", search: location.search });
   };
 
-  const bootloaderType = config ? configModel.getBootloader(config) : null;
-  const tpmAvailable = bootloaderType && isTpmAvailable(bootloaderType);
   // TRANSLATORS: "Trusted Platform Module" is the name of the technology and TPM its abbreviation
   const tpmLabel = _("Use the Trusted Platform Module (TPM) to decrypt automatically on each boot");
-  const tpmDescription = tpmText(bootloaderType);
+  const tpmDescription = generateTpmDescription(config);
 
   return (
     <Page
@@ -149,7 +149,7 @@ at the new file systems, including data, programs, and system files.",
                 showErrors={false}
               />
               <PasswordCheck password={password} />
-              {tpmAvailable && (
+              {isTpmAvailable && (
                 <Checkbox
                   id="tpm"
                   label={tpmLabel}

@@ -20,19 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { systemQuery } from "~/hooks/model/system";
-import type { System, Bootloader } from "~/model/system";
+import bootloaderSystem from "~/model/system/bootloader";
+import configModel from "~/model/storage/config-model";
+import { useSystem } from "~/hooks/model/system/bootloader";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
+import { isNullish } from "radashi";
 
-const selectSystem = (system: System | null): Bootloader.System | null =>
-  system?.bootloader ?? null;
+function useIsTpmAvailable(): boolean {
+  const system = useSystem();
+  const config = useConfigModel();
+  const bootloaderType = config ? configModel.getBootloader(config) : null;
 
-function useSystem(): Bootloader.System | null {
-  const { data } = useSuspenseQuery({
-    ...systemQuery,
-    select: selectSystem,
-  });
-  return data;
+  if (isNullish(system) || isNullish(bootloaderType)) return false;
+
+  return bootloaderSystem.isTpmAvailable(system, bootloaderType);
 }
 
-export { useSystem };
+export { useIsTpmAvailable };
