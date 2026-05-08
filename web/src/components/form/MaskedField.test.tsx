@@ -130,7 +130,7 @@ describe("MaskedField", () => {
       const { user } = installerRender(<MaskedFieldForm />);
       const input = screen.getByLabelText("Secret code");
       screen.getByText("us");
-      screen.getByText(/keyboard/i);
+      screen.getByText(/keyboard layout/i);
       expect(screen.queryByText(/CAPS LOCK/)).not.toBeInTheDocument();
       await user.type(input, "{capslock}");
       screen.getByText(/CAPS LOCK/);
@@ -138,7 +138,7 @@ describe("MaskedField", () => {
 
     it("hides the keymap reminder when set", () => {
       installerRender(<MaskedFieldForm hideReminders={["keymap"]} />);
-      expect(screen.queryByText(/keyboard/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/keyboard layout/i)).not.toBeInTheDocument();
     });
 
     it("hides the capslock reminder when set", () => {
@@ -148,7 +148,7 @@ describe("MaskedField", () => {
 
     it("hides all reminders when all are set", () => {
       installerRender(<MaskedFieldForm hideReminders={["keymap", "capslock"]} />);
-      expect(screen.queryByText(/keyboard/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/keyboard layout/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/caps lock/i)).not.toBeInTheDocument();
     });
   });

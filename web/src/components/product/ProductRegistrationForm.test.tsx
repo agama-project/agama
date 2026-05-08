@@ -236,7 +236,7 @@ describe("ProductRegistrationForm", () => {
     it("allows dismissing the error and clearing the registration data", async () => {
       const { user } = installerRender(<ProductRegistrationForm />);
 
-      const button = screen.getByRole("button", { name: "Dismiss and clear data below" });
+      const button = screen.getByRole("button", { name: "Dismiss and clear registration data" });
       await user.click(button);
       expect(putConfig).toHaveBeenCalledWith({
         ...mockConfig,
@@ -337,7 +337,7 @@ describe("ProductRegistrationForm", () => {
 
       screen.getByText("Invalid registration code");
 
-      screen.getByRole("button", { name: "Dismiss and clear data below" });
+      screen.getByRole("button", { name: "Dismiss and clear registration data" });
     });
 
     it("re-enables button when backend returns same registration issue object", async () => {

@@ -80,7 +80,7 @@ const KeymapReminder = () => {
            * %s will be replaced with the keyboard layout name (e.g., "US", "DE").
            * Example: "Using us keyboard".
            */
-          _("Using %s keyboard")
+          _("Using %s keyboard layout")
         }
       >
         {() => (

@@ -167,7 +167,7 @@ export default function ProductRegistrationForm() {
               <Button variant="control" isInline onClick={submitNoRegister}>
                 {
                   // TRANSLATORS: button to dismiss the error alert and clear the registration data
-                  _("Dismiss and clear data below")
+                  _("Dismiss and clear registration data")
                 }
               </Button>
             }
