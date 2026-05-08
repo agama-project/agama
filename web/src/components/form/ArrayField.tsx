@@ -132,6 +132,49 @@ function filterNew(existing: string[], normalized: string[]): string[] {
   return unique([...existing, ...normalized]).slice(existing.length);
 }
 
+/**
+ * Renders keyboard usage instructions for screen readers.
+ *
+ * Always rendered but visually hidden, accessed via aria-describedby.
+ * Provides complete keyboard navigation instructions.
+ */
+function ScreenReaderInstructions({ id }: { id: string }) {
+  return (
+    <HelperTextItem id={id}>
+      <Text srOnly>
+        {
+          // TRANSLATORS: keyboard usage hint for screen readers.
+          _(
+            "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit",
+          )
+        }
+      </Text>
+    </HelperTextItem>
+  );
+}
+
+/**
+ * Renders keyboard usage instructions for sighted users.
+ *
+ * Shows context-aware hints based on whether entries exist.
+ * Only rendered when field is dirty (has entries or draft content).
+ */
+function SightedInstructions({ hasEntries, isDirty }: { hasEntries: boolean; isDirty: boolean }) {
+  if (!isDirty) return null;
+
+  return (
+    <HelperTextItem>
+      <Text textStyle={["fontSizeXs", "textColorSubtle"]}>
+        {hasEntries
+          ? // TRANSLATORS: keyboard usage hint when entries exist.
+            _("Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate")
+          : // TRANSLATORS: keyboard usage hint when field is empty.
+            _("Enter or Tab to add")}
+      </Text>
+    </HelperTextItem>
+  );
+}
+
 type EntryProps = {
   /** Raw stored value, not necessarily the display form. */
   item: string;
@@ -632,18 +675,13 @@ export default function ArrayField({
 
       <FormHelperText>
         <HelperText>
+          <ScreenReaderInstructions id={instructionsId} />
+          <SightedInstructions
+            hasEntries={value.length > 0}
+            isDirty={value.length > 0 || draft !== ""}
+          />
           <HelperTextItem id={hintId}>
             {helperText && <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{helperText}</Text>}
-          </HelperTextItem>
-          <HelperTextItem id={instructionsId}>
-            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>
-              {
-                // TRANSLATORS: keyboard usage hint shown below the field.
-                _(
-                  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.",
-                )
-              }
-            </Text>
           </HelperTextItem>
           {hasAnyError && (
             <HelperTextItem variant="error">

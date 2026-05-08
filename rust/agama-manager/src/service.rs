@@ -20,7 +20,7 @@
 
 use crate::{
     actions::FinishAction, bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n,
-    message, network, proxy, s390, security, software, storage, tasks, users,
+    message, network, ntp, proxy, s390, security, software, storage, tasks, users,
 };
 use agama_users::PasswordCheckResult;
 use agama_utils::{
@@ -84,6 +84,8 @@ pub enum Error {
     #[error(transparent)]
     Proxy(#[from] proxy::service::Error),
     #[error(transparent)]
+    Ntp(#[from] ntp::service::Error),
+    #[error(transparent)]
     Hardware(#[from] hardware::Error),
     #[error("Cannot dispatch this action in {current} stage (expected {expected}).")]
     UnexpectedStage { current: Stage, expected: Stage },
@@ -111,6 +113,7 @@ pub struct Starter {
     l10n: Option<Handler<l10n::Service>>,
     network: Option<NetworkSystemClient>,
     proxy: Option<Handler<proxy::Service>>,
+    ntp: Option<Handler<ntp::Service>>,
     security: Option<Handler<security::Service>>,
     software: Option<Handler<software::Service>>,
     storage: Option<Handler<storage::Service>>,
@@ -138,6 +141,7 @@ impl Starter {
             l10n: None,
             network: None,
             proxy: None,
+            ntp: None,
             security: None,
             software: None,
             storage: None,
@@ -225,6 +229,11 @@ impl Starter {
         self
     }
 
+    pub fn with_ntp(mut self, ntp: Handler<ntp::Service>) -> Self {
+        self.ntp = Some(ntp);
+        self
+    }
+
     /// Starts the service and returns a handler to communicate with it.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let issues = match self.issues {
@@ -304,6 +313,11 @@ impl Starter {
             }
         };
 
+        let ntp = match self.ntp {
+            Some(ntp) => ntp,
+            None => ntp::Service::starter(self.events.clone(), software.clone()).start()?,
+        };
+
         let iscsi = match self.iscsi {
             Some(iscsi) => iscsi,
             None => {
@@ -380,6 +394,7 @@ impl Starter {
             network: network.clone(),
             progress: progress.clone(),
             proxy: proxy.clone(),
+            ntp: ntp.clone(),
             questions: self.questions.clone(),
             security: security.clone(),
             software: software.clone(),
@@ -399,6 +414,7 @@ impl Starter {
             l10n,
             network,
             proxy,
+            ntp,
             software,
             storage,
             products: products::Registry::default(),
@@ -422,6 +438,7 @@ pub struct Service {
     hostname: Handler<hostname::Service>,
     iscsi: Handler<iscsi::Service>,
     proxy: Handler<proxy::Service>,
+    ntp: Handler<ntp::Service>,
     l10n: Handler<l10n::Service>,
     software: Handler<software::Service>,
     network: NetworkSystemClient,
@@ -681,6 +698,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         // (ignoring imported certificates by questions).
         let security = self.config.security.clone();
         let proxy = self.proxy.call(proxy::message::GetConfig).await?;
+        let ntp = self.ntp.call(ntp::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
@@ -705,6 +723,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             iscsi,
             l10n: Some(l10n),
             proxy,
+            ntp,
             questions,
             network: Some(network),
             security,

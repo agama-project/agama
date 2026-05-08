@@ -33,7 +33,7 @@
  *
  * ## Field component conventions
  *
- * All field components (TextField, CheckboxField, DropdownField, ArrayField)
+ * All field components (TextField, NumberField, CheckboxField, DropdownField, ArrayField)
  * follow the same contract:
  *
  * - `onChange` is wired internally. No value or change handler props are

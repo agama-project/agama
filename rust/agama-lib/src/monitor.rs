@@ -160,7 +160,7 @@ impl Monitor {
         http_client: &BaseHTTPClient,
     ) -> Result<(MonitorClient, InstallationStatus), MonitorError> {
         // Channel to send/receive commands from the client.
-        let (updates, _rx) = broadcast::channel(16);
+        let (updates, _rx) = broadcast::channel(100);
         let client = MonitorClient {
             updates: updates.clone(),
         };

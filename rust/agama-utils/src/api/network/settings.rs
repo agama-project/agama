@@ -141,6 +141,7 @@ impl Default for BondSettings {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct BridgeSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stp: Option<bool>,
