@@ -139,6 +139,135 @@ describe("ConnectionForm", () => {
     });
   });
 
+  describe("Bridge connection", () => {
+    it("shows bridge fields when type is Bridge", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+      const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
+      expect(stpSelector).toHaveTextContent("Default");
+
+      // STP fields should not be visible by default
+      expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
+
+      // Enable STP to see the fields
+      await user.click(stpSelector);
+      await user.click(screen.getByRole("option", { name: /^Custom/ }));
+
+      screen.getByLabelText(/Priority/);
+      screen.getByLabelText(/Forward delay/);
+      screen.getByLabelText(/Hello time/);
+      screen.getByLabelText(/Max message age/);
+      screen.getByText("Bridge ports");
+    });
+
+    it("resets the device name when switching from Bridge back to Ethernet", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      // Switch to Bridge
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+      const deviceNameField = await screen.findByLabelText("Device name");
+      await user.type(deviceNameField, "br0");
+      expect(deviceNameField).toHaveValue("br0");
+
+      // Switch back to Ethernet
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Ethernet" }));
+
+      // It should not show the Bridge's device name field anymore
+      expect(screen.queryByDisplayValue("br0")).not.toBeInTheDocument();
+      // Binding mode should be back to "Any" (default)
+      expect(screen.getByLabelText("Device")).toHaveTextContent("Any");
+    });
+
+    it("submits with bridge settings", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+
+      const ifaceInput = screen.getByLabelText("Device name");
+      await user.clear(ifaceInput);
+      await user.type(ifaceInput, "br1");
+
+      // STP is default by default. Let's enable it to set some values.
+      const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+      await user.click(stpSelector);
+      await user.click(screen.getByRole("option", { name: /^Custom/ }));
+
+      const priorityInput = screen.getByLabelText(/Priority/);
+      await user.clear(priorityInput);
+      await user.type(priorityInput, "16384");
+
+      const delayInput = screen.getByLabelText(/Forward delay/);
+      await user.clear(delayInput);
+      await user.type(delayInput, "10");
+
+      // Now disable it and verify that STP-related fields are hidden
+      await user.click(stpSelector);
+      await user.click(screen.getByRole("option", { name: /^Disabled/ }));
+      expect(screen.queryByLabelText(/Priority/)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Forward delay/)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Hello time/)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Max message age/)).not.toBeInTheDocument();
+
+      // Add a port
+      await user.type(screen.getByLabelText("Bridge ports"), "enp1s0");
+      await user.keyboard("{Enter}");
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            iface: "br1",
+            bridge: expect.objectContaining({
+              stp: false,
+              priority: undefined,
+              forwardDelay: undefined,
+              ports: ["enp1s0"],
+            }),
+          }),
+        );
+      });
+    });
+
+    it("submits with undefined STP when STP is set to Default", async () => {
+      const { user } = installerRender(<ConnectionForm />);
+
+      await user.click(screen.getByLabelText("Type"));
+      await user.click(screen.getByRole("option", { name: "Bridge" }));
+
+      const ifaceInput = screen.getByLabelText("Device name");
+      await user.clear(ifaceInput);
+      await user.type(ifaceInput, "br1");
+
+      // STP is already default by default.
+      const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+      expect(stpSelector).toHaveTextContent("Default");
+
+      // Add a port
+      await user.type(screen.getByLabelText("Bridge ports"), "enp1s0");
+      await user.keyboard("{Enter}");
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(
+          expect.objectContaining({
+            iface: "br1",
+            bridge: expect.objectContaining({
+              stp: undefined,
+              ports: ["enp1s0"],
+            }),
+          }),
+        );
+      });
+    });
+  });
+
   describe("Device binding", () => {
     it("does not show device or MAC fields when mode is Any", () => {
       installerRender(<ConnectionForm />);
@@ -393,6 +522,27 @@ describe("ConnectionForm", () => {
       expect(screen.getByRole("checkbox", { name: "Use custom DNS search domains" })).toBeChecked();
     });
 
+    it("infers STP as Enabled when stp is missing but other STP options are present", async () => {
+      mockUseSystem.mockReturnValue({
+        connections: [
+          buildConnection("br0", {
+            bridge: {
+              ports: ["enp1s0"],
+              priority: 32768,
+              // stp is missing
+            },
+          }),
+        ],
+      });
+      mockParams({ id: "br0" });
+
+      installerRender(<ConnectionForm />);
+
+      const stpSelector = await screen.findByLabelText("Spanning Tree Protocol (STP)");
+      expect(stpSelector).toHaveTextContent("Custom");
+      expect(screen.getByLabelText(/Priority/)).toBeInTheDocument();
+    });
+
     it("submits the updated connection when accepting the form", async () => {
       mockUseSystem.mockReturnValue({
         connections: [buildConnection("eth0", { nameservers: ["8.8.8.8"] })],
@@ -605,7 +755,7 @@ describe("ConnectionForm", () => {
         const { user } = installerRender(<ConnectionForm />);
         await user.type(screen.getByLabelText("Name"), "Test");
         await user.click(screen.getByLabelText("IPv4 Settings"));
-        await user.click(screen.getByRole("option", { name: /^Automatic \+ manual/ }));
+        await user.click(screen.getByRole("option", { name: /^Manual/ }));
         await user.type(screen.getByLabelText("IPv4 Addresses"), "not-an-ip{Enter}");
         await user.click(screen.getByRole("button", { name: "Accept" }));
         await screen.findByText(/Invalid IPv4 address/);
@@ -684,6 +834,114 @@ describe("ConnectionForm", () => {
             ),
           ).not.toBeInTheDocument();
           expect(mockMutateAsync).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe("Bridge", () => {
+      it("shows an error when no device name is defined", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+
+        const ifaceInput = await screen.findByLabelText("Device name");
+        await user.clear(ifaceInput);
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Device name is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows an error when no bridge ports are selected", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+        await user.type(await screen.findByLabelText("Device name"), "br0");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("At least one bridge port is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows errors when bridge STP settings are out of range", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+        await user.type(await screen.findByLabelText("Device name"), "br0");
+        await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
+
+        // Enable STP to see the fields
+        const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+        await user.click(stpSelector);
+        await user.click(screen.getByRole("option", { name: /^Custom/ }));
+
+        const priorityInput = screen.getByLabelText(/Priority/);
+        await user.clear(priorityInput);
+        await user.type(priorityInput, "70000");
+
+        const delayInput = screen.getByLabelText(/Forward delay/);
+        await user.clear(delayInput);
+        await user.type(delayInput, "2");
+
+        const helloInput = screen.getByLabelText(/Hello time/);
+        await user.clear(helloInput);
+        await user.type(helloInput, "11");
+
+        const maxAgeInput = screen.getByLabelText(/Max message age/);
+        await user.clear(maxAgeInput);
+        await user.type(maxAgeInput, "5");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Priority must be between 0 and 61440");
+        await screen.findByText("Forward delay must be between 4 and 30 seconds");
+        await screen.findByText("Hello time must be between 1 and 10 seconds");
+        await screen.findByText("Max message age must be between 6 and 40 seconds");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("allows empty STP settings when STP is enabled", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByRole("option", { name: "Bridge" }));
+        await user.type(await screen.findByLabelText("Name"), "test-bridge");
+        await user.type(await screen.findByLabelText("Device name"), "br0");
+        await user.type(screen.getByLabelText("Bridge ports"), "enp1s0{enter}");
+
+        // Enable STP
+        const stpSelector = screen.getByLabelText("Spanning Tree Protocol (STP)");
+        await user.click(stpSelector);
+        await user.click(screen.getByRole("option", { name: /^Custom/ }));
+
+        // Clear all STP fields
+        await user.clear(screen.getByLabelText(/Priority/));
+        await user.clear(screen.getByLabelText(/Forward delay/));
+        await user.clear(screen.getByLabelText(/Hello time/));
+        await user.clear(screen.getByLabelText(/Max message age/));
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await waitFor(() => {
+          expect(mockMutateAsync).toHaveBeenCalledWith(
+            expect.objectContaining({
+              bridge: expect.objectContaining({
+                stp: true,
+                priority: undefined,
+                forwardDelay: undefined,
+                helloTime: undefined,
+                maxAge: undefined,
+              }),
+            }),
+          );
         });
       });
     });

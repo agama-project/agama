@@ -1,8 +1,26 @@
 -------------------------------------------------------------------
+<<<<<<< registration-stop-listening-software
 Mon May  6 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Move product availability issues to software scope
   (gh#agama-project/agama#3456).
+=======
+Thu May  7 10:56:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved saving libzypp service (related to bsc#1261351)
+
+-------------------------------------------------------------------
+Thu May  7 09:50:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve handling of updates in the "agama monitor" command
+  (gh#agama-project/agama#3470).
+
+-------------------------------------------------------------------
+Thu May  7 06:03:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for synchronizing and configuring the NTP service
+  using an Agama configuration file (jsc#PED-15144).
+>>>>>>> master
 
 -------------------------------------------------------------------
 Wed May  6 08:54:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
