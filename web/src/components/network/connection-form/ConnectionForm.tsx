@@ -29,11 +29,11 @@ import Page from "~/components/core/Page";
 import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
-import IpSettings from "~/components/network/IpSettings";
-import BondSettings from "~/components/network/BondSettings";
-import BridgeSettings from "~/components/network/BridgeSettings";
-import BindingModeSelector from "~/components/network/BindingModeSelector";
-import DeviceSelector from "~/components/network/DeviceSelector";
+import IpSettings from "./IpSettings";
+import BondSettings from "./BondSettings";
+import BridgeSettings from "./BridgeSettings";
+import BindingModeSelector from "./BindingModeSelector";
+import DeviceSelector from "./DeviceSelector";
 import {
   BondMode,
   Bridge,

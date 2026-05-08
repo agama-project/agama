@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import ConnectionForm from "~/components/network/ConnectionForm";
+import ConnectionForm from "~/components/network/connection-form/ConnectionForm";
 import NetworkPage from "~/components/network/NetworkPage";
 import WifiConnectionForm from "~/components/network/WifiConnectionForm";
 import ConnectionPage from "~/components/network/ConnectionPage";

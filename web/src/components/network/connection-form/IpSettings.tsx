@@ -23,11 +23,7 @@
 import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import {
-  connectionFormOptions,
-  FormIpMode,
-  ADDRESS_REQUIRED_MODES,
-} from "~/components/network/ConnectionForm";
+import { connectionFormOptions, FormIpMode, ADDRESS_REQUIRED_MODES } from "./ConnectionForm";
 import { withForm } from "~/hooks/form";
 import { ensureIPPrefix, isValidIPv4Address, isValidIPv6Address } from "~/utils/network";
 import { _, N_ } from "~/i18n";

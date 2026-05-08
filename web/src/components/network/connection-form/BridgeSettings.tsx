@@ -25,7 +25,7 @@ import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import { connectionFormOptions, BridgeStpMode } from "~/components/network/ConnectionForm";
+import { connectionFormOptions, BridgeStpMode } from "./ConnectionForm";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { _, N_, formatList } from "~/i18n";
