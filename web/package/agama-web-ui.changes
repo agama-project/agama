@@ -3,8 +3,8 @@ Fri May  8 11:01:22 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Simplify hostname configuration UX by replacing the checkbox-driven
   approach with a mode selector (gh#agama-project/agama#3475).
--------------------------------------------------------------------
 
+-------------------------------------------------------------------
 Mon May  5 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve the overall UX of the product registration page and
