@@ -111,7 +111,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
     match subcommand {
         ConfigCommands::Show { output } => {
             let http_client = build_http_client(api_url, opts.insecure, true).await?;
-            let response: api::Config = http_client.get("/v2/config").await?;
+            let response: api::Config = http_client.get("/config").await?;
             let json = serde_json::to_string_pretty(&response)?;
 
             let destination = output.unwrap_or(CliOutput::Stdout);
@@ -155,7 +155,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
         }
         ConfigCommands::Edit { editor } => {
             let (http_client, ws) = build_clients(api_url, opts.insecure).await?;
-            let response: api::Config = http_client.get("/v2/config").await?;
+            let response: api::Config = http_client.get("/config").await?;
             let editor = editor
                 .or_else(|| std::env::var("EDITOR").ok())
                 .unwrap_or(DEFAULT_EDITOR.to_string());
@@ -174,7 +174,7 @@ async fn patch_config(
     model: &api::Config,
 ) -> Result<(), anyhow::Error> {
     let patch = api::Patch::with_update(model)?;
-    http_client.patch_void("/v2/config", &patch).await?;
+    http_client.patch_void("/config", &patch).await?;
     Ok(())
 }
 

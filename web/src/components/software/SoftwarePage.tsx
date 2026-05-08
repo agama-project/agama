@@ -44,9 +44,10 @@ import Page from "~/components/core/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
+import PatternSelectionUnavailable from "~/components/software/PatternSelectionUnavailable";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/software";
-import { useSystem } from "~/hooks/model/system/software";
+import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { isPatternSelected } from "~/utils/software";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
@@ -77,6 +78,15 @@ const NothingSelected = ({
         </Link>
       </EmptyStateActions>
     </EmptyStateFooter>
+  </EmptyState>
+);
+
+/**
+ * Informational empty state shown when patterns are not available.
+ */
+const NoAvailable = ({ title, body }: { title: string; body: string }) => (
+  <EmptyState headingLevel="h4" titleText={title} variant="sm">
+    <EmptyStateBody>{body}</EmptyStateBody>
   </EmptyState>
 );
 
@@ -244,7 +254,7 @@ const SoftwareSection = ({
       }
       description={description}
       pfCardProps={{ isFullHeight: false }}
-      actions={!noneSelected && <Link to={selectionPath}>{buttonText}</Link>}
+      actions={!noneSelected && totalCount > 0 && <Link to={selectionPath}>{buttonText}</Link>}
     >
       <SelectedPatternsList patterns={patterns} selection={selection} emptyContent={emptyContent} />
     </Page.Section>
@@ -252,27 +262,11 @@ const SoftwareSection = ({
 };
 
 /**
- * Fallback section shown when the product does not support pattern selection.
- */
-const PatternSelectionUnavailable = () => (
-  <Page.Section title={_("Patterns")}>
-    <Content component="p">
-      {/* TRANSLATORS: shown when the product does not support pattern selection at install time */}
-      {_(
-        "This product does not allow to select software patterns during installation. \
-However, you can add additional software once the installation is finished.",
-      )}
-    </Content>
-  </Page.Section>
-);
-
-/**
  * Main content of the software page.
  */
 const SoftwarePageContent = () => {
-  const { patterns } = useSystem();
+  const { all: patterns, desktops: allDesktops, other: allOtherPatterns } = useAvailablePatterns();
   const proposal = useProposal();
-  const issues = useIssues("software");
 
   if (!proposal) {
     // TRANSLATORS: shown while the software proposal is not yet available
@@ -283,73 +277,89 @@ const SoftwarePageContent = () => {
     ? xbytes(proposal.usedSpace * 1024, { iec: true })
     : undefined;
 
-  const [allDesktops, allOtherPatterns] = fork(patterns, (p) => p.desktop);
   const selectedPatterns = patterns.filter((p) => isPatternSelected(proposal.patterns, p.name));
   const [desktops, otherPatterns] = fork(selectedPatterns, (p) => p.desktop);
 
+  if (isEmpty(proposal.patterns)) return <PatternSelectionUnavailable />;
+
+  const desktopsEmptyContent =
+    allDesktops.length === 0 ? (
+      <NoAvailable
+        // TRANSLATORS: empty state title when no desktop environments are available
+        title={_("No desktops available")}
+        // TRANSLATORS: explanation shown when the product has no desktop environments
+        body={_("This product does not provide desktop environments.")}
+      />
+    ) : (
+      <NothingSelected
+        to={PATHS.desktopSelection}
+        // TRANSLATORS: hint shown when no desktop environment has been chosen
+        body={_("Select a desktop environment to get a graphical interface.")}
+        // TRANSLATORS: button to go to the desktop environment selection page
+        buttonText={_("Select a desktop")}
+      />
+    );
+
+  const additionalPatternsEmptyContent =
+    allOtherPatterns.length === 0 ? (
+      <NoAvailable
+        // TRANSLATORS: empty state title when no additional patterns are available
+        title={_("No additional patterns available")}
+        // TRANSLATORS: explanation shown when the product has no additional patterns
+        body={_("This product does not provide additional patterns.")}
+      />
+    ) : (
+      <NothingSelected
+        to={PATHS.patternsSelection}
+        // TRANSLATORS: hint shown when no additional software patterns have been chosen
+        body={_("Select one or more to extend the system.")}
+        // TRANSLATORS: button to go to the pattern selection page
+        buttonText={_("Select patterns")}
+      />
+    );
+
   return (
-    <Page.Content>
+    <>
       <Content>
         <SpaceRequirements usedSize={usedSize} hasSelection={selectedPatterns.length > 0} />
       </Content>
-      <IssuesAlert issues={issues} />
-      {isEmpty(proposal.patterns) ? (
-        <PatternSelectionUnavailable />
-      ) : (
-        <Grid hasGutter>
-          <GridItem lg={6}>
-            <SoftwareSection
-              title={_("Desktops")}
-              description={_(
-                // TRANSLATORS: description for the Desktops section
-                "Graphical desktop environments for the system.",
-              )}
-              buttonText={
-                // TRANSLATORS: button to change the desktop selection
-                n_("Change desktop", "Change desktops", desktops.length)
-              }
-              totalCount={allDesktops.length}
-              patterns={desktops}
-              selection={proposal.patterns}
-              selectionPath={PATHS.desktopSelection}
-              emptyContent={
-                <NothingSelected
-                  to={PATHS.desktopSelection}
-                  // TRANSLATORS: hint shown when no desktop environment has been chosen
-                  body={_("Select a desktop environment to get a graphical interface.")}
-                  // TRANSLATORS: button to go to the desktop environment selection page
-                  buttonText={_("Select a desktop")}
-                />
-              }
-            />
-          </GridItem>
-          <GridItem lg={6}>
-            <SoftwareSection
-              title={_("Additional patterns")}
-              description={_(
-                // TRANSLATORS: description for the Additional software section
-                "Curated sets of packages for common use cases and features to extend the system.",
-              )}
-              // TRANSLATORS: button to change the additional software selection
-              buttonText={_("Change patterns")}
-              totalCount={allOtherPatterns.length}
-              patterns={otherPatterns}
-              selection={proposal.patterns}
-              selectionPath={PATHS.patternsSelection}
-              emptyContent={
-                <NothingSelected
-                  to={PATHS.patternsSelection}
-                  // TRANSLATORS: hint shown when no additional software patterns have been chosen
-                  body={_("Select one or more to extend the system.")}
-                  // TRANSLATORS: button to go to the pattern selection page
-                  buttonText={_("Select patterns")}
-                />
-              }
-            />
-          </GridItem>
-        </Grid>
-      )}
-    </Page.Content>
+      <Grid hasGutter>
+        <GridItem lg={6}>
+          <SoftwareSection
+            title={_("Desktops")}
+            description={_(
+              // TRANSLATORS: description for the Desktops section
+              "Graphical desktop environments for the system.",
+            )}
+            buttonText={
+              // TRANSLATORS: button to change the desktop selection
+              n_("Change desktop", "Change desktops", desktops.length)
+            }
+            totalCount={allDesktops.length}
+            patterns={desktops}
+            selection={proposal.patterns}
+            selectionPath={PATHS.desktopSelection}
+            emptyContent={desktopsEmptyContent}
+          />
+        </GridItem>
+        <GridItem lg={6}>
+          <SoftwareSection
+            title={_("Additional patterns")}
+            description={_(
+              // TRANSLATORS: description for the Additional software section
+              "Curated sets of packages for common use cases and features to extend the system.",
+            )}
+            // TRANSLATORS: button to change the additional software selection
+            buttonText={_("Change patterns")}
+            totalCount={allOtherPatterns.length}
+            patterns={otherPatterns}
+            selection={proposal.patterns}
+            selectionPath={PATHS.patternsSelection}
+            emptyContent={additionalPatternsEmptyContent}
+          />
+        </GridItem>
+      </Grid>
+    </>
   );
 };
 
@@ -357,9 +367,14 @@ const SoftwarePageContent = () => {
  * Software page component
  */
 function SoftwarePage() {
+  const issues = useIssues("software");
+
   return (
     <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>
-      <SoftwarePageContent />
+      <Page.Content>
+        <IssuesAlert issues={issues} />
+        <SoftwarePageContent />
+      </Page.Content>
     </Page>
   );
 }

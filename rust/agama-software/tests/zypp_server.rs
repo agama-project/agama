@@ -127,6 +127,7 @@ async fn test_start_zypp_server() {
         .send(SoftwareAction::Write {
             state: software_state,
             progress: progress_handler,
+            l10n: None,
             question: question_handler.clone(),
             security: security_handler,
             tx,

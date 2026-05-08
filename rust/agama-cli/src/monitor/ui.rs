@@ -43,6 +43,7 @@ pub fn scope_to_string(scope: &Scope) -> String {
     match scope {
         Scope::Manager => gettext("Manager"),
         Scope::Network => gettext("Network"),
+        Scope::Ntp => gettext("NTP"),
         Scope::Hostname => gettext("Hostname"),
         Scope::L10n => gettext("Localization"),
         Scope::Product => gettext("Product"),

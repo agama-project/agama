@@ -47,10 +47,11 @@ pub async fn router(
         .await
         .expect("Failed to start the questions service");
     let state = ServerState::new(manager, questions);
-    let server = server_with_state(state).expect("Failed to build the testing server");
+    let server =
+        server_with_state(state, ApiRouter::new()).expect("Failed to build the testing server");
 
     let router = MainServiceBuilder::new(events.clone(), share_dir.join("public"))
-        .add_service("/v2", server)
+        .add_service("/", server)
         .with_config(config)
         .build();
     Ok(router)

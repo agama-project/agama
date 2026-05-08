@@ -264,6 +264,7 @@ type APIRoute = {
 type APIConnection = {
   id: string;
   bond?: Bond;
+  bridge?: Bridge;
   interface?: string;
   macAddress?: string;
   addresses?: string[];
@@ -309,6 +310,15 @@ type Bond = {
   ports: string[];
 };
 
+type Bridge = {
+  forwardDelay?: number;
+  priority?: number;
+  maxAge?: number;
+  ports: string[];
+  helloTime?: number;
+  stp?: boolean;
+};
+
 type ConnectionOptions = {
   iface?: string;
   macAddress?: string;
@@ -321,6 +331,7 @@ type ConnectionOptions = {
   method6?: ConnectionMethod;
   wireless?: Wireless;
   bond?: Bond;
+  bridge?: Bridge;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
@@ -351,6 +362,7 @@ class Connection {
   method4?: ConnectionMethod;
   method6?: ConnectionMethod;
   bond?: Bond;
+  bridge?: Bridge;
   wireless?: Wireless;
   persistent: boolean;
 
@@ -586,6 +598,8 @@ export {
 export type {
   APIAccessPoint,
   APIConnection,
+  Bond,
+  Bridge,
   ConnectionBindingMode,
   ConnectionOptions,
   APIDevice,

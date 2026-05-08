@@ -77,10 +77,36 @@ function TestForm({
 }
 
 describe("ArrayField", () => {
-  it("renders label and usage", () => {
+  it("renders label", () => {
     installerRender(<TestForm />);
     screen.getByText("Tags");
-    screen.getByText(/Enter or Tab to add/);
+  });
+
+  it("always provides screen reader instructions via aria-describedby", () => {
+    installerRender(<TestForm />);
+    const input = screen.getByRole("textbox", { name: "Tags" });
+    const instructions = screen.getByText(/Escape to exit/);
+    const instructionsId = instructions.closest("[id]")?.id;
+    expect(input.getAttribute("aria-describedby")).toContain(instructionsId);
+  });
+
+  it("does not show sighted instructions on empty field", () => {
+    installerRender(<TestForm />);
+    expect(
+      screen.queryByText("Enter or Tab to add", { selector: ":not([class*='screenReader'])" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows sighted instructions when field has draft content", async () => {
+    const { user } = installerRender(<TestForm />);
+    const input = screen.getByRole("textbox", { name: "Tags" });
+    await user.type(input, "a");
+    screen.getByText("Enter or Tab to add");
+  });
+
+  it("shows sighted instructions when field has entries", () => {
+    installerRender(<TestForm defaultValues={["alpha"]} />);
+    screen.getByText("Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate");
   });
 
   it("renders given existing values", () => {

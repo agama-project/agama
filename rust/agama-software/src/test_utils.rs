@@ -37,6 +37,8 @@ use crate::{
     ModelAdapter, Service,
 };
 
+use agama_l10n;
+
 pub struct TestModel;
 
 #[async_trait]
@@ -76,6 +78,7 @@ impl ModelAdapter for TestModel {
     async fn write(
         &mut self,
         _software: SoftwareState,
+        _l10n: Handler<agama_l10n::Service>,
         _progress: Handler<progress::Service>,
     ) -> Result<WriteIssues, service::Error> {
         Ok(Default::default())
@@ -86,11 +89,12 @@ impl ModelAdapter for TestModel {
 pub async fn start_service(
     events: event::Sender,
     issues: Handler<issue::Service>,
+    l10n: Handler<agama_l10n::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
 ) -> Handler<Service> {
     let security = start_security_service(questions.clone()).await;
-    Service::starter(events, issues, progress, questions, security)
+    Service::starter(events, issues, l10n, progress, questions, security)
         .with_model(TestModel {})
         .start()
         .await

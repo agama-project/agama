@@ -18,11 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_lib::monitor::{InstallationStatus, MonitorClient};
+use agama_lib::{
+    http::BaseHTTPClient,
+    monitor::{InstallationStatus, MonitorClient},
+};
 use anyhow::Result;
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
-use std::{io, time::Duration};
+use serde::Deserialize;
+use std::{collections::HashMap, io, time::Duration};
 use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
@@ -35,26 +39,45 @@ enum Message {
     TerminalEvent(Event),
 }
 
+// FIXME: find a better place
+/// Minimal struct to deserialize product information from /system
+#[derive(Debug, Deserialize)]
+struct ProductInfo {
+    id: String,
+    name: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct MinimalSystemInfo {
+    products: Vec<ProductInfo>,
+}
+
 /// Application state for the monitor TUI
 pub struct MonitorApp {
     /// Current installation status (includes system info)
     pub status: InstallationStatus,
+    /// Product names
+    product_names: HashMap<String, String>,
     /// UI color theme
     pub theme: Theme,
     /// Exit in the next iteration
     exit: bool,
     /// Stop on idle
     stop_on_idle: bool,
+    /// Base HTTP client
+    http_client: BaseHTTPClient,
 }
 
 impl MonitorApp {
     /// Creates a new MonitorApp from the initial status.
-    pub fn new(status: InstallationStatus) -> Self {
+    pub fn new(status: InstallationStatus, http_client: BaseHTTPClient) -> Self {
         Self {
             status,
             theme: Theme::default(),
             exit: false,
             stop_on_idle: false,
+            http_client,
+            product_names: Default::default(),
         }
     }
 
@@ -91,9 +114,11 @@ impl MonitorApp {
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
         monitor: MonitorClient,
     ) -> Result<()> {
-        let (tx, mut rx) = mpsc::channel(16);
+        self.update_product_names().await?;
 
+        let (tx, mut rx) = mpsc::channel(16);
         let tx_clone = tx.clone();
+
         tokio::task::spawn(async move {
             let mut updates = monitor.subscribe();
             while let Ok(new_status) = updates.recv().await {
@@ -148,6 +173,16 @@ impl MonitorApp {
             _ => {}
         }
     }
+
+    async fn update_product_names(&mut self) -> Result<()> {
+        let info: MinimalSystemInfo = self.http_client.get("/system").await?;
+        self.product_names = info
+            .products
+            .iter()
+            .map(|i| (i.id.clone(), i.name.clone()))
+            .collect();
+        Ok(())
+    }
 }
 
 /// Implement the Widget trait for MonitorApp
@@ -158,8 +193,10 @@ impl Widget for &mut MonitorApp {
 
         // Render each section using widget structs
         ui::StatusBar::new(&self.status, &self.theme).render(layout.status_bar, buf);
-        if let Some(product_name) = &self.status.system_info.product_name {
-            ui::Product::new(product_name).render(layout.product, buf);
+        if let Some(product_id) = &self.status.system_info.product_id {
+            if let Some(name) = self.product_names.get(product_id) {
+                ui::Product::new(name).render(layout.product, buf);
+            }
         }
         ui::Separator.render(layout.separator, buf);
         ui::Content::new(&self.status, &self.theme).render(layout.content, buf);

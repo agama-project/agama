@@ -154,13 +154,13 @@ describe("ConnectionDetails", () => {
   });
 
   describe("Binding settings section", () => {
-    it("renders information aobut the binding mode (all)", () => {
+    it("renders information about the binding mode (all)", () => {
       installerRender(<ConnectionDetails connection={new Connection("Network #1")} />);
       const section = screen.getByRole("region", { name: "Binding" });
       within(section).getByText("Connection is available to all devices.");
     });
 
-    it("renders information aobut the binding mode (to MAC)", () => {
+    it("renders information about the binding mode (to MAC)", () => {
       installerRender(
         <ConnectionDetails
           connection={new Connection("Network #1", { macAddress: "AA:11:22:33:44:FF" })}
@@ -170,7 +170,7 @@ describe("ConnectionDetails", () => {
       within(section).getByText("Connection is bound to MAC address AA:11:22:33:44:FF.");
     });
 
-    it("renders information aobut the binding mode (to device)", () => {
+    it("renders information about the binding mode (to device)", () => {
       installerRender(
         <ConnectionDetails connection={new Connection("Network #1", { iface: "enp1s0" })} />,
       );
@@ -183,6 +183,74 @@ describe("ConnectionDetails", () => {
       const section = screen.getByRole("region", { name: "Binding" });
       const editLink = within(section).getByRole("link", { name: "Edit binding settings" });
       expect(editLink).toHaveAttribute("href", "/network/connections/Network%20%231/binding/edit");
+    });
+  });
+
+  describe("Bridge details", () => {
+    it("renders bridge details when STP is enabled", () => {
+      const connection = new Connection("br0", {
+        bridge: {
+          stp: true,
+          priority: 16384,
+          forwardDelay: 10,
+          helloTime: 2,
+          maxAge: 20,
+          ports: ["enp1s0", "enp1s1"],
+        },
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bridge" });
+
+      within(section).getByText("Enabled");
+      within(section).getByText("16384");
+      within(section).getByText("10");
+      within(section).getByText("2");
+      within(section).getByText("20");
+      within(section).getByText("enp1s0");
+      within(section).getByText("enp1s1");
+    });
+
+    it("renders bridge details when STP is disabled", () => {
+      const connection = new Connection("br0", {
+        bridge: {
+          stp: false,
+          ports: ["enp1s0"],
+          priority: 32768,
+          forwardDelay: 15,
+          helloTime: 2,
+          maxAge: 20,
+        },
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bridge" });
+
+      within(section).getByText("Disabled");
+      within(section).getByText("enp1s0");
+
+      // STP-related fields should be hidden
+      expect(within(section).queryByText("Priority")).not.toBeInTheDocument();
+      expect(within(section).queryByText("Forward delay")).not.toBeInTheDocument();
+      expect(within(section).queryByText("Hello time")).not.toBeInTheDocument();
+      expect(within(section).queryByText("Max message age")).not.toBeInTheDocument();
+
+      // Values should also not be present
+      expect(within(section).queryByText("32768")).not.toBeInTheDocument();
+      expect(within(section).queryByText("15")).not.toBeInTheDocument();
+      expect(within(section).queryByText("2")).not.toBeInTheDocument();
+      expect(within(section).queryByText("20")).not.toBeInTheDocument();
+    });
+
+    it("renders 'None set' for optional fields when missing", () => {
+      const connection = new Connection("br0", {
+        bridge: {
+          stp: false,
+          ports: [],
+        },
+      });
+      installerRender(<ConnectionDetails connection={connection} />);
+      const section = screen.getByRole("region", { name: "Bridge" });
+
+      within(section).queryAllByText("None set");
     });
   });
 

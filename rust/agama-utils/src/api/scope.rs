@@ -44,6 +44,7 @@ use serde::{Deserialize, Serialize};
 pub enum Scope {
     Manager,
     Network,
+    Ntp,
     Hostname,
     L10n,
     Product,

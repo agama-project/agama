@@ -34,7 +34,7 @@ describe("DownloadLogsButton", () => {
   it("has correct download attributes", () => {
     plainRender(<DownloadLogsButton />);
     const button = screen.getByRole("link", { name: /Download logs/i });
-    expect(button).toHaveAttribute("href", "/api/v2/private/download_logs");
+    expect(button).toHaveAttribute("href", "/api/private/download_logs");
     expect(button).toHaveAttribute("download", "agama-logs.tar.gz");
   });
 

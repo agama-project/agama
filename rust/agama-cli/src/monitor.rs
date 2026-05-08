@@ -102,7 +102,7 @@ pub async fn run(
     let (monitor, initial_status) = Monitor::connect(websocket, &http_client).await?;
 
     // Create app state with selected theme
-    let mut app = MonitorApp::new(initial_status)
+    let mut app = MonitorApp::new(initial_status, http_client)
         .with_theme(theme)
         .with_stop_on_idle(stop_on_idle);
 

@@ -22,10 +22,51 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { SOFTWARE } from "~/routes/paths";
 import NoDesktopAlert from "./NoDesktopAlert";
 
+const mockUseAvailablePatternsFn: jest.Mock<ReturnType<typeof useAvailablePatterns>> = jest.fn();
+
+jest.mock("~/hooks/model/system/software", () => ({
+  useAvailablePatterns: () => mockUseAvailablePatternsFn(),
+}));
+
+const gnome = {
+  name: "gnome",
+  category: "Graphical Environments",
+  icon: "./pattern-gnome-wayland",
+  description: "The GNOME desktop environment ...",
+  summary: "GNOME Desktop",
+  order: 1010,
+  preselected: false,
+  desktop: true,
+};
+
+const yast2Basis = {
+  name: "yast2_basis",
+  category: "Base Technologies",
+  icon: "./yast",
+  description: "YaST tools for basic system administration.",
+  summary: "YaST Base Utilities",
+  order: 1220,
+  preselected: false,
+  desktop: false,
+};
+
 describe("NoDesktopAlert", () => {
+  beforeEach(() => {
+    mockUseAvailablePatternsFn.mockReturnValue({
+      all: [gnome, yast2Basis],
+      desktops: [gnome],
+      other: [yast2Basis],
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("renders the headline and the command-line consequence", () => {
     installerRender(<NoDesktopAlert />);
 
@@ -38,5 +79,18 @@ describe("NoDesktopAlert", () => {
 
     const link = screen.getByRole("link", { name: "software" });
     expect(link).toHaveAttribute("href", expect.stringContaining(SOFTWARE.root));
+  });
+
+  it("returns null when no desktop patterns are available", () => {
+    mockUseAvailablePatternsFn.mockReturnValue({
+      all: [yast2Basis],
+      desktops: [],
+      other: [yast2Basis],
+    });
+
+    const { container } = installerRender(<NoDesktopAlert />);
+
+    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByText("No desktop selected")).not.toBeInTheDocument();
   });
 });

@@ -72,6 +72,7 @@ dependencies = [
 name = "agama-files"
 version = "0.1.0"
 dependencies = [
+ "agama-l10n",
  "agama-software",
  "agama-utils",
  "async-trait",
@@ -197,6 +198,7 @@ dependencies = [
  "agama-iscsi",
  "agama-l10n",
  "agama-network",
+ "agama-ntp",
  "agama-proxy",
  "agama-s390",
  "agama-security",
@@ -241,6 +243,21 @@ dependencies = [
  "tracing",
  "uuid",
  "zbus",
+]
+
+[[package]]
+name = "agama-ntp"
+version = "0.1.0"
+dependencies = [
+ "agama-l10n",
+ "agama-software",
+ "agama-utils",
+ "async-trait",
+ "tempfile",
+ "test-context",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
