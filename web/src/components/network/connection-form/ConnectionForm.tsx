@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { formOptions } from "@tanstack/react-form";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { unique } from "radashi";
 import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
@@ -34,14 +33,7 @@ import BondFields from "./BondFields";
 import BridgeFields from "./BridgeFields";
 import BindingModeSelector from "./BindingModeSelector";
 import DeviceSelector from "./DeviceSelector";
-import {
-  BondMode,
-  Bridge,
-  Connection,
-  ConnectionBindingMode,
-  ConnectionMethod,
-  ConnectionType,
-} from "~/types/network";
+import { BondMode, Bridge, Connection, ConnectionMethod, ConnectionType } from "~/types/network";
 import { useConnectionMutation, useConfig } from "~/hooks/model/config/network";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useSystem, useDevices } from "~/hooks/model/system/network";
@@ -63,30 +55,11 @@ import {
 } from "~/utils/network";
 import { _ } from "~/i18n";
 import { validateConnectionForm } from "./connectionFormValidation";
-
-/**
- * Form IP mode values.
- *
- * These control UI behavior (which fields are shown) and map to ConnectionMethod:
- * - AUTO: no address/gateway fields shown → ConnectionMethod.AUTO
- * - ADVANCED_AUTO: addresses required, gateway optional → ConnectionMethod.AUTO
- * - MANUAL: addresses and gateway required → ConnectionMethod.MANUAL
- */
-export const FormIpMode = {
-  AUTO: "auto",
-  ADVANCED_AUTO: "advanced-auto",
-  MANUAL: "manual",
-} as const;
-
-export type FormIpMode = (typeof FormIpMode)[keyof typeof FormIpMode];
-
-/**
- * Modes that require at least one address to be provided.
- */
-export const ADDRESS_REQUIRED_MODES: readonly FormIpMode[] = [
-  FormIpMode.MANUAL,
-  FormIpMode.ADVANCED_AUTO,
-];
+import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFieldsSchema";
+import type { FormIpMode as FormIpModeType } from "./ipFieldsSchema";
+import { BridgeStpMode } from "./bridgeFieldsSchema";
+import type { BridgeStpMode as BridgeStpModeType } from "./bridgeFieldsSchema";
+import { connectionFormOptions } from "./connectionSchema";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -94,63 +67,13 @@ export const ADDRESS_REQUIRED_MODES: readonly FormIpMode[] = [
  * Both AUTO and ADVANCED_AUTO map to ConnectionMethod.AUTO; they differ
  * only in UI behavior (whether address/gateway fields are shown).
  */
-const MODE_TO_METHOD: Record<FormIpMode, ConnectionMethod> = {
+const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
   [FormIpMode.AUTO]: ConnectionMethod.AUTO,
   [FormIpMode.ADVANCED_AUTO]: ConnectionMethod.AUTO,
   [FormIpMode.MANUAL]: ConnectionMethod.MANUAL,
 };
 
-/**
- * Bridge STP (Spanning Tree Protocol) mode values.
- */
-export const BridgeStpMode = {
-  DEFAULT: "default",
-  ENABLED: "enabled",
-  DISABLED: "disabled",
-} as const;
-
-export type BridgeStpMode = (typeof BridgeStpMode)[keyof typeof BridgeStpMode];
-
-/**
- * Shared form options for ConnectionForm and its `withForm` based
- * sub-components
- *
- * Sub-components spread these options in their `withForm` definition so
- * TanStack Form can infer the field types, enabling type-safe props.
- *
- * Note: Type casts widen literal defaults to their union types, allowing
- * fields to accept any value from the union, not just the initial value.
- */
-export const connectionFormOptions = formOptions({
-  defaultValues: {
-    name: "",
-    type: CONNECTION_TYPE.ETHERNET as ConnectionType,
-    iface: "",
-    ifaceMac: "",
-    ipv4Mode: FormIpMode.AUTO as FormIpMode,
-    addresses4: [] as string[],
-    gateway4: "",
-    ipv6Mode: FormIpMode.AUTO as FormIpMode,
-    addresses6: [] as string[],
-    gateway6: "",
-    nameservers: [] as string[],
-    dnsSearchList: [] as string[],
-    customDns: false,
-    customDnsSearch: false,
-    bindingMode: "none" as ConnectionBindingMode,
-    bondIface: "",
-    bondMode: BondMode.BALANCE_ROUND_ROBIN as BondMode,
-    bondOptions: [] as string[],
-    bondPorts: [] as string[],
-    bridgeIface: "",
-    bridgeStp: BridgeStpMode.DEFAULT as BridgeStpMode,
-    bridgePriority: undefined,
-    bridgeForwardDelay: undefined,
-    bridgeHelloTime: undefined,
-    bridgeMaxAge: undefined,
-    bridgePorts: [] as string[],
-  },
-});
+export { connectionFormOptions };
 
 type FormValues = typeof connectionFormOptions.defaultValues;
 
@@ -173,7 +96,7 @@ const SUPPORTED_CONNECTION_TYPES = [
  * - `undefined` method with addresses → ADVANCED_AUTO (from system)
  * - `undefined` method without addresses → AUTO
  */
-function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]): FormIpMode {
+function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]): FormIpModeType {
   if (method === ConnectionMethod.MANUAL) return FormIpMode.MANUAL;
 
   return addresses.length > 0 ? FormIpMode.ADVANCED_AUTO : FormIpMode.AUTO;
@@ -186,7 +109,7 @@ function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]):
  * If `stp` is absent but other STP-related options are present, it's
  * inferred as ENABLED. Otherwise, it defaults to DEFAULT (system default).
  */
-function inferBridgeStp(bridge: Bridge | undefined): BridgeStpMode {
+function inferBridgeStp(bridge: Bridge | undefined): BridgeStpModeType {
   if (!bridge) return BridgeStpMode.DEFAULT;
 
   if (bridge.stp !== undefined) {

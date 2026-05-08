@@ -48,7 +48,8 @@ import {
   isValidDNSSearchDomain,
 } from "~/utils/network";
 import { _, formatList } from "~/i18n";
-import { connectionFormOptions, FormIpMode, ADDRESS_REQUIRED_MODES } from "./ConnectionForm";
+import { connectionFormOptions } from "./connectionSchema";
+import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFieldsSchema";
 
 type FormValues = typeof connectionFormOptions.defaultValues;
 type FormFieldErrors = Partial<Record<keyof FormValues, string>>;

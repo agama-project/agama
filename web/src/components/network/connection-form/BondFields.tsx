@@ -22,7 +22,7 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { connectionFormOptions } from "./ConnectionForm";
+import { connectionFormOptions } from "./connectionSchema";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { BondMode } from "~/types/network";
