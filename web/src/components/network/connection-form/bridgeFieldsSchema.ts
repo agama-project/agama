@@ -20,8 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import * as v from "valibot";
 import { _ } from "~/i18n";
+import {
+  requiredString,
+  optionalIntRange,
+  requiredStringArray,
+  string,
+} from "~/components/form/validation-helpers";
 
 /**
  * Bridge STP (Spanning Tree Protocol) mode values.
@@ -48,34 +53,39 @@ export const bridgeDefaults = {
 };
 
 /**
- * Helper for validating integers within an inclusive range.
- */
-const intRange = (min: number, max: number, message: string) =>
-  v.pipe(v.number(), v.minValue(min, message), v.maxValue(max, message));
-
-/**
- * Validation schema for bridge-specific fields.
+ * Validation schema entries for bridge-specific fields.
  *
- * Returns a function to defer i18n initialization.
+ * STP fields are conditionally included at construction time — when
+ * stpEnabled is false those keys are absent entirely, not present but
+ * skipped. No cross-field rule needed; the schema accurately reflects
+ * what is actually being validated.
+ *
+ * optionalIntRange uses inclusive bounds on both ends — no +1 offset,
+ * no comment required to explain it.
+ *
+ * Factory function accepts current STP state to derive the correct
+ * validation rules for the active configuration.
  */
-export const bridgeSchema = () =>
-  v.object({
-    bridgeIface: v.pipe(v.string(), v.minLength(1, _("Device name is required"))),
-    bridgePorts: v.pipe(
-      v.array(v.string()),
-      v.minLength(1, _("At least one bridge port is required")),
-    ),
-    bridgeStp: v.string(),
+export const BridgeSchema = (stpEnabled: boolean) => ({
+  // TRANSLATORS: validation error for the bridge device name field.
+  bridgeIface: requiredString(_("Device name is required")),
+  // TRANSLATORS: validation error for the bridge ports field.
+  bridgePorts: requiredStringArray(_("At least one bridge port is required")),
+  bridgeStp: string(),
+  // STP fields only validated when STP is enabled.
+  // Resolved at construction time — no cross-field rule needed.
+  ...(stpEnabled && {
     // TRANSLATORS: validation error for the bridge priority field.
-    bridgePriority: v.optional(intRange(0, 61440, _("Priority must be between 0 and 61440"))),
+    bridgePriority: optionalIntRange(0, 61440, _("Priority must be between 0 and 61440")),
     // TRANSLATORS: validation error for the bridge forward delay field.
-    bridgeForwardDelay: v.optional(
-      intRange(4, 30, _("Forward delay must be between 4 and 30 seconds")),
+    bridgeForwardDelay: optionalIntRange(
+      4,
+      30,
+      _("Forward delay must be between 4 and 30 seconds"),
     ),
     // TRANSLATORS: validation error for the bridge hello time field.
-    bridgeHelloTime: v.optional(intRange(1, 10, _("Hello time must be between 1 and 10 seconds"))),
+    bridgeHelloTime: optionalIntRange(1, 10, _("Hello time must be between 1 and 10 seconds")),
     // TRANSLATORS: validation error for the bridge max message age field.
-    bridgeMaxAge: v.optional(
-      intRange(6, 40, _("Max message age must be between 6 and 40 seconds")),
-    ),
-  });
+    bridgeMaxAge: optionalIntRange(6, 40, _("Max message age must be between 6 and 40 seconds")),
+  }),
+});

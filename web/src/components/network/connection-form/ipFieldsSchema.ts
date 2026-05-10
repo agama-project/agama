@@ -20,6 +20,25 @@
  * find current contact information at www.suse.com.
  */
 
+import { _ } from "~/i18n";
+import {
+  isValidIPv4Address,
+  isValidIPv6Address,
+  isValidIPv4,
+  isValidIPv6,
+  isValidNameserver,
+  isValidDNSSearchDomain,
+} from "~/utils/network";
+import {
+  requiredValidArray,
+  optionalValidArray,
+  requiredValidString,
+  optionalValidString,
+  string,
+  boolean,
+  stringArray,
+} from "~/components/form/validation-helpers";
+
 /**
  * Form IP mode values.
  *
@@ -60,164 +79,98 @@ export const ipDefaults = {
   customDnsSearch: false,
 };
 
-import * as v from "valibot";
-import {
-  isValidIPv4Address,
-  isValidIPv6Address,
-  isValidIPv4,
-  isValidIPv6,
-  isValidNameserver,
-  isValidDNSSearchDomain,
-} from "~/utils/network";
-import { _ } from "~/i18n";
+type IpSchemaInput = {
+  ipv4Mode: FormIpMode;
+  ipv6Mode: FormIpMode;
+  customDns: boolean;
+  customDnsSearch: boolean;
+};
 
 /**
- * Validation schema for IP settings fields with cross-field validation.
+ * Validation schema entries for IP settings fields.
  *
- * Returns a function to defer i18n initialization.
+ * All conditionality — address requirements, gateway optionality, DNS
+ * activation — is resolved at construction time based on the current form
+ * state, not encoded as cross-field rules at validation time. This keeps
+ * the schema readable and avoids partialCheck for cases that are not
+ * genuinely cross-field.
+ *
+ * Factory function accepts current form values to derive the correct
+ * validation rules for the active modes.
  */
-export const ipSchema = () =>
-  v.pipe(
-    v.object({
-      ipv4Mode: v.string(),
-      addresses4: v.array(v.string()),
-      gateway4: v.string(),
-      ipv6Mode: v.string(),
-      addresses6: v.array(v.string()),
-      gateway6: v.string(),
-      nameservers: v.array(v.string()),
-      dnsSearchList: v.array(v.string()),
-      customDns: v.boolean(),
-      customDnsSearch: v.boolean(),
-    }),
-    v.forward(
-      v.check(
-        ({ ipv4Mode, addresses4 }) => {
-          const required = ADDRESS_REQUIRED_MODES.includes(ipv4Mode as FormIpMode);
-          return !required || addresses4.length > 0;
-        },
-        // TRANSLATORS: validation error for the IPv4 addresses field.
-        _("At least one IPv4 address is required"),
-      ),
-      ["addresses4"],
+export const IpSchema = ({ ipv4Mode, ipv6Mode, customDns, customDnsSearch }: IpSchemaInput) => {
+  const addressSchema = (
+    mode: FormIpMode,
+    isValid: (s: string) => boolean,
+    emptyMessage: string,
+    invalidMessage: string,
+  ) =>
+    ADDRESS_REQUIRED_MODES.includes(mode)
+      ? requiredValidArray(isValid, emptyMessage, invalidMessage)
+      : optionalValidArray(isValid, invalidMessage);
+
+  const gatewaySchema = (
+    mode: FormIpMode,
+    isValid: (s: string) => boolean,
+    emptyMessage: string,
+    invalidMessage: string,
+  ) => {
+    if (mode === FormIpMode.MANUAL)
+      return requiredValidString(isValid, emptyMessage, invalidMessage);
+    if (mode === FormIpMode.ADVANCED_AUTO) return optionalValidString(isValid, invalidMessage);
+    return string(); // AUTO — not validated
+  };
+
+  return {
+    ipv4Mode: string(),
+    // TRANSLATORS: validation error for the IPv4 addresses field.
+    addresses4: addressSchema(
+      ipv4Mode,
+      isValidIPv4Address,
+      _("At least one IPv4 address is required"),
+      _("Some IPv4 addresses are invalid"),
     ),
-    v.forward(
-      v.check(
-        ({ ipv4Mode, addresses4 }) => {
-          const required = ADDRESS_REQUIRED_MODES.includes(ipv4Mode as FormIpMode);
-          const active = required || addresses4.length > 0;
-          return !active || addresses4.every((a) => isValidIPv4Address(a));
-        },
-        // TRANSLATORS: validation error for the IPv4 addresses field.
-        _("Some IPv4 addresses are invalid"),
-      ),
-      ["addresses4"],
+    // TRANSLATORS: validation error for the IPv4 gateway field.
+    gateway4: gatewaySchema(
+      ipv4Mode,
+      isValidIPv4,
+      _("IPv4 gateway is required"),
+      _("Invalid IPv4 gateway"),
     ),
-    v.forward(
-      v.check(
-        ({ ipv4Mode, gateway4 }) => {
-          return ipv4Mode !== FormIpMode.MANUAL || gateway4.length > 0;
-        },
-        // TRANSLATORS: validation error for the IPv4 gateway field.
-        _("IPv4 gateway is required"),
-      ),
-      ["gateway4"],
+    ipv6Mode: string(),
+    // TRANSLATORS: validation error for the IPv6 addresses field.
+    addresses6: addressSchema(
+      ipv6Mode,
+      isValidIPv6Address,
+      _("At least one IPv6 address is required"),
+      _("Some IPv6 addresses are invalid"),
     ),
-    v.forward(
-      v.check(
-        ({ ipv4Mode, gateway4 }) => {
-          const mode = ipv4Mode as FormIpMode;
-          return (
-            !gateway4 ||
-            (mode !== FormIpMode.MANUAL && mode !== FormIpMode.ADVANCED_AUTO) ||
-            isValidIPv4(gateway4)
-          );
-        },
-        // TRANSLATORS: validation error for the IPv4 gateway field.
-        _("Invalid IPv4 gateway"),
-      ),
-      ["gateway4"],
+    // TRANSLATORS: validation error for the IPv6 gateway field.
+    gateway6: gatewaySchema(
+      ipv6Mode,
+      isValidIPv6,
+      _("IPv6 gateway is required"),
+      _("Invalid IPv6 gateway"),
     ),
-    v.forward(
-      v.check(
-        ({ ipv6Mode, addresses6 }) => {
-          const required = ADDRESS_REQUIRED_MODES.includes(ipv6Mode as FormIpMode);
-          return !required || addresses6.length > 0;
-        },
-        // TRANSLATORS: validation error for the IPv6 addresses field.
-        _("At least one IPv6 address is required"),
-      ),
-      ["addresses6"],
-    ),
-    v.forward(
-      v.check(
-        ({ ipv6Mode, addresses6 }) => {
-          const required = ADDRESS_REQUIRED_MODES.includes(ipv6Mode as FormIpMode);
-          const active = required || addresses6.length > 0;
-          return !active || addresses6.every((a) => isValidIPv6Address(a));
-        },
-        // TRANSLATORS: validation error for the IPv6 addresses field.
-        _("Some IPv6 addresses are invalid"),
-      ),
-      ["addresses6"],
-    ),
-    v.forward(
-      v.check(
-        ({ ipv6Mode, gateway6 }) => {
-          return ipv6Mode !== FormIpMode.MANUAL || gateway6.length > 0;
-        },
-        // TRANSLATORS: validation error for the IPv6 gateway field.
-        _("IPv6 gateway is required"),
-      ),
-      ["gateway6"],
-    ),
-    v.forward(
-      v.check(
-        ({ ipv6Mode, gateway6 }) => {
-          const mode = ipv6Mode as FormIpMode;
-          return (
-            !gateway6 ||
-            (mode !== FormIpMode.MANUAL && mode !== FormIpMode.ADVANCED_AUTO) ||
-            isValidIPv6(gateway6)
-          );
-        },
-        // TRANSLATORS: validation error for the IPv6 gateway field.
-        _("Invalid IPv6 gateway"),
-      ),
-      ["gateway6"],
-    ),
-    v.forward(
-      v.check(
-        ({ customDns, nameservers }) => !customDns || nameservers.length > 0,
-        // TRANSLATORS: validation error for the DNS servers field.
-        _("At least one DNS server is required"),
-      ),
-      ["nameservers"],
-    ),
-    v.forward(
-      v.check(
-        ({ customDns, nameservers }) =>
-          !customDns || nameservers.every((s) => isValidNameserver(s)),
-        // TRANSLATORS: validation error for the DNS servers field.
-        _("Some DNS server addresses are invalid"),
-      ),
-      ["nameservers"],
-    ),
-    v.forward(
-      v.check(
-        ({ customDnsSearch, dnsSearchList }) => !customDnsSearch || dnsSearchList.length > 0,
-        // TRANSLATORS: validation error for the DNS search domains field.
-        _("At least one DNS search domain is required"),
-      ),
-      ["dnsSearchList"],
-    ),
-    v.forward(
-      v.check(
-        ({ customDnsSearch, dnsSearchList }) =>
-          !customDnsSearch || dnsSearchList.every((d) => isValidDNSSearchDomain(d)),
-        // TRANSLATORS: validation error for the DNS search domains field.
-        _("Some DNS search domains are invalid"),
-      ),
-      ["dnsSearchList"],
-    ),
-  );
+    // DNS fields: only validated when the corresponding toggle is on.
+    // Resolved at construction time — no cross-field rule needed.
+    nameservers: customDns
+      ? // TRANSLATORS: validation error for the DNS servers field.
+        requiredValidArray(
+          isValidNameserver,
+          _("At least one DNS server is required"),
+          _("Some DNS server addresses are invalid"),
+        )
+      : stringArray(),
+    dnsSearchList: customDnsSearch
+      ? // TRANSLATORS: validation error for the DNS search domains field.
+        requiredValidArray(
+          isValidDNSSearchDomain,
+          _("At least one DNS search domain is required"),
+          _("Some DNS search domains are invalid"),
+        )
+      : stringArray(),
+    customDns: boolean(),
+    customDnsSearch: boolean(),
+  };
+};

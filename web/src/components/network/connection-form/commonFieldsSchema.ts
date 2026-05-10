@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import * as v from "valibot";
 import { ConnectionType, ConnectionBindingMode } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import { _ } from "~/i18n";
+import { requiredString, string } from "~/components/form/validation-helpers";
 
 /**
  * Default values for common connection fields.
@@ -37,16 +37,20 @@ export const commonDefaults = {
 };
 
 /**
- * Validation schema for common connection fields.
+ * Validation schema entries for common connection fields.
  *
- * Returns a function to defer i18n initialization.
+ * Returns entry objects (not a wrapped schema) so callers can spread them
+ * into a merged object alongside type-specific entries. Merging at construction
+ * time via spread is preferred over v.intersect, which runs each sub-schema
+ * as a separate validation pass at runtime.
+ *
+ * Factory function defers i18n string resolution until after initialization.
  */
-export const commonSchema = () =>
-  v.object({
-    // TRANSLATORS: validation error for the connection name field.
-    name: v.pipe(v.string(), v.minLength(1, _("Name is required"))),
-    type: v.string(),
-    iface: v.string(),
-    ifaceMac: v.string(),
-    bindingMode: v.string(),
-  });
+export const CommonSchema = () => ({
+  // TRANSLATORS: validation error for the connection name field.
+  name: requiredString(_("Name is required")),
+  type: string(),
+  iface: string(),
+  ifaceMac: string(),
+  bindingMode: string(),
+});

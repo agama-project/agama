@@ -24,7 +24,6 @@ import React from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { unique } from "radashi";
 import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
-import * as v from "valibot";
 import Page from "~/components/core/Page";
 import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import NestedContent from "~/components/core/NestedContent";
@@ -59,7 +58,7 @@ import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFieldsSchema";
 import type { FormIpMode as FormIpModeType } from "./ipFieldsSchema";
 import { BridgeStpMode } from "./bridgeFieldsSchema";
 import type { BridgeStpMode as BridgeStpModeType } from "./bridgeFieldsSchema";
-import { connectionFormOptions, schemaByType } from "./connectionSchema";
+import { connectionFormOptions, validateConnectionForm } from "./connectionSchema";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -292,17 +291,8 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
     }),
     validators: {
       onSubmitAsync: async ({ value: formValues }) => {
-        const schema = schemaByType()[formValues.type];
-        const result = v.safeParse(schema, formValues, { abortEarly: false });
-
-        if (!result.success) {
-          const fields = {};
-          for (const issue of result.issues) {
-            const path = issue.path?.map((p) => p.key).join(".") ?? "form";
-            fields[path] = issue.message;
-          }
-          return { fields };
-        }
+        const fieldErrors = validateConnectionForm({ value: formValues });
+        if (fieldErrors) return fieldErrors;
 
         try {
           await updateConnection(buildConnection(formValues));
