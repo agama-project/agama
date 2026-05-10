@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions } from "./connectionSchema";
+import { connectionFormOptions } from "./connectionValidation";
 import { DeviceState } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import BondFields from "./BondFields";

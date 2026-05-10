@@ -23,12 +23,20 @@
 import { ConnectionType, ConnectionBindingMode } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import { _ } from "~/i18n";
-import { requiredString, string } from "~/components/form/validation-helpers";
+import { requiredString } from "~/components/form/validation-helpers";
+
+type CommonFields = {
+  name: string;
+  type: ConnectionType;
+  iface: string;
+  ifaceMac: string;
+  bindingMode: ConnectionBindingMode;
+};
 
 /**
  * Default values for common connection fields.
  */
-export const commonDefaults = {
+export const defaultValues = {
   name: "",
   type: CONNECTION_TYPE.ETHERNET as ConnectionType,
   iface: "",
@@ -37,20 +45,17 @@ export const commonDefaults = {
 };
 
 /**
- * Validation schema entries for common connection fields.
+ * Validation for common connection fields.
  *
- * Returns entry objects (not a wrapped schema) so callers can spread them
- * into a merged object alongside type-specific entries. Merging at construction
- * time via spread is preferred over v.intersect, which runs each sub-schema
- * as a separate validation pass at runtime.
+ * Only the name field requires validation. The other common fields (type,
+ * iface, ifaceMac, bindingMode) are either guaranteed valid by the UI
+ * (type is a dropdown) or validated elsewhere (iface/ifaceMac are device
+ * properties, bindingMode is a controlled enum).
  *
- * Factory function defers i18n string resolution until after initialization.
+ * Returns a record of field errors, where each key is a field name and each
+ * value is an error message or undefined.
  */
-export const CommonSchema = () => ({
+export const validate = (fields: CommonFields): Record<string, string | undefined> => ({
   // TRANSLATORS: validation error for the connection name field.
-  name: requiredString(_("Name is required")),
-  type: string(),
-  iface: string(),
-  ifaceMac: string(),
-  bindingMode: string(),
+  name: requiredString(fields.name, _("Name is required")),
 });

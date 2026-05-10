@@ -23,8 +23,8 @@
 import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import { connectionFormOptions } from "./connectionSchema";
-import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFieldsSchema";
+import { connectionFormOptions } from "./connectionValidation";
+import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFields";
 import { withForm } from "~/hooks/form";
 import { ensureIPPrefix, isValidIPv4Address, isValidIPv6Address } from "~/utils/network";
 import { _, N_ } from "~/i18n";

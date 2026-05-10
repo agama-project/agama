@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions } from "./connectionSchema";
+import { connectionFormOptions } from "./connectionValidation";
 import BindingModeSelector from "./BindingModeSelector";
 
 function TestForm() {

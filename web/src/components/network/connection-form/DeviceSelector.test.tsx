@@ -26,7 +26,7 @@ import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { DeviceState } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
-import { connectionFormOptions } from "./connectionSchema";
+import { connectionFormOptions } from "./connectionValidation";
 import DeviceSelector from "./DeviceSelector";
 
 const mockDevices = [

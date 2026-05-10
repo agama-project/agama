@@ -20,103 +20,130 @@
  * find current contact information at www.suse.com.
  */
 
-import {
-  array,
-  check,
-  literal,
-  minLength,
-  minValue,
-  maxValue,
-  number,
-  optional,
-  pipe,
-  string,
-  trim,
-  union,
-} from "valibot";
-
 /**
- * Validation schema helpers.
+ * Validation helpers.
  *
- * Named imports (not `import * as v`) preserve tree-shaking.
- * Each helper provides clear validation intent, keeping schema files readable.
- *
- * Library-agnostic naming: these wrap Valibot today, but could wrap a
- * different validation library tomorrow without changing call sites.
+ * Plain TypeScript functions that return error messages or undefined.
+ * Each helper provides clear validation intent, keeping validation code readable.
  */
-
-// Re-export basic primitives for direct use in schemas
-export { string, boolean, object, pipe, check, safeParse, flatten } from "valibot";
-
-/**
- * Array of strings with no validation on individual items.
- */
-export const stringArray = () => array(string());
-
-/**
- * Non-empty array of strings.
- * Reports the absence of items with a clear message.
- */
-export const requiredStringArray = (emptyMessage: string) =>
-  pipe(array(string()), minLength(1, emptyMessage));
 
 /**
  * Non-empty string after trimming whitespace.
+ *
+ * @example
+ * requiredString("", "Name is required") // "Name is required"
+ * requiredString("  ", "Name is required") // "Name is required"
+ * requiredString("foo", "Name is required") // undefined
  */
-export const requiredString = (message: string) => pipe(string(), trim(), minLength(1, message));
+export const requiredString = (value: string, message: string): string | undefined => {
+  return value.trim().length === 0 ? message : undefined;
+};
 
 /**
  * Inclusive integer range check.
  *
- * Uses minValue/maxValue for inclusive bounds on both ends, avoiding the
- * off-by-one errors that come from exclusive-end range checks.
+ * Bounds are inclusive on both ends, avoiding off-by-one errors.
+ *
+ * @example
+ * intRange(5, 0, 10, "Must be 0-10") // undefined
+ * intRange(15, 0, 10, "Must be 0-10") // "Must be 0-10"
+ * intRange(undefined, 0, 10, "Must be 0-10") // undefined
  */
-export const intRange = (min: number, max: number, message: string) =>
-  pipe(number(), minValue(min, message), maxValue(max, message));
+export const intRange = (
+  value: number | undefined,
+  min: number,
+  max: number,
+  message: string,
+): string | undefined => {
+  if (value === undefined) return undefined;
+  return value >= min && value <= max ? undefined : message;
+};
 
 /**
  * Optional inclusive integer range — undefined passes, present values are range-checked.
+ *
+ * @example
+ * optionalIntRange(undefined, 0, 10, "Must be 0-10") // undefined
+ * optionalIntRange(5, 0, 10, "Must be 0-10") // undefined
+ * optionalIntRange(15, 0, 10, "Must be 0-10") // "Must be 0-10"
  */
-export const optionalIntRange = (min: number, max: number, message: string) =>
-  optional(intRange(min, max, message));
+export const optionalIntRange = (
+  value: number | undefined,
+  min: number,
+  max: number,
+  message: string,
+): string | undefined => {
+  return intRange(value, min, max, message);
+};
 
 /**
  * Non-empty array where every item passes the predicate.
  *
  * Reports empty and invalid as separate messages so the user knows
  * whether to add an entry or fix an existing one.
+ *
+ * @example
+ * requiredValidList([], isValid, "Required", "Invalid") // "Required"
+ * requiredValidList(["valid"], isValid, "Required", "Invalid") // undefined
+ * requiredValidList(["invalid"], isValid, "Required", "Invalid") // "Invalid"
  */
-export const requiredValidArray = (
+export const requiredValidList = (
+  value: string[],
   predicate: (item: string) => boolean,
   emptyMessage: string,
   invalidMessage: string,
-) =>
-  pipe(
-    array(string()),
-    minLength(1, emptyMessage),
-    check((items) => items.every(predicate), invalidMessage),
-  );
+): string | undefined => {
+  if (value.length === 0) return emptyMessage;
+  return value.every(predicate) ? undefined : invalidMessage;
+};
 
 /**
  * Array that may be empty, but any present items must pass the predicate.
+ *
+ * @example
+ * optionalValidList([], isValid, "Invalid") // undefined
+ * optionalValidList(["valid"], isValid, "Invalid") // undefined
+ * optionalValidList(["invalid"], isValid, "Invalid") // "Invalid"
  */
-export const optionalValidArray = (predicate: (item: string) => boolean, invalidMessage: string) =>
-  pipe(
-    array(string()),
-    check((items) => items.every(predicate), invalidMessage),
-  );
+export const optionalValidList = (
+  value: string[],
+  predicate: (item: string) => boolean,
+  invalidMessage: string,
+): string | undefined => {
+  return value.every(predicate) ? undefined : invalidMessage;
+};
 
 /**
  * Required non-empty string that must also pass the predicate.
+ *
+ * @example
+ * requiredValidString("", isValid, "Required", "Invalid") // "Required"
+ * requiredValidString("valid", isValid, "Required", "Invalid") // undefined
+ * requiredValidString("invalid", isValid, "Required", "Invalid") // "Invalid"
  */
 export const requiredValidString = (
+  value: string,
   predicate: (s: string) => boolean,
   emptyMessage: string,
   invalidMessage: string,
-) => pipe(string(), minLength(1, emptyMessage), check(predicate, invalidMessage));
+): string | undefined => {
+  if (value.length === 0) return emptyMessage;
+  return predicate(value) ? undefined : invalidMessage;
+};
 
 /**
  * Empty string passes; non-empty must satisfy the predicate.
+ *
+ * @example
+ * optionalValidString("", isValid, "Invalid") // undefined
+ * optionalValidString("valid", isValid, "Invalid") // undefined
+ * optionalValidString("invalid", isValid, "Invalid") // "Invalid"
  */
-export const optionalValidString = (predicate: (s: string) => boolean, invalidMessage: string) =>
-  union([literal(""), pipe(string(), check(predicate, invalidMessage))]);
+export const optionalValidString = (
+  value: string,
+  predicate: (s: string) => boolean,
+  invalidMessage: string,
+): string | undefined => {
+  if (value === "") return undefined;
+  return predicate(value) ? undefined : invalidMessage;
+};

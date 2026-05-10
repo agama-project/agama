@@ -54,11 +54,11 @@ import {
   isValidDNSSearchDomain,
 } from "~/utils/network";
 import { _ } from "~/i18n";
-import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFieldsSchema";
-import type { FormIpMode as FormIpModeType } from "./ipFieldsSchema";
-import { BridgeStpMode } from "./bridgeFieldsSchema";
-import type { BridgeStpMode as BridgeStpModeType } from "./bridgeFieldsSchema";
-import { connectionFormOptions, validateConnectionForm } from "./connectionSchema";
+import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFields";
+import type { FormIpMode as FormIpModeType } from "./ipFields";
+import { BridgeStpMode } from "./bridgeFields";
+import type { BridgeStpMode as BridgeStpModeType } from "./bridgeFields";
+import { connectionFormOptions, validateConnectionForm } from "./connectionValidation";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -290,7 +290,9 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
       ...defaults,
     }),
     validators: {
-      onSubmitAsync: async ({ value: formValues }) => {
+      onSubmitAsync: async ({
+        value: formValues,
+      }): Promise<{ fields?: Record<string, string>; form?: string } | undefined> => {
         const fieldErrors = validateConnectionForm({ value: formValues });
         if (fieldErrors) return fieldErrors;
 
@@ -316,7 +318,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
           // Validation is intentionally deferred to submission so users are
           // not interrupted while filling the form. All rules live in
           // onSubmitAsync rather than per-field onSubmit validators because
-          // several checks are cross-field (e.g. gateway validity depends on
+          // several checks are cross-field (e.g., gateway validity depends on
           // the addresses list). TanStack Form only clears field errors set
           // by onSubmitAsync when a per-field onSubmit validator runs for
           // the same cause — which never happens here — so canSubmit stays

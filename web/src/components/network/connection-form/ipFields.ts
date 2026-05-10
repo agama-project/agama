@@ -30,13 +30,10 @@ import {
   isValidDNSSearchDomain,
 } from "~/utils/network";
 import {
-  requiredValidArray,
-  optionalValidArray,
+  requiredValidList,
+  optionalValidList,
   requiredValidString,
   optionalValidString,
-  string,
-  boolean,
-  stringArray,
 } from "~/components/form/validation-helpers";
 
 /**
@@ -63,10 +60,61 @@ export const ADDRESS_REQUIRED_MODES: readonly FormIpMode[] = [
   FormIpMode.ADVANCED_AUTO,
 ];
 
+type IpFields = {
+  ipv4Mode: FormIpMode;
+  addresses4: string[];
+  gateway4: string;
+  ipv6Mode: FormIpMode;
+  addresses6: string[];
+  gateway6: string;
+  nameservers: string[];
+  dnsSearchList: string[];
+  customDns: boolean;
+  customDnsSearch: boolean;
+};
+
+/**
+ * Helper for mode-dependent address validation.
+ *
+ * In MANUAL and ADVANCED_AUTO modes, at least one address is required.
+ * In AUTO mode, addresses are optional (system handles them).
+ */
+const validateAddresses = (
+  mode: FormIpMode,
+  addresses: string[],
+  isValid: (s: string) => boolean,
+  emptyMessage: string,
+  invalidMessage: string,
+) =>
+  ADDRESS_REQUIRED_MODES.includes(mode)
+    ? requiredValidList(addresses, isValid, emptyMessage, invalidMessage)
+    : optionalValidList(addresses, isValid, invalidMessage);
+
+/**
+ * Helper for mode-dependent gateway validation.
+ *
+ * In MANUAL mode, gateway is required.
+ * In ADVANCED_AUTO mode, gateway is optional.
+ * In AUTO mode, gateway is not validated (system handles it).
+ */
+const validateGateway = (
+  mode: FormIpMode,
+  gateway: string,
+  isValid: (s: string) => boolean,
+  emptyMessage: string,
+  invalidMessage: string,
+) => {
+  if (mode === FormIpMode.MANUAL)
+    return requiredValidString(gateway, isValid, emptyMessage, invalidMessage);
+  if (mode === FormIpMode.ADVANCED_AUTO)
+    return optionalValidString(gateway, isValid, invalidMessage);
+  return undefined;
+};
+
 /**
  * Default values for IP settings fields.
  */
-export const ipDefaults = {
+export const defaultValues = {
   ipv4Mode: FormIpMode.AUTO as FormIpMode,
   addresses4: [] as string[],
   gateway4: "",
@@ -79,98 +127,72 @@ export const ipDefaults = {
   customDnsSearch: false,
 };
 
-type IpSchemaInput = {
-  ipv4Mode: FormIpMode;
-  ipv6Mode: FormIpMode;
-  customDns: boolean;
-  customDnsSearch: boolean;
-};
-
 /**
- * Validation schema entries for IP settings fields.
+ * Validation for IP settings fields.
  *
  * All conditionality — address requirements, gateway optionality, DNS
- * activation — is resolved at construction time based on the current form
- * state, not encoded as cross-field rules at validation time. This keeps
- * the schema readable and avoids partialCheck for cases that are not
- * genuinely cross-field.
+ * activation — is resolved at call time based on the current form
+ * state, not encoded as cross-field rules at validation time.
  *
- * Factory function accepts current form values to derive the correct
- * validation rules for the active modes.
+ * Uses module-level helpers (validateAddresses, validateGateway) to
+ * encapsulate mode-dependent logic, keeping the main function readable
+ * as a declaration of what gets validated rather than how.
+ *
+ * Returns a record of field errors, where each key is a field name and each
+ * value is an error message or undefined.
  */
-export const IpSchema = ({ ipv4Mode, ipv6Mode, customDns, customDnsSearch }: IpSchemaInput) => {
-  const addressSchema = (
-    mode: FormIpMode,
-    isValid: (s: string) => boolean,
-    emptyMessage: string,
-    invalidMessage: string,
-  ) =>
-    ADDRESS_REQUIRED_MODES.includes(mode)
-      ? requiredValidArray(isValid, emptyMessage, invalidMessage)
-      : optionalValidArray(isValid, invalidMessage);
-
-  const gatewaySchema = (
-    mode: FormIpMode,
-    isValid: (s: string) => boolean,
-    emptyMessage: string,
-    invalidMessage: string,
-  ) => {
-    if (mode === FormIpMode.MANUAL)
-      return requiredValidString(isValid, emptyMessage, invalidMessage);
-    if (mode === FormIpMode.ADVANCED_AUTO) return optionalValidString(isValid, invalidMessage);
-    return string(); // AUTO — not validated
-  };
-
+export const validate = (fields: IpFields): Record<string, string | undefined> => {
   return {
-    ipv4Mode: string(),
     // TRANSLATORS: validation error for the IPv4 addresses field.
-    addresses4: addressSchema(
-      ipv4Mode,
+    addresses4: validateAddresses(
+      fields.ipv4Mode,
+      fields.addresses4,
       isValidIPv4Address,
       _("At least one IPv4 address is required"),
       _("Some IPv4 addresses are invalid"),
     ),
     // TRANSLATORS: validation error for the IPv4 gateway field.
-    gateway4: gatewaySchema(
-      ipv4Mode,
+    gateway4: validateGateway(
+      fields.ipv4Mode,
+      fields.gateway4,
       isValidIPv4,
       _("IPv4 gateway is required"),
       _("Invalid IPv4 gateway"),
     ),
-    ipv6Mode: string(),
     // TRANSLATORS: validation error for the IPv6 addresses field.
-    addresses6: addressSchema(
-      ipv6Mode,
+    addresses6: validateAddresses(
+      fields.ipv6Mode,
+      fields.addresses6,
       isValidIPv6Address,
       _("At least one IPv6 address is required"),
       _("Some IPv6 addresses are invalid"),
     ),
     // TRANSLATORS: validation error for the IPv6 gateway field.
-    gateway6: gatewaySchema(
-      ipv6Mode,
+    gateway6: validateGateway(
+      fields.ipv6Mode,
+      fields.gateway6,
       isValidIPv6,
       _("IPv6 gateway is required"),
       _("Invalid IPv6 gateway"),
     ),
     // DNS fields: only validated when the corresponding toggle is on.
-    // Resolved at construction time — no cross-field rule needed.
-    nameservers: customDns
+    nameservers: fields.customDns
       ? // TRANSLATORS: validation error for the DNS servers field.
-        requiredValidArray(
+        requiredValidList(
+          fields.nameservers,
           isValidNameserver,
           _("At least one DNS server is required"),
           _("Some DNS server addresses are invalid"),
         )
-      : stringArray(),
-    dnsSearchList: customDnsSearch
+      : undefined,
+    dnsSearchList: fields.customDnsSearch
       ? // TRANSLATORS: validation error for the DNS search domains field.
-        requiredValidArray(
+        requiredValidList(
+          fields.dnsSearchList,
           isValidDNSSearchDomain,
           _("At least one DNS search domain is required"),
           _("Some DNS search domains are invalid"),
         )
-      : stringArray(),
-    customDns: boolean(),
-    customDnsSearch: boolean(),
+      : undefined,
   };
 };
