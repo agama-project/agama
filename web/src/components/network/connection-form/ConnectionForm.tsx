@@ -54,11 +54,17 @@ import {
   isValidDNSSearchDomain,
 } from "~/utils/network";
 import { _ } from "~/i18n";
-import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./ipFields";
-import type { FormIpMode as FormIpModeType } from "./ipFields";
-import { BridgeStpMode } from "./bridgeFields";
-import type { BridgeStpMode as BridgeStpModeType } from "./bridgeFields";
-import { connectionFormOptions, validateConnectionForm } from "./connectionValidation";
+import {
+  FormIpMode,
+  ADDRESS_REQUIRED_MODES,
+  BridgeStpMode,
+  connectionFormOptions,
+  validate as validateConnectionForm,
+} from "./connectionFormFields";
+import type {
+  FormIpMode as FormIpModeType,
+  BridgeStpMode as BridgeStpModeType,
+} from "./connectionFormFields";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -293,7 +299,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
       onSubmitAsync: async ({
         value: formValues,
       }): Promise<{ fields?: Record<string, string>; form?: string } | undefined> => {
-        const fieldErrors = validateConnectionForm({ value: formValues });
+        const fieldErrors = validateConnectionForm(formValues);
         if (fieldErrors) return fieldErrors;
 
         try {

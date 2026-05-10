@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { connectionFormOptions } from "./connectionValidation";
+import { connectionFormOptions } from "./connectionFormFields";
 import { withForm } from "~/hooks/form";
 import { _, N_ } from "~/i18n";
 

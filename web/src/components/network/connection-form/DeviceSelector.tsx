@@ -22,7 +22,7 @@
 
 import React from "react";
 import Text from "~/components/core/Text";
-import { connectionFormOptions } from "./connectionValidation";
+import { connectionFormOptions } from "./connectionFormFields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { Device } from "~/types/network";

@@ -24,8 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions } from "./connectionValidation";
-import { FormIpMode } from "./ipFields";
+import { connectionFormOptions } from "./connectionFormFields";
+import { FormIpMode } from "./connectionFormFields";
 import IpFields from "./IpFields";
 
 function TestForm({
