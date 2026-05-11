@@ -396,7 +396,7 @@ async fn monitor_progress(http: BaseHTTPClient, ws: WebSocketClient) -> anyhow::
     // wait a bit to settle it down and avoid quick actions blinking
     sleep(Duration::from_secs(1)).await;
 
-    show_progress(http, ws, true, "suse_green").await?;
+    show_progress(http, ws, true).await?;
 
     Ok(())
 }

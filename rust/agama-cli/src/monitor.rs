@@ -28,7 +28,7 @@ mod theme;
 mod ui;
 
 use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
@@ -62,23 +62,6 @@ fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Re
     Ok(())
 }
 
-/// Parses a theme name and returns the corresponding Theme
-///
-/// # Arguments
-///
-/// * `name` - Theme name ("monochrome", "colored", or "suse_green")
-fn parse_theme(name: &str) -> Result<Theme> {
-    match name.to_lowercase().as_str() {
-        "monochrome" => Ok(Theme::monochrome()),
-        "colored" => Ok(Theme::colored()),
-        "suse_green" | "suse-green" => Ok(Theme::suse_green()),
-        _ => Err(anyhow!(
-            "Unknown theme '{}'. Valid options: monochrome, colored, suse_green",
-            name
-        )),
-    }
-}
-
 /// Starts the TUI monitor
 ///
 /// # Arguments
@@ -91,17 +74,10 @@ pub async fn run(
     http_client: BaseHTTPClient,
     websocket: WebSocketClient,
     stop_on_idle: bool,
-    theme_name: &str,
 ) -> Result<()> {
-    // Parse the theme
-    let theme = parse_theme(theme_name)?;
-
-    // // Connect to monitor and get initial status
-    // let (monitor, initial_status) = Monitor::connect(websocket, &http_client).await?;
-
     // Create app state with selected theme
     let mut app = MonitorAppBuilder::new(http_client, websocket)
-        .with_theme(theme)
+        .with_theme(Theme::monochrome())
         .with_stop_on_idle(stop_on_idle)
         .build()
         .await?;

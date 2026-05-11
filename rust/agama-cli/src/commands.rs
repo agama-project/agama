@@ -130,17 +130,7 @@ pub enum Commands {
     },
 
     /// Continuously monitors the Agama service until it finishes.
-    Monitor {
-        /// Color theme to use. Possible values:
-        ///
-        /// monochrome - black, white, and shades of gray (default)
-        ///
-        /// colored - colorful theme with green, yellow, cyan, etc.
-        ///
-        /// suse_green - SUSE branded theme with green accents
-        #[arg(short, long, default_value = "suse_green")]
-        theme: String,
-    },
+    Monitor,
 
     /// Prints the current state of the installation (e.g., waiting, blocked, running, or finished).
     Status {

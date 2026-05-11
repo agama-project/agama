@@ -109,7 +109,7 @@ async fn probe(http: BaseHTTPClient, ws: WebSocketClient) -> anyhow::Result<()> 
     let probe = tokio::spawn(async move {
         let _ = manager_client.probe().await;
     });
-    show_progress(http, ws, true, "suse_green").await?;
+    show_progress(http, ws, true).await?;
     Ok(probe.await?)
 }
 
@@ -138,7 +138,7 @@ async fn install(http_client: BaseHTTPClient, mut ws: WebSocketClient) -> anyhow
     // wait a bit before start monitoring
     sleep(Duration::from_secs(1)).await;
 
-    let res = show_progress(http_client, ws, true, "suse_green").await;
+    let res = show_progress(http_client, ws, true).await;
     if let Err(e) = res {
         eprintln!("Failed to show progress: {:?}", e);
     }
@@ -312,9 +312,8 @@ pub async fn show_progress(
     http: BaseHTTPClient,
     ws: WebSocketClient,
     stop_on_idle: bool,
-    theme: &str,
 ) -> anyhow::Result<()> {
-    monitor::run(http, ws, stop_on_idle, theme).await?;
+    monitor::run(http, ws, stop_on_idle).await?;
 
     Ok(())
 }
@@ -360,9 +359,9 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
             let client = build_http_client(api_url, cli.opts.insecure, false).await?;
             run_auth_cmd(client, subcommand).await?;
         }
-        Commands::Monitor { theme } => {
+        Commands::Monitor => {
             let (http, ws) = build_clients(api_url, cli.opts.insecure).await?;
-            monitor::run(http, ws, false, &theme).await?;
+            monitor::run(http, ws, false).await?;
         }
         Commands::Status { format } => {
             let client = build_http_client(api_url, cli.opts.insecure, true).await?;
