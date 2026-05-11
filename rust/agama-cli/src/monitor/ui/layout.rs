@@ -56,7 +56,7 @@ pub struct MonitorLayout {
 /// Creates the main layout for the monitor UI
 ///
 /// Layout structure (matching TypeScript mockup + hints):
-/// - Row 1: Status bar (hostname, IP, machine, BUSY/IDLE, phase)
+/// - Row 1: Status bar (status, phase, hostname, IP, machine)
 /// - Row 2: Empty gap
 /// - Row 3: Product name
 /// - Row 4: Separator line
