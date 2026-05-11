@@ -30,6 +30,7 @@ import EmailField from "~/components/form/EmailField";
 import MaskedField from "~/components/form/MaskedField";
 import ReadOnlyField from "~/components/form/ReadOnlyField";
 import NumberField from "~/components/form/NumberField";
+import SearchableSelectField from "~/components/form/SearchableSelectField";
 import SubmitButton from "~/components/form/SubmitButton";
 import TextField from "~/components/form/TextField";
 
@@ -49,6 +50,7 @@ const { useAppForm, withForm } = createFormHook({
     MaskedField,
     ReadOnlyField,
     NumberField,
+    SearchableSelectField,
     TextField,
   },
   formComponents: { CancelButton, SubmitButton },

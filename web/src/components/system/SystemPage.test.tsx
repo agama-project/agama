@@ -50,16 +50,47 @@ jest.mock("~/hooks/model/proposal", () => ({
   }),
 }));
 
+const mockL10nProposal = jest.fn();
+const mockL10nSystem = jest.fn();
+
+jest.mock("~/hooks/model/proposal/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/proposal/l10n"),
+  useProposal: () => mockL10nProposal(),
+}));
+
+jest.mock("~/hooks/model/system/l10n", () => ({
+  ...jest.requireActual("~/hooks/model/system/l10n"),
+  useSystem: () => mockL10nSystem(),
+}));
+
 describe("SystemPage", () => {
   beforeEach(() => {
     system.mockReturnValue({});
     mockStaticHostname = "";
     mockPatchConfig.mockResolvedValue(true);
+    mockL10nProposal.mockReturnValue({
+      locale: "en_US.UTF-8",
+      keymap: "us",
+      timezone: "America/New_York",
+    });
+    mockL10nSystem.mockReturnValue({
+      locales: [{ id: "en_US.UTF-8", language: "English", territory: "United States" }],
+      keymaps: [{ id: "us", description: "English (US)" }],
+      timezones: [
+        {
+          id: "America/New_York",
+          parts: ["America", "New York"],
+          country: "United States",
+          utcOffset: -5,
+        },
+      ],
+    });
   });
 
-  it("renders hostname and NTP settings sections", () => {
+  it("renders hostname, language and region, and NTP settings sections", () => {
     installerRender(<SystemPage />);
     screen.getByRole("group", { name: "Hostname" });
+    screen.getByRole("group", { name: "Language and Region" });
     screen.getByRole("group", { name: "Network Time Protocol (NTP)" });
   });
 
@@ -72,6 +103,11 @@ describe("SystemPage", () => {
 
       expect(mockPatchConfig).toHaveBeenCalledWith({
         hostname: { static: "" },
+        l10n: {
+          locale: "en_US.UTF-8",
+          keymap: "us",
+          timezone: "America/New_York",
+        },
         ntp: { sources: [] },
       });
     });
@@ -85,6 +121,11 @@ describe("SystemPage", () => {
 
       expect(mockPatchConfig).toHaveBeenCalledWith({
         hostname: { static: "my-server" },
+        l10n: {
+          locale: "en_US.UTF-8",
+          keymap: "us",
+          timezone: "America/New_York",
+        },
         ntp: { sources: [] },
       });
     });
@@ -107,6 +148,11 @@ describe("SystemPage", () => {
 
       expect(mockPatchConfig).toHaveBeenCalledWith({
         hostname: { static: "" },
+        l10n: {
+          locale: "en_US.UTF-8",
+          keymap: "us",
+          timezone: "America/New_York",
+        },
         ntp: {
           sources: [
             {

@@ -26,9 +26,11 @@ import { formOptions } from "@tanstack/react-form";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import HostnameSettings from "~/components/system/HostnameSettings";
+import L10nSettings from "~/components/system/L10nSettings";
 import NtpSettings from "~/components/system/NtpSettings";
 import { patchConfig } from "~/api";
 import { useProposal } from "~/hooks/model/proposal";
+import { useProposal as useL10nProposal } from "~/hooks/model/proposal/l10n";
 import { useAppForm } from "~/hooks/form";
 import { _ } from "~/i18n";
 
@@ -49,6 +51,9 @@ export const systemFormOptions = formOptions({
   defaultValues: {
     hostnameMode: HOSTNAME_MODE.TRANSIENT as HostnameMode,
     hostnameValue: "",
+    locale: "",
+    keymap: "",
+    timezone: "",
     ntpMode: NTP_MODE.DEFAULT as NtpMode,
     ntpServers: [] as string[],
   },
@@ -60,17 +65,22 @@ export const systemFormOptions = formOptions({
  * Allows the user to configure:
  * - Hostname: choose between a transient hostname (provided by the network) or
  *   a static one (set manually)
+ * - Language and region: language, keyboard layout, and timezone
  * - NTP: choose between default NTP servers or custom ones
  */
 export default function SystemPage() {
   const { hostname: proposal } = useProposal();
   const { hostname: transientHostname, static: staticHostname } = proposal;
+  const l10nProposal = useL10nProposal();
 
   const form = useAppForm({
     ...systemFormOptions,
     defaultValues: {
       hostnameMode: isEmpty(staticHostname) ? HOSTNAME_MODE.TRANSIENT : HOSTNAME_MODE.STATIC,
       hostnameValue: staticHostname || transientHostname,
+      locale: l10nProposal?.locale || "",
+      keymap: l10nProposal?.keymap || "",
+      timezone: l10nProposal?.timezone || "",
       ntpMode: NTP_MODE.DEFAULT as NtpMode,
       ntpServers: [] as string[],
     },
@@ -93,6 +103,11 @@ export default function SystemPage() {
           hostname: {
             static:
               formValues.hostnameMode === HOSTNAME_MODE.STATIC ? formValues.hostnameValue : "",
+          },
+          l10n: {
+            locale: formValues.locale,
+            keymap: formValues.keymap,
+            timezone: formValues.timezone,
           },
           ntp: {
             sources:
@@ -160,6 +175,7 @@ export default function SystemPage() {
             </form.Subscribe>
 
             <HostnameSettings form={form} />
+            <L10nSettings form={form} />
             <NtpSettings form={form} />
 
             <ActionGroup>
