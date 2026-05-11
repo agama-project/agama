@@ -80,6 +80,11 @@ translations:
     ru: Открытая, надёжная и перспективная серверная ОС Linux для обеспечения
       непрерывности бизнеса. Безопасна, гибка и подходит для критически важных
       нагрузок — на локальных серверах, в облаке и на периферии.
+    sk: Otvorený, spoľahlivý, konformný a do budúcnosti orientovaný linuxový server,
+      ktorý zaručuje podnikovú obchodnú plynulosť. Ide o bezpečný a prispôsobivý
+      OS pre dlhodobo podporovanú infraštruktúru pripravenú na inovácie, ktorá
+      spracováva kritické podnikové úlohy na mieste, v cloude aj na okraji
+      siete.
     sv: Ett öppet, pålitligt, kompatibelt och framtidssäkert Linux-serverval som
       säkerställer företagets affärskontinuitet. Det är det säkra och
       anpassningsbara operativsystemet för långsiktigt stödd, innovationsfärdig
@@ -116,6 +121,7 @@ translations:
         kab: Tizeɣt
         nb_NO: Standard
         ru: Стандартный
+        sk: Štandardný
         sv: Standard
         uk: Стандартна
       description:
@@ -133,6 +139,7 @@ translations:
         ka: სტანდარტული სისტემა
         kab: Anagraw n tizeɣt
         ru: Стандартная система
+        sk: Štandardný systém
         sv: Standard system
         uk: Стандартна система
     immutable:
@@ -151,6 +158,7 @@ translations:
         ka: უცვლადი
         nb_NO: Immutable
         ru: Неизменяемый
+        sk: Nemenný
         sv: Oföränderlig
         uk: Незмінний
       description:
@@ -168,6 +176,7 @@ translations:
         ka: უცვლელი სისტემა ატომური განახლებებით
         nb_NO: Et uforanderlig system med atomiske oppdateringer
         ru: Неизменяемая система с атомарными обновлениями
+        sk: Nemenný systém s atomickými aktualizáciami
         sv: Oföränderligt system med atomiska uppdateringar
         uk: Незмінна система з атомарними оновленнями
 desktop_selection: optional
