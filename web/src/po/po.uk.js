@@ -774,6 +774,9 @@ export default {
   "Deactivated": [
     "Деактивовано"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Типова файлова система для %s"
   ],
@@ -987,8 +990,14 @@ export default {
   "Enter a name for the volume group.": [
     "Введіть назву групи томів."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Натисніть Enter або клавішу Tab, щоб додати; клавіші зі стрілками — для перегляду записів, Ctrl + стрілки — для зміни порядку, Escape — для виходу; Backspace або Delete — для видалення."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -996,14 +1005,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Приклад: %s"
-  ],
   "Excellent signal": [
     "Відмінний сигнал"
   ],
   "Expiration date": [
     "Спливає"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1105,6 +1114,12 @@ export default {
   "Formatting devices": [
     "Форматування пристроїв"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Повнодискове шифрування (FDE) дає змогу захистити інформацію, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
   ],
@@ -1131,6 +1146,12 @@ export default {
   ],
   "Graphical desktop environments for the system.": [
     "Графічні робочі середовища для системи."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Приховати"
@@ -1382,6 +1403,9 @@ export default {
   "License acceptance required": [
     "Необхідно прийняти ліцензію"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Завантаження"
   ],
@@ -1435,6 +1459,12 @@ export default {
   ],
   "Max channel": [
     "Макс. канал"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Memory": [
     "Пам'ять"
@@ -1704,6 +1734,9 @@ export default {
   "Not supported (%s)": [
     "Не підтримується (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "Офлайн"
   ],
@@ -1806,6 +1839,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Потенційна втрата даних, що впливає щонайменше на %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Процедура може призвести до втрати даних"
   ],
@@ -1821,17 +1860,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Захист інформації, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Забезпечення автентифікації"
   ],
-  "Provide email address": [
-    "Вкажіть адресу електронної пошти"
-  ],
   "Provide its password to log in to the system.": [
     "Вкажіть його пароль для входу в систему."
-  ],
-  "Provide registration code": [
-    "Вкажіть код реєстрації"
   ],
   "Public SSH Key": [
     "Відкритий SSH-ключ"
@@ -1938,6 +1977,9 @@ export default {
   "Review and install": [
     "Переглянути та встановити"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Вхід як root за допомогою SSH-ключа"
   ],
@@ -1973,6 +2015,9 @@ export default {
   ],
   "SSID": [
     "Назва мережі"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "Центр обслуговування клієнтів SUSE (SCC)"
@@ -2060,9 +2105,6 @@ export default {
   "Server URL": [
     "URL сервера"
   ],
-  "Server options": [
-    "Параметри сервера"
-  ],
   "Set DIAG off": [
     "Вимкнути DIAG"
   ],
@@ -2148,6 +2190,9 @@ export default {
   ],
   "Something went wrong": [
     "Щось пішло не так"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Почати налаштування базової інсталяції"
@@ -2372,9 +2417,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Продукт не знайдено в репозиторіях, тому неможливо продовжити встановлення."
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "Продукт буде зареєстрований з назвою хоста «%s»"
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Розмір для %1$s буде динамічно коригуватися залежно від обсягу оперативної пам'яті в системі та наявності окремої файлової системи для %2$s."
   ],
@@ -2510,6 +2552,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Щоб забезпечити можливість завантаження нової системи, програмі встановлення може знадобитися створити або налаштувати деякі розділи на відповідному диску."
@@ -2708,9 +2753,6 @@ export default {
   "Using %d connections with %s": [
     "Використаня %d з'єднань з %s"
   ],
-  "Using [%s] keyboard": [
-    "Розкладка клавіатури [%s]"
-  ],
   "Using a hashed password.": [
     "Використовуючи хешований пароль."
   ],
@@ -2801,9 +2843,6 @@ export default {
   "You can safely close this window.": [
     "Ви можете сміливо закривати це вікно."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Ви не зможете змінити його пізніше. Перейдіть до розділу %s, якщо хочете змінити це перед тим, як продовжити реєстрацію."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Можливо, Ви захочете відкинути поточні налаштування і почати з чистого аркуша з простою конфігурацією."
   ],
@@ -2830,9 +2869,6 @@ export default {
   ],
   "auto selected": [
     "автоматичний вибір"
-  ],
-  "hostname": [
-    "ім'я хоста"
   ],
   "iBFT": [
     "iBFT"
