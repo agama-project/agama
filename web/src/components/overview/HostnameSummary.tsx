@@ -25,13 +25,13 @@ import { isEmpty } from "radashi";
 import Link from "~/components/core/Link";
 import Summary from "~/components/core/Summary";
 import { useProposal } from "~/hooks/model/proposal/hostname";
-import { HOSTNAME } from "~/routes/paths";
+import { SYSTEM } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
  * Hostname settings summary
  *
- * Title is a link that navigates to hostname configuration page.
+ * Title is a link that navigates to system configuration page.
  *
  * If a transient hostname is in use, it shows a brief explanation to inform
  * users that the hostname may change after reboot or network changes.
@@ -43,7 +43,7 @@ export default function HostnameSummary() {
     <Summary
       icon="fingerprint"
       title={
-        <Link to={HOSTNAME.root} variant="link" isInline>
+        <Link to={SYSTEM.root} variant="link" isInline>
           {_("Hostname")}
         </Link>
       }

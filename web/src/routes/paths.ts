@@ -109,8 +109,8 @@ const STORAGE = {
   },
 };
 
-const HOSTNAME = {
-  root: "/hostname",
+const SYSTEM = {
+  root: "/system",
 };
 
-export { HOSTNAME, L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER };
+export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, SYSTEM, USER };

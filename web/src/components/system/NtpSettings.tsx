@@ -1,0 +1,102 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React from "react";
+import { NestedContent } from "~/components/core";
+import { systemFormOptions } from "~/components/system/SystemPage";
+import { withForm } from "~/hooks/form";
+import { _ } from "~/i18n";
+
+const NTP_MODE = {
+  DEFAULT: "default",
+  CUSTOM: "custom",
+} as const;
+
+/**
+ * NTP configuration section for the system settings form.
+ *
+ * Allows choosing between default NTP servers (product defaults) or custom
+ * servers specified by the user.
+ *
+ * Receives a typed form instance via `withForm`.
+ */
+const NtpSettings = withForm({
+  ...systemFormOptions,
+  render: function Render({ form }) {
+    return (
+      <fieldset>
+        <legend>
+          {
+            // TRANSLATORS: fieldset legend for NTP configuration
+            _("Network Time Protocol (NTP)")
+          }
+        </legend>
+        <NestedContent margin="mxLg">
+          <form.AppField name="ntpMode">
+            {(field) => (
+              <field.DropdownField
+                // TRANSLATORS: label for NTP mode selector
+                label={_("Mode")}
+                options={[
+                  {
+                    value: NTP_MODE.DEFAULT,
+                    // TRANSLATORS: NTP mode option
+                    label: _("Default"),
+                    // TRANSLATORS: description for default NTP mode
+                    description: _("Use product's default NTP servers"),
+                  },
+                  {
+                    value: NTP_MODE.CUSTOM,
+                    // TRANSLATORS: NTP mode option
+                    label: _("Custom"),
+                    // TRANSLATORS: description for custom NTP mode
+                    description: _("Set NTP servers manually"),
+                  },
+                ]}
+              />
+            )}
+          </form.AppField>
+
+          <form.Subscribe selector={(s) => s.values.ntpMode}>
+            {(ntpMode) =>
+              ntpMode === NTP_MODE.CUSTOM && (
+                <form.AppField name="ntpServers">
+                  {(field) => (
+                    <field.ArrayField
+                      // TRANSLATORS: label for NTP servers input field
+                      label={_("Server addresses")}
+                      // TRANSLATORS: helper text for NTP servers input field
+                      helperText={_("E.g., pool.ntp.org")}
+                      skipDuplicates
+                    />
+                  )}
+                </form.AppField>
+              )
+            }
+          </form.Subscribe>
+        </NestedContent>
+      </fieldset>
+    );
+  },
+});
+
+export default NtpSettings;

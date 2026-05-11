@@ -45,7 +45,7 @@ import { useSystem } from "~/hooks/model/system/software";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
 import { useConfig } from "~/hooks/model/config";
-import { HOSTNAME } from "~/routes/paths";
+import { SYSTEM } from "~/routes/paths";
 import { patchConfig } from "~/api";
 import { mask } from "~/utils";
 import { _ } from "~/i18n";
@@ -130,7 +130,7 @@ const HostnameAlert = () => {
           }
         >
           {(section) => (
-            <Link variant="link" to={HOSTNAME.root} isInline>
+            <Link variant="link" to={SYSTEM.root} isInline>
               {section}
             </Link>
           )}
