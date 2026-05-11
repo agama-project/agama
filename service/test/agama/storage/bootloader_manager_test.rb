@@ -22,7 +22,6 @@
 require_relative "../../test_helper"
 
 require "agama/storage/bootloader_manager"
-require "agama/storage/bootloader_type"
 require "agama/storage/bootloader_prober"
 require "agama/config"
 require "bootloader/grub2"
@@ -187,7 +186,7 @@ describe Agama::Storage::BootloaderManager do
 
       context "to systemd-boot" do
         before do
-          agama_bootloader.config.type = Agama::Storage::BootloaderType::SYSTEMD_BOOT
+          agama_bootloader.config.type = Y2Storage::BootloaderType::SYSTEMD_BOOT
         end
 
         it "calls bootloader_by_name with 'systemd-boot'" do
@@ -201,7 +200,7 @@ describe Agama::Storage::BootloaderManager do
 
       context "to grub2 on EFI" do
         before do
-          agama_bootloader.config.type = Agama::Storage::BootloaderType::GRUB2
+          agama_bootloader.config.type = Y2Storage::BootloaderType::GRUB2
         end
 
         it "calls bootloader_by_name with 'grub2-efi'" do
@@ -216,7 +215,7 @@ describe Agama::Storage::BootloaderManager do
       context "to grub2 on non-EFI" do
         before do
           allow(::Bootloader::Systeminfo).to receive(:efi?).and_return(false)
-          agama_bootloader.config.type = Agama::Storage::BootloaderType::GRUB2
+          agama_bootloader.config.type = Y2Storage::BootloaderType::GRUB2
         end
 
         it "calls bootloader_by_name with 'grub2'" do
@@ -230,7 +229,7 @@ describe Agama::Storage::BootloaderManager do
 
       context "to none" do
         before do
-          agama_bootloader.config.type = Agama::Storage::BootloaderType::NONE
+          agama_bootloader.config.type = Y2Storage::BootloaderType::NONE
         end
 
         it "calls bootloader_by_name with 'none'" do

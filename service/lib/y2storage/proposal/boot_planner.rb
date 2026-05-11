@@ -22,6 +22,7 @@
 require "yast"
 require "y2storage/boot_requirements_strategies"
 require "y2storage/storage_manager"
+require "y2storage/bootloader_type"
 
 module Y2Storage
   module Proposal
@@ -93,9 +94,9 @@ module Y2Storage
       def strategy_class
         @strategy_class ||=
           case bootloader_config.type
-          when Agama::Storage::BootloaderType::NONE
+          when BootloaderType::NONE
             BootRequirementsStrategies::NfsRoot
-          when Agama::Storage::BootloaderType::GRUB2
+          when BootloaderType::GRUB2
             grub2_strategy_class
           else
             BootRequirementsStrategies::BLS

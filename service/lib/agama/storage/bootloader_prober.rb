@@ -20,10 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/bootloader"
-require "agama/storage/bootloader_type"
-require "y2storage/storage_manager"
-require "y2storage/encryption_method"
 require "yast"
+require "y2storage"
 
 Yast.import "Arch"
 
@@ -33,12 +31,12 @@ module Agama
     class BootloaderProber
       # @return [Array<Bootloader>]
       def probe
-        grub2 = Bootloader.new(BootloaderType::GRUB2, tpm: grub2_tpm?)
+        grub2 = Bootloader.new(Y2Storage::BootloaderType::GRUB2, tpm: grub2_tpm?)
         return [grub2] if raspberry_pi? || !(arch.x86? || Yast::Arch.aarch64)
 
         tpm = bls_tpm?
-        grub2_bls = Bootloader.new(BootloaderType::GRUB2_BLS, tpm: tpm)
-        systemd_boot = Bootloader.new(BootloaderType::SYSTEMD_BOOT, tpm: tpm)
+        grub2_bls = Bootloader.new(Y2Storage::BootloaderType::GRUB2_BLS, tpm: tpm)
+        systemd_boot = Bootloader.new(Y2Storage::BootloaderType::SYSTEMD_BOOT, tpm: tpm)
         [grub2, grub2_bls, systemd_boot]
       end
 

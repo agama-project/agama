@@ -119,7 +119,7 @@ module Agama
         # changes needed in Y2Storage::BootRequirementsChecker in the short future.
         def disable_bls_bootloader
           BootloaderConfigSolver.new(product_config).solve(@bootloader_config)
-          value = @bootloader_config.type == BootloaderType::GRUB2 ? "1" : "0"
+          value = @bootloader_config.type == Y2Storage::BootloaderType::GRUB2 ? "1" : "0"
           ENV["YAST_NO_BLS_BOOT"] = value
           # Avoiding problems with cached values
           Y2Storage::StorageEnv.instance.reset_cache
