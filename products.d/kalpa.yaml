@@ -66,6 +66,9 @@ translations:
       Somente Leitura e atualizações automáticas e atômicas do seu sistema
     ru: Неизменяемая и непрерывно обновляемая настольная система с окружением
       Plasma, Flatpak-приложениями и автоматическими атомарными обновлениями
+    sk: Nemenný desktopový produkt s rolujúcim vydaním, využívajúci Plasma Desktop,
+      technológiu Flatpak na distribúciu aplikácií, so základom len na čítanie a
+      automatickými a atomickými aktualizáciami vášho systému
     sv: En rullande utgåva med en oföränderlig skrivbordsprodukt, som använder
       Plasma skrivbordet, utnyttjar Flatpak för programleverans, en skrivskyddad
       bas och automatiska och atomära uppdateringar av ditt system
