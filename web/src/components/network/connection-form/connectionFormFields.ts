@@ -22,6 +22,7 @@
 
 import { formOptions } from "@tanstack/react-form";
 import { sprintf } from "sprintf-js";
+
 import { BondMode, ConnectionType, ConnectionBindingMode } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import { _, formatList } from "~/i18n";
@@ -306,11 +307,17 @@ const validateIpFields = (fields: IpFields): Record<string, string | undefined> 
  * only valid in certain modes (ACTIVE_BACKUP, BALANCE_TLB, BALANCE_ALB).
  * This rule depends on both bondMode and bondOptions, so it's evaluated
  * at validation time and returned as a field error on bondOptions.
+ *
+
  */
 const validateBondFields = (fields: BondFields): Record<string, string | undefined> => {
+  const { bondMode, bondOptions, bondPorts, bondIface } = fields;
+
+  const hasPrimaryOption = bondOptions.some((o) => o.startsWith("primary="));
+
   const bondOptionsError = (() => {
-    if (!fields.bondOptions.some((o) => o.startsWith("primary="))) return undefined;
-    if (PRIMARY_BOND_OPTION_MODES.includes(fields.bondMode)) return undefined;
+    if (!hasPrimaryOption) return undefined;
+    if (PRIMARY_BOND_OPTION_MODES.includes(bondMode)) return undefined;
 
     const modeNames = PRIMARY_BOND_OPTION_MODES.map((m) => `'${m}'`);
     // TRANSLATORS: validation error for the bond options field when the 'primary' option is used in an invalid mode.
@@ -320,9 +327,9 @@ const validateBondFields = (fields: BondFields): Record<string, string | undefin
 
   return {
     // TRANSLATORS: validation error for the bond device name field.
-    bondIface: requiredString(fields.bondIface, _("Device name is required")),
+    bondIface: requiredString(bondIface, _("Device name is required")),
     // TRANSLATORS: validation error for the bond ports field.
-    bondPorts: fields.bondPorts.length === 0 ? _("At least one bond port is required") : undefined,
+    bondPorts: bondPorts.length === 0 ? _("At least one bond port is required") : undefined,
     bondOptions: bondOptionsError,
   };
 };
@@ -332,9 +339,6 @@ const validateBondFields = (fields: BondFields): Record<string, string | undefin
  *
  * STP fields are conditionally validated based on whether STP is enabled.
  * When STP is disabled, those fields are not validated at all.
- *
- * optionalIntRange uses inclusive bounds on both ends — no +1 offset,
- * no comment required to explain it.
  */
 const validateBridgeFields = (fields: BridgeFields): Record<string, string | undefined> => {
   const stpEnabled = fields.bridgeStp === BridgeStpMode.ENABLED;
@@ -380,6 +384,21 @@ const validateBridgeFields = (fields: BridgeFields): Record<string, string | und
 };
 
 /**
+ * Dispatches to the appropriate type-specific validator based on connection type.
+ * Returns an empty object for types with no extra validation (e.g. Ethernet).
+ */
+const validateTypeFields = (fields: FormFields): Record<string, string | undefined> => {
+  switch (fields.type) {
+    case CONNECTION_TYPE.BOND:
+      return validateBondFields(fields);
+    case CONNECTION_TYPE.BRIDGE:
+      return validateBridgeFields(fields);
+    default:
+      return {};
+  }
+};
+
+/**
  * Validates the form values for the active connection type.
  *
  * Designed for TanStack Form's validators. Returns undefined when valid
@@ -391,31 +410,21 @@ const validateBridgeFields = (fields: BridgeFields): Record<string, string | und
  * - Cross-field validation (e.g., bond primary option) is handled within
  *   the type-specific validators and returned as field errors
  *
- * Field errors are collected by merging all validator outputs and filtering
- * out undefined values.
+ * Field errors are collected by merging all validator outputs and
+ * stripping undefined values.
  */
 export const validate = (fields: FormFields): { fields?: Record<string, string> } | undefined => {
-  const commonErrors = validateCommonFields(fields);
-  const ipErrors = validateIpFields(fields);
+  const allFieldErrors = {
+    ...validateCommonFields(fields),
+    ...validateIpFields(fields),
+    ...validateTypeFields(fields),
+  };
 
-  let typeErrors: Record<string, string | undefined> = {};
-
-  if (fields.type === CONNECTION_TYPE.BOND) {
-    typeErrors = validateBondFields(fields);
-  } else if (fields.type === CONNECTION_TYPE.BRIDGE) {
-    typeErrors = validateBridgeFields(fields);
-  }
-
-  // Merge all field errors and filter out undefined values
-  const allFieldErrors = { ...commonErrors, ...ipErrors, ...typeErrors };
   const fieldErrors: Record<string, string> = {};
 
   for (const [key, error] of Object.entries(allFieldErrors)) {
-    if (error !== undefined) {
-      fieldErrors[key] = error;
-    }
+    if (error !== undefined) fieldErrors[key] = error;
   }
 
-  // Return field errors if any exist
   return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
 };
