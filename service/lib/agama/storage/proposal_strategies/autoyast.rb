@@ -31,9 +31,6 @@ module Agama
       class Autoyast < Base
         include Yast::I18n
 
-        # @return [Storage::BootloaderConfig]
-        attr_reader :bootloader_config
-
         # @param product_config [Config] Product config
         # @param storage_system [Storage::System]
         # @param partitioning [Array<Hash>]
@@ -42,9 +39,8 @@ module Agama
         def initialize(product_config, storage_system, partitioning, bootloader_config, logger)
           textdomain "agama"
 
-          super(product_config, storage_system, logger)
+          super(product_config, storage_system, bootloader_config, logger)
           @partitioning = partitioning
-          @bootloader_config = bootloader_config
         end
 
         # Settings used for calculating the proposal.
