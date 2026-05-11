@@ -15,6 +15,12 @@ export default {
   "%1$d of %2$d devices match filters": [
     "%1$d dari %2$d perangkat cocok dengan filter"
   ],
+  "%1$d of %2$d patterns": [
+    "%1$d dari %2$d pola"
+  ],
+  "%1$d of %2$d selected": [
+    "%1$d dari %2$d dipilih"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -45,6 +51,9 @@ export default {
   "%d connections available": [
     "%d koneksi tersedia"
   ],
+  "%d desktop selected": [
+    "%d desktop dipilih"
+  ],
   "%d devices available": [
     "%d perangkat tersedia"
   ],
@@ -66,11 +75,17 @@ export default {
   "%d invalid entries removed.": [
     "%d entri tidak valid dihapus."
   ],
+  "%d matches the filter": [
+    "%d cocok dengan filter"
+  ],
   "%d mode available": [
     "%d mode tersedia"
   ],
   "%d other mode available": [
     "%d mode lain tersedia"
+  ],
+  "%d pattern found": [
+    "%d pola ditemukan"
   ],
   "%s - %s": [
     "%s - %s"
@@ -255,6 +270,9 @@ export default {
   "Additional CHAP authentication performed by the initiator": [
     "Autentikasi CHAP tambahan dilakukan oleh initiator"
   ],
+  "Additional patterns": [
+    "Pola tambahan"
+  ],
   "Address": [
     "Alamat"
   ],
@@ -333,6 +351,9 @@ export default {
   "At least one IPv6 address is required": [
     "Setidaknya satu alamat IPv6 diperlukan"
   ],
+  "At least one bond port is required": [
+    "Setidaknya satu port bond diperlukan"
+  ],
   "At least one logical volume will be deleted": [
     "Setidaknya satu volume logis akan dihapus"
   ],
@@ -362,6 +383,9 @@ export default {
   ],
   "Automatic LUN scan is enabled": [
     "Pemindaian LUN otomatis diaktifkan"
+  ],
+  "Available devices: %s": [
+    "Perangkat yang tersedia: %s"
   ],
   "Back": [
     "Kembali"
@@ -405,20 +429,38 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    "Bond"
+  ],
+  "Bond details": [
+    "Detail bond"
+  ],
+  "Bond mode": [
+    "Mode bond"
+  ],
+  "Bond mode is required": [
+    "Mode bond wajib diisi"
+  ],
+  "Bond options": [
+    "Opsi bond"
+  ],
+  "Bond ports": [
+    "Port bond"
+  ],
   "Boot options": [
     "Opsi boot"
   ],
   "Breadcrumbs": [
     "Breadcrumb"
   ],
+  "Bridge": [
+    "Bridge"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs dengan snapshot"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "Dengan melanjutkan, instalasi akan dimulai dengan pengaturan yang telah ditentukan."
   ],
   "CHAP authentication performed by the target": [
     "Autentikasi CHAP dilakukan oleh target"
@@ -450,6 +492,9 @@ export default {
   "Change Language": [
     "Ubah Bahasa"
   ],
+  "Change desktop": [
+    "Ubah desktop"
+  ],
   "Change device menu": [
     "Ubah menu perangkat"
   ],
@@ -471,14 +516,14 @@ export default {
   "Change mode": [
     "Ubah mode"
   ],
+  "Change patterns": [
+    "Ubah pola"
+  ],
   "Change product": [
     "Ubah produk"
   ],
   "Change product or mode": [
     "Ubah produk atau mode"
-  ],
-  "Change selection": [
-    "Mengubah pilihan"
   ],
   "Change the device to configure": [
     "Ubah perangkat untuk dikonfigurasi"
@@ -630,6 +675,9 @@ export default {
   "Confirm the product selection.": [
     "Konfirmasi pemilihan produk."
   ],
+  "Confirming starts the installation immediately with the defined settings.": [
+    "Dengan mengonfirmasi, proses instalasi akan segera dimulai dengan pengaturan yang telah ditentukan."
+  ],
   "Connect": [
     "Sambungkan"
   ],
@@ -699,6 +747,9 @@ export default {
   "Create user": [
     "Membuat pengguna"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    "Kumpulan paket yang dikurasi untuk kasus penggunaan umum dan fitur untuk memperluas sistem."
+  ],
   "Current %1$s at %2$s": [
     "Saat ini %1$s di %2$s"
   ],
@@ -738,9 +789,6 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    "Daftar Domain Pencarian DNS"
-  ],
   "DNS search domains": [
     "Domain pencarian DNS"
   ],
@@ -753,6 +801,9 @@ export default {
   "Deactivated": [
     "Dinonaktifkan"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistem berkas default untuk %s"
   ],
@@ -764,6 +815,9 @@ export default {
   ],
   "Default file system for generic partitions": [
     "Sistem berkas default untuk partisi umum"
+  ],
+  "Default selection": [
+    "Pilihan default"
   ],
   "Define a custom size": [
     "Tentukan ukuran kustom"
@@ -798,6 +852,12 @@ export default {
   "Description": [
     "Deskripsi"
   ],
+  "Desktop selection": [
+    "Pemilihan desktop"
+  ],
+  "Desktops": [
+    "Desktop"
+  ],
   "Destroy current data and format device as": [
     "Hapus data saat ini dan format perangkat sebagai"
   ],
@@ -821,6 +881,9 @@ export default {
   ],
   "Device name": [
     "Nama perangkat"
+  ],
+  "Device name is required": [
+    "Nama perangkat wajib diisi"
   ],
   "Discard": [
     "Buang"
@@ -897,14 +960,17 @@ export default {
   "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
     "Mis., 8.8.8.8 atau 2001:4860:4860::8888"
   ],
+  "E.g., bond0": [
+    "Mis., bond0"
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    "Misal, downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
+  ],
   "E.g., example.com": [
     "Mis., example.com"
   ],
   "Edit": [
     "Edit"
-  ],
-  "Edit binding": [
-    "Edit pengikatan"
   ],
   "Edit binding settings": [
     "Edit pengaturan ikatan"
@@ -963,8 +1029,14 @@ export default {
   "Enter a name for the volume group.": [
     "Masukkan nama untuk grup volume."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Enter atau Tab untuk menambahkan; tombol panah untuk menavigasi entri, Ctrl+panah untuk mengurutkan ulang, Escape untuk keluar; Backspace atau Delete untuk menghapus."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -972,14 +1044,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Contoh: %s"
-  ],
   "Excellent signal": [
     "Sinyal sangat baik"
   ],
   "Expiration date": [
     "Tanggal kadaluwarsa"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1023,8 +1095,8 @@ export default {
   "Filter by language, territory or locale code": [
     "Memfilter berdasarkan bahasa, wilayah, atau kode lokal"
   ],
-  "Filter by pattern title or description": [
-    "Memfilter berdasarkan judul atau deskripsi pola"
+  "Filter by name and description": [
+    "Filter berdasarkan nama dan deskripsi"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
@@ -1080,6 +1152,12 @@ export default {
   "Formatting devices": [
     "Memformat perangkat"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Enkripsi Disk Penuh (FDE) memungkinkan untuk melindungi informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
@@ -1098,11 +1176,26 @@ export default {
   "Go to network page": [
     "Buka halaman jaringan"
   ],
+  "Go to network settings": [
+    "Pergi ke pengaturan jaringan"
+  ],
+  "Go to registration": [
+    "Pergi ke pendaftaran"
+  ],
   "Go to storage page": [
     "Buka halaman penyimpanan"
   ],
   "Good signal": [
     "Sinyal baik"
+  ],
+  "Graphical desktop environments for the system.": [
+    "Lingkungan desktop grafis untuk sistem."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Sembunyikan"
@@ -1111,7 +1204,7 @@ export default {
     "Menyembunyikan tindakan subvolume %d"
   ],
   "Hostname": [
-    "Nama host"
+    "Nama Host"
   ],
   "Hostname could not be updated": [
     "Nama host tidak dapat diperbarui"
@@ -1170,14 +1263,17 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Jika media lokal digunakan untuk menjalankan penginstalasi ini, hapus media tersebut sebelum boot berikutnya."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Jika tidak yakin, batalkan dan tinjau pengaturan penyimpanan."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    "Jika itu tidak dimaksudkan, batalkan dan pilih desktop di pengaturan [software]."
   ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Jika Anda tidak yakin, periksa dan sesuaikan pengaturan penyimpanan."
+  "If unsure, cancel and review [storage] settings.": [
+    "Jika tidak yakin, batalkan dan tinjau pengaturan [storage]."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Jika Anda ingin menonaktifkan pemeriksaan ini, harap tentukan \"inst.ay_check=0\" pada baris perintah kernel"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "Menyertakan %1$d pola tambahan. Membutuhkan %2$s"
   ],
   "Initiator": [
     "Inisiator"
@@ -1350,14 +1446,14 @@ export default {
   "License acceptance required": [
     "Diperlukan penerimaan lisensi"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Memuat"
   ],
   "Loading data...": [
     "Memuat data..."
-  ],
-  "Loading the installation repositories...": [
-    "Memuat repositori instalasi..."
   ],
   "Localization": [
     "Pelokalan"
@@ -1398,6 +1494,9 @@ export default {
   "Login form": [
     "Formulir masuk"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC": [
     "MAC"
   ],
@@ -1418,6 +1517,12 @@ export default {
   ],
   "Max channel": [
     "Saluran maks"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "Anggota"
@@ -1521,9 +1626,6 @@ export default {
   "Name is required": [
     "Nama wajib diisi"
   ],
-  "Needs about %s": [
-    "Memerlukan sekitar %s"
-  ],
   "Network": [
     "Jaringan"
   ],
@@ -1566,8 +1668,8 @@ export default {
   "No additional partitions will be created": [
     "Tidak akan dibuat partisi tambahan"
   ],
-  "No additional software was selected.": [
-    "Tidak ada perangkat lunak tambahan yang dipilih."
+  "No additional patterns available": [
+    "Tidak ada pola tambahan yang tersedia"
   ],
   "No connections match filters": [
     "Tidak ada koneksi yang cocok dengan filter"
@@ -1580,6 +1682,12 @@ export default {
   ],
   "No data loss is expected": [
     "Tidak diharapkan ada kehilangan data"
+  ],
+  "No desktop selected": [
+    "Tidak ada desktop yang dipilih"
+  ],
+  "No desktops available": [
+    "Tidak ada desktop yang tersedia"
   ],
   "No device is currently using this connection.": [
     "Tidak ada perangkat yang saat ini menggunakan koneksi ini."
@@ -1619,6 +1727,12 @@ export default {
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. Gunakan dengan hati-hati."
+  ],
+  "No patterns match": [
+    "Tidak ada pola yang cocok"
+  ],
+  "No patterns match the filter": [
+    "Tidak ada pola yang cocok dengan filter"
   ],
   "No software RAID devices are available for selection.": [
     "Tidak ada perangkat RAID perangkat lunak yang tersedia untuk dipilih."
@@ -1662,11 +1776,11 @@ export default {
   "None of the locales match the filter.": [
     "Tidak ada lokasi yang cocok dengan filter."
   ],
-  "None of the patterns match the filter.": [
-    "Tidak ada pola yang cocok dengan filter."
-  ],
   "None of the time zones match the filter.": [
     "Tidak ada zona waktu yang cocok dengan filter."
+  ],
+  "None selected": [
+    "Tidak ada yang dipilih"
   ],
   "None set": [
     "Tidak ditetapkan"
@@ -1694,6 +1808,9 @@ export default {
   ],
   "Not supported (%s)": [
     "Tidak didukung (%s)"
+  ],
+  "Not used by this bridge": [
+    ""
   ],
   "Offline": [
     "Luring"
@@ -1782,6 +1899,9 @@ export default {
   "Passwords do not match": [
     "Kata sandi tidak cocok"
   ],
+  "Patterns selection": [
+    "Pemilihan pola"
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "Lakukan penemuan untuk menemukan target iSCSI yang tersedia."
   ],
@@ -1806,6 +1926,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potensi kehilangan data yang memengaruhi setidaknya %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Melanjutkan dapat menyebabkan kehilangan data"
   ],
@@ -1821,17 +1947,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Berikan autentikasi"
   ],
-  "Provide email address": [
-    "Berikan alamat email"
-  ],
   "Provide its password to log in to the system.": [
     "Berikan kata sandinya untuk masuk ke sistem."
-  ],
-  "Provide registration code": [
-    "Berikan kode pendaftaran"
   ],
   "Public SSH Key": [
     "Kunci SSH Publik"
@@ -1847,6 +1973,18 @@ export default {
   ],
   "RAID": [
     "RAID"
+  ],
+  "Read less": [
+    "Baca lebih sedikit"
+  ],
+  "Read less about %s": [
+    "Baca lebih sedikit tentang %s"
+  ],
+  "Read more": [
+    "Baca selengkapnya"
+  ],
+  "Read more about %s": [
+    "Baca selengkapnya tentang %s"
   ],
   "Read only": [
     "Hanya baca"
@@ -1905,14 +2043,14 @@ export default {
   "Remove the configuration for this volume group": [
     "Hapus konfigurasi untuk grup volume ini"
   ],
-  "Repository load failed": [
-    "Pemuatan repositori gagal"
+  "Required space with current selection: [%s]": [
+    "Ruang yang diperlukan dengan pilihan saat ini: [%s]"
   ],
-  "Required packages": [
-    "Paket yang diperlukan"
+  "Required space: [%s]": [
+    "Ruang yang diperlukan: [%s]"
   ],
-  "Required packages and %s pattern": [
-    "Paket yang diperlukan dan %s pola"
+  "Requires %s": [
+    "Membutuhkan %s"
   ],
   "Rescan devices": [
     "Pindai ulang perangkat"
@@ -1946,6 +2084,9 @@ export default {
   ],
   "Review and install": [
     "Tinjau dan instal"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "Login root dengan kunci SSH"
@@ -1983,6 +2124,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
@@ -2000,6 +2144,12 @@ export default {
   ],
   "Select %s": [
     "Pilih %s"
+  ],
+  "Select a desktop": [
+    "Pilih desktop"
+  ],
+  "Select a desktop environment to get a graphical interface.": [
+    "Pilih lingkungan desktop untuk mendapatkan antarmuka grafis."
   ],
   "Select a device": [
     "Pilih perangkat"
@@ -2046,6 +2196,9 @@ export default {
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
     "Pilih entri untuk mengedit atau menghapusnya. Atau [hapus semua entri tidak valid.]"
   ],
+  "Select one or more to extend the system.": [
+    "Pilih satu atau lebih untuk memperluas sistem."
+  ],
   "Select or enter a mount point": [
     "Pilih atau masukkan titik mount"
   ],
@@ -2054,6 +2207,9 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Pilih atau masukkan titik mount yang valid"
+  ],
+  "Select patterns": [
+    "Pilih pola"
   ],
   "Select the controllers to activate": [
     "Pilih pengontrol yang akan diaktifkan"
@@ -2076,17 +2232,11 @@ export default {
   "Selected disk cannot be changed": [
     "Disk yang dipilih tidak dapat diubah"
   ],
-  "Selected patterns": [
-    "Pola yang dipilih"
-  ],
   "Selected volume group cannot be changed": [
     "Grup volume yang dipilih tidak dapat diubah"
   ],
   "Server URL": [
     "URL Server"
-  ],
-  "Server options": [
-    "Opsi server"
   ],
   "Set DIAG off": [
     "Matikan DIAG"
@@ -2146,10 +2296,13 @@ export default {
     "Lewati ke konten"
   ],
   "Software": [
-    "Perangkat lunak"
+    "Perangkat Lunak"
   ],
   "Software %s": [
     "Perangkat Lunak %s"
+  ],
+  "Software selection is not available": [
+    "Pemilihan perangkat lunak tidak tersedia"
   ],
   "Some DNS search domains are invalid": [
     "Beberapa domain pencarian DNS tidak valid"
@@ -2169,9 +2322,6 @@ export default {
   "Some existing partitions may be shrunk": [
     "Beberapa partisi yang sudah ada mungkin akan diperkecil"
   ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Beberapa repositori instalasi tidak dapat dimuat. Sistem tidak dapat diinstal tanpa repositori tersebut."
-  ],
   "Some logical volumes may be deleted": [
     "Beberapa volume logis mungkin akan dihapus"
   ],
@@ -2189,6 +2339,9 @@ export default {
   ],
   "Something went wrong": [
     "Ada yang tidak beres"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Mulai mengkonfigurasi instalasi dasar"
@@ -2255,6 +2408,9 @@ export default {
   ],
   "Temporary name that may change after reboot or network changes": [
     "Nama sementara yang dapat berubah setelah mulai ulang atau perubahan jaringan"
+  ],
+  "The 'primary' option is only valid for %s modes": [
+    "Opsi 'primary' hanya berlaku untuk mode %s"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Grup LVM ‘%1$s’ akan tetap berada di %2$s"
@@ -2364,9 +2520,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Partisi-partisi berikut akan dibuat atau di-mount"
   ],
-  "The following software patterns are selected for installation:": [
-    "Pola perangkat lunak berikut ini dipilih untuk instalasi:"
-  ],
   "The initiator name cannot be blank": [
     "Nama inisiator tidak boleh kosong"
   ],
@@ -2402,9 +2555,6 @@ export default {
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Produk tidak ditemukan di repositori sehingga tidak memungkinkan untuk melanjutkan instalasi."
-  ],
-  "The product will be registered with \"%s\" hostname": [
-    "Produk akan di-registrasi dengan hostname \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
@@ -2442,6 +2592,9 @@ export default {
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "Ukuran harus berupa angka diikuti dengan satuan dalam bentuk GiB (pangkat 2) atau GB (pangkat 10)."
   ],
+  "The software selection could not be loaded.": [
+    "Pemilihan perangkat lunak tidak dapat dimuat."
+  ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Konfigurasi penyimpanan valid (lihat hasil di bawah) tetapi menggunakan elemen yang tidak didukung oleh antarmuka ini."
   ],
@@ -2450,6 +2603,9 @@ export default {
   ],
   "The system is rebooting": [
     "Sistem sedang dimulai ulang"
+  ],
+  "The system will boot to a command-line interface.": [
+    "Sistem akan boot ke antarmuka baris perintah."
   ],
   "The whole device will be used for %s": [
     "Seluruh perangkat akan digunakan untuk %s"
@@ -2502,11 +2658,20 @@ export default {
   "This license is not available in %s.": [
     "Lisensi ini tidak tersedia di %s."
   ],
+  "This might be due to network connectivity.": [
+    "Ini mungkin disebabkan oleh konektivitas jaringan."
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Polanya ini menyeimbangkan antara kejelasan dan efisiensi: mode ini menjaga kesederhanaan untuk pemilihan yang sederhana, sementara tampilan penuh mendukung eksplorasi yang lebih mendalam dan tindakan yang lebih kompleks, terutama untuk pengguna yang memiliki banyak perangkat."
   ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Produk ini tidak memungkinkan untuk memilih pola perangkat lunak selama instalasi. Namun demikian, Anda dapat menambahkan perangkat lunak tambahan setelah penginstalan selesai."
+  "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
+    "Produk ini tidak mengizinkan pemilihan perangkat lunak pada saat instalasi. Perangkat lunak tambahan dapat ditambahkan setelah instalasi selesai."
+  ],
+  "This product does not provide additional patterns.": [
+    "Produk ini tidak menyediakan pola tambahan."
+  ],
+  "This product does not provide desktop environments.": [
+    "Produk ini tidak menyediakan lingkungan desktop."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Ruang ini mencakup sistem dasar dan pola perangkat lunak yang dipilih, jika ada."
@@ -2532,11 +2697,11 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
-  ],
-  "Try again": [
-    "Coba lagi"
   ],
   "Try to activate again": [
     "Coba aktifkan lagi"
@@ -2561,9 +2726,6 @@ export default {
   ],
   "Unknown error": [
     "Kesalahan tidak diketahui"
-  ],
-  "Unselect": [
-    "Batalkan pilihan"
   ],
   "Unselect or activate them and try it again.": [
     "Batalkan pilihan atau aktifkan, lalu coba lagi."
@@ -2721,9 +2883,6 @@ export default {
   "Use these same settings for the selected product": [
     "Gunakan pengaturan yang sama untuk produk yang dipilih"
   ],
-  "Used space": [
-    "Ruang yang digunakan"
-  ],
   "User name": [
     "Nama pengguna"
   ],
@@ -2733,11 +2892,11 @@ export default {
   "Username suggestion dropdown": [
     "Tarik-turun saran nama pengguna"
   ],
+  "Using %d additional pattern": [
+    "Menggunakan %d pola tambahan"
+  ],
   "Using %d connections with %s": [
     "Menggunakan %d koneksi dengan %s"
-  ],
-  "Using [%s] keyboard": [
-    "Menggunakan keyboard [%s]"
   ],
   "Using a hashed password.": [
     "Menggunakan kata sandi yang dienkripsi."
@@ -2762,6 +2921,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Menggunakan nama host sementara: %s"
+  ],
+  "VLAN": [
+    "VLAN"
   ],
   "View license": [
     "Lihat lisensi"
@@ -2838,9 +3000,6 @@ export default {
   "You can safely close this window.": [
     "Anda dapat menutup jendela ini dengan aman."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Anda tidak dapat mengubahnya nanti. Pergi ke bagian %s jika Anda ingin mengubahnya sebelum melanjutkan proses pendaftaran."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Anda mungkin ingin menghapus pengaturan saat ini dan memulai dari awal dengan konfigurasi sederhana."
   ],
@@ -2867,9 +3026,6 @@ export default {
   ],
   "auto selected": [
     "otomatis dipilih"
-  ],
-  "hostname": [
-    "hostname"
   ],
   "iBFT": [
     "iBFT"

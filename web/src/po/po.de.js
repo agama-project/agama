@@ -15,6 +15,12 @@ export default {
   "%1$d of %2$d devices match filters": [
     "%1$d von %2$d Geräten entsprechen den Filtern"
   ],
+  "%1$d of %2$d patterns": [
+    "%1$d von %2$d Mustern"
+  ],
+  "%1$d of %2$d selected": [
+    "%1$d von %2$d ausgewählt"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -73,6 +79,10 @@ export default {
   "%d other mode available": [
     "%d weiterer Modus verfügbar",
     "%d weitere Modi verfügbar"
+  ],
+  "%d pattern found": [
+    "%d Muster gefunden",
+    "%d Muster gefunden"
   ],
   "%s - %s": [
     "%s - %s"
@@ -402,20 +412,29 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    ""
+  ],
+  "Bond ports": [
+    ""
+  ],
   "Boot options": [
     "Boot-Optionen"
   ],
   "Breadcrumbs": [
     "Brotkrümel"
   ],
+  "Bridge": [
+    ""
+  ],
+  "Bridge ports": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs mit Schnappschüssen"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "Wenn Sie fortfahren, wird die Installation mit den festgelegten Einstellungen gestartet."
   ],
   "CHAP authentication performed by the target": [
     "Vom Ziel durchgeführte CHAP-Authentifizierung"
@@ -468,14 +487,14 @@ export default {
   "Change mode": [
     "Modus ändern"
   ],
+  "Change patterns": [
+    "Muster ändern"
+  ],
   "Change product": [
     "Produkt ändern"
   ],
   "Change product or mode": [
     "Produkt oder Modus ändern"
-  ],
-  "Change selection": [
-    "Auswahl ändern"
   ],
   "Change the file system or mount point": [
     "Dateisystem oder Einhängepunkt ändern"
@@ -686,6 +705,9 @@ export default {
   "Create user": [
     "Benutzer erstellen"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "Aktuell %1$s bei %2$s"
   ],
@@ -722,9 +744,6 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    "DNS-Suchliste"
-  ],
   "DNS search domains": [
     "DNS-Suchdomänen"
   ],
@@ -736,6 +755,9 @@ export default {
   ],
   "Deactivated": [
     "Deaktiviert"
+  ],
+  "Default": [
+    ""
   ],
   "Default file system for %s": [
     "Standard-Dateisystem für %s"
@@ -781,6 +803,12 @@ export default {
   ],
   "Description": [
     "Beschreibung"
+  ],
+  "Desktop selection": [
+    "Desktop-Auswahl"
+  ],
+  "Desktops": [
+    ""
   ],
   "Destroy current data and format device as": [
     "Aktuelle Daten zerstören und Gerät formatieren als"
@@ -866,6 +894,9 @@ export default {
   "Download logs to troubleshoot or share with support.": [
     "Protokolle herunterladen, um Fehler zu beheben oder sie mit dem Kundendienst zu teilen."
   ],
+  "E.g., %s": [
+    ""
+  ],
   "E.g., 192.168.1.1": [
     "Z.B. 192.168.1.1"
   ],
@@ -880,6 +911,15 @@ export default {
   ],
   "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
     "Z.B. 8.8.8.8 oder 2001:4860:4860::8888"
+  ],
+  "E.g., bond0": [
+    ""
+  ],
+  "E.g., br0": [
+    ""
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    ""
   ],
   "E.g., example.com": [
     "Z.B. example.com"
@@ -944,8 +984,14 @@ export default {
   "Enter a name for the volume group.": [
     "Name für die Volume-Gruppe eingeben."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Zum Hinzufügen die Eingabetaste oder die Tabulatortaste drücken; mit den Pfeiltasten durch die Einträge navigieren, mit Strg+Pfeiltasten die Reihenfolge ändern, mit Esc das Fenster schließen; mit Rücktaste oder Entf löschen."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -953,14 +999,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Beispiel: %s"
-  ],
   "Excellent signal": [
     "Ausgezeichnetes Signal"
   ],
   "Expiration date": [
     "Ablaufdatum"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1006,8 +1052,8 @@ export default {
   "Filter by language, territory or locale code": [
     "Nach Sprache, Gebiet oder Sprachumgebungscode filtern"
   ],
-  "Filter by pattern title or description": [
-    "Nach Mustertitel oder Beschreibung filtern"
+  "Filter by name and description": [
+    "Nach Name und Beschreibung filtern"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Nach Gebiet, Zeitzonencode oder UTC-Abweichung filtern"
@@ -1063,6 +1109,12 @@ export default {
   "Formatting devices": [
     "Geräte formatieren"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Die vollständige Festplattenverschlüsselung (FDE) ermöglicht den Schutz der in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programmen und Systemdateien."
   ],
@@ -1086,6 +1138,15 @@ export default {
   ],
   "Good signal": [
     "Gutes Signal"
+  ],
+  "Graphical desktop environments for the system.": [
+    ""
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Ausblenden"
@@ -1154,14 +1215,15 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Wenn ein lokales Medium zur Ausführung dieses Installationsprogramms verwendet wurde, entfernen Sie es vor dem nächsten Start."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Wenn Sie sich nicht sicher sind, brechen Sie den Vorgang ab und überprüfen Sie die Speichereinstellungen."
-  ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Wenn Sie sich nicht sicher sind, überprüfen und passen Sie die Speicherungseinstellungen an."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Wenn Sie diese Überprüfung deaktivieren möchten, geben Sie bitte „inst.ay_check=0” in der Befehlszeile des Kernels an"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "",
+    ""
   ],
   "Initiator": [
     "Initiator"
@@ -1334,14 +1396,14 @@ export default {
   "License acceptance required": [
     "Lizenzannahme erforderlich"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Wird geladen"
   ],
   "Loading data...": [
     "Daten werden gelesen ..."
-  ],
-  "Loading the installation repositories...": [
-    "Installations-Repositorien werden geladen ..."
   ],
   "Localization": [
     "Lokalisierung"
@@ -1370,6 +1432,9 @@ export default {
   "Login form": [
     "Anmeldeformular"
   ],
+  "Loopback": [
+    ""
+  ],
   "MAC": [
     "MAC"
   ],
@@ -1390,6 +1455,12 @@ export default {
   ],
   "Max channel": [
     "Maximaler Kanal"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "Mitglieder"
@@ -1495,9 +1566,6 @@ export default {
   "Name is required": [
     "Name ist erforderlich"
   ],
-  "Needs about %s": [
-    "Benötigt etwa %s"
-  ],
   "Network": [
     "Netzwerk"
   ],
@@ -1530,9 +1598,6 @@ export default {
   ],
   "No additional partitions will be created": [
     "Es werden keine zusätzlichen Partitionen erstellt"
-  ],
-  "No additional software was selected.": [
-    "Es wurde keine zusätzliche Software ausgewählt."
   ],
   "No connections match filters": [
     "Keine Verbindungen entsprechen den Filtern"
@@ -1627,9 +1692,6 @@ export default {
   "None of the locales match the filter.": [
     "Keines der Gebietsschemata entspricht dem Filter."
   ],
-  "None of the patterns match the filter.": [
-    "Keines der Muster entspricht dem Filter."
-  ],
   "None of the time zones match the filter.": [
     "Keine der Zeitzonen entspricht dem Filter."
   ],
@@ -1659,6 +1721,9 @@ export default {
   ],
   "Not supported (%s)": [
     "Nicht unterstützt (%s)"
+  ],
+  "Not used by this bridge": [
+    ""
   ],
   "Offline": [
     "Offline"
@@ -1741,6 +1806,9 @@ export default {
   "Passwords do not match": [
     "Passwörter stimmen nicht überein"
   ],
+  "Patterns selection": [
+    "Musterauswahl"
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "Führe eine Erkennung durch, um verfügbare iSCSI-Ziele zu finden."
   ],
@@ -1762,6 +1830,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potenzieller Datenverlust, von dem mindestens %s betroffen sind"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Das Fortfahren kann zu Datenverlust führen"
   ],
@@ -1777,17 +1851,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Schutz für die in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programme und Systemdateien."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Authentifizierung bereitstellen"
   ],
-  "Provide email address": [
-    "E-Mail-Adresse angeben"
-  ],
   "Provide its password to log in to the system.": [
     "Geben Sie das Passwort für die Anmeldung am System ein."
-  ],
-  "Provide registration code": [
-    "Registrierungscode angeben"
   ],
   "Public SSH Key": [
     "Öffentlicher SSH-Schlüssel"
@@ -1861,15 +1935,8 @@ export default {
   "Remove the configuration for this volume group": [
     "Konfiguration für diese Volume-Gruppe entfernen"
   ],
-  "Repository load failed": [
-    "Laden des Repositoriums ist fehlgeschlagen"
-  ],
-  "Required packages": [
-    "Erforderliche Pakete"
-  ],
-  "Required packages and %s pattern": [
-    "Erforderliche Pakete und %s Muster",
-    "Erforderliche Pakete und %s Muster"
+  "Required space with current selection: [%s]": [
+    ""
   ],
   "Rescan devices": [
     "Geräte neu scannen"
@@ -1903,6 +1970,9 @@ export default {
   ],
   "Review and install": [
     "Überprüfen und installieren"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "Root-Anmeldung mit SSH-Schlüssel"
@@ -1940,6 +2010,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
@@ -1957,6 +2030,9 @@ export default {
   ],
   "Select %s": [
     "%s auswählen"
+  ],
+  "Select a desktop environment to get a graphical interface.": [
+    ""
   ],
   "Select a device": [
     "Gerät auswählen"
@@ -2031,17 +2107,11 @@ export default {
   "Selected disk cannot be changed": [
     "Ausgewählte Festplatte kann nicht geändert werden"
   ],
-  "Selected patterns": [
-    "Ausgewählte Muster"
-  ],
   "Selected volume group cannot be changed": [
     "Ausgewählte Volume-Gruppe kann nicht geändert werden"
   ],
   "Server URL": [
     "Server-URL"
-  ],
-  "Server options": [
-    "Serveroptionen"
   ],
   "Set DIAG off": [
     "DIAG ausschalten"
@@ -2125,9 +2195,6 @@ export default {
   "Some existing partitions may be shrunk": [
     "Einige vorhandene Partitionen können verkleinert werden"
   ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Einige Installations-Repositorien konnten nicht geladen werden. Das System kann ohne sie nicht installiert werden."
-  ],
   "Some logical volumes may be deleted": [
     "Einige logische Volumes werden möglicherweise gelöscht"
   ],
@@ -2145,6 +2212,9 @@ export default {
   ],
   "Something went wrong": [
     "Etwas ist schiefgelaufen"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Konfiguration einer Basisinstallation beginnen"
@@ -2213,6 +2283,9 @@ export default {
   ],
   "Temporary name that may change after reboot or network changes": [
     "Temporärer Name, der sich nach einem Neustart oder Netzwerkänderungen ändern kann"
+  ],
+  "The 'primary' option is only valid for %s modes": [
+    ""
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Die LVM-Gruppe ‚%1$s‘ wird bei %2$s bleiben"
@@ -2321,9 +2394,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Die folgenden Partitionen werden erstellt oder eingehängt"
   ],
-  "The following software patterns are selected for installation:": [
-    "Die folgenden Softwaremuster werden für die Installation ausgewählt:"
-  ],
   "The initiator name cannot be blank": [
     "Der Initiatorname darf nicht leer sein"
   ],
@@ -2357,9 +2427,6 @@ export default {
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
-  ],
-  "The product will be registered with \"%s\" hostname": [
-    "Das Produkt wird unter dem Hostnamen „%s“ registriert"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
@@ -2405,6 +2472,9 @@ export default {
   ],
   "The system is rebooting": [
     "Das System wird neu gestartet"
+  ],
+  "The system will boot to a command-line interface.": [
+    ""
   ],
   "The whole device will be used for %s": [
     "Das gesamte Gerät wird für %s verwendet"
@@ -2459,11 +2529,11 @@ export default {
   "This license is not available in %s.": [
     "Diese Lizenz ist in %s nicht verfügbar."
   ],
+  "This might be due to network connectivity.": [
+    ""
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Dieses Muster schafft ein Gleichgewicht zwischen Klarheit und Effizienz: Das Modal hält die Dinge leicht für einfache Auswahlen, während die Vollansicht eine tiefere Erkundung und komplexere Aktionen unterstützt, insbesondere für Nutzer mit vielen Geräten."
-  ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Bei diesem Produkt ist es nicht möglich, während der Installation Softwaremuster auszuwählen. Sie können jedoch zusätzliche Software hinzufügen, sobald die Installation abgeschlossen ist."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Dieser Bereich umfasst das Basissystem und die ausgewählten Softwaremuster, falls vorhanden."
@@ -2486,11 +2556,11 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Um sicherzustellen, dass das neue System starten kann, muss das Installationsprogramm möglicherweise einige Partitionen auf der entsprechenden Festplatte erstellen oder konfigurieren."
-  ],
-  "Try again": [
-    "Erneut versuchen"
   ],
   "Try to activate again": [
     "Aktivieren erneut versuchen"
@@ -2515,9 +2585,6 @@ export default {
   ],
   "Unknown error": [
     "Unbekannter Fehler"
-  ],
-  "Unselect": [
-    "Abwählen"
   ],
   "Unselect or activate them and try it again.": [
     "Wählen Sie sie ab oder aktivieren Sie sie und versuchen Sie es erneut."
@@ -2675,9 +2742,6 @@ export default {
   "Use these same settings for the selected product": [
     "Dieselben Einstellungen für das ausgewählte Produkt verwenden"
   ],
-  "Used space": [
-    "Belegter Speicherplatz"
-  ],
   "User name": [
     "Benutzername"
   ],
@@ -2689,9 +2753,6 @@ export default {
   ],
   "Using %d connections with %s": [
     "Verwendung von %d Verbindungen mit %s"
-  ],
-  "Using [%s] keyboard": [
-    "Tastatur [%s] wird verwendet"
   ],
   "Using a hashed password.": [
     "Verwendung eines gehashten Passworts."
@@ -2713,6 +2774,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Transienter Hostname wird verwendet: %s"
+  ],
+  "VLAN": [
+    "VLAN"
   ],
   "View license": [
     "Lizenz ansehen"
@@ -2786,9 +2850,6 @@ export default {
   "You can safely close this window.": [
     "Sie können dieses Fenster gefahrlos schließen."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Sie können ihn später nicht mehr ändern. Gehen Sie zum Abschnitt %s, wenn Sie ihn vor der Registrierung ändern möchten."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Möglicherweise möchten Sie die aktuellen Einstellungen verwerfen und mit einer einfachen Konfiguration neu beginnen."
   ],
@@ -2815,9 +2876,6 @@ export default {
   ],
   "auto selected": [
     "automatisch ausgewählt"
-  ],
-  "hostname": [
-    "Hostname"
   ],
   "iBFT": [
     "iBFT"

@@ -20,6 +20,7 @@
 
 //! This module implements Agama's HTTP API.
 
+use crate::profile::profile_service;
 use crate::server::config_schema;
 use crate::web::error::ErrorResponse;
 use agama_lib::{error::ServiceError, logs};
@@ -116,14 +117,18 @@ pub async fn server_service(
         .start()
         .await
         .map_err(anyhow::Error::msg)?;
+    let profile = profile_service().await;
     let state = ServerState::new(manager, questions);
-    server_with_state(state)
+    server_with_state(state, profile)
 }
 
 /// Sets up and returns the axum service for the manager module with the given state
 ///
 /// * `state`: server state.
-pub fn server_with_state(state: ServerState) -> Result<ApiRouter, ServiceError> {
+pub fn server_with_state(
+    state: ServerState,
+    profile_routes: ApiRouter,
+) -> Result<ApiRouter, ServiceError> {
     Ok(ApiRouter::new()
         .api_route("/status", get_with(get_status, get_status_docs))
         .api_route("/system", get_with(get_system, get_system_docs))
@@ -155,6 +160,7 @@ pub fn server_with_state(state: ServerState) -> Result<ApiRouter, ServiceError> 
         .route("/private/resolvables/{id}", put(set_resolvables))
         .route("/private/download_logs", get(download_logs))
         .route("/private/password_check", post(check_password))
+        .nest_service("/private/profile", profile_routes)
         .with_state(state))
 }
 

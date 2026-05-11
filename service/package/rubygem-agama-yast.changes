@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May  7 12:11:45 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Import the ntp-client section from a AutoYaST profiles
+  (jsc#PED-15144).
+
+-------------------------------------------------------------------
 Fri Apr 17 10:29:38 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Add support for configuring pervasive encryption APQNs and key

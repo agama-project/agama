@@ -15,6 +15,12 @@ export default {
   "%1$d of %2$d devices match filters": [
     "%2$d 個のデバイスのうち %1$d 個が条件に該当しています"
   ],
+  "%1$d of %2$d patterns": [
+    "%2$d 個のパターンのうち %1$d 個"
+  ],
+  "%1$d of %2$d selected": [
+    "%2$d 個のうち %1$d 個を選択済み"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -45,6 +51,9 @@ export default {
   "%d connections available": [
     "%d 個の接続が利用可能です"
   ],
+  "%d desktop selected": [
+    "%d 個のデスクトップ環境を選択済み"
+  ],
   "%d devices available": [
     "%d 個のデバイスが利用可能です"
   ],
@@ -66,11 +75,17 @@ export default {
   "%d invalid entries removed.": [
     "%d 個の正しくない項目を削除しました。"
   ],
+  "%d matches the filter": [
+    "該当した %d 個のパターンがあります"
+  ],
   "%d mode available": [
     "%d 個のモードが利用可能です"
   ],
   "%d other mode available": [
     "%d 個の他のモードが利用可能です"
+  ],
+  "%d pattern found": [
+    "%d 個のパターンが見つかりました"
   ],
   "%s - %s": [
     "%s - %s"
@@ -255,6 +270,9 @@ export default {
   "Additional CHAP authentication performed by the initiator": [
     "イニシエータによる追加の CHAP 認証"
   ],
+  "Additional patterns": [
+    "追加のパターン"
+  ],
   "Address": [
     "アドレス"
   ],
@@ -262,7 +280,7 @@ export default {
     "アドレスとゲートウエイをネットワーク側から割り当てます"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "新しいシステムが利用可能な領域内に収まるように設定を調整してください。"
+    "新しいシステムが利用可能な容量内に収まるように設定を調整してください。"
   ],
   "All": [
     "全て"
@@ -333,6 +351,9 @@ export default {
   "At least one IPv6 address is required": [
     "1 つ以上の IPv6 アドレスを設定する必要があります"
   ],
+  "At least one bond port is required": [
+    "1 つ以上のボンディングポートを設定する必要があります"
+  ],
   "At least one logical volume will be deleted": [
     "少なくとも 1 つ以上の論理ボリュームを削除します"
   ],
@@ -362,6 +383,9 @@ export default {
   ],
   "Automatic LUN scan is enabled": [
     "自動 LUN スキャンが有効化されています"
+  ],
+  "Available devices: %s": [
+    "利用可能なデバイス: %s"
   ],
   "Back": [
     "戻る"
@@ -405,20 +429,38 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    "ボンディング"
+  ],
+  "Bond details": [
+    "ボンディングの詳細"
+  ],
+  "Bond mode": [
+    "ボンディングモード"
+  ],
+  "Bond mode is required": [
+    "ボンディングモードを指定する必要があります"
+  ],
+  "Bond options": [
+    "ボンディングオプション"
+  ],
+  "Bond ports": [
+    "ボンディングポート"
+  ],
   "Boot options": [
     "起動オプション"
   ],
   "Breadcrumbs": [
     "パンくず"
   ],
+  "Bridge": [
+    "ブリッジ"
+  ],
   "Btrfs": [
     "btrfs"
   ],
   "Btrfs with snapshots": [
     "スナップショット有りの btrfs"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "続行すると、指定の設定でインストールが開始されます。"
   ],
   "CHAP authentication performed by the target": [
     "ターゲットによる CHAP 認証"
@@ -450,6 +492,9 @@ export default {
   "Change Language": [
     "言語の変更"
   ],
+  "Change desktop": [
+    "デスクトップ環境の変更"
+  ],
   "Change device menu": [
     "デバイスメニューの変更"
   ],
@@ -471,14 +516,14 @@ export default {
   "Change mode": [
     "モードの変更"
   ],
+  "Change patterns": [
+    "パターンの変更"
+  ],
   "Change product": [
     "製品の変更"
   ],
   "Change product or mode": [
     "製品またはモードの変更"
-  ],
-  "Change selection": [
-    "選択の変更"
   ],
   "Change the device to configure": [
     "設定したいデバイスの変更"
@@ -630,6 +675,9 @@ export default {
   "Confirm the product selection.": [
     "製品セクションで確認を行ってください。"
   ],
+  "Confirming starts the installation immediately with the defined settings.": [
+    "続行すると、指定の設定ですぐにインストールが開始されます。"
+  ],
   "Connect": [
     "接続"
   ],
@@ -699,6 +747,9 @@ export default {
   "Create user": [
     "ユーザの作成"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    "一般的な用途のほか、システムの機能拡張のために厳選したパッケージセットです。"
+  ],
   "Current %1$s at %2$s": [
     "%2$s にある現在の %1$s"
   ],
@@ -738,9 +789,6 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    "DNS 検索リスト"
-  ],
   "DNS search domains": [
     "DNS 検索ドメイン"
   ],
@@ -753,6 +801,9 @@ export default {
   "Deactivated": [
     "無効"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "%s に対する既定のファイルシステム"
   ],
@@ -764,6 +815,9 @@ export default {
   ],
   "Default file system for generic partitions": [
     "汎用パーティションに対する既定のファイルシステム"
+  ],
+  "Default selection": [
+    "既定の選択"
   ],
   "Define a custom size": [
     "独自のサイズを指定する"
@@ -798,6 +852,12 @@ export default {
   "Description": [
     "説明"
   ],
+  "Desktop selection": [
+    "デスクトップ環境の選択"
+  ],
+  "Desktops": [
+    "デスクトップ"
+  ],
   "Destroy current data and format device as": [
     "現在のデータを消去して下記の形式でデバイスをフォーマット:"
   ],
@@ -821,6 +881,9 @@ export default {
   ],
   "Device name": [
     "デバイス名"
+  ],
+  "Device name is required": [
+    "デバイス名を指定する必要があります"
   ],
   "Discard": [
     "破棄"
@@ -897,14 +960,17 @@ export default {
   "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
     "例: 8.8.8.8, 2001:4860:4860::8888"
   ],
+  "E.g., bond0": [
+    "例: bond0"
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    "例: downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
+  ],
   "E.g., example.com": [
     "例: example.com"
   ],
   "Edit": [
     "編集"
-  ],
-  "Edit binding": [
-    "バインディング設定の編集"
   ],
   "Edit binding settings": [
     "バインディング設定の編集"
@@ -963,8 +1029,14 @@ export default {
   "Enter a name for the volume group.": [
     "ボリュームグループに対する名前を入力してください。"
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Enter キーまたは Tab キーで追加、矢印キーで項目間の移動、 Ctrl+矢印キーで順序変更、 Esc キーで終了、Backspace もしくは Delete キーで削除をそれぞれ行います。"
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "イーサネット"
@@ -972,14 +1044,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "例: %s"
-  ],
   "Excellent signal": [
     "優良な信号強度"
   ],
   "Expiration date": [
     "有効期限"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "ext2"
@@ -1023,8 +1095,8 @@ export default {
   "Filter by language, territory or locale code": [
     "言語／地域／ロケールコードでフィルタ"
   ],
-  "Filter by pattern title or description": [
-    "パターンタイトルまたは説明でフィルタ"
+  "Filter by name and description": [
+    "名前や説明でフィルタ"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "地域／タイムゾーンコード／UTC オフセット値でフィルタ"
@@ -1036,7 +1108,7 @@ export default {
     "インストール後のシステムの最終形です。"
   ],
   "Find space in %s": [
-    "%s 内での領域検出"
+    "%s 内での容量検出"
   ],
   "First user": [
     "最初のユーザ"
@@ -1080,6 +1152,12 @@ export default {
   "Formatting devices": [
     "デバイスをフォーマットしています"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "完全ディスク暗号化 (Full Disk Encryption; FDE) を使用することで、データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
@@ -1098,11 +1176,26 @@ export default {
   "Go to network page": [
     "ネットワークページに移動"
   ],
+  "Go to network settings": [
+    "ネットワーク設定に移動"
+  ],
+  "Go to registration": [
+    "登録に移動"
+  ],
   "Go to storage page": [
     "ストレージページに移動"
   ],
   "Good signal": [
     "良好な信号強度"
+  ],
+  "Graphical desktop environments for the system.": [
+    "システムに対するグラフィカルなデスクトップ環境です。"
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "隠す"
@@ -1170,14 +1263,17 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
   ],
-  "If unsure, cancel and review storage settings.": [
-    "不安な場合はいったんキャンセルして、ストレージ設定をご確認ください。"
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    "もしもこちらを希望していない場合は、いったんキャンセルしたあと [ソフトウエア] 設定でデスクトップ環境を選択してください。"
   ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "不安な場合はストレージ設定をご確認のうえ、必要であれば変更してください。"
+  "If unsure, cancel and review [storage] settings.": [
+    "不安な場合はいったんキャンセルして、 [ストレージ] 設定をご確認ください。"
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "このチェックを無効化したい場合は、カーネルのコマンドラインに \"inst.ay_check=0\" を指定してください"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "%1$d 個の追加パターンを含みます。 %2$s が必要です"
   ],
   "Initiator": [
     "イニシエータ"
@@ -1258,7 +1354,7 @@ export default {
     "正しくない [zFCP] 設定です"
   ],
   "Invalid settings": [
-    "正しくない設定です"
+    "設定が正しくありません"
   ],
   "Invalid software selection": [
     "ソフトウエア選択が正しくありません"
@@ -1350,14 +1446,14 @@ export default {
   "License acceptance required": [
     "ライセンスの受け入れが必要です"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "読み込んでいます"
   ],
   "Loading data...": [
     "データを読み込んでいます..."
-  ],
-  "Loading the installation repositories...": [
-    "インストール用リポジトリを読み込んでいます..."
   ],
   "Localization": [
     "ローカライゼーション"
@@ -1398,6 +1494,9 @@ export default {
   "Login form": [
     "ログインフォーム"
   ],
+  "Loopback": [
+    "ループバック"
+  ],
   "MAC": [
     "MAC"
   ],
@@ -1418,6 +1517,12 @@ export default {
   ],
   "Max channel": [
     "最大チャネル"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "メンバー"
@@ -1444,7 +1549,7 @@ export default {
     "設定と物理ボリュームの変更"
   ],
   "More": [
-    "続く"
+    "詳細"
   ],
   "More actions": [
     "さらなる処理"
@@ -1521,9 +1626,6 @@ export default {
   "Name is required": [
     "名前を指定する必要があります"
   ],
-  "Needs about %s": [
-    "おおよそ %s が必要"
-  ],
   "Network": [
     "ネットワーク"
   ],
@@ -1566,8 +1668,8 @@ export default {
   "No additional partitions will be created": [
     "追加パーティションは作成しない"
   ],
-  "No additional software was selected.": [
-    "追加のソフトウエアは何も選択していません。"
+  "No additional patterns available": [
+    "利用可能な追加パターンはありません"
   ],
   "No connections match filters": [
     "フィルタに該当する接続がありません"
@@ -1580,6 +1682,12 @@ export default {
   ],
   "No data loss is expected": [
     "データ削除は予定されていません"
+  ],
+  "No desktop selected": [
+    "デスクトップ環境を選択していません"
+  ],
+  "No desktops available": [
+    "デスクトップ環境が提供されていません"
   ],
   "No device is currently using this connection.": [
     "この接続ではデバイスを使用していません。"
@@ -1619,6 +1727,12 @@ export default {
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "起動用のパーティションを自動設定しません。注意してお使いください。"
+  ],
+  "No patterns match": [
+    "該当するパターンはありません"
+  ],
+  "No patterns match the filter": [
+    "フィルタに該当するパターンがありません"
   ],
   "No software RAID devices are available for selection.": [
     "選択可能なソフトウエア RAID デバイスがありません。"
@@ -1662,11 +1776,11 @@ export default {
   "None of the locales match the filter.": [
     "フィルタに該当するロケールがありません。"
   ],
-  "None of the patterns match the filter.": [
-    "フィルタに該当するパターンがありません。"
-  ],
   "None of the time zones match the filter.": [
     "フィルタに該当するタイムゾーンがありません。"
+  ],
+  "None selected": [
+    "何も選択していません"
   ],
   "None set": [
     "未設定"
@@ -1694,6 +1808,9 @@ export default {
   ],
   "Not supported (%s)": [
     "サポート対象外です (%s)"
+  ],
+  "Not used by this bridge": [
+    ""
   ],
   "Offline": [
     "オフライン"
@@ -1782,6 +1899,9 @@ export default {
   "Passwords do not match": [
     "パスワードが合致しません"
   ],
+  "Patterns selection": [
+    "パターンの選択"
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "利用可能な iSCSI ターゲットを検出するため、検索を実施してください。"
   ],
@@ -1806,6 +1926,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "少なくとも %s に影響する潜在的なデータ削除が発生します"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "続行することによりデータ削除が発生する可能性があります"
   ],
@@ -1821,17 +1947,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "認証情報を設定"
   ],
-  "Provide email address": [
-    "電子メールアドレスを入力する"
-  ],
   "Provide its password to log in to the system.": [
     "システムにログインするためのパスワードを入力してください。"
-  ],
-  "Provide registration code": [
-    "登録コードを入力する"
   ],
   "Public SSH Key": [
     "公開 SSH 鍵"
@@ -1847,6 +1973,18 @@ export default {
   ],
   "RAID": [
     "RAID"
+  ],
+  "Read less": [
+    "表示を減らす"
+  ],
+  "Read less about %s": [
+    "%s に関する表示を減らす"
+  ],
+  "Read more": [
+    "表示を増やす"
+  ],
+  "Read more about %s": [
+    "%s に関する表示を増やす"
   ],
   "Read only": [
     "読み込み専用"
@@ -1905,14 +2043,14 @@ export default {
   "Remove the configuration for this volume group": [
     "このボリュームグループに対する設定の削除"
   ],
-  "Repository load failed": [
-    "リポジトリ読み込み失敗"
+  "Required space with current selection: [%s]": [
+    "現在の選択で必要となる容量: [%s]"
   ],
-  "Required packages": [
-    "必要なパッケージ"
+  "Required space: [%s]": [
+    "必要な容量: [%s]"
   ],
-  "Required packages and %s pattern": [
-    "%s 個のパターンと必要なパッケージ"
+  "Requires %s": [
+    "%s が必要です"
   ],
   "Rescan devices": [
     "デバイスの再検出"
@@ -1946,6 +2084,9 @@ export default {
   ],
   "Review and install": [
     "確認してインストール"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "SSH 鍵による root ログイン"
@@ -1983,6 +2124,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
@@ -2001,6 +2145,12 @@ export default {
   "Select %s": [
     "%s を選択"
   ],
+  "Select a desktop": [
+    "デスクトップ環境の選択"
+  ],
+  "Select a desktop environment to get a graphical interface.": [
+    "グラフィカルユーザインターフェイス (GUI) を使用したい場合は、デスクトップ環境を選択してください。"
+  ],
   "Select a device": [
     "デバイスの選択"
   ],
@@ -2017,7 +2167,7 @@ export default {
     "製品の選択"
   ],
   "Select a product and confirm your choice.": [
-    "製品を選択したあと、確認のためにボタンを押してください。"
+    "製品を選択してください。"
   ],
   "Select a product mode to continue.": [
     "続行するには製品モードを選択してください。"
@@ -2046,6 +2196,9 @@ export default {
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
     "編集または削除する項目を選択してください。もしくは [正しくない全ての項目を削除] することもできます。"
   ],
+  "Select one or more to extend the system.": [
+    "システムの機能を拡張したい場合は、 1 つ以上のパターンを選択してください。"
+  ],
   "Select or enter a mount point": [
     "マウントポイントの選択または入力"
   ],
@@ -2054,6 +2207,9 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "正しいマウントポイントを選択または入力してください"
+  ],
+  "Select patterns": [
+    "パターンの選択"
   ],
   "Select the controllers to activate": [
     "有効化するコントローラを選択してください"
@@ -2076,17 +2232,11 @@ export default {
   "Selected disk cannot be changed": [
     "選択済みのディスクは変更できません"
   ],
-  "Selected patterns": [
-    "パターンの選択"
-  ],
   "Selected volume group cannot be changed": [
     "選択済みのボリュームグループは変更できません"
   ],
   "Server URL": [
     "サーバ URL"
-  ],
-  "Server options": [
-    "サーバオプション"
   ],
   "Set DIAG off": [
     "DIAG を無効にする"
@@ -2151,26 +2301,26 @@ export default {
   "Software %s": [
     "ソフトウエア %s"
   ],
+  "Software selection is not available": [
+    "ソフトウエア選択は利用できません"
+  ],
   "Some DNS search domains are invalid": [
-    "DNS 検索ドメインの中に正しくない設定があります"
+    "DNS 検索ドメインの中に正しくないものがあります"
   ],
   "Some DNS server addresses are invalid": [
-    "DNS サーバの中に正しくない設定があります"
+    "DNS サーバの中に正しくないものがあります"
   ],
   "Some IPv4 addresses are invalid": [
-    "IPv4 アドレスの中に正しくない設定があります"
+    "IPv4 アドレスの中に正しくないものがあります"
   ],
   "Some IPv6 addresses are invalid": [
-    "IPv6 アドレスの中に正しくない設定があります"
+    "IPv6 アドレスの中に正しくないものがあります"
   ],
   "Some existing logical volumes may be shrunk": [
     "いくつかの既存の論理ボリュームを縮小するかもしれません"
   ],
   "Some existing partitions may be shrunk": [
     "いくつかの既存パーティションを縮小する"
-  ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "インストール用リポジトリのうち、読み込めなかったものがあります。これらのリポジトリ無しにはシステムをインストールできません。"
   ],
   "Some logical volumes may be deleted": [
     "いくつかの論理ボリュームを削除するかもしれません"
@@ -2189,6 +2339,9 @@ export default {
   ],
   "Something went wrong": [
     "何らかの問題が発生しました"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "基本的なインストールの設定を開始する"
@@ -2255,6 +2408,9 @@ export default {
   ],
   "Temporary name that may change after reboot or network changes": [
     "システムの再起動やネットワーク側の変更により変わりうる一時的な名前です"
+  ],
+  "The 'primary' option is only valid for %s modes": [
+    "'primary' オプションは %s モードの時にのみ有効です"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM グループ '%1$s' が %2$s に残されます"
@@ -2344,7 +2500,7 @@ export default {
     "登録コード無しで拡張の登録を行いました。"
   ],
   "The final size can be bigger in order to fill the extra free space.": [
-    "最終的なサイズは、連続した空き領域にあわせて拡大される可能性があります。"
+    "最終的なサイズは、連続した空き容量にあわせて拡大される可能性があります。"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
     "Trusted Platform Module (TPM) の設定の最後では、新しいシステムの初回起動時に暗号化されたデバイスを自動で解除するよう設定します。これを動作させるためには、マシンが新しいブートローダを直接起動するように設定しておく必要があります。"
@@ -2363,9 +2519,6 @@ export default {
   ],
   "The following partitions will be created or mounted": [
     "下記のパーティションを作成またはマウントします"
-  ],
-  "The following software patterns are selected for installation:": [
-    "下記のソフトウエアパターンをインストールするよう選択しています:"
   ],
   "The initiator name cannot be blank": [
     "何らかのイニシエータ名を指定する必要があります"
@@ -2403,9 +2556,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "リポジトリ内には製品が見つかりませんでした。そのため、インストールを続行することができません。"
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "製品をホスト名 \"%s\" で登録します"
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
   ],
@@ -2442,6 +2592,9 @@ export default {
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "サイズは、数値の後に GiB (2 のべき乗で指定する場合) や GB (10 のべき乗で指定する場合) の形式で単位を付けて入力する必要があります。"
   ],
+  "The software selection could not be loaded.": [
+    "ソフトウエア選択を読み込めませんでした。"
+  ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "ストレージ設定は下記の結果の通り有効ではありますが、このインターフェイスではいくつかの要素がサポートされていません。"
   ],
@@ -2450,6 +2603,9 @@ export default {
   ],
   "The system is rebooting": [
     "システムを再起動しています"
+  ],
+  "The system will boot to a command-line interface.": [
+    "インストール後のシステムではコマンドラインインターフェイスを使用することになります。"
   ],
   "The whole device will be used for %s": [
     "デバイス全体を %s 向けに使用する"
@@ -2502,11 +2658,20 @@ export default {
   "This license is not available in %s.": [
     "このライセンスは %s では提供されていません。"
   ],
+  "This might be due to network connectivity.": [
+    "ネットワークに接続されていない可能性があります。"
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "このパターンは、明瞭性と効率性のバランスを取った形と言えます。モーダル型の表示により簡単に選択できますし、より詳しい調査や複雑な処理を必要とする場合であっても、フルビューへの切り替えで対応できます。特に、多数のデバイスを扱う必要がある場合に有用です。"
   ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "この製品はインストール時のパターン選択を許可していません。なお、インストール完了後に必要なソフトウエアを追加できます。"
+  "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
+    "この製品はインストール時のソフトウエア選択を許可していません。インストール完了後に必要なソフトウエアを追加してください。"
+  ],
+  "This product does not provide additional patterns.": [
+    "この製品では追加パターンが提供されていません。"
+  ],
+  "This product does not provide desktop environments.": [
+    "この製品ではデスクトップ環境が提供されていません。"
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "この容量にはシステムの基本部分のほか、選択したソフトウエアパターンが含まれます。"
@@ -2532,11 +2697,11 @@ export default {
   "Tmpfs": [
     "tmpfs"
   ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
-  ],
-  "Try again": [
-    "再試行"
   ],
   "Try to activate again": [
     "再有効化の試行"
@@ -2561,9 +2726,6 @@ export default {
   ],
   "Unknown error": [
     "不明なエラー"
-  ],
-  "Unselect": [
-    "未選択"
   ],
   "Unselect or activate them and try it again.": [
     "これらのデバイスを選択から外すか、もしくは有効化してからやり直してください。"
@@ -2721,9 +2883,6 @@ export default {
   "Use these same settings for the selected product": [
     "選択した製品に対しても同じ設定を使用する"
   ],
-  "Used space": [
-    "使用済み領域"
-  ],
   "User name": [
     "ユーザ名"
   ],
@@ -2733,11 +2892,11 @@ export default {
   "Username suggestion dropdown": [
     "ユーザ名の提案ドロップダウン"
   ],
+  "Using %d additional pattern": [
+    "%d 個の追加パターンを使用します"
+  ],
   "Using %d connections with %s": [
     "%d 個の接続 (%s) を使用"
-  ],
-  "Using [%s] keyboard": [
-    "[%s] キーボードを使用しています"
   ],
   "Using a hashed password.": [
     "ハッシュ化されたパスワードを使用します。"
@@ -2762,6 +2921,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "暫定的なホスト名を使用しています: %s"
+  ],
+  "VLAN": [
+    "VLAN"
   ],
   "View license": [
     "ライセンスの表示"
@@ -2838,9 +3000,6 @@ export default {
   "You can safely close this window.": [
     "このウインドウは閉じてかまいません。"
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "登録内容は後から変更することができません。登録に際して変更しておきたい項目がある場合は、 %s セクションに移動してください。"
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "現在の設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
@@ -2848,7 +3007,7 @@ export default {
     "これらの設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
   "You need to fix any invalid settings before proceeding with the installation.": [
-    "インストールを続行する前に、正しくない設定を修正する必要があります。"
+    "インストールを続行する前に、設定を修正する必要があります。"
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "暗号化されていない公衆ネットワークに接続しようとしています。通信の安全性が保てないかもしれません。"
@@ -2867,9 +3026,6 @@ export default {
   ],
   "auto selected": [
     "自動選択済み"
-  ],
-  "hostname": [
-    "ホスト名"
   ],
   "iBFT": [
     "iBFT"

@@ -86,8 +86,16 @@ impl MainServiceBuilder {
     /// * `path`: Path to mount the service under `/api`.
     /// * `service`: Service to mount on the given `path`.
     pub fn add_service(self, path: &str, service: impl Into<ApiRouter<()>>) -> Self {
+        // root nesting is not allowed, so merge instead
+        let router = if path == "/" {
+            let service: ApiRouter<ServiceState> = service.into().with_state(());
+            self.api_router.merge(service)
+        } else {
+            self.api_router.nest_api_service(path, service)
+        };
+
         Self {
-            api_router: self.api_router.nest_api_service(path, service),
+            api_router: router,
             ..self
         }
     }
@@ -116,6 +124,7 @@ impl MainServiceBuilder {
             .route("/login", get(login_from_query))
             .nest("/api", api_router)
             .fallback_service(serve)
+            .route_layer(middleware::from_fn(version_header))
             .layer(
                 TraceLayer::new_for_http()
                     .on_request(|request: &Request<Body>, span: &Span| {
@@ -154,4 +163,11 @@ async fn auth_middleware(claims: TokenClaims, mut request: Request, next: Next) 
     request.extensions_mut().insert(Arc::new(claims.client_id));
     let response = next.run(request).await;
     response
+}
+
+async fn version_header(req: Request, next: Next) -> Response {
+    let mut res = next.run(req).await;
+    res.headers_mut()
+        .insert("X-API-Version", HeaderValue::from_str("2").unwrap());
+    res
 }

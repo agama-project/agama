@@ -15,6 +15,12 @@ export default {
   "%1$d of %2$d devices match filters": [
     "%1$d av %2$d enheter av matchar filtret"
   ],
+  "%1$d of %2$d patterns": [
+    "%1$d av %2$d mönster"
+  ],
+  "%1$d of %2$d selected": [
+    "%1$d av %2$d valt"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -48,6 +54,10 @@ export default {
   "%d connections available": [
     "%d anslutningar tillgängliga"
   ],
+  "%d desktop selected": [
+    "%d skrivbord valt",
+    "%d flera skrivbord valda"
+  ],
   "%d devices available": [
     "%d enheter tillgängliga"
   ],
@@ -69,6 +79,10 @@ export default {
   "%d invalid entries removed.": [
     "%d ogiltiga poster borttagna."
   ],
+  "%d matches the filter": [
+    "%d matchar filtret",
+    "%d flera matchar filterna"
+  ],
   "%d mode available": [
     "%d läge tillgängligt",
     "%d lägen tillgängliga"
@@ -76,6 +90,10 @@ export default {
   "%d other mode available": [
     "%d annat läge tillgängligt",
     "%d andra lägen tillgängliga"
+  ],
+  "%d pattern found": [
+    "%d mönster hittades",
+    "%d flera mönster hittades"
   ],
   "%s - %s": [
     "%s - %s"
@@ -267,6 +285,9 @@ export default {
   "Additional CHAP authentication performed by the initiator": [
     "Ytterligare CHAP-autentisering utförd av initiativtagaren"
   ],
+  "Additional patterns": [
+    "Ytterligare mönster"
+  ],
   "Address": [
     "Adresser"
   ],
@@ -347,6 +368,9 @@ export default {
   "At least one IPv6 address is required": [
     "Åtminstone en IPv6-adress krävs"
   ],
+  "At least one bond port is required": [
+    "Åtminstone minst en bondport krävs"
+  ],
   "At least one logical volume will be deleted": [
     "Minst en logisk volym kommer att raderas"
   ],
@@ -376,6 +400,9 @@ export default {
   ],
   "Automatic LUN scan is enabled": [
     "Automatisk LUN-skanning är aktiverad"
+  ],
+  "Available devices: %s": [
+    "Tillgängliga enheter: %s"
   ],
   "Back": [
     "Bakåt"
@@ -419,20 +446,38 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    "Bond"
+  ],
+  "Bond details": [
+    "Bond detaljer"
+  ],
+  "Bond mode": [
+    "Bond läge"
+  ],
+  "Bond mode is required": [
+    "Bond läge krävs"
+  ],
+  "Bond options": [
+    "Bond alternativ"
+  ],
+  "Bond ports": [
+    "Bond portar"
+  ],
   "Boot options": [
     "Uppstartsalternativ"
   ],
   "Breadcrumbs": [
     "Brödsmulor"
   ],
+  "Bridge": [
+    "Brygga"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs med ögonblicksavbilder"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "Genom att fortsätta startar installationen med definierade inställningar."
   ],
   "CHAP authentication performed by the target": [
     "CHAP-autentisering utförd av målet"
@@ -464,6 +509,10 @@ export default {
   "Change Language": [
     "Ändra språk"
   ],
+  "Change desktop": [
+    "Ändra skrivbord",
+    "Ändra flera skrivbord"
+  ],
   "Change device menu": [
     "Ändra enhetsmeny"
   ],
@@ -485,14 +534,14 @@ export default {
   "Change mode": [
     "Ändra läge"
   ],
+  "Change patterns": [
+    "Ändra mönster"
+  ],
   "Change product": [
     "Ändra produkt"
   ],
   "Change product or mode": [
     "Ändra produkt eller läge"
-  ],
-  "Change selection": [
-    "Ändra val"
   ],
   "Change the device to configure": [
     "Ändra enhet som ska konfigureras"
@@ -646,6 +695,9 @@ export default {
   "Confirm the product selection.": [
     "Bekräfta produktval."
   ],
+  "Confirming starts the installation immediately with the defined settings.": [
+    "Att bekräfta startar installationen omedelbart med de angivna inställningarna."
+  ],
   "Connect": [
     "Anslut"
   ],
@@ -715,6 +767,9 @@ export default {
   "Create user": [
     "Skapa användare"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    "Utvalda uppsättningar av paket för vanliga användningsområden och funktioner för att utöka systemet."
+  ],
   "Current %1$s at %2$s": [
     "Nuvarande %1$s på %2$s"
   ],
@@ -754,9 +809,6 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    "DNS söklista"
-  ],
   "DNS search domains": [
     "DNS-sökdomäner"
   ],
@@ -769,6 +821,9 @@ export default {
   "Deactivated": [
     "Inaktiverad"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Standard filsystem för %s"
   ],
@@ -780,6 +835,9 @@ export default {
   ],
   "Default file system for generic partitions": [
     "Standardfilsystem för generiska partitioner"
+  ],
+  "Default selection": [
+    "Standard val"
   ],
   "Define a custom size": [
     "Definiera en anpassad storlek"
@@ -814,6 +872,12 @@ export default {
   "Description": [
     "Beskrivning"
   ],
+  "Desktop selection": [
+    "Val av skrivbord"
+  ],
+  "Desktops": [
+    "Skrivbord"
+  ],
   "Destroy current data and format device as": [
     "Förstör nuvarande data och formatera enheten som"
   ],
@@ -837,6 +901,9 @@ export default {
   ],
   "Device name": [
     "Enhetsnamn"
+  ],
+  "Device name is required": [
+    "Enhetsnamn krävs"
   ],
   "Discard": [
     "Kasta bort"
@@ -913,14 +980,17 @@ export default {
   "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
     "T.ex. 8.8.8.8 eller 2001:4860:4860::8888"
   ],
+  "E.g., bond0": [
+    "T.ex. bond0"
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    "T.ex. downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
+  ],
   "E.g., example.com": [
     "T.ex. exempel.com"
   ],
   "Edit": [
     "Redigera"
-  ],
-  "Edit binding": [
-    "Redigera bindning"
   ],
   "Edit binding settings": [
     "Redigera bindningsinställningar"
@@ -979,8 +1049,14 @@ export default {
   "Enter a name for the volume group.": [
     "Ange ett namn för volymgrupp."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Enter eller Tab för att lägga till; piltangenter för att navigera mellan poster, Ctrl+pilar för att ändra ordning, Escape för att avsluta; Backspace eller Delete för att ta bort."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -988,14 +1064,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Exempel: %s"
-  ],
   "Excellent signal": [
     "Utmärkt signal"
   ],
   "Expiration date": [
     "Utgångsdatum"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1041,8 +1117,8 @@ export default {
   "Filter by language, territory or locale code": [
     "Filtrera efter språk, territorium eller lokalkod"
   ],
-  "Filter by pattern title or description": [
-    "Filtrera efter mönstertitel eller beskrivning"
+  "Filter by name and description": [
+    "Filtrera efter namn och beskrivning"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Filtrera efter område, tidszonskod eller UTC-förskjutning"
@@ -1098,6 +1174,12 @@ export default {
   "Formatting devices": [
     "Formaterar enheter"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Heldiskkryptering (FDE) gör det möjligt att skydda informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
   ],
@@ -1116,11 +1198,26 @@ export default {
   "Go to network page": [
     "Gå till nätverkssidan"
   ],
+  "Go to network settings": [
+    "Gå till nätverksinställningar"
+  ],
+  "Go to registration": [
+    "Gå till registrering"
+  ],
   "Go to storage page": [
     "Gå till lagringssidan"
   ],
   "Good signal": [
     "Bra signal"
+  ],
+  "Graphical desktop environments for the system.": [
+    "Grafiska skrivbordsmiljöer för systemet."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Dölj"
@@ -1189,14 +1286,18 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Om ett lokalt media användes för att köra det här installationsprogrammet, ta bort det före nästa uppstart."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Om du är osäker, avbryt och granska lagringsinställningarna."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    "Om det inte är avsett, avbryt och välj ett skrivbord i [programvaru]-inställningarna."
   ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Om du är osäker, kontrollera och justera lagringsinställningarna."
+  "If unsure, cancel and review [storage] settings.": [
+    "Om du är osäker, avbryt och granska inställningarna för [lagring]."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Om du vill inaktivera den här kontrollen, ange \"inst.ay_check=0\" på kärnans kommandorad"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "Inkluderar %1$d ytterligt mönster. Kräver %2$s",
+    "Inkluderar %1$d ytterligare mönster. Kräver %2$s"
   ],
   "Initiator": [
     "Initiativtagare"
@@ -1369,14 +1470,14 @@ export default {
   "License acceptance required": [
     "Licensgodkännande krävs"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Laddar"
   ],
   "Loading data...": [
     "Laddar data..."
-  ],
-  "Loading the installation repositories...": [
-    "Laddar installationsförråd..."
   ],
   "Localization": [
     "Lokalisering"
@@ -1417,6 +1518,9 @@ export default {
   "Login form": [
     "Inloggningsformulär"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC": [
     "MAC"
   ],
@@ -1437,6 +1541,12 @@ export default {
   ],
   "Max channel": [
     "Maximal kanal"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "Medlemmar"
@@ -1542,9 +1652,6 @@ export default {
   "Name is required": [
     "Namn krävs"
   ],
-  "Needs about %s": [
-    "Behöver runt %s"
-  ],
   "Network": [
     "Nätverk"
   ],
@@ -1587,8 +1694,8 @@ export default {
   "No additional partitions will be created": [
     "Inga ytterligare partitioner kommer att skapas"
   ],
-  "No additional software was selected.": [
-    "Ingen ytterligare programvara valdes."
+  "No additional patterns available": [
+    "Inga ytterligare mönster tillgängliga"
   ],
   "No connections match filters": [
     "Inga anslutningar matchar filtren"
@@ -1601,6 +1708,12 @@ export default {
   ],
   "No data loss is expected": [
     "Ingen dataförlust förväntas"
+  ],
+  "No desktop selected": [
+    "Inget skrivbord valt"
+  ],
+  "No desktops available": [
+    "Inga skrivbordsmiljöer tillgängliga"
   ],
   "No device is currently using this connection.": [
     "Ingen enhet använder för närvarande den här anslutningen."
@@ -1640,6 +1753,12 @@ export default {
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Inga partitioner kommer att konfigureras automatiskt för uppstart. Använd med försiktighet."
+  ],
+  "No patterns match": [
+    "Inget av mönstren matchar"
+  ],
+  "No patterns match the filter": [
+    "Inget av mönstren matchar filtret"
   ],
   "No software RAID devices are available for selection.": [
     "Inga programvaru-RAID-enheter är tillgängliga för val."
@@ -1683,11 +1802,11 @@ export default {
   "None of the locales match the filter.": [
     "Inget av lokalerna matchar filtret."
   ],
-  "None of the patterns match the filter.": [
-    "Inget av mönstren matchar filtret."
-  ],
   "None of the time zones match the filter.": [
     "Inget av tidszonerna matchar filtret."
+  ],
+  "None selected": [
+    "Inget valt"
   ],
   "None set": [
     "Ingen inställd"
@@ -1715,6 +1834,9 @@ export default {
   ],
   "Not supported (%s)": [
     "Stöds inte (%s)"
+  ],
+  "Not used by this bridge": [
+    ""
   ],
   "Offline": [
     "Offline"
@@ -1803,6 +1925,9 @@ export default {
   "Passwords do not match": [
     "Lösenorden matchar inte"
   ],
+  "Patterns selection": [
+    "Mönster val"
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "Utför en identifiering för att hitta tillgängliga iSCSI-mål."
   ],
@@ -1827,6 +1952,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potentiell dataförlust som påverkar minst %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Att fortsätta kan leda till dataförlust"
   ],
@@ -1842,17 +1973,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Skydd för informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Tillhandahåll autentisering"
   ],
-  "Provide email address": [
-    "Ange en e-postadress"
-  ],
   "Provide its password to log in to the system.": [
     "Ange dess lösenord för att logga in på systemet."
-  ],
-  "Provide registration code": [
-    "Ange registreringskod"
   ],
   "Public SSH Key": [
     "Publik SSH nyckel"
@@ -1868,6 +1999,18 @@ export default {
   ],
   "RAID": [
     "RAID"
+  ],
+  "Read less": [
+    "Läs mindre"
+  ],
+  "Read less about %s": [
+    "Läs mindre om %s"
+  ],
+  "Read more": [
+    "Läs mer"
+  ],
+  "Read more about %s": [
+    "Läs mer om %s"
   ],
   "Read only": [
     "Läs endast"
@@ -1926,15 +2069,14 @@ export default {
   "Remove the configuration for this volume group": [
     "Ta bort konfigurationen för den här volymgruppen"
   ],
-  "Repository load failed": [
-    "Det gick inte att ladda förråd"
+  "Required space with current selection: [%s]": [
+    "Nödvändigt utrymme med aktuella val: [%s]"
   ],
-  "Required packages": [
-    "Obligatoriska paket"
+  "Required space: [%s]": [
+    "Nödvändigt utrymme: [%s]"
   ],
-  "Required packages and %s pattern": [
-    "Obligatoriskt paket och %s mönster",
-    "Obligatoriska paket och flera %s mönster"
+  "Requires %s": [
+    "Kräver: %s"
   ],
   "Rescan devices": [
     "Skanna om enheter"
@@ -1968,6 +2110,9 @@ export default {
   ],
   "Review and install": [
     "Granska och installera"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "Root-inloggning med SSH-nyckel"
@@ -2005,6 +2150,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "SUSE kundcenter (SCC)"
   ],
@@ -2022,6 +2170,12 @@ export default {
   ],
   "Select %s": [
     "Välj %s"
+  ],
+  "Select a desktop": [
+    "Välj en skrivbordsmiljö"
+  ],
+  "Select a desktop environment to get a graphical interface.": [
+    "Välj en skrivbordsmiljö för att få ett grafiskt gränssnitt."
   ],
   "Select a device": [
     "Välj en enhet"
@@ -2069,6 +2223,9 @@ export default {
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
     "Markera poster att redigera eller ta bort. Eller [ta bort alla ogiltiga poster.]"
   ],
+  "Select one or more to extend the system.": [
+    "Välj en eller flera för att utöka systemet."
+  ],
   "Select or enter a mount point": [
     "Välj eller ange en monteringspunkt"
   ],
@@ -2077,6 +2234,9 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "Välj eller ange en giltig monteringspunkt"
+  ],
+  "Select patterns": [
+    "Välj mönster"
   ],
   "Select the controllers to activate": [
     "Välj en styrenhet för att fortsätta"
@@ -2099,17 +2259,11 @@ export default {
   "Selected disk cannot be changed": [
     "Vald disk kan inte ändras"
   ],
-  "Selected patterns": [
-    "Valda mönster"
-  ],
   "Selected volume group cannot be changed": [
     "Vald volymgrupp kan inte ändras"
   ],
   "Server URL": [
     "Server URL"
-  ],
-  "Server options": [
-    "Server alternativ"
   ],
   "Set DIAG off": [
     "Sätt DIAGNOS av"
@@ -2175,6 +2329,9 @@ export default {
   "Software %s": [
     "Programvara %s"
   ],
+  "Software selection is not available": [
+    "Programvaruval är inte tillgängligt"
+  ],
   "Some DNS search domains are invalid": [
     "Vissa DNS-sökdomäner är ogiltiga"
   ],
@@ -2193,9 +2350,6 @@ export default {
   "Some existing partitions may be shrunk": [
     "Vissa befintliga partitioner kan krympas"
   ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Vissa installationsförråd kunde inte laddas. Utan dem kan systemet inte installeras."
-  ],
   "Some logical volumes may be deleted": [
     "Vissa logiska volymer kan komma att raderas"
   ],
@@ -2213,6 +2367,9 @@ export default {
   ],
   "Something went wrong": [
     "Något gick fel"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Börja konfigurera en grundläggande installation"
@@ -2281,6 +2438,9 @@ export default {
   ],
   "Temporary name that may change after reboot or network changes": [
     "Temporärt namn som kan ändras efter omstart eller nätverksändringar"
+  ],
+  "The 'primary' option is only valid for %s modes": [
+    "Det 'primära' alternativet är endast giltigt för %s lägen"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
@@ -2395,9 +2555,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Följande partitioner kommer att skapas eller monteras"
   ],
-  "The following software patterns are selected for installation:": [
-    "Följande programvarumönster är valda för installation:"
-  ],
   "The initiator name cannot be blank": [
     "Initiatornamnet kan inte vara tomt"
   ],
@@ -2435,9 +2592,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Produkten hittades inte i förrådet så det är inte möjligt att fortsätta med installationen."
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "Produkten kommer att registreras med \"%s\" värdnamn"
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Storleken för %1$s kommer att justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av ett separat filsystem för %2$s."
   ],
@@ -2474,6 +2628,9 @@ export default {
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "Storleken måste vara ett tal följt av en enhet av formen GiB (potens 2) eller GB (potens 10)."
   ],
+  "The software selection could not be loaded.": [
+    "Programvalet kunde inte laddas."
+  ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Lagringskonfigurationen är giltig (se resultat nedan) men använder element som inte stöds av detta gränssnitt."
   ],
@@ -2482,6 +2639,9 @@ export default {
   ],
   "The system is rebooting": [
     "Systemet startar om"
+  ],
+  "The system will boot to a command-line interface.": [
+    "Systemet kommer att starta till ett kommandoradsgränssnitt."
   ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
@@ -2536,11 +2696,20 @@ export default {
   "This license is not available in %s.": [
     "Den här licensen är inte tillgänglig i %s."
   ],
+  "This might be due to network connectivity.": [
+    "Detta kan bero på nätverksanslutningen."
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Detta mönster skapar en balans mellan tydlighet och effektivitet: modalvyn gör det lätt för enkla val, medan helvyn stöder djupare utforskning och mer komplexa åtgärder, särskilt för användare med massor av enheter."
   ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Denna produkten tillåter inte att välja programvarumönster under installationen. Du kan dock lägga till ytterligare programvara när installationen är klar."
+  "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
+    "Den här produkten tillåter inte val av programvara vid installationstillfället. Ytterligare programvara kan läggas till efter att installationen är klar."
+  ],
+  "This product does not provide additional patterns.": [
+    "Denna produkt tillhandahåller inga ytterligare mönster."
+  ],
+  "This product does not provide desktop environments.": [
+    "Den här produkten tillhandahåller inte skrivbordsmiljöer."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Detta utrymme inkluderar bassystemet och de valda programvarumönsterna, om några."
@@ -2566,11 +2735,11 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."
-  ],
-  "Try again": [
-    "Försök igen"
   ],
   "Try to activate again": [
     "Försök att aktivera igen"
@@ -2595,9 +2764,6 @@ export default {
   ],
   "Unknown error": [
     "Okänt fel"
-  ],
-  "Unselect": [
-    "Avmarkera"
   ],
   "Unselect or activate them and try it again.": [
     "Avmarkera eller aktivera dem och försök igen."
@@ -2755,9 +2921,6 @@ export default {
   "Use these same settings for the selected product": [
     "Använd samma inställningar för den valda produkten"
   ],
-  "Used space": [
-    "Använt utrymme"
-  ],
   "User name": [
     "Användarnamn"
   ],
@@ -2767,11 +2930,12 @@ export default {
   "Username suggestion dropdown": [
     "Rullgardinsmeny för användarnamnsförslag"
   ],
+  "Using %d additional pattern": [
+    "Använd %d ytterligt mönster",
+    "Använd %d ytterligare mönster"
+  ],
   "Using %d connections with %s": [
     "Använder %d anslutningar med %s"
-  ],
-  "Using [%s] keyboard": [
-    "Använder [%s] tangentbordslayout"
   ],
   "Using a hashed password.": [
     "Använder ett hashat lösenord."
@@ -2796,6 +2960,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "Använder transient värdnamn: %s"
+  ],
+  "VLAN": [
+    "VLAN"
   ],
   "View license": [
     "Visa licens"
@@ -2872,9 +3039,6 @@ export default {
   "You can safely close this window.": [
     "Du kan säkert stänga det här fönstret."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Du kan inte ändra den senare. Gå till avsnittet %s om du vill ändra den innan du fortsätter med registreringen."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Du kanske vill ignorera de nuvarande inställningarna och börja från början med en enkel konfiguration."
   ],
@@ -2901,9 +3065,6 @@ export default {
   ],
   "auto selected": [
     "automatiskt vald"
-  ],
-  "hostname": [
-    "värdnamn"
   ],
   "iBFT": [
     "iBFT"

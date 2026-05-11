@@ -77,6 +77,10 @@ translations:
       версии программ, без жёстких периодических циклов выпуска. Продукт
       ориентирован на пользователей, которым необходимо самое актуальное
       стабильное ПО.
+    sk: Verzia rolujúceho vydania openSUSE, ktorá obsahuje najnovšie „stabilné“
+      verzie všetkého softvéru namiesto toho, aby sa spoliehala na striktné
+      pravidelné cykly vydávania. Tento projekt je určený pre používateľov,
+      ktorí chcú najnovšiu stabilnú verziu softvéru.
     sv: En ren rullande släppversion av openSUSE som innehåller de senaste "stabila"
       versionerna av all programvara istället för att förlita sig på stela
       periodiska släppcykler. Projektet gör detta för användare som vill ha den

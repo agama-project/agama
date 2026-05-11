@@ -15,6 +15,12 @@ export default {
   "%1$d of %2$d devices match filters": [
     "ფილტრს ემთხვევა %1$d მოწყობილობა %2$d-დან"
   ],
+  "%1$d of %2$d patterns": [
+    "%1$d ნიმუში %2$d-დან"
+  ],
+  "%1$d of %2$d selected": [
+    "არჩეულია %1$d %2$d-დან"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -39,7 +45,7 @@ export default {
     "%1$s შეიქმნება დანაყოფების სახით %2$s-ზე"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    ""
+    "%1$s, მხოლოდ, შეიცავს LVM ჯგუფს '%2$s' და ყველა დანაყოფს, რომელიც ჩატვირთვისთვისაა საჭირო"
   ],
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s და [კიდევ %3$d]",
@@ -47,6 +53,10 @@ export default {
   ],
   "%d connections available": [
     "ხელმისაწვდომია %d კავშირი"
+  ],
+  "%d desktop selected": [
+    "არჩეულია %d სამუშაო გარემო",
+    "არჩეულია %d სამუშაო გარემო"
   ],
   "%d devices available": [
     "ხელმისაწვდომია %d მოწყობილობა"
@@ -69,6 +79,10 @@ export default {
   "%d invalid entries removed.": [
     "%d არასწორი ჩანაწერი წაიშალა."
   ],
+  "%d matches the filter": [
+    "ფილტრს ემთხვევა %d ნიმუში",
+    "ფილტრს ემთხვევა %d ნიმუში"
+  ],
   "%d mode available": [
     "ხელმისაწვდომია %d რეჟიმი",
     "ხელმისაწვდომია %d რეჟიმი"
@@ -77,11 +91,15 @@ export default {
     "ხელმისაწვდომია კიდევ %d რეჟიმი",
     "ხელმისაწვდომია კიდევ %d რეჟიმი"
   ],
+  "%d pattern found": [
+    "აღმოჩენილია %d ნიმუში",
+    "აღმოჩენილია %d ნიმუში"
+  ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s added but is invalid: %s. Select to edit.": [
-    ""
+    "%s დაემატა, მაგრამ არასწორია: %s. აირჩიეთ ჩასასწორებლად."
   ],
   "%s added.": [
     "%s დამატებულია."
@@ -132,7 +150,7 @@ export default {
     "%s შეიქმნება, როგორც დანაყოფი"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    ""
+    "%s მაინც შეიცავს მორგებულ LVM ჯგუფებს და დანაყოფს, რომელიც საჭიროა ჩასატვირთად"
   ],
   "%s with %d partitions": [
     "%s %d დანაყოფით"
@@ -267,6 +285,9 @@ export default {
   "Additional CHAP authentication performed by the initiator": [
     "ინიციატორის მიერ შესრულებული დამატებითი CHAP ავთენტიკაცია"
   ],
+  "Additional patterns": [
+    "დამატებით ნიმუშები"
+  ],
   "Address": [
     "მისამართი"
   ],
@@ -347,6 +368,9 @@ export default {
   "At least one IPv6 address is required": [
     "აუცილებელია, სულ ცოტა, ერთი IPv6 მისამართი"
   ],
+  "At least one bond port is required": [
+    "საჭიროა, სულ ცოტა, ერთი დაწყვილების პორტი"
+  ],
   "At least one logical volume will be deleted": [
     "წაიშლება, სულ ცოტა, ერთი ლოგიკური ტომი"
   ],
@@ -376,6 +400,9 @@ export default {
   ],
   "Automatic LUN scan is enabled": [
     "LUN-ის ავტომატური სკანირება ჩართულია"
+  ],
+  "Available devices: %s": [
+    "ხელმისაწვდომი მოწყობილობები: %s"
   ],
   "Back": [
     "უკან"
@@ -419,20 +446,38 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    "დაწყვილება"
+  ],
+  "Bond details": [
+    "დაწყვილების დეტალები"
+  ],
+  "Bond mode": [
+    "დაწყვილების რეჟიმი"
+  ],
+  "Bond mode is required": [
+    "მოწყობილობის რეჟიმი აუცილებელია"
+  ],
+  "Bond options": [
+    "დაწყვილების პარამეტრები"
+  ],
+  "Bond ports": [
+    "დაწყვილების პორტები"
+  ],
   "Boot options": [
     "ჩატვირთვის პარამეტრები"
   ],
   "Breadcrumbs": [
     "ნავიგაციის პანელი"
   ],
+  "Bridge": [
+    "ხიდი"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs სწრაფი ასლებით"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "თუ გააგრძელებთ, დაყენება აღწერილი პარამეტრებით დაიწყება."
   ],
   "CHAP authentication performed by the target": [
     "სამიზნის მიერ შესრულებული CHAP ავთენტიკაცია"
@@ -464,6 +509,10 @@ export default {
   "Change Language": [
     "ენის შეცვლა"
   ],
+  "Change desktop": [
+    "სამუშაო გარემოს შეცვლა",
+    "სამუშაო გარემოების შეცვლა"
+  ],
   "Change device menu": [
     "მოწყობილობის მენიუს შეცვლა"
   ],
@@ -485,14 +534,14 @@ export default {
   "Change mode": [
     "რეჟიმის შეცვლა"
   ],
+  "Change patterns": [
+    "ნიმუშების შეცვლა"
+  ],
   "Change product": [
     "პროდუქტის შეცვლა"
   ],
   "Change product or mode": [
     "პროდუქტის, ან რეჟიმის შეცვლა"
-  ],
-  "Change selection": [
-    "მონიშნულის შეცვლა"
   ],
   "Change the device to configure": [
     "შეცვალეთ დისკი მოსარგებად"
@@ -577,7 +626,7 @@ export default {
     "დახურვა"
   ],
   "Configuration from the network plus static addresses and gateway": [
-    ""
+    "კონფიგურაცია ქსელიდან, პლუს სტატიკური მისამართები და ნაგულისხმევი რაუტერი"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "iSCSI-დან ჩამტვირთავი მიკროკოდიდან (iBFT) წაკითხული კონფიგურაცია. ინიციატორის შეცვლა შეუძლებელია."
@@ -645,6 +694,9 @@ export default {
   ],
   "Confirm the product selection.": [
     "პროდუქტის არჩევნის დადასტურება."
+  ],
+  "Confirming starts the installation immediately with the defined settings.": [
+    "დადასტურება დაუყოვნებლივ დაიწყებს დაყენებას მოწოდებული პარამეტრებით."
   ],
   "Connect": [
     "დაკავშირება"
@@ -715,6 +767,9 @@ export default {
   "Create user": [
     "მომხმარებლის შექმნა"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "მიმდინარე %1$s მოწყობილობაზე %2$s"
   ],
@@ -754,9 +809,6 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    "DNS ძებნის სია"
-  ],
   "DNS search domains": [
     "DNS-ში ძებნის დომენები"
   ],
@@ -769,6 +821,9 @@ export default {
   "Deactivated": [
     "დეაქტივირებულია"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "ნაგულისხმევი ფაილური სისტემა %s-სთვის"
   ],
@@ -780,6 +835,9 @@ export default {
   ],
   "Default file system for generic partitions": [
     "ნაგულისხმევი ფაილური სისტემა ზოგადი დანაყოფებისთვის"
+  ],
+  "Default selection": [
+    "ნაგულისხმევი არჩევანი"
   ],
   "Define a custom size": [
     "აღერეთ თქვენი ზომა"
@@ -814,6 +872,12 @@ export default {
   "Description": [
     "აღწერა"
   ],
+  "Desktop selection": [
+    "სამუშაო გარემოს არჩევანი"
+  ],
+  "Desktops": [
+    "სამუშაო გარემოები"
+  ],
   "Destroy current data and format device as": [
     "არსებული მონაცემების განადგურება და დანაყოფის დაფორმატება, როგორც"
   ],
@@ -837,6 +901,9 @@ export default {
   ],
   "Device name": [
     "მოწყობილობის სახელი"
+  ],
+  "Device name is required": [
+    "მოწყობილობის სახელი აუცილებელია"
   ],
   "Discard": [
     "მოცილება"
@@ -902,25 +969,28 @@ export default {
     "მაგ: 192.168.1.1"
   ],
   "E.g., 192.168.1.1 or 192.168.1.1/24. Prefix auto-added if omitted.": [
-    ""
+    "მაგ: 192.168.1.1, ან 192.168.1.1/24. თუ არ მიუთითებთ, პრეფიქსია ვტომატურად დაემატება."
   ],
   "E.g., 2001:db8::1": [
     "მაგ: 2001:db8::1"
   ],
   "E.g., 2001:db8::1 or 2001:db8::1/64. Prefix auto-added if omitted.": [
-    ""
+    "მაგ: 2001:db8::1, ან 2001:db8::1/64. თუ მითითებული არაა, პრეფიქსი ავტომატურად დაემატება."
   ],
   "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
     "მაგ: 8.8.8.8 ან 2001:4860:4860::8888"
+  ],
+  "E.g., bond0": [
+    "მაგ: bond0"
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    "მაგ: downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
   ],
   "E.g., example.com": [
     "მაგ: example.com"
   ],
   "Edit": [
     "ჩასწორება"
-  ],
-  "Edit binding": [
-    "მიბმის ჩასწორება"
   ],
   "Edit binding settings": [
     "მიბმის პარამეტრების ჩასწორება"
@@ -979,7 +1049,13 @@ export default {
   "Enter a name for the volume group.": [
     "შეიყვანეთ სახელი ტომების ჯგუფისთვის."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     ""
   ],
   "Ethernet": [
@@ -988,14 +1064,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "მაგ: %s"
-  ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
   ],
   "Expiration date": [
     "ვადა"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1041,8 +1117,8 @@ export default {
   "Filter by language, territory or locale code": [
     "ფილტრი ენით, ტერიტორიით, ან ლოკალის კოდით"
   ],
-  "Filter by pattern title or description": [
-    "გაფილტვრა ნიმუშის სახელით ან აღწერით"
+  "Filter by name and description": [
+    "გაფილტვრა სახელით და აღწერით"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "გაფილტვრა ტერიტორიით, დროის სარტყლით, ან UTC წანაცვლებით"
@@ -1098,6 +1174,12 @@ export default {
   "Formatting devices": [
     "მოწყობილობების დაფორმატება"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     ""
   ],
@@ -1116,11 +1198,26 @@ export default {
   "Go to network page": [
     "ქსელის გვერდზე გადასვლა"
   ],
+  "Go to network settings": [
+    "ქსელის მორგების გვერდზე გადასვლა"
+  ],
+  "Go to registration": [
+    "რეგისტრაციაზე გადასვლა"
+  ],
   "Go to storage page": [
     "საცავის გვერდზე გადასვლა"
   ],
   "Good signal": [
     "კარგი სიგნალი"
+  ],
+  "Graphical desktop environments for the system.": [
+    "გრაფიკული სამუშაო გარემოები სისტემისთვის."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "დამალვა"
@@ -1181,7 +1278,7 @@ export default {
     "IPv6 ნაგულისხმევი რაუტერი აუცილებელია"
   ],
   "Identify the connection device by its name in the system": [
-    ""
+    "კავშირის იდენტიფიკაცია სისტემაში მისი სახელით"
   ],
   "Identify the connection device by its physical address": [
     "კავშირის მოწყობილობის იდენტიფიკაცია მისი ფიზიკური მისამართით"
@@ -1189,14 +1286,18 @@ export default {
   "If a local media was used to run this installer, remove it before the next boot.": [
     ""
   ],
-  "If unsure, cancel and review storage settings.": [
-    "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ ეს და გადახედეთ საცავის პარამეტრებს."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "თუ დარწმუნებული არ ბრძანებით, შეამოწმეთ და გაასწორეთ საცავის პარამეტრები."
+  "If unsure, cancel and review [storage] settings.": [
+    "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ და გადახედეთ [საცავის] პარამეტრებს."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "თუ გნებავთ, გამორთოთ ეს შემოწმება, მიუთითეთ ბირთვის ბრძანების სტრიქონში \"inst_ay_check=0\""
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "შეიცავს %1$d დამატებით ნიმუშს. სჭირდება %2$s",
+    "შეიცავს %1$d დამატებით ნიმუშს. სჭირდება %2$s"
   ],
   "Initiator": [
     "ინიციატორი"
@@ -1369,20 +1470,20 @@ export default {
   "License acceptance required": [
     "აუცილებელია ლიცენზიაზე დათანხმება"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "იტვირთება"
   ],
   "Loading data...": [
     "მონაცემების ჩატვირთვა..."
   ],
-  "Loading the installation repositories...": [
-    "დაყენების რეპოზიტორიების ჩატვირთვა..."
-  ],
   "Localization": [
     "ლოკალიზაცია"
   ],
   "Locked targets cannot be managed from here and do not offer any actions.": [
-    ""
+    "ჩაკეტილი სამიზნეების მართვა აქედან შეუძლებელია და ჩვენ ამის ქმედებებს არ გთავაზობთ."
   ],
   "Log in": [
     "შესვლა"
@@ -1417,6 +1518,9 @@ export default {
   "Login form": [
     "შესვლის ფორმა"
   ],
+  "Loopback": [
+    "მარყუჟი"
+  ],
   "MAC": [
     "MAC"
   ],
@@ -1437,6 +1541,12 @@ export default {
   ],
   "Max channel": [
     "მაქს. არხი"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "წევრები"
@@ -1542,9 +1652,6 @@ export default {
   "Name is required": [
     "სახელი აუცილებელია"
   ],
-  "Needs about %s": [
-    "საჭიროა დაახლ %s"
-  ],
   "Network": [
     "ქსელი"
   ],
@@ -1587,8 +1694,8 @@ export default {
   "No additional partitions will be created": [
     "დამატებითი დანაყოფები არ შეიქმნება"
   ],
-  "No additional software was selected.": [
-    "დამატებითი პროგრამები არ არჩეულა."
+  "No additional patterns available": [
+    "დამატებით ნიმუშები ხელმისაწვდომი არაა"
   ],
   "No connections match filters": [
     "ფილტრს კავშირი არ ემთხვევა"
@@ -1601,6 +1708,12 @@ export default {
   ],
   "No data loss is expected": [
     "მონაცემთა კარგვა მოსალოდნელი არაა"
+  ],
+  "No desktop selected": [
+    "სამუშაო გარემო დაყენებული არაა"
+  ],
+  "No desktops available": [
+    "სამუშაო გარემოები ხელმისაწვდომი არაა"
   ],
   "No device is currently using this connection.": [
     "ამ კავშირს, ამჟამად, არც ერთი მოწყობილობა იყენებს."
@@ -1640,6 +1753,12 @@ export default {
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "ჩასატვირთად დანაყოფების ავტომატური მორგება არ მოხდება. ფრთხილად გამოიყენეთ."
+  ],
+  "No patterns match": [
+    "ემთხვევა არცერთი ნიმუში"
+  ],
+  "No patterns match the filter": [
+    "ფილტრს ნიმუში არ ემთხვევა"
   ],
   "No software RAID devices are available for selection.": [
     "მოსანიშნად პროგრამული RAID მოწყობილობები ხელმისაწვდომი არაა."
@@ -1683,11 +1802,11 @@ export default {
   "None of the locales match the filter.": [
     "ლოკალების რაოდენობა, რომელიც ფილტრს ემთხვევა."
   ],
-  "None of the patterns match the filter.": [
-    "ფილტრს შაბლონებიდან არც ერთი ემთხვევა."
-  ],
   "None of the time zones match the filter.": [
     "ფილტრს დროის სარტყლებიდან არცერთი ემთხვევა."
+  ],
+  "None selected": [
+    "არჩეული არაფერია"
   ],
   "None set": [
     "დაყენებული არაა"
@@ -1715,6 +1834,9 @@ export default {
   ],
   "Not supported (%s)": [
     "მხარდაჭერილი არაა (%s)"
+  ],
+  "Not used by this bridge": [
+    ""
   ],
   "Offline": [
     "გათიშულია"
@@ -1803,6 +1925,9 @@ export default {
   "Passwords do not match": [
     "პაროლები არ ემთხვევა"
   ],
+  "Patterns selection": [
+    "ნიმუშების არჩევანი"
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "განახორციელეთ აღმოჩენა, რომ იპოვოთ ხელმისაწვდომი iSCSI სამიზნეები."
   ],
@@ -1827,6 +1952,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "პოტენციური მონაცემთა კარგვა, რომელიც, მინიმუმ, ეხება სისტემას %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "გაგრძელებამ, შეიძლება, მონაცემთა კარგვა გამოიწვიოს"
   ],
@@ -1842,17 +1973,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     ""
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "ავთენტიკაციის მიწოდება"
   ],
-  "Provide email address": [
-    "შეიყვანეთ ელფოსტის მისამართი"
-  ],
   "Provide its password to log in to the system.": [
     "შეიყვანეთ მისი პაროლი სისტემაში შესასვლელად."
-  ],
-  "Provide registration code": [
-    "შეიყვანეთ რეგისტრაციის კოდი"
   ],
   "Public SSH Key": [
     "საჯარო SSH გასაღები"
@@ -1868,6 +1999,18 @@ export default {
   ],
   "RAID": [
     "RAID"
+  ],
+  "Read less": [
+    "ნაკლების წაკითხვა"
+  ],
+  "Read less about %s": [
+    "ნაკლების წაკითხვა %s-ის შესახებ"
+  ],
+  "Read more": [
+    "მეტის წაკითხვა"
+  ],
+  "Read more about %s": [
+    "მეტის წაკითხვა %s-ის შესახებ"
   ],
   "Read only": [
     "მხოლოდ-წაკითხვადი"
@@ -1926,15 +2069,14 @@ export default {
   "Remove the configuration for this volume group": [
     "ამ ტომების ჯგუფის კონფიგურაციის წაშლა"
   ],
-  "Repository load failed": [
-    "რეპოზიტორიის ჩატვირთვა ჩავარდა"
+  "Required space with current selection: [%s]": [
+    "საჭირო ადგილი მიმდინარე არჩევნით: [%s]"
   ],
-  "Required packages": [
-    "აუცილებელი პაკეტები"
+  "Required space: [%s]": [
+    "საჭირო ადგილი: [%s]"
   ],
-  "Required packages and %s pattern": [
-    "აუცილებელი პაკეტები და %s ნიმუში",
-    "აუცილებელი პაკეტები და %s ნიმუში"
+  "Requires %s": [
+    "სჭირდება %s"
   ],
   "Rescan devices": [
     "მოწყობილობების თავიდან სკანირება"
@@ -1968,6 +2110,9 @@ export default {
   ],
   "Review and install": [
     "გადახედვა და დაყენება"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "Root-ის შესვლა SSH გასაღებით"
@@ -2005,6 +2150,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
@@ -2022,6 +2170,12 @@ export default {
   ],
   "Select %s": [
     "%s-ის არჩევა"
+  ],
+  "Select a desktop": [
+    "სამუშაო გარემოს არჩევა"
+  ],
+  "Select a desktop environment to get a graphical interface.": [
+    "გრაფიკული ინტერფეისის მისაღებად აირჩიეთ სამუშაო გარემო."
   ],
   "Select a device": [
     "აირჩიეთ მოწყობილობა"
@@ -2067,7 +2221,10 @@ export default {
     "აირჩიეთ მოწყობილობები ერთზე მეტი ქმედებისთვის"
   ],
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
-    ""
+    "აირჩიეთ ჩასასწორებელი, ან წასაშლელი ჩანაწერები, ან [ყველა არასწორი ჩანაწერის წაშლა]"
+  ],
+  "Select one or more to extend the system.": [
+    "აირჩიეთ ერთი, ან მეტი სისტემის გასაფართოებლად."
   ],
   "Select or enter a mount point": [
     "აირჩიეთ, ან შეიყვანეთ მიმაგრების წერტილი"
@@ -2077,6 +2234,9 @@ export default {
   ],
   "Select or enter a valid mount point": [
     "აირჩიეთ, ან შეიყვანეთ სწორი მიმაგრების წერტილი"
+  ],
+  "Select patterns": [
+    "ნიმუშების არჩევა"
   ],
   "Select the controllers to activate": [
     "აირჩიეთ გასააქტიურებელი კონტროლერები"
@@ -2099,17 +2259,11 @@ export default {
   "Selected disk cannot be changed": [
     "არჩეული დისკის შეცვლა შეუძლებელია"
   ],
-  "Selected patterns": [
-    "მონიშნული ნიმუშები"
-  ],
   "Selected volume group cannot be changed": [
     "არჩეული ტომების ჯგუფის შეცვლა შეუძლებელია"
   ],
   "Server URL": [
     "სერვერის URL"
-  ],
-  "Server options": [
-    "სერვერის პარამეტრები"
   ],
   "Set DIAG off": [
     "DIAG-ის გამორთვა"
@@ -2175,6 +2329,9 @@ export default {
   "Software %s": [
     "პროგრამული %s"
   ],
+  "Software selection is not available": [
+    "პროგრამების არჩევანი ხელმისაწვდომი არაა"
+  ],
   "Some DNS search domains are invalid": [
     "ზოგიერთი DNS-ში ძებნის დომენი არასწორია"
   ],
@@ -2193,9 +2350,6 @@ export default {
   "Some existing partitions may be shrunk": [
     "ზოგიერთი არსებული დანაყოფი, შეიძლება, დაპატარავდეს"
   ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    ""
-  ],
   "Some logical volumes may be deleted": [
     "შეიძლება წაიშალოს რამდენიმე ლოგიკური ტომი"
   ],
@@ -2213,6 +2367,9 @@ export default {
   ],
   "Something went wrong": [
     "რაღაც არასწორია"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "საბაზისო დაყენების მორგების დაწყება"
@@ -2281,6 +2438,9 @@ export default {
   ],
   "Temporary name that may change after reboot or network changes": [
     "დროებითი სახელი, რომელიც შეიძლება, შეიცვალოს გადატვირთვის, ან ქსელის ცვლილების შემდეგ"
+  ],
+  "The 'primary' option is only valid for %s modes": [
+    "პარამეტრი 'primary', მხოლოდ, %s რეჟიმებისთვისაა"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM ჯგუფი '%1$s' დარჩება დისკზე '%2$s'"
@@ -2395,9 +2555,6 @@ export default {
   "The following partitions will be created or mounted": [
     "შემდეგი დანაყოფები შეიქმნება, ან მიმაგრდება"
   ],
-  "The following software patterns are selected for installation:": [
-    "დაყენებისთვის არჩეულია შემდეგი პროგრამის შაბლონები:"
-  ],
   "The initiator name cannot be blank": [
     "ინიციატორის სახელი არ შეიძლება, ცარიელი იყოს"
   ],
@@ -2435,9 +2592,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     ""
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "პროდუქტი დარეგისტრირდება ჰოსტის სახელით \"%s\""
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     ""
   ],
@@ -2474,6 +2628,9 @@ export default {
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     ""
   ],
+  "The software selection could not be loaded.": [
+    "პროგრამების არჩევნის ჩატვირთვა შეუძლებელია."
+  ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     ""
   ],
@@ -2482,6 +2639,9 @@ export default {
   ],
   "The system is rebooting": [
     "მიმდინარეობს სისტემის გადატვირთვა"
+  ],
+  "The system will boot to a command-line interface.": [
+    "სისტემა ბრძანების სტრიქონის ინტერფეისში ჩაიტვირთება."
   ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
@@ -2536,11 +2696,20 @@ export default {
   "This license is not available in %s.": [
     "ეს ლიცენზია %s-ში ხელმისაწვდომი არაა."
   ],
+  "This might be due to network connectivity.": [
+    "ეს, შეიძლება, ქსელის კავშირის გამო ხდებოდეს."
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     ""
   ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
+  "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
     ""
+  ],
+  "This product does not provide additional patterns.": [
+    "ეს პროდუქტი სამუშაო დამატებით ნიმუშებს."
+  ],
+  "This product does not provide desktop environments.": [
+    "ეს პროდუქტი სამუშაო გარემოებს არ მოგაწვდით."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "ეს სივრცე შეიცავს საბაზისო სისტემას და არჩეულ პროგრამის ნიმუშებს, თუ არსებობს."
@@ -2566,11 +2735,11 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
-  "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
+  "To change it, visit the [hostname] section before registering.": [
     ""
   ],
-  "Try again": [
-    "თავიდან სცადეთ"
+  "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
+    ""
   ],
   "Try to activate again": [
     "გააქტიურების თავიდან ცდა"
@@ -2595,9 +2764,6 @@ export default {
   ],
   "Unknown error": [
     "უცნობი შეცდომა"
-  ],
-  "Unselect": [
-    "მონიშვნის მოხსნა"
   ],
   "Unselect or activate them and try it again.": [
     "მოხსენით მონიშვნა, ან გაააქტიურეთ ისინი და თავიდან სცადეთ."
@@ -2750,13 +2916,10 @@ export default {
     "დისკის გამოყენება დანაყოფების გარეშე"
   ],
   "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
-    ""
+    "გამოიყენეთ ჩანართები დისკების, RAID მოწყობილობების და LVM ტომის ჯგუფების იდენტიფიკაციისთვის."
   ],
   "Use these same settings for the selected product": [
     "იგივე პარამეტრების გამოყენება მონიშნული პროდუქტისთვის"
-  ],
-  "Used space": [
-    "გამოყენებული ადგილი"
   ],
   "User name": [
     "მომხმარებლის სახელი"
@@ -2767,11 +2930,12 @@ export default {
   "Username suggestion dropdown": [
     "მომხმარებლის სახელის მინიშნების ჩამოსაშლელი მენიუ"
   ],
+  "Using %d additional pattern": [
+    "გამოიყენება %d დამატებითი ნიმუში",
+    "გამოიყენება %d დამატებითი ნიმუში"
+  ],
   "Using %d connections with %s": [
     "გამოიყენება %d კავშირი %s-ით"
-  ],
-  "Using [%s] keyboard": [
-    "გამოიყენება [%s] კლავიატურა"
   ],
   "Using a hashed password.": [
     "დაჰეშილი პაროლის გამოყენება."
@@ -2796,6 +2960,9 @@ export default {
   ],
   "Using transient hostname: %s": [
     "გამოიყენება გარდამავლი ჰოსტის სახელი: %s"
+  ],
+  "VLAN": [
+    "VLAN"
   ],
   "View license": [
     "ლიცენზიის ნახვა"
@@ -2872,9 +3039,6 @@ export default {
   "You can safely close this window.": [
     "ეს ფანჯარა შეგიძლიათ, უსაფრთხოდ დახუროთ."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    ""
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     ""
   ],
@@ -2901,9 +3065,6 @@ export default {
   ],
   "auto selected": [
     "ავტომატურად არჩეული"
-  ],
-  "hostname": [
-    "ჰოსტის სახელი"
   ],
   "iBFT": [
     "iBFT"

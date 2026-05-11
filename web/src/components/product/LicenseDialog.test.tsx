@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen, waitFor } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockL10n, loadTranslations } from "~/test-utils";
 import { useSystem } from "~/hooks/model/system";
 import { Product } from "~/model/system";
 import * as api from "~/api";
@@ -72,14 +72,11 @@ jest.mock("~/hooks/model/system", () => ({
   }),
 }));
 
-jest.mock("~/context/installerL10n", () => ({
-  ...jest.requireActual("~/context/installerL10n"),
-  useInstallerL10n: () => ({ language: mockUILanguage }),
-}));
-
 describe("LicenseDialog", () => {
   mockLicenseLanguage = mockUILanguage;
-  beforeEach(() => {
+  beforeEach(async () => {
+    await loadTranslations(mockUILanguage);
+    mockL10n({ language: mockUILanguage });
     mockGetLicense = jest.spyOn(api, "getLicense").mockImplementation(
       jest.fn().mockImplementation(async () => ({
         body: "El contenido de la licencia",
@@ -89,7 +86,7 @@ describe("LicenseDialog", () => {
   });
 
   it("loads given product license in the interface language", async () => {
-    installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
+    installerRender(<LicenseDialog product={product} onClose={onCloseFn} />);
     await waitFor(() => {
       expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
       screen.getByText("El contenido de la licencia");
@@ -102,7 +99,7 @@ describe("LicenseDialog", () => {
     });
 
     it("it warns the user that the license is not translated", async () => {
-      installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, { withL10n: true });
+      installerRender(<LicenseDialog product={product} onClose={onCloseFn} />);
       await waitFor(() => {
         expect(mockGetLicense).toHaveBeenCalledWith(sle.license, mockUILanguage);
         screen.getByText("El contenido de la licencia");
@@ -112,9 +109,7 @@ describe("LicenseDialog", () => {
   });
 
   it("triggers given callback on Close click", async () => {
-    const { user } = installerRender(<LicenseDialog product={product} onClose={onCloseFn} />, {
-      withL10n: true,
-    });
+    const { user } = installerRender(<LicenseDialog product={product} onClose={onCloseFn} />);
     const closeButton = await screen.findByRole("button", { name: "Schließen" });
     await user.click(closeButton);
     expect(onCloseFn).toHaveBeenCalled();
