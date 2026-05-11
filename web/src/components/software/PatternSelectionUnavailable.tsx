@@ -35,6 +35,14 @@ import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { REGISTRATION, NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
 
+/**
+ * Software issues indicating the product is unavailable.
+ *
+ * These issues signal that the product cannot be found, either because
+ * registration is required but missing, or because product detection failed.
+ */
+export const PRODUCT_AVAILABILITY_ISSUES = ["missing_registration", "missing_product"];
+
 const EmptyStateIcon = () => <Icon name="apps_outage" />;
 
 type UnavailableStateProps = {
@@ -95,7 +103,7 @@ const UnavailableState = ({
  *     installation
  */
 export default function PatternSelectionUnavailable() {
-  const issues = useIssues("product");
+  const issues = useIssues("software");
   const { all: patterns } = useAvailablePatterns();
 
   const missingRegistration = issues.find((i) => i.class === "missing_registration");
