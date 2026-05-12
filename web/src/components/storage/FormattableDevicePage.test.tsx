@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
 import type { Storage } from "~/model/system";
@@ -105,9 +105,11 @@ describe("FormattableDevicePage", () => {
 
     await user.type(mountPoint, "/home");
     await user.tab();
-    // Valid mount point selected, enable file system field
-    expect(filesystem).toBeEnabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    // Valid mount point selected, enable file system field (deferred onChange)
+    await waitFor(() => {
+      expect(filesystem).toBeEnabled();
+      expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    });
     // Display available file systems
     await user.click(filesystem);
     screen.getByRole("listbox", { name: "Available file systems" });
@@ -123,17 +125,23 @@ describe("FormattableDevicePage", () => {
 
     await user.type(mountPoint, "/home");
     await user.tab();
-    expect(mountPoint).toHaveValue("/home");
-    expect(filesystem).toBeEnabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    // Wait for deferred onChange to update parent state
+    await waitFor(() => {
+      expect(mountPoint).toHaveValue("/home");
+      expect(filesystem).toBeEnabled();
+      expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    });
 
     await user.click(mountPoint);
     await user.clear(mountPoint);
     await user.tab();
-    expect(mountPoint).toHaveValue("");
-    // File system field is disabled until a valid mount point selected
-    expect(filesystem).toBeDisabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
+    // Wait for deferred onChange to update parent state
+    await waitFor(() => {
+      expect(mountPoint).toHaveValue("");
+      // File system field is disabled until a valid mount point selected
+      expect(filesystem).toBeDisabled();
+      expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
+    });
   });
 
   describe("if the device has already a filesystem config", () => {

@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import PartitionPage from "./PartitionPage";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -172,10 +172,12 @@ describe("PartitionPage", () => {
 
     await user.type(mountPoint, "/home");
     await user.tab();
+    // Wait for deferred onChange to update parent state
+    await waitFor(() => {
+      expect(filesystem).toBeEnabled();
+      expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    });
     const size = screen.getByRole("button", { name: "Size mode" });
-    // Valid mount point selected, enable file system and size fields
-    expect(filesystem).toBeEnabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
     expect(size).toBeEnabled();
     // Display mount point options
     await user.click(mountPointMode);
@@ -204,17 +206,23 @@ describe("PartitionPage", () => {
     expect(size).toBeDisabled();
     await user.type(mountPoint, "/home");
     await user.tab();
-    expect(mountPoint).toHaveValue("/home");
-    expect(filesystem).toBeEnabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    // Wait for deferred onChange to update parent state
+    await waitFor(() => {
+      expect(mountPoint).toHaveValue("/home");
+      expect(filesystem).toBeEnabled();
+      expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
+    });
     size = screen.getByRole("button", { name: "Size mode" });
     expect(size).toBeEnabled();
     await user.clear(mountPoint);
     await user.tab();
-    expect(mountPoint).toHaveValue("");
-    // File system and size fields disabled until valid mount point selected
-    expect(filesystem).toBeDisabled();
-    expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
+    // Wait for deferred onChange to update parent state
+    await waitFor(() => {
+      expect(mountPoint).toHaveValue("");
+      // File system and size fields disabled until valid mount point selected
+      expect(filesystem).toBeDisabled();
+      expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
+    });
     size = screen.getByRole("button", { name: "Size mode" });
     expect(size).toBeDisabled();
   });
