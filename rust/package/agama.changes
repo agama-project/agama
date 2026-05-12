@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 12 10:17:19 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add new popup when package installation failed if user wants
+  to retry it. (gh#agama-project/agama#3484)
+
+-------------------------------------------------------------------
 Fri May  8 12:36:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Move product availability issues to software scope
