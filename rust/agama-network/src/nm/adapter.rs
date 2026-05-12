@@ -75,7 +75,7 @@ impl<'a> NetworkManagerAdapter<'a> {
         }
 
         tracing::info!("Activating connection {}", &conn.id);
-        Ok(self.client.activate_connection(path).await?)
+        self.client.activate_connection(path).await
     }
 }
 
@@ -175,7 +175,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
             let is_removed = conn.is_removed() || ctrl.is_some_and(|c| c.is_removed());
 
             if let Some(old_conn) = old_state.get_connection_by_uuid(conn.uuid) {
-                if old_conn == conn {
+                if old_conn == conn && !is_removed {
                     tracing::info!(
                         "No change detected for connection {} ({})",
                         conn.id,
@@ -214,6 +214,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
 
                 if conn.is_up() {
                     if let Ok(path) = self.activate_connection(conn, path).await {
+                        tracing::info!("Activating connection {} with path {}", &conn.id, &path);
                         active_paths.push(path)
                     }
                 } else if conn.is_down() || conn.is_removed() {
@@ -237,7 +238,12 @@ impl Adapter for NetworkManagerAdapter<'_> {
                     let path = &active_paths[i];
                     match self.client.active_connection_state(path).await {
                         // Finished if state is ACTIVATED or DEACTIVATED
-                        Ok(ConnectionState::Activated | ConnectionState::Deactivated) => {
+                        Ok(ConnectionState::Activated) => {
+                            tracing::info!("The connection for {} was activated", &path);
+                            active_paths.remove(i);
+                        }
+                        Ok(ConnectionState::Deactivated) => {
+                            tracing::info!("The connection for {} was deactivated", &path);
                             active_paths.remove(i);
                         }
                         Ok(_) => {

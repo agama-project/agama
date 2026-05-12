@@ -258,6 +258,38 @@ impl NetworkState {
         "/mnt"
     }
 
+    fn sanitized_connection_collection(
+        &self,
+        connections: NetworkConnectionsCollection,
+    ) -> Result<ConnectionCollection, NetworkStateError> {
+        let mut collection: ConnectionCollection = connections.try_into()?;
+        let mut controller_uuids: HashMap<Uuid, Uuid> = HashMap::new();
+        for conn in collection.iter_mut() {
+            if let Some(current_conn) = self.get_connection(&conn.id) {
+                let old_uuid = conn.uuid;
+                conn.uuid = current_conn.uuid;
+                if matches!(
+                    conn.config,
+                    ConnectionConfig::Bridge(_) | ConnectionConfig::Bond(_)
+                ) {
+                    controller_uuids.insert(old_uuid, conn.uuid);
+                } else {
+                    continue;
+                }
+            }
+        }
+
+        for conn in collection.iter_mut() {
+            if let Some(controller) = conn.controller {
+                if let Some(new_controller) = controller_uuids.get(&controller) {
+                    conn.controller = Some(*new_controller);
+                }
+            }
+        }
+
+        Ok(collection)
+    }
+
     /// Updates the current [NetworkState] with the configuration provided.
     ///
     /// The config could contain a [NetworkConnectionsCollection] to be updated, in case of
@@ -273,19 +305,24 @@ impl NetworkState {
         let updated_config = config.clone();
 
         if let Some(connections) = config.connections {
-            for net_conn in &connections.0 {
-                if let Some(current_conn) = self.get_connection(&net_conn.id).cloned() {
+            let mut collection = self.sanitized_connection_collection(connections.clone())?;
+            for conn in collection.iter_mut() {
+                if let Some(current_conn) = self.get_connection(&conn.id) {
                     let mut updated = current_conn.clone();
-                    updated.merge_network_connection(net_conn.clone())?;
-                    if updated != current_conn {
+                    updated.merge_connection(conn)?;
+                    if updated != *current_conn {
+                        tracing::info!("Updating connection {}", &conn.id);
                         self.update_connection(updated)?;
                     }
                 } else {
-                    let conn: Connection = net_conn.clone().try_into()?;
-                    self.add_connection(conn)?;
+                    tracing::info!("Adding connection {}", &conn.id);
+                    self.add_connection(conn.clone())?;
                 }
             }
 
+            // Although the current sanitized_connection_collection already handled the definition
+            // of port connections with the pertinent controller, the orphaned ports are problematic and
+            // needs to be handled in a particular way.
             for conn in connections.0 {
                 if conn.bridge.is_some() | conn.bond.is_some() {
                     let mut ports = vec![];
@@ -426,7 +463,12 @@ impl NetworkState {
                             conn.interface = Some(conn.id.clone());
                         }
                     } else if conn.controller == Some(controller.uuid) {
+                        tracing::info!(
+                            "Controller does not contain {} anymore, removing orphaned port",
+                            &conn.id
+                        );
                         conn.controller = None;
+                        conn.remove();
                     }
                 }
                 Ok(())
@@ -759,89 +801,86 @@ impl Connection {
     }
 
     /// Merges the current connection with the configuration provided.
-    pub fn merge_network_connection(
-        &mut self,
-        conn: NetworkConnection,
-    ) -> Result<(), NetworkStateError> {
-        if let Some(method4) = conn.method4 {
-            self.ip_config.method4 = Some(method4);
+    pub fn merge_connection(&mut self, conn: &Connection) -> Result<(), NetworkStateError> {
+        if conn.ip_config.method4.is_some() {
+            self.ip_config.method4 = conn.ip_config.method4;
         }
-        if let Some(method6) = conn.method6 {
-            self.ip_config.method6 = Some(method6);
+        if conn.ip_config.method6.is_some() {
+            self.ip_config.method6 = conn.ip_config.method6;
         }
 
-        if let Some(status) = conn.status {
-            self.status = status;
+        if conn.status != Status::Keep {
+            self.status = conn.status;
         }
 
-        if let Some(autoconnect) = conn.autoconnect {
-            self.autoconnect = autoconnect;
+        self.autoconnect = conn.autoconnect;
+        self.persistent = conn.persistent;
+
+        if conn.ip_config.ignore_auto_dns {
+            self.ip_config.ignore_auto_dns = conn.ip_config.ignore_auto_dns;
         }
 
-        if let Some(persistent) = conn.persistent {
-            self.persistent = persistent;
-        }
-
-        if let Some(ignore_auto_dns) = conn.ignore_auto_dns {
-            self.ip_config.ignore_auto_dns = ignore_auto_dns;
-        }
-
-        if let Some(vlan_config) = conn.vlan {
-            let config = VlanConfig::try_from(vlan_config)?;
-            self.config = config.into();
-        }
-        if let Some(wireless_config) = conn.wireless {
-            let config = WirelessConfig::try_from(wireless_config)?;
-            self.config = config.into();
-        }
-
-        if let Some(bond_config) = conn.bond {
-            let config = BondConfig::try_from(bond_config)?;
-            self.config = config.into();
-        }
-        if let Some(bridge_config) = conn.bridge {
-            let config = BridgeConfig::try_from(bridge_config)?;
-            self.config = config.into();
-        }
-
-        if let Some(ieee_8021x_config) = conn.ieee_8021x {
-            self.ieee_8021x_config = Some(IEEE8021XConfig::try_from(ieee_8021x_config)?);
-        }
-
-        if let Some(mac) = conn.mac_address {
-            self.mac_address = MacAddr6::from_str(mac.as_str()).ok();
-        }
-
-        if let Some(mac) = conn.custom_mac_address {
-            if let Ok(m) = MacAddress::from_str(&mac) {
-                self.custom_mac_address = m;
+        match &conn.config {
+            ConnectionConfig::Vlan(vlan_config) => {
+                self.config = vlan_config.clone().into();
             }
+            ConnectionConfig::Wireless(wireless_config) => {
+                self.config = wireless_config.clone().into();
+            }
+            ConnectionConfig::Bond(bond_config) => {
+                self.config = bond_config.clone().into();
+            }
+            ConnectionConfig::Bridge(bridge_config) => {
+                self.config = bridge_config.clone().into();
+            }
+            _ => {}
         }
 
-        if let Some(ms) = conn.match_settings {
-            self.match_config.driver = ms.driver;
-            self.match_config.interface = ms.interface;
-            self.match_config.path = ms.path;
-            self.match_config.kernel = ms.kernel;
+        if conn.ieee_8021x_config.is_some() {
+            self.ieee_8021x_config = conn.ieee_8021x_config.clone();
         }
 
-        if !conn.addresses.is_empty() {
-            self.ip_config.addresses = conn.addresses;
+        if conn.mac_address.is_some() {
+            self.mac_address = conn.mac_address;
         }
-        if !conn.nameservers.is_empty() {
-            self.ip_config.nameservers = conn.nameservers;
+
+        if !conn.custom_mac_address.to_string().is_empty() {
+            self.custom_mac_address = conn.custom_mac_address.clone();
         }
-        if !conn.dns_searchlist.is_empty() {
-            self.ip_config.dns_searchlist = conn.dns_searchlist;
+
+        if !conn.match_config.driver.is_empty() {
+            self.match_config.driver = conn.match_config.driver.clone();
         }
-        if let Some(gateway4) = conn.gateway4 {
-            self.ip_config.gateway4 = Some(gateway4);
+
+        if !conn.match_config.interface.is_empty() {
+            self.match_config.interface = conn.match_config.interface.clone();
         }
-        if let Some(gateway6) = conn.gateway6 {
-            self.ip_config.gateway6 = Some(gateway6);
+
+        if !conn.match_config.path.is_empty() {
+            self.match_config.path = conn.match_config.path.clone();
         }
-        if let Some(interface) = conn.interface {
-            self.interface = Some(interface);
+
+        if !conn.match_config.kernel.is_empty() {
+            self.match_config.kernel = conn.match_config.kernel.clone();
+        }
+
+        if !conn.ip_config.addresses.is_empty() {
+            self.ip_config.addresses = conn.ip_config.addresses.clone();
+        }
+        if !conn.ip_config.nameservers.is_empty() {
+            self.ip_config.nameservers = conn.ip_config.nameservers.clone();
+        }
+        if !conn.ip_config.dns_searchlist.is_empty() {
+            self.ip_config.dns_searchlist = conn.ip_config.dns_searchlist.clone();
+        }
+        if conn.ip_config.gateway4.is_some() {
+            self.ip_config.gateway4 = conn.ip_config.gateway4;
+        }
+        if conn.ip_config.gateway6.is_some() {
+            self.ip_config.gateway6 = conn.ip_config.gateway6;
+        }
+        if conn.interface.is_some() {
+            self.interface = conn.interface.clone();
         }
         if conn.mtu != 0 {
             self.mtu = conn.mtu;
@@ -1866,7 +1905,7 @@ impl TryFrom<BridgeSettings> for BridgeConfig {
         let stp = settings.stp;
         let priority = settings.priority;
         let forward_delay = settings.forward_delay;
-        let hello_time = settings.forward_delay;
+        let hello_time = settings.hello_time;
 
         Ok(BridgeConfig {
             stp,
