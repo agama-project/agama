@@ -801,6 +801,9 @@ export default {
   "Deactivated": [
     "Dinonaktifkan"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistem berkas default untuk %s"
   ],
@@ -1026,8 +1029,14 @@ export default {
   "Enter a name for the volume group.": [
     "Masukkan nama untuk grup volume."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Enter atau Tab untuk menambahkan; tombol panah untuk menavigasi entri, Ctrl+panah untuk mengurutkan ulang, Escape untuk keluar; Backspace atau Delete untuk menghapus."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -1035,14 +1044,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Contoh: %s"
-  ],
   "Excellent signal": [
     "Sinyal sangat baik"
   ],
   "Expiration date": [
     "Tanggal kadaluwarsa"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1143,6 +1152,12 @@ export default {
   "Formatting devices": [
     "Memformat perangkat"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Enkripsi Disk Penuh (FDE) memungkinkan untuk melindungi informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
@@ -1161,6 +1176,12 @@ export default {
   "Go to network page": [
     "Buka halaman jaringan"
   ],
+  "Go to network settings": [
+    "Pergi ke pengaturan jaringan"
+  ],
+  "Go to registration": [
+    "Pergi ke pendaftaran"
+  ],
   "Go to storage page": [
     "Buka halaman penyimpanan"
   ],
@@ -1169,6 +1190,12 @@ export default {
   ],
   "Graphical desktop environments for the system.": [
     "Lingkungan desktop grafis untuk sistem."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Sembunyikan"
@@ -1419,6 +1446,9 @@ export default {
   "License acceptance required": [
     "Diperlukan penerimaan lisensi"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Memuat"
   ],
@@ -1487,6 +1517,12 @@ export default {
   ],
   "Max channel": [
     "Saluran maks"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "Anggota"
@@ -1632,6 +1668,9 @@ export default {
   "No additional partitions will be created": [
     "Tidak akan dibuat partisi tambahan"
   ],
+  "No additional patterns available": [
+    "Tidak ada pola tambahan yang tersedia"
+  ],
   "No connections match filters": [
     "Tidak ada koneksi yang cocok dengan filter"
   ],
@@ -1770,6 +1809,9 @@ export default {
   "Not supported (%s)": [
     "Tidak didukung (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "Luring"
   ],
@@ -1884,6 +1926,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potensi kehilangan data yang memengaruhi setidaknya %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Melanjutkan dapat menyebabkan kehilangan data"
   ],
@@ -1899,17 +1947,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Berikan autentikasi"
   ],
-  "Provide email address": [
-    "Berikan alamat email"
-  ],
   "Provide its password to log in to the system.": [
     "Berikan kata sandinya untuk masuk ke sistem."
-  ],
-  "Provide registration code": [
-    "Berikan kode pendaftaran"
   ],
   "Public SSH Key": [
     "Kunci SSH Publik"
@@ -2037,6 +2085,9 @@ export default {
   "Review and install": [
     "Tinjau dan instal"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Login root dengan kunci SSH"
   ],
@@ -2072,6 +2123,9 @@ export default {
   ],
   "SSID": [
     "SSID"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -2184,9 +2238,6 @@ export default {
   "Server URL": [
     "URL Server"
   ],
-  "Server options": [
-    "Opsi server"
-  ],
   "Set DIAG off": [
     "Matikan DIAG"
   ],
@@ -2250,6 +2301,9 @@ export default {
   "Software %s": [
     "Perangkat Lunak %s"
   ],
+  "Software selection is not available": [
+    "Pemilihan perangkat lunak tidak tersedia"
+  ],
   "Some DNS search domains are invalid": [
     "Beberapa domain pencarian DNS tidak valid"
   ],
@@ -2285,6 +2339,9 @@ export default {
   ],
   "Something went wrong": [
     "Ada yang tidak beres"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Mulai mengkonfigurasi instalasi dasar"
@@ -2499,9 +2556,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Produk tidak ditemukan di repositori sehingga tidak memungkinkan untuk melanjutkan instalasi."
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "Produk akan di-registrasi dengan hostname \"%s\""
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
   ],
@@ -2537,6 +2591,9 @@ export default {
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "Ukuran harus berupa angka diikuti dengan satuan dalam bentuk GiB (pangkat 2) atau GB (pangkat 10)."
+  ],
+  "The software selection could not be loaded.": [
+    "Pemilihan perangkat lunak tidak dapat dimuat."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Konfigurasi penyimpanan valid (lihat hasil di bawah) tetapi menggunakan elemen yang tidak didukung oleh antarmuka ini."
@@ -2602,10 +2659,16 @@ export default {
     "Lisensi ini tidak tersedia di %s."
   ],
   "This might be due to network connectivity.": [
-    ""
+    "Ini mungkin disebabkan oleh konektivitas jaringan."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Polanya ini menyeimbangkan antara kejelasan dan efisiensi: mode ini menjaga kesederhanaan untuk pemilihan yang sederhana, sementara tampilan penuh mendukung eksplorasi yang lebih mendalam dan tindakan yang lebih kompleks, terutama untuk pengguna yang memiliki banyak perangkat."
+  ],
+  "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
+    "Produk ini tidak mengizinkan pemilihan perangkat lunak pada saat instalasi. Perangkat lunak tambahan dapat ditambahkan setelah instalasi selesai."
+  ],
+  "This product does not provide additional patterns.": [
+    "Produk ini tidak menyediakan pola tambahan."
   ],
   "This product does not provide desktop environments.": [
     "Produk ini tidak menyediakan lingkungan desktop."
@@ -2633,6 +2696,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
@@ -2832,9 +2898,6 @@ export default {
   "Using %d connections with %s": [
     "Menggunakan %d koneksi dengan %s"
   ],
-  "Using [%s] keyboard": [
-    "Menggunakan keyboard [%s]"
-  ],
   "Using a hashed password.": [
     "Menggunakan kata sandi yang dienkripsi."
   ],
@@ -2937,9 +3000,6 @@ export default {
   "You can safely close this window.": [
     "Anda dapat menutup jendela ini dengan aman."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Anda tidak dapat mengubahnya nanti. Pergi ke bagian %s jika Anda ingin mengubahnya sebelum melanjutkan proses pendaftaran."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Anda mungkin ingin menghapus pengaturan saat ini dan memulai dari awal dengan konfigurasi sederhana."
   ],
@@ -2966,9 +3026,6 @@ export default {
   ],
   "auto selected": [
     "otomatis dipilih"
-  ],
-  "hostname": [
-    "hostname"
   ],
   "iBFT": [
     "iBFT"

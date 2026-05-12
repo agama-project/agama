@@ -1,5 +1,24 @@
 -------------------------------------------------------------------
-Mon May  5 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue May 12 13:35:54 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix query refetch when activating zFCP devices (bsc#1263808).
+
+-------------------------------------------------------------------
+Tue May 12 10:29:09 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Improve keyboard accessibility for dropdown components by enabling
+  arrow keys to open closed menus following the W3C Select-Only
+  Combobox pattern (gh#agama-project/agama#3468).
+
+-------------------------------------------------------------------
+Tue May 12 09:29:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Replace the mount point field in storage forms with a free-text
+  input that preserves user entries and provides optional suggestion
+  (gh#agama-project/agama#3445).
+
+-------------------------------------------------------------------
+Tue May  5 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve the overall UX of the product registration page and
   decouple it from software progress (gh#agama-project/agama#3456).

@@ -821,6 +821,9 @@ export default {
   "Deactivated": [
     "დეაქტივირებულია"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "ნაგულისხმევი ფაილური სისტემა %s-სთვის"
   ],
@@ -1046,7 +1049,13 @@ export default {
   "Enter a name for the volume group.": [
     "შეიყვანეთ სახელი ტომების ჯგუფისთვის."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     ""
   ],
   "Ethernet": [
@@ -1055,14 +1064,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "მაგ: %s"
-  ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
   ],
   "Expiration date": [
     "ვადა"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1165,6 +1174,12 @@ export default {
   "Formatting devices": [
     "მოწყობილობების დაფორმატება"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     ""
   ],
@@ -1197,6 +1212,12 @@ export default {
   ],
   "Graphical desktop environments for the system.": [
     "გრაფიკული სამუშაო გარემოები სისტემისთვის."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "დამალვა"
@@ -1449,6 +1470,9 @@ export default {
   "License acceptance required": [
     "აუცილებელია ლიცენზიაზე დათანხმება"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "იტვირთება"
   ],
@@ -1517,6 +1541,12 @@ export default {
   ],
   "Max channel": [
     "მაქს. არხი"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "წევრები"
@@ -1805,6 +1835,9 @@ export default {
   "Not supported (%s)": [
     "მხარდაჭერილი არაა (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "გათიშულია"
   ],
@@ -1919,6 +1952,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "პოტენციური მონაცემთა კარგვა, რომელიც, მინიმუმ, ეხება სისტემას %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "გაგრძელებამ, შეიძლება, მონაცემთა კარგვა გამოიწვიოს"
   ],
@@ -1934,17 +1973,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     ""
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "ავთენტიკაციის მიწოდება"
   ],
-  "Provide email address": [
-    "შეიყვანეთ ელფოსტის მისამართი"
-  ],
   "Provide its password to log in to the system.": [
     "შეიყვანეთ მისი პაროლი სისტემაში შესასვლელად."
-  ],
-  "Provide registration code": [
-    "შეიყვანეთ რეგისტრაციის კოდი"
   ],
   "Public SSH Key": [
     "საჯარო SSH გასაღები"
@@ -2072,6 +2111,9 @@ export default {
   "Review and install": [
     "გადახედვა და დაყენება"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Root-ის შესვლა SSH გასაღებით"
   ],
@@ -2107,6 +2149,9 @@ export default {
   ],
   "SSID": [
     "SSID"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -2220,9 +2265,6 @@ export default {
   "Server URL": [
     "სერვერის URL"
   ],
-  "Server options": [
-    "სერვერის პარამეტრები"
-  ],
   "Set DIAG off": [
     "DIAG-ის გამორთვა"
   ],
@@ -2325,6 +2367,9 @@ export default {
   ],
   "Something went wrong": [
     "რაღაც არასწორია"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "საბაზისო დაყენების მორგების დაწყება"
@@ -2547,9 +2592,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     ""
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "პროდუქტი დარეგისტრირდება ჰოსტის სახელით \"%s\""
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     ""
   ],
@@ -2692,6 +2734,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     ""
@@ -2892,9 +2937,6 @@ export default {
   "Using %d connections with %s": [
     "გამოიყენება %d კავშირი %s-ით"
   ],
-  "Using [%s] keyboard": [
-    "გამოიყენება [%s] კლავიატურა"
-  ],
   "Using a hashed password.": [
     "დაჰეშილი პაროლის გამოყენება."
   ],
@@ -2997,9 +3039,6 @@ export default {
   "You can safely close this window.": [
     "ეს ფანჯარა შეგიძლიათ, უსაფრთხოდ დახუროთ."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    ""
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     ""
   ],
@@ -3026,9 +3065,6 @@ export default {
   ],
   "auto selected": [
     "ავტომატურად არჩეული"
-  ],
-  "hostname": [
-    "ჰოსტის სახელი"
   ],
   "iBFT": [
     "iBFT"

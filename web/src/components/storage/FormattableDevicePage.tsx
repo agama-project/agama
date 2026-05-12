@@ -40,13 +40,12 @@ import {
   SelectGroup,
   SelectList,
   SelectOption,
-  SelectOptionProps,
   Stack,
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SelectWrapper as Select } from "~/components/core/";
+import SuggestionsTextField from "~/components/form/SuggestionsTextField";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
-import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import {
   useConfigModel,
   useMissingMountPaths,
@@ -257,10 +256,6 @@ function useAutoRefreshFilesystem(handler, value: FormValue) {
   }, [handler, mountPoint, defaultFilesystem, usableFilesystems, currentFilesystem]);
 }
 
-function mountPointSelectOptions(mountPoints: string[]): SelectOptionProps[] {
-  return mountPoints.map((p) => ({ value: p, children: p }));
-}
-
 type FilesystemOptionLabelProps = {
   value: string;
   volume: System.Volume;
@@ -457,16 +452,11 @@ export default function FormattableDevicePage() {
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
               <Flex>
                 <FlexItem>
-                  <SelectTypeaheadCreatable
+                  <SuggestionsTextField
                     id="mountPoint"
-                    toggleName={_("Mount point toggle")}
-                    listName={_("Suggested mount points")}
-                    inputName={_("Mount point")}
-                    clearButtonName={_("Clear selected mount point")}
                     value={mountPoint}
-                    options={mountPointSelectOptions(unusedMountPoints)}
-                    createText={_("Use")}
-                    onChange={changeMountPoint}
+                    suggestions={unusedMountPoints}
+                    onChange={(_event, value) => changeMountPoint(value)}
                   />
                 </FlexItem>
               </Flex>
@@ -476,7 +466,7 @@ export default function FormattableDevicePage() {
                     variant={mountPointError ? "error" : "default"}
                     screenReaderText=""
                   >
-                    {!mountPointError && _("Select or enter a mount point")}
+                    {!mountPointError && _("E.g., /home, /var, or swap")}
                     {mountPointError?.message}
                   </HelperTextItem>
                 </HelperText>
