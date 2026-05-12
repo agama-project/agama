@@ -821,6 +821,9 @@ export default {
   "Deactivated": [
     "Desactivat"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistema de fitxers per defecte per a %s"
   ],
@@ -1046,8 +1049,14 @@ export default {
   "Enter a name for the volume group.": [
     "Introduïu un nom per al grup de volums."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Retorn o Tab per afegir; tecles de fletxa per navegar per les entrades, Ctrl+fletxes per reordenar, Esc per sortir; Retrocés o Supr per suprimir."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Xarxa amb fil"
@@ -1055,14 +1064,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Exemple: %s"
-  ],
   "Excellent signal": [
     "Senyal excel·lent"
   ],
   "Expiration date": [
     "Data de venciment"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1165,6 +1174,12 @@ export default {
   "Formatting devices": [
     "Formatatge de dispositius"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
@@ -1197,6 +1212,12 @@ export default {
   ],
   "Graphical desktop environments for the system.": [
     "Entorns d'escriptori gràfics per al sistema."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Amaga"
@@ -1449,6 +1470,9 @@ export default {
   "License acceptance required": [
     "Cal l'acceptació de la llicència"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Carregant"
   ],
@@ -1517,6 +1541,12 @@ export default {
   ],
   "Max channel": [
     "Canal màxim"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "Membres"
@@ -1805,6 +1835,9 @@ export default {
   "Not supported (%s)": [
     "No compatible (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "Fora de línia"
   ],
@@ -1919,6 +1952,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Pèrdua potencial de dades que afecta com a mínim els sistemes següents: %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Si continueu, és possible que es perdin dades."
   ],
@@ -1934,17 +1973,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Protecció de la informació desada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Proporcioneu l'autenticació"
   ],
-  "Provide email address": [
-    "Proporcioneu una adreça de correu electrònic."
-  ],
   "Provide its password to log in to the system.": [
     "Proporcioneu-ne la contrasenya per iniciar sessió al sistema."
-  ],
-  "Provide registration code": [
-    "Proporcioneu el codi de registre"
   ],
   "Public SSH Key": [
     "Clau pública SSH"
@@ -2072,6 +2111,9 @@ export default {
   "Review and install": [
     "Revisa i instal·la"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Inici de sessió d'arrel amb clau SSH"
   ],
@@ -2107,6 +2149,9 @@ export default {
   ],
   "SSID": [
     "SSID"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "Centre de clients de SUSE (SCC)"
@@ -2220,9 +2265,6 @@ export default {
   "Server URL": [
     "URL del servidor"
   ],
-  "Server options": [
-    "Opcions del servidor"
-  ],
   "Set DIAG off": [
     "Desactiva la DIAG"
   ],
@@ -2325,6 +2367,9 @@ export default {
   ],
   "Something went wrong": [
     "Alguna cosa ha anat malament."
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Comenceu a configurar una instal·lació bàsica"
@@ -2547,9 +2592,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "No s'ha trobat el producte als repositoris, per la qual cosa no és possible continuar la instal·lació."
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "El producte es registrarà amb el nom d'amfitrió %s."
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
   ],
@@ -2692,6 +2734,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
@@ -2892,9 +2937,6 @@ export default {
   "Using %d connections with %s": [
     "S'usen %d connexions amb %s"
   ],
-  "Using [%s] keyboard": [
-    "S'usa el teclat per a [%s]"
-  ],
   "Using a hashed password.": [
     "S'usa una contrasenya amb funció resum."
   ],
@@ -2997,9 +3039,6 @@ export default {
   "You can safely close this window.": [
     "Podeu tancar aquesta finestra amb seguretat."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "No ho podeu canviar més tard. Aneu a la secció %s si voleu modificar-la abans de procedir al registre."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
   ],
@@ -3026,9 +3065,6 @@ export default {
   ],
   "auto selected": [
     "seleccionat automàticament"
-  ],
-  "hostname": [
-    "Nom d'amfitrió"
   ],
   "iBFT": [
     "iBFT"

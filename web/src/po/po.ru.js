@@ -365,6 +365,9 @@ export default {
   "Bridge": [
     ""
   ],
+  "Bridge ports": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -657,6 +660,9 @@ export default {
   "Deactivated": [
     "Деактивировано"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Файловая система по умолчанию для %s"
   ],
@@ -768,6 +774,9 @@ export default {
   "Download logs to troubleshoot or share with support.": [
     "Загрузите журналы для устранения неполадок или отправки в службу поддержки."
   ],
+  "E.g., %s": [
+    ""
+  ],
   "E.g., 192.168.1.1": [
     ""
   ],
@@ -784,6 +793,9 @@ export default {
     ""
   ],
   "E.g., bond0": [
+    ""
+  ],
+  "E.g., br0": [
     ""
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
@@ -852,20 +864,26 @@ export default {
   "Enter a name for the volume group.": [
     "Введите имя для группы томов."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     ""
   ],
   "ExFAT": [
     "ExFAT"
-  ],
-  "Example: %s": [
-    "Пример: %s"
   ],
   "Excellent signal": [
     "Отличный сигнал"
   ],
   "Expiration date": [
     "Истекает"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -964,6 +982,12 @@ export default {
   "Formatted": [
     "Отформатированный"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Полнодисковое шифрование (FDE) позволяет защитить информацию, хранящуюся на новых файловых системах, включая данные, программы и системные файлы."
   ],
@@ -989,6 +1013,12 @@ export default {
     "Хороший сигнал"
   ],
   "Graphical desktop environments for the system.": [
+    ""
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
     ""
   ],
   "Hide": [
@@ -1199,6 +1229,9 @@ export default {
   "License acceptance required": [
     "Требуется принятие лицензии"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Загрузка"
   ],
@@ -1249,6 +1282,12 @@ export default {
   ],
   "Max channel": [
     "Макс. канал"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Memory": [
     "Память"
@@ -1464,6 +1503,9 @@ export default {
   "Not supported (%s)": [
     "Не поддерживается (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "On boot": [
     "При загрузке"
   ],
@@ -1560,6 +1602,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Существует риск потери данных, затрагивающий %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "При продолжении есть риск потери данных"
   ],
@@ -1572,17 +1620,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Защита информации, хранящейся в новых файловых системах, включая данные, программы и системные файлы."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Обеспечение аутентификации"
   ],
-  "Provide email address": [
-    "Укажите адрес эл. почты"
-  ],
   "Provide its password to log in to the system.": [
     "Укажите его пароль для входа в систему."
-  ],
-  "Provide registration code": [
-    "Укажите код регистрации"
   ],
   "Public SSH Key": [
     "Публичный ключ SSH"
@@ -1677,6 +1725,9 @@ export default {
   "Review and install": [
     "Просмотреть и установить"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Вход с правами root с помощью SSH-ключа"
   ],
@@ -1712,6 +1763,9 @@ export default {
   ],
   "SSID": [
     "Имя сети"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "Центр обслуживания клиентов SUSE (SCC)"
@@ -1789,9 +1843,6 @@ export default {
   ],
   "Server URL": [
     "URL сервера"
-  ],
-  "Server options": [
-    "Опции серверов"
   ],
   "Set DIAG off": [
     "Отключить DIAG"
@@ -1878,6 +1929,9 @@ export default {
   ],
   "Something went wrong": [
     "Что-то пошло не так"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Начать настройку базовой установки"
@@ -2093,9 +2147,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     ""
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "Продукт будет зарегистрирован с именем узла «%s»"
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Размер для %1$s будет динамически корректироваться в зависимости от объема оперативной памяти в системе и наличия отдельной файловой системы для %2$s."
   ],
@@ -2210,6 +2261,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Чтобы обеспечить загрузку новой системы, программе установки может потребоваться создать или настроить некоторые разделы на соответствующем диске."
@@ -2400,9 +2454,6 @@ export default {
   "Using %d connections with %s": [
     "Используется %d подкл. с %s"
   ],
-  "Using [%s] keyboard": [
-    "Раскладка клавиатуры: [%s]"
-  ],
   "Using a hashed password.": [
     "Используя хэшированный пароль."
   ],
@@ -2490,9 +2541,6 @@ export default {
   "You can safely close this window.": [
     "Это окно можно закрыть."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Вы не сможете изменить его позже. Перейдите в раздел «%s», если хотите изменить его перед тем, как продолжить регистрацию."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Возможно, вы захотите отказаться от текущих настроек и начать с нуля, используя простую конфигурацию."
   ],
@@ -2519,9 +2567,6 @@ export default {
   ],
   "auto selected": [
     "автоматический выбор"
-  ],
-  "hostname": [
-    "имя узла"
   ],
   "iBFT": [
     "iBFT"
