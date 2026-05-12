@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 12 10:29:09 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Improve keyboard accessibility for dropdown components by enabling
+  arrow keys to open closed menus following the W3C Select-Only
+  Combobox pattern (gh#agama-project/agama#3468).
+
+-------------------------------------------------------------------
 Tue May 12 09:29:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Replace the mount point field in storage forms with a free-text
