@@ -24,6 +24,7 @@ import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { systemFormOptions } from "~/components/system/SystemPage";
+import { isValidNtpServer } from "~/components/system/systemFormValidation";
 import { withForm } from "~/hooks/form";
 import { _ } from "~/i18n";
 
@@ -54,7 +55,7 @@ const NtpSettings = withForm({
         <NestedContent margin="mxLg">
           <Text textStyle={["fontSizeXs", "textColorSubtle"]}>
             {
-              // TRANSLATORS: fieldset legend for NTP configuration
+              // TRANSLATORS: explanatory text for NTP configuration
               _(
                 "Configure the Network Time Protocol (NTP) servers used to set the system date and time.",
               )
@@ -94,8 +95,14 @@ const NtpSettings = withForm({
                       // TRANSLATORS: label for NTP servers input field
                       label={_("Server addresses")}
                       // TRANSLATORS: helper text for NTP servers input field
-                      helperText={_("E.g., pool.ntp.org")}
+                      helperText={_(
+                        "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org",
+                      )}
                       skipDuplicates
+                      validateOnSubmit={(v) =>
+                        // TRANSLATORS: validation error for an invalid NTP server address entry
+                        isValidNtpServer(v) ? undefined : _("Invalid NTP server address")
+                      }
                     />
                   )}
                 </form.AppField>

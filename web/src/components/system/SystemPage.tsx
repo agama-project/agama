@@ -20,17 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { isEmpty } from "radashi";
+import React, { useRef } from "react";
+import { isEmpty, shake } from "radashi";
 import { formOptions } from "@tanstack/react-form";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
 import { Page } from "~/components/core";
 import HostnameSettings from "~/components/system/HostnameSettings";
 import NtpSettings from "~/components/system/NtpSettings";
+import { validateSystemForm } from "~/components/system/systemFormValidation";
 import { patchConfig } from "~/api";
+import { useConfig } from "~/hooks/model/config";
 import { useProposal } from "~/hooks/model/proposal";
-import { useAppForm } from "~/hooks/form";
+import { anyFieldChanged, useAppForm } from "~/hooks/form";
 import { _ } from "~/i18n";
+import type * as Ntp from "~/model/config/ntp";
 
 const HOSTNAME_MODE = {
   TRANSIENT: "transient",
@@ -54,6 +57,51 @@ export const systemFormOptions = formOptions({
   },
 });
 
+type SystemFormValues = typeof systemFormOptions.defaultValues;
+type SystemFieldMeta = Partial<Record<keyof SystemFormValues, { isDefaultValue?: boolean }>>;
+
+/**
+ * Builds the hostname config patch if any hostname-related field has changed.
+ *
+ * Returns undefined if no changes are detected, which will be shaken out of the
+ * final config.
+ */
+function buildHostnameConfig(
+  formValues: SystemFormValues,
+  fieldMeta: SystemFieldMeta,
+): { static: string } | undefined {
+  if (!anyFieldChanged(fieldMeta, "hostnameMode", "hostnameValue")) return undefined;
+  if (formValues.hostnameMode === HOSTNAME_MODE.STATIC) return { static: formValues.hostnameValue };
+  return { static: "" };
+}
+
+/**
+ * Builds the NTP config patch if any NTP-related field has changed.
+ *
+ * Returns undefined if no changes are detected, which will be shaken out of the
+ * final config.
+ */
+function buildNtpConfig(
+  formValues: SystemFormValues,
+  fieldMeta: SystemFieldMeta,
+): { sources: Ntp.Source[] } | undefined {
+  const fieldsToCheck =
+    formValues.ntpMode === NTP_MODE.CUSTOM ? ["ntpMode", "ntpServers"] : ["ntpMode"];
+
+  if (!anyFieldChanged(fieldMeta, ...fieldsToCheck)) return undefined;
+  if (formValues.ntpMode !== NTP_MODE.CUSTOM) return { sources: [] };
+  return {
+    sources: formValues.ntpServers.map(
+      (address): Ntp.Source => ({
+        type: "pool",
+        address,
+        iburst: true,
+        offline: false,
+      }),
+    ),
+  };
+}
+
 /**
  * Page for configuring system settings.
  *
@@ -63,53 +111,46 @@ export const systemFormOptions = formOptions({
  * - NTP: choose between default NTP servers or custom ones
  */
 export default function SystemPage() {
+  const config = useConfig();
   const { hostname: proposal } = useProposal();
   const { hostname: transientHostname, static: staticHostname } = proposal;
+
+  const ntpSources = config?.ntp?.sources || [];
+  const hasCustomNtpSources = ntpSources.length > 0;
+
+  const wasPatched = useRef(false);
 
   const form = useAppForm({
     ...systemFormOptions,
     defaultValues: {
       hostnameMode: isEmpty(staticHostname) ? HOSTNAME_MODE.TRANSIENT : HOSTNAME_MODE.STATIC,
       hostnameValue: staticHostname || transientHostname,
-      ntpMode: NTP_MODE.DEFAULT as NtpMode,
-      ntpServers: [] as string[],
+      ntpMode: hasCustomNtpSources ? NTP_MODE.CUSTOM : NTP_MODE.DEFAULT,
+      ntpServers: hasCustomNtpSources ? ntpSources.map((s) => s.address) : [],
     },
     validators: {
-      onSubmitAsync: async ({ value: formValues }) => {
-        const errors: { fields?: Record<string, string> } = {};
+      onSubmitAsync: async ({ value: formValues, formApi }) => {
+        wasPatched.current = false;
 
-        if (formValues.hostnameMode === HOSTNAME_MODE.STATIC && isEmpty(formValues.hostnameValue)) {
-          errors.fields = {
-            // TRANSLATORS: validation error when static hostname value is empty
-            hostnameValue: _("Enter a hostname value."),
-          };
-        }
+        const fieldErrors = validateSystemForm(formValues);
+        if (fieldErrors) return { fields: fieldErrors };
 
-        if (Object.keys(errors).length > 0) {
-          return errors;
-        }
+        const { fieldMeta } = formApi.state;
 
-        return await patchConfig({
-          hostname: {
-            static:
-              formValues.hostnameMode === HOSTNAME_MODE.STATIC ? formValues.hostnameValue : "",
-          },
-          ntp: {
-            sources:
-              formValues.ntpMode === NTP_MODE.CUSTOM
-                ? formValues.ntpServers.map((address) => ({
-                    type: "pool",
-                    address,
-                    iburst: true,
-                    offline: false,
-                  }))
-                : [],
-          },
-        })
-          .then(() => undefined)
-          .catch(() => ({
-            // TRANSLATORS: error message when system settings update request fails
-            form: _("System settings could not be updated"),
+        const config = shake({
+          hostname: buildHostnameConfig(formValues, fieldMeta),
+          ntp: buildNtpConfig(formValues, fieldMeta),
+        });
+
+        if (isEmpty(config)) return undefined;
+
+        return await patchConfig(config)
+          .then(() => {
+            wasPatched.current = true;
+            return undefined;
+          })
+          .catch(({ message: errorMessage }) => ({
+            form: errorMessage,
           }));
       },
     },
@@ -130,9 +171,12 @@ export default function SystemPage() {
               {(serverError) =>
                 serverError && (
                   <Alert
-                    // TRANSLATORS: error alert title when system settings update fails
-                    title={_("The system settings could not be saved")}
+                    isInline
                     variant="danger"
+                    title={
+                      // TRANSLATORS: error message when system settings update request fails
+                      _("System settings could not be updated")
+                    }
                   >
                     {serverError}
                   </Alert>
@@ -141,19 +185,20 @@ export default function SystemPage() {
             </form.Subscribe>
 
             <form.Subscribe
-              selector={(s) => ({
-                showSuccess: s.isSubmitted && s.isSubmitting === false,
-                hasError: !!s.errorMap.onSubmit?.form,
-              })}
+              selector={(s) => s.isSubmitted && !s.isSubmitting && !s.errorMap.onSubmit?.form}
             >
-              {({ showSuccess, hasError }) =>
-                showSuccess &&
-                !hasError && (
+              {(showResult) =>
+                showResult && (
                   <Alert
-                    variant="success"
                     isInline
-                    // TRANSLATORS: success message shown after system settings are updated
-                    title={_("System settings successfully updated")}
+                    variant={wasPatched.current ? "success" : "info"}
+                    title={
+                      wasPatched.current
+                        ? // TRANSLATORS: success message shown after system settings are updated
+                          _("System settings successfully updated")
+                        : // TRANSLATORS: info message shown when submitting the form with no changes
+                          _("No changes detected. System settings are already up to date.")
+                    }
                   />
                 )
               }

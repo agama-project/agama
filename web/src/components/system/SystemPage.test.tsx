@@ -33,11 +33,18 @@ jest.mock("~/api", () => ({
   patchConfig: (config) => mockPatchConfig(config),
 }));
 
-const system = jest.fn();
+const mockSystem = jest.fn();
 
 jest.mock("~/hooks/model/system", () => ({
   ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => system(),
+  useSystem: () => mockSystem(),
+}));
+
+jest.mock("~/hooks/model/config", () => ({
+  ...jest.requireActual("~/hooks/model/config"),
+  useConfig: () => ({
+    ntp: { sources: [] },
+  }),
 }));
 
 jest.mock("~/hooks/model/proposal", () => ({
@@ -52,7 +59,7 @@ jest.mock("~/hooks/model/proposal", () => ({
 
 describe("SystemPage", () => {
   beforeEach(() => {
-    system.mockReturnValue({});
+    mockSystem.mockReturnValue({});
     mockStaticHostname = "";
     mockPatchConfig.mockResolvedValue(true);
   });
@@ -60,36 +67,37 @@ describe("SystemPage", () => {
   it("renders hostname and NTP settings sections", () => {
     installerRender(<SystemPage />);
     screen.getByRole("group", { name: "Hostname" });
-    screen.getByRole("group", { name: "Network Time Protocol (NTP)" });
+    screen.getByRole("group", { name: "Time Synchronization Servers" });
   });
 
   describe("form submission", () => {
-    it("sends hostname and NTP config on submit", async () => {
+    it("does not send config when nothing changed", async () => {
       const { user } = installerRender(<SystemPage />);
 
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
-      expect(mockPatchConfig).toHaveBeenCalledWith({
-        hostname: { static: "" },
-        ntp: { sources: [] },
-      });
+      expect(mockPatchConfig).not.toHaveBeenCalled();
+      screen.getByText("No changes detected. System settings are already up to date.");
     });
 
-    it("sends static hostname when set", async () => {
+    it("only sends hostname config when hostname changed", async () => {
       mockStaticHostname = "my-server";
       const { user } = installerRender(<SystemPage />);
 
+      const hostnameInput = screen.getByRole("textbox", { name: "Name" });
+      await user.clear(hostnameInput);
+      await user.type(hostnameInput, "new-server");
+
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
       expect(mockPatchConfig).toHaveBeenCalledWith({
-        hostname: { static: "my-server" },
-        ntp: { sources: [] },
+        hostname: { static: "new-server" },
       });
     });
 
-    it("sends custom NTP servers when configured", async () => {
+    it("only sends NTP config when NTP settings changed", async () => {
       const { user } = installerRender(<SystemPage />);
 
       const modeButtons = screen.getAllByLabelText("Mode");
@@ -106,7 +114,76 @@ describe("SystemPage", () => {
       await user.click(acceptButton);
 
       expect(mockPatchConfig).toHaveBeenCalledWith({
-        hostname: { static: "" },
+        ntp: {
+          sources: [
+            {
+              type: "pool",
+              address: "pool.ntp.org",
+              iburst: true,
+              offline: false,
+            },
+          ],
+        },
+      });
+    });
+
+    it("does not send config when switching back to initial state", async () => {
+      const { user } = installerRender(<SystemPage />);
+
+      // Switch to custom mode
+      const modeButtons = screen.getAllByLabelText("Mode");
+      const ntpModeButton = modeButtons[1];
+      await user.click(ntpModeButton);
+
+      const customOption = screen.getByRole("option", { name: /Custom/ });
+      await user.click(customOption);
+
+      const ntpInput = screen.getByRole("textbox", { name: "Server addresses" });
+      await user.type(ntpInput, "pool.ntp.org{Enter}");
+
+      // Switch back to default (reverting to initial state)
+      await user.click(ntpModeButton);
+      const defaultOption = screen.getByRole("option", { name: /Default/ });
+      await user.click(defaultOption);
+
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      await user.click(acceptButton);
+
+      // No config should be sent because we're back to the initial state
+      expect(mockPatchConfig).not.toHaveBeenCalled();
+      screen.getByText("No changes detected. System settings are already up to date.");
+    });
+
+    it("sends both hostname and NTP config when both changed", async () => {
+      const { user } = installerRender(<SystemPage />);
+
+      // Change hostname mode to static
+      const modeButtons = screen.getAllByLabelText("Mode");
+      const hostnameModeButton = modeButtons[0];
+      await user.click(hostnameModeButton);
+
+      const staticOption = screen.getByRole("option", { name: /Static/ });
+      await user.click(staticOption);
+
+      const hostnameInput = screen.getByRole("textbox", { name: "Name" });
+      await user.clear(hostnameInput);
+      await user.type(hostnameInput, "test-server");
+
+      // Change NTP to custom
+      const ntpModeButton = modeButtons[1];
+      await user.click(ntpModeButton);
+
+      const customOption = screen.getByRole("option", { name: /Custom/ });
+      await user.click(customOption);
+
+      const ntpInput = screen.getByRole("textbox", { name: "Server addresses" });
+      await user.type(ntpInput, "pool.ntp.org{Enter}");
+
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      await user.click(acceptButton);
+
+      expect(mockPatchConfig).toHaveBeenCalledWith({
+        hostname: { static: "test-server" },
         ntp: {
           sources: [
             {
@@ -123,6 +200,17 @@ describe("SystemPage", () => {
     it("shows success alert after successful update", async () => {
       const { user } = installerRender(<SystemPage />);
 
+      // Make a change to trigger an update
+      const modeButtons = screen.getAllByLabelText("Mode");
+      const ntpModeButton = modeButtons[1];
+      await user.click(ntpModeButton);
+
+      const customOption = screen.getByRole("option", { name: /Custom/ });
+      await user.click(customOption);
+
+      const ntpInput = screen.getByRole("textbox", { name: "Server addresses" });
+      await user.type(ntpInput, "pool.ntp.org{Enter}");
+
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
@@ -130,14 +218,25 @@ describe("SystemPage", () => {
     });
 
     it("shows error alert when update fails", async () => {
-      mockPatchConfig.mockRejectedValue(new Error("Network error"));
+      mockPatchConfig.mockRejectedValue({ message: "Network error" });
       const { user } = installerRender(<SystemPage />);
+
+      // Change something to trigger API call
+      const modeButtons = screen.getAllByLabelText("Mode");
+      const ntpModeButton = modeButtons[1];
+      await user.click(ntpModeButton);
+
+      const customOption = screen.getByRole("option", { name: /Custom/ });
+      await user.click(customOption);
+
+      const ntpInput = screen.getByRole("textbox", { name: "Server addresses" });
+      await user.type(ntpInput, "pool.ntp.org{Enter}");
 
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
-      screen.getByText("The system settings could not be saved");
       screen.getByText("System settings could not be updated");
+      screen.getByText("Network error");
     });
   });
 
@@ -160,6 +259,90 @@ describe("SystemPage", () => {
 
       expect(mockPatchConfig).not.toHaveBeenCalled();
       screen.getByText("Enter a hostname value.");
+    });
+
+    it("shows error when custom NTP mode has no servers", async () => {
+      const { user } = installerRender(<SystemPage />);
+
+      const modeButtons = screen.getAllByLabelText("Mode");
+      const ntpModeButton = modeButtons[1];
+      await user.click(ntpModeButton);
+
+      const customOption = screen.getByRole("option", { name: /Custom/ });
+      await user.click(customOption);
+
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      await user.click(acceptButton);
+
+      expect(mockPatchConfig).not.toHaveBeenCalled();
+      screen.getByText("At least one NTP server is required");
+    });
+
+    it("shows error when NTP servers are invalid", async () => {
+      const { user } = installerRender(<SystemPage />);
+
+      const modeButtons = screen.getAllByLabelText("Mode");
+      const ntpModeButton = modeButtons[1];
+      await user.click(ntpModeButton);
+
+      const customOption = screen.getByRole("option", { name: /Custom/ });
+      await user.click(customOption);
+
+      const ntpInput = screen.getByRole("textbox", { name: "Server addresses" });
+      await user.type(ntpInput, "invalid@server!{Enter}");
+
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      await user.click(acceptButton);
+
+      expect(mockPatchConfig).not.toHaveBeenCalled();
+      // ArrayField shows per-entry validation errors after submit
+      screen.getByText(/Invalid NTP server address/);
+      // ArrayField also shows helper text with option to remove invalid entries
+      screen.getByText(/Select entries to edit or remove them/);
+    });
+
+    it("accepts valid NTP server hostnames", async () => {
+      const { user } = installerRender(<SystemPage />);
+
+      const modeButtons = screen.getAllByLabelText("Mode");
+      const ntpModeButton = modeButtons[1];
+      await user.click(ntpModeButton);
+
+      const customOption = screen.getByRole("option", { name: /Custom/ });
+      await user.click(customOption);
+
+      const ntpInput = screen.getByRole("textbox", { name: "Server addresses" });
+      await user.type(ntpInput, "pool.ntp.org{Enter}");
+      await user.type(ntpInput, "192.168.1.1{Enter}");
+      await user.type(ntpInput, "2001:db8::1{Enter}");
+
+      const acceptButton = screen.getByRole("button", { name: "Accept" });
+      await user.click(acceptButton);
+
+      expect(mockPatchConfig).toHaveBeenCalledWith({
+        ntp: {
+          sources: [
+            {
+              type: "pool",
+              address: "pool.ntp.org",
+              iburst: true,
+              offline: false,
+            },
+            {
+              type: "pool",
+              address: "192.168.1.1",
+              iburst: true,
+              offline: false,
+            },
+            {
+              type: "pool",
+              address: "2001:db8::1",
+              iburst: true,
+              offline: false,
+            },
+          ],
+        },
+      });
     });
   });
 });
