@@ -27,6 +27,7 @@ import { useSystemChanges } from "~/hooks/model/system";
 import { useProposal, useProposalChanges } from "~/hooks/model/proposal";
 import { useIssues, useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
@@ -45,6 +46,7 @@ const Content = () => {
   // https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
   useProposal();
   useIssues();
+  useConfigModel();
 
   const location = useLocation();
   const product = useProductInfo();
