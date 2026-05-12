@@ -90,7 +90,7 @@ describe Agama::Storage::ConfigSolver do
 
   let(:storage_system) { Agama::Storage::System.new }
 
-  subject { described_class.new(product_config, storage_system) }
+  subject { described_class.new(product_config, bootloader_config, storage_system) }
 
   describe "#solve" do
     let(:scenario) { "empty-hd-50GiB.yaml" }

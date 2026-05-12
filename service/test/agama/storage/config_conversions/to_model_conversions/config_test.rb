@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../config_context"
-require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/to_model_conversions/config"
 require "y2storage/encryption_method"
 
@@ -37,8 +36,6 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
       volumeGroups: volume_groups
     }
   end
-
-  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
 
   let(:boot) { nil }
   let(:drives) { nil }
@@ -234,8 +231,9 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
         model_json = subject.convert
         expect(model_json[:boot]).to eq(
           {
-            configure: true,
-            device:    { default: true }
+            configure:  true,
+            bootloader: "grub2",
+            device:     { default: true }
           }
         )
       end

@@ -175,21 +175,6 @@ storage:
           # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
           - path: var
             copy_on_write: false
-          # Architecture specific subvolumes
-          - path: boot/grub2/arm64-efi
-            archs: aarch64
-          - path: boot/grub2/arm-efi
-            archs: arm
-          - path: boot/grub2/i386-pc
-            archs: x86_64
-          - path: boot/grub2/powerpc-ieee1275
-            archs: ppc,!board_powernv
-          - path: boot/grub2/s390x-emu
-            archs: s390
-          - path: boot/grub2/x86_64-efi
-            archs: x86_64
-          - path: boot/grub2/riscv64-efi
-            archs: riscv64
       size:
         auto: true
       outline:

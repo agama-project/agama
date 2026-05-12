@@ -82,6 +82,10 @@ module Agama
         # @return [Y2Storage::ProposalSettings]
         def proposal_settings
           agama_default = ProposalSettingsReader.new(product_config).read
+          root_vol = agama_default.volumes.find { |v| v.mount_path == "/" }
+          if root_vol&.btrfs
+            root_vol.btrfs.subvolumes.concat(bootloader_config.type.root_subvolumes)
+          end
           agama_default.to_y2storage(config: product_config)
         end
 
