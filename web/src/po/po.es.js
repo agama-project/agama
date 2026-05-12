@@ -821,6 +821,9 @@ export default {
   "Deactivated": [
     "Desactivado"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistema de archivos por defecto para %s"
   ],
@@ -1046,8 +1049,14 @@ export default {
   "Enter a name for the volume group.": [
     "Introduzca un nombre para el grupo del volúmenes."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Enter o Tab para agregar; flechas para navegar entradas, Ctrl+flechas para reorganizar, Escape para salir; Borrar o Supr para eliminar."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -1055,14 +1064,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Ejemplo: %s"
-  ],
   "Excellent signal": [
     "Señal excelente"
   ],
   "Expiration date": [
     "Fecha de vencimiento"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1165,6 +1174,12 @@ export default {
   "Formatting devices": [
     "Formatear dispositivos"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "El cifrado completo del disco (FDE) permite proteger la información almacenada en los nuevos sistemas de archivos, incluidos datos, programas y archivos del sistema."
   ],
@@ -1197,6 +1212,12 @@ export default {
   ],
   "Graphical desktop environments for the system.": [
     "Entornos gráficos de escritorio para el sistema."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Ocultar"
@@ -1449,6 +1470,9 @@ export default {
   "License acceptance required": [
     "Es necesario aceptar la licencia"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Cargando"
   ],
@@ -1517,6 +1541,12 @@ export default {
   ],
   "Max channel": [
     "Canal máximo"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "Miembros"
@@ -1805,6 +1835,9 @@ export default {
   "Not supported (%s)": [
     "No compatible (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "Sin conexión"
   ],
@@ -1919,6 +1952,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Posible pérdida de datos que afecta al menos a %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Continuar puede provocar pérdida de datos"
   ],
@@ -1934,17 +1973,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Protección de la información almacenada en los nuevos sistemas de archivo, incluyendo datos, programas y archivos del sistema."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Proporcionar autenticación"
   ],
-  "Provide email address": [
-    "Proporcione una dirección de correo electrónico"
-  ],
   "Provide its password to log in to the system.": [
     "Proporcione su contraseña para iniciar sesión en el sistema."
-  ],
-  "Provide registration code": [
-    "Proporcione el código de registro"
   ],
   "Public SSH Key": [
     "Clave SSH pública"
@@ -2072,6 +2111,9 @@ export default {
   "Review and install": [
     "Revisar e instalar"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Inicio de sesión de root (raíz) con clave SSH"
   ],
@@ -2107,6 +2149,9 @@ export default {
   ],
   "SSID": [
     "SSID"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "Centro de servicios al cliente de SUSE (SCC)"
@@ -2220,9 +2265,6 @@ export default {
   "Server URL": [
     "URL del servidor"
   ],
-  "Server options": [
-    "Opciones del servidor"
-  ],
   "Set DIAG off": [
     "Desactivar DIAG"
   ],
@@ -2325,6 +2367,9 @@ export default {
   ],
   "Something went wrong": [
     "Algo ha fallado"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Comience configurando una instalación básica"
@@ -2547,9 +2592,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "El producto no se encontró en los repositorios, por lo que no es posible continuar con la instalación."
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "El producto se registrará con el nombre de host \"%s\""
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "El tamaño para %1$s se ajustará dinámicamente según el total de RAM del sistema y la presencia de un sistema de archivos independiente para %2$s."
   ],
@@ -2692,6 +2734,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Para garantizar que el nuevo sistema pueda arrancar, es posible que el instalador tenga que crear o configurar algunas particiones en el disco correspondiente."
@@ -2892,9 +2937,6 @@ export default {
   "Using %d connections with %s": [
     "Usando conexiones %d con %s"
   ],
-  "Using [%s] keyboard": [
-    "Se está utilizando el teclado [%s]"
-  ],
   "Using a hashed password.": [
     "Utiliza una contraseña con hash."
   ],
@@ -2997,9 +3039,6 @@ export default {
   "You can safely close this window.": [
     "Puedes cerrar esta ventana sin problemas."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "No puede cambiarlo más tarde. Vaya a la sección %s si desea modificarlo antes de proceder con el registro."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Quizá quiera descartar los ajustes actuales y empezar desde cero con una configuración sencilla."
   ],
@@ -3026,9 +3065,6 @@ export default {
   ],
   "auto selected": [
     "seleccionado automáticamente"
-  ],
-  "hostname": [
-    "nombre del equipo"
   ],
   "iBFT": [
     "iBFT"

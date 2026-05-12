@@ -36,7 +36,7 @@
  */
 
 import { sprintf } from "sprintf-js";
-import { isEmpty, shake } from "radashi";
+import { inRange, isEmpty, shake } from "radashi";
 import { BondMode } from "~/types/network";
 import {
   CONNECTION_TYPE,
@@ -236,6 +236,61 @@ function validateBondFields(formValues: FormValues): Partial<FormFieldErrors> {
 }
 
 /**
+ * Validates bridge STP specific fields
+ */
+function validateBridgeStp(formValues: FormValues): Partial<FormFieldErrors> {
+  if (!formValues.bridgeStp) return {};
+
+  return {
+    // For radashi inRange the start is inclusive but the end of the range is exclusive,
+    // therefore, take care of adding 1 more to the end range.
+    // TRANSLATORS: validation error for the bridge priority field.
+    bridgePriority:
+      formValues.bridgePriority === undefined || inRange(formValues.bridgePriority, 0, 61441)
+        ? undefined
+        : _("Priority must be between 0 and 61440"),
+    // TRANSLATORS: validation error for the bridge forward delay field.
+    bridgeForwardDelay:
+      formValues.bridgeForwardDelay === undefined || inRange(formValues.bridgeForwardDelay, 4, 31)
+        ? undefined
+        : _("Forward delay must be between 4 and 30 seconds"),
+    // TRANSLATORS: validation error for the bridge hello time field.
+    bridgeHelloTime:
+      formValues.bridgeHelloTime === undefined || inRange(formValues.bridgeHelloTime, 1, 11)
+        ? undefined
+        : _("Hello time must be between 1 and 10 seconds"),
+
+    // TRANSLATORS: validation error for the bridge max message age field.
+    bridgeMaxAge:
+      formValues.bridgeMaxAge === undefined || inRange(formValues.bridgeMaxAge, 6, 41)
+        ? undefined
+        : _("Max message age must be between 6 and 40 seconds"),
+  };
+}
+
+/**
+ * Validates bridge-specific fields.
+ */
+function validateBridgeFields(formValues: FormValues): Partial<FormFieldErrors> {
+  if (formValues.type !== CONNECTION_TYPE.BRIDGE) return {};
+
+  const { bridgeIface, bridgePorts } = formValues;
+
+  const errors: Partial<FormFieldErrors> = {
+    // TRANSLATORS: validation error for the bridge device name field.
+    bridgeIface: !bridgeIface.trim() ? _("Device name is required") : undefined,
+    bridgePorts:
+      bridgePorts.length === 0
+        ? // TRANSLATORS: validation error for the bridge ports field.
+          _("At least one bridge port is required")
+        : undefined,
+    ...validateBridgeStp(formValues),
+  };
+
+  return errors;
+}
+
+/**
  * Validates the connection form values.
  *
  * Returns a map of field errors when validation fails, or undefined when all
@@ -245,6 +300,7 @@ export function validateConnectionForm(formValues: FormValues): FormFieldErrors 
   const fieldErrors = shake({
     ...validateCommonFields(formValues),
     ...validateBondFields(formValues),
+    ...validateBridgeFields(formValues),
   });
 
   if (!isEmpty(fieldErrors)) return fieldErrors;

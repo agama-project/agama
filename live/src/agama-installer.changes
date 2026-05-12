@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Thu May  7 13:06:27 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Restore back the checkmedia option in the *.kiwi file
+  (reverts the change for bsc#1262229, the latest checkmedia
+  supports GPT partition tables and kiwi improved the check to
+  detect the checkmedia version)
+
+-------------------------------------------------------------------
+Thu May  7 08:19:56 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- bsc#1264099
+  - use --enable-vt-switch option conditionally only if gnome-kiosk
+    supports it
+
+-------------------------------------------------------------------
+Wed May  6 14:11:57 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Removed development GPG keys (bsc#1262143)
+
+-------------------------------------------------------------------
 Thu Apr 23 08:20:09 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed medium check (bsc#1262311)

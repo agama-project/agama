@@ -71,6 +71,9 @@ translations:
     ru: Экспериментальная непрерывно обновляемая версия openSUSE, обновляющаяся реже
       Tumbleweed, но чаще Leap. Предлагает баланс между высокой стабильностью и
       новизной пакетов.
+    sk: Experimentálne a trochu pomalšie rolujúce vydanie openSUSE navrhnuté tak,
+      aby sa aktualizovalo menej často ako Tumbleweed, ale častejšie ako Leap,
+      bez nútenia používateľov vyberať si medzi "stabilnými" a novšími balíkmi.
     sv: En experimentell och något långsammare rullande utgåva av openSUSE utformad
       för att få nya paketuppdateringar mer sällan än Tumbleweed men oftare än
       Leap utan att tvinga användarna att välja mellan "stabila" eller nyare

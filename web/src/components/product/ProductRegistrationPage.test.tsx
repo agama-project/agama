@@ -27,7 +27,7 @@ import ProductRegistrationPage from "./ProductRegistrationPage";
 import { Product } from "~/model/system";
 import { RegistrationInfo, AddonInfo } from "~/model/system/software";
 import { Config } from "~/model/config";
-import { patchConfig, putConfig } from "~/api";
+import { patchConfig } from "~/api";
 import { Issue } from "~/model/issue";
 import { cloneDeep } from "radashi";
 
@@ -82,7 +82,6 @@ jest.mock("~/hooks/model/issue", () => ({
 }));
 
 jest.mock("~/api", () => ({
-  putConfig: jest.fn(),
   patchConfig: jest.fn(),
 }));
 
@@ -97,20 +96,18 @@ describe("ProductRegistrationPage", () => {
     mockConfig = { product: { id: "sle", mode: "standard", registrationCode: "" } };
     mockIssues = [];
     mockProductConfig(mockConfig.product);
-    // @ts-ignore
     mockProduct(mockSelectedProduct);
   });
 
   describe("when the selected product is not registrable", () => {
     beforeEach(() => {
       mockSelectedProduct = tw;
-      // @ts-ignore
       mockProduct(mockSelectedProduct);
       mockRegistrationInfo = undefined;
     });
 
     it("renders the registration page", () => {
-      installerRender(<ProductRegistrationPage />, { withL10n: true });
+      installerRender(<ProductRegistrationPage />);
       screen.getByText("Registration");
     });
   });
@@ -118,16 +115,17 @@ describe("ProductRegistrationPage", () => {
   describe("when the selected product is registrable and not yet registered", () => {
     beforeEach(() => {
       mockSelectedProduct = sle;
-      // @ts-ignore
       mockProduct(mockSelectedProduct);
       mockRegistrationInfo = undefined;
     });
 
     describe("and the static hostname is not set", () => {
       it("renders a custom alert using the transient hostname", () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
 
-        screen.getByText('The product will be registered with "testing-node" hostname');
+        screen.getByText("Hostname cannot be changed after registration");
+        screen.getByText("Configured as", { exact: false });
+        screen.getByText("testing-node");
         screen.getByRole("link", { name: "hostname" });
       });
     });
@@ -138,228 +136,25 @@ describe("ProductRegistrationPage", () => {
       });
 
       it("renders a custom alert using the static hostname", () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
 
-        screen.getByText('The product will be registered with "testing-server" hostname');
+        screen.getByText("Hostname cannot be changed after registration");
+        screen.getByText("Configured as", { exact: false });
+        screen.getByText("testing-server");
         screen.getByRole("link", { name: "hostname" });
       });
     });
 
-    it("allows registering the product without an email address", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-      const registrationCodeInput = screen.getByLabelText("Registration code");
-      const submitButton = screen.getByRole("button", { name: "Register" });
+    it("renders the registration form", () => {
+      installerRender(<ProductRegistrationPage />);
 
-      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-
-      await user.click(submitButton);
-
-      expect(putConfig).toHaveBeenCalledWith({
-        ...mockConfig,
-        product: {
-          id: "sle",
-          mode: "standard",
-          registrationCode: "INTERNAL-USE-ONLY-1234-5678",
-          registrationEmail: undefined,
-          registrationUrl: undefined,
-        },
-      });
-    });
-
-    it("allows registering the product with an email address", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-      const registrationCodeInput = screen.getByLabelText("Registration code");
-      const submitButton = screen.getByRole("button", { name: "Register" });
-
-      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-
-      // email input is optional, user has to explicitely activate it
-      const provideEmailCheckbox = screen.getByRole("checkbox", { name: "Provide email address" });
-      expect(provideEmailCheckbox).not.toBeChecked();
-      await user.click(provideEmailCheckbox);
-      expect(provideEmailCheckbox).toBeChecked();
-      const emailInput = screen.getByRole("textbox", { name: /Email/ });
-      await user.type(emailInput, "example@company.test");
-
-      await user.click(submitButton);
-
-      expect(putConfig).toHaveBeenCalledWith({
-        ...mockConfig,
-        product: {
-          id: "sle",
-          mode: "standard",
-          registrationCode: "INTERNAL-USE-ONLY-1234-5678",
-          registrationEmail: "example@company.test",
-          registrationUrl: undefined,
-        },
-      });
-    });
-
-    it("renders an error when email input is enabled but left empty", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-      const registrationCodeInput = screen.getByLabelText("Registration code");
-      const submitButton = screen.getByRole("button", { name: "Register" });
-
-      await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-
-      // email input is optional, user has to explicitely activate it
-      const provideEmailCheckbox = screen.getByRole("checkbox", { name: "Provide email address" });
-      await user.click(provideEmailCheckbox);
-      await user.click(submitButton);
-
-      expect(putConfig).not.toHaveBeenCalled();
-      screen.getByText("Warning alert:");
-      screen.getByText("Enter an email");
-    });
-
-    it("allows registering using a custom server", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-      const registrationServerButton = screen.getByRole("button", { name: "Registration server" });
-      await user.click(registrationServerButton);
-      const customServer = screen.getByRole("option", { name: /^Custom/ });
-      await user.click(customServer);
-      const serverUrlInput = screen.getByRole("textbox", { name: "Server URL" });
-      await user.type(serverUrlInput, "https://custom-server.test");
-      const submitButton = screen.getByRole("button", { name: "Register" });
-
-      await user.click(submitButton);
-      expect(putConfig).toHaveBeenCalledWith({
-        ...mockConfig,
-        product: {
-          id: "sle",
-          mode: "standard",
-          registrationUrl: "https://custom-server.test",
-          registrationCode: undefined,
-          registrationEmail: undefined,
-        },
-      });
-    });
-
-    describe("if registering with the default server", () => {
-      it("shows an error when no registration code is provided", async () => {
-        const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-        const submitButton = screen.getByRole("button", { name: "Register" });
-
-        await user.click(submitButton);
-
-        expect(putConfig).not.toHaveBeenCalled();
-        screen.getByText("Warning alert:");
-        screen.getByText("Enter a registration code");
-      });
-    });
-
-    describe("if registering with a custom server", () => {
-      it("shows an error when no server URL is provided", async () => {
-        const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-        const registrationServerButton = screen.getByRole("button", {
-          name: "Registration server",
-        });
-        await user.click(registrationServerButton);
-        const customServer = screen.getByRole("option", { name: /^Custom/ });
-        await user.click(customServer);
-        const submitButton = screen.getByRole("button", { name: "Register" });
-        await user.click(submitButton);
-
-        expect(putConfig).not.toHaveBeenCalled();
-        screen.getByText("Warning alert:");
-        screen.getByText("Enter a server URL");
-      });
-
-      describe("and user enabled the registration code input", () => {
-        it("does not renders an error if the code is provided", async () => {
-          const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-          const registrationServerButton = screen.getByRole("button", {
-            name: "Registration server",
-          });
-          await user.click(registrationServerButton);
-          const customServer = screen.getByRole("option", { name: /^Custom/ });
-          await user.click(customServer);
-          const serverUrlInput = screen.getByRole("textbox", { name: "Server URL" });
-          await user.type(serverUrlInput, "https://custom-server.test");
-          const provideRegistrationCode = screen.getByRole("checkbox", {
-            name: "Provide registration code",
-          });
-          await user.click(provideRegistrationCode);
-          const registrationCodeInput = screen.getByLabelText("Registration code");
-          await user.type(registrationCodeInput, "INTERNAL-USE-ONLY-1234-5678");
-          const submitButton = screen.getByRole("button", { name: "Register" });
-          await user.click(submitButton);
-
-          expect(putConfig).toHaveBeenCalledWith({
-            ...mockConfig,
-            product: {
-              id: "sle",
-              mode: "standard",
-              registrationUrl: "https://custom-server.test",
-              registrationCode: "INTERNAL-USE-ONLY-1234-5678",
-              registrationEmail: undefined,
-            },
-          });
-          expect(screen.queryByText("Enter a registration code")).toBeNull();
-        });
-
-        it("renders an error if the code is left empty", async () => {
-          const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-          const registrationServerButton = screen.getByRole("button", {
-            name: "Registration server",
-          });
-          await user.click(registrationServerButton);
-          const customServer = screen.getByRole("option", { name: /^Custom/ });
-          await user.click(customServer);
-          const serverUrlInput = screen.getByRole("textbox", { name: "Server URL" });
-          await user.type(serverUrlInput, "https://custom-server.test");
-          const provideRegistrationCode = screen.getByRole("checkbox", {
-            name: "Provide registration code",
-          });
-          await user.click(provideRegistrationCode);
-          const submitButton = screen.getByRole("button", { name: "Register" });
-          await user.click(submitButton);
-
-          expect(putConfig).not.toHaveBeenCalled();
-          screen.getByText("Warning alert:");
-          screen.queryByText("Enter a registration code.");
-        });
-      });
-    });
-  });
-
-  describe("when the registration failed", () => {
-    beforeEach(() => {
-      mockIssues = [
-        {
-          scope: "software",
-          class: "system_registration_failed",
-          description: "Unauthorized code",
-        },
-      ];
-    });
-
-    it("renders errors returned by the registration server", async () => {
-      installerRender(<ProductRegistrationPage />, { withL10n: true });
-
-      screen.getByText("Warning alert:");
-      screen.getByText("Unauthorized code");
-    });
-
-    it("allows forgetting the registration information", async () => {
-      const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
-
-      const button = screen.getByRole("button", { name: "Do not register" });
-      await user.click(button);
-      expect(putConfig).toHaveBeenCalledWith({
-        ...mockConfig,
-        product: {
-          id: "sle",
-          mode: "standard",
-        },
-      });
+      screen.getByRole("button", { name: "Register" });
     });
   });
 
   describe("when selected product is registrable and already registered", () => {
     beforeEach(() => {
       mockSelectedProduct = sle;
-      // @ts-ignore
       mockProduct(mockSelectedProduct);
       mockRegistrationInfo = {
         code: "INTERNAL-USE-ONLY-1234-5678",
@@ -369,7 +164,7 @@ describe("ProductRegistrationPage", () => {
     });
 
     it("does not render a custom alert about the hostname", () => {
-      installerRender(<ProductRegistrationPage />, { withL10n: true });
+      installerRender(<ProductRegistrationPage />);
 
       expect(screen.queryByText("Custom alert:")).toBeNull();
       expect(screen.queryByText(/hostname/)).toBeNull();
@@ -378,7 +173,7 @@ describe("ProductRegistrationPage", () => {
 
     describe("if registered with the default server", () => {
       it("does not render the registration server information", () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
         expect(screen.queryByText("Registration server")).toBeNull();
         expect(screen.queryByText("https://custom-server.test")).toBeNull();
       });
@@ -395,7 +190,7 @@ describe("ProductRegistrationPage", () => {
       });
 
       it("renders the registration server", () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
         screen.getByText("Registration server");
         screen.getByText("https://custom-server.test");
       });
@@ -403,7 +198,7 @@ describe("ProductRegistrationPage", () => {
 
     describe("if using a resgistration code", () => {
       it("renders the code partially hidden", async () => {
-        const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+        const { user } = installerRender(<ProductRegistrationPage />);
         screen.getByText("Registration code");
         const visibilityCodeToggler = screen.getByRole("button", { name: "Show" });
         screen.getByText(/\*?5678/);
@@ -427,14 +222,14 @@ describe("ProductRegistrationPage", () => {
       });
 
       it("does not render the code", async () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
         expect(screen.queryByText("Registration code")).toBeNull();
       });
     });
 
     describe("if using an email", () => {
       it("renders the email", () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
         screen.getByText("Email");
         screen.getByText("example@company.test");
       });
@@ -450,7 +245,7 @@ describe("ProductRegistrationPage", () => {
       });
 
       it("does not render the email", () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
         expect(screen.queryByText("Email")).toBeNull();
         expect(screen.queryByText("example@company.test")).toBeNull();
       });
@@ -466,7 +261,7 @@ describe("ProductRegistrationPage", () => {
       });
 
       it("renders them", async () => {
-        installerRender(<ProductRegistrationPage />, { withL10n: true });
+        installerRender(<ProductRegistrationPage />);
 
         // heading without "BETA"
         const title = screen.getByRole("heading", {
@@ -493,7 +288,7 @@ describe("ProductRegistrationPage", () => {
         });
 
         it("renders them with its registration code partially hidden", async () => {
-          const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+          const { user } = installerRender(<ProductRegistrationPage />);
 
           // the second "Show" button, the first one belongs to the base product registration code
           const visibilityCodeToggler = screen.getAllByRole("button", { name: "Show" })[1];
@@ -537,7 +332,7 @@ describe("ProductRegistrationPage", () => {
         });
 
         it("allows forgetting the registration information", async () => {
-          const { user } = installerRender(<ProductRegistrationPage />, { withL10n: true });
+          const { user } = installerRender(<ProductRegistrationPage />);
 
           const button = screen.getByRole("button", { name: "Do not register" });
           await user.click(button);
@@ -555,5 +350,46 @@ describe("ProductRegistrationPage", () => {
         });
       });
     });
+  });
+
+  it("renders general issues alert", () => {
+    mockSelectedProduct = sle;
+    mockProduct(sle);
+    mockRegistrationInfo = undefined;
+    mockIssues = [
+      {
+        scope: "product",
+        class: "system_registration_failed",
+        description: "Failed to register",
+      },
+      {
+        scope: "product",
+        class: "some_other_issue",
+        description: "Some other problem",
+      },
+    ];
+
+    installerRender(<ProductRegistrationPage />);
+
+    // General issues alert should show other issues
+    screen.getByText("Some other problem");
+  });
+
+  it("hides hostname alert after failed registration attempt", () => {
+    mockSelectedProduct = sle;
+    mockProduct(sle);
+    mockRegistrationInfo = undefined;
+    mockIssues = [
+      {
+        scope: "product",
+        class: "system_registration_failed",
+        description: "Failed to register",
+      },
+    ];
+
+    installerRender(<ProductRegistrationPage />);
+
+    // Hostname alert should not be shown after registration attempt
+    expect(screen.queryByText("Hostname cannot be changed after registration")).toBeNull();
   });
 });

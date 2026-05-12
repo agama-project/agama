@@ -284,6 +284,7 @@ export default function ConnectionsTable() {
                   [CONNECTION_TYPE.WIFI]: connectionTypeLabel(CONNECTION_TYPE.WIFI),
                   [CONNECTION_TYPE.ETHERNET]: connectionTypeLabel(CONNECTION_TYPE.ETHERNET),
                   [CONNECTION_TYPE.BOND]: connectionTypeLabel(CONNECTION_TYPE.BOND),
+                  [CONNECTION_TYPE.BRIDGE]: connectionTypeLabel(CONNECTION_TYPE.BRIDGE),
                 }}
                 onChange={(_, v) => onFilterChange("type", v)}
               />

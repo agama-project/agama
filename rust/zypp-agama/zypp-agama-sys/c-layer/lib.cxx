@@ -587,7 +587,14 @@ void add_service(struct Zypp *zypp, const char *alias, const char *url,
     zypp::ServiceInfo zypp_service = zypp::ServiceInfo(alias);
     zypp_service.setUrl(zypp::Url(url));
 
-    zypp->repo_manager->addService(zypp_service);
+    const zypp::ServiceInfo stored = zypp->repo_manager->getService(alias);
+    if (stored == zypp::ServiceInfo::noService) {
+      // the service does not exist, add it
+      zypp->repo_manager->addService(zypp_service);
+    } else {
+      // the service already exists, modify the existing one
+      zypp->repo_manager->modifyService(zypp_service);
+    }
     STATUS_OK(status);
   } catch (zypp::Exception &excpt) {
     STATUS_EXCEPT(status, excpt);

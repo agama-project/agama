@@ -417,6 +417,14 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 .pf-v6-c-form__group {
   justify-self: flex-start;
+
+  // Prevent form inputs from stretching to match the width of long helper text
+  // or instructions. Inputs size themselves based on content and explicit
+  // width constraints, while text elements flow at their natural width.
+  .pf-v6-c-form-control,
+  .pf-v6-c-text-input-group {
+    max-width: fit-content;
+  }
 }
 
 // Fix select toggle icon visibility by creating more space at the end :/
@@ -595,4 +603,11 @@ nav.agm-breadcrumb h1 {
     justify-self: start;
     text-align: start;
   }
+}
+
+// Hide datalist dropdown arrow in Chrome/Edge
+// The arrow is hidden to emphasize free-text input and match Firefox behavior
+// Users will discover suggestions by typing
+input[type="text"][list]::-webkit-calendar-picker-indicator {
+  display: none;
 }

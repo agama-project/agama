@@ -66,6 +66,10 @@ translations:
       continuidade nos negócios e minimiza riscos e custos operacionais.
     ru: "Ведущая ОС для безопасной и надёжной работы SAP: сертифицирована для SAP,
       обеспечивает стабильность, снижает риски и издержки."
+    sk: Popredný OS pre bezpečnú a spoľahlivú platformu SAP. Schválený pre nasadenie
+      SAP, SUSE Linux Enterprise Server pre aplikácie SAP zabezpečuje budúcnosť
+      projektu SAP, poskytuje nepretržitý chod podniku a minimalizuje
+      prevádzkové riziká a náklady.
     sv: Det ledande operativsystemet för en säker och pålitlig SAP-plattform.
       Godkänd för SAP utrullningar, SUSE Linux Enterprise Server för
       SAP-applikationer framtidssäkrar SAP-projektet, erbjuder oavbrutna affärer
@@ -98,6 +102,7 @@ translations:
         kab: Tizeɣt
         nb_NO: Standard
         ru: Стандартный
+        sk: Štandardný
         sv: Standard
         uk: Стандартна
       description:
@@ -115,6 +120,7 @@ translations:
         ka: სტანდარტული სისტემა
         kab: Anagraw n tizeɣt
         ru: Стандартная система
+        sk: Štandardný systém
         sv: Standard system
         uk: Стандартна система
     immutable:
@@ -133,6 +139,7 @@ translations:
         ka: უცვლადი
         nb_NO: Immutable
         ru: Неизменяемый
+        sk: Nemenný
         sv: Oföränderlig
         uk: Незмінний
       description:
@@ -150,6 +157,7 @@ translations:
         ka: უცვლელი სისტემა ატომური განახლებებით
         nb_NO: Et uforanderlig system med atomiske oppdateringer
         ru: Неизменяемая система с атомарными обновлениями
+        sk: Nemenný systém s atomickými aktualizáciami
         sv: Oföränderligt system med atomiska uppdateringar
         uk: Незмінна система з атомарними оновленнями
 desktop_selection: optional

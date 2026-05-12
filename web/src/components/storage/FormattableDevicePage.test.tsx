@@ -97,16 +97,14 @@ describe("FormattableDevicePage", () => {
   it("renders a form for formatting the device", async () => {
     const { user } = installerRender(<FormattableDevicePage />);
     screen.getByRole("form", { name: "Configure device /dev/sda" });
-    const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
+    const mountPoint = screen.getByLabelText("Mount point");
     const filesystem = screen.getByRole("button", { name: "File system" });
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
 
-    await user.click(mountPoint);
-    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
-    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
-    await user.click(homeMountPoint);
+    await user.type(mountPoint, "/home");
+    await user.tab();
     // Valid mount point selected, enable file system field
     expect(filesystem).toBeEnabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
@@ -117,24 +115,21 @@ describe("FormattableDevicePage", () => {
 
   it("allows reseting the chosen mount point", async () => {
     const { user } = installerRender(<FormattableDevicePage />);
-    // Note that the underline PF component gives the role combobox to the input
-    const mountPoint = screen.getByRole("combobox", { name: "Mount point" });
+    const mountPoint = screen.getByLabelText("Mount point");
     const filesystem = screen.getByRole("button", { name: "File system" });
     expect(mountPoint).toHaveValue("");
     // File system field is disabled until a valid mount point selected
     expect(filesystem).toBeDisabled();
-    const mountPointToggle = screen.getByRole("button", { name: "Mount point toggle" });
-    await user.click(mountPointToggle);
-    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
-    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
-    await user.click(homeMountPoint);
+
+    await user.type(mountPoint, "/home");
+    await user.tab();
     expect(mountPoint).toHaveValue("/home");
     expect(filesystem).toBeEnabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
-    const clearMountPointButton = screen.getByRole("button", {
-      name: "Clear selected mount point",
-    });
-    await user.click(clearMountPointButton);
+
+    await user.click(mountPoint);
+    await user.clear(mountPoint);
+    await user.tab();
     expect(mountPoint).toHaveValue("");
     // File system field is disabled until a valid mount point selected
     expect(filesystem).toBeDisabled();
@@ -177,11 +172,9 @@ describe("FormattableDevicePage", () => {
   describe("if the form is accepted", () => {
     it("changes the device config", async () => {
       const { user } = installerRender(<FormattableDevicePage />);
-      const mountPointToggle = screen.getByRole("button", { name: "Mount point toggle" });
-      await user.click(mountPointToggle);
-      const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
-      const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
-      await user.click(homeMountPoint);
+      const mountPoint = screen.getByLabelText("Mount point");
+      await user.type(mountPoint, "/home");
+      await user.tab();
       const filesystemButton = screen.getByRole("button", { name: "File system" });
       await user.click(filesystemButton);
       const filesystemOptions = screen.getByRole("listbox", { name: "Available file systems" });

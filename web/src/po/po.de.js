@@ -427,6 +427,9 @@ export default {
   "Bridge": [
     ""
   ],
+  "Bridge ports": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -753,6 +756,9 @@ export default {
   "Deactivated": [
     "Deaktiviert"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Standard-Dateisystem für %s"
   ],
@@ -888,6 +894,9 @@ export default {
   "Download logs to troubleshoot or share with support.": [
     "Protokolle herunterladen, um Fehler zu beheben oder sie mit dem Kundendienst zu teilen."
   ],
+  "E.g., %s": [
+    ""
+  ],
   "E.g., 192.168.1.1": [
     "Z.B. 192.168.1.1"
   ],
@@ -904,6 +913,9 @@ export default {
     "Z.B. 8.8.8.8 oder 2001:4860:4860::8888"
   ],
   "E.g., bond0": [
+    ""
+  ],
+  "E.g., br0": [
     ""
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
@@ -972,8 +984,14 @@ export default {
   "Enter a name for the volume group.": [
     "Name für die Volume-Gruppe eingeben."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Zum Hinzufügen die Eingabetaste oder die Tabulatortaste drücken; mit den Pfeiltasten durch die Einträge navigieren, mit Strg+Pfeiltasten die Reihenfolge ändern, mit Esc das Fenster schließen; mit Rücktaste oder Entf löschen."
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "Ethernet"
@@ -981,14 +999,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Beispiel: %s"
-  ],
   "Excellent signal": [
     "Ausgezeichnetes Signal"
   ],
   "Expiration date": [
     "Ablaufdatum"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -1091,6 +1109,12 @@ export default {
   "Formatting devices": [
     "Geräte formatieren"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Die vollständige Festplattenverschlüsselung (FDE) ermöglicht den Schutz der in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programmen und Systemdateien."
   ],
@@ -1116,6 +1140,12 @@ export default {
     "Gutes Signal"
   ],
   "Graphical desktop environments for the system.": [
+    ""
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
     ""
   ],
   "Hide": [
@@ -1366,6 +1396,9 @@ export default {
   "License acceptance required": [
     "Lizenzannahme erforderlich"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Wird geladen"
   ],
@@ -1422,6 +1455,12 @@ export default {
   ],
   "Max channel": [
     "Maximaler Kanal"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "Mitglieder"
@@ -1683,6 +1722,9 @@ export default {
   "Not supported (%s)": [
     "Nicht unterstützt (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "Offline"
   ],
@@ -1788,6 +1830,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potenzieller Datenverlust, von dem mindestens %s betroffen sind"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Das Fortfahren kann zu Datenverlust führen"
   ],
@@ -1803,17 +1851,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Schutz für die in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programme und Systemdateien."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Authentifizierung bereitstellen"
   ],
-  "Provide email address": [
-    "E-Mail-Adresse angeben"
-  ],
   "Provide its password to log in to the system.": [
     "Geben Sie das Passwort für die Anmeldung am System ein."
-  ],
-  "Provide registration code": [
-    "Registrierungscode angeben"
   ],
   "Public SSH Key": [
     "Öffentlicher SSH-Schlüssel"
@@ -1923,6 +1971,9 @@ export default {
   "Review and install": [
     "Überprüfen und installieren"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Root-Anmeldung mit SSH-Schlüssel"
   ],
@@ -1958,6 +2009,9 @@ export default {
   ],
   "SSID": [
     "SSID"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -2059,9 +2113,6 @@ export default {
   "Server URL": [
     "Server-URL"
   ],
-  "Server options": [
-    "Serveroptionen"
-  ],
   "Set DIAG off": [
     "DIAG ausschalten"
   ],
@@ -2161,6 +2212,9 @@ export default {
   ],
   "Something went wrong": [
     "Etwas ist schiefgelaufen"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Konfiguration einer Basisinstallation beginnen"
@@ -2374,9 +2428,6 @@ export default {
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
     "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "Das Produkt wird unter dem Hostnamen „%s“ registriert"
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
   ],
@@ -2504,6 +2555,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Um sicherzustellen, dass das neue System starten kann, muss das Installationsprogramm möglicherweise einige Partitionen auf der entsprechenden Festplatte erstellen oder konfigurieren."
@@ -2700,9 +2754,6 @@ export default {
   "Using %d connections with %s": [
     "Verwendung von %d Verbindungen mit %s"
   ],
-  "Using [%s] keyboard": [
-    "Tastatur [%s] wird verwendet"
-  ],
   "Using a hashed password.": [
     "Verwendung eines gehashten Passworts."
   ],
@@ -2799,9 +2850,6 @@ export default {
   "You can safely close this window.": [
     "Sie können dieses Fenster gefahrlos schließen."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Sie können ihn später nicht mehr ändern. Gehen Sie zum Abschnitt %s, wenn Sie ihn vor der Registrierung ändern möchten."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Möglicherweise möchten Sie die aktuellen Einstellungen verwerfen und mit einer einfachen Konfiguration neu beginnen."
   ],
@@ -2828,9 +2876,6 @@ export default {
   ],
   "auto selected": [
     "automatisch ausgewählt"
-  ],
-  "hostname": [
-    "Hostname"
   ],
   "iBFT": [
     "iBFT"

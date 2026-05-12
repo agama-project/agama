@@ -123,17 +123,6 @@ jest.mock("~/hooks/model/config/iscsi", () => ({
   useRemoveTarget: () => mockRemoveTargetFn,
 }));
 
-// Needed by withL10n
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({
-    l10n: {
-      keymap: "us",
-      timezone: "Europe/Berlin",
-      locale: "en_US",
-    },
-  }),
-}));
-
 describe("TargetsTable", () => {
   beforeEach(() => {
     jest.clearAllMocks();
