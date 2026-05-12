@@ -86,7 +86,7 @@ module Agama
           if root_vol&.btrfs
             root_vol.btrfs.subvolumes.concat(bootloader_config.type.root_subvolumes)
           end
-          agama_default.to_y2storage(config: product_config)
+          agama_default.to_y2storage(config: product_config, bootloader_config: bootloader_config)
         end
 
         # Logs AutoYaST warnings

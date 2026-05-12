@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "y2storage/boot_requirements_strategies"
+require "y2storage/boot_requirements_checker"
 require "y2storage/storage_manager"
 require "y2storage/bootloader_type"
 
@@ -28,11 +28,6 @@ module Y2Storage
   module Proposal
     # Class to calculate the partitions that will be needed to boot the system in the Agama
     # proposal, according to the Agama settings
-    #
-    # TODO: Currently this class overlaps some of its reponsibilities (and even logic!) with
-    # Y2Storage::BootRequirementsChecker. We need to re-evaluate that before merging everything
-    # to the master branch of Agama. It would likely make sense to make BootRequirementsChecker
-    # more configurable instead of directly using its strategies in this class.
     class BootPlanner
       include Yast::Logger
 
@@ -55,8 +50,14 @@ module Y2Storage
       #   added to the starting devicegraph.
       # @return [Array<Planned::Partition>]
       def partitions(planned_devices)
-        strategy(planned_devices).needed_partitions(:min)
-      rescue BootRequirementsStrategies::Error => e
+        checker = BootRequirementsChecker.new(
+          devicegraph,
+          planned_devices: planned_devices,
+          boot_disk_name:  boot_device_name,
+          bootloader:      bootloader_config.type
+        )
+        checker.needed_partitions(:min)
+      rescue BootRequirementsChecker::Error => e
         raise NotBootableError, e.message
       end
 
@@ -76,62 +77,6 @@ module Y2Storage
       # @return [String, nil]
       def boot_device_name
         config.boot_device&.found_device&.name
-      end
-
-      # @see #partitions
-      def strategy(planned_devices)
-        strategy_class.new(devicegraph, planned_devices, boot_device_name)
-      end
-
-      # @see #grub2_strategy_class
-      def arch
-        @arch ||= StorageManager.instance.arch
-      end
-
-      # @see #strategy
-      #
-      # @return [BootRequirementsStrategies::Base]
-      def strategy_class
-        @strategy_class ||=
-          case bootloader_config.type
-          when BootloaderType::NONE
-            BootRequirementsStrategies::NfsRoot
-          when BootloaderType::GRUB2
-            grub2_strategy_class
-          else
-            BootRequirementsStrategies::BLS
-          end
-      end
-
-      # @see #strategy
-      #
-      # @return [BootRequirementsStrategies::Base]
-      def grub2_strategy_class
-        if raspberry_pi?
-          BootRequirementsStrategies::Raspi
-        elsif arch.efiboot?
-          BootRequirementsStrategies::UEFI
-        elsif arch.s390?
-          BootRequirementsStrategies::ZIPL
-        elsif arch.ppc?
-          BootRequirementsStrategies::PReP
-        else
-          # Fallback to Legacy as default
-          BootRequirementsStrategies::Legacy
-        end
-      end
-
-      # @see #raspberry_pi?
-      VENDOR_MODEL_PATH = "/proc/device-tree/model"
-      private_constant :VENDOR_MODEL_PATH
-
-      # Whether this is a Raspberry Pi. See fate#323484
-      #
-      # @return [Boolean]
-      def raspberry_pi?
-        return false unless File.exist?(VENDOR_MODEL_PATH)
-
-        File.read(VENDOR_MODEL_PATH).match?(/Raspberry Pi/i)
       end
     end
   end
