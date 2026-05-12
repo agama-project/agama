@@ -50,7 +50,7 @@ export type SuggestionsTextFieldProps = Omit<TextInputProps, "list"> & {
  *
  * This component uses TWO mechanisms to prevent flickering and focus loss:
  *
- * ### 1. Debounced onChange (400ms)
+ * ### 1. Debounced onChange (600ms)
  *
  * **Why it's needed:**
  * Current parent forms (PartitionPage, LogicalVolumePage,
@@ -80,7 +80,7 @@ export type SuggestionsTextFieldProps = Omit<TextInputProps, "list"> & {
  *  - Flickering and input lag
  *  - Focus loss mid-typing
  *
- * Debouncing (400ms) reduces parent updates while user is typing.
+ * Debouncing (600ms) reduces parent updates while user is typing.
  *
  * ### 2. Focus Tracking
  *
@@ -89,7 +89,7 @@ export type SuggestionsTextFieldProps = Omit<TextInputProps, "list"> & {
  * ```
  *  1. User types "/h"        → internalValue = "/h" (onChange debounced)
  *  2. User types "ome"       → internalValue = "/home"
- *  3. 400ms after step 1     → onChange("/h") fires → parent updates
+ *  3. 600ms after step 1     → onChange("/h") fires → parent updates
  *  4. Parent re-renders      → externalValue = "/h"
  *  5. Effect runs            → setInternalValue("/h")
  *  6. User's "ome" is lost!  → Input shows "/h" instead of "/home"
@@ -101,7 +101,7 @@ export type SuggestionsTextFieldProps = Omit<TextInputProps, "list"> & {
  *
  * ### Behavior Summary
  *
- * - **While typing (focused)**: Internal state only, onChange debounced (400ms)
+ * - **While typing (focused)**: Internal state only, onChange debounced (600ms)
  * - **On blur**: Cancel debounce, fire onChange immediately, sync with parent value
  * - **External updates when unfocused**: Sync immediately (form reset, initial load)
  * - **External updates when focused**: Ignored (prevents race conditions)
@@ -201,7 +201,7 @@ function SuggestionsTextField({
     if (onChange) {
       debounceTimeout.current = window.setTimeout(() => {
         onChange(event, newValue);
-      }, 400);
+      }, 600);
     }
   };
 
