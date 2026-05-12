@@ -49,7 +49,7 @@ describe("PatternSelectionUnavailable", () => {
     it("shows the issue description", () => {
       mockUseIssues.mockReturnValue([
         {
-          scope: "product",
+          scope: "software",
           class: "missing_registration",
           description: "Product registration is required",
         },
@@ -63,7 +63,7 @@ describe("PatternSelectionUnavailable", () => {
     it("shows a link to registration", () => {
       mockUseIssues.mockReturnValue([
         {
-          scope: "product",
+          scope: "software",
           class: "missing_registration",
           description: "Product registration is required",
         },
@@ -80,7 +80,7 @@ describe("PatternSelectionUnavailable", () => {
     it("shows the issue description", () => {
       mockUseIssues.mockReturnValue([
         {
-          scope: "product",
+          scope: "software",
           class: "missing_product",
           description: "Base product is not available",
         },
@@ -94,7 +94,7 @@ describe("PatternSelectionUnavailable", () => {
     it("shows an additional hint about network connectivity", () => {
       mockUseIssues.mockReturnValue([
         {
-          scope: "product",
+          scope: "software",
           class: "missing_product",
           description: "Base product is not available",
         },
@@ -108,7 +108,7 @@ describe("PatternSelectionUnavailable", () => {
     it("shows a link to network settings", () => {
       mockUseIssues.mockReturnValue([
         {
-          scope: "product",
+          scope: "software",
           class: "missing_product",
           description: "Base product is not available",
         },

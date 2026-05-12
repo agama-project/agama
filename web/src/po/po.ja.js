@@ -801,6 +801,9 @@ export default {
   "Deactivated": [
     "無効"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "%s に対する既定のファイルシステム"
   ],
@@ -1026,8 +1029,14 @@ export default {
   "Enter a name for the volume group.": [
     "ボリュームグループに対する名前を入力してください。"
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
-    "Enter キーまたは Tab キーで追加、矢印キーで項目間の移動、 Ctrl+矢印キーで順序変更、 Esc キーで終了、Backspace もしくは Delete キーで削除をそれぞれ行います。"
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
   ],
   "Ethernet": [
     "イーサネット"
@@ -1035,14 +1044,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "例: %s"
-  ],
   "Excellent signal": [
     "優良な信号強度"
   ],
   "Expiration date": [
     "有効期限"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "ext2"
@@ -1143,6 +1152,12 @@ export default {
   "Formatting devices": [
     "デバイスをフォーマットしています"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "完全ディスク暗号化 (Full Disk Encryption; FDE) を使用することで、データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
@@ -1175,6 +1190,12 @@ export default {
   ],
   "Graphical desktop environments for the system.": [
     "システムに対するグラフィカルなデスクトップ環境です。"
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "隠す"
@@ -1425,6 +1446,9 @@ export default {
   "License acceptance required": [
     "ライセンスの受け入れが必要です"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "読み込んでいます"
   ],
@@ -1493,6 +1517,12 @@ export default {
   ],
   "Max channel": [
     "最大チャネル"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     "メンバー"
@@ -1779,6 +1809,9 @@ export default {
   "Not supported (%s)": [
     "サポート対象外です (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "オフライン"
   ],
@@ -1893,6 +1926,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "少なくとも %s に影響する潜在的なデータ削除が発生します"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "続行することによりデータ削除が発生する可能性があります"
   ],
@@ -1908,17 +1947,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "認証情報を設定"
   ],
-  "Provide email address": [
-    "電子メールアドレスを入力する"
-  ],
   "Provide its password to log in to the system.": [
     "システムにログインするためのパスワードを入力してください。"
-  ],
-  "Provide registration code": [
-    "登録コードを入力する"
   ],
   "Public SSH Key": [
     "公開 SSH 鍵"
@@ -2046,6 +2085,9 @@ export default {
   "Review and install": [
     "確認してインストール"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "SSH 鍵による root ログイン"
   ],
@@ -2081,6 +2123,9 @@ export default {
   ],
   "SSID": [
     "SSID"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -2193,9 +2238,6 @@ export default {
   "Server URL": [
     "サーバ URL"
   ],
-  "Server options": [
-    "サーバオプション"
-  ],
   "Set DIAG off": [
     "DIAG を無効にする"
   ],
@@ -2297,6 +2339,9 @@ export default {
   ],
   "Something went wrong": [
     "何らかの問題が発生しました"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "基本的なインストールの設定を開始する"
@@ -2511,9 +2556,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "リポジトリ内には製品が見つかりませんでした。そのため、インストールを続行することができません。"
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "製品をホスト名 \"%s\" で登録します"
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "システムのメモリサイズと %2$s 向けの個別ファイルシステムの存在に応じて、 %1$s 向けのサイズを動的に調整します。"
   ],
@@ -2654,6 +2696,9 @@ export default {
   ],
   "Tmpfs": [
     "tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
@@ -2853,9 +2898,6 @@ export default {
   "Using %d connections with %s": [
     "%d 個の接続 (%s) を使用"
   ],
-  "Using [%s] keyboard": [
-    "[%s] キーボードを使用しています"
-  ],
   "Using a hashed password.": [
     "ハッシュ化されたパスワードを使用します。"
   ],
@@ -2958,9 +3000,6 @@ export default {
   "You can safely close this window.": [
     "このウインドウは閉じてかまいません。"
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "登録内容は後から変更することができません。登録に際して変更しておきたい項目がある場合は、 %s セクションに移動してください。"
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "現在の設定を破棄してシンプルな設定からやり直すこともできます。"
   ],
@@ -2987,9 +3026,6 @@ export default {
   ],
   "auto selected": [
     "自動選択済み"
-  ],
-  "hostname": [
-    "ホスト名"
   ],
   "iBFT": [
     "iBFT"

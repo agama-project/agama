@@ -358,6 +358,9 @@ export default {
   "Bridge": [
     ""
   ],
+  "Bridge ports": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
@@ -648,6 +651,9 @@ export default {
   "Deactivated": [
     "Απενεργοποιημένο"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Προεπιλεγμένο σύστημα αρχείων για το %s"
   ],
@@ -711,6 +717,9 @@ export default {
   "Device details": [
     "Λεπτομέρειες συσκευής"
   ],
+  "Disabled": [
+    ""
+  ],
   "Discard": [
     "Απόρριψη"
   ],
@@ -759,6 +768,9 @@ export default {
   "Download logs to troubleshoot or share with support.": [
     "Κάντε λήψη των καταγραφών για αντιμετώπιση προβλημάτων ή για κοινοποίηση στην υποστήριξη."
   ],
+  "E.g., %s": [
+    ""
+  ],
   "E.g., 192.168.1.1": [
     ""
   ],
@@ -775,6 +787,9 @@ export default {
     ""
   ],
   "E.g., bond0": [
+    ""
+  ],
+  "E.g., br0": [
     ""
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
@@ -810,6 +825,9 @@ export default {
   "Enable mutual verification": [
     "Ενεργοποίηση αμοιβαίας επαλήθευσης"
   ],
+  "Enabled": [
+    ""
+  ],
   "Encrypt the system": [
     "Κρυπτογράφηση του συστήματος"
   ],
@@ -843,7 +861,13 @@ export default {
   "Enter a name for the volume group.": [
     "Εισαγάγετε ένα όνομα για την ομάδα τόμων (volume group)."
   ],
-  "Enter or Tab to add; arrow keys to navigate entries, Ctrl+arrows to reorder, Escape to exit; Backspace or Delete to remove.": [
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     ""
   ],
   "Ethernet": [
@@ -852,14 +876,14 @@ export default {
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Παράδειγμα: %s"
-  ],
   "Excellent signal": [
     "Εξαιρετικό σήμα"
   ],
   "Expiration date": [
     "Ημερομηνία λήξης"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -956,6 +980,12 @@ export default {
   "Formatted": [
     "Διαμορφωμένο"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Η Πλήρης Κρυπτογράφηση Δίσκου (FDE) επιτρέπει την προστασία των πληροφοριών που αποθηκεύονται στα νέα συστήματα αρχείων, συμπεριλαμβανομένων των δεδομένων, των προγραμμάτων και των αρχείων συστήματος."
   ],
@@ -981,6 +1011,12 @@ export default {
     "Καλό σήμα"
   ],
   "Graphical desktop environments for the system.": [
+    ""
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
     ""
   ],
   "Hide": [
@@ -1195,6 +1231,9 @@ export default {
   "License acceptance required": [
     "Απαιτείται αποδοχή της άδειας χρήσης"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Φόρτωση"
   ],
@@ -1245,6 +1284,12 @@ export default {
   ],
   "Max channel": [
     "Μέγιστο κανάλι"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
   ],
   "Members": [
     ""
@@ -1461,6 +1506,9 @@ export default {
   "Not supported (%s)": [
     "Δεν υποστηρίζεται (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "On boot": [
     "Κατά την εκκίνηση"
   ],
@@ -1557,6 +1605,12 @@ export default {
   "Potential data loss affecting at least %s": [
     "Πιθανή απώλεια δεδομένων που επηρεάζει τουλάχιστον το %s"
   ],
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
+  ],
   "Proceeding may result in data loss": [
     "Η συνέχεια ενδέχεται να οδηγήσει σε απώλεια δεδομένων"
   ],
@@ -1569,17 +1623,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Προστασία για τις πληροφορίες που αποθηκεύονται στα νέα συστήματα αρχείων, συμπεριλαμβανομένων δεδομένων, προγραμμάτων και αρχείων συστήματος."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Παροχή πιστοποίησης"
   ],
-  "Provide email address": [
-    "Δώστε τη διεύθυνση email"
-  ],
   "Provide its password to log in to the system.": [
     "Εισαγάγετε τον κωδικό πρόσβασης για να συνδεθείτε στο σύστημα."
-  ],
-  "Provide registration code": [
-    "Δώστε τον κωδικό εγγραφής"
   ],
   "Public SSH Key": [
     "Δημόσιο κλειδί SSH"
@@ -1674,6 +1728,9 @@ export default {
   "Review and install": [
     "Έλεγχος και εγκατάσταση"
   ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
+  ],
   "Root login with SSH key": [
     "Σύνδεση root με κλειδί SSH"
   ],
@@ -1709,6 +1766,9 @@ export default {
   ],
   "SSID": [
     "SSID"
+  ],
+  "STP": [
+    ""
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -1788,9 +1848,6 @@ export default {
   ],
   "Server URL": [
     "URL διακομιστή"
-  ],
-  "Server options": [
-    "Επιλογές διακομιστή"
   ],
   "Set DIAG off": [
     "Απενεργοποίηση DIAG"
@@ -1876,6 +1933,9 @@ export default {
   ],
   "Something went wrong": [
     "Κάτι πήγε στραβά"
+  ],
+  "Spanning Tree Protocol (STP)": [
+    ""
   ],
   "Start configuring a basic installation": [
     "Έναρξη διαμόρφωσης μιας βασικής εγκατάστασης"
@@ -2083,9 +2143,6 @@ export default {
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     ""
   ],
-  "The product will be registered with \"%s\" hostname": [
-    "Το προϊόν θα εγγραφεί με το όνομα συστήματος (hostname) «%s»"
-  ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Το μέγεθος για τη %1$s θα προσαρμοστεί δυναμικά με βάση την ποσότητα RAM στο σύστημα και την ύπαρξη ξεχωριστού συστήματος αρχείων για το %2$s."
   ],
@@ -2204,6 +2261,9 @@ export default {
   ],
   "Tmpfs": [
     "Tmpfs"
+  ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Για να διασφαλιστεί ότι το νέο σύστημα μπορεί να εκκινήσει, ο εγκαταστάτης ενδέχεται να χρειαστεί να δημιουργήσει ή να ρυθμίσει ορισμένες κατατμήσεις στον κατάλληλο δίσκο."
@@ -2394,9 +2454,6 @@ export default {
   "Using %d connections with %s": [
     "Χρήση %d συνδέσεων με %s"
   ],
-  "Using [%s] keyboard": [
-    "Χρήση πληκτρολογίου [%s]"
-  ],
   "Using a hashed password.": [
     "Χρήση συνθηματικού με κατακερματισμό (hashed)."
   ],
@@ -2484,9 +2541,6 @@ export default {
   "You can safely close this window.": [
     "Μπορείτε να κλείσετε αυτό το παράθυρο με ασφάλεια."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Δεν μπορείτε να το αλλάξετε αργότερα. Μεταβείτε στην ενότητα %s αν θέλετε να το τροποποιήσετε πριν προχωρήσετε στην εγγραφή."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Ίσως θέλετε να απορρίψετε τις τρέχουσες ρυθμίσεις και να ξεκινήσετε από το μηδέν με μια απλή διαμόρφωση."
   ],
@@ -2513,9 +2567,6 @@ export default {
   ],
   "auto selected": [
     "αυτόματα επιλεγμένο"
-  ],
-  "hostname": [
-    "όνομα συστήματος"
   ],
   "iBFT": [
     "iBFT"

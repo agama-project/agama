@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-20 09:45+0000\n"
-"PO-Revision-Date: 2026-03-28 08:04+0000\n"
+"PO-Revision-Date: 2026-05-04 07:04+0000\n"
 "Last-Translator: David D <dadu042@mailo.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/fr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 5.17.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -506,19 +506,18 @@ msgstr ""
 #.
 #. @return [Issue]
 #: service/lib/agama/storage/proposal.rb:315
-#, fuzzy
 msgid "A problem occurred while calculating the storage setup"
 msgstr "Un problème est survenu lors du calcul de la configuration du stockage"
 
 #. Step to copy the installation logs
 #: service/lib/agama/storage/umounter.rb:112
 msgid "Copying logs"
-msgstr "Les journaux sont en cours de copie"
+msgstr "Journaux en cours de copie"
 
 #. Step to unmount the target file-systems
 #: service/lib/agama/storage/umounter.rb:153
 msgid "Unmounting storage devices"
-msgstr "Les périphériques de stockage sont en cours de démontage"
+msgstr "Démontage des périphériques de stockage"
 
 #. Activates the controller if it is not active yet.
 #.

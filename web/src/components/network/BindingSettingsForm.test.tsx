@@ -180,7 +180,7 @@ describe("BindingSettingsForm", () => {
       });
     });
 
-    it("sets 'mac' mode  default", () => {
+    it("sets 'mac' mode by default", () => {
       installerRender(<BindingSettingsForm />);
       const { unbound, byName, byMac } = getOptions();
 
