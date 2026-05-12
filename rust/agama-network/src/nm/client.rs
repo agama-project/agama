@@ -368,7 +368,7 @@ impl<'a> NetworkManagerClient<'a> {
 
     /// Activates a NetworkManager connection.
     ///
-    /// * `path`: D-Bus patch of the connection.
+    /// * `path`: D-Bus path of the connection.
     pub async fn activate_connection(
         &self,
         path: OwnedObjectPath,
@@ -397,7 +397,7 @@ impl<'a> NetworkManagerClient<'a> {
 
     /// Deactivates a NetworkManager connection.
     ///
-    /// * `path`: D-Bus patch of the connection.
+    /// * `path`: D-Bus path of the connection.
     pub async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
 
@@ -426,8 +426,8 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(proxy)
     }
 
-    // Returns the DeviceProxy for the given device name
-    //
+    /// Returns the DeviceProxy for the given device name
+    ///
     /// * `name`: Device name.
     async fn get_device_proxy(&self, name: String) -> Result<DeviceProxy<'_>, NmError> {
         let mut device_path: Option<OwnedObjectPath> = None;

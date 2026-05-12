@@ -64,7 +64,7 @@ impl TryFrom<NmWirelessMode> for WirelessMode {
             "adhoc" => Ok(WirelessMode::AdHoc),
             "mesh" => Ok(WirelessMode::Mesh),
             "ap" => Ok(WirelessMode::AP),
-            _ => Err(NmError::UnsupporedWirelessMode(value.to_string())),
+            _ => Err(NmError::UnsupportedWirelessMode(value.to_string())),
         }
     }
 }
@@ -250,9 +250,9 @@ impl TryFrom<NmKeyManagement> for SecurityProtocol {
             "owe" => Ok(SecurityProtocol::OWE),
             "ieee8021x" => Ok(SecurityProtocol::DynamicWEP),
             "wpa-psk" => Ok(SecurityProtocol::WPA2),
-            "wpa-eap" => Ok(SecurityProtocol::WPA3Personal),
-            "sae" => Ok(SecurityProtocol::WPA2Enterprise),
-            "wpa-eap-suite-b-192" => Ok(SecurityProtocol::WPA2Enterprise),
+            "wpa-eap" => Ok(SecurityProtocol::WPA2Enterprise),
+            "sae" => Ok(SecurityProtocol::WPA3Personal),
+            "wpa-eap-suite-b-192" => Ok(SecurityProtocol::WPA3Only),
             "none" => Ok(SecurityProtocol::WEP),
             _ => Err(NmError::UnsupportedSecurityProtocol(value.to_string())),
         }
