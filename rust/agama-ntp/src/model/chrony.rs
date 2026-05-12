@@ -35,6 +35,7 @@ const CHRONY_MAX_TRIES: &str = "1";
 const CHRONY_SERVICE_NAME: &str = "chronyd";
 const DEFAULT_WORKDIR: &str = "/";
 const DEFAULT_INSTALL_DIR: &str = "/mnt";
+const DRACUT_CHRONY_CONFIG: &str = "run/chrony/dracut.sources.d/dracut.sources";
 
 pub struct Model {
     workdir: PathBuf,
@@ -96,6 +97,11 @@ impl Default for Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
+    async fn get_config(&self) -> Result<Config, Error> {
+        let sources_path = self.workdir.join(DRACUT_CHRONY_CONFIG);
+        Ok(Config::from_chrony_conf(sources_path).map_err(Error::ReadConfig)?)
+    }
+
     async fn write_config(&self, config: &Config) -> Result<(), Error> {
         let path = self.config_path();
 

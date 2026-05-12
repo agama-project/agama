@@ -27,6 +27,8 @@ pub mod chrony;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("Could not read the system configuration")]
+    ReadConfig(#[source] io::Error),
     #[error("Failed to write chronyd configuration")]
     WriteConfig(#[source] io::Error),
     #[error("Failed to reload chronyd")]
@@ -40,7 +42,12 @@ pub enum Error {
 }
 
 #[async_trait]
-pub trait ModelAdapter: Send + 'static {
+pub trait ModelAdapter: Send + Sync + 'static {
+    /// Gets the system configuration
+    async fn get_config(&self) -> Result<Config, Error> {
+        Ok(Config::default())
+    }
+
     /// Apply the configuration to the current system.
     ///
     /// - `config`: configuration to apply.

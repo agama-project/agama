@@ -61,13 +61,14 @@ impl Starter {
         self
     }
 
-    pub fn start(self) -> Result<Handler<Service>, Error> {
-        let service = Service {
+    pub async fn start(self) -> Result<Handler<Service>, Error> {
+        let mut service = Service {
             config: None,
             model: self.model,
             software: self.software,
         };
 
+        service.setup().await;
         let handler = actor::spawn(service);
         Ok(handler)
     }
@@ -76,13 +77,24 @@ impl Starter {
 pub struct Service {
     // FIXME: is this the right place to keep the configuration?
     config: Option<api::ntp::Config>,
-    model: Box<dyn model::ModelAdapter>,
+    model: Box<dyn model::ModelAdapter + Send + 'static>,
     software: Handler<software::Service>,
 }
 
 impl Service {
     pub fn starter(events: event::Sender, software: Handler<software::Service>) -> Starter {
         Starter::new(events, software)
+    }
+
+    /// Initializes the service by reading the current configuration.
+    pub async fn setup(&mut self) {
+        if let Ok(config) = self.model.get_config().await {
+            if !config.is_empty() {
+                self.config = Some(config);
+            }
+        }
+
+        tracing::info!("Additional NTP configuration: {:?}", &self.config);
     }
 
     async fn set_resolvables(&mut self, resolvables: Vec<Resolvable>) {
