@@ -206,24 +206,29 @@ function SuggestionsTextField({
   };
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    isFocused.current = false;
-
-    // Cancel debounced onChange and sync immediately on blur
+    // Cancel debounced onChange
     if (debounceTimeout.current !== null) {
       window.clearTimeout(debounceTimeout.current);
       debounceTimeout.current = null;
     }
 
-    if (onChange) {
-      onChange(event, internalValue);
-    }
-
-    // Sync with external value on blur in case parent transformed it
-    setInternalValue(String(externalValue || ""));
-
-    if (onBlur) {
-      onBlur(event);
-    }
+    // Defer these updates using setTimeout(..., 0) so they run after the blur
+    // event. If onChange or onBlur are called immediately during blur, a React
+    // re-render can happen before the browser finishes moving focus (e.g., when
+    // pressing TAB), causing focus loss.
+    //
+    // More on how event loop and task queues work:
+    // https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide
+    const currentValue = internalValue;
+    setTimeout(() => {
+      isFocused.current = false;
+      if (onChange) {
+        onChange(event, currentValue);
+      }
+      if (onBlur) {
+        onBlur(event);
+      }
+    }, 0);
   };
 
   return (
