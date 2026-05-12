@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{message, model};
-use std::path::Path;
+use crate::{
+    message,
+    model::{self, chrony},
+};
 
 use agama_software::{self as software, Resolvable};
 use agama_utils::{
@@ -48,18 +50,14 @@ impl Starter {
     pub fn new(events: event::Sender, software: Handler<software::Service>) -> Starter {
         Self {
             _events: events,
-            model: Box::new(model::Model::new()),
+            model: Box::new(chrony::Model::new()),
+
             software,
         }
     }
 
     pub fn with_model(mut self, model: Box<dyn model::ModelAdapter>) -> Self {
         self.model = model;
-        self
-    }
-
-    pub fn with_install_dir<P: AsRef<Path>>(mut self, install_dir: P) -> Self {
-        self.model = Box::new(model::Model::new().with_install_dir(install_dir));
         self
     }
 
