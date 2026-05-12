@@ -22,9 +22,10 @@
 
 import React from "react";
 import { Alert, Content, Flex } from "@patternfly/react-core";
-import { NestedContent } from "~/components/core";
-import Text from "~/components/core/Text";
+import Icon from "~/components/layout/Icon";
 import Interpolate from "~/components/core/Interpolate";
+import NestedContent from "~/components/core/NestedContent";
+import Text from "~/components/core/Text";
 import { systemFormOptions } from "~/components/system/SystemPage";
 import { withForm } from "~/hooks/form";
 import { useSystem } from "~/hooks/model/system";
@@ -41,15 +42,18 @@ const HOSTNAME_MODE = {
 function TransientModeHelperText() {
   return (
     <Content>
-      <Interpolate
-        sentence={
-          // TRANSLATORS: explanation of transient hostname behavior.
-          // Text in square brackets will be displayed in bold.
-          _("This name is dynamic and [may change after a reboot or network update].")
-        }
-      >
-        {(text) => <Text isBold>{text}</Text>}
-      </Interpolate>
+      <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+        <Icon name="emergency" />
+        <Interpolate
+          sentence={
+            // TRANSLATORS: explanation of transient hostname behavior.
+            // Text in square brackets will be displayed in bold.
+            _("This name is dynamic and [may change after a reboot or network update].")
+          }
+        >
+          {(text) => <Text isBold>{text}</Text>}
+        </Interpolate>
+      </Flex>
     </Content>
   );
 }
