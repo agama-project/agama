@@ -299,21 +299,21 @@ impl ZyppServer {
             tracing::info!("libzypp commit ends with {}", result);
             if result {
                 break;
-            } else {
-                let text =
-                    gettext("Packages download and installation failed. Would you like to retry?");
-                let question_spec =
-                    QuestionSpec::new(&text, "software.installation_retry").with_yes_no_actions();
-                // TODO: it would be nice if we can in backend split between auto selected option and focused option
-                // TODO: if needed we would need to extend C API to get more details about failure
-                let answer = ask_software_question(&question, question_spec);
-                // if there is error during asking question, then just consider it as not want to retry
-                let Ok(answer) = answer else {
-                    break;
-                };
-                if answer.action == "No" {
-                    break;
-                }
+            }
+
+            let text =
+                gettext("Packages download and installation failed. Would you like to retry?");
+            let question_spec =
+                QuestionSpec::new(&text, "software.installation_retry").with_yes_no_actions();
+            // TODO: it would be nice if we can in backend split between auto selected option and focused option
+            // TODO: if needed we would need to extend C API to get more details about failure
+            let answer = ask_software_question(&question, question_spec);
+            // if there is error during asking question, then just consider it as not want to retry
+            let Ok(answer) = answer else {
+                break;
+            };
+            if answer.action == "No" {
+                break;
             }
         }
         let res = progress.cast(progress::message::Finish::new(Scope::Software));
