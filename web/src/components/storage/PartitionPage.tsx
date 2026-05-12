@@ -36,15 +36,14 @@ import {
   SelectGroup,
   SelectList,
   SelectOption,
-  SelectOptionProps,
   Split,
   SplitItem,
   Stack,
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SelectWrapper as Select, SubtleContent } from "~/components/core/";
+import SuggestionsTextField from "~/components/form/SuggestionsTextField";
 import { SelectWrapperProps as SelectProps } from "~/components/core/SelectWrapper";
-import SelectTypeaheadCreatable from "~/components/core/SelectTypeaheadCreatable";
 import AutoSizeText from "~/components/storage/AutoSizeText";
 import SizeModeSelect, { SizeMode, SizeRange } from "~/components/storage/SizeModeSelect";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
@@ -477,10 +476,6 @@ function useAutoRefreshSize(handler, value: FormValue) {
   }, [handler, target, solvedSizes]);
 }
 
-function mountPointSelectOptions(mountPoints: string[]): SelectOptionProps[] {
-  return mountPoints.map((p) => ({ value: p, children: p }));
-}
-
 type TargetOptionLabelProps = {
   value: string;
 };
@@ -835,16 +830,11 @@ const PartitionPageForm = () => {
             <FormGroup fieldId="mountPoint" label={_("Mount point")}>
               <Flex>
                 <FlexItem>
-                  <SelectTypeaheadCreatable
+                  <SuggestionsTextField
                     id="mountPoint"
-                    toggleName={_("Mount point toggle")}
-                    listName={_("Suggested mount points")}
-                    inputName={_("Mount point")}
-                    clearButtonName={_("Clear selected mount point")}
                     value={mountPoint}
-                    options={mountPointSelectOptions(unusedMountPoints)}
-                    createText={_("Use")}
-                    onChange={changeMountPoint}
+                    suggestions={unusedMountPoints}
+                    onChange={(_event, value) => changeMountPoint(value)}
                   />
                 </FlexItem>
                 <FlexItem>
@@ -864,7 +854,7 @@ const PartitionPageForm = () => {
                     variant={mountPointError ? "error" : "default"}
                     screenReaderText=""
                   >
-                    {!mountPointError && _("Select or enter a mount point")}
+                    {!mountPointError && _("E.g., /home, /var, or swap")}
                     {mountPointError?.message}
                   </HelperTextItem>
                 </HelperText>
