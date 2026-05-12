@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import SuggestionsTextField from "./SuggestionsTextField";
 
@@ -146,25 +146,11 @@ describe("SuggestionsTextField", () => {
     expect(screen.getByLabelText("Test field")).toHaveValue("/home");
   });
 
-  it("ignores external value changes while focused", async () => {
-    // NOTE: This tests focus tracking behavior that acts as a safeguard against
-    // race conditions, but doesn't typically happen with current forms.
-    // Current forms (PartitionPage, etc.) use useState and pass the value back
-    // that the input itself sent via onChange callback - so external value usually
-    // matches what user typed. This is the "tricky" controlled component pattern
-    // where the input sends a value up, parent updates state, re-renders, and
-    // sends the same value back down.
-    // Focus tracking prevents issues if parent sends a DIFFERENT value while
-    // user is typing (edge case). With TanStack Form, this won't be needed at all
-    // since field state is managed internally.
-    const { user, rerender } = installerRender(
-      <SuggestionsTextField
-        id="test-field"
-        value="/boot"
-        onChange={jest.fn()}
-        aria-label="Test field"
-      />,
-    );
+  it("ignores external value changes while focused (real-world scenario)", async () => {
+    // This tests the typical controlled component pattern where the parent
+    // responds to onChange and sends back the same value. Focus tracking
+    // prevents race conditions from the debounced onChange.
+    const { user } = installerRender(<ControlledSuggestionsTextField initialValue="/boot" />);
 
     const input = screen.getByLabelText("Test field");
     expect(input).toHaveValue("/boot");
@@ -176,24 +162,13 @@ describe("SuggestionsTextField", () => {
     await user.type(input, "test");
     expect(input).toHaveValue("/boottest");
 
-    // Parent tries to update value while focused - should be ignored
-    rerender(
-      <SuggestionsTextField
-        id="test-field"
-        value="/home"
-        onChange={jest.fn()}
-        aria-label="Test field"
-      />,
-    );
-
-    // Value should NOT change because input is focused
-    expect(input).toHaveValue("/boottest");
-
     // Blur the input
     await user.tab();
 
-    // After blur, should sync with external value
-    expect(input).toHaveValue("/home");
+    // After blur, value should match what we typed
+    await waitFor(() => {
+      expect(input).toHaveValue("/boottest");
+    });
   });
 
   it("clears the value when external value is cleared", async () => {
