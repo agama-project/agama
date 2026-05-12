@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { NestedContent } from "~/components/core";
+import NestedContent from "~/components/core/NestedContent";
+import Text from "~/components/core/Text";
 import { systemFormOptions } from "~/components/system/SystemPage";
 import { withForm } from "~/hooks/form";
 import { _ } from "~/i18n";
@@ -47,10 +48,18 @@ const NtpSettings = withForm({
         <legend>
           {
             // TRANSLATORS: fieldset legend for NTP configuration
-            _("Network Time Protocol (NTP)")
+            _("Time Synchronization Servers")
           }
         </legend>
         <NestedContent margin="mxLg">
+          <Text textStyle={["fontSizeXs", "textColorSubtle"]}>
+            {
+              // TRANSLATORS: fieldset legend for NTP configuration
+              _(
+                "Configure the Network Time Protocol (NTP) servers used to set the system date and time.",
+              )
+            }
+          </Text>
           <form.AppField name="ntpMode">
             {(field) => (
               <field.DropdownField
