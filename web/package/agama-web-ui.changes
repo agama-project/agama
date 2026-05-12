@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon May  11 22:39:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue May 12 09:29:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Replace the mount point field in storage forms with a free-text
   input that preserves user entries and provides optional suggestion
