@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May  6 14:11:57 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Removed development GPG keys (bsc#1262143)
+
+-------------------------------------------------------------------
 Wed Apr 22 06:43:48 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1262229
