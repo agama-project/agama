@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed May 13 11:52:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Replace the Hostname page and section with a more generic System
+  one that includes NTP and hostname configuration
+  (gh#agama-project/agama#3482).
+- Simplify the UX for changing the hostname by replacing the
+  checkbox-driven approach with a mode selector
+  (related: gh#agama-project/agama#3475).
+
+-------------------------------------------------------------------
 Wed May 13 11:13:23 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Revert replacement of widget used in storage forms for mount
