@@ -127,8 +127,13 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<api::ntp::Config>) -> Result<(), Error> {
-        let mut new_config = message.config.unwrap_or_default();
-        new_config.merge(self.default_config.clone());
+        let new_config = match message.config {
+            Some(mut cfg) => {
+                cfg.merge(self.default_config.clone());
+                cfg
+            }
+            None => self.default_config.clone(),
+        };
 
         if new_config == self.config {
             return Ok(());
