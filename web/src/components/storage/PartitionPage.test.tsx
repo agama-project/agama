@@ -161,7 +161,7 @@ describe("PartitionPage", () => {
   it("renders a form for defining a partition", async () => {
     const { user } = installerRender(<PartitionPage />);
     screen.getByRole("form", { name: "Configure partition at /dev/sda" });
-    const mountPoint = screen.getByLabelText("Mount point");
+    const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const mountPointMode = screen.getByRole("button", { name: "Mount point mode" });
     const filesystem = screen.getByRole("button", { name: "File system" });
     const waitingSize = screen.getByRole("button", { name: "Size mode" });
@@ -170,8 +170,10 @@ describe("PartitionPage", () => {
     expect(screen.queryByRole("textbox", { name: "File system label" })).not.toBeInTheDocument();
     expect(waitingSize).toBeDisabled();
 
-    await user.type(mountPoint, "/home");
-    await user.tab();
+    await user.click(mountPoint);
+    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
+    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+    await user.click(homeMountPoint);
     const size = screen.getByRole("button", { name: "Size mode" });
     // Valid mount point selected, enable file system and size fields
     expect(filesystem).toBeEnabled();
@@ -195,22 +197,28 @@ describe("PartitionPage", () => {
 
   it("allows reseting the chosen mount point", async () => {
     const { user } = installerRender(<PartitionPage />);
-    const mountPoint = screen.getByLabelText("Mount point");
+    // Note that the underline PF component gives the role combobox to the input
+    const mountPoint = screen.getByRole("combobox", { name: "Mount point" });
     const filesystem = screen.getByRole("button", { name: "File system" });
     let size = screen.getByRole("button", { name: "Size mode" });
     expect(mountPoint).toHaveValue("");
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
     expect(size).toBeDisabled();
-    await user.type(mountPoint, "/home");
-    await user.tab();
+    const mountPointToggle = screen.getByRole("button", { name: "Mount point toggle" });
+    await user.click(mountPointToggle);
+    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
+    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+    await user.click(homeMountPoint);
     expect(mountPoint).toHaveValue("/home");
     expect(filesystem).toBeEnabled();
     expect(screen.queryByRole("textbox", { name: "File system label" })).toBeInTheDocument();
     size = screen.getByRole("button", { name: "Size mode" });
     expect(size).toBeEnabled();
-    await user.clear(mountPoint);
-    await user.tab();
+    const clearMountPointButton = screen.getByRole("button", {
+      name: "Clear selected mount point",
+    });
+    await user.click(clearMountPointButton);
     expect(mountPoint).toHaveValue("");
     // File system and size fields disabled until valid mount point selected
     expect(filesystem).toBeDisabled();
@@ -222,11 +230,13 @@ describe("PartitionPage", () => {
   it("does not allow sending sizes without units", async () => {
     const { user } = installerRender(<PartitionPage />);
     screen.getByRole("form", { name: "Configure partition at /dev/sda" });
-    const mountPoint = screen.getByLabelText("Mount point");
+    const mountPoint = screen.getByRole("button", { name: "Mount point toggle" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
 
-    await user.type(mountPoint, "/home");
-    await user.tab();
+    await user.click(mountPoint);
+    const mountPointOptions = screen.getByRole("listbox", { name: "Suggested mount points" });
+    const homeMountPoint = within(mountPointOptions).getByRole("option", { name: "/home" });
+    await user.click(homeMountPoint);
     expect(acceptButton).toBeEnabled();
 
     // Display size modes
@@ -254,7 +264,7 @@ describe("PartitionPage", () => {
 
     it("initializes the form with the partition values", async () => {
       installerRender(<PartitionPage />);
-      const mountPointSelector = screen.getByLabelText("Mount point");
+      const mountPointSelector = screen.getByRole("combobox", { name: "Mount point" });
       expect(mountPointSelector).toHaveValue("/home");
       const targetButton = screen.getByRole("button", { name: "Mount point mode" });
       within(targetButton).getByText(/As a new partition/);

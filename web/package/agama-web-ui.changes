@@ -4,6 +4,14 @@ Wed May 13 11:28:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 - reset user configuration when switching product (bsc#1264438)
 
 -------------------------------------------------------------------
+Wed May 13 11:13:23 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Revert replacement of widget used in storage forms for mount
+  points fields due to several problems undermining the user
+  experience (related to gh#agama-project/agama#3445,
+  gh#agama-project/agama#3489)
+
+-------------------------------------------------------------------
 Tue May 12 13:35:54 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix query refetch when activating zFCP devices (bsc#1263808).
