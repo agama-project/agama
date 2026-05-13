@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed May 13 11:28:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- reset user configuration when switching product (bsc#1264438)
+
+-------------------------------------------------------------------
 Tue May 12 13:35:54 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix query refetch when activating zFCP devices (bsc#1263808).
