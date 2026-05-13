@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,28 +21,25 @@
  */
 
 /**
- * Hostname configuration for PATCH requests.
- *
- * Used to update hostname settings via `patchConfig({ hostname: {...} })`.
- *
- * To set a static hostname:
- * ```typescript
- * patchConfig({ hostname: { static: "my-server" } })
- * ```
- *
- * To clear static hostname (switch to transient mode):
- * ```typescript
- * patchConfig({ hostname: { static: "" } })
- * ```
- *
- * @property static - The static hostname value. Set to empty string to clear
- *                    and use transient mode.
- * @property hostname - The transient hostname. Typically not set via config, as
- *                      it's provided by the network.
+ * NTP source type
  */
-type Config = {
-  static?: string;
-  hostname?: string;
+type SourceType = "pool" | "server" | "peer";
+
+/**
+ * NTP source configuration
+ */
+type Source = {
+  type: SourceType;
+  address: string;
+  iburst?: boolean;
+  offline?: boolean;
 };
 
-export type { Config };
+/**
+ * NTP configuration
+ */
+type Config = {
+  sources?: Source[];
+};
+
+export type { Config, Source, SourceType };

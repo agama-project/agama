@@ -23,7 +23,7 @@
 import React from "react";
 import { Title } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
-import HostnameSummary from "~/components/overview/HostnameSummary";
+import SystemSummary from "~/components/overview/SystemSummary";
 import L10nSummary from "~/components/overview/L10nSummary";
 import StorageSummary from "~/components/overview/StorageSummary";
 import NetworkSummary from "~/components/overview/NetworkSummary";
@@ -49,7 +49,7 @@ export default function InstallationSummarySection() {
       </Title>
       <NestedContent margin="mtSm">
         <div className="installation-settings-summary">
-          <HostnameSummary />
+          <SystemSummary />
           <L10nSummary />
           <RegistrationSummary />
           <NetworkSummary />
