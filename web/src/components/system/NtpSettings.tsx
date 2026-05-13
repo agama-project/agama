@@ -21,8 +21,7 @@
  */
 
 import React from "react";
-import NestedContent from "~/components/core/NestedContent";
-import Text from "~/components/core/Text";
+import { Fieldset } from "~/components/form/Fieldset";
 import { systemFormOptions } from "~/components/system/SystemPage";
 import { isValidNtpServer } from "~/components/system/systemFormValidation";
 import { withForm } from "~/hooks/form";
@@ -45,72 +44,67 @@ const NtpSettings = withForm({
   ...systemFormOptions,
   render: function Render({ form }) {
     return (
-      <fieldset>
-        <legend>
-          {
-            // TRANSLATORS: fieldset legend for NTP configuration
-            _("Time Synchronization Servers")
-          }
-        </legend>
-        <NestedContent margin="mxLg">
-          <Text textStyle={["fontSizeXs", "textColorSubtle"]}>
-            {
-              // TRANSLATORS: explanatory text for NTP configuration
-              _(
-                "Configure the Network Time Protocol (NTP) servers used to set the system date and time.",
-              )
-            }
-          </Text>
-          <form.AppField name="ntpMode">
-            {(field) => (
-              <field.DropdownField
-                // TRANSLATORS: label for NTP mode selector
-                label={_("Mode")}
-                options={[
-                  {
-                    value: NTP_MODE.DEFAULT,
-                    // TRANSLATORS: NTP mode option
-                    label: _("Default"),
-                    // TRANSLATORS: description for default NTP mode
-                    description: _("Use product's default NTP servers"),
-                  },
-                  {
-                    value: NTP_MODE.CUSTOM,
-                    // TRANSLATORS: NTP mode option
-                    label: _("Custom"),
-                    // TRANSLATORS: description for custom NTP mode
-                    description: _("Set NTP servers manually"),
-                  },
-                ]}
-              />
-            )}
-          </form.AppField>
+      <Fieldset
+        legend={
+          // TRANSLATORS: fieldset legend for NTP configuration
+          _("Time Synchronization Servers")
+        }
+        description={
+          // TRANSLATORS: explanatory text for NTP configuration
+          _(
+            "Configure the Network Time Protocol (NTP) servers used to set the system date and time.",
+          )
+        }
+      >
+        <form.AppField name="ntpMode">
+          {(field) => (
+            <field.DropdownField
+              // TRANSLATORS: label for NTP mode selector
+              label={_("Mode")}
+              options={[
+                {
+                  value: NTP_MODE.DEFAULT,
+                  // TRANSLATORS: NTP mode option
+                  label: _("Default"),
+                  // TRANSLATORS: description for default NTP mode
+                  description: _("Use product's default NTP servers"),
+                },
+                {
+                  value: NTP_MODE.CUSTOM,
+                  // TRANSLATORS: NTP mode option
+                  label: _("Custom"),
+                  // TRANSLATORS: description for custom NTP mode
+                  description: _("Set NTP servers manually"),
+                },
+              ]}
+            />
+          )}
+        </form.AppField>
 
-          <form.Subscribe selector={(s) => s.values.ntpMode}>
-            {(ntpMode) =>
-              ntpMode === NTP_MODE.CUSTOM && (
-                <form.AppField name="ntpServers">
-                  {(field) => (
-                    <field.ArrayField
-                      // TRANSLATORS: label for NTP servers input field
-                      label={_("Server addresses")}
-                      // TRANSLATORS: helper text for NTP servers input field
-                      helperText={_(
-                        "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org",
-                      )}
-                      skipDuplicates
-                      validateOnSubmit={(v) =>
-                        // TRANSLATORS: validation error for an invalid NTP server address entry
-                        isValidNtpServer(v) ? undefined : _("Invalid NTP server address")
-                      }
-                    />
-                  )}
-                </form.AppField>
-              )
-            }
-          </form.Subscribe>
-        </NestedContent>
-      </fieldset>
+        <form.Subscribe selector={(s) => s.values.ntpMode}>
+          {(ntpMode) =>
+            ntpMode === NTP_MODE.CUSTOM && (
+              <form.AppField name="ntpServers">
+                {(field) => (
+                  <field.ArrayField
+                    // TRANSLATORS: label for NTP servers input field
+                    label={_("Server addresses")}
+                    // TRANSLATORS: helper text for NTP servers input field
+                    helperText={_(
+                      "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org",
+                    )}
+                    skipDuplicates
+                    validateOnSubmit={(v) =>
+                      // TRANSLATORS: validation error for an invalid NTP server address entry
+                      isValidNtpServer(v) ? undefined : _("Invalid NTP server address")
+                    }
+                  />
+                )}
+              </form.AppField>
+            )
+          }
+        </form.Subscribe>
+      </Fieldset>
     );
   },
 });

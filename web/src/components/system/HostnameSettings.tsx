@@ -24,8 +24,8 @@ import React from "react";
 import { Alert, Content, Flex } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Interpolate from "~/components/core/Interpolate";
-import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
+import { Fieldset } from "~/components/form/Fieldset";
 import { systemFormOptions } from "~/components/system/SystemPage";
 import { withForm } from "~/hooks/form";
 import { useSystem } from "~/hooks/model/system";
@@ -92,92 +92,89 @@ const HostnameSettings = withForm({
     const { software } = useSystem();
 
     return (
-      <fieldset>
-        <legend>
-          {
-            // TRANSLATORS: fieldset legend for hostname configuration
-            _("Hostname")
-          }
-        </legend>
-        <NestedContent margin="mxLg">
-          <Flex alignItems={{ default: "alignItemsFlexStart" }} gap={{ default: "gapMd" }}>
-            <form.AppField name="hostnameMode">
-              {(field) => (
-                <field.DropdownField
-                  // TRANSLATORS: label for hostname mode selector
-                  label={_("Mode")}
-                  options={[
-                    {
-                      value: HOSTNAME_MODE.TRANSIENT,
-                      // TRANSLATORS: hostname mode option
-                      label: _("Transient"),
-                      // TRANSLATORS: description for transient hostname mode
-                      description: _("Provided by the network"),
-                    },
-                    {
-                      value: HOSTNAME_MODE.STATIC,
-                      // TRANSLATORS: hostname mode option
-                      label: _("Static"),
-                      // TRANSLATORS: description for static hostname mode
-                      description: _("Set manually"),
-                    },
-                  ]}
-                />
-              )}
-            </form.AppField>
-
-            <form.Subscribe selector={(s) => s.values.hostnameMode}>
-              {(mode) =>
-                mode === HOSTNAME_MODE.TRANSIENT ? (
-                  <form.AppField name="hostnameValue">
-                    {(field) => (
-                      <field.ReadOnlyField
-                        // TRANSLATORS: label for hostname value display
-                        label={_("Name")}
-                      />
-                    )}
-                  </form.AppField>
-                ) : (
-                  <form.AppField name="hostnameValue">
-                    {(field) => (
-                      <field.TextField
-                        // TRANSLATORS: label for hostname input
-                        label={_("Name")}
-                      />
-                    )}
-                  </form.AppField>
-                )
-              }
-            </form.Subscribe>
-          </Flex>
+      <Fieldset
+        legend={
+          // TRANSLATORS: fieldset legend for hostname configuration
+          _("Hostname")
+        }
+      >
+        <Flex alignItems={{ default: "alignItemsFlexStart" }} gap={{ default: "gapMd" }}>
+          <form.AppField name="hostnameMode">
+            {(field) => (
+              <field.DropdownField
+                // TRANSLATORS: label for hostname mode selector
+                label={_("Mode")}
+                options={[
+                  {
+                    value: HOSTNAME_MODE.TRANSIENT,
+                    // TRANSLATORS: hostname mode option
+                    label: _("Transient"),
+                    // TRANSLATORS: description for transient hostname mode
+                    description: _("Provided by the network"),
+                  },
+                  {
+                    value: HOSTNAME_MODE.STATIC,
+                    // TRANSLATORS: hostname mode option
+                    label: _("Static"),
+                    // TRANSLATORS: description for static hostname mode
+                    description: _("Set manually"),
+                  },
+                ]}
+              />
+            )}
+          </form.AppField>
 
           <form.Subscribe selector={(s) => s.values.hostnameMode}>
             {(mode) =>
               mode === HOSTNAME_MODE.TRANSIENT ? (
-                <TransientModeHelperText />
+                <form.AppField name="hostnameValue">
+                  {(field) => (
+                    <field.ReadOnlyField
+                      // TRANSLATORS: label for hostname value display
+                      label={_("Name")}
+                    />
+                  )}
+                </form.AppField>
               ) : (
-                <StaticModeHelperText />
+                <form.AppField name="hostnameValue">
+                  {(field) => (
+                    <field.TextField
+                      // TRANSLATORS: label for hostname input
+                      label={_("Name")}
+                    />
+                  )}
+                </form.AppField>
               )
             }
           </form.Subscribe>
+        </Flex>
 
-          {software?.registration && (
-            <Alert
-              isInline
-              variant="info"
-              // TRANSLATORS: alert title warning about registered hostname not changing
-              title={_("Registered hostname will not change")}
-            >
-              {
-                // TRANSLATORS: explanation why registered hostname cannot be changed
-                _(
-                  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.",
-                )
-              }
-            </Alert>
-          )}
-        </NestedContent>
-      </fieldset>
+        <form.Subscribe selector={(s) => s.values.hostnameMode}>
+          {(mode) =>
+            mode === HOSTNAME_MODE.TRANSIENT ? (
+              <TransientModeHelperText />
+            ) : (
+              <StaticModeHelperText />
+            )
+          }
+        </form.Subscribe>
+
+        {software?.registration && (
+          <Alert
+            isInline
+            variant="info"
+            // TRANSLATORS: alert title warning about registered hostname not changing
+            title={_("Registered hostname will not change")}
+          >
+            {
+              // TRANSLATORS: explanation why registered hostname cannot be changed
+              _(
+                "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.",
+              )
+            }
+          </Alert>
+        )}
+      </Fieldset>
     );
   },
 });
