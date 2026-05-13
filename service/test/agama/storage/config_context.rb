@@ -42,10 +42,6 @@ shared_context "config" do
 
   let(:storage_system) { Agama::Storage::System.new }
 
-  let(:bootloader_config) do
-    instance_double(Agama::Storage::BootloaderConfig, type: Y2Storage::BootloaderType::GRUB2)
-  end
-
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
       .new(config_json,

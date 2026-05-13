@@ -235,6 +235,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
     context "for the 'boot' property" do
       let(:boot) { { configure: true } }
 
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
+
       it "generates the expected JSON" do
         model_json = subject.convert
         expect(model_json[:boot]).to eq(
