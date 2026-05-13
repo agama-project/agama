@@ -38,11 +38,29 @@ mod tests {
         issue, progress, question,
     };
     use async_trait::async_trait;
-    use std::sync::{Arc, Mutex};
+    use std::{
+        path::Path,
+        sync::{Arc, Mutex},
+    };
     use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
 
     use crate::{message, model, Service};
+
+    /// Helper function to setup dracut NTP sources file.
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - the workdir path
+    /// * `content` - The content to write to the file
+    fn setup_dracut_sources(path: &Path, content: &str) {
+        let dracut_sources_path = path.join("run/chrony/dracut.sources.d/dracut.sources");
+
+        if let Some(parent) = dracut_sources_path.parent() {
+            std::fs::create_dir_all(parent).unwrap();
+        }
+        std::fs::write(dracut_sources_path, content).unwrap();
+    }
 
     #[derive(Clone)]
     struct MockModel {
@@ -125,6 +143,53 @@ mod tests {
         }
     }
 
+    struct DracutContext {
+        handler: Handler<Service>,
+        _events_rx: event::Receiver,
+        _tempdir: tempfile::TempDir,
+    }
+
+    impl AsyncTestContext for DracutContext {
+        async fn setup() -> DracutContext {
+            let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
+            let issues = issue::Service::starter(events_tx.clone()).start();
+            let progress = progress::Service::starter(events_tx.clone()).start();
+            let questions = question::start(events_tx.clone()).await.unwrap();
+            let l10n = start_l10n_service(events_tx.clone(), issues.clone()).await;
+
+            let software = start_software_service(
+                events_tx.clone(),
+                issues,
+                l10n,
+                progress.clone(),
+                questions.clone(),
+            )
+            .await;
+
+            // Set up tempdir with dracut sources
+            let tempdir = tempfile::tempdir().unwrap();
+
+            let dracut_content = r#"# Dracut NTP sources
+pool 0.opensuse.pool.ntp.org iburst
+server ntp.example.com offline
+"#;
+            setup_dracut_sources(tempdir.path(), dracut_content);
+
+            // Create service with real chrony model
+            let model = Box::new(model::chrony::Model::new().with_workdir(tempdir.path()));
+            let handler = Service::starter(events_tx, software)
+                .with_model(model)
+                .start()
+                .unwrap();
+
+            DracutContext {
+                handler,
+                _events_rx,
+                _tempdir: tempdir,
+            }
+        }
+    }
+
     #[test_context(Context)]
     #[tokio::test]
     async fn test_get_config_empty(ctx: &mut Context) {
@@ -178,43 +243,11 @@ mod tests {
         assert!(*ctx.model.install_called.lock().unwrap());
     }
 
+    #[test_context(DracutContext)]
     #[tokio::test]
-    async fn test_get_config_with_dracut_sources() {
-        let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-        let issues = issue::Service::starter(events_tx.clone()).start();
-        let progress = progress::Service::starter(events_tx.clone()).start();
-        let questions = question::start(events_tx.clone()).await.unwrap();
-        let l10n = start_l10n_service(events_tx.clone(), issues.clone()).await;
-
-        let software = start_software_service(
-            events_tx.clone(),
-            issues,
-            l10n,
-            progress.clone(),
-            questions.clone(),
-        )
-        .await;
-
-        // Set up dracut sources file
-        let tempdir = tempfile::tempdir().unwrap();
-        let dracut_chrony_dir = tempdir.path().join("run/chrony/dracut.sources.d");
-        std::fs::create_dir_all(&dracut_chrony_dir).unwrap();
-
-        let dracut_content = r#"# Dracut NTP sources
-pool 0.opensuse.pool.ntp.org iburst
-server ntp.example.com offline
-"#;
-        std::fs::write(dracut_chrony_dir.join("dracut.sources"), dracut_content).unwrap();
-
-        // Create service with real chrony model using the temp workdir
-        let model = Box::new(model::chrony::Model::new().with_workdir(tempdir.path()));
-        let handler = Service::starter(events_tx, software)
-            .with_model(model)
-            .start()
-            .unwrap();
-
+    async fn test_get_config_with_dracut_sources(ctx: &mut DracutContext) {
         // Get the configuration - should include dracut sources
-        let config = handler.call(message::GetConfig).await.unwrap().unwrap();
+        let config = ctx.handler.call(message::GetConfig).await.unwrap().unwrap();
 
         // Verify the dracut sources are present
         let sources = config.sources.as_ref().unwrap();
@@ -250,14 +283,12 @@ server ntp.example.com offline
 
         // Set up dracut sources file with original servers
         let tempdir = tempfile::tempdir().unwrap();
-        let dracut_chrony_dir = tempdir.path().join("run/chrony/dracut.sources.d");
-        std::fs::create_dir_all(&dracut_chrony_dir).unwrap();
 
         let dracut_content = r#"# Dracut NTP sources
 pool 0.opensuse.pool.ntp.org iburst
 server time.example.com
 "#;
-        std::fs::write(dracut_chrony_dir.join("dracut.sources"), dracut_content).unwrap();
+        setup_dracut_sources(tempdir.path(), dracut_content);
 
         // Create service with real chrony model
         let model = Box::new(model::chrony::Model::new().with_workdir(tempdir.path()));
