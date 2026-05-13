@@ -44,7 +44,7 @@ pub enum Error {
 #[async_trait]
 pub trait ModelAdapter: Send + Sync + 'static {
     /// Gets the system configuration
-    async fn get_config(&self) -> Result<Config, Error> {
+    fn get_config(&self) -> Result<Config, Error> {
         Ok(Config::default())
     }
 

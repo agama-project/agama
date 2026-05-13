@@ -88,7 +88,7 @@ impl Service {
 
     /// Initializes the service by reading the current configuration.
     pub async fn setup(&mut self) {
-        if let Ok(config) = self.model.get_config().await {
+        if let Ok(config) = self.model.get_config() {
             if !config.sources.is_empty() {
                 self.config = Some(config);
             }

@@ -104,7 +104,7 @@ impl Default for Model {
 
 #[async_trait]
 impl ModelAdapter for Model {
-    async fn get_config(&self) -> Result<Config, Error> {
+    fn get_config(&self) -> Result<Config, Error> {
         let sources_path = self.workdir.join(DRACUT_CHRONY_CONFIG);
         parse_chrony_config(sources_path).map_err(Error::ReadConfig)
     }
@@ -301,7 +301,7 @@ mod tests {
         std::fs::write(dracut_chrony_dir.join("dracut.sources"), content).unwrap();
 
         let model = Model::new().with_workdir(tempdir.path());
-        let config = model.get_config().await.unwrap();
+        let config = model.get_config().unwrap();
 
         assert_eq!(config.sources.len(), 1);
     }
