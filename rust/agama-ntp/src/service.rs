@@ -61,14 +61,14 @@ impl Starter {
         self
     }
 
-    pub async fn start(self) -> Result<Handler<Service>, Error> {
+    pub fn start(self) -> Result<Handler<Service>, Error> {
         let mut service = Service {
             config: None,
             model: self.model,
             software: self.software,
         };
 
-        service.setup().await;
+        service.setup();
         let handler = actor::spawn(service);
         Ok(handler)
     }
@@ -87,7 +87,7 @@ impl Service {
     }
 
     /// Initializes the service by reading the current configuration.
-    pub async fn setup(&mut self) {
+    pub fn setup(&mut self) {
         if let Ok(config) = self.model.get_config() {
             if !config.sources.is_empty() {
                 self.config = Some(config);

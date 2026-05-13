@@ -115,7 +115,6 @@ mod tests {
             let handler = Service::starter(events_tx, software)
                 .with_model(Box::new(model.clone()))
                 .start()
-                .await
                 .unwrap();
 
             Context {

@@ -315,11 +315,7 @@ impl Starter {
 
         let ntp = match self.ntp {
             Some(ntp) => ntp,
-            None => {
-                ntp::Service::starter(self.events.clone(), software.clone())
-                    .start()
-                    .await?
-            }
+            None => ntp::Service::starter(self.events.clone(), software.clone()).start()?,
         };
 
         let iscsi = match self.iscsi {
