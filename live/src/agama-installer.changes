@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 13 12:45:19 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add the "ntp" dracut module to allow setting the NTP configuration
+  from the kernel command-line (gh#agama-project/agama#3488).
+
+-------------------------------------------------------------------
 Thu May  7 13:06:27 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Restore back the checkmedia option in the *.kiwi file
