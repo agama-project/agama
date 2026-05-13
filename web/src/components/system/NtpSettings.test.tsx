@@ -42,7 +42,7 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
 describe("NtpSettings", () => {
   it("renders the NTP fieldset", () => {
     installerRender(<TestForm />);
-    screen.getByRole("group", { name: "Network Time Protocol (NTP)" });
+    screen.getByRole("group", { name: "Time Synchronization Servers" });
   });
 
   it("renders Mode dropdown", () => {
@@ -69,7 +69,7 @@ describe("NtpSettings", () => {
 
     it("shows helper text", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
-      screen.getByText("E.g., pool.ntp.org");
+      screen.getByText(/E\.g\., pool\.ntp\.org/);
     });
 
     it("displays existing NTP servers", () => {

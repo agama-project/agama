@@ -21,7 +21,7 @@
  */
 
 import React, { useRef } from "react";
-import { isEmpty, shake } from "radashi";
+import { isEmpty, isNullish, shake } from "radashi";
 import { formOptions } from "@tanstack/react-form";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
 import { Page } from "~/components/core";
@@ -111,26 +111,37 @@ function buildNtpConfig(
  * - NTP: choose between default NTP servers or custom ones
  */
 export default function SystemPage() {
-  const config = useConfig();
-  const { hostname: proposal } = useProposal();
-  const { hostname: transientHostname, static: staticHostname } = proposal;
+  /**
+   * Tracks whether the backend config was actually patched during the last submit.
+   *
+   * Used to distinguish between two successful submit scenarios:
+   * - true: form had changes, backend was updated via patchConfig()
+   * - false: form validated successfully but no changes needed persisting
+   *
+   * This determines the alert variant (success vs info) and message shown to the user.
+   */
+  const configWasPatched = useRef(false);
+  const { ntp } = useConfig();
+  const { hostname } = useProposal();
+  const { hostname: transientHostname, static: staticHostname } = hostname;
 
-  const ntpSources = config?.ntp?.sources || [];
-  const hasCustomNtpSources = ntpSources.length > 0;
-
-  const wasPatched = useRef(false);
+  const ntpServers = ntp?.sources?.map((s) => s.address) || [];
+  const usingTransientHostname = isEmpty(staticHostname) || isNullish(staticHostname);
 
   const form = useAppForm({
     ...systemFormOptions,
     defaultValues: {
       hostnameMode: isEmpty(staticHostname) ? HOSTNAME_MODE.TRANSIENT : HOSTNAME_MODE.STATIC,
-      hostnameValue: staticHostname || transientHostname,
-      ntpMode: hasCustomNtpSources ? NTP_MODE.CUSTOM : NTP_MODE.DEFAULT,
-      ntpServers: hasCustomNtpSources ? ntpSources.map((s) => s.address) : [],
+      hostnameValue: usingTransientHostname ? transientHostname : staticHostname,
+      ntpMode: ntpServers.length > 0 ? NTP_MODE.CUSTOM : NTP_MODE.DEFAULT,
+      ntpServers,
     },
     validators: {
       onSubmitAsync: async ({ value: formValues, formApi }) => {
-        wasPatched.current = false;
+        configWasPatched.current = false;
+
+        // Form pristine, nothing has changed for sure, skip everything
+        if (!formApi.state.isDirty) return undefined;
 
         const fieldErrors = validateSystemForm(formValues);
         if (fieldErrors) return { fields: fieldErrors };
@@ -142,11 +153,16 @@ export default function SystemPage() {
           ntp: buildNtpConfig(formValues, fieldMeta),
         });
 
-        if (isEmpty(config)) return undefined;
+        // Form dirty but no actual changes nor backend patches needed
+        if (isEmpty(config)) {
+          form.reset(formValues);
+          return undefined;
+        }
 
         return await patchConfig(config)
           .then(() => {
-            wasPatched.current = true;
+            configWasPatched.current = true;
+            form.reset(formValues);
             return undefined;
           })
           .catch(({ message: errorMessage }) => ({
@@ -185,15 +201,17 @@ export default function SystemPage() {
             </form.Subscribe>
 
             <form.Subscribe
-              selector={(s) => s.isSubmitted && !s.isSubmitting && !s.errorMap.onSubmit?.form}
+              selector={(s) =>
+                s.isSubmitted && !s.isSubmitting && !s.errorMap.onSubmit?.form && !s.isDirty
+              }
             >
               {(showResult) =>
                 showResult && (
                   <Alert
                     isInline
-                    variant={wasPatched.current ? "success" : "info"}
+                    variant={configWasPatched.current ? "success" : "info"}
                     title={
-                      wasPatched.current
+                      configWasPatched.current
                         ? // TRANSLATORS: success message shown after system settings are updated
                           _("System settings successfully updated")
                         : // TRANSLATORS: info message shown when submitting the form with no changes
