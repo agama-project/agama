@@ -324,7 +324,7 @@ impl NetworkState {
             // of port connections with the pertinent controller, the orphaned ports are problematic and
             // needs to be handled in a particular way.
             for conn in connections.0 {
-                if conn.bridge.is_some() | conn.bond.is_some() {
+                if conn.bridge.is_some() || conn.bond.is_some() {
                     let mut ports = vec![];
                     if let Some(model) = conn.bridge {
                         ports = model.ports;

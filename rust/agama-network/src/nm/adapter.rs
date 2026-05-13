@@ -217,7 +217,7 @@ impl Adapter for NetworkManagerAdapter<'_> {
                         tracing::info!("Activating connection {} with path {}", &conn.id, &path);
                         active_paths.push(path)
                     }
-                } else if conn.is_down() || conn.is_removed() {
+                } else if conn.is_down() {
                     tracing::info!("Deactivating connection {}", &conn.id);
                     let _ = self.client.deactivate_connection(path).await;
                 }
