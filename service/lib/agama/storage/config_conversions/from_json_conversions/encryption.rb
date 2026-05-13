@@ -78,7 +78,9 @@ module Agama
           def tpm_fde?
             return true if tpm_fde_schema?
 
-            luks2_schema? && encryption_json.dig(:luks2, :tpm) && !bootloader_config.type&.bls?
+            luks2_schema? &&
+              encryption_json.dig(:luks2, :tpm) &&
+              bootloader_config.type&.is?(:grub2)
           end
 
           # @return [Boolean]
