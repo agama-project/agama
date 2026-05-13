@@ -21,7 +21,6 @@
 
 require_relative "../../storage_helpers"
 require "agama/storage/bootloader_config"
-require "agama/storage/bootloader_type"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_conversions/to_model_conversions/boot"
 
@@ -140,7 +139,7 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Boot do
     context "if a bootloader type is configured" do
       let(:config_json) { {} }
 
-      let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
       it "generates the expected JSON" do
         expect(subject.convert).to eq(
@@ -156,7 +155,7 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Boot do
     context "if the bootloader type is none" do
       let(:config_json) { {} }
 
-      let(:bootloader_type) { Agama::Storage::BootloaderType::NONE }
+      let(:bootloader_type) { Y2Storage::BootloaderType::NONE }
 
       it "generates the expected JSON" do
         expect(subject.convert).to eq(

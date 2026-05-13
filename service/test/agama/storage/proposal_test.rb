@@ -70,9 +70,6 @@ describe Agama::Storage::Proposal do
 
   before do
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
-    # To speed-up the tests
-    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
-      .to receive(:bls_bootloader_proposed?).and_return(false)
   end
 
   let(:achivable_config) do
@@ -732,7 +729,7 @@ describe Agama::Storage::Proposal do
   describe "#bootloader_config" do
     let(:source_bootloader_config) do
       config = Agama::Storage::BootloaderConfig.new
-      config.type = Agama::Storage::BootloaderType::GRUB2
+      config.type = Y2Storage::BootloaderType::GRUB2
       config
     end
 
@@ -745,19 +742,19 @@ describe Agama::Storage::Proposal do
       it "returns the source bootloader config when solved is false" do
         result = subject.bootloader_config(solved: false)
         expect(result).to be(source_bootloader_config)
-        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+        expect(result.type).to eq(Y2Storage::BootloaderType::GRUB2)
       end
 
       it "returns the source bootloader config when solved is true" do
         result = subject.bootloader_config(solved: true)
         expect(result).to be(source_bootloader_config)
-        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+        expect(result.type).to eq(Y2Storage::BootloaderType::GRUB2)
       end
 
       it "returns the source bootloader config when solved is not specified" do
         result = subject.bootloader_config
         expect(result).to be(source_bootloader_config)
-        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+        expect(result.type).to eq(Y2Storage::BootloaderType::GRUB2)
       end
     end
 
@@ -769,7 +766,7 @@ describe Agama::Storage::Proposal do
       it "returns the source bootloader config when solved is false" do
         result = subject.bootloader_config(solved: false)
         expect(result).to be(source_bootloader_config)
-        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+        expect(result.type).to eq(Y2Storage::BootloaderType::GRUB2)
       end
 
       it "returns the solved bootloader config when solved is true" do
@@ -781,7 +778,7 @@ describe Agama::Storage::Proposal do
       it "returns the source bootloader config when solved is not specified" do
         result = subject.bootloader_config
         expect(result).to be(source_bootloader_config)
-        expect(result.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+        expect(result.type).to eq(Y2Storage::BootloaderType::GRUB2)
       end
     end
   end

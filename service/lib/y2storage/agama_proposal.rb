@@ -103,7 +103,7 @@ module Y2Storage
       Agama::Storage::BootloaderConfigSolver.new(product_config).solve(bootloader_config)
 
       Agama::Storage::ConfigSolver
-        .new(product_config, storage_system)
+        .new(product_config, bootloader_config, storage_system)
         .solve(config)
 
       issues = Agama::Storage::ConfigChecker

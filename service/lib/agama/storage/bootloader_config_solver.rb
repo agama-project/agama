@@ -20,9 +20,9 @@
 # find current contact information at www.suse.com.
 
 require "agama/cmdline_args"
-require "agama/storage/bootloader_type"
 require "bootloader/systeminfo"
 require "yast"
+require "y2storage"
 
 module Agama
   module Storage
@@ -59,13 +59,13 @@ module Agama
       attr_reader :product_config
 
       # Default bootloader type for most scenarios
-      DEFAULT_TYPE = BootloaderType::GRUB2
+      DEFAULT_TYPE = Y2Storage::BootloaderType::GRUB2
       private_constant :DEFAULT_TYPE
 
       # Default bootloader type for systems in which a BLS-compliant bootloader is supported
       # TODO: change this to SYSTEMD_BOOT when we have sorted everthing out (encryption with TPM,
       # dual-booting, etc.).
-      DEFAULT_BLS_TYPE = BootloaderType::GRUB2
+      DEFAULT_BLS_TYPE = Y2Storage::BootloaderType::GRUB2
       private_constant :DEFAULT_BLS_TYPE
 
       # Archs in which a BLS-compliant bootloader is supported
@@ -81,9 +81,9 @@ module Agama
         BLS_ARCHS.any? { |a| Yast::Arch.public_send(a) }
       end
 
-      # @return [BootloaderType, nil]
+      # @return [Y2Storage::BootloaderType, nil]
       def product_bls_type
-        BootloaderType.find(product_config.data.dig("boot", "default_efi_bootloader"))
+        Y2Storage::BootloaderType.find(product_config.data.dig("boot", "default_efi_bootloader"))
       end
 
       # Bootloader type indicated in the kernel options.
@@ -91,13 +91,14 @@ module Agama
       # This is only used for the systemd-boot preview and will be dropped once the config allows
       # changing the bootloader
       #
-      # @return [BootloaderType, nil] nil if "systemd_boot_preview" kernel option is not set.
+      # @return [Y2Storage::BootloaderType, nil] nil if "systemd_boot_preview" kernel option is
+      #   not set.
       def kernel_bls_type
         arg_value = kernel_args.data["systemd_boot_preview"]
 
         return unless arg_value == "1"
 
-        BootloaderType::SYSTEMD_BOOT
+        Y2Storage::BootloaderType::SYSTEMD_BOOT
       end
 
       # Kernel arguments.

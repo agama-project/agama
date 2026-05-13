@@ -29,7 +29,7 @@ module Agama
 
       # Type of bootloader to install
       #
-      # @return [BootloaderType, nil] if nil, the type is decided by Agama
+      # @return [Y2Storage::BootloaderType, nil] if nil, the type is decided by Agama
       attr_accessor :type
 
       # Whether bootloader should update persistent RAM.

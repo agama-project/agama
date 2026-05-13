@@ -90,7 +90,7 @@ describe Agama::Storage::ConfigSolver do
 
   let(:storage_system) { Agama::Storage::System.new }
 
-  subject { described_class.new(product_config, storage_system) }
+  subject { described_class.new(product_config, bootloader_config, storage_system) }
 
   describe "#solve" do
     let(:scenario) { "empty-hd-50GiB.yaml" }
@@ -627,6 +627,119 @@ describe Agama::Storage::ConfigSolver do
           lv = vg.logical_volumes.first
           expect(lv.search.solved?).to eq(true)
           expect(lv.search.device.name).to eq("/dev/data/home")
+        end
+      end
+    end
+
+    describe "completing the list of subvolumes" do
+      let(:config_json) do
+        {
+          drives: [{ filesystem: { path: "/", type: "btrfs" } }]
+        }
+      end
+
+      let(:product_data) do
+        { "storage" => { "volume_templates" => [root_vol] } }
+      end
+
+      let(:grub2) { Y2Storage::BootloaderType::GRUB2 }
+      let(:systemd_boot) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+      before { allow(bootloader_config).to receive(:type).and_return bootloader }
+
+      context "if the product specifies a default set of subvolumes" do
+        let(:root_vol) do
+          {
+            "mount_path" => "/", "filesystem" => "btrfs",
+            "btrfs" => { "subvolumes" => ["home", "opt"] }
+          }
+        end
+
+        context "and Grub2 is used as bootloader" do
+          let(:bootloader) { grub2 }
+
+          it "creates a list with default and grub2 subvolumes" do
+            subject.solve(config)
+            subvols = config.root_drive.filesystem.type.btrfs.subvolumes
+            expect(subvols.map(&:path)).to contain_exactly(
+              "home", "opt", "boot/grub2/i386-pc", "boot/grub2/x86_64-efi",
+              "boot/grub2/powerpc-ieee1275", "boot/grub2/s390x-emu", "boot/grub2/arm64-efi",
+              "boot/grub2/arm-efi", "boot/grub2/riscv64-efi"
+            )
+          end
+        end
+
+        context "and Grub2 is not used as bootloader" do
+          let(:bootloader) { systemd_boot }
+
+          it "creates a list with default subvolumes" do
+            subject.solve(config)
+            subvols = config.root_drive.filesystem.type.btrfs.subvolumes
+            expect(subvols.map(&:path)).to contain_exactly("home", "opt")
+          end
+        end
+      end
+
+      context "if the product does not specify a default set of subvolumes" do
+        let(:root_vol) do
+          {
+            "mount_path" => "/", "filesystem" => "btrfs",
+            "btrfs" => { "default_subvolume" => "@" }
+          }
+        end
+
+        context "and Grub2 is used as bootloader" do
+          let(:bootloader) { grub2 }
+
+          it "creates a list with the grub2 subvolumes" do
+            subject.solve(config)
+            subvols = config.root_drive.filesystem.type.btrfs.subvolumes
+            expect(subvols.map(&:path)).to contain_exactly(
+              "boot/grub2/i386-pc", "boot/grub2/x86_64-efi", "boot/grub2/powerpc-ieee1275",
+              "boot/grub2/s390x-emu", "boot/grub2/arm64-efi", "boot/grub2/arm-efi",
+              "boot/grub2/riscv64-efi"
+            )
+          end
+        end
+
+        context "and Grub2 is not used as bootloader" do
+          let(:bootloader) { systemd_boot }
+
+          it "leaves the list of subvolumes empty" do
+            subject.solve(config)
+            subvols = config.root_drive.filesystem.type.btrfs.subvolumes
+            expect(subvols).to be_empty
+          end
+        end
+      end
+
+      context "if the product does not use Btrfs by default" do
+        let(:root_vol) do
+          { "mount_path" => "/", "filesystem" => "ext4" }
+        end
+
+        context "and Grub2 is used as bootloader" do
+          let(:bootloader) { grub2 }
+
+          it "creates a list with the grub2 subvolumes" do
+            subject.solve(config)
+            subvols = config.root_drive.filesystem.type.btrfs.subvolumes
+            expect(subvols.map(&:path)).to contain_exactly(
+              "boot/grub2/i386-pc", "boot/grub2/x86_64-efi", "boot/grub2/powerpc-ieee1275",
+              "boot/grub2/s390x-emu", "boot/grub2/arm64-efi", "boot/grub2/arm-efi",
+              "boot/grub2/riscv64-efi"
+            )
+          end
+        end
+
+        context "and Grub2 is not used as bootloader" do
+          let(:bootloader) { systemd_boot }
+
+          it "leaves the list of subvolumes empty" do
+            subject.solve(config)
+            subvols = config.root_drive.filesystem.type.btrfs.subvolumes
+            expect(subvols).to be_empty
+          end
         end
       end
     end

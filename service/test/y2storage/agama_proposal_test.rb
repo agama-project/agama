@@ -75,8 +75,9 @@ describe Y2Storage::AgamaProposal do
     described_class.new(
       config,
       storage_system,
-      product_config: product_config,
-      issues_list:    issues_list
+      product_config:    product_config,
+      bootloader_config: bootloader_config,
+      issues_list:       issues_list
     )
   end
 
@@ -189,12 +190,6 @@ describe Y2Storage::AgamaProposal do
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
-  before do
-    # To speed-up the tests
-    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
-      .to receive(:bls_bootloader_proposed?).and_return(false)
-  end
-
   describe "#propose" do
     context "when only the root partition is specified" do
       let(:config) { default_config }
@@ -242,24 +237,18 @@ describe Y2Storage::AgamaProposal do
         allow(Yast::Arch).to receive(:aarch64).and_return(false)
         allow(Yast::Arch).to receive(:arm).and_return(false)
         allow(Yast::Arch).to receive(:riscv64).and_return(false)
-        # Bypass the global mock
-        allow(Y2Storage::BootRequirementsStrategies::Analyzer)
-          .to receive(:bls_bootloader_proposed?).and_call_original
       end
 
-      context "when the product configures systemd-boot as default EFI bootloader" do
-        let(:product_data) do
-          super().merge(
-            "boot" => {
-              "default_efi_bootloader" => "systemd-boot"
-            }
-          )
+      context "when systemd-boot is configured as bootloader" do
+        before do
+          allow(bootloader_config).to receive(:type)
+            .and_return Y2Storage::BootloaderType::SYSTEMD_BOOT
         end
 
         it "proposes the corresponding boot partitions" do
           proposal.propose
           efi_partition = proposal.devices.partitions.find do |part|
-            part.filesystem&.mount_path == "/boot/efi"
+            part.filesystem&.mount_path == "/boot"
           end
 
           expect(efi_partition).to_not be_nil
@@ -267,28 +256,12 @@ describe Y2Storage::AgamaProposal do
         end
       end
 
-      context "when the product configures grub2 as default EFI bootloader" do
-        let(:product_data) do
-          super().merge(
-            "boot" => {
-              "default_efi_bootloader" => "grub2"
-            }
-          )
+      context "when Grub2 is configued as bootloader" do
+        before do
+          allow(bootloader_config).to receive(:type).and_return Y2Storage::BootloaderType::GRUB2
         end
 
         it "proposes the corresponding boot partitions" do
-          proposal.propose
-          efi_partition = proposal.devices.partitions.find do |part|
-            part.filesystem&.mount_path == "/boot/efi"
-          end
-
-          expect(efi_partition).to_not be_nil
-          expect(efi_partition.size).to eq(512.MiB)
-        end
-      end
-
-      context "when the product does not specify a default EFI bootloader" do
-        it "proposes the corresponding boot partitions for the default case" do
           proposal.propose
           efi_partition = proposal.devices.partitions.find do |part|
             part.filesystem&.mount_path == "/boot/efi"

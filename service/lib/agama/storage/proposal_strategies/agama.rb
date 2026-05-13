@@ -33,9 +33,6 @@ module Agama
         attr_reader :config
         alias_method :settings, :config
 
-        # @return [Storage::BootloaderConfig]
-        attr_reader :bootloader_config
-
         # @param product_config [Agama::Config]
         # @param storage_system [Storage::System]
         # @param config [Storage::Config]
@@ -44,9 +41,8 @@ module Agama
         def initialize(product_config, storage_system, config, bootloader_config, logger)
           textdomain "agama"
 
-          super(product_config, storage_system, logger)
+          super(product_config, storage_system, bootloader_config, logger)
           @config = config
-          @bootloader_config = bootloader_config
         end
 
         # @see Base#calculate

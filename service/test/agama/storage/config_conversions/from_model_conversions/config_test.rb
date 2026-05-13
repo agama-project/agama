@@ -29,7 +29,6 @@ require "agama/storage/configs/drive"
 require "agama/storage/configs/encryption"
 require "agama/storage/configs/md_raid"
 require "agama/storage/bootloader_config"
-require "agama/storage/bootloader_type"
 
 describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
   include_context "from model conversions"
@@ -492,7 +491,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
       context "with TPM and grub2 bootloader" do
         let(:bootloader_config) do
           config = Agama::Storage::BootloaderConfig.new
-          config.type = Agama::Storage::BootloaderType::GRUB2
+          config.type = Y2Storage::BootloaderType::GRUB2
           config
         end
 
@@ -528,7 +527,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
       context "with TPM and grub2-bls bootloader" do
         let(:bootloader_config) do
           config = Agama::Storage::BootloaderConfig.new
-          config.type = Agama::Storage::BootloaderType::GRUB2_BLS
+          config.type = Y2Storage::BootloaderType::GRUB2_BLS
           config
         end
 
@@ -567,7 +566,7 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
       context "with TPM and systemd-boot bootloader" do
         let(:bootloader_config) do
           config = Agama::Storage::BootloaderConfig.new
-          config.type = Agama::Storage::BootloaderType::SYSTEMD_BOOT
+          config.type = Y2Storage::BootloaderType::SYSTEMD_BOOT
           config
         end
 

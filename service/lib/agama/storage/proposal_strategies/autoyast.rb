@@ -31,9 +31,6 @@ module Agama
       class Autoyast < Base
         include Yast::I18n
 
-        # @return [Storage::BootloaderConfig]
-        attr_reader :bootloader_config
-
         # @param product_config [Config] Product config
         # @param storage_system [Storage::System]
         # @param partitioning [Array<Hash>]
@@ -42,9 +39,8 @@ module Agama
         def initialize(product_config, storage_system, partitioning, bootloader_config, logger)
           textdomain "agama"
 
-          super(product_config, storage_system, logger)
+          super(product_config, storage_system, bootloader_config, logger)
           @partitioning = partitioning
-          @bootloader_config = bootloader_config
         end
 
         # Settings used for calculating the proposal.
@@ -86,7 +82,11 @@ module Agama
         # @return [Y2Storage::ProposalSettings]
         def proposal_settings
           agama_default = ProposalSettingsReader.new(product_config).read
-          agama_default.to_y2storage(config: product_config)
+          root_vol = agama_default.volumes.find { |v| v.mount_path == "/" }
+          if root_vol&.btrfs
+            root_vol.btrfs.subvolumes.concat(bootloader_config.type.root_subvolumes)
+          end
+          agama_default.to_y2storage(config: product_config, bootloader_config: bootloader_config)
         end
 
         # Logs AutoYaST warnings
@@ -123,7 +123,7 @@ module Agama
         # changes needed in Y2Storage::BootRequirementsChecker in the short future.
         def disable_bls_bootloader
           BootloaderConfigSolver.new(product_config).solve(@bootloader_config)
-          value = @bootloader_config.type == BootloaderType::GRUB2 ? "1" : "0"
+          value = @bootloader_config.type == Y2Storage::BootloaderType::GRUB2 ? "1" : "0"
           ENV["YAST_NO_BLS_BOOT"] = value
           # Avoiding problems with cached values
           Y2Storage::StorageEnv.instance.reset_cache
