@@ -116,7 +116,7 @@ impl ModelAdapter for Model {
             fs::create_dir_all(parent).map_err(Error::WriteConfig)?;
         }
 
-        let content = generate_chrony_config(&config);
+        let content = generate_chrony_config(config);
         fs::write(&path, content).map_err(Error::WriteConfig)?;
 
         self.reload_chrony().await?;
@@ -148,7 +148,7 @@ impl ModelAdapter for Model {
         }
 
         // FIXME: copying the configuration would be enough.
-        let content = generate_chrony_config(&config);
+        let content = generate_chrony_config(config);
 
         fs::write(path, content).map_err(Error::WriteConfig)?;
 
