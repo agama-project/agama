@@ -75,6 +75,13 @@ describe("HostnameSettings", () => {
       screen.getByText(/may change after a reboot or network update/);
     });
 
+    it("wraps emphasized text in strong element", () => {
+      const { container } = installerRender(<TestForm defaultValues={defaultValues} />);
+      const strong = container.querySelector("strong");
+      expect(strong).toBeInTheDocument();
+      expect(strong).toHaveTextContent(/may change after a reboot or network update/);
+    });
+
     it("does not show static mode helper text", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
       expect(screen.queryByText(/will remain unchanged/)).not.toBeInTheDocument();
@@ -99,6 +106,14 @@ describe("HostnameSettings", () => {
     it("does not show transient mode helper text", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
       expect(screen.queryByText(/may change after a reboot/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("aria-live announcements", () => {
+    it("announces helper text changes to screen readers via aria-live", () => {
+      const { container } = installerRender(<TestForm />);
+      const liveRegion = container.querySelector('[aria-live="polite"]');
+      expect(liveRegion).toBeInTheDocument();
     });
   });
 

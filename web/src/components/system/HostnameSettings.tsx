@@ -48,10 +48,14 @@ function TransientModeHelperText() {
           sentence={
             // TRANSLATORS: explanation of transient hostname behavior.
             // Text in square brackets will be displayed in bold.
-            _("This name is dynamic and [may change after a reboot or network update].")
+            _("Hostname is dynamic and [may change after a reboot or network update].")
           }
         >
-          {(text) => <Text isBold>{text}</Text>}
+          {(text) => (
+            <Text component="strong" isBold>
+              {text}
+            </Text>
+          )}
         </Interpolate>
       </Flex>
     </Content>
@@ -69,10 +73,14 @@ function StaticModeHelperText() {
         sentence={
           // TRANSLATORS: helper text for static hostname input.
           // Text in square brackets will be displayed in bold.
-          _("This name [will remain unchanged] across reboots and network changes.")
+          _("Hostname [will remain unchanged] across reboots and network changes.")
         }
       >
-        {(text) => <Text isBold>{text}</Text>}
+        {(text) => (
+          <Text component="strong" isBold>
+            {text}
+          </Text>
+        )}
       </Interpolate>
     </Content>
   );
@@ -149,14 +157,19 @@ const HostnameSettings = withForm({
           </form.Subscribe>
         </Flex>
 
+        {/* TODO: Move this to a global ARIA live region once the application-wide
+            announcement mechanism is implemented. This local aria-live works but
+            a centralized approach would be more maintainable and consistent. */}
         <form.Subscribe selector={(s) => s.values.hostnameMode}>
-          {(mode) =>
-            mode === HOSTNAME_MODE.TRANSIENT ? (
-              <TransientModeHelperText />
-            ) : (
-              <StaticModeHelperText />
-            )
-          }
+          {(mode) => (
+            <div aria-live="polite">
+              {mode === HOSTNAME_MODE.TRANSIENT ? (
+                <TransientModeHelperText />
+              ) : (
+                <StaticModeHelperText />
+              )}
+            </div>
+          )}
         </form.Subscribe>
 
         {software?.registration && (
