@@ -702,7 +702,7 @@ const ProductSelectionContent = () => {
   const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    // Put only config there to reset reset of config as it can be affected by product (bsc#1264438)
+    // Put product and mode only in order to reset the rest of the config, which can depend on the selected product and mode (bsc#1264438)
     putConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
 
