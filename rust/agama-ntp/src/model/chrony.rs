@@ -116,7 +116,7 @@ impl ModelAdapter for Model {
             fs::create_dir_all(parent).map_err(Error::WriteConfig)?;
         }
 
-        let content = generate_chrony_config(&config.sources);
+        let content = generate_chrony_config(config.sources.as_deref().unwrap_or(&[]));
         fs::write(&path, content).map_err(Error::WriteConfig)?;
 
         self.reload_chrony().await?;
@@ -148,7 +148,7 @@ impl ModelAdapter for Model {
         }
 
         // FIXME: copying the configuration would be enough.
-        let content = generate_chrony_config(&config.sources);
+        let content = generate_chrony_config(config.sources.as_deref().unwrap_or(&[]));
         fs::write(path, content).map_err(Error::WriteConfig)?;
 
         enable_service(&self.install_dir, CHRONY_SERVICE_NAME);
@@ -256,6 +256,12 @@ pub fn parse_chrony_config_str(content: &str) -> io::Result<Config> {
         });
     }
 
+    let sources = if sources.is_empty() {
+        None
+    } else {
+        Some(sources)
+    };
+
     Ok(Config { sources })
 }
 
@@ -303,7 +309,7 @@ mod tests {
         let model = Model::new().with_workdir(tempdir.path());
         let config = model.get_config().unwrap();
 
-        assert_eq!(config.sources.len(), 1);
+        assert_eq!(config.sources.as_ref().unwrap().len(), 1);
     }
 
     #[test_context(Context)]
@@ -313,12 +319,12 @@ mod tests {
         let model = Model::new().with_workdir(tempdir.path());
 
         let config = Config {
-            sources: vec![Source {
+            sources: Some(vec![Source {
                 source_type: SourceType::Pool,
                 address: "ntp.example.com".to_string(),
                 iburst: true,
                 offline: false,
-            }],
+            }]),
         };
 
         model.write_config(&config).await.unwrap();
@@ -341,12 +347,12 @@ mod tests {
         let model = Model::new().with_install_dir(tempdir.path());
 
         let config = Config {
-            sources: vec![Source {
+            sources: Some(vec![Source {
                 source_type: SourceType::Server,
                 address: "ntp.server.com".to_string(),
                 iburst: false,
                 offline: true,
-            }],
+            }]),
         };
 
         model.install(&config).await.unwrap();
@@ -440,11 +446,12 @@ mod tests {
         let content = "pool 0.opensuse.pool.ntp.org iburst\n";
         let config = parse_chrony_config_str(content).unwrap();
 
-        assert_eq!(config.sources.len(), 1);
-        assert_eq!(config.sources[0].source_type, SourceType::Pool);
-        assert_eq!(config.sources[0].address, "0.opensuse.pool.ntp.org");
-        assert_eq!(config.sources[0].iburst, true);
-        assert_eq!(config.sources[0].offline, false);
+        let sources = config.sources.as_ref().unwrap();
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].source_type, SourceType::Pool);
+        assert_eq!(sources[0].address, "0.opensuse.pool.ntp.org");
+        assert_eq!(sources[0].iburst, true);
+        assert_eq!(sources[0].offline, false);
     }
 
     #[test]
@@ -456,22 +463,23 @@ peer ntp-peer.local
 "#;
         let config = parse_chrony_config_str(content).unwrap();
 
-        assert_eq!(config.sources.len(), 3);
+        let sources = config.sources.as_ref().unwrap();
+        assert_eq!(sources.len(), 3);
 
-        assert_eq!(config.sources[0].source_type, SourceType::Pool);
-        assert_eq!(config.sources[0].address, "0.opensuse.pool.ntp.org");
-        assert_eq!(config.sources[0].iburst, true);
-        assert_eq!(config.sources[0].offline, false);
+        assert_eq!(sources[0].source_type, SourceType::Pool);
+        assert_eq!(sources[0].address, "0.opensuse.pool.ntp.org");
+        assert_eq!(sources[0].iburst, true);
+        assert_eq!(sources[0].offline, false);
 
-        assert_eq!(config.sources[1].source_type, SourceType::Server);
-        assert_eq!(config.sources[1].address, "ntp.example.com");
-        assert_eq!(config.sources[1].iburst, false);
-        assert_eq!(config.sources[1].offline, true);
+        assert_eq!(sources[1].source_type, SourceType::Server);
+        assert_eq!(sources[1].address, "ntp.example.com");
+        assert_eq!(sources[1].iburst, false);
+        assert_eq!(sources[1].offline, true);
 
-        assert_eq!(config.sources[2].source_type, SourceType::Peer);
-        assert_eq!(config.sources[2].address, "ntp-peer.local");
-        assert_eq!(config.sources[2].iburst, false);
-        assert_eq!(config.sources[2].offline, false);
+        assert_eq!(sources[2].source_type, SourceType::Peer);
+        assert_eq!(sources[2].address, "ntp-peer.local");
+        assert_eq!(sources[2].iburst, false);
+        assert_eq!(sources[2].offline, false);
     }
 
     #[test]
@@ -479,9 +487,10 @@ peer ntp-peer.local
         let content = "server ntp.example.com iburst offline\n";
         let config = parse_chrony_config_str(content).unwrap();
 
-        assert_eq!(config.sources.len(), 1);
-        assert_eq!(config.sources[0].iburst, true);
-        assert_eq!(config.sources[0].offline, true);
+        let sources = config.sources.as_ref().unwrap();
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].iburst, true);
+        assert_eq!(sources[0].offline, true);
     }
 
     #[test]
@@ -496,9 +505,10 @@ server ntp2.org iburst
 "#;
         let config = parse_chrony_config_str(content).unwrap();
 
-        assert_eq!(config.sources.len(), 2);
-        assert_eq!(config.sources[0].address, "ntp1.org");
-        assert_eq!(config.sources[1].address, "ntp2.org");
+        let sources = config.sources.as_ref().unwrap();
+        assert_eq!(sources.len(), 2);
+        assert_eq!(sources[0].address, "ntp1.org");
+        assert_eq!(sources[1].address, "ntp2.org");
     }
 
     #[test]
@@ -506,7 +516,7 @@ server ntp2.org iburst
         let content = "# Only comments\n\n";
         let config = parse_chrony_config_str(content).unwrap();
 
-        assert_eq!(config.sources.len(), 0);
+        assert!(config.sources.is_none());
     }
 
     #[test]
@@ -518,9 +528,10 @@ just_one_word
 "#;
         let config = parse_chrony_config_str(content).unwrap();
 
-        assert_eq!(config.sources.len(), 2);
-        assert_eq!(config.sources[0].address, "ntp.org");
-        assert_eq!(config.sources[1].address, "ntp2.org");
+        let sources = config.sources.as_ref().unwrap();
+        assert_eq!(sources.len(), 2);
+        assert_eq!(sources[0].address, "ntp.org");
+        assert_eq!(sources[1].address, "ntp2.org");
     }
 
     #[test]
@@ -528,9 +539,10 @@ just_one_word
         let content = "pool ntp.org iburst unknown_option offline another_unknown\n";
         let config = parse_chrony_config_str(content).unwrap();
 
-        assert_eq!(config.sources.len(), 1);
-        assert_eq!(config.sources[0].iburst, true);
-        assert_eq!(config.sources[0].offline, true);
+        let sources = config.sources.as_ref().unwrap();
+        assert_eq!(sources.len(), 1);
+        assert_eq!(sources[0].iburst, true);
+        assert_eq!(sources[0].offline, true);
     }
 
     #[test]
@@ -548,8 +560,9 @@ server ntp.example.com offline
 
         let config = parse_chrony_config(temp_file.path()).unwrap();
 
-        assert_eq!(config.sources.len(), 2);
-        assert_eq!(config.sources[0].source_type, SourceType::Pool);
-        assert_eq!(config.sources[1].source_type, SourceType::Server);
+        let sources = config.sources.as_ref().unwrap();
+        assert_eq!(sources.len(), 2);
+        assert_eq!(sources[0].source_type, SourceType::Pool);
+        assert_eq!(sources[1].source_type, SourceType::Server);
     }
 }

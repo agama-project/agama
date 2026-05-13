@@ -136,12 +136,12 @@ mod tests {
     #[tokio::test]
     async fn test_set_and_get_config(ctx: &mut Context) {
         let test_config = Config {
-            sources: vec![Source {
+            sources: Some(vec![Source {
                 source_type: SourceType::Pool,
                 address: "ntp.example.com".to_string(),
                 iburst: true,
                 offline: false,
-            }],
+            }]),
         };
 
         ctx.handler
@@ -159,12 +159,12 @@ mod tests {
     #[tokio::test]
     async fn test_finish(ctx: &mut Context) {
         let test_config = Config {
-            sources: vec![Source {
+            sources: Some(vec![Source {
                 source_type: SourceType::Server,
                 address: "ntp.server.com".to_string(),
                 iburst: false,
                 offline: true,
-            }],
+            }]),
         };
 
         ctx.handler

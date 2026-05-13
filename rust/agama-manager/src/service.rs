@@ -699,6 +699,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let security = self.config.security.clone();
         let proxy = self.proxy.call(proxy::message::GetConfig).await?;
         let ntp = self.ntp.call(ntp::message::GetConfig).await?;
+        tracing::debug!("NTP={:?}", &ntp);
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
