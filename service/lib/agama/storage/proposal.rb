@@ -142,7 +142,7 @@ module Agama
           storage_system:    storage_system
         ).convert
 
-        ConfigSolver.new(product_config, storage_system).solve(config)
+        ConfigSolver.new(product_config, bootloader_config, storage_system).solve(config)
 
         ConfigConversions::ToModel.new(config,
           product_config: product_config, bootloader_config: bootloader_config).convert

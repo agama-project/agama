@@ -20,9 +20,9 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require "agama/storage/bootloader_type"
 require "agama/storage/config_conversions"
 require "y2storage/refinements"
+require "y2storage/bootloader_type"
 
 using Y2Storage::Refinements::SizeCasts
 
@@ -254,7 +254,7 @@ shared_examples "with encryption" do
         }
       end
 
-      let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
       it "generates the expected JSON" do
         config_json = subject.convert

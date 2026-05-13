@@ -19,16 +19,16 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/bootloader_type"
+require "y2storage"
 
 module Agama
   module Storage
     # Class representing a bootloader.
     class Bootloader
-      # @return [BootloaderType] Type of the bootloader
+      # @return [Y2Storage::BootloaderType] Type of the bootloader
       attr_reader :type
 
-      # @param type [BootloaderType] Type of the bootloader.
+      # @param type [Y2Storage::BootloaderType] Type of the bootloader.
       # @param tpm [Boolean] Whether TPM is available for the bootloader.
       def initialize(type, tpm: false)
         @type = type

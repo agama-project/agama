@@ -21,8 +21,8 @@
 
 require_relative "../config_context"
 require "agama/storage/bootloader_config"
-require "agama/storage/bootloader_type"
 require "agama/storage/config_checkers/encryption"
+require "y2storage/bootloader_type"
 require "y2storage/encryption_method/pervasive_luks2"
 require "y2storage/encryption_method/protected_swap"
 require "y2storage/encryption_method/tpm_fde"
@@ -165,7 +165,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       end
 
       let(:filesystem) { { path: "/" } }
-      let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
       it "includes the expected issue" do
         issues = subject.issues
@@ -186,7 +186,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       end
 
       let(:filesystem) { { path: "/" } }
-      let(:bootloader_type) { Agama::Storage::BootloaderType::GRUB2_BLS }
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2_BLS }
 
       it "includes the expected issue" do
         issues = subject.issues
@@ -207,7 +207,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       end
 
       let(:filesystem) { { path: "/" } }
-      let(:bootloader_type) { Agama::Storage::BootloaderType::GRUB2 }
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
 
       it "does not include an issue" do
         expect(subject.issues.size).to eq(0)
@@ -226,7 +226,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
 
       let(:filesystem) { { path: "/" } }
 
-      let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
       it "does not include an issue" do
         expect(subject.issues.size).to eq(0)
@@ -244,7 +244,7 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       end
 
       let(:filesystem) { { path: "/" } }
-      let(:bootloader_type) { Agama::Storage::BootloaderType::GRUB2_BLS }
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2_BLS }
 
       it "does not include an issue" do
         expect(subject.issues.size).to eq(0)
@@ -264,12 +264,12 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       let(:filesystem) { { path: "/" } }
 
       # This bootloader type is passed to FromJSON, so FDE BLS will be configured.
-      let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
       # This bootloader is passed to the checker.
       let(:subject_bootloader_config) do
         Agama::Storage::BootloaderConfig.new.tap do |c|
-          c.type = Agama::Storage::BootloaderType::GRUB2
+          c.type = Y2Storage::BootloaderType::GRUB2
         end
       end
 

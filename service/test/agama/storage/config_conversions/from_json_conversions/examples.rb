@@ -20,11 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require "agama/storage/bootloader_type"
 require "agama/storage/configs/encryption"
 require "agama/storage/configs/filesystem"
 require "agama/storage/configs/partition"
 require "agama/storage/configs/search"
+require "y2storage/bootloader_type"
 require "y2storage/encryption_method"
 require "y2storage/encryption_method/tpm_bls"
 require "y2storage/filesystems/mount_by_type"
@@ -265,7 +265,7 @@ shared_examples "with encryption" do
         }
       end
 
-      let(:bootloader_type) { Agama::Storage::BootloaderType::GRUB2 }
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
 
       it "sets #encryption to the expected value" do
         config = subject.convert
@@ -294,7 +294,7 @@ shared_examples "with encryption" do
         }
       end
 
-      let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
       it "sets #encryption to the expected value" do
         config = subject.convert

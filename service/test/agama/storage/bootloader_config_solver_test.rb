@@ -23,7 +23,6 @@ require_relative "../../test_helper"
 
 require "agama/storage/bootloader_config_solver"
 require "agama/storage/bootloader_config"
-require "agama/storage/bootloader_type"
 require "agama/config"
 require "agama/cmdline_args"
 
@@ -42,12 +41,12 @@ describe Agama::Storage::BootloaderConfigSolver do
   describe "#solve" do
     context "when the config already has a type set" do
       before do
-        bootloader_config.type = Agama::Storage::BootloaderType::SYSTEMD_BOOT
+        bootloader_config.type = Y2Storage::BootloaderType::SYSTEMD_BOOT
       end
 
       it "does not modify the type" do
         solver.solve(bootloader_config)
-        expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
+        expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
       end
     end
 
@@ -59,7 +58,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
         it "sets the type to GRUB2" do
           solver.solve(bootloader_config)
-          expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+          expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2)
         end
       end
 
@@ -79,7 +78,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
           it "sets the type to GRUB2" do
             solver.solve(bootloader_config)
-            expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+            expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2)
           end
         end
 
@@ -102,7 +101,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
               it "sets the type to SYSTEMD_BOOT (from kernel args)" do
                 solver.solve(bootloader_config)
-                expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
+                expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
               end
             end
 
@@ -111,7 +110,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
               it "sets the type to SYSTEMD_BOOT (kernel args take priority)" do
                 solver.solve(bootloader_config)
-                expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
+                expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
               end
             end
           end
@@ -123,7 +122,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
             it "ignores the parameter and uses product/default bootloader" do
               solver.solve(bootloader_config)
-              expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+              expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2)
             end
           end
 
@@ -135,7 +134,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
               it "sets the type to GRUB2 (default BLS type)" do
                 solver.solve(bootloader_config)
-                expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+                expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2)
               end
             end
 
@@ -144,7 +143,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
               it "sets the type to the product-specified bootloader" do
                 solver.solve(bootloader_config)
-                expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
+                expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
               end
             end
 
@@ -153,7 +152,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
               it "sets the type to GRUB2_BLS" do
                 solver.solve(bootloader_config)
-                expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2_BLS)
+                expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2_BLS)
               end
             end
 
@@ -162,7 +161,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
               it "falls back to GRUB2 (default BLS type)" do
                 solver.solve(bootloader_config)
-                expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+                expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2)
               end
             end
           end
@@ -182,7 +181,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
             it "sets the type to GRUB2 (default BLS type)" do
               solver.solve(bootloader_config)
-              expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+              expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2)
             end
           end
 
@@ -191,7 +190,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
             it "sets the type to SYSTEMD_BOOT" do
               solver.solve(bootloader_config)
-              expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::SYSTEMD_BOOT)
+              expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::SYSTEMD_BOOT)
             end
           end
         end
@@ -207,7 +206,7 @@ describe Agama::Storage::BootloaderConfigSolver do
 
           it "sets the type to GRUB2 when product doesn't specify" do
             solver.solve(bootloader_config)
-            expect(bootloader_config.type).to eq(Agama::Storage::BootloaderType::GRUB2)
+            expect(bootloader_config.type).to eq(Y2Storage::BootloaderType::GRUB2)
           end
         end
       end

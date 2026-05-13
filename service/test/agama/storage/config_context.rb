@@ -34,13 +34,17 @@ shared_context "config" do
   # Solves the config.
   def solve_config
     Agama::Storage::ConfigSolver
-      .new(product_config, storage_system)
+      .new(product_config, bootloader_config, storage_system)
       .solve(config)
   end
 
   include Agama::RSpec::StorageHelpers
 
   let(:storage_system) { Agama::Storage::System.new }
+
+  let(:bootloader_config) do
+    instance_double(Agama::Storage::BootloaderConfig, type: Y2Storage::BootloaderType::GRUB2)
+  end
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON

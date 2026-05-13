@@ -21,8 +21,8 @@
 
 require_relative "../../config_context"
 require "agama/storage/bootloader_config"
-require "agama/storage/bootloader_type"
 require "agama/storage/config_conversions/to_model_conversions/config"
+require "y2storage/bootloader_type"
 require "y2storage/encryption_method"
 require "y2storage/encryption_method/tpm_bls"
 
@@ -239,8 +239,9 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
         model_json = subject.convert
         expect(model_json[:boot]).to eq(
           {
-            configure: true,
-            device:    { default: true }
+            configure:  true,
+            bootloader: "grub2",
+            device:     { default: true }
           }
         )
       end
@@ -323,7 +324,7 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
         end
 
         context "and the encryption method is TPM BLS" do
-          let(:bootloader_type) { Agama::Storage::BootloaderType::SYSTEMD_BOOT }
+          let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
           let(:encryption) do
             {

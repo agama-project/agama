@@ -28,12 +28,17 @@ module Agama
     module ProposalStrategies
       # Base class for the strategies used by the Agama proposal.
       class Base
+        # @return [Storage::BootloaderConfig]
+        attr_reader :bootloader_config
+
         # @param product_config [Config] Product config
         # @param storage_system [Storage::System]
+        # @param bootloader_config [Storage::BootloaderConfig]
         # @param logger [Logger]
-        def initialize(product_config, storage_system, logger)
+        def initialize(product_config, storage_system, bootloader_config, logger)
           @product_config = product_config
           @storage_system = storage_system
+          @bootloader_config = bootloader_config
           @logger = logger
         end
 
