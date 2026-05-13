@@ -85,10 +85,15 @@ module Agama
         # @return [Configs::Btrfs]
         def default_btrfs(path = nil)
           btrfs = default_filesystem(path).type.btrfs
-          if path == "/" && btrfs.subvolumes
-            btrfs.subvolumes.concat(@bootloader_config.type.root_subvolumes)
-          end
+          btrfs.subvolumes.concat(bootloader_subvolumes) if path == "/" && btrfs.subvolumes
           btrfs
+        end
+
+        # List of subvolumes for the configured bootloader type, if any.
+        #
+        # @return [Array<Y2Storage::SubvolSpecification>]
+        def bootloader_subvolumes
+          @bootloader_config.type&.root_subvolumes || []
         end
       end
     end
