@@ -230,4 +230,94 @@ server ntp.example.com offline
         assert_eq!(sources[1].iburst, false);
         assert_eq!(sources[1].offline, true);
     }
+
+    #[tokio::test]
+    async fn test_set_config_override_and_reset_to_dracut() {
+        let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
+        let issues = issue::Service::starter(events_tx.clone()).start();
+        let progress = progress::Service::starter(events_tx.clone()).start();
+        let questions = question::start(events_tx.clone()).await.unwrap();
+        let l10n = start_l10n_service(events_tx.clone(), issues.clone()).await;
+
+        let software = start_software_service(
+            events_tx.clone(),
+            issues,
+            l10n,
+            progress.clone(),
+            questions.clone(),
+        )
+        .await;
+
+        // Set up dracut sources file with original servers
+        let tempdir = tempfile::tempdir().unwrap();
+        let dracut_chrony_dir = tempdir.path().join("run/chrony/dracut.sources.d");
+        std::fs::create_dir_all(&dracut_chrony_dir).unwrap();
+
+        let dracut_content = r#"# Dracut NTP sources
+pool 0.opensuse.pool.ntp.org iburst
+server time.example.com
+"#;
+        std::fs::write(dracut_chrony_dir.join("dracut.sources"), dracut_content).unwrap();
+
+        // Create service with real chrony model
+        let model = Box::new(model::chrony::Model::new().with_workdir(tempdir.path()));
+        let handler = Service::starter(events_tx, software)
+            .with_model(model)
+            .start()
+            .unwrap();
+
+        // Step 1: Verify initial state has dracut sources
+        let initial_config = handler.call(message::GetConfig).await.unwrap().unwrap();
+        assert_eq!(initial_config.sources.as_ref().unwrap().len(), 2);
+        assert_eq!(
+            initial_config.sources.as_ref().unwrap()[0].address,
+            "0.opensuse.pool.ntp.org"
+        );
+
+        // Step 2: SetConfig with custom servers
+        let custom_config = Config {
+            sources: Some(vec![
+                Source {
+                    source_type: SourceType::Server,
+                    address: "custom1.ntp.org".to_string(),
+                    iburst: true,
+                    offline: false,
+                },
+                Source {
+                    source_type: SourceType::Server,
+                    address: "custom2.ntp.org".to_string(),
+                    iburst: false,
+                    offline: true,
+                },
+            ]),
+        };
+
+        handler
+            .call(message::SetConfig::new(Some(custom_config.clone())))
+            .await
+            .unwrap();
+
+        // Step 3: GetConfig should return custom servers (not dracut)
+        let config_after_set = handler.call(message::GetConfig).await.unwrap().unwrap();
+        let sources_after_set = config_after_set.sources.as_ref().unwrap();
+        assert_eq!(sources_after_set.len(), 2);
+        assert_eq!(sources_after_set[0].address, "custom1.ntp.org");
+        assert_eq!(sources_after_set[0].iburst, true);
+        assert_eq!(sources_after_set[1].address, "custom2.ntp.org");
+        assert_eq!(sources_after_set[1].offline, true);
+
+        // Step 4: SetConfig with None to reset to defaults
+        handler.call(message::SetConfig::new(None)).await.unwrap();
+
+        // Step 5: GetConfig should return original dracut servers
+        let config_after_reset = handler.call(message::GetConfig).await.unwrap().unwrap();
+        let sources_after_reset = config_after_reset.sources.as_ref().unwrap();
+        assert_eq!(sources_after_reset.len(), 2);
+        assert_eq!(sources_after_reset[0].address, "0.opensuse.pool.ntp.org");
+        assert_eq!(sources_after_reset[0].source_type, SourceType::Pool);
+        assert_eq!(sources_after_reset[0].iburst, true);
+        assert_eq!(sources_after_reset[1].address, "time.example.com");
+        assert_eq!(sources_after_reset[1].source_type, SourceType::Server);
+        assert_eq!(sources_after_reset[1].iburst, false);
+    }
 }
