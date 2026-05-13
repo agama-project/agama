@@ -28,6 +28,10 @@ import SimpleSelector from "./SimpleSelector";
 
 const onChangeFn = jest.fn();
 
+// NOTE: Keyboard navigation tests (arrow keys open menu, explore-then-commit) are
+// not duplicated here because:
+//   - The behavior is comprehensively tested in use-select-keyboard.test.tsx
+//   - These tests focus on filter control functionality and rendering behavior
 describe("SimpleSelector", () => {
   const selectOptions = {
     all: _("All"),

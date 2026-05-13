@@ -23,8 +23,9 @@ use agama_utils::{
     actor::Handler,
     api::{
         self, l10n,
+        question::QuestionSpec,
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
-        Issue, Scope,
+        Issue, Progress, Scope,
     },
     helpers::copy_dir_all,
     kernel_cmdline::KernelCmdline,
@@ -41,7 +42,7 @@ use tokio::sync::{
 use zypp_agama::{errors::ZyppResult, ZyppError};
 
 use crate::{
-    callbacks,
+    callbacks::{self, ask_software_question},
     model::{
         registration::RegistrationError,
         state::{self, SoftwareState},
@@ -273,26 +274,48 @@ impl ZyppServer {
         let mut download_callback =
             callbacks::CommitDownload::new(progress.clone(), question.clone());
         let mut install_callback = callbacks::Install::new(progress.clone(), question.clone());
-        let mut security_callback = callbacks::Security::new(question);
+        let mut security_callback = callbacks::Security::new(question.clone());
         security_callback.set_trusted_gpg_keys(self.trusted_keys.clone());
         security_callback.set_unsigned_repos(self.unsigned_repos.clone());
 
         let packages_count = zypp.packages_count();
         // use packages count *2 as we need to download package and also install it
         let steps = (packages_count * 2) as usize;
-        let _ = progress.cast(progress::message::Start::new(
-            Scope::Software,
-            steps,
-            "Starting packages installation",
-        ));
 
         zypp.switch_target(self.install_dir.as_ref())?;
-        let result = zypp.commit(
-            &mut download_callback,
-            &mut install_callback,
-            &mut security_callback,
-        )?;
-        tracing::info!("libzypp commit ends with {}", result);
+        let mut result;
+        loop {
+            // cast set progress as if we retry it can result in DupliciteProgress
+            let _ = progress.cast(progress::message::SetProgress::new(Progress::new(
+                Scope::Software,
+                steps,
+                gettext("Starting packages installation"),
+            )));
+            result = zypp.commit(
+                &mut download_callback,
+                &mut install_callback,
+                &mut security_callback,
+            )?;
+            tracing::info!("libzypp commit ends with {}", result);
+            if result {
+                break;
+            }
+
+            let text =
+                gettext("Packages download and installation failed. Would you like to retry?");
+            let question_spec =
+                QuestionSpec::new(&text, "software.installation_retry").with_yes_no_actions();
+            // TODO: it would be nice if we can in backend split between auto selected option and focused option
+            // TODO: if needed we would need to extend C API to get more details about failure
+            let answer = ask_software_question(&question, question_spec);
+            // if there is error during asking question, then just consider it as not want to retry
+            let Ok(answer) = answer else {
+                break;
+            };
+            if answer.action == "No" {
+                break;
+            }
+        }
         let res = progress.cast(progress::message::Finish::new(Scope::Software));
         tracing::info!("Software install finished. Progress result {:#?}", res);
         Ok(result)
