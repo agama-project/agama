@@ -34,6 +34,12 @@ pub struct Config {
     pub sources: Option<Vec<Source>>,
 }
 
+impl Config {
+    pub fn is_empty(&self) -> bool {
+        self.sources.is_none() || self.sources.as_ref().is_some_and(|s| s.is_empty())
+    }
+}
+
 /// NTP source configuration.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]

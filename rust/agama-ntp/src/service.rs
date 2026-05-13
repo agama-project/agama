@@ -29,6 +29,7 @@ use agama_utils::{
     api::{self, event},
 };
 use async_trait::async_trait;
+use merge::Merge;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -62,21 +63,25 @@ impl Starter {
     }
 
     pub fn start(self) -> Result<Handler<Service>, Error> {
-        let mut service = Service {
-            config: None,
+        let config = self.model.get_config().unwrap_or_default();
+        tracing::info!("Default NTP configuration: {:?}", &config);
+
+        let service = Service {
+            default_config: config.clone(),
+            config,
             model: self.model,
             software: self.software,
         };
 
-        service.setup();
         let handler = actor::spawn(service);
         Ok(handler)
     }
 }
 
 pub struct Service {
-    // FIXME: is this the right place to keep the configuration?
-    config: Option<api::ntp::Config>,
+    // Cache the default configuration to merge it with the current one.
+    default_config: api::ntp::Config,
+    config: api::ntp::Config,
     model: Box<dyn model::ModelAdapter + Send + 'static>,
     software: Handler<software::Service>,
 }
@@ -84,17 +89,6 @@ pub struct Service {
 impl Service {
     pub fn starter(events: event::Sender, software: Handler<software::Service>) -> Starter {
         Starter::new(events, software)
-    }
-
-    /// Initializes the service by reading the current configuration.
-    pub fn setup(&mut self) {
-        if let Ok(config) = self.model.get_config() {
-            if config.sources.is_some() {
-                self.config = Some(config);
-            }
-        }
-
-        tracing::info!("Additional NTP configuration: {:?}", &self.config);
     }
 
     async fn set_resolvables(&mut self, resolvables: Vec<Resolvable>) {
@@ -122,32 +116,43 @@ impl MessageHandler<message::GetConfig> for Service {
         &mut self,
         _message: message::GetConfig,
     ) -> Result<Option<api::ntp::Config>, Error> {
-        Ok(self.config.clone())
+        Ok(Some(self.config.clone()))
     }
 }
 
+/// Set the NTP configuration.
+///
+/// If no configuration is given, it considers the default configuration that was read
+/// when starting the service (e.g., includes the sources coming from dracut).
 #[async_trait]
 impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<api::ntp::Config>) -> Result<(), Error> {
-        if let Some(config) = &message.config {
-            if let Err(e) = self.model.write_config(config).await {
-                tracing::error!("Failed to write NTP configuration: {e}");
-            }
+        let mut new_config = message.config.unwrap_or_default();
+        new_config.merge(self.default_config.clone());
 
-            self.set_resolvables(self.model.resolvables()).await;
-        } else {
+        if &new_config == &self.config {
+            return Ok(());
+        }
+
+        self.config = new_config;
+
+        if self.config.is_empty() {
             if let Err(e) = self.model.remove_config().await {
                 tracing::error!("Failed to remove the NTP configuration: {e}");
             }
             self.set_resolvables(vec![]).await;
+        } else {
+            if let Err(e) = self.model.write_config(&self.config).await {
+                tracing::error!("Failed to write NTP configuration: {e}");
+            }
+
+            self.set_resolvables(self.model.resolvables()).await;
         }
 
-        if self.config != message.config {
-            if let Err(e) = self.model.sync().await {
-                tracing::error!("Failed to synchronize with the NTP server: {e}");
-            }
+        if let Err(e) = self.model.sync().await {
+            tracing::error!("Failed to synchronize with the NTP server: {e}");
         }
-        self.config = message.config;
+
         Ok(())
     }
 }
@@ -155,8 +160,8 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
 #[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
-        if let Some(config) = &self.config {
-            if let Err(e) = self.model.install(config).await {
+        if !self.config.is_empty() {
+            if let Err(e) = self.model.install(&self.config).await {
                 tracing::error!("Failed to install NTP configuration: {}", e);
             }
         }
