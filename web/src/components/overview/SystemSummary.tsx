@@ -22,7 +22,7 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { isEmpty } from "radashi";
+import { isEmpty, isNullish } from "radashi";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
 import Summary from "~/components/core/Summary";
@@ -33,61 +33,107 @@ import { SYSTEM } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 
 /**
+ * Renders the hostname with bold formatting
+ */
+function HostnameTitleInfo({ hostname }: { hostname: string }) {
+  return (
+    <Interpolate
+      sentence={
+        // TRANSLATORS: system hostname in summary. %s is the hostname.
+        _("Name %s")
+      }
+    >
+      {() => <Text isBold>{hostname}</Text>}
+    </Interpolate>
+  );
+}
+
+/**
+ * Renders explanation text for transient hostname mode
+ */
+function HostnameTransientDescription() {
+  return (
+    // TRANSLATORS: explanation shown when hostname is transient (not static)
+    _("Using transient name, which may change after reboot or network changes")
+  );
+}
+
+/**
+ * Renders short NTP information for inline display (transient hostname mode)
+ */
+function NtpTitleInfo({ servers }: { servers: string[] }) {
+  return servers.length > 0
+    ? sprintf(
+        n_(
+          // TRANSLATORS: NTP server count shown inline (transient mode). %d is the count.
+          "%d NTP server",
+          "%d NTP servers",
+          servers.length,
+        ),
+        servers.length,
+      )
+    : // TRANSLATORS: shown when using product default NTP servers (transient mode)
+      _("Default NTP");
+}
+
+/**
+ * Renders full NTP information sentence
+ */
+function NtpDescriptionInfo({ servers }: { servers: string[] }) {
+  if (servers.length === 0) {
+    return (
+      // TRANSLATORS: shown when using product default NTP servers (static mode)
+      _("Default NTP")
+    );
+  }
+
+  if (servers.length === 1) {
+    return (
+      <Interpolate
+        sentence={
+          // TRANSLATORS: shown when using a single custom NTP server (static mode). %s is the server address (shown in bold).
+          _("Using %s as NTP server")
+        }
+      >
+        {() => <Text isBold>{servers[0]}</Text>}
+      </Interpolate>
+    );
+  }
+
+  return (
+    <Interpolate
+      sentence={sprintf(
+        // TRANSLATORS: shown when using multiple custom NTP servers (static mode). First %s is the count, second %s is the first server address. Keep the brackets [] around the second %s - they mark bold text.
+        _("Using %s NTP servers, including [%s]"),
+        servers.length.toString(),
+        servers[0],
+      )}
+    >
+      {(ntpServer) => <Text isBold>{ntpServer}</Text>}
+    </Interpolate>
+  );
+}
+
+/**
  * System settings summary
  *
  * Displays a summary of hostname and NTP server configuration.
  *
  * Title is a link that navigates to system configuration page.
  *
- * Value shows the hostname (in bold) and NTP server information: either the count
- * of custom servers or "Default NTP servers" when using product defaults.
+ * For transient hostnames: shows name and NTP info on one line with a dash separator,
+ * with an explanation description below.
  *
- * Description provides a brief explanation when using transient hostname mode.
+ * For static hostnames: shows only the name in value, with NTP info in description.
  */
 export default function SystemSummary() {
   const config = useConfig();
   const proposal = useProposal();
   const { hostname: transientHostname, static: staticHostname } = proposal || {};
 
-  const hostname = staticHostname || transientHostname;
-  const isTransient = isEmpty(staticHostname);
-
-  const ntpSources = config?.ntp?.sources || [];
-  const hasCustomNtpServers = ntpSources.length > 0;
-
-  const ntpPart = hasCustomNtpServers
-    ? sprintf(
-        n_(
-          // TRANSLATORS: NTP server count in system summary
-          "%d NTP server",
-          "%d NTP servers",
-          ntpSources.length,
-        ),
-        ntpSources.length,
-      )
-    : // TRANSLATORS: default NTP servers indication in system summary
-      _("Default NTP servers");
-
-  const value = (
-    <>
-      <Interpolate
-        sentence={
-          // TRANSLATORS: system name in summary. %s will be replaced
-          // with the name in bold.
-          _("Name %s")
-        }
-      >
-        {() => <Text isBold>{hostname}</Text>}
-      </Interpolate>
-      {" - "}
-      {ntpPart}
-    </>
-  );
-
-  const description = isTransient
-    ? // TRANSLATORS: brief explanation for transient hostname mode
-      _("Using transient name, which may change after reboot or network changes")
-    : undefined;
+  const isTransient = isEmpty(staticHostname) || isNullish(staticHostname);
+  const hostname = isTransient ? transientHostname : staticHostname;
+  const ntpServers = (config?.ntp?.sources || []).map((s) => s.address);
 
   return (
     <Summary
@@ -97,8 +143,20 @@ export default function SystemSummary() {
           {_("System")}
         </Link>
       }
-      value={value}
-      description={description}
+      value={
+        isTransient ? (
+          <>
+            <HostnameTitleInfo hostname={hostname} />
+            {" - "}
+            <NtpTitleInfo servers={ntpServers} />
+          </>
+        ) : (
+          <HostnameTitleInfo hostname={hostname} />
+        )
+      }
+      description={
+        isTransient ? <HostnameTransientDescription /> : <NtpDescriptionInfo servers={ntpServers} />
+      }
     />
   );
 }

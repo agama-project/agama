@@ -63,12 +63,12 @@ describe("SystemSummary", () => {
       screen.getByText("my-custom-hostname");
     });
 
-    it("renders default NTP servers indication", () => {
+    it("renders default NTP indication in description", () => {
       installerRender(<SystemSummary />);
-      screen.getByText(/Default NTP servers/);
+      screen.getByText(/Default NTP/);
     });
 
-    it("does not render explanation for static hostname", () => {
+    it("does not render transient explanation for static hostname", () => {
       installerRender(<SystemSummary />);
       expect(
         screen.queryByText(
@@ -78,7 +78,43 @@ describe("SystemSummary", () => {
     });
   });
 
-  describe("with static hostname and custom NTP servers", () => {
+  describe("with static hostname and one custom NTP server", () => {
+    beforeEach(() => {
+      mockUseProposalFn.mockReturnValue({
+        hostname: "",
+        static: "my-custom-hostname",
+      });
+      mockUseConfigFn.mockReturnValue({
+        ntp: {
+          sources: [{ type: "pool", address: "pool.ntp.org", iburst: true, offline: false }],
+        },
+      });
+    });
+
+    it("renders the static hostname in the value", () => {
+      installerRender(<SystemSummary />);
+      screen.getByText("my-custom-hostname");
+    });
+
+    it("renders singular NTP server info in description", () => {
+      installerRender(<SystemSummary />);
+      screen.getByText(/Using/);
+      screen.getByText("pool.ntp.org");
+      screen.getByText(/as NTP server/);
+      expect(screen.queryByText(/servers/)).not.toBeInTheDocument();
+    });
+
+    it("does not render transient explanation", () => {
+      installerRender(<SystemSummary />);
+      expect(
+        screen.queryByText(
+          "Using transient name, which may change after reboot or network changes",
+        ),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("with static hostname and multiple custom NTP servers", () => {
     beforeEach(() => {
       mockUseProposalFn.mockReturnValue({
         hostname: "",
@@ -94,13 +130,18 @@ describe("SystemSummary", () => {
       });
     });
 
-    it("renders the static hostname and NTP server count", () => {
+    it("renders the static hostname in the value", () => {
       installerRender(<SystemSummary />);
       screen.getByText("my-custom-hostname");
-      screen.getByText(/2 NTP servers/);
     });
 
-    it("does not render explanation", () => {
+    it("renders NTP server info in description with first server", () => {
+      installerRender(<SystemSummary />);
+      screen.getByText(/Using 2 NTP servers, including/);
+      screen.getByText("pool.ntp.org");
+    });
+
+    it("does not render transient explanation", () => {
       installerRender(<SystemSummary />);
       expect(
         screen.queryByText(
@@ -133,7 +174,12 @@ describe("SystemSummary", () => {
       screen.getByText("linux-abcd");
     });
 
-    it("renders the transient hostname explanation", () => {
+    it("renders default NTP inline in the value", () => {
+      installerRender(<SystemSummary />);
+      screen.getByText(/Default NTP/);
+    });
+
+    it("renders the transient hostname explanation in description", () => {
       installerRender(<SystemSummary />);
       screen.getByText("Using transient name, which may change after reboot or network changes");
     });
@@ -152,14 +198,18 @@ describe("SystemSummary", () => {
       });
     });
 
-    it("renders hostname and singular NTP server count", () => {
+    it("renders hostname in the value", () => {
       installerRender(<SystemSummary />);
       screen.getByText("linux-abcd");
+    });
+
+    it("renders singular NTP server count inline in the value", () => {
+      installerRender(<SystemSummary />);
       screen.getByText(/1 NTP server/);
       expect(screen.queryByText(/servers/)).not.toBeInTheDocument();
     });
 
-    it("renders the transient hostname explanation", () => {
+    it("renders the transient hostname explanation in description", () => {
       installerRender(<SystemSummary />);
       screen.getByText("Using transient name, which may change after reboot or network changes");
     });
@@ -218,10 +268,15 @@ describe("SystemSummary", () => {
       mockUseConfigFn.mockReturnValue(null);
     });
 
-    it("renders with default NTP servers indication", () => {
+    it("renders with default NTP indication", () => {
       installerRender(<SystemSummary />);
       screen.getByText(/test-host/);
-      screen.getByText(/Default NTP servers/);
+      screen.getByText(/Default NTP/);
+    });
+
+    it("renders transient hostname explanation", () => {
+      installerRender(<SystemSummary />);
+      screen.getByText("Using transient name, which may change after reboot or network changes");
     });
   });
 });
