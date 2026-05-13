@@ -213,13 +213,24 @@ impl Adapter for NetworkManagerAdapter<'_> {
                 };
 
                 if conn.is_up() {
-                    if let Ok(path) = self.activate_connection(conn, path).await {
-                        tracing::info!("Activating connection {} with path {}", &conn.id, &path);
-                        active_paths.push(path)
+                    match self.activate_connection(conn, path).await {
+                        Ok(active_path) => {
+                            tracing::info!(
+                                "Activating connection {} with path {}",
+                                &conn.id,
+                                &active_path
+                            );
+                            active_paths.push(active_path);
+                        }
+                        Err(e) => {
+                            tracing::error!("Failed to activate connection {}: {}", &conn.id, e);
+                        }
                     }
                 } else if conn.is_down() {
                     tracing::info!("Deactivating connection {}", &conn.id);
-                    let _ = self.client.deactivate_connection(path).await;
+                    if let Err(e) = self.client.deactivate_connection(path).await {
+                        tracing::error!("Failed to deactivate connection {}: {}", &conn.id, e);
+                    }
                 }
             }
         }
