@@ -130,7 +130,7 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
         let mut new_config = message.config.unwrap_or_default();
         new_config.merge(self.default_config.clone());
 
-        if &new_config == &self.config {
+        if new_config == self.config {
             return Ok(());
         }
 
