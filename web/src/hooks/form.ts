@@ -168,11 +168,31 @@ function mergeFormDefaults<T extends { defaultValues: Record<string, unknown> }>
   return { ...opts, defaultValues: { ...opts.defaultValues, ...runtimeDefaults } };
 }
 
+/**
+ * Returns true if any of the given fields have been modified from their default
+ * value. Uses TanStack Form's `isDefaultValue` flag, which provides
+ * non-persistent dirty detection (i.e. returns false if the value is reverted
+ * back to its default).
+ *
+ * @example
+ * const { fieldMeta } = formApi.state;
+ *
+ * anyFieldChanged(fieldMeta, "hostnameMode", "hostnameValue");
+ * anyFieldChanged(fieldMeta, "ntpMode");
+ */
+function anyFieldChanged(
+  fieldMeta: Record<string, { isDefaultValue?: boolean }>,
+  ...fields: string[]
+): boolean {
+  return fields.some((field) => fieldMeta[field]?.isDefaultValue === false);
+}
+
 export {
   useAppForm,
   usePristineSafeForm,
   withForm,
   mergeFormDefaults,
+  anyFieldChanged,
   useFieldContext,
   useFormContext,
 };

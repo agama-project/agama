@@ -605,9 +605,19 @@ nav.agm-breadcrumb h1 {
   }
 }
 
-// Hide datalist dropdown arrow in Chrome/Edge
-// The arrow is hidden to emphasize free-text input and match Firefox behavior
-// Users will discover suggestions by typing
-input[type="text"][list]::-webkit-calendar-picker-indicator {
-  display: none;
+fieldset {
+  border: 0;
+  border-top: 1px solid var(--agm-t--color--fog);
+  padding: 0;
+  padding-block-start: var(--pf-t--global--spacer--md);
+  margin: 0;
+  display: grid;
+  gap: var(--pf-v6-c-form--GridGap);
+
+  legend {
+    font-size: var(--pf-t--global--font--size--md);
+    font-weight: var(--pf-t--global--font--weight--200);
+    margin-inline-start: var(--pf-t--global--spacer--sm);
+    padding: 0 var(--pf-t--global--spacer--sm);
+  }
 }

@@ -35,7 +35,6 @@ import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
 import ProductSelectionPage from "./ProductSelectionPage";
 import { Product } from "~/model/system";
-import { useConfig } from "~/hooks/model/config";
 
 const tumbleweed: Product = {
   id: "Tumbleweed",
@@ -68,10 +67,7 @@ const productWithModes: Product = {
   ],
 };
 
-const oldConfig = { hostname: { static: "agama" } };
-
 const mockPutConfigFn = jest.fn();
-const mockUseConfigFn: jest.Mock<ReturnType<typeof useConfig>> = jest.fn();
 const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
 const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
@@ -85,11 +81,6 @@ jest.mock("~/components/product/LicenseDialog", () => () => <div>LicenseDialog M
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   putConfig: (payload) => mockPutConfigFn(payload),
-}));
-
-jest.mock("~/hooks/model/config", () => ({
-  ...jest.requireActual("~/hooks/model/config"),
-  useConfig: () => mockUseConfigFn(),
 }));
 
 jest.mock("~/hooks/model/system", () => ({
@@ -115,8 +106,6 @@ describe("ProductSelectionPage", () => {
       patterns: [],
       repositories: [],
     });
-
-    mockUseConfigFn.mockReturnValue(oldConfig);
   });
 
   it("renders available products excluding the selected one unless it has modes", () => {
@@ -228,7 +217,6 @@ describe("ProductSelectionPage", () => {
   describe("when a product is already selected", () => {
     beforeEach(() => {
       mockProduct(tumbleweed);
-      mockUseConfigFn.mockReturnValue({ ...oldConfig, product: { id: tumbleweed.id } });
     });
 
     it("redirects to root when the byUser param is not set", () => {
@@ -265,7 +253,7 @@ describe("ProductSelectionPage", () => {
     const selectButton = screen.getByRole("button", { name: "Select" });
     await user.click(productOption);
     await user.click(selectButton);
-    expect(mockPutConfigFn).toHaveBeenCalledWith({ ...oldConfig, product: { id: tumbleweed.id } });
+    expect(mockPutConfigFn).toHaveBeenCalledWith({ product: { id: tumbleweed.id } });
   });
 
   it("does not trigger the product selection if user selects a product but clicks o cancel button", async () => {
@@ -359,7 +347,6 @@ describe("ProductSelectionPage", () => {
       await user.click(selectButton);
 
       expect(mockPutConfigFn).toHaveBeenCalledWith({
-        ...oldConfig,
         product: { id: productWithModes.id, mode: "standard" },
       });
     });
@@ -416,7 +403,6 @@ describe("ProductSelectionPage", () => {
         mockProduct(undefined);
         mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
         const { user } = installerRender(<ProductSelectionPage />);
-
         const productOption = screen.getByRole("radio", { name: productWithModes.name });
         await user.click(productOption);
 
