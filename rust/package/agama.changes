@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu May 14 13:25:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix problems detected by cargo audit (gh#agama-project/agama#3497):
+  - Disable unused "reqwest" features.
+  - Update "inquire" to get rid of "fxhash" (unmaintained).
+  - Update "ratatui", "lru" and "paste".
+  - Update "tokio-tungstenite" and "rand".
+
+-------------------------------------------------------------------
 Thu May 14 10:30:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Add the connection state to the network system configuration
