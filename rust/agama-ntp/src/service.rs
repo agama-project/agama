@@ -18,8 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{message, model};
-use std::path::Path;
+use crate::{
+    message,
+    model::{self, chrony},
+};
 
 use agama_software::{self as software, Resolvable};
 use agama_utils::{
@@ -27,6 +29,7 @@ use agama_utils::{
     api::{self, event},
 };
 use async_trait::async_trait;
+use merge::Merge;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -48,7 +51,8 @@ impl Starter {
     pub fn new(events: event::Sender, software: Handler<software::Service>) -> Starter {
         Self {
             _events: events,
-            model: Box::new(model::Model::new()),
+            model: Box::new(chrony::Model::new()),
+
             software,
         }
     }
@@ -58,14 +62,13 @@ impl Starter {
         self
     }
 
-    pub fn with_install_dir<P: AsRef<Path>>(mut self, install_dir: P) -> Self {
-        self.model = Box::new(model::Model::new().with_install_dir(install_dir));
-        self
-    }
-
     pub fn start(self) -> Result<Handler<Service>, Error> {
+        let config = self.model.get_config().unwrap_or_default();
+        tracing::info!("Default NTP configuration: {:?}", &config);
+
         let service = Service {
-            config: None,
+            default_config: config.clone(),
+            config,
             model: self.model,
             software: self.software,
         };
@@ -76,9 +79,10 @@ impl Starter {
 }
 
 pub struct Service {
-    // FIXME: is this the right place to keep the configuration?
-    config: Option<api::ntp::Config>,
-    model: Box<dyn model::ModelAdapter>,
+    // Cache the default configuration to merge it with the current one.
+    default_config: api::ntp::Config,
+    config: api::ntp::Config,
+    model: Box<dyn model::ModelAdapter + Send + 'static>,
     software: Handler<software::Service>,
 }
 
@@ -112,32 +116,48 @@ impl MessageHandler<message::GetConfig> for Service {
         &mut self,
         _message: message::GetConfig,
     ) -> Result<Option<api::ntp::Config>, Error> {
-        Ok(self.config.clone())
+        Ok(Some(self.config.clone()))
     }
 }
 
+/// Set the NTP configuration.
+///
+/// If no configuration is given, it considers the default configuration that was read
+/// when starting the service (e.g., includes the sources coming from dracut).
 #[async_trait]
 impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
     async fn handle(&mut self, message: message::SetConfig<api::ntp::Config>) -> Result<(), Error> {
-        if let Some(config) = &message.config {
-            if let Err(e) = self.model.write_config(config).await {
-                tracing::error!("Failed to write NTP configuration: {e}");
+        let new_config = match message.config {
+            Some(mut cfg) => {
+                cfg.merge(self.default_config.clone());
+                cfg
             }
+            None => self.default_config.clone(),
+        };
 
-            self.set_resolvables(self.model.resolvables()).await;
-        } else {
+        if new_config == self.config {
+            return Ok(());
+        }
+
+        self.config = new_config;
+
+        if self.config.is_empty() {
             if let Err(e) = self.model.remove_config().await {
                 tracing::error!("Failed to remove the NTP configuration: {e}");
             }
             self.set_resolvables(vec![]).await;
+        } else {
+            if let Err(e) = self.model.write_config(&self.config).await {
+                tracing::error!("Failed to write NTP configuration: {e}");
+            }
+
+            self.set_resolvables(self.model.resolvables()).await;
         }
 
-        if self.config != message.config {
-            if let Err(e) = self.model.sync().await {
-                tracing::error!("Failed to synchronize with the NTP server: {e}");
-            }
+        if let Err(e) = self.model.sync().await {
+            tracing::error!("Failed to synchronize with the NTP server: {e}");
         }
-        self.config = message.config;
+
         Ok(())
     }
 }
@@ -145,8 +165,8 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
 #[async_trait]
 impl MessageHandler<message::Finish> for Service {
     async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
-        if let Some(config) = &self.config {
-            if let Err(e) = self.model.install(config).await {
+        if !self.config.is_empty() {
+            if let Err(e) = self.model.install(&self.config).await {
                 tracing::error!("Failed to install NTP configuration: {}", e);
             }
         }

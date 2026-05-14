@@ -5,6 +5,24 @@ Thu May 14 09:02:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   a new version (gh#agama-project/agama#3443).
 
 -------------------------------------------------------------------
+Wed May 13 11:54:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow setting the NTP configuration from the kernel command-line
+  (gh#agama-project/agama#3488).
+
+-------------------------------------------------------------------
+Tue May 12 10:17:19 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add new popup when package installation failed if user wants
+  to retry it. (gh#agama-project/agama#3484)
+
+-------------------------------------------------------------------
+Fri May  8 12:36:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Move product availability issues to software scope
+  (gh#agama-project/agama#3456).
+
+-------------------------------------------------------------------
 Thu May  7 10:56:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Improved saving libzypp service (related to bsc#1261351)

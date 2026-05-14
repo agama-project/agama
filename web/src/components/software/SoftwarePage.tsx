@@ -44,7 +44,9 @@ import Page from "~/components/core/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
-import PatternSelectionUnavailable from "~/components/software/PatternSelectionUnavailable";
+import PatternSelectionUnavailable, {
+  PRODUCT_AVAILABILITY_ISSUES,
+} from "~/components/software/PatternSelectionUnavailable";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useAvailablePatterns } from "~/hooks/model/system/software";
@@ -367,7 +369,10 @@ const SoftwarePageContent = () => {
  * Software page component
  */
 function SoftwarePage() {
-  const issues = useIssues("software");
+  // Filter out product availability issues: handled by PatternSelectionUnavailable
+  const issues = useIssues("software").filter(
+    (i) => !PRODUCT_AVAILABILITY_ISSUES.includes(i.class),
+  );
 
   return (
     <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>

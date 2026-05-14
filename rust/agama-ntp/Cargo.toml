@@ -8,6 +8,7 @@ edition.workspace = true
 agama-software = { version = "0.1.0", path = "../agama-software" }
 agama-utils = { version = "0.1.0", path = "../agama-utils" }
 async-trait = "0.1.89"
+merge = { version = "0.2.0", default-features = false, features = ["std"] }
 thiserror = "2.0.18"
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
 tracing = "0.1.44"

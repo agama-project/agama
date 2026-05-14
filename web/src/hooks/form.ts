@@ -26,6 +26,8 @@ import ArrayField from "~/components/form/ArrayField";
 import CancelButton from "~/components/form/CancelButton";
 import CheckboxField from "~/components/form/CheckboxField";
 import DropdownField from "~/components/form/DropdownField";
+import EmailField from "~/components/form/EmailField";
+import MaskedField from "~/components/form/MaskedField";
 import ReadOnlyField from "~/components/form/ReadOnlyField";
 import NumberField from "~/components/form/NumberField";
 import SubmitButton from "~/components/form/SubmitButton";
@@ -43,6 +45,8 @@ const { useAppForm, withForm } = createFormHook({
     ArrayField,
     CheckboxField,
     DropdownField,
+    EmailField,
+    MaskedField,
     ReadOnlyField,
     NumberField,
     TextField,
@@ -164,11 +168,31 @@ function mergeFormDefaults<T extends { defaultValues: Record<string, unknown> }>
   return { ...opts, defaultValues: { ...opts.defaultValues, ...runtimeDefaults } };
 }
 
+/**
+ * Returns true if any of the given fields have been modified from their default
+ * value. Uses TanStack Form's `isDefaultValue` flag, which provides
+ * non-persistent dirty detection (i.e. returns false if the value is reverted
+ * back to its default).
+ *
+ * @example
+ * const { fieldMeta } = formApi.state;
+ *
+ * anyFieldChanged(fieldMeta, "hostnameMode", "hostnameValue");
+ * anyFieldChanged(fieldMeta, "ntpMode");
+ */
+function anyFieldChanged(
+  fieldMeta: Record<string, { isDefaultValue?: boolean }>,
+  ...fields: string[]
+): boolean {
+  return fields.some((field) => fieldMeta[field]?.isDefaultValue === false);
+}
+
 export {
   useAppForm,
   usePristineSafeForm,
   withForm,
   mergeFormDefaults,
+  anyFieldChanged,
   useFieldContext,
   useFormContext,
 };

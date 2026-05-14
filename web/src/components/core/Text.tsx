@@ -32,7 +32,7 @@ type TextStyleKey = keyof typeof textStyles;
 type TextProps = React.HTMLProps<HTMLSpanElement> &
   React.PropsWithChildren<{
     /** The HTML element to use for wrapping given children */
-    component?: "small" | "span";
+    component?: "small" | "span" | "strong";
     /** Whether apply bold font weight */
     isBold?: boolean;
     /**

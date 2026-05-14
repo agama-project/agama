@@ -3,7 +3,7 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useProposal } from "~/hooks/model/proposal/hostname";
 import HostnameSummary from "./HostnameSummary";
-import { HOSTNAME } from "~/routes/paths";
+import { SYSTEM } from "~/routes/paths";
 
 const mockUseProposalFn: jest.Mock<ReturnType<typeof useProposal>> = jest.fn();
 
@@ -24,7 +24,7 @@ describe("HostnameSummary", () => {
       installerRender(<HostnameSummary />);
       const heading = screen.getByRole("heading");
       const link = within(heading).getByRole("link", { name: "Hostname" });
-      expect(link).toHaveAttribute("href", expect.stringContaining(HOSTNAME.root));
+      expect(link).toHaveAttribute("href", expect.stringContaining(SYSTEM.root));
     });
 
     it("renders the static hostname as the value", () => {
@@ -52,7 +52,7 @@ describe("HostnameSummary", () => {
       installerRender(<HostnameSummary />);
       const heading = screen.getByRole("heading");
       const link = within(heading).getByRole("link", { name: "Hostname" });
-      expect(link).toHaveAttribute("href", expect.stringContaining(HOSTNAME.root));
+      expect(link).toHaveAttribute("href", expect.stringContaining(SYSTEM.root));
     });
 
     it("renders the transient hostname as the value", () => {
@@ -78,7 +78,7 @@ describe("HostnameSummary", () => {
       installerRender(<HostnameSummary />);
       const heading = screen.getByRole("heading");
       const link = within(heading).getByRole("link", { name: "Hostname" });
-      expect(link).toHaveAttribute("href", expect.stringContaining(HOSTNAME.root));
+      expect(link).toHaveAttribute("href", expect.stringContaining(SYSTEM.root));
     });
 
     it("renders static hostname", () => {

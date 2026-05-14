@@ -253,6 +253,7 @@ dependencies = [
  "agama-software",
  "agama-utils",
  "async-trait",
+ "merge",
  "tempfile",
  "test-context",
  "thiserror 2.0.18",

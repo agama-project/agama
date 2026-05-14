@@ -31,9 +31,13 @@ import {
 import Text from "~/components/core/Text";
 import { useFieldContext } from "~/hooks/form-contexts";
 
+import type { TextInputProps } from "@patternfly/react-core";
+
 type TextFieldProps = {
   label: React.ReactNode;
   helperText?: React.ReactNode;
+  type?: TextInputProps["type"];
+  size?: number;
 };
 
 /**
@@ -42,7 +46,7 @@ type TextFieldProps = {
  *
  * @see useFieldContext for field component conventions.
  */
-export default function TextField({ label, helperText }: TextFieldProps) {
+export default function TextField({ label, helperText, type, size }: TextFieldProps) {
   const field = useFieldContext<string>();
   const error = field.state.meta.errors[0];
 
@@ -51,6 +55,8 @@ export default function TextField({ label, helperText }: TextFieldProps) {
       <TextInput
         id={field.name}
         name={field.name}
+        type={type}
+        size={size}
         value={field.state.value}
         validated={error ? "error" : "default"}
         onChange={(_, value) => field.handleChange(value)}
