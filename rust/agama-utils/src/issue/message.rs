@@ -57,11 +57,20 @@ impl Message for Set {
 
 pub struct Clear {
     pub scope: Scope,
+    pub notify: bool,
 }
 
 impl Clear {
     pub fn new(scope: Scope) -> Self {
-        Self { scope }
+        Self {
+            scope,
+            notify: true,
+        }
+    }
+
+    pub fn notify(mut self, notify: bool) -> Self {
+        self.notify = notify;
+        self
     }
 }
 
