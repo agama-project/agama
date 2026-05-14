@@ -196,9 +196,7 @@ impl MonitorApp {
         }
 
         match (key_event.code, key_event.modifiers) {
-            (KeyCode::Char('q'), _)
-            | (KeyCode::Esc, _)
-            | (KeyCode::Char('c'), KeyModifiers::CONTROL) => {
+            (KeyCode::Char('q'), _) | (KeyCode::Esc, _) => {
                 self.exit = true;
             }
             _ => {}

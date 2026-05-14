@@ -36,7 +36,7 @@ impl Widget for Hints {
         let hints = vec![
             Span::styled("q", Style::default().add_modifier(Modifier::BOLD)),
             Span::raw(" / "),
-            Span::styled("Ctrl-C", Style::default().add_modifier(Modifier::BOLD)),
+            Span::styled("Esc", Style::default().add_modifier(Modifier::BOLD)),
             Span::styled(" exit", Style::default().add_modifier(Modifier::DIM)),
         ];
 
