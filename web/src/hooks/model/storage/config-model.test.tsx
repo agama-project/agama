@@ -27,6 +27,7 @@ import {
   useConfigModel,
   useSolvedConfigModel,
   useIsGrub2WithTpm,
+  useIsTpmAvailable,
   useMissingMountPaths,
   useDevice,
   usePartitionable,
@@ -57,9 +58,13 @@ import {
   STORAGE_MODEL_KEY,
 } from "./config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { Storage } from "~/model/system";
+import type { Storage, Bootloader } from "~/model/system";
 
 jest.mock("~/hooks/model/system/storage", () => ({
+  useSystem: jest.fn(),
+}));
+
+jest.mock("~/hooks/model/system/bootloader", () => ({
   useSystem: jest.fn(),
 }));
 
@@ -70,9 +75,13 @@ jest.mock("~/api", () => ({
 }));
 
 import { useSystem } from "~/hooks/model/system/storage";
+import { useSystem as useBootloaderSystem } from "~/hooks/model/system/bootloader";
 import { putStorageModel, solveStorageModel } from "~/api";
 
 const mockUseSystem = useSystem as jest.MockedFunction<typeof useSystem>;
+const mockUseBootloaderSystem = useBootloaderSystem as jest.MockedFunction<
+  typeof useBootloaderSystem
+>;
 const mockPutStorageModel = putStorageModel as jest.MockedFunction<typeof putStorageModel>;
 const mockSolveStorageModel = solveStorageModel as jest.MockedFunction<typeof solveStorageModel>;
 
@@ -88,6 +97,7 @@ describe("config-model hooks", () => {
       },
     });
     mockUseSystem.mockReturnValue(null);
+    mockUseBootloaderSystem.mockReturnValue(null);
     mockPutStorageModel.mockClear();
     mockSolveStorageModel.mockClear();
   });
@@ -207,6 +217,176 @@ describe("config-model hooks", () => {
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
       expect(result.current).toBe(false);
+    });
+  });
+
+  describe("useIsTpmAvailable", () => {
+    it("returns true when system and bootloader support TPM", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [
+          { type: "grub2", encryptionAuth: ["password", "tpm"] },
+          { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
+        ],
+      };
+
+      const config: ConfigModel.Config = {
+        boot: { configure: true, bootloader: "grub2" },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(true);
+    });
+
+    it("returns false when bootloader does not support TPM", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [
+          { type: "grub2", encryptionAuth: ["password"] },
+          { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
+        ],
+      };
+
+      const config: ConfigModel.Config = {
+        boot: { configure: true, bootloader: "grub2" },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns false when system is null", () => {
+      const config: ConfigModel.Config = {
+        boot: { configure: true, bootloader: "grub2" },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(null);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns false when bootloader system is null", () => {
+      const config: ConfigModel.Config = {
+        boot: { configure: true, bootloader: "grub2" },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(null);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns false when config is null", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [{ type: "grub2", encryptionAuth: ["password", "tpm"] }],
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns false when bootloader type is not configured", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [{ type: "grub2", encryptionAuth: ["password", "tpm"] }],
+      };
+
+      const config: ConfigModel.Config = {
+        boot: { configure: true },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns false when boot is not configured", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [{ type: "grub2", encryptionAuth: ["password", "tpm"] }],
+      };
+
+      const config: ConfigModel.Config = {};
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns true for systemd-boot with TPM support", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [
+          { type: "grub2", encryptionAuth: ["password"] },
+          { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
+        ],
+      };
+
+      const config: ConfigModel.Config = {
+        boot: { configure: true, bootloader: "systemd-boot" },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(true);
+    });
+
+    it("returns false when bootloader type is not in available bootloaders", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [{ type: "grub2", encryptionAuth: ["password", "tpm"] }],
+      };
+
+      const config: ConfigModel.Config = {
+        boot: { configure: true, bootloader: "systemd-boot" },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(false);
+    });
+
+    it("returns true for grub2-bls with TPM support", () => {
+      const bootloaderSystem: Bootloader.System = {
+        availableBootloaders: [
+          { type: "grub2", encryptionAuth: ["password"] },
+          { type: "grub2-bls", encryptionAuth: ["password", "tpm"] },
+        ],
+      };
+
+      const config: ConfigModel.Config = {
+        boot: { configure: true, bootloader: "grub2-bls" },
+      };
+
+      mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
+      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+
+      const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
+
+      expect(result.current).toBe(true);
     });
   });
 

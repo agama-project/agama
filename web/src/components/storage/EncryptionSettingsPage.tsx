@@ -25,8 +25,11 @@ import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Form } from "@patternfly/react-core";
 import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { useIsTpmAvailable } from "~/hooks/model/bootloader";
-import { useConfigModel, useSetEncryption } from "~/hooks/model/storage/config-model";
+import {
+  useConfigModel,
+  useSetEncryption,
+  useIsTpmAvailable,
+} from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { isEmpty } from "radashi";
 import { _, N_ } from "~/i18n";

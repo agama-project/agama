@@ -25,7 +25,6 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import EncryptionSettingsPage from "./EncryptionSettingsPage";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { Bootloader } from "~/model/system";
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
@@ -58,42 +57,21 @@ const mockNoEncryptionConfig: ConfigModel.Config = {
   },
 };
 
-const mockSystemData: Bootloader.System = {
-  availableBootloaders: [
-    { type: "grub2", encryptionAuth: ["password", "tpm"] },
-    { type: "grub2-bls", encryptionAuth: ["password", "tpm"] },
-    { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
-  ],
-};
-
-// Mock useSystem to provide bootloader data. useIsTpmAvailable uses the real
-// bootloaderSystem.isTpmAvailable logic with this mocked data.
-jest.mock("~/hooks/model/system/bootloader", () => {
-  const bootloaderSystemModule = jest.requireActual("~/model/system/bootloader").default;
-
-  return {
-    useSystem: () => mockSystemData,
-    useIsTpmAvailable: () => (type: Bootloader.BootloaderType) =>
-      bootloaderSystemModule.isTpmAvailable(mockSystemData, type),
-  };
-});
-
 const mockUseConfigModel = jest.fn();
 const mockSetEncryption = jest.fn();
+const mockUseIsTpmAvailable = jest.fn();
+
 jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockUseConfigModel(),
   useSetEncryption: () => mockSetEncryption,
+  useIsTpmAvailable: () => mockUseIsTpmAvailable(),
 }));
 
 describe("EncryptionSettingsPage", () => {
   beforeEach(() => {
-    mockSystemData.availableBootloaders = [
-      { type: "grub2", encryptionAuth: ["password", "tpm"] },
-      { type: "grub2-bls", encryptionAuth: ["password", "tpm"] },
-      { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
-    ];
     mockSetEncryption.mockClear();
     mockUseConfigModel.mockClear();
+    mockUseIsTpmAvailable.mockReturnValue(true);
   });
 
   describe("when encryption is not enabled", () => {
@@ -152,11 +130,7 @@ describe("EncryptionSettingsPage", () => {
 
   describe("when TPM is not available", () => {
     beforeEach(() => {
-      mockSystemData.availableBootloaders = [
-        { type: "grub2", encryptionAuth: ["password"] },
-        { type: "grub2-bls", encryptionAuth: ["password"] },
-        { type: "systemd-boot", encryptionAuth: ["password"] },
-      ];
+      mockUseIsTpmAvailable.mockReturnValue(false);
       mockUseConfigModel.mockReturnValue(mockLuks2Config);
     });
 
