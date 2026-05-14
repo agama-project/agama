@@ -459,7 +459,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /method 'Regular LUKS2' is not available/
+            description: /Regular LUKS2 is not available/
           )
         end
       end
@@ -475,7 +475,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /'Encryption with Volatile Random Key' is not a suitable method/
+            description: /Encryption with Volatile Random Key is not suitable/
           )
         end
       end
