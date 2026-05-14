@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 14 17:57:06 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Adapted the connections table to use the connections state
+  instead of the status (gh#agama-project/agama#3499,
+  related to bsc#1260465).
+
+-------------------------------------------------------------------
 Thu May 14 11:05:33 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update npm dependencies to safer versions (bsc#1264373,
