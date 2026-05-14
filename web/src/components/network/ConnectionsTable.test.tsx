@@ -62,7 +62,11 @@ jest.mock("~/hooks/model/config/network", () => ({
 jest.mock("~/hooks/model/system/network", () => ({
   useConnections: () => mockConnections,
   useDevices: () => mockDevices,
-  useSystem: () => ({ state: { wirelessEnabled: true } }),
+  useSystem: () => ({
+    connections: mockConnections,
+    devices: mockDevices,
+    state: { wirelessEnabled: true },
+  }),
 }));
 
 describe("ConnectionsTable", () => {
