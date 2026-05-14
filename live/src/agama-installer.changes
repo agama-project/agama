@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 14 03:44:13 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Do not copy installer-only boot parameters like systemd.unit,
+  iso-scan/filename and brd.rd_nr to the installed system
+  (gh#agama-project/agama#3172).
+
+-------------------------------------------------------------------
 Wed May 13 12:45:19 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the "ntp" dracut module to allow setting the NTP configuration
