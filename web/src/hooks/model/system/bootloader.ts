@@ -35,15 +35,4 @@ function useSystem(): Bootloader.System | null {
   return data;
 }
 
-const selectAvaialbleBootloaders = (system: System | null): Bootloader.Bootloader[] =>
-  system?.bootloader?.availableBootloaders ?? [];
-
-function useAvailableBootloaders(): Bootloader.Bootloader[] {
-  const { data } = useSuspenseQuery({
-    ...systemQuery,
-    select: selectAvaialbleBootloaders,
-  });
-  return data;
-}
-
-export { useSystem, useAvailableBootloaders };
+export { useSystem };

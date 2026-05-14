@@ -57,37 +57,21 @@ const mockNoEncryptionConfig: ConfigModel.Config = {
   },
 };
 
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({
-    l10n: {
-      keymap: "us",
-      timezone: "Europe/Berlin",
-      locale: "en_US",
-    },
-  }),
-}));
-
-const mockUseAvailableBootloaders = jest.fn();
-jest.mock("~/hooks/model/system/bootloader", () => ({
-  useAvailableBootloaders: () => mockUseAvailableBootloaders(),
-}));
-
 const mockUseConfigModel = jest.fn();
 const mockSetEncryption = jest.fn();
+const mockUseIsTpmAvailable = jest.fn();
+
 jest.mock("~/hooks/model/storage/config-model", () => ({
   useConfigModel: () => mockUseConfigModel(),
   useSetEncryption: () => mockSetEncryption,
+  useIsTpmAvailable: () => mockUseIsTpmAvailable(),
 }));
 
 describe("EncryptionSettingsPage", () => {
   beforeEach(() => {
-    mockUseAvailableBootloaders.mockReturnValue([
-      { type: "grub2", encryptionAuth: ["password"] },
-      { type: "grub2-bls", encryptionAuth: ["password", "tpm"] },
-      { type: "systemd-boot", encryptionAuth: ["password", "tpm"] },
-    ]);
     mockSetEncryption.mockClear();
     mockUseConfigModel.mockClear();
+    mockUseIsTpmAvailable.mockReturnValue(true);
   });
 
   describe("when encryption is not enabled", () => {
@@ -146,15 +130,81 @@ describe("EncryptionSettingsPage", () => {
 
   describe("when TPM is not available", () => {
     beforeEach(() => {
-      mockUseAvailableBootloaders.mockReturnValue([
-        { type: "grub2", encryptionAuth: ["password"] },
-      ]);
+      mockUseIsTpmAvailable.mockReturnValue(false);
       mockUseConfigModel.mockReturnValue(mockLuks2Config);
     });
 
     it("does not offer TPM", () => {
       installerRender(<EncryptionSettingsPage />);
       expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).toBeNull();
+    });
+  });
+
+  describe("TPM explanation text", () => {
+    describe("with BLS bootloader (grub2-bls)", () => {
+      beforeEach(() => {
+        mockUseConfigModel.mockReturnValue({
+          boot: {
+            configure: true,
+            bootloader: "grub2-bls",
+          },
+          encryption: {
+            password: "12345",
+            tpm: false,
+          },
+        });
+      });
+
+      it("shows only the basic TPM explanation without FDE boot instructions", () => {
+        installerRender(<EncryptionSettingsPage />, { withL10n: true });
+        screen.getByRole("checkbox", { name: /Use.*TPM/ });
+        screen.getByText(/password will not be needed to boot/);
+        expect(screen.queryByText(/booted directly on its first run/)).not.toBeInTheDocument();
+      });
+    });
+
+    describe("with BLS bootloader (systemd-boot)", () => {
+      beforeEach(() => {
+        mockUseConfigModel.mockReturnValue({
+          boot: {
+            configure: true,
+            bootloader: "systemd-boot",
+          },
+          encryption: {
+            password: "12345",
+            tpm: false,
+          },
+        });
+      });
+
+      it("shows only the basic TPM explanation without FDE boot instructions", () => {
+        installerRender(<EncryptionSettingsPage />, { withL10n: true });
+        screen.getByRole("checkbox", { name: /Use.*TPM/ });
+        screen.getByText(/password will not be needed to boot/);
+        expect(screen.queryByText(/booted directly on its first run/)).not.toBeInTheDocument();
+      });
+    });
+
+    describe("with non-BLS bootloader (grub2)", () => {
+      beforeEach(() => {
+        mockUseConfigModel.mockReturnValue({
+          boot: {
+            configure: true,
+            bootloader: "grub2",
+          },
+          encryption: {
+            password: "12345",
+            tpm: false,
+          },
+        });
+      });
+
+      it("shows the full TPM explanation including FDE boot instructions", () => {
+        installerRender(<EncryptionSettingsPage />, { withL10n: true });
+        screen.getByRole("checkbox", { name: /Use.*TPM/ });
+        screen.getByText(/password will not be needed to boot/);
+        screen.getByText(/booted directly on its first run/);
+      });
     });
   });
 });
