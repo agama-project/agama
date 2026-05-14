@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 14 03:45:16 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Install dracut systemd service units via the unit directory variable
+  so they are included in non-hostonly initrds with dracut 109
+  (gh#agama-project/agama#3264).
+
+-------------------------------------------------------------------
 Thu May 14 03:44:13 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
 
 - Do not copy installer-only boot parameters like systemd.unit,
