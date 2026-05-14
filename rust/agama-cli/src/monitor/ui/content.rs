@@ -124,7 +124,7 @@ impl<'a> Content<'a> {
         Paragraph::new(lines).render(content_area, buf);
     }
 
-    /// Renders a message about not product being selected.
+    /// Renders a message about no product being selected.
     fn render_no_product(&self, area: Rect, buf: &mut Buffer) {
         let content_area = Rect {
             x: area.x + 1,

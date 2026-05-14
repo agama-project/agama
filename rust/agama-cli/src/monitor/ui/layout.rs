@@ -55,13 +55,14 @@ pub struct MonitorLayout {
 
 /// Creates the main layout for the monitor UI
 ///
-/// Layout structure (matching TypeScript mockup + hints):
-/// - Row 1: Status bar (status, phase, hostname, IP, machine)
-/// - Row 2: Empty gap
-/// - Row 3: Product name
-/// - Row 4: Separator line
-/// - Middle: Dynamic content (progress, issues, messages) - with air gaps
-/// - Footer: Hints separator and keyboard hints (non-sticky, immediately below content)
+/// Layout structure:
+///
+///   - Row 1: Status bar (status, phase, hostname, IP, machine)
+///   - Row 2: Empty gap
+///   - Row 3: Product name
+///   - Row 4: Separator line
+///   - Middle: Dynamic content (progress, issues, messages) - with air gaps
+///   - Footer: Hints separator and keyboard hints
 pub fn create_layout(area: Rect) -> MonitorLayout {
     // Calculate content height: total - header
     // Leave room for hints at bottom but don't make them sticky
