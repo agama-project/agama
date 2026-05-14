@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 14 09:02:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Replace the user interface of the "agama monitor" command with
+  a new version (gh#agama-project/agama#3443).
+
+-------------------------------------------------------------------
 Thu May  7 10:56:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Improved saving libzypp service (related to bsc#1261351)
