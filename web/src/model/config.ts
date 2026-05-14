@@ -23,6 +23,7 @@
 import type * as Hostname from "~/model/config/hostname";
 import type * as L10n from "~/model/config/l10n";
 import type * as Network from "~/model/config/network";
+import type * as Ntp from "~/model/config/ntp";
 import type * as Product from "~/model/config/product";
 import type * as Software from "~/openapi/config/software";
 import type * as User from "~/model/config/user";
@@ -36,6 +37,7 @@ type Config = {
   hostname?: Hostname.Config;
   l10n?: L10n.Config;
   network?: Network.Config;
+  ntp?: Ntp.Config;
   product?: Product.Config;
   storage?: Storage.Config;
   iscsi?: ISCSI.Config;
@@ -46,4 +48,17 @@ type Config = {
   root?: Root.Config;
 };
 
-export type { Config, Hostname, Product, L10n, Network, Storage, ISCSI, DASD, ZFCP, User, Root };
+export type {
+  Config,
+  Hostname,
+  Product,
+  L10n,
+  Network,
+  Ntp,
+  Storage,
+  ISCSI,
+  DASD,
+  ZFCP,
+  User,
+  Root,
+};

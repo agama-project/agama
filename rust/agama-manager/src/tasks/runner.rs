@@ -20,7 +20,8 @@
 
 use crate::{
     actions::{FinishAction, InstallAction, SetConfigAction},
-    bootloader, files, hostname, iscsi, l10n, proxy, s390, security, service, software, storage,
+    bootloader, files, hostname, iscsi, l10n, ntp, proxy, s390, security, service, software,
+    storage,
     tasks::message,
     users,
 };
@@ -48,6 +49,7 @@ pub struct TasksRunner {
     pub network: NetworkSystemClient,
     pub progress: Handler<progress::Service>,
     pub proxy: Handler<proxy::Service>,
+    pub ntp: Handler<ntp::Service>,
     pub questions: Handler<question::Service>,
     pub security: Handler<security::Service>,
     pub software: Handler<software::Service>,
@@ -70,6 +72,7 @@ impl MessageHandler<message::Install> for TasksRunner {
             l10n: self.l10n.clone(),
             network: self.network.clone(),
             proxy: self.proxy.clone(),
+            ntp: self.ntp.clone(),
             software: self.software.clone(),
             storage: self.storage.clone(),
             files: self.files.clone(),
@@ -115,6 +118,7 @@ impl MessageHandler<message::SetConfig> for TasksRunner {
             network: self.network.clone(),
             progress: self.progress.clone(),
             proxy: self.proxy.clone(),
+            ntp: self.ntp.clone(),
             questions: self.questions.clone(),
             security: self.security.clone(),
             software: self.software.clone(),

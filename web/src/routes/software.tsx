@@ -39,8 +39,12 @@ const routes = (): Route => ({
       element: <SoftwarePage />,
     },
     {
+      path: PATHS.desktopSelection,
+      element: <SoftwarePatternsSelection scope="desktops" />,
+    },
+    {
       path: PATHS.patternsSelection,
-      element: <SoftwarePatternsSelection />,
+      element: <SoftwarePatternsSelection scope="other" />,
     },
   ],
 });

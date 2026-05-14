@@ -53,11 +53,13 @@ pub trait Callback {
     /// or permanently import the key.
     fn accept_key(
         &self,
-        _key_id: String,
-        _key_name: String,
-        _key_fingerprint: String,
-        _repository_alias: String,
+        key_id: String,
+        key_name: String,
+        key_fingerprint: String,
+        repository_alias: String,
     ) -> GpgKeyTrust {
+        tracing::info!("Default action: rejecting GPG key for repository {}: id='{}', name='{}', fingerprint='{}'",
+            repository_alias, key_id, key_name, key_fingerprint);
         GpgKeyTrust::Reject
     }
 

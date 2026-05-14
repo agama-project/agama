@@ -113,6 +113,13 @@ impl MessageHandler<message::Set> for Service {
 impl MessageHandler<message::Clear> for Service {
     async fn handle(&mut self, message: message::Clear) -> Result<(), Error> {
         _ = self.issues.remove(&message.scope);
+
+        if message.notify {
+            self.events.send(Event::IssuesChanged {
+                scope: message.scope,
+            })?;
+        }
+
         Ok(())
     }
 }

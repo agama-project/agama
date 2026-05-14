@@ -39,6 +39,24 @@ export default {
     "%1$s, %2$s και [%3$d ακόμη]",
     "%1$s, %2$s και [%3$d ακόμη]"
   ],
+  "%d duplicates skipped.": [
+    ""
+  ],
+  "%d entries added, %d duplicates skipped.": [
+    ""
+  ],
+  "%d entries added, %d invalid, %d duplicates skipped.": [
+    ""
+  ],
+  "%d entries added, %d invalid.": [
+    ""
+  ],
+  "%d entries added.": [
+    ""
+  ],
+  "%d invalid entries removed.": [
+    ""
+  ],
   "%d mode available": [
     "%d διαθέσιμη λειτουργία",
     "%d διαθέσιμες λειτουργίες"
@@ -49,6 +67,15 @@ export default {
   ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s added but is invalid: %s. Select to edit.": [
+    ""
+  ],
+  "%s added.": [
+    ""
+  ],
+  "%s already exists, skipped.": [
+    ""
   ],
   "%s and %d others": [
     "%s και %d ακόμη"
@@ -62,11 +89,23 @@ export default {
   "%s disk": [
     "Δίσκος %s"
   ],
+  "%s entries": [
+    ""
+  ],
   "%s has been registered with below information.": [
     "Το %s έχει εγγραφεί με τις παρακάτω πληροφορίες."
   ],
+  "%s is invalid: %s": [
+    ""
+  ],
   "%s logo": [
     "Λογότυπο %s"
+  ],
+  "%s moved to input for editing.": [
+    ""
+  ],
+  "%s removed.": [
+    ""
   ],
   "%s task active": [
     "%s εργασία ενεργή",
@@ -82,13 +121,13 @@ export default {
   "%s with %d partitions": [
     "%s με %d κατατμήσεις"
   ],
-  "(bind by name)": [
-    ""
-  ],
   "(bound by MAC)": [
     ""
   ],
   "(bound by name)": [
+    ""
+  ],
+  "(optional)": [
     ""
   ],
   "(step %s of %s)": [
@@ -122,10 +161,6 @@ export default {
   "A new partition will be created for %s": [
     "Θα δημιουργηθεί μια νέα κατάτμηση για %s",
     "Θα δημιουργηθούν νέες κατατμήσεις για %s"
-  ],
-  "A new volume will be created for %s": [
-    "Θα δημιουργηθεί ένας νέος τόμος για %s",
-    "Θα δημιουργηθούν νέοι τόμοι για %s"
   ],
   "A partition may be deleted": [
     "Μια κατάτμηση ενδέχεται να διαγραφεί"
@@ -163,23 +198,11 @@ export default {
   "Add": [
     "Προσθήκη"
   ],
-  "Add DNS": [
-    "Προσθήκη DNS"
-  ],
   "Add LVM volume group": [
     "Προσθήκη ομάδας τόμων (volume group) LVM"
   ],
   "Add a partition or mount an existing one": [
     "Προσθήκη κατάτμησης ή προσάρτηση μιας υπάρχουσας"
-  ],
-  "Add an address": [
-    "Προσθήκη διεύθυνσης"
-  ],
-  "Add another DNS": [
-    "Προσθήκη άλλου DNS"
-  ],
-  "Add another address": [
-    "Προσθήκη άλλης διεύθυνσης"
   ],
   "Add device menu": [
     "Μενού προσθήκης συσκευής"
@@ -190,20 +213,14 @@ export default {
   "Add or use partition": [
     "Προσθήκη ή χρήση κατάτμησης"
   ],
-  "Add search domain": [
-    ""
-  ],
   "Additional CHAP authentication performed by the initiator": [
     "Πρόσθετη πιστοποίηση CHAP που εκτελείται από τον initiator"
   ],
   "Address": [
     "Διεύθυνση"
   ],
-  "Addresses": [
-    "Διευθύνσεις"
-  ],
-  "Addresses data list": [
-    "Λίστα δεδομένων διευθύνσεων"
+  "Address and gateway assigned from the network": [
+    ""
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
     "Προσαρμόστε τις παρακάτω ρυθμίσεις ώστε το νέο σύστημα να χωρέσει στον διαθέσιμο χώρο."
@@ -245,6 +262,9 @@ export default {
     "Θα χρησιμοποιηθεί μια υπάρχουσα κατάτμηση για %s",
     "Θα χρησιμοποιηθούν υπάρχουσες κατατμήσεις για %s"
   ],
+  "Any": [
+    ""
+  ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Οποιαδήποτε υπάρχουσα κατάτμηση θα αφαιρεθεί και όλα τα δεδομένα στον δίσκο θα χαθούν."
   ],
@@ -254,8 +274,11 @@ export default {
   "As a new partition on %s": [
     "Ως νέα κατάτμηση στο %s"
   ],
-  "At least one address must be provided for selected mode": [
-    "Πρέπει να δοθεί τουλάχιστον μία διεύθυνση για την επιλεγμένη λειτουργία"
+  "At least one DNS search domain is required": [
+    ""
+  ],
+  "At least one DNS server is required": [
+    ""
   ],
   "At least one partition will be deleted": [
     "Τουλάχιστον μία κατάτμηση θα διαγραφεί"
@@ -271,9 +294,6 @@ export default {
   ],
   "Automatic": [
     "Αυτόματη"
-  ],
-  "Automatic (DHCP)": [
-    "Αυτόματη (DHCP)"
   ],
   "Automatic LUN scan is disabled": [
     ""
@@ -323,20 +343,29 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    ""
+  ],
+  "Bond ports": [
+    ""
+  ],
   "Boot options": [
     "Επιλογές εκκίνησης"
   ],
   "Breadcrumbs": [
     "Ίχνη πλοήγησης"
   ],
+  "Bridge": [
+    ""
+  ],
+  "Bridge ports": [
+    ""
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs με στιγμιότυπα"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "Προχωρώντας, η εγκατάσταση θα ξεκινήσει με τις καθορισμένες ρυθμίσεις."
   ],
   "CHAP authentication performed by the target": [
     "Πιστοποίηση CHAP που εκτελείται από τον στόχο (target)"
@@ -395,21 +424,6 @@ export default {
   "Change product or mode": [
     "Αλλαγή προϊόντος ή λειτουργίας"
   ],
-  "Change selection": [
-    "Αλλαγή επιλογής"
-  ],
-  "Change the disk to configure": [
-    "Αλλαγή του δίσκου προς ρύθμιση"
-  ],
-  "Change the disk to create %s": [
-    "Αλλαγή του δίσκου για τη δημιουργία %s"
-  ],
-  "Change the disk to format as %s": [
-    "Αλλαγή του δίσκου προς διαμόρφωση ως %s"
-  ],
-  "Change the disk to install the system": [
-    "Αλλαγή του δίσκου για την εγκατάσταση του συστήματος"
-  ],
   "Change the file system or mount point": [
     "Αλλαγή του συστήματος αρχείων ή του σημείου προσάρτησης"
   ],
@@ -435,6 +449,9 @@ export default {
     "Επιλέξτε ένα προϊόν",
     "Επιλέξτε από %d διαθέσιμα προϊόντα"
   ],
+  "Choose a volume group to define logical volumes": [
+    ""
+  ],
   "Choose device to bind by MAC": [
     "Επιλέξτε συσκευή για συσχέτιση βάσει MAC"
   ],
@@ -458,6 +475,9 @@ export default {
   ],
   "Close": [
     "Κλείσιμο"
+  ],
+  "Configuration from the network plus static addresses and gateway": [
+    ""
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Η διαμόρφωση αναγνώστηκε από το iSCSI Boot Firmware Table (iBFT). Ο initiator δεν μπορεί να αλλάξει."
@@ -586,6 +606,9 @@ export default {
   "Create user": [
     "Δημιουργία χρήστη"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    ""
+  ],
   "Current %1$s at %2$s": [
     "Τρέχον %1$s στο %2$s"
   ],
@@ -622,20 +645,17 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    ""
-  ],
   "Deactivate": [
     "Απενεργοποίηση"
   ],
   "Deactivated": [
     "Απενεργοποιημένο"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Προεπιλεγμένο σύστημα αρχείων για το %s"
-  ],
-  "Default file system for generic logical volumes": [
-    "Προεπιλεγμένο σύστημα αρχείων για γενικούς λογικούς τόμους"
   ],
   "Default file system for generic mount paths": [
     "Προεπιλεγμένο σύστημα αρχείων για γενικές διαδρομές προσάρτησης"
@@ -676,6 +696,9 @@ export default {
   "Description": [
     "Περιγραφή"
   ],
+  "Desktops": [
+    ""
+  ],
   "Destroy current data and format device as": [
     "Καταστροφή τρεχόντων δεδομένων και διαμόρφωση συσκευής ως"
   ],
@@ -693,6 +716,9 @@ export default {
   ],
   "Device details": [
     "Λεπτομέρειες συσκευής"
+  ],
+  "Disabled": [
+    ""
   ],
   "Discard": [
     "Απόρριψη"
@@ -733,9 +759,6 @@ export default {
   "Do not use": [
     "Να μη χρησιμοποιηθεί"
   ],
-  "Domain": [
-    ""
-  ],
   "Down": [
     ""
   ],
@@ -744,6 +767,36 @@ export default {
   ],
   "Download logs to troubleshoot or share with support.": [
     "Κάντε λήψη των καταγραφών για αντιμετώπιση προβλημάτων ή για κοινοποίηση στην υποστήριξη."
+  ],
+  "E.g., %s": [
+    ""
+  ],
+  "E.g., 192.168.1.1": [
+    ""
+  ],
+  "E.g., 192.168.1.1 or 192.168.1.1/24. Prefix auto-added if omitted.": [
+    ""
+  ],
+  "E.g., 2001:db8::1": [
+    ""
+  ],
+  "E.g., 2001:db8::1 or 2001:db8::1/64. Prefix auto-added if omitted.": [
+    ""
+  ],
+  "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
+    ""
+  ],
+  "E.g., bond0": [
+    ""
+  ],
+  "E.g., br0": [
+    ""
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    ""
+  ],
+  "E.g., example.com": [
+    ""
   ],
   "Edit": [
     "Επεξεργασία"
@@ -771,6 +824,9 @@ export default {
   ],
   "Enable mutual verification": [
     "Ενεργοποίηση αμοιβαίας επαλήθευσης"
+  ],
+  "Enabled": [
+    ""
   ],
   "Encrypt the system": [
     "Κρυπτογράφηση του συστήματος"
@@ -805,20 +861,29 @@ export default {
   "Enter a name for the volume group.": [
     "Εισαγάγετε ένα όνομα για την ομάδα τόμων (volume group)."
   ],
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
+  ],
   "Ethernet": [
     ""
   ],
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Παράδειγμα: %s"
-  ],
   "Excellent signal": [
     "Εξαιρετικό σήμα"
   ],
   "Expiration date": [
     "Ημερομηνία λήξης"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -863,9 +928,6 @@ export default {
   ],
   "Filter by language, territory or locale code": [
     "Φιλτράρισμα βάσει γλώσσας, περιοχής ή κωδικού locale"
-  ],
-  "Filter by pattern title or description": [
-    "Φιλτράρισμα βάσει τίτλου ή περιγραφής προτύπου"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Φιλτράρισμα βάσει περιοχής, κωδικού ζώνης ώρας ή απόκλισης UTC"
@@ -918,6 +980,12 @@ export default {
   "Formatted": [
     "Διαμορφωμένο"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Η Πλήρης Κρυπτογράφηση Δίσκου (FDE) επιτρέπει την προστασία των πληροφοριών που αποθηκεύονται στα νέα συστήματα αρχείων, συμπεριλαμβανομένων των δεδομένων, των προγραμμάτων και των αρχείων συστήματος."
   ],
@@ -926,9 +994,6 @@ export default {
   ],
   "Gateway": [
     "Πύλη"
-  ],
-  "Gateway can be defined only in 'Manual' mode": [
-    "Η πύλη μπορεί να οριστεί μόνο στη «Χειροκίνητη» λειτουργία"
   ],
   "GiB": [
     "GiB"
@@ -944,6 +1009,15 @@ export default {
   ],
   "Good signal": [
     "Καλό σήμα"
+  ],
+  "Graphical desktop environments for the system.": [
+    ""
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Απόκρυψη"
@@ -964,9 +1038,6 @@ export default {
   "I have read and accept the [license] for %s": [
     "Έχω διαβάσει και αποδέχομαι την [άδεια χρήσης] για το %s"
   ],
-  "IP Address": [
-    "Διεύθυνση IP"
-  ],
   "IP Addresses": [
     "Διευθύνσεις IP"
   ],
@@ -979,20 +1050,33 @@ export default {
   "IPv4": [
     "IPv4"
   ],
+  "IPv4 gateway is required": [
+    ""
+  ],
   "IPv6": [
     "IPv6"
+  ],
+  "IPv6 gateway is required": [
+    ""
+  ],
+  "Identify the connection device by its name in the system": [
+    ""
+  ],
+  "Identify the connection device by its physical address": [
+    ""
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Εάν χρησιμοποιήθηκε τοπικό μέσο για την εκτέλεση της εγκατάστασης, αφαιρέστε το πριν την επόμενη εκκίνηση."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Αν δεν είστε σίγουροι, ακυρώστε και ελέγξτε τις ρυθμίσεις αποθήκευσης."
-  ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Εάν δεν είστε σίγουροι, ελέγξτε και προσαρμόστε τις ρυθμίσεις αποθήκευσης."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    ""
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Εάν θέλετε να απενεργοποιήσετε αυτόν τον έλεγχο, προσδιορίστε «inst.ay_check=0» στη γραμμή εντολών του πυρήνα"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "",
+    ""
   ],
   "Initiator": [
     "Initiator"
@@ -1051,6 +1135,12 @@ export default {
   "Interface": [
     "Διεπαφή"
   ],
+  "Invalid IPv4 gateway": [
+    ""
+  ],
+  "Invalid IPv6 gateway": [
+    ""
+  ],
   "Invalid settings": [
     "Μη έγκυρες ρυθμίσεις"
   ],
@@ -1059,9 +1149,6 @@ export default {
   ],
   "Invalid storage settings": [
     "Μη έγκυρες ρυθμίσεις αποθηκευτικού χώρου"
-  ],
-  "Ip prefix or netmask": [
-    "Πρόθεμα IP ή μάσκα δικτύου"
   ],
   "Issue date": [
     "Ημερομηνία έκδοσης"
@@ -1102,6 +1189,9 @@ export default {
   "JFS": [
     "JFS"
   ],
+  "Keep %s": [
+    ""
+  ],
   "Keyboard": [
     "Πληκτρολόγιο"
   ],
@@ -1132,20 +1222,23 @@ export default {
   "Let the installer propose a sensible size": [
     "Αφήστε τον εγκαταστάτη να προτείνει ένα λογικό μέγεθος"
   ],
+  "Level": [
+    ""
+  ],
   "License acceptance is required to continue.": [
     "Απαιτείται αποδοχή της άδειας χρήσης για να συνεχίσετε."
   ],
   "License acceptance required": [
     "Απαιτείται αποδοχή της άδειας χρήσης"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Φόρτωση"
   ],
   "Loading data...": [
     "Φόρτωση δεδομένων..."
-  ],
-  "Loading the installation repositories...": [
-    "Φόρτωση των αποθετηρίων εγκατάστασης..."
   ],
   "Localization": [
     "Τοπικοποίηση"
@@ -1171,6 +1264,9 @@ export default {
   "Login form": [
     "Φόρμα σύνδεσης"
   ],
+  "Loopback": [
+    ""
+  ],
   "MAC": [
     "MAC"
   ],
@@ -1188,6 +1284,15 @@ export default {
   ],
   "Max channel": [
     "Μέγιστο κανάλι"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
+  ],
+  "Members": [
+    ""
   ],
   "Memory": [
     "Μνήμη"
@@ -1287,9 +1392,6 @@ export default {
   "Name": [
     "Όνομα"
   ],
-  "Needs about %s": [
-    "Χρειάζεται περίπου %s"
-  ],
   "Network": [
     "Δίκτυο"
   ],
@@ -1302,14 +1404,14 @@ export default {
   "No": [
     "Όχι"
   ],
+  "No LVM volume groups are available for selection.": [
+    ""
+  ],
   "No Wi-Fi networks were found": [
     "Δεν βρέθηκαν δίκτυα Wi-Fi"
   ],
   "No additional partitions will be created": [
     "Δεν θα δημιουργηθούν πρόσθετες κατατμήσεις"
-  ],
-  "No additional software was selected.": [
-    "Δεν επιλέχθηκε πρόσθετο λογισμικό."
   ],
   "No content found": [
     "Δεν βρέθηκε περιεχόμενο"
@@ -1335,14 +1437,14 @@ export default {
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "Δεν βρέθηκε iSCSI Boot Firmware Table (iBFT). Ο initiator μπορεί να [ρυθμιστεί χειροκίνητα.]"
   ],
-  "No logical volumes are defined yet": [
-    "Δεν έχουν οριστεί ακόμη λογικοί τόμοι"
-  ],
   "No partitions will be automatically configured for booting.": [
     "Καμία κατάτμηση δεν θα ρυθμιστεί αυτόματα για την εκκίνηση."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Καμία κατάτμηση δεν θα ρυθμιστεί αυτόματα για την εκκίνηση. Χρησιμοποιήστε το με προσοχή."
+  ],
+  "No software RAID devices are available for selection.": [
+    ""
   ],
   "No support is planned.": [
     "Δεν προβλέπεται υποστήριξη."
@@ -1374,9 +1476,6 @@ export default {
   "None of the locales match the filter.": [
     "Κανένα locale δεν ταιριάζει με το φίλτρο."
   ],
-  "None of the patterns match the filter.": [
-    "Κανένα από τα πρότυπα δεν ταιριάζει με το φίλτρο."
-  ],
   "None of the time zones match the filter.": [
     "Καμία ζώνη ώρας δεν ταιριάζει με το φίλτρο."
   ],
@@ -1406,6 +1505,9 @@ export default {
   ],
   "Not supported (%s)": [
     "Δεν υποστηρίζεται (%s)"
+  ],
+  "Not used by this bridge": [
+    ""
   ],
   "On boot": [
     "Κατά την εκκίνηση"
@@ -1503,8 +1605,11 @@ export default {
   "Potential data loss affecting at least %s": [
     "Πιθανή απώλεια δεδομένων που επηρεάζει τουλάχιστον το %s"
   ],
-  "Prefix length or netmask": [
-    "Μήκος προθέματος ή μάσκα δικτύου"
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
   ],
   "Proceeding may result in data loss": [
     "Η συνέχεια ενδέχεται να οδηγήσει σε απώλεια δεδομένων"
@@ -1518,17 +1623,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Προστασία για τις πληροφορίες που αποθηκεύονται στα νέα συστήματα αρχείων, συμπεριλαμβανομένων δεδομένων, προγραμμάτων και αρχείων συστήματος."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Παροχή πιστοποίησης"
   ],
-  "Provide email address": [
-    "Δώστε τη διεύθυνση email"
-  ],
   "Provide its password to log in to the system.": [
     "Εισαγάγετε τον κωδικό πρόσβασης για να συνδεθείτε στο σύστημα."
-  ],
-  "Provide registration code": [
-    "Δώστε τον κωδικό εγγραφής"
   ],
   "Public SSH Key": [
     "Δημόσιο κλειδί SSH"
@@ -1541,6 +1646,9 @@ export default {
   ],
   "Question": [
     "Ερώτηση"
+  ],
+  "RAID": [
+    ""
   ],
   "Reboot": [
     "Επανεκκίνηση"
@@ -1587,21 +1695,11 @@ export default {
   "Reload": [
     "Επαναφόρτωση"
   ],
-  "Remove": [
-    "Αφαίρεση"
-  ],
   "Remove the configuration for this disk": [
     "Αφαίρεση της διαμόρφωσης για αυτόν τον δίσκο"
   ],
-  "Repository load failed": [
-    "Η φόρτωση του αποθετηρίου απέτυχε"
-  ],
-  "Required packages": [
-    "Απαιτούμενα πακέτα"
-  ],
-  "Required packages and %s pattern": [
-    "Απαιτούμενα πακέτα και %s πρότυπο (pattern)",
-    "Απαιτούμενα πακέτα και %s πρότυπα (patterns)"
+  "Required space with current selection: [%s]": [
+    ""
   ],
   "Rescan devices": [
     "Επανασάρωση συσκευών"
@@ -1629,6 +1727,9 @@ export default {
   ],
   "Review and install": [
     "Έλεγχος και εγκατάσταση"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "Σύνδεση root με κλειδί SSH"
@@ -1666,6 +1767,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
@@ -1684,14 +1788,11 @@ export default {
   "Select %s": [
     "Επιλογή %s"
   ],
-  "Select a device to define partitions or to mount": [
-    "Επιλέξτε μια συσκευή για ορισμό κατατμήσεων ή για προσάρτηση"
+  "Select a desktop environment to get a graphical interface.": [
+    ""
   ],
   "Select a disk": [
     "Επιλέξτε έναν δίσκο"
-  ],
-  "Select a disk to define partitions or to mount": [
-    "Επιλέξτε έναν δίσκο για ορισμό κατατμήσεων ή για προσάρτηση"
   ],
   "Select a mode": [
     "Επιλέξτε λειτουργία"
@@ -1712,17 +1813,17 @@ export default {
   "Select a product to continue.": [
     "Επιλέξτε ένα προϊόν για να συνεχίσετε."
   ],
-  "Select another device to define partitions or to mount": [
-    "Επιλέξτε άλλη συσκευή για ορισμό κατατμήσεων ή για προσάρτηση"
-  ],
-  "Select another disk to define partitions or to mount": [
-    "Επιλέξτε άλλον δίσκο για ορισμό κατατμήσεων ή για προσάρτηση"
-  ],
   "Select at least one disk.": [
     "Επιλέξτε τουλάχιστον έναν δίσκο."
   ],
   "Select device": [
     "Επιλογή συσκευής"
+  ],
+  "Select entries to edit or remove them. Or [remove all invalid entries.]": [
+    ""
+  ],
+  "Select one or more to extend the system.": [
+    ""
   ],
   "Select or enter a mount point": [
     "Επιλέξτε ή εισαγάγετε ένα σημείο προσάρτησης"
@@ -1745,17 +1846,8 @@ export default {
   "Selected disk cannot be changed": [
     "Ο επιλεγμένος δίσκος δεν μπορεί να αλλάξει"
   ],
-  "Selected patterns": [
-    "Επιλεγμένα πρότυπα"
-  ],
-  "Server IP": [
-    "IP διακομιστή"
-  ],
   "Server URL": [
     "URL διακομιστή"
-  ],
-  "Server options": [
-    "Επιλογές διακομιστή"
   ],
   "Set DIAG off": [
     "Απενεργοποίηση DIAG"
@@ -1800,9 +1892,6 @@ export default {
   "Size limits must be numbers followed by a unit like GiB or GB": [
     "Τα όρια μεγέθους πρέπει να είναι αριθμοί που ακολουθούνται από μια μονάδα όπως GiB ή GB"
   ],
-  "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Τα όρια μεγέθους πρέπει να είναι αριθμοί που ακολουθούνται προαιρετικά από μια μονάδα όπως GiB ή GB"
-  ],
   "Size mode": [
     "Λειτουργία μεγέθους"
   ],
@@ -1818,11 +1907,20 @@ export default {
   "Software %s": [
     "Λογισμικό %s"
   ],
+  "Some DNS search domains are invalid": [
+    ""
+  ],
+  "Some DNS server addresses are invalid": [
+    ""
+  ],
+  "Some IPv4 addresses are invalid": [
+    ""
+  ],
+  "Some IPv6 addresses are invalid": [
+    ""
+  ],
   "Some existing partitions may be shrunk": [
     "Ορισμένες υπάρχουσες κατατμήσεις ενδέχεται να συρρικνωθούν"
-  ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Ορισμένα αποθετήρια εγκατάστασης δεν μπόρεσαν να φορτωθούν. Το σύστημα δεν μπορεί να εγκατασταθεί χωρίς αυτά."
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "Ορισμένα από τα στοιχεία στο προφίλ AutoYaST δεν υποστηρίζονται."
@@ -1836,6 +1934,9 @@ export default {
   "Something went wrong": [
     "Κάτι πήγε στραβά"
   ],
+  "Spanning Tree Protocol (STP)": [
+    ""
+  ],
   "Start configuring a basic installation": [
     "Έναρξη διαμόρφωσης μιας βασικής εγκατάστασης"
   ],
@@ -1844,6 +1945,9 @@ export default {
   ],
   "Startup": [
     "Εκκίνηση"
+  ],
+  "Static addresses and gateway": [
+    ""
   ],
   "Static hostname": [
     "Στατικό όνομα συστήματος"
@@ -1900,6 +2004,9 @@ export default {
   ],
   "Temporary name that may change after reboot or network changes": [
     "Προσωρινό όνομα που ενδέχεται να αλλάξει μετά από επανεκκίνηση ή αλλαγές δικτύου"
+  ],
+  "The 'primary' option is only valid for %s modes": [
+    ""
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Η ομάδα LVM '%1$s' θα παραμείνει στο %2$s"
@@ -1999,9 +2106,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Οι ακόλουθες κατατμήσεις θα δημιουργηθούν ή θα προσαρτηθούν"
   ],
-  "The following software patterns are selected for installation:": [
-    "Τα ακόλουθα πρότυπα λογισμικού έχουν επιλεγεί για εγκατάσταση:"
-  ],
   "The initiator name cannot be blank": [
     "Το όνομα του initiator δεν μπορεί να είναι κενό"
   ],
@@ -2018,17 +2122,11 @@ export default {
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Το μέγιστο πρέπει να είναι ένας αριθμός που ακολουθείται από μια μονάδα όπως GiB ή GB"
   ],
-  "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "Το μέγιστο πρέπει να είναι ένας αριθμός που ακολουθείται προαιρετικά από μια μονάδα όπως GiB ή GB"
-  ],
   "The minimum cannot be greater than the maximum": [
     "Το ελάχιστο δεν μπορεί να είναι μεγαλύτερο από το μέγιστο"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
     "Το ελάχιστο πρέπει να είναι ένας αριθμός που ακολουθείται από μια μονάδα όπως GiB ή GB"
-  ],
-  "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "Το ελάχιστο πρέπει να είναι ένας αριθμός που ακολουθείται προαιρετικά από μια μονάδα όπως GiB ή GB"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Ο αναδυόμενος επιλογέας προσφέρει μια απλοποιημένη διεπαφή σχεδιασμένη για γρήγορη και άμεση χρήση, χωρίς να επιβαρύνει τον χρήστη."
@@ -2044,9 +2142,6 @@ export default {
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     ""
-  ],
-  "The product will be registered with \"%s\" hostname": [
-    "Το προϊόν θα εγγραφεί με το όνομα συστήματος (hostname) «%s»"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Το μέγεθος για τη %1$s θα προσαρμοστεί δυναμικά με βάση την ποσότητα RAM στο σύστημα και την ύπαρξη ξεχωριστού συστήματος αρχείων για το %2$s."
@@ -2093,6 +2188,9 @@ export default {
   "The system is rebooting": [
     "Το σύστημα κάνει επανεκκίνηση"
   ],
+  "The system will boot to a command-line interface.": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Ολόκληρη η συσκευή θα χρησιμοποιηθεί για %s"
   ],
@@ -2131,11 +2229,17 @@ export default {
   "This license is not available in %s.": [
     "Αυτή η άδεια χρήσης δεν είναι διαθέσιμη στο %s."
   ],
+  "This might be due to network connectivity.": [
+    ""
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Αυτό το πρότυπο επιτυγχάνει μια ισορροπία μεταξύ σαφήνειας και αποτελεσματικότητας: το αναδυόμενο παράθυρο διατηρεί τα πράγματα ελαφριά για απλές επιλογές, ενώ η πλήρης προβολή υποστηρίζει βαθύτερη εξερεύνηση και πιο σύνθετες ενέργειες, ειδικά για χρήστες με πάρα πολλές συσκευές."
   ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Αυτό το προϊόν δεν επιτρέπει την επιλογή προτύπων λογισμικού κατά την εγκατάσταση. Ωστόσο, μπορείτε να προσθέσετε επιπλέον λογισμικό αφού ολοκληρωθεί η εγκατάσταση."
+  "This product does not provide additional patterns.": [
+    ""
+  ],
+  "This product does not provide desktop environments.": [
+    ""
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Αυτός ο χώρος περιλαμβάνει το βασικό σύστημα και τα επιλεγμένα πρότυπα λογισμικού, εάν υπάρχουν."
@@ -2158,11 +2262,11 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Για να διασφαλιστεί ότι το νέο σύστημα μπορεί να εκκινήσει, ο εγκαταστάτης ενδέχεται να χρειαστεί να δημιουργήσει ή να ρυθμίσει ορισμένες κατατμήσεις στον κατάλληλο δίσκο."
-  ],
-  "Try again": [
-    "Δοκιμάστε ξανά"
   ],
   "Try to deactivate again": [
     ""
@@ -2184,9 +2288,6 @@ export default {
   ],
   "Unknown error": [
     ""
-  ],
-  "Unselect": [
-    "Αποεπιλογή"
   ],
   "Unselect or activate them and try it again.": [
     "Αποεπιλέξτε ή ενεργοποιήστε τις και δοκιμάστε ξανά."
@@ -2260,6 +2361,12 @@ export default {
   "Use available space": [
     "Χρήση διαθέσιμου χώρου"
   ],
+  "Use custom DNS search domains": [
+    ""
+  ],
+  "Use custom DNS servers": [
+    ""
+  ],
   "Use device %s": [
     "Χρήση συσκευής %s"
   ],
@@ -2329,11 +2436,11 @@ export default {
   "Use the disk without partitions": [
     "Χρήση του δίσκου χωρίς κατατμήσεις"
   ],
+  "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
+    ""
+  ],
   "Use these same settings for the selected product": [
     "Χρήση των ίδιων ρυθμίσεων για το επιλεγμένο προϊόν"
-  ],
-  "Used space": [
-    "Χρησιμοποιούμενος χώρος"
   ],
   "User name": [
     "Όνομα χρήστη"
@@ -2346,9 +2453,6 @@ export default {
   ],
   "Using %d connections with %s": [
     "Χρήση %d συνδέσεων με %s"
-  ],
-  "Using [%s] keyboard": [
-    "Χρήση πληκτρολογίου [%s]"
   ],
   "Using a hashed password.": [
     "Χρήση συνθηματικού με κατακερματισμό (hashed)."
@@ -2368,6 +2472,9 @@ export default {
   "Using transient hostname: %s": [
     "Χρήση προσωρινού ονόματος συστήματος: %s"
   ],
+  "VLAN": [
+    ""
+  ],
   "View license": [
     "Προβολή άδειας χρήσης"
   ],
@@ -2376,6 +2483,9 @@ export default {
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Η ομάδα τόμων '%s' υπάρχει ήδη. Εισαγάγετε ένα διαφορετικό όνομα."
+  ],
+  "Volume groups cannot be formatted": [
+    ""
   ],
   "WPA & WPA2 Personal": [
     "WPA & WPA2 Personal"
@@ -2431,9 +2541,6 @@ export default {
   "You can safely close this window.": [
     "Μπορείτε να κλείσετε αυτό το παράθυρο με ασφάλεια."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Δεν μπορείτε να το αλλάξετε αργότερα. Μεταβείτε στην ενότητα %s αν θέλετε να το τροποποιήσετε πριν προχωρήσετε στην εγγραφή."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Ίσως θέλετε να απορρίψετε τις τρέχουσες ρυθμίσεις και να ξεκινήσετε από το μηδέν με μια απλή διαμόρφωση."
   ],
@@ -2461,9 +2568,6 @@ export default {
   "auto selected": [
     "αυτόματα επιλεγμένο"
   ],
-  "hostname": [
-    "όνομα συστήματος"
-  ],
   "iBFT": [
     "iBFT"
   ],
@@ -2478,9 +2582,6 @@ export default {
   ],
   "partition": [
     "κατάτμηση"
-  ],
-  "proposal.Device": [
-    "proposal.Device"
   ],
   "reset to defaults": [
     "επαναφορά προεπιλογών"

@@ -24,7 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { ConnectionType, DeviceState } from "~/types/network";
+import { DeviceState } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 import { connectionFormOptions } from "~/components/network/ConnectionForm";
 import DeviceSelector from "./DeviceSelector";
 
@@ -32,13 +33,13 @@ const mockDevices = [
   {
     name: "enp1s0",
     macAddress: "00:11:22:33:44:55",
-    type: ConnectionType.ETHERNET,
+    type: CONNECTION_TYPE.ETHERNET,
     state: DeviceState.CONNECTED,
   },
   {
     name: "enp2s0",
     macAddress: "AA:BB:CC:DD:EE:FF",
-    type: ConnectionType.ETHERNET,
+    type: CONNECTION_TYPE.ETHERNET,
     state: DeviceState.DISCONNECTED,
   },
 ];

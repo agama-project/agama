@@ -88,6 +88,11 @@ translations:
     ru: Лёгкий дистрибутив для контейнерных нагрузок с автоматическим управлением и
       обновлениями. openSUSE MicroOS использует атомарные обновления и btrfs на
       только-чтение. Всегда актуален благодаря модели непрерывных обновлений.
+    sk: Rýchla, kompaktná distribúcia navrhnutá na hosťovanie kontajnerových
+      pracovných záťaží s automatizovanou administráciou a opravami. openSUSE
+      MicroOS poskytuje transakčné (atomické) aktualizácie na koreňovom
+      súborovom systéme btrfs, ktorý je len na čítanie. Ako distribúcia s
+      rolujúcim vydaním je softvér vždy aktuálny.
     sv: En snabb, liten distribution utformad för att vara värd för
       arbetsbelastningar i behållare med automatiserad administration och
       patchning. openSUSE MicroOS tillhandahåller transaktionella (atomära)

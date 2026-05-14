@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Apr 23 15:59:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Declare the `desktop_selection` policy (suggested/optional) per
+  product and mark desktop patterns with the `desktop` property
+  so the UI can group and hint about desktop environments
+  (gh#agama-project/agama#3390, gh#agama-project/agama#3403,
+  gh#agama-project/agama#3406).
+
+-------------------------------------------------------------------
 Tue Apr 14 17:36:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 20

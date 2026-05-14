@@ -135,7 +135,12 @@ const Summary = ({
               <DescriptionSkeletons />
             ) : (
               description && (
-                <Text component="small" isBold={hasIssues} className={textStyles.textColorSubtle}>
+                <Text
+                  component="small"
+                  isBold={hasIssues}
+                  className={textStyles.textColorSubtle}
+                  style={{ textWrap: "balance" }}
+                >
                   {description}
                 </Text>
               )

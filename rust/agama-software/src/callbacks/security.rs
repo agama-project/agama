@@ -22,10 +22,12 @@ impl Security {
     }
 
     pub fn set_trusted_gpg_keys(&mut self, trusted_gpg_keys: Vec<RepoKey>) {
+        tracing::info!("Configured trusted GPG keys: {:?}", trusted_gpg_keys);
         self.trusted_gpg_keys = trusted_gpg_keys;
     }
 
     pub fn set_unsigned_repos(&mut self, unsigned_repos: Vec<String>) {
+        tracing::info!("Allowed unsigned repositories: {:?}", unsigned_repos);
         self.unsigned_repos = unsigned_repos;
     }
 }
@@ -110,7 +112,7 @@ impl security::Callback for Security {
             .with_data(&[
                 ("id", key_id.as_str()),
                 ("name", key_name.as_str()),
-                ("fingerprint", key_fingerprint.as_str()),
+                ("fingerprint", human_fingerprint.as_str()),
             ])
             .with_default_action("Skip");
         let result = ask_software_question(&self.questions, question);
@@ -119,6 +121,7 @@ impl security::Callback for Security {
             return security::GpgKeyTrust::Reject;
         };
 
+        tracing::info!("Received answer: {:?}", answer);
         answer
             .action
             .as_str()

@@ -23,6 +23,7 @@
 use std::fmt::Display;
 
 use regex::Regex;
+use schemars::JsonSchema;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 use thiserror::Error;
@@ -31,12 +32,13 @@ use thiserror::Error;
 ///
 /// It contains the license ID and the list of languages that with a translation.
 #[serde_as]
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, JsonSchema)]
 pub struct License {
     /// License ID.
     pub id: String,
     /// Languages in which the license is translated.
     #[serde_as(as = "Vec<DisplayFromStr>")]
+    #[schemars(with = "Vec<String>")]
     pub languages: Vec<LanguageTag>,
 }
 
@@ -46,7 +48,7 @@ pub struct License {
 ///
 /// TODO: in the future it might contain a title, extracted from the text.
 #[serde_as]
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, JsonSchema)]
 pub struct LicenseContent {
     /// License ID.
     pub id: String,
@@ -54,13 +56,14 @@ pub struct LicenseContent {
     pub body: String,
     /// License language.
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub language: LanguageTag,
 }
 
 /// Simplified representation of the RFC 5646 language code.
 ///
 /// It only considers xx and xx-XX formats.
-#[derive(Clone, Debug, Serialize, PartialEq, utoipa::ToSchema)]
+#[derive(Clone, Debug, Serialize, PartialEq, JsonSchema)]
 pub struct LanguageTag {
     // ISO-639
     pub language: String,

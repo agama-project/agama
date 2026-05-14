@@ -266,6 +266,15 @@ strong {
   top: 1em;
 }
 
+.agm-sticky-category-header {
+  position: sticky;
+  background: var(--pf-t--global--background--color--primary--default);
+  z-index: 2;
+  padding-block-start: var(--pf-t--global--spacer--sm);
+  padding-block-end: var(--pf-t--global--spacer--sm);
+  border-bottom: var(--pf-t--global--border--width--regular) solid rgb(0 0 0 / 10%);
+}
+
 #productSelectionForm {
   input[type="radio"] {
     align-self: center;
@@ -408,6 +417,14 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 .pf-v6-c-form__group {
   justify-self: flex-start;
+
+  // Prevent form inputs from stretching to match the width of long helper text
+  // or instructions. Inputs size themselves based on content and explicit
+  // width constraints, while text elements flow at their natural width.
+  .pf-v6-c-form-control,
+  .pf-v6-c-text-input-group {
+    max-width: fit-content;
+  }
 }
 
 // Fix select toggle icon visibility by creating more space at the end :/
@@ -585,5 +602,22 @@ nav.agm-breadcrumb h1 {
   .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 6"] {
     justify-self: start;
     text-align: start;
+  }
+}
+
+fieldset {
+  border: 0;
+  border-top: 1px solid var(--agm-t--color--fog);
+  padding: 0;
+  padding-block-start: var(--pf-t--global--spacer--md);
+  margin: 0;
+  display: grid;
+  gap: var(--pf-v6-c-form--GridGap);
+
+  legend {
+    font-size: var(--pf-t--global--font--size--md);
+    font-weight: var(--pf-t--global--font--weight--200);
+    margin-inline-start: var(--pf-t--global--spacer--sm);
+    padding: 0 var(--pf-t--global--spacer--sm);
   }
 }

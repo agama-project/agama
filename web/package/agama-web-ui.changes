@@ -1,4 +1,105 @@
 -------------------------------------------------------------------
+Wed May 13 11:52:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Replace the Hostname page and section with a more generic System
+  one that includes NTP and hostname configuration
+  (gh#agama-project/agama#3482).
+- Simplify the UX for changing the hostname by replacing the
+  checkbox-driven approach with a mode selector
+  (related: gh#agama-project/agama#3475).
+  
+-------------------------------------------------------------------
+Wed May 13 11:28:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- reset user configuration when switching product (bsc#1264438)
+
+-------------------------------------------------------------------
+Wed May 13 11:13:23 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Revert replacement of widget used in storage forms for mount
+  points fields due to several problems undermining the user
+  experience (related to gh#agama-project/agama#3445,
+  gh#agama-project/agama#3489)
+
+-------------------------------------------------------------------
+Tue May 12 13:35:54 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix query refetch when activating zFCP devices (bsc#1263808).
+
+-------------------------------------------------------------------
+Tue May 12 10:29:09 UTC 2026 - David Díaz <dgonzalez@suse.com>
+
+- Improve keyboard accessibility for dropdown components by enabling
+  arrow keys to open closed menus following the W3C Select-Only
+  Combobox pattern (gh#agama-project/agama#3468).
+
+-------------------------------------------------------------------
+Tue May 12 09:29:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Replace the mount point field in storage forms with a free-text
+  input that preserves user entries and provides optional suggestion
+  (gh#agama-project/agama#3445).
+
+-------------------------------------------------------------------
+Tue May  5 12:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the overall UX of the product registration page and
+  decouple it from software progress (gh#agama-project/agama#3456).
+
+-------------------------------------------------------------------
+Thu Apr 30 13:01:05 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for configuring a network bridge using the UI
+  (gh#agama-project/agama#3435).
+
+-------------------------------------------------------------------
+Tue Apr 28 15:43:35 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show contextual hints when software selection is unavailable and
+  handle empty states when no patterns are available
+  (gh#agama-project/agama#3441, related to gh#agama-project/agama#3436
+  and gh#agama-project/agama#3420).
+
+-------------------------------------------------------------------
+Mon Apr 27 11:00:16 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Handle desktop selection when no desktop environments are available
+  (gh#agama-project/agama#3436, related to gh#agama-project/agama#3420).
+
+-------------------------------------------------------------------
+Sun Apr 26 21:35:13 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for configuring a network bond using the UI
+  (gh#agama-project/agama#3412).
+
+-------------------------------------------------------------------
+Fri Apr 24 15:21:18 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Sort software patterns by their order field within each category
+  (gh#agama-project/agama#3425).
+
+-------------------------------------------------------------------
+Thu Apr 23 15:59:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Revamp the software selection page to separate desktop
+  environments from additional patterns and migrate it to a proper
+  form with explicit Accept/Cancel
+  (gh#agama-project/agama#3389, gh#agama-project/agama#3396).
+- Hint users when no desktop is selected on products that suggest
+  one: surface the choice in the installation summary and link
+  from confirmation alerts to the relevant section
+  (gh#agama-project/agama#3409).
+- Polish the patterns selection page with sticky headers, filter
+  feedback and a subtler auto-selected badge
+  (gh#agama-project/agama#3417).
+
+-------------------------------------------------------------------
+Thu Apr 23 11:53:49 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix "Accept" button when connecting to iscsi target
+  (gh#agama-project/agama#3418)
+
+-------------------------------------------------------------------
 Tue Apr 14 17:36:57 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 20

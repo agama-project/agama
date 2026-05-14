@@ -197,7 +197,9 @@ shared_examples "with encryption" do
       let(:encryption) do
         {
           pervasiveLuks2: {
-            password: "12345"
+            password: "12345",
+            apqns:    ["01.0001", "01.0002"],
+            keyType:  "CCA-AESCIPHER"
           }
         }
       end
@@ -209,7 +211,9 @@ shared_examples "with encryption" do
         expect(encryption_json).to eq(
           {
             pervasiveLuks2: {
-              password: "12345"
+              password: "12345",
+              apqns:    ["01.0001", "01.0002"],
+              keyType:  "CCA-AESCIPHER"
             }
           }
         )

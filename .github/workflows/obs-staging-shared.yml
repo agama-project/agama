@@ -27,10 +27,14 @@ on:
         required: false
         type: string
 
+env:
+  obs_project: ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+
 jobs:
   update_obs_package:
     # do not run in forks which do not set the OBS_PROJECTS and OBS_USER variables,
     # or the mapping for the current branch is missing
+    # (BTW, jobs.FOO.if cannot see env.*)
     if: vars.OBS_PROJECTS && fromJson(vars.OBS_PROJECTS)[github.ref_name] && vars.OBS_USER
 
     runs-on: ubuntu-latest
@@ -66,8 +70,8 @@ jobs:
           OBS_USER:     ${{ vars.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ inputs.package_name }} from ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
-        run: osc co ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }} ${{ inputs.package_name }}
+      - name: Checkout ${{ inputs.package_name }} from ${{ env.obs_project }}
+        run: osc co ${{ env.obs_project }} ${{ inputs.package_name }}
 
       - name: Configure git
         run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -75,9 +79,11 @@ jobs:
       - name: Update service revision
         # only when a tag has been pushed, or "release" branch updated
         if: inputs.service_file != ''
-        run: |-
+        run: |
           echo "Updating revision to \"${{ github.ref_name }}\""
-          sed -i -e 's#<param name="revision">.*</param>#<param name="revision">${{ github.ref_name }}</param>#' ${{ inputs.service_file }}
+          BEG='<param name="revision">'
+          END='</param>'
+          sed -i -e "s#${BEG}.*${END}#${BEG}${{ github.ref_name }}${END}#" ${{ inputs.service_file }}
 
       - name: Copy optional service file
         # patch the URL in the file so it works also from forks, forks also by
@@ -85,8 +91,13 @@ jobs:
         # no tag is present
         if: inputs.service_file != ''
         run: |
-          sed -e 's#<param name="url">.*</param>#<param name="url">https://github.com/${{ github.repository }}.git</param>#' ${{ inputs.service_file }} > ./${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}/${{ inputs.package_name }}/_service
-          if [ -z "$(git tag -l)" ]; then sed -i -e 's#<param name="versionformat">.*</param>##' ./${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}/${{ inputs.package_name }}/_service; fi
+          OUT_SERVICE=./${{ env.obs_project }}/${{ inputs.package_name }}/_service
+          BEG='<param name="url">'
+          END='</param>'
+          SED_EXPR="s#${BEG}.*${END}#${BEG}https://github.com/${{ github.repository }}.git${END}#"
+          sed -e "${SED_EXPR}" ${{ inputs.service_file }} > $OUT_SERVICE
+          BEG='<param name="versionformat">'
+          if [ -z "$(git tag -l)" ]; then sed -i -e "s#${BEG}.*${END}##" $OUT_SERVICE; fi
 
       - name: Run services
         run: |
@@ -95,13 +106,15 @@ jobs:
           # downloaded NPM package tarballs and they are accidentally added to the
           # OBS package, so delete any TGZ files present
           rm -vf *.tgz
-        working-directory: ./${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}/${{ inputs.package_name }}
+        working-directory: ./${{ env.obs_project }}/${{ inputs.package_name }}
 
       - name: Check status
         run: osc addremove && osc diff && osc status
-        working-directory: ./${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}/${{ inputs.package_name }}
+        working-directory: ./${{ env.obs_project }}/${{ inputs.package_name }}
 
-      - name: Commit ${{ inputs.package_name }} to ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
-        run: |-
-          osc commit -m "Updated to $(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo) ($(sed -e '/^commit:/!d' -e 's/commit: *\(.*\)/\1/' agama.obsinfo))"
-        working-directory: ./${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}/${{ inputs.package_name }}
+      - name: Commit ${{ inputs.package_name }} to ${{ env.obs_project }}
+        run: |
+          VERSION="$(sed -e '/^version:/!d' -e 's/version: *\(.*\)/\1/' agama.obsinfo)"
+          COMMIT="$(sed  -e '/^commit:/!d'  -e 's/commit: *\(.*\)/\1/'  agama.obsinfo)"
+          osc commit -m "Updated to ${VERSION} (${COMMIT})"
+        working-directory: ./${{ env.obs_project }}/${{ inputs.package_name }}

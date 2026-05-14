@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 10:53+0000\n"
+"POT-Creation-Date: 2026-04-20 09:45+0000\n"
 "PO-Revision-Date: 2025-10-05 22:59+0000\n"
 "Last-Translator: Emin Tufan Çetin <cetin@users.noreply.l10n.opensuse.org>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -91,42 +91,6 @@ msgstr "Depolama aygıtları araştırılıyor"
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Depolama yapılandırmasını ayarlama"
-
-#. TRANSLATORS: SSL certificate details
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Certificate:"
-msgstr "Sertifika:"
-
-#: service/lib/agama/ssl/certificate_details.rb:31
-msgid "Issued To"
-msgstr "Kime Verildi"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "Issued By"
-msgstr "Veren kuruluş"
-
-#: service/lib/agama/ssl/certificate_details.rb:32
-msgid "SHA1 Fingerprint: "
-msgstr "SHA1 Parmak İzi: "
-
-#: service/lib/agama/ssl/certificate_details.rb:34
-msgid "SHA256 Fingerprint: "
-msgstr "SHA256 Parmak İzi: "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:46
-msgid "Common Name (CN): "
-msgstr "Ortak Ad (OA): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:48
-msgid "Organization (O): "
-msgstr "Organizasyon (O): "
-
-#. label followed by the SSL certificate identification
-#: service/lib/agama/ssl/certificate_details.rb:50
-msgid "Organization Unit (OU): "
-msgstr "Organizasyon Birimi (OB): "
 
 #. Issue when the device has several users.
 #.
@@ -213,13 +177,13 @@ msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "'%{filesystem}' dosya sistemi türü '%{path}' için uygun değil"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/logical_volume.rb:82
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:93
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr "'%s' takma adlı LVM ince havuz birimi yok"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
-#: service/lib/agama/storage/config_checkers/md_raid.rb:98
+#: service/lib/agama/storage/config_checkers/md_raid.rb:97
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
 msgstr "'%s' takma adlı bir MD RAID üye aygıtı yok"
@@ -227,94 +191,17 @@ msgstr "'%s' takma adlı bir MD RAID üye aygıtı yok"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:111
+#: service/lib/agama/storage/config_checkers/md_raid.rb:110
 msgid "There is a MD RAID without level"
 msgstr "Seviyesi olmayan bir MD RAID var"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:124
+#: service/lib/agama/storage/config_checkers/md_raid.rb:123
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "%s için en az %s cihaz gereklidir"
-
-#. Issue if the device member is deleted.
-#.
-#. @param member_config [#search]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:171
-#, perl-brace-format
-msgid ""
-"The device '%{member}' cannot be deleted because it is part of the MD RAID %"
-"{md_raid}"
-msgstr ""
-"'%{member}' aygıtı silinemez çünkü MD RAID %{md_raid}'in bir parçasıdır"
-
-#. Issue if the device member is resized.
-#.
-#. @param member_config [#search]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:194
-#, perl-brace-format
-msgid ""
-"The device '%{member}' cannot be resized because it is part of the MD RAID %"
-"{md_raid}"
-msgstr ""
-"'%{member}' aygıtı MD RAID %{md_raid}'in bir parçası olduğu için yeniden "
-"boyutlandırılamaz"
-
-#. Issue if the device member is formatted.
-#.
-#. @param member_config [#search]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:217
-#, perl-brace-format
-msgid ""
-"The device '%{member}' cannot be formatted because it is part of the MD RAID "
-"%{md_raid}"
-msgstr ""
-"'%{member}' aygıtı biçimlendirilemiyor çünkü MD RAID %{md_raid}'in bir "
-"parçası"
-
-#. Issue if the device member is partitioned.
-#.
-#. @param member_config [#search]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:240
-#, perl-brace-format
-msgid ""
-"The device '%{member}' cannot be partitioned because it is part of the MD "
-"RAID %{md_raid}"
-msgstr ""
-"'%{member}' aygıtı, MD RAID %{md_raid}'in bir parçası olduğu için "
-"bölümlenemiyor"
-
-#. Issue if the device member is used by other device (e.g., as target for physical volumes).
-#.
-#. @param member_config [#search]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:262
-#, perl-brace-format
-msgid ""
-"The device '%{member}' cannot be used because it is part of the MD RAID %"
-"{md_raid}"
-msgstr ""
-"'%{member}' aygıtı, MD RAID %{md_raid}'in bir parçası olduğu için "
-"kullanılamaz"
-
-#. Issue if the parent of the device member is formatted.
-#.
-#. @param device [Y2Storage::BlkDevice]
-#. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:287
-#, perl-brace-format
-msgid ""
-"The device '%{device}' cannot be formatted because it is part of the MD RAID "
-"%{md_raid}"
-msgstr ""
-"'%{device}' aygıtı biçimlendirilemiyor çünkü MD RAID %{md_raid}'in bir "
-"parçası"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
@@ -325,53 +212,199 @@ msgstr ""
 "'%{method}' fiziksel birimleri şifrelemek için uygun bir yöntem değildir."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
-#: service/lib/agama/storage/config_checkers/search.rb:74
+#: service/lib/agama/storage/config_checkers/search.rb:76
 #, c-format
 msgid "Mandatory device %s not found"
 msgstr "Zorunlu aygıt %s bulunamadı"
 
 #. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
-#: service/lib/agama/storage/config_checkers/search.rb:77
+#: service/lib/agama/storage/config_checkers/search.rb:82
 #, c-format
 msgid "Mandatory %s not found"
 msgstr "Zorunlu %s bulunamadı"
 
+#. Issue if the parent of the member device is formatted.
+#.
+#. @param device [Y2Storage::BlkDevice] Parent of the member device.
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:126
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{parent_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı biçimlendirilemiyor çünkü MD RAID %{md_raid}'in bir "
+"parçası"
+
+#. TRANSLATORS: %{parent_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:136
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{parent_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı biçimlendirilemiyor çünkü MD RAID %{md_raid}'in bir "
+"parçası"
+
+#. Issue if the member device is deleted.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:166
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be deleted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı silinemez çünkü MD RAID %{md_raid}'in bir parçasıdır"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:176
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be deleted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı silinemez çünkü MD RAID %{md_raid}'in bir parçasıdır"
+
+#. Issue if the device member is resized.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:206
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be resized because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı MD RAID %{md_raid}'in bir parçası olduğu için yeniden "
+"boyutlandırılamaz"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:216
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be resized because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı MD RAID %{md_raid}'in bir parçası olduğu için yeniden "
+"boyutlandırılamaz"
+
+#. Issue if the device member is formatted.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:246
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı biçimlendirilemiyor çünkü MD RAID %{md_raid}'in bir "
+"parçası"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:256
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı biçimlendirilemiyor çünkü MD RAID %{md_raid}'in bir "
+"parçası"
+
+#. Issue if the device member is partitioned.
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:286
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be partitioned because it is part of the "
+"reused MD RAID '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı, MD RAID %{md_raid}'in bir parçası olduğu için "
+"bölümlenemiyor"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:296
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be partitioned because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı, MD RAID %{md_raid}'in bir parçası olduğu için "
+"bölümlenemiyor"
+
+#. Issue if the device member is used by other device (e.g., as target for physical volumes).
+#.
+#. @param member_config [#search]
+#. @return [Issue, nil]
+#: service/lib/agama/storage/config_checkers/search.rb:325
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be used because it is part of the reused "
+"MD RAID '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı, MD RAID %{md_raid}'in bir parçası olduğu için "
+"kullanılamaz"
+
+#. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
+#. "/dev/vda", "/dev/md0").
+#: service/lib/agama/storage/config_checkers/search.rb:335
+#, fuzzy, perl-brace-format
+msgid ""
+"The device '%{member_name}' cannot be used because it is a physical volume "
+"of the reused LVM volume group '%{reused_name}'"
+msgstr ""
+"'%{member}' aygıtı, MD RAID %{md_raid}'in bir parçası olduğu için "
+"kullanılamaz"
+
 #. @return [String]
-#: service/lib/agama/storage/config_checkers/search.rb:85
+#: service/lib/agama/storage/config_checkers/search.rb:383
 msgid "drive"
 msgstr "sürücü"
 
-#: service/lib/agama/storage/config_checkers/search.rb:87
+#: service/lib/agama/storage/config_checkers/search.rb:385
 msgid "MD RAID"
 msgstr "MD RAID"
 
-#: service/lib/agama/storage/config_checkers/search.rb:89
+#: service/lib/agama/storage/config_checkers/search.rb:387
 msgid "partition"
 msgstr "bölümleme"
 
-#: service/lib/agama/storage/config_checkers/search.rb:91
+#: service/lib/agama/storage/config_checkers/search.rb:389
 msgid "LVM logical volume"
 msgstr "LVM mantıksal birimi"
 
-#: service/lib/agama/storage/config_checkers/search.rb:93
+#: service/lib/agama/storage/config_checkers/search.rb:391
+msgid "LVM volume group"
+msgstr ""
+
+#: service/lib/agama/storage/config_checkers/search.rb:393
 msgid "device"
 msgstr "cihaz"
 
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:77
+#: service/lib/agama/storage/config_checkers/volume_group.rb:80
 msgid "There is a volume group without name"
 msgstr "Adı olmayan bir birim grubu var"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:109
+#: service/lib/agama/storage/config_checkers/volume_group.rb:112
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "'%s' takma adlı LVM fiziksel birimi yok"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:136
+#: service/lib/agama/storage/config_checkers/volume_group.rb:139
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -381,7 +414,7 @@ msgstr ""
 "yeni aygıtları karıştırıyor"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:156
+#: service/lib/agama/storage/config_checkers/volume_group.rb:159
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr "'%s' takma adlı LVM fiziksel birimleri için hedef aygıt yok"
@@ -520,6 +553,38 @@ msgstr ""
 #, c-format
 msgid "Unknown zFCP LUN %s"
 msgstr ""
+
+#~ msgid "Certificate:"
+#~ msgstr "Sertifika:"
+
+#~ msgid "Issued To"
+#~ msgstr "Kime Verildi"
+
+#~ msgid "Issued By"
+#~ msgstr "Veren kuruluş"
+
+#~ msgid "SHA1 Fingerprint: "
+#~ msgstr "SHA1 Parmak İzi: "
+
+#~ msgid "SHA256 Fingerprint: "
+#~ msgstr "SHA256 Parmak İzi: "
+
+#~ msgid "Common Name (CN): "
+#~ msgstr "Ortak Ad (OA): "
+
+#~ msgid "Organization (O): "
+#~ msgstr "Organizasyon (O): "
+
+#~ msgid "Organization Unit (OU): "
+#~ msgstr "Organizasyon Birimi (OB): "
+
+#, perl-brace-format
+#~ msgid ""
+#~ "The device '%{device}' cannot be formatted because it is part of the MD "
+#~ "RAID %{md_raid}"
+#~ msgstr ""
+#~ "'%{device}' aygıtı biçimlendirilemiyor çünkü MD RAID %{md_raid}'in bir "
+#~ "parçası"
 
 #~ msgid "Logout iSCSI targets"
 #~ msgstr "iSCSI hedeflerinden çıkış yapın"

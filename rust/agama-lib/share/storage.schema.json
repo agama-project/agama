@@ -912,7 +912,19 @@
           "additionalProperties": false,
           "required": ["password"],
           "properties": {
-            "password": { "$ref": "#/$defs/encryptionPassword" }
+            "password": { "$ref": "#/$defs/encryptionPassword" },
+            "apqns": {
+              "description": "List of APQNs used to generate secure keys.",
+              "type": "array",
+              "items": {
+                "examples": ["01.0001", "01.0002"],
+                "type": "string"
+              }
+            },
+            "keyType": {
+              "description": "Type of the generated secure key.",
+              "enum": ["EP11-AES", "CCA-AESCIPHER", "CCA-AESDATA"]
+            }
           }
         }
       }

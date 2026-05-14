@@ -183,6 +183,8 @@ shared_examples "with encryption" do
       expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
       expect(encryption.cipher).to eq("twofish")
       expect(encryption.label).to eq("test")
+      expect(encryption.apqns).to be_empty
+      expect(encryption.pervasive_key_type).to be_nil
     end
 
     context "if 'encryption' only specifies 'password'" do
@@ -207,11 +209,37 @@ shared_examples "with encryption" do
       end
     end
 
+    context "if 'encryption' is 'luks1'" do
+      let(:encryption) do
+        {
+          luks1: {
+            password: "12345"
+          }
+        }
+      end
+
+      it "sets #encryption to the expected value" do
+        config = subject.convert
+        encryption = config.encryption
+        expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
+        expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS1)
+        expect(encryption.password).to eq("12345")
+        expect(encryption.key_size).to be_nil
+        expect(encryption.pbkd_function).to be_nil
+        expect(encryption.cipher).to be_nil
+        expect(encryption.label).to be_nil
+        expect(encryption.apqns).to be_empty
+        expect(encryption.pervasive_key_type).to be_nil
+      end
+    end
+
     context "if 'encryption' is 'pervasiveLuks2'" do
       let(:encryption) do
         {
           pervasiveLuks2: {
-            password: "12345"
+            password: "12345",
+            apqns:    ["01.0001", "01.0002"],
+            keyType:  "CCA-AESCIPHER"
           }
         }
       end
@@ -222,6 +250,8 @@ shared_examples "with encryption" do
         expect(encryption).to be_a(Agama::Storage::Configs::Encryption)
         expect(encryption.method).to eq(Y2Storage::EncryptionMethod::PERVASIVE_LUKS2)
         expect(encryption.password).to eq("12345")
+        expect(encryption.apqns).to contain_exactly("01.0001", "01.0002")
+        expect(encryption.pervasive_key_type).to eq("CCA-AESCIPHER")
         expect(encryption.key_size).to be_nil
         expect(encryption.pbkd_function).to be_nil
         expect(encryption.cipher).to be_nil
@@ -248,6 +278,8 @@ shared_examples "with encryption" do
         expect(encryption.pbkd_function).to be_nil
         expect(encryption.cipher).to be_nil
         expect(encryption.label).to be_nil
+        expect(encryption.apqns).to be_empty
+        expect(encryption.pervasive_key_type).to be_nil
       end
     end
 

@@ -21,13 +21,14 @@
 //! Representation of the network settings
 
 use crate::api::network::{AccessPoint, Device, NetworkConnectionsCollection, StateSettings};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::default::Default;
 
 /// Network settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schema(as = network::SystemInfo)]
+#[schemars(rename = "network.SystemInfo")]
 pub struct SystemInfo {
     pub access_points: Vec<AccessPoint>, // networks or access_points shold be returned
     /// Connections to use in the installation

@@ -48,17 +48,6 @@ jest.mock("~/api", () => ({
   patchConfig: (config) => mockPatchConfig(config),
 }));
 
-// Needed by withL10n
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({
-    l10n: {
-      keymap: "us",
-      timezone: "Europe/Berlin",
-      locale: "en_US",
-    },
-  }),
-}));
-
 describe("RootUserForm", () => {
   beforeEach(() => {
     mockPassword = "n0ts3cr3t";
@@ -67,7 +56,7 @@ describe("RootUserForm", () => {
   });
 
   it("allows setting/editing a password", async () => {
-    const { user } = installerRender(<RootUserForm />, { withL10n: true });
+    const { user } = installerRender(<RootUserForm />);
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     const passwordInput = screen.getByLabelText("Password");
     const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
@@ -84,7 +73,7 @@ describe("RootUserForm", () => {
   });
 
   it("does not allow setting an empty password", async () => {
-    const { user } = installerRender(<RootUserForm />, { withL10n: true });
+    const { user } = installerRender(<RootUserForm />);
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     const passwordInput = screen.getByLabelText("Password");
     const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
@@ -99,7 +88,7 @@ describe("RootUserForm", () => {
   });
 
   it("renders password validation errors, if any", async () => {
-    const { user } = installerRender(<RootUserForm />, { withL10n: true });
+    const { user } = installerRender(<RootUserForm />);
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     const passwordInput = screen.getByLabelText("Password");
     const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
@@ -112,7 +101,7 @@ describe("RootUserForm", () => {
   });
 
   it("allows clearing the password", async () => {
-    const { user } = installerRender(<RootUserForm />, { withL10n: true });
+    const { user } = installerRender(<RootUserForm />);
     const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     expect(passwordToggle).toBeChecked();
@@ -127,7 +116,7 @@ describe("RootUserForm", () => {
   });
 
   it("allows setting a public SSH Key ", async () => {
-    const { user } = installerRender(<RootUserForm />, { withL10n: true });
+    const { user } = installerRender(<RootUserForm />);
     const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     await user.click(sshPublicKeyToggle);
@@ -144,7 +133,7 @@ describe("RootUserForm", () => {
   });
 
   it("does not allow setting an empty public SSH Key", async () => {
-    const { user } = installerRender(<RootUserForm />, { withL10n: true });
+    const { user } = installerRender(<RootUserForm />);
     const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     await user.click(sshPublicKeyToggle);
@@ -157,7 +146,7 @@ describe("RootUserForm", () => {
 
   it("allows clearing the public SSH Key", async () => {
     mockPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
-    const { user } = installerRender(<RootUserForm />, { withL10n: true });
+    const { user } = installerRender(<RootUserForm />);
     const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
     expect(sshPublicKeyToggle).toBeChecked();
@@ -178,7 +167,7 @@ describe("RootUserForm", () => {
     });
 
     it("allows preserving it", async () => {
-      const { user } = installerRender(<RootUserForm />, { withL10n: true });
+      const { user } = installerRender(<RootUserForm />);
       const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(passwordToggle).toBeChecked();
@@ -195,7 +184,7 @@ describe("RootUserForm", () => {
     });
 
     it("allows discarding it", async () => {
-      const { user } = installerRender(<RootUserForm />, { withL10n: true });
+      const { user } = installerRender(<RootUserForm />);
       const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(passwordToggle).toBeChecked();
@@ -210,7 +199,7 @@ describe("RootUserForm", () => {
     });
 
     it("allows using a plain password instead", async () => {
-      const { user } = installerRender(<RootUserForm />, { withL10n: true });
+      const { user } = installerRender(<RootUserForm />);
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       const changeToPlainButton = screen.getByRole("button", { name: "Change" });
       await user.click(changeToPlainButton);

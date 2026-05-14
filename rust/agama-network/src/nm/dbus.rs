@@ -471,6 +471,14 @@ fn ip_config_to_ipv4_dbus<'a>(
         ipv4_dbus.insert("dns-priority", dns_priority4.into());
     }
 
+    if let Some(never_default4) = &ip_config.never_default4 {
+        ipv4_dbus.insert("never-default", never_default4.into());
+    }
+
+    if let Some(ignore_auto_routes4) = &ip_config.ignore_auto_routes4 {
+        ipv4_dbus.insert("ignore-auto-routes", ignore_auto_routes4.into());
+    }
+
     if let Some(dhcp4_settings) = &ip_config.dhcp4_settings {
         if VersionReq::parse(">=1.52.0").unwrap().matches(nm_version) {
             let dhcp_send_hostname = match dhcp4_settings.send_hostname {
@@ -573,6 +581,14 @@ fn ip_config_to_ipv6_dbus<'a>(
 
     if let Some(dns_priority6) = &ip_config.dns_priority6 {
         ipv6_dbus.insert("dns-priority", dns_priority6.into());
+    }
+
+    if let Some(never_default6) = &ip_config.never_default6 {
+        ipv6_dbus.insert("never-default", never_default6.into());
+    }
+
+    if let Some(ignore_auto_routes6) = &ip_config.ignore_auto_routes6 {
+        ipv6_dbus.insert("ignore-auto-routes", ignore_auto_routes6.into());
     }
 
     if let Some(dhcp6_settings) = &ip_config.dhcp6_settings {
@@ -1080,6 +1096,15 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
         if let Some(ignore_auto_dns) = get_optional_property::<bool>(ipv4, "ignore-auto-dns")? {
             ip_config.ignore_auto_dns = ignore_auto_dns;
         }
+
+        if let Some(ignore_auto_routes) = get_optional_property::<bool>(ipv4, "ignore-auto-routes")?
+        {
+            ip_config.ignore_auto_routes4 = Some(ignore_auto_routes);
+        }
+
+        if let Some(never_default) = get_optional_property::<bool>(ipv4, "never-default")? {
+            ip_config.never_default4 = Some(never_default);
+        }
         if let Some(route_data) = ipv4.get("route-data") {
             ip_config.routes4 = routes_from_dbus(route_data)?;
         }
@@ -1152,6 +1177,15 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
 
         if let Some(ignore_auto_dns) = get_optional_property::<bool>(ipv6, "ignore-auto-dns")? {
             ip_config.ignore_auto_dns = ignore_auto_dns;
+        }
+
+        if let Some(ignore_auto_routes) = get_optional_property::<bool>(ipv6, "ignore-auto-routes")?
+        {
+            ip_config.ignore_auto_routes6 = Some(ignore_auto_routes);
+        }
+
+        if let Some(never_default) = get_optional_property::<bool>(ipv6, "never-default")? {
+            ip_config.never_default6 = Some(never_default);
         }
 
         if let Some(route_data) = ipv6.get("route-data") {
@@ -2672,5 +2706,55 @@ mod test {
             .unwrap();
         assert_eq!(port_type, BRIDGE_KEY);
         assert_eq!(connection_dbus.get("slave-type"), None);
+    }
+
+    #[test]
+    fn test_connection_with_ignore_auto_routes_and_never_default() -> anyhow::Result<()> {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([hi("id", "eth0")?, hi("uuid", uuid)?]);
+
+        let ipv4_section = HashMap::from([
+            hi("method", "auto")?,
+            hi("ignore-auto-routes", true)?,
+            hi("never-default", false)?,
+        ]);
+
+        let ipv6_section = HashMap::from([
+            hi("method", "auto")?,
+            hi("ignore-auto-routes", false)?,
+            hi("never-default", true)?,
+        ]);
+
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section),
+            ("ipv4".to_string(), ipv4_section),
+            ("ipv6".to_string(), ipv6_section),
+            (ETHERNET_KEY.to_string(), build_ethernet_section_from_dbus()),
+        ]);
+
+        let connection = connection_from_dbus(dbus_conn).unwrap();
+        assert!(connection.ip_config.ignore_auto_routes4.unwrap());
+        assert!(!connection.ip_config.never_default4.unwrap());
+        assert!(!connection.ip_config.ignore_auto_routes6.unwrap());
+        assert!(connection.ip_config.never_default6.unwrap());
+
+        let nm_version = semver::Version::new(1, 44, 0);
+        let back_to_dbus = connection_to_dbus(&connection, None, nm_version);
+
+        let ipv4_dbus = back_to_dbus.get("ipv4").unwrap();
+        assert_eq!(
+            *ipv4_dbus.get("ignore-auto-routes").unwrap(),
+            Value::new(true)
+        );
+        assert_eq!(*ipv4_dbus.get("never-default").unwrap(), Value::new(false));
+
+        let ipv6_dbus = back_to_dbus.get("ipv6").unwrap();
+        assert_eq!(
+            *ipv6_dbus.get("ignore-auto-routes").unwrap(),
+            Value::new(false)
+        );
+        assert_eq!(*ipv6_dbus.get("never-default").unwrap(), Value::new(true));
+
+        Ok(())
     }
 }

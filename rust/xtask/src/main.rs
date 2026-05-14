@@ -1,21 +1,19 @@
 use std::{env, path::PathBuf};
 
 mod tasks {
-    use std::{fs::File, io::Write, path::Path};
+    use std::{fs::File, io::Write};
 
     use agama_cli::Cli;
-    use agama_server::web::docs::{
-        ApiDocBuilder, ConfigApiDocBuilder, MiscApiDocBuilder, ProfileApiDocBuilder,
-    };
     use clap::CommandFactory;
     use clap_complete::aot;
     use clap_markdown::MarkdownOptions;
 
-    use crate::create_output_dir;
+    use crate::output_dir;
 
     /// Generate auto-completion snippets for common shells.
     pub fn generate_completions() -> std::io::Result<()> {
-        let out_dir = create_output_dir("shell")?;
+        let out_dir = output_dir()?.join("shell");
+        std::fs::create_dir_all(&out_dir)?;
 
         let mut cmd = Cli::command();
         clap_complete::generate_to(aot::Bash, &mut cmd, "agama", &out_dir)?;
@@ -31,25 +29,24 @@ mod tasks {
 
     /// Generate Agama's CLI documentation in markdown format.
     pub fn generate_markdown() -> std::io::Result<()> {
-        let out_dir = create_output_dir("markdown")?;
-
         let options = MarkdownOptions::new()
             .title("Command-line reference".to_string())
             .show_footer(false);
         let markdown = clap_markdown::help_markdown_custom::<Cli>(&options);
 
-        let filename = out_dir.join("agama.md");
-        let mut file = File::create(&filename)?;
+        let path = output_dir()?.join("agama.md");
+        let mut file = File::create(&path)?;
         file.write_all(markdown.as_bytes())?;
         file.write_all(GENERATED.as_bytes())?;
 
-        println!("Generate Markdown documentation at {}.", filename.display());
+        println!("Generate Markdown documentation at {}.", path.display());
         Ok(())
     }
 
     /// Generate Agama's CLI man pages.
     pub fn generate_manpages() -> std::io::Result<()> {
-        let out_dir = create_output_dir("man")?;
+        let out_dir = output_dir()?.join("man");
+        std::fs::create_dir_all(&out_dir)?;
 
         let cmd = Cli::command();
         clap_mangen::generate_to(cmd, &out_dir)?;
@@ -59,40 +56,47 @@ mod tasks {
     }
 
     /// Generate Agama's OpenAPI specification.
-    pub fn generate_openapi() -> std::io::Result<()> {
-        let out_dir = create_output_dir("openapi")?;
+    pub async fn generate_openapi() -> std::io::Result<()> {
+        use agama_server::web::docs;
 
-        write_openapi(ConfigApiDocBuilder {}, out_dir.join("config.json"))?;
-        write_openapi(MiscApiDocBuilder {}, out_dir.join("misc.json"))?;
-        write_openapi(ProfileApiDocBuilder {}, out_dir.join("profile.json"))?;
+        let out_dir = output_dir()?;
+
+        // Generate JSON format (includes post-processing for aide serialization quirks)
+        let json_value = docs::build_json().await.map_err(std::io::Error::other)?;
+
+        let json = serde_json::to_string_pretty(&json_value)?;
+        let json_path = out_dir.join("openapi.json");
+        let mut json_file = File::create(&json_path)?;
+        json_file.write_all(json.as_bytes())?;
         println!(
-            "Generate the OpenAPI specification at {}.",
-            out_dir.display()
+            "Generated OpenAPI specification (JSON) at {}.",
+            json_path.display()
         );
-        Ok(())
-    }
 
-    fn write_openapi<T, P: AsRef<Path>>(builder: T, path: P) -> std::io::Result<()>
-    where
-        T: ApiDocBuilder,
-    {
-        let openapi = builder.build().to_pretty_json()?;
-        let mut file = File::create(path)?;
-        file.write_all(openapi.as_bytes())?;
+        // Generate YAML format
+        let yaml = serde_yaml::to_string(&json_value).map_err(std::io::Error::other)?;
+        let yaml_path = out_dir.join("openapi.yaml");
+        let mut yaml_file = File::create(&yaml_path)?;
+        yaml_file.write_all(yaml.as_bytes())?;
+        println!(
+            "Generated OpenAPI specification (YAML) at {}.",
+            yaml_path.display()
+        );
+
         Ok(())
     }
 }
 
-fn create_output_dir(name: &str) -> std::io::Result<PathBuf> {
+fn output_dir() -> std::io::Result<PathBuf> {
     let out_dir = std::env::var_os("OUT_DIR")
         .map(PathBuf::from)
-        .unwrap_or(PathBuf::from("out"))
-        .join(name);
+        .unwrap_or(PathBuf::from("out"));
     std::fs::create_dir_all(&out_dir)?;
     Ok(out_dir)
 }
 
-fn main() -> std::io::Result<()> {
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
     let Some(task) = env::args().nth(1) else {
         eprintln!("You must specify a xtask");
         std::process::exit(1);
@@ -102,7 +106,7 @@ fn main() -> std::io::Result<()> {
         "completions" => tasks::generate_completions(),
         "markdown" => tasks::generate_markdown(),
         "manpages" => tasks::generate_manpages(),
-        "openapi" => tasks::generate_openapi(),
+        "openapi" => tasks::generate_openapi().await,
         other => {
             eprintln!("Unknown task '{}'", other);
             std::process::exit(1);

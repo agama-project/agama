@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -30,7 +30,7 @@ use agama_utils::{
         Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
     },
     kernel_cmdline::KernelCmdline,
-    products::{ProductSpec, UserPattern},
+    products::{ProductSpec, UserPatternSpec},
 };
 use url::Url;
 
@@ -385,7 +385,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
 
         for pattern in &software.user_patterns {
-            if let UserPattern::Preselected(user_pattern) = pattern {
+            if let UserPatternSpec::Object(user_pattern) = pattern {
                 if user_pattern.selected {
                     resolvables.add_or_replace(
                         &user_pattern.name,

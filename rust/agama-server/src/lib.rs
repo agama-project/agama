@@ -25,3 +25,4 @@ pub mod profile;
 pub mod web;
 pub use web::service;
 pub mod server;
+pub mod test_utils;

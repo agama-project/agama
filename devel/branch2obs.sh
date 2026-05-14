@@ -236,14 +236,14 @@ workflows=(obs-staging-live.yml obs-staging-products.yml obs-staging-rust.yml ob
 if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null; then
   for workflow in "${workflows[@]}"; do
     echo "Starting GitHub Action $workflow..."
-    gh workflow run "$workflow" --ref "$BRANCH"
+    gh -R "$repo_slug" workflow run "$workflow" --ref "$BRANCH"
   done
 else
   echo "After creating the remote branch trigger the submission actions on the web"
   echo "or run these commands:"
   echo
   for workflow in "${workflows[@]}"; do
-    echo "    gh workflow run \"$workflow\" --ref \"$BRANCH\""
+    echo "    gh -R \"$repo_slug\" workflow run \"$workflow\" --ref \"$BRANCH\""
   done
 fi
 

@@ -20,7 +20,10 @@
 
 pub mod common;
 use agama_manager::test_utils::start_service;
-use agama_server::server::web::{server_with_state, ServerState};
+use agama_server::{
+    profile::profile_service,
+    server::web::{server_with_state, ServerState},
+};
 use agama_utils::{question, test};
 use axum::http::{Method, Request, StatusCode};
 use common::body_to_string;
@@ -52,8 +55,9 @@ impl AsyncTestContext for Context {
 
         let questions = question::start(events_tx.clone()).await.unwrap();
         let manager = start_service(events_tx, dbus).await;
+        let profile = profile_service().await;
 
-        let service = server_with_state(ServerState::new(manager, questions))
+        let service = server_with_state(ServerState::new(manager, questions), profile)
             .expect("Could not create the testing router");
         Context {
             client: Client::new(service),

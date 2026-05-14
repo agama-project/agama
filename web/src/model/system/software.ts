@@ -42,6 +42,11 @@ type Pattern = {
   icon: string;
   /** Whether the pattern is selected by default */
   preselected: boolean;
+  /**
+   * Whether the pattern represents a desktop environment, useful to split
+   * desktops from other patterns
+   * */
+  desktop: boolean;
 };
 
 type Repository = {

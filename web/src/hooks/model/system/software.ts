@@ -20,11 +20,12 @@
  * find current contact information at www.suse.com.
  */
 
-import { shake } from "radashi";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { fork } from "radashi";
 import { systemQuery } from "~/hooks/model/system";
 import { useProposal } from "~/hooks/model/proposal/software";
-import { SelectedBy } from "~/model/proposal/software";
+import { useProductInfo } from "~/hooks/model/config/product";
+import { isPatternSelected } from "~/utils/software";
 import type { System, Software } from "~/model/system";
 
 const selectSystem = (data: System | null): Software.System => data?.software;
@@ -37,8 +38,31 @@ function useSystem(): Software.System | null {
   return data;
 }
 
+type AvailablePatterns = {
+  all: Software.Pattern[];
+  desktops: Software.Pattern[];
+  other: Software.Pattern[];
+};
+
+/**
+ * Retrieves all available patterns categorized by type.
+ *
+ * Returns three lists:
+ * - `all`: every pattern available in the system
+ * - `desktops`: patterns flagged as desktop environments
+ * - `other`: non-desktop patterns
+ */
+function useAvailablePatterns(): AvailablePatterns {
+  const { patterns } = useSystem();
+  const [desktops, other] = fork(patterns, (p) => p.desktop);
+  return { all: patterns, desktops, other };
+}
+
 /**
  * Retrieves the list of patterns currently selected in the active proposal.
+ *
+ * Only patterns selected by the user or auto-pulled are included; patterns
+ * explicitly removed or not selected at all are excluded.
  */
 function useSelectedPatterns() {
   const proposal = useProposal();
@@ -46,11 +70,28 @@ function useSelectedPatterns() {
 
   if (!proposal) return [];
 
-  const selectedPatternsKeys = Object.keys(
-    shake(proposal.patterns, (value) => value === SelectedBy.NONE),
-  );
-
-  return patterns.filter((p) => selectedPatternsKeys.includes(p.name));
+  return patterns.filter((p) => isPatternSelected(proposal.patterns, p.name));
 }
 
-export { useSystem, useSelectedPatterns };
+/**
+ * Whether the product suggests picking a desktop environment but none is
+ * currently selected.
+ *
+ * Use this to decide whether to hint the user in UI surfaces such as the
+ * software summary or the installation confirmation. Returns `false` for
+ * products that do not declare `desktopSelection` or declare it as
+ * `"optional"`, and also returns `false` when no desktop patterns are
+ * available (can't be missing if none exist).
+ */
+function useIsDesktopMissing(): boolean {
+  const product = useProductInfo();
+  const selectedPatterns = useSelectedPatterns();
+  const { desktops: availableDesktops } = useAvailablePatterns();
+
+  if (product?.desktopSelection !== "suggested") return false;
+  if (availableDesktops.length === 0) return false;
+
+  return !selectedPatterns.some((p) => p.desktop);
+}
+
+export { useSystem, useSelectedPatterns, useAvailablePatterns, useIsDesktopMissing };

@@ -15,6 +15,12 @@ export default {
   "%1$d of %2$d devices match filters": [
     "%1$d de %2$d dispositius coincideixen amb els filtres"
   ],
+  "%1$d of %2$d patterns": [
+    "%1$d de %2$d patrons"
+  ],
+  "%1$d of %2$d selected": [
+    "%1$d de %2$d seleccionats"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -48,8 +54,34 @@ export default {
   "%d connections available": [
     "%d connexions disponibles"
   ],
+  "%d desktop selected": [
+    "%d escriptori seleccionat",
+    "%d escriptoris seleccionats"
+  ],
   "%d devices available": [
     "%d dispositius disponibles"
+  ],
+  "%d duplicates skipped.": [
+    "S'han omès %d duplicats."
+  ],
+  "%d entries added, %d duplicates skipped.": [
+    "S'han afegit %d entrades, s'han omès %d duplicats."
+  ],
+  "%d entries added, %d invalid, %d duplicates skipped.": [
+    "%d entrades afegides, %d de no vàlides, %d duplicats omesos."
+  ],
+  "%d entries added, %d invalid.": [
+    "S'han afegit %d entrades, però %d no són vàlides."
+  ],
+  "%d entries added.": [
+    "S'han afegit %d entrades."
+  ],
+  "%d invalid entries removed.": [
+    "S'han suprimit %d entrades no vàlides."
+  ],
+  "%d matches the filter": [
+    "%d coincideix amb el filtre",
+    "%d coincideixen amb el filtre"
   ],
   "%d mode available": [
     "%d mode disponible",
@@ -59,8 +91,21 @@ export default {
     "%d altre mode disponible",
     "%d altres modes disponibles"
   ],
+  "%d pattern found": [
+    "%d patró trobat",
+    "%d patrons trobats"
+  ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s added but is invalid: %s. Select to edit.": [
+    "%s afegida però no és vàlida: %s. Seleccioneu per editar."
+  ],
+  "%s added.": [
+    "%s afegida."
+  ],
+  "%s already exists, skipped.": [
+    "%s ja existeix, s'ha omès."
   ],
   "%s and %d others": [
     "%s i %d altres"
@@ -74,11 +119,23 @@ export default {
   "%s disk": [
     "Disc %s"
   ],
+  "%s entries": [
+    "Entrades per a %s"
+  ],
   "%s has been registered with below information.": [
     "%s s'ha registrat amb la informació següent."
   ],
+  "%s is invalid: %s": [
+    "%s no és vàlida: %s"
+  ],
   "%s logo": [
     "Logotip per a %s"
+  ],
+  "%s moved to input for editing.": [
+    "%s s'ha mogut a l'entrada per editar."
+  ],
+  "%s removed.": [
+    "%s suprimida."
   ],
   "%s task active": [
     "%s tasca activa",
@@ -88,20 +145,24 @@ export default {
     "%s es crearà com a volum lògic",
     "%s es crearan com a volums lògics"
   ],
+  "%s will be created as a partition": [
+    "%s es crearà com a partició",
+    "%s es crearan com a particions"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s encara contindrà els grups d'LVM configurats i qualsevol partició necessària per a arrencar"
   ],
   "%s with %d partitions": [
     "%s amb %d particions"
   ],
-  "(bind by name)": [
-    "(vincle per nom)"
-  ],
   "(bound by MAC)": [
     "(vinculació per MAC)"
   ],
   "(bound by name)": [
     "(vinculació per nom)"
+  ],
+  "(optional)": [
+    "(opcional)"
   ],
   "(step %s of %s)": [
     "(pas %s de %s)"
@@ -131,13 +192,22 @@ export default {
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "S'usarà un interval de mida genèric entre %1$s i %2$s per a la %3$s nova"
   ],
+  "A logical volume may be deleted": [
+    "Es pot suprimir un volum lògic"
+  ],
+  "A logical volume may be shrunk": [
+    "Es pot encongir un volum lògic"
+  ],
+  "A logical volume will be deleted": [
+    "Se suprimirà un volum lògic"
+  ],
+  "A new logical volume will be created for %s": [
+    "Es crearà un volum lògic nou per a %s",
+    "Es crearan volums lògics nous per a %s"
+  ],
   "A new partition will be created for %s": [
     "Es crearà una partició nova per a %s",
     "Es crearan particions noves per a %s"
-  ],
-  "A new volume will be created for %s": [
-    "Es crearà un volum nou per a %s",
-    "Es crearan volums nous per a %s"
   ],
   "A partition may be deleted": [
     "Es pot suprimir una partició"
@@ -188,26 +258,14 @@ export default {
   "Add": [
     "Afegeix"
   ],
-  "Add DNS": [
-    "Afegeix-hi un DNS"
+  "Add %s": [
+    "Afegeix-hi %s"
   ],
   "Add LVM volume group": [
     "Afegeix un grup de volums d'LVM"
   ],
   "Add a partition or mount an existing one": [
     "Afegiu-hi una partició o munteu-ne una d'existent"
-  ],
-  "Add an address": [
-    "Afegeix-hi una adreça"
-  ],
-  "Add another DNS": [
-    "Afegeix-hi un altre DNS"
-  ],
-  "Add another address": [
-    "Afegeix-hi una altra adreça"
-  ],
-  "Add another search domain": [
-    "Afegiu un altre domini de cerca"
   ],
   "Add connection": [
     "Afegeix-hi una connexió"
@@ -218,23 +276,23 @@ export default {
   "Add logical volume": [
     "Afegeix un volum lògic"
   ],
+  "Add or use logical volume": [
+    "Afegeix o usa un volum lògic"
+  ],
   "Add or use partition": [
     "Afegiu o useu una partició"
-  ],
-  "Add search domain": [
-    "Afegeix un domini de cerca"
   ],
   "Additional CHAP authentication performed by the initiator": [
     "Autenticació de CHAP addicional feta per l'iniciador"
   ],
+  "Additional patterns": [
+    "Patrons addicionals"
+  ],
   "Address": [
     "Adreça"
   ],
-  "Addresses": [
-    "Adreces"
-  ],
-  "Addresses data list": [
-    "Llista de dades d'adreces"
+  "Address and gateway assigned from the network": [
+    "Adreça i passarel·la assignades des de la xarxa"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
     "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
@@ -272,9 +330,19 @@ export default {
   "Already using all available disks": [
     "Ja s'usen tots els discs disponibles"
   ],
+  "An existing logical volume will be used for %s": [
+    "S'usarà un volum lògic existent per a %s",
+    "S'usaran els volums lògics existents per a %s"
+  ],
   "An existing partition will be used for %s": [
     "S'usarà una partició existent per a %s",
     "S'usaran les particions existents per a %s"
+  ],
+  "Any": [
+    "Qualsevol"
+  ],
+  "Any existing logical volume will be removed and all data in the volume group will be lost.": [
+    "Qualsevol volum lògic existent se suprimirà i se'n perdran totes les dades."
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Se suprimirà qualsevol partició existent i es perdran totes les dades del disc."
@@ -282,11 +350,29 @@ export default {
   "Any partition needed to boot will be configured.": [
     "Es configurarà qualsevol partició necessària per a arrencar."
   ],
+  "As a new logical volume on %s": [
+    "Com a volum lògic nou a %s"
+  ],
   "As a new partition on %s": [
     "Com a partició nova a %s"
   ],
-  "At least one address must be provided for selected mode": [
-    "S'ha de proporcionar almenys una adreça per al mode seleccionat."
+  "At least one DNS search domain is required": [
+    "Cal com a mínim un domini de cerca de DNS"
+  ],
+  "At least one DNS server is required": [
+    "Cal com a mínim un servidor DNS"
+  ],
+  "At least one IPv4 address is required": [
+    "Cal com a mínim una adreça IPv4"
+  ],
+  "At least one IPv6 address is required": [
+    "Cal com a mínim una adreça IPv6"
+  ],
+  "At least one bond port is required": [
+    "Cal com a mínim un port de vinculació."
+  ],
+  "At least one logical volume will be deleted": [
+    "Se suprimirà com a mínim un volum lògic"
   ],
   "At least one partition will be deleted": [
     "Se suprimirà almenys una partició"
@@ -306,14 +392,17 @@ export default {
   "Automatic": [
     "Automàtica"
   ],
-  "Automatic (DHCP)": [
-    "Automàtic (DHCP)"
+  "Automatic + manual": [
+    "Automàtica i manual"
   ],
   "Automatic LUN scan is disabled": [
     "L'exploració automàtica de LUN està desactivada."
   ],
   "Automatic LUN scan is enabled": [
     "L'exploració automàtica de LUN està activada."
+  ],
+  "Available devices: %s": [
+    "Dispositius disponibles: %s"
   ],
   "Back": [
     "Ves enrere"
@@ -357,20 +446,38 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    "Vincle"
+  ],
+  "Bond details": [
+    "Detalls del vincle"
+  ],
+  "Bond mode": [
+    "Mode de vinculació"
+  ],
+  "Bond mode is required": [
+    "Cal el mode de vinculació."
+  ],
+  "Bond options": [
+    "Opcions de vinculació"
+  ],
+  "Bond ports": [
+    "Ports de vinculació"
+  ],
   "Boot options": [
     "Opcions d'arrencada"
   ],
   "Breadcrumbs": [
     "Ruta de navegació"
   ],
+  "Bridge": [
+    "Pont"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs amb instantànies"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "En continuar, la instal·lació començarà amb els paràmetres definits."
   ],
   "CHAP authentication performed by the target": [
     "Autenticació de CHAP feta per la destinació"
@@ -402,6 +509,10 @@ export default {
   "Change Language": [
     "Canvia'n la llengua"
   ],
+  "Change desktop": [
+    "Canvia l'escriptori",
+    "Canvia els escriptoris"
+  ],
   "Change device menu": [
     "Canvia el menú del dispositiu"
   ],
@@ -423,32 +534,35 @@ export default {
   "Change mode": [
     "Canvia'n el mode"
   ],
+  "Change patterns": [
+    "Canvia els patrons"
+  ],
   "Change product": [
     "Canvia el producte"
   ],
   "Change product or mode": [
     "Canvieu el producte o el mode"
   ],
-  "Change selection": [
-    "Canvia la selecció"
+  "Change the device to configure": [
+    "Canvieu el dispositiu per configurar"
   ],
-  "Change the disk to configure": [
-    "Canvieu el disc per configurar"
+  "Change the device to create %s": [
+    "Canvieu el dispositiu per crear-hi %s"
   ],
-  "Change the disk to create %s": [
-    "Canvieu el disc per crear-hi %s"
+  "Change the device to format as %s": [
+    "Canvieu el dispositiu per formatar com a %s"
   ],
-  "Change the disk to format as %s": [
-    "Canvia el disc per formatar com a %s"
-  ],
-  "Change the disk to install the system": [
-    "Canvieu el disc per instal·lar-hi el sistema"
+  "Change the device to install the system": [
+    "Canvieu el dispositiu per instal·lar-hi el sistema"
   ],
   "Change the file system or mount point": [
     "Canvia'n el sistema de fitxers o el punt de muntatge"
   ],
   "Change to %s": [
     "Canvia a %s"
+  ],
+  "Change volume group menu": [
+    "Canvieu el menú del grup de volums"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Els canvis en aquesta configuració actualitzaran immediatament la secció de Resultat que hi ha a continuació."
@@ -462,8 +576,14 @@ export default {
   "Check whether Agama server is running.": [
     "Comproveu si el servidor Agama s'executa."
   ],
+  "Choose a RAID device to define partitions or to mount": [
+    "Seleccioneu un dispositiu de RAID per definir-ne les particions o per muntar-lo"
+  ],
   "Choose a disk for placing the boot loader": [
     "Trieu un disc per posar-hi el carregador d'arrencada"
+  ],
+  "Choose a disk to define partitions or to mount": [
+    "Seleccioneu un disc per definir-ne les particions o per muntar-lo"
   ],
   "Choose a mode": [
     "Trieu-ne el mode"
@@ -471,6 +591,9 @@ export default {
   "Choose a product": [
     "Trieu el producte",
     "Trieu entre %d productes disponibles"
+  ],
+  "Choose a volume group to define logical volumes": [
+    "Trieu un grup de volums per definir-ne els volums lògics"
   ],
   "Choose device to bind by MAC": [
     "Trieu el dispositiu per vincular per MAC"
@@ -480,6 +603,12 @@ export default {
   ],
   "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
     "Trieu com s'ha d'associar la connexió amb un dispositiu de xarxa. Això ajuda a controlar quin dispositiu usa la connexió."
+  ],
+  "Chosen by MAC": [
+    "Triat per MAC"
+  ],
+  "Chosen by name": [
+    "Triat pel nom"
   ],
   "Clear": [
     "Esborra"
@@ -495,6 +624,9 @@ export default {
   ],
   "Close": [
     "Tanca"
+  ],
+  "Configuration from the network plus static addresses and gateway": [
+    "Configuració des de la xarxa més adreces estàtiques i passarel·la"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configuració llegida de la taula del microprogramari d'arrencada d'iSCSI (iBFT). L'iniciador no es pot canviar."
@@ -522,6 +654,9 @@ export default {
   ],
   "Configure logical volume": [
     "Configura un volum lògic"
+  ],
+  "Configure logical volume at %s": [
+    "Configura un volum lògic a %s"
   ],
   "Configure partition": [
     "Configura la partició"
@@ -559,6 +694,9 @@ export default {
   ],
   "Confirm the product selection.": [
     "Confirmeu la selecció del producte."
+  ],
+  "Confirming starts the installation immediately with the defined settings.": [
+    "En confirmar-ho, la instal·lació s'inicia immediatament amb els paràmetres definits."
   ],
   "Connect": [
     "Connecta't"
@@ -599,6 +737,9 @@ export default {
   "Connection is bound to device %s.": [
     "La connexió està vinculada al dispositiu %s."
   ],
+  "Connection not found": [
+    "No s'ha trobat la connexió"
+  ],
   "Connection not found or lost": [
     "Connexió no trobada o perduda"
   ],
@@ -626,6 +767,9 @@ export default {
   "Create user": [
     "Crea un usuari"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    "Conjunts de paquets seleccionats per a casos d'ús comuns i funcions per ampliar el sistema."
+  ],
   "Current %1$s at %2$s": [
     "%1$s actual a %2$s"
   ],
@@ -634,6 +778,9 @@ export default {
   ],
   "Current content": [
     "Contingut actual"
+  ],
+  "Current logical volumes will be kept": [
+    "Es mantindran els volums lògics actuals"
   ],
   "Current partitions will be kept": [
     "Es conservaran les particions actuals"
@@ -662,8 +809,11 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    "Llista de cerca de DNS"
+  "DNS search domains": [
+    "Dominis de cerca de DNS"
+  ],
+  "DNS servers": [
+    "Servidors DNS"
   ],
   "Deactivate": [
     "Desactiva"
@@ -671,17 +821,23 @@ export default {
   "Deactivated": [
     "Desactivat"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistema de fitxers per defecte per a %s"
   ],
-  "Default file system for generic logical volumes": [
-    "Sistema de fitxers per defecte per a volums lògics genèrics"
+  "Default file system for generic logical volume": [
+    "Sistema de fitxers per defecte per a un volum lògic genèric"
   ],
   "Default file system for generic mount paths": [
     "Sistema de fitxers per defecte per als camins de muntatge genèrics"
   ],
   "Default file system for generic partitions": [
     "Sistema de fitxers per defecte per a particions genèriques"
+  ],
+  "Default selection": [
+    "Selecció per defecte"
   ],
   "Define a custom size": [
     "Definiu una mida personalitzada"
@@ -716,8 +872,17 @@ export default {
   "Description": [
     "Descripció"
   ],
+  "Desktop selection": [
+    "Selecció d'escriptoris"
+  ],
+  "Desktops": [
+    "Escriptoris"
+  ],
   "Destroy current data and format device as": [
     "Destrueix les dades actuals i formata el dispositiu com a"
+  ],
+  "Destroy current data and format logical volume as": [
+    "Destrueix les dades actuals i formata el dispositiu lògic com a"
   ],
   "Destroy current data and format partition as": [
     "Destrueix les dades actuals i formata la partició com a"
@@ -733,6 +898,12 @@ export default {
   ],
   "Device details": [
     "Detalls del dispositiu"
+  ],
+  "Device name": [
+    "Nom del dispositiu"
+  ],
+  "Device name is required": [
+    "El nom del dispositiu és obligatori."
   ],
   "Discard": [
     "Descarta'l"
@@ -782,9 +953,6 @@ export default {
   "Do not use": [
     "No l'usis"
   ],
-  "Domain": [
-    "Domini"
-  ],
   "Down": [
     "Avall"
   ],
@@ -797,11 +965,32 @@ export default {
   "Download logs to troubleshoot or share with support.": [
     "Baixeu registres per solucionar problemes o compartir-los amb el suport tècnic."
   ],
+  "E.g., 192.168.1.1": [
+    "P. ex., 192.168.1.1"
+  ],
+  "E.g., 192.168.1.1 or 192.168.1.1/24. Prefix auto-added if omitted.": [
+    "P. ex., 192.168.1.1 o 192.168.1.1/24. El prefix s'afegeix automàticament si s'omet."
+  ],
+  "E.g., 2001:db8::1": [
+    "P. ex., 2001:db8::1"
+  ],
+  "E.g., 2001:db8::1 or 2001:db8::1/64. Prefix auto-added if omitted.": [
+    "P. ex., 2001:db8::1 o 2001:db8::1/64. El prefix s'afegeix automàticament si s'omet."
+  ],
+  "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
+    "P. ex., 8.8.8.8 o 2001:4860:4860::8888"
+  ],
+  "E.g., bond0": [
+    "P. ex., bond0"
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    "P. ex., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
+  ],
+  "E.g., example.com": [
+    "P. ex., exemple.com"
+  ],
   "Edit": [
     "Edita"
-  ],
-  "Edit binding": [
-    "Edita la vinculació"
   ],
   "Edit binding settings": [
     "Edita la configuració de la vinculació"
@@ -860,20 +1049,29 @@ export default {
   "Enter a name for the volume group.": [
     "Introduïu un nom per al grup de volums."
   ],
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
+  ],
   "Ethernet": [
     "Xarxa amb fil"
   ],
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Exemple: %s"
-  ],
   "Excellent signal": [
     "Senyal excel·lent"
   ],
   "Expiration date": [
     "Data de venciment"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -919,8 +1117,8 @@ export default {
   "Filter by language, territory or locale code": [
     "Filtra per llengua, territori o codi local"
   ],
-  "Filter by pattern title or description": [
-    "Filtra per títol o descripció del patró"
+  "Filter by name and description": [
+    "Filtra per nom i descripció"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Filtra per territori, codi de zona horària o desplaçament d'UTC"
@@ -976,6 +1174,12 @@ export default {
   "Formatting devices": [
     "Formatatge de dispositius"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
@@ -984,9 +1188,6 @@ export default {
   ],
   "Gateway": [
     "Passarel·la"
-  ],
-  "Gateway can be defined only in 'Manual' mode": [
-    "La passarel·la només es pot definir en mode manual."
   ],
   "GiB": [
     "GiB"
@@ -997,11 +1198,26 @@ export default {
   "Go to network page": [
     "Ves a la pàgina de la xarxa"
   ],
+  "Go to network settings": [
+    "Ves a la configuració de la xarxa"
+  ],
+  "Go to registration": [
+    "Ves al registre"
+  ],
   "Go to storage page": [
     "Ves a la pàgina de l'emmagatzematge"
   ],
   "Good signal": [
     "Senyal bo"
+  ],
+  "Graphical desktop environments for the system.": [
+    "Entorns d'escriptori gràfics per al sistema."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Amaga"
@@ -1022,9 +1238,6 @@ export default {
   "I have read and accept the [license] for %s": [
     "He llegit i accepto la [llicència] de %s"
   ],
-  "IP Address": [
-    "Adreça IP"
-  ],
   "IP Addresses": [
     "Adreces IP"
   ],
@@ -1037,20 +1250,54 @@ export default {
   "IPv4": [
     "IPv4"
   ],
+  "IPv4 Addresses": [
+    "Adreces IPv4"
+  ],
+  "IPv4 Gateway": [
+    "Passarel·la d'IPv4"
+  ],
+  "IPv4 Settings": [
+    "Paràmetres d'IPv4"
+  ],
+  "IPv4 gateway is required": [
+    "Cal una passarel·la IPv4"
+  ],
   "IPv6": [
     "IPv6"
+  ],
+  "IPv6 Addresses": [
+    "Adreces IPv6"
+  ],
+  "IPv6 Gateway": [
+    "Passarel·la d'IPv6"
+  ],
+  "IPv6 Settings": [
+    "Paràmetres d'IPv6"
+  ],
+  "IPv6 gateway is required": [
+    "Cal una passarel·la IPv6"
+  ],
+  "Identify the connection device by its name in the system": [
+    "Identifica el dispositiu de connexió pel nom al sistema"
+  ],
+  "Identify the connection device by its physical address": [
+    "Identifica el dispositiu de connexió per l'adreça física"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Si s'ha usat un mitjà local per executar aquest instal·lador, traieu-lo abans de la propera arrencada."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Si no ho teniu clar, cancel·leu-ho i reviseu la configuració d'emmagatzematge."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    "Si això no és el que voleu, cancel·leu-ho i seleccioneu un escriptori a la configuració de [programari]."
   ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Si no ho teniu clar, comproveu i ajusteu la configuració de l'emmagatzematge."
+  "If unsure, cancel and review [storage] settings.": [
+    "Si no ho teniu clar, cancel·leu-ho i reviseu la configuració de l'[emmagatzematge]."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Si voleu desactivar aquesta comprovació, especifiqueu \"inst.ay_check=0\" a la línia d'ordres del nucli."
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "Inclou %1$d patró addicional. Requereix %2$s",
+    "Inclou %1$d patrons addicionals. Requereix %2$s"
   ],
   "Initiator": [
     "Iniciador"
@@ -1109,6 +1356,24 @@ export default {
   "Interface": [
     "Interfície"
   ],
+  "Invalid DNS search domain": [
+    "Domini de cerca de DNS no vàlid"
+  ],
+  "Invalid DNS server address": [
+    "Adreça del servidor DNS no vàlida"
+  ],
+  "Invalid IPv4 address": [
+    "Adreça IPv4 no vàlida"
+  ],
+  "Invalid IPv4 gateway": [
+    "Passarel·la IPv4 no vàlida"
+  ],
+  "Invalid IPv6 address": [
+    "Adreça IPv6 no vàlida"
+  ],
+  "Invalid IPv6 gateway": [
+    "Passarel·la IPv6 no vàlida"
+  ],
   "Invalid [zFCP] settings": [
     "Configuració de [zFCP] no vàlida"
   ],
@@ -1120,9 +1385,6 @@ export default {
   ],
   "Invalid storage settings": [
     "Configuració d'emmagatzematge no vàlida"
-  ],
-  "Ip prefix or netmask": [
-    "Prefix IP o màscara de xarxa"
   ],
   "Issue date": [
     "Data d'emissió"
@@ -1163,6 +1425,9 @@ export default {
   "JFS": [
     "JFS"
   ],
+  "Keep %s": [
+    "Mantén %s"
+  ],
   "Keyboard": [
     "Teclat"
   ],
@@ -1196,20 +1461,23 @@ export default {
   "Let the installer propose a sensible size": [
     "Permet que l'instal·lador proposi una mida raonable"
   ],
+  "Level": [
+    "Nivell"
+  ],
   "License acceptance is required to continue.": [
     "Cal acceptar la llicència per continuar."
   ],
   "License acceptance required": [
     "Cal l'acceptació de la llicència"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Carregant"
   ],
   "Loading data...": [
     "Carregant dades..."
-  ],
-  "Loading the installation repositories...": [
-    "Carregant els repositoris d'instal·lació..."
   ],
   "Localization": [
     "Localització"
@@ -1226,8 +1494,23 @@ export default {
   "Logical volume name": [
     "Nom del volum lògic"
   ],
+  "Logical volumes": [
+    "Volums lògics"
+  ],
   "Logical volumes for %s": [
     "Volums lògics per a %s"
+  ],
+  "Logical volumes that are not reused will be removed and that data will be lost.": [
+    "Els volums lògics que no es reutilitzin se suprimiran i se'n perdran les dades."
+  ],
+  "Logical volumes that are not reused will be resized as needed.": [
+    "Es canviarà la mida dels volums lògics que no es reutilitzin segons calgui."
+  ],
+  "Logical volumes that are not reused would be resized if needed.": [
+    "Es canviarà la mida dels volums lògics que no es reutilitzin si cal."
+  ],
+  "Logical volumes will be used and created for %s": [
+    "S'usaran i crearan volums lògics per a %s"
   ],
   "Login": [
     "Entrada"
@@ -1235,8 +1518,14 @@ export default {
   "Login form": [
     "Forma d'entrada"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC": [
     "MAC"
+  ],
+  "MAC address": [
+    "Adreça MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Assegureu-vos que la contrasenya sigui correcta i torneu-ho a intentar."
@@ -1252,6 +1541,15 @@ export default {
   ],
   "Max channel": [
     "Canal màxim"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
+  ],
+  "Members": [
+    "Membres"
   ],
   "Memory": [
     "Memòria"
@@ -1351,8 +1649,8 @@ export default {
   "Name": [
     "Nom"
   ],
-  "Needs about %s": [
-    "Necessita aproximadament %s"
+  "Name is required": [
+    "Cal el nom"
   ],
   "Network": [
     "Xarxa"
@@ -1369,20 +1667,35 @@ export default {
   "New Wi-Fi connection": [
     "Connexió sense fil nova"
   ],
+  "New connection": [
+    "Connexió nova"
+  ],
   "No": [
     "No"
   ],
   "No DASD devices found in this machine.": [
     "No s'han trobat dispositius DASD en aquesta màquina."
   ],
+  "No LVM volume groups are available for selection.": [
+    "No hi ha grups de volums d'LVM disponibles per a la selecció."
+  ],
+  "No LVM volume groups found": [
+    "No s'han trobat cap grup de volums d'LVM"
+  ],
+  "No RAID devices found": [
+    "No s'ha trobat cap dispositiu de RAID"
+  ],
   "No Wi-Fi networks were found": [
     "No s'ha trobat cap xarxa sense fil"
+  ],
+  "No additional logical volumes will be created": [
+    "No es crearan volums lògics addicionals"
   ],
   "No additional partitions will be created": [
     "No es crearan particions addicionals"
   ],
-  "No additional software was selected.": [
-    "No s'ha seleccionat cap programari addicional."
+  "No additional patterns available": [
+    "No hi ha patrons addicionals disponibles."
   ],
   "No connections match filters": [
     "Cap connexió coincideix amb els filtres"
@@ -1395,6 +1708,12 @@ export default {
   ],
   "No data loss is expected": [
     "No s'espera cap pèrdua de dades."
+  ],
+  "No desktop selected": [
+    "No s'ha seleccionat cap escriptori."
+  ],
+  "No desktops available": [
+    "No hi ha cap escriptori disponible."
   ],
   "No device is currently using this connection.": [
     "Cap dispositiu usa actualment aquesta connexió."
@@ -1417,20 +1736,32 @@ export default {
   "No devices selected. Select one or more devices to perform bulk actions.": [
     "No s'ha seleccionat cap dispositiu. Seleccioneu un o més dispositius per fer-hi accions massives."
   ],
+  "No disks are available for selection.": [
+    "No hi ha discs disponibles per a la selecció."
+  ],
+  "No disks found": [
+    "No s'ha trobat cap disc"
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "No s'ha trobat cap taula de microprogramari d'arrencada d'iSCSI (iBFT). L'iniciador es pot [configurar manualment.]"
   ],
   "No information available yet": [
     "Encara no hi ha informació disponible"
   ],
-  "No logical volumes are defined yet": [
-    "Encara no s'ha definit cap volum lògic"
-  ],
   "No partitions will be automatically configured for booting.": [
     "No es configurarà cap partició per a l'arrencada automàticament."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "No es configurarà automàticament cap partició per a l'arrencada. Useu-ho amb precaució."
+  ],
+  "No patterns match": [
+    "No hi coincideix cap patró."
+  ],
+  "No patterns match the filter": [
+    "No hi ha patrons que coincideixin amb el filtre."
+  ],
+  "No software RAID devices are available for selection.": [
+    "No hi ha cap dispositiu de RAID de programari disponible per a la selecció."
   ],
   "No support is planned.": [
     "No té compatibilitat prevista."
@@ -1471,11 +1802,11 @@ export default {
   "None of the locales match the filter.": [
     "Cap de les llengües coincideix amb el filtre."
   ],
-  "None of the patterns match the filter.": [
-    "Cap dels patrons coincideix amb el filtre."
-  ],
   "None of the time zones match the filter.": [
     "Cap de les zones horàries coincideix amb el filtre."
+  ],
+  "None selected": [
+    "No se n'ha seleccionat cap."
   ],
   "None set": [
     "No s'ha establert"
@@ -1504,11 +1835,20 @@ export default {
   "Not supported (%s)": [
     "No compatible (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "Fora de línia"
   ],
   "On boot": [
     "A l'arrencada"
+  ],
+  "Only reused logical volumes and space not assigned to any logical volume will be used.": [
+    "Només s'usaran els volums lògics reutilitzats i l'espai no assignat a cap volum lògic."
+  ],
+  "Only reused logical volumes will be used.": [
+    "Només s'usaran volums lògics reutilitzats."
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Només s'usaran les particions reutilitzades i l'espai no assignat a cap partició."
@@ -1585,11 +1925,17 @@ export default {
   "Passwords do not match": [
     "Les contrasenyes no coincideixen."
   ],
+  "Patterns selection": [
+    "Selecció de patrons"
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "Fa una descoberta per trobar destinacions d'iSCSI disponibles."
   ],
   "Performs auto LUN scan": [
     "Fa una exploració automàtica de LUN"
+  ],
+  "Physical volumes": [
+    "Volums físics"
   ],
   "PiB": [
     "PiB"
@@ -1606,8 +1952,11 @@ export default {
   "Potential data loss affecting at least %s": [
     "Pèrdua potencial de dades que afecta com a mínim els sistemes següents: %s"
   ],
-  "Prefix length or netmask": [
-    "Longitud del prefix o màscara de xarxa"
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
   ],
   "Proceeding may result in data loss": [
     "Si continueu, és possible que es perdin dades."
@@ -1624,17 +1973,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Protecció de la informació desada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Proporcioneu l'autenticació"
   ],
-  "Provide email address": [
-    "Proporcioneu una adreça de correu electrònic."
-  ],
   "Provide its password to log in to the system.": [
     "Proporcioneu-ne la contrasenya per iniciar sessió al sistema."
-  ],
-  "Provide registration code": [
-    "Proporcioneu el codi de registre"
   ],
   "Public SSH Key": [
     "Clau pública SSH"
@@ -1647,6 +1996,21 @@ export default {
   ],
   "Question": [
     "Pregunta"
+  ],
+  "RAID": [
+    "RAID"
+  ],
+  "Read less": [
+    "Llegeix menys"
+  ],
+  "Read less about %s": [
+    "Menys lectura sobre %s"
+  ],
+  "Read more": [
+    "Llegeix més"
+  ],
+  "Read more about %s": [
+    "Més lectura sobre %s"
   ],
   "Read only": [
     "Només de lectura"
@@ -1696,21 +2060,23 @@ export default {
   "Reload": [
     "Torna a carregar"
   ],
-  "Remove": [
-    "Suprimeix"
+  "Remove %s": [
+    "Suprimeix %s"
   ],
   "Remove the configuration for this disk": [
     "Suprimeix la configuració d'aquest disc"
   ],
-  "Repository load failed": [
-    "Ha fallat carregar el repositori."
+  "Remove the configuration for this volume group": [
+    "Suprimeix la configuració per a aquest grup de volums"
   ],
-  "Required packages": [
-    "Paquets requerits"
+  "Required space with current selection: [%s]": [
+    "Espai necessari amb la selecció actual: [%s]"
   ],
-  "Required packages and %s pattern": [
-    "Paquets necessaris i %s patró",
-    "Paquets necessaris i %s patrons"
+  "Required space: [%s]": [
+    "Espai necessari: [%s]"
+  ],
+  "Requires %s": [
+    "Requereix %s"
   ],
   "Rescan devices": [
     "Torna a escanejar els dispositius"
@@ -1733,6 +2099,9 @@ export default {
   "Retrieving error details": [
     "Obtenció dels detalls de l'error"
   ],
+  "Reused logical volumes will not be shrunk": [
+    "No s'encongiran els volums lògics reutilitzats"
+  ],
   "Reused partitions will not be shrunk": [
     "Les particions reutilitzades no s'encongiran"
   ],
@@ -1741,6 +2110,9 @@ export default {
   ],
   "Review and install": [
     "Revisa i instal·la"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "Inici de sessió d'arrel amb clau SSH"
@@ -1778,6 +2150,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "Centre de clients de SUSE (SCC)"
   ],
@@ -1796,14 +2171,17 @@ export default {
   "Select %s": [
     "Selecciona %s"
   ],
-  "Select a device to define partitions or to mount": [
-    "Seleccioneu un dispositiu per definir-ne les particions o per muntar-lo"
+  "Select a desktop": [
+    "Seleccioneu un escriptori"
+  ],
+  "Select a desktop environment to get a graphical interface.": [
+    "Seleccioneu un entorn d'escriptori per obtenir una interfície gràfica."
+  ],
+  "Select a device": [
+    "Seleccioneu un dispositiu"
   ],
   "Select a disk": [
     "Seleccioneu un disc"
-  ],
-  "Select a disk to define partitions or to mount": [
-    "Seleccioneu un disc per definir-ne les particions o per muntar-lo"
   ],
   "Select a mode": [
     "Seleccioneu un mode"
@@ -1824,11 +2202,14 @@ export default {
   "Select a product to continue.": [
     "Seleccioneu un producte per continuar."
   ],
-  "Select another device to define partitions or to mount": [
-    "Seleccioneu un altre dispositiu per definir-ne les particions o per muntar-lo"
+  "Select an existing device": [
+    "Seleccioneu un dispositiu existent"
   ],
-  "Select another disk to define partitions or to mount": [
-    "Seleccioneu un altre disc per definir-ne les particions o per muntar-lo"
+  "Select another disk": [
+    "Seleccioneu un altre disc"
+  ],
+  "Select another existing device": [
+    "Seleccioneu un altre dispositiu existent"
   ],
   "Select at least one disk.": [
     "Seleccioneu almenys un disc."
@@ -1839,6 +2220,12 @@ export default {
   "Select devices to perform bulk actions": [
     "Seleccioneu els dispositius per fer-hi accions massives"
   ],
+  "Select entries to edit or remove them. Or [remove all invalid entries.]": [
+    "Seleccioneu les entrades per editar-les o suprimir-les. O [suprimeix totes les entrades no vàlides.]"
+  ],
+  "Select one or more to extend the system.": [
+    "Seleccioneu-ne un o més per ampliar el sistema."
+  ],
   "Select or enter a mount point": [
     "Seleccioneu o introduïu un punt de muntatge"
   ],
@@ -1848,11 +2235,20 @@ export default {
   "Select or enter a valid mount point": [
     "Seleccioneu o introduïu un punt de muntatge vàlid"
   ],
+  "Select patterns": [
+    "Seleccioneu patrons"
+  ],
   "Select the controllers to activate": [
     "Seleccioneu els controladors per activar"
   ],
   "Select the zFCP controllers to activate:": [
     "Seleccioneu els controladors de zFCP que voleu activar:"
+  ],
+  "Select what to do with each logical volume in order to find space for allocating the new system.": [
+    "Seleccioneu què voleu fer amb cada volum lògic per trobar espai per assignar-hi el sistema nou."
+  ],
+  "Select what to do with each logical volume.": [
+    "Seleccioneu què voleu fer amb cada volum lògic."
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Seleccioneu què fer de cada partició per trobar espai per assignar-hi el sistema nou."
@@ -1863,17 +2259,11 @@ export default {
   "Selected disk cannot be changed": [
     "El disc seleccionat no es pot canviar"
   ],
-  "Selected patterns": [
-    "Patrons seleccionats"
-  ],
-  "Server IP": [
-    "IP del servidor"
+  "Selected volume group cannot be changed": [
+    "No es pot canviar el grup de volums seleccionat"
   ],
   "Server URL": [
     "URL del servidor"
-  ],
-  "Server options": [
-    "Opcions del servidor"
   ],
   "Set DIAG off": [
     "Desactiva la DIAG"
@@ -1886,6 +2276,9 @@ export default {
   ],
   "Settings": [
     "Configuració"
+  ],
+  "Several logical volumes will be deleted": [
+    "Se suprimiran diversos volums lògics"
   ],
   "Several partitions will be deleted": [
     "Se suprimiran diverses particions"
@@ -1906,6 +2299,9 @@ export default {
   "Show more": [
     "Mostra'n més"
   ],
+  "Shrink existing logical volumes": [
+    "Encongeix els volums lògics existents"
+  ],
   "Shrink existing partitions": [
     "Encongeix les particions existents"
   ],
@@ -1917,9 +2313,6 @@ export default {
   ],
   "Size limits must be numbers followed by a unit like GiB or GB": [
     "Els límits de mida han de ser números seguits d'una unitat com ara GiB o GB."
-  ],
-  "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Els límits de mida han de ser números seguits opcionalment d'una unitat com ara GiB o GB"
   ],
   "Size mode": [
     "Mode de mida"
@@ -1936,11 +2329,32 @@ export default {
   "Software %s": [
     "Programari %s"
   ],
+  "Software selection is not available": [
+    "La selecció de programari no està disponible."
+  ],
+  "Some DNS search domains are invalid": [
+    "Alguns dominis de cerca de DNS no són vàlids"
+  ],
+  "Some DNS server addresses are invalid": [
+    "Algunes adreces de servidor DNS no són vàlides"
+  ],
+  "Some IPv4 addresses are invalid": [
+    "Algunes adreces IPv4 no són vàlides"
+  ],
+  "Some IPv6 addresses are invalid": [
+    "Algunes adreces IPv6 no són vàlides"
+  ],
+  "Some existing logical volumes may be shrunk": [
+    "Es poden encongir alguns volums lògics existents"
+  ],
   "Some existing partitions may be shrunk": [
     "Algunes particions existents es poden encongir"
   ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Alguns repositoris d'instal·lació no s'han pogut carregar. El sistema no es pot instal·lar sense."
+  "Some logical volumes may be deleted": [
+    "Alguns volums lògics es poden suprimir"
+  ],
+  "Some logical volumes may be shrunk": [
+    "Es poden encongir alguns volums lògics"
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "Alguns dels elements del vostre perfil d'AutoYaST no són compatibles."
@@ -1954,6 +2368,9 @@ export default {
   "Something went wrong": [
     "Alguna cosa ha anat malament."
   ],
+  "Spanning Tree Protocol (STP)": [
+    ""
+  ],
   "Start configuring a basic installation": [
     "Comenceu a configurar una instal·lació bàsica"
   ],
@@ -1962,6 +2379,9 @@ export default {
   ],
   "Startup": [
     "Inici"
+  ],
+  "Static addresses and gateway": [
+    "Adreces estàtiques i passarel·la"
   ],
   "Static hostname": [
     "Nom d'amfitrió estàtic"
@@ -2019,6 +2439,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "Nom temporal que pot canviar després d'un reinici o canvis de xarxa"
   ],
+  "The 'primary' option is only valid for %s modes": [
+    "L'opció primària només és vàlida per als modes %s"
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "El grup d'LVM %1$s es mantindrà a %2$s"
   ],
@@ -2031,6 +2454,15 @@ export default {
   ],
   "The connection can be used by any available device.": [
     "La connexió la pot usar qualsevol dispositiu disponible."
+  ],
+  "The connection could not be saved": [
+    "No s'ha pogut desar la connexió"
+  ],
+  "The connection does not exist or is no longer available.": [
+    "La connexió no existeix o ja no està disponible."
+  ],
+  "The connection is available for all devices": [
+    "La connexió està disponible per a tots els dispositius"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "La connexió només s'usarà durant la instal·lació i no estarà disponible al sistema instal·lat."
@@ -2051,8 +2483,14 @@ export default {
     "La configuració d'emmagatzematge actual té el problema següent:",
     "La configuració d'emmagatzematge actual té els problemes següents:"
   ],
+  "The data is kept, but the current logical volumes will be resized as needed.": [
+    "Les dades es conserven, però es canviarà la mida dels volums lògics actuals segons calgui."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Les dades es conserven, però les particions actuals es canviaran de mida segons calgui."
+  ],
+  "The data is kept. Only the space not assigned to any logical volume will be used.": [
+    "Les dades es conserven. Només s'usarà l'espai no assignat a cap volum lògic."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
     "Es conserven les dades. Només s'usarà l'espai no assignat a cap partició."
@@ -2117,9 +2555,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Es crearan o muntaran les particions següents:"
   ],
-  "The following software patterns are selected for installation:": [
-    "S'han seleccionat els patrons de programari següents per a la instal·lació:"
-  ],
   "The initiator name cannot be blank": [
     "El nom de l'iniciador no pot estar en blanc"
   ],
@@ -2136,17 +2571,11 @@ export default {
   "The maximum must be a number followed by a unit like GiB or GB": [
     "El màxim ha de ser un número seguit d'una unitat com ara GiB o GB."
   ],
-  "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "El màxim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
-  ],
   "The minimum cannot be greater than the maximum": [
     "El mínim no pot ser superior al màxim"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
     "El mínim ha de ser un número seguit d'una unitat com ara GiB o GB"
-  ],
-  "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "El mínim ha de ser un número seguit opcionalment d'una unitat com ara GiB o GB"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "El selector modal ofereix una interfície simplificada dissenyada per a un ús ràpid i senzill, sense sobrecarregar l'usuari."
@@ -2162,9 +2591,6 @@ export default {
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "No s'ha trobat el producte als repositoris, per la qual cosa no és possible continuar la instal·lació."
-  ],
-  "The product will be registered with \"%s\" hostname": [
-    "El producte es registrarà amb el nom d'amfitrió %s."
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "La mida de %1$s s'ajustarà dinàmicament segons la quantitat de RAM del sistema i de la presència d'un sistema de fitxers separat per a %2$s."
@@ -2202,6 +2628,9 @@ export default {
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "La mida ha de ser un número seguit d'una unitat del tipus GiB (potència de 2) o GB (potència de 10)."
   ],
+  "The software selection could not be loaded.": [
+    "No s'ha pogut carregar la selecció de programari."
+  ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "La configuració d'emmagatzematge és vàlida (vegeu-ne el resultat a continuació) però usa elements no compatibles amb aquesta interfície."
   ],
@@ -2210,6 +2639,9 @@ export default {
   ],
   "The system is rebooting": [
     "El sistema es reinicia"
+  ],
+  "The system will boot to a command-line interface.": [
+    "El sistema arrencarà des d'una interfície de línia d'ordres."
   ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"
@@ -2222,6 +2654,9 @@ export default {
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "No hi ha discs disponibles per a la instal·lació. És possible que hàgiu de configurar algun dispositiu."
+  ],
+  "There are not usable logical volumes": [
+    "No hi ha volums lògics usables"
   ],
   "There are not usable partitions": [
     "No hi ha particions usables"
@@ -2261,14 +2696,26 @@ export default {
   "This license is not available in %s.": [
     "Aquesta llicència no està disponible en %s."
   ],
+  "This might be due to network connectivity.": [
+    "Això podria ser degut a la connectivitat de la xarxa."
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Aquest patró aconsegueix un equilibri entre claredat i eficiència: el modal manté les coses lleugeres per a seleccions senzilles, mentre que la vista completa permet una exploració més profunda i accions més complexes, especialment per a usuaris amb molts dispositius."
   ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Aquest producte no permet seleccionar patrons de programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
+  "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
+    "Aquest producte no permet seleccionar programari durant la instal·lació. Tanmateix, hi podeu afegir programari addicional un cop acabada la instal·lació."
+  ],
+  "This product does not provide additional patterns.": [
+    "Aquest producte no proporciona patrons addicionals."
+  ],
+  "This product does not provide desktop environments.": [
+    "Aquest producte no proporciona entorns d'escriptori."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Aquest espai inclou el sistema de base i els patrons de programari seleccionats, si n'hi ha."
+  ],
+  "This uses existing logical volumes at the volume group": [
+    "Això usa els volums lògics existents al grup de volums"
   ],
   "This uses existing partitions at the disk": [
     "Això usa les particions existents al dispositiu"
@@ -2288,11 +2735,11 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
-  ],
-  "Try again": [
-    "Torna-ho a provar"
   ],
   "Try to activate again": [
     "Torna a provar l'activació"
@@ -2317,9 +2764,6 @@ export default {
   ],
   "Unknown error": [
     "Error desconegut"
-  ],
-  "Unselect": [
-    "Desmarca"
   ],
   "Unselect or activate them and try it again.": [
     "Desmarqueu-los o activeu-los i torneu-ho a provar."
@@ -2350,6 +2794,9 @@ export default {
   ],
   "Use": [
     "Usa'l"
+  ],
+  "Use LVM volume group %s": [
+    "Usa el grup de volums d'LVM %s"
   ],
   "Use RAID %s": [
     "Usa la RAID %s"
@@ -2392,6 +2839,12 @@ export default {
   ],
   "Use available space": [
     "Usa l'espai disponible"
+  ],
+  "Use custom DNS search domains": [
+    "Usa dominis de cerca de DNS personalitzats"
+  ],
+  "Use custom DNS servers": [
+    "Usa servidors DNS personalitzats"
   ],
   "Use device %s": [
     "Usa el dispositiu %s"
@@ -2462,11 +2915,11 @@ export default {
   "Use the disk without partitions": [
     "Usa el disc sense particions"
   ],
+  "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
+    "Useu les pestanyes per navegar pels discs, els dispositius RAID i els grups de volums d'LVM."
+  ],
   "Use these same settings for the selected product": [
     "Usa aquests mateixos paràmetres per al producte seleccionat"
-  ],
-  "Used space": [
-    "Espai usat"
   ],
   "User name": [
     "Nom d'usuari"
@@ -2477,11 +2930,12 @@ export default {
   "Username suggestion dropdown": [
     "Menú desplegable de suggeriments de nom d'usuari"
   ],
+  "Using %d additional pattern": [
+    "S'usa %d patró addicional",
+    "S'usen %d patrons addicionals"
+  ],
   "Using %d connections with %s": [
     "S'usen %d connexions amb %s"
-  ],
-  "Using [%s] keyboard": [
-    "S'usa el teclat per a [%s]"
   ],
   "Using a hashed password.": [
     "S'usa una contrasenya amb funció resum."
@@ -2489,11 +2943,17 @@ export default {
   "Using an advanced storage configuration": [
     "S'usa una configuració d'emmagatzematge avançada."
   ],
+  "Using an existing logical volume": [
+    "S'usa un volum lògic existent"
+  ],
   "Using an existing partition": [
     "S'usa una partició existent"
   ],
   "Using code ending in %s": [
     "S'usa el codi que acaba en %s"
+  ],
+  "Using logical volume %s": [
+    "S'usa el volum lògic %s"
   ],
   "Using partition %s": [
     "S'usa la partició %s"
@@ -2501,14 +2961,29 @@ export default {
   "Using transient hostname: %s": [
     "S'usa un nom d'amfitrió transitori: %s"
   ],
+  "VLAN": [
+    "VLAN"
+  ],
   "View license": [
     "Mostra la llicència"
+  ],
+  "Volume %s": [
+    "Volum %s"
   ],
   "Volume group %s": [
     "Grup de volums %s"
   ],
+  "Volume group %s menu": [
+    "Menú del grup de volums %s"
+  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "El grup de volums %s ja existeix. Introduïu un nom diferent."
+  ],
+  "Volume groups cannot be formatted": [
+    "Els grups de volums no es poden formatar"
+  ],
+  "Volumes %s": [
+    "Volums %s"
   ],
   "WPA & WPA2 Personal": [
     "WPA i WPA2 personal"
@@ -2564,9 +3039,6 @@ export default {
   "You can safely close this window.": [
     "Podeu tancar aquesta finestra amb seguretat."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "No ho podeu canviar més tard. Aneu a la secció %s si voleu modificar-la abans de procedir al registre."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar la configuració actual i començar des de zero amb una configuració simple."
   ],
@@ -2594,9 +3066,6 @@ export default {
   "auto selected": [
     "seleccionat automàticament"
   ],
-  "hostname": [
-    "Nom d'amfitrió"
-  ],
   "iBFT": [
     "iBFT"
   ],
@@ -2611,9 +3080,6 @@ export default {
   ],
   "partition": [
     "partició"
-  ],
-  "proposal.Device": [
-    "proposta.Dispositiu"
   ],
   "reset to defaults": [
     "restableix els valors predeterminats"

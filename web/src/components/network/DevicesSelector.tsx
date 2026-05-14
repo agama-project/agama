@@ -23,7 +23,8 @@
 import React from "react";
 import { sprintf } from "sprintf-js";
 import { FormSelect, FormSelectOption, FormSelectProps } from "@patternfly/react-core";
-import { ConnectionType, Device } from "~/types/network";
+import { Device } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 import { useDevices, useSystem } from "~/hooks/model/system/network";
 import { _ } from "~/i18n";
 
@@ -59,7 +60,7 @@ export default function DevicesSelector({
 
   const filteredDevices = state.wirelessEnabled
     ? devices
-    : devices.filter((d) => d.type !== ConnectionType.WIFI);
+    : devices.filter((d) => d.type !== CONNECTION_TYPE.WIFI);
 
   const labelAttrs = valueKey === "macAddress" ? ["macAddress", "name"] : ["name", "macAddress"];
 

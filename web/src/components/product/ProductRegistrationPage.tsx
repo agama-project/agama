@@ -20,58 +20,39 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
+import { sprintf } from "sprintf-js";
+import { isEmpty } from "radashi";
 import {
-  ActionGroup,
   Alert,
   Button,
-  Checkbox,
   Content,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
   Flex,
-  Form,
-  FormGroup,
-  SelectList,
-  SelectOption,
-  TextInput,
-  List,
-  ListItem,
   Divider,
   Title,
 } from "@patternfly/react-core";
-import {
-  IssuesAlert,
-  Link,
-  NestedContent,
-  Page,
-  SelectWrapper as Select,
-  SubtleContent,
-} from "~/components/core";
-import RegistrationExtension from "./RegistrationExtension";
-import RegistrationCodeInput from "./RegistrationCodeInput";
-import { HOSTNAME } from "~/routes/paths";
-import { isEmpty } from "radashi";
-import { mask } from "~/utils";
-import { sprintf } from "sprintf-js";
-import { _, N_ } from "~/i18n";
+import { IssuesAlert, Link, NestedContent, Page } from "~/components/core";
+import Interpolate from "~/components/core/Interpolate";
+import Text from "~/components/core/Text";
+import RegistrationExtension from "~/components/product/RegistrationExtension";
+import ProductRegistrationForm from "~/components/product/ProductRegistrationForm";
 import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
-import { useProduct, useProductInfo } from "~/hooks/model/config/product";
+import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
-import { patchConfig, putConfig } from "~/api";
-import type { Issue } from "~/model/issue";
-import type { Addon } from "~/model/config/product";
 import { useConfig } from "~/hooks/model/config";
+import { SYSTEM } from "~/routes/paths";
+import { patchConfig } from "~/api";
+import { mask } from "~/utils";
+import { _ } from "~/i18n";
 
-const FORM_ID = "productRegistration";
-const SERVER_LABEL = N_("Registration server");
-const EMAIL_LABEL = N_("Email");
-const SCC_SERVER_LABEL = N_("SUSE Customer Center (SCC)");
-const CUSTOM_SERVER_LABEL = N_("Custom");
-const EXAMPLE_URL = "https://example.com";
+import type { Addon } from "~/model/config/product";
+
+import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 
 const RegisteredProductSection = () => {
   const product = useProductInfo();
@@ -90,7 +71,7 @@ const RegisteredProductSection = () => {
         <DescriptionListGroup>
           {!isEmpty(registration.url) && (
             <>
-              <DescriptionListTerm>{_(SERVER_LABEL)}</DescriptionListTerm>
+              <DescriptionListTerm>{_("Registration server")}</DescriptionListTerm>
               <DescriptionListDescription>{registration.url}</DescriptionListDescription>
             </>
           )}
@@ -109,7 +90,7 @@ const RegisteredProductSection = () => {
           )}
           {!isEmpty(registration.email) && (
             <>
-              <DescriptionListTerm>{_(EMAIL_LABEL)}</DescriptionListTerm>
+              <DescriptionListTerm>{_("Email")}</DescriptionListTerm>
               <DescriptionListDescription>{registration.email}</DescriptionListDescription>
             </>
           )}
@@ -119,321 +100,42 @@ const RegisteredProductSection = () => {
   );
 };
 
-type ServerOption = "default" | "custom";
-
-type RegistrationServerProps = {
-  id?: string;
-  value: ServerOption;
-  onChange: (v: ServerOption) => void;
-};
-
-function RegistrationServer({
-  id = "server",
-  value,
-  onChange,
-}: RegistrationServerProps): React.ReactNode {
-  return (
-    <FormGroup fieldId={id} label={_(SERVER_LABEL)}>
-      <Select
-        id={"server"}
-        value={value}
-        label={value === "default" ? _(SCC_SERVER_LABEL) : _(CUSTOM_SERVER_LABEL)}
-        onChange={(v: ServerOption) => onChange(v)}
-      >
-        <SelectList aria-label={_("Server options")}>
-          <SelectOption value="default" description={_("Register using SUSE server")}>
-            {_(SCC_SERVER_LABEL)}
-          </SelectOption>
-          <SelectOption
-            value="custom"
-            description={_("Register using a custom registration server")}
-          >
-            {_(CUSTOM_SERVER_LABEL)}
-          </SelectOption>
-        </SelectList>
-      </Select>
-    </FormGroup>
-  );
-}
-
-type RegistrationUrlProps = {
-  id?: string;
-  value: string;
-  onChange: (v: string) => void;
-};
-
-function RegistrationUrl({ id = "url", value, onChange }: RegistrationUrlProps): React.ReactNode {
-  return (
-    <FormGroup fieldId={id} label={_("Server URL")}>
-      <TextInput id={id} value={value} onChange={(_, v) => onChange(v)} />
-      {/* TRANSLATORS: %s is replaced by an example URL like https://example.com */}
-      <SubtleContent>{sprintf(_("Example: %s"), EXAMPLE_URL)}</SubtleContent>
-    </FormGroup>
-  );
-}
-
-type RegistrationCodeFieldProps = {
-  id?: string;
-  value: string;
-  onChange: (v: string) => void;
-};
-
-function RegistrationCodeField({
-  id,
-  value,
-  onChange,
-}: RegistrationCodeFieldProps): React.ReactNode {
-  return (
-    <FormGroup fieldId={id} label={_("Registration code")}>
-      <RegistrationCodeInput id={id} value={value} onChange={(_, v) => onChange(v)} />
-    </FormGroup>
-  );
-}
-
-type RegistrationCodeProps = {
-  id?: string;
-  value: string;
-  onChange: (v: string) => void;
-  isOptional?: boolean;
-  isProvided?: boolean;
-  onProvidedChange?: (v: boolean) => void;
-};
-
-function RegistrationCode({
-  id = "code",
-  value,
-  onChange,
-  isOptional = false,
-  isProvided = false,
-  onProvidedChange,
-}: RegistrationCodeProps): React.ReactNode {
-  if (!isOptional) return <RegistrationCodeField id={id} value={value} onChange={onChange} />;
-
-  const optionalId = `provide-${id}`;
-
-  return (
-    <>
-      <FormGroup fieldId={optionalId}>
-        <Checkbox
-          id={optionalId}
-          label={_("Provide registration code")}
-          isChecked={isProvided}
-          onChange={() => onProvidedChange && onProvidedChange(!isProvided)}
-        />
-      </FormGroup>
-      {isProvided && (
-        <NestedContent margin="mxMd" aria-live="polite">
-          <RegistrationCodeField id={id} value={value} onChange={onChange} />
-        </NestedContent>
-      )}
-    </>
-  );
-}
-
-type RegistrationEmailProps = {
-  id?: string;
-  value: string;
-  onChange: (v: string) => void;
-  isProvided?: boolean;
-  onProvidedChange?: (v: boolean) => void;
-};
-
-function RegistrationEmail({
-  id = "email",
-  value,
-  onChange,
-  isProvided = false,
-  onProvidedChange,
-}: RegistrationEmailProps): React.ReactNode {
-  const optionalId = `provide-${id}`;
-
-  return (
-    <>
-      <FormGroup fieldId={optionalId}>
-        <Checkbox
-          id={optionalId}
-          label={_("Provide email address")}
-          isChecked={isProvided}
-          onChange={() => onProvidedChange(!isProvided)}
-        />
-      </FormGroup>
-
-      {isProvided && (
-        <NestedContent margin="mxMd" aria-live="polite">
-          <FormGroup fieldId={id} label={EMAIL_LABEL}>
-            <TextInput id={id} value={value} onChange={(_, v) => onChange(v)} />
-          </FormGroup>
-        </NestedContent>
-      )}
-    </>
-  );
-}
-
-const RegistrationFormSection = () => {
-  const [server, setServer] = useState<ServerOption>("default");
-  const [url, setUrl] = useState("");
-  const [key, setKey] = useState("");
-  const [email, setEmail] = useState("");
-  const [provideKey, setProvideKey] = useState(true);
-  const [provideEmail, setProvideEmail] = useState(false);
-  const [requestError, setRequestError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [loading] = useState(false);
-  const config = useConfig();
-  const product = useProduct();
-  const issues = useIssues("product");
-  const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
-
-  const resetForm = useCallback(() => {
-    setServer("default");
-    setUrl("");
-    setKey("");
-    setEmail("");
-    setProvideKey(false);
-    setProvideEmail(false);
-  }, [setServer, setUrl, setKey, setEmail, setProvideKey, setProvideEmail]);
-
-  useEffect(() => {
-    if (product) {
-      const { registrationCode: key, registrationEmail: email, registrationUrl: url } = product;
-      const server = isEmpty(url) ? "default" : "custom";
-      setServer(server);
-      setKey(key);
-      setEmail(email);
-      setUrl(url);
-      setProvideKey(!isEmpty(key));
-      setProvideEmail(!isEmpty(email));
-    }
-  }, [product]);
-
-  const changeServer = (value: ServerOption) => {
-    if (value !== "default") setProvideKey(!isEmpty(key));
-    setServer(value);
-  };
-
-  const changeProvideKey = (value: boolean) => {
-    if (!value) setKey("");
-    setProvideKey(value);
-  };
-
-  const changeProvideEmail = (value: boolean) => {
-    if (!value) setEmail("");
-    setProvideEmail(value);
-  };
-
-  const submit = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setRequestError(null);
-
-    const isUrlRequired = server !== "default";
-    const isKeyRequired = server === "default" || provideKey;
-
-    const errors = [];
-    if (isUrlRequired && isEmpty(url)) errors.push("Enter a server URL");
-    if (isKeyRequired && isEmpty(key)) errors.push("Enter a registration code");
-    if (provideEmail && isEmpty(email)) errors.push("Enter an email");
-    setErrors(errors);
-
-    if (!isEmpty(errors)) return;
-
-    putConfig({
-      ...config,
-      product: {
-        id: product.id,
-        mode: product.mode,
-        registrationCode: isKeyRequired ? key : undefined,
-        registrationEmail: provideEmail ? email : undefined,
-        registrationUrl: isUrlRequired ? url : undefined,
-      },
-    });
-  };
-
-  const submitNoRegister = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setRequestError(null);
-    resetForm();
-    putConfig({
-      ...config,
-      product: {
-        id: product.id,
-        mode: product.mode,
-      },
-    });
-  };
-
-  // TODO: adjust texts based of registration "type", mandatory or optional
-
-  return (
-    <Form id={FORM_ID} onSubmit={submit}>
-      {requestError && <Alert variant="warning" isInline title={requestError} />}
-
-      {!isEmpty(errors) && (
-        <Alert variant="warning" isInline title={_("Check the following before continuing")}>
-          <List isPlain>
-            {errors.map((e, i) => (
-              <ListItem key={i}>{e}</ListItem>
-            ))}
-          </List>
-        </Alert>
-      )}
-
-      <RegistrationServer value={server} onChange={changeServer} />
-
-      {server !== "default" && <RegistrationUrl value={url} onChange={setUrl} />}
-
-      <RegistrationCode
-        value={key}
-        onChange={setKey}
-        isOptional={server !== "default"}
-        isProvided={provideKey}
-        onProvidedChange={changeProvideKey}
-      />
-
-      <RegistrationEmail
-        value={email}
-        onChange={setEmail}
-        isProvided={provideEmail}
-        onProvidedChange={changeProvideEmail}
-      />
-
-      <ActionGroup>
-        <Flex alignItems={{ default: "alignItemsCenter" }}>
-          <Button variant="primary" type="submit" form={FORM_ID} isInline isLoading={loading}>
-            {_("Register")}
-          </Button>
-          {registrationIssue && (
-            <Button variant="link" type="submit" isInline onClick={submitNoRegister}>
-              {_("Do not register")}
-            </Button>
-          )}
-        </Flex>
-      </ActionGroup>
-    </Form>
-  );
-};
-
 const HostnameAlert = () => {
   const { hostname: hostnameProposal } = useProposal();
   const { hostname: transientHostname, static: staticHostname } = hostnameProposal;
   const hostname = isEmpty(staticHostname) ? transientHostname : staticHostname;
 
-  // TRANSLATORS: %s will be replaced with the hostname value
-  const title = sprintf(_('The product will be registered with "%s" hostname'), hostname);
-
-  // TRANSLATORS: %s will be replaced with the section name
-  const [descStart, descEnd] = _(
-    "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.",
-  ).split("%s");
-
-  const link = (
-    <Link variant="link" to={HOSTNAME.root} isInline>
-      {_("hostname")}
-    </Link>
-  );
+  const title = _("Hostname cannot be changed after registration");
 
   return (
-    <Alert title={title} variant="custom">
-      {descStart} {link} {descEnd}
+    <Alert isInline title={title} variant="custom">
+      {!isEmpty(hostname) && (
+        <Content isEditorial className={spacingStyles.mbXs}>
+          <Interpolate
+            sentence={
+              // TRANSLATORS: %s will be replaced with the hostname value
+              _("Configured as %s.")
+            }
+          >
+            {() => <Text isBold>{hostname}</Text>}
+          </Interpolate>
+        </Content>
+      )}
+      <Content component="small">
+        <Interpolate
+          sentence={
+            // TRANSLATORS: text in square brackets is the section name and will be
+            // rendered as a link. Keep the brackets
+            _("To change it, visit the [hostname] section before registering.")
+          }
+        >
+          {(section) => (
+            <Link variant="link" to={SYSTEM.root} isInline>
+              {section}
+            </Link>
+          )}
+        </Interpolate>
+      </Content>
     </Alert>
   );
 };
@@ -511,29 +213,20 @@ const Extensions = () => {
   );
 };
 
-const RegistrationIssueAlert = ({ issue }: { issue: Issue }) => {
-  return (
-    <Alert variant="warning" title={issue.description}>
-      {issue.details && <p>{issue.details}</p>}
-    </Alert>
-  );
-};
-
 export default function ProductRegistrationPage() {
   const { registration } = useSystem();
   const issues = useIssues("product");
   const registrationIssue = issues.find((i) => i.class === "system_registration_failed");
+  const nonRegistrationIssues = issues.filter((i) => i.class !== "system_registration_failed");
+  // Avoid repeating the alert after registration attempt
+  const showHostnameAlert = !registration && !registrationIssue;
 
   return (
-    <Page breadcrumbs={[{ label: _("Registration") }]} progress={{ scope: "software" }}>
+    <Page breadcrumbs={[{ label: _("Registration") }]}>
       <Page.Content>
-        {!registration && <HostnameAlert />}
-        {registrationIssue ? (
-          <RegistrationIssueAlert issue={registrationIssue} />
-        ) : (
-          <IssuesAlert issues={issues} />
-        )}
-        {!registration ? <RegistrationFormSection /> : <RegisteredProductSection />}
+        {showHostnameAlert && <HostnameAlert />}
+        {!registration && <IssuesAlert issues={nonRegistrationIssues} />}
+        {!registration ? <ProductRegistrationForm /> : <RegisteredProductSection />}
         {registration && <Extensions />}
       </Page.Content>
     </Page>
