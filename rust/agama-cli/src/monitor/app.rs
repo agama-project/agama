@@ -125,7 +125,7 @@ pub struct MonitorApp {
 impl MonitorApp {
     /// Updates the installation status.
     pub fn update_status(&mut self, new_status: InstallationStatus) {
-        if (self.stop_on_idle && new_status.is_idle()) || new_status.has_finished() {
+        if self.stop_on_idle && new_status.is_idle() {
             self.exit = true;
         }
         self.status = new_status;

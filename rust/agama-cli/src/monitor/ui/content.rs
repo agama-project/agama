@@ -279,7 +279,7 @@ impl Widget for Content<'_> {
     /// 5. The list of issues if any.
     /// 6. A default message informing the user that Agama is ready.
     fn render(self, area: Rect, buf: &mut Buffer) {
-        if self.status.status.stage.is_last() {
+        if self.status.has_finished() {
             self.render_final_status(area, buf);
         } else if !self.status.questions.is_empty() {
             self.render_questions(area, buf);
