@@ -32,7 +32,7 @@ jest.mock("~/hooks/model/progress", () => ({
 }));
 
 const mockConnection: Connection = new Connection("Network 1", {
-  state: ConnectionState.activated,
+  state: ConnectionState.ACTIVATED,
 });
 
 jest.mock("~/components/network/ConnectionDetails", () => () => <div>ConnectionDetails Mock</div>);

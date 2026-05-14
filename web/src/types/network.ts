@@ -109,10 +109,11 @@ enum ConnectionStatus {
 
 // Current state of the connection.
 enum ConnectionState {
-  activating = "activating",
-  activated = "activated",
-  deactivating = "deactivating",
-  deactivated = "deactivated",
+  UNKNOWN = "unknown",
+  ACTIVATING = "activating",
+  ACTIVATED = "activated",
+  DEACTIVATING = "deactivating",
+  DEACTIVATED = "deactivated",
 }
 
 enum ConnectionMethod {
@@ -284,7 +285,7 @@ type APIConnection = {
   method6?: string;
   wireless?: Wireless;
   status: ConnectionStatus;
-  state: ConnectionState;
+  state?: ConnectionState;
   persistent: boolean;
 };
 
@@ -359,7 +360,7 @@ type ConnectionOptions = {
 class Connection {
   id: string;
   status: ConnectionStatus = ConnectionStatus.UP;
-  state: ConnectionState;
+  state?: ConnectionState;
   iface: string;
   macAddress?: string;
   addresses: IPAddress[] = [];
@@ -385,13 +386,12 @@ class Connection {
   }
 
   static fromApi(connection: APIConnection) {
-    const { id, status, interface: iface, ...options } = connection;
+    const { id, interface: iface, ...options } = connection;
     const nameservers = connection.nameservers || [];
     const dnsSearchList = connection.dnsSearchList || [];
     const addresses = connection.addresses?.map(buildAddress) || [];
     const conn = new Connection(id, {
       ...options,
-      status,
       // FIXME: try a better approach for methods/gateway and/or typecasting
       method4: options.method4 as ConnectionMethod,
       method6: options.method6 as ConnectionMethod,
@@ -416,7 +416,7 @@ class Connection {
   }
 
   toApi() {
-    const { iface, addresses, ...newConnection } = this;
+    const { iface, addresses, state, ...newConnection } = this;
     const result: APIConnection = {
       ...newConnection,
       interface: iface,

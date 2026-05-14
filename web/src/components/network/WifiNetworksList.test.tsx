@@ -81,7 +81,7 @@ describe.skip("WifiNetworksList", () => {
             ssid: "Network 2",
             mode: "infrastructure",
           },
-          state: ConnectionState.activating,
+          state: ConnectionState.ACTIVATING,
         }),
       ];
 
@@ -158,7 +158,7 @@ describe.skip("WifiNetworksList", () => {
               ssid: "Network 2",
               mode: "infrastructure",
             },
-            state: ConnectionState.activating,
+            state: ConnectionState.ACTIVATING,
             persistent: true,
           }),
         ];
@@ -197,7 +197,7 @@ describe.skip("WifiNetworksList", () => {
               ssid: "Network 2",
               mode: "infrastructure",
             },
-            state: ConnectionState.activating,
+            state: ConnectionState.ACTIVATING,
             persistent: false,
           }),
         ];

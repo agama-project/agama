@@ -51,7 +51,7 @@ const mockDevice: Device = {
 };
 
 let mockConnection: Connection = new Connection("Network 1", {
-  state: ConnectionState.activated,
+  state: ConnectionState.ACTIVATED,
 });
 
 const mockMutation = jest.fn(() => Promise.resolve());
@@ -157,7 +157,7 @@ describe("BindingSettingsForm", () => {
   describe("when the connection is bound by device name", () => {
     beforeEach(() => {
       mockConnection = new Connection("Network 1", {
-        state: ConnectionState.activated,
+        state: ConnectionState.ACTIVATED,
         iface: "enp1s0",
       });
     });
@@ -175,7 +175,7 @@ describe("BindingSettingsForm", () => {
   describe("when connection is bound MAC address", () => {
     beforeEach(() => {
       mockConnection = new Connection("Network 1", {
-        state: ConnectionState.activated,
+        state: ConnectionState.ACTIVATED,
         macAddress: "52:54:00:46:2A:F9",
       });
     });
