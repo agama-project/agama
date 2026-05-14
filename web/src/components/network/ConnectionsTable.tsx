@@ -205,7 +205,7 @@ const createColumns = (devices: Device[]) => [
 export default function ConnectionsTable() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const devices = useDevices();
-  const { state: systemState, connections } = useSystem();
+  const { state: systemState, connections = [] } = useSystem();
   const { mutateAsync: mutateConnection } = useConnectionMutation();
   const navigate = useNavigate();
 

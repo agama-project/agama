@@ -56,11 +56,11 @@ const mockDevices = [
 ];
 
 jest.mock("~/hooks/model/config/network", () => ({
-  useConnections: () => mockConnections,
   useConnectionMutation: () => ({ mutateAsync: mockMutateAsync }),
 }));
 
 jest.mock("~/hooks/model/system/network", () => ({
+  useConnections: () => mockConnections,
   useDevices: () => mockDevices,
   useSystem: () => ({ state: { wirelessEnabled: true } }),
 }));
