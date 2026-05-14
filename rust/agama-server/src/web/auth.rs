@@ -22,7 +22,6 @@
 
 use super::state::ServiceState;
 use agama_lib::auth::{AuthToken, AuthTokenError, TokenClaims};
-use async_trait::async_trait;
 use axum::{
     extract::FromRequestParts,
     http::{request, StatusCode},
@@ -60,7 +59,6 @@ impl IntoResponse for AuthError {
     }
 }
 
-#[async_trait]
 impl FromRequestParts<ServiceState> for TokenClaims {
     type Rejection = AuthError;
 

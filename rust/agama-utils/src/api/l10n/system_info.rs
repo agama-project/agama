@@ -20,14 +20,15 @@
 
 use agama_locale_data::{KeymapId, LocaleId, TimezoneId};
 use gettextrs::dgettext;
+use schemars::JsonSchema;
 use serde::ser::SerializeStruct;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
 /// Localization-related information of the system where the installer is running.
 #[serde_as]
-#[derive(Clone, Default, Debug, Serialize, utoipa::ToSchema)]
-#[schema(as = l10n::SystemInfo)]
+#[derive(Clone, Default, Debug, Serialize, JsonSchema)]
+#[schemars(rename = "l10n.SystemInfo")]
 pub struct SystemInfo {
     /// List of know locales.
     pub locales: Vec<LocaleEntry>,
@@ -37,21 +38,25 @@ pub struct SystemInfo {
     pub keymaps: Vec<Keymap>,
     /// Locale of the system where Agama is running.
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub locale: LocaleId,
     /// Keymap of the system where Agama is running.
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub keymap: KeymapId,
     /// Timezone of the system where Agama is running.
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub timezone: TimezoneId,
 }
 
 /// Represents a locale, including the localized language and territory.
 #[serde_as]
-#[derive(Debug, Serialize, Clone, utoipa::ToSchema, PartialEq, Eq)]
+#[derive(Debug, Serialize, Clone, JsonSchema, PartialEq, Eq)]
 pub struct LocaleEntry {
     /// The locale code (e.g., "es_ES.UTF-8").
     #[serde_as(as = "DisplayFromStr")]
+    #[schemars(with = "String")]
     pub id: LocaleId,
     /// Localized language name (e.g., "Spanish", "Español", etc.)
     pub language: String,
@@ -78,7 +83,7 @@ impl PartialOrd for LocaleEntry {
 }
 
 /// Represents a timezone, including each part as localized.
-#[derive(Clone, Debug, Serialize, utoipa::ToSchema, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, JsonSchema, PartialEq, Eq)]
 pub struct TimezoneEntry {
     /// Timezone identifier (e.g. "Atlantic/Canary").
     pub id: TimezoneId,
@@ -104,7 +109,7 @@ impl PartialOrd for TimezoneEntry {
 }
 
 // Minimal representation of a keymap
-#[derive(Clone, Debug, utoipa::ToSchema, PartialEq, Eq)]
+#[derive(Clone, Debug, JsonSchema, PartialEq, Eq)]
 pub struct Keymap {
     /// Keymap identifier (e.g., "us")
     pub id: KeymapId,

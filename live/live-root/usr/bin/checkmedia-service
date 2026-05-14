@@ -4,16 +4,24 @@
 
 # get the partition where the live ISO is mounted, the real name is set by the
 # config.sh script which gets the live partition label name from KIWI
-disk=$(blkid -L "@@LIVE_MEDIUM_LABEL@@")
+label="@@LIVE_MEDIUM_LABEL@@"
+disk="/dev/disk/by-label/$label"
 
-if [ -z "$disk" ]; then
-  echo -e "\e[31mPartition \"@@LIVE_MEDIUM_LABEL@@\" not found, skipping media check\e[0m"
+if [ -b "$disk" ]; then
+  # when booting from disk/USB flash checkmedia expects the device name, not the partition
+  # get the parent device if there is any
+  parent=$(lsblk --noheadings --output PKNAME "$disk")
+  [ -b "/dev/$parent" ] && disk="/dev/$parent"
+fi
+
+if [ ! -b "$disk" ]; then
+  echo -e "\e[31mPartition \"$label\" not found, skipping media check\e[0m"
   read -n1 -s -p "Press any key to continue... "
   echo
   exit 0
 fi
 
-echo "Checking data integrity of device $disk (@@LIVE_MEDIUM_LABEL@@)..."
+echo "Checking data integrity of device $disk ($label))..."
 
 if checkmedia -v "$disk"; then
   echo -e "\e[32mMedium check succeeded\e[0m"

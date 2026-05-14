@@ -550,7 +550,21 @@
   { "key": "nfs_server", "support": "no" },
   { "key": "nis", "support": "no" },
   { "key": "nis_server", "support": "no" },
-  { "key": "ntp-client", "support": "no" },
+  {
+    "key": "ntp-client",
+    "children": [
+      { "key": "ntp_policy", "support": "no" },
+      { "key": "ntp_servers[]",
+        "notes": "All servers are considered of type 'pool'",
+        "children": [
+          { "key": "address", "support": "yes" },
+          { "key": "iburst", "support": "yes" },
+          { "key": "offline", "support": "yes" }
+        ]
+      },
+      { "key": "ntp_sync", "support": "no" }
+    ]
+  },
   { "key": "printer", "support": "no" },
   {
     "key": "proxy",

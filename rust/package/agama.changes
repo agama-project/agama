@@ -1,4 +1,132 @@
 -------------------------------------------------------------------
+Thu May 14 09:02:02 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Replace the user interface of the "agama monitor" command with
+  a new version (gh#agama-project/agama#3443).
+
+-------------------------------------------------------------------
+Wed May 13 11:54:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Allow setting the NTP configuration from the kernel command-line
+  (gh#agama-project/agama#3488).
+
+-------------------------------------------------------------------
+Tue May 12 10:17:19 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add new popup when package installation failed if user wants
+  to retry it. (gh#agama-project/agama#3484)
+
+-------------------------------------------------------------------
+Fri May  8 12:36:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Move product availability issues to software scope
+  (gh#agama-project/agama#3456).
+
+-------------------------------------------------------------------
+Thu May  7 10:56:21 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Improved saving libzypp service (related to bsc#1261351)
+
+-------------------------------------------------------------------
+Thu May  7 09:50:03 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve handling of updates in the "agama monitor" command
+  (gh#agama-project/agama#3470).
+
+-------------------------------------------------------------------
+Thu May  7 06:03:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for synchronizing and configuring the NTP service
+  using an Agama configuration file (jsc#PED-15144).
+
+-------------------------------------------------------------------
+Wed May  6 08:54:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- HTTP API:
+  - remove v2 part of path
+  - add new X-API-Version response header with value 2
+  - move /profile path to /private/profile
+  (gh#agama-project/agama#3461)
+
+-------------------------------------------------------------------
+Mon May  4 10:46:08 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix zypp tests to work with new rpm with more tight permissions
+  (bsc#1254914)
+
+-------------------------------------------------------------------
+Thu Apr 30 09:04:17 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: add new `agama status` command that prints current state of
+  agama with textual or json output format
+  (gh#agama-project/agama#3442)
+
+-------------------------------------------------------------------
+Tue Apr 28 11:02:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the path to the /private/resolvables/{id} endpoint (bsc#1262995).
+
+-------------------------------------------------------------------
+Mon Apr 27 16:12:45 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Prefer local media to download (gh#agama-project/agama#3405),
+  when registering the system using the Full medium prefer the
+  packages from DVD to avoid downloading them from SCC, use the
+  DVD as a local cache
+
+-------------------------------------------------------------------
+Fri Apr 24 14:16:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Expose the product-level `desktop_selection` option and the
+  pattern-level `desktop` property through the API so the web UI
+  can group desktop environments and alert when none is picked
+  (gh#agama-project/agama#3390, gh#agama-project/agama#3403).
+
+-------------------------------------------------------------------
+Fri Apr 24 08:37:21 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend the OpenAPI specification (gh#agama-project/agama#3414):
+  - Add missing summaries, operation IDs and descriptions to each
+    path.
+  - Use tags to classify the paths.
+  - Add missing schemas.
+  - Add authentication paths and security the specification.
+  - Update "cargo xtask openapi" to generate the specification in
+    JSON and YAML formats.
+  - Replace utoipa with aide to generate the documentation.
+
+-------------------------------------------------------------------
+Tue Apr 21 07:27:36 UTC 2026 - Clemens Famulla-Conrad <cfamullaconrad@suse.com>
+
+- network: Add ignore_auto_routes[46] and never_default[46]
+  (gh#agama-project/agama#3404)
+
+-------------------------------------------------------------------
+Mon Apr 20 11:00:37 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Properly initialize the GPG callbacks during registration so the
+  PackageHub GPG key can be imported from the autoinstallation
+  profile (bsc#1261351)
+
+-------------------------------------------------------------------
+Mon Apr 20 09:35:34 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Drop dead code (gh#agama-project/agama#3402).
+
+-------------------------------------------------------------------
+Fri Apr 17 16:56:48 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- CLI: improve `agama monitor` command to be able to show blocking
+  issues or waiting for questions. Also command now ends when
+  installation finishes. (gh#agama-project/agama#3377)
+
+-------------------------------------------------------------------
+Fri Apr 17 10:29:38 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add support for pervasive encryption options in storage
+  configuration schema (gh#agama-project/agama#3384).
+
+-------------------------------------------------------------------
 Wed Apr 15 07:25:18 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Copy the Agama systemd network link files for renaming devices

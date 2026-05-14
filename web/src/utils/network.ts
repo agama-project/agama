@@ -28,11 +28,71 @@ import {
   ApSecurityFlags,
   Connection,
   ConnectionBindingMode,
+  ConnectionType,
   Device,
   IPAddress,
   Route,
   SecurityProtocols,
 } from "~/types/network";
+import { _, N_ } from "~/i18n";
+
+/**
+ * Connection type constants.
+ *
+ * TypeScript enforces that all values match the ConnectionType union.
+ */
+export const CONNECTION_TYPE = {
+  ETHERNET: "ethernet",
+  WIFI: "wireless",
+  LOOPBACK: "loopback",
+  BOND: "bond",
+  BRIDGE: "bridge",
+  VLAN: "vlan",
+  UNKNOWN: "unknown",
+} as const;
+
+/**
+ * Returns true if the given connection type is virtual.
+ */
+const isVirtual = (type: ConnectionType): boolean =>
+  (
+    [CONNECTION_TYPE.BOND, CONNECTION_TYPE.BRIDGE, CONNECTION_TYPE.VLAN] as ConnectionType[]
+  ).includes(type);
+
+/**
+ * Translatable labels for connection types.
+ */
+const CONNECTION_TYPE_LABELS: Record<ConnectionType, string> = {
+  [CONNECTION_TYPE.ETHERNET]: N_("Ethernet"),
+  [CONNECTION_TYPE.WIFI]: N_("Wi-Fi"),
+  [CONNECTION_TYPE.LOOPBACK]: N_("Loopback"),
+  [CONNECTION_TYPE.BOND]: N_("Bond"),
+  [CONNECTION_TYPE.BRIDGE]: N_("Bridge"),
+  [CONNECTION_TYPE.VLAN]: N_("VLAN"),
+  [CONNECTION_TYPE.UNKNOWN]: N_("Unknown"),
+};
+
+/**
+ * Returns the translated label for a connection type.
+ */
+// eslint-disable-next-line agama-i18n/string-literals
+const connectionTypeLabel = (type: ConnectionType): string => _(CONNECTION_TYPE_LABELS[type]);
+
+/**
+ * Returns the type for the given connection.
+ */
+const connectionType = (connection: Connection): ConnectionType => {
+  const { wireless, bond, bridge } = connection;
+  if (wireless) {
+    return CONNECTION_TYPE.WIFI;
+  } else if (bond) {
+    return CONNECTION_TYPE.BOND;
+  } else if (bridge) {
+    return CONNECTION_TYPE.BRIDGE;
+  } else {
+    return CONNECTION_TYPE.ETHERNET;
+  }
+};
 
 /**
  * Check if an IP is valid
@@ -337,11 +397,14 @@ export {
   buildRoutes,
   connectionAddresses,
   connectionBindingMode,
+  connectionType,
+  connectionTypeLabel,
   ensureIPPrefix,
   formatIp,
   generateConnectionName,
   intToIPString,
   ipPrefixFor,
+  isVirtual,
   isValidIp,
   isValidIpPrefix,
   securityFromFlags,

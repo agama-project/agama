@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -22,9 +22,10 @@ use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
-        self,
+        self, l10n,
+        question::QuestionSpec,
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
-        Issue, Scope,
+        Issue, Progress, Scope,
     },
     helpers::copy_dir_all,
     kernel_cmdline::KernelCmdline,
@@ -41,7 +42,7 @@ use tokio::sync::{
 use zypp_agama::{errors::ZyppResult, ZyppError};
 
 use crate::{
-    callbacks,
+    callbacks::{self, ask_software_question},
     model::{
         registration::RegistrationError,
         state::{self, SoftwareState},
@@ -120,6 +121,7 @@ pub enum SoftwareAction {
     Write {
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        l10n: Option<l10n::Proposal>,
         question: Handler<question::Service>,
         security: Handler<security::Service>,
         tx: oneshot::Sender<ZyppServerResult<WriteIssues>>,
@@ -226,6 +228,7 @@ impl ZyppServer {
             SoftwareAction::Write {
                 state,
                 progress,
+                l10n,
                 question,
                 security: security_srv,
                 tx,
@@ -234,6 +237,7 @@ impl ZyppServer {
                 self.write(
                     state,
                     progress,
+                    l10n,
                     question,
                     security_srv,
                     &mut security_callback,
@@ -270,26 +274,48 @@ impl ZyppServer {
         let mut download_callback =
             callbacks::CommitDownload::new(progress.clone(), question.clone());
         let mut install_callback = callbacks::Install::new(progress.clone(), question.clone());
-        let mut security_callback = callbacks::Security::new(question);
+        let mut security_callback = callbacks::Security::new(question.clone());
         security_callback.set_trusted_gpg_keys(self.trusted_keys.clone());
         security_callback.set_unsigned_repos(self.unsigned_repos.clone());
 
         let packages_count = zypp.packages_count();
         // use packages count *2 as we need to download package and also install it
         let steps = (packages_count * 2) as usize;
-        let _ = progress.cast(progress::message::Start::new(
-            Scope::Software,
-            steps,
-            "Starting packages installation",
-        ));
 
         zypp.switch_target(self.install_dir.as_ref())?;
-        let result = zypp.commit(
-            &mut download_callback,
-            &mut install_callback,
-            &mut security_callback,
-        )?;
-        tracing::info!("libzypp commit ends with {}", result);
+        let mut result;
+        loop {
+            // cast set progress as if we retry it can result in DupliciteProgress
+            let _ = progress.cast(progress::message::SetProgress::new(Progress::new(
+                Scope::Software,
+                steps,
+                gettext("Starting packages installation"),
+            )));
+            result = zypp.commit(
+                &mut download_callback,
+                &mut install_callback,
+                &mut security_callback,
+            )?;
+            tracing::info!("libzypp commit ends with {}", result);
+            if result {
+                break;
+            }
+
+            let text =
+                gettext("Packages download and installation failed. Would you like to retry?");
+            let question_spec =
+                QuestionSpec::new(&text, "software.installation_retry").with_yes_no_actions();
+            // TODO: it would be nice if we can in backend split between auto selected option and focused option
+            // TODO: if needed we would need to extend C API to get more details about failure
+            let answer = ask_software_question(&question, question_spec);
+            // if there is error during asking question, then just consider it as not want to retry
+            let Ok(answer) = answer else {
+                break;
+            };
+            if answer.action == "No" {
+                break;
+            }
+        }
         let res = progress.cast(progress::message::Finish::new(Scope::Software));
         tracing::info!("Software install finished. Progress result {:#?}", res);
         Ok(result)
@@ -321,6 +347,7 @@ impl ZyppServer {
         &mut self,
         state: SoftwareState,
         progress: Handler<progress::Service>,
+        l10n: Option<l10n::Proposal>,
         _questions: Handler<question::Service>,
         security_srv: Handler<security::Service>,
         security: &mut callbacks::Security,
@@ -345,7 +372,13 @@ impl ZyppServer {
         // TODO: add information about the current registration state
         let old_state = self.read(zypp)?;
         if let Some(registration_config) = &state.registration {
-            self.update_registration(registration_config, zypp, &security_srv, &mut issues);
+            self.update_registration(
+                registration_config,
+                zypp,
+                security,
+                &security_srv,
+                &mut issues,
+            );
 
             if !issues.is_empty() {
                 return Self::send_issues_and_finish(issues, tx, progress);
@@ -450,17 +483,16 @@ impl ZyppServer {
                 &state.product,
                 &error
             );
-            if state.allow_registration && !self.is_registered() {
+
+            let issue = if state.allow_registration && !self.is_registered() {
                 let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
-                let issue =
-                    Issue::new("missing_registration", &message).with_details(&error.to_string());
-                issues.product.push(issue);
+                Issue::new("missing_registration", &message).with_details(&error.to_string())
             } else {
                 let message = gettext("Failed to find the product in the repositories.");
-                let issue =
-                    Issue::new("missing_product", &message).with_details(&error.to_string());
-                issues.software.push(issue);
+                Issue::new("missing_product", &message).with_details(&error.to_string())
             };
+
+            issues.software.push(issue);
 
             return Self::send_issues_and_finish(issues, tx, progress);
         }
@@ -489,6 +521,11 @@ impl ZyppServer {
                 // by dependencies
                 ResolvableSelection::Removed => {}
             };
+        }
+
+        if let Some(proposal) = l10n {
+            let locale = proposal.locale;
+            zypp.select_locale(locale.language, locale.territory);
         }
 
         // if registered select products from add-on services
@@ -763,11 +800,19 @@ impl ZyppServer {
             .filter(|p| p.preselected())
             .map(|p| p.name())
             .collect();
+        let desktop_patterns: Vec<_> = product
+            .software
+            .user_patterns
+            .iter()
+            .filter(|p| p.desktop())
+            .map(|p| p.name())
+            .collect();
 
         let patterns = self
             .user_patterns(product, zypp)?
             .map(|p| {
                 let preselected = preselected_patterns.contains(&p.name.as_str());
+                let desktop = desktop_patterns.contains(&p.name.as_str());
                 Pattern {
                     name: p.name,
                     category: p.category,
@@ -776,6 +821,7 @@ impl ZyppServer {
                     summary: p.summary,
                     order: p.order,
                     preselected,
+                    desktop,
                 }
             })
             .collect();
@@ -903,18 +949,19 @@ impl ZyppServer {
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        security: &mut callbacks::Security,
         security_srv: &Handler<security::Service>,
         issues: &mut WriteIssues,
     ) {
         match &self.registration {
             RegistrationStatus::Failed(_) | RegistrationStatus::NotRegistered => {
-                self.register_base_system(state, zypp, security_srv, issues);
+                self.register_base_system(state, zypp, security, security_srv, issues);
             }
             RegistrationStatus::Registered(_) => {}
         };
 
         if !state.addons.is_empty() {
-            self.register_addons(&state.addons, zypp, issues);
+            self.register_addons(&state.addons, zypp, security, issues);
         }
     }
 
@@ -922,6 +969,7 @@ impl ZyppServer {
         &mut self,
         state: &RegistrationState,
         zypp: &zypp_agama::Zypp,
+        security: &mut callbacks::Security,
         security_srv: &Handler<security::Service>,
         issues: &mut WriteIssues,
     ) {
@@ -940,7 +988,7 @@ impl ZyppServer {
             registration = registration.with_url(url);
         }
 
-        match registration.register(zypp, security_srv) {
+        match registration.register(zypp, security, security_srv) {
             Ok(registration) => {
                 self.registration = RegistrationStatus::Registered(Box::new(registration));
             }
@@ -961,6 +1009,7 @@ impl ZyppServer {
         &mut self,
         addons: &Vec<Addon>,
         zypp: &zypp_agama::Zypp,
+        security: &mut callbacks::Security,
         issues: &mut WriteIssues,
     ) {
         let RegistrationStatus::Registered(registration) = &mut self.registration else {
@@ -973,7 +1022,7 @@ impl ZyppServer {
                 tracing::info!("Skipping already registered add-on {}", &addon.id);
                 continue;
             }
-            if let Err(error) = registration.register_addon(zypp, addon) {
+            if let Err(error) = registration.register_addon(zypp, security, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
                 let issue_id = format!("addon_registration_failed[{}]", &addon.id);
                 let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());

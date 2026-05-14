@@ -71,7 +71,9 @@ module Agama
           # @return [Hash]
           def pervasive_luks2_properties_conversions
             {
-              password: config.password
+              password: config.password,
+              apqns:    config.apqns,
+              keyType:  config.pervasive_key_type
             }
           end
 

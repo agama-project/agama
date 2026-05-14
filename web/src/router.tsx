@@ -30,7 +30,7 @@ import InstallationFinished from "~/components/core/InstallationFinished";
 import InstallationProgress from "~/components/core/InstallationProgress";
 import LoginPage from "~/components/core/LoginPage";
 import OverviewPage from "~/components/overview/OverviewPage";
-import HostnamePage from "~/components/system/HostnamePage";
+import SystemPage from "~/components/system/SystemPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";
@@ -38,7 +38,7 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { HOSTNAME, ROOT as PATHS } from "./routes/paths";
+import { SYSTEM, ROOT as PATHS } from "./routes/paths";
 import { N_ } from "~/i18n";
 
 const rootRoutes = () => [
@@ -47,9 +47,9 @@ const rootRoutes = () => [
     element: <OverviewPage />,
   },
   {
-    path: HOSTNAME.root,
-    element: <HostnamePage />,
-    handle: { name: N_("Hostname"), icon: "fingerprint" },
+    path: SYSTEM.root,
+    element: <SystemPage />,
+    handle: { name: N_("System"), icon: "server" },
   },
   registrationRoutes(),
   l10nRoutes(),

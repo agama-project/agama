@@ -4,9 +4,13 @@ version = "0.1.0"
 rust-version.workspace = true
 edition.workspace = true
 
+[features]
+default = ["curl"]
+curl = ["dep:agama-transfer"]
+
 [dependencies]
 agama-locale-data = { path = "../agama-locale-data" }
-agama-transfer = { path = "../agama-transfer" }
+agama-transfer = { path = "../agama-transfer", optional = true }
 anyhow = { version = "1.0.98" }
 async-trait = "0.1.89"
 camino = "1.2.1"
@@ -16,7 +20,7 @@ serde_with = "3.14.0"
 strum = { version = "0.27.2", features = ["derive"] }
 thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "process", "sync", "time"] }
-utoipa = { version = "5.3.1", features = ["url"] }
+schemars = { version = "1.2.1", features = ["url2"] }
 zbus = "5.7.1"
 zvariant = "5.5.2"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }

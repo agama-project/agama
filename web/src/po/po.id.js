@@ -15,6 +15,12 @@ export default {
   "%1$d of %2$d devices match filters": [
     "%1$d dari %2$d perangkat cocok dengan filter"
   ],
+  "%1$d of %2$d patterns": [
+    "%1$d dari %2$d pola"
+  ],
+  "%1$d of %2$d selected": [
+    "%1$d dari %2$d dipilih"
+  ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
@@ -45,8 +51,32 @@ export default {
   "%d connections available": [
     "%d koneksi tersedia"
   ],
+  "%d desktop selected": [
+    "%d desktop dipilih"
+  ],
   "%d devices available": [
     "%d perangkat tersedia"
+  ],
+  "%d duplicates skipped.": [
+    "%d duplikat dilewati."
+  ],
+  "%d entries added, %d duplicates skipped.": [
+    "%d entri ditambahkan, %d duplikat dilewati."
+  ],
+  "%d entries added, %d invalid, %d duplicates skipped.": [
+    "%d entri ditambahkan, %d tidak valid, %d duplikat dilewati."
+  ],
+  "%d entries added, %d invalid.": [
+    "%d entri ditambahkan, %d tidak valid."
+  ],
+  "%d entries added.": [
+    "%d entri ditambahkan."
+  ],
+  "%d invalid entries removed.": [
+    "%d entri tidak valid dihapus."
+  ],
+  "%d matches the filter": [
+    "%d cocok dengan filter"
   ],
   "%d mode available": [
     "%d mode tersedia"
@@ -54,8 +84,20 @@ export default {
   "%d other mode available": [
     "%d mode lain tersedia"
   ],
+  "%d pattern found": [
+    "%d pola ditemukan"
+  ],
   "%s - %s": [
     "%s - %s"
+  ],
+  "%s added but is invalid: %s. Select to edit.": [
+    "%s ditambahkan tetapi tidak valid: %s. Pilih untuk mengedit."
+  ],
+  "%s added.": [
+    "%s ditambahkan."
+  ],
+  "%s already exists, skipped.": [
+    "%s sudah ada, dilewati."
   ],
   "%s and %d others": [
     "%s dan %d lainnya"
@@ -69,11 +111,23 @@ export default {
   "%s disk": [
     "%s diska"
   ],
+  "%s entries": [
+    "%s entri"
+  ],
   "%s has been registered with below information.": [
     "%s telah terdaftar dengan informasi di bawah ini."
   ],
+  "%s is invalid: %s": [
+    "%s tidak valid: %s"
+  ],
   "%s logo": [
     "logo %s"
+  ],
+  "%s moved to input for editing.": [
+    "%s dipindahkan ke input untuk diedit."
+  ],
+  "%s removed.": [
+    "%s dihapus."
   ],
   "%s task active": [
     "%s tugas aktif"
@@ -81,20 +135,23 @@ export default {
   "%s will be created as a logical volume": [
     "%s akan dibuat sebagai volume logis"
   ],
+  "%s will be created as a partition": [
+    "%s akan dibuat sebagai partisi"
+  ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
     "%s masih akan berisi grup LVM yang dikonfigurasi dan partisi apa pun yang diperlukan untuk booting"
   ],
   "%s with %d partitions": [
     "%s dengan partisi %d"
   ],
-  "(bind by name)": [
-    "(ikat berdasarkan nama)"
-  ],
   "(bound by MAC)": [
     "(terikat berdasarkan MAC)"
   ],
   "(bound by name)": [
     "(terikat berdasarkan nama)"
+  ],
+  "(optional)": [
+    "(opsional)"
   ],
   "(step %s of %s)": [
     "(langkah %s dari %s)"
@@ -123,11 +180,20 @@ export default {
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Rentang ukuran umum antara %1$s dan %2$s akan digunakan untuk %3$s yang baru"
   ],
+  "A logical volume may be deleted": [
+    "Sebuah volume logis mungkin akan dihapus"
+  ],
+  "A logical volume may be shrunk": [
+    "Sebuah volume logis mungkin akan diperkecil"
+  ],
+  "A logical volume will be deleted": [
+    "Sebuah volume logis akan dihapus"
+  ],
+  "A new logical volume will be created for %s": [
+    "Volume logis baru akan dibuat untuk %s"
+  ],
   "A new partition will be created for %s": [
     "Partisi baru akan dibuat untuk %s"
-  ],
-  "A new volume will be created for %s": [
-    "Volume baru akan dibuat untuk %s"
   ],
   "A partition may be deleted": [
     "Sebuah partisi dapat dihapus"
@@ -177,26 +243,14 @@ export default {
   "Add": [
     "Tambahkan"
   ],
-  "Add DNS": [
-    "Tambahkan DNS"
+  "Add %s": [
+    "Tambahkan %s"
   ],
   "Add LVM volume group": [
     "Tambahkan grup volume LVM"
   ],
   "Add a partition or mount an existing one": [
     "Tambahkan partisi atau mount partisi yang sudah ada"
-  ],
-  "Add an address": [
-    "Tambahkan alamat"
-  ],
-  "Add another DNS": [
-    "Tambahkan DNS lain"
-  ],
-  "Add another address": [
-    "Tambahkan alamat lain"
-  ],
-  "Add another search domain": [
-    "Tambahkan domain pencarian lain"
   ],
   "Add connection": [
     "Tambahkan koneksi"
@@ -207,23 +261,23 @@ export default {
   "Add logical volume": [
     "Tambahkan volume logis"
   ],
+  "Add or use logical volume": [
+    "Tambahkan atau gunakan volume logis"
+  ],
   "Add or use partition": [
     "Tambahkan atau gunakan partisi"
-  ],
-  "Add search domain": [
-    "Tambahkan domain pencarian"
   ],
   "Additional CHAP authentication performed by the initiator": [
     "Autentikasi CHAP tambahan dilakukan oleh initiator"
   ],
+  "Additional patterns": [
+    "Pola tambahan"
+  ],
   "Address": [
     "Alamat"
   ],
-  "Addresses": [
-    "Alamat"
-  ],
-  "Addresses data list": [
-    "Daftar data alamat"
+  "Address and gateway assigned from the network": [
+    "Alamat dan gateway ditetapkan dari jaringan"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
     "Sesuaikan pengaturan di bawah ini agar sistem baru dapat disesuaikan dengan ruang yang tersedia."
@@ -261,8 +315,17 @@ export default {
   "Already using all available disks": [
     "Sudah menggunakan semua disk yang tersedia"
   ],
+  "An existing logical volume will be used for %s": [
+    "Volume logis yang sudah ada akan digunakan untuk %s"
+  ],
   "An existing partition will be used for %s": [
     "Partisi yang sudah ada akan digunakan untuk %s"
+  ],
+  "Any": [
+    "Semua"
+  ],
+  "Any existing logical volume will be removed and all data in the volume group will be lost.": [
+    "Semua volume logis yang ada akan dihapus dan semua data dalam grup volume akan hilang."
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Semua partisi yang ada akan dihapus dan semua data di disk akan hilang."
@@ -270,11 +333,29 @@ export default {
   "Any partition needed to boot will be configured.": [
     "Partisi apa pun yang diperlukan untuk booting akan dikonfigurasi."
   ],
+  "As a new logical volume on %s": [
+    "Sebagai volume logis baru pada %s"
+  ],
   "As a new partition on %s": [
     "Sebagai partisi baru di %s"
   ],
-  "At least one address must be provided for selected mode": [
-    "Setidaknya satu alamat harus disediakan untuk mode yang dipilih"
+  "At least one DNS search domain is required": [
+    "Setidaknya satu domain pencarian DNS diperlukan"
+  ],
+  "At least one DNS server is required": [
+    "Setidaknya satu server DNS diperlukan"
+  ],
+  "At least one IPv4 address is required": [
+    "Setidaknya satu alamat IPv4 diperlukan"
+  ],
+  "At least one IPv6 address is required": [
+    "Setidaknya satu alamat IPv6 diperlukan"
+  ],
+  "At least one bond port is required": [
+    "Setidaknya satu port bond diperlukan"
+  ],
+  "At least one logical volume will be deleted": [
+    "Setidaknya satu volume logis akan dihapus"
   ],
   "At least one partition will be deleted": [
     "Setidaknya satu partisi akan dihapus"
@@ -294,14 +375,17 @@ export default {
   "Automatic": [
     "Otomatis"
   ],
-  "Automatic (DHCP)": [
-    "Otomatis (DHCP)"
+  "Automatic + manual": [
+    "Otomatis + manual"
   ],
   "Automatic LUN scan is disabled": [
     "Pemindaian LUN otomatis dinonaktifkan"
   ],
   "Automatic LUN scan is enabled": [
     "Pemindaian LUN otomatis diaktifkan"
+  ],
+  "Available devices: %s": [
+    "Perangkat yang tersedia: %s"
   ],
   "Back": [
     "Kembali"
@@ -345,20 +429,38 @@ export default {
   "BitLocker": [
     "BitLocker"
   ],
+  "Bond": [
+    "Bond"
+  ],
+  "Bond details": [
+    "Detail bond"
+  ],
+  "Bond mode": [
+    "Mode bond"
+  ],
+  "Bond mode is required": [
+    "Mode bond wajib diisi"
+  ],
+  "Bond options": [
+    "Opsi bond"
+  ],
+  "Bond ports": [
+    "Port bond"
+  ],
   "Boot options": [
     "Opsi boot"
   ],
   "Breadcrumbs": [
     "Breadcrumb"
   ],
+  "Bridge": [
+    "Bridge"
+  ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
     "Btrfs dengan snapshot"
-  ],
-  "By proceeding, the installation will begin with defined settings.": [
-    "Dengan melanjutkan, instalasi akan dimulai dengan pengaturan yang telah ditentukan."
   ],
   "CHAP authentication performed by the target": [
     "Autentikasi CHAP dilakukan oleh target"
@@ -390,6 +492,9 @@ export default {
   "Change Language": [
     "Ubah Bahasa"
   ],
+  "Change desktop": [
+    "Ubah desktop"
+  ],
   "Change device menu": [
     "Ubah menu perangkat"
   ],
@@ -411,32 +516,35 @@ export default {
   "Change mode": [
     "Ubah mode"
   ],
+  "Change patterns": [
+    "Ubah pola"
+  ],
   "Change product": [
     "Ubah produk"
   ],
   "Change product or mode": [
     "Ubah produk atau mode"
   ],
-  "Change selection": [
-    "Mengubah pilihan"
+  "Change the device to configure": [
+    "Ubah perangkat untuk dikonfigurasi"
   ],
-  "Change the disk to configure": [
-    "Ganti disk untuk konfigurasi"
+  "Change the device to create %s": [
+    "Ubah perangkat untuk membuat %s"
   ],
-  "Change the disk to create %s": [
-    "Ganti disk untuk membuat %s"
+  "Change the device to format as %s": [
+    "Ubah perangkat untuk diformat sebagai %s"
   ],
-  "Change the disk to format as %s": [
-    "Ganti disk untuk diformat sebagai %s"
-  ],
-  "Change the disk to install the system": [
-    "Ganti disk untuk menginstal sistem"
+  "Change the device to install the system": [
+    "Ubah perangkat untuk menginstal sistem"
   ],
   "Change the file system or mount point": [
     "Ubah sistem berkas atau titik mount"
   ],
   "Change to %s": [
     "Ubah ke %s"
+  ],
+  "Change volume group menu": [
+    "Menu grup volume ubah"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Perubahan pada pengaturan ini akan segera memperbarui bagian 'Hasil' di bawah ini."
@@ -450,14 +558,23 @@ export default {
   "Check whether Agama server is running.": [
     "Periksa apakah server Agama sedang berjalan."
   ],
+  "Choose a RAID device to define partitions or to mount": [
+    "Pilih perangkat RAID untuk mendefinisikan partisi atau untuk dipasang"
+  ],
   "Choose a disk for placing the boot loader": [
     "Pilih disk untuk menempatkan boot loader"
+  ],
+  "Choose a disk to define partitions or to mount": [
+    "Pilih disk untuk mendefinisikan partisi atau untuk dipasang"
   ],
   "Choose a mode": [
     "Pilih mode"
   ],
   "Choose a product": [
     "Pilih dari %d produk yang tersedia"
+  ],
+  "Choose a volume group to define logical volumes": [
+    "Pilih grup volume untuk mendefinisikan volume logis"
   ],
   "Choose device to bind by MAC": [
     "Pilih perangkat untuk diikat berdasarkan MAC"
@@ -467,6 +584,12 @@ export default {
   ],
   "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
     "Pilih cara koneksi harus dihubungkan dengan perangkat jaringan. Hal ini membantu mengontrol perangkat mana yang digunakan oleh koneksi tersebut."
+  ],
+  "Chosen by MAC": [
+    "Dipilih berdasarkan MAC"
+  ],
+  "Chosen by name": [
+    "Dipilih berdasarkan nama"
   ],
   "Clear": [
     "Hapus"
@@ -482,6 +605,9 @@ export default {
   ],
   "Close": [
     "Tutup"
+  ],
+  "Configuration from the network plus static addresses and gateway": [
+    "Konfigurasi dari jaringan ditambah alamat statis dan gateway"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Konfigurasi dibaca dari iSCSI Boot Firmware Table (iBFT). Initiator tidak dapat diubah."
@@ -509,6 +635,9 @@ export default {
   ],
   "Configure logical volume": [
     "Konfigurasi volume logis"
+  ],
+  "Configure logical volume at %s": [
+    "Konfigurasikan volume logis di %s"
   ],
   "Configure partition": [
     "Konfigurasi partisi"
@@ -545,6 +674,9 @@ export default {
   ],
   "Confirm the product selection.": [
     "Konfirmasi pemilihan produk."
+  ],
+  "Confirming starts the installation immediately with the defined settings.": [
+    "Dengan mengonfirmasi, proses instalasi akan segera dimulai dengan pengaturan yang telah ditentukan."
   ],
   "Connect": [
     "Sambungkan"
@@ -585,6 +717,9 @@ export default {
   "Connection is bound to device %s.": [
     "Koneksi terhubung ke perangkat %s."
   ],
+  "Connection not found": [
+    "Koneksi tidak ditemukan"
+  ],
   "Connection not found or lost": [
     "Koneksi tidak ditemukan atau terputus"
   ],
@@ -612,6 +747,9 @@ export default {
   "Create user": [
     "Membuat pengguna"
   ],
+  "Curated sets of packages for common use cases and features to extend the system.": [
+    "Kumpulan paket yang dikurasi untuk kasus penggunaan umum dan fitur untuk memperluas sistem."
+  ],
   "Current %1$s at %2$s": [
     "Saat ini %1$s di %2$s"
   ],
@@ -620,6 +758,9 @@ export default {
   ],
   "Current content": [
     "Konten saat ini"
+  ],
+  "Current logical volumes will be kept": [
+    "Volume logis saat ini akan dipertahankan"
   ],
   "Current partitions will be kept": [
     "Partisi saat ini akan tetap dipertahankan"
@@ -648,8 +789,11 @@ export default {
   "DNS": [
     "DNS"
   ],
-  "DNS Search List": [
-    "Daftar Domain Pencarian DNS"
+  "DNS search domains": [
+    "Domain pencarian DNS"
+  ],
+  "DNS servers": [
+    "Server DNS"
   ],
   "Deactivate": [
     "Nonaktifkan"
@@ -657,10 +801,13 @@ export default {
   "Deactivated": [
     "Dinonaktifkan"
   ],
+  "Default": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistem berkas default untuk %s"
   ],
-  "Default file system for generic logical volumes": [
+  "Default file system for generic logical volume": [
     "Sistem berkas default untuk volume logis umum"
   ],
   "Default file system for generic mount paths": [
@@ -668,6 +815,9 @@ export default {
   ],
   "Default file system for generic partitions": [
     "Sistem berkas default untuk partisi umum"
+  ],
+  "Default selection": [
+    "Pilihan default"
   ],
   "Define a custom size": [
     "Tentukan ukuran kustom"
@@ -702,8 +852,17 @@ export default {
   "Description": [
     "Deskripsi"
   ],
+  "Desktop selection": [
+    "Pemilihan desktop"
+  ],
+  "Desktops": [
+    "Desktop"
+  ],
   "Destroy current data and format device as": [
     "Hapus data saat ini dan format perangkat sebagai"
+  ],
+  "Destroy current data and format logical volume as": [
+    "Hapus data saat ini dan format volume logis sebagai"
   ],
   "Destroy current data and format partition as": [
     "Hapus data saat ini dan format partisi sebagai"
@@ -719,6 +878,12 @@ export default {
   ],
   "Device details": [
     "Rincian perangkat"
+  ],
+  "Device name": [
+    "Nama perangkat"
+  ],
+  "Device name is required": [
+    "Nama perangkat wajib diisi"
   ],
   "Discard": [
     "Buang"
@@ -768,9 +933,6 @@ export default {
   "Do not use": [
     "Jangan gunakan"
   ],
-  "Domain": [
-    "Domain"
-  ],
   "Down": [
     "Nonaktif"
   ],
@@ -783,11 +945,32 @@ export default {
   "Download logs to troubleshoot or share with support.": [
     "Unduh log untuk memecahkan masalah atau berbagi dengan dukungan."
   ],
+  "E.g., 192.168.1.1": [
+    "Mis., 192.168.1.1"
+  ],
+  "E.g., 192.168.1.1 or 192.168.1.1/24. Prefix auto-added if omitted.": [
+    "Mis., 192.168.1.1 atau 192.168.1.1/24. Prefiks ditambahkan otomatis jika dihilangkan."
+  ],
+  "E.g., 2001:db8::1": [
+    "Mis., 2001:db8::1"
+  ],
+  "E.g., 2001:db8::1 or 2001:db8::1/64. Prefix auto-added if omitted.": [
+    "Mis., 2001:db8::1 atau 2001:db8::1/64. Prefiks ditambahkan otomatis jika dihilangkan."
+  ],
+  "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
+    "Mis., 8.8.8.8 atau 2001:4860:4860::8888"
+  ],
+  "E.g., bond0": [
+    "Mis., bond0"
+  ],
+  "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
+    "Misal, downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
+  ],
+  "E.g., example.com": [
+    "Mis., example.com"
+  ],
   "Edit": [
     "Edit"
-  ],
-  "Edit binding": [
-    "Edit pengikatan"
   ],
   "Edit binding settings": [
     "Edit pengaturan ikatan"
@@ -846,20 +1029,29 @@ export default {
   "Enter a name for the volume group.": [
     "Masukkan nama untuk grup volume."
   ],
+  "Enter or Tab to add": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
+    ""
+  ],
+  "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
+    ""
+  ],
   "Ethernet": [
     "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
   ],
-  "Example: %s": [
-    "Contoh: %s"
-  ],
   "Excellent signal": [
     "Sinyal sangat baik"
   ],
   "Expiration date": [
     "Tanggal kadaluwarsa"
+  ],
+  "Explicitly enabled with manual settings": [
+    ""
   ],
   "Ext2": [
     "Ext2"
@@ -903,8 +1095,8 @@ export default {
   "Filter by language, territory or locale code": [
     "Memfilter berdasarkan bahasa, wilayah, atau kode lokal"
   ],
-  "Filter by pattern title or description": [
-    "Memfilter berdasarkan judul atau deskripsi pola"
+  "Filter by name and description": [
+    "Filter berdasarkan nama dan deskripsi"
   ],
   "Filter by territory, time zone code or UTC offset": [
     "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
@@ -960,6 +1152,12 @@ export default {
   "Formatting devices": [
     "Memformat perangkat"
   ],
+  "Forward delay": [
+    ""
+  ],
+  "Forward delay must be between 4 and 30 seconds": [
+    ""
+  ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Enkripsi Disk Penuh (FDE) memungkinkan untuk melindungi informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
@@ -968,9 +1166,6 @@ export default {
   ],
   "Gateway": [
     "Gateway"
-  ],
-  "Gateway can be defined only in 'Manual' mode": [
-    "Gateway hanya dapat ditentukan dalam mode 'Manual'"
   ],
   "GiB": [
     "GiB"
@@ -981,11 +1176,26 @@ export default {
   "Go to network page": [
     "Buka halaman jaringan"
   ],
+  "Go to network settings": [
+    "Pergi ke pengaturan jaringan"
+  ],
+  "Go to registration": [
+    "Pergi ke pendaftaran"
+  ],
   "Go to storage page": [
     "Buka halaman penyimpanan"
   ],
   "Good signal": [
     "Sinyal baik"
+  ],
+  "Graphical desktop environments for the system.": [
+    "Lingkungan desktop grafis untuk sistem."
+  ],
+  "Hello time": [
+    ""
+  ],
+  "Hello time must be between 1 and 10 seconds": [
+    ""
   ],
   "Hide": [
     "Sembunyikan"
@@ -994,7 +1204,7 @@ export default {
     "Menyembunyikan tindakan subvolume %d"
   ],
   "Hostname": [
-    "Nama host"
+    "Nama Host"
   ],
   "Hostname could not be updated": [
     "Nama host tidak dapat diperbarui"
@@ -1004,9 +1214,6 @@ export default {
   ],
   "I have read and accept the [license] for %s": [
     "Saya telah membaca dan menerima [lisensi] untuk %s"
-  ],
-  "IP Address": [
-    "Alamat IP"
   ],
   "IP Addresses": [
     "Alamat IP"
@@ -1020,20 +1227,53 @@ export default {
   "IPv4": [
     "IPv4"
   ],
+  "IPv4 Addresses": [
+    "Alamat IPv4"
+  ],
+  "IPv4 Gateway": [
+    "Gateway IPv4"
+  ],
+  "IPv4 Settings": [
+    "Pengaturan IPv4"
+  ],
+  "IPv4 gateway is required": [
+    "Gateway IPv4 wajib diisi"
+  ],
   "IPv6": [
     "IPv6"
+  ],
+  "IPv6 Addresses": [
+    "Alamat IPv6"
+  ],
+  "IPv6 Gateway": [
+    "Gateway IPv6"
+  ],
+  "IPv6 Settings": [
+    "Pengaturan IPv6"
+  ],
+  "IPv6 gateway is required": [
+    "Gateway IPv6 wajib diisi"
+  ],
+  "Identify the connection device by its name in the system": [
+    "Identifikasi perangkat koneksi berdasarkan namanya di sistem"
+  ],
+  "Identify the connection device by its physical address": [
+    "Identifikasi perangkat koneksi berdasarkan alamat fisiknya"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
     "Jika media lokal digunakan untuk menjalankan penginstalasi ini, hapus media tersebut sebelum boot berikutnya."
   ],
-  "If unsure, cancel and review storage settings.": [
-    "Jika tidak yakin, batalkan dan tinjau pengaturan penyimpanan."
+  "If that is not intended, cancel and select a desktop in the [software] settings.": [
+    "Jika itu tidak dimaksudkan, batalkan dan pilih desktop di pengaturan [software]."
   ],
-  "If you are unsure, check and adjust the storage settings.": [
-    "Jika Anda tidak yakin, periksa dan sesuaikan pengaturan penyimpanan."
+  "If unsure, cancel and review [storage] settings.": [
+    "Jika tidak yakin, batalkan dan tinjau pengaturan [storage]."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Jika Anda ingin menonaktifkan pemeriksaan ini, harap tentukan \"inst.ay_check=0\" pada baris perintah kernel"
+  ],
+  "Includes %1$d additional pattern. Requires %2$s": [
+    "Menyertakan %1$d pola tambahan. Membutuhkan %2$s"
   ],
   "Initiator": [
     "Inisiator"
@@ -1092,6 +1332,24 @@ export default {
   "Interface": [
     "Antarmuka"
   ],
+  "Invalid DNS search domain": [
+    "Domain pencarian DNS tidak valid"
+  ],
+  "Invalid DNS server address": [
+    "Alamat server DNS tidak valid"
+  ],
+  "Invalid IPv4 address": [
+    "Alamat IPv4 tidak valid"
+  ],
+  "Invalid IPv4 gateway": [
+    "Gateway IPv4 tidak valid"
+  ],
+  "Invalid IPv6 address": [
+    "Alamat IPv6 tidak valid"
+  ],
+  "Invalid IPv6 gateway": [
+    "Gateway IPv6 tidak valid"
+  ],
   "Invalid [zFCP] settings": [
     "Pengaturan [zFCP] tidak valid"
   ],
@@ -1103,9 +1361,6 @@ export default {
   ],
   "Invalid storage settings": [
     "Pengaturan penyimpanan tidak valid"
-  ],
-  "Ip prefix or netmask": [
-    "Awalan IP atau netmask"
   ],
   "Issue date": [
     "Tanggal penerbitan"
@@ -1146,6 +1401,9 @@ export default {
   "JFS": [
     "JFS"
   ],
+  "Keep %s": [
+    "Pertahankan %s"
+  ],
   "Keyboard": [
     "Papan ketik"
   ],
@@ -1179,20 +1437,23 @@ export default {
   "Let the installer propose a sensible size": [
     "Biarkan penginstal mengusulkan ukuran yang masuk akal"
   ],
+  "Level": [
+    "Level"
+  ],
   "License acceptance is required to continue.": [
     "Penerimaan lisensi diperlukan untuk melanjutkan."
   ],
   "License acceptance required": [
     "Diperlukan penerimaan lisensi"
   ],
+  "Listening and learning time (4-30 seconds).": [
+    ""
+  ],
   "Loading": [
     "Memuat"
   ],
   "Loading data...": [
     "Memuat data..."
-  ],
-  "Loading the installation repositories...": [
-    "Memuat repositori instalasi..."
   ],
   "Localization": [
     "Pelokalan"
@@ -1209,8 +1470,23 @@ export default {
   "Logical volume name": [
     "Nama volume logis"
   ],
+  "Logical volumes": [
+    "Volume logis"
+  ],
   "Logical volumes for %s": [
     "Volume logis untuk %s"
+  ],
+  "Logical volumes that are not reused will be removed and that data will be lost.": [
+    "Volume logis yang tidak digunakan kembali akan dihapus dan datanya akan hilang."
+  ],
+  "Logical volumes that are not reused will be resized as needed.": [
+    "Volume logis yang tidak digunakan kembali akan diubah ukurannya sesuai kebutuhan."
+  ],
+  "Logical volumes that are not reused would be resized if needed.": [
+    "Volume logis yang tidak digunakan kembali akan diubah ukurannya jika diperlukan."
+  ],
+  "Logical volumes will be used and created for %s": [
+    "Volume logis akan digunakan dan dibuat untuk %s"
   ],
   "Login": [
     "Masuk"
@@ -1218,8 +1494,14 @@ export default {
   "Login form": [
     "Formulir masuk"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC": [
     "MAC"
+  ],
+  "MAC address": [
+    "Alamat MAC"
   ],
   "Make sure that the passsword is correct and try again.": [
     "Pastikan kata sandi benar dan coba lagi."
@@ -1235,6 +1517,15 @@ export default {
   ],
   "Max channel": [
     "Saluran maks"
+  ],
+  "Max message age": [
+    ""
+  ],
+  "Max message age must be between 6 and 40 seconds": [
+    ""
+  ],
+  "Members": [
+    "Anggota"
   ],
   "Memory": [
     "Memori"
@@ -1332,8 +1623,8 @@ export default {
   "Name": [
     "Nama"
   ],
-  "Needs about %s": [
-    "Memerlukan sekitar %s"
+  "Name is required": [
+    "Nama wajib diisi"
   ],
   "Network": [
     "Jaringan"
@@ -1341,11 +1632,17 @@ export default {
   "Network details": [
     "Rincian jaringan"
   ],
+  "Network not available": [
+    "Jaringan tidak tersedia"
+  ],
   "New": [
     "Baru"
   ],
   "New Wi-Fi connection": [
     "Koneksi Wi-Fi baru"
+  ],
+  "New connection": [
+    "Koneksi baru"
   ],
   "No": [
     "Tidak"
@@ -1353,14 +1650,26 @@ export default {
   "No DASD devices found in this machine.": [
     "Tidak ada perangkat DASD yang ditemukan di mesin ini."
   ],
+  "No LVM volume groups are available for selection.": [
+    "Tidak ada grup volume LVM yang tersedia untuk dipilih."
+  ],
+  "No LVM volume groups found": [
+    "Tidak ada grup volume LVM ditemukan"
+  ],
+  "No RAID devices found": [
+    "Tidak ada perangkat RAID ditemukan"
+  ],
   "No Wi-Fi networks were found": [
     "Tidak ditemukan jaringan Wi-Fi"
+  ],
+  "No additional logical volumes will be created": [
+    "Tidak ada volume logis tambahan yang akan dibuat"
   ],
   "No additional partitions will be created": [
     "Tidak akan dibuat partisi tambahan"
   ],
-  "No additional software was selected.": [
-    "Tidak ada perangkat lunak tambahan yang dipilih."
+  "No additional patterns available": [
+    "Tidak ada pola tambahan yang tersedia"
   ],
   "No connections match filters": [
     "Tidak ada koneksi yang cocok dengan filter"
@@ -1373,6 +1682,12 @@ export default {
   ],
   "No data loss is expected": [
     "Tidak diharapkan ada kehilangan data"
+  ],
+  "No desktop selected": [
+    "Tidak ada desktop yang dipilih"
+  ],
+  "No desktops available": [
+    "Tidak ada desktop yang tersedia"
   ],
   "No device is currently using this connection.": [
     "Tidak ada perangkat yang saat ini menggunakan koneksi ini."
@@ -1395,20 +1710,32 @@ export default {
   "No devices selected. Select one or more devices to perform bulk actions.": [
     "Tidak ada perangkat yang dipilih. Pilih satu atau lebih perangkat untuk melakukan tindakan massal."
   ],
+  "No disks are available for selection.": [
+    "Tidak ada disk yang tersedia untuk dipilih."
+  ],
+  "No disks found": [
+    "Tidak ada disk ditemukan"
+  ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
     "Tidak ada iSCSI Boot Firmware Table (iBFT) yang ditemukan. Initiator dapat [dikonfigurasi secara manual.]"
   ],
   "No information available yet": [
     "Belum ada informasi yang tersedia"
   ],
-  "No logical volumes are defined yet": [
-    "Belum ada volume logis yang didefinisikan"
-  ],
   "No partitions will be automatically configured for booting.": [
     "Partisi tidak akan dikonfigurasi secara otomatis untuk booting."
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. Gunakan dengan hati-hati."
+  ],
+  "No patterns match": [
+    "Tidak ada pola yang cocok"
+  ],
+  "No patterns match the filter": [
+    "Tidak ada pola yang cocok dengan filter"
+  ],
+  "No software RAID devices are available for selection.": [
+    "Tidak ada perangkat RAID perangkat lunak yang tersedia untuk dipilih."
   ],
   "No support is planned.": [
     "Tidak ada dukungan yang direncanakan."
@@ -1449,11 +1776,11 @@ export default {
   "None of the locales match the filter.": [
     "Tidak ada lokasi yang cocok dengan filter."
   ],
-  "None of the patterns match the filter.": [
-    "Tidak ada pola yang cocok dengan filter."
-  ],
   "None of the time zones match the filter.": [
     "Tidak ada zona waktu yang cocok dengan filter."
+  ],
+  "None selected": [
+    "Tidak ada yang dipilih"
   ],
   "None set": [
     "Tidak ditetapkan"
@@ -1482,11 +1809,20 @@ export default {
   "Not supported (%s)": [
     "Tidak didukung (%s)"
   ],
+  "Not used by this bridge": [
+    ""
+  ],
   "Offline": [
     "Luring"
   ],
   "On boot": [
     "Saat boot"
+  ],
+  "Only reused logical volumes and space not assigned to any logical volume will be used.": [
+    "Hanya volume logis yang digunakan kembali dan ruang yang tidak ditetapkan ke volume logis mana pun yang akan digunakan."
+  ],
+  "Only reused logical volumes will be used.": [
+    "Hanya volume logis yang digunakan kembali yang akan digunakan."
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Hanya partisi yang digunakan kembali dan ruang yang tidak dialokasikan ke partisi mana pun yang akan digunakan."
@@ -1563,11 +1899,17 @@ export default {
   "Passwords do not match": [
     "Kata sandi tidak cocok"
   ],
+  "Patterns selection": [
+    "Pemilihan pola"
+  ],
   "Perform a discovery to find available iSCSI targets.": [
     "Lakukan penemuan untuk menemukan target iSCSI yang tersedia."
   ],
   "Performs auto LUN scan": [
     "Melakukan pemindaian LUN otomatis"
+  ],
+  "Physical volumes": [
+    "Volume fisik"
   ],
   "PiB": [
     "PiB"
@@ -1584,8 +1926,11 @@ export default {
   "Potential data loss affecting at least %s": [
     "Potensi kehilangan data yang memengaruhi setidaknya %s"
   ],
-  "Prefix length or netmask": [
-    "Panjang awalan atau netmask"
+  "Priority": [
+    ""
+  ],
+  "Priority must be between 0 and 61440": [
+    ""
   ],
   "Proceeding may result in data loss": [
     "Melanjutkan dapat menyebabkan kehilangan data"
@@ -1602,17 +1947,17 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
+  "Protocol message interval (1-10 seconds).": [
+    ""
+  ],
+  "Protocol message retention time (6-40 seconds).": [
+    ""
+  ],
   "Provide authentication": [
     "Berikan autentikasi"
   ],
-  "Provide email address": [
-    "Berikan alamat email"
-  ],
   "Provide its password to log in to the system.": [
     "Berikan kata sandinya untuk masuk ke sistem."
-  ],
-  "Provide registration code": [
-    "Berikan kode pendaftaran"
   ],
   "Public SSH Key": [
     "Kunci SSH Publik"
@@ -1625,6 +1970,21 @@ export default {
   ],
   "Question": [
     "Pertanyaan"
+  ],
+  "RAID": [
+    "RAID"
+  ],
+  "Read less": [
+    "Baca lebih sedikit"
+  ],
+  "Read less about %s": [
+    "Baca lebih sedikit tentang %s"
+  ],
+  "Read more": [
+    "Baca selengkapnya"
+  ],
+  "Read more about %s": [
+    "Baca selengkapnya tentang %s"
   ],
   "Read only": [
     "Hanya baca"
@@ -1674,20 +2034,23 @@ export default {
   "Reload": [
     "Muat ulang"
   ],
-  "Remove": [
-    "Menghapus"
+  "Remove %s": [
+    "Hapus %s"
   ],
   "Remove the configuration for this disk": [
     "Hapus konfigurasi untuk disk ini"
   ],
-  "Repository load failed": [
-    "Pemuatan repositori gagal"
+  "Remove the configuration for this volume group": [
+    "Hapus konfigurasi untuk grup volume ini"
   ],
-  "Required packages": [
-    "Paket yang diperlukan"
+  "Required space with current selection: [%s]": [
+    "Ruang yang diperlukan dengan pilihan saat ini: [%s]"
   ],
-  "Required packages and %s pattern": [
-    "Paket yang diperlukan dan %s pola"
+  "Required space: [%s]": [
+    "Ruang yang diperlukan: [%s]"
+  ],
+  "Requires %s": [
+    "Membutuhkan %s"
   ],
   "Rescan devices": [
     "Pindai ulang perangkat"
@@ -1710,6 +2073,9 @@ export default {
   "Retrieving error details": [
     "Mengambil detail kesalahan"
   ],
+  "Reused logical volumes will not be shrunk": [
+    "Volume logis yang digunakan kembali tidak akan diperkecil"
+  ],
   "Reused partitions will not be shrunk": [
     "Partisi yang digunakan kembali tidak akan diperkecil"
   ],
@@ -1718,6 +2084,9 @@ export default {
   ],
   "Review and install": [
     "Tinjau dan instal"
+  ],
+  "Root bridge selection (0-61440). [Lower is higher priority].": [
+    ""
   ],
   "Root login with SSH key": [
     "Login root dengan kunci SSH"
@@ -1755,6 +2124,9 @@ export default {
   "SSID": [
     "SSID"
   ],
+  "STP": [
+    ""
+  ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
@@ -1773,14 +2145,17 @@ export default {
   "Select %s": [
     "Pilih %s"
   ],
-  "Select a device to define partitions or to mount": [
-    "Pilih perangkat untuk mendefinisikan partisi atau untuk mount"
+  "Select a desktop": [
+    "Pilih desktop"
+  ],
+  "Select a desktop environment to get a graphical interface.": [
+    "Pilih lingkungan desktop untuk mendapatkan antarmuka grafis."
+  ],
+  "Select a device": [
+    "Pilih perangkat"
   ],
   "Select a disk": [
     "Pilih disk"
-  ],
-  "Select a disk to define partitions or to mount": [
-    "Pilih perangkat lain untuk mendefinisikan partisi atau untuk mount"
   ],
   "Select a mode": [
     "Pilih mode"
@@ -1800,11 +2175,14 @@ export default {
   "Select a product to continue.": [
     "Pilih produk untuk melanjutkan."
   ],
-  "Select another device to define partitions or to mount": [
-    "Pilih perangkat lain untuk mendefinisikan partisi atau untuk mount"
+  "Select an existing device": [
+    "Pilih perangkat yang sudah ada"
   ],
-  "Select another disk to define partitions or to mount": [
-    "Pilih disk lain untuk mendefinisikan partisi atau untuk mount"
+  "Select another disk": [
+    "Pilih disk lain"
+  ],
+  "Select another existing device": [
+    "Pilih perangkat lain yang sudah ada"
   ],
   "Select at least one disk.": [
     "Pilih setidaknya satu disk."
@@ -1815,6 +2193,12 @@ export default {
   "Select devices to perform bulk actions": [
     "Pilih perangkat untuk melakukan tindakan massal"
   ],
+  "Select entries to edit or remove them. Or [remove all invalid entries.]": [
+    "Pilih entri untuk mengedit atau menghapusnya. Atau [hapus semua entri tidak valid.]"
+  ],
+  "Select one or more to extend the system.": [
+    "Pilih satu atau lebih untuk memperluas sistem."
+  ],
   "Select or enter a mount point": [
     "Pilih atau masukkan titik mount"
   ],
@@ -1824,11 +2208,20 @@ export default {
   "Select or enter a valid mount point": [
     "Pilih atau masukkan titik mount yang valid"
   ],
+  "Select patterns": [
+    "Pilih pola"
+  ],
   "Select the controllers to activate": [
     "Pilih pengontrol yang akan diaktifkan"
   ],
   "Select the zFCP controllers to activate:": [
     "Pilih pengontrol zFCP yang akan diaktifkan:"
+  ],
+  "Select what to do with each logical volume in order to find space for allocating the new system.": [
+    "Pilih tindakan yang akan dilakukan pada setiap volume logis untuk menemukan ruang bagi alokasi sistem baru."
+  ],
+  "Select what to do with each logical volume.": [
+    "Pilih tindakan yang akan dilakukan pada setiap volume logis."
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Pilih tindakan yang akan dilakukan pada setiap partisi untuk menemukan ruang yang cukup untuk mengalokasikan sistem baru."
@@ -1839,17 +2232,11 @@ export default {
   "Selected disk cannot be changed": [
     "Disk yang dipilih tidak dapat diubah"
   ],
-  "Selected patterns": [
-    "Pola yang dipilih"
-  ],
-  "Server IP": [
-    "IP Server"
+  "Selected volume group cannot be changed": [
+    "Grup volume yang dipilih tidak dapat diubah"
   ],
   "Server URL": [
     "URL Server"
-  ],
-  "Server options": [
-    "Opsi server"
   ],
   "Set DIAG off": [
     "Matikan DIAG"
@@ -1862,6 +2249,9 @@ export default {
   ],
   "Settings": [
     "Pengaturan"
+  ],
+  "Several logical volumes will be deleted": [
+    "Beberapa volume logis akan dihapus"
   ],
   "Several partitions will be deleted": [
     "Beberapa partisi akan dihapus"
@@ -1881,6 +2271,9 @@ export default {
   "Show more": [
     "Tampilkan lebih banyak"
   ],
+  "Shrink existing logical volumes": [
+    "Perkecil volume logis yang sudah ada"
+  ],
   "Shrink existing partitions": [
     "Perkecil partisi yang ada"
   ],
@@ -1893,9 +2286,6 @@ export default {
   "Size limits must be numbers followed by a unit like GiB or GB": [
     "Batasan ukuran harus berupa angka diikuti dengan satuan seperti GiB atau GB"
   ],
-  "Size limits must be numbers optionally followed by a unit like GiB or GB": [
-    "Batasan ukuran harus berupa angka, yang dapat diikuti oleh satuan seperti GiB atau GB"
-  ],
   "Size mode": [
     "Mode ukuran"
   ],
@@ -1906,16 +2296,37 @@ export default {
     "Lewati ke konten"
   ],
   "Software": [
-    "Perangkat lunak"
+    "Perangkat Lunak"
   ],
   "Software %s": [
     "Perangkat Lunak %s"
   ],
+  "Software selection is not available": [
+    "Pemilihan perangkat lunak tidak tersedia"
+  ],
+  "Some DNS search domains are invalid": [
+    "Beberapa domain pencarian DNS tidak valid"
+  ],
+  "Some DNS server addresses are invalid": [
+    "Beberapa alamat server DNS tidak valid"
+  ],
+  "Some IPv4 addresses are invalid": [
+    "Beberapa alamat IPv4 tidak valid"
+  ],
+  "Some IPv6 addresses are invalid": [
+    "Beberapa alamat IPv6 tidak valid"
+  ],
+  "Some existing logical volumes may be shrunk": [
+    "Beberapa volume logis yang sudah ada mungkin akan diperkecil"
+  ],
   "Some existing partitions may be shrunk": [
     "Beberapa partisi yang sudah ada mungkin akan diperkecil"
   ],
-  "Some installation repositories could not be loaded. The system cannot be installed without them.": [
-    "Beberapa repositori instalasi tidak dapat dimuat. Sistem tidak dapat diinstal tanpa repositori tersebut."
+  "Some logical volumes may be deleted": [
+    "Beberapa volume logis mungkin akan dihapus"
+  ],
+  "Some logical volumes may be shrunk": [
+    "Beberapa volume logis mungkin akan diperkecil"
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "Beberapa elemen dalam profil AutoYaST Anda tidak didukung."
@@ -1929,6 +2340,9 @@ export default {
   "Something went wrong": [
     "Ada yang tidak beres"
   ],
+  "Spanning Tree Protocol (STP)": [
+    ""
+  ],
   "Start configuring a basic installation": [
     "Mulai mengkonfigurasi instalasi dasar"
   ],
@@ -1937,6 +2351,9 @@ export default {
   ],
   "Startup": [
     "Startup"
+  ],
+  "Static addresses and gateway": [
+    "Alamat statis dan gateway"
   ],
   "Static hostname": [
     "Nama host statis"
@@ -1992,6 +2409,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "Nama sementara yang dapat berubah setelah mulai ulang atau perubahan jaringan"
   ],
+  "The 'primary' option is only valid for %s modes": [
+    "Opsi 'primary' hanya berlaku untuk mode %s"
+  ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Grup LVM ‘%1$s’ akan tetap berada di %2$s"
   ],
@@ -2003,6 +2423,15 @@ export default {
   ],
   "The connection can be used by any available device.": [
     "Koneksi ini dapat digunakan oleh perangkat apa pun yang tersedia."
+  ],
+  "The connection could not be saved": [
+    "Koneksi tidak dapat disimpan"
+  ],
+  "The connection does not exist or is no longer available.": [
+    "Koneksi tidak ada atau sudah tidak tersedia."
+  ],
+  "The connection is available for all devices": [
+    "Koneksi tersedia untuk semua perangkat"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Koneksi hanya akan digunakan selama pemasangan dan tidak tersedia dalam sistem yang telah dipasang."
@@ -2022,8 +2451,14 @@ export default {
   "The current storage configuration has the following issue:": [
     "Konfigurasi penyimpanan saat ini memiliki masalah sebagai berikut:"
   ],
+  "The data is kept, but the current logical volumes will be resized as needed.": [
+    "Data dipertahankan, tetapi volume logis saat ini akan diubah ukurannya sesuai kebutuhan."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Data tetap dipertahankan, tetapi partisi saat ini akan diubah ukurannya sesuai kebutuhan."
+  ],
+  "The data is kept. Only the space not assigned to any logical volume will be used.": [
+    "Data dipertahankan. Hanya ruang yang tidak ditetapkan ke volume logis mana pun yang akan digunakan."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
     "Data tetap dipertahankan. Hanya ruang yang tidak ditetapkan ke partisi mana pun yang akan digunakan."
@@ -2085,9 +2520,6 @@ export default {
   "The following partitions will be created or mounted": [
     "Partisi-partisi berikut akan dibuat atau di-mount"
   ],
-  "The following software patterns are selected for installation:": [
-    "Pola perangkat lunak berikut ini dipilih untuk instalasi:"
-  ],
   "The initiator name cannot be blank": [
     "Nama inisiator tidak boleh kosong"
   ],
@@ -2103,17 +2535,11 @@ export default {
   "The maximum must be a number followed by a unit like GiB or GB": [
     "Nilai maksimum harus berupa angka, yang diikuti oleh satuan seperti GiB atau GB"
   ],
-  "The maximum must be a number optionally followed by a unit like GiB or GB": [
-    "Nilai maksimum harus berupa angka, yang dapat diikuti oleh satuan seperti GiB atau GB"
-  ],
   "The minimum cannot be greater than the maximum": [
     "Nilai minimum tidak boleh lebih besar dari nilai maksimum"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
     "Nilai minimum harus berupa angka, yang diikuti oleh satuan seperti GiB atau GB"
-  ],
-  "The minimum must be a number optionally followed by a unit like GiB or GB": [
-    "Nilai minimum harus berupa angka, yang dapat diikuti oleh satuan seperti GiB atau GB"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Pemilih mode menawarkan antarmuka yang disederhanakan yang dirancang untuk penggunaan cepat dan mudah, tanpa membingungkan pengguna."
@@ -2129,9 +2555,6 @@ export default {
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Produk tidak ditemukan di repositori sehingga tidak memungkinkan untuk melanjutkan instalasi."
-  ],
-  "The product will be registered with \"%s\" hostname": [
-    "Produk akan di-registrasi dengan hostname \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
@@ -2169,6 +2592,9 @@ export default {
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "Ukuran harus berupa angka diikuti dengan satuan dalam bentuk GiB (pangkat 2) atau GB (pangkat 10)."
   ],
+  "The software selection could not be loaded.": [
+    "Pemilihan perangkat lunak tidak dapat dimuat."
+  ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Konfigurasi penyimpanan valid (lihat hasil di bawah) tetapi menggunakan elemen yang tidak didukung oleh antarmuka ini."
   ],
@@ -2177,6 +2603,9 @@ export default {
   ],
   "The system is rebooting": [
     "Sistem sedang dimulai ulang"
+  ],
+  "The system will boot to a command-line interface.": [
+    "Sistem akan boot ke antarmuka baris perintah."
   ],
   "The whole device will be used for %s": [
     "Seluruh perangkat akan digunakan untuk %s"
@@ -2189,6 +2618,9 @@ export default {
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
     "Tidak ada disk yang tersedia untuk pemasangan. Anda mungkin perlu mengkonfigurasi beberapa perangkat."
+  ],
+  "There are not usable logical volumes": [
+    "Tidak ada volume logis yang dapat digunakan"
   ],
   "There are not usable partitions": [
     "Tidak ada partisi yang dapat digunakan"
@@ -2226,14 +2658,26 @@ export default {
   "This license is not available in %s.": [
     "Lisensi ini tidak tersedia di %s."
   ],
+  "This might be due to network connectivity.": [
+    "Ini mungkin disebabkan oleh konektivitas jaringan."
+  ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Polanya ini menyeimbangkan antara kejelasan dan efisiensi: mode ini menjaga kesederhanaan untuk pemilihan yang sederhana, sementara tampilan penuh mendukung eksplorasi yang lebih mendalam dan tindakan yang lebih kompleks, terutama untuk pengguna yang memiliki banyak perangkat."
   ],
-  "This product does not allow to select software patterns during installation. However, you can add additional software once the installation is finished.": [
-    "Produk ini tidak memungkinkan untuk memilih pola perangkat lunak selama instalasi. Namun demikian, Anda dapat menambahkan perangkat lunak tambahan setelah penginstalan selesai."
+  "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
+    "Produk ini tidak mengizinkan pemilihan perangkat lunak pada saat instalasi. Perangkat lunak tambahan dapat ditambahkan setelah instalasi selesai."
+  ],
+  "This product does not provide additional patterns.": [
+    "Produk ini tidak menyediakan pola tambahan."
+  ],
+  "This product does not provide desktop environments.": [
+    "Produk ini tidak menyediakan lingkungan desktop."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Ruang ini mencakup sistem dasar dan pola perangkat lunak yang dipilih, jika ada."
+  ],
+  "This uses existing logical volumes at the volume group": [
+    "Ini menggunakan volume logis yang sudah ada pada grup volume"
   ],
   "This uses existing partitions at the disk": [
     "Ini menggunakan partisi yang sudah ada di disk"
@@ -2253,11 +2697,11 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
+  "To change it, visit the [hostname] section before registering.": [
+    ""
+  ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
-  ],
-  "Try again": [
-    "Coba lagi"
   ],
   "Try to activate again": [
     "Coba aktifkan lagi"
@@ -2282,9 +2726,6 @@ export default {
   ],
   "Unknown error": [
     "Kesalahan tidak diketahui"
-  ],
-  "Unselect": [
-    "Batalkan pilihan"
   ],
   "Unselect or activate them and try it again.": [
     "Batalkan pilihan atau aktifkan, lalu coba lagi."
@@ -2315,6 +2756,9 @@ export default {
   ],
   "Use": [
     "Gunakan"
+  ],
+  "Use LVM volume group %s": [
+    "Gunakan grup volume LVM %s"
   ],
   "Use RAID %s": [
     "Gunakan RAID %s"
@@ -2357,6 +2801,12 @@ export default {
   ],
   "Use available space": [
     "Gunakan ruang yang tersedia"
+  ],
+  "Use custom DNS search domains": [
+    "Gunakan domain pencarian DNS kustom"
+  ],
+  "Use custom DNS servers": [
+    "Gunakan server DNS kustom"
   ],
   "Use device %s": [
     "Gunakan perangkat %s"
@@ -2427,11 +2877,11 @@ export default {
   "Use the disk without partitions": [
     "Gunakan disk tanpa partisi"
   ],
+  "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
+    "Gunakan tab untuk menelusuri disk, perangkat RAID, dan grup volume LVM."
+  ],
   "Use these same settings for the selected product": [
     "Gunakan pengaturan yang sama untuk produk yang dipilih"
-  ],
-  "Used space": [
-    "Ruang yang digunakan"
   ],
   "User name": [
     "Nama pengguna"
@@ -2442,11 +2892,11 @@ export default {
   "Username suggestion dropdown": [
     "Tarik-turun saran nama pengguna"
   ],
+  "Using %d additional pattern": [
+    "Menggunakan %d pola tambahan"
+  ],
   "Using %d connections with %s": [
     "Menggunakan %d koneksi dengan %s"
-  ],
-  "Using [%s] keyboard": [
-    "Menggunakan keyboard [%s]"
   ],
   "Using a hashed password.": [
     "Menggunakan kata sandi yang dienkripsi."
@@ -2454,11 +2904,17 @@ export default {
   "Using an advanced storage configuration": [
     "Menggunakan konfigurasi penyimpanan tingkat lanjut"
   ],
+  "Using an existing logical volume": [
+    "Menggunakan volume logis yang sudah ada"
+  ],
   "Using an existing partition": [
     "Menggunakan partisi yang sudah ada"
   ],
   "Using code ending in %s": [
     "Menggunakan kode yang diakhiri dengan %s"
+  ],
+  "Using logical volume %s": [
+    "Menggunakan volume logis %s"
   ],
   "Using partition %s": [
     "Menggunakan partisi %s"
@@ -2466,14 +2922,29 @@ export default {
   "Using transient hostname: %s": [
     "Menggunakan nama host sementara: %s"
   ],
+  "VLAN": [
+    "VLAN"
+  ],
   "View license": [
     "Lihat lisensi"
+  ],
+  "Volume %s": [
+    "Volume %s"
   ],
   "Volume group %s": [
     "Grup volume %s"
   ],
+  "Volume group %s menu": [
+    "Menu grup volume %s"
+  ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Grup volume ‘%s’ sudah ada. Masukkan nama yang berbeda."
+  ],
+  "Volume groups cannot be formatted": [
+    "Grup volume tidak dapat diformat"
+  ],
+  "Volumes %s": [
+    "Volume %s"
   ],
   "WPA & WPA2 Personal": [
     "WPA & WPA2 Pribadi"
@@ -2529,9 +3000,6 @@ export default {
   "You can safely close this window.": [
     "Anda dapat menutup jendela ini dengan aman."
   ],
-  "You cannot change it later. Go to the %s section if you want to modify it before proceeding with registration.": [
-    "Anda tidak dapat mengubahnya nanti. Pergi ke bagian %s jika Anda ingin mengubahnya sebelum melanjutkan proses pendaftaran."
-  ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
     "Anda mungkin ingin menghapus pengaturan saat ini dan memulai dari awal dengan konfigurasi sederhana."
   ],
@@ -2559,9 +3027,6 @@ export default {
   "auto selected": [
     "otomatis dipilih"
   ],
-  "hostname": [
-    "hostname"
-  ],
   "iBFT": [
     "iBFT"
   ],
@@ -2576,9 +3041,6 @@ export default {
   ],
   "partition": [
     "partisi"
-  ],
-  "proposal.Device": [
-    "proposal.Device"
   ],
   "reset to defaults": [
     "kembalikan ke default"

@@ -25,7 +25,7 @@ import ConnectionForm from "~/components/network/ConnectionForm";
 import BindingSettingsForm from "~/components/network/BindingSettingsForm";
 import NetworkPage from "~/components/network/NetworkPage";
 import WifiConnectionForm from "~/components/network/WifiConnectionForm";
-import WiredConnectionPage from "~/components/network/WiredConnectionPage";
+import ConnectionPage from "~/components/network/ConnectionPage";
 import { Route } from "~/types/routes";
 import { NETWORK as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
@@ -39,24 +39,24 @@ const routes = (): Route => ({
   children: [
     { index: true, element: <NetworkPage /> },
     {
-      path: PATHS.editConnection,
+      path: PATHS.connection.edit,
       element: <ConnectionForm />,
     },
     {
-      path: PATHS.newConnection,
+      path: PATHS.connection.new,
       element: <ConnectionForm />,
     },
     {
-      path: PATHS.editBindingSettings,
+      path: PATHS.connection.editBinding,
       element: <BindingSettingsForm />,
     },
     {
-      path: PATHS.newWiFiConnection,
+      path: PATHS.wifi.new,
       element: <WifiConnectionForm />,
     },
     {
-      path: PATHS.wiredConnection,
-      element: <WiredConnectionPage />,
+      path: PATHS.connection.details,
+      element: <ConnectionPage />,
     },
   ],
 });

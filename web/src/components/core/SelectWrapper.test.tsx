@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -36,6 +36,12 @@ const TestingSelector = (props: Partial<SelectWrapperProps>) => (
 );
 
 describe("SelectWrapper", () => {
+  // NOTE: Keyboard navigation tests (arrow keys open menu, explore-then-commit) are
+  // not duplicated here because:
+  //   - The behavior is comprehensively tested in use-select-keyboard.test.tsx
+  //   - This component will be deprecated once all forms migrate to TanStack Form
+  //     and use DropdownField instead
+  //
   it("renders a toggle button using label or value", () => {
     const { rerender } = plainRender(<TestingSelector label="The label" value="The value" />);
     const button = screen.getByRole("button");

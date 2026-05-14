@@ -37,13 +37,6 @@ if [ -f "${REPO}.disabled" ]; then
 fi
 rm -f /etc/zypp/repos.d/*.disabled
 
-# configure the repositories in the Live system
-# import the OBS key for the systemsmanagement OBS project
-rpm --import /tmp/systemsmanagement_key.gpg
-rm /tmp/systemsmanagement_key.gpg
-# import the IBS key for the Devel:YaST:Agama:Head project
-rpm --import /tmp/Devel_YaST_Agama_Head_key.gpg
-rm /tmp/Devel_YaST_Agama_Head_key.gpg
 # import the openSUSE keys, but check if there is any
 if stat -t /usr/lib/rpm/gnupg/keys/*.asc 2>/dev/null 1>/dev/null; then
   rpm --import /usr/lib/rpm/gnupg/keys/*.asc
@@ -149,7 +142,7 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui "' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 # decrease the kernel logging on the console, use a dracut module to do it early in the boot process
 echo 'add_dracutmodules+=" agama-logging "' > /etc/dracut.conf.d/10-agama-logging.conf

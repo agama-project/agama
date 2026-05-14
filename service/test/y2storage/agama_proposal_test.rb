@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -445,6 +445,41 @@ describe Y2Storage::AgamaProposal do
             # all LUKS documentation and to cryptsetup
             key_size: 64
           )
+        end
+      end
+
+      context "if the encryption settings contains pervasive method" do
+        before do
+          allow(Y2Storage::EncryptionProcesses::SecureKey).to receive(:all).and_return([])
+          allow(Y2Storage::EncryptionProcesses::Apqn).to receive(:all).and_return(apqns)
+        end
+
+        let(:apqns) { [apqn1, apqn2] }
+        let(:apqn1) { Y2Storage::EncryptionProcesses::Apqn.new("01.0001", "", "", "") }
+        let(:apqn2) { Y2Storage::EncryptionProcesses::Apqn.new("01.0002", "", "", "") }
+
+        let(:home_encryption) do
+          Agama::Storage::Configs::Encryption.new.tap do |enc|
+            enc.method = Y2Storage::EncryptionMethod::PERVASIVE_LUKS2
+            enc.password = "notSecreT"
+            enc.apqns = ["01.0001", "01.0002", "01.0003"]
+            enc.pervasive_key_type = "CCA-AESCIPHER"
+          end
+        end
+
+        it "proposes the right encryption layer" do
+          proposal.propose
+          partition = proposal.devices.partitions.find do |part|
+            part.blk_filesystem&.mount_path == "/home"
+          end
+          expect(partition.encrypted?).to eq true
+          expect(partition.encryption).to have_attributes(
+            method:   Y2Storage::EncryptionMethod::PERVASIVE_LUKS2,
+            password: "notSecreT"
+          )
+          expect(partition.encryption.encryption_process.apqns.map(&:name))
+            .to contain_exactly("01.0001", "01.0002")
+          expect(partition.encryption.encryption_process.key_type).to eq("CCA-AESCIPHER")
         end
       end
 

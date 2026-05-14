@@ -60,6 +60,7 @@ pub enum WebSocketError {
 }
 
 /// WebSocket client for the Agama service.
+#[derive(Debug)]
 pub struct WebSocketClient {
     socket: WebSocketStream<tokio_tungstenite::MaybeTlsStream<TcpStream>>,
 }

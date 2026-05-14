@@ -21,12 +21,13 @@
 use crate::api::{
     bootloader,
     files::{self, FileSourceError},
-    hostname, iscsi, l10n, network, proxy, question, s390, security,
+    hostname, iscsi, l10n, network, ntp, proxy, question, s390, security,
     software::{self, ProductConfig},
     storage, users,
 };
 use fluent_uri::Uri;
 use merge::Merge;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
@@ -39,7 +40,7 @@ pub enum Error {
 }
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, utoipa::ToSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
 pub struct Config {
@@ -52,6 +53,7 @@ pub struct Config {
     #[serde(flatten)]
     pub software: Option<software::Config>,
     pub network: Option<network::Config>,
+    pub ntp: Option<ntp::Config>,
     pub questions: Option<question::Config>,
     #[serde(flatten)]
     pub storage: Option<storage::Config>,

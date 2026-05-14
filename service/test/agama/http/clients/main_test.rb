@@ -33,7 +33,7 @@ describe Agama::HTTP::Clients::Main do
 
   describe "#set_resolvables" do
     it "calls the end-point to set resolvables" do
-      url = URI("http://localhost/api/v2/private/resolvables/storage")
+      url = URI("http://localhost/api/private/resolvables/storage")
       data = [{ "name" => "btrfsprogs", "type" => "package" }].to_json
       expect(Net::HTTP).to receive(:put).with(url, data, {
         "Content-Type": "application/json",

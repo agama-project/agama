@@ -18,11 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Describes what Agama proposes for the target system.
-#[derive(Clone, Debug, Deserialize, Serialize, utoipa::ToSchema)]
-#[schema(as = hostname::Proposal)]
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[schemars(rename = "hostname.Proposal")]
 pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub r#static: Option<String>,

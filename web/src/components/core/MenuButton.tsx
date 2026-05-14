@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useMemo, useRef, useState } from "react";
+import React, { useId, useMemo, useRef } from "react";
 import {
   MenuToggle,
   DrilldownMenu,
@@ -34,6 +34,7 @@ import {
   MenuItemProps,
   MenuToggleProps,
 } from "@patternfly/react-core";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { _, TranslatedString } from "~/i18n";
 import { useLocation, useNavigate } from "react-router";
 
@@ -71,6 +72,8 @@ export type MenuButtonProps = {
   };
   customToggle?: React.ReactElement<CustomToggleProps>;
   toggleProps?: MenuToggleProps;
+  /** Disable opening menu with arrow keys when closed */
+  disableArrowKeyOpen?: boolean;
 };
 
 export function MenuButtonItem({
@@ -127,17 +130,25 @@ export function MenuButtonItem({
   );
 }
 
+/**
+ * Dropdown menu button with support for drilldown menus and keyboard navigation.
+ *
+ * Uses {@link useComboboxKeyboard} hook for arrow-key-to-open behavior: pressing ↓/↑
+ * on a closed toggle opens the menu and focuses the first/last item.
+ */
 export default function MenuButton({
   items = [],
   menuProps = {},
   toggleProps = {},
   customToggle,
+  disableArrowKeyOpen = false,
   children,
 }: React.PropsWithChildren<MenuButtonProps>): React.ReactNode {
-  const menuRef = useRef();
-  const toggleRef = useRef();
+  const pfToggleRef = useRef();
   const rootId = useMenuId();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard({
+    component: "menu",
+  });
   const [menuDrilledIn, setMenuDrilledIn] = React.useState<string[]>([]);
   const [drilldownPath, setDrilldownPath] = React.useState<string[]>([]);
   const [activeMenu, setActiveMenu] = React.useState<string>(rootId);
@@ -198,13 +209,18 @@ export default function MenuButton({
     }
   };
 
-  const baseToggleProps = { ref: toggleRef, onClick: toggle, isExpanded: isOpen };
+  const baseToggleProps = {
+    ref: getToggleRef(pfToggleRef),
+    onClick: toggle,
+    onKeyDown: disableArrowKeyOpen ? undefined : onToggleKeydown,
+    isExpanded: isOpen,
+  };
 
   return (
     <MenuContainer
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      toggleRef={toggleRef}
+      toggleRef={pfToggleRef}
       popperProps={{ direction: "down", enableFlip: false, ...menuProps.popperProps }}
       toggle={
         React.isValidElement(customToggle) ? (

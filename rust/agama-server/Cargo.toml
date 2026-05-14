@@ -22,7 +22,7 @@ serde = { version = "1.0.210", features = ["derive"] }
 tokio = { version = "1.40.0", features = ["macros", "rt-multi-thread", "sync"] }
 tokio-stream = "0.1.16"
 async-trait = "0.1.83"
-axum = { version = "0.7.7", features = ["ws", "macros"] }
+axum = { version = "0.8.9", features = ["ws", "macros"] }
 serde_json = "1.0.128"
 tower-http = { version = "0.6.2", features = [
     "compression-br",
@@ -33,10 +33,12 @@ tower-http = { version = "0.6.2", features = [
 tracing = "0.1.40"
 clap = { version = "4.5.19", features = ["derive", "wrap_help"] }
 tower = { version = "0.5.2", features = ["util"] }
-utoipa = { version = "5.2.0", features = ["axum_extras", "uuid"] }
+aide = { version = "0.16.0-alpha.4", features = ["axum", "axum-extra", "axum-json", "axum-query", "macros"] }
+indexmap = "2.7"
+schemars = { version = "1.2.1", features = ["uuid1", "url2"] }
 config = "0.15.11"
 rand = "0.9.1"
-axum-extra = { version = "0.9.4", features = ["cookie", "typed-header"] }
+axum-extra = { version = "0.12.6", features = ["cookie", "typed-header"] }
 # pam 0.8.0 (2023-11) plus an unreleased commit from 2023-12
 # that switches from users to uzers, fixing CVE-2025-5791
 pam = { git = "https://github.com/1wilkens/pam.git", rev = "daf26ae" }

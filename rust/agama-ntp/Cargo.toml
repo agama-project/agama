@@ -1,0 +1,19 @@
+[package]
+name = "agama-ntp"
+version = "0.1.0"
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
+agama-software = { version = "0.1.0", path = "../agama-software" }
+agama-utils = { version = "0.1.0", path = "../agama-utils" }
+async-trait = "0.1.89"
+merge = { version = "0.2.0", default-features = false, features = ["std"] }
+thiserror = "2.0.18"
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
+tracing = "0.1.44"
+
+[dev-dependencies]
+agama-l10n = { version = "0.1.0", path = "../agama-l10n" }
+test-context = "0.4.1"
+tempfile = "3.13.0"

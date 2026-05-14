@@ -19,6 +19,6 @@
 // find current contact information at www.suse.com.
 
 pub mod web;
-pub use web::server_service;
+pub use web::{server_service, server_with_state};
 
 mod config_schema;

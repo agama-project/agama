@@ -109,7 +109,7 @@ export default function BindingSettingsForm() {
 
   const breadcrumbs = [
     { label: _("Network"), path: NETWORK.root },
-    { label: connection.id, path: generatePath(NETWORK.wiredConnection, { id: connection.id }) },
+    { label: connection.id, path: generatePath(NETWORK.connection.details, { id: connection.id }) },
     { label: _("Binding settings") },
   ];
 

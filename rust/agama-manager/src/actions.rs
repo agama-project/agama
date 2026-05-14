@@ -32,8 +32,8 @@ use gettextrs::gettext;
 use tokio::sync::RwLock;
 
 use crate::{
-    bootloader, checks, files, hostname, ipmi::Ipmi, iscsi, l10n, proxy, s390, security, service,
-    software, storage, users,
+    bootloader, checks, files, hostname, ipmi::Ipmi, iscsi, l10n, ntp, proxy, s390, security,
+    service, software, storage, users,
 };
 
 /// Implements the installation process.
@@ -45,6 +45,7 @@ pub struct InstallAction {
     pub l10n: Handler<l10n::Service>,
     pub network: NetworkSystemClient,
     pub proxy: Handler<proxy::Service>,
+    pub ntp: Handler<ntp::Service>,
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
     pub files: Handler<files::Service>,
@@ -116,6 +117,7 @@ impl InstallAction {
         self.files.call(files::message::Finish).await?;
         self.network.install().await?;
         self.proxy.call(proxy::message::Finish).await?;
+        self.ntp.call(ntp::message::Finish).await?;
         self.hostname.call(hostname::message::Install).await?;
         self.users.call(users::message::Install).await?;
         self.storage.call(storage::message::Finish).await?;
@@ -162,6 +164,7 @@ pub struct SetConfigAction {
     pub l10n: Handler<l10n::Service>,
     pub network: NetworkSystemClient,
     pub proxy: Handler<proxy::Service>,
+    pub ntp: Handler<ntp::Service>,
     pub progress: Handler<progress::Service>,
     pub questions: Handler<question::Service>,
     pub security: Handler<security::Service>,
@@ -186,6 +189,7 @@ impl SetConfigAction {
             gettext("Storing security settings"),
             gettext("Setting up the hostname"),
             gettext("Setting up the network proxy"),
+            gettext("Setting up NTP"),
             gettext("Importing user files"),
             gettext("Running user pre-installation scripts"),
             gettext("Storing questions settings"),
@@ -236,6 +240,13 @@ impl SetConfigAction {
             .await?;
         self.proxy
             .call(proxy::message::SetConfig::new(config.proxy.clone()))
+            .await?;
+
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
+        self.ntp
+            .call(ntp::message::SetConfig::new(config.ntp.clone()))
             .await?;
 
         self.progress

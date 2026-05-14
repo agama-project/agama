@@ -29,12 +29,15 @@ const L10N = {
 
 const NETWORK = {
   root: "/network",
-  newConnection: "/network/connections/new",
-  editConnection: "/network/connections/:id/edit",
-  editBindingSettings: "/network/connections/:id/binding/edit",
-  wiredConnection: "/network/wired_connection/:id",
-  newWiFiConnection: "/network/wifi_networks/new",
-  wifiConnection: "/network/wifi_networks/:id",
+  connection: {
+    new: "/network/connections/new",
+    details: "/network/connections/:id/details",
+    edit: "/network/connections/:id/edit",
+    editBinding: "/network/connections/:id/binding/edit",
+  },
+  wifi: {
+    new: "/network/wifi_networks/new",
+  },
 };
 
 const PRODUCT = {
@@ -54,8 +57,8 @@ const ROOT = {
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",
   installationExit: "/installation/exit",
-  logs: "/api/v2/private/download_logs",
-  config: "/api/v2/config",
+  logs: "/api/private/download_logs",
+  config: "/api/config",
 };
 
 const USER = {
@@ -71,6 +74,7 @@ const USER = {
 
 const SOFTWARE = {
   root: "/software",
+  desktopSelection: "/software/desktops/select",
   patternsSelection: "/software/patterns/select",
   conflicts: "/software/conflicts",
 };
@@ -105,8 +109,8 @@ const STORAGE = {
   },
 };
 
-const HOSTNAME = {
-  root: "/hostname",
+const SYSTEM = {
+  root: "/system",
 };
 
-export { HOSTNAME, L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, USER };
+export { L10N, NETWORK, PRODUCT, REGISTRATION, ROOT, SOFTWARE, STORAGE, SYSTEM, USER };

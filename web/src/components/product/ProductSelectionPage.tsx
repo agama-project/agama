@@ -65,7 +65,6 @@ import { n_, _ } from "~/i18n";
 
 import pfTextStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useInstallerL10n } from "~/context/installerL10n";
-import { useConfig } from "~/hooks/model/config";
 
 /**
  * Props for ProductFormProductOption component
@@ -687,7 +686,6 @@ const ProductSelectionContent = () => {
   const navigate = useNavigate();
   const product = useProduct();
   const { products } = useSystem();
-  const config = useConfig();
   const currentProduct = useProductInfo();
   const [submittedSelection, setSubmmitedSelection] = useState<Product>();
   const [isSubmitted, setIsSubmmited] = useState(false);
@@ -704,7 +702,8 @@ const ProductSelectionContent = () => {
   const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    putConfig({ ...config, product: { id: selectedProduct.id, mode: selectedMode } });
+    // Put product and mode only in order to reset the rest of the config, which can depend on the selected product and mode (bsc#1264438)
+    putConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
   };
 
   return (

@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import {
   FormGroup,
   MenuToggle,
@@ -29,6 +29,7 @@ import {
   SelectList,
   SelectOption,
 } from "@patternfly/react-core";
+import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { useFieldContext } from "~/hooks/form-contexts";
 
 export type DropdownOption<T> = {
@@ -79,9 +80,7 @@ type DropdownFieldProps<T> = {
  *
  * The W3C pattern does allow a middle ground — pressing ↓/↑ on a closed
  * toggle should open the menu and focus the first or last item without
- * committing a value. This component does not yet implement that behavior.
- *
- * TODO: implement arrow-key-opens-menu via a `useSelectKeyboard` hook.
+ * committing a value. This component implements that via {@link useComboboxKeyboard}.
  *
  * @see useFieldContext for field component conventions.
  *
@@ -102,14 +101,14 @@ export default function DropdownField<T extends string>({
   children,
 }: DropdownFieldProps<T>) {
   const field = useFieldContext<T>();
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+  const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
   const selectedOption = options.find(({ value }) => value === field.state.value);
 
   return (
     <FormGroup fieldId={field.name} label={label}>
       <Select
+        ref={menuRef}
         isOpen={isOpen}
         selected={field.state.value}
         onSelect={(_, value) => {
@@ -117,12 +116,13 @@ export default function DropdownField<T extends string>({
           setIsOpen(false);
         }}
         onOpenChange={setIsOpen}
+        onToggleKeydown={onToggleKeydown}
         shouldFocusToggleOnSelect
-        toggle={(ref: React.Ref<MenuToggleElement>) => (
+        toggle={(pfToggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             id={field.name}
-            ref={ref}
-            onClick={toggle}
+            ref={getToggleRef(pfToggleRef)}
+            onClick={() => setIsOpen(!isOpen)}
             isExpanded={isOpen}
             isDisabled={isDisabled}
           >

@@ -11,10 +11,14 @@ on:
       OBS_PASSWORD:
         required: true
 
+env:
+  obs_project: ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+
 jobs:
   update_service:
     # do not run in forks which do not set the OBS_PROJECTS and OBS_USER variables,
     # or the mapping for the current branch is missing
+    # (BTW, jobs.FOO.if cannot see env.*)
     if: vars.OBS_PROJECTS && fromJson(vars.OBS_PROJECTS)[github.ref_name] && vars.OBS_USER
 
     runs-on: ubuntu-latest
@@ -65,11 +69,11 @@ jobs:
           OBS_USER:     ${{ vars.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Commit the rubygem-agama-yast package to ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+      - name: Commit the rubygem-agama-yast package to ${{ env.obs_project }}
         run: rake osc:commit
         working-directory: ./service
         env:
           # do not build the package with "osc", it takes long time
           # and does not provide much value
           SKIP_OSC_BUILD: 1
-          OBS_PROJECT: ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+          OBS_PROJECT: ${{ env.obs_project }}

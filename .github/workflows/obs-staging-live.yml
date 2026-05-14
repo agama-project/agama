@@ -12,10 +12,14 @@ on:
   # allow running manually
   workflow_dispatch:
 
+env:
+  obs_project: ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+
 jobs:
   update_obs_package:
     # do not run in forks which do not set the OBS_PROJECTS variable,
     # or the mapping for the current branch is missing
+    # (BTW, jobs.FOO.if cannot see env.*)
     if: vars.OBS_PROJECTS && fromJson(vars.OBS_PROJECTS)[github.ref_name] && vars.OBS_USER
 
     runs-on: ubuntu-latest
@@ -44,8 +48,8 @@ jobs:
           OBS_USER:     ${{ vars.OBS_USER }}
           OBS_PASSWORD: ${{ secrets.OBS_PASSWORD }}
 
-      - name: Checkout ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }} agama-installer
-        run: osc co -o dist ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }} agama-installer
+      - name: Checkout ${{ env.obs_project }} agama-installer
+        run: osc co -o dist ${{ env.obs_project }} agama-installer
         working-directory: ./live
 
       - name: Build sources
@@ -60,6 +64,6 @@ jobs:
         run: osc diff && osc status
         working-directory: ./live/dist
 
-      - name: Commit agama-installer to ${{ fromJson(vars.OBS_PROJECTS)[github.ref_name] }}
+      - name: Commit agama-installer to ${{ env.obs_project }}
         run: osc commit -m "Updated to Agama $GITHUB_SHA"
         working-directory: ./live/dist

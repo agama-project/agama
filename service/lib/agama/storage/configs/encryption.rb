@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -30,7 +30,8 @@ module Agama
         include Yast2::Equatable
         include Y2Storage::SecretAttributes
 
-        eql_attr :eql_method, :password, :eql_pbkd_function, :label, :cipher, :key_size
+        eql_attr :eql_method, :password, :eql_pbkd_function, :label, :cipher, :key_size, :apqns,
+          :pervasive_key_type
 
         # @return [Y2Storage::EncryptionMethod::Base, nil]
         attr_accessor :method
@@ -60,6 +61,21 @@ module Agama
         # @return [Integer, nil] If nil, the default key size will be used. If an integer
         #     value is used, it has to be a multiple of 8
         attr_accessor :key_size
+
+        # List of APQNs used for generating secure keys (only for pervasive encryption).
+        #
+        # @return [Array<String>]
+        attr_accessor :apqns
+
+        # Type of the generated secure key (only for pervasive encryption).
+        #
+        # @return [String, nil] Accepted key types: "EP11-AES", "CCA-AESCIPHER", "CCA-AESCIPHER". If
+        #   nil, a default one is used according to the APQNs.
+        attr_accessor :pervasive_key_type
+
+        def initialize
+          @apqns = []
+        end
 
         # Whether the password is missing.
         #

@@ -32,7 +32,7 @@ type TextStyleKey = keyof typeof textStyles;
 type TextProps = React.HTMLProps<HTMLSpanElement> &
   React.PropsWithChildren<{
     /** The HTML element to use for wrapping given children */
-    component?: "small" | "span";
+    component?: "small" | "span" | "strong";
     /** Whether apply bold font weight */
     isBold?: boolean;
     /**
@@ -40,6 +40,12 @@ type TextProps = React.HTMLProps<HTMLSpanElement> &
      * Takes precedence over `srOn` if both are provided.
      */
     srOnly?: boolean;
+    /**
+     * Whether the text should be hidden from screen readers while remaining visible.
+     * Useful for pairing with `srOnly` content: show a short label visually while
+     * providing a more descriptive alternative for screen reader users.
+     */
+    srHidden?: boolean;
     /**
      * Makes text only accessible to screen readers at a specific breakpoint.
      * Ignored if `srOnly` is true.
@@ -65,15 +71,16 @@ type TextProps = React.HTMLProps<HTMLSpanElement> &
 
 /**
  * Simple text wrapper that optionally applies bold styling and
- * screen-reader-only visibility.
+ * screen-reader visibility controls.
  *
- * Accessibility behavior is controlled by `srOnly` and `srOn`, with `srOnly`
- * taking precedence.
+ * Accessibility behavior is controlled by `srOnly`, `srHidden`, and `srOn`,
+ * with `srOnly` taking precedence over `srOn`.
  */
 export default function Text({
   component = "span",
   isBold = false,
   srOnly = false,
+  srHidden = false,
   srOn,
   children,
   textStyle,
@@ -85,6 +92,7 @@ export default function Text({
   return (
     <Wrapper
       {...props}
+      aria-hidden={srHidden || undefined}
       className={[
         className,
         isString(textStyle) && textStyles[textStyle],

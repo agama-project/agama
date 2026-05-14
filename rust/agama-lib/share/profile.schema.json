@@ -155,6 +155,19 @@
         }
       }
     },
+    "ntp": {
+      "title": "NTP configuration",
+      "type": "object",
+      "properties": {
+        "sources": {
+          "title": "NTP sources",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ntpSource"
+          }
+        }
+      }
+    },
     "security": {
       "title": "Security settings",
       "type": "object",
@@ -854,6 +867,36 @@
     }
   },
   "$defs": {
+    "ntpSource": {
+      "title": "NTP source",
+      "type": "object",
+      "required": ["type", "address"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["pool", "server", "peer"],
+          "title": "NTP source type",
+          "description": "Type of NTP source: pool (pool of servers), server (single server), or peer (symmetric association)"
+        },
+        "address": {
+          "type": "string",
+          "title": "NTP server address or pool name",
+          "examples": ["0.opensuse.pool.ntp.org", "ntp.example.com"]
+        },
+        "iburst": {
+          "type": "boolean",
+          "default": false,
+          "title": "Enable iburst option",
+          "description": "Send a burst of packets for faster initial synchronization"
+        },
+        "offline": {
+          "type": "boolean",
+          "default": false,
+          "title": "Mark source as offline initially",
+          "description": "Start with the source marked as offline (can be activated later)"
+        }
+      }
+    },
     "preScript": {
       "title": "User-defined installation script that runs before the installation starts",
       "type": "object",

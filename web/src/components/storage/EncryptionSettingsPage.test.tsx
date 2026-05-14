@@ -96,7 +96,7 @@ describe("EncryptionSettingsPage", () => {
     });
 
     it("allows enabling the encryption", async () => {
-      const { user } = installerRender(<EncryptionSettingsPage />, { withL10n: true });
+      const { user } = installerRender(<EncryptionSettingsPage />);
       const encryptionCheckbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
       expect(encryptionCheckbox).not.toBeChecked();
       await user.click(encryptionCheckbox);
@@ -116,7 +116,7 @@ describe("EncryptionSettingsPage", () => {
     });
 
     it("allows disabling the encryption", async () => {
-      const { user } = installerRender(<EncryptionSettingsPage />, { withL10n: true });
+      const { user } = installerRender(<EncryptionSettingsPage />);
       const encryptionCheckbox = screen.getByRole("checkbox", { name: "Encrypt the system" });
       expect(encryptionCheckbox).toBeChecked();
       await user.click(encryptionCheckbox);
@@ -133,7 +133,7 @@ describe("EncryptionSettingsPage", () => {
     });
 
     it("allows disabling TPM", async () => {
-      const { user } = installerRender(<EncryptionSettingsPage />, { withL10n: true });
+      const { user } = installerRender(<EncryptionSettingsPage />);
       const tpmCheckbox = screen.getByRole("checkbox", { name: /Use.*TPM/ });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       expect(tpmCheckbox).toBeChecked();
@@ -153,7 +153,7 @@ describe("EncryptionSettingsPage", () => {
     });
 
     it("does not offer TPM", () => {
-      installerRender(<EncryptionSettingsPage />, { withL10n: true });
+      installerRender(<EncryptionSettingsPage />);
       expect(screen.queryByRole("checkbox", { name: /Use.*TPM/ })).toBeNull();
     });
   });

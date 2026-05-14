@@ -25,10 +25,10 @@ import {
   Connection,
   ConnectionMethod,
   ConnectionState,
-  ConnectionType,
   Device,
   DeviceState,
 } from "~/types/network";
+import { CONNECTION_TYPE } from "~/utils/network";
 
 const createConnection = (
   id: string,
@@ -45,7 +45,7 @@ const createConnection = (
 
 const createDevice = (overrides: Partial<Device> = {}): Device => ({
   name: "eth0",
-  type: ConnectionType.ETHERNET,
+  type: CONNECTION_TYPE.ETHERNET,
   state: DeviceState.CONNECTED,
   addresses: [{ address: "192.168.1.100", prefix: 24 }],
   nameservers: [],
@@ -229,7 +229,7 @@ describe("getIpAddresses", () => {
     const linkedDevice = createDevice({ connection: connection.id });
     const unlinkedDevice = createDevice({
       name: "wlan0",
-      type: ConnectionType.WIFI,
+      type: CONNECTION_TYPE.WIFI,
       state: DeviceState.DISCONNECTED,
       addresses: [{ address: "192.168.1.200", prefix: 24 }],
       gateway4: "",
@@ -256,7 +256,7 @@ describe("getIpAddresses", () => {
     const device2 = createDevice({
       name: "wlan0",
       connection: connection2.id,
-      type: ConnectionType.WIFI,
+      type: CONNECTION_TYPE.WIFI,
       addresses: [{ address: "10.0.0.50", prefix: 8 }],
       gateway4: "10.0.0.1",
       macAddress: "BB:11:22:33:44:55",

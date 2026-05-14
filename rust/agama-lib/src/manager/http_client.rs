@@ -22,7 +22,7 @@ use crate::{
     http::{BaseHTTPClient, BaseHTTPClientError},
     logs::LogsLists,
 };
-use agama_utils::api::{self, FinishMethod, Status};
+use agama_utils::api::{self, FinishMethod, IssueWithScope, Status};
 use reqwest::header::CONTENT_ENCODING;
 use std::path::{Path, PathBuf};
 use std::{fs, io::Cursor, os::unix::fs::OpenOptionsExt};
@@ -60,7 +60,7 @@ impl ManagerHTTPClient {
     /// Starts the installation.
     pub async fn install(&self) -> Result<(), ManagerHTTPClientError> {
         let action = api::Action::Install;
-        self.client.post_void("/v2/action", &action).await?;
+        self.client.post_void("/action", &action).await?;
         Ok(())
     }
 
@@ -69,7 +69,7 @@ impl ManagerHTTPClient {
     /// * `method`: halt, reboot, stop or poweroff the system.
     pub async fn finish(&self, method: FinishMethod) -> Result<(), ManagerHTTPClientError> {
         let action = api::Action::Finish(method);
-        self.client.post_void("/v2/action", &action).await?;
+        self.client.post_void("/action", &action).await?;
         Ok(())
     }
 
@@ -81,7 +81,7 @@ impl ManagerHTTPClient {
     /// Returns path to logs
     pub async fn store(&self, path: &Path) -> Result<PathBuf, ManagerHTTPClientError> {
         // 1) response with logs
-        let response = self.client.get_raw("/v2/private/download_logs").await?;
+        let response = self.client.get_raw("/private/download_logs").await?;
 
         // 2) find out the destination file name
         let ext = &response.headers().get(CONTENT_ENCODING).ok_or(
@@ -125,7 +125,13 @@ impl ManagerHTTPClient {
 
     /// Returns the installer status.
     pub async fn status(&self) -> Result<Status, ManagerHTTPClientError> {
-        let status = self.client.get::<Status>("/v2/status").await?;
+        let status = self.client.get::<Status>("/status").await?;
         Ok(status)
+    }
+
+    /// Returns the installer status.
+    pub async fn issues(&self) -> Result<Vec<IssueWithScope>, ManagerHTTPClientError> {
+        let issues: Vec<IssueWithScope> = self.client.get("/issues").await?;
+        Ok(issues)
     }
 }

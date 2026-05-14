@@ -70,7 +70,7 @@ fn format_backend_error(error: &String) -> String {
 ///   }
 /// ```
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct BaseHTTPClient {
     pub client: reqwest::Client,
     insecure: bool,

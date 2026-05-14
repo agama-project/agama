@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-23 06:09+0000\n"
+"POT-Creation-Date: 2026-05-08 12:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -28,6 +28,144 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+#: agama-cli/src/progress.rs:116
+msgid "Calculating the installation proposal:"
+msgstr ""
+
+#: agama-cli/src/progress.rs:118
+msgid "Installing the system:"
+msgstr ""
+
+#: agama-cli/src/progress.rs:223 agama-cli/src/status.rs:77
+msgid "Installation is ready to start."
+msgstr ""
+
+#: agama-cli/src/progress.rs:226
+msgid "Waiting to start installation"
+msgstr ""
+
+#: agama-cli/src/progress.rs:234
+msgid "Installation successfully finished"
+msgstr ""
+
+#: agama-cli/src/progress.rs:235
+msgid "Installation failed"
+msgstr ""
+
+#: agama-cli/src/progress.rs:248
+msgid ""
+"There are unanswered questions. Please use `agama questions` command or web "
+"interface to answer them:"
+msgstr ""
+
+#: agama-cli/src/progress.rs:260
+msgid "Installer is failed to calculate the installation proposal."
+msgstr ""
+
+#: agama-cli/src/progress.rs:264
+msgid "There are these issues blocking installation:"
+msgstr ""
+
+#: agama-cli/src/progress.rs:277
+msgid "Details"
+msgstr ""
+
+#: agama-cli/src/progress.rs:287
+msgid "Manager"
+msgstr ""
+
+#: agama-cli/src/progress.rs:288
+msgid "Network"
+msgstr ""
+
+#: agama-cli/src/progress.rs:289
+msgid "Hostname"
+msgstr ""
+
+#: agama-cli/src/progress.rs:290
+msgid "Localization"
+msgstr ""
+
+#: agama-cli/src/progress.rs:291
+msgid "Product"
+msgstr ""
+
+#: agama-cli/src/progress.rs:292
+msgid "Software"
+msgstr ""
+
+#: agama-cli/src/progress.rs:293
+msgid "Storage"
+msgstr ""
+
+#: agama-cli/src/progress.rs:294
+msgid "Files"
+msgstr ""
+
+#: agama-cli/src/progress.rs:295
+msgid "iSCSI"
+msgstr ""
+
+#: agama-cli/src/progress.rs:296
+msgid "DASD"
+msgstr ""
+
+#: agama-cli/src/progress.rs:297
+msgid "zFCP"
+msgstr ""
+
+#: agama-cli/src/progress.rs:298
+msgid "Users"
+msgstr ""
+
+#: agama-cli/src/progress.rs:299
+msgid "NTP"
+msgstr ""
+
+#: agama-cli/src/progress.rs:349
+msgid "Current step"
+msgstr ""
+
+#: agama-cli/src/status.rs:75
+msgid "Installation failed."
+msgstr ""
+
+#: agama-cli/src/status.rs:76
+msgid "Installation finished successfully."
+msgstr ""
+
+#: agama-cli/src/status.rs:78
+msgid "Installation is in progress."
+msgstr ""
+
+#: agama-cli/src/status.rs:79
+msgid "Installation is being proposed."
+msgstr ""
+
+#: agama-cli/src/status.rs:80
+msgid ""
+"There are unanswered questions. Please use `agama questions` command or web "
+"interface to answer them."
+msgstr ""
+
+#: agama-cli/src/status.rs:81
+msgid ""
+"The installer failed to calculate the installation proposal. There are "
+"issues blocking the installation."
+msgstr ""
+
+#: agama-cli/src/status.rs:111
+msgid "Details:"
+msgstr ""
+
+#: agama-cli/src/status.rs:113
+msgid "Open questions:"
+msgstr ""
+
+#: agama-cli/src/status.rs:119
+msgid "Blocking issues:"
+msgstr ""
+
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:198
 msgid "Failed to retrieve the script %s. Do you want to try again?"
@@ -38,71 +176,75 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:86
+#: agama-manager/src/actions.rs:87
 msgid "Prepare the system"
 msgstr ""
 
-#: agama-manager/src/actions.rs:87
+#: agama-manager/src/actions.rs:88
 msgid "Install software"
 msgstr ""
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:89
 msgid "Configure the system"
 msgstr ""
 
-#: agama-manager/src/actions.rs:186
+#: agama-manager/src/actions.rs:189
 msgid "Storing security settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:187
+#: agama-manager/src/actions.rs:190
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/actions.rs:188
+#: agama-manager/src/actions.rs:191
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/actions.rs:189
-msgid "Importing user files"
-msgstr ""
-
-#: agama-manager/src/actions.rs:190
-msgid "Running user pre-installation scripts"
-msgstr ""
-
-#: agama-manager/src/actions.rs:191
-msgid "Storing questions settings"
-msgstr ""
-
 #: agama-manager/src/actions.rs:192
-msgid "Storing localization settings"
+msgid "Setting up NTP"
 msgstr ""
 
 #: agama-manager/src/actions.rs:193
-msgid "Storing users settings"
+msgid "Importing user files"
 msgstr ""
 
 #: agama-manager/src/actions.rs:194
-msgid "Configuring iSCSI devices"
+msgid "Running user pre-installation scripts"
+msgstr ""
+
+#: agama-manager/src/actions.rs:195
+msgid "Storing questions settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:196
+msgid "Storing localization settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:197
+msgid "Storing users settings"
 msgstr ""
 
 #: agama-manager/src/actions.rs:198
-msgid "Configuring DASD devices"
+msgid "Configuring iSCSI devices"
 msgstr ""
 
 #: agama-manager/src/actions.rs:202
+msgid "Configuring DASD devices"
+msgstr ""
+
+#: agama-manager/src/actions.rs:206
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:207
+#: agama-manager/src/actions.rs:211
 msgid "Preparing the software proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:208
+#: agama-manager/src/actions.rs:212
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:209
+#: agama-manager/src/actions.rs:213
 msgid "Storing bootloader settings"
 msgstr ""
 
@@ -119,7 +261,7 @@ msgid "Reject"
 msgstr ""
 
 #: agama-security/src/service.rs:226
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
 msgstr ""
 
@@ -149,79 +291,79 @@ msgid "Continue"
 msgstr ""
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
-#: agama-software/src/callbacks/security.rs:102
+#: agama-software/src/callbacks/security.rs:104
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
 
-#: agama-software/src/callbacks/security.rs:109
+#: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
 msgstr ""
 
-#: agama-software/src/model/packages.rs:54
+#: agama-software/src/model/packages.rs:55
 msgid "package"
 msgstr ""
 
-#: agama-software/src/model/packages.rs:55
+#: agama-software/src/model/packages.rs:56
 msgid "pattern"
 msgstr ""
 
-#: agama-software/src/model/packages.rs:56
+#: agama-software/src/model/packages.rs:57
 msgid "product"
 msgstr ""
 
-#: agama-software/src/service.rs:279
+#: agama-software/src/service.rs:287
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:332
+#: agama-software/src/zypp_server.rs:336
 msgid "Updating the list of repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:333
+#: agama-software/src/zypp_server.rs:337
 msgid "Refreshing metadata from the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:334
+#: agama-software/src/zypp_server.rs:338
 msgid "Calculating the software proposal"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:337
+#: agama-software/src/zypp_server.rs:341
 msgid "Registering the system"
 msgstr ""
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:401
+#: agama-software/src/zypp_server.rs:411
 msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:421
+#: agama-software/src/zypp_server.rs:431
 msgid "Could not read the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:465
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:459
+#: agama-software/src/zypp_server.rs:468
 msgid "Failed to find the product in the repositories."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:517
+#: agama-software/src/zypp_server.rs:531
 msgid "There are conflicts in the software selection"
 msgstr ""
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:546
+#: agama-software/src/zypp_server.rs:560
 msgid "Could not select %s '%s' for installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:951
+#: agama-software/src/zypp_server.rs:976
 msgid "Failed to register the system"
 msgstr ""
 
