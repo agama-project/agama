@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 14 03:43:16 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Install dracut systemd service units via the unit directory variable
+  so they are included in non-hostonly initrds with dracut 109
+  (gh#agama-project/agama#3264).
+
+-------------------------------------------------------------------
 Wed May 13 12:45:19 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add the "ntp" dracut module to allow setting the NTP configuration
