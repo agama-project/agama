@@ -27,7 +27,7 @@ regex = "1.11.1"
 home = "0.5.11"
 fluent-uri = "0.4.1"
 serde = { version = "1.0.228", features = ["derive"] }
-ratatui = "0.29"
+ratatui = "0.30"
 crossterm = { version = "0.29", features = ["event-stream"] }
 futures-util = "0.3"
 
