@@ -119,7 +119,7 @@ module Agama
         # @return [Issue, nil]
         def wrong_bootloader_method_issue
           method = encryption&.method
-          error = grub2_error? || bls_error?
+          error = tpm_bls_error? || tpm_fde_error?
 
           return unless method && error
 
@@ -149,18 +149,26 @@ module Agama
           methods
         end
 
-        # Whether the bootloader is grub2 and the encryption method cannot be used.
+        # Whether the encryption is TPM BLS and it cannot be used with the configured bootloader.
         #
         # @return [Boolean]
-        def grub2_error?
-          bootloader_config.type&.is?(:grub2) && encryption&.method&.is?(:tpm_bls)
+        def tpm_bls_error?
+          return false unless encryption&.method&.is?(:tpm_bls)
+
+          return false unless bootloader_config.type
+
+          !bootloader_config.type.bls?
         end
 
-        # Whether the bootloader is BLS-compliant and the encryption method cannot be used.
+        # Whether the encryption is TPM FDE and it cannot be used with the configured bootloader.
         #
         # @return [Boolean]
-        def bls_error?
-          bootloader_config.type&.bls? && encryption&.method&.is?(:tpm_fde)
+        def tpm_fde_error?
+          return false unless encryption&.method&.is?(:tpm_fde)
+
+          return false unless bootloader_config.type
+
+          !bootloader_config.type.is?(:grub2)
         end
       end
     end

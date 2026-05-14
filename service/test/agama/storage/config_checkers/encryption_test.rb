@@ -120,6 +120,33 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       end
     end
 
+    context "if TPM BLS is not possible" do
+      let(:encryption) do
+        {
+          luks2: {
+            password: "12345",
+            tpm:      true
+          }
+        }
+      end
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+      before do
+        allow_any_instance_of(Y2Storage::EncryptionMethod::TpmBls)
+          .to(receive(:possible?))
+          .and_return(false)
+      end
+
+      it "includes the expected issue" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
+          description: /BLS Compliant Encryption With TPM Unlocking is not available/
+        )
+      end
+    end
+
     context "with invalid method" do
       let(:encryption) { "protected_swap" }
       let(:filesystem) { { path: "/" } }
@@ -149,65 +176,6 @@ describe Agama::Storage::ConfigCheckers::Encryption do
       end
 
       let(:filesystem) { { path: "/" } }
-
-      it "does not include an issue" do
-        expect(subject.issues.size).to eq(0)
-      end
-    end
-
-    context "with TPM FDE encryption and systemd-boot bootloader" do
-      let(:encryption) do
-        {
-          tpmFde: {
-            password: "12345"
-          }
-        }
-      end
-
-      let(:filesystem) { { path: "/" } }
-      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
-
-      it "includes the expected issue" do
-        issues = subject.issues
-        expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
-          description: /is not suitable for the bootloader/
-        )
-      end
-    end
-
-    context "with TPM FDE encryption and grub2-bls bootloader" do
-      let(:encryption) do
-        {
-          tpmFde: {
-            password: "12345"
-          }
-        }
-      end
-
-      let(:filesystem) { { path: "/" } }
-      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2_BLS }
-
-      it "includes the expected issue" do
-        issues = subject.issues
-        expect(issues).to include an_object_having_attributes(
-          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
-          description: /is not suitable for the bootloader/
-        )
-      end
-    end
-
-    context "with TPM FDE encryption and grub2 bootloader" do
-      let(:encryption) do
-        {
-          tpmFde: {
-            password: "12345"
-          }
-        }
-      end
-
-      let(:filesystem) { { path: "/" } }
-      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
 
       it "does not include an issue" do
         expect(subject.issues.size).to eq(0)
@@ -279,6 +247,187 @@ describe Agama::Storage::ConfigCheckers::Encryption do
           kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
           description: /is not suitable for the bootloader/
         )
+      end
+    end
+
+    context "with TPM BLS encryption and bls-legacy bootloader" do
+      let(:encryption) do
+        {
+          luks2: {
+            password: "12345",
+            tpm:      true
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { Y2Storage::BootloaderType::BLS_LEGACY }
+
+      it "does not include an issue" do
+        expect(subject.issues.size).to eq(0)
+      end
+    end
+
+    context "with TPM BLS encryption and NONE bootloader" do
+      let(:encryption) do
+        {
+          luks2: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { Y2Storage::BootloaderType::NONE }
+
+      it "includes the expected issue" do
+        # Explicitly force TPM_BLS encryption method after Config creation
+        drive_config.encryption.method = Y2Storage::EncryptionMethod::TPM_BLS
+
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
+          description: /is not suitable for the bootloader/
+        )
+      end
+    end
+
+    context "with TPM BLS encryption and nil bootloader type" do
+      let(:encryption) do
+        {
+          luks2: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { nil }
+
+      it "does not include an issue" do
+        # Explicitly force TPM_BLS encryption method after Config creation
+        drive_config.encryption.method = Y2Storage::EncryptionMethod::TPM_BLS
+
+        # With nil bootloader, the check is skipped (returns false early)
+        expect(subject.issues.size).to eq(0)
+      end
+    end
+
+    context "with TPM FDE encryption and systemd-boot bootloader" do
+      let(:encryption) do
+        {
+          tpmFde: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+      it "includes the expected issue" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
+          description: /is not suitable for the bootloader/
+        )
+      end
+    end
+
+    context "with TPM FDE encryption and grub2-bls bootloader" do
+      let(:encryption) do
+        {
+          tpmFde: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2_BLS }
+
+      it "includes the expected issue" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
+          description: /is not suitable for the bootloader/
+        )
+      end
+    end
+
+    context "with TPM FDE encryption and grub2 bootloader" do
+      let(:encryption) do
+        {
+          tpmFde: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
+
+      it "does not include an issue" do
+        expect(subject.issues.size).to eq(0)
+      end
+    end
+
+    context "with TPM FDE encryption and bls-legacy bootloader" do
+      let(:encryption) do
+        {
+          tpmFde: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { Y2Storage::BootloaderType::BLS_LEGACY }
+
+      it "includes the expected issue" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
+          description: /is not suitable for the bootloader/
+        )
+      end
+    end
+
+    context "with TPM FDE encryption and NONE bootloader" do
+      let(:encryption) do
+        {
+          tpmFde: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { Y2Storage::BootloaderType::NONE }
+
+      it "includes the expected issue" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
+          description: /is not suitable for the bootloader/
+        )
+      end
+    end
+
+    context "with TPM FDE encryption and nil bootloader type" do
+      let(:encryption) do
+        {
+          tpmFde: {
+            password: "12345"
+          }
+        }
+      end
+
+      let(:filesystem) { { path: "/" } }
+      let(:bootloader_type) { nil }
+
+      it "does not include an issue" do
+        expect(subject.issues.size).to eq(0)
       end
     end
   end
