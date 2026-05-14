@@ -22,8 +22,9 @@ use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
     monitor::{InstallationStatus, Monitor, MonitorClient},
 };
-use anyhow::Result;
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
+use anyhow::{anyhow, Result};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
+use gettextrs::gettext;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
 use std::{collections::HashMap, io, time::Duration};
@@ -168,13 +169,17 @@ impl MonitorApp {
 
         while !self.exit {
             terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
-            if let Some(message) = rx.recv().await {
-                match message {
-                    Message::Update(update) => self.update_status(update),
-                    Message::TerminalEvent(event) => {
-                        if let Event::Key(key_event) = event {
-                            self.handle_key_event(key_event);
-                        }
+
+            let message = rx
+                .recv()
+                .await
+                .ok_or(anyhow!(gettext("Lost the connection with the server.")))?;
+
+            match message {
+                Message::Update(update) => self.update_status(update),
+                Message::TerminalEvent(event) => {
+                    if let Event::Key(key_event) = event {
+                        self.handle_key_event(key_event);
                     }
                 }
             }
