@@ -53,7 +53,7 @@ module Agama
       #
       # @return [Boolean]
       def bls_tpm?
-        arch.efiboot? && Yast::Arch.has_tpm2
+        Y2Storage::EncryptionMethod::TPM_BLS.possible?
       end
 
       # FIXME: This method is duplicated at Y2Storage::Proposal::BootPlanner and also in

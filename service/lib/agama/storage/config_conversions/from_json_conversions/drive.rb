@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -33,13 +33,23 @@ module Agama
       module FromJSONConversions
         # Drive conversion from JSON hash according to schema.
         class Drive < Base
-        private
-
           include WithSearch
           include WithEncryption
           include WithFilesystem
           include WithPtableType
           include WithPartitions
+
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
+        private
+
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
 
           alias_method :drive_json, :config_json
 

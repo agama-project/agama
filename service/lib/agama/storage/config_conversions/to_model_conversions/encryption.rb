@@ -48,7 +48,7 @@ module Agama
             method = config.method
             return unless method
 
-            method.is?(:tpm_fde) || method.is?(:systemd_fde)
+            method.is?(:tpm_fde) || method.is?(:tpm_bls)
           end
         end
       end

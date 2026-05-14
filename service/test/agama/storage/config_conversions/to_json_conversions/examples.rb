@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require_relative "../../../../test_helper"
 require "agama/storage/config_conversions"
 require "y2storage/refinements"
+require "y2storage/bootloader_type"
 
 using Y2Storage::Refinements::SizeCasts
 
@@ -215,7 +216,7 @@ shared_examples "with encryption" do
       end
     end
 
-    context "if encryption method is TMP FDE" do
+    context "if encryption method is TPM FDE" do
       let(:encryption) do
         {
           tpmFde: {
@@ -230,8 +231,44 @@ shared_examples "with encryption" do
 
         expect(encryption_json).to eq(
           {
-            tpmFde: {
+            luks2: {
+              tpm:      true,
               password: "12345"
+            }
+          }
+        )
+      end
+    end
+
+    context "if encryption method is TPM BLS" do
+      let(:encryption) do
+        {
+          luks2: {
+            tpm:          true,
+            password:     "12345",
+            keySize:      256,
+            pbkdFunction: "argon2i",
+            cipher:       "twofish",
+            label:        "test"
+          }
+        }
+      end
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        encryption_json = config_json[:encryption]
+
+        expect(encryption_json).to eq(
+          {
+            luks2: {
+              tpm:          true,
+              password:     "12345",
+              keySize:      256,
+              pbkdFunction: "argon2i",
+              cipher:       "twofish",
+              label:        "test"
             }
           }
         )

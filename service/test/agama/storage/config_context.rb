@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,10 +21,10 @@
 
 require_relative "./product_config_context"
 require_relative "./storage_helpers"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_solver"
 require "agama/storage/system"
-require "agama/storage/bootloader_config"
 require "y2storage"
 require "y2storage/encryption_method/tpm_fde"
 
@@ -42,23 +42,28 @@ shared_context "config" do
 
   let(:storage_system) { Agama::Storage::System.new }
 
-  let(:bootloader_config) do
-    instance_double(Agama::Storage::BootloaderConfig, type: Y2Storage::BootloaderType::GRUB2)
-  end
-
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
-      .new(config_json, default_paths: default_paths, mandatory_paths: mandatory_paths)
+      .new(config_json,
+        bootloader_config: bootloader_config,
+        default_paths:     default_paths,
+        mandatory_paths:   mandatory_paths)
       .convert
   end
 
   let(:config_json) { nil }
+
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
 
   before do
     mock_storage(devicegraph: scenario)
 
     # To speed-up the tests. Use #allow_any_instance because #allow introduces marshaling problems
     allow_any_instance_of(Y2Storage::EncryptionMethod::TpmFde)
+      .to(receive(:possible?))
+      .and_return(true)
+
+    allow_any_instance_of(Y2Storage::EncryptionMethod::TpmBls)
       .to(receive(:possible?))
       .and_return(true)
 

@@ -26,7 +26,7 @@ require "agama/storage/config_checkers/md_raid"
 describe Agama::Storage::ConfigCheckers::MdRaid do
   include_context "config"
 
-  subject { described_class.new(md_config, config, product_config) }
+  subject { described_class.new(md_config, config, bootloader_config, product_config) }
 
   let(:config_json) do
     {

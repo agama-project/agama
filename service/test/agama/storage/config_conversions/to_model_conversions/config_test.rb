@@ -20,8 +20,11 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../config_context"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/to_model_conversions/config"
+require "y2storage/bootloader_type"
 require "y2storage/encryption_method"
+require "y2storage/encryption_method/tpm_bls"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
   include_context "config"
@@ -37,10 +40,15 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
     }
   end
 
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap { |c| c.type = bootloader_type }
+  end
+
   let(:boot) { nil }
   let(:drives) { nil }
   let(:md_raids) { nil }
   let(:volume_groups) { nil }
+  let(:bootloader_type) { nil }
 
   describe "#convert" do
     context "if #drives is not configured" do
@@ -227,6 +235,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
     context "for the 'boot' property" do
       let(:boot) { { configure: true } }
 
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
+
       it "generates the expected JSON" do
         model_json = subject.convert
         expect(model_json[:boot]).to eq(
@@ -294,7 +304,7 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
           )
         end
 
-        context "and the encryption method is tpmFde" do
+        context "and the encryption method is TPM FDE" do
           let(:encryption) do
             {
               tpmFde: {
@@ -315,10 +325,16 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
           end
         end
 
-        context "and the encryption method is systemdFde" do
-          before do
-            encryption = config.drives.first.partitions.first.encryption
-            encryption.method = Y2Storage::EncryptionMethod::SYSTEMD_FDE
+        context "and the encryption method is TPM BLS" do
+          let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+          let(:encryption) do
+            {
+              luks2: {
+                password: "12345",
+                tpm:      true
+              }
+            }
           end
 
           it "generates the expected JSON" do
