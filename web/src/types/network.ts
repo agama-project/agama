@@ -136,6 +136,14 @@ enum NetworkState {
   CONNECTED = "connected",
 }
 
+enum ConnectivityState {
+  UNKNOWN = "unknown",
+  NONE = "none",
+  PORTAL = "portal",
+  LIMITED = "limited",
+  FULL = "full",
+}
+
 enum SecurityProtocols {
   WEP = "WEP",
   WPA = "WPA1",
@@ -442,7 +450,7 @@ type WifiNetwork = AccessPoint & {
 
 type GeneralState = {
   copyNetwork: boolean;
-  connectivity: boolean;
+  connectivity: ConnectivityState;
   networkingEnabled: boolean;
   wirelessEnabled: boolean;
 };
@@ -580,6 +588,7 @@ export {
   ApSecurityFlags,
   BondMode,
   Connection,
+  ConnectivityState,
   ConnectionState,
   ConnectionStatus,
   ConnectionMethod,
