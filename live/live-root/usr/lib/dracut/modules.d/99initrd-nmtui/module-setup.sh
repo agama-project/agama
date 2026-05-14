@@ -24,7 +24,7 @@ install() {
   inst_hook cmdline 99 "$moddir/initrd-nmtui-cmdline.sh"
 
   # install the systemd service and the self-update script to the initramfs
-  inst_multiple "$systemdsystemconfdir"/initrd-nmtui.service initrd-network-setup.sh dialog nmtui nmcli kill tput clear
+  inst_multiple "$systemdsystemunitdir"/initrd-nmtui.service initrd-network-setup.sh dialog nmtui nmcli kill tput clear
 
   # enable the self-update service in the initramfs
   $SYSTEMCTL -q --root "$initdir" enable initrd-nmtui.service
