@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 14 11:05:33 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update npm dependencies to safer versions (bsc#1264373,
+  bsc#1264802, gh#agama-project/agama#3496).
+
+-------------------------------------------------------------------
 Wed May 13 11:52:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Replace the Hostname page and section with a more generic System
@@ -7,7 +13,7 @@ Wed May 13 11:52:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
 - Simplify the UX for changing the hostname by replacing the
   checkbox-driven approach with a mode selector
   (related: gh#agama-project/agama#3475).
-  
+
 -------------------------------------------------------------------
 Wed May 13 11:28:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
