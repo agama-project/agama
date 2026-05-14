@@ -66,7 +66,6 @@ const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
 /**
  * Returns the translated label for a connection state.
  */
-// eslint-disable-next-line agama-i18n/string-literals
 const connectionStateLabel = (state: ConnectionState): string => CONNECTION_STATE_LABELS[state];
 
 /**
