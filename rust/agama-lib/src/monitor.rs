@@ -53,8 +53,8 @@
 
 use std::fmt;
 
-use agama_utils::api::{self, Event};
-use serde::Serialize;
+use agama_utils::api::{self, Config, Event};
+use serde::{Deserialize, Serialize};
 use tokio::sync::{broadcast, Mutex};
 
 use crate::{
@@ -62,6 +62,27 @@ use crate::{
     manager::{http_client::ManagerHTTPClientError, ManagerHTTPClient},
     questions::{self, http_client::QuestionsHTTPClientError},
 };
+
+/// Minimal struct to deserialize hardware info from /system
+#[derive(Debug, Deserialize)]
+struct HardwareInfo {
+    model: Option<String>,
+}
+
+/// Minimal struct to deserialize hostname info from /system
+#[derive(Debug, Deserialize)]
+struct HostnameInfo {
+    hostname: String,
+}
+
+/// Minimal struct to deserialize /system response
+#[derive(Debug, Deserialize)]
+struct MinimalSystemInfo {
+    /// Hardware information
+    hardware: HardwareInfo,
+    /// Hostname information
+    hostname: HostnameInfo,
+}
 
 /// Errors that can occur when interacting with the monitor.
 #[derive(thiserror::Error, Debug)]
@@ -84,6 +105,19 @@ impl fmt::Display for MonitorBackendError {
     }
 }
 
+/// System information for the monitor
+#[derive(Clone, Default, Debug, PartialEq, Serialize)]
+pub struct SystemInfo {
+    /// System hostname
+    pub hostname: String,
+    /// Server IP address or hostname
+    pub ip: String,
+    /// Machine type/model
+    pub machine: String,
+    /// Product identifier
+    pub product_id: Option<String>,
+}
+
 /// Extended status information with combination of status, issues and questions
 #[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct InstallationStatus {
@@ -93,6 +127,22 @@ pub struct InstallationStatus {
     pub issues: Vec<api::IssueWithScope>,
     /// List of unanswered questions.
     pub questions: Vec<api::question::Question>,
+    /// System information (hostname, IP, machine, product)
+    pub system_info: SystemInfo,
+}
+
+impl InstallationStatus {
+    pub fn has_product(&self) -> bool {
+        self.system_info.product_id.is_some()
+    }
+
+    pub fn is_idle(&self) -> bool {
+        self.status.progresses.is_empty()
+    }
+
+    pub fn has_finished(&self) -> bool {
+        self.status.stage.is_last()
+    }
 }
 
 /// It allows connecting to the Agama monitor to get the status or listen for changes.
@@ -141,10 +191,14 @@ impl Monitor {
             .filter(|q| q.answer.is_none())
             .collect();
 
+        // Fetch system information
+        let system_info = Self::fetch_system_info(http_client).await?;
+
         let installation_status = InstallationStatus {
             status: manager.status().await?,
             issues: manager.issues().await?,
             questions,
+            system_info,
         };
         Ok(installation_status)
     }
@@ -176,6 +230,60 @@ impl Monitor {
 
         tokio::spawn(async move { monitor.run().await });
         Ok((client, initial_status))
+    }
+
+    /// Fetches system information from the API
+    /// Returns (SystemInfo, products list) tuple
+    async fn fetch_system_info(http_client: &BaseHTTPClient) -> Result<SystemInfo, MonitorError> {
+        // Extract IP from HTTP client base URL
+        let ip = http_client
+            .base_url
+            .host_str()
+            .unwrap_or("localhost")
+            .to_string();
+
+        // Fetch system info from API
+        let system_info: MinimalSystemInfo = http_client
+            .get("/system")
+            .await
+            .map_err(|e| MonitorError::Manager(ManagerHTTPClientError::HTTP(e)))?;
+
+        // Extract hostname
+        let hostname = system_info.hostname.hostname;
+
+        // Extract machine model
+        let machine = system_info
+            .hardware
+            .model
+            .unwrap_or_else(|| "Unknown Machine".to_string());
+
+        let product_id = Self::fetch_product_id(http_client).await?;
+
+        let system = SystemInfo {
+            hostname,
+            ip,
+            machine,
+            product_id,
+        };
+
+        Ok(system)
+    }
+
+    async fn fetch_product_id(
+        http_client: &BaseHTTPClient,
+    ) -> Result<Option<String>, MonitorError> {
+        let config: Config = http_client
+            .get("/config")
+            .await
+            .map_err(|e| MonitorError::Manager(ManagerHTTPClientError::HTTP(e)))?;
+
+        let product_id = config
+            .software
+            .as_ref()
+            .and_then(|p| p.product.as_ref())
+            .and_then(|p| p.id.clone());
+
+        Ok(product_id)
     }
 
     /// Runs the monitor.
@@ -218,6 +326,13 @@ impl Monitor {
                     return Ok(());
                 };
                 status.issues = issues;
+
+                // Refresh product ID as it might have changed
+                // (e.g., when a product is selected, it triggers IssuesChanged)
+                match Self::fetch_product_id(&self.http_client).await {
+                    Ok(product_id) => status.system_info.product_id = product_id,
+                    Err(e) => tracing::error!("Failed to refresh product name: {:?}", e),
+                }
             }
             Event::QuestionAdded { .. } => {
                 //TODO: we need better params when question is added to be able to depend only on websocket

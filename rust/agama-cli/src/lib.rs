@@ -49,7 +49,6 @@ use crate::{
     error::CliError,
     events::run as run_events_cmd,
     logs::run as run_logs_cmd,
-    progress::ProgressMonitor,
     questions::run as run_questions_cmd,
 };
 
@@ -63,7 +62,7 @@ mod context;
 mod error;
 mod events;
 mod logs;
-mod progress;
+mod monitor;
 mod questions;
 mod status;
 
@@ -308,12 +307,13 @@ async fn build_clients(
 ///
 /// * `monitor`: monitor client.
 /// * `stop_on_idle`: stop displaying the progress when Agama becomes idle.
+/// * `theme`: color theme name to use.
 pub async fn show_progress(
     http: BaseHTTPClient,
     ws: WebSocketClient,
     stop_on_idle: bool,
 ) -> anyhow::Result<()> {
-    ProgressMonitor::run(http, ws, stop_on_idle).await?;
+    monitor::run(http, ws, stop_on_idle).await?;
 
     Ok(())
 }
@@ -361,7 +361,7 @@ pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
         }
         Commands::Monitor => {
             let (http, ws) = build_clients(api_url, cli.opts.insecure).await?;
-            show_progress(http, ws, false).await?;
+            monitor::run(http, ws, false).await?;
         }
         Commands::Status { format } => {
             let client = build_http_client(api_url, cli.opts.insecure, true).await?;

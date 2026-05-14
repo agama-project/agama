@@ -141,6 +141,7 @@ mod tests {
             status: api::status::Status::default(),
             issues: vec![],
             questions: vec![],
+            system_info: Default::default(),
         }
     }
 
