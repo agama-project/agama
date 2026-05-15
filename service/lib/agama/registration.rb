@@ -119,7 +119,7 @@ module Agama
         # TODO: check if we can do it in memory for libzypp
         SUSE::Connect::YaST.create_credentials_file(@login, @password, GLOBAL_CREDENTIALS_PATH)
 
-        activate_params = {}
+        activate_params = { token: code }
         @logger.info "Activating product #{base_target_product.inspect}"
         service = SUSE::Connect::YaST.activate_product(base_target_product, activate_params, email)
         process_service(service)
