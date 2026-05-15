@@ -29,7 +29,7 @@ use super::dbus::{
     merge_dbus_connections,
 };
 use super::error::NmError;
-use super::model::{NmConnectionState, NmDeviceType};
+use super::model::{NmConnectionState, NmConnectivityState, NmDeviceType};
 use super::proxies::{
     AccessPointProxy, ActiveConnectionProxy, ConnectionProxy, DeviceProxy, NetworkManagerProxy,
     SettingsProxy, WirelessProxy,
@@ -37,7 +37,9 @@ use super::proxies::{
 use crate::model::{
     Connection, ConnectionConfig, GeneralState, SecurityProtocol, NOT_COPY_NETWORK_PATH,
 };
-use crate::types::{AccessPoint, AddFlags, ConnectionFlags, Device, DeviceType, UpdateFlags, SSID};
+use crate::types::{
+    AccessPoint, AddFlags, ConnectionFlags, ConnectionState, Device, DeviceType, UpdateFlags, SSID,
+};
 use agama_utils::dbus::get_optional_property;
 use semver::Version;
 use uuid::Uuid;
@@ -70,8 +72,7 @@ impl<'a> NetworkManagerClient<'a> {
         let networking_enabled = self.nm_proxy.networking_enabled().await?;
         // TODO:: Allow to set global DNS configuration
         // let global_dns_configuration = self.nm_proxy.global_dns_configuration().await?;
-        // Fixme: save as NMConnectivityState enum
-        let connectivity = self.nm_proxy.connectivity().await? == 4;
+        let connectivity = NmConnectivityState(self.nm_proxy.connectivity().await?).try_into()?;
         let copy_network = !Path::new(NOT_COPY_NETWORK_PATH).exists();
 
         Ok(GeneralState {
@@ -228,9 +229,8 @@ impl<'a> NetworkManagerClient<'a> {
 
             match connection_from_dbus(settings) {
                 Ok(mut connection) => {
-                    let state = states.get(&connection.id).map(|s| NmConnectionState(*s));
-                    if let Some(state) = state {
-                        connection.state = state.try_into().unwrap_or_default();
+                    if let Some(state) = states.get(&connection.id) {
+                        connection.state = *state;
                     }
 
                     Self::add_secrets(&mut connection.config, &proxy).await?;
@@ -265,7 +265,7 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(connections)
     }
 
-    pub async fn connection_states(&self) -> Result<HashMap<String, u32>, NmError> {
+    pub async fn connection_states(&self) -> Result<HashMap<String, ConnectionState>, NmError> {
         let mut states = HashMap::new();
 
         for active_path in &self.nm_proxy.active_connections().await? {
@@ -273,7 +273,8 @@ impl<'a> NetworkManagerClient<'a> {
                 .path(active_path.as_str())?
                 .build()
                 .await?;
-            states.insert(proxy.id().await?, proxy.state().await?);
+            let state = NmConnectionState(proxy.state().await?).try_into()?;
+            states.insert(proxy.id().await?, state);
         }
 
         Ok(states)
@@ -286,15 +287,13 @@ impl<'a> NetworkManagerClient<'a> {
         &self,
         conn: &Connection,
         controller: Option<&Connection>,
-    ) -> Result<(), NmError> {
+    ) -> Result<OwnedObjectPath, NmError> {
         let mut new_conn = connection_to_dbus(
             conn,
             controller,
             Version::parse(&self.nm_proxy.version().await?)
                 .map_err(NmError::FailedNmVersionParse)?,
         );
-
-        let devices = self.devices().await?;
 
         let path = if let Ok(proxy) = self.get_connection_proxy(conn.uuid).await {
             let original = proxy.get_settings().await?;
@@ -325,38 +324,7 @@ impl<'a> NetworkManagerClient<'a> {
             path
         };
 
-        // FIXME: Do not like that an activation/deactivation could not apply the changes because of
-        // a roolback when calling this method with an error.
-        if conn.is_up() {
-            if let Some(interface) = &conn.interface {
-                for device in devices {
-                    if interface != &device.name {
-                        continue;
-                    }
-
-                    if let Some(device_conn) = device.connection {
-                        if device_conn != conn.id {
-                            tracing::info!(
-                                "Disconnecting {} because the connection is {}",
-                                &device_conn,
-                                &conn.id,
-                            );
-                            self.disconnect_device(device.name).await?;
-                        }
-                    }
-                }
-            }
-
-            // FIXME: If it is a wireless and wireless is disabled it will fail, and if it is a
-            // device which is not available it will also fail.
-
-            tracing::info!("Activating connection {}", &conn.id);
-            self.activate_connection(path).await?;
-        } else if conn.is_down() || conn.is_removed() {
-            tracing::info!("Deactivating connection {}", &conn.id);
-            self.deactivate_connection(path).await?;
-        }
-        Ok(())
+        Ok(path)
     }
 
     /// Disconnect the device with the given name.
@@ -400,24 +368,37 @@ impl<'a> NetworkManagerClient<'a> {
 
     /// Activates a NetworkManager connection.
     ///
-    /// * `path`: D-Bus patch of the connection.
-    async fn activate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
+    /// * `path`: D-Bus path of the connection.
+    pub async fn activate_connection(
+        &self,
+        path: OwnedObjectPath,
+    ) -> Result<OwnedObjectPath, NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
         let root = ObjectPath::try_from("/").unwrap();
-        if let Err(e) = proxy
+        let path = proxy
             .activate_connection(&path.as_ref(), &root, &root)
-            .await
-        {
-            tracing::error!("Could not activate connection {}: {:?}", path, e);
-        }
+            .await?;
+        Ok(path)
+    }
 
-        Ok(())
+    /// Retrieves the state of an active connection.
+    ///
+    /// * `path`: D-Bus path of the active connection.
+    pub async fn active_connection_state(
+        &self,
+        path: &ObjectPath<'_>,
+    ) -> Result<ConnectionState, NmError> {
+        let proxy = ActiveConnectionProxy::builder(&self.connection)
+            .path(path)?
+            .build()
+            .await?;
+        NmConnectionState(proxy.state().await?).try_into()
     }
 
     /// Deactivates a NetworkManager connection.
     ///
-    /// * `path`: D-Bus patch of the connection.
-    async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
+    /// * `path`: D-Bus path of the connection.
+    pub async fn deactivate_connection(&self, path: OwnedObjectPath) -> Result<(), NmError> {
         let proxy = NetworkManagerProxy::new(&self.connection).await?;
 
         if let Some(active_connection) = self.settings_active_connection(path.clone()).await? {
@@ -445,8 +426,8 @@ impl<'a> NetworkManagerClient<'a> {
         Ok(proxy)
     }
 
-    // Returns the DeviceProxy for the given device name
-    //
+    /// Returns the DeviceProxy for the given device name
+    ///
     /// * `name`: Device name.
     async fn get_device_proxy(&self, name: String) -> Result<DeviceProxy<'_>, NmError> {
         let mut device_path: Option<OwnedObjectPath> = None;

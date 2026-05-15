@@ -295,8 +295,9 @@
           "type": "object",
           "properties": {
             "connectivity": {
-              "title": "Whether the user is able to access the Internet",
-              "type": "boolean",
+              "title": "Network connectivity state",
+              "type": "string",
+              "enum": ["unknown", "none", "portal", "limited", "full"],
               "readOnly": true
             },
             "copyNetwork": {
@@ -351,7 +352,14 @@
               "method6": {
                 "title": "IPv6 configuration method",
                 "type": "string",
-                "enum": ["auto", "manual", "link-local", "disabled"]
+                "enum": [
+                  "auto",
+                  "manual",
+                  "dhcp",
+                  "link-local",
+                  "shared",
+                  "disabled"
+                ]
               },
               "gateway4": {
                 "title": "Connection gateway address",

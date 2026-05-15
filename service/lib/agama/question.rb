@@ -80,14 +80,16 @@ module Agama
           options:        hash["actions"].map { |a| a["id"].to_sym },
           default_option: hash["defaultAction"]&.to_sym,
           data:           hash["data"] || {},
-          answer:         answer
+          answer:         answer,
+          field:          hash["field"]
         )
         question.send(:id=, hash["id"])
         question
       end
     end
 
-    def initialize(qclass:, text:, options:, default_option: nil, data: {}, answer: nil)
+    # rubocop:disable Metrics/ParameterLists
+    def initialize(qclass:, text:, options:, default_option: nil, data: {}, answer: nil, field: nil)
       @id = nil
       @qclass = qclass
       @text = text
@@ -95,7 +97,9 @@ module Agama
       @default_option = default_option
       @data = data
       @answer = answer
+      @field = field
     end
+    # rubocop:enable Metrics/ParameterLists
 
     # Converts a question into a hash to be consumed by the HTTP API.
     def to_api
@@ -114,6 +118,9 @@ module Agama
         "defaultAction" => @default_option.to_s,
         "data"          => @data
       }
+
+      question["field"] = { "type" => @field } if @field
+      question
     end
 
   private

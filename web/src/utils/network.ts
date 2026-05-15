@@ -29,6 +29,7 @@ import {
   Connection,
   ConnectionBindingMode,
   ConnectionType,
+  ConnectionState,
   Device,
   IPAddress,
   Route,
@@ -50,6 +51,23 @@ export const CONNECTION_TYPE = {
   VLAN: "vlan",
   UNKNOWN: "unknown",
 } as const;
+
+/**
+ * Translatable labels for connection states.
+ */
+const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
+  unknown: N_("Unknown"),
+  activating: N_("Activating"),
+  activated: N_("Activated"),
+  deactivating: N_("Deactivating"),
+  deactivated: N_("Deactivated"),
+};
+
+/**
+ * Returns the translated label for a connection state.
+ */
+// eslint-disable-next-line agama-i18n/string-literals
+const connectionStateLabel = (state: ConnectionState): string => _(CONNECTION_STATE_LABELS[state]);
 
 /**
  * Returns true if the given connection type is virtual.
@@ -397,6 +415,7 @@ export {
   buildRoutes,
   connectionAddresses,
   connectionBindingMode,
+  connectionStateLabel,
   connectionType,
   connectionTypeLabel,
   ensureIPPrefix,

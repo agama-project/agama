@@ -66,7 +66,7 @@ const buildConnection = (id: string, overrides = {}) =>
   Connection.fromApi({
     id,
     status: ConnectionStatus.UP,
-    state: ConnectionState.activated,
+    state: ConnectionState.ACTIVATED,
     persistent: true,
     addresses: [],
     nameservers: [],

@@ -143,7 +143,7 @@ pub enum LinkLocal {
 }
 
 #[derive(Debug, Error)]
-#[error("Invalid link-local value: {0}")]
+#[error("Invalid linkLocal value: {0}")]
 pub struct InvalidLinkLocalValue(i32);
 
 impl TryFrom<i32> for LinkLocal {
@@ -165,8 +165,8 @@ impl TryFrom<i32> for LinkLocal {
 #[derive(Default, Debug, PartialEq, Clone, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct IpConfig {
-    pub method4: Ipv4Method,
-    pub method6: Ipv6Method,
+    pub method4: Option<Ipv4Method>,
+    pub method6: Option<Ipv6Method>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     #[schemars(with = "Vec<schemas::IpInetSchema>")]
     pub addresses: Vec<IpInet>,
@@ -401,86 +401,62 @@ impl From<&IpRoute> for HashMap<&str, Value<'_>> {
     }
 }
 
+use strum::{Display, EnumString, VariantNames};
+
 #[derive(Debug, Error)]
 #[error("Unknown IP configuration method name: {0}")]
 pub struct UnknownIpMethod(String);
 
-#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(
+    Debug,
+    Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Deserialize,
+    Serialize,
+    Display,
+    EnumString,
+    VariantNames,
+    JsonSchema,
+)]
 #[serde(rename_all = "camelCase")]
+#[strum(serialize_all = "camelCase")]
 pub enum Ipv4Method {
     Disabled = 0,
     #[default]
     Auto = 1,
     Manual = 2,
+    #[strum(serialize = "link-local")]
     LinkLocal = 3,
+    Shared = 4,
 }
 
-impl fmt::Display for Ipv4Method {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            Ipv4Method::Disabled => "disabled",
-            Ipv4Method::Auto => "auto",
-            Ipv4Method::Manual => "manual",
-            Ipv4Method::LinkLocal => "link-local",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-impl FromStr for Ipv4Method {
-    type Err = UnknownIpMethod;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "disabled" => Ok(Ipv4Method::Disabled),
-            "auto" => Ok(Ipv4Method::Auto),
-            "manual" => Ok(Ipv4Method::Manual),
-            "link-local" => Ok(Ipv4Method::LinkLocal),
-            _ => Err(UnknownIpMethod(s.to_string())),
-        }
-    }
-}
-
-#[derive(Debug, Default, Copy, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(
+    Debug,
+    Default,
+    Copy,
+    Clone,
+    PartialEq,
+    Deserialize,
+    Serialize,
+    Display,
+    EnumString,
+    VariantNames,
+    JsonSchema,
+)]
 #[serde(rename_all = "camelCase")]
+#[strum(serialize_all = "camelCase")]
 pub enum Ipv6Method {
     Disabled = 0,
     #[default]
     Auto = 1,
     Manual = 2,
+    #[strum(serialize = "link-local")]
     LinkLocal = 3,
     Ignore = 4,
     Dhcp = 5,
-}
-
-impl fmt::Display for Ipv6Method {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let name = match &self {
-            Ipv6Method::Disabled => "disabled",
-            Ipv6Method::Auto => "auto",
-            Ipv6Method::Manual => "manual",
-            Ipv6Method::LinkLocal => "link-local",
-            Ipv6Method::Ignore => "ignore",
-            Ipv6Method::Dhcp => "dhcp",
-        };
-        write!(f, "{}", name)
-    }
-}
-
-impl FromStr for Ipv6Method {
-    type Err = UnknownIpMethod;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "disabled" => Ok(Ipv6Method::Disabled),
-            "auto" => Ok(Ipv6Method::Auto),
-            "manual" => Ok(Ipv6Method::Manual),
-            "link-local" => Ok(Ipv6Method::LinkLocal),
-            "ignore" => Ok(Ipv6Method::Ignore),
-            "dhcp" => Ok(Ipv6Method::Dhcp),
-            _ => Err(UnknownIpMethod(s.to_string())),
-        }
-    }
+    Shared = 6,
 }
 
 impl From<UnknownIpMethod> for zbus::fdo::Error {
@@ -582,6 +558,8 @@ pub enum DeviceState {
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ConnectionState {
+    /// The connection state is unknown.
+    Unknown,
     /// The connection is getting activated.
     Activating,
     /// The connection is activated.
@@ -591,6 +569,36 @@ pub enum ConnectionState {
     #[default]
     /// The connection is deactivated.
     Deactivated,
+}
+
+/// Network connectivity state.
+#[derive(
+    Default,
+    Serialize,
+    Deserialize,
+    Debug,
+    PartialEq,
+    Eq,
+    Clone,
+    Copy,
+    strum::Display,
+    strum::EnumString,
+    JsonSchema,
+)]
+#[strum(serialize_all = "camelCase")]
+#[serde(rename_all = "camelCase")]
+pub enum ConnectivityState {
+    #[default]
+    /// The connectivity state is unknown.
+    Unknown,
+    /// No connectivity.
+    None,
+    /// The network is behind a captive portal and cannot reach the full internet.
+    Portal,
+    /// The network is connected but it has no access to the full internet.
+    Limited,
+    /// The network is connected and it has access to the full internet.
+    Full,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize, JsonSchema)]
@@ -781,6 +789,7 @@ mod tests {
             "dnsSearchList": ["example.com"],
             "ignoreAutoDns": false,
             "linkLocal4": "default"
+
         }"#;
         let config: IpConfig = serde_json::from_str(json).unwrap();
         assert_eq!(config.dns_searchlist, vec!["example.com"]);
@@ -798,6 +807,7 @@ mod tests {
             "dnsSearchlist": ["example.org"],
             "ignoreAutoDns": false,
             "linkLocal4": "default"
+
         }"#;
         let config: IpConfig = serde_json::from_str(json).unwrap();
         assert_eq!(config.dns_searchlist, vec!["example.org"]);

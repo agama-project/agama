@@ -28,6 +28,7 @@ import { Product } from "~/model/system";
 import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
 import { System } from "~/model/system/network";
+import { ConnectivityState } from "~/types/network";
 import * as utils from "~/utils";
 import { ROOT } from "~/routes/paths";
 import InstallerL10nOptions, { InstallerL10nOptionsProps } from "./InstallerL10nOptions";
@@ -56,7 +57,7 @@ const network: System = {
   connections: [],
   devices: [],
   state: {
-    connectivity: true,
+    connectivity: ConnectivityState.FULL,
     copyNetwork: true,
     networkingEnabled: true,
     wirelessEnabled: true,

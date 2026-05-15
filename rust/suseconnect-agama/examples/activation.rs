@@ -1,8 +1,7 @@
 use std::{env, process::exit};
 
 use suseconnect_agama::{
-    activate_product, announce_system, create_credentials_file, ConnectParams,
-    ProductSpecification, DEFAULT_CONFIG_FILE,
+    activate_product, announce_system, create_credentials_file, ConnectParams, ProductSpecification,
 };
 
 pub fn main() {
@@ -28,7 +27,7 @@ pub fn main() {
     let result = create_credentials_file(
         &credentials.login,
         &credentials.password,
-        DEFAULT_CONFIG_FILE,
+        suseconnect_agama::GLOBAL_CREDENTIALS_FILE,
     );
     println!("{:?}", result);
     if result.is_err() {
@@ -39,6 +38,8 @@ pub fn main() {
         version: "16.0".to_string(),
         arch: "x86_64".to_string(),
     };
+    // uncomment to emulate original behavior which do not send token for base product
+    // params.token = None;
     let result = activate_product(product_spec, params, "");
     println!("{:?}", result);
 }
