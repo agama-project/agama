@@ -125,10 +125,14 @@ pub struct MonitorApp {
 impl MonitorApp {
     /// Updates the installation status.
     pub fn update_status(&mut self, new_status: InstallationStatus) {
-        if self.stop_on_idle && new_status.is_idle() {
+        self.status = new_status;
+        if self.should_exit() {
             self.exit = true;
         }
-        self.status = new_status;
+    }
+
+    fn should_exit(&self) -> bool {
+        self.stop_on_idle && self.status.is_idle()
     }
 
     /// Runs the monitor TUI event loop.
@@ -146,6 +150,10 @@ impl MonitorApp {
         let (tx, mut rx) = mpsc::channel(16);
         let tx_clone = tx.clone();
         let mut updates = self.monitor.subscribe();
+
+        if self.should_exit() {
+            return Ok(());
+        }
 
         tokio::task::spawn(async move {
             while let Ok(new_status) = updates.recv().await {

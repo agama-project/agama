@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 15 16:37:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the monitor initialization when "agama config load" happens
+  too fast (gh#agama-project/agama#3507).
+
+-------------------------------------------------------------------
 Fri May 15 14:27:47 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Added support for installing systemd-boot and grub2-bls,
