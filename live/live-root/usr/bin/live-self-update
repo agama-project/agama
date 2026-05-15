@@ -118,6 +118,9 @@ cleanup_chroot() {
     findmnt "$NEWROOT"/proc > /dev/null && umount "$NEWROOT"/proc
     findmnt "$NEWROOT"/dev > /dev/null && umount "$NEWROOT"/dev
   fi
+
+  # return the original exit value
+  exit "$result"
 }
 
 # read the data from /etc/os-release file (source it)
