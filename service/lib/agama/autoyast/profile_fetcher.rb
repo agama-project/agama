@@ -55,6 +55,7 @@ module Agama
       # @return [ProfileHash,nil] an evaluated AutoYaST profile
       def fetch
         import_yast
+        replace_storage_manager
         read_profile
       end
 
@@ -162,6 +163,19 @@ module Agama
         Yast.import "AutoinstScripts"
         Yast.import "Profile"
         Yast.import "ProfileLocation"
+        require "agama/autoyast/report_patching"
+      end
+
+      def replace_storage_manager
+        require "y2storage/storage_manager"
+        require "agama/autoyast/storage_manager"
+        Y2Storage::StorageManager.define_singleton_method(:instance) do
+          return @storage_manager if @storage_manager
+
+          @storage_manager = Agama::AutoYaST::StorageManager.new
+          @storage_manager.probe
+          @storage_manager
+        end
       end
     end
   end

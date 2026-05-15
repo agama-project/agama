@@ -1,0 +1,120 @@
+{
+   "blockdevices": [
+      {
+         "name": "loop0",
+         "fstype": "squashfs",
+         "type": "loop",
+         "path": "/dev/loop0",
+         "size": 679739392,
+         "mountpoints": []
+      },{
+         "name": "loop1",
+         "fstype": "ext4",
+         "type": "loop",
+         "path": "/dev/loop1",
+         "size": 6861881344,
+         "mountpoints": [],
+         "children": [
+            {
+               "name": "live-rw",
+               "fstype": "ext4",
+               "type": "dm",
+               "path": "/dev/mapper/live-rw",
+               "size": 6861881344,
+               "mountpoints": [
+                   "/"
+               ]
+            },{
+               "name": "live-base",
+               "fstype": "ext4",
+               "type": "dm",
+               "path": "/dev/mapper/live-base",
+               "size": 6861881344,
+               "mountpoints": []
+            }
+         ]
+      },{
+         "name": "loop2",
+         "fstype": "DM_snapshot_cow",
+         "type": "loop",
+         "path": "/dev/loop2",
+         "size": 34359738368,
+         "mountpoints": [],
+         "children": [
+            {
+               "name": "live-rw",
+               "fstype": "ext4",
+               "type": "dm",
+               "path": "/dev/mapper/live-rw",
+               "size": 6861881344,
+               "mountpoints": [
+                   "/"
+               ]
+            }
+         ]
+      },{
+         "name": "sda",
+         "fstype": null,
+         "type": "disk",
+         "path": "/dev/sda",
+         "size": 1073741824,
+         "mountpoints": []
+      },{
+         "name": "sr0",
+         "fstype": "iso9660",
+         "type": "rom",
+         "path": "/dev/sr0",
+         "size": 855382016,
+         "mountpoints": [
+             "/run/initramfs/live"
+         ]
+      },{
+         "name": "zram0",
+         "fstype": null,
+         "type": "disk",
+         "path": "/dev/zram0",
+         "size": 4105306112,
+         "mountpoints": [
+             "[SWAP]"
+         ]
+      },{
+         "name": "vda",
+         "fstype": null,
+         "type": "disk",
+         "path": "/dev/vda",
+         "size": 42949672960,
+         "mountpoints": [],
+         "children": [
+            {
+               "name": "vda1",
+               "fstype": null,
+               "type": "part",
+               "path": "/dev/vda1",
+               "size": 8388608,
+               "mountpoints": []
+            },{
+               "name": "vda2",
+               "fstype": "btrfs",
+               "type": "part",
+               "path": "/dev/vda2",
+               "size": 40791703552,
+               "mountpoints": []
+            },{
+               "name": "vda3",
+               "fstype": "ntfs",
+               "type": "part",
+               "path": "/dev/vda3",
+               "size": 2148515328,
+               "mountpoints": []
+            }
+         ]
+      },{
+         "name": "vdb",
+         "fstype": null,
+         "type": "disk",
+         "path": "/dev/vdb",
+         "size": 21474836480,
+         "mountpoints": []
+      }
+   ]
+}
