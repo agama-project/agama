@@ -402,7 +402,13 @@ impl RegistrationBuilder {
             config_files: vec![suseconnect_agama::GLOBAL_CREDENTIALS_FILE.into()],
         };
 
-        registration.activate_product(zypp, security, &self.product, &self.version, None)?;
+        registration.activate_product(
+            zypp,
+            security,
+            &self.product,
+            &self.version,
+            self.code.as_deref(),
+        )?;
         Ok(registration)
     }
 }
