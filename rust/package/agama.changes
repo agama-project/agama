@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 15 14:34:41 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Support new boot section in product definition (jsc#PED-10703).
+- TPM unlocking of encrypted devices: improved schemas and APIs.
+
+-------------------------------------------------------------------
 Thu May 14 13:25:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix problems detected by cargo audit (gh#agama-project/agama#3497):
