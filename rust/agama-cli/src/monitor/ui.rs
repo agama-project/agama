@@ -54,5 +54,6 @@ pub fn scope_to_string(scope: &Scope) -> String {
         Scope::DASD => gettext("DASD"),
         Scope::ZFCP => gettext("zFCP"),
         Scope::Users => gettext("Users"),
+        Scope::Registration => gettext("Registration"),
     }
 }

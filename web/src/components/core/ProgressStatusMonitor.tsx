@@ -41,6 +41,7 @@ const SCOPE_NAMES = {
   storage: N_("Storage"),
   network: N_("Network"),
   l10n: N_("Localization"),
+  registration: N_("Registration"),
 };
 
 /**

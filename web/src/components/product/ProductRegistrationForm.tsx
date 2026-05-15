@@ -20,18 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId, useState } from "react";
+import React, { useState } from "react";
 import { formOptions } from "@tanstack/react-form";
-import {
-  ActionGroup,
-  Alert,
-  Button,
-  Content,
-  Form,
-  HelperText,
-  HelperTextItem,
-  Stack,
-} from "@patternfly/react-core";
+import { ActionGroup, Alert, Button, Content, Form, Stack } from "@patternfly/react-core";
 import LabelText from "~/components/form/LabelText";
 import { isEmpty, shake } from "radashi";
 import { sprintf } from "sprintf-js";
@@ -91,7 +82,6 @@ function validateRegistrationForm(formValues: FormValues): FormFieldErrors | und
  * Form for registering a product with a registration server.
  */
 export default function ProductRegistrationForm() {
-  const loadingHintId = useId();
   const [loading, setLoading] = useState(false);
   const config = useConfig();
   const product = useProduct();
@@ -253,17 +243,9 @@ export default function ProductRegistrationForm() {
               isInline
               isLoading={loading}
               isDisabled={loading}
-              aria-describedby={loading ? loadingHintId : undefined}
             >
               {_("Register")}
             </Button>
-            {loading && (
-              <HelperText id={loadingHintId} isLiveRegion>
-                <HelperTextItem variant="indeterminate">
-                  {_("Registration in progress")}
-                </HelperTextItem>
-              </HelperText>
-            )}
           </Stack>
         </ActionGroup>
       </Form>

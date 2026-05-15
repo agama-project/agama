@@ -224,6 +224,14 @@ impl<A: Actor> Clone for Handler<A> {
     }
 }
 
+impl<A: Actor> std::fmt::Debug for Handler<A> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Handler")
+            .field("actor", &A::name())
+            .finish()
+    }
+}
+
 impl<A: Actor> Handler<A> {
     /// Sends a message and waits for the answer.
     ///

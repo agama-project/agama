@@ -61,4 +61,5 @@ pub enum Scope {
     #[serde(rename = "zfcp")]
     ZFCP,
     Users,
+    Registration,
 }

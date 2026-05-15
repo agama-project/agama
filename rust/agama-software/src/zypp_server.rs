@@ -355,14 +355,11 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let mut issues = WriteIssues::default();
-        let mut steps = vec![
+        let steps = vec![
             gettext("Updating the list of repositories"),
             gettext("Refreshing metadata from the repositories"),
             gettext("Calculating the software proposal"),
         ];
-        if state.registration.is_some() {
-            steps.insert(0, gettext("Registering the system"));
-        }
 
         _ = progress.cast(progress::message::StartWithSteps::new(
             Scope::Software,
@@ -378,6 +375,7 @@ impl ZyppServer {
                 security,
                 &security_srv,
                 &mut issues,
+                progress.clone(),
             );
 
             if !issues.is_empty() {
@@ -952,17 +950,44 @@ impl ZyppServer {
         security: &mut callbacks::Security,
         security_srv: &Handler<security::Service>,
         issues: &mut WriteIssues,
+        progress: Handler<progress::Service>,
     ) {
-        match &self.registration {
+        match &mut self.registration {
             RegistrationStatus::Failed(_) | RegistrationStatus::NotRegistered => {
-                self.register_base_system(state, zypp, security, security_srv, issues);
+                self.register_base_system(
+                    state,
+                    zypp,
+                    security,
+                    security_srv,
+                    issues,
+                    progress.clone(),
+                );
             }
-            RegistrationStatus::Registered(_) => {}
+            RegistrationStatus::Registered(registration) => {
+                registration.set_progress(progress.clone());
+                let new_addons: Vec<_> = state
+                    .addons
+                    .iter()
+                    .filter(|a| !registration.is_addon_registered(a))
+                    .collect();
+                if !new_addons.is_empty() {
+                    let mut steps = vec![];
+                    for addon in &new_addons {
+                        steps.push(gettext("Registering the add-on %s").replace("%s", &addon.id));
+                    }
+                    let _ = progress.cast(progress::message::StartWithSteps::new(
+                        Scope::Registration,
+                        steps,
+                    ));
+                }
+            }
         };
 
         if !state.addons.is_empty() {
             self.register_addons(&state.addons, zypp, security, issues);
         }
+
+        let _ = progress.cast(progress::message::Finish::new(Scope::Registration));
     }
 
     fn register_base_system(
@@ -972,9 +997,11 @@ impl ZyppServer {
         security: &mut callbacks::Security,
         security_srv: &Handler<security::Service>,
         issues: &mut WriteIssues,
+        progress: Handler<progress::Service>,
     ) {
-        let mut registration =
-            Registration::builder(self.root_dir.clone(), &state.product, &state.version);
+        let mut registration = Registration::builder(self.root_dir.clone(), &state.product, &state.version)
+            .with_progress(progress)
+            .with_addons(state.addons.clone());
 
         if let Some(code) = &state.code {
             registration = registration.with_code(code);

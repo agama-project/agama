@@ -27,9 +27,15 @@
 use agama_security as security;
 use agama_utils::{
     actor::Handler,
-    api::software::{AddonInfo, AddonRegistration, RegistrationInfo},
+    api::{
+        progress::Progress,
+        scope::Scope,
+        software::{AddonInfo, AddonRegistration, RegistrationInfo},
+    },
     arch::Arch,
+    progress,
 };
+use gettextrs::gettext;
 use camino::Utf8PathBuf;
 use openssl::x509::X509;
 use suseconnect_agama::{self, ConnectParams, Credentials};
@@ -78,6 +84,7 @@ pub struct Registration {
     addons: Vec<Addon>,
     // Holds all config files it created, later it will be copied to target system
     config_files: Vec<Utf8PathBuf>,
+    progress: Option<Handler<progress::Service>>,
 }
 
 impl Registration {
@@ -95,6 +102,10 @@ impl Registration {
         security: &mut callbacks::Security,
         addon: &Addon,
     ) -> RegistrationResult<()> {
+        if let Some(progress) = &self.progress {
+            let _ = progress.cast(progress::message::Next::new(Scope::Registration));
+        }
+
         // Use the product's version as default.
         let version = addon.version.clone().unwrap_or(self.version.clone());
         let code = addon.code.as_deref();
@@ -290,6 +301,10 @@ impl Registration {
             .map(|s| s.name.clone())
             .collect()
     }
+
+    pub fn set_progress(&mut self, progress: Handler<progress::Service>) {
+        self.progress = Some(progress);
+    }
 }
 
 /// A builder for a [Registration] object.
@@ -306,6 +321,8 @@ pub struct RegistrationBuilder {
     code: Option<String>,
     email: Option<String>,
     url: Option<Url>,
+    progress: Option<Handler<progress::Service>>,
+    addons: Vec<Addon>,
 }
 
 impl RegistrationBuilder {
@@ -324,6 +341,8 @@ impl RegistrationBuilder {
             code: None,
             email: None,
             url: None,
+            progress: None,
+            addons: vec![],
         }
     }
 
@@ -351,6 +370,22 @@ impl RegistrationBuilder {
         self
     }
 
+    /// Sets the progress handler.
+    ///
+    /// * `progress`: progress handler.
+    pub fn with_progress(mut self, progress: Handler<progress::Service>) -> Self {
+        self.progress = Some(progress);
+        self
+    }
+
+    /// Sets the add-ons to register.
+    ///
+    /// * `addons`: list of add-ons.
+    pub fn with_addons(mut self, addons: Vec<Addon>) -> Self {
+        self.addons = addons;
+        self
+    }
+
     /// Registers the system and return a [Registration] object.
     ///
     /// It announces the system, gets the credentials and registers the base product.
@@ -362,6 +397,20 @@ impl RegistrationBuilder {
         security: &mut callbacks::Security,
         security_srv: &Handler<security::Service>,
     ) -> RegistrationResult<Registration> {
+        if let Some(progress) = &self.progress {
+            let mut steps = vec![
+                gettext("Announcing the system"),
+                gettext("Registering the base product"),
+            ];
+            for addon in &self.addons {
+                steps.push(gettext("Registering the add-on %s").replace("%s", &addon.id));
+            }
+            let _ = progress.cast(progress::message::StartWithSteps::new(
+                Scope::Registration,
+                steps,
+            ));
+        }
+
         let params = suseconnect_agama::ConnectParams {
             token: self.code.clone(),
             email: self.email.clone(),
@@ -377,6 +426,10 @@ impl RegistrationBuilder {
             || suseconnect_agama::announce_system(params.clone(), &target_distro),
             security_srv,
         )?;
+
+        if let Some(progress) = &self.progress {
+            let _ = progress.cast(progress::message::Next::new(Scope::Registration));
+        }
 
         // suseconnect_agama::announce_system(params.clone(), &target_distro)?;
 
@@ -400,6 +453,7 @@ impl RegistrationBuilder {
             services: vec![],
             addons: vec![],
             config_files: vec![suseconnect_agama::GLOBAL_CREDENTIALS_FILE.into()],
+            progress: self.progress.clone(),
         };
 
         registration.activate_product(

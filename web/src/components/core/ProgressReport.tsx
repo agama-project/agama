@@ -98,10 +98,11 @@ export default function ProgressReport() {
   const managerProgress = progresses.find((t) => t.scope === "manager");
   const softwareProgress = progresses.find((t) => t.scope === "software");
   const storageProgress = progresses.find((t) => t.scope === "storage");
+  const registrationProgress = progresses.find((t) => t.scope === "registration");
 
   if (!managerProgress) return;
 
-  const detail = softwareProgress || storageProgress;
+  const detail = softwareProgress || storageProgress || registrationProgress;
 
   return <Progress steps={managerProgress.steps} step={managerProgress} detail={detail} />;
 }

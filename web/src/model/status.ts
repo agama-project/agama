@@ -32,7 +32,8 @@ type Scope =
   | "iscsi"
   | "dasd"
   | "zfcp"
-  | "users";
+  | "users"
+  | "registration";
 
 type Progress = {
   index: number;

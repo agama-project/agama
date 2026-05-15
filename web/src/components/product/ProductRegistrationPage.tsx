@@ -222,7 +222,10 @@ export default function ProductRegistrationPage() {
   const showHostnameAlert = !registration && !registrationIssue;
 
   return (
-    <Page breadcrumbs={[{ label: _("Registration") }]}>
+    <Page
+      breadcrumbs={[{ label: _("Registration") }]}
+      progress={{ scope: "registration", ensureRefetched: "system" }}
+    >
       <Page.Content>
         {showHostnameAlert && <HostnameAlert />}
         {!registration && <IssuesAlert issues={nonRegistrationIssues} />}

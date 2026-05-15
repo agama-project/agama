@@ -259,10 +259,7 @@ describe("ProductRegistrationForm", () => {
 
       await waitFor(() => {
         expect(submitButton).toBeDisabled();
-        expect(submitButton).toHaveAttribute("aria-describedby");
       });
-
-      screen.getByText("Registration in progress");
     });
 
     it("hides registration issue alert during loading", async () => {
@@ -315,7 +312,6 @@ describe("ProductRegistrationForm", () => {
       await waitFor(() => {
         expect(submitButton).toBeDisabled();
       });
-      screen.getByText("Registration in progress");
 
       mockIssues = [
         {
@@ -332,7 +328,7 @@ describe("ProductRegistrationForm", () => {
       });
 
       await waitFor(() => {
-        expect(screen.queryByText("Registration in progress")).not.toBeInTheDocument();
+        expect(submitButton).not.toBeDisabled();
       });
 
       screen.getByText("Invalid registration code");
