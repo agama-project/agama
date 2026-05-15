@@ -20,7 +20,9 @@
 
 //! Representation of the network settings
 
-use super::types::{ConnectionState, DeviceState, DeviceType, Status};
+use super::types::{
+    ConnectionState, ConnectivityState, DeviceState, DeviceType, Ipv4Method, Ipv6Method, Status,
+};
 use crate::openapi::schemas;
 use cidr::IpInet;
 use merge::Merge;
@@ -31,6 +33,9 @@ use std::net::IpAddr;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct NetworkConnectionsCollection(pub Vec<NetworkConnection>);
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
+pub struct NetworkConnectionsWithStateCollection(pub Vec<NetworkConnectionWithState>);
 
 /// Network settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -47,7 +52,7 @@ pub struct NetworkSettings {
 #[merge(strategy = merge::option::overwrite_none)]
 pub struct StateSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub connectivity: Option<bool>,
+    pub connectivity: Option<ConnectivityState>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wireless_enabled: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -220,13 +225,13 @@ pub struct NetworkConnection {
     pub id: String,
     /// IPv4 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub method4: Option<String>,
+    pub method4: Option<Ipv4Method>,
     /// Gateway IP address for the IPv4 connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway4: Option<IpAddr>,
     /// IPv6 method used for the network connection
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub method6: Option<String>,
+    pub method6: Option<Ipv6Method>,
     /// Gateway IP address for the IPv6 connection
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gateway6: Option<IpAddr>,
@@ -318,7 +323,7 @@ impl NetworkConnection {
 //
 // TODO: If the client ignores the additional "state" field, this struct
 // does not need to be here.
-#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct NetworkConnectionWithState {
     #[serde(flatten)]
     pub connection: NetworkConnection,

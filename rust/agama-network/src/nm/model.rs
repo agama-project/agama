@@ -29,7 +29,7 @@
 use crate::{
     model::{SecurityProtocol, WirelessMode},
     nm::error::NmError,
-    types::{ConnectionState, DeviceType, Ipv4Method, Ipv6Method},
+    types::{ConnectionState, ConnectivityState, DeviceType, Ipv4Method, Ipv6Method},
 };
 use std::fmt;
 use std::str::FromStr;
@@ -64,7 +64,7 @@ impl TryFrom<NmWirelessMode> for WirelessMode {
             "adhoc" => Ok(WirelessMode::AdHoc),
             "mesh" => Ok(WirelessMode::Mesh),
             "ap" => Ok(WirelessMode::AP),
-            _ => Err(NmError::UnsupporedWirelessMode(value.to_string())),
+            _ => Err(NmError::UnsupportedWirelessMode(value.to_string())),
         }
     }
 }
@@ -182,12 +182,43 @@ impl TryFrom<NmConnectionState> for ConnectionState {
 
     fn try_from(value: NmConnectionState) -> Result<Self, Self::Error> {
         match value {
-            NmConnectionState(0) => Ok(ConnectionState::Deactivated),
+            NmConnectionState(0) => Ok(ConnectionState::Unknown),
             NmConnectionState(1) => Ok(ConnectionState::Activating),
             NmConnectionState(2) => Ok(ConnectionState::Activated),
             NmConnectionState(3) => Ok(ConnectionState::Deactivating),
             NmConnectionState(4) => Ok(ConnectionState::Deactivated),
             NmConnectionState(_) => Err(NmError::UnsupportedConnectionState(value.into())),
+        }
+    }
+}
+
+/// Connectivity state
+#[derive(Debug, Default, Clone, Copy)]
+pub struct NmConnectivityState(pub u32);
+
+impl From<NmConnectivityState> for u32 {
+    fn from(value: NmConnectivityState) -> u32 {
+        value.0
+    }
+}
+
+impl fmt::Display for NmConnectivityState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl TryFrom<NmConnectivityState> for ConnectivityState {
+    type Error = NmError;
+
+    fn try_from(value: NmConnectivityState) -> Result<Self, Self::Error> {
+        match value {
+            NmConnectivityState(0) => Ok(ConnectivityState::Unknown),
+            NmConnectivityState(1) => Ok(ConnectivityState::None),
+            NmConnectivityState(2) => Ok(ConnectivityState::Portal),
+            NmConnectivityState(3) => Ok(ConnectivityState::Limited),
+            NmConnectivityState(4) => Ok(ConnectivityState::Full),
+            NmConnectivityState(_) => Err(NmError::UnsupportedConnectivityState(value.into())),
         }
     }
 }
@@ -219,9 +250,9 @@ impl TryFrom<NmKeyManagement> for SecurityProtocol {
             "owe" => Ok(SecurityProtocol::OWE),
             "ieee8021x" => Ok(SecurityProtocol::DynamicWEP),
             "wpa-psk" => Ok(SecurityProtocol::WPA2),
-            "wpa-eap" => Ok(SecurityProtocol::WPA3Personal),
-            "sae" => Ok(SecurityProtocol::WPA2Enterprise),
-            "wpa-eap-suite-b-192" => Ok(SecurityProtocol::WPA2Enterprise),
+            "wpa-eap" => Ok(SecurityProtocol::WPA2Enterprise),
+            "sae" => Ok(SecurityProtocol::WPA3Personal),
+            "wpa-eap-suite-b-192" => Ok(SecurityProtocol::WPA3Only),
             "none" => Ok(SecurityProtocol::WEP),
             _ => Err(NmError::UnsupportedSecurityProtocol(value.to_string())),
         }

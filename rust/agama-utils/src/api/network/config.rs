@@ -27,7 +27,7 @@ use serde::{Deserialize, Serialize};
 use std::default::Default;
 
 /// Network config settings for installation
-#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[schemars(rename = "network.Config")]
 pub struct Config {
@@ -45,6 +45,7 @@ pub struct Config {
 mod tests {
     use super::*;
     use crate::api::network::settings::{NetworkConnection, WirelessSettings}; // Import necessary types
+    use crate::api::network::types::{ConnectivityState, Ipv4Method};
 
     #[test]
     fn test_merge_network_config() {
@@ -52,7 +53,7 @@ mod tests {
         let mut updated = Config {
             connections: Some(NetworkConnectionsCollection(vec![NetworkConnection {
                 id: "eth0".to_string(),
-                method4: Some("dhcp".to_string()),
+                method4: Some(Ipv4Method::Auto),
                 addresses: vec![],
                 nameservers: vec![],
                 dns_searchlist: vec![],
@@ -60,7 +61,7 @@ mod tests {
                 ..Default::default()
             }])),
             state: Some(StateSettings {
-                connectivity: Some(true),
+                connectivity: Some(ConnectivityState::Full),
                 wireless_enabled: Some(true),
                 networking_enabled: Some(true),
                 copy_network: None,
@@ -72,7 +73,7 @@ mod tests {
             connections: Some(NetworkConnectionsCollection(vec![
                 NetworkConnection {
                     id: "eth1".to_string(),
-                    method4: Some("static".to_string()),
+                    method4: Some(Ipv4Method::Manual),
                     addresses: vec!["192.168.1.10/24".parse().unwrap()],
                     nameservers: vec!["8.8.8.8".parse().unwrap()],
                     dns_searchlist: vec!["example.com".to_string()],
@@ -81,7 +82,7 @@ mod tests {
                 },
                 NetworkConnection {
                     id: "wifi0".to_string(),
-                    method4: Some("dhcp".to_string()),
+                    method4: Some(Ipv4Method::Auto),
                     wireless: Some(WirelessSettings {
                         ssid: "MyWiFi".to_string(),
                         security: "wpa2".to_string(),
@@ -91,10 +92,10 @@ mod tests {
                 },
             ])),
             state: Some(StateSettings {
-                connectivity: Some(false),       // This should NOT overwrite updated's true
-                wireless_enabled: None,          // This should NOT overwrite updated's true
+                connectivity: Some(ConnectivityState::None), // This should NOT overwrite updated's true
+                wireless_enabled: None, // This should NOT overwrite updated's true
                 networking_enabled: Some(false), // This should NOT overwrite updated's true
-                copy_network: Some(true),        // This SHOULD overwrite updated's None
+                copy_network: Some(true), // This SHOULD overwrite updated's None
             }),
         };
 
@@ -110,7 +111,7 @@ mod tests {
 
         // Assertions for state (StateSettings has overwrite_none strategy)
         let merged_state = updated.state.unwrap();
-        assert_eq!(merged_state.connectivity, Some(true)); // from updated, not overwritten by original.Some(false)
+        assert_eq!(merged_state.connectivity, Some(ConnectivityState::Full)); // from updated, not overwritten by original.Some(false)
         assert_eq!(merged_state.wireless_enabled, Some(true)); // from updated, not overwritten by original.None
         assert_eq!(merged_state.networking_enabled, Some(true)); // from updated, not overwritten by original.Some(false)
         assert_eq!(merged_state.copy_network, Some(true)); // from original, overwritten updated.None
@@ -156,7 +157,7 @@ mod tests {
                 ..Default::default()
             }])),
             state: Some(StateSettings {
-                connectivity: Some(true),
+                connectivity: Some(ConnectivityState::Full),
                 ..Default::default()
             }),
         };

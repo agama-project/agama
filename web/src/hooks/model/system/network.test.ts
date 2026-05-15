@@ -37,7 +37,7 @@ const createConnection = (
   return new Connection(id, {
     method4: ConnectionMethod.AUTO,
     method6: ConnectionMethod.AUTO,
-    state: ConnectionState.activated,
+    state: ConnectionState.ACTIVATED,
     persistent: true,
     ...overrides,
   });
@@ -72,7 +72,7 @@ describe("getNetworkStatus", () => {
     const nonPersistentConnection = createConnection("Network 2", {
       method4: ConnectionMethod.MANUAL,
       method6: ConnectionMethod.MANUAL,
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
       persistent: false,
     });
 
@@ -86,7 +86,7 @@ describe("getNetworkStatus", () => {
     const nonPersistentConnection = createConnection("Network 2", {
       method4: ConnectionMethod.MANUAL,
       method6: ConnectionMethod.MANUAL,
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
       persistent: false,
     });
 
@@ -99,7 +99,7 @@ describe("getNetworkStatus", () => {
     const nonPersistentConnection = createConnection("Network 1", {
       method4: ConnectionMethod.MANUAL,
       method6: ConnectionMethod.MANUAL,
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
       persistent: false,
     });
 
@@ -113,7 +113,7 @@ describe("getNetworkStatus", () => {
     const nonPersistentConnection = createConnection("Network 2", {
       method4: ConnectionMethod.MANUAL,
       method6: ConnectionMethod.MANUAL,
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
       persistent: false,
     });
 
@@ -126,7 +126,7 @@ describe("getNetworkStatus", () => {
 
   it("returns AUTO status when there are only connections with auto method and without static IP addresses", () => {
     const autoConnection = createConnection("Network 1", {
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
       addresses: [],
     });
 
@@ -139,7 +139,7 @@ describe("getNetworkStatus", () => {
     const manualConnection = createConnection("Network 1", {
       method4: ConnectionMethod.MANUAL,
       method6: ConnectionMethod.MANUAL,
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
     });
 
     const result = getNetworkStatus([manualConnection]);
@@ -151,7 +151,7 @@ describe("getNetworkStatus", () => {
     const manualWithStaticIp = createConnection("Network 1", {
       method4: ConnectionMethod.MANUAL,
       method6: ConnectionMethod.MANUAL,
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
       addresses: [{ address: "192.168.1.10", prefix: 24 }],
     });
 
@@ -164,7 +164,7 @@ describe("getNetworkStatus", () => {
     const mixedConnection = createConnection("Network 1", {
       method4: ConnectionMethod.AUTO,
       method6: ConnectionMethod.MANUAL,
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
     });
 
     const result = getNetworkStatus([mixedConnection]);
@@ -174,7 +174,7 @@ describe("getNetworkStatus", () => {
 
   it("returns MIXED status when there is an auto connection with static IP address", () => {
     const autoWithStaticIp = createConnection("Network 1", {
-      state: ConnectionState.activating,
+      state: ConnectionState.ACTIVATING,
       addresses: [{ address: "192.168.1.10", prefix: 24 }],
     });
 

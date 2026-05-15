@@ -1,4 +1,25 @@
 -------------------------------------------------------------------
+Fri May 15 14:27:47 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added support for installing systemd-boot and grub2-bls,
+  based on the product definition (jsc#PED-10703).
+- Added possibility to force systemd-boot installation as tech
+  preview.
+- When installing systemd-boot or grub2-bls, use the BLS-compliant
+  new strategy from yast2-storage-ng.
+- Added support to configure TPM unlocking using sdbootutils.
+
+-------------------------------------------------------------------
+Fri May 15 11:41:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix handling of AutoYaST rules (gh#agama-project/agama#3502).
+
+-------------------------------------------------------------------
+Fri May 15 11:15:57 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapt code to new suseconnect-ng version (bsc#1265239)
+
+-------------------------------------------------------------------
 Thu May  7 12:11:45 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Import the ntp-client section from a AutoYaST profiles

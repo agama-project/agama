@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 15 14:41:09 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Tumbleweed and Slowroll configured to use systemd-boot relying
+  on the new BLS-compliant mechanism (jsc#PED-10703).
+
+-------------------------------------------------------------------
 Thu Apr 23 15:59:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Declare the `desktop_selection` policy (suggested/optional) per

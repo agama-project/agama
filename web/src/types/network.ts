@@ -109,10 +109,11 @@ enum ConnectionStatus {
 
 // Current state of the connection.
 enum ConnectionState {
-  activating = "activating",
-  activated = "activated",
-  deactivating = "deactivating",
-  deactivated = "deactivated",
+  UNKNOWN = "unknown",
+  ACTIVATING = "activating",
+  ACTIVATED = "activated",
+  DEACTIVATING = "deactivating",
+  DEACTIVATED = "deactivated",
 }
 
 enum ConnectionMethod {
@@ -134,6 +135,14 @@ enum NetworkState {
   DISCONNECTED = "disconnected",
   CONNECTING = "connecting",
   CONNECTED = "connected",
+}
+
+enum ConnectivityState {
+  UNKNOWN = "unknown",
+  NONE = "none",
+  PORTAL = "portal",
+  LIMITED = "limited",
+  FULL = "full",
 }
 
 enum SecurityProtocols {
@@ -276,7 +285,7 @@ type APIConnection = {
   method6?: string;
   wireless?: Wireless;
   status: ConnectionStatus;
-  state: ConnectionState;
+  state?: ConnectionState;
   persistent: boolean;
 };
 
@@ -351,7 +360,7 @@ type ConnectionOptions = {
 class Connection {
   id: string;
   status: ConnectionStatus = ConnectionStatus.UP;
-  state: ConnectionState;
+  state?: ConnectionState;
   iface: string;
   macAddress?: string;
   addresses: IPAddress[] = [];
@@ -377,13 +386,12 @@ class Connection {
   }
 
   static fromApi(connection: APIConnection) {
-    const { id, status, interface: iface, ...options } = connection;
+    const { id, interface: iface, ...options } = connection;
     const nameservers = connection.nameservers || [];
     const dnsSearchList = connection.dnsSearchList || [];
     const addresses = connection.addresses?.map(buildAddress) || [];
     const conn = new Connection(id, {
       ...options,
-      status,
       // FIXME: try a better approach for methods/gateway and/or typecasting
       method4: options.method4 as ConnectionMethod,
       method6: options.method6 as ConnectionMethod,
@@ -408,7 +416,7 @@ class Connection {
   }
 
   toApi() {
-    const { iface, addresses, ...newConnection } = this;
+    const { iface, addresses, state, ...newConnection } = this;
     const result: APIConnection = {
       ...newConnection,
       interface: iface,
@@ -442,7 +450,7 @@ type WifiNetwork = AccessPoint & {
 
 type GeneralState = {
   copyNetwork: boolean;
-  connectivity: boolean;
+  connectivity: ConnectivityState;
   networkingEnabled: boolean;
   wirelessEnabled: boolean;
 };
@@ -580,6 +588,7 @@ export {
   ApSecurityFlags,
   BondMode,
   Connection,
+  ConnectivityState,
   ConnectionState,
   ConnectionStatus,
   ConnectionMethod,

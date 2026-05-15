@@ -447,7 +447,14 @@ fn ip_config_to_ipv4_dbus<'a>(
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        ("method", ip_config.method4.to_string().into()),
+        (
+            "method",
+            ip_config
+                .method4
+                .unwrap_or(Ipv4Method::Auto)
+                .to_string()
+                .into(),
+        ),
         ("link-local", (link_local as i32).into()),
     ]);
 
@@ -556,7 +563,14 @@ fn ip_config_to_ipv6_dbus<'a>(
         ("dns-data", dns_data),
         ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        ("method", ip_config.method6.to_string().into()),
+        (
+            "method",
+            ip_config
+                .method6
+                .unwrap_or(Ipv6Method::Auto)
+                .to_string()
+                .into(),
+        ),
     ]);
 
     if !ip_config.routes6.is_empty() {
@@ -1068,8 +1082,9 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
     let mut ip_config = IpConfig::default();
 
     if let Some(ipv4) = conn.get("ipv4") {
-        let method4: String = get_property(ipv4, "method")?;
-        ip_config.method4 = NmMethod(method4).try_into()?;
+        if let Some(method) = get_optional_property(ipv4, "method")? {
+            ip_config.method4 = Some(NmMethod(method).try_into()?);
+        }
 
         if let Some(address_data) = ipv4.get("address-data") {
             let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
@@ -1150,8 +1165,9 @@ fn ip_config_from_dbus(conn: &OwnedNestedHash) -> Result<IpConfig, NmError> {
     }
 
     if let Some(ipv6) = conn.get("ipv6") {
-        let method6: String = get_property(ipv6, "method")?;
-        ip_config.method6 = NmMethod(method6).try_into()?;
+        if let Some(method) = get_optional_property(ipv6, "method")? {
+            ip_config.method6 = Some(NmMethod(method).try_into()?);
+        }
 
         if let Some(address_data) = ipv6.get("address-data") {
             let mut addresses = addresses_with_prefix_from_dbus(address_data)?;
@@ -1750,8 +1766,8 @@ mod test {
             .dns_searchlist
             .contains(&"example.com".to_string()));
         assert!(ip_config.ignore_auto_dns);
-        assert_eq!(ip_config.method4, Ipv4Method::Auto);
-        assert_eq!(ip_config.method6, Ipv6Method::Auto);
+        assert_eq!(ip_config.method4, Some(Ipv4Method::Auto));
+        assert_eq!(ip_config.method6, Some(Ipv6Method::Auto));
         assert_eq!(
             ip_config.routes4,
             vec![IpRoute {

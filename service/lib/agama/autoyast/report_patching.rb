@@ -29,6 +29,7 @@ require "json"
 require "yast"
 require "yast2/execute"
 require "ui/dialog"
+require "agama/http/clients/questions"
 
 # :nodoc:
 # rubocop:disable Metrics/ParameterLists
@@ -46,18 +47,20 @@ module Yast2
         text = message
         text += "\n\n" + details unless details.empty?
         options = generate_options(buttons)
-        question = {
-          class:         "autoyast.popup",
-          text:          text,
-          options:       generate_options(buttons),
-          defaultOption: focus || options.first,
-          data:          {}
-        }
-        data = { generic: question }.to_json
-        answer_json = Yast::Execute.locally!("agama", "questions", "ask",
-          stdin: data, stdout: :capture)
-        answer = JSON.parse!(answer_json)
-        answer["generic"]["answer"].to_sym
+
+        questions_client = Agama::HTTP::Clients::Questions.new(Logger.new($stdout))
+
+        question = Agama::Question.new(
+          qclass:         "autoyast.popup",
+          text:           text,
+          options:        generate_options(buttons),
+          default_option: focus || options.first,
+          data:           {}
+        )
+
+        questions_client.ask(question) do |answer|
+          return answer.action
+        end
       end
 
     private
@@ -91,23 +94,22 @@ module UI
     end
 
     def run
-      # at first construct agama question to display.
-      text = @label
-      question = {
-        "class"         => "autoyast.password",
-        "text"          => text,
-        "options"       => ["ok", "cancel"],
-        "defaultOption" => "cancel",
-        "data"          => {}
-      }
-      data = { generic: question, withPassword: {} }.to_json
-      answer_json = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
-stdout: :capture)
-      answer = JSON.parse!(answer_json)
-      result = answer["generic"]["answer"].to_sym
-      return nil if result == :cancel
+      question = Agama::Question.new(
+        qclass:         "autoyast.password",
+        text:           @label,
+        field:          :password,
+        options:        [:ok, :cancel],
+        default_option: :cancel,
+        data:           {}
+      )
 
-      answer["withPassword"]["password"]
+      questions_client = Agama::HTTP::Clients::Questions.new(Logger.new($stdout))
+
+      questions_client.ask(question) do |answer|
+        return nil if answer.action == :cancel
+
+        return answer.value
+      end
     end
   end
 end
