@@ -66,7 +66,8 @@ const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
 /**
  * Returns the translated label for a connection state.
  */
-const connectionStateLabel = (state: ConnectionState): string => CONNECTION_STATE_LABELS[state];
+// eslint-disable-next-line agama-i18n/string-literals
+const connectionStateLabel = (state: ConnectionState): string => _(CONNECTION_STATE_LABELS[state]);
 
 /**
  * Returns true if the given connection type is virtual.
