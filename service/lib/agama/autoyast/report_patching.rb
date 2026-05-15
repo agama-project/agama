@@ -29,6 +29,7 @@ require "json"
 require "yast"
 require "yast2/execute"
 require "ui/dialog"
+require "agama/http/clients/questions"
 
 # :nodoc:
 # rubocop:disable Metrics/ParameterLists
@@ -46,18 +47,20 @@ module Yast2
         text = message
         text += "\n\n" + details unless details.empty?
         options = generate_options(buttons)
-        question = {
-          class:         "autoyast.popup",
-          text:          text,
-          options:       generate_options(buttons),
-          defaultOption: focus || options.first,
-          data:          {}
-        }
-        data = { generic: question }.to_json
-        answer_json = Yast::Execute.locally!("agama", "questions", "ask",
-          stdin: data, stdout: :capture)
-        answer = JSON.parse!(answer_json)
-        answer["generic"]["answer"].to_sym
+
+        questions_client = Agama::HTTP::Clients::Questions.new(Logger.new($stdout))
+
+        question = Agama::Question.new(
+          qclass:         "autoyast.popup",
+          text:           text,
+          options:        generate_options(buttons),
+          default_option: focus || options.first,
+          data:           {}
+        )
+
+        questions_client.ask(question) do |answer|
+          return answer.action
+        end
       end
 
     private
