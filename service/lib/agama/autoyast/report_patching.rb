@@ -94,23 +94,22 @@ module UI
     end
 
     def run
-      # at first construct agama question to display.
-      text = @label
-      question = {
-        "class"         => "autoyast.password",
-        "text"          => text,
-        "options"       => ["ok", "cancel"],
-        "defaultOption" => "cancel",
-        "data"          => {}
-      }
-      data = { generic: question, withPassword: {} }.to_json
-      answer_json = Yast::Execute.locally!("agama", "questions", "ask", stdin: data,
-stdout: :capture)
-      answer = JSON.parse!(answer_json)
-      result = answer["generic"]["answer"].to_sym
-      return nil if result == :cancel
+      question = Agama::Question.new(
+        qclass:         "autoyast.password",
+        text:           @label,
+        field:          :password,
+        options:        [:ok, :cancel],
+        default_option: :cancel,
+        data:           {}
+      )
 
-      answer["withPassword"]["password"]
+      questions_client = Agama::HTTP::Clients::Questions.new(Logger.new($stdout))
+
+      questions_client.ask(question) do |answer|
+        return nil if answer.action == :cancel
+
+        return answer.value
+      end
     end
   end
 end
