@@ -42,12 +42,24 @@ import Text from "~/components/core/Text";
 import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
-import { useConnections, useConnectionMutation } from "~/hooks/model/config/network";
+import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useDevices, useSystem } from "~/hooks/model/system/network";
 import { sortCollection } from "~/utils";
-import { connectionType, CONNECTION_TYPE, connectionTypeLabel, formatIp } from "~/utils/network";
+import {
+  connectionType,
+  CONNECTION_TYPE,
+  connectionTypeLabel,
+  connectionStateLabel,
+  formatIp,
+} from "~/utils/network";
 import { _ } from "~/i18n";
-import { Connection, ConnectionStatus, ConnectionType, Device } from "~/types/network";
+import {
+  Connection,
+  ConnectionState,
+  ConnectionStatus,
+  ConnectionType,
+  Device,
+} from "~/types/network";
 import { NETWORK } from "~/routes/paths";
 
 /**
@@ -57,7 +69,7 @@ type ConnectionsFilters = {
   name?: string;
   device?: string;
   type?: "all" | ConnectionType;
-  status?: "all" | "up" | "down";
+  state?: "all" | ConnectionState;
 };
 
 /** Internal state shape for the connections table component. */
@@ -74,7 +86,7 @@ const initialState: TableState = {
     name: "",
     device: "",
     type: "all",
-    status: "all",
+    state: "all",
   },
 };
 
@@ -101,7 +113,7 @@ const filterConnections = (
   connections: Connection[],
   filters: ConnectionsFilters,
 ): Connection[] => {
-  const { name, device, type, status } = filters;
+  const { name, device, type, state } = filters;
 
   return connections.filter((c) => {
     if (!isEmpty(name) && !c.id.toLowerCase().includes(name.toLowerCase())) {
@@ -119,10 +131,8 @@ const filterConnections = (
       if (connectionType(c) !== type) return false;
     }
 
-    if (status && status !== "all") {
-      const isUp = c.status === ConnectionStatus.UP;
-      if (status === "up" && !isUp) return false;
-      if (status === "down" && isUp) return false;
+    if (state && state !== "all") {
+      if (c.state !== state) return false;
     }
 
     return true;
@@ -155,10 +165,9 @@ const createColumns = (devices: Device[]) => [
     sortingKey: (c: Connection) => connectionType(c),
   },
   {
-    name: _("Status"),
-    value: (c: Connection) =>
-      c.status === ConnectionStatus.UP ? _("Connected") : _("Disconnected"),
-    sortingKey: (c: Connection) => c.status,
+    name: _("State"),
+    value: (c: Connection) => connectionStateLabel(c.state),
+    sortingKey: (c: Connection) => c.state,
   },
   {
     name: _("Device"),
@@ -195,9 +204,8 @@ const createColumns = (devices: Device[]) => [
 
 export default function ConnectionsTable() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const connections = useConnections();
   const devices = useDevices();
-  const { state: systemState } = useSystem();
+  const { state: systemState, connections = [] } = useSystem();
   const { mutateAsync: mutateConnection } = useConnectionMutation();
   const navigate = useNavigate();
 
@@ -291,14 +299,19 @@ export default function ConnectionsTable() {
             </ToolbarItem>
             <ToolbarItem>
               <SimpleSelector
-                label={_("Status")}
-                value={state.filters.status}
+                label={_("State")}
+                value={state.filters.state}
                 options={{
                   all: _("All"),
-                  up: _("Up"),
-                  down: _("Down"),
+                  [ConnectionState.ACTIVATED]: connectionStateLabel(ConnectionState.ACTIVATED),
+                  [ConnectionState.DEACTIVATED]: connectionStateLabel(ConnectionState.DEACTIVATED),
+                  [ConnectionState.ACTIVATING]: connectionStateLabel(ConnectionState.ACTIVATING),
+                  [ConnectionState.DEACTIVATING]: connectionStateLabel(
+                    ConnectionState.DEACTIVATING,
+                  ),
+                  [ConnectionState.UNKNOWN]: connectionStateLabel(ConnectionState.UNKNOWN),
                 }}
-                onChange={(_, v) => onFilterChange("status", v)}
+                onChange={(_, v) => onFilterChange("state", v)}
               />
             </ToolbarItem>
           </ToolbarGroup>
@@ -329,8 +342,8 @@ export default function ConnectionsTable() {
         updateSorting={onSortingChange}
         itemActions={(c: Connection) => {
           const isWifi = !!c.wireless;
-          const isConnected = c.status === ConnectionStatus.UP;
-          const isDisconnected = c.status === ConnectionStatus.DOWN;
+          const isConnected = c.state === ConnectionState.ACTIVATED;
+          const isDisconnected = c.state === ConnectionState.DEACTIVATED;
           const canConnect = !isWifi || systemState.wirelessEnabled;
 
           return [

@@ -36,7 +36,7 @@ const mockConnection = (options: Partial<ConnectionOptions> = {}) =>
       ssid: "Network 2",
       mode: "infrastructure",
     },
-    state: ConnectionState.activating,
+    state: ConnectionState.ACTIVATING,
     ...options,
   });
 

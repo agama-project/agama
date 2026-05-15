@@ -558,6 +558,8 @@ pub enum DeviceState {
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum ConnectionState {
+    /// The connection state is unknown.
+    Unknown,
     /// The connection is getting activated.
     Activating,
     /// The connection is activated.

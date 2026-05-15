@@ -182,7 +182,7 @@ impl TryFrom<NmConnectionState> for ConnectionState {
 
     fn try_from(value: NmConnectionState) -> Result<Self, Self::Error> {
         match value {
-            NmConnectionState(0) => Ok(ConnectionState::Deactivated),
+            NmConnectionState(0) => Ok(ConnectionState::Unknown),
             NmConnectionState(1) => Ok(ConnectionState::Activating),
             NmConnectionState(2) => Ok(ConnectionState::Activated),
             NmConnectionState(3) => Ok(ConnectionState::Deactivating),

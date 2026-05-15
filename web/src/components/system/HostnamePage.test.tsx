@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import HostnamePage from "./HostnamePage";
+import { ConnectivityState } from "~/types/network";
 
 let mockStaticHostname: string;
 const mockPatchConfig = jest.fn();
@@ -46,7 +47,7 @@ jest.mock("~/hooks/model/proposal", () => ({
     network: {
       connections: [],
       state: {
-        connectivity: true,
+        connectivity: ConnectivityState.FULL,
         copyNetwork: true,
         networkingEnabled: false,
         wirelessEnabled: false,

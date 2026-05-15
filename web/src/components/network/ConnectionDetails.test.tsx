@@ -73,7 +73,7 @@ const mockAnotherDevice: Device = {
 };
 
 const mockConnection: Connection = new Connection("Network #1", {
-  state: ConnectionState.activated,
+  state: ConnectionState.ACTIVATED,
   iface: "enp1s0",
   method4: ConnectionMethod.AUTO,
   method6: ConnectionMethod.AUTO,
@@ -101,7 +101,7 @@ describe("ConnectionDetails", () => {
 
     it("renders 'None set' for IPv4 and IPv6 when no method is set", () => {
       const connection = new Connection("Network #1", {
-        state: ConnectionState.activated,
+        state: ConnectionState.ACTIVATED,
         iface: "enp1s0",
       });
       installerRender(<ConnectionDetails connection={connection} />);
@@ -116,7 +116,7 @@ describe("ConnectionDetails", () => {
         <ConnectionDetails
           connection={
             new Connection("Network #1", {
-              state: ConnectionState.activated,
+              state: ConnectionState.ACTIVATED,
               iface: "enp1s0",
               addresses: [{ address: "192.168.0.0", prefix: "24" }, { address: "192.168.20.20" }],
               gateway4: "100.100.100.4",

@@ -92,7 +92,7 @@ const NetworkSecurity = ({ id, security }) => {
 
 type ConnectingSpinnerProps = { ssid: WifiNetwork["ssid"]; state: ConnectionState | undefined };
 const ConnectingSpinner = ({ state, ssid }: ConnectingSpinnerProps) => {
-  if (state !== ConnectionState.activating) return;
+  if (state !== ConnectionState.ACTIVATING) return;
 
   // TRANSLATORS: %s will be replaced by Wi-Fi network SSID
   const label = sprintf(_("Connecting to %s"), ssid);
@@ -129,7 +129,7 @@ const NetworkListItem = ({ network, connection, showIp }: NetworkListItemProps) 
                   >
                     {network.ssid}
                   </Content>
-                  {connection?.state === ConnectionState.activated && (
+                  {connection?.state === ConnectionState.ACTIVATED && (
                     <Label id={statusId} isCompact color="green">
                       {_("Connected")}
                     </Label>
