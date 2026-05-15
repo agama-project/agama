@@ -166,7 +166,6 @@ boot:
   default_efi_bootloader: "systemd-boot"
 
 storage:
-  boot_strategy: BLS
   space_policy: delete
   volumes:
     - "/"
