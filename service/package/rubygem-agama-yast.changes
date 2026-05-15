@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri May 15 11:14:54 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapt code to new suseconnect-ng version (bsc#1265239) 
+
+-------------------------------------------------------------------
 Fri Apr 10 06:20:39 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use /var/lib/agama/scripts to save the scripts in the target
