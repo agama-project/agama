@@ -109,15 +109,6 @@ software:
   optional_packages: []
   base_product: Kalpa
 
-security:
-  lsm: selinux
-  available_lsms:
-    selinux:
-      patterns:
-        - microos_selinux
-    none:
-      patterns: null
-
 storage:
   space_policy: delete
   volumes:
@@ -140,9 +131,6 @@ storage:
           # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
           - path: var
             copy_on_write: false
-          # Architecture specific subvolumes
-          - path: boot/grub2/x86_64-efi
-            archs: x86_64
       size:
         auto: true
       outline:

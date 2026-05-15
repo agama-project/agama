@@ -33,9 +33,11 @@ module Agama
     # generated from a profile.
     class ConfigSolver
       # @param product_config [Agama::Config] configuration of the product to install
+      # @param bootloader_config [Storage::BootloaderConfig]
       # @param storage_system [Storage::System]
-      def initialize(product_config, storage_system)
+      def initialize(product_config, bootloader_config, storage_system)
         @product_config = product_config
+        @bootloader_config = bootloader_config
         @storage_system = storage_system
       end
 
@@ -46,7 +48,7 @@ module Agama
       # @param config [Config]
       def solve(config)
         ConfigSolvers::Encryption.new(product_config).solve(config)
-        ConfigSolvers::Filesystem.new(product_config).solve(config)
+        ConfigSolvers::Filesystem.new(product_config, bootloader_config).solve(config)
         ConfigSolvers::DrivesSearch.new(storage_system).solve(config)
         ConfigSolvers::MdRaidsSearch.new(storage_system).solve(config)
         ConfigSolvers::VolumeGroupsSearch.new(storage_system).solve(config)
@@ -59,6 +61,9 @@ module Agama
 
       # @return [Agama::Config]
       attr_reader :product_config
+
+      # @return [Storage::BootloaderConfig]
+      attr_reader :bootloader_config
 
       # @return [Storage::System]
       attr_reader :storage_system

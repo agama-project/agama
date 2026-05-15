@@ -23,9 +23,12 @@
 import { useCallback } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSystem } from "~/hooks/model/system/storage";
+import { useSystem as useBootloaderSystem } from "~/hooks/model/system/bootloader";
 import { solveStorageModel, getStorageModel, putStorageModel } from "~/api";
 import configModel from "~/model/storage/config-model";
+import bootloaderSystem from "~/model/system/bootloader";
 import { findDeviceByName } from "~/model/system/storage";
+import { isNullish } from "radashi";
 import type {
   ConfigModel,
   Data,
@@ -347,6 +350,27 @@ function useConvertDevice() {
   };
 }
 
+const selectIsGrub2WithTpm = (config: ConfigModel.Config | null): boolean =>
+  !isNullish(config) && configModel.isGrub2WithTpm(config);
+
+function useIsGrub2WithTpm(): boolean {
+  const { data } = useSuspenseQuery({
+    ...configModelQuery,
+    select: selectIsGrub2WithTpm,
+  });
+  return data;
+}
+
+function useIsTpmAvailable(): boolean {
+  const system = useBootloaderSystem();
+  const config = useConfigModel();
+  const bootloaderType = config ? configModel.getBootloader(config) : null;
+
+  if (isNullish(system) || isNullish(bootloaderType)) return false;
+
+  return bootloaderSystem.isTpmAvailable(system, bootloaderType);
+}
+
 export {
   STORAGE_MODEL_KEY,
   useConfigModel,
@@ -378,4 +402,6 @@ export {
   useSetFilesystem,
   useSetSpacePolicy,
   useConvertDevice,
+  useIsGrub2WithTpm,
+  useIsTpmAvailable,
 };

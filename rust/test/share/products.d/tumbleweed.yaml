@@ -225,3 +225,6 @@ storage:
           - ext4
           - xfs
           - vfat
+
+boot:
+  default_efi_bootloader: "systemd-boot"

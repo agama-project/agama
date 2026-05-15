@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 15 14:42:28 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapted UI to handle TPM unlocking according to the new schema
+  (jsc#PED-10703).
+
+-------------------------------------------------------------------
 Thu May 14 17:57:06 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Adapted the connections table to use the connections state

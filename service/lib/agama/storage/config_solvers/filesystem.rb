@@ -29,6 +29,11 @@ module Agama
       # The filesystem configs are solved by assigning the default filesystem values defined by the
       # productd, if needed.
       class Filesystem < Base
+        def initialize(product_config, bootloader_config)
+          super(product_config)
+          @bootloader_config = bootloader_config
+        end
+
         # Solves all the filesystem configs within a given config.
         #
         # @note The config object is modified.
@@ -79,7 +84,16 @@ module Agama
         # @param path [String, nil]
         # @return [Configs::Btrfs]
         def default_btrfs(path = nil)
-          default_filesystem(path).type.btrfs
+          btrfs = default_filesystem(path).type.btrfs
+          btrfs.subvolumes.concat(bootloader_subvolumes) if path == "/" && btrfs.subvolumes
+          btrfs
+        end
+
+        # List of subvolumes for the configured bootloader type, if any.
+        #
+        # @return [Array<Y2Storage::SubvolSpecification>]
+        def bootloader_subvolumes
+          @bootloader_config.type&.root_subvolumes || []
         end
       end
     end

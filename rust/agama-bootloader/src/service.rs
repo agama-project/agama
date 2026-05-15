@@ -27,6 +27,7 @@ use agama_utils::{
     api::bootloader::Config,
 };
 use async_trait::async_trait;
+use serde_json::Value;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -102,6 +103,13 @@ impl Actor for Service {
 impl MessageHandler<message::GetConfig> for Service {
     async fn handle(&mut self, _message: message::GetConfig) -> Result<Config, Error> {
         Ok(self.client.get_config().await?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetSystem> for Service {
+    async fn handle(&mut self, _message: message::GetSystem) -> Result<Option<Value>, Error> {
+        Ok(self.client.get_system().await?)
     }
 }
 

@@ -26,7 +26,7 @@ require "agama/storage/config_checkers/logical_volume"
 describe Agama::Storage::ConfigCheckers::LogicalVolume do
   include_context "config"
 
-  subject { described_class.new(lv_config, vg_config, config, product_config) }
+  subject { described_class.new(lv_config, vg_config, config, bootloader_config, product_config) }
 
   let(:config_json) do
     {

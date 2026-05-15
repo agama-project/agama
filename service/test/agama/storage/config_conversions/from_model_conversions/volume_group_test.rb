@@ -26,6 +26,7 @@ require "agama/storage/configs/drive"
 require "agama/storage/configs/logical_volume"
 require "agama/storage/configs/md_raid"
 require "agama/storage/configs/search"
+require "agama/storage/bootloader_config"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
@@ -33,8 +34,10 @@ using Y2Storage::Refinements::SizeCasts
 describe Agama::Storage::ConfigConversions::FromModelConversions::VolumeGroup do
   include_context "from model conversions"
 
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
+
   subject do
-    described_class.new(model_json, product_config, targets)
+    described_class.new(model_json, product_config, bootloader_config, targets)
   end
 
   describe "#convert" do

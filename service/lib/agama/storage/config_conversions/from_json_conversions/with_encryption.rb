@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,7 +32,7 @@ module Agama
             encryption_json = config_json[:encryption]
             return unless encryption_json
 
-            FromJSONConversions::Encryption.new(encryption_json).convert
+            FromJSONConversions::Encryption.new(encryption_json, bootloader_config).convert
           end
         end
       end

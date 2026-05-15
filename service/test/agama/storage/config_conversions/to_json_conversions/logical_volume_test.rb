@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,9 +32,17 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::LogicalVolume do
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSONConversions::LogicalVolume
-      .new(config_json)
+      .new(config_json, bootloader_config)
       .convert
   end
+
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap do |config|
+      config.type = bootloader_type
+    end
+  end
+
+  let(:bootloader_type) { nil }
 
   let(:config_json) do
     {

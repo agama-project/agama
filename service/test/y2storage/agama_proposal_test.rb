@@ -75,8 +75,9 @@ describe Y2Storage::AgamaProposal do
     described_class.new(
       config,
       storage_system,
-      product_config: product_config,
-      issues_list:    issues_list
+      product_config:    product_config,
+      bootloader_config: bootloader_config,
+      issues_list:       issues_list
     )
   end
 
@@ -189,12 +190,6 @@ describe Y2Storage::AgamaProposal do
 
   let(:scenario) { "empty-hd-50GiB.yaml" }
 
-  before do
-    # To speed-up the tests
-    allow(Y2Storage::BootRequirementsStrategies::Analyzer)
-      .to receive(:bls_bootloader_proposed?).and_return(false)
-  end
-
   describe "#propose" do
     context "when only the root partition is specified" do
       let(:config) { default_config }
@@ -228,6 +223,52 @@ describe Y2Storage::AgamaProposal do
           root_fs = root_part.filesystem
           expect(root_fs.root?).to eq true
           expect(root_fs.type.is?(:btrfs)).to eq true
+        end
+      end
+    end
+
+    context "on an EFI system" do
+      let(:config) { default_config }
+
+      before do
+        allow_any_instance_of(Y2Storage::Arch).to receive(:efiboot?).and_return(true)
+        allow(Yast::Arch).to receive(:x86_64).and_return(true)
+        allow(Yast::Arch).to receive(:i386).and_return(false)
+        allow(Yast::Arch).to receive(:aarch64).and_return(false)
+        allow(Yast::Arch).to receive(:arm).and_return(false)
+        allow(Yast::Arch).to receive(:riscv64).and_return(false)
+      end
+
+      context "when systemd-boot is configured as bootloader" do
+        before do
+          allow(bootloader_config).to receive(:type)
+            .and_return Y2Storage::BootloaderType::SYSTEMD_BOOT
+        end
+
+        it "proposes the corresponding boot partitions" do
+          proposal.propose
+          efi_partition = proposal.devices.partitions.find do |part|
+            part.filesystem&.mount_path == "/boot"
+          end
+
+          expect(efi_partition).to_not be_nil
+          expect(efi_partition.size).to eq(1.GiB)
+        end
+      end
+
+      context "when Grub2 is configued as bootloader" do
+        before do
+          allow(bootloader_config).to receive(:type).and_return Y2Storage::BootloaderType::GRUB2
+        end
+
+        it "proposes the corresponding boot partitions" do
+          proposal.propose
+          efi_partition = proposal.devices.partitions.find do |part|
+            part.filesystem&.mount_path == "/boot/efi"
+          end
+
+          expect(efi_partition).to_not be_nil
+          expect(efi_partition.size).to eq(512.MiB)
         end
       end
     end
@@ -453,7 +494,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /method 'Regular LUKS2' is not available/
+            description: /Regular LUKS2 is not available/
           )
         end
       end
@@ -469,7 +510,7 @@ describe Y2Storage::AgamaProposal do
         it "reports the corresponding error" do
           proposal.propose
           expect(proposal.issues_list).to include an_object_having_attributes(
-            description: /'Encryption with Volatile Random Key' is not a suitable method/
+            description: /Encryption with Volatile Random Key is not suitable/
           )
         end
       end

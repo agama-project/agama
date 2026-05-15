@@ -36,6 +36,7 @@ pub struct SystemInfo {
     pub software: software::SystemInfo,
     pub storage: Option<Value>,
     pub iscsi: Option<Value>,
+    pub bootloader: Option<Value>,
     pub network: network::SystemInfo,
     #[serde(flatten)]
     pub s390: Option<s390::SystemInfo>,

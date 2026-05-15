@@ -33,12 +33,22 @@ module Agama
       module FromJSONConversions
         # Logical volume conversion from JSON hash according to schema.
         class LogicalVolume < Base
-        private
-
           include WithEncryption
           include WithFilesystem
           include WithSize
           include WithSearch
+
+          # @param config_json [Hash]
+          # @param bootloader_config [BootloaderConfig]
+          def initialize(config_json, bootloader_config)
+            super(config_json)
+            @bootloader_config = bootloader_config
+          end
+
+        private
+
+          # @return [BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @see Base
           # @return [Configs::LogicalVolume]

@@ -41,15 +41,20 @@ module Agama
           include WithSize
 
           # @param model_json [Hash]
+          # @param bootloader_config [Storage::BootloaderConfig]
           # @param encryption_model [Hash, nil]
-          def initialize(model_json, encryption_model = nil)
+          def initialize(model_json, bootloader_config, encryption_model = nil)
             super(model_json)
+            @bootloader_config = bootloader_config
             @encryption_model = encryption_model
           end
 
         private
 
           alias_method :partition_model, :model_json
+
+          # @return [Storage::BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @return [Hash, nil]
           attr_reader :encryption_model

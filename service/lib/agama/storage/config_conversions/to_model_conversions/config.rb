@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -34,16 +34,21 @@ module Agama
         class Config < Base
           # @param config [Storage::Config]
           # @param product_config [Agama::Config, nil]
-          def initialize(config, product_config)
+          # @param bootloader_config [Storage::BootloaderConfig, nil]
+          def initialize(config, product_config, bootloader_config)
             super()
             @config = config
             @product_config = product_config
+            @bootloader_config = bootloader_config
           end
 
         private
 
           # @return [Agama::Config, nil]
           attr_reader :product_config
+
+          # @return [Storage::BootloaderConfig, nil]
+          attr_reader :bootloader_config
 
           # @see Base#conversions
           def conversions
@@ -58,7 +63,7 @@ module Agama
 
           # @return [Hash]
           def convert_boot
-            ToModelConversions::Boot.new(config).convert
+            ToModelConversions::Boot.new(config, bootloader_config).convert
           end
 
           # @return [Hash]

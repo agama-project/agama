@@ -851,7 +851,7 @@
         { "$ref": "#/$defs/encryptionLuks1" },
         { "$ref": "#/$defs/encryptionLuks2" },
         { "$ref": "#/$defs/encryptionPervasiveLuks2" },
-        { "$ref": "#/$defs/encryptionTPM" },
+        { "$ref": "#/$defs/encryptionTpmFde" },
         { "$ref": "#/$defs/encryptionSwap" }
       ]
     },
@@ -891,6 +891,11 @@
             "label": {
               "description": "LUKS2 label.",
               "type": "string"
+            },
+            "tpm": {
+              "description": "Whether to use TPM2 unlocking.",
+              "type": "boolean",
+              "default": false
             }
           }
         }
@@ -924,7 +929,8 @@
         }
       }
     },
-    "encryptionTPM": {
+    "encryptionTpmFde": {
+      "deprecated": true,
       "description": "TPM-Based Full Disk Encryption.",
       "type": "object",
       "additionalProperties": false,
@@ -941,8 +947,8 @@
       }
     },
     "encryptionSwap": {
-      "description": "Swap encryptions.",
-      "enum": ["protected_swap", "secure_swap", "random_swap"]
+      "description": "Swap encryptions. The snake case names are deprecated.",
+      "enum": ["protected_swap", "secure_swap", "random_swap", "protectedSwap", "secureSwap", "randomSwap"]
     },
     "encryptionPassword": {
       "description": "Password to use when creating a new encryption device.",

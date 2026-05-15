@@ -221,6 +221,8 @@ pub struct ProductTemplate {
     #[serde(default)]
     pub storage: StorageSpec,
     #[serde(default)]
+    pub boot: BootSpec,
+    #[serde(default)]
     pub modes: Vec<ProductModeSpec>,
 }
 
@@ -265,6 +267,7 @@ impl ProductTemplate {
             desktop_selection: self.desktop_selection.clone(),
             software,
             storage,
+            boot: self.boot.clone(),
         })
     }
 
@@ -301,6 +304,7 @@ pub struct ProductSpec {
     pub desktop_selection: Option<DesktopSelection>,
     pub software: SoftwareSpec,
     pub storage: StorageSpec,
+    pub boot: BootSpec,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -426,6 +430,13 @@ pub struct StorageSpec {
     #[serde(default)]
     #[merge(strategy = merge::vec::append)]
     pub volume_templates: Vec<VolumeSpec>,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge)]
+pub struct BootSpec {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub default_efi_bootloader: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -569,6 +580,12 @@ mod test {
             desktop: true,
         };
         assert_eq!(gnome, Some(&UserPatternSpec::Object(expected_pattern)));
+
+        let boot = &tw.boot;
+        assert_eq!(
+            boot.default_efi_bootloader.as_ref().unwrap(),
+            "systemd-boot"
+        );
     }
 
     #[test_context(Context)]

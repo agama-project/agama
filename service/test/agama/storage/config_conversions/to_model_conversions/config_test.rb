@@ -20,12 +20,16 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../config_context"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/to_model_conversions/config"
+require "y2storage/bootloader_type"
+require "y2storage/encryption_method"
+require "y2storage/encryption_method/tpm_bls"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
   include_context "config"
 
-  subject { described_class.new(config, product_config) }
+  subject { described_class.new(config, product_config, bootloader_config) }
 
   let(:config_json) do
     {
@@ -36,10 +40,15 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
     }
   end
 
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap { |c| c.type = bootloader_type }
+  end
+
   let(:boot) { nil }
   let(:drives) { nil }
   let(:md_raids) { nil }
   let(:volume_groups) { nil }
+  let(:bootloader_type) { nil }
 
   describe "#convert" do
     context "if #drives is not configured" do
@@ -226,12 +235,15 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
     context "for the 'boot' property" do
       let(:boot) { { configure: true } }
 
+      let(:bootloader_type) { Y2Storage::BootloaderType::GRUB2 }
+
       it "generates the expected JSON" do
         model_json = subject.convert
         expect(model_json[:boot]).to eq(
           {
-            configure: true,
-            device:    { default: true }
+            configure:  true,
+            bootloader: "grub2",
+            device:     { default: true }
           }
         )
       end
@@ -247,9 +259,7 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
                 partitions: [
                   {
                     filesystem: { path: "/" },
-                    encryption: {
-                      luks1: { password: "12345" }
-                    }
+                    encryption: encryption
                   }
                 ]
               }
@@ -275,15 +285,68 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
           }
         end
 
+        let(:encryption) do
+          {
+            luks1: {
+              password: "12345"
+            }
+          }
+        end
+
         it "generates the expected JSON" do
           encryption_model = subject.convert[:encryption]
 
           expect(encryption_model).to eq(
             {
-              method:   "luks1",
-              password: "12345"
+              password: "12345",
+              tpm:      false
             }
           )
+        end
+
+        context "and the encryption method is TPM FDE" do
+          let(:encryption) do
+            {
+              tpmFde: {
+                password: "12345"
+              }
+            }
+          end
+
+          it "generates the expected JSON" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                password: "12345",
+                tpm:      true
+              }
+            )
+          end
+        end
+
+        context "and the encryption method is TPM BLS" do
+          let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+          let(:encryption) do
+            {
+              luks2: {
+                password: "12345",
+                tpm:      true
+              }
+            }
+          end
+
+          it "generates the expected JSON" do
+            encryption_model = subject.convert[:encryption]
+
+            expect(encryption_model).to eq(
+              {
+                password: "12345",
+                tpm:      true
+              }
+            )
+          end
         end
       end
 
@@ -334,8 +397,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
 
             expect(encryption_model).to eq(
               {
-                method:   "luks1",
-                password: "12345"
+                password: "12345",
+                tpm:      false
               }
             )
           end
@@ -396,8 +459,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
 
             expect(encryption_model).to eq(
               {
-                method:   "luks1",
-                password: "12345"
+                password: "12345",
+                tpm:      false
               }
             )
           end
@@ -411,8 +474,8 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
 
             expect(encryption_model).to eq(
               {
-                method:   "luks2",
-                password: "54321"
+                password: "54321",
+                tpm:      false
               }
             )
           end

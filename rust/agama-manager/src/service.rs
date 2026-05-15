@@ -650,6 +650,7 @@ impl MessageHandler<message::GetSystem> for Service {
         let manager = self.system.clone();
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
+        let bootloader = self.bootloader.call(bootloader::message::GetSystem).await?;
         let network = self.network.get_system().await?;
 
         let s390 = if let Some(s390) = &self.s390 {
@@ -673,6 +674,7 @@ impl MessageHandler<message::GetSystem> for Service {
             network,
             storage,
             iscsi,
+            bootloader,
             s390,
             software,
         })

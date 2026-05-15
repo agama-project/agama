@@ -28,12 +28,15 @@ require "agama/storage/configs/boot_device"
 require "agama/storage/configs/drive"
 require "agama/storage/configs/encryption"
 require "agama/storage/configs/md_raid"
+require "agama/storage/bootloader_config"
 
 describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
   include_context "from model conversions"
 
+  let(:bootloader_config) { Agama::Storage::BootloaderConfig.new }
+
   subject do
-    described_class.new(model_json, product_config, storage_system)
+    described_class.new(model_json, product_config, bootloader_config, storage_system)
   end
 
   describe "#convert" do
@@ -400,13 +403,6 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
     end
 
     context "if 'encryption' is specified" do
-      let(:encryption) do
-        {
-          method:   "luks1",
-          password: "12345"
-        }
-      end
-
       let(:drives) do
         [
           {
@@ -454,33 +450,156 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::Config do
         ]
       end
 
-      it "sets #encryption to the newly formatted partitions, except the boot-related ones" do
-        config = subject.convert
-        partitions = config.partitions
-        new_partitions = partitions.reject(&:search)
-        reused_partitions = partitions.select(&:search)
-        mounted_partitions, reformatted_partitions = reused_partitions.partition do |part|
-          part.filesystem.reuse?
-        end
-        new_non_boot_partitions, new_boot_partitions = new_partitions.partition do |part|
-          part.filesystem&.path != "/boot/efi"
+      context "without TPM" do
+        let(:encryption) do
+          {
+            password: "12345"
+          }
         end
 
-        expect(new_non_boot_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
-        expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
-        expect(reformatted_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks1))
-        expect(reformatted_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
-        expect(mounted_partitions.map(&:encryption)).to all(be_nil)
-        expect(new_boot_partitions.map(&:encryption)).to all(be_nil)
+        it "sets #encryption with LUKS2 method to the newly formatted partitions, except the " \
+           "boot-related ones" do
+          config = subject.convert
+          partitions = config.partitions
+          new_partitions = partitions.reject(&:search)
+          reused_partitions = partitions.select(&:search)
+          mounted_partitions, reformatted_partitions = reused_partitions.partition do |part|
+            part.filesystem.reuse?
+          end
+          new_non_boot_partitions, new_boot_partitions = new_partitions.partition do |part|
+            part.filesystem&.path != "/boot/efi"
+          end
+
+          expect(new_non_boot_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks2))
+          expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+          expect(reformatted_partitions.map { |p| p.encryption.method.id }).to all(eq(:luks2))
+          expect(reformatted_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+          expect(mounted_partitions.map(&:encryption)).to all(be_nil)
+          expect(new_boot_partitions.map(&:encryption)).to all(be_nil)
+        end
+
+        it "sets #encryption with LUKS2 method for the automatically created physical volumes" do
+          config = subject.convert
+          volume_group = config.volume_groups.first
+          target_encryption = volume_group.physical_volumes_encryption
+
+          expect(target_encryption.method.id).to eq(:luks2)
+          expect(target_encryption.password).to eq("12345")
+        end
       end
 
-      it "sets #encryption for the automatically created physical volumes" do
-        config = subject.convert
-        volume_group = config.volume_groups.first
-        target_encryption = volume_group.physical_volumes_encryption
+      context "with TPM and grub2 bootloader" do
+        let(:bootloader_config) do
+          config = Agama::Storage::BootloaderConfig.new
+          config.type = Y2Storage::BootloaderType::GRUB2
+          config
+        end
 
-        expect(target_encryption.method.id).to eq(:luks1)
-        expect(target_encryption.password).to eq("12345")
+        let(:encryption) do
+          {
+            tpm:      true,
+            password: "12345"
+          }
+        end
+
+        it "sets #encryption with TPM_FDE method to the newly formatted partitions" do
+          config = subject.convert
+          partitions = config.partitions
+          new_partitions = partitions.reject(&:search)
+          new_non_boot_partitions = new_partitions.reject do |part|
+            part.filesystem&.path == "/boot/efi"
+          end
+
+          expect(new_non_boot_partitions.map { |p| p.encryption.method.id }).to all(eq(:tpm_fde))
+          expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+        end
+
+        it "sets #encryption with TPM_FDE method for the automatically created physical volumes" do
+          config = subject.convert
+          volume_group = config.volume_groups.first
+          target_encryption = volume_group.physical_volumes_encryption
+
+          expect(target_encryption.method.id).to eq(:tpm_fde)
+          expect(target_encryption.password).to eq("12345")
+        end
+      end
+
+      context "with TPM and grub2-bls bootloader" do
+        let(:bootloader_config) do
+          config = Agama::Storage::BootloaderConfig.new
+          config.type = Y2Storage::BootloaderType::GRUB2_BLS
+          config
+        end
+
+        let(:encryption) do
+          {
+            tpm:      true,
+            password: "12345"
+          }
+        end
+
+        it "sets #encryption with TPM_BLS method to the newly formatted partitions" do
+          config = subject.convert
+          partitions = config.partitions
+          new_partitions = partitions.reject(&:search)
+          new_non_boot_partitions = new_partitions.reject do |part|
+            part.filesystem&.path == "/boot/efi"
+          end
+
+          expect(new_non_boot_partitions.map do |p|
+                   p.encryption.method.id
+                 end).to all(eq(:tpm_bls))
+          expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+        end
+
+        it "sets #encryption with TPM_BLS method for the automatically created physical " \
+           "volumes" do
+          config = subject.convert
+          volume_group = config.volume_groups.first
+          target_encryption = volume_group.physical_volumes_encryption
+
+          expect(target_encryption.method.id).to eq(:tpm_bls)
+          expect(target_encryption.password).to eq("12345")
+        end
+      end
+
+      context "with TPM and systemd-boot bootloader" do
+        let(:bootloader_config) do
+          config = Agama::Storage::BootloaderConfig.new
+          config.type = Y2Storage::BootloaderType::SYSTEMD_BOOT
+          config
+        end
+
+        let(:encryption) do
+          {
+            tpm:      true,
+            password: "12345"
+          }
+        end
+
+        it "sets #encryption with TPM_BLS method to the newly formatted partitions" do
+          config = subject.convert
+          partitions = config.partitions
+          new_partitions = partitions.reject(&:search)
+          new_non_boot_partitions = new_partitions.reject do |part|
+            part.filesystem&.path == "/boot/efi"
+          end
+
+          expect(new_non_boot_partitions.map do |p|
+                   p.encryption.method.id
+                 end).to all(eq(:tpm_bls))
+          expect(new_non_boot_partitions.map { |p| p.encryption.password }).to all(eq("12345"))
+        end
+
+        it "sets #encryption with TPM_BLS method for the automatically created physical " \
+           "volumes" do
+          config = subject.convert
+          volume_group = config.volume_groups.first
+          target_encryption = volume_group.physical_volumes_encryption
+
+          expect(target_encryption.method.id).to eq(:tpm_bls)
+          expect(target_encryption.password).to eq("12345")
+        end
       end
     end
   end

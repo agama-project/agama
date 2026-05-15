@@ -47,7 +47,7 @@ export type Encryption =
   | EncryptionLuks1
   | EncryptionLuks2
   | EncryptionPervasiveLuks2
-  | EncryptionTPM
+  | EncryptionTpmFde
   | EncryptionSwap;
 /**
  * Password to use when creating a new encryption device.
@@ -63,9 +63,15 @@ export type EncryptionCipher = string;
 export type EncryptionKeySize = number;
 export type EncryptionPbkdFunction = "pbkdf2" | "argon2i" | "argon2id";
 /**
- * Swap encryptions.
+ * Swap encryptions. The snake case names are deprecated.
  */
-export type EncryptionSwap = "protected_swap" | "secure_swap" | "random_swap";
+export type EncryptionSwap =
+  | "protected_swap"
+  | "secure_swap"
+  | "random_swap"
+  | "protectedSwap"
+  | "secureSwap"
+  | "randomSwap";
 export type FilesystemType = FilesystemTypeAny | FilesystemTypeBtrfs;
 export type FilesystemTypeAny =
   | "bcachefs"
@@ -281,6 +287,10 @@ export interface EncryptionLuks2 {
      * LUKS2 label.
      */
     label?: string;
+    /**
+     * Whether to use TPM2 unlocking.
+     */
+    tpm?: boolean;
   };
 }
 /**
@@ -292,9 +302,10 @@ export interface EncryptionPervasiveLuks2 {
   };
 }
 /**
+ * @deprecated
  * TPM-Based Full Disk Encryption.
  */
-export interface EncryptionTPM {
+export interface EncryptionTpmFde {
   tpmFde: {
     password: EncryptionPassword;
   };

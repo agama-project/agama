@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,7 +28,17 @@ module Agama
       module FromModelConversions
         # Encryption conversion from model according to the JSON schema.
         class Encryption < Base
+          # @param model_json [Hash]
+          # @param bootloader_config [Storage::BootloaderConfig]
+          def initialize(model_json, bootloader_config)
+            super(model_json)
+            @bootloader_config = bootloader_config
+          end
+
         private
+
+          # @return [Storage::BootloaderConfig]
+          attr_reader :bootloader_config
 
           # @see Base
           # @return [Configs::Encryption]
@@ -47,13 +57,16 @@ module Agama
 
           # @return [Y2Storage::EncryptionMethod::Base]
           def convert_method
-            method_conversions = {
-              "luks1"  => Y2Storage::EncryptionMethod::LUKS1,
-              "luks2"  => Y2Storage::EncryptionMethod::LUKS2,
-              "tpmFde" => Y2Storage::EncryptionMethod::TPM_FDE
-            }
+            tpm = model_json[:tpm] || false
+            bootloader_type = bootloader_config.type
 
-            method_conversions[model_json[:method]]
+            if tpm && bootloader_type&.bls?
+              Y2Storage::EncryptionMethod::TPM_BLS
+            elsif tpm
+              Y2Storage::EncryptionMethod::TPM_FDE
+            else
+              Y2Storage::EncryptionMethod::LUKS2
+            end
           end
         end
       end

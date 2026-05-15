@@ -4,7 +4,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type EncryptionMethod = "luks1" | "luks2" | "tpmFde";
+export type BootloaderType = "grub2" | "grub2-bls" | "systemd-boot";
 export type FilesystemType =
   | "bcachefs"
   | "btrfs"
@@ -41,14 +41,15 @@ export interface Config {
 export interface Boot {
   configure: boolean;
   device?: BootDevice;
+  bootloader?: BootloaderType;
 }
 export interface BootDevice {
   default: boolean;
   name?: string;
 }
 export interface Encryption {
-  method: EncryptionMethod;
   password?: string;
+  tpm?: boolean;
 }
 export interface Drive {
   name: string;

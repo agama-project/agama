@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,11 +20,12 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../storage_helpers"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json"
 require "agama/storage/config_conversions/to_model_conversions/boot"
 
 describe Agama::Storage::ConfigConversions::ToModelConversions::Boot do
-  subject { described_class.new(config) }
+  subject { described_class.new(config, bootloader_config) }
 
   let(:config) do
     Agama::Storage::ConfigConversions::FromJSON
@@ -32,19 +33,11 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Boot do
       .convert
   end
 
-  # let(:config_json) do
-  #   {
-  #     boot: {
-  #       configure: configure,
-  #       device: device
-  #     },
-  #     drives: drives
-  #   }
-  # end
+  let(:bootloader_config) do
+    Agama::Storage::BootloaderConfig.new.tap { |b| b.type = bootloader_type }
+  end
 
-  # let(:drives) { nil }
-  # let(:configure) { nil }
-  # let(:device) { nil }
+  let(:bootloader_type) { nil }
 
   describe "#convert" do
     context "with the default config" do
@@ -138,6 +131,37 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Boot do
         expect(subject.convert).to eq(
           {
             configure: false
+          }
+        )
+      end
+    end
+
+    context "if a bootloader type is configured" do
+      let(:config_json) { {} }
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
+      it "generates the expected JSON" do
+        expect(subject.convert).to eq(
+          {
+            configure:  true,
+            device:     { default: true },
+            bootloader: "systemd-boot"
+          }
+        )
+      end
+    end
+
+    context "if the bootloader type is none" do
+      let(:config_json) { {} }
+
+      let(:bootloader_type) { Y2Storage::BootloaderType::NONE }
+
+      it "generates the expected JSON" do
+        expect(subject.convert).to eq(
+          {
+            configure: true,
+            device:    { default: true }
           }
         )
       end

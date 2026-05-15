@@ -59,7 +59,7 @@ describe Agama::Storage::Manager do
     allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     # mock writting config as proposal call can do storage probing, which fails in CI
-    allow_any_instance_of(Agama::Storage::Bootloader).to receive(:write_config)
+    allow_any_instance_of(Agama::Storage::BootloaderManager).to receive(:write_config)
     allow(Yast::Installation).to receive(:destdir).and_return(File.join(tmp_dir, "mnt"))
     stub_const("Agama::Storage::Finisher::CopyLogsStep::SCRIPTS_DIR",
       File.join(tmp_dir, "run", "agama", "scripts"))
@@ -237,39 +237,6 @@ describe Agama::Storage::Manager do
       storage.update_product_config(config)
       expect(storage.product_config).to eq(config)
       expect(storage.proposal.product_config).to eq(config)
-    end
-
-    context "if the product does not require bls boot explicitly" do
-      before do
-        allow(ENV).to receive(:[]=)
-      end
-
-      let(:config) { Agama::Config.new({}) }
-
-      it "sets env YAST_NO_BLS_BOOT to yes " do
-        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "1")
-        storage.update_product_config(config)
-      end
-    end
-
-    context "if the product requires bls boot explicitly" do
-      before do
-        allow(ENV).to receive(:[]=)
-        allow(ENV).to receive(:[]).with("YAST_NO_BLS_BOOT").and_return("0")
-      end
-
-      let(:config) do
-        Agama::Config.new({
-          "storage" => {
-            "boot_strategy" => "BLS"
-          }
-        })
-      end
-
-      it "keeps initial env YAST_NO_BLS_BOOT" do
-        expect(ENV).to receive(:[]=).with("YAST_NO_BLS_BOOT", "0")
-        storage.update_product_config(config)
-      end
     end
   end
 

@@ -23,72 +23,16 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockStage } from "~/test-utils";
-import type { Storage } from "~/model/config";
 import InstallationFinished from "~/components/core/InstallationFinished";
 
-type storageConfigType = "guided" | "raw";
-type guidedEncryption = {
-  password: string;
-  method: string;
-  pbkdFunction?: string;
-};
-
-const mockUseExtendedConfigFn = jest.fn();
-
-const mockStorageConfig = (
-  type: storageConfigType,
-  encryption: undefined | Storage.Encryption | guidedEncryption,
-) => {
-  const encryptionHash = {};
-  if (encryption !== undefined) encryptionHash["encryption"] = encryption;
-
-  switch (type) {
-    case "guided":
-      return {
-        storage: {
-          guided: {
-            ...encryptionHash,
-          },
-        },
-      };
-    case "raw":
-      return {
-        storage: {
-          drives: [
-            {
-              partitions: [
-                {
-                  filesystem: {
-                    path: "/",
-                  },
-                  id: "linux",
-                  ...encryptionHash,
-                },
-                {
-                  filesystem: {
-                    mountBy: "uuid",
-                    path: "swap",
-                    type: "swap",
-                  },
-                  id: "swap",
-                  size: "2 GiB",
-                },
-              ],
-            },
-          ],
-        },
-      };
-  }
-};
-
-jest.mock("~/hooks/model/config", () => ({
-  ...jest.requireActual("~/hooks/model/config"),
-  useExtendedConfig: () => mockUseExtendedConfigFn(),
+const mockUseIsGrub2WithTpm = jest.fn();
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  useIsGrub2WithTpm: () => mockUseIsGrub2WithTpm(),
 }));
 
 describe("InstallationFinished", () => {
   beforeEach(() => {
-    mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
+    mockUseIsGrub2WithTpm.mockReturnValue(false);
     mockStage("finished");
   });
 
@@ -121,66 +65,25 @@ describe("InstallationFinished", () => {
     expect(menuitem).toHaveAttribute("download");
   });
 
-  describe("when running storage config in raw mode", () => {
+  describe("when using grub2 with TPM", () => {
     beforeEach(() => {
-      mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
+      mockUseIsGrub2WithTpm.mockReturnValue(true);
     });
 
-    describe("when TPM is set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(
-          mockStorageConfig("raw", {
-            tpmFde: {
-              password: "n0tS3cr3t",
-            },
-          }),
-        );
-      });
-
-      it("shows the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        await screen.findAllByText(/TPM/);
-      });
-    });
-
-    describe("when TPM is not set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("raw", null));
-      });
-
-      it("does not show the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
-      });
+    it("shows the TPM reminder", async () => {
+      installerRender(<InstallationFinished />);
+      await screen.findAllByText(/TPM/);
     });
   });
 
-  describe("when running storage config in guided mode", () => {
-    describe("when TPM is set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(
-          mockStorageConfig("guided", {
-            method: "tpm_fde",
-            password: "n0tS3cr3t",
-          }),
-        );
-      });
-
-      it("shows the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        await screen.findAllByText(/TPM/);
-      });
+  describe("when not using grub2 with TPM", () => {
+    beforeEach(() => {
+      mockUseIsGrub2WithTpm.mockReturnValue(false);
     });
 
-    describe("when TPM is not set as encryption method", () => {
-      beforeEach(() => {
-        mockUseExtendedConfigFn.mockReturnValue(mockStorageConfig("guided", null));
-      });
-
-      it("does not show the TPM reminder", async () => {
-        installerRender(<InstallationFinished />);
-        expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
-      });
+    it("does not show the TPM reminder", async () => {
+      installerRender(<InstallationFinished />);
+      expect(screen.queryAllByText(/TPM/)).toHaveLength(0);
     });
   });
 });

@@ -34,9 +34,8 @@ import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
 import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
-import { useExtendedConfig } from "~/hooks/model/config";
+import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
-
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 
@@ -66,31 +65,8 @@ the machine needs to boot directly to the new boot loader.",
   );
 };
 
-// TODO: define some utility method to get the device used as root (drive, partition, logical volume).
-// TODO: use type checking for config.
-function usingTpm(config): boolean {
-  if (!config) {
-    return null;
-  }
-
-  if (config.guided) return config.guided.encryption;
-
-  const { drives = [], volumeGroups = [] } = config;
-
-  const devices = [
-    ...drives,
-    ...drives.flatMap((d) => d.partitions || []),
-    ...volumeGroups.flatMap((v) => v.logicalVolumes || []),
-  ];
-
-  const root = devices.find((d) => d.filesystem?.path === "/");
-
-  return root?.encryption?.tpmFde !== undefined;
-}
-
 function InstallationFinished() {
-  const { storage: storageConfig } = useExtendedConfig();
-  const mountTpmAlert = usingTpm(storageConfig);
+  const isGrub2WithTpm = useIsGrub2WithTpm();
 
   return (
     <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
@@ -99,7 +75,7 @@ function InstallationFinished() {
           icon="done_all"
           firstRowStart={_("Installation complete")}
           firstRowEnd={
-            mountTpmAlert ? (
+            isGrub2WithTpm ? (
               <TpmAlert />
             ) : (
               <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
@@ -115,7 +91,7 @@ function InstallationFinished() {
                   {_("You can reboot the machine to log in to the new system.")}
                 </HelperTextItem>
               </HelperText>
-              {mountTpmAlert && (
+              {isGrub2WithTpm && (
                 <Flex
                   justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexEnd" }}
                 >

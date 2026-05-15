@@ -59,15 +59,6 @@ software:
   optional_packages: []
   base_product: Leap-Micro
 
-security:
-  lsm: selinux
-  available_lsms:
-    selinux:
-      patterns:
-        - selinux
-    none:
-      patterns: null
-
 storage:
   space_policy: delete
   volumes:
@@ -90,11 +81,6 @@ storage:
           # Unified var subvolume - https://lists.opensuse.org/opensuse-packaging/2017-11/msg00017.html
           - path: var
             copy_on_write: false
-          # Architecture specific subvolumes
-          - path: boot/grub2/arm64-efi
-            archs: aarch64
-          - path: boot/grub2/x86_64-efi
-            archs: x86_64
       size:
         auto: true
       outline:

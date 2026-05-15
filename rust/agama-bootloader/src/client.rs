@@ -45,6 +45,8 @@ pub enum Error {
 pub trait BootloaderClient {
     /// Retrieves the current bootloader configuration.
     async fn get_config(&self) -> ClientResult<Config>;
+    /// Retrieves the bootloader system information.
+    async fn get_system(&self) -> ClientResult<Option<serde_json::Value>>;
     /// Sets the bootloader configuration.
     async fn set_config(&self, config: &Config) -> ClientResult<()>;
     /// Sets the extra kernel args for given scope.
@@ -88,6 +90,13 @@ impl BootloaderClient for Client {
         Ok(self
             .storage_client
             .call(message::bootloader::GetConfig)
+            .await?)
+    }
+
+    async fn get_system(&self) -> ClientResult<Option<serde_json::Value>> {
+        Ok(self
+            .storage_client
+            .call(message::bootloader::GetSystem)
             .await?)
     }
 

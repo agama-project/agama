@@ -26,7 +26,7 @@ require "agama/storage/config_checkers/volume_group"
 describe Agama::Storage::ConfigCheckers::VolumeGroup do
   include_context "config"
 
-  subject { described_class.new(vg_config, config, product_config) }
+  subject { described_class.new(vg_config, config, bootloader_config, product_config) }
 
   let(:config_json) do
     {
@@ -140,7 +140,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
             kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
-            description: /'Regular LUKS2' is not available/
+            description: /Regular LUKS2 is not available/
           )
         end
       end
@@ -152,7 +152,7 @@ describe Agama::Storage::ConfigCheckers::VolumeGroup do
           issues = subject.issues
           expect(issues).to include an_object_having_attributes(
             kind:        Agama::Storage::IssueClasses::Config::WRONG_ENCRYPTION_METHOD,
-            description: /'Encryption with Volatile Random Key' is not a suitable method/
+            description: /Encryption with Volatile Random Key is not suitable/
           )
         end
       end

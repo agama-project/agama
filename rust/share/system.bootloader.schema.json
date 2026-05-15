@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$id": "https://github.com/openSUSE/agama/blob/master/rust/share/system.bootloader.schema.json",
+  "title": "System",
+  "description": "API description of the bootloader system",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["availableBootloaders"],
+  "properties": {
+    "availableBootloaders": {
+      "description": "Possible bootloaders to select in the current system.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/bootloader" }
+    }
+  },
+  "$defs": {
+    "bootloader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "encryptionAuth"],
+      "properties": {
+        "type": { "$ref": "#/$defs/bootloaderType" },
+        "encryptionAuth": {
+          "description": "Encryption authentication methods that can be managed by the bootloader in this system.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/encryptionAuthMethod" }
+        }
+      }
+    },
+    "bootloaderType": {
+      "enum": ["grub2", "grub2-bls", "systemd-boot"]
+    },
+    "encryptionAuthMethod": {
+      "enum": ["password", "tpm"]
+    }
+  }
+}

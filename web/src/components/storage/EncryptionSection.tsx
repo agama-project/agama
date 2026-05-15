@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2025] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -31,9 +31,9 @@ import { _ } from "~/i18n";
 import PasswordCheck from "~/components/users/PasswordCheck";
 import type { ConfigModel } from "~/model/storage/config-model";
 
-function encryptionLabel(method?: ConfigModel.EncryptionMethod) {
-  if (!method) return _("Encryption is disabled");
-  if (method === "tpmFde") return _("Encryption is enabled using TPM unlocking");
+function encryptionLabel(encryption?: ConfigModel.Encryption) {
+  if (!encryption) return _("Encryption is disabled");
+  if (encryption.tpm) return _("Encryption is enabled using TPM unlocking");
 
   return _("Encryption is enabled");
 }
@@ -41,7 +41,6 @@ function encryptionLabel(method?: ConfigModel.EncryptionMethod) {
 export default function EncryptionSection() {
   const configModel = useConfigModel();
   const encryption = configModel?.encryption;
-  const method = encryption?.method;
   const password = encryption?.password;
 
   return (
@@ -52,7 +51,7 @@ export default function EncryptionSection() {
             "the new file systems, including data, programs, and system files.",
         )}
       </div>
-      <Content isEditorial>{encryptionLabel(method)}</Content>
+      <Content isEditorial>{encryptionLabel(encryption)}</Content>
       {password && <PasswordCheck password={password} />}
       <Split hasGutter>
         <Link to={STORAGE.editEncryption} keepQuery variant="plain">

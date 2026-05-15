@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -23,7 +23,7 @@ require "agama/config"
 require "agama/http/clients"
 require "agama/issue"
 require "agama/storage/actions_generator"
-require "agama/storage/bootloader"
+require "agama/storage/bootloader_manager"
 require "agama/storage/callbacks"
 require "agama/storage/configurator"
 require "agama/storage/finisher"
@@ -49,7 +49,7 @@ module Agama
       # @return [Hash, nil]
       attr_reader :config_json
 
-      # @return [Bootloader]
+      # @return [BootloaderManager]
       attr_reader :bootloader
 
       # @return [Array<Issue>]
@@ -58,9 +58,8 @@ module Agama
       # @param logger [Logger, nil]
       def initialize(logger: nil)
         @logger = logger || Logger.new($stdout)
-        @bootloader = Bootloader.new(logger)
+        @bootloader = BootloaderManager.new(logger)
         @issues = []
-        @yast_no_bls_boot = ENV["YAST_NO_BLS_BOOT"]
         update_product_config(Agama::Config.new)
       end
 
@@ -70,7 +69,6 @@ module Agama
       def update_product_config(product_config)
         @product_config = product_config
         proposal.product_config = product_config
-        configure_no_bls_bootloader
       end
 
       def activated?
@@ -95,7 +93,8 @@ module Agama
         Y2Storage::StorageManager.instance.probed?
       end
 
-      # Whether the current proposal was already calculated for the given product and config.
+      # Whether the current proposal was already calculated for the given product and config
+      # (assuming the bootloader config has not changed).
       #
       # @param product_config_json [Hash]
       # @param config_json [Hash]
@@ -103,6 +102,18 @@ module Agama
       # @return [Boolean]
       def configured?(product_config_json, config_json)
         product_config.data == product_config_json && self.config_json == config_json
+      end
+
+      # Whether the current proposal was already calculated for the given bootloader config
+      # (assuming the product and storage config have not changed).
+      #
+      # @param boot_config_json [Hash]
+      # @return [Boolean]
+      def configured_for_bootloader?(boot_config_json)
+        # Check only the bootloader type since we know the rest of the bootloader configuration is
+        # irrelevant (ie. does not influence the calculation of the storage setup).
+        # Although formally it is a bit wrong since the manager should not know those details.
+        bootloader_config.type == boot_config_json[:type]
       end
 
       # Probes the devices.
@@ -157,7 +168,9 @@ module Agama
       #
       # @return [Storage::Proposal]
       def proposal
-        @proposal ||= Proposal.new(product_config, logger: logger)
+        @proposal ||= Proposal.new(
+          product_config, bootloader_config: bootloader_config, logger: logger
+        )
       end
 
       # iSCSI manager
@@ -192,6 +205,53 @@ module Agama
         probing_issues + [candidate_devices_issue].compact
       end
 
+      # Whether bootloader was probed.
+      #
+      # @return [Boolean]
+      def bootloader_probed?
+        bootloader.probed?
+      end
+
+      # Probes the available bootloaders.
+      def probe_bootloader
+        bootloader.probe
+      end
+
+      # Available bootloaders in the system.
+      #
+      # @ return [Array<Bootloader>]
+      def available_bootloaders
+        bootloader.available_bootloaders
+      end
+
+      # Current bootloader configuration
+      #
+      # @return [BootloaderConfig]
+      def bootloader_config
+        bootloader.config
+      end
+
+      # Updates the bootloader configuration
+      #
+      # @param config_json [Hash]
+      def update_bootloader_config(config_json)
+        bootloader_config.load_json(config_json)
+      end
+
+      # Configures the bootloader
+      #
+      # @see BootloaderManager#configure
+      def configure_bootloader
+        bootloader.configure(product_config)
+      end
+
+      # Installs the bootloader
+      #
+      # @see BootloaderManager#install
+      def install_bootloader
+        bootloader.install
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
@@ -199,17 +259,6 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
-
-      # Underlying yast-storage-ng has own mechanism for proposing boot strategies.
-      # However, we don't always want to use BLS when it proposes so. Currently
-      # we want to use BLS only for Tumbleweed / Slowroll
-      def configure_no_bls_bootloader
-        # Keep original value of the env variable or set it if needed.
-        value = product_config.boot_strategy&.casecmp("BLS") ? @yast_no_bls_boot : "1"
-        ENV["YAST_NO_BLS_BOOT"] = value
-        # Avoiding problems with cached values
-        Y2Storage::StorageEnv.instance.reset_cache
-      end
 
       # Whether iSCSI is needed in the target system.
       #
