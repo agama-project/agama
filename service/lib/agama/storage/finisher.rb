@@ -68,9 +68,9 @@ module Agama
       def possible_steps
         [
           CopyFilesStep.new(logger),
+          BootloaderStep.new(logger),
           StorageStep.new(logger),
           IscsiStep.new(logger),
-          BootloaderStep.new(logger),
           SnapshotsStep.new(logger)
         ]
       end
