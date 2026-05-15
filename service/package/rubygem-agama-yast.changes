@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
+Fri May 15 11:41:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix handling of AutoYaST rules (gh#agama-project/agama#3502).
+
+-------------------------------------------------------------------
 Fri May 15 11:15:57 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
-- Adapt code to new suseconnect-ng version (bsc#1265239) 
+- Adapt code to new suseconnect-ng version (bsc#1265239)
 
 -------------------------------------------------------------------
 Thu May  7 12:11:45 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
