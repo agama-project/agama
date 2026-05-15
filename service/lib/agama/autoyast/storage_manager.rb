@@ -52,7 +52,7 @@ module Agama
         )
         lshw = JSON.parse(json)
         disks = lshw["blockdevices"].map do |disk|
-          next if disk["type"] != "disk" || disk.fetch("mountpoints", []).include?("[SWAP]")
+          next if disk["type"].to_s != "disk" || disk.fetch("mountpoints", []).include?("[SWAP]")
 
           partitions = disk.fetch("children", []).map do |part|
             next if part.fetch("mountpoints", []).include?("[SWAP]")
