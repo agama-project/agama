@@ -154,7 +154,7 @@ describe Agama::Registration do
           expect(SUSE::Connect::YaST).to receive(:activate_product).with(
             an_object_having_attributes(
               arch: "x86_64", identifier: "test", version: "5.0"
-            ), {}, "test@test.com"
+            ), { token: "11112222" }, "test@test.com"
           )
 
           subject.register("11112222", email: "test@test.com")
