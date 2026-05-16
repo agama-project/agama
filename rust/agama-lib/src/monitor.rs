@@ -28,7 +28,7 @@
 //!
 //! ```no_run
 //! use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-//! use agama_lib::monitor::Monitor;
+//! use agama_lib::monitor::{Monitor, MonitorEvent};
 //! use agama_lib::auth::AuthToken;
 //! use url::Url;
 //!
@@ -38,14 +38,23 @@
 //! let token = AuthToken::new("token");
 //! let ws_client = WebSocketClient::connect(&url, &token, false).await?;
 //!
-//! // Connect the monitor (this spawns a background task) also receive initial status
-//! let (monitor_client, status) = Monitor::connect(ws_client, &http_client).await?;
+//! // Connect the monitor (this spawns a background task)
+//! let stop_on_idle = false;
+//! let (monitor_client, status) = Monitor::connect(ws_client, &http_client, stop_on_idle).await?;
 //! println!("Current stage: {:?}", status.status.stage);
 //!
-//! // Subscribe to future updates
+//! // Subscribe to monitor events
 //! let mut rx = monitor_client.subscribe();
-//! while let Ok(new_status) = rx.recv().await {
-//!     println!("Status updated! Issues count: {}", new_status.issues.len());
+//! while let Ok(event) = rx.recv().await {
+//!     match event {
+//!         MonitorEvent::Update(status) => {
+//!             println!("Status updated! Issues count: {}", status.issues.len());
+//!         }
+//!         MonitorEvent::Finished => {
+//!             println!("Monitoring finished");
+//!             break;
+//!         }
+//!     }
 //! }
 //! # Ok(())
 //! # }
@@ -105,6 +114,15 @@ impl fmt::Display for MonitorBackendError {
     }
 }
 
+/// Events emitted by the Monitor
+#[derive(Clone, Debug)]
+pub enum MonitorEvent {
+    /// A new status update is available
+    Update(InstallationStatus),
+    /// The monitor has finished (connection lost or stop condition met)
+    Finished,
+}
+
 /// System information for the monitor
 #[derive(Clone, Default, Debug, PartialEq, Serialize)]
 pub struct SystemInfo {
@@ -150,15 +168,18 @@ impl InstallationStatus {
 /// It can be cloned and moved between threads.
 #[derive(Clone, Debug)]
 pub struct MonitorClient {
-    /// Channel to subscribe to status updates.
-    updates: broadcast::Sender<InstallationStatus>,
+    /// Channel to subscribe to monitor events.
+    updates: broadcast::Sender<MonitorEvent>,
 }
 
 impl MonitorClient {
-    /// Subscribe to status updates from the monitor.
+    /// Subscribe to monitor events.
+    ///
+    /// Returns a receiver that will receive MonitorEvent::Update for status changes
+    /// and MonitorEvent::Finished when monitoring completes.
     ///
     /// It uses a regular broadcast channel from the Tokio library.
-    pub fn subscribe(&self) -> broadcast::Receiver<InstallationStatus> {
+    pub fn subscribe(&self) -> broadcast::Receiver<MonitorEvent> {
         self.updates.subscribe()
     }
 }
@@ -175,8 +196,10 @@ pub struct Monitor {
     ///
     /// A mutex is needed to avoid race conditions.
     status: Mutex<InstallationStatus>,
-    /// Channel to broadcast status updates to subscribers.
-    updates: broadcast::Sender<InstallationStatus>,
+    /// Channel to broadcast monitor events to subscribers.
+    updates: broadcast::Sender<MonitorEvent>,
+    /// Whether to stop monitoring when the installation goes idle.
+    stop_on_idle: bool,
 }
 
 impl Monitor {
@@ -205,13 +228,17 @@ impl Monitor {
 
     /// Connects and monitors to an Agama service.
     ///
-    /// * `http_client`: HTTP client to talk to the service.
     /// * `websocket_client`: websocket to listen for events.
+    /// * `http_client`: HTTP client to talk to the service.
+    /// * `stop_on_idle`: whether to automatically stop monitoring when the installation goes idle.
     ///
-    /// The monitor runs on a separate Tokio task.
+    /// The monitor runs on a separate Tokio task and emits MonitorEvent messages.
+    /// When stop_on_idle is true, it will emit MonitorEvent::Finished when the installation
+    /// becomes idle. It also emits Finished when the connection is lost.
     pub async fn connect(
         websocket_client: WebSocketClient,
         http_client: &BaseHTTPClient,
+        stop_on_idle: bool,
     ) -> Result<(MonitorClient, InstallationStatus), MonitorError> {
         // Channel to send/receive commands from the client.
         let (updates, _rx) = broadcast::channel(100);
@@ -226,6 +253,7 @@ impl Monitor {
             http_client: http_client.clone(),
             status: Mutex::new(initial_status.clone()),
             updates,
+            stop_on_idle,
         };
 
         tokio::spawn(async move { monitor.run().await });
@@ -290,11 +318,21 @@ impl Monitor {
     async fn run(&mut self) {
         loop {
             let event = self.ws_client.receive().await;
-            if let Err(err) = self.handle_event(event).await {
-                tracing::error!("Critical error happen during event handling: {:?}", err);
-                break;
-            };
+            match self.handle_event(event).await {
+                Ok(should_exit) => {
+                    if should_exit {
+                        break;
+                    }
+                }
+                Err(err) => {
+                    tracing::error!("Critical error happen during event handling: {:?}", err);
+                    break;
+                }
+            }
         }
+
+        // Send Finished event when exiting
+        _ = self.updates.send(MonitorEvent::Finished);
     }
 
     /// Handle events from Agama.
@@ -303,10 +341,12 @@ impl Monitor {
     /// sends the updated state to its subscribers.
     ///
     /// * `event`: Agama event.
+    ///
+    /// Returns `Ok(true)` if the monitor should exit, `Ok(false)` to continue.
     async fn handle_event(
         &mut self,
         event: Result<Event, crate::http::WebSocketError>,
-    ) -> Result<(), crate::http::WebSocketError> {
+    ) -> Result<bool, crate::http::WebSocketError> {
         let event = event?;
 
         let mut g = self.status.lock().await;
@@ -323,7 +363,7 @@ impl Monitor {
                 let issues = manager.issues().await;
                 let Ok(issues) = issues else {
                     tracing::error!("Failed to get list of issues: {:?}", issues);
-                    return Ok(());
+                    return Ok(false);
                 };
                 status.issues = issues;
 
@@ -340,7 +380,7 @@ impl Monitor {
                 let questions = questions.get_questions().await;
                 let Ok(questions) = questions else {
                     tracing::error!("Failed to get list of questions: {:?}", questions);
-                    return Ok(());
+                    return Ok(false);
                 };
                 let questions = questions
                     .into_iter()
@@ -368,12 +408,15 @@ impl Monitor {
             }
             _ => {
                 // other events are not interesting for monitor
-                return Ok(());
+                return Ok(false);
             }
         }
 
-        // lets ignore if send failed, otherwise with progress updates we will have logs full quickly
-        let _ = self.updates.send(g.clone());
-        Ok(())
+        // Send update event (ignore if send failed to avoid flooding logs)
+        let _ = self.updates.send(MonitorEvent::Update(g.clone()));
+
+        // Check if we should exit
+        let should_exit = self.stop_on_idle && g.is_idle();
+        Ok(should_exit)
     }
 }

@@ -25,11 +25,13 @@
 //! When no terminal is available, it falls back to a simple text-based monitor.
 
 mod app;
-mod runner;
 mod theme;
 mod ui;
 
-use agama_lib::{http::{BaseHTTPClient, WebSocketClient}, monitor::Monitor};
+use agama_lib::{
+    http::{BaseHTTPClient, WebSocketClient},
+    monitor::{Monitor, MonitorEvent},
+};
 use anyhow::Result;
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
@@ -39,7 +41,6 @@ use crossterm::{
 use ratatui::{backend::CrosstermBackend, Terminal};
 use std::io::{self, IsTerminal};
 
-use runner::{MonitorEvent, MonitorRunner};
 use theme::Theme;
 
 use crate::monitor::app::MonitorAppBuilder;
@@ -80,17 +81,17 @@ async fn run_headless(
     websocket: WebSocketClient,
     stop_on_idle: bool,
 ) -> Result<()> {
-    let (monitor, status) = Monitor::connect(websocket, &http_client).await?;
+    let (monitor_client, status) =
+        Monitor::connect(websocket, &http_client, stop_on_idle).await?;
 
     eprintln!("Agama monitor started (headless mode)");
     eprintln!("Initial stage: {:?}", status.status.stage);
 
-    // Start the autonomous monitor runner
-    let runner = MonitorRunner::new(monitor, status, stop_on_idle);
-    let mut events = runner.start();
+    // Subscribe to monitor events
+    let mut events = monitor_client.subscribe();
 
     // Listen to events until finished
-    while let Some(event) = events.recv().await {
+    while let Ok(event) = events.recv().await {
         match event {
             MonitorEvent::Update(status) => {
                 eprintln!(

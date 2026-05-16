@@ -20,7 +20,7 @@
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{InstallationStatus, Monitor, MonitorClient},
+    monitor::{InstallationStatus, Monitor, MonitorClient, MonitorEvent},
 };
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
@@ -30,7 +30,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, io, time::Duration};
 use tokio::sync::mpsc;
 
-use super::{runner::{MonitorEvent, MonitorRunner}, theme::Theme, ui};
+use super::{theme::Theme, ui};
 
 /// Application messages.
 enum Message {
@@ -83,12 +83,12 @@ impl MonitorAppBuilder {
 
     pub async fn build(self) -> Result<MonitorApp> {
         let product_names = self.get_product_names().await?;
-        let (monitor, status) = Monitor::connect(self.websocket_client, &self.http_client).await?;
+        let (monitor, status) =
+            Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
         Ok(MonitorApp {
             monitor,
             status,
-            stop_on_idle: self.stop_on_idle,
             theme: self.theme,
             exit: false,
             product_names,
@@ -112,8 +112,6 @@ pub struct MonitorApp {
     monitor: MonitorClient,
     /// Current installation status
     status: InstallationStatus,
-    /// Whether to stop when idle
-    stop_on_idle: bool,
     /// Product names
     product_names: HashMap<String, String>,
     /// UI color theme
@@ -139,7 +137,7 @@ impl MonitorApp {
     /// Runs the monitor TUI event loop.
     ///
     /// This method spawns two tasks:
-    /// 1. The MonitorRunner task (autonomous, emits status updates and finished signal)
+    /// 1. The monitor event forwarding task
     /// 2. A terminal event polling task
     ///
     /// The main loop reacts to events from both sources.
@@ -151,18 +149,13 @@ impl MonitorApp {
     ) -> Result<()> {
         let (tx, mut rx) = mpsc::channel(16);
 
-        // Start the autonomous monitor runner
-        let runner = MonitorRunner::new(
-            self.monitor.clone(),
-            self.status.clone(),
-            self.stop_on_idle,
-        );
-        let mut monitor_events = runner.start();
+        // Subscribe to monitor events
+        let mut monitor_events = self.monitor.subscribe();
 
         // Spawn task to forward monitor events
         let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
-            while let Some(event) = monitor_events.recv().await {
+            while let Ok(event) = monitor_events.recv().await {
                 if tx_monitor.send(Message::Monitor(event)).await.is_err() {
                     break;
                 }
