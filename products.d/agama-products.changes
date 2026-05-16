@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat May 16 07:54:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
 Fri May 15 14:41:09 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Tumbleweed and Slowroll configured to use systemd-boot relying
