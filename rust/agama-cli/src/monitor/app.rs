@@ -20,7 +20,7 @@
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{InstallationStatus, Monitor, MonitorClient, MonitorEvent},
+    monitor::{InstallationStatus, Monitor, MonitorClient},
 };
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
@@ -34,8 +34,10 @@ use super::{theme::Theme, ui};
 
 /// Application messages.
 enum Message {
-    /// Monitor event (status update or finished signal)
-    Monitor(MonitorEvent),
+    /// Status update from monitor
+    StatusUpdate(InstallationStatus),
+    /// Monitor has finished (channel closed)
+    MonitorFinished,
     /// Terminal event.
     Terminal(Event),
 }
@@ -126,14 +128,6 @@ impl MonitorApp {
         self.status = new_status;
     }
 
-    /// Handles a monitor event.
-    fn handle_monitor_event(&mut self, event: MonitorEvent) {
-        match event {
-            MonitorEvent::Update(status) => self.update_status(status),
-            MonitorEvent::Finished => self.exit = true,
-        }
-    }
-
     /// Runs the monitor TUI event loop.
     ///
     /// This method spawns two tasks:
@@ -149,15 +143,24 @@ impl MonitorApp {
     ) -> Result<()> {
         let (tx, mut rx) = mpsc::channel(16);
 
-        // Subscribe to monitor events
-        let mut monitor_events = self.monitor.subscribe();
+        // Subscribe to status updates
+        let mut status_updates = self.monitor.subscribe();
 
-        // Spawn task to forward monitor events
+        // Spawn task to forward status updates
         let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
-            while let Ok(event) = monitor_events.recv().await {
-                if tx_monitor.send(Message::Monitor(event)).await.is_err() {
-                    break;
+            loop {
+                match status_updates.recv().await {
+                    Ok(status) => {
+                        if tx_monitor.send(Message::StatusUpdate(status)).await.is_err() {
+                            break;
+                        }
+                    }
+                    Err(_) => {
+                        // Channel closed - monitoring finished
+                        _ = tx_monitor.send(Message::MonitorFinished).await;
+                        break;
+                    }
                 }
             }
         });
@@ -190,7 +193,8 @@ impl MonitorApp {
                 .ok_or(anyhow!(gettext("Lost the connection with the server.")))?;
 
             match message {
-                Message::Monitor(event) => self.handle_monitor_event(event),
+                Message::StatusUpdate(status) => self.update_status(status),
+                Message::MonitorFinished => self.exit = true,
                 Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
                         self.handle_key_event(key_event);

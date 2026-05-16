@@ -28,7 +28,7 @@
 //!
 //! ```no_run
 //! use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-//! use agama_lib::monitor::{Monitor, MonitorEvent};
+//! use agama_lib::monitor::Monitor;
 //! use agama_lib::auth::AuthToken;
 //! use url::Url;
 //!
@@ -43,19 +43,12 @@
 //! let (monitor_client, status) = Monitor::connect(ws_client, &http_client, stop_on_idle).await?;
 //! println!("Current stage: {:?}", status.status.stage);
 //!
-//! // Subscribe to monitor events
+//! // Subscribe to status updates (channel closes when monitoring stops)
 //! let mut rx = monitor_client.subscribe();
-//! while let Ok(event) = rx.recv().await {
-//!     match event {
-//!         MonitorEvent::Update(status) => {
-//!             println!("Status updated! Issues count: {}", status.issues.len());
-//!         }
-//!         MonitorEvent::Finished => {
-//!             println!("Monitoring finished");
-//!             break;
-//!         }
-//!     }
+//! while let Ok(status) = rx.recv().await {
+//!     println!("Status updated! Issues count: {}", status.issues.len());
 //! }
+//! println!("Monitoring finished");
 //! # Ok(())
 //! # }
 //! ```
@@ -114,15 +107,6 @@ impl fmt::Display for MonitorBackendError {
     }
 }
 
-/// Events emitted by the Monitor
-#[derive(Clone, Debug)]
-pub enum MonitorEvent {
-    /// A new status update is available
-    Update(InstallationStatus),
-    /// The monitor has finished (connection lost or stop condition met)
-    Finished,
-}
-
 /// System information for the monitor
 #[derive(Clone, Default, Debug, PartialEq, Serialize)]
 pub struct SystemInfo {
@@ -168,18 +152,19 @@ impl InstallationStatus {
 /// It can be cloned and moved between threads.
 #[derive(Clone, Debug)]
 pub struct MonitorClient {
-    /// Channel to subscribe to monitor events.
-    updates: broadcast::Sender<MonitorEvent>,
+    /// Channel to subscribe to status updates.
+    updates: broadcast::Sender<InstallationStatus>,
 }
 
 impl MonitorClient {
-    /// Subscribe to monitor events.
+    /// Subscribe to status updates from the monitor.
     ///
-    /// Returns a receiver that will receive MonitorEvent::Update for status changes
-    /// and MonitorEvent::Finished when monitoring completes.
+    /// Returns a receiver that will receive InstallationStatus updates.
+    /// When the monitor stops (connection lost or stop_on_idle triggered),
+    /// the channel will close and recv() will return an error.
     ///
     /// It uses a regular broadcast channel from the Tokio library.
-    pub fn subscribe(&self) -> broadcast::Receiver<MonitorEvent> {
+    pub fn subscribe(&self) -> broadcast::Receiver<InstallationStatus> {
         self.updates.subscribe()
     }
 }
@@ -196,8 +181,8 @@ pub struct Monitor {
     ///
     /// A mutex is needed to avoid race conditions.
     status: Mutex<InstallationStatus>,
-    /// Channel to broadcast monitor events to subscribers.
-    updates: broadcast::Sender<MonitorEvent>,
+    /// Channel to broadcast status updates to subscribers.
+    updates: broadcast::Sender<InstallationStatus>,
     /// Whether to stop monitoring when the installation goes idle.
     stop_on_idle: bool,
 }
@@ -232,9 +217,9 @@ impl Monitor {
     /// * `http_client`: HTTP client to talk to the service.
     /// * `stop_on_idle`: whether to automatically stop monitoring when the installation goes idle.
     ///
-    /// The monitor runs on a separate Tokio task and emits MonitorEvent messages.
-    /// When stop_on_idle is true, it will emit MonitorEvent::Finished when the installation
-    /// becomes idle. It also emits Finished when the connection is lost.
+    /// The monitor runs on a separate Tokio task and emits InstallationStatus updates.
+    /// When stop_on_idle is true, monitoring will stop when the installation becomes idle.
+    /// When the monitor stops (connection lost or stop_on_idle), the channel will close.
     pub async fn connect(
         websocket_client: WebSocketClient,
         http_client: &BaseHTTPClient,
@@ -315,6 +300,12 @@ impl Monitor {
     }
 
     /// Runs the monitor.
+    ///
+    /// The monitor loop exits when:
+    /// - A critical error occurs
+    /// - stop_on_idle is true and the installation becomes idle
+    ///
+    /// When the loop exits, the broadcast sender is dropped, closing the channel.
     async fn run(&mut self) {
         loop {
             let event = self.ws_client.receive().await;
@@ -330,9 +321,7 @@ impl Monitor {
                 }
             }
         }
-
-        // Send Finished event when exiting
-        _ = self.updates.send(MonitorEvent::Finished);
+        // Channel closes automatically when self.updates is dropped
     }
 
     /// Handle events from Agama.
@@ -412,8 +401,8 @@ impl Monitor {
             }
         }
 
-        // Send update event (ignore if send failed to avoid flooding logs)
-        let _ = self.updates.send(MonitorEvent::Update(g.clone()));
+        // Send update (ignore if send failed to avoid flooding logs)
+        let _ = self.updates.send(g.clone());
 
         // Check if we should exit
         let should_exit = self.stop_on_idle && g.is_idle();

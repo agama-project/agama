@@ -30,7 +30,7 @@ mod ui;
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{Monitor, MonitorEvent},
+    monitor::Monitor,
 };
 use anyhow::Result;
 use crossterm::{
@@ -87,28 +87,21 @@ async fn run_headless(
     eprintln!("Agama monitor started (headless mode)");
     eprintln!("Initial stage: {:?}", status.status.stage);
 
-    // Subscribe to monitor events
-    let mut events = monitor_client.subscribe();
+    // Subscribe to status updates
+    let mut updates = monitor_client.subscribe();
 
-    // Listen to events until finished
-    while let Ok(event) = events.recv().await {
-        match event {
-            MonitorEvent::Update(status) => {
-                eprintln!(
-                    "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
-                    status.status.stage,
-                    status.status.progresses.len(),
-                    status.issues.len(),
-                    status.questions.len()
-                );
-            }
-            MonitorEvent::Finished => {
-                eprintln!("Monitoring finished");
-                break;
-            }
-        }
+    // Listen to updates until channel closes
+    while let Ok(status) = updates.recv().await {
+        eprintln!(
+            "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
+            status.status.stage,
+            status.status.progresses.len(),
+            status.issues.len(),
+            status.questions.len()
+        );
     }
 
+    eprintln!("Monitoring finished");
     Ok(())
 }
 
