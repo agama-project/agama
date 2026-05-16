@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat May 16 07:54:42 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
 Fri May 15 14:42:28 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adapted UI to handle TPM unlocking according to the new schema

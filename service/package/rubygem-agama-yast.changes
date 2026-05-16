@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat May 16 07:54:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
 Fri May 15 16:37:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the monitor initialization when "agama config load" happens

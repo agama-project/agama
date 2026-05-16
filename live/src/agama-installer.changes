@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat May 16 07:54:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 21
+
+-------------------------------------------------------------------
 Fri May 15 14:16:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed starting the initrd-nmtui and live-self-update services
