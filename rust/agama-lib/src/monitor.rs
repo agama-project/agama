@@ -21,8 +21,7 @@
 //! This module implements a monitor that listens to Agama events and keeps an updated
 //! representation of the installation status, issues, and questions.
 //!
-//! It provides a [`MonitorClient`] that can be used to query the current status or subscribe
-//! to updates via a broadcast channel.
+//! It provides a broadcast channel receiver to subscribe to status updates.
 //!
 //! # Example
 //!
@@ -40,12 +39,11 @@
 //!
 //! // Connect the monitor (this spawns a background task)
 //! let stop_on_idle = false;
-//! let (monitor_client, status) = Monitor::connect(ws_client, &http_client, stop_on_idle).await?;
+//! let (mut updates, status) = Monitor::connect(ws_client, &http_client, stop_on_idle).await?;
 //! println!("Current stage: {:?}", status.status.stage);
 //!
-//! // Subscribe to status updates (channel closes when monitoring stops)
-//! let mut rx = monitor_client.subscribe();
-//! while let Ok(status) = rx.recv().await {
+//! // Receive status updates (channel closes when monitoring stops)
+//! while let Ok(status) = updates.recv().await {
 //!     println!("Status updated! Issues count: {}", status.issues.len());
 //! }
 //! println!("Monitoring finished");
@@ -147,27 +145,6 @@ impl InstallationStatus {
     }
 }
 
-/// It allows connecting to the Agama monitor to get the status or listen for changes.
-///
-/// It can be cloned and moved between threads.
-#[derive(Clone, Debug)]
-pub struct MonitorClient {
-    /// Channel to subscribe to status updates.
-    updates: broadcast::Sender<InstallationStatus>,
-}
-
-impl MonitorClient {
-    /// Subscribe to status updates from the monitor.
-    ///
-    /// Returns a receiver that will receive InstallationStatus updates.
-    /// When the monitor stops (connection lost or stop_on_idle triggered),
-    /// the channel will close and recv() will return an error.
-    ///
-    /// It uses a regular broadcast channel from the Tokio library.
-    pub fn subscribe(&self) -> broadcast::Receiver<InstallationStatus> {
-        self.updates.subscribe()
-    }
-}
 
 /// Monitors an Agama websocket and keeps combination of various installation statuses.
 ///
@@ -217,6 +194,7 @@ impl Monitor {
     /// * `http_client`: HTTP client to talk to the service.
     /// * `stop_on_idle`: whether to automatically stop monitoring when the installation goes idle.
     ///
+    /// Returns a receiver for status updates and the initial status.
     /// The monitor runs on a separate Tokio task and emits InstallationStatus updates.
     /// When stop_on_idle is true, monitoring will stop when the installation becomes idle.
     /// When the monitor stops (connection lost or stop_on_idle), the channel will close.
@@ -224,12 +202,8 @@ impl Monitor {
         websocket_client: WebSocketClient,
         http_client: &BaseHTTPClient,
         stop_on_idle: bool,
-    ) -> Result<(MonitorClient, InstallationStatus), MonitorError> {
-        // Channel to send/receive commands from the client.
-        let (updates, _rx) = broadcast::channel(100);
-        let client = MonitorClient {
-            updates: updates.clone(),
-        };
+    ) -> Result<(broadcast::Receiver<InstallationStatus>, InstallationStatus), MonitorError> {
+        let (tx, rx) = broadcast::channel(100);
 
         let initial_status = Self::get_installation_status(http_client).await?;
 
@@ -237,12 +211,12 @@ impl Monitor {
             ws_client: websocket_client,
             http_client: http_client.clone(),
             status: Mutex::new(initial_status.clone()),
-            updates,
+            updates: tx,
             stop_on_idle,
         };
 
         tokio::spawn(async move { monitor.run().await });
-        Ok((client, initial_status))
+        Ok((rx, initial_status))
     }
 
     /// Fetches system information from the API

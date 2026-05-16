@@ -20,8 +20,9 @@
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{InstallationStatus, Monitor, MonitorClient},
+    monitor::{InstallationStatus, Monitor},
 };
+use tokio::sync::broadcast;
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
 use gettextrs::gettext;
@@ -85,11 +86,11 @@ impl MonitorAppBuilder {
 
     pub async fn build(self) -> Result<MonitorApp> {
         let product_names = self.get_product_names().await?;
-        let (monitor, status) =
+        let (updates, status) =
             Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
         Ok(MonitorApp {
-            monitor,
+            updates,
             status,
             theme: self.theme,
             exit: false,
@@ -110,8 +111,8 @@ impl MonitorAppBuilder {
 
 /// Application state for the monitor TUI
 pub struct MonitorApp {
-    /// Monitor client
-    monitor: MonitorClient,
+    /// Status updates receiver
+    updates: broadcast::Receiver<InstallationStatus>,
     /// Current installation status
     status: InstallationStatus,
     /// Product names
@@ -143,8 +144,8 @@ impl MonitorApp {
     ) -> Result<()> {
         let (tx, mut rx) = mpsc::channel(16);
 
-        // Subscribe to status updates
-        let mut status_updates = self.monitor.subscribe();
+        // Resubscribe to get a new receiver for the task
+        let mut status_updates = self.updates.resubscribe();
 
         // Spawn task to forward status updates
         let tx_monitor = tx.clone();
