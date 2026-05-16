@@ -600,10 +600,16 @@ impl Service {
     ///
     /// Consider the service as available if there is no pending progress.
     async fn is_software_available(&self) -> Result<bool, Error> {
-        let is_empty = self
-            .progress
-            .call(progress::message::IsEmpty::with_scope(Scope::Software))
-            .await?;
+        let status = self.progress.call(progress::message::GetStatus).await?;
+        if status.stage == Stage::Installing {
+            return Ok(false);
+        }
+
+        let is_empty = status
+            .progresses
+            .iter()
+            .find(|p| p.scope == Scope::Software)
+            .is_none();
         Ok(is_empty)
     }
 
