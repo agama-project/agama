@@ -22,13 +22,13 @@ use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
     monitor::{InstallationStatus, Monitor},
 };
-use tokio::sync::broadcast;
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
 use gettextrs::gettext;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
 use std::{collections::HashMap, io, time::Duration};
+use tokio::sync::broadcast;
 use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
@@ -153,7 +153,11 @@ impl MonitorApp {
             loop {
                 match status_updates.recv().await {
                     Ok(status) => {
-                        if tx_monitor.send(Message::StatusUpdate(status)).await.is_err() {
+                        if tx_monitor
+                            .send(Message::StatusUpdate(status))
+                            .await
+                            .is_err()
+                        {
                             break;
                         }
                     }

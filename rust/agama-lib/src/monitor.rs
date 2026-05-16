@@ -145,7 +145,6 @@ impl InstallationStatus {
     }
 }
 
-
 /// Monitors an Agama websocket and keeps combination of various installation statuses.
 ///
 /// It can be cloned and moved between threads
