@@ -22,12 +22,14 @@
 //!
 //! This module provides a full-screen terminal UI for monitoring Agama installation progress.
 //! It uses ratatui for rendering and is driven by WebSocket updates from the backend.
+//! When no terminal is available, it falls back to a simple text-based monitor.
 
 mod app;
+mod runner;
 mod theme;
 mod ui;
 
-use agama_lib::http::{BaseHTTPClient, WebSocketClient};
+use agama_lib::{http::{BaseHTTPClient, WebSocketClient}, monitor::Monitor};
 use anyhow::Result;
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
@@ -35,8 +37,9 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use ratatui::{backend::CrosstermBackend, Terminal};
-use std::io;
+use std::io::{self, IsTerminal};
 
+use runner::{MonitorEvent, MonitorRunner};
 use theme::Theme;
 
 use crate::monitor::app::MonitorAppBuilder;
@@ -62,19 +65,72 @@ fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Re
     Ok(())
 }
 
-/// Starts the TUI monitor
+/// Runs the monitor in headless (text-only) mode
+///
+/// This mode is used when no terminal is available (e.g., systemd service, automation).
+/// It prints status updates as plain text instead of using the TUI.
 ///
 /// # Arguments
 ///
 /// * `http_client` - The HTTP client to communicate with the Agama service
 /// * `websocket` - The WebSocket client to listen for events
 /// * `stop_on_idle` - Whether to stop monitoring when Agama becomes idle
-/// * `theme_name` - Name of the color theme to use
+async fn run_headless(
+    http_client: BaseHTTPClient,
+    websocket: WebSocketClient,
+    stop_on_idle: bool,
+) -> Result<()> {
+    let (monitor, status) = Monitor::connect(websocket, &http_client).await?;
+
+    eprintln!("Agama monitor started (headless mode)");
+    eprintln!("Initial stage: {:?}", status.status.stage);
+
+    // Start the autonomous monitor runner
+    let runner = MonitorRunner::new(monitor, status, stop_on_idle);
+    let mut events = runner.start();
+
+    // Listen to events until finished
+    while let Some(event) = events.recv().await {
+        match event {
+            MonitorEvent::Update(status) => {
+                eprintln!(
+                    "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
+                    status.status.stage,
+                    status.status.progresses.len(),
+                    status.issues.len(),
+                    status.questions.len()
+                );
+            }
+            MonitorEvent::Finished => {
+                eprintln!("Monitoring finished");
+                break;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+/// Starts the monitor (TUI or headless mode based on terminal availability)
+///
+/// When a terminal is available, uses the full-screen TUI.
+/// Otherwise, falls back to simple text output.
+///
+/// # Arguments
+///
+/// * `http_client` - The HTTP client to communicate with the Agama service
+/// * `websocket` - The WebSocket client to listen for events
+/// * `stop_on_idle` - Whether to stop monitoring when Agama becomes idle
 pub async fn run(
     http_client: BaseHTTPClient,
     websocket: WebSocketClient,
     stop_on_idle: bool,
 ) -> Result<()> {
+    // Check if stdout is connected to a terminal
+    if !io::stdout().is_terminal() {
+        return run_headless(http_client, websocket, stop_on_idle).await;
+    }
+
     // Create app state with selected theme
     let mut app = MonitorAppBuilder::new(http_client, websocket)
         .with_theme(Theme::monochrome())

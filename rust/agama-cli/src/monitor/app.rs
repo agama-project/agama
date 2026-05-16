@@ -30,14 +30,14 @@ use serde::Deserialize;
 use std::{collections::HashMap, io, time::Duration};
 use tokio::sync::mpsc;
 
-use super::{theme::Theme, ui};
+use super::{runner::{MonitorEvent, MonitorRunner}, theme::Theme, ui};
 
 /// Application messages.
 enum Message {
-    /// Agama status update.
-    Update(InstallationStatus),
+    /// Monitor event (status update or finished signal)
+    Monitor(MonitorEvent),
     /// Terminal event.
-    TerminalEvent(Event),
+    Terminal(Event),
 }
 
 // FIXME: find a better place
@@ -88,8 +88,8 @@ impl MonitorAppBuilder {
         Ok(MonitorApp {
             monitor,
             status,
-            theme: self.theme,
             stop_on_idle: self.stop_on_idle,
+            theme: self.theme,
             exit: false,
             product_names,
         })
@@ -108,65 +108,77 @@ impl MonitorAppBuilder {
 
 /// Application state for the monitor TUI
 pub struct MonitorApp {
-    /// Current installation status (includes system info)
+    /// Monitor client
+    monitor: MonitorClient,
+    /// Current installation status
     status: InstallationStatus,
+    /// Whether to stop when idle
+    stop_on_idle: bool,
     /// Product names
     product_names: HashMap<String, String>,
     /// UI color theme
     theme: Theme,
     /// Exit in the next iteration
     exit: bool,
-    /// Stop on idle
-    stop_on_idle: bool,
-    /// Monitor client
-    monitor: MonitorClient,
 }
 
 impl MonitorApp {
     /// Updates the installation status.
-    pub fn update_status(&mut self, new_status: InstallationStatus) {
+    fn update_status(&mut self, new_status: InstallationStatus) {
         self.status = new_status;
-        if self.should_exit() {
-            self.exit = true;
-        }
     }
 
-    fn should_exit(&self) -> bool {
-        self.stop_on_idle && self.status.is_idle()
+    /// Handles a monitor event.
+    fn handle_monitor_event(&mut self, event: MonitorEvent) {
+        match event {
+            MonitorEvent::Update(status) => self.update_status(status),
+            MonitorEvent::Finished => self.exit = true,
+        }
     }
 
     /// Runs the monitor TUI event loop.
     ///
-    /// This method spawns two tokio tasks to read the events coming from the
-    /// MonitorClient and the console events from crossterm. This approach
-    /// helps to improve the responsiveness of the application.
+    /// This method spawns two tasks:
+    /// 1. The MonitorRunner task (autonomous, emits status updates and finished signal)
+    /// 2. A terminal event polling task
+    ///
+    /// The main loop reacts to events from both sources.
     ///
     /// * `terminal` - The terminal to draw on
-    /// * `monitor` - The monitor client to receive updates from
     pub async fn run(
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     ) -> Result<()> {
         let (tx, mut rx) = mpsc::channel(16);
-        let tx_clone = tx.clone();
-        let mut updates = self.monitor.subscribe();
 
-        if self.should_exit() {
-            return Ok(());
-        }
+        // Start the autonomous monitor runner
+        let runner = MonitorRunner::new(
+            self.monitor.clone(),
+            self.status.clone(),
+            self.stop_on_idle,
+        );
+        let mut monitor_events = runner.start();
 
+        // Spawn task to forward monitor events
+        let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
-            while let Ok(new_status) = updates.recv().await {
-                _ = tx_clone.send(Message::Update(new_status)).await;
+            while let Some(event) = monitor_events.recv().await {
+                if tx_monitor.send(Message::Monitor(event)).await.is_err() {
+                    break;
+                }
             }
         });
 
-        let handle = tokio::task::spawn(async move {
+        // Spawn task to read terminal events
+        let tx_terminal = tx.clone();
+        let terminal_handle = tokio::task::spawn(async move {
             loop {
                 match crossterm::event::poll(Duration::from_millis(100)) {
                     Ok(true) => {
                         if let Ok(event) = crossterm::event::read() {
-                            _ = tx.send(Message::TerminalEvent(event)).await;
+                            if tx_terminal.send(Message::Terminal(event)).await.is_err() {
+                                break;
+                            }
                         }
                     }
                     Err(_) => break,
@@ -175,6 +187,7 @@ impl MonitorApp {
             }
         });
 
+        // Main event loop
         while !self.exit {
             terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
 
@@ -184,8 +197,8 @@ impl MonitorApp {
                 .ok_or(anyhow!(gettext("Lost the connection with the server.")))?;
 
             match message {
-                Message::Update(update) => self.update_status(update),
-                Message::TerminalEvent(event) => {
+                Message::Monitor(event) => self.handle_monitor_event(event),
+                Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
                         self.handle_key_event(key_event);
                     }
@@ -193,7 +206,7 @@ impl MonitorApp {
             }
         }
 
-        handle.abort();
+        terminal_handle.abort();
         Ok(())
     }
 
