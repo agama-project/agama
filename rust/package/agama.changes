@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun May 17 22:54:14 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the monitor to work when the terminal is not available. It
+  allows loading profiles without errors (gh#agama-project/agama#3510).
+
+-------------------------------------------------------------------
 Sat May 16 07:54:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 21
