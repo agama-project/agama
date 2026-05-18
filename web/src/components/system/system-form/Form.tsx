@@ -23,15 +23,17 @@
 import React, { useRef } from "react";
 import { isEmpty, isNullish, shake } from "radashi";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import HostnameFields from "./HostnameFields";
-import NtpFields from "./NtpFields";
-import { HOSTNAME_MODE, NTP_MODE, defaultOptions, validate } from "./fields";
+import Page from "~/components/core/Page";
 import { patchConfig } from "~/api";
 import { useConfig } from "~/hooks/model/config";
 import { useProposal } from "~/hooks/model/proposal";
 import { anyFieldChanged, useAppForm } from "~/hooks/form";
 import { _ } from "~/i18n";
+
+import HostnameFields from "./HostnameFields";
+import NtpFields from "./NtpFields";
+import { HOSTNAME_MODE, NTP_MODE, defaultOptions, validate } from "./fields";
+
 import type * as Ntp from "~/model/config/ntp";
 
 type SystemFormValues = typeof defaultOptions.defaultValues;
@@ -121,7 +123,7 @@ export default function SystemPage() {
         if (!formApi.state.isDirty) return undefined;
 
         const fieldErrors = validate(formValues);
-        if (fieldErrors) return { fields: fieldErrors };
+        if (fieldErrors) return fieldErrors;
 
         const { fieldMeta } = formApi.state;
 

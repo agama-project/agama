@@ -30,6 +30,7 @@
 import ipaddr from "ipaddr.js";
 import { formOptions } from "@tanstack/react-form";
 import { isEmpty, shake } from "radashi";
+import { requiredString, requiredValidList } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
 /** Constants */
@@ -114,9 +115,9 @@ export const isValidNtpServer = (value: string): boolean => {
 function validateHostnameFields(formValues: FormFields): Partial<FormFieldErrors> {
   return {
     hostnameValue:
-      formValues.hostnameMode === HOSTNAME_MODE.STATIC && isEmpty(formValues.hostnameValue)
+      formValues.hostnameMode === HOSTNAME_MODE.STATIC
         ? // TRANSLATORS: validation error when static hostname value is empty
-          _("Enter a hostname value.")
+          requiredString(formValues.hostnameValue, _("Enter a hostname value."))
         : undefined,
   };
 }
@@ -127,21 +128,16 @@ function validateHostnameFields(formValues: FormFields): Partial<FormFieldErrors
 function validateNtpFields(formValues: FormFields): Partial<FormFieldErrors> {
   if (formValues.ntpMode !== NTP_MODE.CUSTOM) return {};
 
-  if (formValues.ntpServers.length === 0) {
-    return {
+  return {
+    ntpServers: requiredValidList(
+      formValues.ntpServers,
+      isValidNtpServer,
       // TRANSLATORS: validation error when no NTP servers are provided in custom mode
-      ntpServers: _("At least one NTP server is required"),
-    };
-  }
-
-  if (formValues.ntpServers.some((server) => !isValidNtpServer(server))) {
-    return {
+      _("At least one NTP server is required"),
       // TRANSLATORS: validation error when some NTP server addresses are invalid
-      ntpServers: _("Some NTP server addresses are invalid"),
-    };
-  }
-
-  return {};
+      _("Some NTP server addresses are invalid"),
+    ),
+  };
 }
 
 /**

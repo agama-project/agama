@@ -25,7 +25,8 @@
  */
 
 import { formOptions } from "@tanstack/react-form";
-import { isEmpty, shake } from "radashi";
+import { shake } from "radashi";
+import { requiredString } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
 /** Types */
@@ -69,19 +70,18 @@ export const defaultOptions = formOptions({
  * values are valid.
  */
 export function validate(formFields: FormFields): { fields?: FormFieldErrors } | undefined {
-  const errors: FormFieldErrors = {};
+  const fieldErrors = shake({
+    url:
+      formFields.server === "custom"
+        ? // TRANSLATORS: validation error for the registration server URL field.
+          requiredString(formFields.url, _("Enter a server URL"))
+        : undefined,
+    code:
+      formFields.server === "default"
+        ? // TRANSLATORS: validation error for the registration code field.
+          requiredString(formFields.code, _("Enter a registration code"))
+        : undefined,
+  });
 
-  if (formFields.server === "custom" && isEmpty(formFields.url)) {
-    // TRANSLATORS: validation error for the registration server URL field.
-    errors.url = _("Enter a server URL");
-  }
-
-  if (formFields.server === "default" && isEmpty(formFields.code)) {
-    // TRANSLATORS: validation error for the registration code field.
-    errors.code = _("Enter a registration code");
-  }
-
-  const fieldErrors = shake(errors);
-
-  if (!isEmpty(fieldErrors)) return { fields: fieldErrors };
+  if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
 }

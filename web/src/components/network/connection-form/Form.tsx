@@ -25,15 +25,8 @@ import { generatePath, useNavigate, useParams } from "react-router";
 import { unique } from "radashi";
 import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
-import IpFields from "./IpFields";
-import BondFields from "./BondFields";
-import BridgeFields from "./BridgeFields";
-import BindingModeSelector from "./BindingModeSelector";
-import DeviceSelector from "./DeviceSelector";
-import { BondMode, Bridge, Connection, ConnectionMethod, ConnectionType } from "~/types/network";
 import { useConnectionMutation, useConfig } from "~/hooks/model/config/network";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useSystem, useDevices } from "~/hooks/model/system/network";
@@ -53,15 +46,24 @@ import {
   isValidNameserver,
   isValidDNSSearchDomain,
 } from "~/utils/network";
-import { _ } from "~/i18n";
+
+import BindingModeSelector from "./BindingModeSelector";
+import BondFields from "./BondFields";
+import BridgeFields from "./BridgeFields";
+import DeviceSelector from "./DeviceSelector";
+import IpFields from "./IpFields";
 import {
-  FormIpMode,
   ADDRESS_REQUIRED_MODES,
   BridgeStpMode,
+  FormIpMode,
   defaultOptions,
-  validate as validateConnectionForm,
+  validate,
 } from "./fields";
+import { _ } from "~/i18n";
+
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import type { FormIpMode as FormIpModeType, BridgeStpMode as BridgeStpModeType } from "./fields";
+import { BondMode, Bridge, Connection, ConnectionMethod, ConnectionType } from "~/types/network";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -294,7 +296,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
       onSubmitAsync: async ({
         value: formValues,
       }): Promise<{ fields?: Record<string, string>; form?: string } | undefined> => {
-        const fieldErrors = validateConnectionForm(formValues);
+        const fieldErrors = validate(formValues);
         if (fieldErrors) return fieldErrors;
 
         try {
