@@ -24,8 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions } from "./connectionFormFields";
-import { FormIpMode } from "./connectionFormFields";
+import { defaultOptions, FormIpMode } from "./fields";
 import IpFields from "./IpFields";
 
 function TestForm({
@@ -36,9 +35,9 @@ function TestForm({
   protocol?: "ipv4" | "ipv6";
 }) {
   const form = useAppForm({
-    ...connectionFormOptions,
+    ...defaultOptions,
     defaultValues: {
-      ...connectionFormOptions.defaultValues,
+      ...defaultOptions.defaultValues,
       ...defaultValues,
     },
   });

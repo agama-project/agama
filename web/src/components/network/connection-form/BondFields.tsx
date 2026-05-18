@@ -22,7 +22,7 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { connectionFormOptions } from "./connectionFormFields";
+import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { BondMode } from "~/types/network";
@@ -50,7 +50,7 @@ type BondFieldsProps = {
  * Receives a typed form instance via `withForm`.
  */
 const BondFields = withForm({
-  ...connectionFormOptions,
+  ...defaultOptions,
   props: {
     isEditing: false,
   } as BondFieldsProps,

@@ -23,8 +23,7 @@
 import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import { connectionFormOptions } from "./connectionFormFields";
-import { FormIpMode, ADDRESS_REQUIRED_MODES } from "./connectionFormFields";
+import { defaultOptions, FormIpMode, ADDRESS_REQUIRED_MODES } from "./fields";
 import { withForm } from "~/hooks/form";
 import { ensureIPPrefix, isValidIPv4Address, isValidIPv6Address } from "~/utils/network";
 import { _, N_ } from "~/i18n";
@@ -84,7 +83,7 @@ type IpFieldsProps = {
  * @see https://www.w3.org/WAI/WCAG21/Understanding/headings-and-labels.html
  */
 const IpFields = withForm({
-  ...connectionFormOptions,
+  ...defaultOptions,
   props: {
     protocol: "ipv4",
   } as IpFieldsProps,

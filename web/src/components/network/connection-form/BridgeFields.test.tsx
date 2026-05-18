@@ -24,8 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions } from "./connectionFormFields";
-import { BridgeStpMode } from "./connectionFormFields";
+import { defaultOptions, BridgeStpMode } from "./fields";
 import { DeviceState } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import BridgeFields from "./BridgeFields";
@@ -56,9 +55,9 @@ function TestForm({
   isEditing?: boolean;
 }) {
   const form = useAppForm({
-    ...connectionFormOptions,
+    ...defaultOptions,
     defaultValues: {
-      ...connectionFormOptions.defaultValues,
+      ...defaultOptions.defaultValues,
       name: "test-bridge",
       type: CONNECTION_TYPE.BRIDGE,
       ...defaultValues,

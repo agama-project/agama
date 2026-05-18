@@ -25,8 +25,7 @@ import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import { connectionFormOptions } from "./connectionFormFields";
-import { BridgeStpMode } from "./connectionFormFields";
+import { defaultOptions, BridgeStpMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { _, N_, formatList } from "~/i18n";
@@ -71,7 +70,7 @@ type BridgeFieldsProps = {
  * Receives a typed form instance via `withForm`.
  */
 const BridgeFields = withForm({
-  ...connectionFormOptions,
+  ...defaultOptions,
   props: {
     isEditing: false,
   } as BridgeFieldsProps,

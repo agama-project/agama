@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { connectionFormOptions } from "./connectionFormFields";
+import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { _, N_ } from "~/i18n";
 
@@ -58,7 +58,7 @@ const BINDING_MODE_OPTIONS = [
  * Receives a typed form instance via `withForm`.
  */
 const BindingModeSelector = withForm({
-  ...connectionFormOptions,
+  ...defaultOptions,
   render: function Render({ form }) {
     return (
       <form.AppField name="bindingMode">

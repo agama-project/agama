@@ -58,13 +58,13 @@ import {
   FormIpMode,
   ADDRESS_REQUIRED_MODES,
   BridgeStpMode,
-  connectionFormOptions,
+  defaultOptions,
   validate as validateConnectionForm,
-} from "./connectionFormFields";
+} from "./fields";
 import type {
   FormIpMode as FormIpModeType,
   BridgeStpMode as BridgeStpModeType,
-} from "./connectionFormFields";
+} from "./fields";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -78,9 +78,9 @@ const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
   [FormIpMode.MANUAL]: ConnectionMethod.MANUAL,
 };
 
-export { connectionFormOptions };
+export { defaultOptions };
 
-type FormValues = typeof connectionFormOptions.defaultValues;
+type FormValues = typeof defaultOptions.defaultValues;
 
 /**
  * Connection types supported by this form.
@@ -290,7 +290,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
   };
 
   const form = useAppForm({
-    ...mergeFormDefaults(connectionFormOptions, {
+    ...mergeFormDefaults(defaultOptions, {
       iface: devices[0]?.name ?? "",
       ifaceMac: devices[0]?.macAddress ?? "",
       ...defaults,

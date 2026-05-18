@@ -220,7 +220,7 @@ const defaultValues = {
  * Shared form options for ConnectionForm and its sub-components.
  * Sub-components spread these options in their withForm definition.
  */
-export const connectionFormOptions = formOptions({
+export const defaultOptions = formOptions({
   defaultValues,
 });
 
