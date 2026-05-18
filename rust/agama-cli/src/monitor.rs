@@ -83,12 +83,12 @@ async fn run_headless(
 ) -> Result<()> {
     let (mut updates, status) = Monitor::connect(websocket, &http_client, stop_on_idle).await?;
 
-    eprintln!("Agama monitor started (headless mode)");
-    eprintln!("Initial stage: {:?}", status.status.stage);
+    println!("Agama monitor started (headless mode)");
+    println!("Initial stage: {:?}", status.status.stage);
 
     // Listen to updates until channel closes
     while let Ok(status) = updates.recv().await {
-        eprintln!(
+        println!(
             "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
             status.status.stage,
             status.status.progresses.len(),
@@ -97,7 +97,7 @@ async fn run_headless(
         );
     }
 
-    eprintln!("Monitoring finished");
+    println!("Monitoring finished");
     Ok(())
 }
 
