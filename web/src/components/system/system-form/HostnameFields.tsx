@@ -26,15 +26,10 @@ import Icon from "~/components/layout/Icon";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { Fieldset } from "~/components/form/Fieldset";
-import { systemFormOptions } from "~/components/system/SystemPage";
+import { defaultOptions, HOSTNAME_MODE } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useSystem } from "~/hooks/model/system";
 import { _ } from "~/i18n";
-
-const HOSTNAME_MODE = {
-  TRANSIENT: "transient",
-  STATIC: "static",
-} as const;
 
 /**
  * Displays helper text explaining transient hostname behavior.
@@ -95,7 +90,7 @@ function StaticModeHelperText() {
  * Receives a typed form instance via `withForm`.
  */
 const HostnameSettings = withForm({
-  ...systemFormOptions,
+  ...defaultOptions,
   render: function Render({ form }) {
     const { software } = useSystem();
 
