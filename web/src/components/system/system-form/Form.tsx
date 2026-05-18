@@ -34,8 +34,6 @@ import { anyFieldChanged, useAppForm } from "~/hooks/form";
 import { _ } from "~/i18n";
 import type * as Ntp from "~/model/config/ntp";
 
-export { defaultOptions };
-
 type SystemFormValues = typeof defaultOptions.defaultValues;
 type SystemFieldMeta = Partial<Record<keyof SystemFormValues, { isDefaultValue?: boolean }>>;
 

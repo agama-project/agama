@@ -61,10 +61,7 @@ import {
   defaultOptions,
   validate as validateConnectionForm,
 } from "./fields";
-import type {
-  FormIpMode as FormIpModeType,
-  BridgeStpMode as BridgeStpModeType,
-} from "./fields";
+import type { FormIpMode as FormIpModeType, BridgeStpMode as BridgeStpModeType } from "./fields";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -77,8 +74,6 @@ const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
   [FormIpMode.ADVANCED_AUTO]: ConnectionMethod.AUTO,
   [FormIpMode.MANUAL]: ConnectionMethod.MANUAL,
 };
-
-export { defaultOptions };
 
 type FormValues = typeof defaultOptions.defaultValues;
 

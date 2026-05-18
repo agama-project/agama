@@ -43,8 +43,6 @@ import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { _ } from "~/i18n";
 import { defaultOptions, validate } from "./fields";
 
-export { defaultOptions };
-
 /**
  * Form for registering a product with a registration server.
  */

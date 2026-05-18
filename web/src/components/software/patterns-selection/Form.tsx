@@ -51,8 +51,6 @@ import { defaultOptions } from "./fields";
 
 import type { Pattern } from "~/model/system/software";
 
-export { defaultOptions };
-
 /**
  * Controls which patterns the selection page shows.
  * - "all": all available patterns
