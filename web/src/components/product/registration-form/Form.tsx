@@ -63,9 +63,9 @@ export default function ProductRegistrationForm() {
   const form = useAppForm({
     ...mergeFormDefaults(defaultOptions, {
       server: isEmpty(product?.registrationUrl) ? "default" : "custom",
-      url: product?.registrationUrl || "",
-      code: product?.registrationCode || "",
-      email: product?.registrationEmail || "",
+      url: product?.registrationUrl,
+      code: product?.registrationCode,
+      email: product?.registrationEmail,
     }),
     validators: {
       onSubmitAsync: async ({ value }) => {
