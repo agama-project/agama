@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-06 14:41+0000\n"
-"PO-Revision-Date: 2026-05-09 16:04+0000\n"
+"POT-Creation-Date: 2026-05-15 12:11+0000\n"
+"PO-Revision-Date: 2026-05-17 20:12+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.5\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -37,30 +37,30 @@ msgstr "Analyzovať disky"
 
 #: service/lib/agama/manager.rb:99
 msgid "Configure software"
-msgstr ""
+msgstr "Konfigurovať softvér"
 
 #. Runs the install phase
 #. rubocop:disable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:118
 msgid "Prepare disks"
-msgstr ""
+msgstr "Pripraviť disky"
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr ""
+msgstr "Inštalovať softvér"
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
-msgstr ""
+msgstr "Nakonfigurovať systém"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:161
 msgid "Load software translations"
-msgstr ""
+msgstr "Načítať preklady softvéru"
 
 #: service/lib/agama/manager.rb:162
 msgid "Load storage translations"
-msgstr ""
+msgstr "Načítať preklady úložiska"
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
@@ -69,26 +69,28 @@ msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
+"Snaha o import certifikátu s vlastným podpisom. Chcete mu dôverovať a "
+"zaregistrovať produkt?"
 
 #. TRANSLATORS: button label, try downloading the failed package again
 #: service/lib/agama/software/callbacks/base.rb:48
 msgid "Try again"
-msgstr ""
+msgstr "Skúsiť znovu"
 
 #. TRANSLATORS: button label, ignore the failed download, skip package installation
 #: service/lib/agama/software/callbacks/base.rb:54
 msgid "Continue anyway"
-msgstr ""
+msgstr "Pokračovať napriek tomu"
 
 #. TRANSLATORS: button label, abort the installation completely after an error
 #: service/lib/agama/software/callbacks/base.rb:60
 msgid "Abort installation"
-msgstr ""
+msgstr "Prerušiť inštaláciu"
 
 #. TRANSLATORS: button label, skip the error
 #: service/lib/agama/software/callbacks/base.rb:66
 msgid "Skip"
-msgstr ""
+msgstr "Preskočiť"
 
 #. TRANSLATORS: button label
 #: service/lib/agama/software/callbacks/base.rb:72
@@ -111,6 +113,9 @@ msgid ""
 "that although the file is part of the signed repository, the list of "
 "checksums does not mention this file. Use it anyway?"
 msgstr ""
+"V repozitári nebol nájdený žiadny kontrolný súčet pre súbor %{file}. To "
+"znamená, že hoci je tento súbor súčasťou podpísaného repozitára, v zozname "
+"kontrolných súčtov sa tento súbor neuvádza. Napriek tomu ho použiť?"
 
 #. Callback to accept an unknown digest
 #.
@@ -124,6 +129,9 @@ msgid ""
 "is unknown. This means that the origin and integrity of the file cannot be "
 "verified. Use it anyway?"
 msgstr ""
+"Kontrolný súčet súboru %{file} je \"%{digest}\", očakávaný kontrolný súčet "
+"však nie je známy. To znamená, že pôvod a integritu súboru nemožno overiť. "
+"Napriek tomu ho použiť?"
 
 #. Callback to accept wrong digest
 #.
@@ -138,6 +146,9 @@ msgid ""
 "be \"%{expected}\". The file has changed by accident or by an attacker since "
 "the creater signed it. Use it anyway?"
 msgstr ""
+"Očakávaný kontrolný súčet súboru %{file} je \"%{found}\", pričom mal byť \"%"
+"{expected}\". Súbor sa od momentu, keď ho autor podpísal, zmenil náhodou "
+"alebo útočníkom. Napriek tomu ho použiť?"
 
 #. DoneProvide callback
 #.
@@ -146,7 +157,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "Pri spúšťaní skriptu balíka nastal problém."
 
 #. Callback to handle unsigned files
 #.
@@ -158,6 +169,8 @@ msgid ""
 "The file %{filename} from %{repo_url} is not digitally signed. The origin "
 "and integrity of the file cannot be verified. Use it anyway?"
 msgstr ""
+"Súbor %{filename} z %{repo_url} nie je digitálne podpísaný. Pôvod a "
+"integritu súboru nie je možné overiť. Napriek tomu ho použiť?"
 
 #: service/lib/agama/software/callbacks/signature.rb:72
 #, perl-brace-format
@@ -165,6 +178,8 @@ msgid ""
 "The file %{filename} is not digitally signed. The origin and integrity of "
 "the file cannot be verified. Use it anyway?"
 msgstr ""
+"Súbor %{filename} nie je digitálne podpísaný. Pôvod a integritu súboru nie "
+"je možné overiť. Napriek tomu ho použiť?"
 
 #. Callback to handle signature verification failures
 #.
@@ -176,6 +191,8 @@ msgid ""
 "The key %{id} (%{name}) with fingerprint %{fingerprint} is unknown. Do you "
 "want to trust this key?"
 msgstr ""
+"Kľúč %{id} (%{name}) s odtlačkom %{fingerprint} nie je známy. Chcete tomuto "
+"kľúču dôverovať?"
 
 #. Callback to handle unknown GPG keys
 #.
@@ -188,6 +205,8 @@ msgid ""
 "The file %{filename} from %{repo_url} is digitally signed with the following "
 "unknown GnuPG key: %{key_id}. Use it anyway?"
 msgstr ""
+"Súbor %{filename} z %{repo_url} je digitálne podpísaný nasledujúcim neznámym "
+"kľúčom GnuPG: %{key_id}. Napriek tomu ho použiť?"
 
 #: service/lib/agama/software/callbacks/signature.rb:137
 #, perl-brace-format
@@ -195,6 +214,8 @@ msgid ""
 "The file %{filename} is digitally signed with the following unknown GnuPG "
 "key: %{key_id}. Use it anyway?"
 msgstr ""
+"Súbor %{filename} je digitálne podpísaný nasledujúcim neznámym kľúčom GnuPG: "
+"%{key_id}. Napriek tomu ho použiť?"
 
 #. Callback to handle file verification failures
 #.
@@ -208,6 +229,9 @@ msgid ""
 "GnuPG key, but the integrity check failed: %{key_id} (%{key_name}). Use it "
 "anyway?"
 msgstr ""
+"Súbor %{filename} z %{repo_url} je digitálne podpísaný nasledujúcim kľúčom "
+"GnuPG, ale kontrola integrity zlyhala: %{key_id} (%{key_name}). Napriek tomu "
+"ho použiť?"
 
 #: service/lib/agama/software/callbacks/signature.rb:175
 #, perl-brace-format
@@ -215,6 +239,8 @@ msgid ""
 "The file %{filename} is digitally signed with the following GnuPG key, but "
 "the integrity check failed: %{key_id} (%{key_name}). Use it anyway?"
 msgstr ""
+"Súbor %{filename} je digitálne podpísaný nasledujúcim kľúčom GnuPG, ale "
+"kontrola integrity zlyhala: %{key_id} (%{key_name}). Napriek tomu ho použiť?"
 
 #. TRANSLATORS: button label, trust the GPG key or the signature
 #: service/lib/agama/software/callbacks/signature.rb:199
@@ -531,36 +557,36 @@ msgstr "Povinné %s nebolo nájdené"
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:85
 msgid "drive"
-msgstr ""
+msgstr "jednotka"
 
 #: service/lib/agama/storage/config_checkers/search.rb:87
 msgid "MD RAID"
-msgstr ""
+msgstr "MD RAID"
 
 #: service/lib/agama/storage/config_checkers/search.rb:89
 msgid "partition"
-msgstr ""
+msgstr "oddiel"
 
 #: service/lib/agama/storage/config_checkers/search.rb:91
 msgid "LVM logical volume"
-msgstr ""
+msgstr "Logický zväzok LVM"
 
 #: service/lib/agama/storage/config_checkers/search.rb:93
 msgid "device"
-msgstr ""
+msgstr "zariadenie"
 
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
 #: service/lib/agama/storage/config_checkers/volume_group.rb:76
 msgid "There is a volume group without name"
-msgstr ""
+msgstr "Existuje skupina zväzkov bez názvu"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:106
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
-msgstr ""
+msgstr "Neexistuje žiadny fyzický zväzok LVM s aliasom '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:133
@@ -569,12 +595,15 @@ msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
 "devices and new devices"
 msgstr ""
+"Zoznam cieľových zariadení pre skupinu zväzkov '%s' zahŕňa znovu použité aj "
+"nové zariadenia"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_group.rb:153
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr ""
+"Neexistuje žiadne cieľové zariadenie pre fyzické zväzky LVM s aliasom '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
@@ -582,6 +611,8 @@ msgstr ""
 msgid ""
 "The device '%s' is used several times as target device for physical volumes"
 msgstr ""
+"Zariadenie '%s' je niekoľkokrát použité ako cieľové zariadenie pre fyzické "
+"zväzky"
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
@@ -592,18 +623,21 @@ msgid ""
 "case the device does contain a file system or a storage system that is not "
 "supported, resizing will most likely cause data loss."
 msgstr ""
+"Na zariadení nebol zistený súborový systém ani úložný systém. V prípade, že "
+"zariadenie obsahuje súborový systém alebo úložný systém, ktorý nie je "
+"podporovaný, zmena veľkosti pravdepodobne spôsobí stratu údajov."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "Toto zariadenie nepodporuje zmenšenie"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
 #: service/lib/agama/storage/finisher.rb:145
 msgid "Copying important installation files to the target system"
-msgstr ""
+msgstr "Kopírovanie dôležitých inštalačných súborov na cieľový systém"
 
 #. Constructor
 #: service/lib/agama/storage/finisher.rb:186
@@ -613,27 +647,27 @@ msgstr ""
 #. Step to write the bootloader configuration
 #: service/lib/agama/storage/finisher.rb:197
 msgid "Installing bootloader"
-msgstr ""
+msgstr "Inštalácia správcu štartu"
 
 #. Step to finish the Y2Storage configuration
 #: service/lib/agama/storage/finisher.rb:214
 msgid "Adjusting storage configuration"
-msgstr ""
+msgstr "Úprava konfigurácie úložiska"
 
 #. Step to finish the iSCSI configuration
 #: service/lib/agama/storage/finisher.rb:225
 msgid "Adjusting iSCSI configuration"
-msgstr ""
+msgstr "Úprava konfigurácie iSCSI"
 
 #. Step to configure the file-system snapshots
 #: service/lib/agama/storage/finisher.rb:236
 msgid "Configuring file systems snapshots"
-msgstr ""
+msgstr "Konfigurácia snímok súborových systémov"
 
 #. Step to copy the installation logs
 #: service/lib/agama/storage/finisher.rb:254
 msgid "Copying logs"
-msgstr ""
+msgstr "Kopírovanie záznamov"
 
 #. Executes post-installation scripts
 #: service/lib/agama/storage/finisher.rb:295
@@ -648,7 +682,7 @@ msgstr ""
 #. Step to unmount the target file-systems
 #: service/lib/agama/storage/finisher.rb:353
 msgid "Unmounting storage devices"
-msgstr ""
+msgstr "Odpojenie úložných zariadení"
 
 #. Applies the target configs.
 #.
@@ -716,6 +750,7 @@ msgstr "Zápis sysconfig správcu štartu"
 #: service/lib/agama/storage/proposal.rb:345
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
+"Nie je možné vypočítať platné nastavenie úložiska pri aktuálnej konfigurácii"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
