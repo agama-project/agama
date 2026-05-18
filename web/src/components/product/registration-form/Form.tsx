@@ -68,13 +68,13 @@ export default function ProductRegistrationForm() {
       email: product?.registrationEmail,
     }),
     validators: {
-      onSubmitAsync: async ({ value }) => {
-        return validate(value);
+      onSubmitAsync: async ({ value: formValues }) => {
+        return validate(formValues);
       },
     },
-    onSubmit: ({ value }) => {
-      const isUrlRequired = value.server !== "default";
-      const isCodeRequired = value.server === "default";
+    onSubmit: ({ value: formValues }) => {
+      const isUrlRequired = formValues.server !== "default";
+      const isCodeRequired = formValues.server === "default";
 
       startTracking();
       setLoading(true);
@@ -83,9 +83,10 @@ export default function ProductRegistrationForm() {
         product: {
           id: product.id,
           mode: product.mode,
-          registrationCode: isCodeRequired || !isEmpty(value.code) ? value.code : undefined,
-          registrationEmail: !isEmpty(value.email) ? value.email : undefined,
-          registrationUrl: isUrlRequired ? value.url : undefined,
+          registrationCode:
+            isCodeRequired || !isEmpty(formValues.code) ? formValues.code : undefined,
+          registrationEmail: !isEmpty(formValues.email) ? formValues.email : undefined,
+          registrationUrl: isUrlRequired ? formValues.url : undefined,
         },
       });
     },
