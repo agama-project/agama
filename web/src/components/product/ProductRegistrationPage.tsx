@@ -39,7 +39,7 @@ import { IssuesAlert, Link, NestedContent, Page } from "~/components/core";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import RegistrationExtension from "~/components/product/RegistrationExtension";
-import ProductRegistrationForm from "~/components/product/ProductRegistrationForm";
+import ProductRegistrationForm from "~/components/product/registration-form/Form";
 import { useProposal } from "~/hooks/model/proposal";
 import { useSystem } from "~/hooks/model/system/software";
 import { useProductInfo } from "~/hooks/model/config/product";

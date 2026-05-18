@@ -21,7 +21,6 @@
  */
 
 import React, { useId, useState } from "react";
-import { formOptions } from "@tanstack/react-form";
 import {
   ActionGroup,
   Alert,
@@ -33,7 +32,7 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import LabelText from "~/components/form/LabelText";
-import { isEmpty, shake } from "radashi";
+import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { useProduct } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
@@ -42,50 +41,9 @@ import { useConfig } from "~/hooks/model/config";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { _ } from "~/i18n";
+import { defaultOptions, validate } from "./fields";
 
-type ServerOption = "default" | "custom";
-
-/**
- * Form options for product registration.
- *
- * Type casts widen literal defaults to their union types, allowing fields
- * to accept any value from the union.
- */
-const registrationFormOptions = formOptions({
-  defaultValues: {
-    server: "default" as ServerOption,
-    url: "",
-    code: "",
-    email: "",
-  },
-});
-
-type FormValues = typeof registrationFormOptions.defaultValues;
-type FormFieldErrors = Partial<Record<keyof FormValues, string>>;
-
-/**
- * Validates the registration form values.
- *
- * Returns a map of field errors when validation fails, or undefined when all
- * values are valid.
- */
-function validateRegistrationForm(formValues: FormValues): FormFieldErrors | undefined {
-  const errors: FormFieldErrors = {};
-
-  if (formValues.server === "custom" && isEmpty(formValues.url)) {
-    // TRANSLATORS: validation error for the registration server URL field.
-    errors.url = _("Enter a server URL");
-  }
-
-  if (formValues.server === "default" && isEmpty(formValues.code)) {
-    // TRANSLATORS: validation error for the registration code field.
-    errors.code = _("Enter a registration code");
-  }
-
-  const fieldErrors = shake(errors);
-
-  if (!isEmpty(fieldErrors)) return fieldErrors;
-}
+export { defaultOptions };
 
 /**
  * Form for registering a product with a registration server.
@@ -104,7 +62,7 @@ export default function ProductRegistrationForm() {
   const { startTracking } = useTrackQueriesRefetch(["system"], () => setLoading(false));
 
   const form = useAppForm({
-    ...mergeFormDefaults(registrationFormOptions, {
+    ...mergeFormDefaults(defaultOptions, {
       server: isEmpty(product?.registrationUrl) ? "default" : "custom",
       url: product?.registrationUrl || "",
       code: product?.registrationCode || "",
@@ -112,8 +70,7 @@ export default function ProductRegistrationForm() {
     }),
     validators: {
       onSubmitAsync: async ({ value }) => {
-        const fieldErrors = validateRegistrationForm(value);
-        if (fieldErrors) return { fields: fieldErrors };
+        return validate(value);
       },
     },
     onSubmit: ({ value }) => {

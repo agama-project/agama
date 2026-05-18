@@ -29,7 +29,7 @@ import { Config } from "~/model/config";
 import { putConfig } from "~/api";
 import { Issue } from "~/model/issue";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
-import ProductRegistrationForm from "./ProductRegistrationForm";
+import ProductRegistrationForm from "./Form";
 
 const sle: Product = {
   id: "sle",
