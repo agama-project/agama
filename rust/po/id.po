@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 12:49+0000\n"
+"POT-Creation-Date: 2026-05-18 06:01+0000\n"
 "PO-Revision-Date: 2026-05-05 07:04+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -29,113 +29,128 @@ msgstr "Tidak"
 msgid "Yes"
 msgstr "Ya"
 
-#: agama-cli/src/progress.rs:116
-msgid "Calculating the installation proposal:"
-msgstr "Menghitung proposal instalasi:"
-
-#: agama-cli/src/progress.rs:118
-msgid "Installing the system:"
-msgstr "Menginstal sistem:"
-
-#: agama-cli/src/progress.rs:223 agama-cli/src/status.rs:77
-msgid "Installation is ready to start."
-msgstr "Instalasi siap dimulai."
-
-#: agama-cli/src/progress.rs:226
-msgid "Waiting to start installation"
-msgstr "Menunggu untuk memulai instalasi"
-
-#: agama-cli/src/progress.rs:234
-msgid "Installation successfully finished"
-msgstr "Instalasi berhasil diselesaikan"
-
-#: agama-cli/src/progress.rs:235
-msgid "Installation failed"
-msgstr "Instalasi gagal"
-
-#: agama-cli/src/progress.rs:248
-msgid ""
-"There are unanswered questions. Please use `agama questions` command or web "
-"interface to answer them:"
+#: agama-cli/src/monitor/app.rs:198
+msgid "Lost the connection with the server."
 msgstr ""
-"Ada pertanyaan yang belum dijawab. Harap gunakan perintah `agama questions` "
-"atau antarmuka web untuk menjawabnya:"
 
-#: agama-cli/src/progress.rs:260
-msgid "Installer is failed to calculate the installation proposal."
-msgstr "Penginstal gagal menghitung proposal instalasi."
-
-#: agama-cli/src/progress.rs:264
-msgid "There are these issues blocking installation:"
-msgstr "Ada masalah-masalah berikut yang menghalangi instalasi:"
-
-#: agama-cli/src/progress.rs:277
-msgid "Details"
-msgstr "Detail"
-
-#: agama-cli/src/progress.rs:287
+#: agama-cli/src/monitor/ui.rs:44
 msgid "Manager"
 msgstr "Manajer"
 
-#: agama-cli/src/progress.rs:288
+#: agama-cli/src/monitor/ui.rs:45
 msgid "Network"
 msgstr "Jaringan"
 
-#: agama-cli/src/progress.rs:289
-msgid "Hostname"
-msgstr "Nama Host"
-
-#: agama-cli/src/progress.rs:290
-msgid "Localization"
-msgstr "Pelokalan"
-
-#: agama-cli/src/progress.rs:291
-msgid "Product"
-msgstr "Produk"
-
-#: agama-cli/src/progress.rs:292
-msgid "Software"
-msgstr "Perangkat Lunak"
-
-#: agama-cli/src/progress.rs:293
-msgid "Storage"
-msgstr "Penyimpanan"
-
-#: agama-cli/src/progress.rs:294
-msgid "Files"
-msgstr "Berkas"
-
-#: agama-cli/src/progress.rs:295
-msgid "iSCSI"
-msgstr "iSCSI"
-
-#: agama-cli/src/progress.rs:296
-msgid "DASD"
-msgstr "DASD"
-
-#: agama-cli/src/progress.rs:297
-msgid "zFCP"
-msgstr "zFCP"
-
-#: agama-cli/src/progress.rs:298
-msgid "Users"
-msgstr "Pengguna"
-
-#: agama-cli/src/progress.rs:299
+#: agama-cli/src/monitor/ui.rs:46
 msgid "NTP"
 msgstr ""
 
-#: agama-cli/src/progress.rs:349
-msgid "Current step"
-msgstr "Langkah saat ini"
+#: agama-cli/src/monitor/ui.rs:47
+msgid "Hostname"
+msgstr "Nama Host"
 
-#: agama-cli/src/status.rs:75
+#: agama-cli/src/monitor/ui.rs:48
+msgid "Localization"
+msgstr "Pelokalan"
+
+#: agama-cli/src/monitor/ui.rs:49
+msgid "Product"
+msgstr "Produk"
+
+#: agama-cli/src/monitor/ui.rs:50
+msgid "Software"
+msgstr "Perangkat Lunak"
+
+#: agama-cli/src/monitor/ui.rs:51
+msgid "Storage"
+msgstr "Penyimpanan"
+
+#: agama-cli/src/monitor/ui.rs:52
+msgid "Files"
+msgstr "Berkas"
+
+#: agama-cli/src/monitor/ui.rs:53
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#: agama-cli/src/monitor/ui.rs:54
+msgid "DASD"
+msgstr "DASD"
+
+#: agama-cli/src/monitor/ui.rs:55
+msgid "zFCP"
+msgstr "zFCP"
+
+#: agama-cli/src/monitor/ui.rs:56
+msgid "Users"
+msgstr "Pengguna"
+
+#: agama-cli/src/monitor/ui/content.rs:69
+#, fuzzy
+msgid "There are pending questions:"
+msgstr "Pertanyaan terbuka:"
+
+#: agama-cli/src/monitor/ui/content.rs:81
+msgid ""
+"Please use the web interface (recommended) or the \"agama questions\" "
+"command to answer them."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:101
+#, fuzzy
+msgid "Installation complete."
+msgstr "Instalasi gagal."
+
+#: agama-cli/src/monitor/ui/content.rs:102
+msgid "You can reboot the machine to log in to the new system."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:105 agama-cli/src/status.rs:75
 msgid "Installation failed."
 msgstr "Instalasi gagal."
+
+#: agama-cli/src/monitor/ui/content.rs:106
+msgid "Use the \"agama logs\" command to collect the logs."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:139
+#: agama-cli/src/monitor/ui/content.rs:211
+msgid "Action needed:"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:147
+msgid "No product has been selected yet."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:232
+#, fuzzy
+msgid "Ready for installation."
+msgstr "Menunggu untuk memulai instalasi"
+
+#: agama-cli/src/monitor/ui/content.rs:233
+#, fuzzy
+msgid "Waiting to start installation..."
+msgstr "Menunggu untuk memulai instalasi"
+
+#: agama-cli/src/monitor/ui/content.rs:252
+msgid "Step"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:254
+msgid "of"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/issues.rs:64
+msgid "Waiting for these to be resolved."
+msgstr ""
 
 #: agama-cli/src/status.rs:76
 msgid "Installation finished successfully."
 msgstr "Instalasi selesai dengan sukses."
+
+#: agama-cli/src/status.rs:77
+msgid "Installation is ready to start."
+msgstr "Instalasi siap dimulai."
 
 #: agama-cli/src/status.rs:78
 msgid "Installation is in progress."
@@ -332,53 +347,62 @@ msgstr ""
 "Karena kesalahan internal, tidak memungkinkan untuk membuat proposal "
 "perangkat lunak."
 
-#: agama-software/src/zypp_server.rs:336
+#: agama-software/src/zypp_server.rs:292
+#, fuzzy
+msgid "Starting packages installation"
+msgstr "Menunggu untuk memulai instalasi"
+
+#: agama-software/src/zypp_server.rs:305
+msgid "Packages download and installation failed. Would you like to retry?"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:359
 msgid "Updating the list of repositories"
 msgstr "Memperbarui daftar repositori"
 
-#: agama-software/src/zypp_server.rs:337
+#: agama-software/src/zypp_server.rs:360
 msgid "Refreshing metadata from the repositories"
 msgstr "Menyegarkan metadata dari repositori"
 
-#: agama-software/src/zypp_server.rs:338
+#: agama-software/src/zypp_server.rs:361
 msgid "Calculating the software proposal"
 msgstr "Menghitung usulan perangkat lunak"
 
-#: agama-software/src/zypp_server.rs:341
+#: agama-software/src/zypp_server.rs:364
 msgid "Registering the system"
 msgstr "Mendaftarkan sistem"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:411
+#: agama-software/src/zypp_server.rs:434
 msgid "Could not remove the repository %s"
 msgstr "Tidak dapat menghapus repositori %s"
 
-#: agama-software/src/zypp_server.rs:431
+#: agama-software/src/zypp_server.rs:454
 msgid "Could not read the repositories"
 msgstr "Tidak dapat membaca repositori"
 
-#: agama-software/src/zypp_server.rs:465
+#: agama-software/src/zypp_server.rs:488
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "Gagal menemukan produk di repositori. Anda mungkin perlu mendaftarkan sistem."
 
-#: agama-software/src/zypp_server.rs:468
+#: agama-software/src/zypp_server.rs:491
 msgid "Failed to find the product in the repositories."
 msgstr "Gagal menemukan produk di repositori."
 
-#: agama-software/src/zypp_server.rs:531
+#: agama-software/src/zypp_server.rs:554
 msgid "There are conflicts in the software selection"
 msgstr "Terdapat konflik dalam pemilihan perangkat lunak"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:560
+#: agama-software/src/zypp_server.rs:583
 msgid "Could not select %s '%s' for installation"
 msgstr "Tidak dapat memilih %s '%s' untuk instalasi"
 
-#: agama-software/src/zypp_server.rs:976
+#: agama-software/src/zypp_server.rs:999
 msgid "Failed to register the system"
 msgstr "Gagal mendaftarkan sistem"
 
@@ -392,6 +416,37 @@ msgstr ""
 #: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr "Informasi pengguna pertama tidak lengkap"
+
+#~ msgid "Calculating the installation proposal:"
+#~ msgstr "Menghitung proposal instalasi:"
+
+#~ msgid "Installing the system:"
+#~ msgstr "Menginstal sistem:"
+
+#~ msgid "Installation successfully finished"
+#~ msgstr "Instalasi berhasil diselesaikan"
+
+#~ msgid "Installation failed"
+#~ msgstr "Instalasi gagal"
+
+#~ msgid ""
+#~ "There are unanswered questions. Please use `agama questions` command or "
+#~ "web interface to answer them:"
+#~ msgstr ""
+#~ "Ada pertanyaan yang belum dijawab. Harap gunakan perintah `agama "
+#~ "questions` atau antarmuka web untuk menjawabnya:"
+
+#~ msgid "Installer is failed to calculate the installation proposal."
+#~ msgstr "Penginstal gagal menghitung proposal instalasi."
+
+#~ msgid "There are these issues blocking installation:"
+#~ msgstr "Ada masalah-masalah berikut yang menghalangi instalasi:"
+
+#~ msgid "Details"
+#~ msgstr "Detail"
+
+#~ msgid "Current step"
+#~ msgstr "Langkah saat ini"
 
 #~ msgid "Reading configuration"
 #~ msgstr "Membaca konfigurasi"
