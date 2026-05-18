@@ -20,7 +20,7 @@
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{InstallationStatus, Monitor, MonitorClient},
+    monitor::{InstallationStatus, Monitor},
 };
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
@@ -28,16 +28,19 @@ use gettextrs::gettext;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
 use std::{collections::HashMap, io, time::Duration};
+use tokio::sync::broadcast;
 use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
 
 /// Application messages.
 enum Message {
-    /// Agama status update.
-    Update(InstallationStatus),
+    /// Status update from monitor
+    StatusUpdate(InstallationStatus),
+    /// Monitor has finished (channel closed)
+    MonitorFinished,
     /// Terminal event.
-    TerminalEvent(Event),
+    Terminal(Event),
 }
 
 // FIXME: find a better place
@@ -83,13 +86,13 @@ impl MonitorAppBuilder {
 
     pub async fn build(self) -> Result<MonitorApp> {
         let product_names = self.get_product_names().await?;
-        let (monitor, status) = Monitor::connect(self.websocket_client, &self.http_client).await?;
+        let (updates, status) =
+            Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
         Ok(MonitorApp {
-            monitor,
+            updates,
             status,
             theme: self.theme,
-            stop_on_idle: self.stop_on_idle,
             exit: false,
             product_names,
         })
@@ -108,7 +111,9 @@ impl MonitorAppBuilder {
 
 /// Application state for the monitor TUI
 pub struct MonitorApp {
-    /// Current installation status (includes system info)
+    /// Status updates receiver
+    updates: broadcast::Receiver<InstallationStatus>,
+    /// Current installation status
     status: InstallationStatus,
     /// Product names
     product_names: HashMap<String, String>,
@@ -116,57 +121,65 @@ pub struct MonitorApp {
     theme: Theme,
     /// Exit in the next iteration
     exit: bool,
-    /// Stop on idle
-    stop_on_idle: bool,
-    /// Monitor client
-    monitor: MonitorClient,
 }
 
 impl MonitorApp {
     /// Updates the installation status.
-    pub fn update_status(&mut self, new_status: InstallationStatus) {
+    fn update_status(&mut self, new_status: InstallationStatus) {
         self.status = new_status;
-        if self.should_exit() {
-            self.exit = true;
-        }
-    }
-
-    fn should_exit(&self) -> bool {
-        self.stop_on_idle && self.status.is_idle()
     }
 
     /// Runs the monitor TUI event loop.
     ///
-    /// This method spawns two tokio tasks to read the events coming from the
-    /// MonitorClient and the console events from crossterm. This approach
-    /// helps to improve the responsiveness of the application.
+    /// This method spawns two tasks:
+    /// 1. The monitor event forwarding task
+    /// 2. A terminal event polling task
+    ///
+    /// The main loop reacts to events from both sources.
     ///
     /// * `terminal` - The terminal to draw on
-    /// * `monitor` - The monitor client to receive updates from
     pub async fn run(
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     ) -> Result<()> {
         let (tx, mut rx) = mpsc::channel(16);
-        let tx_clone = tx.clone();
-        let mut updates = self.monitor.subscribe();
 
-        if self.should_exit() {
-            return Ok(());
-        }
+        // Resubscribe to get a new receiver for the task
+        let mut status_updates = self.updates.resubscribe();
 
+        // Spawn task to forward status updates
+        let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
-            while let Ok(new_status) = updates.recv().await {
-                _ = tx_clone.send(Message::Update(new_status)).await;
+            loop {
+                match status_updates.recv().await {
+                    Ok(status) => {
+                        if tx_monitor
+                            .send(Message::StatusUpdate(status))
+                            .await
+                            .is_err()
+                        {
+                            break;
+                        }
+                    }
+                    Err(_) => {
+                        // Channel closed - monitoring finished
+                        _ = tx_monitor.send(Message::MonitorFinished).await;
+                        break;
+                    }
+                }
             }
         });
 
-        let handle = tokio::task::spawn(async move {
+        // Spawn task to read terminal events
+        let tx_terminal = tx.clone();
+        let terminal_handle = tokio::task::spawn(async move {
             loop {
                 match crossterm::event::poll(Duration::from_millis(100)) {
                     Ok(true) => {
                         if let Ok(event) = crossterm::event::read() {
-                            _ = tx.send(Message::TerminalEvent(event)).await;
+                            if tx_terminal.send(Message::Terminal(event)).await.is_err() {
+                                break;
+                            }
                         }
                     }
                     Err(_) => break,
@@ -175,6 +188,7 @@ impl MonitorApp {
             }
         });
 
+        // Main event loop
         while !self.exit {
             terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
 
@@ -184,8 +198,9 @@ impl MonitorApp {
                 .ok_or(anyhow!(gettext("Lost the connection with the server.")))?;
 
             match message {
-                Message::Update(update) => self.update_status(update),
-                Message::TerminalEvent(event) => {
+                Message::StatusUpdate(status) => self.update_status(status),
+                Message::MonitorFinished => self.exit = true,
+                Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
                         self.handle_key_event(key_event);
                     }
@@ -193,7 +208,7 @@ impl MonitorApp {
             }
         }
 
-        handle.abort();
+        terminal_handle.abort();
         Ok(())
     }
 
