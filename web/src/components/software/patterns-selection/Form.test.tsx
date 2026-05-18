@@ -26,7 +26,7 @@ import { installerRender } from "~/test-utils";
 import { patchConfig } from "~/api";
 import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
-import SoftwarePatternsSelection from "./SoftwarePatternsSelection";
+import SoftwarePatternsSelection from "./Form";
 
 const patternsWithPreselected = [
   ...testingPatterns,

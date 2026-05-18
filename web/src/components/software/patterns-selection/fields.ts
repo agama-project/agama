@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2024-2026] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,34 +20,20 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import SoftwarePage from "~/components/software/SoftwarePage";
-import SoftwarePatternsSelection from "~/components/software/patterns-selection/Form";
-import { Route } from "~/types/routes";
-import { SOFTWARE as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
+/**
+ * Software patterns selection form fields: types and defaults.
+ */
 
-const routes = (): Route => ({
-  path: PATHS.root,
-  handle: {
-    name: N_("Software"),
-    icon: "apps",
-  },
-  children: [
-    {
-      index: true,
-      element: <SoftwarePage />,
-    },
-    {
-      path: PATHS.desktopSelection,
-      element: <SoftwarePatternsSelection scope="desktops" />,
-    },
-    {
-      path: PATHS.patternsSelection,
-      element: <SoftwarePatternsSelection scope="other" />,
-    },
-  ],
+import { formOptions } from "@tanstack/react-form";
+
+/** Defaults */
+
+/**
+ * Form options for software patterns selection.
+ *
+ * Default values are dynamic (pattern name -> checked state) and set at runtime
+ * based on available patterns.
+ */
+export const defaultOptions = formOptions({
+  defaultValues: {},
 });
-
-export default routes;
-export { PATHS };
