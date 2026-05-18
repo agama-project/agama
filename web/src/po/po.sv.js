@@ -371,6 +371,9 @@ export default {
   "At least one bond port is required": [
     "Åtminstone minst en bondport krävs"
   ],
+  "At least one bridge port is required": [
+    "Åtminstone minst en bryggport krävs"
+  ],
   "At least one logical volume will be deleted": [
     "Minst en logisk volym kommer att raderas"
   ],
@@ -472,6 +475,12 @@ export default {
   ],
   "Bridge": [
     "Brygga"
+  ],
+  "Bridge details": [
+    "Brygg detaljer"
+  ],
+  "Bridge ports": [
+    "Brygg portar"
   ],
   "Btrfs": [
     "Btrfs"
@@ -664,8 +673,14 @@ export default {
   "Configure partition at %s": [
     "Konfigurera partition på %s"
   ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    ""
+  ],
   "Configure zFCP": [
     "Konfigurera zFCP"
+  ],
+  "Configured as %s.": [
+    "Konfigurerad som %s."
   ],
   "Configured for installation only": [
     "Endast konfigurerad för installation"
@@ -822,7 +837,7 @@ export default {
     "Inaktiverad"
   ],
   "Default": [
-    ""
+    "Standard"
   ],
   "Default file system for %s": [
     "Standard filsystem för %s"
@@ -905,6 +920,9 @@ export default {
   "Device name is required": [
     "Enhetsnamn krävs"
   ],
+  "Disabled": [
+    "Inaktiverat"
+  ],
   "Discard": [
     "Kasta bort"
   ],
@@ -935,6 +953,9 @@ export default {
   "Disks": [
     "Diskar"
   ],
+  "Dismiss and clear registration data": [
+    "Avfärda och rensa registreringsdata"
+  ],
   "Do not activate": [
     "Aktivera inte"
   ],
@@ -953,9 +974,6 @@ export default {
   "Do not use": [
     "Använd inte"
   ],
-  "Down": [
-    "Nere"
-  ],
   "Download config": [
     "Ladda ner konfiguration"
   ],
@@ -964,6 +982,9 @@ export default {
   ],
   "Download logs to troubleshoot or share with support.": [
     "Ladda ner loggar för att felsöka eller dela med support."
+  ],
+  "E.g., %s": [
+    "T.ex., %s"
   ],
   "E.g., 192.168.1.1": [
     "T.ex. 192.168.1.1"
@@ -982,6 +1003,9 @@ export default {
   ],
   "E.g., bond0": [
     "T.ex. bond0"
+  ],
+  "E.g., br0": [
+    "T.ex., br0"
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
     "T.ex. downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
@@ -1016,6 +1040,12 @@ export default {
   "Enable mutual verification": [
     "Aktivera ömsesidig verifiering"
   ],
+  "Enabled": [
+    "Aktiverad"
+  ],
+  "Enabled with the system default settings": [
+    "Aktiverat med systemets standardinställningar"
+  ],
   "Encrypt the system": [
     "Kryptera systemet"
   ],
@@ -1040,23 +1070,26 @@ export default {
   "Encryption settings": [
     "Krypteringsinställningar"
   ],
-  "Enter a hostname.": [
-    "Ange ett värdnamn."
-  ],
   "Enter a name": [
     "Ange ett namn"
   ],
   "Enter a name for the volume group.": [
     "Ange ett namn för volymgrupp."
   ],
+  "Enter a registration code": [
+    "Ange en registreringskod"
+  ],
+  "Enter a server URL": [
+    "Ange en server URL"
+  ],
   "Enter or Tab to add": [
-    ""
+    "Enter eller Tabb för att lägga till"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    ""
+    "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenterna för att navigera"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    ""
+    "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenter för att navigera i poster, Escape för att avsluta"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1071,7 +1104,7 @@ export default {
     "Utgångsdatum"
   ],
   "Explicitly enabled with manual settings": [
-    ""
+    "Explicit aktiverat med manuella inställningar"
   ],
   "Ext2": [
     "Ext2"
@@ -1175,10 +1208,10 @@ export default {
     "Formaterar enheter"
   ],
   "Forward delay": [
-    ""
+    "Forward delay"
   ],
   "Forward delay must be between 4 and 30 seconds": [
-    ""
+    "Forward delay måste vara mellan 4 och 30 sekunder"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Heldiskkryptering (FDE) gör det möjligt att skydda informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
@@ -1214,10 +1247,10 @@ export default {
     "Grafiska skrivbordsmiljöer för systemet."
   ],
   "Hello time": [
-    ""
+    "Hallå tid"
   ],
   "Hello time must be between 1 and 10 seconds": [
-    ""
+    "Hallå tid måste vara mellan 1 och 10 sekunder"
   ],
   "Hide": [
     "Dölj"
@@ -1229,11 +1262,17 @@ export default {
   "Hostname": [
     "Värdnamn"
   ],
+  "Hostname cannot be changed after registration": [
+    "Värdnamn kan inte ändras efter registrering"
+  ],
   "Hostname could not be updated": [
     "Värdnamnet kunde inte uppdateras"
   ],
   "Hostname successfully updated": [
     "Värdnamnet har uppdaterats"
+  ],
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    ""
   ],
   "I have read and accept the [license] for %s": [
     "Jag har läst och accepterar [licensen] för %s"
@@ -1471,7 +1510,7 @@ export default {
     "Licensgodkännande krävs"
   ],
   "Listening and learning time (4-30 seconds).": [
-    ""
+    "Lyssnings och inlärningstid (4–30 sekunder)."
   ],
   "Loading": [
     "Laddar"
@@ -1543,10 +1582,10 @@ export default {
     "Maximal kanal"
   ],
   "Max message age": [
-    ""
+    "Maximal meddelanden ålder"
   ],
   "Max message age must be between 6 and 40 seconds": [
-    ""
+    "Maximal meddelandeålder måste vara mellan 6 och 40 sekunder"
   ],
   "Members": [
     "Medlemmar"
@@ -1697,6 +1736,9 @@ export default {
   "No additional patterns available": [
     "Inga ytterligare mönster tillgängliga"
   ],
+  "No changes detected. System settings are already up to date.": [
+    ""
+  ],
   "No connections match filters": [
     "Inga anslutningar matchar filtren"
   ],
@@ -1836,13 +1878,16 @@ export default {
     "Stöds inte (%s)"
   ],
   "Not used by this bridge": [
-    ""
+    "Används inte av denna brygga"
   ],
   "Offline": [
     "Offline"
   ],
   "On boot": [
     "Vid uppstart"
+  ],
+  "Once set, will [persist across reboots and network changes].": [
+    ""
   ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "Endast återanvända logiska volymer och utrymme som inte är tilldelat någon logisk volym kommer att användas."
@@ -1953,19 +1998,16 @@ export default {
     "Potentiell dataförlust som påverkar minst %s"
   ],
   "Priority": [
-    ""
+    "Prioritet"
   ],
   "Priority must be between 0 and 61440": [
-    ""
+    "Prioritet måste vara mellan 0 och 61440"
   ],
   "Proceeding may result in data loss": [
     "Att fortsätta kan leda till dataförlust"
   ],
   "Proceeding will delete existing data, including %s": [
     "Om du fortsätter raderas befintlig data, inklusive %s"
-  ],
-  "Product is already registered": [
-    "Produkten är redan registrerad"
   ],
   "Product not found": [
     "Produkt hittades inte"
@@ -1974,10 +2016,10 @@ export default {
     "Skydd för informationen som lagras i de nya filsystemen, inklusive data, program och systemfiler."
   ],
   "Protocol message interval (1-10 seconds).": [
-    ""
+    "Protokollmeddelandeintervall (1–10 sekunder)."
   ],
   "Protocol message retention time (6-40 seconds).": [
-    ""
+    "Protokollmeddelandets kvarhållningstid (6–40 sekunder)."
   ],
   "Provide authentication": [
     "Tillhandahåll autentisering"
@@ -2051,6 +2093,9 @@ export default {
   "Registration code": [
     "Registreringskod"
   ],
+  "Registration in progress": [
+    "Registrering pågår"
+  ],
   "Registration server": [
     "Registreringsserver"
   ],
@@ -2112,7 +2157,7 @@ export default {
     "Granska och installera"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
-    ""
+    "Val av rotbrygga (0-61440). [Lägre är högre prioritet]."
   ],
   "Root login with SSH key": [
     "Root-inloggning med SSH-nyckel"
@@ -2151,7 +2196,7 @@ export default {
     "SSID"
   ],
   "STP": [
-    ""
+    "STP"
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE kundcenter (SCC)"
@@ -2271,8 +2316,11 @@ export default {
   "Set DIAG on": [
     "Sätt DIAGNOS på"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "Ställ in ett permanent värdnamn som inte ändras med nätverksuppdateringar."
+  "Set NTP servers manually": [
+    ""
+  ],
+  "Set manually": [
+    ""
   ],
   "Settings": [
     "Inställningar"
@@ -2369,7 +2417,7 @@ export default {
     "Något gick fel"
   ],
   "Spanning Tree Protocol (STP)": [
-    ""
+    "Spanning Tree-protokoll (STP)"
   ],
   "Start configuring a basic installation": [
     "Börja konfigurera en grundläggande installation"
@@ -2382,9 +2430,6 @@ export default {
   ],
   "Static addresses and gateway": [
     "Statiska adresser och gateway"
-  ],
-  "Static hostname": [
-    "Statiskt värdnamn"
   ],
   "Status": [
     "Status"
@@ -2417,6 +2462,9 @@ export default {
   "Switch to another product": [
     "Ändra till en annan produkt",
     "Ändra till en av %d andra tillgängliga produkter"
+  ],
+  "System": [
+    ""
   ],
   "System Information": [
     "Systeminformation"
@@ -2586,8 +2634,11 @@ export default {
   "The password is weak": [
     "Lösenordet är svagt"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "Lösenordet kommer inte att behövas för att starta och komma åt data om TPM kan verifiera systemets integritet. TPM-försegling kräver att det nya systemet startas upp direkt vid första körningen."
+  "The product is already registered. Changes made here will not affect the hostname stored at the registration server.": [
+    ""
+  ],
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
+    ""
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Produkten hittades inte i förrådet så det är inte möjligt att fortsätta med installationen."
@@ -2690,9 +2741,6 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Det här tillägget är inte tillgängligt på servern. Be serveradministratören att spegla tillägget."
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Detta värdnamn är dynamiskt och kan ändras efter en omstart eller nätverksuppdatering, som konfigurerats av den lokala nätverksadministratören."
-  ],
   "This license is not available in %s.": [
     "Den här licensen är inte tillgänglig i %s."
   ],
@@ -2729,6 +2777,9 @@ export default {
   "TiB": [
     "TiB"
   ],
+  "Time Synchronization Servers": [
+    ""
+  ],
   "Time zone": [
     "Tidszon"
   ],
@@ -2736,7 +2787,7 @@ export default {
     "Tmpfs"
   ],
   "To change it, visit the [hostname] section before registering.": [
-    ""
+    "För att ändra det, besök [värdnamn] avsnittet innan du registrerar dig."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."
@@ -2774,17 +2825,11 @@ export default {
   "Unused space": [
     "Oanvänt utrymme"
   ],
-  "Up": [
-    "Uppe"
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "Upp till %s kan återställas genom att krympa enheten."
   ],
   "Update available disks and activate crypt devices": [
     "Uppdatera tillgängliga diskar och aktivera krypteringsenheter"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Att uppdatera värdnamnet nu eller senare kommer inte att ändra det för närvarande registrerade värdnamnet."
   ],
   "Upload": [
     "Ladda upp"
@@ -2900,9 +2945,6 @@ export default {
   "Use several devices": [
     "Använd flera enheter"
   ],
-  "Use static hostname": [
-    "Använd statiskt värdnamn"
-  ],
   "Use suggested username": [
     "Använd föreslaget användarnamn"
   ],
@@ -2937,6 +2979,18 @@ export default {
   "Using %d connections with %s": [
     "Använder %d anslutningar med %s"
   ],
+  "Using %s NTP servers, including [%s]": [
+    ""
+  ],
+  "Using %s as NTP server": [
+    ""
+  ],
+  "Using %s keyboard layout": [
+    "Använder %s tangentbordslayout"
+  ],
+  "Using [%s] keyboard layout": [
+    "Använder [%s] tangentbordslayout"
+  ],
   "Using a hashed password.": [
     "Använder ett hashat lösenord."
   ],
@@ -2958,11 +3012,11 @@ export default {
   "Using partition %s": [
     "Använder partition %s"
   ],
-  "Using transient hostname: %s": [
-    "Använder transient värdnamn: %s"
-  ],
   "VLAN": [
     "VLAN"
+  ],
+  "Value": [
+    ""
   ],
   "View license": [
     "Visa licens"

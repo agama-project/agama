@@ -51,6 +51,10 @@ export default {
     "%1$s, %2$s i [%3$d més]",
     "%1$s, %2$s i [%3$d més]"
   ],
+  "%d NTP server": [
+    "%d servidor NTP",
+    "%d servidors NTP"
+  ],
   "%d connections available": [
     "%d connexions disponibles"
   ],
@@ -368,8 +372,14 @@ export default {
   "At least one IPv6 address is required": [
     "Cal com a mínim una adreça IPv6"
   ],
+  "At least one NTP server is required": [
+    "Cal com a mínim un servidor NTP."
+  ],
   "At least one bond port is required": [
     "Cal com a mínim un port de vinculació."
+  ],
+  "At least one bridge port is required": [
+    "Cal com a mínim un port de pont."
   ],
   "At least one logical volume will be deleted": [
     "Se suprimirà com a mínim un volum lògic"
@@ -472,6 +482,12 @@ export default {
   ],
   "Bridge": [
     "Pont"
+  ],
+  "Bridge details": [
+    "Detalls del pont"
+  ],
+  "Bridge ports": [
+    "Ports de pont"
   ],
   "Btrfs": [
     "Btrfs"
@@ -664,8 +680,14 @@ export default {
   "Configure partition at %s": [
     "Configura la partició a %s"
   ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    "Configureu els servidors del Protocol d'hora de xarxa (NTP) que s'usen per establir la data i l'hora del sistema."
+  ],
   "Configure zFCP": [
     "Configuració de zFCP"
+  ],
+  "Configured as %s.": [
+    "Configurat com a %s."
   ],
   "Configured for installation only": [
     "Configuració només per a la instal·lació"
@@ -788,6 +810,9 @@ export default {
   "Current selection": [
     "Selecció actual"
   ],
+  "Current value: %s": [
+    "Valor actual: %s"
+  ],
   "Custom": [
     "Personalitzat"
   ],
@@ -822,7 +847,10 @@ export default {
     "Desactivat"
   ],
   "Default": [
-    ""
+    "Per defecte"
+  ],
+  "Default NTP": [
+    "NTP per defecte"
   ],
   "Default file system for %s": [
     "Sistema de fitxers per defecte per a %s"
@@ -905,6 +933,9 @@ export default {
   "Device name is required": [
     "El nom del dispositiu és obligatori."
   ],
+  "Disabled": [
+    "Inhabilitat"
+  ],
   "Discard": [
     "Descarta'l"
   ],
@@ -935,6 +966,9 @@ export default {
   "Disks": [
     "Discs"
   ],
+  "Dismiss and clear registration data": [
+    "Tanca i esborra les dades del registre"
+  ],
   "Do not activate": [
     "No l'activis"
   ],
@@ -953,9 +987,6 @@ export default {
   "Do not use": [
     "No l'usis"
   ],
-  "Down": [
-    "Avall"
-  ],
   "Download config": [
     "Baixa la configuració"
   ],
@@ -964,6 +995,9 @@ export default {
   ],
   "Download logs to troubleshoot or share with support.": [
     "Baixeu registres per solucionar problemes o compartir-los amb el suport tècnic."
+  ],
+  "E.g., %s": [
+    "P. ex., %s"
   ],
   "E.g., 192.168.1.1": [
     "P. ex., 192.168.1.1"
@@ -982,6 +1016,9 @@ export default {
   ],
   "E.g., bond0": [
     "P. ex., bond0"
+  ],
+  "E.g., br0": [
+    "P. ex., br0"
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
     "P. ex., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
@@ -1016,6 +1053,12 @@ export default {
   "Enable mutual verification": [
     "Activa la verificació mútua"
   ],
+  "Enabled": [
+    "Habilitat"
+  ],
+  "Enabled with the system default settings": [
+    "Habilitat amb la configuració predeterminada del sistema"
+  ],
   "Encrypt the system": [
     "Encripta el sistema"
   ],
@@ -1040,8 +1083,8 @@ export default {
   "Encryption settings": [
     "Configuració de l'encriptació"
   ],
-  "Enter a hostname.": [
-    "Introduïu un nom d'amfitrió."
+  "Enter a hostname value.": [
+    "Introduïu un valor de nom d'amfitrió."
   ],
   "Enter a name": [
     "Introduïu un nom"
@@ -1049,14 +1092,20 @@ export default {
   "Enter a name for the volume group.": [
     "Introduïu un nom per al grup de volums."
   ],
+  "Enter a registration code": [
+    "Introduïu un codi de registre"
+  ],
+  "Enter a server URL": [
+    "Introduïu l'URL d'un servidor"
+  ],
   "Enter or Tab to add": [
-    ""
+    "Premeu Retorn o Tabulador per afegir"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    ""
+    "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    ""
+    "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar per les entrades, Esc per sortir-ne"
   ],
   "Ethernet": [
     "Xarxa amb fil"
@@ -1071,7 +1120,7 @@ export default {
     "Data de venciment"
   ],
   "Explicitly enabled with manual settings": [
-    ""
+    "Habilitat explícitament amb configuració manual"
   ],
   "Ext2": [
     "Ext2"
@@ -1175,10 +1224,10 @@ export default {
     "Formatatge de dispositius"
   ],
   "Forward delay": [
-    ""
+    "Retard de reenviament"
   ],
   "Forward delay must be between 4 and 30 seconds": [
-    ""
+    "El retard de reenviament ha de ser d'entre 4 i 30 segons"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "L'encriptació de disc complet (FDE) permet protegir la informació emmagatzemada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
@@ -1214,10 +1263,10 @@ export default {
     "Entorns d'escriptori gràfics per al sistema."
   ],
   "Hello time": [
-    ""
+    "Temps de salutació"
   ],
   "Hello time must be between 1 and 10 seconds": [
-    ""
+    "El temps de salutació ha de ser entre 1 i 10 segons"
   ],
   "Hide": [
     "Amaga"
@@ -1229,11 +1278,23 @@ export default {
   "Hostname": [
     "Nom d'amfitrió"
   ],
+  "Hostname [will remain unchanged] across reboots and network changes.": [
+    "El nom de l'amfitrió [es mantindrà sense canvis] després de reiniciar i canviar de xarxa."
+  ],
+  "Hostname cannot be changed after registration": [
+    "No es pot canviar el nom de l'amfitrió després del registre."
+  ],
   "Hostname could not be updated": [
     "No s'ha pogut actualitzar el nom d'amfitrió"
   ],
+  "Hostname is dynamic and [may change after a reboot or network update].": [
+    "El nom de l'amfitrió és dinàmic i [pot canviar després d'un reinici o una actualització de la xarxa]."
+  ],
   "Hostname successfully updated": [
     "El nom d'amfitrió s'ha actualitzat correctament"
+  ],
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    "Noms d'amfitrió, adreces IP o noms de domini completament qualificats (FQDN). P. ex., pool.ntp.org"
   ],
   "I have read and accept the [license] for %s": [
     "He llegit i accepto la [llicència] de %s"
@@ -1374,6 +1435,9 @@ export default {
   "Invalid IPv6 gateway": [
     "Passarel·la IPv6 no vàlida"
   ],
+  "Invalid NTP server address": [
+    "Adreça de servidor NTP no vàlida"
+  ],
   "Invalid [zFCP] settings": [
     "Configuració de [zFCP] no vàlida"
   ],
@@ -1471,7 +1535,7 @@ export default {
     "Cal l'acceptació de la llicència"
   ],
   "Listening and learning time (4-30 seconds).": [
-    ""
+    "Temps d'escolta i aprenentatge (4-30 segons)."
   ],
   "Loading": [
     "Carregant"
@@ -1543,10 +1607,10 @@ export default {
     "Canal màxim"
   ],
   "Max message age": [
-    ""
+    "Edat màxima del missatge"
   ],
   "Max message age must be between 6 and 40 seconds": [
-    ""
+    "L'edat màxima del missatge ha de ser entre 6 i 40 segons"
   ],
   "Members": [
     "Membres"
@@ -1649,6 +1713,9 @@ export default {
   "Name": [
     "Nom"
   ],
+  "Name %s": [
+    "Nom: %s"
+  ],
   "Name is required": [
     "Cal el nom"
   ],
@@ -1696,6 +1763,9 @@ export default {
   ],
   "No additional patterns available": [
     "No hi ha patrons addicionals disponibles."
+  ],
+  "No changes detected. System settings are already up to date.": [
+    "No s'ha detectat cap canvi. La configuració del sistema ja està actualitzada."
   ],
   "No connections match filters": [
     "Cap connexió coincideix amb els filtres"
@@ -1836,13 +1906,16 @@ export default {
     "No compatible (%s)"
   ],
   "Not used by this bridge": [
-    ""
+    "No usat per aquest pont"
   ],
   "Offline": [
     "Fora de línia"
   ],
   "On boot": [
     "A l'arrencada"
+  ],
+  "Once set, will [persist across reboots and network changes].": [
+    "Un cop establert, [persistirà després de reiniciar i canviar de xarxa]."
   ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "Només s'usaran els volums lògics reutilitzats i l'espai no assignat a cap volum lògic."
@@ -1953,19 +2026,16 @@ export default {
     "Pèrdua potencial de dades que afecta com a mínim els sistemes següents: %s"
   ],
   "Priority": [
-    ""
+    "Prioritat"
   ],
   "Priority must be between 0 and 61440": [
-    ""
+    "La prioritat ha de ser entre 0 i 61440"
   ],
   "Proceeding may result in data loss": [
     "Si continueu, és possible que es perdin dades."
   ],
   "Proceeding will delete existing data, including %s": [
     "Si procediu, se'n suprimiran les dades existents, inclòs %s"
-  ],
-  "Product is already registered": [
-    "El producte ja està registrat."
   ],
   "Product not found": [
     "Producte no trobat"
@@ -1974,16 +2044,19 @@ export default {
     "Protecció de la informació desada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
   "Protocol message interval (1-10 seconds).": [
-    ""
+    "Interval de missatge de protocol (1-10 segons)."
   ],
   "Protocol message retention time (6-40 seconds).": [
-    ""
+    "Temps de retenció de missatge del protocol (6-40 segons)."
   ],
   "Provide authentication": [
     "Proporcioneu l'autenticació"
   ],
   "Provide its password to log in to the system.": [
     "Proporcioneu-ne la contrasenya per iniciar sessió al sistema."
+  ],
+  "Provided by the network": [
+    "Proporcionat per la xarxa"
   ],
   "Public SSH Key": [
     "Clau pública SSH"
@@ -2039,6 +2112,9 @@ export default {
   "Registered": [
     "Registrat"
   ],
+  "Registered hostname will not change": [
+    "El nom d'amfitrió registrat no canviarà"
+  ],
   "Registered without a code": [
     "Registrat sense codi"
   ],
@@ -2050,6 +2126,9 @@ export default {
   ],
   "Registration code": [
     "Codi de registre"
+  ],
+  "Registration in progress": [
+    "Registre en curs"
   ],
   "Registration server": [
     "Servidor de registre"
@@ -2112,7 +2191,7 @@ export default {
     "Revisa i instal·la"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
-    ""
+    "Selecció del pont d'arrel (0-61440). [Com més baixa és més alta la prioritat]."
   ],
   "Root login with SSH key": [
     "Inici de sessió d'arrel amb clau SSH"
@@ -2151,7 +2230,7 @@ export default {
     "SSID"
   ],
   "STP": [
-    ""
+    "STP"
   ],
   "SUSE Customer Center (SCC)": [
     "Centre de clients de SUSE (SCC)"
@@ -2265,14 +2344,20 @@ export default {
   "Server URL": [
     "URL del servidor"
   ],
+  "Server addresses": [
+    "Adreces del servidor"
+  ],
   "Set DIAG off": [
     "Desactiva la DIAG"
   ],
   "Set DIAG on": [
     "Activa la DIAG"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "Estableix un nom d'amfitrió permanent que no canviarà amb les actualitzacions per xarxa."
+  "Set NTP servers manually": [
+    "Estableix els servidors NTP manualment"
+  ],
+  "Set manually": [
+    "Establert manualment"
   ],
   "Settings": [
     "Configuració"
@@ -2344,6 +2429,9 @@ export default {
   "Some IPv6 addresses are invalid": [
     "Algunes adreces IPv6 no són vàlides"
   ],
+  "Some NTP server addresses are invalid": [
+    "Algunes adreces de servidor NTP no són vàlides."
+  ],
   "Some existing logical volumes may be shrunk": [
     "Es poden encongir alguns volums lògics existents"
   ],
@@ -2369,7 +2457,7 @@ export default {
     "Alguna cosa ha anat malament."
   ],
   "Spanning Tree Protocol (STP)": [
-    ""
+    "Protocol d'arbre d'expansió (STP)"
   ],
   "Start configuring a basic installation": [
     "Comenceu a configurar una instal·lació bàsica"
@@ -2380,11 +2468,11 @@ export default {
   "Startup": [
     "Inici"
   ],
+  "Static": [
+    "Estàtic"
+  ],
   "Static addresses and gateway": [
     "Adreces estàtiques i passarel·la"
-  ],
-  "Static hostname": [
-    "Nom d'amfitrió estàtic"
   ],
   "Status": [
     "Estat"
@@ -2418,8 +2506,17 @@ export default {
     "Canvieu a un altre producte",
     "Canvieu a un dels %d productes disponibles"
   ],
+  "System": [
+    "Sistema"
+  ],
   "System Information": [
     "Informació del sistema"
+  ],
+  "System settings could not be updated": [
+    "No s'ha pogut actualitzar la configuració del sistema."
+  ],
+  "System settings successfully updated": [
+    "La configuració del sistema s'ha actualitzat correctament."
   ],
   "System will have no network connections": [
     "El sistema no tindrà connexions de xarxa."
@@ -2555,6 +2652,9 @@ export default {
   "The following partitions will be created or mounted": [
     "Es crearan o muntaran les particions següents:"
   ],
+  "The hostname could not be saved": [
+    "No s'ha pogut desar el nom d'amfitrió."
+  ],
   "The initiator name cannot be blank": [
     "El nom de l'iniciador no pot estar en blanc"
   ],
@@ -2586,8 +2686,11 @@ export default {
   "The password is weak": [
     "La contrasenya és feble"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "La contrasenya no caldrà per arrencar i accedir a les dades si el TPM pot verificar la integritat del sistema. El segellat de TPM requereix que el nou sistema s'iniciï directament a la primera execució."
+  "The product is already registered. Changes made here will not affect the hostname stored at the registration server.": [
+    "El producte ja està registrat. Els canvis fets aquí no afectaran el nom d'amfitrió desat al servidor de registre."
+  ],
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
+    "El producte ja està registrat. Els canvis de nom d'amfitrió no afectaran el nom d'amfitrió desat al servidor de registre."
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "No s'ha trobat el producte als repositoris, per la qual cosa no és possible continuar la instal·lació."
@@ -2690,8 +2793,8 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Aquesta extensió no està disponible al servidor. Demaneu a l'administrador del servidor que repliqui l'extensió."
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Aquest nom d'amfitrió és dinàmic i pot canviar després d'un reinici o una actualització per xarxa, tal com el configura l'administrador de la xarxa local."
+  "This hostname is dynamic and [may change after a reboot or network update], as configured by the local network administrator.": [
+    "Aquest nom d'amfitrió és dinàmic i [pot canviar després d'un reinici o una actualització de xarxa], tal com ho ha configurat l'administrador de la xarxa local."
   ],
   "This license is not available in %s.": [
     "Aquesta llicència no està disponible en %s."
@@ -2729,6 +2832,9 @@ export default {
   "TiB": [
     "TiB"
   ],
+  "Time Synchronization Servers": [
+    "Servidors de sincronització d'hora"
+  ],
   "Time zone": [
     "Zona horària"
   ],
@@ -2736,10 +2842,13 @@ export default {
     "Tmpfs"
   ],
   "To change it, visit the [hostname] section before registering.": [
-    ""
+    "Per canviar-ho, visiteu la secció [amfitrió] abans del registre."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Per garantir que el sistema nou pugui arrencar, és possible que l'instal·lador hagi de crear o configurar algunes particions al disc adequat."
+  ],
+  "Transient": [
+    "Transitori"
   ],
   "Try to activate again": [
     "Torna a provar l'activació"
@@ -2774,17 +2883,11 @@ export default {
   "Unused space": [
     "Espai sense ús"
   ],
-  "Up": [
-    "Amunt"
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "Es poden recuperar fins a %s encongint el dispositiu."
   ],
   "Update available disks and activate crypt devices": [
     "Actualitza els discs disponibles i activa els dispositius d'encriptació"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Actualitzar el nom d'amfitrió ara o més tard no canviarà el nom d'amfitrió registrat actualment."
   ],
   "Upload": [
     "Carrega"
@@ -2894,14 +2997,14 @@ export default {
   "Use password": [
     "Usa contrasenya"
   ],
+  "Use product's default NTP servers": [
+    "Usa els servidors NTP predeterminats del producte"
+  ],
   "Use public SSH Key": [
     "Usa una clau pública SSH"
   ],
   "Use several devices": [
     "Usa diversos dispositius"
-  ],
-  "Use static hostname": [
-    "Usa un nom d'amfitrió estàtic"
   ],
   "Use suggested username": [
     "Usa el nom d'usuari suggerit"
@@ -2937,6 +3040,18 @@ export default {
   "Using %d connections with %s": [
     "S'usen %d connexions amb %s"
   ],
+  "Using %s NTP servers, including [%s]": [
+    "S'usen %s servidors NTP, incloent-hi [%s]"
+  ],
+  "Using %s as NTP server": [
+    "S'usa %s com a servidor NTP"
+  ],
+  "Using %s keyboard layout": [
+    "S'usa la disposició de teclat per a [%s]"
+  ],
+  "Using [%s] keyboard layout": [
+    "S'usa ls disposició de teclat per a [%s]"
+  ],
   "Using a hashed password.": [
     "S'usa una contrasenya amb funció resum."
   ],
@@ -2958,11 +3073,14 @@ export default {
   "Using partition %s": [
     "S'usa la partició %s"
   ],
-  "Using transient hostname: %s": [
-    "S'usa un nom d'amfitrió transitori: %s"
+  "Using transient name, which may change after reboot or network changes": [
+    "S'usa un nom transitori, que pot canviar després d'un reinici o de canvi de xarxa."
   ],
   "VLAN": [
     "VLAN"
+  ],
+  "Value": [
+    "Valor"
   ],
   "View license": [
     "Mostra la llicència"

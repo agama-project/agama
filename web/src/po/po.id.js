@@ -645,6 +645,9 @@ export default {
   "Configure partition at %s": [
     "Konfigurasikan partisi di %s"
   ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    ""
+  ],
   "Configure zFCP": [
     "Konfigurasikan zFCP"
   ],
@@ -804,6 +807,9 @@ export default {
   "Default": [
     ""
   ],
+  "Default NTP": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistem berkas default untuk %s"
   ],
@@ -933,9 +939,6 @@ export default {
   "Do not use": [
     "Jangan gunakan"
   ],
-  "Down": [
-    "Nonaktif"
-  ],
   "Download config": [
     "Unduh konfigurasi"
   ],
@@ -1019,9 +1022,6 @@ export default {
   ],
   "Encryption settings": [
     "Pengaturan enkripsi"
-  ],
-  "Enter a hostname.": [
-    "Masukkan nama host."
   ],
   "Enter a name": [
     "Masukkan nama"
@@ -1211,6 +1211,9 @@ export default {
   ],
   "Hostname successfully updated": [
     "Nama host telah diperbarui dengan sukses"
+  ],
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    ""
   ],
   "I have read and accept the [license] for %s": [
     "Saya telah membaca dan menerima [lisensi] untuk %s"
@@ -1671,6 +1674,9 @@ export default {
   "No additional patterns available": [
     "Tidak ada pola tambahan yang tersedia"
   ],
+  "No changes detected. System settings are already up to date.": [
+    ""
+  ],
   "No connections match filters": [
     "Tidak ada koneksi yang cocok dengan filter"
   ],
@@ -1818,6 +1824,9 @@ export default {
   "On boot": [
     "Saat boot"
   ],
+  "Once set, will [persist across reboots and network changes].": [
+    ""
+  ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
     "Hanya volume logis yang digunakan kembali dan ruang yang tidak ditetapkan ke volume logis mana pun yang akan digunakan."
   ],
@@ -1937,9 +1946,6 @@ export default {
   ],
   "Proceeding will delete existing data, including %s": [
     "Melanjutkan akan menghapus data yang ada, termasuk %s"
-  ],
-  "Product is already registered": [
-    "Produk sudah terdaftar"
   ],
   "Product not found": [
     "Produk tidak ditemukan"
@@ -2244,8 +2250,11 @@ export default {
   "Set DIAG on": [
     "Aktifkan DIAG"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "Tetapkan nama host permanen yang tidak akan berubah saat pembaruan jaringan."
+  "Set NTP servers manually": [
+    ""
+  ],
+  "Set manually": [
+    ""
   ],
   "Settings": [
     "Pengaturan"
@@ -2355,9 +2364,6 @@ export default {
   "Static addresses and gateway": [
     "Alamat statis dan gateway"
   ],
-  "Static hostname": [
-    "Nama host statis"
-  ],
   "Status": [
     "Status"
   ],
@@ -2387,6 +2393,9 @@ export default {
   ],
   "Switch to another product": [
     "Beralih ke salah satu dari %d produk yang tersedia"
+  ],
+  "System": [
+    ""
   ],
   "System Information": [
     "Informasi sistem"
@@ -2550,8 +2559,11 @@ export default {
   "The password is weak": [
     "Kata sandi ini lemah"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem. Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung saat pertama kali dijalankan."
+  "The product is already registered. Changes made here will not affect the hostname stored at the registration server.": [
+    ""
+  ],
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
+    ""
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Produk tidak ditemukan di repositori sehingga tidak memungkinkan untuk melanjutkan instalasi."
@@ -2652,9 +2664,6 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Ekstensi ini tidak tersedia di server. Mintalah administrator server untuk menyalin ekstensi tersebut."
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Nama host ini bersifat dinamis dan dapat berubah setelah reboot atau pembaruan jaringan, sesuai dengan konfigurasi yang ditetapkan oleh administrator jaringan lokal."
-  ],
   "This license is not available in %s.": [
     "Lisensi ini tidak tersedia di %s."
   ],
@@ -2691,6 +2700,9 @@ export default {
   "TiB": [
     "TiB"
   ],
+  "Time Synchronization Servers": [
+    ""
+  ],
   "Time zone": [
     "Zona waktu"
   ],
@@ -2702,6 +2714,9 @@ export default {
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
+  ],
+  "Transient": [
+    ""
   ],
   "Try to activate again": [
     "Coba aktifkan lagi"
@@ -2736,17 +2751,11 @@ export default {
   "Unused space": [
     "Ruang tidak terpakai"
   ],
-  "Up": [
-    "Aktif"
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "Hingga %s dapat dipulihkan dengan mengecilkan perangkat."
   ],
   "Update available disks and activate crypt devices": [
     "Perbarui disk yang tersedia dan aktifkan perangkat enkripsi"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Mengubah nama host sekarang atau nanti tidak akan mengubah nama host yang saat ini terdaftar."
   ],
   "Upload": [
     "Unggah"
@@ -2862,9 +2871,6 @@ export default {
   "Use several devices": [
     "Gunakan beberapa perangkat"
   ],
-  "Use static hostname": [
-    "Gunakan nama host statis"
-  ],
   "Use suggested username": [
     "Gunakan nama pengguna yang disarankan"
   ],
@@ -2898,6 +2904,12 @@ export default {
   "Using %d connections with %s": [
     "Menggunakan %d koneksi dengan %s"
   ],
+  "Using %s NTP servers, including [%s]": [
+    ""
+  ],
+  "Using %s as NTP server": [
+    ""
+  ],
   "Using a hashed password.": [
     "Menggunakan kata sandi yang dienkripsi."
   ],
@@ -2919,11 +2931,11 @@ export default {
   "Using partition %s": [
     "Menggunakan partisi %s"
   ],
-  "Using transient hostname: %s": [
-    "Menggunakan nama host sementara: %s"
-  ],
   "VLAN": [
     "VLAN"
+  ],
+  "Value": [
+    ""
   ],
   "View license": [
     "Lihat lisensi"
