@@ -107,7 +107,7 @@ export default {
     "ქმედებები"
   ],
   "Activate": [
-    "აქტივაცია"
+    "გააქტიურება"
   ],
   "Activate and format DASD devices": [
     "DASD მოწყობილობების გააქტიურება და დაფორმატება"
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    "მაგ: %s"
+    "მაგალითი: %s"
   ],
   "Excellent signal": [
     "ძალიან კარგი სიგნალი"
