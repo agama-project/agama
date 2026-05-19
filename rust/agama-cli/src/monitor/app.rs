@@ -24,7 +24,6 @@ use agama_lib::{
 };
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
-use gettextrs::gettext;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
 use std::{collections::HashMap, io, time::Duration};
@@ -32,9 +31,9 @@ use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
 
-/// Application messages.
+/// Application messages (internal).
 #[derive(Clone, Debug)]
-pub enum Message {
+enum Message {
     /// Status update from monitor
     StatusUpdate(InstallationStatus),
     /// Monitor finished (installation became idle)
@@ -45,6 +44,23 @@ pub enum Message {
     Error(String),
     /// Terminal event.
     Terminal(Event),
+}
+
+/// Errors that can occur while running the monitor.
+#[derive(Debug, thiserror::Error)]
+pub enum MonitorError {
+    /// Connection to the server was closed.
+    #[error("Connection to the server was closed")]
+    Disconnected,
+    /// An error occurred during monitoring.
+    #[error("{0}")]
+    MonitoringError(String),
+    /// I/O error.
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
+    /// Other error.
+    #[error(transparent)]
+    Other(#[from] anyhow::Error),
 }
 
 // FIXME: find a better place
@@ -98,7 +114,6 @@ impl MonitorAppBuilder {
             status,
             theme: self.theme,
             product_names,
-            stop_message: None,
         })
     }
 
@@ -123,19 +138,12 @@ pub struct MonitorApp {
     product_names: HashMap<String, String>,
     /// UI color theme
     theme: Theme,
-    /// Stop message (if stopped)
-    stop_message: Option<Message>,
 }
 
 impl MonitorApp {
     /// Updates the installation status.
     fn update_status(&mut self, new_status: InstallationStatus) {
         self.status = new_status;
-    }
-
-    /// Returns the message that caused stopping, if stopped.
-    pub fn stop_message(&self) -> Option<&Message> {
-        self.stop_message.as_ref()
     }
 
     /// Runs the monitor TUI event loop.
@@ -146,11 +154,14 @@ impl MonitorApp {
     ///
     /// The main loop reacts to events from both sources.
     ///
+    /// Returns `Ok(())` when monitoring finishes normally (idle or user quit).
+    /// Returns `Err(MonitorError)` when an error occurs (disconnection or monitoring error).
+    ///
     /// * `terminal` - The terminal to draw on
     pub async fn run(
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
-    ) -> Result<()> {
+    ) -> Result<(), MonitorError> {
         let (tx, mut rx) = mpsc::channel(16);
 
         // Take ownership of the monitor updates receiver
@@ -194,42 +205,47 @@ impl MonitorApp {
         });
 
         // Main event loop
-        while self.stop_message.is_none() {
+        loop {
             terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
 
-            let message = rx
-                .recv()
-                .await
-                .ok_or(anyhow!(gettext("Lost the connection with the server.")))?;
+            let message = rx.recv().await.ok_or(MonitorError::Disconnected)?;
 
             match message {
                 Message::StatusUpdate(status) => self.update_status(status),
-                msg @ Message::Finished | msg @ Message::Disconnected | msg @ Message::Error(_) => {
-                    self.stop_message = Some(msg);
+                Message::Finished => {
+                    terminal_handle.abort();
+                    return Ok(());
+                }
+                Message::Disconnected => {
+                    terminal_handle.abort();
+                    return Err(MonitorError::Disconnected);
+                }
+                Message::Error(e) => {
+                    terminal_handle.abort();
+                    return Err(MonitorError::MonitoringError(e));
                 }
                 Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
-                        self.handle_key_event(key_event);
+                        if self.handle_key_event(key_event) {
+                            terminal_handle.abort();
+                            return Ok(());
+                        }
                     }
                 }
             }
         }
-
-        terminal_handle.abort();
-        Ok(())
     }
 
     /// Handle terminal key events.
-    fn handle_key_event(&mut self, key_event: KeyEvent) {
+    /// Returns true if the application should exit.
+    fn handle_key_event(&mut self, key_event: KeyEvent) -> bool {
         if key_event.kind != KeyEventKind::Press {
-            return;
+            return false;
         }
 
         match (key_event.code, key_event.modifiers) {
-            (KeyCode::Char('q'), _) | (KeyCode::Esc, _) => {
-                self.stop_message = Some(Message::Finished);
-            }
-            _ => {}
+            (KeyCode::Char('q'), _) | (KeyCode::Esc, _) => true,
+            _ => false,
         }
     }
 }
