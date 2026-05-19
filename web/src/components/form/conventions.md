@@ -313,7 +313,7 @@ Examples:
 - `network/connection-form/`
 - `system/system-form/`
 - `product/registration-form/`
-- `software/patterns-selection/`
+- `software/patterns-form/`
 
 ### File Naming
 
@@ -339,6 +339,17 @@ Examples:
 All form data concerns live in a single `fields.ts` file:
 
 ```typescript
+import { formOptions } from "@tanstack/react-form";
+import type {
+  FieldsValidationResult,
+  ValidationResult,
+} from "~/components/form/validation-helpers";
+import {
+  requiredString,
+  optionalIntRange,
+} from "~/components/form/validation-helpers";
+import { _ } from "~/i18n";
+
 /** Types */
 type FormFields = {
   field1: string;
@@ -361,12 +372,12 @@ const defaultValues: FormFields = {
 export const defaultOptions = formOptions({ defaultValues });
 
 /** Validation */
-const validateGroup = (fields: FormFields): Partial<Record<keyof FormFields, string> Record<string, string | undefined> => ({
+const validateGroup = (fields: FormFields): FieldsValidationResult<FormFields> => ({
   field1: requiredString(fields.field1, _("Field 1 is required")),
   field2: optionalIntRange(fields.field2, 0, 100, _("Must be 0-100")),
 });
 
-export function validate(fields: FormFields): { fields?: Partial<Record<keyof FormFields, string>> } | undefined {
+export function validate(fields: FormFields): ValidationResult<FormFields> {
   const fieldErrors = {
     ...validateGroup(fields),
     // ...other validators
