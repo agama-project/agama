@@ -111,6 +111,12 @@ To build a SLE image using the internal OBS instance run
 make build OBS_API=https://api.suse.de OBS_PROJECT=Devel:YaST:Agama:Head OBS_PACKAGE=agama-installer FLAVOR=SUSE_SLE_16
 ```
 
+To build the SLE-16.0 maintenance image (for QU) run
+
+```shell
+make build OBS_API=https://api.suse.de OBS_PROJECT=Devel:YaST:Agama:Maintenance:SLE-16 OBS_PACKAGE=agama-installer FLAVOR=SUSE_SLE_16
+```
+
 #### Using locally built RPM packages
 
 If you have a locally built RPM which you want to include in the ISO instead of the RPM from the
