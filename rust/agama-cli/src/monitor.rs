@@ -43,7 +43,7 @@ use std::io::{self, IsTerminal};
 
 use theme::Theme;
 
-use crate::monitor::app::MonitorAppBuilder;
+use crate::monitor::app::{Message, MonitorAppBuilder};
 
 /// Sets up the terminal for fullscreen TUI mode
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
@@ -153,20 +153,20 @@ pub async fn run(
 
     if let Err(error) = result {
         eprintln!("Error running the monitor: {error}");
-    } else if let Some(update) = app.stop_update() {
+    } else if let Some(message) = app.stop_message() {
         // Report why monitoring stopped
-        match update {
-            MonitorUpdate::Finished => {
+        match message {
+            Message::Finished => {
                 // Silent success - finished is expected when stop_on_idle is true
             }
-            MonitorUpdate::Disconnected => {
+            Message::Disconnected => {
                 eprintln!("Connection to the server was closed.");
             }
-            MonitorUpdate::Error(e) => {
+            Message::Error(e) => {
                 eprintln!("{e}");
             }
-            MonitorUpdate::Status(_) => {
-                // Should not happen - status updates don't cause stopping
+            Message::StatusUpdate(_) | Message::Terminal(_) => {
+                // Should not happen - these don't cause stopping
             }
         }
     }

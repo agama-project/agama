@@ -33,7 +33,8 @@ use tokio::sync::mpsc;
 use super::{theme::Theme, ui};
 
 /// Application messages.
-enum Message {
+#[derive(Clone, Debug)]
+pub enum Message {
     /// Status update from monitor
     StatusUpdate(InstallationStatus),
     /// Monitor finished (installation became idle)
@@ -97,7 +98,7 @@ impl MonitorAppBuilder {
             status,
             theme: self.theme,
             product_names,
-            stop_update: None,
+            stop_message: None,
         })
     }
 
@@ -122,8 +123,8 @@ pub struct MonitorApp {
     product_names: HashMap<String, String>,
     /// UI color theme
     theme: Theme,
-    /// Stop update (if stopped)
-    stop_update: Option<MonitorUpdate>,
+    /// Stop message (if stopped)
+    stop_message: Option<Message>,
 }
 
 impl MonitorApp {
@@ -132,9 +133,9 @@ impl MonitorApp {
         self.status = new_status;
     }
 
-    /// Returns the monitor update that caused stopping, if stopped.
-    pub fn stop_update(&self) -> Option<&MonitorUpdate> {
-        self.stop_update.as_ref()
+    /// Returns the message that caused stopping, if stopped.
+    pub fn stop_message(&self) -> Option<&Message> {
+        self.stop_message.as_ref()
     }
 
     /// Runs the monitor TUI event loop.
@@ -193,7 +194,7 @@ impl MonitorApp {
         });
 
         // Main event loop
-        while self.stop_update.is_none() {
+        while self.stop_message.is_none() {
             terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
 
             let message = rx
@@ -203,14 +204,8 @@ impl MonitorApp {
 
             match message {
                 Message::StatusUpdate(status) => self.update_status(status),
-                Message::Finished => {
-                    self.stop_update = Some(MonitorUpdate::Finished);
-                }
-                Message::Disconnected => {
-                    self.stop_update = Some(MonitorUpdate::Disconnected);
-                }
-                Message::Error(e) => {
-                    self.stop_update = Some(MonitorUpdate::Error(e));
+                msg @ Message::Finished | msg @ Message::Disconnected | msg @ Message::Error(_) => {
+                    self.stop_message = Some(msg);
                 }
                 Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
@@ -232,7 +227,7 @@ impl MonitorApp {
 
         match (key_event.code, key_event.modifiers) {
             (KeyCode::Char('q'), _) | (KeyCode::Esc, _) => {
-                self.stop_update = Some(MonitorUpdate::Finished);
+                self.stop_message = Some(Message::Finished);
             }
             _ => {}
         }
