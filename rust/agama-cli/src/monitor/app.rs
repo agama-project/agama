@@ -20,7 +20,7 @@
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{InstallationStatus, Monitor},
+    monitor::{InstallationStatus, Monitor, MonitorUpdate},
 };
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
@@ -37,8 +37,12 @@ use super::{theme::Theme, ui};
 enum Message {
     /// Status update from monitor
     StatusUpdate(InstallationStatus),
-    /// Monitor has finished (channel closed)
-    MonitorFinished,
+    /// Monitor finished (installation became idle)
+    Finished,
+    /// Monitor disconnected (connection lost)
+    Disconnected,
+    /// Monitor stopped with error
+    Error(String),
     /// Terminal event.
     Terminal(Event),
 }
@@ -95,6 +99,7 @@ impl MonitorAppBuilder {
             theme: self.theme,
             exit: false,
             product_names,
+            stop_info: None,
         })
     }
 
@@ -109,10 +114,21 @@ impl MonitorAppBuilder {
     }
 }
 
+/// Stop information
+#[derive(Clone, Debug)]
+pub enum StopInfo {
+    /// Installation became idle
+    Finished,
+    /// Connection was lost
+    Disconnected,
+    /// An error occurred
+    Error(String),
+}
+
 /// Application state for the monitor TUI
 pub struct MonitorApp {
-    /// Status updates receiver
-    updates: broadcast::Receiver<InstallationStatus>,
+    /// Monitor updates receiver
+    updates: broadcast::Receiver<MonitorUpdate>,
     /// Current installation status
     status: InstallationStatus,
     /// Product names
@@ -121,12 +137,19 @@ pub struct MonitorApp {
     theme: Theme,
     /// Exit in the next iteration
     exit: bool,
+    /// Stop information (if stopped)
+    stop_info: Option<StopInfo>,
 }
 
 impl MonitorApp {
     /// Updates the installation status.
     fn update_status(&mut self, new_status: InstallationStatus) {
         self.status = new_status;
+    }
+
+    /// Returns information about why the monitor stopped, if it stopped.
+    pub fn stop_info(&self) -> Option<&StopInfo> {
+        self.stop_info.as_ref()
     }
 
     /// Runs the monitor TUI event loop.
@@ -147,23 +170,24 @@ impl MonitorApp {
         // Resubscribe to get a new receiver for the task
         let mut status_updates = self.updates.resubscribe();
 
-        // Spawn task to forward status updates
+        // Spawn task to forward monitor updates
         let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
             loop {
                 match status_updates.recv().await {
-                    Ok(status) => {
-                        if tx_monitor
-                            .send(Message::StatusUpdate(status))
-                            .await
-                            .is_err()
-                        {
+                    Ok(update) => {
+                        let message = match update {
+                            MonitorUpdate::Status(status) => Message::StatusUpdate(status),
+                            MonitorUpdate::Finished => Message::Finished,
+                            MonitorUpdate::Disconnected => Message::Disconnected,
+                            MonitorUpdate::Error(e) => Message::Error(e),
+                        };
+                        if tx_monitor.send(message).await.is_err() {
                             break;
                         }
                     }
                     Err(_) => {
-                        // Channel closed - monitoring finished
-                        _ = tx_monitor.send(Message::MonitorFinished).await;
+                        // Channel closed unexpectedly
                         break;
                     }
                 }
@@ -199,7 +223,18 @@ impl MonitorApp {
 
             match message {
                 Message::StatusUpdate(status) => self.update_status(status),
-                Message::MonitorFinished => self.exit = true,
+                Message::Finished => {
+                    self.stop_info = Some(StopInfo::Finished);
+                    self.exit = true;
+                }
+                Message::Disconnected => {
+                    self.stop_info = Some(StopInfo::Disconnected);
+                    self.exit = true;
+                }
+                Message::Error(e) => {
+                    self.stop_info = Some(StopInfo::Error(e));
+                    self.exit = true;
+                }
                 Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
                         self.handle_key_event(key_event);

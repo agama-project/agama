@@ -30,7 +30,7 @@ mod ui;
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::Monitor,
+    monitor::{Monitor, MonitorUpdate},
 };
 use anyhow::Result;
 use crossterm::{
@@ -43,7 +43,7 @@ use std::io::{self, IsTerminal};
 
 use theme::Theme;
 
-use crate::monitor::app::MonitorAppBuilder;
+use crate::monitor::app::{MonitorAppBuilder, StopInfo};
 
 /// Sets up the terminal for fullscreen TUI mode
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
@@ -86,18 +86,33 @@ async fn run_headless(
     println!("Agama monitor started (headless mode)");
     println!("Initial stage: {:?}", status.status.stage);
 
-    // Listen to updates until channel closes
-    while let Ok(status) = updates.recv().await {
-        println!(
-            "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
-            status.status.stage,
-            status.status.progresses.len(),
-            status.issues.len(),
-            status.questions.len()
-        );
+    // Listen to updates
+    while let Ok(update) = updates.recv().await {
+        match update {
+            MonitorUpdate::Status(status) => {
+                println!(
+                    "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
+                    status.status.stage,
+                    status.status.progresses.len(),
+                    status.issues.len(),
+                    status.questions.len()
+                );
+            }
+            MonitorUpdate::Finished => {
+                println!("Monitoring finished: installation became idle");
+                break;
+            }
+            MonitorUpdate::Disconnected => {
+                println!("Monitoring finished: connection was closed");
+                break;
+            }
+            MonitorUpdate::Error(e) => {
+                println!("Monitoring finished with error: {}", e);
+                break;
+            }
+        }
     }
 
-    println!("Monitoring finished");
     Ok(())
 }
 
@@ -139,6 +154,19 @@ pub async fn run(
 
     if let Err(error) = result {
         eprintln!("Error running the monitor: {error}");
+    } else if let Some(info) = app.stop_info() {
+        // Report why monitoring stopped
+        match info {
+            StopInfo::Finished => {
+                // Silent success - finished is expected when stop_on_idle is true
+            }
+            StopInfo::Disconnected => {
+                eprintln!("Connection to the server was closed");
+            }
+            StopInfo::Error(e) => {
+                eprintln!("Monitoring stopped with error: {}", e);
+            }
+        }
     }
 
     // Forces crossterm loop to finish.
