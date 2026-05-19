@@ -87,7 +87,7 @@ async fn run_headless(
     println!("Initial stage: {:?}", status.status.stage);
 
     // Listen to updates
-    while let Ok(update) = updates.recv().await {
+    while let Some(update) = updates.recv().await {
         match update {
             MonitorUpdate::Status(status) => {
                 println!(

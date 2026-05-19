@@ -28,7 +28,6 @@ use gettextrs::gettext;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
 use std::{collections::HashMap, io, time::Duration};
-use tokio::sync::broadcast;
 use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
@@ -94,7 +93,7 @@ impl MonitorAppBuilder {
             Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
         Ok(MonitorApp {
-            updates,
+            updates: Some(updates),
             status,
             theme: self.theme,
             exit: false,
@@ -127,8 +126,8 @@ pub enum StopInfo {
 
 /// Application state for the monitor TUI
 pub struct MonitorApp {
-    /// Monitor updates receiver
-    updates: broadcast::Receiver<MonitorUpdate>,
+    /// Monitor updates receiver (taken when run() is called)
+    updates: Option<mpsc::Receiver<MonitorUpdate>>,
     /// Current installation status
     status: InstallationStatus,
     /// Product names
@@ -167,15 +166,18 @@ impl MonitorApp {
     ) -> Result<()> {
         let (tx, mut rx) = mpsc::channel(16);
 
-        // Resubscribe to get a new receiver for the task
-        let mut status_updates = self.updates.resubscribe();
+        // Take ownership of the monitor updates receiver
+        let mut status_updates = self
+            .updates
+            .take()
+            .ok_or(anyhow!("Monitor receiver already taken"))?;
 
         // Spawn task to forward monitor updates
         let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
             loop {
                 match status_updates.recv().await {
-                    Ok(update) => {
+                    Some(update) => {
                         let message = match update {
                             MonitorUpdate::Status(status) => Message::StatusUpdate(status),
                             MonitorUpdate::Finished => Message::Finished,
@@ -186,8 +188,8 @@ impl MonitorApp {
                             break;
                         }
                     }
-                    Err(_) => {
-                        // Channel closed unexpectedly
+                    None => {
+                        // Channel closed
                         break;
                     }
                 }
