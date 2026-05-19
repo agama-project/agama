@@ -43,7 +43,7 @@ use std::io::{self, IsTerminal};
 
 use theme::Theme;
 
-use crate::monitor::app::{MonitorAppBuilder, StopInfo};
+use crate::monitor::app::MonitorAppBuilder;
 
 /// Sets up the terminal for fullscreen TUI mode
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
@@ -99,15 +99,14 @@ async fn run_headless(
                 );
             }
             MonitorUpdate::Finished => {
-                println!("Monitoring finished: installation became idle");
                 break;
             }
             MonitorUpdate::Disconnected => {
-                println!("Monitoring finished: connection was closed");
+                eprintln!("Connection to the server was closed.");
                 break;
             }
             MonitorUpdate::Error(e) => {
-                println!("Monitoring finished with error: {}", e);
+                eprintln!("{e}");
                 break;
             }
         }
@@ -154,17 +153,20 @@ pub async fn run(
 
     if let Err(error) = result {
         eprintln!("Error running the monitor: {error}");
-    } else if let Some(info) = app.stop_info() {
+    } else if let Some(update) = app.stop_update() {
         // Report why monitoring stopped
-        match info {
-            StopInfo::Finished => {
+        match update {
+            MonitorUpdate::Finished => {
                 // Silent success - finished is expected when stop_on_idle is true
             }
-            StopInfo::Disconnected => {
-                eprintln!("Connection to the server was closed");
+            MonitorUpdate::Disconnected => {
+                eprintln!("Connection to the server was closed.");
             }
-            StopInfo::Error(e) => {
-                eprintln!("Monitoring stopped with error: {}", e);
+            MonitorUpdate::Error(e) => {
+                eprintln!("{e}");
+            }
+            MonitorUpdate::Status(_) => {
+                // Should not happen - status updates don't cause stopping
             }
         }
     }

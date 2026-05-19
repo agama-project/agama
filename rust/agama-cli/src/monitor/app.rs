@@ -98,7 +98,7 @@ impl MonitorAppBuilder {
             theme: self.theme,
             exit: false,
             product_names,
-            stop_info: None,
+            stop_update: None,
         })
     }
 
@@ -113,17 +113,6 @@ impl MonitorAppBuilder {
     }
 }
 
-/// Stop information
-#[derive(Clone, Debug)]
-pub enum StopInfo {
-    /// Installation became idle
-    Finished,
-    /// Connection was lost
-    Disconnected,
-    /// An error occurred
-    Error(String),
-}
-
 /// Application state for the monitor TUI
 pub struct MonitorApp {
     /// Monitor updates receiver (taken when run() is called)
@@ -136,8 +125,8 @@ pub struct MonitorApp {
     theme: Theme,
     /// Exit in the next iteration
     exit: bool,
-    /// Stop information (if stopped)
-    stop_info: Option<StopInfo>,
+    /// Stop update (if stopped)
+    stop_update: Option<MonitorUpdate>,
 }
 
 impl MonitorApp {
@@ -146,9 +135,9 @@ impl MonitorApp {
         self.status = new_status;
     }
 
-    /// Returns information about why the monitor stopped, if it stopped.
-    pub fn stop_info(&self) -> Option<&StopInfo> {
-        self.stop_info.as_ref()
+    /// Returns the monitor update that caused stopping, if stopped.
+    pub fn stop_update(&self) -> Option<&MonitorUpdate> {
+        self.stop_update.as_ref()
     }
 
     /// Runs the monitor TUI event loop.
@@ -218,15 +207,15 @@ impl MonitorApp {
             match message {
                 Message::StatusUpdate(status) => self.update_status(status),
                 Message::Finished => {
-                    self.stop_info = Some(StopInfo::Finished);
+                    self.stop_update = Some(MonitorUpdate::Finished);
                     self.exit = true;
                 }
                 Message::Disconnected => {
-                    self.stop_info = Some(StopInfo::Disconnected);
+                    self.stop_update = Some(MonitorUpdate::Disconnected);
                     self.exit = true;
                 }
                 Message::Error(e) => {
-                    self.stop_info = Some(StopInfo::Error(e));
+                    self.stop_update = Some(MonitorUpdate::Error(e));
                     self.exit = true;
                 }
                 Message::Terminal(event) => {
