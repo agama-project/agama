@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 19 12:27:20 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Perform storage probing in a separate task to avoid blocking the
+  service (related to bsc#1265302).
+
+-------------------------------------------------------------------
 Mon May 18 10:58:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Detect when the WebSocket gets disconnected (bsc#1265431).

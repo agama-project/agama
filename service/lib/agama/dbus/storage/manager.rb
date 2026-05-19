@@ -121,7 +121,7 @@ module Agama
             logger.info("Probing storage")
 
             start_progress(3, ACTIVATING_STEP)
-            manager.activate unless manager.activated?
+            manager.activate
 
             next_progress_step(PROBING_STEP)
             perform_probe(force: true)
