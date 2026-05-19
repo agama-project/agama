@@ -1175,8 +1175,8 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "when storage devices are already activated" do
-      it "does not activate devices" do
-        expect(backend).to_not receive(:activate)
+      it "activates the devices" do
+        expect(backend).to receive(:activate)
         subject.probe
       end
     end
