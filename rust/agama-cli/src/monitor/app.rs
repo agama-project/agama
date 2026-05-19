@@ -175,23 +175,15 @@ impl MonitorApp {
         // Spawn task to forward monitor updates
         let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
-            loop {
-                match status_updates.recv().await {
-                    Some(update) => {
-                        let message = match update {
-                            MonitorUpdate::Status(status) => Message::StatusUpdate(status),
-                            MonitorUpdate::Finished => Message::Finished,
-                            MonitorUpdate::Disconnected => Message::Disconnected,
-                            MonitorUpdate::Error(e) => Message::Error(e),
-                        };
-                        if tx_monitor.send(message).await.is_err() {
-                            break;
-                        }
-                    }
-                    None => {
-                        // Channel closed
-                        break;
-                    }
+            while let Some(update) = status_updates.recv().await {
+                let message = match update {
+                    MonitorUpdate::Status(status) => Message::StatusUpdate(status),
+                    MonitorUpdate::Finished => Message::Finished,
+                    MonitorUpdate::Disconnected => Message::Disconnected,
+                    MonitorUpdate::Error(e) => Message::Error(e),
+                };
+                if tx_monitor.send(message).await.is_err() {
+                    break;
                 }
             }
         });

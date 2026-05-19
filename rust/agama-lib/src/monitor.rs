@@ -227,10 +227,12 @@ impl Monitor {
     ///
     /// Returns a receiver for monitor updates and the initial status.
     /// The monitor runs on a separate Tokio task and emits MonitorUpdate messages:
+    ///
     /// - `MonitorUpdate::Status(status)` for status changes
     /// - `MonitorUpdate::Finished` when the installation becomes idle (if stop_on_idle is true)
     /// - `MonitorUpdate::Disconnected` when the WebSocket connection is closed
     /// - `MonitorUpdate::Error(msg)` when an error occurs during monitoring
+    ///
     /// After a terminal message (Finished, Disconnected, or Error), the channel will close.
     pub async fn connect(
         websocket_client: WebSocketClient,
