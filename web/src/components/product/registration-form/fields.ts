@@ -26,7 +26,7 @@
 
 import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
-import { requiredString } from "~/components/form/validation-helpers";
+import { requiredString, ValidationResult } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
 /** Types */
@@ -39,8 +39,6 @@ type FormFields = {
   code: string;
   email: string;
 };
-
-type FormFieldErrors = Partial<Record<keyof FormFields, string>>;
 
 /** Defaults */
 
@@ -69,7 +67,7 @@ export const defaultOptions = formOptions({
  * Returns a map of field errors when validation fails, or undefined when all
  * values are valid.
  */
-export function validate(formFields: FormFields): { fields?: FormFieldErrors } | undefined {
+export function validate(formFields: FormFields): ValidationResult<FormFields> {
   const fieldErrors = shake({
     url:
       formFields.server === "custom"

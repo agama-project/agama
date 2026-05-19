@@ -21,11 +21,87 @@
  */
 
 /**
- * Validation helpers.
  *
- * Plain TypeScript functions that return error messages or undefined.
- * Each helper provides clear validation intent, keeping validation code readable.
+ * Validation helpers for TanStack Form.
+ *
+ * Plain TypeScript functions that return an error message string when
+ * validation fails, or `undefined` when the value is valid. Each helper encodes
+ * a single, named validation rule, keeping `fields.ts` validation functions
+ * readable and intent-revealing.
+ *
+ * Also exports {@link ValidationResult} and {@link FieldsValidationResult}, the
+ * shared return types for form validation. {@link ValidationResult} is the
+ * final type returned by top-level `validate` functions used with TanStack
+ * Form's `onSubmitAsync` validator. {@link FieldsValidationResult} is the
+ * intermediate type returned by field group validators before they are merged
+ * and stripped of `undefined` values by `validate`.
+ *
  */
+
+/** Types */
+
+/**
+ * Return type for form validation functions used with TanStack Form's
+ * `onSubmitAsync` validator.
+ *
+ * - `undefined` — all fields are valid, submission may proceed.
+ * - `{ fields }` — one or more field-level errors; keyed by field name.
+ * - `{ form }` — a form-level error not tied to any specific field (e.g. a
+ *   server error or network failure caught in the submit handler).
+ * - `{ fields, form }` — both simultaneously.
+ *
+ * `T` is the form's field type (e.g. `FormFields`), which constrains the
+ * `fields` keys to actual field names, catching typos at compile time.
+ *
+ * @example
+ * export function validate(fields: FormFields): ValidationResult<FormFields> {
+ *   const errors = shake({
+ *     name: requiredString(fields.name, _("Name is required")),
+ *   });
+ *   if (!isEmpty(errors)) return { fields: errors };
+ * }
+ *
+ * @example
+ * // In onSubmitAsync, validate() and catch() both produce a ValidationResult:
+ * onSubmitAsync: async ({ value: formValues }) => {
+ *   const result = validate(formValues);
+ *   if (result) return result;
+ *
+ *   return await apiCall(formValues)
+ *     .then(() => undefined)
+ *     .catch(() => ({ form: _("The request failed") }));
+ * },
+ */
+export type ValidationResult<T extends Record<string, unknown>> =
+  | {
+      fields?: Partial<Record<keyof T, string>>;
+      form?: string;
+    }
+  | undefined;
+
+/**
+ * Return type for individual field group validators — the intermediate shape
+ * before {@link ValidationResult} is assembled by the top-level `validate`
+ * function.
+ *
+ * Each key maps to either an error string or `undefined` (no error). The
+ * top-level `validate` merges multiple `FieldsValidationResult` objects and
+ * strips `undefined` values before returning a {@link ValidationResult}.
+ *
+ * `T` should be the specific field group type (e.g. `IpFormFields`), which
+ * constrains the keys to actual field names.
+ *
+ * @example
+ * const validateIpFields = (fields: IpFormFields): FieldsValidationResult<IpFormFields> => ({
+ *   addresses4: requiredValidList(fields.addresses4, isValidIPv4Address, ...),
+ *   gateway4: optionalValidString(fields.gateway4, isValidIPv4, ...),
+ * });
+ */
+export type FieldsValidationResult<T extends Record<string, unknown>> = Partial<
+  Record<keyof T, string | undefined>
+>;
+
+/** Helpers */
 
 /**
  * Non-empty string after trimming whitespace.

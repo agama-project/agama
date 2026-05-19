@@ -33,6 +33,11 @@ import { isEmpty, shake } from "radashi";
 import { requiredString, requiredValidList } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
+import type {
+  ValidationResult,
+  FieldsValidationResult,
+} from "~/components/form/validation-helpers";
+
 /** Constants */
 
 export const HOSTNAME_MODE = {
@@ -50,14 +55,17 @@ export const NTP_MODE = {
 type HostnameMode = "transient" | "static";
 type NtpMode = "default" | "custom";
 
-type FormFields = {
+type HostnameFormFields = {
   hostnameMode: HostnameMode;
   hostnameValue: string;
+};
+
+type NtpFormFields = {
   ntpMode: NtpMode;
   ntpServers: string[];
 };
 
-type FormFieldErrors = Partial<Record<keyof FormFields, string>>;
+type FormFields = HostnameFormFields & NtpFormFields;
 
 /** Defaults */
 
@@ -112,7 +120,9 @@ export const isValidNtpServer = (value: string): boolean => {
 /**
  * Validates hostname fields.
  */
-function validateHostnameFields(formValues: FormFields): Partial<FormFieldErrors> {
+function validateHostnameFields(
+  formValues: FormFields,
+): FieldsValidationResult<HostnameFormFields> {
   return {
     hostnameValue:
       formValues.hostnameMode === HOSTNAME_MODE.STATIC
@@ -125,7 +135,7 @@ function validateHostnameFields(formValues: FormFields): Partial<FormFieldErrors
 /**
  * Validates NTP fields.
  */
-function validateNtpFields(formValues: FormFields): Partial<FormFieldErrors> {
+function validateNtpFields(formValues: FormFields): FieldsValidationResult<NtpFormFields> {
   if (formValues.ntpMode !== NTP_MODE.CUSTOM) return {};
 
   return {
@@ -146,7 +156,7 @@ function validateNtpFields(formValues: FormFields): Partial<FormFieldErrors> {
  * Returns a map of field errors when validation fails, or undefined when all
  * values are valid.
  */
-export function validate(formFields: FormFields): { fields?: FormFieldErrors } | undefined {
+export function validate(formFields: FormFields): ValidationResult<FormFields> {
   const fieldErrors = shake({
     ...validateHostnameFields(formFields),
     ...validateNtpFields(formFields),

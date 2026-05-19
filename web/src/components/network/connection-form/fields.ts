@@ -21,19 +21,11 @@
  */
 
 import { formOptions } from "@tanstack/react-form";
+import { shake } from "radashi";
 import { sprintf } from "sprintf-js";
 
 import { BondMode, ConnectionType, ConnectionBindingMode } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
-import { _, formatList } from "~/i18n";
-import {
-  requiredString,
-  optionalIntRange,
-  requiredValidList,
-  optionalValidList,
-  requiredValidString,
-  optionalValidString,
-} from "~/components/form/validation-helpers";
 import {
   isValidIPv4Address,
   isValidIPv6Address,
@@ -42,6 +34,20 @@ import {
   isValidNameserver,
   isValidDNSSearchDomain,
 } from "~/utils/network";
+import {
+  requiredString,
+  optionalIntRange,
+  requiredValidList,
+  optionalValidList,
+  requiredValidString,
+  optionalValidString,
+} from "~/components/form/validation-helpers";
+import { _, formatList } from "~/i18n";
+
+import type {
+  ValidationResult,
+  FieldsValidationResult,
+} from "~/components/form/validation-helpers";
 
 /** Types */
 
@@ -66,7 +72,7 @@ type IpFormFields = {
   customDnsSearch: boolean;
 };
 
-type BondFormnFields = {
+type BondFormFields = {
   bondIface: string;
   bondMode: BondMode;
   bondOptions: string[];
@@ -83,9 +89,7 @@ type BridgeFormFields = {
   bridgePorts: string[];
 };
 
-type FormFields = CommonFormFields & IpFormFields & BondFormnFields & BridgeFormFields;
-
-type FormFieldErrors = Partial<Record<keyof FormFields, string>>;
+type FormFields = CommonFormFields & IpFormFields & BondFormFields & BridgeFormFields;
 
 /** Exported domain constants */
 
@@ -236,7 +240,9 @@ export const defaultOptions = formOptions({
  * (type is a dropdown) or validated elsewhere (iface/ifaceMac are device
  * properties, bindingMode is a controlled enum).
  */
-const validateCommonFields = (fields: CommonFormFields): Record<string, string | undefined> => ({
+const validateCommonFields = (
+  fields: CommonFormFields,
+): FieldsValidationResult<CommonFormFields> => ({
   // TRANSLATORS: validation error for the connection name field.
   name: requiredString(fields.name, _("Name is required")),
 });
@@ -248,7 +254,7 @@ const validateCommonFields = (fields: CommonFormFields): Record<string, string |
  * activation — is resolved at call time based on the current form
  * state, not encoded as cross-field rules at validation time.
  */
-const validateIpFields = (fields: IpFormFields): Record<string, string | undefined> => ({
+const validateIpFields = (fields: IpFormFields): FieldsValidationResult<IpFormFields> => ({
   // TRANSLATORS: validation error for the IPv4 addresses field.
   addresses4: validateAddresses(
     fields.ipv4Mode,
@@ -312,7 +318,7 @@ const validateIpFields = (fields: IpFormFields): Record<string, string | undefin
  *
 
  */
-const validateBondFields = (fields: BondFormnFields): Record<string, string | undefined> => {
+const validateBondFields = (fields: BondFormFields): FieldsValidationResult<BondFormFields> => {
   const { bondMode, bondOptions, bondPorts, bondIface } = fields;
 
   const hasPrimaryOption = bondOptions.some((o) => o.startsWith("primary="));
@@ -344,7 +350,9 @@ const validateBondFields = (fields: BondFormnFields): Record<string, string | un
  * STP fields are conditionally validated based on whether STP is enabled.
  * When STP is disabled, those fields are not validated at all.
  */
-const validateBridgeFields = (fields: BridgeFormFields): Record<string, string | undefined> => {
+const validateBridgeFields = (
+  fields: BridgeFormFields,
+): FieldsValidationResult<BridgeFormFields> => {
   const stpEnabled = fields.bridgeStp === BridgeStpMode.ENABLED;
 
   return {
@@ -391,7 +399,7 @@ const validateBridgeFields = (fields: BridgeFormFields): Record<string, string |
  * Dispatches to the appropriate type-specific validator based on connection type.
  * Returns an empty object for types with no extra validation (e.g. Ethernet).
  */
-const validateTypeFields = (fields: FormFields): Record<string, string | undefined> => {
+const validateTypeFields = (fields: FormFields): FieldsValidationResult<FormFields> => {
   switch (fields.type) {
     case CONNECTION_TYPE.BOND:
       return validateBondFields(fields);
@@ -417,18 +425,12 @@ const validateTypeFields = (fields: FormFields): Record<string, string | undefin
  * Field errors are collected by merging all validator outputs and
  * stripping undefined values.
  */
-export const validate = (fields: FormFields): { fields?: FormFieldErrors } | undefined => {
-  const allFieldErrors = {
+export const validate = (fields: FormFields): ValidationResult<FormFields> => {
+  const fieldErrors = shake({
     ...validateCommonFields(fields),
     ...validateIpFields(fields),
     ...validateTypeFields(fields),
-  };
-
-  const fieldErrors: Record<string, string> = {};
-
-  for (const [key, error] of Object.entries(allFieldErrors)) {
-    if (error !== undefined) fieldErrors[key] = error;
-  }
+  });
 
   return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
 };
