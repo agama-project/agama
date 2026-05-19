@@ -243,10 +243,10 @@ impl MonitorApp {
             return false;
         }
 
-        match (key_event.code, key_event.modifiers) {
-            (KeyCode::Char('q'), _) | (KeyCode::Esc, _) => true,
-            _ => false,
-        }
+        matches!(
+            (key_event.code, key_event.modifiers),
+            (KeyCode::Char('q'), _) | (KeyCode::Esc, _)
+        )
     }
 }
 
