@@ -96,7 +96,6 @@ impl MonitorAppBuilder {
             updates: Some(updates),
             status,
             theme: self.theme,
-            exit: false,
             product_names,
             stop_update: None,
         })
@@ -123,8 +122,6 @@ pub struct MonitorApp {
     product_names: HashMap<String, String>,
     /// UI color theme
     theme: Theme,
-    /// Exit in the next iteration
-    exit: bool,
     /// Stop update (if stopped)
     stop_update: Option<MonitorUpdate>,
 }
@@ -196,7 +193,7 @@ impl MonitorApp {
         });
 
         // Main event loop
-        while !self.exit {
+        while self.stop_update.is_none() {
             terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
 
             let message = rx
@@ -208,15 +205,12 @@ impl MonitorApp {
                 Message::StatusUpdate(status) => self.update_status(status),
                 Message::Finished => {
                     self.stop_update = Some(MonitorUpdate::Finished);
-                    self.exit = true;
                 }
                 Message::Disconnected => {
                     self.stop_update = Some(MonitorUpdate::Disconnected);
-                    self.exit = true;
                 }
                 Message::Error(e) => {
                     self.stop_update = Some(MonitorUpdate::Error(e));
-                    self.exit = true;
                 }
                 Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
@@ -238,7 +232,7 @@ impl MonitorApp {
 
         match (key_event.code, key_event.modifiers) {
             (KeyCode::Char('q'), _) | (KeyCode::Esc, _) => {
-                self.exit = true;
+                self.stop_update = Some(MonitorUpdate::Finished);
             }
             _ => {}
         }
