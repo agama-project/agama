@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 19 06:29:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update axios dependency to prevent CVE-2026-42041 and CVE-2026-42264
+  (bsc#1264160, bsc#1264802).
+- Update webpack-dev-server to prevent CVE-2025-7339 (bsc#1246678).
+
+-------------------------------------------------------------------
 Tue Mar 24 10:39:36 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Invalidate zFCP controllers query after some controller change
