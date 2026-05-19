@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 19 12:28:48 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Always activate storage devices in order to detect multipath and
+  new encryptions (bsc#1265302).
+
+-------------------------------------------------------------------
 Sat May 16 07:54:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 21
