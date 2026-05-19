@@ -43,7 +43,7 @@
 //! println!("Current stage: {:?}", status.status.stage);
 //!
 //! // Receive monitor updates
-//! while let Ok(update) = updates.recv().await {
+//! while let Some(update) = updates.recv().await {
 //!     match update {
 //!         MonitorUpdate::Status(status) => {
 //!             println!("Status updated! Issues count: {}", status.issues.len());
