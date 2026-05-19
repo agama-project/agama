@@ -361,12 +361,12 @@ const defaultValues: FormFields = {
 export const defaultOptions = formOptions({ defaultValues });
 
 /** Validation */
-const validateGroup = (fields: FormFields): Record<string, string | undefined> => ({
+const validateGroup = (fields: FormFields): Partial<Record<keyof FormFields, string> Record<string, string | undefined> => ({
   field1: requiredString(fields.field1, _("Field 1 is required")),
   field2: optionalIntRange(fields.field2, 0, 100, _("Must be 0-100")),
 });
 
-export const validate = (fields: FormFields): { fields?: Record<string, string> } | undefined => {
+export function validate(fields: FormFields): { fields?: Partial<Record<keyof FormFields, string>> } | undefined {
   const fieldErrors = {
     ...validateGroup(fields),
     // ...other validators
@@ -393,21 +393,18 @@ export const validate = (fields: FormFields): { fields?: Record<string, string> 
 
 Forms use plain TypeScript validation functions rather than schema libraries.
 
-**Validation helpers** are available in `~/components/form/validation-helpers.ts`:
-
-- `requiredString(value, errorMsg)` - Non-empty string
-- `intRange(value, min, max, errorMsg)` - Integer in inclusive range [min, max]
-- `optionalIntRange(value, min, max, errorMsg)` - Optional integer range
-- `requiredValidList(array, predicate, errorMsg)` - All items pass predicate
-- `optionalValidList(array, predicate, errorMsg)` - Empty or all items valid
-- `requiredValidString(value, predicate, errorMsg)` - String passes predicate
-- `optionalValidString(value, predicate, errorMsg)` - Empty or valid
+**Validation helpers** are available in `~/components/form/validation-helpers.ts`.
 
 Example:
 
 ```typescript
 const validateIpFields = (fields): Record<string, string | undefined> => ({
-  addresses4: requiredValidList(fields.addresses4, isValidIPv4, _("Enter valid IPv4 addresses")),
+  addresses4: requiredValidList(
+    fields.addresses4,
+    isValidIPv4,
+    _("At least one IPv4 address is required"),
+    _("Some IPv4 addresses are invalid"),
+  ),
   gateway4: optionalValidString(fields.gateway4, isValidIPv4, _("Enter a valid IPv4 gateway")),
 });
 ```
@@ -525,11 +522,13 @@ field configuration.
 All forms use consistent generic names for key exports and internal identifiers:
 
 **Form options**: `defaultOptions`
+
 ```typescript
 export const defaultOptions = formOptions({ defaultValues });
 ```
 
 **Default values**: `defaultValues`
+
 ```typescript
 const defaultValues: FormFields = {
   // ...
@@ -537,10 +536,13 @@ const defaultValues: FormFields = {
 ```
 
 **Validation function**: `validate`
+
 ```typescript
-export const validate = (fields: FormFields) => {
+export function validate(
+  fields: FormFields,
+): { fields?: Partial<Record<keyof FormFields, string>> } | undefined {
   // ...
-};
+}
 ```
 
 Form-specific prefixes (like `connectionFormOptions` or `validateConnectionForm`)

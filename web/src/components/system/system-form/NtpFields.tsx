@@ -34,7 +34,7 @@ import { _ } from "~/i18n";
  *
  * Receives a typed form instance via `withForm`.
  */
-const NtpSettings = withForm({
+const NtpFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
     return (
@@ -103,4 +103,4 @@ const NtpSettings = withForm({
   },
 });
 
-export default NtpSettings;
+export default NtpFields;

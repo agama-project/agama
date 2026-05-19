@@ -293,9 +293,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
       ...defaults,
     }),
     validators: {
-      onSubmitAsync: async ({
-        value: formValues,
-      }): Promise<{ fields?: Record<string, string>; form?: string } | undefined> => {
+      onSubmitAsync: async ({ value: formValues }) => {
         const fieldErrors = validate(formValues);
         if (fieldErrors) return fieldErrors;
 

@@ -45,7 +45,7 @@ import {
 
 /** Types */
 
-type CommonFields = {
+type CommonFormFields = {
   name: string;
   type: ConnectionType;
   iface: string;
@@ -53,7 +53,7 @@ type CommonFields = {
   bindingMode: ConnectionBindingMode;
 };
 
-type IpFields = {
+type IpFormFields = {
   ipv4Mode: FormIpMode;
   addresses4: string[];
   gateway4: string;
@@ -66,14 +66,14 @@ type IpFields = {
   customDnsSearch: boolean;
 };
 
-type BondFields = {
+type BondFormnFields = {
   bondIface: string;
   bondMode: BondMode;
   bondOptions: string[];
   bondPorts: string[];
 };
 
-type BridgeFields = {
+type BridgeFormFields = {
   bridgeIface: string;
   bridgeStp: BridgeStpMode;
   bridgePriority: number | undefined;
@@ -83,7 +83,9 @@ type BridgeFields = {
   bridgePorts: string[];
 };
 
-type FormFields = CommonFields & IpFields & BondFields & BridgeFields;
+type FormFields = CommonFormFields & IpFormFields & BondFormnFields & BridgeFormFields;
+
+type FormFieldErrors = Partial<Record<keyof FormFields, string>>;
 
 /** Exported domain constants */
 
@@ -234,7 +236,7 @@ export const defaultOptions = formOptions({
  * (type is a dropdown) or validated elsewhere (iface/ifaceMac are device
  * properties, bindingMode is a controlled enum).
  */
-const validateCommonFields = (fields: CommonFields): Record<string, string | undefined> => ({
+const validateCommonFields = (fields: CommonFormFields): Record<string, string | undefined> => ({
   // TRANSLATORS: validation error for the connection name field.
   name: requiredString(fields.name, _("Name is required")),
 });
@@ -246,7 +248,7 @@ const validateCommonFields = (fields: CommonFields): Record<string, string | und
  * activation — is resolved at call time based on the current form
  * state, not encoded as cross-field rules at validation time.
  */
-const validateIpFields = (fields: IpFields): Record<string, string | undefined> => ({
+const validateIpFields = (fields: IpFormFields): Record<string, string | undefined> => ({
   // TRANSLATORS: validation error for the IPv4 addresses field.
   addresses4: validateAddresses(
     fields.ipv4Mode,
@@ -310,7 +312,7 @@ const validateIpFields = (fields: IpFields): Record<string, string | undefined> 
  *
 
  */
-const validateBondFields = (fields: BondFields): Record<string, string | undefined> => {
+const validateBondFields = (fields: BondFormnFields): Record<string, string | undefined> => {
   const { bondMode, bondOptions, bondPorts, bondIface } = fields;
 
   const hasPrimaryOption = bondOptions.some((o) => o.startsWith("primary="));
@@ -328,6 +330,8 @@ const validateBondFields = (fields: BondFields): Record<string, string | undefin
   return {
     // TRANSLATORS: validation error for the bond device name field.
     bondIface: requiredString(bondIface, _("Device name is required")),
+    // TRANSLATORS: validation error for the bond mode name field.
+    bondMode: requiredString(bondMode, _("Bond mode is required")),
     // TRANSLATORS: validation error for the bond ports field.
     bondPorts: bondPorts.length === 0 ? _("At least one bond port is required") : undefined,
     bondOptions: bondOptionsError,
@@ -340,7 +344,7 @@ const validateBondFields = (fields: BondFields): Record<string, string | undefin
  * STP fields are conditionally validated based on whether STP is enabled.
  * When STP is disabled, those fields are not validated at all.
  */
-const validateBridgeFields = (fields: BridgeFields): Record<string, string | undefined> => {
+const validateBridgeFields = (fields: BridgeFormFields): Record<string, string | undefined> => {
   const stpEnabled = fields.bridgeStp === BridgeStpMode.ENABLED;
 
   return {
@@ -413,7 +417,7 @@ const validateTypeFields = (fields: FormFields): Record<string, string | undefin
  * Field errors are collected by merging all validator outputs and
  * stripping undefined values.
  */
-export const validate = (fields: FormFields): { fields?: Record<string, string> } | undefined => {
+export const validate = (fields: FormFields): { fields?: FormFieldErrors } | undefined => {
   const allFieldErrors = {
     ...validateCommonFields(fields),
     ...validateIpFields(fields),

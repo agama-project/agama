@@ -89,7 +89,7 @@ function StaticModeHelperText() {
  *
  * Receives a typed form instance via `withForm`.
  */
-const HostnameSettings = withForm({
+const HostnameFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
     const { software } = useSystem();
@@ -187,4 +187,4 @@ const HostnameSettings = withForm({
   },
 });
 
-export default HostnameSettings;
+export default HostnameFields;
