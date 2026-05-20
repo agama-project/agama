@@ -106,6 +106,36 @@ pub struct Service {
     zfcp_proxy: Option<ZFCPProxy<'static>>,
 }
 
+impl Service {
+    /// Runs the probe action in a separate task.
+    ///
+    /// There are chances to block the service if a probing is requested. For example, if the D-Bus
+    /// service is waiting for a question and the probe action is called, then this service task
+    /// keeps blocked until the question is answered. This typically happens when setting a config
+    /// and a monitor (e.g., iSCSI monitor) requests a storage probe.
+    ///
+    /// It is important to avoid blocking the service task, otherwise no info can be retrieved from
+    /// D-Bus, even though the info is cached by the proxy.
+    ///
+    /// Theoretically, this same problem could happen by calling to activate or setting the locale,
+    /// but the UI does not allow those options if there are questions.
+    ///
+    /// TODO: Decide how to behave when there are questions and a new change is requested to D-Bus
+    /// (exit with error, call D-Bus without waiting, ...).
+    async fn probe(&mut self) -> Result<(), Error> {
+        let proxy = self.storage_proxy.clone();
+
+        tokio::spawn(async move {
+            let result = proxy.probe().await;
+            if let Err(error) = &result {
+                tracing::error!("Failed to probe storage: {error}");
+            }
+        });
+
+        Ok(())
+    }
+}
+
 impl Actor for Service {
     type Error = Error;
 }
@@ -115,7 +145,7 @@ impl MessageHandler<message::CallAction> for Service {
     async fn handle(&mut self, message: message::CallAction) -> Result<(), Error> {
         match message.action.as_str() {
             "Activate" => self.storage_proxy.activate().await?,
-            "Probe" => self.storage_proxy.probe().await?,
+            "Probe" => self.probe().await?,
             "Install" => self.storage_proxy.install().await?,
             "Finish" => self.storage_proxy.finish().await?,
             "Umount" => self.storage_proxy.umount().await?,

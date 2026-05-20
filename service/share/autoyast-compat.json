@@ -555,11 +555,11 @@
     "children": [
       { "key": "ntp_policy", "support": "no" },
       { "key": "ntp_servers[]",
-        "notes": "All servers are considered of type 'pool'",
+        "notes": "All servers are considered of type \"pool\"",
         "children": [
-          { "key": "address", "support": "yes" },
-          { "key": "iburst", "support": "yes" },
-          { "key": "offline", "support": "yes" }
+            { "key": "address", "support": "yes", "agama": "ntp.sources[].address" },
+            { "key": "iburst", "support": "yes", "agama": "ntp.sources[].iburst" },
+            { "key": "offline", "support": "yes", "agama": "ntp.sources[].offline" }
         ]
       },
       { "key": "ntp_sync", "support": "no" }
