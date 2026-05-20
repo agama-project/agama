@@ -33,7 +33,7 @@ jobs:
              findutils git make osc obs-service-format_spec_file
 
       - name: Git Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure git
         run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"

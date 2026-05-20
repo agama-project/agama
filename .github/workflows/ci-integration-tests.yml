@@ -24,7 +24,7 @@ jobs:
     # TODO: Cache the Ruby gems and node packages
 
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         # fetch complete history with tags, agama.gemspec calls "git describe --tags"
         # that would fail with just last commit checked out
@@ -32,7 +32,7 @@ jobs:
         fetch-tags: true
 
     - name: Checkout integration tests
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         path: integration-tests
         repository: ${{ github.repository_owner }}/integration-tests

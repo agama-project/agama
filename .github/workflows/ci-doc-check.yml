@@ -42,7 +42,7 @@ jobs:
     steps:
 
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Fix the file owner
       # fix the file owner
@@ -58,7 +58,7 @@ jobs:
            libxslt-devel libxml2-devel xmlstarlet 'rubygem(ruby-augeas)'
 
     - name: Cache RubyGems
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       with:
         key: "Gemfile-${{ hashFiles('service/Gemfile.lock') }}"
         path: service/vendor/bundle

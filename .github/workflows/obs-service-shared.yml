@@ -44,7 +44,7 @@ jobs:
 
       - name: Git Checkout (full history)
         if: ${{ github.ref_type != 'tag' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # fetch all history, we need to find the latest tag and offset for the version number
           fetch-depth: 0
@@ -53,7 +53,7 @@ jobs:
         run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Git Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           # fetch all history with tags, we need to find the latest version tag
           fetch-depth: 0

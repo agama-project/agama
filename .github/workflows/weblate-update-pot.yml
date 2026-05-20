@@ -44,7 +44,7 @@ jobs:
           gem install --no-format-exec gettext
 
       - name: Checkout Agama sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: agama
           # checkout the SLE-16 branch
@@ -60,7 +60,7 @@ jobs:
         run:  msgfmt --check-format agama/web/agama.pot
 
       - name: Checkout Weblate sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: agama-weblate
           repository: ${{ github.repository_owner }}/agama-weblate
