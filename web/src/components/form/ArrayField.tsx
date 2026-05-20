@@ -32,6 +32,7 @@ import {
   HelperText,
   HelperTextItem,
   Button,
+  Truncate,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
@@ -196,6 +197,8 @@ type EntryProps = {
   onRemove: (index: number) => void;
   /** Returns a stable DOM id used for aria-activedescendant. */
   valueId: (index: number) => string;
+  /** Maximum width for entries in "ch" units. When undefined, no truncation is applied. */
+  maxWidth?: number;
 };
 
 /**
@@ -204,7 +207,17 @@ type EntryProps = {
  * Both the visual color and the aria-label carry validation state, so
  * sighted and assistive-technology users receive the same information.
  */
-function Entry({ item, index, isActive, error, toLabel, onEdit, onRemove, valueId }: EntryProps) {
+function Entry({
+  item,
+  index,
+  isActive,
+  error,
+  toLabel,
+  onEdit,
+  onRemove,
+  valueId,
+  maxWidth,
+}: EntryProps) {
   // preventDefault keeps focus on the input; the edit moves the value back to draft.
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -223,6 +236,19 @@ function Entry({ item, index, isActive, error, toLabel, onEdit, onRemove, valueI
   };
 
   const labelText = toLabel(item);
+
+  let labelContent: React.ReactNode = labelText;
+  if (maxWidth !== undefined) {
+    const trailingNumChars = Math.floor(maxWidth / 2);
+    labelContent = (
+      <Truncate
+        content={labelText}
+        position="middle"
+        trailingNumChars={trailingNumChars}
+        maxCharsDisplayed={maxWidth}
+      />
+    );
+  }
 
   return (
     <span style={{ cursor: "pointer" }} onMouseDown={handleMouseDown}>
@@ -247,7 +273,7 @@ function Entry({ item, index, isActive, error, toLabel, onEdit, onRemove, valueI
           outlineOffset: isActive ? 1 : undefined,
         }}
       >
-        {labelText}
+        {labelContent}
       </Label>
     </span>
   );
@@ -344,6 +370,14 @@ type ArrayFieldProps = {
 
   /** Disables the text input and all entry interactions. */
   isDisabled?: boolean;
+
+  /**
+   * Maximum width for entries in "ch" units.
+   *
+   * When set, entries exceeding this width are truncated in the middle.
+   * When undefined, no truncation is applied.
+   */
+  maxEntryWidth?: number;
 };
 
 /**
@@ -427,6 +461,7 @@ export default function ArrayField({
   toDraft,
   skipDuplicates = false,
   splitPasteOn,
+  maxEntryWidth,
 }: ArrayFieldProps) {
   const field = useFieldContext<string[]>();
   const value = field.state.value;
@@ -677,6 +712,7 @@ export default function ArrayField({
                       onEdit={editAt}
                       onRemove={removeAt}
                       valueId={valueId}
+                      maxWidth={maxEntryWidth}
                     />
                   );
                 })}

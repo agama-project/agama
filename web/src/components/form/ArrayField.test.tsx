@@ -35,6 +35,7 @@ type TestFormProps = {
   /** Simulates a TanStack Form field-level error returned by onSubmitAsync. */
   fieldError?: string;
   splitPasteOn?: RegExp | string;
+  maxEntryWidth?: number;
 };
 
 function TestForm({
@@ -45,6 +46,7 @@ function TestForm({
   helperText,
   fieldError,
   splitPasteOn,
+  maxEntryWidth,
 }: TestFormProps) {
   const form = useAppForm({
     defaultValues: { tags: defaultValues },
@@ -70,6 +72,7 @@ function TestForm({
               skipDuplicates={skipDuplicates}
               helperText={helperText}
               splitPasteOn={splitPasteOn}
+              maxEntryWidth={maxEntryWidth}
             />
           )}
         </form.AppField>
@@ -491,6 +494,46 @@ describe("ArrayField", () => {
       await user.paste("alpha");
       expect(input).toHaveValue("alpha");
       expect(screen.queryByRole("option", { name: "alpha" })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("maxEntryWidth", () => {
+    it("renders entries as plain text when maxEntryWidth is not provided", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} />);
+      const entry = screen.getByRole("option");
+      expect(entry).toHaveAccessibleName("very-long-entry-name");
+      expect(entry.querySelector("span[class*='truncate']")).not.toBeInTheDocument();
+    });
+
+    it("wraps entries in truncate component when maxEntryWidth is provided", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
+      const entry = screen.getByRole("option");
+      const truncateSpan = entry.querySelector("span[class*='truncate']");
+      expect(truncateSpan).toBeInTheDocument();
+    });
+
+    it("preserves full text in aria-label when truncated", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
+      const entry = screen.getByRole("option");
+      expect(entry).toHaveAccessibleName("very-long-entry-name");
+    });
+
+    it("preserves full text in aria-label for invalid entries when truncated", () => {
+      const validateOnChange = (v: string) => (v === "invalid-entry" ? "Bad value" : undefined);
+      installerRender(
+        <TestForm
+          defaultValues={["invalid-entry"]}
+          validateOnChange={validateOnChange}
+          maxEntryWidth={10}
+        />,
+      );
+      const entry = screen.getByRole("option");
+      expect(entry).toHaveAccessibleName("invalid-entry is invalid: Bad value");
+    });
+
+    it("renders remove button with full text when truncated", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
+      screen.getByRole("button", { name: "Remove very-long-entry-name" });
     });
   });
 });
