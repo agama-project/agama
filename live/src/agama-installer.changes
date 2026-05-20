@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue May 19 13:57:18 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Removed the "Boot from Hard Disk" boot menu option, the "Install"
+  menu item is now the default (bsc#1259601, jsc#PED-13766)
+  (kept only in legacy BIOS boot mode)
+- Increased the timeout for booting the default menu item from
+  10 seconds to 60 seconds (jsc#PED-14986)
+
+-------------------------------------------------------------------
 Wed May 13 13:14:26 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Restore back the checkmedia option in the *.kiwi file

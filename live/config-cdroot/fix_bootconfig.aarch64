@@ -45,7 +45,7 @@ fi
 if [ -n "\${iso_path}" ]; then
     isoboot="iso-scan/filename=\${iso_path}"
 fi
-set timeout=10
+set timeout=60
 set timeout_style=menu
 if [ "\${grub_platform}" = "efi" ]; then
     echo "Please press 't' to show the boot menu on this console"
@@ -76,9 +76,6 @@ if [ -f (\$root)/boot/grub2/themes/$theme/theme.txt ];then
 fi
 terminal_input console
 terminal_output gfxterm
-menuentry "Boot from Hard Disk" --class opensuse --class gnu-linux --class gnu --class os {
-  exit
-}
 menuentry "Install $label" --class os --unrestricted {
     set gfxpayload=keep
     echo Loading kernel...
