@@ -22,7 +22,7 @@
 
 import React from "react";
 import UsersPage from "~/components/users/UsersPage";
-import FirstUserForm from "~/components/users/FirstUserForm";
+import FirstUserForm from "~/components/users/first-user-form/Form";
 import RootUserForm from "~/components/users/RootUserForm";
 import { Route } from "~/types/routes";
 import { USER as PATHS } from "~/routes/paths";

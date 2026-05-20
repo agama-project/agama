@@ -289,6 +289,465 @@ Work through these questions in order:
 
 ---
 
+## TanStack Form Patterns
+
+This section documents the correct patterns for accessing form state and building
+components with TanStack Form. Following these patterns avoids type errors and
+ensures components work correctly.
+
+### Accessing Form State
+
+**Use `form.Subscribe`, NOT `form.useStore()`**
+
+TanStack Form does not expose a `useStore()` method. To access form state, always
+use `form.Subscribe`:
+
+```typescript
+// ✅ CORRECT
+<form.Subscribe selector={(s) => s.values.fieldName}>
+  {(value) => <div>{value}</div>}
+</form.Subscribe>
+
+// ❌ WRONG - useStore does not exist
+const value = form.useStore((s) => s.values.fieldName);
+```
+
+**Why Subscribe?**
+
+- `Subscribe` is a React component that re-renders only when the selected state changes
+- It provides proper TypeScript inference for the selected state
+- It's the only supported way to access form state in TanStack Form
+
+**Selecting multiple values:**
+
+```typescript
+<form.Subscribe
+  selector={(s) => ({
+    fieldA: s.values.fieldA,
+    fieldB: s.values.fieldB,
+    errorA: s.fieldMeta.fieldA?.errors?.[0],
+  })}
+>
+  {({ fieldA, fieldB, errorA }) => (
+    // render using selected values
+  )}
+</form.Subscribe>
+```
+
+### Component Patterns
+
+TanStack Form components fall into three categories, each with its own pattern for
+accessing form state:
+
+#### 1. Field Components (use `useFieldContext`)
+
+**What**: Individual input components tied to a single form field.
+
+**Pattern**: Use `useFieldContext<T>()` to access the current field's state.
+
+**When to use**: Building reusable input components like `TextField`,
+`DropdownField`, `CheckboxField`.
+
+**How they're used**: Inside `form.AppField` render props.
+
+```typescript
+// Component definition
+import { useFieldContext } from "~/hooks/form-contexts";
+
+export default function TextField({ label, helperText }: TextFieldProps) {
+  const field = useFieldContext<string>();
+  const error = field.state.meta.errors[0];
+
+  return (
+    <FormGroup fieldId={field.name} label={label}>
+      <TextInput
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        validated={error ? "error" : "default"}
+        onChange={(_, value) => field.handleChange(value)}
+        onBlur={() => field.handleBlur()}
+      />
+      {/* helper text and error display */}
+    </FormGroup>
+  );
+}
+
+// Usage in forms
+<form.AppField name="username">
+  {(field) => <field.TextField label={_("Username")} />}
+</form.AppField>
+```
+
+**Key points:**
+
+- Field component receives field state from context
+- No form prop needed
+- Works with any form that has a field with the expected type
+- Must be used inside `form.AppField`
+- Must call `field.handleBlur()` to support forms using onBlur listeners
+
+#### 2. Field Group Components (use `withForm`)
+
+**What**: Components that render multiple related fields from the same form.
+
+**Pattern**: Use `withForm` wrapper with typed form options. **Always wrap each field
+in `form.AppField`** to register it for validation.
+
+**When to use**: Grouping related fields like IP settings, bond configuration, or
+password + confirmation pairs.
+
+**How they're used**: Passed the form instance as a prop.
+
+```typescript
+// Component definition
+import { withForm } from "~/hooks/form";
+import { defaultOptions } from "./fields";
+
+const PasswordFields = withForm({
+  ...defaultOptions, // Provides type information
+  render: function Render({ form }) {
+    return (
+      <>
+        <form.AppField name="password">
+          {(field) => {
+            const error = field.state.meta.errors[0] as string | undefined;
+            return (
+              <FormGroup fieldId="password" label={_("Password")}>
+                <PasswordInput
+                  value={field.state.value}
+                  onChange={(_, value) => field.handleChange(value)}
+                />
+                {error && (
+                  <FormHelperText>
+                    <HelperText>
+                      <HelperTextItem variant="error">{error}</HelperTextItem>
+                    </HelperText>
+                  </FormHelperText>
+                )}
+              </FormGroup>
+            );
+          }}
+        </form.AppField>
+
+        <form.AppField name="passwordConfirmation">
+          {(field) => {
+            const error = field.state.meta.errors[0] as string | undefined;
+            return (
+              <FormGroup fieldId="passwordConfirmation" label={_("Confirmation")}>
+                <PasswordInput
+                  value={field.state.value}
+                  onChange={(_, value) => field.handleChange(value)}
+                />
+                {/* error display */}
+              </FormGroup>
+            );
+          }}
+        </form.AppField>
+      </>
+    );
+  },
+});
+
+// Usage in forms
+<PasswordFields form={form} />
+```
+
+**Key points:**
+
+- `withForm` provides proper TypeScript types from `defaultOptions`
+- **CRITICAL**: Always wrap fields in `form.AppField` to register them for validation
+- Use `field.handleChange()` for value updates, not `form.setFieldValue()`
+- Access field errors from `field.state.meta.errors`
+- Component receives `form` prop with full type safety
+
+**Why not `useFormContext`?**
+
+`useFormContext()` returns a form instance with generic types that don't know about
+specific field names. This causes TypeScript errors when trying to use field names
+as strings:
+
+```typescript
+// ❌ WRONG - TypeScript error: string not assignable to never
+const form = useFormContext();
+form.setFieldValue("password", value); // Error!
+
+// ✅ CORRECT - withForm provides proper types
+const MyFields = withForm({
+  ...defaultOptions, // defaultOptions knows about "password" field
+  render: ({ form }) => {
+    form.setFieldValue("password", value); // Works!
+  },
+});
+```
+
+#### 3. Form Components
+
+**What**: The main form component that orchestrates everything.
+
+**Pattern**: Use `useAppForm` hook directly.
+
+**When to use**: The top-level form component.
+
+```typescript
+import { useAppForm, mergeFormDefaults } from "~/hooks/form";
+import { defaultOptions, validate } from "./fields";
+
+export default function MyForm() {
+  const data = useDataFromAPI(); // May contain undefined values
+
+  const form = useAppForm({
+    // mergeFormDefaults automatically shakes undefined values
+    ...mergeFormDefaults(defaultOptions, {
+      field1: data?.field1,        // undefined won't override default
+      field2: data?.field2,
+      field3: data?.field3,
+    }),
+    validators: {
+      onSubmitAsync: async ({ value }) => validate(value),
+    },
+    onSubmit: async ({ value }) => {
+      await saveData(value);
+    },
+  });
+
+  return (
+    <form.AppForm>
+      <Form onSubmit={(e) => { e.preventDefault(); form.handleSubmit(); }}>
+        {/* fields */}
+      </Form>
+    </form.AppForm>
+  );
+}
+```
+
+**Using `mergeFormDefaults`:**
+
+`mergeFormDefaults` automatically removes undefined values before merging (using
+`shake` from radashi). This means you can safely pass objects with undefined
+properties without worrying about overriding the defaults from `defaultOptions`:
+
+```typescript
+// ✅ CORRECT - undefined values are automatically removed
+...mergeFormDefaults(defaultOptions, {
+  fullName: user?.fullName,      // May be undefined
+  userName: user?.userName,      // May be undefined
+  email: user?.email,            // May be undefined
+})
+
+// ❌ WRONG - Manual nullish coalescing is redundant
+...mergeFormDefaults(defaultOptions, {
+  fullName: user?.fullName ?? "",
+  userName: user?.userName ?? "",
+  email: user?.email ?? "",
+})
+
+// ❌ WRONG - Manual shake is redundant
+...mergeFormDefaults(defaultOptions, shake({
+  fullName: user?.fullName,
+  userName: user?.userName,
+}))
+```
+
+This keeps the initialization code clean and follows the same pattern across all forms.
+
+### Pattern Selection Guide
+
+**Building a new component?** Ask:
+
+1. **Does it render exactly one form field?**
+   - Yes → Use `useFieldContext` (field component pattern)
+   - No → Continue
+
+2. **Does it need to access multiple fields from a specific form?**
+   - Yes → Use `withForm` (field group pattern)
+   - No → Continue
+
+3. **Is it the main form orchestrator?**
+   - Yes → Use `useAppForm` (form component pattern)
+
+### Common Mistakes and Solutions
+
+#### Mistake 1: Trying to use `form.useStore()`
+
+```typescript
+// ❌ WRONG
+const value = form.useStore((s) => s.values.fieldName);
+
+// ✅ CORRECT
+<form.Subscribe selector={(s) => s.values.fieldName}>
+  {(value) => /* use value */}
+</form.Subscribe>
+```
+
+#### Mistake 2: Using `useFormContext` for field groups
+
+```typescript
+// ❌ WRONG - Type errors with field names
+import { useFormContext } from "~/hooks/form-contexts";
+
+function MyFields() {
+  const form = useFormContext();
+  form.setFieldValue("password", value); // ERROR: string not assignable to never
+}
+
+// ✅ CORRECT - Use withForm for proper types
+import { withForm } from "~/hooks/form";
+import { defaultOptions } from "./fields";
+
+const MyFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => {
+    form.setFieldValue("password", value); // Works!
+  },
+});
+```
+
+#### Mistake 3: Accessing `formApi` in listeners
+
+```typescript
+// ❌ WRONG - formApi doesn't exist in listener context
+<form.AppField
+  name="fullName"
+  listeners={{
+    onBlur: ({ fieldApi, formApi }) => { // formApi doesn't exist here
+      formApi.setFieldValue("suggestions", getSuggestions(fieldApi.state.value));
+    },
+  }}
+>
+
+// ✅ CORRECT - Use form instance from closure, access value directly
+<form.AppField
+  name="fullName"
+  listeners={{
+    onBlur: ({ value }) => {
+      form.setFieldValue("suggestions", getSuggestions(value));
+    },
+  }}
+>
+```
+
+**Available in listener context:**
+- `value`: Current field value
+- `fieldApi`: Field API instance (includes `fieldApi.state.value`, same as `value`)
+
+**Not available:**
+- `formApi`: Use form instance from closure instead
+
+#### Mistake 4: Using `form.setFieldValue` without `form.AppField`
+
+```typescript
+// ❌ WRONG - Field not registered, validation won't run
+const PasswordFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <form.Subscribe selector={(s) => ({ password: s.values.password })}>
+      {({ password }) => (
+        <PasswordInput
+          value={password}
+          onChange={(_, value) => form.setFieldValue("password", value)}
+        />
+      )}
+    </form.Subscribe>
+  ),
+});
+
+// ✅ CORRECT - Always wrap fields in form.AppField
+const PasswordFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <form.AppField name="password">
+      {(field) => (
+        <PasswordInput
+          value={field.state.value}
+          onChange={(_, value) => field.handleChange(value)}
+        />
+      )}
+    </form.AppField>
+  ),
+});
+```
+
+**Why this matters:** Using `form.setFieldValue` directly updates the value but doesn't
+register the field with TanStack Form's validation system. When validation runs,
+TanStack Form doesn't know the field exists, so validators are never called for it and
+errors are never captured. Always use `form.AppField` to properly register fields.
+
+#### Mistake 5: Passing dynamic field names without proper typing
+
+```typescript
+// ❌ WRONG - Can't use dynamic field names with useFormContext
+function PasswordField({ passwordName, confirmationName }: Props) {
+  const form = useFormContext();
+  // Type error: string not assignable to never
+  onChange={(_, value) => form.setFieldValue(passwordName, value)}
+}
+
+// ✅ CORRECT - Use withForm or make it form-specific
+const PasswordFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => {
+    // Field names are known at compile time
+    <form.AppField name="password">
+      {(field) => onChange={(_, value) => field.handleChange(value)}}
+    </form.AppField>
+  },
+});
+```
+
+#### Mistake 6: Not calling `field.handleBlur()` in field components
+
+```typescript
+// ❌ WRONG - onBlur listeners won't fire
+export default function TextField({ label }: TextFieldProps) {
+  const field = useFieldContext<string>();
+  
+  return (
+    <TextInput
+      value={field.state.value}
+      onChange={(_, value) => field.handleChange(value)}
+      // Missing onBlur!
+    />
+  );
+}
+
+// ✅ CORRECT - Field components must call handleBlur()
+export default function TextField({ label }: TextFieldProps) {
+  const field = useFieldContext<string>();
+  
+  return (
+    <TextInput
+      value={field.state.value}
+      onChange={(_, value) => field.handleChange(value)}
+      onBlur={() => field.handleBlur()}
+    />
+  );
+}
+```
+
+**Why this matters:** TanStack Form's `onBlur` listeners in `form.AppField` only fire
+when the field component explicitly calls `field.handleBlur()`. Without this call,
+blur-based field synchronization won't work (e.g., username suggestions triggered when
+blurring the full name field).
+
+All reusable field components (`TextField`, `SuggestionsTextField`, `PasswordField`,
+etc.) must wire `onBlur={() => field.handleBlur()}` to support forms that use blur
+listeners for field coordination.
+
+### Summary Table
+
+| Pattern | Hook/Wrapper | Register Fields | Update Values | onBlur Support | Use Case | Example |
+|---------|--------------|-----------------|---------------|----------------|----------|---------|
+| Field component | `useFieldContext` | Via parent `form.AppField` | `field.handleChange()` | `field.handleBlur()` | Single field input | `TextField`, `DropdownField` |
+| Field group | `withForm` | **Must use `form.AppField`** | `field.handleChange()` | N/A (delegates to fields) | Multiple related fields | `PasswordFields`, `IpFields` |
+| Main form | `useAppForm` | Via `form.AppField` | `field.handleChange()` | N/A (delegates to fields) | Form orchestration | `ConnectionForm`, `SystemForm` |
+
+**Key takeaways:**
+- Always wrap fields in `form.AppField` to register them for validation. Using `form.setFieldValue()` alone won't register the field, and validation won't run.
+- Field components must call `field.handleBlur()` to support forms that use onBlur listeners for field coordination.
+
+---
+
 ## Code Organization
 
 The following conventions apply to all forms using TanStack Form across the
