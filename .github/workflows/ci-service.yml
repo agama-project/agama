@@ -47,33 +47,18 @@ jobs:
     env:
       COVERAGE: 1
 
-    defaults:
-      run:
-        working-directory: ./service
-
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
     container:
-      # FIXME: use some 16.0 based image (with Ruby 3.4, TW contains Ruby 4.0...)
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      # use the openSUSE Leap 16.0 as the base image
+      image: registry.opensuse.org/opensuse/leap:16.0
 
     steps:
 
-    - name: Git Checkout
-      uses: actions/checkout@v4
-
-    - name: Configure git
-      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+      run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
 
     - name: Install Ruby development files
-      run: zypper --non-interactive install
+      run: zypper --non-interactive install --no-recommends
         gcc
         gcc-c++
         make
@@ -84,9 +69,11 @@ jobs:
     - name: Install required packages
       run: |
         RUBY_VERSION=$(ruby -e "puts RbConfig::CONFIG['ruby_version']")
-        zypper --non-interactive install \
+        zypper --non-interactive install --no-recommends \
         suseconnect-ruby-bindings \
         autoyast2-installation \
+        libffi-devel \
+        git \
         yast2 \
         yast2-bootloader \
         yast2-country \
@@ -101,13 +88,18 @@ jobs:
         python3-jsonschema \
         gettext-tools \
         "rubygem(ruby:$RUBY_VERSION:yast-rake)" \
-        "rubygem(ruby:$RUBY_VERSION:gettext)" \
         which
 
+    - name: Configure git
+      run:  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+    - name: Git Checkout
+      uses: actions/checkout@v6
+
     - name: Install RubyGems dependencies
-      # install gems not included in Ruby 4.0
-      run: bundle config set --local with 'development' && bundle install && bundle add ostruct &&
-        bundle add cgi && bundle add fiddle
+      # install gems not included in openSUSE Leap 16.0
+      run: bundle config set --local with 'development' && bundle install && bundle add gettext
+      working-directory: ./service
 
     # "gem build" might create broken symlinks so we replaced them with a copy of the file,
     # ensure that all copies are the same (see bsc#1261340)
@@ -126,14 +118,17 @@ jobs:
           echo "Avoid using symlinks, see https://bugzilla.suse.com/show_bug.cgi?id=1261340"
           exit 1
         fi
+      working-directory: ./service
 
     - name: Check collecting translatable strings
       run: |
         rake pot
         msgfmt --statistics ../agama.pot
+      working-directory: ./service
 
     - name: Run the tests and generate coverage report
       run: bundle exec rspec
+      working-directory: ./service
 
     - name: Upload coverage result
       uses: actions/upload-artifact@v4

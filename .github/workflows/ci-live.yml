@@ -11,7 +11,7 @@ on:
 
       # this file as well
       - .github/workflows/ci-live.yml
-      # any change in the service subfolder
+      # any change in the live subfolder
       - live/**
 
   pull_request:
@@ -21,7 +21,7 @@ on:
 
       # this file as well
       - .github/workflows/ci-live.yml
-      # any change in the service subfolder
+      # any change in the live subfolder
       - live/**
 
   # allow running manually
@@ -37,25 +37,27 @@ jobs:
       run:
         working-directory: ./live
 
-    strategy:
-      fail-fast: false
-      matrix:
-        distro: [ "tumbleweed" ]
-
     container:
-      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
+      # use the openSUSE Leap 16.0 as the base image
+      image: registry.opensuse.org/opensuse/leap:16.0
 
     steps:
 
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Configure and refresh repositories
       # disable unused repositories to have faster refresh
-      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+      run: zypper modifyrepo -d openSUSE:repo-openh264 && zypper ref
 
     - name: Install development files
-      run: zypper --non-interactive install ShellCheck make agama-cli
+      run: zypper --non-interactive install --no-recommends
+        agama-cli
+        findutils
+        make
+        "rubygem(cheetah)"
+        "rubygem(rspec)"
+        ShellCheck
 
     - name: Run shellcheck
       run: make shellcheck
