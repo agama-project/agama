@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May 20 06:18:24 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Honor extraRepositories repository priorities when adding software
+  repositories through libzypp (related to gh#agama-project/agama#3483).
+
+-------------------------------------------------------------------
 Tue May 19 12:27:20 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Perform storage probing in a separate task to avoid blocking the
