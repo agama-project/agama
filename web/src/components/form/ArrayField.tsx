@@ -115,9 +115,16 @@ function pasteAnnouncement(
   );
 }
 
-/** Splits pasted text on whitespace and commas, returning non-empty entries. */
-function parsePasteEntries(text: string): string[] {
-  return sift(text.split(/[\s,]+/).map((t) => t.trim()));
+/**
+ * Splits pasted text into non-empty entries using the given pattern.
+ *
+ * Defaults to splitting on whitespace and commas. Blank entries produced
+ * by the split are always filtered out.
+ *
+ * @internal Exported for testing only.
+ */
+export function parsePasteEntries(text: string, splitPasteOn?: RegExp | string): string[] {
+  return sift(text.split(splitPasteOn ?? /[\s,]+/).map((t) => t.trim()));
 }
 
 /**
@@ -246,7 +253,7 @@ function Entry({ item, index, isActive, error, toLabel, onEdit, onRemove, valueI
   );
 }
 
-type MultiValueFieldProps = {
+type ArrayFieldProps = {
   /**
    * Label rendered by PatternFly's FormGroup.
    *
@@ -315,6 +322,19 @@ type MultiValueFieldProps = {
   skipDuplicates?: boolean;
 
   /**
+   * Pattern used to split pasted text into individual entries.
+   *
+   * Defaults to whitespace and commas, which works for most use cases
+   * (IP addresses, hostnames, emails, etc.). Override when entries
+   * themselves contain spaces — for example, pass `"\n"` for SSH public
+   * keys, which are one-per-line.
+   *
+   * Blank entries are always filtered out after splitting regardless of
+   * the pattern used.
+   */
+  splitPasteOn?: RegExp | string;
+
+  /**
    * Additional guidance shown alongside the error messages.
    *
    * Only rendered when the field has errors. Use to explain the expected
@@ -338,7 +358,15 @@ type MultiValueFieldProps = {
  * Keyboard navigation follows the ARIA listbox pattern: ArrowLeft/Right/Up/Down
  * move between entries, Enter and Space activate the focused one, Home/End jump
  * to the first or last, and Escape exits navigation. Pasting a whitespace- or
- * comma-separated string adds all tokens at once.
+ * comma-separated string adds all tokens at once. The splitting pattern can be
+ * customized via `splitPasteOn` (e.g., `"\n"` for newline-separated entries).
+ *
+ * The component correctly handles newline splitting because the paste event
+ * handler reads from `clipboardData.getData('text')` before the browser
+ * sanitizes the value. Text inputs strip newlines per HTML spec when assigning
+ * to `.value`, but the paste event provides raw clipboard data. See
+ * `parsePasteEntries` unit tests for verification of the splitting logic.
+ * Reference: https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search)
  *
  * Two validation modes are available:
  * - `validateOnChange`: runs on every commit; marks invalid entries right away.
@@ -398,7 +426,8 @@ export default function ArrayField({
   displayValue,
   toDraft,
   skipDuplicates = false,
-}: MultiValueFieldProps) {
+  splitPasteOn,
+}: ArrayFieldProps) {
   const field = useFieldContext<string[]>();
   const value = field.state.value;
   const onChange = (next: string[]) => field.handleChange(next);
@@ -578,7 +607,7 @@ export default function ArrayField({
   };
 
   const onPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const entries = parsePasteEntries(e.clipboardData.getData("text"));
+    const entries = parsePasteEntries(e.clipboardData.getData("text"), splitPasteOn);
     if (entries.length <= 1) return;
     e.preventDefault();
 
