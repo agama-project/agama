@@ -21,9 +21,9 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import RootUserForm from "./RootUserForm";
+import RootUserForm from "./Form";
 
 let mockPassword: string;
 let mockPublicKey: string;
@@ -82,8 +82,7 @@ describe("RootUserForm", () => {
     expect(passwordInput).toHaveValue("");
     expect(passwordConfirmationInput).toHaveValue("");
     await user.click(acceptButton);
-    screen.getByText("Warning alert:");
-    screen.getByText("Password is empty.");
+    screen.getByText("Password is required");
     expect(mockPatchConfig).not.toHaveBeenCalled();
   });
 
@@ -95,18 +94,18 @@ describe("RootUserForm", () => {
     await user.type(passwordInput, "n0tS3cr3t");
     await user.type(passwordConfirmationInput, "S3cr3t");
     await user.click(acceptButton);
-    screen.getByText("Warning alert:");
     screen.getByText("Passwords do not match");
     expect(mockPatchConfig).not.toHaveBeenCalled();
   });
 
   it("allows clearing the password", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
+    const authSelector = screen.getByRole("button", { name: /Authentication/ });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
-    expect(passwordToggle).toBeChecked();
-    await user.click(passwordToggle);
-    expect(passwordToggle).not.toBeChecked();
+    await user.click(authSelector);
+    const listbox = screen.getByRole("listbox");
+    const noneOption = within(listbox).getByRole("option", { name: /None/ });
+    await user.click(noneOption);
     await user.click(acceptButton);
     expect(mockPatchConfig).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -115,13 +114,17 @@ describe("RootUserForm", () => {
     );
   });
 
-  it("allows setting a public SSH Key ", async () => {
+  it("allows setting a public SSH Key", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
-    const acceptButton = screen.getByRole("button", { name: "Accept" });
-    await user.click(sshPublicKeyToggle);
-    const sshPublicKeyInput = screen.getByRole("textbox", { name: "File upload" });
+    const authSelector = screen.getByRole("button", { name: /Authentication/ });
+    await user.click(authSelector);
+    const listbox = screen.getByRole("listbox");
+    const sshKeyOption = within(listbox).getByRole("option", { name: /SSH Public Key/ });
+    await user.click(sshKeyOption);
+    const sshPublicKeyInput = screen.getByRole("textbox", { name: "SSH Public Keys" });
     await user.type(sshPublicKeyInput, "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example");
+    await user.keyboard("{Enter}");
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
     await user.click(acceptButton);
     expect(mockPatchConfig).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -134,28 +137,56 @@ describe("RootUserForm", () => {
 
   it("does not allow setting an empty public SSH Key", async () => {
     const { user } = installerRender(<RootUserForm />);
-    const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
+    const authSelector = screen.getByRole("button", { name: /Authentication/ });
+    await user.click(authSelector);
+    const listbox = screen.getByRole("listbox");
+    const sshKeyOption = within(listbox).getByRole("option", { name: /SSH Public Key/ });
+    await user.click(sshKeyOption);
     const acceptButton = screen.getByRole("button", { name: "Accept" });
-    await user.click(sshPublicKeyToggle);
-    expect(sshPublicKeyToggle).toBeChecked();
     await user.click(acceptButton);
-    screen.getByText("Warning alert:");
-    screen.getByText("Public SSH Key is empty.");
+    screen.getByText("At least one SSH public key is required");
     expect(mockPatchConfig).not.toHaveBeenCalled();
   });
 
   it("allows clearing the public SSH Key", async () => {
     mockPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example";
     const { user } = installerRender(<RootUserForm />);
-    const sshPublicKeyToggle = screen.getByRole("checkbox", { name: "Use public SSH Key" });
+    const authSelector = screen.getByRole("button", { name: /Authentication/ });
     const acceptButton = screen.getByRole("button", { name: "Accept" });
-    expect(sshPublicKeyToggle).toBeChecked();
-    await user.click(sshPublicKeyToggle);
-    expect(sshPublicKeyToggle).not.toBeChecked();
+    await user.click(authSelector);
+    const noneOption = await screen.findByRole("option", { name: /None/ });
+    await user.click(noneOption);
     await user.click(acceptButton);
     expect(mockPatchConfig).toHaveBeenCalledWith(
       expect.objectContaining({
         root: expect.objectContaining({ sshPublicKey: "" }),
+      }),
+    );
+  });
+
+  it("allows using both password and SSH key", async () => {
+    const { user } = installerRender(<RootUserForm />);
+    const authSelector = screen.getByRole("button", { name: /Authentication/ });
+    await user.click(authSelector);
+    const listbox = screen.getByRole("listbox");
+    const bothOption = within(listbox).getByRole("option", { name: /Both/ });
+    await user.click(bothOption);
+    const passwordInput = screen.getByLabelText("Password");
+    const passwordConfirmationInput = screen.getByLabelText("Password confirmation");
+    await user.type(passwordInput, "n0tS3cr3t");
+    await user.type(passwordConfirmationInput, "n0tS3cr3t");
+    const sshPublicKeyInput = screen.getByRole("textbox", { name: "SSH Public Keys" });
+    await user.type(sshPublicKeyInput, "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example");
+    await user.keyboard("{Enter}");
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(acceptButton);
+    expect(mockPatchConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        root: expect.objectContaining({
+          password: "n0tS3cr3t",
+          hashedPassword: false,
+          sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDM+ test@example",
+        }),
       }),
     );
   });
@@ -168,9 +199,7 @@ describe("RootUserForm", () => {
 
     it("allows preserving it", async () => {
       const { user } = installerRender(<RootUserForm />);
-      const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
-      expect(passwordToggle).toBeChecked();
       screen.getByText("Using a hashed password.");
       await user.click(acceptButton);
       expect(mockPatchConfig).toHaveBeenCalledWith(
@@ -185,11 +214,12 @@ describe("RootUserForm", () => {
 
     it("allows discarding it", async () => {
       const { user } = installerRender(<RootUserForm />);
-      const passwordToggle = screen.getByRole("checkbox", { name: "Use password" });
+      const authSelector = screen.getByRole("button", { name: /Authentication/ });
       const acceptButton = screen.getByRole("button", { name: "Accept" });
-      expect(passwordToggle).toBeChecked();
-      await user.click(passwordToggle);
-      expect(passwordToggle).not.toBeChecked();
+      await user.click(authSelector);
+      const listbox = screen.getByRole("listbox");
+      const noneOption = within(listbox).getByRole("option", { name: /None/ });
+      await user.click(noneOption);
       await user.click(acceptButton);
       expect(mockPatchConfig).toHaveBeenCalledWith(
         expect.objectContaining({
