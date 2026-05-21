@@ -23,7 +23,7 @@ use agama_lib::{
     monitor::{InstallationStatus, Monitor, MonitorUpdate},
 };
 use anyhow::{anyhow, Result};
-use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyEventKind};
+use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use futures_util::StreamExt;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
@@ -244,7 +244,9 @@ impl MonitorApp {
 
         matches!(
             (key_event.code, key_event.modifiers),
-            (KeyCode::Char('q'), _) | (KeyCode::Esc, _)
+            (KeyCode::Char('q'), _)
+                | (KeyCode::Esc, _)
+                | (KeyCode::Char('c'), KeyModifiers::CONTROL)
         )
     }
 }
@@ -253,18 +255,17 @@ impl MonitorApp {
 /// This allows rendering using ratatui's widget system
 impl Widget for &mut MonitorApp {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let layout = ui::create_layout(area);
+        let product_name = self
+            .status
+            .system_info
+            .product_id
+            .as_ref()
+            .and_then(|id| self.product_names.get(id));
 
-        // Render each section using widget structs
-        ui::StatusBar::new(&self.status, &self.theme).render(layout.status_bar, buf);
-        if let Some(product_id) = &self.status.system_info.product_id {
-            if let Some(name) = self.product_names.get(product_id) {
-                ui::Product::new(name).render(layout.product, buf);
-            }
-        }
-        ui::Separator.render(layout.separator, buf);
+        let summary = ui::Summary::new(&self.status, product_name.cloned());
+        let layout = ui::create_layout(area, summary.indentation);
+
+        summary.render(layout.summary, buf);
         ui::Content::new(&self.status, &self.theme).render(layout.content, buf);
-        ui::Separator.render(layout.hints_separator, buf);
-        ui::Hints.render(layout.hints, buf);
     }
 }
