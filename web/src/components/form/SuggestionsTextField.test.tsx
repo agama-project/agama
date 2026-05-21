@@ -124,9 +124,7 @@ describe("SuggestionsTextField", () => {
     });
 
     it("shows both helper text and error when there is an error", async () => {
-      const { user } = installerRender(
-        <SuggestionsTextFieldForm helperText="Choose a username" />,
-      );
+      const { user } = installerRender(<SuggestionsTextFieldForm helperText="Choose a username" />);
       await user.click(screen.getByRole("button", { name: "Submit" }));
       screen.getByText("Choose a username");
       await screen.findByText("Text is required");

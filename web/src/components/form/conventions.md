@@ -233,12 +233,43 @@ validation is handled in a single `onSubmitAsync` validator on the form, which
 returns a map of field names to error messages. TanStack Form forwards each
 message to the corresponding field's error display.
 
-After a failed attempt the user may correct and resubmit. Because TanStack Form
-only clears errors set by `onSubmitAsync` when a per-field `onSubmit` validator
-also runs for the same field (which never happens here), `canSubmit` would stay
-`false` indefinitely after a failure. The form works around this by calling
-`setErrorMap` before each new attempt to reset the error state and restore
-`canSubmit`.
+### Clearing validation errors between submit attempts
+
+**CRITICAL**: When using `onSubmitAsync` validation, you **must** call
+`form.setErrorMap({ onSubmit: { fields: {} } })` before `form.handleSubmit()`.
+
+After a failed validation attempt, the user may correct the errors and resubmit.
+However, TanStack Form only clears errors set by `onSubmitAsync` when a
+per-field `onSubmit` validator also runs for the same field. Since we use
+centralized validation in `onSubmitAsync` without per-field validators,
+`canSubmit` would stay `false` indefinitely after a failure, preventing
+resubmission even after corrections.
+
+The form works around this by calling `setErrorMap` before each new attempt to
+reset the error state and restore `canSubmit`.
+
+**Required pattern:**
+
+```tsx
+<Form
+  onSubmit={(e) => {
+    e.preventDefault();
+    // REQUIRED: Clear previous validation errors before resubmitting
+    form.setErrorMap({ onSubmit: { fields: {} } });
+    form.handleSubmit();
+  }}
+>
+```
+
+**Why this matters:**
+
+- Without this call, validation errors from a previous submit attempt persist
+- The form's `canSubmit` state remains `false` even after the user fixes errors
+- Users cannot resubmit the form without refreshing the page
+
+**Reference:** [TanStack Form setErrorMap documentation](https://tanstack.com/form/latest/docs/reference/formApi#seterrormap)
+
+### Server errors
 
 Server errors follow the same path: a save failure returns `{ form: message }`,
 which TanStack Form exposes via `state.errorMap.onSubmit.form`. The form

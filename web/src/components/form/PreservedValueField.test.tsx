@@ -37,7 +37,7 @@ describe("PreservedValueField", () => {
       installerRender(
         <PreservedValueField
           preservedMessage="Using a hashed password."
-          isPreserving={true}
+          isPreserving
           onEdit={onEdit}
         >
           <input type="text" />
@@ -51,7 +51,7 @@ describe("PreservedValueField", () => {
       installerRender(
         <PreservedValueField
           preservedMessage="Using a hashed password."
-          isPreserving={true}
+          isPreserving
           onEdit={onEdit}
         >
           <input type="text" />
@@ -66,7 +66,7 @@ describe("PreservedValueField", () => {
         <PreservedValueField
           preservedMessage="Using a hashed password."
           changeButtonLabel="Edit password"
-          isPreserving={true}
+          isPreserving
           onEdit={onEdit}
         >
           <input type="text" />
@@ -80,7 +80,7 @@ describe("PreservedValueField", () => {
       const { user } = installerRender(
         <PreservedValueField
           preservedMessage="Using a hashed password."
-          isPreserving={true}
+          isPreserving
           onEdit={onEdit}
         >
           <input type="text" />
@@ -95,7 +95,7 @@ describe("PreservedValueField", () => {
       installerRender(
         <PreservedValueField
           preservedMessage="Using a hashed password."
-          isPreserving={true}
+          isPreserving
           onEdit={onEdit}
         >
           <input type="text" aria-label="Password field" />
