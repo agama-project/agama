@@ -137,7 +137,7 @@ export default function SystemSummary() {
 
   return (
     <Summary
-      icon="fingerprint"
+      icon="monitor"
       title={
         <Link to={SYSTEM.root} variant="link" isInline>
           {_("System")}

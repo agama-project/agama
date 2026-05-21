@@ -22,14 +22,15 @@
 //! listen for events.
 
 use agama_utils::api::Event;
+use std::time::Duration;
 use tokio::{net::TcpStream, sync::broadcast};
 use tokio_native_tls::native_tls;
 use tokio_stream::StreamExt;
 use tokio_tungstenite::{
-    connect_async_tls_with_config,
+    client_async_tls_with_config,
     tungstenite::{
         http::{self, Uri},
-        ClientRequestBuilder,
+        ClientRequestBuilder, Message,
     },
     Connector, WebSocketStream,
 };
@@ -76,11 +77,28 @@ impl WebSocketClient {
         auth_token: &AuthToken,
         insecure: bool,
     ) -> Result<Self, WebSocketError> {
+        let host = url
+            .host_str()
+            .ok_or_else(|| WebSocketError::MissingHostname(url.to_string()))?;
+        let port = url
+            .port()
+            .unwrap_or(if url.scheme() == "wss" { 443 } else { 80 });
+
+        // Manually create TCP socket to enable keepalive
+        let tcp_stream = TcpStream::connect((host, port)).await?;
+
+        // Enable TCP keepalive to detect broken connections
+        // This will cause recv() to fail if the connection is dead
+        let socket_ref = socket2::SockRef::from(&tcp_stream);
+        let keepalive = socket2::TcpKeepalive::new()
+            .with_time(Duration::from_secs(30)) // Send first probe after 30s of inactivity
+            .with_interval(Duration::from_secs(10)); // Send probes every 10s
+        socket_ref.set_tcp_keepalive(&keepalive)?;
+
         let tls_connector = native_tls::TlsConnector::builder()
             .danger_accept_invalid_certs(insecure)
             .danger_accept_invalid_hostnames(insecure)
             .build()?;
-        let tls_connector: native_tls::TlsConnector = tls_connector;
 
         let connector = Connector::NativeTls(tls_connector);
         let uri: Uri = url.as_str().parse()?;
@@ -89,24 +107,44 @@ impl WebSocketClient {
         let request =
             ClientRequestBuilder::new(uri).with_header("Authorization", format!("Bearer {token}"));
 
-        // The connect_async_tls_config receives a request, the WebSocket
-        // configuration, whether to disable the "Nagle's algorithm"
-        // (recommended to false) and the connector.
-        //
-        // See https://docs.rs/tokio-tungstenite/latest/tokio_tungstenite/fn.connect_async_tls_with_config.html.
+        // Upgrade the TCP stream to WebSocket
         let (socket, _response) =
-            connect_async_tls_with_config(request, None, false, Some(connector)).await?;
+            client_async_tls_with_config(request, tcp_stream, None, Some(connector)).await?;
 
         Ok(Self { socket })
     }
 
     /// Receive an event from the websocket.
     ///
-    /// It returns the message as an event.
+    /// It returns the message as an event. Ping/Pong frames are handled
+    /// automatically and filtered out. If the connection breaks, this will
+    /// return an error (thanks to TCP keepalive).
     pub async fn receive(&mut self) -> Result<Event, WebSocketError> {
-        let msg = self.socket.next().await.ok_or(WebSocketError::Closed)?;
-        let content = msg?.to_string();
-        let event: Event = serde_json::from_str(&content)?;
-        Ok(event)
+        loop {
+            let msg = self.socket.next().await.ok_or(WebSocketError::Closed)??;
+
+            match msg {
+                Message::Text(text) => {
+                    let event: Event = serde_json::from_str(&text)?;
+                    return Ok(event);
+                }
+                Message::Binary(bytes) => {
+                    let text = String::from_utf8_lossy(&bytes);
+                    let event: Event = serde_json::from_str(&text)?;
+                    return Ok(event);
+                }
+                Message::Ping(_) | Message::Pong(_) => {
+                    // Tungstenite automatically handles ping/pong, just skip
+                    continue;
+                }
+                Message::Close(_) => {
+                    return Err(WebSocketError::Closed);
+                }
+                Message::Frame(_) => {
+                    // Raw frames shouldn't appear in normal usage
+                    continue;
+                }
+            }
+        }
     }
 }
