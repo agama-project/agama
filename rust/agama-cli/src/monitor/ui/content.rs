@@ -31,10 +31,7 @@ use ratatui::{
     widgets::{Paragraph, Widget, Wrap},
 };
 
-use crate::monitor::{
-    theme::Theme,
-    ui::{issues::IssuesList, progress::Progress},
-};
+use crate::monitor::ui::{issues::IssuesList, progress::Progress};
 
 /// Represents the main content of the monitor.
 ///
@@ -42,7 +39,6 @@ use crate::monitor::{
 /// the list of questions, etc.
 pub struct Content<'a> {
     status: &'a InstallationStatus,
-    theme: &'a Theme,
 }
 
 impl<'a> Content<'a> {
@@ -50,8 +46,8 @@ impl<'a> Content<'a> {
     ///
     /// * `status`: current installation status.
     /// * `theme`: UI theme to apply.
-    pub fn new(status: &'a InstallationStatus, theme: &'a Theme) -> Self {
-        Self { status, theme }
+    pub fn new(status: &'a InstallationStatus) -> Self {
+        Self { status }
     }
 
     /// Renders questions
@@ -177,7 +173,7 @@ impl<'a> Content<'a> {
         }
 
         for progress in &detail_progresses {
-            let widget = Progress::new(progress, !has_master_progress, self.theme);
+            let widget = Progress::new(progress, !has_master_progress);
             let height = widget.height() + 1;
             let area = Rect {
                 y: current_y,

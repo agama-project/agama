@@ -25,7 +25,6 @@
 //! When no terminal is available, it falls back to a simple text-based monitor.
 
 mod app;
-mod theme;
 mod ui;
 
 use agama_lib::{
@@ -36,8 +35,6 @@ use anyhow::Result;
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use ratatui::{backend::CrosstermBackend, Terminal, TerminalOptions, Viewport};
 use std::io::{self, IsTerminal};
-
-use theme::Theme;
 
 use crate::monitor::app::MonitorAppBuilder;
 
@@ -137,7 +134,6 @@ pub async fn run(
 
     // Create app state with selected theme
     let mut app = MonitorAppBuilder::new(http_client, websocket)
-        .with_theme(Theme::monochrome())
         .with_stop_on_idle(stop_on_idle)
         .build()
         .await?;

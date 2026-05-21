@@ -30,7 +30,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, io};
 use tokio::sync::mpsc;
 
-use super::{theme::Theme, ui};
+use super::ui;
 
 /// Application messages (internal).
 #[derive(Clone, Debug)]
@@ -80,7 +80,6 @@ struct MinimalSystemInfo {
 pub struct MonitorAppBuilder {
     pub http_client: BaseHTTPClient,
     pub websocket_client: WebSocketClient,
-    pub theme: Theme,
     pub stop_on_idle: bool,
 }
 
@@ -89,14 +88,8 @@ impl MonitorAppBuilder {
         Self {
             http_client,
             websocket_client,
-            theme: Theme::default(),
             stop_on_idle: false,
         }
-    }
-    /// Creates a new MonitorApp with a specific theme.
-    pub fn with_theme(mut self, theme: Theme) -> Self {
-        self.theme = theme;
-        self
     }
 
     /// Sets the monitor to stop after going idle (no running progress).
@@ -113,7 +106,6 @@ impl MonitorAppBuilder {
         Ok(MonitorApp {
             updates: Some(updates),
             status,
-            theme: self.theme,
             product_names,
         })
     }
@@ -137,8 +129,6 @@ pub struct MonitorApp {
     status: InstallationStatus,
     /// Product names
     product_names: HashMap<String, String>,
-    /// UI color theme
-    theme: Theme,
 }
 
 impl MonitorApp {
@@ -266,6 +256,6 @@ impl Widget for &mut MonitorApp {
         let layout = ui::create_layout(area, summary.indentation);
 
         summary.render(layout.summary, buf);
-        ui::Content::new(&self.status, &self.theme).render(layout.content, buf);
+        ui::Content::new(&self.status).render(layout.content, buf);
     }
 }
