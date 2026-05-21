@@ -30,7 +30,7 @@
 import ipaddr from "ipaddr.js";
 import { formOptions } from "@tanstack/react-form";
 import { isEmpty, shake } from "radashi";
-import { requiredString, requiredValidList } from "~/components/form/validation-helpers";
+import { requiredValidList, requiredValidString } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
 import type {
@@ -127,7 +127,12 @@ function validateHostnameFields(
     hostnameValue:
       formValues.hostnameMode === HOSTNAME_MODE.STATIC
         ? // TRANSLATORS: validation error when static hostname value is empty
-          requiredString(formValues.hostnameValue, _("Enter a hostname value."))
+          requiredValidString(
+            formValues.hostnameValue,
+            (value) => HOSTNAME_RE.test(value),
+            _("Enter a hostname value."),
+            _("Invalid hostname value."),
+          )
         : undefined,
   };
 }
