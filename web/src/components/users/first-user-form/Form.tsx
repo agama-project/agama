@@ -22,20 +22,22 @@
 
 import React from "react";
 import { useNavigate } from "react-router";
+import { castArrayIfExists, isNullish } from "radashi";
 import { Alert, ActionGroup, Form } from "@patternfly/react-core";
+import LabelText from "~/components/form/LabelText";
 import Page from "~/components/core/Page";
-import PreservedValueField from "~/components/form/PreservedValueField";
 import PasswordCheck from "~/components/users/PasswordCheck";
 import PasswordFields from "./PasswordFields";
+import PreservedValueField from "~/components/form/PreservedValueField";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useConfig } from "~/hooks/model/config";
 import { patchConfig } from "~/api";
 import { suggestUsernames } from "~/components/users/utils";
 import { USER } from "~/routes/paths";
+import { defaultOptions, isPrivateKey, isValidSshKey, validate } from "./fields";
 import { _ } from "~/i18n";
-import { defaultOptions, validate } from "./fields";
+
 import type { User } from "~/model/config";
-import { isNullish } from "radashi";
 
 type FirstUserFormContentProps = {
   defaults?: Partial<typeof defaultOptions.defaultValues>;
@@ -60,6 +62,7 @@ function FirstUserFormContent({ defaults }: FirstUserFormContentProps) {
             ? firstUser?.password || ""
             : formValues.password,
           hashedPassword: formValues.usingHashedPassword,
+          sshPublicKey: formValues.sshPublicKey,
         };
 
         try {
@@ -131,6 +134,26 @@ function FirstUserFormContent({ defaults }: FirstUserFormContentProps) {
           )}
         </form.Subscribe>
 
+        <form.AppField name="sshPublicKey">
+          {(field) => (
+            <field.ArrayField
+              // TRANSLATORS: label for NTP servers input field
+              label={<LabelText suffix={_("(optional)")}>{_("SSH Public Keys")}</LabelText>}
+              skipDuplicates
+              maxEntryWidth={60}
+              splitPasteOn={/\r?\n/}
+              validateOnSubmit={(v) =>
+                // TRANSLATORS: validation error for an invalid NTP server address entry
+                isValidSshKey(v) && !isPrivateKey(v) ? undefined : _("Invalid SSH Key")
+              }
+              helperText={
+                // TRANSLATORS: helper text for SSH Public Keys.
+                _("Enter or paste your public keys.")
+              }
+            />
+          )}
+        </form.AppField>
+
         <ActionGroup>
           <Page.Submit form="firstUserForm" />
           <Page.Cancel />
@@ -157,6 +180,7 @@ export default function FirstUserForm() {
             fullName: firstUser?.fullName,
             userName: firstUser?.userName,
             usingHashedPassword: firstUser?.hashedPassword,
+            sshPublicKey: castArrayIfExists(firstUser?.sshPublicKey),
           }}
         />
       </Page.Content>

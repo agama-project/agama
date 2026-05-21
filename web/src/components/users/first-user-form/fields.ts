@@ -38,13 +38,14 @@ type UserFormFields = {
   usernameSuggestions: string[];
 };
 
-type PasswordFormFields = {
+type CredentialsFormFields = {
   usingHashedPassword: boolean;
   password: string;
   passwordConfirmation: string;
+  sshPublicKey?: string[];
 };
 
-type FormFields = UserFormFields & PasswordFormFields;
+type FormFields = UserFormFields & CredentialsFormFields;
 
 /** Defaults */
 
@@ -54,6 +55,7 @@ const defaultValues: FormFields = {
   password: "",
   passwordConfirmation: "",
   usingHashedPassword: false,
+  sshPublicKey: [],
   usernameSuggestions: [],
 };
 
@@ -61,21 +63,38 @@ export const defaultOptions = formOptions({ defaultValues });
 
 /** Validation */
 
-const validatePasswordFields = (fields: FormFields): FieldsValidationResult<PasswordFormFields> => {
-  const { usingHashedPassword, password, passwordConfirmation } = fields;
+const SSH_PUBLIC_KEY_REGEX = /^(ssh-|ecdsa-|sk-)\S+\s+[A-Za-z0-9+/]+=*(\s+.*)?$/;
 
-  if (usingHashedPassword) return {};
+export const isValidSshKey = (value: string) => SSH_PUBLIC_KEY_REGEX.test(value);
+export const isPrivateKey = (value: string) => value.includes("PRIVATE KEY");
 
-  const errors: FieldsValidationResult<FormFields> = {
-    password: requiredString(password, _("Password is required")),
-    passwordConfirmation: requiredString(
+const validateSshPublicKey = (key: string): string | undefined => {
+  if (isPrivateKey(key)) return _("Private keys are not allowed");
+  if (!isValidSshKey(key)) return _("Invalid SSH public key");
+};
+
+const validateCredentialsFields = (
+  fields: FormFields,
+): FieldsValidationResult<CredentialsFormFields> => {
+  const { usingHashedPassword, password, passwordConfirmation, sshPublicKey } = fields;
+
+  const errors: FieldsValidationResult<FormFields> = {};
+
+  if (!usingHashedPassword) {
+    errors.password = requiredString(password, _("Password is required"));
+    errors.passwordConfirmation = requiredString(
       passwordConfirmation,
       _("Password confirmation is required"),
-    ),
-  };
+    );
 
-  if (password && passwordConfirmation && password !== passwordConfirmation) {
-    errors.passwordConfirmation = _("Passwords do not match");
+    if (password && passwordConfirmation && password !== passwordConfirmation) {
+      errors.passwordConfirmation = _("Passwords do not match");
+    }
+  }
+
+  const invalidKey = sshPublicKey.find((key) => validateSshPublicKey(key) !== undefined);
+  if (invalidKey) {
+    errors.sshPublicKey = validateSshPublicKey(invalidKey);
   }
 
   return errors;
@@ -93,7 +112,7 @@ const validateUserFields = (fields: FormFields): FieldsValidationResult<UserForm
 export function validate(fields: FormFields): ValidationResult<FormFields> {
   const fieldErrors = shake({
     ...validateUserFields(fields),
-    ...validatePasswordFields(fields),
+    ...validateCredentialsFields(fields),
   });
 
   return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;

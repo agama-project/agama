@@ -25,6 +25,7 @@ type Config = {
   userName: string;
   password: string;
   hashedPassword?: boolean;
+  sshPublicKey?: string | string[];
 };
 
 export type { Config };
