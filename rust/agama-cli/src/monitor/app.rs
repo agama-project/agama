@@ -23,10 +23,11 @@ use agama_lib::{
     monitor::{InstallationStatus, Monitor, MonitorUpdate},
 };
 use anyhow::{anyhow, Result};
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
+use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyEventKind};
+use futures_util::StreamExt;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
-use std::{collections::HashMap, io, time::Duration};
+use std::{collections::HashMap, io};
 use tokio::sync::mpsc;
 
 use super::{theme::Theme, ui};
@@ -189,17 +190,15 @@ impl MonitorApp {
         // Spawn task to read terminal events
         let tx_terminal = tx.clone();
         let terminal_handle = tokio::task::spawn(async move {
-            loop {
-                match crossterm::event::poll(Duration::from_millis(100)) {
-                    Ok(true) => {
-                        if let Ok(event) = crossterm::event::read() {
-                            if tx_terminal.send(Message::Terminal(event)).await.is_err() {
-                                break;
-                            }
+            let mut event_stream = EventStream::new();
+            while let Some(event) = event_stream.next().await {
+                match event {
+                    Ok(event) => {
+                        if tx_terminal.send(Message::Terminal(event)).await.is_err() {
+                            break;
                         }
                     }
                     Err(_) => break,
-                    _ => {}
                 }
             }
         });
