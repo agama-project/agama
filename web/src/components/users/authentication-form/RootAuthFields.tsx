@@ -25,7 +25,13 @@ import NestedContent from "~/components/core/NestedContent";
 import { Fieldset } from "~/components/form/Fieldset";
 import PreservedValueField from "~/components/form/PreservedValueField";
 import PasswordCheck from "~/components/users/PasswordCheck";
-import { AuthMode, defaultOptions, isPrivateKey, isValidSshKey } from "./fields";
+import {
+  AuthMode,
+  authModeRequirements,
+  defaultOptions,
+  isPrivateKey,
+  isValidSshKey,
+} from "./fields";
 import { withForm } from "~/hooks/form";
 import { _ } from "~/i18n";
 
@@ -127,8 +133,7 @@ const RootAuthFields = withForm({
           })}
         >
           {({ authMode, usingHashedPassword }) => {
-            const needsPassword = authMode === AuthMode.PASSWORD || authMode === AuthMode.BOTH;
-            const needsSshKey = authMode === AuthMode.SSH_KEY || authMode === AuthMode.BOTH;
+            const { needsPassword, needsSshKey } = authModeRequirements(authMode);
 
             return (
               <>

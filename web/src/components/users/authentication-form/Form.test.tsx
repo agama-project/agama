@@ -21,23 +21,14 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import type { User, Root } from "~/model/config";
 import AuthenticationForm from "./Form";
 
-let mockFirstUser:
-  | {
-      fullName?: string;
-      userName?: string;
-      password?: string;
-      hashedPassword?: boolean;
-      sshPublicKeys?: string | string[];
-    }
-  | undefined;
-let mockRootUser:
-  | { password?: string; hashedPassword?: boolean; sshPublicKeys?: string }
-  | undefined;
-const mockPatchConfig = jest.fn().mockResolvedValue(true);
+let mockFirstUser: User.Config | undefined;
+let mockRootUser: Root.Config | undefined;
+const mockPutConfig = jest.fn().mockResolvedValue(true);
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
@@ -51,7 +42,7 @@ jest.mock("~/hooks/model/config", () => ({
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
-  patchConfig: (config) => mockPatchConfig(config),
+  putConfig: (config) => mockPutConfig(config),
 }));
 
 describe("AuthenticationForm", () => {
@@ -164,7 +155,7 @@ describe("AuthenticationForm", () => {
 
       await user.click(submitButton);
 
-      expect(mockPatchConfig).not.toHaveBeenCalled();
+      expect(mockPutConfig).not.toHaveBeenCalled();
       screen.getByText(/No changes detected/i);
     });
 
@@ -179,7 +170,7 @@ describe("AuthenticationForm", () => {
       await user.type(screen.getByLabelText("Password confirmation"), "secret123");
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
-      expect(mockPatchConfig).toHaveBeenCalledWith(
+      expect(mockPutConfig).toHaveBeenCalledWith(
         expect.objectContaining({
           user: expect.objectContaining({
             fullName: "John Smith",
@@ -203,9 +194,75 @@ describe("AuthenticationForm", () => {
       await user.click(checkbox);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
-      expect(mockPatchConfig).toHaveBeenCalledWith(
+      const callArg = mockPutConfig.mock.calls[0][0];
+      expect(callArg).not.toHaveProperty("user");
+    });
+
+    it("preserves root when updating only first user", async () => {
+      mockFirstUser = {
+        fullName: "Jane Doe",
+        userName: "jdoe",
+        password: "userpass",
+        hashedPassword: false,
+      };
+      mockRootUser = {
+        password: "rootpass",
+        hashedPassword: false,
+      };
+
+      const { user } = installerRender(<AuthenticationForm />);
+      const fullNameInput = screen.getByLabelText("Full name");
+
+      await user.clear(fullNameInput);
+      await user.type(fullNameInput, "Jane Smith");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      expect(mockPutConfig).toHaveBeenCalledWith(
         expect.objectContaining({
-          user: null,
+          user: expect.objectContaining({
+            fullName: "Jane Smith",
+            userName: "jdoe",
+          }),
+          root: expect.objectContaining({
+            password: "rootpass",
+          }),
+        }),
+      );
+    });
+
+    it("preserves first user when updating only root", async () => {
+      mockFirstUser = {
+        fullName: "Jane Doe",
+        userName: "jdoe",
+        password: "userpass",
+        hashedPassword: false,
+      };
+      mockRootUser = {
+        password: "oldpass",
+        hashedPassword: false,
+      };
+
+      const { user } = installerRender(<AuthenticationForm />);
+
+      const rootGroup = screen.getByRole("group", { name: "Root" });
+      const passwordInput = within(rootGroup).getByLabelText("Password");
+      const confirmationInput = within(rootGroup).getByLabelText("Password confirmation");
+
+      await user.clear(passwordInput);
+      await user.type(passwordInput, "newpass");
+      await user.clear(confirmationInput);
+      await user.type(confirmationInput, "newpass");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      expect(mockPutConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user: expect.objectContaining({
+            fullName: "Jane Doe",
+            userName: "jdoe",
+          }),
+          root: expect.objectContaining({
+            password: "newpass",
+          }),
         }),
       );
     });
@@ -219,15 +276,52 @@ describe("AuthenticationForm", () => {
       await user.click(checkbox);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
-      expect(mockPatchConfig).not.toHaveBeenCalled();
+      expect(mockPutConfig).not.toHaveBeenCalled();
       screen.getByText("Full name is required");
       screen.getByText("Username is required");
     });
   });
 
+  describe("backend compatibility", () => {
+    it("loads SSH key from sshPublicKey field (string)", () => {
+      mockRootUser = {
+        sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
+      };
+
+      installerRender(<AuthenticationForm />);
+
+      const dropdown = screen.getByLabelText("Authentication mode");
+      expect(dropdown).toHaveTextContent("SSH Public Key");
+    });
+
+    it("loads SSH key from sshPublicKeys field (string)", () => {
+      mockRootUser = {
+        sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
+      };
+
+      installerRender(<AuthenticationForm />);
+
+      const dropdown = screen.getByLabelText("Authentication mode");
+      expect(dropdown).toHaveTextContent("SSH Public Key");
+    });
+
+    it("loads first user SSH key from sshPublicKey field (string)", () => {
+      mockFirstUser = {
+        fullName: "Jane Doe",
+        userName: "jdoe",
+        sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host",
+      };
+
+      installerRender(<AuthenticationForm />);
+
+      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
+      expect(checkbox).toBeChecked();
+    });
+  });
+
   describe("server errors", () => {
     it("displays error alert when API call fails", async () => {
-      mockPatchConfig.mockRejectedValueOnce({ message: "Network error" });
+      mockPutConfig.mockRejectedValueOnce({ message: "Network error" });
 
       const { user } = installerRender(<AuthenticationForm />);
       const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });

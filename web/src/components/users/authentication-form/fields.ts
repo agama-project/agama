@@ -51,6 +51,14 @@ export const AuthMode = {
 
 export type AuthMode = (typeof AuthMode)[keyof typeof AuthMode];
 
+/**
+ * Determines which authentication methods are needed for the given mode.
+ */
+export const authModeRequirements = (authMode: AuthMode) => ({
+  needsPassword: authMode === AuthMode.PASSWORD || authMode === AuthMode.BOTH,
+  needsSshKey: authMode === AuthMode.SSH_KEY || authMode === AuthMode.BOTH,
+});
+
 /** Types */
 
 type FirstUserFields = {

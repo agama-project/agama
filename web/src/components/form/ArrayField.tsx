@@ -659,9 +659,9 @@ export default function ArrayField({
     announce(pasteAnnouncement(added, skipped, valid, invalid));
   };
 
-  const hasErrors = value.some(errorFor);
-  const entryErrors = unique(sift(value.map(errorFor)));
-  const hasAnyError = hasErrors || fieldErrors.length > 0;
+  const hasErrors = value?.some(errorFor);
+  const entryErrors = unique(sift(value?.map(errorFor)));
+  const hasAnyError = hasErrors || fieldErrors?.length > 0;
 
   return (
     <FormGroup fieldId={field.name} label={label}>
