@@ -41,11 +41,11 @@ const FirstUserPasswordFields = withForm({
   render: function Render({ form }) {
     return (
       <>
-        <form.AppField name="firstUser.password">
+        <form.AppField name="userPassword">
           {(field) => <field.MaskedField label={_("Password")} />}
         </form.AppField>
 
-        <form.AppField name="firstUser.passwordConfirmation">
+        <form.AppField name="userPasswordConfirmation">
           {(field) => (
             <field.MaskedField
               label={_("Password confirmation")}
@@ -73,7 +73,7 @@ const FirstUserFields = withForm({
           _("First user")
         }
       >
-        <form.AppField name="firstUser.define">
+        <form.AppField name="defineUser">
           {(field) => (
             <field.CheckboxField
               // TRANSLATORS: checkbox label to enable first user definition
@@ -99,25 +99,25 @@ const FirstUserFields = withForm({
           )}
         </form.AppField>
 
-        <form.Subscribe selector={(s) => s.values.firstUser.define}>
+        <form.Subscribe selector={(s) => s.values.defineUser}>
           {(define) =>
             define && (
               <NestedContent margin="mxLg">
                 <form.AppField
-                  name="firstUser.fullName"
+                  name="userFullName"
                   listeners={{
                     onBlur: ({ value }) => {
                       const suggestions = suggestUsernames(value);
-                      form.setFieldValue("firstUser.usernameSuggestions", suggestions);
+                      form.setFieldValue("usernameSuggestions", suggestions);
                     },
                   }}
                 >
                   {(field) => <field.TextField label={_("Full name")} />}
                 </form.AppField>
 
-                <form.Subscribe selector={(s) => s.values.firstUser.usernameSuggestions}>
+                <form.Subscribe selector={(s) => s.values.usernameSuggestions}>
                   {(suggestions) => (
-                    <form.AppField name="firstUser.userName">
+                    <form.AppField name="userName">
                       {(field) => (
                         <field.SuggestionsTextField
                           label={_("Username")}
@@ -128,22 +128,22 @@ const FirstUserFields = withForm({
                   )}
                 </form.Subscribe>
 
-                <form.Subscribe selector={(s) => s.values.firstUser.usingHashedPassword}>
+                <form.Subscribe selector={(s) => s.values.userUsingHashedPassword}>
                   {(usingHashedPassword) => (
                     <PreservedValueField
                       preservedMessage={_("Using a hashed password.")}
                       isPreserving={usingHashedPassword}
-                      onEdit={() => form.setFieldValue("firstUser.usingHashedPassword", false)}
+                      onEdit={() => form.setFieldValue("userUsingHashedPassword", false)}
                     >
                       <FirstUserPasswordFields form={form} />
-                      <form.Subscribe selector={(s) => s.values.firstUser.password}>
+                      <form.Subscribe selector={(s) => s.values.userPassword}>
                         {(password) => <PasswordCheck password={password} />}
                       </form.Subscribe>
                     </PreservedValueField>
                   )}
                 </form.Subscribe>
 
-                <form.AppField name="firstUser.sshPublicKeys">
+                <form.AppField name="userSshPublicKeys">
                   {(field) => (
                     <field.ArrayField
                       label={<LabelText suffix={_("(optional)")}>{_("SSH Public Keys")}</LabelText>}

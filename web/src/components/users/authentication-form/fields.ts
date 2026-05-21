@@ -29,7 +29,12 @@
 
 import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
-import { requiredString, requiredValidList } from "~/components/form/validation-helpers";
+import {
+  FieldsValidationResult,
+  requiredString,
+  requiredValidList,
+  ValidationResult,
+} from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
 /** Constants */
@@ -61,50 +66,43 @@ export const authModeRequirements = (authMode: AuthMode) => ({
 
 /** Types */
 
-type FirstUserFields = {
-  define: boolean;
-  fullName: string;
+export type UserFormFields = {
+  defineUser: boolean;
+  userFullName: string;
   userName: string;
   usernameSuggestions: string[];
-  password: string;
-  passwordConfirmation: string;
-  usingHashedPassword: boolean;
-  sshPublicKeys: string[];
+  userPassword: string;
+  userPasswordConfirmation: string;
+  userUsingHashedPassword: boolean;
+  userSshPublicKeys: string[];
 };
 
-type RootAuthFields = {
-  authMode: AuthMode;
-  password: string;
-  passwordConfirmation: string;
-  usingHashedPassword: boolean;
-  sshPublicKeys: string[];
+export type RootFormFields = {
+  rootAuthMode: AuthMode;
+  rootPassword: string;
+  rootPasswordConfirmation: string;
+  rootUsingHashedPassword: boolean;
+  rootSshPublicKeys: string[];
 };
 
-type FormFields = {
-  firstUser: FirstUserFields;
-  root: RootAuthFields;
-};
+type FormFields = UserFormFields & RootFormFields;
 
 /** Defaults */
 
 const defaultValues: FormFields = {
-  firstUser: {
-    define: false,
-    fullName: "",
-    userName: "",
-    usernameSuggestions: [],
-    password: "",
-    passwordConfirmation: "",
-    usingHashedPassword: false,
-    sshPublicKeys: [],
-  },
-  root: {
-    authMode: AuthMode.NONE,
-    password: "",
-    passwordConfirmation: "",
-    usingHashedPassword: false,
-    sshPublicKeys: [],
-  },
+  defineUser: false,
+  userFullName: "",
+  userName: "",
+  usernameSuggestions: [],
+  userPassword: "",
+  userPasswordConfirmation: "",
+  userUsingHashedPassword: false,
+  userSshPublicKeys: [],
+  rootAuthMode: AuthMode.NONE,
+  rootPassword: "",
+  rootPasswordConfirmation: "",
+  rootUsingHashedPassword: false,
+  rootSshPublicKeys: [],
 };
 
 export const defaultOptions = formOptions({ defaultValues });
@@ -124,76 +122,63 @@ const isValidSshKeyEntry = (key: string): boolean => {
 };
 
 /**
- * Validates first user fields when first user definition is enabled.
+ * Validates user fields when user definition is enabled.
  */
-function validateFirstUserFields(fields: FormFields): Record<string, string | undefined> {
-  if (!fields.firstUser.define) return {};
+function validateUserFields(fields: FormFields): FieldsValidationResult<UserFormFields> {
+  if (!fields.defineUser) return {};
 
-  const errors: Record<string, string | undefined> = {};
+  const passwordMismatch =
+    !fields.userUsingHashedPassword &&
+    fields.userPassword &&
+    fields.userPasswordConfirmation &&
+    fields.userPassword !== fields.userPasswordConfirmation;
 
-  errors["firstUser.fullName"] = requiredString(
-    fields.firstUser.fullName,
-    _("Full name is required"),
-  );
-  errors["firstUser.userName"] = requiredString(
-    fields.firstUser.userName,
-    _("Username is required"),
-  );
-
-  if (!fields.firstUser.usingHashedPassword) {
-    errors["firstUser.password"] = requiredString(
-      fields.firstUser.password,
-      _("Password is required"),
-    );
-    errors["firstUser.passwordConfirmation"] = requiredString(
-      fields.firstUser.passwordConfirmation,
-      _("Password confirmation is required"),
-    );
-
-    if (
-      fields.firstUser.password &&
-      fields.firstUser.passwordConfirmation &&
-      fields.firstUser.password !== fields.firstUser.passwordConfirmation
-    ) {
-      errors["firstUser.passwordConfirmation"] = _("Passwords do not match");
-    }
-  }
-
-  return errors;
+  return {
+    userFullName: requiredString(fields.userFullName, _("Full name is required")),
+    userName: requiredString(fields.userName, _("Username is required")),
+    userPassword: !fields.userUsingHashedPassword
+      ? requiredString(fields.userPassword, _("Password is required"))
+      : undefined,
+    userPasswordConfirmation: passwordMismatch
+      ? _("Passwords do not match")
+      : !fields.userUsingHashedPassword
+        ? requiredString(fields.userPasswordConfirmation, _("Password confirmation is required"))
+        : undefined,
+  };
 }
 
 /**
  * Validates root authentication fields based on selected auth mode.
  */
-function validateRootAuthFields(fields: FormFields): Record<string, string | undefined> {
-  const { authMode, usingHashedPassword, password, passwordConfirmation } = fields.root;
-  const errors: Record<string, string | undefined> = {};
+function validateRootAuthFields(fields: FormFields): FieldsValidationResult<RootFormFields> {
+  const { needsPassword, needsSshKey } = authModeRequirements(fields.rootAuthMode);
 
-  const needsPassword = authMode === AuthMode.PASSWORD || authMode === AuthMode.BOTH;
-  const needsSshKey = authMode === AuthMode.SSH_KEY || authMode === AuthMode.BOTH;
+  const passwordMismatch =
+    needsPassword &&
+    !fields.rootUsingHashedPassword &&
+    fields.rootPassword &&
+    fields.rootPasswordConfirmation &&
+    fields.rootPassword !== fields.rootPasswordConfirmation;
 
-  if (needsPassword && !usingHashedPassword) {
-    errors["root.password"] = requiredString(password, _("Password is required"));
-    errors["root.passwordConfirmation"] = requiredString(
-      passwordConfirmation,
-      _("Password confirmation is required"),
-    );
-
-    if (password && passwordConfirmation && password !== passwordConfirmation) {
-      errors["root.passwordConfirmation"] = _("Passwords do not match");
-    }
-  }
-
-  if (needsSshKey) {
-    errors["root.sshPublicKeys"] = requiredValidList(
-      fields.root.sshPublicKeys,
-      isValidSshKeyEntry,
-      _("At least one SSH public key is required"),
-      _("Some SSH public keys are invalid"),
-    );
-  }
-
-  return errors;
+  return {
+    rootPassword:
+      needsPassword && !fields.rootUsingHashedPassword
+        ? requiredString(fields.rootPassword, _("Password is required"))
+        : undefined,
+    rootPasswordConfirmation: passwordMismatch
+      ? _("Passwords do not match")
+      : needsPassword && !fields.rootUsingHashedPassword
+        ? requiredString(fields.rootPasswordConfirmation, _("Password confirmation is required"))
+        : undefined,
+    rootSshPublicKeys: needsSshKey
+      ? requiredValidList(
+          fields.rootSshPublicKeys,
+          isValidSshKeyEntry,
+          _("At least one SSH public key is required"),
+          _("Some SSH public keys are invalid"),
+        )
+      : undefined,
+  };
 }
 
 /**
@@ -202,11 +187,11 @@ function validateRootAuthFields(fields: FormFields): Record<string, string | und
  * Returns a map of field errors when validation fails, or undefined when all
  * values are valid.
  */
-export function validate(formFields: FormFields): { fields?: Record<string, string> } | undefined {
+export function validate(formFields: FormFields): ValidationResult<FormFields> {
   const fieldErrors = shake({
-    ...validateFirstUserFields(formFields),
+    ...validateUserFields(formFields),
     ...validateRootAuthFields(formFields),
   });
 
-  if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
+  return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
 }

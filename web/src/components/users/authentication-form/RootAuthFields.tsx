@@ -43,11 +43,11 @@ const RootPasswordFields = withForm({
   render: function Render({ form }) {
     return (
       <>
-        <form.AppField name="root.password">
+        <form.AppField name="rootPassword">
           {(field) => <field.MaskedField label={_("Password")} />}
         </form.AppField>
 
-        <form.AppField name="root.passwordConfirmation">
+        <form.AppField name="rootPasswordConfirmation">
           {(field) => (
             <field.MaskedField
               label={_("Password confirmation")}
@@ -116,7 +116,7 @@ const RootAuthFields = withForm({
           _("Select an authentication method to enable the root account.")
         }
       >
-        <form.AppField name="root.authMode">
+        <form.AppField name="rootAuthMode">
           {(field) => (
             <field.DropdownField
               // TRANSLATORS: label for the root authentication mode selector
@@ -128,8 +128,8 @@ const RootAuthFields = withForm({
 
         <form.Subscribe
           selector={(s) => ({
-            authMode: s.values.root.authMode,
-            usingHashedPassword: s.values.root.usingHashedPassword,
+            authMode: s.values.rootAuthMode,
+            usingHashedPassword: s.values.rootUsingHashedPassword,
           })}
         >
           {({ authMode, usingHashedPassword }) => {
@@ -142,10 +142,10 @@ const RootAuthFields = withForm({
                     <PreservedValueField
                       preservedMessage={_("Using a hashed password.")}
                       isPreserving={usingHashedPassword}
-                      onEdit={() => form.setFieldValue("root.usingHashedPassword", false)}
+                      onEdit={() => form.setFieldValue("rootUsingHashedPassword", false)}
                     >
                       <RootPasswordFields form={form} />
-                      <form.Subscribe selector={(s) => s.values.root.password}>
+                      <form.Subscribe selector={(s) => s.values.rootPassword}>
                         {(password) => <PasswordCheck password={password} />}
                       </form.Subscribe>
                     </PreservedValueField>
@@ -154,7 +154,7 @@ const RootAuthFields = withForm({
 
                 {needsSshKey && (
                   <NestedContent margin="mxLg">
-                    <form.AppField name="root.sshPublicKeys">
+                    <form.AppField name="rootSshPublicKeys">
                       {(field) => (
                         <field.ArrayField
                           // TRANSLATORS: label for root SSH public keys input field

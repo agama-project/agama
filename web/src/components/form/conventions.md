@@ -910,6 +910,77 @@ const validateIpFields = (fields): Record<string, string | undefined> => ({
 });
 ```
 
+#### Validation Return Pattern
+
+Individual validation functions return objects with `undefined` values directly.
+**Do not use `shake()` in individual validators** - only use it at the top level:
+
+```typescript
+function validateUserFields(fields: FormFields): FieldsValidationResult<UserFormFields> {
+  if (!fields.defineUser) return {};
+
+  return {
+    userFullName: requiredString(fields.userFullName, _("Full name is required")),
+    userName: requiredString(fields.userName, _("Username is required")),
+    userPassword: !fields.userUsingHashedPassword
+      ? requiredString(fields.userPassword, _("Password is required"))
+      : undefined,  // ← undefined values are fine
+    userPasswordConfirmation: passwordMismatch
+      ? _("Passwords do not match")
+      : !fields.userUsingHashedPassword
+        ? requiredString(fields.userPasswordConfirmation, _("Password confirmation is required"))
+        : undefined,  // ← undefined values are fine
+  };
+  // No shake() here - just return the plain object
+}
+```
+
+**Critical: `shake()` only at the top level**
+
+The top-level `validate()` function uses `shake()` **once** to remove all undefined
+values when merging results from individual validators:
+
+```typescript
+export function validate(formFields: FormFields): ValidationResult<FormFields> {
+  const fieldErrors = shake({
+    ...validateUserFields(formFields),
+    ...validateRootFields(formFields),
+  });
+  // ^^^^^ Single shake() here removes all undefined values
+  
+  return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
+}
+```
+
+**Why this pattern:**
+
+- ✅ **Single shake()**: Better performance, no redundant filtering
+- ✅ **Aligned with type system**: `FieldsValidationResult<T>` explicitly allows `undefined`
+- ✅ **Cleaner validators**: Direct object returns, conditional logic clear
+- ✅ **Centralized cleanup**: All undefined removal happens in one place
+
+**Anti-pattern (don't do this):**
+
+```typescript
+// ❌ WRONG - redundant shake()
+function validateUserFields(fields: FormFields): FieldsValidationResult<UserFormFields> {
+  return shake({  // ← Don't shake here
+    userFullName: requiredString(...),
+    userPassword: condition ? requiredString(...) : undefined,
+  });
+}
+
+export function validate(formFields: FormFields): ValidationResult<FormFields> {
+  const fieldErrors = shake({  // ← And also shake here (double shake!)
+    ...validateUserFields(formFields),
+  });
+}
+```
+
+This pattern shakes twice - once in the validator and once at the top level. Instead,
+let individual validators return objects with undefined values, and shake only once
+at the top level.
+
 #### Plain TypeScript vs Schema Libraries
 
 The codebase initially experimented with Valibot, a Standard Schema validation

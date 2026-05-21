@@ -20,29 +20,43 @@
  * find current contact information at www.suse.com.
  */
 
-import { AuthMode, defaultOptions, isPrivateKey, isValidSshKey, validate } from "./fields";
+import {
+  AuthMode,
+  defaultOptions,
+  isPrivateKey,
+  isValidSshKey,
+  validate,
+  UserFormFields,
+  RootFormFields,
+} from "./fields";
+
+// Test helper to create form field objects
+const createFormFields = (
+  user: Partial<UserFormFields> = {},
+  root: Partial<RootFormFields> = {},
+) => ({
+  ...defaultOptions.defaultValues,
+  ...user,
+  ...root,
+});
 
 describe("authentication form fields", () => {
   describe("defaultOptions", () => {
     it("provides correct default values", () => {
       expect(defaultOptions.defaultValues).toEqual({
-        firstUser: {
-          define: false,
-          fullName: "",
-          userName: "",
-          usernameSuggestions: [],
-          password: "",
-          passwordConfirmation: "",
-          usingHashedPassword: false,
-          sshPublicKeys: [],
-        },
-        root: {
-          authMode: AuthMode.NONE,
-          password: "",
-          passwordConfirmation: "",
-          usingHashedPassword: false,
-          sshPublicKeys: [],
-        },
+        defineUser: false,
+        userFullName: "",
+        userName: "",
+        usernameSuggestions: [],
+        userPassword: "",
+        userPasswordConfirmation: "",
+        userUsingHashedPassword: false,
+        userSshPublicKeys: [],
+        rootAuthMode: AuthMode.NONE,
+        rootPassword: "",
+        rootPasswordConfirmation: "",
+        rootUsingHashedPassword: false,
+        rootSshPublicKeys: [],
       });
     });
   });
@@ -91,198 +105,98 @@ describe("authentication form fields", () => {
   });
 
   describe("validate", () => {
-    describe("when first user is not defined", () => {
+    describe("when user is not defined", () => {
       it("returns no errors for minimal valid form", () => {
-        const result = validate({
-          firstUser: {
-            define: false,
-            fullName: "",
-            userName: "",
-            usernameSuggestions: [],
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
+        const result = validate(createFormFields());
         expect(result).toBeUndefined();
       });
     });
 
-    describe("when first user is defined", () => {
+    describe("when user is defined", () => {
       it("requires full name", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "",
+        const result = validate(
+          createFormFields({
+            defineUser: true,
             userName: "jdoe",
-            usernameSuggestions: [],
-            password: "secret123",
-            passwordConfirmation: "secret123",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
-        expect(result?.fields?.["firstUser.fullName"]).toBeDefined();
+            userPassword: "secret123",
+            userPasswordConfirmation: "secret123",
+          }),
+        );
+        expect(result?.fields?.userFullName).toBeDefined();
       });
 
       it("requires username", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "John Doe",
-            userName: "",
-            usernameSuggestions: [],
-            password: "secret123",
-            passwordConfirmation: "secret123",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
-        expect(result?.fields?.["firstUser.userName"]).toBeDefined();
+        const result = validate(
+          createFormFields({
+            defineUser: true,
+            userFullName: "John Doe",
+            userPassword: "secret123",
+            userPasswordConfirmation: "secret123",
+          }),
+        );
+        expect(result?.fields?.userName).toBeDefined();
       });
 
       it("requires password when not using hashed password", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "John Doe",
+        const result = validate(
+          createFormFields({
+            defineUser: true,
+            userFullName: "John Doe",
             userName: "jdoe",
-            usernameSuggestions: [],
-            password: "",
-            passwordConfirmation: "secret123",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
-        expect(result?.fields?.["firstUser.password"]).toBeDefined();
+            userPasswordConfirmation: "secret123",
+          }),
+        );
+        expect(result?.fields?.userPassword).toBeDefined();
       });
 
       it("requires password confirmation when not using hashed password", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "John Doe",
+        const result = validate(
+          createFormFields({
+            defineUser: true,
+            userFullName: "John Doe",
             userName: "jdoe",
-            usernameSuggestions: [],
-            password: "secret123",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
-        expect(result?.fields?.["firstUser.passwordConfirmation"]).toBeDefined();
+            userPassword: "secret123",
+          }),
+        );
+        expect(result?.fields?.userPasswordConfirmation).toBeDefined();
       });
 
       it("validates that passwords match", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "John Doe",
+        const result = validate(
+          createFormFields({
+            defineUser: true,
+            userFullName: "John Doe",
             userName: "jdoe",
-            usernameSuggestions: [],
-            password: "secret123",
-            passwordConfirmation: "different456",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
-        expect(result?.fields?.["firstUser.passwordConfirmation"]).toContain("do not match");
+            userPassword: "secret123",
+            userPasswordConfirmation: "different456",
+          }),
+        );
+        expect(result?.fields?.userPasswordConfirmation).toContain("do not match");
       });
 
       it("does not require password when using hashed password", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "John Doe",
+        const result = validate(
+          createFormFields({
+            defineUser: true,
+            userFullName: "John Doe",
             userName: "jdoe",
-            usernameSuggestions: [],
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: true,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
+            userUsingHashedPassword: true,
+          }),
+        );
         expect(result).toBeUndefined();
       });
 
       it("accepts valid form with all fields", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "John Doe",
+        const result = validate(
+          createFormFields({
+            defineUser: true,
+            userFullName: "John Doe",
             userName: "jdoe",
-            usernameSuggestions: [],
-            password: "secret123",
-            passwordConfirmation: "secret123",
-            usingHashedPassword: false,
-            sshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
-          },
-          root: {
-            authMode: AuthMode.NONE,
-            password: "",
-            passwordConfirmation: "",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
-
+            userPassword: "secret123",
+            userPasswordConfirmation: "secret123",
+            userSshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
+          }),
+        );
         expect(result).toBeUndefined();
       });
     });
@@ -290,348 +204,163 @@ describe("authentication form fields", () => {
     describe("root authentication", () => {
       describe("when authMode is NONE", () => {
         it("returns no errors", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.NONE,
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-          });
-
+          const result = validate(createFormFields());
           expect(result).toBeUndefined();
         });
       });
 
       describe("when authMode is PASSWORD", () => {
         it("requires password when not using hashed password", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.PASSWORD,
-              password: "",
-              passwordConfirmation: "secret123",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-          });
-
-          expect(result?.fields?.["root.password"]).toBeDefined();
+          const result = validate(
+            createFormFields({}, { rootAuthMode: AuthMode.PASSWORD, rootPasswordConfirmation: "secret123" }),
+          );
+          expect(result?.fields?.rootPassword).toBeDefined();
         });
 
         it("requires password confirmation when not using hashed password", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.PASSWORD,
-              password: "secret123",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-          });
-
-          expect(result?.fields?.["root.passwordConfirmation"]).toBeDefined();
+          const result = validate(
+            createFormFields({}, { rootAuthMode: AuthMode.PASSWORD, rootPassword: "secret123" }),
+          );
+          expect(result?.fields?.rootPasswordConfirmation).toBeDefined();
         });
 
         it("validates that passwords match", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.PASSWORD,
-              password: "secret123",
-              passwordConfirmation: "different456",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-          });
-
-          expect(result?.fields?.["root.passwordConfirmation"]).toContain("do not match");
+          const result = validate(
+            createFormFields(
+              {},
+              {
+                rootAuthMode: AuthMode.PASSWORD,
+                rootPassword: "secret123",
+                rootPasswordConfirmation: "different456",
+              },
+            ),
+          );
+          expect(result?.fields?.rootPasswordConfirmation).toContain("do not match");
         });
 
         it("does not require password when using hashed password", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.PASSWORD,
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: true,
-              sshPublicKeys: [],
-            },
-          });
-
+          const result = validate(
+            createFormFields({}, { rootAuthMode: AuthMode.PASSWORD, rootUsingHashedPassword: true }),
+          );
           expect(result).toBeUndefined();
         });
 
         it("accepts valid password form", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.PASSWORD,
-              password: "secret123",
-              passwordConfirmation: "secret123",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-          });
-
+          const result = validate(
+            createFormFields(
+              {},
+              {
+                rootAuthMode: AuthMode.PASSWORD,
+                rootPassword: "secret123",
+                rootPasswordConfirmation: "secret123",
+              },
+            ),
+          );
           expect(result).toBeUndefined();
         });
       });
 
       describe("when authMode is SSH_KEY", () => {
         it("requires at least one SSH key", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.SSH_KEY,
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-          });
-
-          expect(result?.fields?.["root.sshPublicKeys"]).toContain("At least one");
+          const result = validate(createFormFields({}, { rootAuthMode: AuthMode.SSH_KEY }));
+          expect(result?.fields?.rootSshPublicKeys).toContain("At least one");
         });
 
         it("validates SSH key format", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.SSH_KEY,
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: ["invalid key format"],
-            },
-          });
-
-          expect(result?.fields?.["root.sshPublicKeys"]).toContain("invalid");
+          const result = validate(
+            createFormFields({}, { rootAuthMode: AuthMode.SSH_KEY, rootSshPublicKeys: ["invalid key format"] }),
+          );
+          expect(result?.fields?.rootSshPublicKeys).toContain("invalid");
         });
 
         it("rejects private keys", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.SSH_KEY,
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: ["-----BEGIN RSA PRIVATE KEY-----"],
-            },
-          });
-
-          expect(result?.fields?.["root.sshPublicKeys"]).toContain("invalid");
+          const result = validate(
+            createFormFields(
+              {},
+              { rootAuthMode: AuthMode.SSH_KEY, rootSshPublicKeys: ["-----BEGIN RSA PRIVATE KEY-----"] },
+            ),
+          );
+          expect(result?.fields?.rootSshPublicKeys).toContain("invalid");
         });
 
         it("accepts valid SSH keys", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.SSH_KEY,
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
-            },
-          });
-
+          const result = validate(
+            createFormFields(
+              {},
+              {
+                rootAuthMode: AuthMode.SSH_KEY,
+                rootSshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
+              },
+            ),
+          );
           expect(result).toBeUndefined();
         });
       });
 
       describe("when authMode is BOTH", () => {
         it("requires both password and SSH key", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.BOTH,
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-          });
-
-          expect(result?.fields?.["root.password"]).toBeDefined();
-          expect(result?.fields?.["root.sshPublicKeys"]).toBeDefined();
+          const result = validate(createFormFields({}, { rootAuthMode: AuthMode.BOTH }));
+          expect(result?.fields?.rootPassword).toBeDefined();
+          expect(result?.fields?.rootSshPublicKeys).toBeDefined();
         });
 
         it("accepts valid form with both password and SSH key", () => {
-          const result = validate({
-            firstUser: {
-              define: false,
-              fullName: "",
-              userName: "",
-              usernameSuggestions: [],
-              password: "",
-              passwordConfirmation: "",
-              usingHashedPassword: false,
-              sshPublicKeys: [],
-            },
-            root: {
-              authMode: AuthMode.BOTH,
-              password: "secret123",
-              passwordConfirmation: "secret123",
-              usingHashedPassword: false,
-              sshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
-            },
-          });
-
+          const result = validate(
+            createFormFields(
+              {},
+              {
+                rootAuthMode: AuthMode.BOTH,
+                rootPassword: "secret123",
+                rootPasswordConfirmation: "secret123",
+                rootSshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
+              },
+            ),
+          );
           expect(result).toBeUndefined();
         });
       });
     });
 
-    describe("combined first user and root validation", () => {
+    describe("combined user and root validation", () => {
       it("validates both sections independently", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "",
-            userName: "jdoe",
-            usernameSuggestions: [],
-            password: "secret123",
-            passwordConfirmation: "secret123",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-          root: {
-            authMode: AuthMode.PASSWORD,
-            password: "",
-            passwordConfirmation: "rootpass",
-            usingHashedPassword: false,
-            sshPublicKeys: [],
-          },
-        });
+        const result = validate(
+          createFormFields(
+            {
+              defineUser: true,
+              userName: "jdoe",
+              userPassword: "secret123",
+              userPasswordConfirmation: "secret123",
+            },
+            {
+              rootAuthMode: AuthMode.PASSWORD,
+              rootPasswordConfirmation: "rootpass",
+            },
+          ),
+        );
 
-        expect(result?.fields?.["firstUser.fullName"]).toBeDefined();
-        expect(result?.fields?.["root.password"]).toBeDefined();
+        expect(result?.fields?.userFullName).toBeDefined();
+        expect(result?.fields?.rootPassword).toBeDefined();
       });
 
-      it("accepts valid form with both first user and root defined", () => {
-        const result = validate({
-          firstUser: {
-            define: true,
-            fullName: "John Doe",
-            userName: "jdoe",
-            usernameSuggestions: [],
-            password: "secret123",
-            passwordConfirmation: "secret123",
-            usingHashedPassword: false,
-            sshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
-          },
-          root: {
-            authMode: AuthMode.BOTH,
-            password: "rootpass",
-            passwordConfirmation: "rootpass",
-            usingHashedPassword: false,
-            sshPublicKeys: ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm root@host"],
-          },
-        });
+      it("accepts valid form with both user and root defined", () => {
+        const result = validate(
+          createFormFields(
+            {
+              defineUser: true,
+              userFullName: "John Doe",
+              userName: "jdoe",
+              userPassword: "secret123",
+              userPasswordConfirmation: "secret123",
+              userSshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
+            },
+            {
+              rootAuthMode: AuthMode.BOTH,
+              rootPassword: "rootpass",
+              rootPasswordConfirmation: "rootpass",
+              rootSshPublicKeys: ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm root@host"],
+            },
+          ),
+        );
 
         expect(result).toBeUndefined();
       });

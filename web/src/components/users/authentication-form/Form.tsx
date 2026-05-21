@@ -54,34 +54,43 @@ const getAuthModeFromConfig = (rootUser?: Root.Config): AuthMode => {
 };
 
 /**
- * Builds the first user config patch if any first-user-related field has changed.
+ * Builds the user config patch if any user-related field has changed.
  *
  * Returns undefined if no changes are detected, which will be shaken out of the
  * final config.
  */
-function buildFirstUserConfig(
+function buildUserConfig(
   formValues: AuthFormValues,
   fieldMeta: AuthFieldMeta,
   currentFirstUser?: User.Config,
 ): { user?: User.Config } | undefined {
-  const { define: isDefined, ...user } = formValues.firstUser;
-  const userFields = Object.keys(formValues.firstUser).map((k) => `firstUser.${k}`);
+  const userFields = [
+    "defineUser",
+    "userFullName",
+    "userName",
+    "userPassword",
+    "userPasswordConfirmation",
+    "userUsingHashedPassword",
+    "userSshPublicKeys",
+  ];
 
   if (!anyFieldChanged(fieldMeta, ...userFields)) {
     return undefined;
   }
 
-  if (!isDefined) {
+  if (!formValues.defineUser) {
     return { user: undefined };
   }
 
   return {
     user: {
-      fullName: user.fullName,
-      userName: user.userName,
-      password: user.usingHashedPassword ? currentFirstUser?.password || "" : user.password,
-      hashedPassword: user.usingHashedPassword,
-      sshPublicKeys: user.sshPublicKeys,
+      fullName: formValues.userFullName,
+      userName: formValues.userName,
+      password: formValues.userUsingHashedPassword
+        ? currentFirstUser?.password || ""
+        : formValues.userPassword,
+      hashedPassword: formValues.userUsingHashedPassword,
+      sshPublicKeys: formValues.userSshPublicKeys,
     },
   };
 }
@@ -97,33 +106,33 @@ function buildRootAuthConfig(
   fieldMeta: AuthFieldMeta,
   currentRootUser?: Root.Config,
 ): { root?: Partial<Root.Config> } | undefined {
-  const { needsPassword, needsSshKey } = authModeRequirements(formValues.root.authMode);
+  const { needsPassword, needsSshKey } = authModeRequirements(formValues.rootAuthMode);
 
   const fieldsToCheck = [
-    "root.authMode",
+    "rootAuthMode",
     ...(needsPassword
-      ? ["root.password", "root.passwordConfirmation", "root.usingHashedPassword"]
+      ? ["rootPassword", "rootPasswordConfirmation", "rootUsingHashedPassword"]
       : []),
-    ...(needsSshKey ? ["root.sshPublicKeys"] : []),
+    ...(needsSshKey ? ["rootSshPublicKeys"] : []),
   ];
 
   if (!anyFieldChanged(fieldMeta, ...fieldsToCheck)) return undefined;
 
-  if (formValues.root.authMode === AuthMode.NONE) {
+  if (formValues.rootAuthMode === AuthMode.NONE) {
     return { root: undefined };
   }
 
   const data: Partial<Root.Config> = {};
 
   if (needsPassword) {
-    data.password = formValues.root.usingHashedPassword
+    data.password = formValues.rootUsingHashedPassword
       ? currentRootUser?.password || ""
-      : formValues.root.password;
-    data.hashedPassword = formValues.root.usingHashedPassword;
+      : formValues.rootPassword;
+    data.hashedPassword = formValues.rootUsingHashedPassword;
   }
 
   if (needsSshKey) {
-    data.sshPublicKeys = formValues.root.sshPublicKeys;
+    data.sshPublicKeys = formValues.rootSshPublicKeys;
   }
 
   return { root: data };
@@ -144,29 +153,25 @@ export default function AuthenticationForm() {
   const form = useAppForm({
     ...defaultOptions,
     defaultValues: {
-      firstUser: {
-        define: !isNullish(firstUser),
-        fullName: firstUser?.fullName || "",
-        userName: firstUser?.userName || "",
-        usernameSuggestions: [],
-        password: firstUser?.password || "",
-        passwordConfirmation: firstUser?.password || "",
-        usingHashedPassword: firstUser?.hashedPassword || false,
-        sshPublicKeys:
-          isEmpty(firstUser?.sshPublicKeys) && isEmpty(firstUser?.sshPublicKey)
-            ? []
-            : castArrayIfExists(firstUser?.sshPublicKeys || firstUser?.sshPublicKey),
-      },
-      root: {
-        authMode: getAuthModeFromConfig(rootUser),
-        password: rootUser?.password || "",
-        passwordConfirmation: rootUser?.password || "",
-        usingHashedPassword: rootUser?.hashedPassword || false,
-        sshPublicKeys:
-          isEmpty(rootUser?.sshPublicKeys) && isEmpty(rootUser?.sshPublicKey)
-            ? []
-            : castArrayIfExists(rootUser?.sshPublicKeys || rootUser?.sshPublicKey),
-      },
+      defineUser: !isNullish(firstUser),
+      userFullName: firstUser?.fullName || "",
+      userName: firstUser?.userName || "",
+      usernameSuggestions: [],
+      userPassword: firstUser?.password || "",
+      userPasswordConfirmation: firstUser?.password || "",
+      userUsingHashedPassword: firstUser?.hashedPassword || false,
+      userSshPublicKeys:
+        isEmpty(firstUser?.sshPublicKeys) && isEmpty(firstUser?.sshPublicKey)
+          ? []
+          : castArrayIfExists(firstUser?.sshPublicKeys || firstUser?.sshPublicKey),
+      rootAuthMode: getAuthModeFromConfig(rootUser),
+      rootPassword: rootUser?.password || "",
+      rootPasswordConfirmation: rootUser?.password || "",
+      rootUsingHashedPassword: rootUser?.hashedPassword || false,
+      rootSshPublicKeys:
+        isEmpty(rootUser?.sshPublicKeys) && isEmpty(rootUser?.sshPublicKey)
+          ? []
+          : castArrayIfExists(rootUser?.sshPublicKeys || rootUser?.sshPublicKey),
     },
     validators: {
       onSubmitAsync: async ({ value: formValues, formApi }) => {
@@ -179,7 +184,7 @@ export default function AuthenticationForm() {
 
         const { fieldMeta } = formApi.state;
 
-        const userConfig = buildFirstUserConfig(formValues, fieldMeta, firstUser);
+        const userConfig = buildUserConfig(formValues, fieldMeta, firstUser);
         const rootConfig = buildRootAuthConfig(formValues, fieldMeta, rootUser);
 
         if (!userConfig && !rootConfig) {

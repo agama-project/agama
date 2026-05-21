@@ -98,6 +98,7 @@ describe("AuthenticationForm", () => {
       mockFirstUser = {
         fullName: "Jane Doe",
         userName: "jdoe",
+        password: "s3cr3t",
         hashedPassword: false,
       };
 
@@ -185,6 +186,7 @@ describe("AuthenticationForm", () => {
       mockFirstUser = {
         fullName: "Jane Doe",
         userName: "jdoe",
+        password: "s3cr3t",
         hashedPassword: false,
       };
 
@@ -309,6 +311,7 @@ describe("AuthenticationForm", () => {
       mockFirstUser = {
         fullName: "Jane Doe",
         userName: "jdoe",
+        password: "s3cr3t",
         sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host",
       };
 
