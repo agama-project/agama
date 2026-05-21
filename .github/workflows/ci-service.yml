@@ -96,6 +96,18 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v6
 
+    - name: Bundler cache
+      id: bundler-cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          agama/service/.bundle
+          /usr/lib64/ruby/gems/*
+          !/usr/lib64/ruby/gems/*/gems
+          /usr/bin/rspec
+          /usr/bin/rxgettext
+        key: ${{ runner.os }}-ruby-bundler-16.0-${{ hashFiles('./service/Gemfile.lock') }}
+
     - name: Install RubyGems dependencies
       # install gems not included in openSUSE Leap 16.0
       run: bundle config set --local with 'development' && bundle install && bundle add gettext
@@ -131,7 +143,7 @@ jobs:
       working-directory: ./service
 
     - name: Upload coverage result
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: coverage_service
         if-no-files-found: error
@@ -152,10 +164,10 @@ jobs:
 
     steps:
     - name: Git Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Download coverage result
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: coverage_service
 
