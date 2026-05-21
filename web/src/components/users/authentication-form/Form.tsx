@@ -23,7 +23,6 @@
 import React, { useRef } from "react";
 import { castArrayIfExists, isEmpty, isNullish, shake } from "radashi";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
 import { putConfig } from "~/api";
 import { useConfig } from "~/hooks/model/config";
 import { anyFieldChanged, useAppForm } from "~/hooks/form";
@@ -212,60 +211,56 @@ export default function AuthenticationForm() {
   });
 
   return (
-    <Page breadcrumbs={[{ label: _("Authentication") }]}>
-      <Page.Content>
-        <form.AppForm>
-          <Form
-            id="authenticationForm"
-            onSubmit={(e) => {
-              e.preventDefault();
-              form.setErrorMap({ onSubmit: { fields: {} } });
-              form.handleSubmit();
-            }}
-          >
-            <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
-              {(serverError) =>
-                serverError && (
-                  <Alert
-                    isInline
-                    variant="danger"
-                    title={_("Authentication settings could not be updated")}
-                  >
-                    {serverError}
-                  </Alert>
-                )
-              }
-            </form.Subscribe>
+    <form.AppForm>
+      <Form
+        id="authenticationForm"
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.setErrorMap({ onSubmit: { fields: {} } });
+          form.handleSubmit();
+        }}
+      >
+        <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
+          {(serverError) =>
+            serverError && (
+              <Alert
+                isInline
+                variant="danger"
+                title={_("Authentication settings could not be updated")}
+              >
+                {serverError}
+              </Alert>
+            )
+          }
+        </form.Subscribe>
 
-            <form.Subscribe
-              selector={(s) =>
-                s.isSubmitted && !s.isSubmitting && !s.errorMap.onSubmit?.form && !s.isDirty
-              }
-            >
-              {(showResult) =>
-                showResult && (
-                  <Alert
-                    isInline
-                    variant={configWasPatched.current ? "success" : "info"}
-                    title={
-                      configWasPatched.current
-                        ? _("Authentication settings successfully updated")
-                        : _("No changes detected. Authentication settings are already up to date.")
-                    }
-                  />
-                )
-              }
-            </form.Subscribe>
+        <form.Subscribe
+          selector={(s) =>
+            s.isSubmitted && !s.isSubmitting && !s.errorMap.onSubmit?.form && !s.isDirty
+          }
+        >
+          {(showResult) =>
+            showResult && (
+              <Alert
+                isInline
+                variant={configWasPatched.current ? "success" : "info"}
+                title={
+                  configWasPatched.current
+                    ? _("Authentication settings successfully updated")
+                    : _("No changes detected. Authentication settings are already up to date.")
+                }
+              />
+            )
+          }
+        </form.Subscribe>
 
-            <FirstUserFields form={form} />
-            <RootAuthFields form={form} />
+        <FirstUserFields form={form} />
+        <RootAuthFields form={form} />
 
-            <ActionGroup>
-              <form.SubmitButton label={_("Accept")} />
-            </ActionGroup>
-          </Form>
-        </form.AppForm>
-      </Page.Content>
-    </Page>
+        <ActionGroup>
+          <form.SubmitButton label={_("Accept")} />
+        </ActionGroup>
+      </Form>
+    </form.AppForm>
   );
 }

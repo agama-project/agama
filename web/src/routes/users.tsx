@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import AuthenticationForm from "~/components/users/authentication-form/Form";
+import UsersPage from "~/components/users/UsersPage";
 import { Route } from "~/types/routes";
 import { USER as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";
@@ -32,7 +32,7 @@ const routes = (): Route => ({
     name: N_("Authentication"),
     icon: "manage_accounts",
   },
-  children: [{ index: true, element: <AuthenticationForm /> }],
+  children: [{ index: true, element: <UsersPage /> }],
 });
 
 export default routes;
