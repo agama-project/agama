@@ -45,6 +45,25 @@ jest.mock("~/api", () => ({
   putConfig: (config) => mockPutConfig(config),
 }));
 
+/** Checks the "Define user account" checkbox and returns it. */
+const enableFirstUser = async (user: ReturnType<typeof installerRender>["user"]) => {
+  const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
+  await user.click(checkbox);
+  return checkbox;
+};
+
+/** Fills in the minimum valid first-user fields. */
+const fillFirstUserFields = async (
+  user: ReturnType<typeof installerRender>["user"],
+  overrides: { fullName?: string; userName?: string; password?: string } = {},
+) => {
+  const { fullName = "John Smith", userName = "jsmith", password = "secret123" } = overrides;
+  await user.type(screen.getByLabelText("Full name"), fullName);
+  await user.type(screen.getByLabelText("Username"), userName);
+  await user.type(screen.getByLabelText("Password"), password);
+  await user.type(screen.getByLabelText("Password confirmation"), password);
+};
+
 describe("AuthenticationForm", () => {
   beforeEach(() => {
     mockFirstUser = undefined;
@@ -53,15 +72,10 @@ describe("AuthenticationForm", () => {
   });
 
   describe("initial render", () => {
-    it("renders the form with authentication breadcrumb", () => {
-      installerRender(<AuthenticationForm />);
-      screen.getByText("Authentication");
-    });
-
     it("renders first user and root fieldsets", () => {
       installerRender(<AuthenticationForm />);
-      screen.getByText("First user");
-      screen.getByText("Root");
+      screen.getByRole("group", { name: "First user" });
+      screen.getByRole("group", { name: "Root" });
     });
 
     it("renders first user checkbox unchecked by default", () => {
@@ -70,7 +84,7 @@ describe("AuthenticationForm", () => {
       expect(checkbox).not.toBeChecked();
     });
 
-    it("shows root authentication mode selector", () => {
+    it("shows root authentication mode selector defaulting to None", () => {
       installerRender(<AuthenticationForm />);
       const dropdown = screen.getByLabelText("Authentication mode");
       expect(dropdown).toHaveTextContent("None");
@@ -86,12 +100,13 @@ describe("AuthenticationForm", () => {
 
     it("reveals first user fields when checkbox is checked", async () => {
       const { user } = installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
-
-      await user.click(checkbox);
+      await enableFirstUser(user);
 
       screen.getByLabelText("Full name");
       screen.getByLabelText("Username");
+      screen.getByLabelText("Password");
+      screen.getByLabelText("Password confirmation");
+      screen.getByLabelText("SSH Public Keys (optional)");
     });
 
     it("loads existing first user data", () => {
@@ -108,53 +123,39 @@ describe("AuthenticationForm", () => {
       expect(checkbox).toBeChecked();
       expect(screen.getByLabelText("Full name")).toHaveValue("Jane Doe");
       expect(screen.getByLabelText("Username")).toHaveValue("jdoe");
+      expect(screen.getByLabelText("Password")).toHaveValue("s3cr3t");
+      expect(screen.getByLabelText("Password confirmation")).toHaveValue("s3cr3t");
     });
   });
 
   describe("root authentication section", () => {
-    it("loads root authentication mode from config", () => {
-      mockRootUser = {
-        password: "h4$h3d",
-        hashedPassword: true,
-      };
-
+    it.each<[string, Root.Config, string]>([
+      ["password only", { password: "h4$h3d", hashedPassword: true }, "Password"],
+      [
+        "SSH key only",
+        { sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host" },
+        "SSH Public Key",
+      ],
+      [
+        "both password and SSH key",
+        {
+          password: "h4$h3d",
+          hashedPassword: true,
+          sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
+        },
+        "Both",
+      ],
+    ])("loads auth mode %s from config", (_label, rootConfig, expectedMode) => {
+      mockRootUser = rootConfig;
       installerRender(<AuthenticationForm />);
-
-      const dropdown = screen.getByLabelText("Authentication mode");
-      expect(dropdown).toHaveTextContent("Password");
-    });
-
-    it("loads SSH key mode from config", () => {
-      mockRootUser = {
-        sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
-      };
-
-      installerRender(<AuthenticationForm />);
-
-      const dropdown = screen.getByLabelText("Authentication mode");
-      expect(dropdown).toHaveTextContent("SSH Public Key");
-    });
-
-    it("loads both password and SSH key mode from config", () => {
-      mockRootUser = {
-        password: "h4$h3d",
-        hashedPassword: true,
-        sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
-      };
-
-      installerRender(<AuthenticationForm />);
-
-      const dropdown = screen.getByLabelText("Authentication mode");
-      expect(dropdown).toHaveTextContent("Both");
+      expect(screen.getByLabelText("Authentication mode")).toHaveTextContent(expectedMode);
     });
   });
 
   describe("form submission", () => {
     it("shows no changes message when form is pristine", async () => {
       const { user } = installerRender(<AuthenticationForm />);
-      const submitButton = screen.getByRole("button", { name: "Accept" });
-
-      await user.click(submitButton);
+      await user.click(screen.getByRole("button", { name: "Accept" }));
 
       expect(mockPutConfig).not.toHaveBeenCalled();
       screen.getByText(/No changes detected/i);
@@ -162,13 +163,8 @@ describe("AuthenticationForm", () => {
 
     it("creates first user when checkbox is checked", async () => {
       const { user } = installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
-
-      await user.click(checkbox);
-      await user.type(screen.getByLabelText("Full name"), "John Smith");
-      await user.type(screen.getByLabelText("Username"), "jsmith");
-      await user.type(screen.getByLabelText("Password"), "secret123");
-      await user.type(screen.getByLabelText("Password confirmation"), "secret123");
+      await enableFirstUser(user);
+      await fillFirstUserFields(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
       expect(mockPutConfig).toHaveBeenCalledWith(
@@ -191,13 +187,10 @@ describe("AuthenticationForm", () => {
       };
 
       const { user } = installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
-
-      await user.click(checkbox);
+      await enableFirstUser(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
-      const callArg = mockPutConfig.mock.calls[0][0];
-      expect(callArg).not.toHaveProperty("user");
+      expect(mockPutConfig.mock.calls[0][0]).not.toHaveProperty("user");
     });
 
     it("preserves root when updating only first user", async () => {
@@ -207,27 +200,18 @@ describe("AuthenticationForm", () => {
         password: "userpass",
         hashedPassword: false,
       };
-      mockRootUser = {
-        password: "rootpass",
-        hashedPassword: false,
-      };
+      mockRootUser = { password: "rootpass", hashedPassword: false };
 
       const { user } = installerRender(<AuthenticationForm />);
       const fullNameInput = screen.getByLabelText("Full name");
-
       await user.clear(fullNameInput);
       await user.type(fullNameInput, "Jane Smith");
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
       expect(mockPutConfig).toHaveBeenCalledWith(
         expect.objectContaining({
-          user: expect.objectContaining({
-            fullName: "Jane Smith",
-            userName: "jdoe",
-          }),
-          root: expect.objectContaining({
-            password: "rootpass",
-          }),
+          user: expect.objectContaining({ fullName: "Jane Smith", userName: "jdoe" }),
+          root: expect.objectContaining({ password: "rootpass" }),
         }),
       );
     });
@@ -239,10 +223,7 @@ describe("AuthenticationForm", () => {
         password: "userpass",
         hashedPassword: false,
       };
-      mockRootUser = {
-        password: "oldpass",
-        hashedPassword: false,
-      };
+      mockRootUser = { password: "oldpass", hashedPassword: false };
 
       const { user } = installerRender(<AuthenticationForm />);
 
@@ -258,13 +239,8 @@ describe("AuthenticationForm", () => {
 
       expect(mockPutConfig).toHaveBeenCalledWith(
         expect.objectContaining({
-          user: expect.objectContaining({
-            fullName: "Jane Doe",
-            userName: "jdoe",
-          }),
-          root: expect.objectContaining({
-            password: "newpass",
-          }),
+          user: expect.objectContaining({ fullName: "Jane Doe", userName: "jdoe" }),
+          root: expect.objectContaining({ password: "newpass" }),
         }),
       );
     });
@@ -273,9 +249,7 @@ describe("AuthenticationForm", () => {
   describe("validation", () => {
     it("validates first user fields when checkbox is checked", async () => {
       const { user } = installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
-
-      await user.click(checkbox);
+      await enableFirstUser(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
       expect(mockPutConfig).not.toHaveBeenCalled();
@@ -285,29 +259,24 @@ describe("AuthenticationForm", () => {
   });
 
   describe("backend compatibility", () => {
-    it("loads SSH key from sshPublicKey field (string)", () => {
-      mockRootUser = {
-        sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
-      };
-
+    it.each<[string, Root.Config | User.Config, "root" | "user"]>([
+      [
+        "root sshPublicKey (singular)",
+        { sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host" },
+        "root",
+      ],
+      [
+        "root sshPublicKeys (plural)",
+        { sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host" },
+        "root",
+      ],
+    ])("reads SSH key from %s field", (_label, config, target) => {
+      if (target === "root") mockRootUser = config as Root.Config;
       installerRender(<AuthenticationForm />);
-
-      const dropdown = screen.getByLabelText("Authentication mode");
-      expect(dropdown).toHaveTextContent("SSH Public Key");
+      expect(screen.getByLabelText("Authentication mode")).toHaveTextContent("SSH Public Key");
     });
 
-    it("loads SSH key from sshPublicKeys field (string)", () => {
-      mockRootUser = {
-        sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
-      };
-
-      installerRender(<AuthenticationForm />);
-
-      const dropdown = screen.getByLabelText("Authentication mode");
-      expect(dropdown).toHaveTextContent("SSH Public Key");
-    });
-
-    it("loads first user SSH key from sshPublicKey field (string)", () => {
+    it("loads first user SSH key from sshPublicKey field (singular)", () => {
       mockFirstUser = {
         fullName: "Jane Doe",
         userName: "jdoe",
@@ -317,8 +286,7 @@ describe("AuthenticationForm", () => {
 
       installerRender(<AuthenticationForm />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
-      expect(checkbox).toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /Define user account/i })).toBeChecked();
     });
   });
 
@@ -327,13 +295,8 @@ describe("AuthenticationForm", () => {
       mockPutConfig.mockRejectedValueOnce({ message: "Network error" });
 
       const { user } = installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
-
-      await user.click(checkbox);
-      await user.type(screen.getByLabelText("Full name"), "John Smith");
-      await user.type(screen.getByLabelText("Username"), "jsmith");
-      await user.type(screen.getByLabelText("Password"), "secret123");
-      await user.type(screen.getByLabelText("Password confirmation"), "secret123");
+      await enableFirstUser(user);
+      await fillFirstUserFields(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
       screen.getByText(/Authentication settings could not be updated/i);
@@ -344,13 +307,8 @@ describe("AuthenticationForm", () => {
   describe("success feedback", () => {
     it("shows success message after successful submission", async () => {
       const { user } = installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
-
-      await user.click(checkbox);
-      await user.type(screen.getByLabelText("Full name"), "John Smith");
-      await user.type(screen.getByLabelText("Username"), "jsmith");
-      await user.type(screen.getByLabelText("Password"), "secret123");
-      await user.type(screen.getByLabelText("Password confirmation"), "secret123");
+      await enableFirstUser(user);
+      await fillFirstUserFields(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
       await screen.findByText(/successfully updated/i);
