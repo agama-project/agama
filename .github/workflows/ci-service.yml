@@ -103,6 +103,18 @@ jobs:
         "rubygem(ruby:$RUBY_VERSION:gettext)" \
         which
 
+    - name: Bundler cache
+      id: bundler-cache
+      uses: actions/cache@v5
+      with:
+        path: |
+          agama/service/.bundle
+          /usr/lib64/ruby/gems/*
+          !/usr/lib64/ruby/gems/*/gems
+          /usr/bin/rspec
+          /usr/bin/rxgettext
+        key: ${{ runner.os }}-ruby-bundler-master-${{ hashFiles('./service/Gemfile.lock') }}
+
     - name: Install RubyGems dependencies
       run: bundle config set --local with 'development' && bundle install
 
