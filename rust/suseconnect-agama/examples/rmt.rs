@@ -17,10 +17,11 @@ pub fn main() {
     let params = ConnectParams {
         language: Some("en_US".to_string()),
         url: Some(Url::parse(&url).unwrap()),
-        token: None,
-        email: None,
+        token: args.get(2).map(|s| s.to_string()),
+        email: Some("bug.in.120@suse.com".to_string()),
     };
 
+    println!("announce_system with params {:?}", params);
     let result = announce_system(params.clone(), "sles16");
     println!("{:?}", result);
     let Ok(credentials) = result else {
