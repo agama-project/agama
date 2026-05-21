@@ -225,7 +225,7 @@ jobs:
         sudo apt-get -y install libclang-18-dev libpam0g-dev
         # uninstall the python3-jsonschema package, openapi-spec-validator wants
         # to install a newer version which would conflict with that
-        sudo apt-get purge python3-jsonschema
+        sudo apt-get purge python3-jsonschema python3-typing-extensions
         sudo pip install openapi-spec-validator
 
     - name: Installed packages
