@@ -212,7 +212,10 @@ describe("authentication form fields", () => {
       describe("when authMode is PASSWORD", () => {
         it("requires password when not using hashed password", () => {
           const result = validate(
-            createFormFields({}, { rootAuthMode: AuthMode.PASSWORD, rootPasswordConfirmation: "secret123" }),
+            createFormFields(
+              {},
+              { rootAuthMode: AuthMode.PASSWORD, rootPasswordConfirmation: "secret123" },
+            ),
           );
           expect(result?.fields?.rootPassword).toBeDefined();
         });
@@ -240,7 +243,10 @@ describe("authentication form fields", () => {
 
         it("does not require password when using hashed password", () => {
           const result = validate(
-            createFormFields({}, { rootAuthMode: AuthMode.PASSWORD, rootUsingHashedPassword: true }),
+            createFormFields(
+              {},
+              { rootAuthMode: AuthMode.PASSWORD, rootUsingHashedPassword: true },
+            ),
           );
           expect(result).toBeUndefined();
         });
@@ -268,7 +274,10 @@ describe("authentication form fields", () => {
 
         it("validates SSH key format", () => {
           const result = validate(
-            createFormFields({}, { rootAuthMode: AuthMode.SSH_KEY, rootSshPublicKeys: ["invalid key format"] }),
+            createFormFields(
+              {},
+              { rootAuthMode: AuthMode.SSH_KEY, rootSshPublicKeys: ["invalid key format"] },
+            ),
           );
           expect(result?.fields?.rootSshPublicKeys).toContain("invalid");
         });
@@ -277,7 +286,10 @@ describe("authentication form fields", () => {
           const result = validate(
             createFormFields(
               {},
-              { rootAuthMode: AuthMode.SSH_KEY, rootSshPublicKeys: ["-----BEGIN RSA PRIVATE KEY-----"] },
+              {
+                rootAuthMode: AuthMode.SSH_KEY,
+                rootSshPublicKeys: ["-----BEGIN RSA PRIVATE KEY-----"],
+              },
             ),
           );
           expect(result?.fields?.rootSshPublicKeys).toContain("invalid");
