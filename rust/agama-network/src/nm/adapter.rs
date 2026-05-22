@@ -71,7 +71,7 @@ impl<'a> NetworkManagerAdapter<'a> {
         let devices = self.client.devices().await?;
         for device in devices {
             let is_using_this = device.connection.as_ref() == Some(&conn.id);
-            let is_target = conn.matches_device(&device.name, &device.mac_address);
+            let is_target = conn.is_up() && conn.matches_device(&device.name, &device.mac_address);
             let is_compatible = conn.is_compatible(&device.name, &device.mac_address);
 
             if (is_using_this && !is_compatible)
