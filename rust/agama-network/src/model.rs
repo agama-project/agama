@@ -1068,6 +1068,47 @@ impl Connection {
             || matches!(self.config, ConnectionConfig::Vlan(_))
             || matches!(self.config, ConnectionConfig::Bridge(_))
     }
+
+    /// Determines whether the connection is bound to a specific interface or MAC address.
+    pub fn is_bound(&self) -> bool {
+        !self.interface.as_deref().unwrap_or("").is_empty() || self.mac_address.is_some()
+    }
+
+    /// Determines whether the connection is compatible with the given device name and MAC address.
+    pub fn is_compatible(&self, device_name: &str, device_mac: &MacAddress) -> bool {
+        if let Some(interface) = &self.interface {
+            if !interface.is_empty() && interface != device_name {
+                return false;
+            }
+        }
+        if let Some(mac) = self.mac_address {
+            if let MacAddress::MacAddress(d_mac) = device_mac {
+                if mac != *d_mac {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        true
+    }
+
+    /// Determines whether the connection matches the given device name or MAC address.
+    pub fn matches_device(&self, device_name: &str, device_mac: &MacAddress) -> bool {
+        if let Some(interface) = &self.interface {
+            if !interface.is_empty() && interface == device_name {
+                return true;
+            }
+        }
+        if let Some(mac) = self.mac_address {
+            if let MacAddress::MacAddress(d_mac) = device_mac {
+                if mac == *d_mac {
+                    return true;
+                }
+            }
+        }
+        false
+    }
 }
 
 impl Default for Connection {

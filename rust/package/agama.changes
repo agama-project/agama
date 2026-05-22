@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 22 13:07:14 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- When activating a network connection which bind device has been
+  modified it will disconnect the devices which couldn't apply
+  the connection anymore (gh#agama-project/agama#3532, bsc#1265446).
+
+-------------------------------------------------------------------
 Fri May 22 09:08:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Redesign the progress tracking in the command-line interface.
