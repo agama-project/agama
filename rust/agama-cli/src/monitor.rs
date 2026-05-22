@@ -30,7 +30,7 @@ mod ui;
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::Monitor,
+    monitor::{Monitor, MonitorUpdate},
 };
 use anyhow::Result;
 use crossterm::{
@@ -86,18 +86,32 @@ async fn run_headless(
     println!("Agama monitor started (headless mode)");
     println!("Initial stage: {:?}", status.status.stage);
 
-    // Listen to updates until channel closes
-    while let Ok(status) = updates.recv().await {
-        println!(
-            "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
-            status.status.stage,
-            status.status.progresses.len(),
-            status.issues.len(),
-            status.questions.len()
-        );
+    // Listen to updates
+    while let Some(update) = updates.recv().await {
+        match update {
+            MonitorUpdate::Status(status) => {
+                println!(
+                    "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
+                    status.status.stage,
+                    status.status.progresses.len(),
+                    status.issues.len(),
+                    status.questions.len()
+                );
+            }
+            MonitorUpdate::Finished => {
+                break;
+            }
+            MonitorUpdate::Disconnected => {
+                eprintln!("Connection to the server was closed.");
+                break;
+            }
+            MonitorUpdate::Error(e) => {
+                eprintln!("{e}");
+                break;
+            }
+        }
     }
 
-    println!("Monitoring finished");
     Ok(())
 }
 
@@ -137,8 +151,14 @@ pub async fn run(
     // Cleanup
     restore_terminal(&mut terminal)?;
 
-    if let Err(error) = result {
-        eprintln!("Error running the monitor: {error}");
+    // Handle result
+    match result {
+        Ok(()) => {
+            // Normal finish (idle or user quit)
+        }
+        Err(e) => {
+            eprintln!("{e}");
+        }
     }
 
     // Forces crossterm loop to finish.
