@@ -27,6 +27,8 @@ FILE="$SCREENSHOT_DIR/screenshot.png"
 
 # see the DBus API description at
 # https://gitlab.gnome.org/GNOME/gnome-kiosk/-/blob/main/dbus-interfaces/org.gnome.Shell.Screenshot.xml?ref_type=heads
+# include cursor: false
+# flash screen: false
 gdbus call --session --dest org.gnome.Shell.Screenshot --object-path \
   /org/gnome/Shell/Screenshot --method org.gnome.Shell.Screenshot.Screenshot \
 	false false "$FILE" > /dev/null
