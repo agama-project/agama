@@ -54,8 +54,6 @@ impl<'a> NetworkManagerAdapter<'a> {
         conn: &Connection,
         path: zbus::zvariant::OwnedObjectPath,
     ) -> Result<OwnedObjectPath, NmError> {
-        self.cleanup_devices(conn).await?;
-
         tracing::info!("Activating connection {}", &conn.id);
         self.client.activate_connection(path).await
     }
