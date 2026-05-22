@@ -25,11 +25,46 @@ use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
 
+/// Config handled by agama-security
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub security: Option<SecurityConfig>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    remote_access: Option<RemoteAccessConfig>,
+}
+
+#[derive(Default, Clone, Copy, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum AccessEnum {
+    Enabled,
+    #[default]
+    Default,
+}
+
+/// Remote Access configuration
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+#[schemars(rename = "remoteAccess.Config")]
+pub struct RemoteAccessConfig {
+    /// Remote access to SSH
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub ssh: Option<AccessEnum>,
+    /// Remote access to Cockpit
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub cockpit: Option<AccessEnum>,
+}
+
 /// Security settings for installation
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 #[schemars(rename = "security.Config")]
-pub struct Config {
+pub struct SecurityConfig {
     /// List of user selected patterns to install.
     #[serde(skip_serializing_if = "Option::is_none")]
     // when we add support for remote URL here it should be vector of SSL
