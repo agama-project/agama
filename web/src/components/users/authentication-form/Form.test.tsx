@@ -45,9 +45,9 @@ jest.mock("~/api", () => ({
   putConfig: (config) => mockPutConfig(config),
 }));
 
-/** Checks the "Define user account" checkbox and returns it. */
+/** Checks the "Define a primary user" checkbox and returns it. */
 const enableFirstUser = async (user: ReturnType<typeof installerRender>["user"]) => {
-  const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
+  const checkbox = screen.getByRole("checkbox", { name: /Define a primary user/i });
   await user.click(checkbox);
   return checkbox;
 };
@@ -74,20 +74,20 @@ describe("AuthenticationForm", () => {
   describe("initial render", () => {
     it("renders first user and root fieldsets", () => {
       installerRender(<AuthenticationForm />);
-      screen.getByRole("group", { name: "First user" });
-      screen.getByRole("group", { name: "Root" });
+      screen.getByRole("group", { name: "Primary account" });
+      screen.getByRole("group", { name: "Root account" });
     });
 
     it("renders first user checkbox unchecked by default", () => {
       installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
+      const checkbox = screen.getByRole("checkbox", { name: /Define a primary user/i });
       expect(checkbox).not.toBeChecked();
     });
 
-    it("shows root authentication mode selector defaulting to None", () => {
+    it("shows root authentication mode selector defaulting to Disabled", () => {
       installerRender(<AuthenticationForm />);
-      const dropdown = screen.getByLabelText("Authentication mode");
-      expect(dropdown).toHaveTextContent("None");
+      const dropdown = screen.getByLabelText("Root login method");
+      expect(dropdown).toHaveTextContent("Disabled");
     });
   });
 
@@ -119,7 +119,7 @@ describe("AuthenticationForm", () => {
 
       installerRender(<AuthenticationForm />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Define user account/i });
+      const checkbox = screen.getByRole("checkbox", { name: /Define a primary user/i });
       expect(checkbox).toBeChecked();
       expect(screen.getByLabelText("Full name")).toHaveValue("Jane Doe");
       expect(screen.getByLabelText("Username")).toHaveValue("jdoe");
@@ -143,12 +143,12 @@ describe("AuthenticationForm", () => {
           hashedPassword: true,
           sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA root@host",
         },
-        "Both",
+        "Password and SSH Public Key",
       ],
     ])("loads auth mode %s from config", (_label, rootConfig, expectedMode) => {
       mockRootUser = rootConfig;
       installerRender(<AuthenticationForm />);
-      expect(screen.getByLabelText("Authentication mode")).toHaveTextContent(expectedMode);
+      expect(screen.getByLabelText("Root login method")).toHaveTextContent(expectedMode);
     });
   });
 
@@ -227,7 +227,7 @@ describe("AuthenticationForm", () => {
 
       const { user } = installerRender(<AuthenticationForm />);
 
-      const rootGroup = screen.getByRole("group", { name: "Root" });
+      const rootGroup = screen.getByRole("group", { name: "Root account" });
       const passwordInput = within(rootGroup).getByLabelText("Password");
       const confirmationInput = within(rootGroup).getByLabelText("Password confirmation");
 
@@ -273,7 +273,7 @@ describe("AuthenticationForm", () => {
     ])("reads SSH key from %s field", (_label, config, target) => {
       if (target === "root") mockRootUser = config as Root.Config;
       installerRender(<AuthenticationForm />);
-      expect(screen.getByLabelText("Authentication mode")).toHaveTextContent("SSH Public Key");
+      expect(screen.getByLabelText("Root login method")).toHaveTextContent("SSH Public Key");
     });
 
     it("loads first user SSH key from sshPublicKey field (singular)", () => {
@@ -286,7 +286,7 @@ describe("AuthenticationForm", () => {
 
       installerRender(<AuthenticationForm />);
 
-      expect(screen.getByRole("checkbox", { name: /Define user account/i })).toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /Define a primary user/i })).toBeChecked();
     });
   });
 

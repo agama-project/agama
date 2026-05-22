@@ -67,30 +67,30 @@ const authModeOptions = () => [
   {
     value: AuthMode.NONE,
     // TRANSLATORS: authentication mode option
-    label: _("None"),
+    label: _("Disabled"),
     // TRANSLATORS: description for no authentication mode
-    description: _("No authentication configured"),
+    description: _("Root login is off"),
   },
   {
     value: AuthMode.PASSWORD,
     // TRANSLATORS: authentication mode option
     label: _("Password"),
     // TRANSLATORS: description for password authentication mode
-    description: _("Authenticate using a password"),
+    description: _("Log in using a password"),
   },
   {
     value: AuthMode.SSH_KEY,
     // TRANSLATORS: authentication mode option
     label: _("SSH Public Key"),
     // TRANSLATORS: description for SSH public key authentication mode
-    description: _("Authenticate using an SSH public key"),
+    description: _("Log in using a trusted SSH public key, more secure than a password"),
   },
   {
     value: AuthMode.BOTH,
     // TRANSLATORS: authentication mode option
-    label: _("Both"),
+    label: _("Password and SSH Public Key"),
     // TRANSLATORS: description for both password and SSH key authentication
-    description: _("Authenticate using either password or SSH public key"),
+    description: _("Sets up both and use either to log in"),
   },
 ];
 
@@ -109,18 +109,18 @@ const RootAuthFields = withForm({
       <Fieldset
         legend={
           // TRANSLATORS: fieldset legend for root authentication configuration
-          _("Root")
+          _("Root account")
         }
         description={
           // TRANSLATORS: explanation of how to enable the root account
-          _("Select an authentication method to enable the root account.")
+          _("Choose whether to enable the root account.")
         }
       >
         <form.AppField name="rootAuthMode">
           {(field) => (
             <field.DropdownField
               // TRANSLATORS: label for the root authentication mode selector
-              label={_("Authentication mode")}
+              label={_("Root login method")}
               options={authModeOptions()}
             />
           )}
