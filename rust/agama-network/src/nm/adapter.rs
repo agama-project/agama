@@ -58,7 +58,8 @@ impl<'a> NetworkManagerAdapter<'a> {
         self.client.activate_connection(path).await
     }
 
-    /// Ensures that devices are in a consistent state before activating a connection.
+    /// Ensures that devices are in a consistent state before activating a connection or
+    /// after updating it.
     ///
     /// It disconnects any device that is currently using the connection but is no longer
     /// compatible with it. Also, it disconnects any device that should be used by the
