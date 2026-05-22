@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu May 21 15:53:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Prevent the monitor from blocking (related to bsc#1265431).
+
+-------------------------------------------------------------------
 Mon May 18 10:58:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Detect when the WebSocket gets disconnected (bsc#1265431).
