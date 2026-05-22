@@ -132,6 +132,8 @@ pub struct SystemInfo {
     pub machine: String,
     /// Product identifier
     pub product_id: Option<String>,
+    /// Product mode
+    pub product_mode: Option<String>,
 }
 
 /// Extended status information with combination of status, issues and questions
@@ -281,13 +283,14 @@ impl Monitor {
             .model
             .unwrap_or_else(|| "Unknown Machine".to_string());
 
-        let product_id = Self::fetch_product_id(http_client).await?;
+        let (product_id, product_mode) = Self::fetch_product_id(http_client).await?;
 
         let system = SystemInfo {
             hostname,
             ip,
             machine,
             product_id,
+            product_mode,
         };
 
         Ok(system)
@@ -295,19 +298,20 @@ impl Monitor {
 
     async fn fetch_product_id(
         http_client: &BaseHTTPClient,
-    ) -> Result<Option<String>, MonitorError> {
+    ) -> Result<(Option<String>, Option<String>), MonitorError> {
         let config: Config = http_client
-            .get("/config")
+            .get("/extended_config")
             .await
             .map_err(|e| MonitorError::Manager(ManagerHTTPClientError::HTTP(e)))?;
 
-        let product_id = config
-            .software
-            .as_ref()
-            .and_then(|p| p.product.as_ref())
-            .and_then(|p| p.id.clone());
+        let product_config = config.software.as_ref().and_then(|p| p.product.as_ref());
 
-        Ok(product_id)
+        let (id, mode) = match product_config {
+            Some(product) => (product.id.clone(), product.mode.clone()),
+            None => (None, None),
+        };
+
+        Ok((id, mode))
     }
 
     /// Runs the monitor.
@@ -390,7 +394,10 @@ impl Monitor {
                 // Refresh product ID as it might have changed
                 // (e.g., when a product is selected, it triggers IssuesChanged)
                 match Self::fetch_product_id(&self.http_client).await {
-                    Ok(product_id) => status.system_info.product_id = product_id,
+                    Ok((product_id, product_mode)) => {
+                        status.system_info.product_id = product_id;
+                        status.system_info.product_mode = product_mode;
+                    }
                     Err(e) => tracing::error!("Failed to refresh product name: {:?}", e),
                 }
             }

@@ -23,14 +23,14 @@ use agama_lib::{
     monitor::{InstallationStatus, Monitor, MonitorUpdate},
 };
 use anyhow::{anyhow, Result};
-use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyEventKind};
+use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use futures_util::StreamExt;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
 use std::{collections::HashMap, io};
 use tokio::sync::mpsc;
 
-use super::{theme::Theme, ui};
+use super::ui;
 
 /// Application messages (internal).
 #[derive(Clone, Debug)]
@@ -68,19 +68,31 @@ pub enum MonitorError {
 /// Minimal struct to deserialize product information from /system
 #[derive(Debug, Deserialize)]
 struct ProductInfo {
+    name: String,
+    modes: HashMap<String, String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MinimalProduct {
+    id: String,
+    name: String,
+    modes: Vec<MinimalProductMode>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MinimalProductMode {
     id: String,
     name: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct MinimalSystemInfo {
-    products: Vec<ProductInfo>,
+    products: Vec<MinimalProduct>,
 }
 
 pub struct MonitorAppBuilder {
     pub http_client: BaseHTTPClient,
     pub websocket_client: WebSocketClient,
-    pub theme: Theme,
     pub stop_on_idle: bool,
 }
 
@@ -89,14 +101,8 @@ impl MonitorAppBuilder {
         Self {
             http_client,
             websocket_client,
-            theme: Theme::default(),
             stop_on_idle: false,
         }
-    }
-    /// Creates a new MonitorApp with a specific theme.
-    pub fn with_theme(mut self, theme: Theme) -> Self {
-        self.theme = theme;
-        self
     }
 
     /// Sets the monitor to stop after going idle (no running progress).
@@ -106,26 +112,38 @@ impl MonitorAppBuilder {
     }
 
     pub async fn build(self) -> Result<MonitorApp> {
-        let product_names = self.get_product_names().await?;
+        let products = self.get_products().await?;
         let (updates, status) =
             Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
         Ok(MonitorApp {
             updates: Some(updates),
             status,
-            theme: self.theme,
-            product_names,
+            products,
         })
     }
 
-    async fn get_product_names(&self) -> Result<HashMap<String, String>> {
+    async fn get_products(&self) -> Result<HashMap<String, ProductInfo>> {
         let info: MinimalSystemInfo = self.http_client.get("/system").await?;
-        let product_names = info
+        let products = info
             .products
-            .iter()
-            .map(|i| (i.id.clone(), i.name.clone()))
+            .into_iter()
+            .map(|p| {
+                let modes = p
+                    .modes
+                    .into_iter()
+                    .map(|m| (m.id.clone(), m.name.clone()))
+                    .collect();
+                (
+                    p.id.clone(),
+                    ProductInfo {
+                        name: p.name,
+                        modes,
+                    },
+                )
+            })
             .collect();
-        Ok(product_names)
+        Ok(products)
     }
 }
 
@@ -135,10 +153,8 @@ pub struct MonitorApp {
     updates: Option<mpsc::Receiver<MonitorUpdate>>,
     /// Current installation status
     status: InstallationStatus,
-    /// Product names
-    product_names: HashMap<String, String>,
-    /// UI color theme
-    theme: Theme,
+    /// Products information
+    products: HashMap<String, ProductInfo>,
 }
 
 impl MonitorApp {
@@ -244,8 +260,38 @@ impl MonitorApp {
 
         matches!(
             (key_event.code, key_event.modifiers),
-            (KeyCode::Char('q'), _) | (KeyCode::Esc, _)
+            (KeyCode::Char('q'), _)
+                | (KeyCode::Esc, _)
+                | (KeyCode::Char('c'), KeyModifiers::CONTROL)
         )
+    }
+
+    fn get_product_name(&self, id: &Option<String>, mode: &Option<String>) -> Option<String> {
+        let Some(product_id) = id else {
+            return None;
+        };
+
+        match self.get_product_and_mode(product_id, mode) {
+            (Some(name), Some(mode)) => Some(format!("{} ({})", name, mode)),
+            (Some(name), None) => Some(name),
+            _ => None,
+        }
+    }
+
+    fn get_product_and_mode(
+        &self,
+        id: &str,
+        mode: &Option<String>,
+    ) -> (Option<String>, Option<String>) {
+        let Some(product) = self.products.get(id) else {
+            return (None, None);
+        };
+
+        let product_name = Some(product.name.clone());
+        match mode {
+            Some(mode_id) => (product_name, product.modes.get(mode_id).cloned()),
+            None => (product_name, None),
+        }
     }
 }
 
@@ -253,18 +299,15 @@ impl MonitorApp {
 /// This allows rendering using ratatui's widget system
 impl Widget for &mut MonitorApp {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let layout = ui::create_layout(area);
+        let product_name = self.get_product_name(
+            &self.status.system_info.product_id,
+            &self.status.system_info.product_mode,
+        );
 
-        // Render each section using widget structs
-        ui::StatusBar::new(&self.status, &self.theme).render(layout.status_bar, buf);
-        if let Some(product_id) = &self.status.system_info.product_id {
-            if let Some(name) = self.product_names.get(product_id) {
-                ui::Product::new(name).render(layout.product, buf);
-            }
-        }
-        ui::Separator.render(layout.separator, buf);
-        ui::Content::new(&self.status, &self.theme).render(layout.content, buf);
-        ui::Separator.render(layout.hints_separator, buf);
-        ui::Hints.render(layout.hints, buf);
+        let summary = ui::Summary::new(&self.status, product_name);
+        let layout = ui::create_layout(area, summary.indentation);
+
+        summary.render(layout.summary, buf);
+        ui::Content::new(&self.status).render(layout.content, buf);
     }
 }

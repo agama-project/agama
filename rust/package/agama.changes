@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 22 09:08:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Redesign the progress tracking in the command-line interface.
+- Display the progress inline, preventing rendering artifacts in bsc#1265936.
+
+-------------------------------------------------------------------
 Thu May 21 15:53:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Prevent the monitor from blocking (related to bsc#1265431).
