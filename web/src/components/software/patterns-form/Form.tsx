@@ -33,7 +33,6 @@ import {
 } from "@patternfly/react-core";
 import { group, sort } from "radashi";
 import { sprintf } from "sprintf-js";
-import { formOptions } from "@tanstack/react-form";
 import { Navigate, useNavigate } from "react-router";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
@@ -48,12 +47,9 @@ import { usePristineSafeForm } from "~/hooks/form";
 import { filterPatterns, groupPatterns, isPatternSelected, sortGroupNames } from "~/utils/software";
 import { SOFTWARE } from "~/routes/paths";
 import { N_, _, n_ } from "~/i18n";
+import { defaultOptions } from "./fields";
 
 import type { Pattern } from "~/model/system/software";
-
-const softwarePatternsFormOptions = formOptions({
-  defaultValues: {},
-});
 
 /**
  * Controls which patterns the selection page shows.
@@ -283,7 +279,7 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
   }, {});
 
   const form = usePristineSafeForm({
-    ...softwarePatternsFormOptions,
+    ...defaultOptions,
     defaultValues: initialValues,
     onSubmit: async ({ value: formValues, formApi }) => {
       const { add, remove } = systemPatterns.reduce(

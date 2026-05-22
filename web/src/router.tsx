@@ -30,7 +30,7 @@ import InstallationFinished from "~/components/core/InstallationFinished";
 import InstallationProgress from "~/components/core/InstallationProgress";
 import LoginPage from "~/components/core/LoginPage";
 import OverviewPage from "~/components/overview/OverviewPage";
-import SystemPage from "~/components/system/SystemPage";
+import SystemPage from "~/components/system/system-form/Form";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
 import productsRoutes from "~/routes/products";

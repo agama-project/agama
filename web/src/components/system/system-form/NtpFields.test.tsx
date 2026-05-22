@@ -24,22 +24,22 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { systemFormOptions } from "~/components/system/SystemPage";
-import NtpSettings from "./NtpSettings";
+import { defaultOptions } from "./fields";
+import NtpFields from "./NtpFields";
 
 function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
   const form = useAppForm({
-    ...systemFormOptions,
+    ...defaultOptions,
     defaultValues: {
-      ...systemFormOptions.defaultValues,
+      ...defaultOptions.defaultValues,
       ...defaultValues,
     },
   });
 
-  return <NtpSettings form={form} />;
+  return <NtpFields form={form} />;
 }
 
-describe("NtpSettings", () => {
+describe("NtpFields", () => {
   it("renders the NTP fieldset", () => {
     installerRender(<TestForm />);
     screen.getByRole("group", { name: "Time Synchronization Servers" });

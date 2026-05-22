@@ -24,8 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { systemFormOptions } from "~/components/system/SystemPage";
-import HostnameSettings from "./HostnameSettings";
+import { defaultOptions } from "./fields";
+import HostnameFields from "./HostnameFields";
 
 const system = jest.fn();
 
@@ -36,17 +36,17 @@ jest.mock("~/hooks/model/system", () => ({
 
 function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
   const form = useAppForm({
-    ...systemFormOptions,
+    ...defaultOptions,
     defaultValues: {
-      ...systemFormOptions.defaultValues,
+      ...defaultOptions.defaultValues,
       ...defaultValues,
     },
   });
 
-  return <HostnameSettings form={form} />;
+  return <HostnameFields form={form} />;
 }
 
-describe("HostnameSettings", () => {
+describe("HostnameFields", () => {
   beforeEach(() => {
     system.mockReturnValue({});
   });

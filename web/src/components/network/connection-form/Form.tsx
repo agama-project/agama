@@ -21,27 +21,12 @@
  */
 
 import React from "react";
-import { formOptions } from "@tanstack/react-form";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { unique } from "radashi";
 import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
-import IpSettings from "~/components/network/IpSettings";
-import BondSettings from "~/components/network/BondSettings";
-import BridgeSettings from "~/components/network/BridgeSettings";
-import BindingModeSelector from "~/components/network/BindingModeSelector";
-import DeviceSelector from "~/components/network/DeviceSelector";
-import {
-  BondMode,
-  Bridge,
-  Connection,
-  ConnectionBindingMode,
-  ConnectionMethod,
-  ConnectionType,
-} from "~/types/network";
 import { useConnectionMutation, useConfig } from "~/hooks/model/config/network";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useSystem, useDevices } from "~/hooks/model/system/network";
@@ -61,32 +46,24 @@ import {
   isValidNameserver,
   isValidDNSSearchDomain,
 } from "~/utils/network";
+
+import BindingModeSelector from "./BindingModeSelector";
+import BondFields from "./BondFields";
+import BridgeFields from "./BridgeFields";
+import DeviceSelector from "./DeviceSelector";
+import IpFields from "./IpFields";
+import {
+  ADDRESS_REQUIRED_MODES,
+  BridgeStpMode,
+  FormIpMode,
+  defaultOptions,
+  validate,
+} from "./fields";
 import { _ } from "~/i18n";
-import { validateConnectionForm } from "./connectionFormValidation";
 
-/**
- * Form IP mode values.
- *
- * These control UI behavior (which fields are shown) and map to ConnectionMethod:
- * - AUTO: no address/gateway fields shown → ConnectionMethod.AUTO
- * - ADVANCED_AUTO: addresses required, gateway optional → ConnectionMethod.AUTO
- * - MANUAL: addresses and gateway required → ConnectionMethod.MANUAL
- */
-export const FormIpMode = {
-  AUTO: "auto",
-  ADVANCED_AUTO: "advanced-auto",
-  MANUAL: "manual",
-} as const;
-
-export type FormIpMode = (typeof FormIpMode)[keyof typeof FormIpMode];
-
-/**
- * Modes that require at least one address to be provided.
- */
-export const ADDRESS_REQUIRED_MODES: readonly FormIpMode[] = [
-  FormIpMode.MANUAL,
-  FormIpMode.ADVANCED_AUTO,
-];
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+import type { FormIpMode as FormIpModeType, BridgeStpMode as BridgeStpModeType } from "./fields";
+import { BondMode, Bridge, Connection, ConnectionMethod, ConnectionType } from "~/types/network";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -94,65 +71,13 @@ export const ADDRESS_REQUIRED_MODES: readonly FormIpMode[] = [
  * Both AUTO and ADVANCED_AUTO map to ConnectionMethod.AUTO; they differ
  * only in UI behavior (whether address/gateway fields are shown).
  */
-const MODE_TO_METHOD: Record<FormIpMode, ConnectionMethod> = {
+const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
   [FormIpMode.AUTO]: ConnectionMethod.AUTO,
   [FormIpMode.ADVANCED_AUTO]: ConnectionMethod.AUTO,
   [FormIpMode.MANUAL]: ConnectionMethod.MANUAL,
 };
 
-/**
- * Bridge STP (Spanning Tree Protocol) mode values.
- */
-export const BridgeStpMode = {
-  DEFAULT: "default",
-  ENABLED: "enabled",
-  DISABLED: "disabled",
-} as const;
-
-export type BridgeStpMode = (typeof BridgeStpMode)[keyof typeof BridgeStpMode];
-
-/**
- * Shared form options for ConnectionForm and its `withForm` based
- * sub-components
- *
- * Sub-components spread these options in their `withForm` definition so
- * TanStack Form can infer the field types, enabling type-safe props.
- *
- * Note: Type casts widen literal defaults to their union types, allowing
- * fields to accept any value from the union, not just the initial value.
- */
-export const connectionFormOptions = formOptions({
-  defaultValues: {
-    name: "",
-    type: CONNECTION_TYPE.ETHERNET as ConnectionType,
-    iface: "",
-    ifaceMac: "",
-    ipv4Mode: FormIpMode.AUTO as FormIpMode,
-    addresses4: [] as string[],
-    gateway4: "",
-    ipv6Mode: FormIpMode.AUTO as FormIpMode,
-    addresses6: [] as string[],
-    gateway6: "",
-    nameservers: [] as string[],
-    dnsSearchList: [] as string[],
-    customDns: false,
-    customDnsSearch: false,
-    bindingMode: "none" as ConnectionBindingMode,
-    bondIface: "",
-    bondMode: BondMode.BALANCE_ROUND_ROBIN as BondMode,
-    bondOptions: [] as string[],
-    bondPorts: [] as string[],
-    bridgeIface: "",
-    bridgeStp: BridgeStpMode.DEFAULT as BridgeStpMode,
-    bridgePriority: undefined,
-    bridgeForwardDelay: undefined,
-    bridgeHelloTime: undefined,
-    bridgeMaxAge: undefined,
-    bridgePorts: [] as string[],
-  },
-});
-
-type FormValues = typeof connectionFormOptions.defaultValues;
+type FormValues = typeof defaultOptions.defaultValues;
 
 /**
  * Connection types supported by this form.
@@ -173,7 +98,7 @@ const SUPPORTED_CONNECTION_TYPES = [
  * - `undefined` method with addresses → ADVANCED_AUTO (from system)
  * - `undefined` method without addresses → AUTO
  */
-function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]): FormIpMode {
+function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]): FormIpModeType {
   if (method === ConnectionMethod.MANUAL) return FormIpMode.MANUAL;
 
   return addresses.length > 0 ? FormIpMode.ADVANCED_AUTO : FormIpMode.AUTO;
@@ -186,7 +111,7 @@ function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]):
  * If `stp` is absent but other STP-related options are present, it's
  * inferred as ENABLED. Otherwise, it defaults to DEFAULT (system default).
  */
-function inferBridgeStp(bridge: Bridge | undefined): BridgeStpMode {
+function inferBridgeStp(bridge: Bridge | undefined): BridgeStpModeType {
   if (!bridge) return BridgeStpMode.DEFAULT;
 
   if (bridge.stp !== undefined) {
@@ -362,15 +287,15 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
   };
 
   const form = useAppForm({
-    ...mergeFormDefaults(connectionFormOptions, {
+    ...mergeFormDefaults(defaultOptions, {
       iface: devices[0]?.name ?? "",
       ifaceMac: devices[0]?.macAddress ?? "",
       ...defaults,
     }),
     validators: {
       onSubmitAsync: async ({ value: formValues }) => {
-        const fieldErrors = validateConnectionForm(formValues);
-        if (fieldErrors) return { fields: fieldErrors };
+        const fieldErrors = validate(formValues);
+        if (fieldErrors) return fieldErrors;
 
         try {
           await updateConnection(buildConnection(formValues));
@@ -394,7 +319,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
           // Validation is intentionally deferred to submission so users are
           // not interrupted while filling the form. All rules live in
           // onSubmitAsync rather than per-field onSubmit validators because
-          // several checks are cross-field (e.g. gateway validity depends on
+          // several checks are cross-field (e.g., gateway validity depends on
           // the addresses list). TanStack Form only clears field errors set
           // by onSubmitAsync when a per-field onSubmit validator runs for
           // the same cause — which never happens here — so canSubmit stays
@@ -489,19 +414,19 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
-            type === CONNECTION_TYPE.BOND && <BondSettings form={form} isEditing={isEditing} />
+            type === CONNECTION_TYPE.BOND && <BondFields form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
-            type === CONNECTION_TYPE.BRIDGE && <BridgeSettings form={form} isEditing={isEditing} />
+            type === CONNECTION_TYPE.BRIDGE && <BridgeFields form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 
-        <IpSettings form={form} protocol="ipv4" />
+        <IpFields form={form} protocol="ipv4" />
 
-        <IpSettings form={form} protocol="ipv6" />
+        <IpFields form={form} protocol="ipv6" />
 
         <form.AppField name="customDns">
           {(field) => (

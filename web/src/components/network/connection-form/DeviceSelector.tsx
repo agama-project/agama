@@ -22,7 +22,7 @@
 
 import React from "react";
 import Text from "~/components/core/Text";
-import { connectionFormOptions } from "~/components/network/ConnectionForm";
+import { defaultOptions } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { Device } from "~/types/network";
@@ -46,7 +46,7 @@ type SyncConfig = {
  * @see https://tanstack.com/form/latest/docs/framework/react/guides/listeners
  */
 const DeviceSelector = withForm({
-  ...connectionFormOptions,
+  ...defaultOptions,
   props: {
     by: "iface" as "iface" | "mac",
     sync: undefined,

@@ -23,11 +23,7 @@
 import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import {
-  connectionFormOptions,
-  FormIpMode,
-  ADDRESS_REQUIRED_MODES,
-} from "~/components/network/ConnectionForm";
+import { defaultOptions, FormIpMode, ADDRESS_REQUIRED_MODES } from "./fields";
 import { withForm } from "~/hooks/form";
 import { ensureIPPrefix, isValidIPv4Address, isValidIPv6Address } from "~/utils/network";
 import { _, N_ } from "~/i18n";
@@ -67,12 +63,12 @@ const modeOptions = () => [
   },
 ];
 
-type IpSettingsProps = {
+type IpFieldsProps = {
   protocol: "ipv4" | "ipv6";
 };
 
 /**
- * Protocol-specific IP settings block for a connection form.
+ * Protocol-specific IP fields for a connection form.
  *
  * Shows a selector with three options: Automatic, Manual, and Advanced.
  *
@@ -86,11 +82,11 @@ type IpSettingsProps = {
  * each label self-sufficient for both audiences, as recommended by WCAG 2.4.6.
  * @see https://www.w3.org/WAI/WCAG21/Understanding/headings-and-labels.html
  */
-const IpSettings = withForm({
-  ...connectionFormOptions,
+const IpFields = withForm({
+  ...defaultOptions,
   props: {
     protocol: "ipv4",
-  } as IpSettingsProps,
+  } as IpFieldsProps,
   render: function Render({ form, protocol }) {
     const isIPv4 = protocol === "ipv4";
     // TRANSLATORS: label for the IPv4 or IPv6 settings dropdown.
@@ -178,4 +174,4 @@ const IpSettings = withForm({
   },
 });
 
-export default IpSettings;
+export default IpFields;

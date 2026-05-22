@@ -31,7 +31,7 @@ import {
   DeviceState,
 } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
-import ConnectionForm from "~/components/network/ConnectionForm";
+import ConnectionForm from "./Form";
 
 const mockDevice1 = {
   name: "enp1s0",

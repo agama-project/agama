@@ -24,8 +24,8 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions, FormIpMode } from "~/components/network/ConnectionForm";
-import IpSettings from "./IpSettings";
+import { defaultOptions, FormIpMode } from "./fields";
+import IpFields from "./IpFields";
 
 function TestForm({
   defaultValues = {},
@@ -35,17 +35,17 @@ function TestForm({
   protocol?: "ipv4" | "ipv6";
 }) {
   const form = useAppForm({
-    ...connectionFormOptions,
+    ...defaultOptions,
     defaultValues: {
-      ...connectionFormOptions.defaultValues,
+      ...defaultOptions.defaultValues,
       ...defaultValues,
     },
   });
 
-  return <IpSettings form={form} protocol={protocol} />;
+  return <IpFields form={form} protocol={protocol} />;
 }
 
-describe("IpSettings", () => {
+describe("IpFields", () => {
   it("renders the protocol label", () => {
     installerRender(<TestForm />);
     screen.getByText("IPv4 Settings");
