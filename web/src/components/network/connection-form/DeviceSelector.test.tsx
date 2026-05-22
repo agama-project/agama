@@ -26,7 +26,7 @@ import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { DeviceState } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
-import { connectionFormOptions } from "~/components/network/ConnectionForm";
+import { defaultOptions } from "./fields";
 import DeviceSelector from "./DeviceSelector";
 
 const mockDevices = [
@@ -53,7 +53,7 @@ type SyncProp = React.ComponentProps<typeof DeviceSelector>["sync"];
 let sync: SyncProp;
 
 function TestSelectors() {
-  const form = useAppForm({ ...connectionFormOptions });
+  const form = useAppForm({ ...defaultOptions });
   return (
     <>
       <DeviceSelector form={form} by="iface" sync={sync} />

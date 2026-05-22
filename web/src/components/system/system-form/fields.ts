@@ -21,32 +21,66 @@
  */
 
 /**
- * Validation logic for SystemPage form.
+ * System form fields: types, defaults, and validation.
  *
- * This module centralizes all validation functions for the system settings
- * form (hostname and NTP configuration).
- *
- * Keeping validation here ensures SystemPage.tsx remains focused on UI
- * concerns and provides a single location for all validation logic.
+ * Consolidates all system form concerns (hostname and NTP settings) in a
+ * single module following the connection-form pattern.
  */
 
 import ipaddr from "ipaddr.js";
+import { formOptions } from "@tanstack/react-form";
 import { isEmpty, shake } from "radashi";
+import { requiredValidList, requiredValidString } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
-import { systemFormOptions } from "./SystemPage";
 
-type FormValues = typeof systemFormOptions.defaultValues;
-type FormFieldErrors = Partial<Record<keyof FormValues, string>>;
+import type {
+  ValidationResult,
+  FieldsValidationResult,
+} from "~/components/form/validation-helpers";
 
-const HOSTNAME_MODE = {
+/** Constants */
+
+export const HOSTNAME_MODE = {
   TRANSIENT: "transient",
   STATIC: "static",
 } as const;
 
-const NTP_MODE = {
+export const NTP_MODE = {
   DEFAULT: "default",
   CUSTOM: "custom",
 } as const;
+
+/** Types */
+
+type HostnameMode = "transient" | "static";
+type NtpMode = "default" | "custom";
+
+type HostnameFormFields = {
+  hostnameMode: HostnameMode;
+  hostnameValue: string;
+};
+
+type NtpFormFields = {
+  ntpMode: NtpMode;
+  ntpServers: string[];
+};
+
+type FormFields = HostnameFormFields & NtpFormFields;
+
+/** Defaults */
+
+const defaultValues: FormFields = {
+  hostnameMode: HOSTNAME_MODE.TRANSIENT as HostnameMode,
+  hostnameValue: "",
+  ntpMode: NTP_MODE.DEFAULT as NtpMode,
+  ntpServers: [] as string[],
+};
+
+export const defaultOptions = formOptions({
+  defaultValues,
+});
+
+/** Validation */
 
 /**
  * Matches a valid DNS hostname or FQDN per RFC 952 / RFC 1123.
@@ -86,12 +120,19 @@ export const isValidNtpServer = (value: string): boolean => {
 /**
  * Validates hostname fields.
  */
-function validateHostnameFields(formValues: FormValues): Partial<FormFieldErrors> {
+function validateHostnameFields(
+  formValues: FormFields,
+): FieldsValidationResult<HostnameFormFields> {
   return {
     hostnameValue:
-      formValues.hostnameMode === HOSTNAME_MODE.STATIC && isEmpty(formValues.hostnameValue)
+      formValues.hostnameMode === HOSTNAME_MODE.STATIC
         ? // TRANSLATORS: validation error when static hostname value is empty
-          _("Enter a hostname value.")
+          requiredValidString(
+            formValues.hostnameValue,
+            (value) => HOSTNAME_RE.test(value),
+            _("Enter a hostname value."),
+            _("Invalid hostname value."),
+          )
         : undefined,
   };
 }
@@ -99,37 +140,32 @@ function validateHostnameFields(formValues: FormValues): Partial<FormFieldErrors
 /**
  * Validates NTP fields.
  */
-function validateNtpFields(formValues: FormValues): Partial<FormFieldErrors> {
+function validateNtpFields(formValues: FormFields): FieldsValidationResult<NtpFormFields> {
   if (formValues.ntpMode !== NTP_MODE.CUSTOM) return {};
 
-  if (formValues.ntpServers.length === 0) {
-    return {
+  return {
+    ntpServers: requiredValidList(
+      formValues.ntpServers,
+      isValidNtpServer,
       // TRANSLATORS: validation error when no NTP servers are provided in custom mode
-      ntpServers: _("At least one NTP server is required"),
-    };
-  }
-
-  if (formValues.ntpServers.some((server) => !isValidNtpServer(server))) {
-    return {
+      _("At least one NTP server is required"),
       // TRANSLATORS: validation error when some NTP server addresses are invalid
-      ntpServers: _("Some NTP server addresses are invalid"),
-    };
-  }
-
-  return {};
+      _("Some NTP server addresses are invalid"),
+    ),
+  };
 }
 
 /**
- * Validates the system form values.
+ * Validates the system form fields.
  *
  * Returns a map of field errors when validation fails, or undefined when all
  * values are valid.
  */
-export function validateSystemForm(formValues: FormValues): FormFieldErrors | undefined {
+export function validate(formFields: FormFields): ValidationResult<FormFields> {
   const fieldErrors = shake({
-    ...validateHostnameFields(formValues),
-    ...validateNtpFields(formValues),
+    ...validateHostnameFields(formFields),
+    ...validateNtpFields(formFields),
   });
 
-  if (!isEmpty(fieldErrors)) return fieldErrors;
+  if (!isEmpty(fieldErrors)) return { fields: fieldErrors };
 }

@@ -25,7 +25,7 @@ import { sprintf } from "sprintf-js";
 import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
 import LabelText from "~/components/form/LabelText";
-import { connectionFormOptions, BridgeStpMode } from "~/components/network/ConnectionForm";
+import { defaultOptions, BridgeStpMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { _, N_, formatList } from "~/i18n";
@@ -57,23 +57,23 @@ const stpOptions = () => [
   },
 ];
 
-type BridgeSettingsProps = {
+type BridgeFieldsProps = {
   isEditing?: boolean;
 };
 
 /**
- * Bridge settings block for a connection form.
+ * Bridge fields for a connection form.
  *
  * Shows bridge options and ports when the connection type is BRIDGE.
  * Also shows the device name field for new bridge connections.
  *
  * Receives a typed form instance via `withForm`.
  */
-const BridgeSettings = withForm({
-  ...connectionFormOptions,
+const BridgeFields = withForm({
+  ...defaultOptions,
   props: {
     isEditing: false,
-  } as BridgeSettingsProps,
+  } as BridgeFieldsProps,
   render: function Render({ form, isEditing }) {
     const devices = useDevices();
 
@@ -232,4 +232,4 @@ const BridgeSettings = withForm({
   },
 });
 
-export default BridgeSettings;
+export default BridgeFields;

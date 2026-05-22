@@ -22,15 +22,9 @@
 
 import React from "react";
 import { Fieldset } from "~/components/form/Fieldset";
-import { systemFormOptions } from "~/components/system/SystemPage";
-import { isValidNtpServer } from "~/components/system/systemFormValidation";
+import { defaultOptions, NTP_MODE, isValidNtpServer } from "./fields";
 import { withForm } from "~/hooks/form";
 import { _ } from "~/i18n";
-
-const NTP_MODE = {
-  DEFAULT: "default",
-  CUSTOM: "custom",
-} as const;
 
 /**
  * NTP configuration section for the system settings form.
@@ -40,8 +34,8 @@ const NTP_MODE = {
  *
  * Receives a typed form instance via `withForm`.
  */
-const NtpSettings = withForm({
-  ...systemFormOptions,
+const NtpFields = withForm({
+  ...defaultOptions,
   render: function Render({ form }) {
     return (
       <Fieldset
@@ -109,4 +103,4 @@ const NtpSettings = withForm({
   },
 });
 
-export default NtpSettings;
+export default NtpFields;

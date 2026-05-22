@@ -22,42 +22,21 @@
 
 import React, { useRef } from "react";
 import { isEmpty, isNullish, shake } from "radashi";
-import { formOptions } from "@tanstack/react-form";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
-import { Page } from "~/components/core";
-import HostnameSettings from "~/components/system/HostnameSettings";
-import NtpSettings from "~/components/system/NtpSettings";
-import { validateSystemForm } from "~/components/system/systemFormValidation";
+import Page from "~/components/core/Page";
 import { patchConfig } from "~/api";
 import { useConfig } from "~/hooks/model/config";
 import { useProposal } from "~/hooks/model/proposal";
 import { anyFieldChanged, useAppForm } from "~/hooks/form";
 import { _ } from "~/i18n";
+
+import HostnameFields from "./HostnameFields";
+import NtpFields from "./NtpFields";
+import { HOSTNAME_MODE, NTP_MODE, defaultOptions, validate } from "./fields";
+
 import type * as Ntp from "~/model/config/ntp";
 
-const HOSTNAME_MODE = {
-  TRANSIENT: "transient",
-  STATIC: "static",
-} as const;
-
-const NTP_MODE = {
-  DEFAULT: "default",
-  CUSTOM: "custom",
-} as const;
-
-type HostnameMode = "transient" | "static";
-type NtpMode = "default" | "custom";
-
-export const systemFormOptions = formOptions({
-  defaultValues: {
-    hostnameMode: HOSTNAME_MODE.TRANSIENT as HostnameMode,
-    hostnameValue: "",
-    ntpMode: NTP_MODE.DEFAULT as NtpMode,
-    ntpServers: [] as string[],
-  },
-});
-
-type SystemFormValues = typeof systemFormOptions.defaultValues;
+type SystemFormValues = typeof defaultOptions.defaultValues;
 type SystemFieldMeta = Partial<Record<keyof SystemFormValues, { isDefaultValue?: boolean }>>;
 
 /**
@@ -129,7 +108,7 @@ export default function SystemPage() {
   const usingTransientHostname = isEmpty(staticHostname) || isNullish(staticHostname);
 
   const form = useAppForm({
-    ...systemFormOptions,
+    ...defaultOptions,
     defaultValues: {
       hostnameMode: isEmpty(staticHostname) ? HOSTNAME_MODE.TRANSIENT : HOSTNAME_MODE.STATIC,
       hostnameValue: usingTransientHostname ? transientHostname : staticHostname,
@@ -143,8 +122,8 @@ export default function SystemPage() {
         // Form pristine, nothing has changed for sure, skip everything
         if (!formApi.state.isDirty) return undefined;
 
-        const fieldErrors = validateSystemForm(formValues);
-        if (fieldErrors) return { fields: fieldErrors };
+        const fieldErrors = validate(formValues);
+        if (fieldErrors) return fieldErrors;
 
         const { fieldMeta } = formApi.state;
 
@@ -222,8 +201,8 @@ export default function SystemPage() {
               }
             </form.Subscribe>
 
-            <HostnameSettings form={form} />
-            <NtpSettings form={form} />
+            <HostnameFields form={form} />
+            <NtpFields form={form} />
 
             <ActionGroup>
               {/* TRANSLATORS: button to save system settings changes */}

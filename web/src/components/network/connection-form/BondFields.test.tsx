@@ -24,10 +24,10 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { connectionFormOptions } from "~/components/network/ConnectionForm";
+import { defaultOptions } from "./fields";
 import { DeviceState } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
-import BondSettings from "./BondSettings";
+import BondFields from "./BondFields";
 
 const mockDevice1 = {
   name: "enp1s0",
@@ -55,9 +55,9 @@ function TestForm({
   isEditing?: boolean;
 }) {
   const form = useAppForm({
-    ...connectionFormOptions,
+    ...defaultOptions,
     defaultValues: {
-      ...connectionFormOptions.defaultValues,
+      ...defaultOptions.defaultValues,
       name: "test-bond",
       type: CONNECTION_TYPE.BOND,
       ...defaultValues,
@@ -66,12 +66,12 @@ function TestForm({
 
   return (
     <form.AppForm>
-      <BondSettings form={form} isEditing={isEditing} />
+      <BondFields form={form} isEditing={isEditing} />
     </form.AppForm>
   );
 }
 
-describe("BondSettings", () => {
+describe("BondFields", () => {
   it("renders bond fields", async () => {
     installerRender(<TestForm />);
 
