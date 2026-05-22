@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May 22 14:37:35 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "agama-screenshot" helper script to take screenshots
+  of the locally running Agama installer
+  (gh#agama-project/agama#3537)
+
+-------------------------------------------------------------------
 Thu May 21 15:39:19 UTC 2026 - Volkan OZTUZUN <volkan.oztuzun@suse.com>
 
 - Add ignition and combustion to the live image package list.
