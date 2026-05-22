@@ -17,7 +17,7 @@
 //
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
-//! Implements a data model for Bootloader configuration.
+//! Implements a data model for Security configuration.
 
 use std::fmt;
 
@@ -29,18 +29,23 @@ use serde::{Deserialize, Deserializer, Serialize};
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Config {
+    /// Security specific configuration
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub security: Option<SecurityConfig>,
+    /// Remote access configuration
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     remote_access: Option<RemoteAccessConfig>,
 }
 
+/// Allows to specify explicit enablement of remote access for supported services
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub enum AccessEnum {
+    /// Explicitly enabled
     Enabled,
+    /// Default system configuration behavior that is product specific
     #[default]
     Default,
 }
@@ -65,23 +70,28 @@ pub struct RemoteAccessConfig {
 #[serde(rename_all = "camelCase")]
 #[schemars(rename = "security.Config")]
 pub struct SecurityConfig {
-    /// List of user selected patterns to install.
-    #[serde(skip_serializing_if = "Option::is_none")]
+    /// List of trusted SSL certificates.
+
     // when we add support for remote URL here it should be vector of SSL
     // certificates which will include flatten fingerprint
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub ssl_certificates: Option<Vec<SSLFingerprint>>,
 }
 
+/// Algorithm used for SSL certificate fingerprint
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 pub enum SSLFingerprintAlgorithm {
+    /// SHA1 algorithm
     #[serde(alias = "sha1", alias = "SHA1")]
     SHA1,
+    /// SHA256 algorithm
     #[serde(alias = "sha256", alias = "SHA256")]
     #[default]
     SHA256,
 }
 
+/// Representation of an SSL certificate fingerprint
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 pub struct SSLFingerprint {
     /// The string value for SSL certificate fingerprint.
@@ -95,6 +105,7 @@ pub struct SSLFingerprint {
 }
 
 impl SSLFingerprint {
+    /// Creates a new `SSLFingerprint` with the provided string and algorithm.
     pub fn new(fingerprint: &str, algorithm: SSLFingerprintAlgorithm) -> Self {
         Self {
             fingerprint: normalize_fingerprint(fingerprint),
@@ -102,12 +113,12 @@ impl SSLFingerprint {
         }
     }
 
-    /// Helper function to creaate a SHA1 fingerprint.
+    /// Helper function to create a SHA1 fingerprint.
     pub fn sha1(fingerprint: &str) -> Self {
         Self::new(fingerprint, SSLFingerprintAlgorithm::SHA1)
     }
 
-    /// Helper function to creaate a SHA256 fingerprint.
+    /// Helper function to create a SHA256 fingerprint.
     pub fn sha256(fingerprint: &str) -> Self {
         Self::new(fingerprint, SSLFingerprintAlgorithm::SHA256)
     }
