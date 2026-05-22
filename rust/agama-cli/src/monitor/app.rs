@@ -68,13 +68,26 @@ pub enum MonitorError {
 /// Minimal struct to deserialize product information from /system
 #[derive(Debug, Deserialize)]
 struct ProductInfo {
+    name: String,
+    modes: HashMap<String, String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MinimalProduct {
+    id: String,
+    name: String,
+    modes: Vec<MinimalProductMode>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MinimalProductMode {
     id: String,
     name: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct MinimalSystemInfo {
-    products: Vec<ProductInfo>,
+    products: Vec<MinimalProduct>,
 }
 
 pub struct MonitorAppBuilder {
@@ -99,25 +112,38 @@ impl MonitorAppBuilder {
     }
 
     pub async fn build(self) -> Result<MonitorApp> {
-        let product_names = self.get_product_names().await?;
+        let products = self.get_products().await?;
         let (updates, status) =
             Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
         Ok(MonitorApp {
             updates: Some(updates),
             status,
-            product_names,
+            products,
         })
     }
 
-    async fn get_product_names(&self) -> Result<HashMap<String, String>> {
+    async fn get_products(&self) -> Result<HashMap<String, ProductInfo>> {
         let info: MinimalSystemInfo = self.http_client.get("/system").await?;
-        let product_names = info
+        let products = info
             .products
-            .iter()
-            .map(|i| (i.id.clone(), i.name.clone()))
+            .into_iter()
+            .map(|p| {
+                let modes = p
+                    .modes
+                    .into_iter()
+                    .map(|m| (m.id.clone(), m.name.clone()))
+                    .collect();
+                (
+                    p.id.clone(),
+                    ProductInfo {
+                        name: p.name,
+                        modes,
+                    },
+                )
+            })
             .collect();
-        Ok(product_names)
+        Ok(products)
     }
 }
 
@@ -127,8 +153,8 @@ pub struct MonitorApp {
     updates: Option<mpsc::Receiver<MonitorUpdate>>,
     /// Current installation status
     status: InstallationStatus,
-    /// Product names
-    product_names: HashMap<String, String>,
+    /// Products information
+    products: HashMap<String, ProductInfo>,
 }
 
 impl MonitorApp {
@@ -239,20 +265,46 @@ impl MonitorApp {
                 | (KeyCode::Char('c'), KeyModifiers::CONTROL)
         )
     }
+
+    fn get_product_name(&self, id: &Option<String>, mode: &Option<String>) -> Option<String> {
+        let Some(product_id) = id else {
+            return None;
+        };
+
+        match self.get_product_and_mode(product_id, mode) {
+            (Some(name), Some(mode)) => Some(format!("{} ({})", name, mode)),
+            (Some(name), None) => Some(name),
+            _ => None,
+        }
+    }
+
+    fn get_product_and_mode(
+        &self,
+        id: &str,
+        mode: &Option<String>,
+    ) -> (Option<String>, Option<String>) {
+        let Some(product) = self.products.get(id) else {
+            return (None, None);
+        };
+
+        let product_name = Some(product.name.clone());
+        match mode {
+            Some(mode_id) => (product_name, product.modes.get(mode_id).cloned()),
+            None => (product_name, None),
+        }
+    }
 }
 
 /// Implement the Widget trait for MonitorApp
 /// This allows rendering using ratatui's widget system
 impl Widget for &mut MonitorApp {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let product_name = self
-            .status
-            .system_info
-            .product_id
-            .as_ref()
-            .and_then(|id| self.product_names.get(id));
+        let product_name = self.get_product_name(
+            &self.status.system_info.product_id,
+            &self.status.system_info.product_mode,
+        );
 
-        let summary = ui::Summary::new(&self.status, product_name.cloned());
+        let summary = ui::Summary::new(&self.status, product_name);
         let layout = ui::create_layout(area, summary.indentation);
 
         summary.render(layout.summary, buf);
