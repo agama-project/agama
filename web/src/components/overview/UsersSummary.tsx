@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { isEmpty } from "radashi";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useConfig } from "~/hooks/model/config";
 import { useIssues } from "~/hooks/model/issue";
@@ -30,67 +31,100 @@ import Text from "~/components/core/Text";
 import { USER } from "~/routes/paths";
 import { _ } from "~/i18n";
 
-const rootConfigured = (config) => {
-  if (!config.root) return false;
+/**
+ * Determines the root authentication method type.
+ * @returns {"none"|"password"|"ssh"|"both"}
+ */
+const getRootAuthType = (config) => {
+  if (!config.root) return "none";
 
-  const { password, sshPublicKeys } = config.root;
-  if (password && password !== "") return true;
-  if (sshPublicKeys && sshPublicKeys !== "") return true;
+  const hasPassword = !isEmpty(config.root.password);
+  const hasSshKey = !isEmpty(config.root.sshPublicKey) || !isEmpty(config.root.sshPublicKeys);
 
-  return false;
+  if (hasPassword && hasSshKey) return "both";
+  if (hasPassword) return "password";
+  if (hasSshKey) return "ssh";
+  return "none";
 };
 
 const userConfigured = (config) => {
   if (!config.user) return false;
-
   const { userName, fullName, password } = config.user;
-  return userName !== "" && fullName !== "" && password !== "";
+  return !isEmpty(userName) && !isEmpty(fullName) && !isEmpty(password);
 };
 
-/**
- * Renders a summary text describing the authentication configuration.
- */
+const userHasSsh = (config) =>
+  !isEmpty(config.user?.sshPublicKey) || !isEmpty(config.user?.sshPublicKeys);
+
 const Value = () => {
   const config = useConfig();
-  const root = rootConfigured(config);
-  const user = userConfigured(config);
+  const rootAuthType = getRootAuthType(config);
+  const hasRoot = rootAuthType !== "none";
+  const hasUser = userConfigured(config);
 
-  if (!root && !user) return _("Not configured yet");
-  if (root && !user) return _("Configured for the root user");
+  if (!hasRoot && !hasUser) return _("Not configured yet");
+  if (hasRoot && !hasUser) return _("Using root account");
 
   const userName = config.user.userName;
-  const text = root
-    ? // TRANSLATORS: %s is a username like 'jdoe'
-      _("Configured for root and user %s")
-    : // TRANSLATORS: %s is a username like 'jdoe'
-      _("Configured for user %s");
-  const [textStart, textEnd] = text.split("%s");
+
+  if (!hasRoot) {
+    // TRANSLATORS: %s is a username like 'jdoe'
+    const [textStart, textEnd] = _("Using %s account").split("%s");
+    return (
+      <>
+        {textStart}
+        <Text isBold>{userName}</Text>
+        {textEnd}
+      </>
+    );
+  }
+
+  // TRANSLATORS: %s is a username like 'jdoe'
+  const [textStart, textEnd] = _("Using %s and root account").split("%s");
 
   return (
     <>
-      {textStart} <Text isBold>{userName}</Text> {textEnd}
+      {textStart}
+      <Text isBold>{userName}</Text>
+      {textEnd}
     </>
   );
 };
 
-/**
- * Renders the estimated disk space required for the installation.
- */
 const Description = () => {
   const config = useConfig();
-  if (!rootConfigured(config)) return;
+  const rootAuthType = getRootAuthType(config);
+  const hasRoot = rootAuthType !== "none";
+  const hasUser = userConfigured(config);
+  const hasSsh = userHasSsh(config);
 
-  const password = config.root.password || "";
-  const sshKey = config.root.sshPublicKey || "";
+  // Root only
+  if (hasRoot && !hasUser) {
+    if (rootAuthType === "password") return _("Password only");
+    if (rootAuthType === "ssh") return _("Allowing SSH access via public key");
+    if (rootAuthType === "both") return _("Password and allowing SSH access");
+  }
 
-  if (password !== "" && sshKey !== "") return _("Root login with password and SSH key");
-  if (password !== "") return _("Root login with password");
-  return _("Root login with SSH key");
+  // User only
+  if (!hasRoot && hasUser) {
+    if (hasSsh) return _("Allowing SSH access via public key");
+    return _("Password only");
+  }
+
+  // Both root and user
+  if (hasRoot && hasUser) {
+    if (rootAuthType === "password" && !hasSsh) return _("Root with password only");
+    if (rootAuthType === "password" && hasSsh)
+      return _("Root with password only, user allowing SSH access");
+    if (rootAuthType === "ssh" && !hasSsh) return _("Root allowing SSH access via public key");
+    if (rootAuthType === "ssh" && hasSsh) return _("Both allowing SSH access via public key");
+    if (rootAuthType === "both" && !hasSsh) return _("Root with password and allowing SSH access");
+    if (rootAuthType === "both" && hasSsh) return _("Both with password and allowing SSH access");
+  }
+
+  return null;
 };
 
-/**
- * A software installation summary.
- */
 export default function UsersSummary() {
   const { loading } = useProgressTracking("users");
   const hasIssues = !!useIssues("users").length;
