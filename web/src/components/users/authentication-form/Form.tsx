@@ -218,8 +218,6 @@ function AuthenticationForm({ user, root }: AuthenticationFormProps) {
   // useFormSubmit is initialized before useAppForm so we can pass onSubmitAsync
   // directly into the validators option — no mutation, no two-phase wiring.
   const { onSubmitAsync, AlertSubscribe, formSubmitHandler } = useFormSubmit<AuthFormValues>({
-    successTitle: _("Authentication settings successfully updated"),
-    noChangesTitle: _("No changes detected. Authentication settings are already up to date."),
     onSubmit: async (values, fieldMeta) => {
       const userConfig = buildUserConfig(values, fieldMeta, user);
       const rootConfig = buildRootAuthConfig(values, fieldMeta, root);
@@ -261,18 +259,14 @@ function AuthenticationForm({ user, root }: AuthenticationFormProps) {
         <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
           {(serverError) =>
             serverError && (
-              <Alert
-                isInline
-                variant="danger"
-                title={_("Authentication settings could not be updated")}
-              >
+              <Alert isInline variant="danger" title={_("Changes could not be applied")}>
                 {serverError}
               </Alert>
             )
           }
         </form.Subscribe>
 
-        {/* Success / no-changes alert — managed by useFormSubmit */}
+        {/* Success / no-changes / validation error alerts — managed by useFormSubmit */}
         <AlertSubscribe form={form} />
 
         <FirstUserFields form={form} />

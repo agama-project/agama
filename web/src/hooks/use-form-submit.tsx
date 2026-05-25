@@ -32,7 +32,7 @@ type FormInstance<TValues> = {
   setErrorMap: (errorMap: Record<string, unknown>) => void;
   handleSubmit: () => void;
   Subscribe: <TSelected>(props: {
-    selector: (state: { isDirty: boolean; isSubmitting: boolean }) => TSelected;
+    selector: (state: { isDirty: boolean; isSubmitting: boolean; isValid: boolean }) => TSelected;
     children: (selected: TSelected) => React.ReactNode;
   }) => React.ReactNode;
 };
@@ -154,8 +154,8 @@ type Options<TValues> = {
  */
 export function useFormSubmit<TValues>({
   onSubmit,
-  successTitle = _("Settings successfully updated"),
-  noChangesTitle = _("No changes detected"),
+  successTitle = _("Changes successfully applied"),
+  noChangesTitle = _("No changes to apply"),
 }: Options<TValues>) {
   /**
    * Track submit outcome without triggering re-renders.
@@ -163,6 +163,7 @@ export function useFormSubmit<TValues>({
    */
   const wasPatched = useRef(false);
   const hadNoChanges = useRef(false);
+  const submitAttempted = useRef(false);
 
   /**
    * Track previous dirty state to detect clean→dirty transitions.
@@ -186,6 +187,7 @@ export function useFormSubmit<TValues>({
   ) => {
     wasPatched.current = false;
     hadNoChanges.current = false;
+    submitAttempted.current = false;
 
     const result = await onSubmit(value, formApi.state.fieldMeta);
 
@@ -218,29 +220,49 @@ export function useFormSubmit<TValues>({
   };
 
   /**
-   * Renders a success or info alert after submit.
+   * Renders success, info, or validation error alerts after submit.
    *
-   * Subscribes to isDirty and isSubmitting. Uses refs (not state) to avoid
+   * Subscribes to isDirty, isSubmitting, and isValid. Uses refs (not state) to avoid
    * extra re-renders and to work around TanStack Form's reset bugs.
    *
-   * Alert is shown when form is clean (!isDirty), not submitting, and a
-   * submit outcome ref is set. Cleared on clean→dirty transition.
+   * Success/info alert shown when form is clean (!isDirty), not submitting, and a
+   * submit outcome ref is set.
+   *
+   * Validation error alert shown when submitAttempted ref is set.
+   *
+   * All alerts cleared on clean→dirty transition (user editing after submit).
    */
   function AlertSubscribe({ form }: { form: FormInstance<TValues> }) {
     return (
-      <form.Subscribe selector={(s) => ({ isDirty: s.isDirty, isSubmitting: s.isSubmitting })}>
-        {({ isDirty, isSubmitting }) => {
-          // Clear success flags only on clean→dirty transition (user editing after submit).
+      <form.Subscribe
+        selector={(s) => ({ isDirty: s.isDirty, isSubmitting: s.isSubmitting, isValid: s.isValid })}
+      >
+        {({ isDirty, isSubmitting, isValid }) => {
+          // Clear all flags on clean→dirty transition (user editing after submit).
           // Don't clear during submit (dirty→dirty) or after reset (dirty→clean).
           if (!previousIsDirty.current && isDirty) {
             wasPatched.current = false;
             hadNoChanges.current = false;
+            submitAttempted.current = false;
           }
           previousIsDirty.current = isDirty;
 
-          const show = !isDirty && !isSubmitting && (wasPatched.current || hadNoChanges.current);
+          // Show validation error alert
+          if (submitAttempted.current && !isValid) {
+            return (
+              <Alert
+                isInline
+                variant="danger"
+                title={_("Form contains errors, fix them and try again")}
+              />
+            );
+          }
 
-          if (!show) return null;
+          // Show success/info alert
+          const showSuccessOrInfo =
+            !isDirty && !isSubmitting && (wasPatched.current || hadNoChanges.current);
+
+          if (!showSuccessOrInfo) return null;
 
           return (
             <Alert
@@ -257,16 +279,18 @@ export function useFormSubmit<TValues>({
   /**
    * Returns an onSubmit handler for the <Form> element.
    *
-   * Clears previous server errors, scrolls to top so users see alerts or
-   * validation errors, and triggers TanStack Form submission.
+   * Clears previous server errors, sets validation error flag (checked by
+   * AlertSubscribe), scrolls to top so users see alerts or validation errors,
+   * and triggers TanStack Form submission.
    * Receives the form instance at call time since it's created after this hook.
    */
   function formSubmitHandler(form: FormInstance<TValues>) {
     return (e: React.FormEvent) => {
       e.preventDefault();
       form.setErrorMap({ onSubmit: { fields: {} } });
-      Page.scrollToTop();
+      submitAttempted.current = true;
       form.handleSubmit();
+      Page.scrollToTop();
     };
   }
 
