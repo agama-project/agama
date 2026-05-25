@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 25 15:25:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Enable back ignition and combustion, apply a workaround for
+  detecting the first boot (disable detection, consider every boot
+  as the first boot) (related to bsc#1266257)
+
+-------------------------------------------------------------------
 Mon May 25 12:06:55 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Temporarily disabled ignition and combustion because they cannot
