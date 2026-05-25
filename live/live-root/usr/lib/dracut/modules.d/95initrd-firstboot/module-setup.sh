@@ -18,7 +18,7 @@ install() {
   #
   # The problem is that the first boot detection fails because of the
   # complicated Live ISO setup which uses the device mapper for creating
-  # writable overlay over the squashfs read-only image.)
+  # writable overlay over the squashfs read-only image.
 	$SYSTEMCTL -q --root "$initdir" disable firstboot-detect.service
 	$SYSTEMCTL -q --root "$initdir" enable firstboot.target
 }
