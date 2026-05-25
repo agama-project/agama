@@ -153,7 +153,9 @@ const FirstUserFields = withForm({
                       validateOnSubmit={(v) =>
                         isValidSshKey(v) && !isPrivateKey(v) ? undefined : _("Invalid SSH Key")
                       }
-                      helperText={_("Enter or paste your public keys.")}
+                      helperText={_(
+                        "Paste or enter one or more public SSH keys (e.g. ssh-rsa AAAA...)",
+                      )}
                     />
                   )}
                 </form.AppField>
