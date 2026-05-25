@@ -56,9 +56,9 @@ jest.mock("~/api", () => ({
   putConfig: (config) => mockPutConfig(config),
 }));
 
-/** Checks the "Define a primary user" checkbox and returns it. */
+/** Checks the "Define an administrator user" checkbox and returns it. */
 const enableFirstUser = async (user: ReturnType<typeof installerRender>["user"]) => {
-  const checkbox = screen.getByRole("checkbox", { name: /Define a primary user/i });
+  const checkbox = screen.getByRole("checkbox", { name: /Define an administrator user/i });
   await user.click(checkbox);
   return checkbox;
 };
@@ -85,13 +85,13 @@ describe("AuthenticationForm", () => {
   describe("initial render", () => {
     it("renders first user and root fieldsets", () => {
       installerRender(<AuthenticationForm />);
-      screen.getByRole("group", { name: "Primary account" });
+      screen.getByRole("group", { name: "Administrator account" });
       screen.getByRole("group", { name: "Root account" });
     });
 
     it("renders first user checkbox unchecked by default", () => {
       installerRender(<AuthenticationForm />);
-      const checkbox = screen.getByRole("checkbox", { name: /Define a primary user/i });
+      const checkbox = screen.getByRole("checkbox", { name: /Define an administrator user/i });
       expect(checkbox).not.toBeChecked();
     });
 
@@ -130,7 +130,7 @@ describe("AuthenticationForm", () => {
 
       installerRender(<AuthenticationForm />);
 
-      const checkbox = screen.getByRole("checkbox", { name: /Define a primary user/i });
+      const checkbox = screen.getByRole("checkbox", { name: /Define an administrator user/i });
       expect(checkbox).toBeChecked();
       expect(screen.getByLabelText("Full name")).toHaveValue("Jane Doe");
       expect(screen.getByLabelText("Username")).toHaveValue("jdoe");
@@ -297,7 +297,7 @@ describe("AuthenticationForm", () => {
 
       installerRender(<AuthenticationForm />);
 
-      expect(screen.getByRole("checkbox", { name: /Define a primary user/i })).toBeChecked();
+      expect(screen.getByRole("checkbox", { name: /Define an administrator user/i })).toBeChecked();
     });
   });
 

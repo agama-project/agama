@@ -70,31 +70,31 @@ const FirstUserFields = withForm({
       <Fieldset
         legend={
           // TRANSLATORS: fieldset legend for first user configuration
-          _("Primary account")
+          _("Administrator account")
+        }
+        description={
+          <Interpolate
+            sentence={
+              // TRANSLATORS: checkbox description explaining admin privileges.
+              // Text in square brackets will be displayed in bold.
+              _(
+                "Sets up a main login account. It can run administrator commands when needed ([sudo]), but is separate from the root account.",
+              )
+            }
+          >
+            {(text) => (
+              <Text component="strong" isBold>
+                {text}
+              </Text>
+            )}
+          </Interpolate>
         }
       >
         <form.AppField name="defineUser">
           {(field) => (
             <field.CheckboxField
               // TRANSLATORS: checkbox label to enable first user definition
-              label={_("Define a primary user")}
-              description={
-                <Interpolate
-                  sentence={
-                    // TRANSLATORS: checkbox description explaining admin privileges.
-                    // Text in square brackets will be displayed in bold.
-                    _(
-                      "Sets up a main login account. It can run administrator commands when needed ([sudo]), but is separate from the root account.",
-                    )
-                  }
-                >
-                  {(text) => (
-                    <Text component="strong" isBold>
-                      {text}
-                    </Text>
-                  )}
-                </Interpolate>
-              }
+              label={_("Define an administrator user")}
             />
           )}
         </form.AppField>
