@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 25 10:59:55 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Unify first-user and root authentication configuration into a
+  single workflow and add full SSH public key support
+  (gh#agama-project/agama#3531).
+
+-------------------------------------------------------------------
 Wed May 20 13:00:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Standardize forms organization (gh#agama-project/agama#3521).
