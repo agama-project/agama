@@ -48,6 +48,11 @@ export default {
     "%1$s, %2$s та [ще %3$d]",
     "%1$s, %2$s та [ще %3$d]"
   ],
+  "%d NTP server": [
+    "%d NTP сервер",
+    "%d NTP сервери",
+    "%d NTP серверів"
+  ],
   "%d connections available": [
     "%d з'єднань доступно"
   ],
@@ -351,6 +356,12 @@ export default {
   "At least one IPv6 address is required": [
     "Потрібна принаймні одна адреса IPv6"
   ],
+  "At least one bond port is required": [
+    "Потрібен принаймні один порт для збору даних"
+  ],
+  "At least one bridge port is required": [
+    "Потрібен принаймні один порт-міст"
+  ],
   "At least one partition will be deleted": [
     "Принаймні один розділ буде видалено"
   ],
@@ -408,17 +419,8 @@ export default {
   "Beta": [
     "Бета"
   ],
-  "Bind to MAC address": [
-    "Прив'язати до MAC-адреси"
-  ],
-  "Bind to device name": [
-    "Прив'язати до назви пристрою"
-  ],
   "Binding": [
     "Прив'язка"
-  ],
-  "Binding settings": [
-    "Налаштування прив'язки"
   ],
   "BitLocker": [
     "BitLocker"
@@ -431,6 +433,9 @@ export default {
   ],
   "Bond mode": [
     "Режим прив'язки"
+  ],
+  "Bond mode is required": [
+    "Необхідно ввімкнути режим прив'язки"
   ],
   "Bond options": [
     "Параметри прив'язки"
@@ -445,7 +450,7 @@ export default {
     "Навігаційна панель"
   ],
   "Bridge": [
-    ""
+    "Міст"
   ],
   "Btrfs": [
     "Btrfs"
@@ -550,15 +555,6 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Виберіть групу томів, щоб задати логічні томи"
   ],
-  "Choose device to bind by MAC": [
-    "Виберіть пристрій для прив'язки за MAC-адресою"
-  ],
-  "Choose device to bind by name": [
-    "Виберіть пристрій для прив'язки за назвою"
-  ],
-  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
-    "Виберіть, як це підключення має бути пов'язане з мережевим пристроєм. Це допомагає контролювати, який пристрій використовується для підключення."
-  ],
   "Chosen by MAC": [
     "Вибрано за MAC-адресою"
   ],
@@ -619,8 +615,14 @@ export default {
   "Configure partition at %s": [
     "Налаштування розділу на %s"
   ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    "Налаштуйте сервери протоколу синхронізації часу (NTP), які використовуються для встановлення системної дати та часу."
+  ],
   "Configure zFCP": [
     "Налаштувати zFCP"
+  ],
+  "Configured as %s.": [
+    "Налаштовано як %s."
   ],
   "Configured for installation only": [
     "Налаштовано лише для встановлення"
@@ -775,7 +777,10 @@ export default {
     "Деактивовано"
   ],
   "Default": [
-    ""
+    "Типово"
+  ],
+  "Default NTP": [
+    "Типовий NTP"
   ],
   "Default file system for %s": [
     "Типова файлова система для %s"
@@ -846,6 +851,9 @@ export default {
   "Device name": [
     "Назва пристрою"
   ],
+  "Device name is required": [
+    "Ім'я пристрою вводити обов'язково"
+  ],
   "Discard": [
     "Відмовитись"
   ],
@@ -894,9 +902,6 @@ export default {
   "Do not use": [
     "Не використовувати"
   ],
-  "Down": [
-    "Вниз"
-  ],
   "Download config": [
     "Завантажити конфігурацію"
   ],
@@ -905,6 +910,9 @@ export default {
   ],
   "Download logs to troubleshoot or share with support.": [
     "Завантажте журнали для усунення несправностей або надсилання до служби підтримки."
+  ],
+  "E.g., %s": [
+    "Наприклад,%s"
   ],
   "E.g., 192.168.1.1": [
     "Наприклад, 192.168.1.1"
@@ -957,6 +965,9 @@ export default {
   "Enable mutual verification": [
     "Увімкнути взаємну перевірку"
   ],
+  "Enabled with the system default settings": [
+    "Увімкнено з типовими налаштуваннями системи"
+  ],
   "Encrypt the system": [
     "Зашифрувати систему"
   ],
@@ -981,9 +992,6 @@ export default {
   "Encryption settings": [
     "Налаштування шифрування"
   ],
-  "Enter a hostname.": [
-    "Введіть ім'я хоста."
-  ],
   "Enter a name": [
     "Введіть ім'я"
   ],
@@ -991,13 +999,13 @@ export default {
     "Введіть назву групи томів."
   ],
   "Enter or Tab to add": [
-    ""
+    "Натисніть Enter або Tab, щоб додати"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    ""
+    "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для навігації"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    ""
+    "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для переходу між записами, Escape для виходу"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1012,7 +1020,7 @@ export default {
     "Спливає"
   ],
   "Explicitly enabled with manual settings": [
-    ""
+    "Явно ввімкнено за допомогою ручних налаштувань"
   ],
   "Ext2": [
     "Ext2"
@@ -1115,10 +1123,10 @@ export default {
     "Форматування пристроїв"
   ],
   "Forward delay": [
-    ""
+    "Затримка на вході"
   ],
   "Forward delay must be between 4 and 30 seconds": [
-    ""
+    "Затримка на вході повинна становити від 4 до 30 секунд"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Повнодискове шифрування (FDE) дає змогу захистити інформацію, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
@@ -1138,6 +1146,9 @@ export default {
   "Go to network page": [
     "Перейти до розділу «Мережа»"
   ],
+  "Go to registration": [
+    "Перейти до реєстрації"
+  ],
   "Go to storage page": [
     "Перейти до розділу «Сховище»"
   ],
@@ -1148,10 +1159,10 @@ export default {
     "Графічні робочі середовища для системи."
   ],
   "Hello time": [
-    ""
+    "Час на привітання"
   ],
   "Hello time must be between 1 and 10 seconds": [
-    ""
+    "Час на привітання повинен становити від 1 до 10 секунд"
   ],
   "Hide": [
     "Приховати"
@@ -1164,11 +1175,14 @@ export default {
   "Hostname": [
     "Ім'я хоста"
   ],
-  "Hostname could not be updated": [
-    "Не вдалося оновити ім'я хоста"
+  "Hostname [will remain unchanged] across reboots and network changes.": [
+    "Назва хоста [залишатиметься незмінною] після перезавантаження та змін у мережі."
   ],
-  "Hostname successfully updated": [
-    "Ім'я хоста успішно оновлено"
+  "Hostname is dynamic and [may change after a reboot or network update].": [
+    "Назва хоста є динамічною і [може змінитися після перезавантаження або оновлення мережі]."
+  ],
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    "Назви хостів, IP-адреси або повні доменні імена (FQDN). Наприклад, pool.ntp.org"
   ],
   "I have read and accept the [license] for %s": [
     "Я прочитав і приймаю [license] на %s"
@@ -1404,7 +1418,7 @@ export default {
     "Необхідно прийняти ліцензію"
   ],
   "Listening and learning time (4-30 seconds).": [
-    ""
+    "Час для прослуховування та вивчення (4–30 секунд)."
   ],
   "Loading": [
     "Завантаження"
@@ -1437,7 +1451,7 @@ export default {
     "Форма входу"
   ],
   "Loopback": [
-    ""
+    "Зациклення"
   ],
   "MAC": [
     "MAC-адреса"
@@ -1461,10 +1475,10 @@ export default {
     "Макс. канал"
   ],
   "Max message age": [
-    ""
+    "Макс. термін зберігання повідомлення"
   ],
   "Max message age must be between 6 and 40 seconds": [
-    ""
+    "Максимальний час існування повідомлення повинен становити від 6 до 40 секунд"
   ],
   "Memory": [
     "Пам'ять"
@@ -1566,6 +1580,9 @@ export default {
   "Name": [
     "Назва"
   ],
+  "Name %s": [
+    "Назва %s"
+  ],
   "Name is required": [
     "Ім'я вводити обов'язково"
   ],
@@ -1601,6 +1618,9 @@ export default {
   ],
   "No additional partitions will be created": [
     "Додаткові розділи не створюватимуться"
+  ],
+  "No changes detected. System settings are already up to date.": [
+    "Змін не виявлено. Налаштування системи вже оновлено."
   ],
   "No connections match filters": [
     "Жодне з'єднання не відповідає фільтрам"
@@ -1695,9 +1715,6 @@ export default {
   "None": [
     "Відсутнє"
   ],
-  "None (unbound)": [
-    "Немає (не прив'язано)"
-  ],
   "None of the keymaps match the filter.": [
     "Жодна з карт не відповідає фільтру."
   ],
@@ -1735,7 +1752,7 @@ export default {
     "Не підтримується (%s)"
   ],
   "Not used by this bridge": [
-    ""
+    "Цей міст його не використовує"
   ],
   "Offline": [
     "Офлайн"
@@ -1840,19 +1857,16 @@ export default {
     "Потенційна втрата даних, що впливає щонайменше на %s"
   ],
   "Priority": [
-    ""
+    "Пріоритет"
   ],
   "Priority must be between 0 and 61440": [
-    ""
+    "Значення параметра «Пріоритет» має бути в діапазоні від 0 до 61440"
   ],
   "Proceeding may result in data loss": [
     "Процедура може призвести до втрати даних"
   ],
   "Proceeding will delete existing data, including %s": [
     "Процедура видалить існуючі дані, включаючи %s"
-  ],
-  "Product is already registered": [
-    "Продукт вже зареєстровано"
   ],
   "Product not found": [
     "Продукт не знайдено"
@@ -1861,10 +1875,10 @@ export default {
     "Захист інформації, що зберігається на нових файлових системах, включно з даними, програмами та системними файлами."
   ],
   "Protocol message interval (1-10 seconds).": [
-    ""
+    "Інтервал між повідомленнями протоколу (1–10 секунд)."
   ],
   "Protocol message retention time (6-40 seconds).": [
-    ""
+    "Час зберігання повідомлень протоколу (6–40 секунд)."
   ],
   "Provide authentication": [
     "Забезпечення автентифікації"
@@ -1947,6 +1961,9 @@ export default {
   "Required space: [%s]": [
     "Необхідний простір: [%s]"
   ],
+  "Requires %s": [
+    "Вимагає %s"
+  ],
   "Rescan devices": [
     "Пересканувати пристрої"
   ],
@@ -1978,7 +1995,7 @@ export default {
     "Переглянути та встановити"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
-    ""
+    "Вибір кореневого мосту (0–61440). [Чим менше значення, тим вищий пріоритет]."
   ],
   "Root login with SSH key": [
     "Вхід як root за допомогою SSH-ключа"
@@ -2017,7 +2034,7 @@ export default {
     "Назва мережі"
   ],
   "STP": [
-    ""
+    "STP"
   ],
   "SUSE Customer Center (SCC)": [
     "Центр обслуговування клієнтів SUSE (SCC)"
@@ -2105,14 +2122,20 @@ export default {
   "Server URL": [
     "URL сервера"
   ],
+  "Server addresses": [
+    "Адреси серверів"
+  ],
   "Set DIAG off": [
     "Вимкнути DIAG"
   ],
   "Set DIAG on": [
     "Увімкнути DIAG"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "Встановити постійну назву хоста, яка не змінюватиметься з оновленнями мережі."
+  "Set NTP servers manually": [
+    "Налаштувати сервери NTP вручну"
+  ],
+  "Set manually": [
+    "Задати вручну"
   ],
   "Settings": [
     "Налаштування"
@@ -2164,6 +2187,9 @@ export default {
   "Software %s": [
     "Програмне забезпечення %s"
   ],
+  "Software selection is not available": [
+    "Вибір програмного забезпечення недоступний"
+  ],
   "Some DNS search domains are invalid": [
     "Деякі домени пошуку DNS є недійсними"
   ],
@@ -2192,7 +2218,7 @@ export default {
     "Щось пішло не так"
   ],
   "Spanning Tree Protocol (STP)": [
-    ""
+    "Протокол Spanning Tree (STP)"
   ],
   "Start configuring a basic installation": [
     "Почати налаштування базової інсталяції"
@@ -2205,9 +2231,6 @@ export default {
   ],
   "Static addresses and gateway": [
     "Статичні адреси та шлюз"
-  ],
-  "Static hostname": [
-    "Статичне ім'я хоста"
   ],
   "Status": [
     "Стан"
@@ -2243,8 +2266,14 @@ export default {
     "Перейти до одного з %d доступних продуктів",
     "Перейти до одного з %d доступних продуктів"
   ],
+  "System": [
+    "Система"
+  ],
   "System Information": [
     "Інформація про систему"
+  ],
+  "System settings successfully updated": [
+    "Налаштування системи успішно оновлено"
   ],
   "System will have no network connections": [
     "Система не матиме мережевих підключень"
@@ -2277,9 +2306,6 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "Налаштовані групи LVM залишаться у %s"
-  ],
-  "The connection can be used by any available device.": [
-    "Це підключення може використовуватися будь-яким доступним пристроєм."
   ],
   "The connection could not be saved": [
     "З'єднання не вдалося зберегти"
@@ -2411,8 +2437,8 @@ export default {
   "The password is weak": [
     "Слабкий пароль"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "Пароль не знадобиться для завантаження та доступу до даних, якщо TPM зможе перевірити цілісність системи. Запечатування TPM вимагає, щоб нова система завантажувалася безпосередньо під час першого запуску."
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
+    "Продукт уже зареєстровано. Зміна назви хоста не вплине на назву хоста, збережену на сервері реєстрації."
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "Продукт не знайдено в репозиторіях, тому неможливо продовжити встановлення."
@@ -2452,6 +2478,9 @@ export default {
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
     "Розміри мають вводитися у вигляді чисел, за якими слідує одиниця виміру у вигляді GiB (кратно 2) або GB (кратно 10)."
+  ],
+  "The software selection could not be loaded.": [
+    "Не вдалося завантажити вибране програмне забезпечення."
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
     "Конфігурація сховища є правильною (див. результат нижче), але використовує елементи, які не підтримуються цим інтерфейсом."
@@ -2511,23 +2540,20 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Це розширення недоступне на сервері. Попросіть адміністратора сервера віддзеркалити розширення."
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Це ім'я хоста є динамічним і може змінитися після перезавантаження або оновлення мережі, як це налаштовано адміністратором локальної мережі."
-  ],
   "This license is not available in %s.": [
     "Ліцензія недоступна цією мовою: %s."
   ],
   "This might be due to network connectivity.": [
-    ""
+    "Це може бути пов’язано з проблемами підключення до мережі."
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
     "Цей підхід забезпечує баланс між ясністю та ефективністю: модальне вікно зберігає легкість для простого вибору, в той час як повноекранний режим підтримує глибше вивчення і складніші дії, спеціально для користувачів з великою кількістю пристроїв."
   ],
   "This product does not provide additional patterns.": [
-    ""
+    "Цей продукт не містить додаткових шаблонів."
   ],
   "This product does not provide desktop environments.": [
-    ""
+    "Цей продукт не підтримує робочі середовища."
   ],
   "This space includes the base system and the selected software patterns, if any.": [
     "Цей простір включає базову систему та вибрані програмні шаблони, якщо такі є."
@@ -2547,6 +2573,9 @@ export default {
   "TiB": [
     "ТіБ"
   ],
+  "Time Synchronization Servers": [
+    "Сервери сихронізації часу"
+  ],
   "Time zone": [
     "Часовий пояс"
   ],
@@ -2554,7 +2583,7 @@ export default {
     "Tmpfs"
   ],
   "To change it, visit the [hostname] section before registering.": [
-    ""
+    "Щоб змінити це, перейдіть до розділу [hostname] перед реєстрацією."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Щоб забезпечити можливість завантаження нової системи, програмі встановлення може знадобитися створити або налаштувати деякі розділи на відповідному диску."
@@ -2570,9 +2599,6 @@ export default {
   ],
   "Unable to modify the settings": [
     "Не вдається змінити налаштування"
-  ],
-  "Unbound": [
-    "Без прив'язки"
   ],
   "Unexpected error": [
     "Несподівана помилка"
@@ -2592,17 +2618,11 @@ export default {
   "Unused space": [
     "Невикористаний простір"
   ],
-  "Up": [
-    "Вгору"
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "До %s можна відновити шляхом стискання пристрою."
   ],
   "Update available disks and activate crypt devices": [
     "Оновлення доступних дисків і активація криптопристроїв"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Оновлення імені хоста зараз або пізніше не змінить поточне зареєстроване ім'я хоста."
   ],
   "Upload": [
     "Завантажити"
@@ -2715,9 +2735,6 @@ export default {
   "Use several devices": [
     "Використати кілька пристроїв"
   ],
-  "Use static hostname": [
-    "Використовувати статичне ім'я хоста"
-  ],
   "Use suggested username": [
     "Використайте запропоноване ім'я користувача"
   ],
@@ -2753,6 +2770,18 @@ export default {
   "Using %d connections with %s": [
     "Використаня %d з'єднань з %s"
   ],
+  "Using %s NTP servers, including [%s]": [
+    "Задіяно %s NTP-серверів, включаючи [%s]"
+  ],
+  "Using %s as NTP server": [
+    "Використання %s як NTP-сервера"
+  ],
+  "Using %s keyboard layout": [
+    "Використано %s розкладку клавіатури"
+  ],
+  "Using [%s] keyboard layout": [
+    "Використано розкладку клавіатури [%s]"
+  ],
   "Using a hashed password.": [
     "Використовуючи хешований пароль."
   ],
@@ -2771,11 +2800,8 @@ export default {
   "Using partition %s": [
     "Використовуючи розділ %s"
   ],
-  "Using transient hostname: %s": [
-    "Використання перехідного імені хоста: %s"
-  ],
   "VLAN": [
-    ""
+    "VLAN"
   ],
   "View license": [
     "Переглянути ліцензію"
