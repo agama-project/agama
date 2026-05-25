@@ -259,9 +259,9 @@ describe("UsersSummary", () => {
           screen.getByText(/account/);
         });
 
-        it("displays 'Can log in with SSH key'", () => {
+        it("displays 'Can log in with password and SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Can log in with SSH key");
+          screen.getByText("Can log in with password and SSH key");
         });
       });
     });
@@ -325,9 +325,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'root can log in with SSH key'", () => {
+        it("displays 'root can log in with SSH key, user with password'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("root can log in with SSH key");
+          screen.getByText("root can log in with SSH key, user with password");
         });
       });
 
@@ -365,9 +365,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'root can log in with password and SSH key'", () => {
+        it("displays 'root can log in with password and SSH key, user with password only'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("root can log in with password and SSH key");
+          screen.getByText("root can log in with password and SSH key, user with password only");
         });
       });
 

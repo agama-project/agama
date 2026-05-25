@@ -48,20 +48,17 @@ const getRootAuthType = (config) => {
   return "none";
 };
 
-const userConfigured = (config) => {
+const isUserDefined = (config) => {
   if (!config.user) return false;
   const { userName, fullName, password } = config.user;
   return !isEmpty(userName) && !isEmpty(fullName) && !isEmpty(password);
 };
 
-const userHasSsh = (config) =>
-  !isEmpty(config.user?.sshPublicKey) || !isEmpty(config.user?.sshPublicKeys);
-
 const Value = () => {
   const config = useConfig();
   const rootAuthType = getRootAuthType(config);
   const hasRoot = rootAuthType !== "none";
-  const hasUser = userConfigured(config);
+  const hasUser = isUserDefined(config);
 
   if (!hasRoot && !hasUser) return _("Not configured yet");
   if (hasRoot && !hasUser) return _("Using root account");
@@ -93,8 +90,8 @@ const Description = () => {
   const config = useConfig();
   const rootAuthType = getRootAuthType(config);
   const hasRoot = rootAuthType !== "none";
-  const hasUser = userConfigured(config);
-  const hasSsh = userHasSsh(config);
+  const hasUser = isUserDefined(config);
+  const userHasSsh = !isEmpty(config.user?.sshPublicKey) || !isEmpty(config.user?.sshPublicKeys);
 
   // Root only
   if (hasRoot && !hasUser) {
@@ -109,7 +106,7 @@ const Description = () => {
   // User only
   if (!hasRoot && hasUser) {
     // TRANSLATORS: authentication method description for user account
-    if (hasSsh) return _("Can log in with SSH key");
+    if (userHasSsh) return _("Can log in with password and SSH key");
     // TRANSLATORS: authentication method description for user account
     return _("Can log in with password only");
   }
@@ -117,19 +114,22 @@ const Description = () => {
   // Both root and user
   if (hasRoot && hasUser) {
     // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "password" && !hasSsh) return _("root can log in with password only");
+    if (rootAuthType === "password" && !userHasSsh) return _("root can log in with password only");
     // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "password" && hasSsh)
+    if (rootAuthType === "password" && userHasSsh)
       return _("root can log in with password only, user with password and SSH key");
     // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "ssh" && !hasSsh) return _("root can log in with SSH key");
+    if (rootAuthType === "ssh" && !userHasSsh)
+      return _("root can log in with SSH key, user with password");
     // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "ssh" && hasSsh)
+    if (rootAuthType === "ssh" && userHasSsh)
       return _("root can log in with SSH key, user with password and SSH key");
     // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "both" && !hasSsh) return _("root can log in with password and SSH key");
+    if (rootAuthType === "both" && !userHasSsh)
+      return _("root can log in with password and SSH key, user with password only");
     // TRANSLATORS: "Both" refers to both root and user accounts. "root" must not be translated
-    if (rootAuthType === "both" && hasSsh) return _("Both can log in with password and SSH key");
+    if (rootAuthType === "both" && userHasSsh)
+      return _("Both can log in with password and SSH key");
   }
 
   return null;
