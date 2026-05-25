@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 25 12:50:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update shell-quote dependency (CVE-2026-9277, bsc#1266256).
+
+-------------------------------------------------------------------
 Tue May 19 06:29:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update axios dependency to prevent CVE-2026-42041 and CVE-2026-42264
