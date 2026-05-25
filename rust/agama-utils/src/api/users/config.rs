@@ -86,8 +86,8 @@ pub struct FirstUserConfig {
     pub user_name: Option<String>,
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(alias = "sshPublicKeys")]
-    pub ssh_public_key: Option<StringOrList>,
+    #[serde(alias = "sshPublicKey")]
+    pub ssh_public_keys: Option<StringOrList>,
 }
 
 impl FirstUserConfig {
@@ -168,8 +168,8 @@ pub struct RootUserConfig {
     /// Root SSH public key
     #[merge(strategy = merge::option::overwrite_none)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(alias = "sshPublicKeys")]
-    pub ssh_public_key: Option<StringOrList>,
+    #[serde(alias = "sshPublicKey")]
+    pub ssh_public_keys: Option<StringOrList>,
 }
 
 impl RootUserConfig {
@@ -182,7 +182,7 @@ impl RootUserConfig {
             return false;
         }
 
-        if self.ssh_public_key.as_ref().is_some_and(|k| !k.is_empty()) {
+        if self.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()) {
             return false;
         }
 
@@ -264,7 +264,7 @@ mod test {
         assert!(root_with_empty_password_config.is_empty());
 
         let root_with_ssh_key = RootUserConfig {
-            ssh_public_key: Some(StringOrList::Single("12345678".to_string())),
+            ssh_public_keys: Some(StringOrList::Single("12345678".to_string())),
             ..Default::default()
         };
         let root_with_ssh_key_config = Config {
@@ -274,7 +274,7 @@ mod test {
         assert!(!root_with_ssh_key_config.is_empty());
 
         let root_with_ssh_keys = RootUserConfig {
-            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
+            ssh_public_keys: Some(StringOrList::List(vec!["12345678".to_string()])),
             ..Default::default()
         };
         let root_with_ssh_keys_config = Config {
@@ -295,7 +295,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(valid_user.is_valid());
 
@@ -306,7 +306,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(!empty_user_name.is_valid());
 
@@ -317,7 +317,7 @@ mod test {
                 password: "12345678".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(!empty_full_name.is_valid());
 
@@ -328,13 +328,13 @@ mod test {
                 password: "".to_string(),
                 hashed_password: false,
             }),
-            ssh_public_key: None,
+            ssh_public_keys: None,
         };
         assert!(!empty_password.is_valid());
 
         let with_ssh_keys = FirstUserConfig {
             user_name: Some("firstuser".to_string()),
-            ssh_public_key: Some(StringOrList::List(vec!["12345678".to_string()])),
+            ssh_public_keys: Some(StringOrList::List(vec!["12345678".to_string()])),
             ..Default::default()
         };
         let with_ssh_keys_config = Config {
