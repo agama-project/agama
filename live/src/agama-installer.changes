@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon May 25 12:06:55 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Temporarily disabled ignition and combustion because they cannot
+  start properly in the Live ISO environment (bsc#1266257)
+
+-------------------------------------------------------------------
 Thu May 21 15:39:19 UTC 2026 - Volkan OZTUZUN <volkan.oztuzun@suse.com>
 
 - Add ignition and combustion to the live image package list.
