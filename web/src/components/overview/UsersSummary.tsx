@@ -54,6 +54,29 @@ const isUserDefined = (config) => {
   return !isEmpty(userName) && !isEmpty(fullName) && !isEmpty(password);
 };
 
+/**
+ * Renders "SSH login enabled for %s" with the account name in bold.
+ * Used when only one of the two accounts has SSH login enabled.
+ */
+const SshEnabledFor = ({ name }) => (
+  // TRANSLATORS: %s is either "root" or a username like 'jdoe'
+  <Interpolate sentence={_("SSH login enabled for %s")}>
+    {() => <Text isBold>{name}</Text>}
+  </Interpolate>
+);
+
+/**
+ * Renders "Using %s account" with the account name in bold.
+ * Used in the summary value to show which accounts are configured.
+ */
+const Account = ({ name }) => (
+  // TRANSLATORS: %s is either "root" or a username like 'jdoe'
+  <Interpolate sentence={_("Using %s account")}>{() => <Text isBold>{name}</Text>}</Interpolate>
+);
+
+/**
+ * Displays which accounts, if any, are configured for login.
+ */
 const Value = () => {
   const config = useConfig();
   const rootAuthType = getRootAuthType(config);
@@ -61,18 +84,11 @@ const Value = () => {
   const hasUser = isUserDefined(config);
 
   if (!hasRoot && !hasUser) return _("Not configured yet");
-  if (hasRoot && !hasUser) return _("Using root account");
+  if (hasRoot && !hasUser) return <Account name="root" />;
 
   const userName = config.user.userName;
 
-  if (!hasRoot) {
-    // TRANSLATORS: %s is a username like 'jdoe'
-    return (
-      <Interpolate sentence={_("Using %s account")}>
-        {() => <Text isBold>{userName}</Text>}
-      </Interpolate>
-    );
-  }
+  if (!hasRoot) return <Account name={userName} />;
 
   // TRANSLATORS: first %s is a username like 'jdoe', second is the literal word "root" which must not be translated
   return (
@@ -86,6 +102,14 @@ const Value = () => {
   );
 };
 
+/**
+ * Displays a summary of the SSH login configuration.
+ *
+ * Only shown when SSH login is enabled for at least one account,
+ * since password login is always set for the user and not worth highlighting.
+ * For root, SSH-only login (no password) is explicitly surfaced since it is
+ * not mandatory; if root has no SSH, it implies password login.
+ */
 const Description = () => {
   const config = useConfig();
   const rootAuthType = getRootAuthType(config);
@@ -93,44 +117,32 @@ const Description = () => {
   const hasUser = isUserDefined(config);
   const userHasSsh = !isEmpty(config.user?.sshPublicKey) || !isEmpty(config.user?.sshPublicKeys);
 
-  // Root only
-  if (hasRoot && !hasUser) {
-    // TRANSLATORS: authentication method description for root account
-    if (rootAuthType === "password") return _("Can log in with password only");
-    // TRANSLATORS: authentication method description for root account
-    if (rootAuthType === "ssh") return _("Can log in with SSH key");
-    // TRANSLATORS: authentication method description for root account
-    if (rootAuthType === "both") return _("Can log in with password and SSH key");
+  if (!hasRoot && !hasUser) return null;
+
+  const sshForRoot = rootAuthType === "ssh" || rootAuthType === "both";
+  const sshForUser = hasUser && userHasSsh;
+
+  if (sshForRoot && sshForUser) return _("SSH login enabled for both accounts");
+
+  if (rootAuthType === "ssh" && hasUser) {
+    // TRANSLATORS: "root" refers to the root user account, must not be translated
+    return (
+      <Interpolate sentence={_("%s login enabled only with SSH key")}>
+        {/* eslint-disable-next-line i18next/no-literal-string */}
+        {() => <Text isBold>root</Text>}
+      </Interpolate>
+    );
   }
 
-  // User only
-  if (!hasRoot && hasUser) {
-    // TRANSLATORS: authentication method description for user account
-    if (userHasSsh) return _("Can log in with password and SSH key");
-    // TRANSLATORS: authentication method description for user account
-    return _("Can log in with password only");
-  }
+  if (rootAuthType === "ssh") return _("Login enabled only with SSH key");
 
-  // Both root and user
-  if (hasRoot && hasUser) {
-    // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "password" && !userHasSsh) return _("root can log in with password only");
-    // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "password" && userHasSsh)
-      return _("root can log in with password only, user with password and SSH key");
-    // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "ssh" && !userHasSsh)
-      return _("root can log in with SSH key, user with password");
-    // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "ssh" && userHasSsh)
-      return _("root can log in with SSH key, user with password and SSH key");
-    // TRANSLATORS: "root" refers to the root user account, must not be translated
-    if (rootAuthType === "both" && !userHasSsh)
-      return _("root can log in with password and SSH key, user with password only");
-    // TRANSLATORS: "Both" refers to both root and user accounts. "root" must not be translated
-    if (rootAuthType === "both" && userHasSsh)
-      return _("Both can log in with password and SSH key");
-  }
+  if (sshForRoot && hasUser) return <SshEnabledFor name="root" />;
+
+  if (sshForRoot) return _("SSH login enabled");
+
+  if (sshForUser && hasRoot) return <SshEnabledFor name={config.user.userName} />;
+
+  if (sshForUser) return _("SSH login enabled");
 
   return null;
 };

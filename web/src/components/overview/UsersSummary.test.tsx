@@ -19,6 +19,7 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
+
 import React from "react";
 import { screen, within } from "@testing-library/react";
 import { installerRender, mockProgresses } from "~/test-utils";
@@ -89,7 +90,6 @@ describe("UsersSummary", () => {
 
       it("does not display any description", () => {
         installerRender(<UsersSummary />);
-        expect(screen.queryByText(/Password/)).not.toBeInTheDocument();
         expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
       });
     });
@@ -104,12 +104,14 @@ describe("UsersSummary", () => {
 
         it("displays 'Using root account'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Using root account");
+          screen.getByText(/Using/);
+          screen.getByText("root");
+          screen.getByText(/account/);
         });
 
-        it("displays 'Can log in with password only'", () => {
+        it("does not display any description", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Can log in with password only");
+          expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
         });
       });
 
@@ -122,12 +124,14 @@ describe("UsersSummary", () => {
 
         it("displays 'Using root account'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Using root account");
+          screen.getByText(/Using/);
+          screen.getByText("root");
+          screen.getByText(/account/);
         });
 
-        it("displays 'Can log in with SSH key'", () => {
+        it("displays 'Login enabled only with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Can log in with SSH key");
+          screen.getByText("Login enabled only with SSH key");
         });
       });
 
@@ -138,14 +142,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using root account'", () => {
+        it("displays 'Login enabled only with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Using root account");
-        });
-
-        it("displays 'Can log in with SSH key'", () => {
-          installerRender(<UsersSummary />);
-          screen.getByText("Can log in with SSH key");
+          screen.getByText("Login enabled only with SSH key");
         });
       });
 
@@ -161,14 +160,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using root account'", () => {
+        it("displays 'Login enabled only with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Using root account");
-        });
-
-        it("displays 'Can log in with SSH key'", () => {
-          installerRender(<UsersSummary />);
-          screen.getByText("Can log in with SSH key");
+          screen.getByText("Login enabled only with SSH key");
         });
       });
 
@@ -182,14 +176,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using root account'", () => {
+        it("displays 'SSH login enabled'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Using root account");
-        });
-
-        it("displays 'Can log in with password and SSH key'", () => {
-          installerRender(<UsersSummary />);
-          screen.getByText("Can log in with password and SSH key");
+          screen.getByText("SSH login enabled");
         });
       });
 
@@ -203,14 +192,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using root account'", () => {
+        it("displays 'SSH login enabled'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Using root account");
-        });
-
-        it("displays 'Can log in with password and SSH key'", () => {
-          installerRender(<UsersSummary />);
-          screen.getByText("Can log in with password and SSH key");
+          screen.getByText("SSH login enabled");
         });
       });
     });
@@ -234,9 +218,9 @@ describe("UsersSummary", () => {
           screen.getByText(/account/);
         });
 
-        it("displays 'Can log in with password only'", () => {
+        it("does not display any description", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Can log in with password only");
+          expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
         });
       });
 
@@ -252,16 +236,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using {username} account'", () => {
+        it("displays 'SSH login enabled'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText(/Using/);
-          screen.getByText("jdoe");
-          screen.getByText(/account/);
-        });
-
-        it("displays 'Can log in with password and SSH key'", () => {
-          installerRender(<UsersSummary />);
-          screen.getByText("Can log in with password and SSH key");
+          screen.getByText("SSH login enabled");
         });
       });
     });
@@ -288,9 +265,9 @@ describe("UsersSummary", () => {
           screen.getByText(/accounts/);
         });
 
-        it("displays 'root can log in with password only'", () => {
+        it("does not display any description", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("root can log in with password only");
+          expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
         });
       });
 
@@ -307,9 +284,10 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'root can log in with password only, user with password and SSH key'", () => {
+        it("displays 'SSH login enabled for {username}'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("root can log in with password only, user with password and SSH key");
+          screen.getByText(/SSH login enabled for/);
+          expect(screen.queryAllByText("jdoe")).toHaveLength(2);
         });
       });
 
@@ -325,9 +303,10 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'root can log in with SSH key, user with password'", () => {
+        it("displays 'root login enabled only with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("root can log in with SSH key, user with password");
+          screen.getByText(/login enabled only with SSH key/);
+          expect(screen.queryAllByText("root")).toHaveLength(2);
         });
       });
 
@@ -344,9 +323,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'root can log in with SSH key, user with password and SSH key'", () => {
+        it("displays 'SSH login enabled for both accounts'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("root can log in with SSH key, user with password and SSH key");
+          screen.getByText("SSH login enabled for both accounts");
         });
       });
 
@@ -365,9 +344,10 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'root can log in with password and SSH key, user with password only'", () => {
+        it("displays 'SSH login enabled for root'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("root can log in with password and SSH key, user with password only");
+          screen.getByText(/SSH login enabled for/);
+          expect(screen.queryAllByText("root")).toHaveLength(2);
         });
       });
 
@@ -387,9 +367,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Both can log in with password and SSH key'", () => {
+        it("displays 'SSH login enabled for both accounts'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Both can log in with password and SSH key");
+          screen.getByText("SSH login enabled for both accounts");
         });
       });
     });
