@@ -107,9 +107,9 @@ describe("UsersSummary", () => {
           screen.getByText("Using root account");
         });
 
-        it("displays 'Password only'", () => {
+        it("displays 'Can log in with password only'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Password only");
+          screen.getByText("Can log in with password only");
         });
       });
 
@@ -125,9 +125,9 @@ describe("UsersSummary", () => {
           screen.getByText("Using root account");
         });
 
-        it("displays 'Allowing SSH access via public key'", () => {
+        it("displays 'Can log in with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Allowing SSH access via public key");
+          screen.getByText("Can log in with SSH key");
         });
       });
 
@@ -143,9 +143,9 @@ describe("UsersSummary", () => {
           screen.getByText("Using root account");
         });
 
-        it("displays 'Allowing SSH access via public key'", () => {
+        it("displays 'Can log in with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Allowing SSH access via public key");
+          screen.getByText("Can log in with SSH key");
         });
       });
 
@@ -166,9 +166,9 @@ describe("UsersSummary", () => {
           screen.getByText("Using root account");
         });
 
-        it("displays 'Allowing SSH access via public key'", () => {
+        it("displays 'Can log in with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Allowing SSH access via public key");
+          screen.getByText("Can log in with SSH key");
         });
       });
 
@@ -187,9 +187,9 @@ describe("UsersSummary", () => {
           screen.getByText("Using root account");
         });
 
-        it("displays 'Password and allowing SSH access'", () => {
+        it("displays 'Can log in with password and SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Password and allowing SSH access");
+          screen.getByText("Can log in with password and SSH key");
         });
       });
 
@@ -208,9 +208,9 @@ describe("UsersSummary", () => {
           screen.getByText("Using root account");
         });
 
-        it("displays 'Password and allowing SSH access'", () => {
+        it("displays 'Can log in with password and SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Password and allowing SSH access");
+          screen.getByText("Can log in with password and SSH key");
         });
       });
     });
@@ -234,9 +234,9 @@ describe("UsersSummary", () => {
           screen.getByText(/account/);
         });
 
-        it("displays 'Password only'", () => {
+        it("displays 'Can log in with password only'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Password only");
+          screen.getByText("Can log in with password only");
         });
       });
 
@@ -259,9 +259,9 @@ describe("UsersSummary", () => {
           screen.getByText(/account/);
         });
 
-        it("displays 'Allowing SSH access via public key'", () => {
+        it("displays 'Can log in with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Allowing SSH access via public key");
+          screen.getByText("Can log in with SSH key");
         });
       });
     });
@@ -279,16 +279,18 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using {username} and root account'", () => {
+        it("displays 'Using {username} and root accounts'", () => {
           installerRender(<UsersSummary />);
           screen.getByText(/Using/);
           screen.getByText("jdoe");
-          screen.getByText(/and root account/);
+          screen.getByText(/and/);
+          screen.getByText("root");
+          screen.getByText(/accounts/);
         });
 
-        it("displays 'Root with password only'", () => {
+        it("displays 'root can log in with password only'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Root with password only");
+          screen.getByText("root can log in with password only");
         });
       });
 
@@ -305,9 +307,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Root with password only, user allowing SSH access'", () => {
+        it("displays 'root can log in with password only, user with password and SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Root with password only, user allowing SSH access");
+          screen.getByText("root can log in with password only, user with password and SSH key");
         });
       });
 
@@ -323,9 +325,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Root allowing SSH access via public key'", () => {
+        it("displays 'root can log in with SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Root allowing SSH access via public key");
+          screen.getByText("root can log in with SSH key");
         });
       });
 
@@ -342,9 +344,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Both allowing SSH access via public key'", () => {
+        it("displays 'root can log in with SSH key, user with password and SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Both allowing SSH access via public key");
+          screen.getByText("root can log in with SSH key, user with password and SSH key");
         });
       });
 
@@ -363,9 +365,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Root with password and allowing SSH access'", () => {
+        it("displays 'root can log in with password and SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Root with password and allowing SSH access");
+          screen.getByText("root can log in with password and SSH key");
         });
       });
 
@@ -385,9 +387,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Both with password and allowing SSH access'", () => {
+        it("displays 'Both can log in with password and SSH key'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Both with password and allowing SSH access");
+          screen.getByText("Both can log in with password and SSH key");
         });
       });
     });

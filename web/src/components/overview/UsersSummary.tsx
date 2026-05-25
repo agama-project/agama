@@ -28,6 +28,7 @@ import { useIssues } from "~/hooks/model/issue";
 import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
+import Interpolate from "~/components/core/Interpolate";
 import { USER } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -69,25 +70,22 @@ const Value = () => {
 
   if (!hasRoot) {
     // TRANSLATORS: %s is a username like 'jdoe'
-    const [textStart, textEnd] = _("Using %s account").split("%s");
     return (
-      <>
-        {textStart}
-        <Text isBold>{userName}</Text>
-        {textEnd}
-      </>
+      <Interpolate sentence={_("Using %s account")}>
+        {() => <Text isBold>{userName}</Text>}
+      </Interpolate>
     );
   }
 
-  // TRANSLATORS: %s is a username like 'jdoe'
-  const [textStart, textEnd] = _("Using %s and root account").split("%s");
-
+  // TRANSLATORS: first %s is a username like 'jdoe', second is the literal word "root" which must not be translated
   return (
-    <>
-      {textStart}
-      <Text isBold>{userName}</Text>
-      {textEnd}
-    </>
+    <Interpolate sentence={_("Using %s and %s accounts")}>
+      {[
+        () => <Text isBold>{userName}</Text>,
+        // eslint-disable-next-line i18next/no-literal-string
+        () => <Text isBold>root</Text>,
+      ]}
+    </Interpolate>
   );
 };
 
@@ -100,26 +98,38 @@ const Description = () => {
 
   // Root only
   if (hasRoot && !hasUser) {
-    if (rootAuthType === "password") return _("Password only");
-    if (rootAuthType === "ssh") return _("Allowing SSH access via public key");
-    if (rootAuthType === "both") return _("Password and allowing SSH access");
+    // TRANSLATORS: authentication method description for root account
+    if (rootAuthType === "password") return _("Can log in with password only");
+    // TRANSLATORS: authentication method description for root account
+    if (rootAuthType === "ssh") return _("Can log in with SSH key");
+    // TRANSLATORS: authentication method description for root account
+    if (rootAuthType === "both") return _("Can log in with password and SSH key");
   }
 
   // User only
   if (!hasRoot && hasUser) {
-    if (hasSsh) return _("Allowing SSH access via public key");
-    return _("Password only");
+    // TRANSLATORS: authentication method description for user account
+    if (hasSsh) return _("Can log in with SSH key");
+    // TRANSLATORS: authentication method description for user account
+    return _("Can log in with password only");
   }
 
   // Both root and user
   if (hasRoot && hasUser) {
-    if (rootAuthType === "password" && !hasSsh) return _("Root with password only");
+    // TRANSLATORS: "root" refers to the root user account, must not be translated
+    if (rootAuthType === "password" && !hasSsh) return _("root can log in with password only");
+    // TRANSLATORS: "root" refers to the root user account, must not be translated
     if (rootAuthType === "password" && hasSsh)
-      return _("Root with password only, user allowing SSH access");
-    if (rootAuthType === "ssh" && !hasSsh) return _("Root allowing SSH access via public key");
-    if (rootAuthType === "ssh" && hasSsh) return _("Both allowing SSH access via public key");
-    if (rootAuthType === "both" && !hasSsh) return _("Root with password and allowing SSH access");
-    if (rootAuthType === "both" && hasSsh) return _("Both with password and allowing SSH access");
+      return _("root can log in with password only, user with password and SSH key");
+    // TRANSLATORS: "root" refers to the root user account, must not be translated
+    if (rootAuthType === "ssh" && !hasSsh) return _("root can log in with SSH key");
+    // TRANSLATORS: "root" refers to the root user account, must not be translated
+    if (rootAuthType === "ssh" && hasSsh)
+      return _("root can log in with SSH key, user with password and SSH key");
+    // TRANSLATORS: "root" refers to the root user account, must not be translated
+    if (rootAuthType === "both" && !hasSsh) return _("root can log in with password and SSH key");
+    // TRANSLATORS: "Both" refers to both root and user accounts. "root" must not be translated
+    if (rootAuthType === "both" && hasSsh) return _("Both can log in with password and SSH key");
   }
 
   return null;
