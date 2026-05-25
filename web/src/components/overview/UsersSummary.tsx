@@ -33,9 +33,9 @@ import { _ } from "~/i18n";
 const rootConfigured = (config) => {
   if (!config.root) return false;
 
-  const { password, sshPublicKey } = config.root;
+  const { password, sshPublicKeys } = config.root;
   if (password && password !== "") return true;
-  if (sshPublicKey && sshPublicKey !== "") return true;
+  if (sshPublicKeys && sshPublicKeys !== "") return true;
 
   return false;
 };
