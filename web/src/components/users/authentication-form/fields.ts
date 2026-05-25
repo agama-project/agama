@@ -31,6 +31,7 @@ import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
 import {
   FieldsValidationResult,
+  optionalValidList,
   requiredString,
   requiredValidList,
   ValidationResult,
@@ -144,6 +145,11 @@ function validateUserFields(fields: FormFields): FieldsValidationResult<UserForm
       : !fields.userUsingHashedPassword
         ? requiredString(fields.userPasswordConfirmation, _("Password confirmation is required"))
         : undefined,
+    userSshPublicKeys: optionalValidList(
+      fields.userSshPublicKeys,
+      isValidSshKeyEntry,
+      _("Some SSH public keys are invalid"),
+    ),
   };
 }
 

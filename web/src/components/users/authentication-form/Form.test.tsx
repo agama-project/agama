@@ -267,6 +267,66 @@ describe("AuthenticationForm", () => {
       screen.getByText("Full name is required");
       screen.getByText("Username is required");
     });
+
+    it("accepts valid SSH public keys for first user", async () => {
+      const { user } = installerRender(<AuthenticationForm />);
+      await enableFirstUser(user);
+      await fillFirstUserFields(user);
+
+      const sshKeysField = screen.getByLabelText("SSH Public Keys (optional)");
+      await user.type(sshKeysField, "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host");
+      await user.keyboard("{Enter}");
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      expect(mockPutConfig).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user: expect.objectContaining({
+            sshPublicKeys: ["ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA user@host"],
+          }),
+        }),
+      );
+    });
+
+    it("rejects invalid SSH public keys for first user", async () => {
+      mockFirstUser = {
+        fullName: "Jane Doe",
+        userName: "jdoe",
+        password: "s3cr3t",
+        hashedPassword: false,
+        sshPublicKeys: "not-a-valid-ssh-key",
+      };
+
+      const { user } = installerRender(<AuthenticationForm />);
+
+      const fullNameInput = screen.getByLabelText("Full name");
+      await user.type(fullNameInput, " Smith");
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      expect(mockPutConfig).not.toHaveBeenCalled();
+      screen.getByText(/Invalid SSH Key/);
+    });
+
+    it("rejects private keys for first user", async () => {
+      mockFirstUser = {
+        fullName: "Jane Doe",
+        userName: "jdoe",
+        password: "s3cr3t",
+        hashedPassword: false,
+        sshPublicKeys: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA",
+      };
+
+      const { user } = installerRender(<AuthenticationForm />);
+
+      const fullNameInput = screen.getByLabelText("Full name");
+      await user.type(fullNameInput, " Smith");
+
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      expect(mockPutConfig).not.toHaveBeenCalled();
+      screen.getByText(/Invalid SSH Key/);
+    });
   });
 
   describe("backend compatibility", () => {
