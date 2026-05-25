@@ -100,13 +100,15 @@ const connectionTypeLabel = (type: ConnectionType): string => _(CONNECTION_TYPE_
  * Returns the type for the given connection.
  */
 const connectionType = (connection: Connection): ConnectionType => {
-  const { wireless, bond, bridge } = connection;
+  const { wireless, bond, bridge, vlan } = connection;
   if (wireless) {
     return CONNECTION_TYPE.WIFI;
   } else if (bond) {
     return CONNECTION_TYPE.BOND;
   } else if (bridge) {
     return CONNECTION_TYPE.BRIDGE;
+  } else if (vlan) {
+    return CONNECTION_TYPE.VLAN;
   } else {
     return CONNECTION_TYPE.ETHERNET;
   }

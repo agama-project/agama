@@ -89,7 +89,18 @@ type BridgeFormFields = {
   bridgePorts: string[];
 };
 
-type FormFields = CommonFormFields & IpFormFields & BondFormFields & BridgeFormFields;
+type VlanFormFields = {
+  vlanIface: string;
+  vlanId: number | undefined;
+  vlanParent: string;
+  vlanProtocol: string;
+};
+
+type FormFields = CommonFormFields &
+  IpFormFields &
+  BondFormFields &
+  BridgeFormFields &
+  VlanFormFields;
 
 /** Exported domain constants */
 
@@ -220,6 +231,12 @@ const defaultValues = {
   bridgeHelloTime: undefined,
   bridgeMaxAge: undefined,
   bridgePorts: [] as string[],
+
+  // VLAN fields
+  vlanIface: "",
+  vlanId: undefined as number | undefined,
+  vlanParent: "",
+  vlanProtocol: "",
 };
 
 /**
@@ -315,8 +332,6 @@ const validateIpFields = (fields: IpFormFields): FieldsValidationResult<IpFormFi
  * only valid in certain modes (ACTIVE_BACKUP, BALANCE_TLB, BALANCE_ALB).
  * This rule depends on both bondMode and bondOptions, so it's evaluated
  * at validation time and returned as a field error on bondOptions.
- *
-
  */
 const validateBondFields = (fields: BondFormFields): FieldsValidationResult<BondFormFields> => {
   const { bondMode, bondOptions, bondPorts, bondIface } = fields;
@@ -396,6 +411,20 @@ const validateBridgeFields = (
 };
 
 /**
+ * Validates VLAN-specific fields.
+ */
+const validateVlanFields = (fields: VlanFormFields): FieldsValidationResult<VlanFormFields> => ({
+  // TRANSLATORS: validation error for the VLAN device name field.
+  vlanIface: requiredString(fields.vlanIface, _("Device name is required")),
+  // TRANSLATORS: validation error for the VLAN ID field.
+  vlanId: optionalIntRange(fields.vlanId, 0, 4094, _("VLAN ID must be between 0 and 4094")),
+  // TRANSLATORS: validation error for the VLAN parent device field.
+  vlanParent: requiredString(fields.vlanParent, _("Parent device is required")),
+  // TRANSLATORS: validation error for the VLAN protocol field.
+  vlanProtocol: optionalValidString(fields.vlanProtocol, () => true, ""),
+});
+
+/**
  * Dispatches to the appropriate type-specific validator based on connection type.
  * Returns an empty object for types with no extra validation (e.g. Ethernet).
  */
@@ -405,6 +434,8 @@ const validateTypeFields = (fields: FormFields): FieldsValidationResult<FormFiel
       return validateBondFields(fields);
     case CONNECTION_TYPE.BRIDGE:
       return validateBridgeFields(fields);
+    case CONNECTION_TYPE.VLAN:
+      return validateVlanFields(fields);
     default:
       return {};
   }

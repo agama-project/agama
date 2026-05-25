@@ -50,6 +50,7 @@ import {
 import BindingModeSelector from "./BindingModeSelector";
 import BondFields from "./BondFields";
 import BridgeFields from "./BridgeFields";
+import VlanFields from "./VlanFields";
 import DeviceSelector from "./DeviceSelector";
 import IpFields from "./IpFields";
 import {
@@ -86,6 +87,7 @@ const SUPPORTED_CONNECTION_TYPES = [
   CONNECTION_TYPE.ETHERNET,
   CONNECTION_TYPE.BOND,
   CONNECTION_TYPE.BRIDGE,
+  CONNECTION_TYPE.VLAN,
 ] as const;
 
 /**
@@ -174,6 +176,10 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     bridgeHelloTime: connection.bridge?.helloTime,
     bridgeMaxAge: connection.bridge?.maxAge,
     bridgePorts: connection.bridge?.ports ?? [],
+    vlanIface: connection.iface,
+    vlanId: connection.vlan?.id,
+    vlanParent: connection.vlan?.parent ?? "",
+    vlanProtocol: connection.vlan?.protocol,
   };
 }
 
@@ -237,6 +243,14 @@ function buildConnection(formValues: FormValues): Connection {
             maxAge:
               formValues.bridgeStp === BridgeStpMode.ENABLED ? formValues.bridgeMaxAge : undefined,
             ports: formValues.bridgePorts,
+          }
+        : undefined,
+    vlan:
+      formValues.type === CONNECTION_TYPE.VLAN
+        ? {
+            id: formValues.vlanId!,
+            parent: formValues.vlanParent,
+            protocol: formValues.vlanProtocol !== "" ? formValues.vlanProtocol : undefined,
           }
         : undefined,
   });
@@ -421,6 +435,12 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
         <form.Subscribe selector={(s) => s.values.type}>
           {(type) =>
             type === CONNECTION_TYPE.BRIDGE && <BridgeFields form={form} isEditing={isEditing} />
+          }
+        </form.Subscribe>
+
+        <form.Subscribe selector={(s) => s.values.type}>
+          {(type) =>
+            type === CONNECTION_TYPE.VLAN && <VlanFields form={form} isEditing={isEditing} />
           }
         </form.Subscribe>
 

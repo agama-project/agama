@@ -274,6 +274,7 @@ type APIConnection = {
   id: string;
   bond?: Bond;
   bridge?: Bridge;
+  vlan?: Vlan;
   interface?: string;
   macAddress?: string;
   addresses?: string[];
@@ -328,6 +329,12 @@ type Bridge = {
   stp?: boolean;
 };
 
+type Vlan = {
+  id: number;
+  parent: string;
+  protocol?: string;
+};
+
 type ConnectionOptions = {
   iface?: string;
   macAddress?: string;
@@ -341,6 +348,7 @@ type ConnectionOptions = {
   wireless?: Wireless;
   bond?: Bond;
   bridge?: Bridge;
+  vlan?: Vlan;
   status?: ConnectionStatus;
   state?: ConnectionState;
   persistent?: boolean;
@@ -372,6 +380,7 @@ class Connection {
   method6?: ConnectionMethod;
   bond?: Bond;
   bridge?: Bridge;
+  vlan?: Vlan;
   wireless?: Wireless;
   persistent: boolean;
 
@@ -609,6 +618,7 @@ export type {
   APIConnection,
   Bond,
   Bridge,
+  Vlan,
   ConnectionBindingMode,
   ConnectionOptions,
   APIDevice,
