@@ -78,7 +78,7 @@ const FirstUserFields = withForm({
               // TRANSLATORS: checkbox description explaining admin privileges.
               // Text in square brackets will be displayed in bold.
               _(
-                "Sets up a main login account. It can run administrator commands when needed ([sudo]), but is separate from the root account.",
+                "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.",
               )
             }
           >
@@ -154,7 +154,7 @@ const FirstUserFields = withForm({
                         isValidSshKey(v) && !isPrivateKey(v) ? undefined : _("Invalid SSH Key")
                       }
                       helperText={_(
-                        "Paste or enter one or more public SSH keys (e.g. ssh-rsa AAAA...)",
+                        "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)",
                       )}
                     />
                   )}

@@ -83,7 +83,7 @@ const authModeOptions = () => [
     // TRANSLATORS: authentication mode option
     label: _("SSH Public Key"),
     // TRANSLATORS: description for SSH public key authentication mode
-    description: _("Log in using a trusted SSH public key, more secure than a password"),
+    description: _("Log in using a trusted SSH public key"),
   },
   {
     value: AuthMode.BOTH,
@@ -166,7 +166,7 @@ const RootAuthFields = withForm({
                             isValidSshKey(v) && !isPrivateKey(v) ? undefined : _("Invalid SSH Key")
                           }
                           helperText={_(
-                            "Paste or enter one or more public SSH keys (e.g. ssh-rsa AAAA...)",
+                            "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)",
                           )}
                         />
                       )}
