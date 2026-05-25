@@ -7,10 +7,10 @@ export default {
     " 时区选择"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" 不存在或不再可用。"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -733,7 +733,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "示例：%s"
   ],
   "Excellent signal": [
     "信号极佳"
@@ -916,7 +916,7 @@ export default {
     "如果继续，硬盘上的分区将会根据已提供的安装设置进行修改。"
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "如要禁用此项检查，请在内核命令行中指定 \"inst.ay_check=0\""
   ],
   "In progress": [
     "进行中"
@@ -1382,6 +1382,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "引导分区将会分配在安装磁盘上。"
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "如需托管 \"system\"，将自动创建相应分区。"
   ],
   "Partitions will be used and created for %s": [
     "将会为 %s 使用和创建多个分区"
@@ -1939,7 +1942,7 @@ export default {
     "若 TPM 可以验证系统的完整性，启动和访问数据的时候将无需使用密码。 TPM 密封要求新系统在首次启动时直接开始引导。"
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "产品将使用 \"%s\" 主机名进行注册"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"

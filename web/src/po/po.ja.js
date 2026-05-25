@@ -1324,7 +1324,7 @@ export default {
     "保護されていないネットワーク"
   ],
   "Not selected yet": [
-    "まだ何も選択していません"
+    "まだ選択していません"
   ],
   "Not supported (%s)": [
     "サポート対象外です (%s)"

@@ -7,10 +7,10 @@ export default {
     " Selezione fuso orario"
   ],
   "\"%s\"": [
-    ""
+    "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    ""
+    "\"%s\" non esiste o non è più disponibile."
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
@@ -739,7 +739,7 @@ export default {
     "ExFAT"
   ],
   "Example: %s": [
-    ""
+    "Esempio: %s"
   ],
   "Excellent signal": [
     "Segnale eccellente"
@@ -925,7 +925,7 @@ export default {
     "Se continui, le partizioni del disco rigido saranno modificate in base alle impostazioni di installazione fornite."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Se vuoi disattivare questo controllo, specifica \"inst.ay_check=0\" nella riga di comando del kernel"
   ],
   "In progress": [
     "In corso"
@@ -1009,7 +1009,7 @@ export default {
     "Impostazioni di memorizzazione non valide"
   ],
   "Ip prefix or netmask": [
-    "Prefisso IP o netmask"
+    "Prefisso IP o maschera di rete"
   ],
   "Issue date": [
     "Data di emissione"
@@ -1393,6 +1393,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "Le partizioni di avvio verranno allocate sul disco di installazione."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Se necessario, verranno create partizioni per ospitare il \"sistema."
   ],
   "Partitions will be used and created for %s": [
     "Le partizioni verranno utilizze e create per %s"
@@ -1957,7 +1960,7 @@ export default {
     "Non sarà necessaria la password per avviare e accedere ai dati se TPM è in grado di verificare l'integrità del sistema. La sigillatura del TPM richiede che il nuovo sistema venga avviato direttamente alla sua prima esecuzione."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "Il prodotto sarà registrato con l'hostname \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "La dimensione di %1$s verrà regolata dinamicamente in base alla quantità di RAM nel sistema e alla presenza di un file system separato per %2$s."
@@ -2370,7 +2373,7 @@ export default {
     "iSCSI"
   ],
   "logical volume": [
-    "Volume LVM"
+    "volume logico"
   ],
   "no": [
     "no"

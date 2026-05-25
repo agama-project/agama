@@ -2277,7 +2277,7 @@ export default {
     "Använder partition %s"
   ],
   "Using transient hostname: %s": [
-    "Använder transient värdnamn: %s"
+    "Använder tillfälligt värdnamn: %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Volymgrupp '%s' existerar redan. Ange ett annat namn."
