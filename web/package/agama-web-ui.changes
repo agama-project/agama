@@ -2,6 +2,7 @@
 Mon May 25 12:50:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update shell-quote dependency (CVE-2026-9277, bsc#1266256).
+- Update other dependencies reported by "npm audit".
 
 -------------------------------------------------------------------
 Tue May 19 06:29:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
