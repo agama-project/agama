@@ -925,7 +925,7 @@ export default {
     "Se você continuar, as partições do seu disco rígido serão modificadas de acordo com as configurações de instalação fornecidas."
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernel's command-line": [
-    ""
+    "Para desabilitar esta verificação, especifique \"inst.ay_check=0\" na linha de comando do kernel"
   ],
   "In progress": [
     "Em progresso"
@@ -1393,6 +1393,9 @@ export default {
   ],
   "Partitions to boot will be allocated at the installation disk.": [
     "As partições para inicialização serão alocadas no disco de instalação."
+  ],
+  "Partitions to host \"system\" will be created if needed.": [
+    "Se necessário, serão criadas as partições para hospedar o \"sistema\"."
   ],
   "Partitions will be used and created for %s": [
     "Partições serão usadas e criadas para %s"
@@ -1957,7 +1960,7 @@ export default {
     "A senha não será necessária para inicializar e acessar os dados se o TPM puder verificar a integridade do sistema. A vedação do TPM exige que o novo sistema seja inicializado diretamente em sua primeira execução."
   ],
   "The product will be registered with \"%s\" hostname": [
-    ""
+    "O produto será registrado com o nome de host \"%s\""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "O tamanho para %1$s será ajustado dinamicamente com base na quantidade de RAM no sistema e na presença de um sistema de arquivos separado para %2$s."
