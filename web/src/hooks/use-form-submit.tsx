@@ -22,6 +22,7 @@
 
 import React, { useRef } from "react";
 import { Alert } from "@patternfly/react-core";
+import Page from "~/components/core/Page";
 import { _ } from "~/i18n";
 
 // Minimal interface describing the form instance methods and state that
@@ -256,13 +257,15 @@ export function useFormSubmit<TValues>({
   /**
    * Returns an onSubmit handler for the <Form> element.
    *
-   * Clears previous server errors and triggers TanStack Form submission.
+   * Clears previous server errors, scrolls to top so users see alerts or
+   * validation errors, and triggers TanStack Form submission.
    * Receives the form instance at call time since it's created after this hook.
    */
   function formSubmitHandler(form: FormInstance<TValues>) {
     return (e: React.FormEvent) => {
       e.preventDefault();
       form.setErrorMap({ onSubmit: { fields: {} } });
+      Page.scrollToTop();
       form.handleSubmit();
     };
   }
