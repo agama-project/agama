@@ -7,11 +7,58 @@ which serves as the running example throughout.
 As more forms are reimplemented, this document should be updated with new
 examples and refined patterns.
 
+---
+
+## Table of Contents
+
+- [Core principle](#core-principle)
+- [Patterns](#patterns)
+  - [1. Required field, no suffix](#1-required-field-no-suffix)
+  - [2. Always shown, optional or context-dependent](#2-always-shown-optional-or-context-dependent)
+  - [3. Conditionally shown, required when shown](#3-conditionally-shown-required-when-shown)
+  - [4. Conditionally shown, optional when shown](#4-conditionally-shown-optional-when-shown)
+  - [5. Choice selector (mode or behavior selection)](#5-choice-selector-mode-or-behavior-selection)
+  - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
+- [Read-only information](#read-only-information)
+- [Accessibility notes](#accessibility-notes)
+- [Validation](#validation)
+- [Combining patterns](#combining-patterns)
+- [Choosing the right pattern](#choosing-the-right-pattern)
+- [Summary](#summary)
+- [TanStack Form Patterns](#tanstack-form-patterns)
+  - [Accessing Form State](#accessing-form-state)
+  - [Component Patterns](#component-patterns)
+  - [Pattern Selection Guide](#pattern-selection-guide)
+  - [Common Mistakes and Solutions](#common-mistakes-and-solutions)
+  - [Summary Table](#summary-table)
+- [Persistent Forms (forms that stay mounted)](#persistent-forms-forms-that-stay-mounted)
+  - [The Problem](#the-problem)
+  - [The Solution: Three Focused Abstractions](#the-solution-three-focused-abstractions)
+  - [withFrozenQuery](#withfrozenquery)
+  - [useFormSubmit](#useformsubmit)
+  - [useUpdateConfig](#useupdateconfig)
+  - [Why fetchQuery Instead of useSuspenseQuery](#why-fetchquery-instead-of-usesuspensequery)
+  - [Why shake Lives in useUpdateConfig, Not the Caller](#why-shake-lives-in-useupdateconfig-not-the-caller)
+  - [Putting It Together](#putting-it-together)
+  - [Trade-offs and When Not to Use This Pattern](#trade-offs-and-when-not-to-use-this-pattern)
+- [Code Organization](#code-organization)
+  - [Directory Structure](#directory-structure)
+  - [File Naming](#file-naming)
+  - [The fields.ts Module](#the-fieldsts-module)
+  - [Validation Approach](#validation-approach)
+  - [Form Component Integration](#form-component-integration)
+  - [Naming Consistency](#naming-consistency)
+  - [Benefits Summary](#benefits-summary)
+
+---
+
 ## Core principle
 
 Show only what the user needs, when they need it. A form that shows fewer
 fields is easier to fill, easier to understand, and less likely to confuse.
 Every field that appears should have a clear reason to be there.
+
+---
 
 ## Patterns
 
@@ -167,6 +214,8 @@ of users: that just adds an unnecessary click.
 **Examples:** "Use custom DNS" checkbox reveals the DNS servers field. "Use
 custom DNS search domains" checkbox reveals the DNS search domains field.
 
+---
+
 ## Read-only information
 
 Use `ReadOnlyField` to display contextual information alongside editable fields
@@ -261,6 +310,10 @@ reset the error state and restore `canSubmit`.
 >
 ```
 
+Note: when using `useFormSubmit` (see [Persistent Forms](#persistent-forms-forms-that-stay-mounted)),
+the `formSubmitHandler` factory handles this automatically. You do not need to
+call `setErrorMap` manually.
+
 **Why this matters:**
 
 - Without this call, validation errors from a previous submit attempt persist
@@ -302,8 +355,7 @@ Work through these questions in order:
 4. Does the field become optional only after another choice? Use pattern 4.
 5. Does the user need to choose between different configuration behaviors or
    modes? Use pattern 5.
-6. Is the field an advanced option that most users will never need? Use pattern
-7.
+6. Is the field an advanced option that most users will never need? Use pattern 6.
 
 ---
 
@@ -659,10 +711,12 @@ const MyFields = withForm({
 ```
 
 **Available in listener context:**
+
 - `value`: Current field value
 - `fieldApi`: Field API instance (includes `fieldApi.state.value`, same as `value`)
 
 **Not available:**
+
 - `formApi`: Use form instance from closure instead
 
 #### Mistake 4: Using `form.setFieldValue` without `form.AppField`
@@ -732,7 +786,7 @@ const PasswordFields = withForm({
 // ❌ WRONG - onBlur listeners won't fire
 export default function TextField({ label }: TextFieldProps) {
   const field = useFieldContext<string>();
-  
+
   return (
     <TextInput
       value={field.state.value}
@@ -745,7 +799,7 @@ export default function TextField({ label }: TextFieldProps) {
 // ✅ CORRECT - Field components must call handleBlur()
 export default function TextField({ label }: TextFieldProps) {
   const field = useFieldContext<string>();
-  
+
   return (
     <TextInput
       value={field.state.value}
@@ -767,15 +821,356 @@ listeners for field coordination.
 
 ### Summary Table
 
-| Pattern | Hook/Wrapper | Register Fields | Update Values | onBlur Support | Use Case | Example |
-|---------|--------------|-----------------|---------------|----------------|----------|---------|
-| Field component | `useFieldContext` | Via parent `form.AppField` | `field.handleChange()` | `field.handleBlur()` | Single field input | `TextField`, `DropdownField` |
-| Field group | `withForm` | **Must use `form.AppField`** | `field.handleChange()` | N/A (delegates to fields) | Multiple related fields | `PasswordFields`, `IpFields` |
-| Main form | `useAppForm` | Via `form.AppField` | `field.handleChange()` | N/A (delegates to fields) | Form orchestration | `ConnectionForm`, `SystemForm` |
+| Pattern         | Hook/Wrapper      | Register Fields              | Update Values          | onBlur Support            | Use Case                | Example                        |
+| --------------- | ----------------- | ---------------------------- | ---------------------- | ------------------------- | ----------------------- | ------------------------------ |
+| Field component | `useFieldContext` | Via parent `form.AppField`   | `field.handleChange()` | `field.handleBlur()`      | Single field input      | `TextField`, `DropdownField`   |
+| Field group     | `withForm`        | **Must use `form.AppField`** | `field.handleChange()` | N/A (delegates to fields) | Multiple related fields | `PasswordFields`, `IpFields`   |
+| Main form       | `useAppForm`      | Via `form.AppField`          | `field.handleChange()` | N/A (delegates to fields) | Form orchestration      | `ConnectionForm`, `SystemForm` |
 
 **Key takeaways:**
+
 - Always wrap fields in `form.AppField` to register them for validation. Using `form.setFieldValue()` alone won't register the field, and validation won't run.
 - Field components must call `field.handleBlur()` to support forms that use onBlur listeners for field coordination.
+
+---
+
+## Persistent Forms (forms that stay mounted)
+
+Most forms in the application navigate away after a successful submit, which
+naturally resets all form state. Some forms — typically settings screens — stay
+mounted. The user can submit, see a success message, then edit and submit again
+without any navigation.
+
+These forms require extra care because:
+
+1. **Query refetches can flicker or overwrite edits.** Background refetches
+   change the data reference. If the form reacts to every update, fields may
+   flash or reset while the user is editing.
+2. **`form.reset()` has a race condition bug.** Calling `form.reset()` directly
+   inside `onSubmit` ignores the new default values (TanStack Form issue
+   [#1681](https://github.com/TanStack/form/issues/1681)).
+3. **Success alerts need careful state management.** Using React `useState` for
+   a success flag inside a `Subscribe` callback causes re-render loops. Refs
+   are required.
+4. **The frozen base config can become stale.** If the form freezes config on
+   mount and uses it as the base for `putConfig`, background changes (from
+   websocket events, concurrent operations, or background probes) will be
+   silently overwritten at submit time.
+
+### The Solution: Three Focused Abstractions
+
+Three hooks/HOCs cover all persistent-form concerns. Each has a single
+responsibility:
+
+| Abstraction       | File                             | Responsibility                                             |
+| ----------------- | -------------------------------- | ---------------------------------------------------------- |
+| `withFrozenQuery` | `hooks/form/withFrozenQuery.tsx` | Freeze initial data; protect from refetch re-renders       |
+| `useFormSubmit`   | `hooks/form/useFormSubmit.tsx`   | Submit lifecycle: reset, success alert, error surfacing    |
+| `useUpdateConfig` | `hooks/form/useUpdateConfig.ts`  | Safe write: fetch fresh config at submit time, merge patch |
+
+### withFrozenQuery
+
+A HOC that freezes the initial query data on mount and passes it as props to a
+memoized form component. Query refetches update the wrapper but never reach the
+inner form.
+
+**Architecture:**
+
+```
+withFrozenQuery(useHook, FormComponent)
+  └─> FrozenQueryWrapper     (subscribes to query, freezes data on mount)
+        └─> MemoizedForm     (receives frozen props, protected from refetches)
+              └─> TanStack Form (stable defaultValues, no flickering)
+```
+
+**How it works:**
+
+1. The wrapper calls the query hook and freezes the result in a `useState`
+   lazy initializer (runs exactly once).
+2. The inner form is wrapped with `React.memo`, so it only re-renders when its
+   props change.
+3. Because frozen props never change, the form never re-renders due to refetches.
+
+**Usage:**
+
+```tsx
+// Before: manual wrapper + memo + useState freeze (~20 lines)
+const MemoizedAuthenticationForm = React.memo(AuthenticationForm);
+export default function AuthenticationFormWrapper() {
+  const currentConfig = useConfig();
+  const [frozenProps] = useState(() => ({
+    firstUser: currentConfig.user,
+    rootUser: currentConfig.root,
+  }));
+  return <MemoizedAuthenticationForm {...frozenProps} />;
+}
+
+// After: one line
+export default withFrozenQuery(useConfig, AuthenticationForm);
+```
+
+**Type contract:** The query hook must return an object assignable to (at least
+a subset of) the form component's props.
+
+### useFormSubmit
+
+A hook that encapsulates the entire submit lifecycle for forms that stay
+mounted. The caller provides business logic only; the hook owns everything else.
+
+**What it handles:**
+
+- Deferred `form.reset()` after every submit (success or no-op), using
+  `setTimeout(..., 0)` to work around TanStack Form bug
+  [#1681](https://github.com/TanStack/form/issues/1681)
+- Success/info alert rendered via refs + `Subscribe` (avoids re-render loops
+  and works around TanStack Form bug
+  [#1798](https://github.com/TanStack/form/issues/1798))
+- Clean→dirty transition tracking so the alert disappears only when the user
+  starts editing after a successful submit
+- Clearing previous server errors before each new submit attempt
+
+**Why `useFormSubmit` is initialized before `useAppForm`:**
+
+`onSubmitAsync` (returned by the hook) needs to be composed directly into
+`useAppForm`'s `validators` option. If the hook were initialized after
+`useAppForm`, the validator would need to be wired in after the fact, which
+requires mutating `form.options` — fragile and non-obvious. Initializing the
+hook first allows clean composition:
+
+```tsx
+// ✅ CORRECT order
+const { onSubmitAsync, AlertSubscribe, formSubmitHandler } = useFormSubmit({
+  onSubmit: async (values, fieldMeta) => { ... },
+});
+
+const form = useAppForm({
+  validators: {
+    onSubmitAsync: async (ctx) => {
+      const fieldErrors = validate(ctx.value); // field validation first
+      if (fieldErrors) return fieldErrors;
+      return onSubmitAsync(ctx, form);         // business logic second
+    },
+  },
+});
+```
+
+**`AlertSubscribe` and `formSubmitHandler` receive `form` at use time**, not at
+hook init time, for the same reason — the form doesn't exist yet when the hook
+runs.
+
+**`SubmitResult` type:**
+
+```ts
+type SubmitResult =
+  | { patched: true } // config was updated
+  | { noChanges: true } // submit succeeded, nothing to change
+  | { error: string }; // API/server error
+```
+
+**Full usage:**
+
+```tsx
+function MySettingsForm({ someData }: Props) {
+  const updateConfig = useUpdateConfig();
+
+  const { onSubmitAsync, AlertSubscribe, formSubmitHandler } = useFormSubmit({
+    successTitle: _("Settings successfully updated"),
+    noChangesTitle: _("No changes detected"),
+    onSubmit: async (values, fieldMeta) => {
+      const patch = buildPatch(values, fieldMeta);
+      if (!patch) return { noChanges: true };
+
+      return updateConfig(patch)
+        .then(() => ({ patched: true as const }))
+        .catch(({ message }) => ({ error: message }));
+    },
+  });
+
+  const form = useAppForm({
+    ...defaultOptions,
+    defaultValues: buildFormValues(someData),
+    validators: {
+      onSubmitAsync: async (ctx) => {
+        const fieldErrors = validate(ctx.value);
+        if (fieldErrors) return fieldErrors;
+        return onSubmitAsync(ctx, form);
+      },
+    },
+  });
+
+  return (
+    <form.AppForm>
+      <Form onSubmit={formSubmitHandler(form)}>
+        <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
+          {(serverError) =>
+            serverError && (
+              <Alert isInline variant="danger" title={_("Could not save settings")}>
+                {serverError}
+              </Alert>
+            )
+          }
+        </form.Subscribe>
+
+        <AlertSubscribe form={form} />
+
+        {/* fields */}
+
+        <ActionGroup>
+          <form.SubmitButton label={_("Accept")} />
+        </ActionGroup>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+export default withFrozenQuery(useConfig, MySettingsForm);
+```
+
+### useUpdateConfig
+
+A hook that safely applies a partial config patch on top of a **fresh** config
+fetched at submit time, preventing accidental overrides of unrelated settings.
+
+**The problem it solves:**
+
+Forms freeze their initial config (via `withFrozenQuery`) to prevent flickering.
+But if that frozen config were used as the base for `putConfig`, any backend
+changes that occurred while the user was editing would be silently lost.
+
+```
+t=0s   Form opens. Config frozen: { user: A, storage: X }
+t=30s  Background probe updates storage: { user: A, storage: Y }
+t=60s  User submits auth changes.
+       Without useUpdateConfig: putConfig({ user: B, storage: X }) ← X overwrites Y
+       With useUpdateConfig:    putConfig({ user: B, storage: Y }) ← Y preserved
+```
+
+**Usage:**
+
+```tsx
+const updateConfig = useUpdateConfig();
+
+// Update specific fields
+await updateConfig({ user: newUser, root: newRoot });
+
+// Delete first user (undefined is intentional — see shake note below)
+await updateConfig({ user: undefined });
+```
+
+### Why fetchQuery Instead of useSuspenseQuery
+
+The natural instinct when writing `useUpdateConfig` is to use `useSuspenseQuery`
+at the top of the hook:
+
+```ts
+// ❌ DO NOT DO THIS — stale closure problem
+function useUpdateConfig() {
+  const { data: freshConfig } = useSuspenseQuery(configQuery);
+  return (patch) => putConfig(shake({ ...freshConfig, ...patch }));
+}
+```
+
+This has a stale closure problem. The returned function closes over
+`freshConfig` at **render time**. Because `withFrozenQuery` + `React.memo`
+intentionally prevent the form from re-rendering on refetches, `freshConfig`
+inside that closure is the value from the last render — which may be minutes
+old by submit time. This is exactly the staleness problem we were trying to
+solve.
+
+`queryClient.fetchQuery` fixes this by resolving data at **call time**:
+
+```ts
+// ✅ CORRECT — data resolved at submit time
+function useUpdateConfig() {
+  const queryClient = useQueryClient();
+  return async (patch) => {
+    const freshConfig = await queryClient.fetchQuery(configQuery);
+    return putConfig(shake({ ...freshConfig, ...patch }));
+  };
+}
+```
+
+`fetchQuery` respects `staleTime`: it returns cached data immediately if fresh,
+and only hits the network if the cache is stale. It is not a blind network call
+on every submit.
+
+This is the pattern TkDodo (TanStack Query's main maintainer) explicitly
+recommends for event handlers:
+
+> "You can always call `queryClient.fetchQuery(...)` in your event handler.
+> It respects staleTime so it won't fetch if you have fresh data."
+>
+> — TkDodo, [TanStack Query discussion #3754](https://github.com/TanStack/query/discussions/3754)
+
+A submit handler is an event handler. `useSuspenseQuery` is the right tool for
+subscribing a component to reactive data for rendering; `fetchQuery` is the
+right tool for imperatively reading data inside an event handler to build a
+write payload.
+
+Note: `useQueryClient()` is still called at the top level of the hook, fully
+respecting the rules of hooks. `fetchQuery` is called inside the returned async
+callback, which is a regular async function, not a hook.
+
+### Why shake Lives in useUpdateConfig, Not the Caller
+
+Callers express "delete this field" by passing `undefined` in the patch:
+
+```ts
+await updateConfig({ user: undefined }); // delete the first user
+```
+
+The spread `{ ...freshConfig, ...patch }` correctly propagates that `undefined`
+into the merged object. However, the API rejects payloads containing `undefined`
+values. `shake()` strips them before the request is sent.
+
+This is a **transport-layer concern**, not a domain concern. If `shake` were
+moved to the caller, `{ user: undefined }` would be removed before reaching the
+hook, and the spread would leave the `user` key untouched from `freshConfig` —
+silently breaking deletes.
+
+```ts
+// ❌ shake in caller — deletes are silently broken
+const patch = shake({ user: undefined }); // => {}
+await updateConfig(patch); // user not removed!
+
+// ✅ shake in hook — caller intent preserved
+await updateConfig({ user: undefined }); // hook shakes after merge
+```
+
+### Putting It Together
+
+The complete pattern for a persistent settings form:
+
+```
+withFrozenQuery(useConfig, MyForm)
+  ├── withFrozenQuery: freezes config on mount, blocks refetch re-renders
+  ├── useFormSubmit:   reset lifecycle, success alert, error surfacing
+  └── useUpdateConfig: fresh config at submit time, patch merge, shake
+```
+
+Each abstraction is independently usable. A form that navigates away after
+submit only needs `useUpdateConfig`. A form with a custom data source uses
+`withFrozenQuery` with a different query hook. None of them require the others.
+
+### Trade-offs and When Not to Use This Pattern
+
+This is the **single-user pattern**: the form owns its state after
+initialization, and background updates do not interrupt editing.
+
+**Do not use this pattern** when:
+
+- Multiple users may edit the same data simultaneously and you need to show
+  live updates from other users (use a controlled fields + derived state
+  pattern instead).
+- The form is expected to navigate away after submit — standard `useAppForm`
+  with `onSubmit` is sufficient.
+
+**References:**
+
+- TkDodo: [React Query and Forms](https://tkdodo.eu/blog/react-query-and-forms)
+- TanStack Form issue [#1681](https://github.com/TanStack/form/issues/1681): `form.reset` during `onSubmit` ignores new values
+- TanStack Form issue [#1798](https://github.com/TanStack/form/issues/1798): reset + `useStore` subscription bug
+- TanStack Query discussion [#3754](https://github.com/TanStack/query/discussions/3754): `fetchQuery` in event handlers
 
 ---
 
@@ -834,10 +1229,7 @@ import type {
   FieldsValidationResult,
   ValidationResult,
 } from "~/components/form/validation-helpers";
-import {
-  requiredString,
-  optionalIntRange,
-} from "~/components/form/validation-helpers";
+import { requiredString, optionalIntRange } from "~/components/form/validation-helpers";
 import { _ } from "~/i18n";
 
 /** Types */
@@ -879,7 +1271,7 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
   }
 
   return Object.keys(errors).length > 0 ? { fields: errors } : undefined;
-};
+}
 ```
 
 **Why everything in one file?**
@@ -924,12 +1316,12 @@ function validateUserFields(fields: FormFields): FieldsValidationResult<UserForm
     userName: requiredString(fields.userName, _("Username is required")),
     userPassword: !fields.userUsingHashedPassword
       ? requiredString(fields.userPassword, _("Password is required"))
-      : undefined,  // ← undefined values are fine
+      : undefined, // ← undefined values are fine
     userPasswordConfirmation: passwordMismatch
       ? _("Passwords do not match")
       : !fields.userUsingHashedPassword
         ? requiredString(fields.userPasswordConfirmation, _("Password confirmation is required"))
-        : undefined,  // ← undefined values are fine
+        : undefined, // ← undefined values are fine
   };
   // No shake() here - just return the plain object
 }
@@ -947,7 +1339,7 @@ export function validate(formFields: FormFields): ValidationResult<FormFields> {
     ...validateRootFields(formFields),
   });
   // ^^^^^ Single shake() here removes all undefined values
-  
+
   return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
 }
 ```
@@ -976,10 +1368,6 @@ export function validate(formFields: FormFields): ValidationResult<FormFields> {
   });
 }
 ```
-
-This pattern shakes twice - once in the validator and once at the top level. Instead,
-let individual validators return objects with undefined values, and shake only once
-at the top level.
 
 #### Plain TypeScript vs Schema Libraries
 

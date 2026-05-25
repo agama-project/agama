@@ -22,6 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
+import { shake } from "radashi";
 import { installerRender } from "~/test-utils";
 import type { User, Root } from "~/model/config";
 import AuthenticationForm from "./Form";
@@ -29,6 +30,15 @@ import AuthenticationForm from "./Form";
 let mockFirstUser: User.Config | undefined;
 let mockRootUser: Root.Config | undefined;
 const mockPutConfig = jest.fn().mockResolvedValue(true);
+const mockUpdateConfig = jest.fn((patch) =>
+  mockPutConfig(
+    shake({
+      user: mockFirstUser,
+      root: mockRootUser,
+      ...patch,
+    }),
+  ),
+);
 
 jest.mock("~/components/users/PasswordCheck", () => () => <div>PasswordCheck Mock</div>);
 
@@ -38,6 +48,7 @@ jest.mock("~/hooks/model/config", () => ({
     user: mockFirstUser,
     root: mockRootUser,
   }),
+  useUpdateConfig: () => mockUpdateConfig,
 }));
 
 jest.mock("~/api", () => ({
