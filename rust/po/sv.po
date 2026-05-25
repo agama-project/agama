@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 12:49+0000\n"
-"PO-Revision-Date: 2026-05-07 19:04+0000\n"
+"POT-Creation-Date: 2026-05-22 12:43+0000\n"
+"PO-Revision-Date: 2026-05-18 09:12+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.5\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
@@ -29,114 +29,175 @@ msgstr "Nej"
 msgid "Yes"
 msgstr "Ja"
 
-#: agama-cli/src/progress.rs:116
-msgid "Calculating the installation proposal:"
-msgstr "Beräknar installationsförslag:"
-
-#: agama-cli/src/progress.rs:118
-msgid "Installing the system:"
-msgstr "Installerar systemet:"
-
-#: agama-cli/src/progress.rs:223 agama-cli/src/status.rs:77
-msgid "Installation is ready to start."
-msgstr "Installation är redo att starta."
-
-#: agama-cli/src/progress.rs:226
-msgid "Waiting to start installation"
-msgstr "Väntar på att starta installation"
-
-#: agama-cli/src/progress.rs:234
-msgid "Installation successfully finished"
-msgstr "Installation har slutförts"
-
-#: agama-cli/src/progress.rs:235
-msgid "Installation failed"
-msgstr "Installation misslyckades"
-
-#: agama-cli/src/progress.rs:248
-msgid ""
-"There are unanswered questions. Please use `agama questions` command or web "
-"interface to answer them:"
-msgstr ""
-"Det finns obesvarade frågor. Använd kommandot `agama questions` eller "
-"webbgränssnittet för att besvara dem:"
-
-#: agama-cli/src/progress.rs:260
-msgid "Installer is failed to calculate the installation proposal."
-msgstr ""
-"Installationsprogrammet misslyckades med att beräkna installationsförslag."
-
-#: agama-cli/src/progress.rs:264
-msgid "There are these issues blocking installation:"
-msgstr "Det finns följande problem som blockerar installationen:"
-
-#: agama-cli/src/progress.rs:277
-msgid "Details"
-msgstr "Detaljer"
-
-#: agama-cli/src/progress.rs:287
+#: agama-cli/src/monitor/ui.rs:38
 msgid "Manager"
 msgstr "Hanterare"
 
-#: agama-cli/src/progress.rs:288
+#: agama-cli/src/monitor/ui.rs:39
 msgid "Network"
 msgstr "Nätverk"
 
-#: agama-cli/src/progress.rs:289
-msgid "Hostname"
-msgstr "Värdnamn"
-
-#: agama-cli/src/progress.rs:290
-msgid "Localization"
-msgstr "Lokalisering"
-
-#: agama-cli/src/progress.rs:291
-msgid "Product"
-msgstr "Produkt"
-
-#: agama-cli/src/progress.rs:292
-msgid "Software"
-msgstr "Programvara"
-
-#: agama-cli/src/progress.rs:293
-msgid "Storage"
-msgstr "Lagring"
-
-#: agama-cli/src/progress.rs:294
-msgid "Files"
-msgstr "Filer"
-
-#: agama-cli/src/progress.rs:295
-msgid "iSCSI"
-msgstr "iSCSI"
-
-#: agama-cli/src/progress.rs:296
-msgid "DASD"
-msgstr "DASD"
-
-#: agama-cli/src/progress.rs:297
-msgid "zFCP"
-msgstr "zFCP"
-
-#: agama-cli/src/progress.rs:298
-msgid "Users"
-msgstr "Användare"
-
-#: agama-cli/src/progress.rs:299
+#: agama-cli/src/monitor/ui.rs:40
 msgid "NTP"
 msgstr "NTP"
 
-#: agama-cli/src/progress.rs:349
-msgid "Current step"
-msgstr "Nuvarande steg"
+#: agama-cli/src/monitor/ui.rs:41
+msgid "Hostname"
+msgstr "Värdnamn"
 
-#: agama-cli/src/status.rs:75
+#: agama-cli/src/monitor/ui.rs:42
+msgid "Localization"
+msgstr "Lokalisering"
+
+#: agama-cli/src/monitor/ui.rs:43
+msgid "Product"
+msgstr "Produkt"
+
+#: agama-cli/src/monitor/ui.rs:44
+msgid "Software"
+msgstr "Programvara"
+
+#: agama-cli/src/monitor/ui.rs:45
+msgid "Storage"
+msgstr "Lagring"
+
+#: agama-cli/src/monitor/ui.rs:46
+msgid "Files"
+msgstr "Filer"
+
+#: agama-cli/src/monitor/ui.rs:47
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#: agama-cli/src/monitor/ui.rs:48
+msgid "DASD"
+msgstr "DASD"
+
+#: agama-cli/src/monitor/ui.rs:49
+msgid "zFCP"
+msgstr "zFCP"
+
+#: agama-cli/src/monitor/ui.rs:50
+msgid "Users"
+msgstr "Användare"
+
+#: agama-cli/src/monitor/ui/content.rs:63
+msgid "There are pending questions:"
+msgstr "Det finns oavslutade frågor:"
+
+#: agama-cli/src/monitor/ui/content.rs:73
+msgid ""
+"Please use the web interface (recommended) or the \"agama questions\" "
+"command to answer them."
+msgstr ""
+"Vänligen använd webbgränssnittet (rekommenderas) eller kommandot \"agama "
+"questions\" för att besvara dem."
+
+#: agama-cli/src/monitor/ui/content.rs:93
+msgid "Installation complete."
+msgstr "Installation slutförd."
+
+#: agama-cli/src/monitor/ui/content.rs:94
+msgid "You can reboot the machine to log in to the new system."
+msgstr "Du kan starta om maskinen för att logga in på det nya systemet."
+
+#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:75
 msgid "Installation failed."
 msgstr "Installation misslyckades."
+
+#: agama-cli/src/monitor/ui/content.rs:98
+msgid "Use the \"agama logs\" command to collect the logs."
+msgstr "Använd kommandot \"agama logs\" för att samla in loggarna."
+
+#: agama-cli/src/monitor/ui/content.rs:129
+#: agama-cli/src/monitor/ui/content.rs:201
+msgid "Action needed:"
+msgstr "Åtgärd krävs:"
+
+#: agama-cli/src/monitor/ui/content.rs:137
+msgid "No product has been selected yet."
+msgstr "Ingen produkt har valts ännu."
+
+#: agama-cli/src/monitor/ui/content.rs:222
+msgid "Ready for installation."
+msgstr "Redo för installation."
+
+#: agama-cli/src/monitor/ui/content.rs:223
+msgid "Waiting to start installation..."
+msgstr "Väntar på att starta installation..."
+
+#: agama-cli/src/monitor/ui/content.rs:239
+msgid "Step"
+msgstr "Steg"
+
+#: agama-cli/src/monitor/ui/content.rs:241
+msgid "of"
+msgstr "av"
+
+#: agama-cli/src/monitor/ui/issues.rs:64
+msgid "Waiting for these to be resolved."
+msgstr "Väntar på att dessa ska lösas."
+
+#: agama-cli/src/monitor/ui/summary.rs:47
+msgid "Host: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:48
+msgid "Model: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:49
+#, fuzzy
+msgid "Product: "
+msgstr "Produkt"
+
+#: agama-cli/src/monitor/ui/summary.rs:50
+msgid "Stage: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:51
+msgid "Status: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:76
+msgid "Busy"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:77
+#: agama-cli/src/monitor/ui/summary.rs:104
+msgid "Failed"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:78
+msgid "Idle"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:101
+#, fuzzy
+msgid "Installing"
+msgstr "Installerar systemet:"
+
+#: agama-cli/src/monitor/ui/summary.rs:102
+#, fuzzy
+msgid "Configuring"
+msgstr "Konfigurerar DASD-enheter"
+
+#: agama-cli/src/monitor/ui/summary.rs:103
+msgid "Finished"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:117
+#, fuzzy
+msgid "Not selected yet"
+msgstr "Ingen produkt har valts ännu."
 
 #: agama-cli/src/status.rs:76
 msgid "Installation finished successfully."
 msgstr "Installation har slutförts framgångsrikt."
+
+#: agama-cli/src/status.rs:77
+msgid "Installation is ready to start."
+msgstr "Installation är redo att starta."
 
 #: agama-cli/src/status.rs:78
 msgid "Installation is in progress."
@@ -256,11 +317,11 @@ msgstr "Förbereder lagringsförslag"
 msgid "Storing bootloader settings"
 msgstr "Lagrar starthanterare inställningar"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:511
 msgid "Writing network configuration"
 msgstr "Skriver nätverkskonfiguration"
 
-#: agama-network/src/service.rs:513
+#: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
 msgstr "Synkronisera nätverkstjänstens status"
 
@@ -331,53 +392,62 @@ msgid ""
 msgstr ""
 "På grund av ett internt fel gick det inte att skapa ett programvaru förslag."
 
-#: agama-software/src/zypp_server.rs:336
+#: agama-software/src/zypp_server.rs:292
+msgid "Starting packages installation"
+msgstr "Startar installation av paket"
+
+#: agama-software/src/zypp_server.rs:305
+msgid "Packages download and installation failed. Would you like to retry?"
+msgstr ""
+"Nedladdning och installation av paket misslyckades. Vill du försöka igen?"
+
+#: agama-software/src/zypp_server.rs:359
 msgid "Updating the list of repositories"
 msgstr "Uppdaterar listan över förråd"
 
-#: agama-software/src/zypp_server.rs:337
+#: agama-software/src/zypp_server.rs:360
 msgid "Refreshing metadata from the repositories"
 msgstr "Uppdaterar metadata från förråd"
 
-#: agama-software/src/zypp_server.rs:338
+#: agama-software/src/zypp_server.rs:361
 msgid "Calculating the software proposal"
 msgstr "Beräknar programvaruförslag"
 
-#: agama-software/src/zypp_server.rs:341
+#: agama-software/src/zypp_server.rs:364
 msgid "Registering the system"
 msgstr "Registrerar systemet"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:411
+#: agama-software/src/zypp_server.rs:434
 msgid "Could not remove the repository %s"
 msgstr "Kunde ta bort förråd %s"
 
-#: agama-software/src/zypp_server.rs:431
+#: agama-software/src/zypp_server.rs:454
 msgid "Could not read the repositories"
 msgstr "Kunde inte läsa från förråd"
 
-#: agama-software/src/zypp_server.rs:465
+#: agama-software/src/zypp_server.rs:488
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "Misslyckades att hitta produkt i förråd. Du kan behöva registrera systemet."
 
-#: agama-software/src/zypp_server.rs:468
+#: agama-software/src/zypp_server.rs:491
 msgid "Failed to find the product in the repositories."
 msgstr "Misslyckades att hitta produkt i förråd."
 
-#: agama-software/src/zypp_server.rs:531
+#: agama-software/src/zypp_server.rs:554
 msgid "There are conflicts in the software selection"
 msgstr "Det finns konflikter i programvaruval"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:560
+#: agama-software/src/zypp_server.rs:583
 msgid "Could not select %s '%s' for installation"
 msgstr "Kunde inte välja %s '%s' för installation"
 
-#: agama-software/src/zypp_server.rs:976
+#: agama-software/src/zypp_server.rs:999
 msgid "Failed to register the system"
 msgstr "Misslyckades att registrera systemet"
 
@@ -391,6 +461,38 @@ msgstr ""
 #: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr "Informationen om den första användaren är ofullständig"
+
+#~ msgid "Lost the connection with the server."
+#~ msgstr "Förlorade anslutningen till servern."
+
+#~ msgid "Calculating the installation proposal:"
+#~ msgstr "Beräknar installationsförslag:"
+
+#~ msgid "Installation successfully finished"
+#~ msgstr "Installation har slutförts"
+
+#~ msgid "Installation failed"
+#~ msgstr "Installation misslyckades"
+
+#~ msgid ""
+#~ "There are unanswered questions. Please use `agama questions` command or "
+#~ "web interface to answer them:"
+#~ msgstr ""
+#~ "Det finns obesvarade frågor. Använd kommandot `agama questions` eller "
+#~ "webbgränssnittet för att besvara dem:"
+
+#~ msgid "Installer is failed to calculate the installation proposal."
+#~ msgstr ""
+#~ "Installationsprogrammet misslyckades med att beräkna installationsförslag."
+
+#~ msgid "There are these issues blocking installation:"
+#~ msgstr "Det finns följande problem som blockerar installationen:"
+
+#~ msgid "Details"
+#~ msgstr "Detaljer"
+
+#~ msgid "Current step"
+#~ msgstr "Nuvarande steg"
 
 #~ msgid "Reading configuration"
 #~ msgstr "Läser konfiguration"
