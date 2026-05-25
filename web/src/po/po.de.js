@@ -51,6 +51,10 @@ export default {
   "%d connections available": [
     "%d Verbindungen verfügbar"
   ],
+  "%d desktop selected": [
+    "%d Desktop ausgewählt",
+    "%d Desktops ausgewählt"
+  ],
   "%d devices available": [
     "%d Geräte verfügbar"
   ],
@@ -370,6 +374,9 @@ export default {
   "Automatic LUN scan is enabled": [
     ""
   ],
+  "Available devices: %s": [
+    "Verfügbare Geräte: %s"
+  ],
   "Back": [
     "Zurück"
   ],
@@ -397,17 +404,8 @@ export default {
   "Beta": [
     "Beta"
   ],
-  "Bind to MAC address": [
-    "Mit MAC-Adresse verknüpfen"
-  ],
-  "Bind to device name": [
-    "Mit Gerätenamen verknüpfen"
-  ],
   "Binding": [
     "Bindung"
-  ],
-  "Binding settings": [
-    "Verknüpfungseinstellungen"
   ],
   "BitLocker": [
     "BitLocker"
@@ -536,15 +534,6 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Wählen Sie eine Volume-Gruppe aus, um logische Volumes zu definieren"
   ],
-  "Choose device to bind by MAC": [
-    "Zu verknüpfendes Gerät nach MAC auswählen"
-  ],
-  "Choose device to bind by name": [
-    "Zu verknüpfendes Gerät nach Namen auswählen"
-  ],
-  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
-    "Wählen Sie aus, wie die Verbindung mit einem Netzwerkgerät verknüpft werden soll. Damit lässt sich steuern, welches Gerät die Verbindung verwendet."
-  ],
   "Chosen by MAC": [
     "Nach MAC ausgewählt"
   ],
@@ -604,6 +593,9 @@ export default {
   ],
   "Configure partition at %s": [
     "Partition bei %s konfigurieren"
+  ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    ""
   ],
   "Configure zFCP": [
     "zFCP konfigurieren"
@@ -757,7 +749,10 @@ export default {
     "Deaktiviert"
   ],
   "Default": [
-    ""
+    "Standard"
+  ],
+  "Default NTP": [
+    "Standard-NTP"
   ],
   "Default file system for %s": [
     "Standard-Dateisystem für %s"
@@ -770,6 +765,9 @@ export default {
   ],
   "Default file system for generic partitions": [
     "Standard-Dateisystem für generische Partitionen"
+  ],
+  "Default selection": [
+    "Standardauswahl"
   ],
   "Define a custom size": [
     "Benutzerdefinierte Größe definieren"
@@ -834,6 +832,12 @@ export default {
   "Device name": [
     "Gerätename"
   ],
+  "Device name is required": [
+    "Gerätename ist erforderlich"
+  ],
+  "Disabled": [
+    "Deaktiviert"
+  ],
   "Discard": [
     "Verwerfen"
   ],
@@ -882,9 +886,6 @@ export default {
   "Do not use": [
     "Nicht verwenden"
   ],
-  "Down": [
-    ""
-  ],
   "Download config": [
     "Konfiguration herunterladen"
   ],
@@ -913,13 +914,13 @@ export default {
     "Z.B. 8.8.8.8 oder 2001:4860:4860::8888"
   ],
   "E.g., bond0": [
-    ""
+    "Z. B. bond0"
   ],
   "E.g., br0": [
-    ""
+    "Z. B. br0"
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
-    ""
+    "Z. B. downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
   ],
   "E.g., example.com": [
     "Z.B. example.com"
@@ -951,6 +952,12 @@ export default {
   "Enable mutual verification": [
     "Gegenseitige Verifizierung aktivieren"
   ],
+  "Enabled": [
+    "Aktiviert"
+  ],
+  "Enabled with the system default settings": [
+    "Mit den Systemstandard-Einstellungen aktiviert"
+  ],
   "Encrypt the system": [
     "System verschlüsseln"
   ],
@@ -975,9 +982,6 @@ export default {
   "Encryption settings": [
     "Verschlüsselungseinstellungen"
   ],
-  "Enter a hostname.": [
-    "Geben Sie einen Hostnamen ein."
-  ],
   "Enter a name": [
     "Name eingeben"
   ],
@@ -985,13 +989,13 @@ export default {
     "Name für die Volume-Gruppe eingeben."
   ],
   "Enter or Tab to add": [
-    ""
+    "Eingabe oder Tab zum Hinzufügen"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    ""
+    "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    ""
+    "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren zwischen den Einträgen, Esc zum Beenden"
   ],
   "Ethernet": [
     "Ethernet"
@@ -1006,7 +1010,7 @@ export default {
     "Ablaufdatum"
   ],
   "Explicitly enabled with manual settings": [
-    ""
+    "Ausdrücklich mit manuellen Einstellungen aktiviert"
   ],
   "Ext2": [
     "Ext2"
@@ -1110,10 +1114,10 @@ export default {
     "Geräte formatieren"
   ],
   "Forward delay": [
-    ""
+    "Weiterleitungsverzögerung"
   ],
   "Forward delay must be between 4 and 30 seconds": [
-    ""
+    "Weiterleitungsverzögerung muss zwischen 4 und 30 Sekunden liegen"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "Die vollständige Festplattenverschlüsselung (FDE) ermöglicht den Schutz der in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programmen und Systemdateien."
@@ -1158,11 +1162,8 @@ export default {
   "Hostname": [
     "Hostname"
   ],
-  "Hostname could not be updated": [
-    "Hostname konnte nicht aktualisiert werden"
-  ],
-  "Hostname successfully updated": [
-    "Hostname erfolgreich aktualisiert"
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    ""
   ],
   "I have read and accept the [license] for %s": [
     "Ich habe die [Lizenz] für %s gelesen und akzeptiere sie"
@@ -1299,6 +1300,9 @@ export default {
   ],
   "Invalid IPv6 gateway": [
     "Ungültiger IPv6-Gateway"
+  ],
+  "Invalid NTP server address": [
+    "Ungültige NTP-Serveradresse"
   ],
   "Invalid [zFCP] settings": [
     "Ungültige [zFCP]-Einstellungen"
@@ -1457,10 +1461,10 @@ export default {
     "Maximaler Kanal"
   ],
   "Max message age": [
-    ""
+    "Maximales Alter der Nachricht"
   ],
   "Max message age must be between 6 and 40 seconds": [
-    ""
+    "Maximales Nachrichtenalter muss zwischen 6 und 40 Sekunden liegen"
   ],
   "Members": [
     "Mitglieder"
@@ -1599,6 +1603,9 @@ export default {
   "No additional partitions will be created": [
     "Es werden keine zusätzlichen Partitionen erstellt"
   ],
+  "No changes detected. System settings are already up to date.": [
+    ""
+  ],
   "No connections match filters": [
     "Keine Verbindungen entsprechen den Filtern"
   ],
@@ -1610,6 +1617,9 @@ export default {
   ],
   "No data loss is expected": [
     "Es wird kein Datenverlust erwartet"
+  ],
+  "No desktop selected": [
+    "Kein Desktop ausgewählt"
   ],
   "No device is currently using this connection.": [
     "Derzeit verwendet kein Gerät diese Verbindung."
@@ -1682,9 +1692,6 @@ export default {
   ],
   "None": [
     "Kein"
-  ],
-  "None (unbound)": [
-    "Keine (ungebunden)"
   ],
   "None of the keymaps match the filter.": [
     "Keine der Tastenzuordnungen entspricht dem Filter."
@@ -1831,19 +1838,16 @@ export default {
     "Potenzieller Datenverlust, von dem mindestens %s betroffen sind"
   ],
   "Priority": [
-    ""
+    "Priorität"
   ],
   "Priority must be between 0 and 61440": [
-    ""
+    "Priorität muss zwischen 0 und 61440 liegen"
   ],
   "Proceeding may result in data loss": [
     "Das Fortfahren kann zu Datenverlust führen"
   ],
   "Proceeding will delete existing data, including %s": [
     "Durch das Fortfahren werden vorhandene Daten gelöscht, einschließlich %s"
-  ],
-  "Product is already registered": [
-    "Produkt ist bereits registriert"
   ],
   "Product not found": [
     "Produkt nicht gefunden"
@@ -1852,10 +1856,10 @@ export default {
     "Schutz für die in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programme und Systemdateien."
   ],
   "Protocol message interval (1-10 seconds).": [
-    ""
+    "Intervall der Protokollnachrichten (1-10 Sekunden)."
   ],
   "Protocol message retention time (6-40 seconds).": [
-    ""
+    "Aufbewahrungsdauer von Protokollnachrichten (6-40 Sekunden)."
   ],
   "Provide authentication": [
     "Authentifizierung bereitstellen"
@@ -2011,7 +2015,7 @@ export default {
     "SSID"
   ],
   "STP": [
-    ""
+    "STP"
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -2119,8 +2123,11 @@ export default {
   "Set DIAG on": [
     "DIAG einschalten"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "Legen Sie einen permanenten Hostnamen fest, der sich bei Netzwerkaktualisierungen nicht ändert."
+  "Set NTP servers manually": [
+    ""
+  ],
+  "Set manually": [
+    "Manuell festlegen"
   ],
   "Settings": [
     "Einstellungen"
@@ -2225,11 +2232,11 @@ export default {
   "Startup": [
     "Start"
   ],
+  "State": [
+    "Status"
+  ],
   "Static addresses and gateway": [
     "Statische Adressen und Gateway"
-  ],
-  "Static hostname": [
-    "Statischer Hostname"
   ],
   "Status": [
     "Status"
@@ -2262,6 +2269,9 @@ export default {
   "Switch to another product": [
     "Wechseln Sie zu einem anderen Produkt",
     "Wechseln Sie zu einem der %d verfügbaren Produkte"
+  ],
+  "System": [
+    ""
   ],
   "System Information": [
     "Systeminformationen"
@@ -2296,9 +2306,6 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "Die konfigurierten LVM-Gruppen bleiben bei %s"
-  ],
-  "The connection can be used by any available device.": [
-    "Die Verbindung kann von jedem verfügbaren Gerät genutzt werden."
   ],
   "The connection could not be saved": [
     "Die Verbindung konnte nicht gespeichert werden"
@@ -2425,8 +2432,8 @@ export default {
   "The password is weak": [
     "Das Passwort ist schwach"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "Das Passwort wird nicht benötigt, um zu booten und auf die Daten zuzugreifen, wenn das TPM die Integrität des Systems verifizieren kann. Die TPM-Versiegelung erfordert, dass das neue System bei seinem ersten Start direkt gebootet wird."
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
+    ""
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
     "Die Größe für %1$s wird dynamisch angepasst, basierend auf der Menge an RAM im System und dem Vorhandensein eines separaten Dateisystems für %2$s."
@@ -2523,9 +2530,6 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Diese Erweiterung ist auf dem Server nicht verfügbar. Bitten Sie den Serveradministrator, die Erweiterung zu spiegeln."
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "Dieser Hostname ist dynamisch und kann sich nach einem Neustart oder einer Netzwerkaktualisierung ändern, wie vom lokalen Netzwerkadministrator konfiguriert."
-  ],
   "This license is not available in %s.": [
     "Diese Lizenz ist in %s nicht verfügbar."
   ],
@@ -2549,6 +2553,9 @@ export default {
   ],
   "TiB": [
     "TiB"
+  ],
+  "Time Synchronization Servers": [
+    ""
   ],
   "Time zone": [
     "Zeitzone"
@@ -2574,9 +2581,6 @@ export default {
   "Unable to modify the settings": [
     "Einstellungen können nicht geändert werden"
   ],
-  "Unbound": [
-    "Ungebunden"
-  ],
   "Unexpected error": [
     "Unerwarteter Fehler"
   ],
@@ -2595,17 +2599,11 @@ export default {
   "Unused space": [
     "Ungenutzter Platz"
   ],
-  "Up": [
-    ""
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "Bis zu %s können durch Verkleinern des Geräts zurückgewonnen werden."
   ],
   "Update available disks and activate crypt devices": [
     "Verfügbare Festplatten aktualisieren und Kryptogeräte aktivieren"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Wenn Sie den Hostnamen jetzt oder später aktualisieren, wird der aktuell registrierte Hostname nicht geändert."
   ],
   "Upload": [
     "Hochladen"
@@ -2721,9 +2719,6 @@ export default {
   "Use several devices": [
     "Mehrere Geräte verwenden"
   ],
-  "Use static hostname": [
-    "Statischen Hostnamen verwenden"
-  ],
   "Use suggested username": [
     "Vorgeschlagenen Benutzernamen verwenden"
   ],
@@ -2754,6 +2749,15 @@ export default {
   "Using %d connections with %s": [
     "Verwendung von %d Verbindungen mit %s"
   ],
+  "Using %s NTP servers, including [%s]": [
+    ""
+  ],
+  "Using %s as NTP server": [
+    ""
+  ],
+  "Using %s keyboard layout": [
+    "Tastaturbelegung %s wird verwendet"
+  ],
   "Using a hashed password.": [
     "Verwendung eines gehashten Passworts."
   ],
@@ -2771,9 +2775,6 @@ export default {
   ],
   "Using partition %s": [
     "Partition %s wird verwendet"
-  ],
-  "Using transient hostname: %s": [
-    "Transienter Hostname wird verwendet: %s"
   ],
   "VLAN": [
     "VLAN"

@@ -431,17 +431,8 @@ export default {
   "Beta": [
     "Beta"
   ],
-  "Bind to MAC address": [
-    "Vincular a dirección MAC"
-  ],
-  "Bind to device name": [
-    "Asociar al nombre del dispositivo"
-  ],
   "Binding": [
     "Asociar"
-  ],
-  "Binding settings": [
-    "Ajustes de vinculación"
   ],
   "BitLocker": [
     "BitLocker"
@@ -595,15 +586,6 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Borra el grupo de volúmenes para definir volúmenes lógicos"
   ],
-  "Choose device to bind by MAC": [
-    "Escoger dispositivo para vincular por dirección MAC"
-  ],
-  "Choose device to bind by name": [
-    "Escoger dispositivo para vincular por nombre"
-  ],
-  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
-    "Elija cómo se debe asociar la conexión con un dispositivo de red. Esto ayuda a controlar qué dispositivo usa la conexión."
-  ],
   "Chosen by MAC": [
     "Elegido por MAC"
   ],
@@ -663,6 +645,9 @@ export default {
   ],
   "Configure partition at %s": [
     "Configurar partición en %s"
+  ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    ""
   ],
   "Configure zFCP": [
     "Configurar zFCP"
@@ -824,6 +809,9 @@ export default {
   "Default": [
     ""
   ],
+  "Default NTP": [
+    ""
+  ],
   "Default file system for %s": [
     "Sistema de archivos por defecto para %s"
   ],
@@ -953,9 +941,6 @@ export default {
   "Do not use": [
     "No utilizar"
   ],
-  "Down": [
-    "Bajada"
-  ],
   "Download config": [
     "Descargar configuración"
   ],
@@ -1039,9 +1024,6 @@ export default {
   ],
   "Encryption settings": [
     "Ajustes de cifrado"
-  ],
-  "Enter a hostname.": [
-    "Introduce el nombre del equipo."
   ],
   "Enter a name": [
     "Introduzca un nombre"
@@ -1229,11 +1211,8 @@ export default {
   "Hostname": [
     "Nombre del equipo"
   ],
-  "Hostname could not be updated": [
-    "El nombre del equipo no se ha podido actualizar"
-  ],
-  "Hostname successfully updated": [
-    "El nombre del equipo se ha actualizado con éxito"
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    ""
   ],
   "I have read and accept the [license] for %s": [
     "He leído y acepto la [license] para %s"
@@ -1697,6 +1676,9 @@ export default {
   "No additional patterns available": [
     "No hay patrones adicionales disponibles"
   ],
+  "No changes detected. System settings are already up to date.": [
+    ""
+  ],
   "No connections match filters": [
     "Ninguna conexión coincide con los filtros"
   ],
@@ -1792,9 +1774,6 @@ export default {
   ],
   "None": [
     "Ninguno"
-  ],
-  "None (unbound)": [
-    "Ninguno (sin vincular)"
   ],
   "None of the keymaps match the filter.": [
     "Ninguno de los mapas de teclas coincide con el filtro."
@@ -1963,9 +1942,6 @@ export default {
   ],
   "Proceeding will delete existing data, including %s": [
     "Si continúas, se eliminarán los datos existentes, incluido %s"
-  ],
-  "Product is already registered": [
-    "El producto ya está registrado"
   ],
   "Product not found": [
     "Producto no encontrado"
@@ -2271,8 +2247,11 @@ export default {
   "Set DIAG on": [
     "Activar DIAG"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "Establece un nombre permanente del equipo que no cambie con las actualizaciones de la red."
+  "Set NTP servers manually": [
+    ""
+  ],
+  "Set manually": [
+    ""
   ],
   "Settings": [
     "Ajustes"
@@ -2383,9 +2362,6 @@ export default {
   "Static addresses and gateway": [
     "Direcciones estáticas y puerta de enlace"
   ],
-  "Static hostname": [
-    "Nombre estático del equipo"
-  ],
   "Status": [
     "Estado"
   ],
@@ -2417,6 +2393,9 @@ export default {
   "Switch to another product": [
     "Cambiar a otro producto",
     "Cambie a uno de los %d productos disponibles"
+  ],
+  "System": [
+    ""
   ],
   "System Information": [
     "Información de sistema"
@@ -2451,9 +2430,6 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "Los grupos de LVM configurados permanecerán en %s"
-  ],
-  "The connection can be used by any available device.": [
-    "La conexión puede ser utilizada por cualquier dispositivo disponible."
   ],
   "The connection could not be saved": [
     "No se pudo guardar la conexión"
@@ -2586,8 +2562,8 @@ export default {
   "The password is weak": [
     "La contraseña es débil"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "La contraseña no será necesaria para arrancar y acceder a los datos si TPM puede verificar la integridad del sistema. El sellado TPM requiere que el nuevo sistema se arranque directamente en su primera ejecución."
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
+    ""
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "El producto no se encontró en los repositorios, por lo que no es posible continuar con la instalación."
@@ -2690,9 +2666,6 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "Esta extensión no está disponible en el servidor. Pida al administrador del servidor que replique la extensión."
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "El nombre del equipo es dinámico y puede cambiar tras un reinicio o actualización de red, según lo configure el administrador de la red local."
-  ],
   "This license is not available in %s.": [
     "Esta licencia no está disponible en %s."
   ],
@@ -2729,6 +2702,9 @@ export default {
   "TiB": [
     "TiB"
   ],
+  "Time Synchronization Servers": [
+    ""
+  ],
   "Time zone": [
     "Zona horaria"
   ],
@@ -2741,6 +2717,9 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Para garantizar que el nuevo sistema pueda arrancar, es posible que el instalador tenga que crear o configurar algunas particiones en el disco correspondiente."
   ],
+  "Transient": [
+    ""
+  ],
   "Try to activate again": [
     "Intente activar de nuevo"
   ],
@@ -2752,9 +2731,6 @@ export default {
   ],
   "Unable to modify the settings": [
     "No es posible modificar los ajustes"
-  ],
-  "Unbound": [
-    "No asociado"
   ],
   "Unexpected error": [
     "Error inesperado"
@@ -2774,17 +2750,11 @@ export default {
   "Unused space": [
     "Espacio no utilizado"
   ],
-  "Up": [
-    "Subida"
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "Se pueden recuperar hasta %s reduciendo el dispositivo."
   ],
   "Update available disks and activate crypt devices": [
     "Actualizar los discos disponibles y activar los dispositivos de cifrado"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "Actualizar el nombre del equipo ahora o más adelante no cambiará el nombre del equipo registrado actualmente."
   ],
   "Upload": [
     "Subir"
@@ -2900,9 +2870,6 @@ export default {
   "Use several devices": [
     "Usar varios dispositivos"
   ],
-  "Use static hostname": [
-    "Utilizar un nombre estático del equipo"
-  ],
   "Use suggested username": [
     "Usar nombre de usuario sugerido"
   ],
@@ -2937,6 +2904,12 @@ export default {
   "Using %d connections with %s": [
     "Usando conexiones %d con %s"
   ],
+  "Using %s NTP servers, including [%s]": [
+    ""
+  ],
+  "Using %s as NTP server": [
+    ""
+  ],
   "Using a hashed password.": [
     "Utiliza una contraseña con hash."
   ],
@@ -2957,9 +2930,6 @@ export default {
   ],
   "Using partition %s": [
     "Utilizando partición %s"
-  ],
-  "Using transient hostname: %s": [
-    "Se está utilizando un nombre temporal de equipo: %s"
   ],
   "VLAN": [
     "VLAN"

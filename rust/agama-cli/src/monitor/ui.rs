@@ -21,22 +21,16 @@
 //! UI rendering modules for the monitor TUI
 
 mod content;
-mod hints;
 mod issues;
 mod layout;
-mod product;
 mod progress;
-mod separator;
-mod status_bar;
+mod summary;
 
 use agama_utils::api::Scope;
 pub use content::Content;
 use gettextrs::gettext;
-pub use hints::Hints;
 pub use layout::create_layout;
-pub use product::Product;
-pub use separator::Separator;
-pub use status_bar::StatusBar;
+pub use summary::Summary;
 
 /// Converts a Scope to a human-readable string
 pub fn scope_to_string(scope: &Scope) -> String {
