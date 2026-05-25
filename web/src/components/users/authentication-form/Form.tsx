@@ -206,7 +206,7 @@ type AuthenticationFormProps = {
  * Encapsulates the submit lifecycle for forms that stay mounted:
  * - Deferred form.reset() after submit (workaround for TanStack Form #1681)
  * - Success/info alert via refs + Subscribe (no extra re-renders)
- * - Clean→dirty transition tracking to hide alert when user edits again
+ * - Clean > dirty transition tracking to hide alert when user edits again
  *
  * ### Field validation
  * Stays in useAppForm's validators.onSubmitAsync where TanStack Form expects it.

@@ -169,7 +169,7 @@ describe("AuthenticationForm", () => {
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
       expect(mockPutConfig).not.toHaveBeenCalled();
-      screen.getByText(/No changes detected/i);
+      screen.getByText("No changes to apply");
     });
 
     it("creates first user when checkbox is checked", async () => {
@@ -370,7 +370,7 @@ describe("AuthenticationForm", () => {
       await fillFirstUserFields(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
-      screen.getByText(/Authentication settings could not be updated/i);
+      screen.getByText("Changes could not be applied");
       screen.getByText("Network error");
     });
   });
@@ -382,7 +382,7 @@ describe("AuthenticationForm", () => {
       await fillFirstUserFields(user);
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
-      await screen.findByText(/successfully updated/i);
+      await screen.findByText("Changes successfully applied");
     });
   });
 });

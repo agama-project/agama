@@ -69,6 +69,9 @@ type Options<TValues> = {
 
   /** Alert title shown when submit detected no changes. Defaults to a generic message. */
   noChangesTitle?: string;
+
+  /** Alert title shown when form has validation errors. Defaults to a generic message. */
+  errorTitle?: string;
 };
 
 /**
@@ -156,6 +159,7 @@ export function useFormSubmit<TValues>({
   onSubmit,
   successTitle = _("Changes successfully applied"),
   noChangesTitle = _("No changes to apply"),
+  errorTitle = _("Form contains errors, fix them and try again"),
 }: Options<TValues>) {
   /**
    * Track submit outcome without triggering re-renders.
@@ -249,13 +253,7 @@ export function useFormSubmit<TValues>({
 
           // Show validation error alert
           if (submitAttempted.current && !isValid) {
-            return (
-              <Alert
-                isInline
-                variant="danger"
-                title={_("Form contains errors, fix them and try again")}
-              />
-            );
+            return <Alert isInline variant="danger" title={errorTitle} />;
           }
 
           // Show success/info alert
