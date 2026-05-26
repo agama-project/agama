@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 26 18:38:34 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for configuring a VLAN using the UI
+  (gh#agama-project/agama#3548).
+
+-------------------------------------------------------------------
 Mon May 25 12:36:17 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update shell-quote dependency (CVE-2026-9277, bsc#1266256).
