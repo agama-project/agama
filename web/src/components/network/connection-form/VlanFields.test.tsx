@@ -81,17 +81,13 @@ describe("VlanFields", () => {
     expect(await screen.findByLabelText("Encapsulation protocol")).toBeInTheDocument();
 
     expect(screen.getByText(/Available devices: enp1s0 and enp2s0/)).toBeInTheDocument();
-    expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent(
-      "Default",
-    );
+    expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent("Default");
   });
 
   it("allows setting the default protocol", async () => {
     installerRender(<TestForm defaultValues={{ vlanProtocol: VlanProtocolMode.DEFAULT }} />);
 
-    expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent(
-      "Default",
-    );
+    expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent("Default");
   });
 
   it("allows defining the device name for a new vlan connection", async () => {
