@@ -5,6 +5,11 @@ Tue May 26 18:38:34 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   (gh#agama-project/agama#3548).
 
 -------------------------------------------------------------------
+Tue May 26 15:39:38 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Simplify alert for issues (gh#agama-project/agama#3550).
+
+-------------------------------------------------------------------
 Mon May 25 12:36:17 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update shell-quote dependency (CVE-2026-9277, bsc#1266256).
