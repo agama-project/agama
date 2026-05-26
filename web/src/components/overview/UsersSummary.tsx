@@ -55,13 +55,13 @@ const isUserDefined = (config) => {
 };
 
 /**
- * Renders "SSH login enabled for %s" with the account name in bold.
- * Used when only one of the two accounts has SSH login enabled.
+ * Renders "Public key provided for %s" with the account name in bold.
+ * Used when only one of the two accounts has a public key configured.
  */
-const SshEnabledFor = ({ name }) => (
+const PublicKeyProvided = ({ user }) => (
   // TRANSLATORS: %s is either "root" or a username like 'jdoe'
-  <Interpolate sentence={_("SSH login enabled for %s")}>
-    {() => <Text isBold>{name}</Text>}
+  <Interpolate sentence={_("Public key provided for %s")}>
+    {() => <Text isBold>{user}</Text>}
   </Interpolate>
 );
 
@@ -75,7 +75,7 @@ const Account = ({ name }) => (
 );
 
 /**
- * Displays which accounts, if any, are configured for login.
+ * Renders which accounts, if any, are configured for login.
  */
 const Value = () => {
   const config = useConfig();
@@ -83,6 +83,7 @@ const Value = () => {
   const hasRoot = rootAuthType !== "none";
   const hasUser = isUserDefined(config);
 
+  // TRANSLATORS: shown when no user accounts are configured yet
   if (!hasRoot && !hasUser) return _("Not configured yet");
   if (hasRoot && !hasUser) return <Account name="root" />;
 
@@ -90,7 +91,7 @@ const Value = () => {
 
   if (!hasRoot) return <Account name={userName} />;
 
-  // TRANSLATORS: first %s is a username like 'jdoe', second is the literal word "root" which must not be translated
+  // TRANSLATORS: first %s is a username like 'jdoe', second is "root"
   return (
     <Interpolate sentence={_("Using %s and %s accounts")}>
       {[
@@ -103,12 +104,11 @@ const Value = () => {
 };
 
 /**
- * Displays a summary of the SSH login configuration.
+ * Renders a description highlighting public key configuration status.
  *
- * Only shown when SSH login is enabled for at least one account,
- * since password login is always set for the user and not worth highlighting.
- * For root, SSH-only login (no password) is explicitly surfaced since it is
- * not mandatory; if root has no SSH, it implies password login.
+ * Only shown when worth highlighting: public keys provided, or the important
+ * case where root has no public key (SSH login might be restricted on most systems).
+ * Password-only user accounts are not mentioned since password login is always available.
  */
 const Description = () => {
   const config = useConfig();
@@ -119,30 +119,25 @@ const Description = () => {
 
   if (!hasRoot && !hasUser) return null;
 
-  const sshForRoot = rootAuthType === "ssh" || rootAuthType === "both";
-  const sshForUser = hasUser && userHasSsh;
+  const rootHasSshKey = rootAuthType === "ssh" || rootAuthType === "both";
+  const userHasSshKey = hasUser && userHasSsh;
 
-  if (sshForRoot && sshForUser) return _("SSH login enabled for both accounts");
+  // TRANSLATORS: both user accounts have SSH public keys configured
+  if (rootHasSshKey && userHasSshKey) return _("Public key provided for both");
 
-  if (rootAuthType === "ssh" && hasUser) {
-    // TRANSLATORS: "root" refers to the root user account, must not be translated
-    return (
-      <Interpolate sentence={_("%s login enabled only with SSH key")}>
-        {/* eslint-disable-next-line i18next/no-literal-string */}
-        {() => <Text isBold>root</Text>}
-      </Interpolate>
-    );
+  // TRANSLATORS: SSH public key is configured for a single account
+  const publicKeyProvided = _("Public key provided");
+
+  if (userHasSshKey && !hasRoot) return publicKeyProvided;
+  if (userHasSshKey && !rootHasSshKey) return <PublicKeyProvided user={config.user.userName} />;
+
+  if (rootHasSshKey && !hasUser) return publicKeyProvided;
+  if (rootHasSshKey && hasUser && !userHasSshKey) return <PublicKeyProvided user="root" />;
+
+  if (!hasUser && hasRoot && !rootHasSshKey) {
+    // TRANSLATORS: warning when root account has no SSH public key configured
+    return _("No public key provided, SSH login might be restricted");
   }
-
-  if (rootAuthType === "ssh") return _("Login enabled only with SSH key");
-
-  if (sshForRoot && hasUser) return <SshEnabledFor name="root" />;
-
-  if (sshForRoot) return _("SSH login enabled");
-
-  if (sshForUser && hasRoot) return <SshEnabledFor name={config.user.userName} />;
-
-  if (sshForUser) return _("SSH login enabled");
 
   return null;
 };
@@ -157,6 +152,7 @@ export default function UsersSummary() {
       icon="manage_accounts"
       title={
         <Link to={USER.root} variant="link" isInline>
+          {/* TRANSLATORS: section title for user authentication configuration */}
           {_("Authentication")}
         </Link>
       }

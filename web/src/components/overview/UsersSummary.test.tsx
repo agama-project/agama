@@ -83,72 +83,72 @@ describe("UsersSummary", () => {
         mockUseConfigFn.mockReturnValue({});
       });
 
-      it("displays 'Not configured yet'", () => {
+      it("renders 'Not configured yet'", () => {
         installerRender(<UsersSummary />);
         screen.getByText("Not configured yet");
       });
 
-      it("does not display any description", () => {
+      it("renders no description", () => {
         installerRender(<UsersSummary />);
-        expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/public key/i)).not.toBeInTheDocument();
       });
     });
 
     describe("when only root is configured", () => {
-      describe("with password only", () => {
+      describe("root account without SSH key configured", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: { password: "secret123" },
           });
         });
 
-        it("displays 'Using root account'", () => {
+        it("renders 'Using root account'", () => {
           installerRender(<UsersSummary />);
           screen.getByText(/Using/);
           screen.getByText("root");
           screen.getByText(/account/);
         });
 
-        it("does not display any description", () => {
+        it("renders warning that SSH login might be restricted", () => {
           installerRender(<UsersSummary />);
-          expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
+          screen.getByText("No public key provided, SSH login might be restricted");
         });
       });
 
-      describe("with SSH key only (old sshPublicKey field)", () => {
+      describe("root accessible only via SSH key authentication (old sshPublicKey field)", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: { sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EA... root@host" },
           });
         });
 
-        it("displays 'Using root account'", () => {
+        it("renders 'Using root account'", () => {
           installerRender(<UsersSummary />);
           screen.getByText(/Using/);
           screen.getByText("root");
           screen.getByText(/account/);
         });
 
-        it("displays 'Login enabled only with SSH key'", () => {
+        it("renders 'Public key provided'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Login enabled only with SSH key");
+          screen.getByText("Public key provided");
         });
       });
 
-      describe("with SSH key only (new sshPublicKeys field as string)", () => {
+      describe("root accessible only via SSH key authentication (new sshPublicKeys field as string)", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: { sshPublicKeys: "ssh-rsa AAAAB3NzaC1yc2EA... root@host" },
           });
         });
 
-        it("displays 'Login enabled only with SSH key'", () => {
+        it("renders 'Public key provided'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Login enabled only with SSH key");
+          screen.getByText("Public key provided");
         });
       });
 
-      describe("with SSH key only (new sshPublicKeys field as array)", () => {
+      describe("root accessible only via SSH key authentication (new sshPublicKeys field as array)", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: {
@@ -160,13 +160,13 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Login enabled only with SSH key'", () => {
+        it("renders 'Public key provided'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("Login enabled only with SSH key");
+          screen.getByText("Public key provided");
         });
       });
 
-      describe("with password and SSH key (old field)", () => {
+      describe("root accessible via password or SSH key (old field)", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: {
@@ -176,13 +176,13 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'SSH login enabled'", () => {
+        it("renders 'Public key provided'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("SSH login enabled");
+          screen.getByText("Public key provided");
         });
       });
 
-      describe("with password and SSH key (new field)", () => {
+      describe("root accessible via password or SSH key (new field)", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: {
@@ -192,15 +192,15 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'SSH login enabled'", () => {
+        it("renders 'Public key provided'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("SSH login enabled");
+          screen.getByText("Public key provided");
         });
       });
     });
 
     describe("when only user is configured", () => {
-      describe("with password only", () => {
+      describe("user account without SSH access", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             user: {
@@ -211,20 +211,20 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using {username} account'", () => {
+        it("renders 'Using {username} account'", () => {
           installerRender(<UsersSummary />);
           screen.getByText(/Using/);
           screen.getByText("jdoe");
           screen.getByText(/account/);
         });
 
-        it("does not display any description", () => {
+        it("renders no description", () => {
           installerRender(<UsersSummary />);
-          expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
+          expect(screen.queryByText(/public key/i)).not.toBeInTheDocument();
         });
       });
 
-      describe("with password and SSH key", () => {
+      describe("user account with SSH access enabled", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             user: {
@@ -236,15 +236,15 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'SSH login enabled'", () => {
+        it("renders 'Public key provided'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("SSH login enabled");
+          screen.getByText("Public key provided");
         });
       });
     });
 
     describe("when both root and user are configured", () => {
-      describe("root with password, user without SSH", () => {
+      describe("both accounts without SSH keys", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: { password: "secret123" },
@@ -256,7 +256,7 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'Using {username} and root accounts'", () => {
+        it("renders 'Using {username} and root accounts'", () => {
           installerRender(<UsersSummary />);
           screen.getByText(/Using/);
           screen.getByText("jdoe");
@@ -265,13 +265,13 @@ describe("UsersSummary", () => {
           screen.getByText(/accounts/);
         });
 
-        it("does not display any description", () => {
+        it("renders no description", () => {
           installerRender(<UsersSummary />);
-          expect(screen.queryByText(/SSH/)).not.toBeInTheDocument();
+          expect(screen.queryByText(/public key/i)).not.toBeInTheDocument();
         });
       });
 
-      describe("root with password, user with SSH", () => {
+      describe("only user has SSH access configured", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: { password: "secret123" },
@@ -284,14 +284,14 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'SSH login enabled for {username}'", () => {
+        it("renders 'Public key provided for {username}'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText(/SSH login enabled for/);
+          screen.getByText(/Public key provided for/);
           expect(screen.queryAllByText("jdoe")).toHaveLength(2);
         });
       });
 
-      describe("root with SSH only, user without SSH", () => {
+      describe("root SSH-only, user password-only", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: { sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EA... root@host" },
@@ -303,14 +303,14 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'root login enabled only with SSH key'", () => {
+        it("renders 'Public key provided for root'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText(/login enabled only with SSH key/);
+          screen.getByText(/Public key provided for/);
           expect(screen.queryAllByText("root")).toHaveLength(2);
         });
       });
 
-      describe("root with SSH only, user with SSH", () => {
+      describe("both accounts with SSH access, root SSH-only", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: { sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EA... root@host" },
@@ -323,13 +323,13 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'SSH login enabled for both accounts'", () => {
+        it("renders 'Public key provided for both'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("SSH login enabled for both accounts");
+          screen.getByText("Public key provided for both");
         });
       });
 
-      describe("root with password and SSH, user without SSH", () => {
+      describe("only root has SSH access configured", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: {
@@ -344,14 +344,14 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'SSH login enabled for root'", () => {
+        it("renders 'Public key provided for root'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText(/SSH login enabled for/);
+          screen.getByText(/Public key provided for/);
           expect(screen.queryAllByText("root")).toHaveLength(2);
         });
       });
 
-      describe("root with password and SSH, user with SSH", () => {
+      describe("both accounts with SSH access configured", () => {
         beforeEach(() => {
           mockUseConfigFn.mockReturnValue({
             root: {
@@ -367,9 +367,9 @@ describe("UsersSummary", () => {
           });
         });
 
-        it("displays 'SSH login enabled for both accounts'", () => {
+        it("renders 'Public key provided for both'", () => {
           installerRender(<UsersSummary />);
-          screen.getByText("SSH login enabled for both accounts");
+          screen.getByText("Public key provided for both");
         });
       });
     });
@@ -388,7 +388,7 @@ describe("UsersSummary", () => {
         ]);
       });
 
-      it("displays warning icon for issues", () => {
+      it("renders warning icon for issues", () => {
         const { container } = installerRender(<UsersSummary />);
         const warningIcon = container.querySelector("svg.pf-v6-u-text-color-status-warning");
         expect(warningIcon).toBeInTheDocument();
