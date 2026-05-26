@@ -22,7 +22,7 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { defaultOptions } from "./fields";
+import { defaultOptions, VlanProtocolMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { _, formatList } from "~/i18n";
@@ -32,16 +32,17 @@ import { _, formatList } from "~/i18n";
  */
 const protocolOptions = () => [
   {
-    value: "",
+    value: VlanProtocolMode.DEFAULT,
     // TRANSLATORS: option for the VLAN protocol selector when no specific protocol is chosen.
-    label: _("Default"),
+    // It uses the '802.1Q' protocol by default.
+    label: _("Default (802.1Q)"),
   },
   {
-    value: "802.1Q",
+    value: VlanProtocolMode.IEEE_802_1Q,
     label: "802.1Q",
   },
   {
-    value: "802.1ad",
+    value: VlanProtocolMode.IEEE_802_1AD,
     label: "802.1ad",
   },
 ];
@@ -123,7 +124,11 @@ const VlanFields = withForm({
                 // TRANSLATORS: label for the VLAN encapsulation protocol field.
                 _("Encapsulation protocol")
               }
-              options={protocolOptions()}
+              options={protocolOptions().map(({ value, label }) => ({
+                value,
+                // eslint-disable-next-line agama-i18n/string-literals
+                label: _(label),
+              }))}
             />
           )}
         </form.AppField>

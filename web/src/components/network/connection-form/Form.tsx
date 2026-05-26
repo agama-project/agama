@@ -57,14 +57,26 @@ import {
   ADDRESS_REQUIRED_MODES,
   BridgeStpMode,
   FormIpMode,
+  VlanProtocolMode,
   defaultOptions,
   validate,
 } from "./fields";
 import { _ } from "~/i18n";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
-import type { FormIpMode as FormIpModeType, BridgeStpMode as BridgeStpModeType } from "./fields";
-import { BondMode, Bridge, Connection, ConnectionMethod, ConnectionType } from "~/types/network";
+import type {
+  FormIpMode as FormIpModeType,
+  BridgeStpMode as BridgeStpModeType,
+  VlanProtocolMode as VlanProtocolModeType,
+} from "./fields";
+import {
+  BondMode,
+  Bridge,
+  Connection,
+  ConnectionMethod,
+  ConnectionType,
+  VlanProtocol,
+} from "~/types/network";
 
 /**
  * Maps form mode values to their corresponding {@link ConnectionMethod}.
@@ -179,7 +191,7 @@ function connectionToFormValues(connection: Connection): Partial<FormValues> {
     vlanIface: connection.iface,
     vlanId: connection.vlan?.id,
     vlanParent: connection.vlan?.parent ?? "",
-    vlanProtocol: connection.vlan?.protocol,
+    vlanProtocol: (connection.vlan?.protocol ?? VlanProtocolMode.DEFAULT) as VlanProtocolModeType,
   };
 }
 
@@ -250,7 +262,10 @@ function buildConnection(formValues: FormValues): Connection {
         ? {
             id: formValues.vlanId!,
             parent: formValues.vlanParent,
-            protocol: formValues.vlanProtocol !== "" ? formValues.vlanProtocol : undefined,
+            protocol:
+              formValues.vlanProtocol !== VlanProtocolMode.DEFAULT
+                ? (formValues.vlanProtocol as VlanProtocol)
+                : undefined,
           }
         : undefined,
   });

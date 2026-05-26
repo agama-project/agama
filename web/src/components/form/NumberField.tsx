@@ -53,7 +53,7 @@ export default function NumberField({ label, helperText, min, max }: NumberField
       <TextInput
         id={field.name}
         name={field.name}
-        value={field.state.value ?? ""}
+        value={field.state.value}
         type="number"
         min={min}
         max={max}

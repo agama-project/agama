@@ -24,7 +24,7 @@ import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
 import { sprintf } from "sprintf-js";
 
-import { BondMode, ConnectionType, ConnectionBindingMode } from "~/types/network";
+import { BondMode, ConnectionType, ConnectionBindingMode, VlanProtocol } from "~/types/network";
 import { CONNECTION_TYPE } from "~/utils/network";
 import {
   isValidIPv4Address,
@@ -93,7 +93,7 @@ type VlanFormFields = {
   vlanIface: string;
   vlanId: number | undefined;
   vlanParent: string;
-  vlanProtocol: string;
+  vlanProtocol: VlanProtocolMode;
 };
 
 type FormFields = CommonFormFields &
@@ -138,6 +138,17 @@ export const BridgeStpMode = {
 } as const;
 
 export type BridgeStpMode = (typeof BridgeStpMode)[keyof typeof BridgeStpMode];
+
+/**
+ * VLAN encapsulation protocol mode values.
+ */
+export const VlanProtocolMode = {
+  DEFAULT: "default",
+  IEEE_802_1Q: VlanProtocol.IEEE_802_1Q,
+  IEEE_802_1AD: VlanProtocol.IEEE_802_1AD,
+} as const;
+
+export type VlanProtocolMode = (typeof VlanProtocolMode)[keyof typeof VlanProtocolMode];
 
 /** Private constants */
 
@@ -236,7 +247,7 @@ const defaultValues = {
   vlanIface: "",
   vlanId: undefined as number | undefined,
   vlanParent: "",
-  vlanProtocol: "",
+  vlanProtocol: VlanProtocolMode.DEFAULT as VlanProtocolMode,
 };
 
 /**
@@ -420,8 +431,6 @@ const validateVlanFields = (fields: VlanFormFields): FieldsValidationResult<Vlan
   vlanId: optionalIntRange(fields.vlanId, 0, 4094, _("VLAN ID must be between 0 and 4094")),
   // TRANSLATORS: validation error for the VLAN parent device field.
   vlanParent: requiredString(fields.vlanParent, _("Parent device is required")),
-  // TRANSLATORS: validation error for the VLAN protocol field.
-  vlanProtocol: optionalValidString(fields.vlanProtocol, () => true, ""),
 });
 
 /**

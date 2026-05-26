@@ -121,6 +121,11 @@ enum ConnectionMethod {
   AUTO = "auto",
 }
 
+enum VlanProtocol {
+  IEEE_802_1Q = "802.1Q",
+  IEEE_802_1AD = "802.1ad",
+}
+
 enum DeviceType {
   LOOPBACK = 0,
   ETHERNET = 1,
@@ -332,7 +337,7 @@ type Bridge = {
 type Vlan = {
   id: number;
   parent: string;
-  protocol?: string;
+  protocol?: VlanProtocol;
 };
 
 type ConnectionOptions = {
@@ -609,6 +614,7 @@ export {
   NetworkState,
   NetworkSystem,
   SecurityProtocols,
+  VlanProtocol,
   WifiNetworkStatus,
   Wireless,
 };
