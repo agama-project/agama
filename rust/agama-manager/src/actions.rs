@@ -315,12 +315,14 @@ impl SetConfigAction {
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
-                self.software
+                let software_future = self
+                    .software
                     .call(software::message::SetConfig::new(
                         Arc::clone(product),
                         config.software.clone(),
                     ))
                     .await?;
+                let _ = software_future.await;
 
                 self.set_selinux().await?;
 

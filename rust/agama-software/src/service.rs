@@ -29,7 +29,7 @@ use crate::{
 use agama_l10n;
 use agama_security as security;
 use agama_utils::{
-    actor::{self, Actor, Handler, MessageHandler},
+    actor::{self, run_in_background, Actor, Handler, MessageHandler},
     api::{
         event::{self, Event},
         software::{Config, Proposal, Repository, SystemInfo},
@@ -39,11 +39,12 @@ use agama_utils::{
     kernel_cmdline::KernelCmdline,
     products::ProductSpec,
     progress, question,
+    BoxFuture,
 };
 use async_trait::async_trait;
 use gettextrs::gettext;
 use std::{path::PathBuf, process::Command, sync::Arc};
-use tokio::sync::{broadcast, Mutex, MutexGuard, RwLock};
+use tokio::sync::{broadcast, oneshot, Mutex, MutexGuard, RwLock};
 use url::Url;
 
 #[derive(thiserror::Error, Debug)]
@@ -257,26 +258,27 @@ impl Service {
     /// 1. Synchronizes the packaging system (through the model adapter).
     /// 2. Emits issues if something is wrong.
     /// 3. Updates the service state (system information and proposal).
-    async fn update_proposal(&self) -> Result<(), Error> {
-        let wanted_state = {
-            let state = self.state.read().await;
-            state.state.clone()
-        };
-
-        let Some(wanted_state) = wanted_state else {
-            tracing::warn!("No wanted state has been calculated.");
-            return Ok(());
-        };
-
+    fn update_proposal(&self) -> oneshot::Receiver<Result<(), Error>> {
+        let state = self.state.clone();
         let model = self.model.clone();
         let progress = self.progress.clone();
         let issues = self.issues.clone();
         let l10n = self.l10n.clone();
-        let state = self.state.clone();
         let events = self.events.clone();
-        tracing::info!("Synchronizing the wanted software state");
 
-        tokio::task::spawn(async move {
+        run_in_background(async move {
+            let wanted_state = {
+                let state = state.read().await;
+                state.state.clone()
+            };
+
+            let Some(wanted_state) = wanted_state else {
+                tracing::warn!("No wanted state has been calculated.");
+                return Ok(());
+            };
+
+            tracing::info!("Synchronizing the wanted software state");
+
             let mut my_model = model.lock().await;
             let found_issues = my_model
                 .write(wanted_state, l10n, progress)
@@ -304,9 +306,8 @@ impl Service {
             ));
 
             Self::update_state(state, my_model, events).await;
-        });
-
-        Ok(())
+            Ok(())
+        })
     }
 
     /// Ancillary function to updates the service state with the information from the model.
@@ -405,7 +406,9 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
-    async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
+    async fn handle(&mut self, message: message::SetConfig<Config>)
+        -> Result<BoxFuture<Result<(), Error>>, Error>
+    {
         self.product = Some(message.product.clone());
 
         let mut config = message.config.clone().unwrap_or_default();
@@ -425,9 +428,13 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
         self.calculate_wanted_state().await?;
 
         // and then update the proposal (in a separate task).
-        self.update_proposal().await?;
+        let response = self.update_proposal();
 
-        Ok(())
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response("Service")))?
+        }))
     }
 }
 
@@ -487,7 +494,7 @@ impl MessageHandler<message::SetResolvables> for Service {
 #[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
-        self.update_proposal().await?;
+        let _ = self.update_proposal();
         Ok(())
     }
 }

@@ -18,16 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::future::Future;
-
 use agama_utils::{
-    actor::{self, Actor, Handler, MessageHandler},
+    actor::{self, run_in_background, Actor, Handler, MessageHandler},
     api::{bootloader, iscsi, storage::Config, Issue},
     arch::Arch,
     BoxFuture,
 };
 use async_trait::async_trait;
-use tokio::sync::oneshot;
 
 use crate::{
     message,
@@ -421,21 +418,6 @@ impl MessageHandler<message::zfcp::SetConfig> for Service {
         }
         Ok(())
     }
-}
-
-fn run_in_background<F>(func: F) -> oneshot::Receiver<Result<(), Error>>
-where
-    F: Future<Output = Result<(), Error>> + Send + 'static,
-{
-    let (tx, rx) = oneshot::channel::<Result<(), Error>>();
-    tokio::spawn(async move {
-        let result = func.await;
-        if let Err(error) = &result {
-            tracing::error!("Failed to run background action: {error}");
-        }
-        _ = tx.send(result);
-    });
-    rx
 }
 
 /// Converts a string into a Value.
