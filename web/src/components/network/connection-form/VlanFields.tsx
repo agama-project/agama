@@ -25,7 +25,7 @@ import { sprintf } from "sprintf-js";
 import { defaultOptions, VlanProtocolMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
-import { _, formatList } from "~/i18n";
+import { _, N_, formatList } from "~/i18n";
 
 /**
  * Protocol options for the selector.
@@ -34,16 +34,23 @@ const protocolOptions = () => [
   {
     value: VlanProtocolMode.DEFAULT,
     // TRANSLATORS: option for the VLAN protocol selector when no specific protocol is chosen.
-    // It uses the '802.1Q' protocol by default.
-    label: _("Default (802.1Q)"),
+    label: N_("Default"),
+    // TRANSLATORS: description for the 'Default' VLAN protocol option.
+    description: N_("Use the system default (802.1Q)."),
   },
   {
     value: VlanProtocolMode.IEEE_802_1Q,
-    label: "802.1Q",
+    // TRANSLATORS: label for the '802.1Q' VLAN protocol option.
+    label: N_("802.1Q"),
+    // TRANSLATORS: description for the '802.1Q' VLAN protocol option.
+    description: N_("Use the 802.1Q protocol explicitly."),
   },
   {
     value: VlanProtocolMode.IEEE_802_1AD,
-    label: "802.1ad",
+    // TRANSLATORS: label for the '802.1ad' VLAN protocol option.
+    label: N_("802.1ad"),
+    // TRANSLATORS: description for the '802.1ad' VLAN protocol option.
+    description: N_("Use the 802.1ad protocol explicitly."),
   },
 ];
 
@@ -124,10 +131,12 @@ const VlanFields = withForm({
                 // TRANSLATORS: label for the VLAN encapsulation protocol field.
                 _("Encapsulation protocol")
               }
-              options={protocolOptions().map(({ value, label }) => ({
+              options={protocolOptions().map(({ value, label, description }) => ({
                 value,
                 // eslint-disable-next-line agama-i18n/string-literals
                 label: _(label),
+                // eslint-disable-next-line agama-i18n/string-literals
+                description: _(description),
               }))}
             />
           )}

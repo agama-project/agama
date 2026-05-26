@@ -82,7 +82,7 @@ describe("VlanFields", () => {
 
     expect(screen.getByText(/Available devices: enp1s0 and enp2s0/)).toBeInTheDocument();
     expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent(
-      "Default (802.1Q)",
+      "Default",
     );
   });
 
@@ -90,7 +90,7 @@ describe("VlanFields", () => {
     installerRender(<TestForm defaultValues={{ vlanProtocol: VlanProtocolMode.DEFAULT }} />);
 
     expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent(
-      "Default (802.1Q)",
+      "Default",
     );
   });
 

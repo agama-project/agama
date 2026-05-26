@@ -36,6 +36,7 @@ import {
 } from "~/utils/network";
 import {
   requiredString,
+  requiredIntRange,
   optionalIntRange,
   requiredValidList,
   optionalValidList,
@@ -428,7 +429,13 @@ const validateVlanFields = (fields: VlanFormFields): FieldsValidationResult<Vlan
   // TRANSLATORS: validation error for the VLAN device name field.
   vlanIface: requiredString(fields.vlanIface, _("Device name is required")),
   // TRANSLATORS: validation error for the VLAN ID field.
-  vlanId: optionalIntRange(fields.vlanId, 0, 4094, _("VLAN ID must be between 0 and 4094")),
+  vlanId: requiredIntRange(
+    fields.vlanId,
+    0,
+    4094,
+    _("VLAN ID is required"),
+    _("VLAN ID must be between 0 and 4094"),
+  ),
   // TRANSLATORS: validation error for the VLAN parent device field.
   vlanParent: requiredString(fields.vlanParent, _("Parent device is required")),
 });
