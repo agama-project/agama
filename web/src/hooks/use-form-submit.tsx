@@ -159,7 +159,7 @@ export function useFormSubmit<TValues>({
   onSubmit,
   successTitle = _("Changes successfully applied"),
   noChangesTitle = _("No changes to apply"),
-  errorTitle = _("Form contains errors, fix them and try again"),
+  errorTitle = _("Fix the errors below and try again"),
 }: Options<TValues>) {
   /**
    * Track submit outcome without triggering re-renders.
