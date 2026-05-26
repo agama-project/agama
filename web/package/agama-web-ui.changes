@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May 25 12:36:17 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update shell-quote dependency (CVE-2026-9277, bsc#1266256).
+
+-------------------------------------------------------------------
 Wed May 20 13:00:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Standardize forms organization (gh#agama-project/agama#3521).

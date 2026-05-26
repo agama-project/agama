@@ -51,6 +51,10 @@ export default {
     "%1$s, %2$s და [კიდევ %3$d]",
     "%1$s, %2$s და [კიდევ %3$d]"
   ],
+  "%d NTP server": [
+    "%d NTP სერვერი",
+    "%d NTP სერვერი"
+  ],
   "%d connections available": [
     "ხელმისაწვდომია %d კავშირი"
   ],
@@ -235,7 +239,7 @@ export default {
     "ქმედებები მონიშნული %s მოწყობილობისთვის:"
   ],
   "Activate": [
-    "აქტივაცია"
+    "გააქტიურება"
   ],
   "Activate and format DASD devices": [
     "DASD მოწყობილობების გააქტიურება და დაფორმატება"
@@ -248,6 +252,9 @@ export default {
   ],
   "Activated": [
     "აქტივირებულია"
+  ],
+  "Activating": [
+    "აქტივაცია"
   ],
   "Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     ""
@@ -368,8 +375,14 @@ export default {
   "At least one IPv6 address is required": [
     "აუცილებელია, სულ ცოტა, ერთი IPv6 მისამართი"
   ],
+  "At least one NTP server is required": [
+    "საჭიროა, სულ ცოტა, ერთი NTP სერვერი"
+  ],
   "At least one bond port is required": [
     "საჭიროა, სულ ცოტა, ერთი დაწყვილების პორტი"
+  ],
+  "At least one bridge port is required": [
+    "საჭიროა, სულ ცოტა, ერთი ხიდის პორტი"
   ],
   "At least one logical volume will be deleted": [
     "წაიშლება, სულ ცოტა, ერთი ლოგიკური ტომი"
@@ -431,17 +444,8 @@ export default {
   "Beta": [
     "ბეტა"
   ],
-  "Bind to MAC address": [
-    "მიბმა MAC მისამართზე"
-  ],
-  "Bind to device name": [
-    "მიბმა მოწყობილობის სახელზე"
-  ],
   "Binding": [
     "მიმაგრება"
-  ],
-  "Binding settings": [
-    "მიბმის პარამეტრები"
   ],
   "BitLocker": [
     "BitLocker"
@@ -472,6 +476,12 @@ export default {
   ],
   "Bridge": [
     "ხიდი"
+  ],
+  "Bridge details": [
+    "ხიდის დეტალები"
+  ],
+  "Bridge ports": [
+    "ხიდის პორტები"
   ],
   "Btrfs": [
     "Btrfs"
@@ -595,15 +605,6 @@ export default {
   "Choose a volume group to define logical volumes": [
     "აირჩიეთ ტომების ჯგუფი ლოგიკური ტომების აღსაწერად"
   ],
-  "Choose device to bind by MAC": [
-    "აირჩიეთ მოწყობილობა MAC-ით მისაბმელად"
-  ],
-  "Choose device to bind by name": [
-    "აირჩიეთ მოწყობილობა, რომლის სახელზეც მიბმა გნებავთ"
-  ],
-  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
-    ""
-  ],
   "Chosen by MAC": [
     "არჩეულია MAC-ით"
   ],
@@ -664,8 +665,14 @@ export default {
   "Configure partition at %s": [
     "დანაყოფის აღწერა %s-ზე"
   ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    ""
+  ],
   "Configure zFCP": [
     "zFCP-ის მორგება"
+  ],
+  "Configured as %s.": [
+    "მორგებულია, როგორც %s."
   ],
   "Configured for installation only": [
     "მორგებულია მხოლოდ დასაყენებლად"
@@ -821,8 +828,14 @@ export default {
   "Deactivated": [
     "დეაქტივირებულია"
   ],
+  "Deactivating": [
+    "მიმდინარეობს დეაქტივაცია"
+  ],
   "Default": [
-    ""
+    "ნაგულისხმევი"
+  ],
+  "Default NTP": [
+    "ნაგულისხმევი NTP"
   ],
   "Default file system for %s": [
     "ნაგულისხმევი ფაილური სისტემა %s-სთვის"
@@ -905,6 +918,9 @@ export default {
   "Device name is required": [
     "მოწყობილობის სახელი აუცილებელია"
   ],
+  "Disabled": [
+    "გამორთულია"
+  ],
   "Discard": [
     "მოცილება"
   ],
@@ -935,6 +951,9 @@ export default {
   "Disks": [
     "დისკები"
   ],
+  "Dismiss and clear registration data": [
+    "რეგისტრაციის მონაცემების მოცილება და გასუფთავება"
+  ],
   "Do not activate": [
     "არ გააქტიურება"
   ],
@@ -953,9 +972,6 @@ export default {
   "Do not use": [
     "არ გამოიყენო"
   ],
-  "Down": [
-    "გამორთ"
-  ],
   "Download config": [
     "კონფიგურაციის გადმოწერა"
   ],
@@ -964,6 +980,9 @@ export default {
   ],
   "Download logs to troubleshoot or share with support.": [
     "ჟურნალის გადმოწერა პრობლემების გადასაჭრელად, ან მხარდაჭერის გუნდთან გასაზიარებლად."
+  ],
+  "E.g., %s": [
+    "მაგ: %s"
   ],
   "E.g., 192.168.1.1": [
     "მაგ: 192.168.1.1"
@@ -982,6 +1001,9 @@ export default {
   ],
   "E.g., bond0": [
     "მაგ: bond0"
+  ],
+  "E.g., br0": [
+    "მაგ: br0"
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
     "მაგ: downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
@@ -1016,6 +1038,12 @@ export default {
   "Enable mutual verification": [
     "ორმხრივი გადამოწმების ჩართვა"
   ],
+  "Enabled": [
+    "ჩართულია"
+  ],
+  "Enabled with the system default settings": [
+    "ჩართულია სისტემის ნაგულისხმევ პარამეტრებთან ერთად"
+  ],
   "Encrypt the system": [
     "სისტემის დაშიფვრა"
   ],
@@ -1040,8 +1068,8 @@ export default {
   "Encryption settings": [
     "დაშიფვრის პარამეტრები"
   ],
-  "Enter a hostname.": [
-    "შეიყვანეთ ჰოსტის სახელი."
+  "Enter a hostname value.": [
+    "შეიყვანეთ ჰოსტის სახელის მნიშვნელობა."
   ],
   "Enter a name": [
     "შეიყვანეთ სახელი"
@@ -1049,8 +1077,14 @@ export default {
   "Enter a name for the volume group.": [
     "შეიყვანეთ სახელი ტომების ჯგუფისთვის."
   ],
+  "Enter a registration code": [
+    "შეიყვანეთ რეგისტრაციის კოდი"
+  ],
+  "Enter a server URL": [
+    "შეიყვანეთ სერვერის URL"
+  ],
   "Enter or Tab to add": [
-    ""
+    "დასამატებლად დააჭირეთ Enter-ს, ან Tab-ს"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
     ""
@@ -1071,7 +1105,7 @@ export default {
     "ვადა"
   ],
   "Explicitly enabled with manual settings": [
-    ""
+    "აშკარად ჩართულია მორგებული პარამეტრებით"
   ],
   "Ext2": [
     "Ext2"
@@ -1175,7 +1209,7 @@ export default {
     "მოწყობილობების დაფორმატება"
   ],
   "Forward delay": [
-    ""
+    "გადაგზავნის დაყოვნება"
   ],
   "Forward delay must be between 4 and 30 seconds": [
     ""
@@ -1214,7 +1248,7 @@ export default {
     "გრაფიკული სამუშაო გარემოები სისტემისთვის."
   ],
   "Hello time": [
-    ""
+    "Hello-ის დრო"
   ],
   "Hello time must be between 1 and 10 seconds": [
     ""
@@ -1229,11 +1263,17 @@ export default {
   "Hostname": [
     "ჰოსტის სახელი"
   ],
-  "Hostname could not be updated": [
-    "ჰოსტის სახელის განახლება შეუძლებელია"
+  "Hostname [will remain unchanged] across reboots and network changes.": [
+    "ჰოსტის სახელი [უცვლელი დარჩება] გადატვირთვის, ან ქსელის ცვლილების შემდეგ."
   ],
-  "Hostname successfully updated": [
-    "ჰოსტის სახელი წარმატებით განახლდა"
+  "Hostname cannot be changed after registration": [
+    "რეგისტრაციის შემდეგ ჰოსტის სახელს ვერ შეცვლით"
+  ],
+  "Hostname is dynamic and [may change after a reboot or network update].": [
+    "ჰოსტის სახელი დინამიკურია [და შეიძლება, შეიცვალოს გადატვირთვის, ან ქსელის ცვლილების შემდეგ]."
+  ],
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    ""
   ],
   "I have read and accept the [license] for %s": [
     "მე წავიკითხე და დავეთანხმე ლიცენზიას %s-სთვის"
@@ -1374,8 +1414,14 @@ export default {
   "Invalid IPv6 gateway": [
     "არასწორი IPv6 ნაგულისხმევი რაუტერი"
   ],
+  "Invalid NTP server address": [
+    "არასწორი NTP სერვერის მისამართი"
+  ],
   "Invalid [zFCP] settings": [
     "არასწორი [zFCP] პარამეტრები"
+  ],
+  "Invalid hostname value.": [
+    "არასწორი ჰოსტის სახელის მნიშვნელობა."
   ],
   "Invalid settings": [
     "არასწორი პარამეტრები"
@@ -1471,7 +1517,7 @@ export default {
     "აუცილებელია ლიცენზიაზე დათანხმება"
   ],
   "Listening and learning time (4-30 seconds).": [
-    ""
+    "მოსმენისა და სწავლის დრო (4-30 წმ)."
   ],
   "Loading": [
     "იტვირთება"
@@ -1543,7 +1589,7 @@ export default {
     "მაქს. არხი"
   ],
   "Max message age": [
-    ""
+    "შეტყობინების მაქს. ასაკი"
   ],
   "Max message age must be between 6 and 40 seconds": [
     ""
@@ -1649,6 +1695,9 @@ export default {
   "Name": [
     "სახელი"
   ],
+  "Name %s": [
+    "სახელი %s"
+  ],
   "Name is required": [
     "სახელი აუცილებელია"
   ],
@@ -1696,6 +1745,9 @@ export default {
   ],
   "No additional patterns available": [
     "დამატებით ნიმუშები ხელმისაწვდომი არაა"
+  ],
+  "No changes detected. System settings are already up to date.": [
+    ""
   ],
   "No connections match filters": [
     "ფილტრს კავშირი არ ემთხვევა"
@@ -1793,9 +1845,6 @@ export default {
   "None": [
     "არაფერი"
   ],
-  "None (unbound)": [
-    "არცერთი (მიბმის გარეშე)"
-  ],
   "None of the keymaps match the filter.": [
     "ფილტრს არცერთი კლავიტურის განლაგება ემთხვევა."
   ],
@@ -1836,7 +1885,7 @@ export default {
     "მხარდაჭერილი არაა (%s)"
   ],
   "Not used by this bridge": [
-    ""
+    "არ გამოიყენება ამ ხიდის მიერ"
   ],
   "Offline": [
     "გათიშულია"
@@ -1953,7 +2002,7 @@ export default {
     "პოტენციური მონაცემთა კარგვა, რომელიც, მინიმუმ, ეხება სისტემას %s"
   ],
   "Priority": [
-    ""
+    "პრიორიტეტი"
   ],
   "Priority must be between 0 and 61440": [
     ""
@@ -1964,9 +2013,6 @@ export default {
   "Proceeding will delete existing data, including %s": [
     "გაგრძელება წაშლის არსებულ მონაცემებს, %s-ის ჩათვლით"
   ],
-  "Product is already registered": [
-    "პროდუქტი უკვე რეგისტრირებულია"
-  ],
   "Product not found": [
     "პროდუქტი აღმოჩენილი არაა"
   ],
@@ -1974,7 +2020,7 @@ export default {
     ""
   ],
   "Protocol message interval (1-10 seconds).": [
-    ""
+    "პროტოკოლის შეტყობინებების ინტერვალი (1-10 წმ)."
   ],
   "Protocol message retention time (6-40 seconds).": [
     ""
@@ -1984,6 +2030,9 @@ export default {
   ],
   "Provide its password to log in to the system.": [
     "შეიყვანეთ მისი პაროლი სისტემაში შესასვლელად."
+  ],
+  "Provided by the network": [
+    "მოწოდებულია ქსელის მიერ"
   ],
   "Public SSH Key": [
     "საჯარო SSH გასაღები"
@@ -2039,6 +2088,9 @@ export default {
   "Registered": [
     "დარეგისტრირებულია"
   ],
+  "Registered hostname will not change": [
+    "რეგისტრირებული ჰოსტის სახელი არ შეიცვლება"
+  ],
   "Registered without a code": [
     "რეგისტრირებულია კოდის გარეშე"
   ],
@@ -2050,6 +2102,9 @@ export default {
   ],
   "Registration code": [
     "რეგისტრაციის კოდი"
+  ],
+  "Registration in progress": [
+    "მიმდინარეობს რეგისტრაცია"
   ],
   "Registration server": [
     "რეგისტრაციის სერვერი"
@@ -2151,7 +2206,7 @@ export default {
     "SSID"
   ],
   "STP": [
-    ""
+    "STP"
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -2265,14 +2320,20 @@ export default {
   "Server URL": [
     "სერვერის URL"
   ],
+  "Server addresses": [
+    "სერვერის მისამართები"
+  ],
   "Set DIAG off": [
     "DIAG-ის გამორთვა"
   ],
   "Set DIAG on": [
     "DIAG-ის ჩართვა"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "დააყენეთ მუდმივი ჰოსტის სახელი, რომელიც არ შეიცვლება ქსელის განახლებებთან ერთად."
+  "Set NTP servers manually": [
+    "NTP სერვერების ხელით დაყენება"
+  ],
+  "Set manually": [
+    "ხელით დაყენება"
   ],
   "Settings": [
     "მორგება"
@@ -2344,6 +2405,9 @@ export default {
   "Some IPv6 addresses are invalid": [
     "ზოგიერთი IPv6 მისამართი არასწორია"
   ],
+  "Some NTP server addresses are invalid": [
+    "ზოგიერთი NTP სერვერის მისამართი არასწორია"
+  ],
   "Some existing logical volumes may be shrunk": [
     "ზოგიერთი არსებული ლოგიკური ტომი, შეიძლება, დაპატარავდეს"
   ],
@@ -2380,11 +2444,14 @@ export default {
   "Startup": [
     "გაშვება"
   ],
+  "State": [
+    "მდგომარეობა"
+  ],
+  "Static": [
+    "სტატიკური"
+  ],
   "Static addresses and gateway": [
     "სტატიკური მისამართები და ნაგულისხმევი რაუტერი"
-  ],
-  "Static hostname": [
-    "სტატიკური ჰოსტის სახელი"
   ],
   "Status": [
     "სტატუსი"
@@ -2418,11 +2485,23 @@ export default {
     "გადართვა სხვა პროდუქტზე",
     "გადართვა ერთ-ერთზე %d ხელმისაწვდომი პროდუქტიდან"
   ],
+  "System": [
+    "სისტემა"
+  ],
   "System Information": [
     "ინფორმაცია სისტემის შესახებ"
   ],
+  "System settings could not be updated": [
+    "სისტემის პარამეტრების განახლება შეუძლებელია"
+  ],
+  "System settings successfully updated": [
+    "სისტემის პარამეტრები წარმატებით განახლდა"
+  ],
   "System will have no network connections": [
     "სისტემას ქსელი არ ექნება"
+  ],
+  "TPM sealing requires the new system to be booted directly on its first run.": [
+    "TPM-ის დაბეჭდვას ახალი სისტემის პირდაპირ ჩატვირთვა სჭირდება პირველი გაშვებისას."
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM-ის დაბეჭდვას ახალი სისტემის პირდაპირ ჩატვირთვა სჭირდება."
@@ -2451,9 +2530,6 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "მორგებული LVM ჯგუფები დარჩება დისკზე %s"
-  ],
-  "The connection can be used by any available device.": [
-    "კავშირის გამოყენება ნებისმიერ ხელმისაწვდომ მოწყობილობას შეუძლია."
   ],
   "The connection could not be saved": [
     "კავშირის შენახვა შეუძლებელია"
@@ -2586,7 +2662,10 @@ export default {
   "The password is weak": [
     "პაროლი სუსტია"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
+  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system.": [
+    ""
+  ],
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
     ""
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
@@ -2690,9 +2769,6 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     ""
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "ეს ჰოსტის სახელი დინამიკურია და შეიძლება, შეიცვალოს დაყენების ან ქსელური განახლების შემდეგ, როგორც ამას ლოკალური ქსელის ადმინისტრატორი მიუთითებს."
-  ],
   "This license is not available in %s.": [
     "ეს ლიცენზია %s-ში ხელმისაწვდომი არაა."
   ],
@@ -2729,6 +2805,9 @@ export default {
   "TiB": [
     "ტიბ"
   ],
+  "Time Synchronization Servers": [
+    "დროის სინქრონიზაციის სერვერები"
+  ],
   "Time zone": [
     "დროის სარტყელი"
   ],
@@ -2741,6 +2820,9 @@ export default {
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     ""
   ],
+  "Transient": [
+    "გარდამავალი"
+  ],
   "Try to activate again": [
     "გააქტიურების თავიდან ცდა"
   ],
@@ -2752,9 +2834,6 @@ export default {
   ],
   "Unable to modify the settings": [
     "პარამეტრების შეცვლა შეუძლებელია"
-  ],
-  "Unbound": [
-    "მოხსნა"
   ],
   "Unexpected error": [
     "მოულოდნელი შეცდომა"
@@ -2774,17 +2853,11 @@ export default {
   "Unused space": [
     "გამოუყენებელი ადგილი"
   ],
-  "Up": [
-    "ჩართ"
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "შეიძლება %s-მდე აღდგენა მოწყობილობის დაპატარავებით."
   ],
   "Update available disks and activate crypt devices": [
     "ხელმისაწვდომი დისკების განახლება და კრიპტოგრაფიული მოწყობილობების გააქტიურება"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "ჰოსტის სახელის შეცვლა ახლა, ან მოგვიანებით არ შეცვლის ამჟამად დარეგისტრირებულ ჰოსტის სახელს."
   ],
   "Upload": [
     "ატვირთვა"
@@ -2894,14 +2967,14 @@ export default {
   "Use password": [
     "პაროლის გამოყენება"
   ],
+  "Use product's default NTP servers": [
+    "პროდუქტის ნაგულისხმევი NTP სერვერების გამოყენება"
+  ],
   "Use public SSH Key": [
     "საჯარო SSH გასაღების გამოყენება"
   ],
   "Use several devices": [
     "რამდენიმე მოწყობილობის გამოყენება"
-  ],
-  "Use static hostname": [
-    "სტატიკური ჰოსტის სახელის გამოყენება"
   ],
   "Use suggested username": [
     "მინიშნებული მომხმარებლის სახელის გამოყენება"
@@ -2937,6 +3010,18 @@ export default {
   "Using %d connections with %s": [
     "გამოიყენება %d კავშირი %s-ით"
   ],
+  "Using %s NTP servers, including [%s]": [
+    ""
+  ],
+  "Using %s as NTP server": [
+    "%s-ის გამოყენება NTP სერვერად"
+  ],
+  "Using %s keyboard layout": [
+    "გამოიყენება %s კლავიატურის განლაგება"
+  ],
+  "Using [%s] keyboard layout": [
+    "გამოიყენება [%s] კლავიატურის განლაგება"
+  ],
   "Using a hashed password.": [
     "დაჰეშილი პაროლის გამოყენება."
   ],
@@ -2958,8 +3043,8 @@ export default {
   "Using partition %s": [
     "გამოიყენება დანაყოფი %s"
   ],
-  "Using transient hostname: %s": [
-    "გამოიყენება გარდამავლი ჰოსტის სახელი: %s"
+  "Using transient name, which may change after reboot or network changes": [
+    "გარდამავალი სახელი, რომელიც შეიძლება, შეიცვალოს გადატვირთვის, ან ქსელის ცვლილების შემდეგ"
   ],
   "VLAN": [
     "VLAN"
