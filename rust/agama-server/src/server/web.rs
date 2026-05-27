@@ -27,7 +27,6 @@ use agama_lib::{error::ServiceError, logs};
 use agama_manager::service::Error as ManagerError;
 use agama_manager::users::PasswordCheckResult;
 use agama_manager::{self as manager, message, users};
-use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -39,7 +38,7 @@ use agama_utils::{
     },
     progress, question,
 };
-use aide::axum::routing::{get_with, post_with, put};
+use aide::axum::routing::{get_with, post_with};
 use aide::axum::ApiRouter;
 use aide::transform::TransformOperation;
 use axum::{
