@@ -22,8 +22,9 @@ use std::future::Future;
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader, iscsi, storage::Config, Issue},
+    api::{bootloader, iscsi, software::Resolvable, storage::Config, Issue},
     arch::Arch,
+    message::GetResolvables,
     BoxFuture,
 };
 use async_trait::async_trait;
@@ -194,6 +195,14 @@ impl MessageHandler<message::GetProposal> for Service {
 impl MessageHandler<message::GetIssues> for Service {
     async fn handle(&mut self, _message: message::GetIssues) -> Result<Vec<Issue>, Error> {
         let raw_json = self.storage_proxy.issues().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.storage_proxy.resolvables().await?;
         Ok(try_from_string(&raw_json)?)
     }
 }

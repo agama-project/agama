@@ -26,8 +26,10 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{event, storage::Config},
-    issue, progress, BoxFuture,
+    api::{event, software::Resolvable, storage::Config},
+    issue,
+    message::GetResolvables,
+    progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -204,6 +206,13 @@ impl MessageHandler<message::GetConfigFromModel> for Service {
 impl MessageHandler<message::GetProposal> for Service {
     async fn handle(&mut self, _message: message::GetProposal) -> Result<Option<Value>, Error> {
         self.client.get_proposal().await.map_err(|e| e.into())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        self.client.get_resolvables().await.map_err(|e| e.into())
     }
 }
 
