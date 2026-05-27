@@ -1,7 +1,13 @@
 -------------------------------------------------------------------
-Mon May 25 11:00:05 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed May 27 13:40:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use "sshPublicKeys" by default (gh#agama-project/agama#3531).
+
+-------------------------------------------------------------------
+Wed May 27 07:40:40 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Do not display system information in output of agama status
+  command (gh#agama-project/agama#3553).
 
 -------------------------------------------------------------------
 Fri May 22 13:07:14 UTC 2026 - Knut Anderssen <kanderssen@suse.com>

@@ -24,28 +24,44 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { IssuesAlert } from "~/components/core";
-import { SOFTWARE } from "~/routes/paths";
 import type { Issue } from "~/model/issue";
 
-describe("IssueAlert", () => {
-  it("renders a list of issues", () => {
-    const issue: Issue = {
-      description: "A generic issue",
-      class: "generic",
-      scope: "software",
-    };
-    installerRender(<IssuesAlert issues={[issue]} />);
-    expect(screen.getByText(issue.description)).toBeInTheDocument();
+const genericIssue: Issue = {
+  description: "A generic issue",
+  class: "generic",
+  scope: "software",
+};
+
+const anotherIssue: Issue = {
+  description: "Another issue",
+  class: "generic",
+  scope: "software",
+};
+
+describe("IssuesAlert", () => {
+  it("renders nothing when there are no issues", () => {
+    const { container } = installerRender(<IssuesAlert issues={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it("renders a link to conflict resolution when there is a 'solver' issue", () => {
-    const issue: Issue = {
-      description: "Conflicts found",
-      class: "solver",
-      scope: "software",
-    };
-    installerRender(<IssuesAlert issues={[issue]} />);
-    const link = screen.getByRole("link", { name: "Review and fix" });
-    expect(link).toHaveAttribute("href", SOFTWARE.conflicts);
+  describe("when there is a single issue", () => {
+    it("renders the issue description as the alert title", () => {
+      installerRender(<IssuesAlert issues={[genericIssue]} />);
+      screen.getByRole("heading", { name: /A generic issue/ });
+    });
+
+    it("does not render a list", () => {
+      installerRender(<IssuesAlert issues={[genericIssue]} />);
+      expect(screen.queryByRole("list")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when there are multiple issues", () => {
+    it("renders a generic alert title and a list of issue descriptions", () => {
+      installerRender(<IssuesAlert issues={[genericIssue, anotherIssue]} />);
+      screen.getByRole("heading", { name: /You must fix these issues/ });
+      screen.getByText(genericIssue.description);
+      screen.getByText(anotherIssue.description);
+    });
   });
 });
