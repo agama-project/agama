@@ -59,7 +59,7 @@ describe("IssuesAlert", () => {
   describe("when there are multiple issues", () => {
     it("renders a generic alert title and a list of issue descriptions", () => {
       installerRender(<IssuesAlert issues={[genericIssue, anotherIssue]} />);
-      screen.getByRole("heading", { name: /The following issues need to be addressed/ });
+      screen.getByRole("heading", { name: /You must fix these issues/ });
       screen.getByText(genericIssue.description);
       screen.getByText(anotherIssue.description);
     });
