@@ -23,7 +23,6 @@ use std::{
     sync::Arc,
 };
 
-use agama_software::{self as software, Resolvable, ResolvableType};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -32,6 +31,7 @@ use agama_utils::{
             user_file, Script, ScriptsConfig, UserFile,
         },
         question::QuestionSpec,
+        software::Resolvable,
     },
     command::enable_service,
     message::GetResolvables,
@@ -52,8 +52,6 @@ pub enum Error {
     #[error(transparent)]
     Scripts(#[from] scripts::Error),
     #[error(transparent)]
-    Software(#[from] software::service::Error),
-    #[error(transparent)]
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Questions(#[from] AskError),
@@ -69,7 +67,6 @@ const DEFAULT_INSTALL_DIR: &str = "/mnt";
 pub struct Starter {
     workdir: PathBuf,
     install_dir: PathBuf,
-    software: Handler<software::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
 }
@@ -77,14 +74,13 @@ pub struct Starter {
 impl Starter {
     /// Creates a new starter.
     ///
-    /// * `events`: channel to emit the [localization-specific events](crate::Event).
+    /// * `progress`: handler to report the progress.
+    /// * `questions`: handler to interact with the user.
     pub fn new(
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
-        software: Handler<software::Service>,
     ) -> Self {
         Self {
-            software,
             progress,
             questions,
             workdir: PathBuf::from(DEFAULT_WORK_DIR),
@@ -98,7 +94,6 @@ impl Starter {
         let service = Service {
             progress: self.progress,
             questions: self.questions,
-            software: self.software,
             scripts: Arc::new(Mutex::new(scripts)),
             files: vec![],
             install_dir: self.install_dir,
@@ -120,7 +115,6 @@ impl Starter {
 }
 
 pub struct Service {
-    software: Handler<software::Service>,
     progress: Handler<progress::Service>,
     questions: Handler<question::Service>,
     scripts: Arc<Mutex<ScriptsRepository>>,
@@ -133,9 +127,8 @@ impl Service {
     pub fn starter(
         progress: Handler<progress::Service>,
         questions: Handler<question::Service>,
-        software: Handler<software::Service>,
     ) -> Starter {
-        Starter::new(progress, questions, software)
+        Starter::new(progress, questions)
     }
 
     /// Clear the scripts.
@@ -315,10 +308,12 @@ impl MessageHandler<GetResolvables> for Service {
         let scripts = self.scripts.lock().await;
         let has_init_scripts = !scripts.by_group(ScriptsGroup::Init).is_empty();
 
-        if has_init_scripts {
-            Ok(vec![Resolvable::new("agama-scripts", ResolvableType::Package)])
+        let resolvables = if has_init_scripts {
+            vec![Resolvable::package("agama-scripts")]
         } else {
-            Ok(vec![])
-        }
+            vec![]
+        };
+
+        Ok(resolvables)
     }
 }

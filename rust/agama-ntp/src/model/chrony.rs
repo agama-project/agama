@@ -20,8 +20,10 @@
 
 //! This module defines a chrony-based module for the agama-ntp service.
 
-use agama_software::{Resolvable, ResolvableType};
-use agama_utils::api::ntp::{Config, Source, SourceType};
+use agama_utils::api::{
+    ntp::{Config, Source, SourceType},
+    software::Resolvable,
+};
 use agama_utils::command::enable_service;
 use async_trait::async_trait;
 use std::path::{Path, PathBuf};
@@ -157,7 +159,7 @@ impl ModelAdapter for Model {
     }
 
     fn resolvables(&self) -> Vec<Resolvable> {
-        vec![Resolvable::new("chrony", ResolvableType::Package)]
+        vec![Resolvable::package("chrony")]
     }
 
     async fn remove_config(&self) -> Result<(), Error> {

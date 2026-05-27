@@ -38,6 +38,14 @@ impl Resolvable {
             r#type,
         }
     }
+
+    pub fn package(name: &str) -> Self {
+        Self::new(name, ResolvableType::Package)
+    }
+
+    pub fn pattern(name: &str) -> Self {
+        Self::new(name, ResolvableType::Pattern)
+    }
 }
 
 /// Software resolvable type (package or pattern).

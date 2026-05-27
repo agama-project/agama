@@ -38,8 +38,7 @@ use agama_utils::{
     issue,
     kernel_cmdline::KernelCmdline,
     products::ProductSpec,
-    progress, question,
-    BoxFuture,
+    progress, question, BoxFuture,
 };
 use async_trait::async_trait;
 use gettextrs::gettext;
@@ -406,9 +405,10 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
-    async fn handle(&mut self, message: message::SetConfig<Config>)
-        -> Result<BoxFuture<Result<(), Error>>, Error>
-    {
+    async fn handle(
+        &mut self,
+        message: message::SetConfig<Config>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
         self.product = Some(message.product.clone());
 
         let mut config = message.config.clone().unwrap_or_default();
@@ -485,7 +485,7 @@ impl MessageHandler<message::SetResolvables> for Service {
 #[async_trait]
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
-        let _ = self.update_proposal();
+        let _ = self.update_proposal().await;
         Ok(())
     }
 }

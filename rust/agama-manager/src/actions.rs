@@ -337,23 +337,15 @@ impl SetConfigAction {
                     .await?;
 
                 // STEP 3: Collect resolvables from all services
-                let files_resolvables = self
-                    .files
-                    .call(GetResolvables)
-                    .await
-                    .unwrap_or_else(|e| {
-                        tracing::error!("Failed to get resolvables from files service: {e}");
-                        vec![]
-                    });
+                let files_resolvables = self.files.call(GetResolvables).await.unwrap_or_else(|e| {
+                    tracing::error!("Failed to get resolvables from files service: {e}");
+                    vec![]
+                });
 
-                let ntp_resolvables = self
-                    .ntp
-                    .call(GetResolvables)
-                    .await
-                    .unwrap_or_else(|e| {
-                        tracing::error!("Failed to get resolvables from ntp service: {e}");
-                        vec![]
-                    });
+                let ntp_resolvables = self.ntp.call(GetResolvables).await.unwrap_or_else(|e| {
+                    tracing::error!("Failed to get resolvables from ntp service: {e}");
+                    vec![]
+                });
 
                 // STEP 4: Set aggregated resolvables in software (no proposal trigger)
                 self.software

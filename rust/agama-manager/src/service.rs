@@ -315,7 +315,7 @@ impl Starter {
 
         let ntp = match self.ntp {
             Some(ntp) => ntp,
-            None => ntp::Service::starter(self.events.clone(), software.clone()).start()?,
+            None => ntp::Service::starter(self.events.clone()).start()?,
         };
 
         let iscsi = match self.iscsi {
@@ -335,7 +335,7 @@ impl Starter {
         let files = match self.files {
             Some(files) => files,
             None => {
-                files::Service::starter(progress.clone(), self.questions.clone(), software.clone())
+                files::Service::starter(progress.clone(), self.questions.clone())
                     .start()
                     .await?
             }

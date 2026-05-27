@@ -23,10 +23,9 @@ use crate::{
     model::{self, chrony},
 };
 
-use agama_software::{self as software, Resolvable};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{self, event},
+    api::{self, event, software::Resolvable},
     message::GetResolvables,
 };
 use async_trait::async_trait;
@@ -38,23 +37,18 @@ pub enum Error {
     Actor(#[from] actor::Error),
     #[error(transparent)]
     Model(#[from] model::Error),
-    #[error(transparent)]
-    Software(#[from] software::service::Error),
 }
 
 pub struct Starter {
     _events: event::Sender,
     model: Box<dyn model::ModelAdapter + Send + 'static>,
-    software: Handler<software::Service>,
 }
 
 impl Starter {
-    pub fn new(events: event::Sender, software: Handler<software::Service>) -> Starter {
+    pub fn new(events: event::Sender) -> Starter {
         Self {
             _events: events,
             model: Box::new(chrony::Model::new()),
-
-            software,
         }
     }
 
@@ -71,7 +65,6 @@ impl Starter {
             default_config: config.clone(),
             config,
             model: self.model,
-            software: self.software,
         };
 
         let handler = actor::spawn(service);
@@ -84,14 +77,12 @@ pub struct Service {
     default_config: api::ntp::Config,
     config: api::ntp::Config,
     model: Box<dyn model::ModelAdapter + Send + 'static>,
-    software: Handler<software::Service>,
 }
 
 impl Service {
-    pub fn starter(events: event::Sender, software: Handler<software::Service>) -> Starter {
-        Starter::new(events, software)
+    pub fn starter(events: event::Sender) -> Starter {
+        Starter::new(events)
     }
-
 }
 
 impl Actor for Service {
@@ -169,6 +160,11 @@ impl MessageHandler<message::SetLocale> for Service {
 #[async_trait]
 impl MessageHandler<GetResolvables> for Service {
     async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
-        Ok(self.model.resolvables())
+        let resolvables = if self.config.is_empty() {
+            vec![]
+        } else {
+            self.model.resolvables()
+        };
+        Ok(resolvables)
     }
 }

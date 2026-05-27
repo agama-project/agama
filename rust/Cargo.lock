@@ -73,7 +73,6 @@ name = "agama-files"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
- "agama-software",
  "agama-utils",
  "async-trait",
  "gettext-rs",
@@ -251,7 +250,6 @@ name = "agama-ntp"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
- "agama-software",
  "agama-utils",
  "async-trait",
  "merge",
