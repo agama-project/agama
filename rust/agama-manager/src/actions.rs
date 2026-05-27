@@ -22,7 +22,7 @@ use std::{process::Command, sync::Arc};
 
 use agama_network::NetworkSystemClient;
 use agama_utils::{
-    actor::Handler,
+    actor::{Handler, MessageHandler},
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
     issue,
     message::GetResolvables,
@@ -313,7 +313,6 @@ impl SetConfigAction {
 
         match &product {
             Some(product) => {
-                // STEP 1: Storage SetConfig
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
@@ -326,7 +325,6 @@ impl SetConfigAction {
                     .await?;
                 let _ = storage_future.await;
 
-                // STEP 2: Bootloader SetConfig (depends on storage)
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
@@ -336,31 +334,7 @@ impl SetConfigAction {
                     ))
                     .await?;
 
-                // STEP 3: Collect resolvables from all services
-                let files_resolvables = self.files.call(GetResolvables).await.unwrap_or_else(|e| {
-                    tracing::error!("Failed to get resolvables from files service: {e}");
-                    vec![]
-                });
-
-                let ntp_resolvables = self.ntp.call(GetResolvables).await.unwrap_or_else(|e| {
-                    tracing::error!("Failed to get resolvables from ntp service: {e}");
-                    vec![]
-                });
-
-                // STEP 4: Set aggregated resolvables in software (no proposal trigger)
-                self.software
-                    .call(software::message::SetResolvables::new(
-                        "agama-files".to_string(),
-                        files_resolvables,
-                    ))
-                    .await?;
-
-                self.software
-                    .call(software::message::SetResolvables::new(
-                        "agama-ntp".to_string(),
-                        ntp_resolvables,
-                    ))
-                    .await?;
+                self.set_resolvables().await?;
 
                 // STEP 5: Software SetConfig (triggers single proposal with all resolvables)
                 self.progress
@@ -431,6 +405,35 @@ impl SetConfigAction {
             tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
         }
 
+        Ok(())
+    }
+
+    // Sets the resolvables required by other services
+    async fn set_resolvables(&self) -> Result<(), service::Error> {
+        self.set_resolvables_for(self.files.clone(), "files")
+            .await?;
+        self.set_resolvables_for(self.files.clone(), "ntp").await?;
+        Ok(())
+    }
+
+    async fn set_resolvables_for<T>(
+        &self,
+        handler: Handler<T>,
+        id: &str,
+    ) -> Result<(), service::Error>
+    where
+        T: MessageHandler<GetResolvables>,
+    {
+        let resolvables = handler
+            .call(GetResolvables)
+            .await
+            .unwrap_or_else(|_| vec![]);
+        self.software
+            .call(software::message::SetResolvables::new(
+                id.to_string(),
+                resolvables,
+            ))
+            .await?;
         Ok(())
     }
 }
