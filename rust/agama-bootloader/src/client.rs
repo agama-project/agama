@@ -21,7 +21,7 @@
 //! Implements a client to access Agama's D-Bus API related to Bootloader management.
 
 use crate::storage_client::{self, message};
-use agama_utils::{actor::Handler, api::bootloader::Config};
+use agama_utils::{actor::Handler, api::{bootloader::Config, software::Resolvable}};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -47,6 +47,8 @@ pub trait BootloaderClient {
     async fn get_config(&self) -> ClientResult<Config>;
     /// Retrieves the bootloader system information.
     async fn get_system(&self) -> ClientResult<Option<serde_json::Value>>;
+    /// Retrieves the bootloader resolvables.
+    async fn get_resolvables(&self) -> ClientResult<Vec<Resolvable>>;
     /// Sets the bootloader configuration.
     async fn set_config(&self, config: &Config) -> ClientResult<()>;
     /// Sets the extra kernel args for given scope.
@@ -97,6 +99,13 @@ impl BootloaderClient for Client {
         Ok(self
             .storage_client
             .call(message::bootloader::GetSystem)
+            .await?)
+    }
+
+    async fn get_resolvables(&self) -> ClientResult<Vec<Resolvable>> {
+        Ok(self
+            .storage_client
+            .call(message::bootloader::GetResolvables)
             .await?)
     }
 

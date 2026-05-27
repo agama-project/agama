@@ -268,6 +268,17 @@ impl MessageHandler<message::bootloader::GetSystem> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::bootloader::GetResolvables> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::bootloader::GetResolvables,
+    ) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.bootloader_proxy.resolvables().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::bootloader::SetConfig> for Service {
     async fn handle(&mut self, message: message::bootloader::SetConfig) -> Result<(), Error> {
         self.bootloader_proxy
