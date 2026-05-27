@@ -44,6 +44,7 @@ use zypp_agama::{errors::ZyppResult, ZyppError};
 use crate::{
     callbacks::{self, ask_software_question},
     model::{
+        packages::ResolvableTypeExt,
         registration::RegistrationError,
         state::{self, SoftwareState},
         WriteIssues,
@@ -575,7 +576,7 @@ impl ZyppServer {
         skip_if_missing: bool,
     ) -> Vec<Issue> {
         let mut issues = vec![];
-        let result = zypp.select_resolvable(name, r#type.into(), reason);
+        let result = zypp.select_resolvable(name, r#type.to_zypp_kind(), reason);
 
         if let Err(error) = result {
             if skip_if_missing {
@@ -600,9 +601,11 @@ impl ZyppServer {
     }
 
     fn unselect_resolvable(&self, zypp: &zypp_agama::Zypp, name: &str, r#type: ResolvableType) {
-        if let Err(error) =
-            zypp.unselect_resolvable(name, r#type.into(), zypp_agama::ResolvableSelected::User)
-        {
+        if let Err(error) = zypp.unselect_resolvable(
+            name,
+            r#type.to_zypp_kind(),
+            zypp_agama::ResolvableSelected::User,
+        ) {
             tracing::info!("Could not unselect '{name}': {error}");
         }
     }
