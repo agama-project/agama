@@ -336,7 +336,6 @@ impl SetConfigAction {
 
                 self.set_resolvables().await?;
 
-                // STEP 5: Software SetConfig (triggers single proposal with all resolvables)
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
@@ -349,7 +348,6 @@ impl SetConfigAction {
                     .await?;
                 let _ = software_future.await;
 
-                // STEP 6: SELinux setup (uses software state)
                 self.set_selinux().await?;
             }
 
