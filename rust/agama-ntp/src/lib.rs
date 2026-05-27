@@ -25,8 +25,6 @@ pub use service::{Service, Starter};
 
 #[cfg(test)]
 mod tests {
-    use agama_l10n::test_utils::start_service as start_l10n_service;
-
     use agama_utils::{
         actor::Handler,
         api::{
@@ -35,7 +33,7 @@ mod tests {
             software::Resolvable,
             Event,
         },
-        issue, progress, question,
+        issue,
     };
     use async_trait::async_trait;
     use std::{
@@ -138,7 +136,6 @@ mod tests {
     impl AsyncTestContext for DracutContext {
         async fn setup() -> DracutContext {
             let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-            let issues = issue::Service::starter(events_tx.clone()).start();
 
             // Set up tempdir with dracut sources
             let tempdir = tempfile::tempdir().unwrap();
