@@ -36,7 +36,7 @@ export default function IssuesAlert({ issues }: { issues: Issue[] }) {
   }
 
   return (
-    <Alert {...props} title={_("The following issues need to be addressed")}>
+    <Alert {...props} title={_("You must fix these issues")}>
       <List>
         {issues.map((i, idx) => (
           <ListItem key={idx}>{i.description}</ListItem>
