@@ -22,7 +22,7 @@
 
 use std::sync::Arc;
 
-use agama_utils::{actor::Handler, api::bootloader::Config, issue};
+use agama_utils::{actor::Handler, api::{bootloader::Config, software::Resolvable}, issue};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
@@ -85,6 +85,10 @@ impl BootloaderClient for TestClient {
 
     async fn get_system(&self) -> Result<Option<serde_json::Value>, Error> {
         Ok(None)
+    }
+
+    async fn get_resolvables(&self) -> Result<Vec<Resolvable>, Error> {
+        Ok(vec![])
     }
 
     async fn set_config(&self, config: &Config) -> Result<(), Error> {

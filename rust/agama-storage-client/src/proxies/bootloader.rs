@@ -36,4 +36,8 @@ pub trait Bootloader {
     /// System property
     #[zbus(property)]
     fn system(&self) -> zbus::Result<String>;
+
+    /// Resolvables property
+    #[zbus(property)]
+    fn resolvables(&self) -> zbus::Result<String>;
 }
