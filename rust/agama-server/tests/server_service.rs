@@ -24,7 +24,10 @@ use agama_server::{
     profile::profile_service,
     server::web::{server_with_state, ServerState},
 };
-use agama_utils::{question, test};
+use agama_utils::{
+    api::{event, Event, Scope},
+    question, test,
+};
 use axum::http::{Method, Request, StatusCode};
 use common::body_to_string;
 use std::{error::Error, path::PathBuf};
@@ -35,6 +38,7 @@ use crate::common::Client;
 
 struct Context {
     client: Client,
+    events: event::Receiver,
 }
 
 impl AsyncTestContext for Context {
@@ -44,14 +48,8 @@ impl AsyncTestContext for Context {
         let schema_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../agama-lib/share");
         std::env::set_var("AGAMA_SCHEMA_DIR", schema_dir.display().to_string());
 
-        let (events_tx, mut events_rx) = channel(16);
+        let (events_tx, events_rx) = channel(16);
         let dbus = test::dbus::connection().await.unwrap();
-
-        tokio::spawn(async move {
-            while let Ok(event) = events_rx.recv().await {
-                println!("{:?}", event);
-            }
-        });
 
         let questions = question::start(events_tx.clone()).await.unwrap();
         let manager = start_service(events_tx, dbus).await;
@@ -61,6 +59,7 @@ impl AsyncTestContext for Context {
             .expect("Could not create the testing router");
         Context {
             client: Client::new(service),
+            events: events_rx,
         }
     }
 }
@@ -98,6 +97,19 @@ async fn test_get_extended_config(ctx: &mut Context) -> Result<(), Box<dyn Error
     assert!(body.contains(r#""timezone""#));
 
     Ok(())
+}
+
+async fn wait_until_finished(events: &mut event::Receiver) {
+    while let Ok(event) = events.recv().await {
+        if matches!(
+            event,
+            Event::ProgressFinished {
+                scope: Scope::Manager
+            }
+        ) {
+            break;
+        }
+    }
 }
 
 #[test_context(Context)]
@@ -139,6 +151,8 @@ async fn test_put_config_success(ctx: &mut Context) -> Result<(), Box<dyn Error>
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::OK);
 
+    wait_until_finished(&mut ctx.events).await;
+
     let request = Request::builder()
         .uri("/config")
         .body("".to_string())
@@ -175,6 +189,8 @@ async fn test_put_config_without_mode(ctx: &mut Context) -> Result<(), Box<dyn E
 
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::OK);
+
+    wait_until_finished(&mut ctx.events).await;
 
     let request = Request::builder()
         .uri("/extended_config")
@@ -230,6 +246,8 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::OK);
 
+    wait_until_finished(&mut ctx.events).await;
+
     let json = r#"{ "update": { "l10n": { "keymap": "en" } } }"#;
     let request = Request::builder()
         .uri("/config")
@@ -237,6 +255,8 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
         .method(Method::PATCH)
         .body(json.to_string())
         .unwrap();
+
+    wait_until_finished(&mut ctx.events).await;
 
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::OK);
