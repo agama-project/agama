@@ -86,3 +86,13 @@ impl Progress {
         self.steps.get(index - 1).cloned()
     }
 }
+
+impl std::fmt::Display for Progress {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}, {}/{}, {}",
+            self.scope, self.step, self.size, self.step
+        )
+    }
+}
