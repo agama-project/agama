@@ -23,8 +23,8 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import testingPatterns from "./patterns.test.json";
-import testingProposal from "./proposal.test.json";
+import testingPatterns from "./patterns-form/patterns.test.json";
+import testingProposal from "./patterns-form/proposal.test.json";
 import SoftwarePage from "./SoftwarePage";
 
 const mockProposal = jest.fn();

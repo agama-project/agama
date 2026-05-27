@@ -191,6 +191,10 @@ jobs:
       run: rpm -qa
 
     - name: Rust cache
+      # cache only the master branch (it is shared in pull requests), the Rust
+      # cache for unit tests is HUGE (about 3GB!) and we would quickly reach the
+      # 10GB limit for just few branches/pull requests
+      if: github.ref_name == 'master'
       id: cache-tests
       uses: actions/cache@v5
       with:

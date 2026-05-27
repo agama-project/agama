@@ -27,7 +27,7 @@ use ratatui::{
     widgets::{Gauge, Widget},
 };
 
-use crate::monitor::{theme::Theme, ui::scope_to_string};
+use crate::monitor::ui::scope_to_string;
 
 /// Left indentation for progress widget content
 const PROGRESS_INDENT: u16 = 3;
@@ -42,7 +42,6 @@ const SCOPE_LABEL_SPACING: u16 = 2;
 pub struct Progress<'a> {
     with_scope: bool,
     progress: &'a api::Progress,
-    theme: &'a Theme,
 }
 
 impl<'a> Progress<'a> {
@@ -50,12 +49,10 @@ impl<'a> Progress<'a> {
     ///
     /// * `progress`: a struct containing the progress to print.
     /// * `with_scope`: whether to display the scope.
-    /// * `theme`: UI theme to apply.
-    pub fn new(progress: &'a api::Progress, with_scope: bool, theme: &'a Theme) -> Self {
+    pub fn new(progress: &'a api::Progress, with_scope: bool) -> Self {
         Self {
             progress,
             with_scope,
-            theme,
         }
     }
 
@@ -102,7 +99,6 @@ impl<'a> Widget for Progress<'a> {
         };
 
         Gauge::default()
-            .gauge_style(Style::default().fg(self.theme.accent))
             .percent(percent)
             .label("")
             .render(gauge_area, buf);

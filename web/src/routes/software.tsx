@@ -22,7 +22,7 @@
 
 import React from "react";
 import SoftwarePage from "~/components/software/SoftwarePage";
-import SoftwarePatternsSelection from "~/components/software/SoftwarePatternsSelection";
+import SoftwarePatternsSelection from "~/components/software/patterns-form/Form";
 import { Route } from "~/types/routes";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import { N_ } from "~/i18n";

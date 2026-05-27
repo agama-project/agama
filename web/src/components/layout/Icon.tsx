@@ -35,6 +35,7 @@ import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
+import Monitor from "@icons/monitor.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
@@ -107,6 +108,7 @@ const icons = {
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
+  monitor: Monitor,
   more_horiz: MoreHoriz,
   more_vert: MoreVert,
   network_wifi: NetworkWifi,

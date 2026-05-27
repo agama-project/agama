@@ -286,3 +286,288 @@ Work through these questions in order:
 | Conditionally optional            | On condition | `(optional)`                      | No                  |
 | Choice selector                   | Always       | No suffix                         | Depends on choice   |
 | Checkbox opt-in                   | On checkbox  | No suffix                         | Yes, when rendered  |
+
+---
+
+## Code Organization
+
+The following conventions apply to all forms using TanStack Form across the
+application. They ensure forms are discoverable, maintainable, and follow
+consistent patterns.
+
+### Directory Structure
+
+Each form lives in its own subdirectory:
+
+```
+components/
+  <namespace>/<form-name>-form/
+    Form.tsx              # Main form component
+    fields.ts             # Types, defaults, validation
+    *Fields.tsx           # Field group components (if needed)
+    *.test.tsx            # Tests
+```
+
+Examples:
+
+- `network/connection-form/`
+- `system/system-form/`
+- `product/registration-form/`
+- `software/patterns-form/`
+
+### File Naming
+
+**Form component**: `Form.tsx`
+
+- Always named `Form.tsx` inside the form directory
+- The directory name provides context, making prefixes redundant
+- Export the actual component with its descriptive name: `export default ConnectionForm`
+
+**Fields module**: `fields.ts`
+
+- Always named `fields.ts` (not `<formName>Fields.ts`)
+- Contains types, defaults, validation, and constants
+- Single source of truth for all form concerns
+
+**Field groups**: `*Fields.tsx`
+
+- Components that group related form fields: `BondFields.tsx`, `IpFields.tsx`
+- Use `*Fields` suffix, not `*Settings` (more accurate naming)
+
+### The fields.ts Module
+
+All form data concerns live in a single `fields.ts` file:
+
+```typescript
+import { formOptions } from "@tanstack/react-form";
+import type {
+  FieldsValidationResult,
+  ValidationResult,
+} from "~/components/form/validation-helpers";
+import {
+  requiredString,
+  optionalIntRange,
+} from "~/components/form/validation-helpers";
+import { _ } from "~/i18n";
+
+/** Types */
+type FormFields = {
+  field1: string;
+  field2: number;
+  // ...
+};
+
+/** Exported constants (if any) */
+export const SOME_MODE = {
+  OPTION_A: "a",
+  OPTION_B: "b",
+} as const;
+
+/** Defaults */
+const defaultValues: FormFields = {
+  field1: "",
+  field2: 0,
+};
+
+export const defaultOptions = formOptions({ defaultValues });
+
+/** Validation */
+const validateGroup = (fields: FormFields): FieldsValidationResult<FormFields> => ({
+  field1: requiredString(fields.field1, _("Field 1 is required")),
+  field2: optionalIntRange(fields.field2, 0, 100, _("Must be 0-100")),
+});
+
+export function validate(fields: FormFields): ValidationResult<FormFields> {
+  const fieldErrors = {
+    ...validateGroup(fields),
+    // ...other validators
+  };
+
+  const errors: Record<string, string> = {};
+  for (const [key, error] of Object.entries(fieldErrors)) {
+    if (error !== undefined) errors[key] = error;
+  }
+
+  return Object.keys(errors).length > 0 ? { fields: errors } : undefined;
+};
+```
+
+**Why everything in one file?**
+
+1. **Single source of truth**: All form structure in one place
+2. **Co-location**: Type, default, and validation visible together
+3. **Easier maintenance**: Add/modify fields with full context
+4. **Better discoverability**: Always check `fields.ts` first
+5. **Reduced cognitive load**: One consistent pattern to learn
+
+### Validation Approach
+
+Forms use plain TypeScript validation functions rather than schema libraries.
+
+**Validation helpers** are available in `~/components/form/validation-helpers.ts`.
+
+Example:
+
+```typescript
+const validateIpFields = (fields): Record<string, string | undefined> => ({
+  addresses4: requiredValidList(
+    fields.addresses4,
+    isValidIPv4,
+    _("At least one IPv4 address is required"),
+    _("Some IPv4 addresses are invalid"),
+  ),
+  gateway4: optionalValidString(fields.gateway4, isValidIPv4, _("Enter a valid IPv4 gateway")),
+});
+```
+
+#### Plain TypeScript vs Schema Libraries
+
+The codebase initially experimented with Valibot, a Standard Schema validation
+library (~1.5kb), using declarative schemas in separate files:
+
+```typescript
+// Initial Valibot approach (rolled back)
+import * as v from "valibot";
+
+const ipFieldsSchema = v.object({
+  addresses4: v.pipe(
+    v.array(v.string()),
+    v.check((arr) => arr.every(isValidIPv4)),
+  ),
+  gateway4: v.optional(v.pipe(v.string(), v.check(isValidIPv4))),
+});
+```
+
+This approach was rolled back in favor of plain TypeScript functions for several
+reasons:
+
+**Why plain TypeScript was chosen**:
+
+1. **Simpler mental model**: Direct validation logic is more straightforward than
+   schema composition
+2. **No abstraction tax**: No library-specific API to learn (`v.object()`,
+   `v.pipe()`, `v.check()`, etc.)
+3. **Better readability**: Imperative functions are clearer when validation
+   depends on combinations of field values (e.g., gateway validity depends on
+   mode and presence of addresses)
+4. **Co-location benefits**: Types, defaults, and validation all in one file
+   without mixing declarative and imperative styles
+5. **Zero dependencies**: Eliminates external validation library from bundle
+6. **Lower value in this context**: Form validation is relatively simple;
+   complex interdependencies between fields don't map well to declarative schemas
+
+**What Valibot would have provided**:
+
+1. **Standardized validation**: Standard Schema means potential compatibility with
+   other tools and libraries
+2. **Runtime type safety**: Schema doubles as both validator and type definition
+3. **Composability**: Schemas can be composed and extended declaratively
+4. **Error messages**: Built-in i18n support for validation messages
+
+**Why these benefits add low value here**:
+
+- **Standard Schema compatibility**: No other tools in the codebase use Standard
+  Schema, so interoperability benefits don't apply
+- **Runtime type safety**: TypeScript already provides compile-time type safety,
+  and form values come from controlled inputs (not external APIs)
+- **Composability**: Form validation often requires checking field combinations
+  (`if (mode === 'manual' && addresses.length === 0)`), which is more natural in
+  imperative code than composed schemas
+- **Error messages**: The `i18n` function `_()` already handles translation;
+  Valibot's message system adds another layer without clear benefit
+
+The imperative approach using reusable helpers provides sufficient structure
+without the learning curve and complexity of a schema system. For forms with
+truly independent field validations, schemas might offer value. For forms where
+validation logic frequently crosses field boundaries (as is common in network
+configuration), plain TypeScript functions are more maintainable.
+
+### Form Component Integration
+
+Import from `fields.ts` in the form component:
+
+```typescript
+import { defaultOptions, validate, SOME_MODE } from "./fields";
+
+function MyForm() {
+  const form = useAppForm({
+    ...mergeFormDefaults(defaultOptions, initialValues),
+    validators: {
+      onSubmitAsync: async ({ value: formValues }) => {
+        return validate(formValues);
+      },
+    },
+    onSubmit: async ({ value }) => {
+      await apiCall(value);
+      navigate(-1);
+    },
+  });
+
+  return (
+    <form.AppForm>
+      {/* form fields */}
+    </form.AppForm>
+  );
+}
+```
+
+Field group components (like `BondFields.tsx`) also import directly from `./fields.ts`:
+
+```typescript
+import { defaultOptions } from "./fields";
+import { withForm } from "~/hooks/form";
+
+const BondFields = withForm({
+  ...defaultOptions,
+  render: function Render({ form }) {
+    // field components
+  },
+});
+```
+
+External components (like routes) only import the form component itself, not the
+field configuration.
+
+### Naming Consistency
+
+All forms use consistent generic names for key exports and internal identifiers:
+
+**Form options**: `defaultOptions`
+
+```typescript
+export const defaultOptions = formOptions({ defaultValues });
+```
+
+**Default values**: `defaultValues`
+
+```typescript
+const defaultValues: FormFields = {
+  // ...
+};
+```
+
+**Validation function**: `validate`
+
+```typescript
+export function validate(
+  fields: FormFields,
+): { fields?: Partial<Record<keyof FormFields, string>> } | undefined {
+  // ...
+}
+```
+
+Form-specific prefixes (like `connectionFormOptions` or `validateConnectionForm`)
+are avoided. The directory structure and module imports already provide the
+necessary context, making prefixes redundant. This generic naming makes the
+pattern immediately recognizable across all forms.
+
+### Benefits Summary
+
+The unified approach provides:
+
+- **Discoverability**: Consistent structure across all forms
+- **Maintainability**: Single file for all form concerns
+- **Simplicity**: Plain TypeScript, no library abstractions
+- **Type safety**: Full TypeScript support throughout
+- **Performance**: Zero runtime validation overhead
+- **Developer experience**: Clear pattern, easy to learn and apply
