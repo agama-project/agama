@@ -41,6 +41,22 @@ impl<T> SetConfig<T> {
     }
 }
 
+/// Message to set access for other parts of agama like agama-users.
+pub struct SetAccess {
+    pub id: String,
+    pub config: Config,
+}
+
+impl Message for SetAccess {
+    type Reply = ();
+}
+
+impl SetAccess {
+    pub fn new(id: String, config: Config) -> Self {
+        Self { id, config }
+    }
+}
+
 /// Execute actions at the end of the installation.
 #[derive(Clone)]
 pub struct Finish;

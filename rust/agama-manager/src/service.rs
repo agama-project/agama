@@ -26,7 +26,10 @@ use agama_users::PasswordCheckResult;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        self, Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo, event, manager::{self, LicenseContent}, status::Stage
+        self, event,
+        manager::{self, LicenseContent},
+        status::Stage,
+        Action, Config, Event, Issue, IssueMap, Proposal, Scope, Status, SystemInfo,
     },
     arch::Arch,
     issue, licenses,
@@ -713,7 +716,10 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let ntp = self.ntp.call(ntp::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
-        let remote_access = self.remote_access.call(agama_remote::message::GetConfig).await?;
+        let remote_access = self
+            .remote_access
+            .call(agama_remote::message::GetConfig)
+            .await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 

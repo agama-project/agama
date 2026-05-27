@@ -19,7 +19,12 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs::{self, File}, ops::{Deref, DerefMut}, os::unix::fs::OpenOptionsExt, path::Path, process::Output, time::Duration
+    fs::{self, File},
+    ops::{Deref, DerefMut},
+    os::unix::fs::OpenOptionsExt,
+    path::Path,
+    process::Output,
+    time::Duration,
 };
 
 use tokio::{io, process::Command, time::sleep};
@@ -92,7 +97,9 @@ pub struct ChrootCommand {
 impl ChrootCommand {
     pub fn new<P: AsRef<Path>>(chroot: P) -> Result<Self, ChrootError> {
         if !chroot.as_ref().is_dir() {
-            return Err(ChrootError::DirectoreNotExist(chroot.as_ref().display().to_string()));
+            return Err(ChrootError::DirectoreNotExist(
+                chroot.as_ref().display().to_string(),
+            ));
         }
 
         let mut cmd = Command::new("chroot");
@@ -152,18 +159,18 @@ pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) -> Result<(
         return Err(ServiceError::ChrootFailed(command.unwrap_err()));
     };
 
-    command
-        .args(["systemctl", "enable", name]);
+    command.args(["systemctl", "enable", name]);
 
     let output = command.output().await?;
-    
-            if output.status.success() {
-                tracing::info!("Enabled the {name} service");
-                return Ok(());
-            } else {
-                return Err(ServiceError::SystemctlFailed(output.stderr.try_into().unwrap_or_default()));
-            }
-        
+
+    if output.status.success() {
+        tracing::info!("Enabled the {name} service");
+        return Ok(());
+    } else {
+        return Err(ServiceError::SystemctlFailed(
+            output.stderr.try_into().unwrap_or_default(),
+        ));
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -176,22 +183,28 @@ pub enum FirewallError {
     IOError(#[from] std::io::Error),
 }
 
-pub async fn open_firewall<P: AsRef<Path>>(install_dir: P, name: &str) -> Result<(), FirewallError> {
+pub async fn open_firewall<P: AsRef<Path>>(
+    install_dir: P,
+    name: &str,
+) -> Result<(), FirewallError> {
     let firewall_cmd = ChrootCommand::new(&install_dir)?
-            .cmd("firewall-offline-cmd")
-            .args([format!("--add-service={}", name)])
-            .output().await?;
+        .cmd("firewall-offline-cmd")
+        .args([format!("--add-service={}", name)])
+        .output()
+        .await?;
 
-        // ignore error if the firewall is not installed, in that case we do need to open the port,
-        // chroot returns exit status 127 if the command is not found
-        if firewall_cmd.status.code() == Some(127) {
-            tracing::warn!("Command firewall-offline-cmd not found, firewall not installed?");
-            return Ok(());
-        }
-
-        if !firewall_cmd.status.success() {
-            return Err(FirewallError::FirewallCmdFailed(firewall_cmd.stderr.try_into().unwrap_or_default()));
-        }
-
-        Ok(())
+    // ignore error if the firewall is not installed, in that case we do need to open the port,
+    // chroot returns exit status 127 if the command is not found
+    if firewall_cmd.status.code() == Some(127) {
+        tracing::warn!("Command firewall-offline-cmd not found, firewall not installed?");
+        return Ok(());
     }
+
+    if !firewall_cmd.status.success() {
+        return Err(FirewallError::FirewallCmdFailed(
+            firewall_cmd.stderr.try_into().unwrap_or_default(),
+        ));
+    }
+
+    Ok(())
+}

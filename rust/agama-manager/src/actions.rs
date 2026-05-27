@@ -23,7 +23,7 @@ use std::{process::Command, sync::Arc};
 use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::Handler,
-    api::{Config, FinishMethod, Scope, files::scripts::ScriptsGroup, status::Stage},
+    api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
     issue,
     products::ProductSpec,
     progress, question,
@@ -122,8 +122,9 @@ impl InstallAction {
         self.hostname.call(hostname::message::Install).await?;
         self.users.call(users::message::Install).await?;
         self.storage.call(storage::message::Finish).await?;
-        self.remote_access.call(agama_remote::message::Finish).await?;
-        
+        self.remote_access
+            .call(agama_remote::message::Finish)
+            .await?;
 
         // call files before storage finish as it unmounts /mnt/run which is important for chrooted scripts
         self.files
@@ -233,7 +234,9 @@ impl SetConfigAction {
             .await?;
         // as remote access is fast call, lets just use it together with security
         self.remote_access
-            .call(agama_remote::message::SetConfig::new(config.remote_access.clone()))
+            .call(agama_remote::message::SetConfig::new(
+                config.remote_access.clone(),
+            ))
             .await?;
 
         self.progress

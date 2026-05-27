@@ -18,14 +18,16 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::
-    path::{Path, PathBuf}
-;
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 use agama_software::Resolvable;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{self, remote_access::Config}, command::{enable_service, open_firewall},
+    api::{self, remote_access::Config},
+    command::{enable_service, open_firewall},
 };
 use async_trait::async_trait;
 
@@ -78,20 +80,40 @@ impl Starter {
 }
 
 struct State {
-    config: Config,
+    /// config specified by user
+    user_config: Config,
+    /// configs to request remote access from other parts of agama
+    agama_config: HashMap<String, Config>,
     software: Handler<agama_software::Service>,
 }
 
 impl State {
     pub fn new(software: Handler<agama_software::Service>) -> Self {
         Self {
-            config: Config::default(),
+            user_config: Config::default(),
+            agama_config: HashMap::new(),
             software,
         }
     }
 
+    fn is_ssh_enabled(&self) -> bool {
+        self.user_config.ssh == Some(api::remote_access::AccessEnum::Enabled)
+            || self
+                .agama_config
+                .values()
+                .any(|config| config.ssh == Some(api::remote_access::AccessEnum::Enabled))
+    }
+
+    fn is_cockpit_enabled(&self) -> bool {
+        self.user_config.cockpit == Some(api::remote_access::AccessEnum::Enabled)
+            || self
+                .agama_config
+                .values()
+                .any(|config| config.cockpit == Some(api::remote_access::AccessEnum::Enabled))
+    }
+
     pub async fn write<P: AsRef<Path>>(&self, install_dir: P) -> Result<(), Error> {
-        if self.config.ssh == Some(api::remote_access::AccessEnum::Enabled) {
+        if self.is_ssh_enabled() {
             // TODO: when we can report install issues, we should report
             // it here which individual remote access enablement failed
             let res = Self::enable_ssh(&install_dir).await;
@@ -99,7 +121,7 @@ impl State {
                 tracing::error!("Failed to enable ssh: {}", error);
             }
         }
-        if self.config.cockpit == Some(api::remote_access::AccessEnum::Enabled) {
+        if self.is_cockpit_enabled() {
             // TODO: when we can report install issues, we should report
             // it here which individual remote access enablement failed
             let res = Self::enable_cockpit(&install_dir).await;
@@ -125,21 +147,40 @@ impl State {
         Ok(())
     }
 
-    pub fn set_config(&mut self, config: Config) {
-        self.config = config;
+    pub fn set_user_config(&mut self, config: Config) {
+        self.user_config = config;
+        self.update_resolvables();
+    }
+
+    pub fn set_module_config(&mut self, id: String, config: Config) {
+        self.agama_config.insert(id, config);
+        self.update_resolvables();
+    }
+
+    fn update_resolvables(&mut self) {
         let mut resolvables = vec![];
-        if self.config.cockpit == Some(api::remote_access::AccessEnum::Enabled) {
-            resolvables.push(Resolvable{ name: "cockpit".to_string(), r#type: agama_software::ResolvableType::Pattern});
+        if self.is_cockpit_enabled() {
+            resolvables.push(Resolvable {
+                name: "cockpit".to_string(),
+                r#type: agama_software::ResolvableType::Pattern,
+            });
         }
-        if self.config.ssh == Some(api::remote_access::AccessEnum::Enabled) {
-            resolvables.push(Resolvable{ name: "openssh-server".to_string(), r#type: agama_software::ResolvableType::Package});
+        if self.is_ssh_enabled() {
+            resolvables.push(Resolvable {
+                name: "openssh-server".to_string(),
+                r#type: agama_software::ResolvableType::Package,
+            });
         }
-
-        let res = self.software.cast(agama_software::message::SetResolvables{ id: "remote_access".to_string(), resolvables });
+        let res = self.software.cast(agama_software::message::SetResolvables {
+            id: "remote_access".to_string(),
+            resolvables,
+        });
         if let Err(error) = res {
-            tracing::error!("Failed to call set resolvables for remote Access: {:?}", error);
+            tracing::error!(
+                "Failed to call set resolvables for remote Access: {:?}",
+                error
+            );
         }
-
     }
 }
 
@@ -164,14 +205,8 @@ impl MessageHandler<message::SetConfig<api::remote_access::Config>> for Service 
         &mut self,
         message: message::SetConfig<api::remote_access::Config>,
     ) -> Result<(), Error> {
-        match message.config {
-            Some(config) => {
-                self.state.set_config(config);
-            }
-            None => {
-                self.state.set_config(Config::default());
-            }
-        }
+        self.state
+            .set_user_config(message.config.unwrap_or_default());
         Ok(())
     }
 }
@@ -183,16 +218,20 @@ impl MessageHandler<message::GetConfig> for Service {
         _message: message::GetConfig,
     ) -> Result<api::remote_access::Config, Error> {
         // FIXME: remember what is set and what not
-        Ok(self.state.config.clone())
+        Ok(self.state.user_config.clone())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetAccess> for Service {
+    async fn handle(&mut self, message: message::SetAccess) -> Result<(), Error> {
+        Ok(self.state.set_module_config(message.id, message.config))
     }
 }
 
 #[async_trait]
 impl MessageHandler<message::Finish> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::Finish,
-    ) -> Result<(), Error> {
+    async fn handle(&mut self, _message: message::Finish) -> Result<(), Error> {
         self.state.write(&self.install_dir).await
     }
 }
