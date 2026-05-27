@@ -22,6 +22,7 @@
 require "agama/dbus/base_object"
 require "agama/dbus/with_issues"
 require "agama/dbus/with_progress"
+require "agama/dbus/with_resolvables"
 require "agama/storage/bootloader"
 require "agama/storage/config_conversions"
 require "agama/storage/volume_templates_builder"
@@ -36,13 +37,14 @@ module Agama
   module DBus
     module Storage
       # D-Bus object to manage storage installation
+      #
+      # The class is long due to declarations (D-BUS, JSON and progress reporting).
       class Manager < BaseObject # rubocop:disable Metrics/ClassLength
-        # The class is long due to declarations (D-BUS, JSON and progress reporting).
-
         extend Yast::I18n
         include Yast::I18n
         include WithIssues
         include WithProgress
+        include WithResolvables
 
         PATH = "/org/opensuse/Agama/Storage1"
         private_constant :PATH
@@ -60,8 +62,10 @@ module Agama
           @serialized_config_model = serialize_config_model
           @serialized_proposal = serialize_proposal
           @serialized_issues = serialize_issues
+          @serialized_resolvables = serialize_storage_resolvables
           @serialized_bootloader_system = serialize_bootloader_system
           @serialized_bootloader_config = serialize_bootloader_config
+          @serialized_bootloader_resolvables = serialize_bootloader_resolvables
           register_progress_callbacks
         end
 
@@ -71,6 +75,7 @@ module Agama
           dbus_reader_attr_accessor :serialized_config_model, "s", dbus_name: "ConfigModel"
           dbus_reader_attr_accessor :serialized_proposal, "s", dbus_name: "Proposal"
           dbus_reader_attr_accessor :serialized_issues, "s", dbus_name: "Issues"
+          dbus_reader_attr_accessor :serialized_resolvables, "s", dbus_name: "Resolvables"
           dbus_method(:Activate) { activate }
           dbus_method(:Probe) { probe }
           dbus_method(:Install) { install }
@@ -217,6 +222,8 @@ module Agama
         dbus_interface "org.opensuse.Agama.Storage1.Bootloader" do
           dbus_reader_attr_accessor :serialized_bootloader_system, "s", dbus_name: "System"
           dbus_reader_attr_accessor :serialized_bootloader_config, "s", dbus_name: "Config"
+          dbus_reader_attr_accessor :serialized_bootloader_resolvables, "s",
+            dbus_name: "Resolvables"
           dbus_method(:SetConfig, "in serialized_config:s, out result:u") do |serialized_config|
             configure_bootloader(serialized_config)
           end
@@ -320,7 +327,6 @@ module Agama
         # @param config_json [Hash, nil]
         def calculate_proposal(config_json = nil)
           manager.configure(config_json)
-          manager.add_packages if manager.proposal.success?
 
           # The "return if unchanged" guard has been removed from the methods below to always
           # emit the corresponding signal.
@@ -341,6 +347,7 @@ module Agama
           update_serialized_config_model
           update_serialized_proposal
           update_serialized_issues
+          update_serialized_resolvables
         end
 
         # Performs the bootloader configuration applying the current config.
@@ -348,6 +355,7 @@ module Agama
           logger.info("Configuring bootloader")
           manager.configure_bootloader
           update_serialized_bootloader_config
+          update_serialized_bootloader_resolvables
         end
 
         # Updates the system info if needed.
@@ -397,6 +405,15 @@ module Agama
           self.serialized_issues = serialized_issues
         end
 
+        # Updates the resolvables info if needed.
+        def update_serialized_resolvables
+          serialized_resolvables = serialize_storage_resolvables
+          # return if self.serialized_resolvables == serialized_resolvables
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.serialized_resolvables = serialized_resolvables
+        end
+
         # Updates the bootloader system info if needed.
         def update_serialized_bootloader_system
           serialized_bootloader_system = serialize_bootloader_system
@@ -413,6 +430,15 @@ module Agama
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_bootloader_config = serialized_bootloader_config
+        end
+
+        # Updates the bootloader resolvables if needed.
+        def update_serialized_bootloader_resolvables
+          serialized_bootloader_resolvables = serialize_bootloader_resolvables
+          return if self.serialized_bootloader_resolvables == serialized_bootloader_resolvables
+
+          # This assignment emits a D-Bus PropertiesChanged.
+          self.serialized_bootloader_resolvables = serialized_bootloader_resolvables
         end
 
         # Generates the serialized JSON of the system.
@@ -472,6 +498,13 @@ module Agama
           super(manager.issues)
         end
 
+        # Generates the serialized JSON of the list of resolvables.
+        #
+        # @return [String]
+        def serialize_storage_resolvables
+          serialize_resolvables(packages: manager.packages)
+        end
+
         # Generates the serialized JSON of the bootloader system.
         #
         # @return [String]
@@ -489,6 +522,13 @@ module Agama
         # @return [String]
         def serialize_bootloader_config
           JSON.pretty_generate(manager.bootloader_config.to_json)
+        end
+
+        # Generates the serialized JSON of the list of bootloader resolvables.
+        #
+        # @return [String]
+        def serialize_bootloader_resolvables
+          serialize_resolvables(packages: manager.bootloader_packages)
         end
 
         # Representation of the null JSON.

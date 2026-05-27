@@ -67,6 +67,7 @@ describe Agama::DBus::Storage::Manager do
     allow(Y2Storage::EncryptionMethod::TPM_FDE).to receive(:possible?).and_return(true)
     # Speed up tests by avoiding looking up by name in the system
     allow(Y2Storage::BlkDevice).to receive(:find_by_any_name)
+    allow(Bootloader::Systeminfo).to receive(:efi?).and_return(false)
 
     allow(backend).to receive(:on_configure)
     allow(backend).to receive(:on_issues_change)
@@ -76,10 +77,12 @@ describe Agama::DBus::Storage::Manager do
     allow(backend).to receive(:bootloader_probed?).and_return(false)
     allow(backend).to receive(:available_bootloaders).and_return([])
     allow(backend).to receive(:bootloader_config).and_return({})
+    allow(backend).to receive(:bootloader_packages).and_return([])
     allow(backend).to receive(:probe_bootloader)
     allow(bootloader).to receive(:config)
     allow(bootloader).to receive(:probed?).and_return(false)
     allow(bootloader).to receive(:probe)
+    allow(bootloader).to receive(:packages).and_return([])
     mock_storage(devicegraph: "empty-hd-50GiB.yaml")
   end
 
@@ -491,7 +494,6 @@ describe Agama::DBus::Storage::Manager do
 
       allow(backend).to receive(:activate)
       allow(backend).to receive(:probe)
-      allow(backend).to receive(:add_packages)
 
       allow(proposal).to receive(:success?).and_return true
 
@@ -593,13 +595,6 @@ describe Agama::DBus::Storage::Manager do
       end
     end
 
-    RSpec.shared_examples "adjust software" do
-      it "adjusts the packages to install in the target system" do
-        expect(backend).to receive(:add_packages)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
     RSpec.shared_examples "calculate proposal" do
       it "calculates the proposal" do
         expect(backend).to receive(:configure)
@@ -608,7 +603,6 @@ describe Agama::DBus::Storage::Manager do
 
       include_examples "emit ProgressChanged and ProgressFinished"
       include_examples "emit ProposalChanged"
-      include_examples "adjust software"
     end
 
     RSpec.shared_examples "do not calculate proposal" do
@@ -750,6 +744,9 @@ describe Agama::DBus::Storage::Manager do
       let(:config_hash) do
         {
           storage: {
+            boot:   {
+              configure: false
+            },
             drives: [
               {
                 ptableType: "gpt",
@@ -787,7 +784,6 @@ describe Agama::DBus::Storage::Manager do
 
         include_examples "emit ProgressChanged and ProgressFinished"
         include_examples "emit ProposalChanged"
-        include_examples "adjust software"
 
         context "if the serialized config contains legacy AutoYaST settings" do
           let(:config_hash) do
@@ -808,7 +804,6 @@ describe Agama::DBus::Storage::Manager do
 
           include_examples "emit ProgressChanged and ProgressFinished"
           include_examples "emit ProposalChanged"
-          include_examples "adjust software"
         end
       end
 
@@ -1161,7 +1156,6 @@ describe Agama::DBus::Storage::Manager do
 
       allow(backend).to receive(:activated?).and_return activated
       allow(backend).to receive(:probe)
-      allow(backend).to receive(:add_packages)
       allow(bootloader).to receive(:configure)
       # Initializes serialized_system to mimic the system is not probed yet.
       subject.serialized_system = "null"
@@ -1198,12 +1192,6 @@ describe Agama::DBus::Storage::Manager do
 
       it "configures bootloader" do
         expect(bootloader).to receive(:configure)
-        subject.probe
-      end
-
-      it "adjusts the packages to install in the target system" do
-        allow(proposal).to receive(:success?).and_return(true)
-        expect(backend).to receive(:add_packages)
         subject.probe
       end
 
@@ -1250,11 +1238,6 @@ describe Agama::DBus::Storage::Manager do
 
       it "configures bootloader" do
         expect(bootloader).to receive(:configure)
-        subject.probe
-      end
-
-      it "adjusts the packages to install in the target system" do
-        expect(backend).to receive(:add_packages)
         subject.probe
       end
 
@@ -1337,6 +1320,76 @@ describe Agama::DBus::Storage::Manager do
           a_hash_including(
             description: /boot device cannot be automatically/i
           )
+        )
+      end
+    end
+  end
+
+  describe "#serialized_resolvables" do
+    before do
+      allow(backend).to receive(:packages).and_return(packages)
+    end
+
+    context "if there are no packages" do
+      let(:packages) { [] }
+
+      it "returns an empty list" do
+        expect(parse(subject.serialized_resolvables)).to eq([])
+      end
+    end
+
+    context "if there are packages" do
+      let(:packages) { ["package1", "package2"] }
+
+      it "returns the list of packages" do
+        result = parse(subject.serialized_resolvables)
+
+        expect(result).to eq(
+          [
+            {
+              name: "package1",
+              type: "package"
+            },
+            {
+              name: "package2",
+              type: "package"
+            }
+          ]
+        )
+      end
+    end
+  end
+
+  describe "#serialized_bootloader_resolvables" do
+    before do
+      allow(backend).to receive(:bootloader_packages).and_return(packages)
+    end
+
+    context "if there are no bootloader packages" do
+      let(:packages) { [] }
+
+      it "returns an empty list" do
+        expect(parse(subject.serialized_bootloader_resolvables)).to eq([])
+      end
+    end
+
+    context "if there are bootloader packages" do
+      let(:packages) { ["grub2", "shim"] }
+
+      it "returns the list of bootloader packages" do
+        result = parse(subject.serialized_bootloader_resolvables)
+
+        expect(result).to eq(
+          [
+            {
+              name: "grub2",
+              type: "package"
+            },
+            {
+              name: "shim",
+              type: "package"
+            }
+          ]
         )
       end
     end
