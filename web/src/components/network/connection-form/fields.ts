@@ -246,7 +246,7 @@ const defaultValues = {
 
   // VLAN fields
   vlanIface: "",
-  vlanId: undefined as number | undefined,
+  vlanId: undefined,
   vlanParent: "",
   vlanProtocol: VlanProtocolMode.DEFAULT as VlanProtocolMode,
 };
