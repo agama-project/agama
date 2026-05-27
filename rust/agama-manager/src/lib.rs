@@ -40,6 +40,7 @@ pub use agama_security as security;
 pub use agama_software as software;
 pub use agama_storage as storage;
 pub use agama_users as users;
+pub use agama_remote as remote_access;
 
 pub(crate) mod checks;
 pub(crate) mod tasks;

@@ -19,11 +19,7 @@
 // find current contact information at www.suse.com.
 
 use std::{
-    fs::{self, File},
-    os::unix::fs::OpenOptionsExt,
-    path::Path,
-    process::Output,
-    time::Duration,
+    fs::{self, File}, ops::{Deref, DerefMut}, os::unix::fs::OpenOptionsExt, path::Path, process::Output, time::Duration
 };
 
 use tokio::{io, process::Command, time::sleep};
@@ -66,6 +62,67 @@ pub async fn run_with_retry(mut command: Command) -> io::Result<Output> {
     }
 }
 
+#[derive(thiserror::Error, Debug)]
+pub enum ChrootError {
+    #[error("Target directory for chroot does not exists: {0}")]
+    DirectoreNotExist(String),
+}
+
+/// A wrapper for common std::process::Command for use in chroot
+///
+/// It basically creates Command for chroot and command to be run
+/// in chrooted environment is passed as an argument.
+///
+/// Example use:
+/// ```
+/// # use agama_users::ChrootCommand;
+/// # use agama_users::service;
+/// # fn main() -> Result<(), service::Error> {
+/// let cmd = ChrootCommand::new("/tmp".into())?
+///   .cmd("echo")
+///   .args(["Hello world!"]);
+/// # Ok(())
+/// # }
+/// ```
+#[derive(Debug)]
+pub struct ChrootCommand {
+    command: Command,
+}
+
+impl ChrootCommand {
+    pub fn new<P: AsRef<Path>>(chroot: P) -> Result<Self, ChrootError> {
+        if !chroot.as_ref().is_dir() {
+            return Err(ChrootError::DirectoreNotExist(chroot.as_ref().display().to_string()));
+        }
+
+        let mut cmd = Command::new("chroot");
+
+        cmd.arg(chroot.as_ref());
+
+        Ok(Self { command: cmd })
+    }
+
+    pub fn cmd(mut self, command: &str) -> Self {
+        self.command.arg(command);
+
+        self
+    }
+}
+
+impl Deref for ChrootCommand {
+    type Target = Command;
+
+    fn deref(&self) -> &Self::Target {
+        &self.command
+    }
+}
+
+impl DerefMut for ChrootCommand {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.command
+    }
+}
+
 /// Convenience function to create a file to be used as to save command artifacts
 /// (stdout, stderr or exit code).
 pub fn create_log_file(path: &Path) -> io::Result<File> {
@@ -78,25 +135,63 @@ pub fn create_log_file(path: &Path) -> io::Result<File> {
     Ok(file)
 }
 
+#[derive(thiserror::Error, Debug)]
+pub enum ServiceError {
+    #[error("Failed to enable service - systemctl error: {0}")]
+    SystemctlFailed(String),
+    #[error("Failed to enable service - chroot error: {0}")]
+    ChrootFailed(#[from] ChrootError),
+    #[error("Failed to enable service - io error: {0}")]
+    IOError(#[from] std::io::Error),
+}
+
 /// Convenience function to enable a service
-pub fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) {
-    let mut command = std::process::Command::new("chroot");
+pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) -> Result<(), ServiceError> {
+    let command = ChrootCommand::new(root_dir);
+    let Ok(mut command) = command else {
+        return Err(ServiceError::ChrootFailed(command.unwrap_err()));
+    };
+
     command
-        .arg(root_dir.as_ref())
         .args(["systemctl", "enable", name]);
 
-    match command.output() {
-        Ok(output) => {
+    let output = command.output().await?;
+    
             if output.status.success() {
                 tracing::info!("Enabled the {name} service");
+                return Ok(());
             } else {
-                tracing::error!("Failed to enable the {name} service: {output:?}")
+                return Err(ServiceError::SystemctlFailed(output.stderr.try_into().unwrap_or_default()));
             }
-        }
-        Err(error) => {
-            tracing::error!(
-                "Failed to run the command to enable the {name} service command: {error}"
-            );
-        }
-    }
+        
 }
+
+#[derive(thiserror::Error, Debug)]
+pub enum FirewallError {
+    #[error("Failed to open firewall port - firewall-offline-cmd error: {0}")]
+    FirewallCmdFailed(String),
+    #[error("Failed to open firewall port - chroot error: {0}")]
+    ChrootFailed(#[from] ChrootError),
+    #[error("Failed to open firewall port - io error: {0}")]
+    IOError(#[from] std::io::Error),
+}
+
+pub async fn open_firewall<P: AsRef<Path>>(install_dir: P, name: &str) -> Result<(), FirewallError> {
+    let firewall_cmd = ChrootCommand::new(&install_dir)?
+            .cmd("firewall-offline-cmd")
+            .args([format!("--add-service={}", name)])
+            .output().await?;
+
+        // ignore error if the firewall is not installed, in that case we do need to open the port,
+        // chroot returns exit status 127 if the command is not found
+        if firewall_cmd.status.code() == Some(127) {
+            tracing::warn!("Command firewall-offline-cmd not found, firewall not installed?");
+            return Ok(());
+        }
+
+        if !firewall_cmd.status.success() {
+            return Err(FirewallError::FirewallCmdFailed(firewall_cmd.stderr.try_into().unwrap_or_default()));
+        }
+
+        Ok(())
+    }

@@ -201,6 +201,7 @@ dependencies = [
  "agama-network",
  "agama-ntp",
  "agama-proxy",
+ "agama-remote",
  "agama-s390",
  "agama-security",
  "agama-software",
@@ -272,6 +273,22 @@ dependencies = [
  "gettext-rs",
  "strum",
  "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "agama-remote"
+version = "0.1.0"
+dependencies = [
+ "agama-software",
+ "agama-utils",
+ "async-trait",
+ "gettext-rs",
+ "openssl",
+ "tempfile",
+ "test-context",
  "thiserror 2.0.18",
  "tokio",
  "tracing",
