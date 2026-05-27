@@ -92,7 +92,7 @@ impl std::fmt::Display for Progress {
         write!(
             f,
             "{}, {}/{}, {}",
-            self.scope, self.step, self.size, self.step
+            self.scope, self.index, self.size, self.step
         )
     }
 }
