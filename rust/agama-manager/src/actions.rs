@@ -25,6 +25,7 @@ use agama_utils::{
     actor::Handler,
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
     issue,
+    message::GetResolvables,
     products::ProductSpec,
     progress, question,
 };
@@ -208,9 +209,9 @@ impl SetConfigAction {
 
         if product.is_some() {
             steps.extend_from_slice(&[
-                gettext("Preparing the software proposal"),
                 gettext("Preparing the storage proposal"),
                 gettext("Storing bootloader settings"),
+                gettext("Preparing the software proposal"),
             ])
         }
 
@@ -312,6 +313,64 @@ impl SetConfigAction {
 
         match &product {
             Some(product) => {
+                // STEP 1: Storage SetConfig
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
+                let storage_future = self
+                    .storage
+                    .call(storage::message::SetConfig::new(
+                        Arc::clone(product),
+                        config.storage.clone(),
+                    ))
+                    .await?;
+                let _ = storage_future.await;
+
+                // STEP 2: Bootloader SetConfig (depends on storage)
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
+                self.bootloader
+                    .call(bootloader::message::SetConfig::new(
+                        config.bootloader.clone(),
+                    ))
+                    .await?;
+
+                // STEP 3: Collect resolvables from all services
+                let files_resolvables = self
+                    .files
+                    .call(GetResolvables)
+                    .await
+                    .unwrap_or_else(|e| {
+                        tracing::error!("Failed to get resolvables from files service: {e}");
+                        vec![]
+                    });
+
+                let ntp_resolvables = self
+                    .ntp
+                    .call(GetResolvables)
+                    .await
+                    .unwrap_or_else(|e| {
+                        tracing::error!("Failed to get resolvables from ntp service: {e}");
+                        vec![]
+                    });
+
+                // STEP 4: Set aggregated resolvables in software (no proposal trigger)
+                self.software
+                    .call(software::message::SetResolvables::new(
+                        "agama-files".to_string(),
+                        files_resolvables,
+                    ))
+                    .await?;
+
+                self.software
+                    .call(software::message::SetResolvables::new(
+                        "agama-ntp".to_string(),
+                        ntp_resolvables,
+                    ))
+                    .await?;
+
+                // STEP 5: Software SetConfig (triggers single proposal with all resolvables)
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
@@ -324,29 +383,8 @@ impl SetConfigAction {
                     .await?;
                 let _ = software_future.await;
 
+                // STEP 6: SELinux setup (uses software state)
                 self.set_selinux().await?;
-
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
-                let future = self
-                    .storage
-                    .call(storage::message::SetConfig::new(
-                        Arc::clone(product),
-                        config.storage.clone(),
-                    ))
-                    .await?;
-                let _ = future.await;
-
-                // call bootloader always after storage to ensure that bootloader reflect new storage settings
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
-                self.bootloader
-                    .call(bootloader::message::SetConfig::new(
-                        config.bootloader.clone(),
-                    ))
-                    .await?;
             }
 
             None => {

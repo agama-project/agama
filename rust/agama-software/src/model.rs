@@ -39,7 +39,8 @@ pub mod registration;
 pub mod software_selection;
 pub mod state;
 
-pub use packages::{Resolvable, ResolvableType};
+// Re-export from agama-utils for backwards compatibility
+pub use agama_utils::api::software::{Resolvable, ResolvableType};
 pub use registration::Registration;
 
 /// Issues found when applying the software configuration.

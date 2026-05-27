@@ -27,6 +27,7 @@ use agama_software::{self as software, Resolvable};
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{self, event},
+    message::GetResolvables,
 };
 use async_trait::async_trait;
 use merge::Merge;
@@ -91,19 +92,6 @@ impl Service {
         Starter::new(events, software)
     }
 
-    async fn set_resolvables(&mut self, resolvables: Vec<Resolvable>) {
-        let result = self
-            .software
-            .call(agama_software::message::SetResolvables::new(
-                "agama-ntp".to_string(),
-                resolvables,
-            ))
-            .await;
-
-        if let Err(e) = result {
-            tracing::error!("Failed to set resolvables for agama-ntp: {e}");
-        }
-    }
 }
 
 impl Actor for Service {
@@ -145,13 +133,10 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
             if let Err(e) = self.model.remove_config().await {
                 tracing::error!("Failed to remove the NTP configuration: {e}");
             }
-            self.set_resolvables(vec![]).await;
         } else {
             if let Err(e) = self.model.write_config(&self.config).await {
                 tracing::error!("Failed to write NTP configuration: {e}");
             }
-
-            self.set_resolvables(self.model.resolvables()).await;
         }
 
         if let Err(e) = self.model.sync().await {
@@ -178,5 +163,12 @@ impl MessageHandler<message::Finish> for Service {
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        Ok(self.model.resolvables())
     }
 }

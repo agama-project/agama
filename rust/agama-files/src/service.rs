@@ -34,6 +34,7 @@ use agama_utils::{
         question::QuestionSpec,
     },
     command::enable_service,
+    message::GetResolvables,
     progress,
     question::{self, ask_question, AskError},
 };
@@ -168,19 +169,11 @@ impl Service {
             }
         }
 
-        let mut packages = vec![];
         if let Some(scripts) = config.init {
             for init in scripts {
                 self.add_script(init.into()).await?;
             }
-            packages.push(Resolvable::new("agama-scripts", ResolvableType::Package));
         }
-        self.software
-            .call(agama_software::message::SetResolvables::new(
-                "agama-scripts".to_string(),
-                packages,
-            ))
-            .await?;
         Ok(())
     }
 
@@ -313,5 +306,19 @@ impl MessageHandler<message::Finish> for Service {
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        let scripts = self.scripts.lock().await;
+        let has_init_scripts = !scripts.by_group(ScriptsGroup::Init).is_empty();
+
+        if has_init_scripts {
+            Ok(vec![Resolvable::new("agama-scripts", ResolvableType::Package)])
+        } else {
+            Ok(vec![])
+        }
     }
 }
