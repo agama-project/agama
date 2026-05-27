@@ -102,7 +102,7 @@ const VlanFields = withForm({
               }
               helperText={
                 // TRANSLATORS: helper text for the VLAN ID field.
-                _("Numeric between 0 and 4094")
+                _("Numeric identifier (0–4094)")
               }
               min={0}
               max={4094}
