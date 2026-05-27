@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 // Re-export types from agama-utils
-pub use agama_utils::api::software::{Resolvable, ResolvableType};
+pub use agama_utils::api::software::ResolvableType;
 
 /// Extension trait to convert ResolvableType to zypp_agama::ResolvableKind
 pub trait ResolvableTypeExt {
