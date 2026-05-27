@@ -411,6 +411,8 @@ impl SetConfigAction {
         self.set_resolvables_for(self.files.clone(), "files")
             .await?;
         self.set_resolvables_for(self.files.clone(), "ntp").await?;
+        self.set_resolvables_for(self.storage.clone(), "storage")
+            .await?;
         Ok(())
     }
 
