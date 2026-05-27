@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,18 +28,6 @@ module Agama
       class Main < Base
         def install
           post("action", '"install"')
-        end
-
-        # Sets a list of resolvables for installation.
-        #
-        # @param unique_id [String] Unique ID to identify the list.
-        # @param type [String] Resolvable type (e.g., "package" or "pattern").
-        # @param resolvables [Array<String>] Resolvables names.
-        def set_resolvables(unique_id, type, resolvables)
-          data = resolvables.map do |name|
-            { "name" => name, "type" => type.to_s }
-          end
-          put("private/resolvables/#{unique_id}", data)
         end
       end
     end
