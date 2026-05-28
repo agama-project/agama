@@ -22,7 +22,10 @@
 
 import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
-import type { ValidationResult } from "~/components/form/validation-helpers";
+import type {
+  ValidationResult,
+  FieldsValidationResult,
+} from "~/components/form/validation-helpers";
 import { requiredString, optionalValidString } from "~/components/form/validation-helpers";
 import { requiredSize, sizeRange } from "~/components/storage/validation-helpers";
 import { _ } from "~/i18n";
@@ -188,10 +191,19 @@ function validateMinSize(fields: FormFields): string | undefined {
 
 function validateMaxSize(fields: FormFields): string | undefined {
   if (fields.sizeMode !== SIZE_MODE.RANGE) return undefined;
-  return requiredSize(
+
+  const requiredError = requiredSize(
     fields.maxSize,
     _("Maximum size is required"),
     _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+  );
+
+  if (requiredError) return requiredError;
+
+  return sizeRange(
+    fields.minSize,
+    fields.maxSize,
+    _("Minimum size cannot be greater than maximum size"),
   );
 }
 
@@ -201,15 +213,6 @@ function validateFixedSize(fields: FormFields): string | undefined {
     fields.fixedSize,
     _("Size is required"),
     _("Invalid size format (e.g., 20 GiB, 100 MB)"),
-  );
-}
-
-function validateSizeRange(fields: FormFields): string | undefined {
-  if (fields.sizeMode !== SIZE_MODE.RANGE) return undefined;
-  return sizeRange(
-    fields.minSize,
-    fields.maxSize,
-    _("Minimum size cannot be greater than maximum size"),
   );
 }
 
@@ -234,9 +237,7 @@ export function validate(
     minSize: validateMinSize(fields),
     maxSize: validateMaxSize(fields),
     fixedSize: validateFixedSize(fields),
-    // Cross-field validation
-    sizeRange: validateSizeRange(fields),
   });
 
-  if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
+  return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
 }
