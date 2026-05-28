@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Alert, AlertActionCloseButton, Stack } from "@patternfly/react-core";
+import { Alert, AlertActionCloseButton, FormGroup, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
@@ -118,7 +118,7 @@ const FilesystemFieldsContent = withForm({
 
     const selectedPartition = device.partitions?.find((p) => p.name === selectedPartitionId);
     const currentFsType = selectedPartition?.filesystem?.type;
-    const canReuseFs = currentFsType && usableFilesystems.includes(currentFsType);
+    const hasFilesystem = !!currentFsType;
 
     const filesystemOptions = [
       {
@@ -170,25 +170,50 @@ const FilesystemFieldsContent = withForm({
           </>
         )}
 
-        {partitionSource === PARTITION_SOURCE.REUSE && (
+        {partitionSource === PARTITION_SOURCE.REUSE && !hasFilesystem && (
+          <>
+            <FormGroup label={_("File system")}>
+              <Text>
+                {_(
+                  "Partition is not formatted. It will be formatted with the selected file system type.",
+                )}
+              </Text>
+            </FormGroup>
+            <form.AppField name="filesystem">
+              {(field) => (
+                <field.DropdownField label={_("File system type")} options={filesystemOptions} />
+              )}
+            </form.AppField>
+            {filesystem === FILESYSTEM_TYPE.AUTO && defaultFilesystem && mountPoint && (
+              <NestedContent margin="mxLg">
+                <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+                  {sprintf(
+                    // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+                    _("%1$s will be used for %2$s."),
+                    filesystemLabel(defaultFilesystem),
+                    mountPoint,
+                  )}
+                </Text>
+              </NestedContent>
+            )}
+          </>
+        )}
+
+        {partitionSource === PARTITION_SOURCE.REUSE && hasFilesystem && (
           <form.AppField name="filesystemAction">
             {(field) => (
               <field.RadioGroupField
                 label={_("File system")}
                 options={[
-                  ...(canReuseFs
-                    ? [
-                        {
-                          value: FILESYSTEM_ACTION.REUSE,
-                          label: sprintf(
-                            // TRANSLATORS: %s is filesystem type like "Btrfs"
-                            _("Keep current (%s)"),
-                            filesystemLabel(currentFsType),
-                          ),
-                          description: _("Do not format, existing data will be preserved"),
-                        },
-                      ]
-                    : []),
+                  {
+                    value: FILESYSTEM_ACTION.REUSE,
+                    label: sprintf(
+                      // TRANSLATORS: %s is filesystem type like "Btrfs"
+                      _("Keep current (%s)"),
+                      filesystemLabel(currentFsType),
+                    ),
+                    description: _("Do not format, existing data will be preserved"),
+                  },
                   {
                     value: FILESYSTEM_ACTION.FORMAT,
                     label: _("Format"),
