@@ -55,7 +55,7 @@ import { InstallerL10nOptions, Link, Page, SubtleContent } from "~/components/co
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
-import { putConfig } from "~/api";
+import { patchConfig, putConfig } from "~/api";
 import { useProduct, useProductInfo } from "~/hooks/model/config/product";
 import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
@@ -702,8 +702,14 @@ const ProductSelectionContent = () => {
   const onSubmit = async (selectedProduct: Product, selectedMode: string) => {
     setIsSubmmited(true);
     setSubmmitedSelection(selectedProduct);
-    // Put product and mode only in order to reset the rest of the config, which can depend on the selected product and mode (bsc#1264438)
-    putConfig({ product: { id: selectedProduct.id, mode: selectedMode } });
+    const productConfig = { product: { id: selectedProduct.id, mode: selectedMode } };
+    if (currentProduct) {
+      // Use PUT to reset the config when changing product (bsc#1264438)
+      putConfig(productConfig);
+    } else {
+      // Use PATCH to preserve initial settings when no product was selected yet
+      patchConfig(productConfig);
+    }
   };
 
   return (
