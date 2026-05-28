@@ -42,21 +42,23 @@ module Y2Storage
         @bootloader_config = bootloader_config
       end
 
-      # Partitions needed in order to be able to boot the system
+      # Candidate sets of partitions needed in order to be able to boot the system
       #
       # @raise [NotBootableError] if adding partitions is not enough to make the system bootable
       #
       # @param planned_devices [Array<Planned::Device>] devices that are already planned to be
       #   added to the starting devicegraph.
-      # @return [Array<Planned::Partition>]
-      def partitions(planned_devices)
+      # @return [Array<Array<Planned::Partition>>]
+      def plans(planned_devices)
+        return [[]] unless config.boot.configure?
+
         checker = BootRequirementsChecker.new(
           devicegraph,
           planned_devices: planned_devices,
           boot_disk_name:  boot_device_name,
           bootloader:      bootloader_config.type
         )
-        checker.needed_partitions(:min)
+        different_plans(checker)
       rescue BootRequirementsChecker::Error => e
         raise NotBootableError, e.message
       end
@@ -77,6 +79,31 @@ module Y2Storage
       # @return [String, nil]
       def boot_device_name
         config.boot_device&.found_device&.name
+      end
+
+      # @see #plans
+      #
+      # This ensures that only one attempt is done if the plans for desired and min size are the
+      # same, which happens with some boot requirement strategies.
+      #
+      # @return [Array<Array<Planned::Partition>>]
+      def different_plans(checker)
+        plans = [:desired, :min].map do |target|
+          checker.needed_partitions(target)
+        end
+
+        return plans[0, 1] if equivalent_plans?(plans.first, plans.last)
+
+        plans
+      end
+
+      # @see #different_plans
+      #
+      # @return [Boolean]
+      def equivalent_plans?(plan_a, plan_b)
+        # The only possible difference between two plans for the same situation (:desired vs :min)
+        # is the size of the boot partitions
+        plan_a.map(&:min_size) == plan_b.map(&:min_size)
       end
     end
   end
