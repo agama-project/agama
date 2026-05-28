@@ -21,9 +21,10 @@
  */
 
 import React from "react";
-import { ActionGroup, Form } from "@patternfly/react-core";
 import { useParams, useNavigate } from "react-router";
+import { ActionGroup, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
+import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useDevice } from "~/hooks/model/system/storage";
 import {
@@ -52,6 +53,8 @@ import {
 
 import type { ConfigModel as ConfigModelType, Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
+import { STORAGE } from "~/routes/paths";
+import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
 function useDeviceModelFromParams(): Partitionable.Device | null {
   const { collection, index } = useParams();
@@ -266,56 +269,80 @@ export default function PartitionForm() {
     },
   });
 
-  if (!deviceModel || !systemDevice) {
-    return null;
+  const breadcrumbs: BreadcrumbProps[] = [
+    // TRANSLATORS: breadcrumb label for the storage configuration section.
+    { label: _("Storage"), path: STORAGE.root },
+  ];
+
+  if (deviceModel) {
+    breadcrumbs.push(
+      {
+        label: deviceModel.name,
+      },
+      // TRANSLATORS: breadcrumb label for the partition create/edit form.
+      { label: _("Configure partition") },
+    );
+  } else {
+    breadcrumbs.push({ label: _("Configure partition") });
   }
 
   return (
-    <form.AppForm>
-      <Page>
-        <Page.Content>
-          <h2>{initialPartition ? _("Edit partition") : _("Add partition")}</h2>
+    <Page breadcrumbs={breadcrumbs}>
+      <Page.Content>
+        {!deviceModel || !systemDevice ? (
+          <ResourceNotFound
+            // TRANSLATORS: title of the page shown when the target device
+            // does not exist. Do not end with a period.
+            title={_("Device not found")}
+            // TRANSLATORS: body text on the device not found page.
+            body={_("The device does not exist or is no longer available.")}
+            // TRANSLATORS: link text on the device not found page.
+            linkText={_("Go to storage page")}
+            linkPath={STORAGE.root}
+          />
+        ) : (
+          <form.AppForm>
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+                form.setErrorMap({ onSubmit: { fields: {} } });
+                form.handleSubmit();
+              }}
+            >
+              {/* Mount point */}
+              <form.AppField name="mountPoint">
+                {(field) => (
+                  <field.SuggestionsTextField
+                    label={_("Mount point")}
+                    suggestions={unusedMountPoints}
+                    helperText={_("e.g., /, /home, /var, swap")}
+                  />
+                )}
+              </form.AppField>
 
-          <Form
-            onSubmit={(e) => {
-              e.preventDefault();
-              form.setErrorMap({ onSubmit: { fields: {} } });
-              form.handleSubmit();
-            }}
-          >
-            {/* Mount point */}
-            <form.AppField name="mountPoint">
-              {(field) => (
-                <field.SuggestionsTextField
-                  label={_("Mount point")}
-                  suggestions={unusedMountPoints}
-                  helperText={_("e.g., /, /home, /var, swap")}
-                />
-              )}
-            </form.AppField>
+              {/* Partition source */}
+              <PartitionSourceFields
+                form={form}
+                device={systemDevice}
+                availablePartitions={availablePartitions}
+              />
 
-            {/* Partition source */}
-            <PartitionSourceFields
-              form={form}
-              device={systemDevice}
-              availablePartitions={availablePartitions}
-            />
+              {/* Filesystem */}
+              <FilesystemFields form={form} device={systemDevice} />
 
-            {/* Filesystem */}
-            <FilesystemFields form={form} device={systemDevice} />
+              {/* Size (only for new partitions) */}
+              <form.Subscribe selector={(s) => s.values.partitionSource}>
+                {(source) => source === PARTITION_SOURCE.NEW && <SizeFields form={form} />}
+              </form.Subscribe>
 
-            {/* Size (only for new partitions) */}
-            <form.Subscribe selector={(s) => s.values.partitionSource}>
-              {(source) => source === PARTITION_SOURCE.NEW && <SizeFields form={form} />}
-            </form.Subscribe>
-
-            <ActionGroup>
-              <form.SubmitButton label={_("Accept")} />
-              <form.CancelButton />
-            </ActionGroup>
-          </Form>
-        </Page.Content>
-      </Page>
-    </form.AppForm>
+              <ActionGroup>
+                <form.SubmitButton label={_("Accept")} />
+                <form.CancelButton />
+              </ActionGroup>
+            </Form>
+          </form.AppForm>
+        )}
+      </Page.Content>
+    </Page>
   );
 }
