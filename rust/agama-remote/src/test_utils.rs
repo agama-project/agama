@@ -18,13 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::actor::Handler;
+use agama_utils::{actor::Handler, api::Event};
+use tokio::sync::broadcast::Sender;
 
 use crate::{Service, Starter};
 
 /// Starts a testing security service.
-pub async fn start_service(software: Handler<agama_software::Service>) -> Handler<Service> {
-    Starter::new(software)
+pub async fn start_service(
+    software: Handler<agama_software::Service>,
+    events: Sender<Event>,
+) -> Handler<Service> {
+    Starter::new(software, events)
         .start()
         .expect("Could not spawn a testing security service")
 }

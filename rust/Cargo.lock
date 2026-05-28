@@ -449,6 +449,7 @@ dependencies = [
 name = "agama-users"
 version = "0.1.0"
 dependencies = [
+ "agama-remote",
  "agama-utils",
  "async-trait",
  "gettext-rs",

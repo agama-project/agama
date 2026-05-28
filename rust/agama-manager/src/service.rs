@@ -357,10 +357,13 @@ impl Starter {
             None => hardware::Registry::new_from_system(),
         };
 
+        let remote_access =
+            agama_remote::Service::starter(software.clone(), self.events.clone()).start()?;
+
         let users = match self.users {
             Some(users) => users,
             None => {
-                users::Service::starter(self.events.clone(), issues.clone())
+                users::Service::starter(self.events.clone(), issues.clone(), remote_access.clone())
                     .start()
                     .await?
             }
@@ -385,8 +388,6 @@ impl Starter {
                 }
             }
         };
-
-        let remote_access = agama_remote::Service::starter(software.clone()).start()?;
 
         let runner = tasks::TasksRunner {
             bootloader: bootloader.clone(),

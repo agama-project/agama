@@ -57,6 +57,14 @@ impl SetAccess {
     }
 }
 
+#[derive(Clone)]
+pub struct GetProposal;
+
+impl Message for GetProposal {
+    // Proposal is basically resolved config computed from agama needs and user config
+    type Reply = Config;
+}
+
 /// Execute actions at the end of the installation.
 #[derive(Clone)]
 pub struct Finish;

@@ -26,10 +26,11 @@ use std::{
 use agama_software::Resolvable;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{self, remote_access::Config},
+    api::{self, event, remote_access::Config, Event, Scope},
     command::{enable_service, open_firewall},
 };
 use async_trait::async_trait;
+use tokio::sync::broadcast::Sender;
 
 use crate::message;
 
@@ -54,13 +55,15 @@ pub enum Error {
 pub struct Starter {
     software: Handler<agama_software::Service>,
     install_dir: PathBuf,
+    events: event::Sender,
 }
 
 impl Starter {
-    pub fn new(software: Handler<agama_software::Service>) -> Starter {
+    pub fn new(software: Handler<agama_software::Service>, events: event::Sender) -> Starter {
         Self {
             software,
             install_dir: PathBuf::from(DEFAULT_INSTALL_DIR),
+            events,
         }
     }
 
@@ -71,7 +74,7 @@ impl Starter {
 
     pub fn start(self) -> Result<Handler<Service>, Error> {
         let service = Service {
-            state: State::new(self.software.clone()),
+            state: State::new(self.software.clone(), self.events),
             install_dir: self.install_dir.clone(),
         };
         let handler = actor::spawn(service);
@@ -85,14 +88,16 @@ struct State {
     /// configs to request remote access from other parts of agama
     agama_config: HashMap<String, Config>,
     software: Handler<agama_software::Service>,
+    events: Sender<Event>,
 }
 
 impl State {
-    pub fn new(software: Handler<agama_software::Service>) -> Self {
+    pub fn new(software: Handler<agama_software::Service>, events: Sender<Event>) -> Self {
         Self {
             user_config: Config::default(),
             agama_config: HashMap::new(),
             software,
+            events,
         }
     }
 
@@ -110,6 +115,18 @@ impl State {
                 .agama_config
                 .values()
                 .any(|config| config.cockpit == Some(api::remote_access::AccessEnum::Enabled))
+    }
+
+    pub fn final_config(&self) -> Config {
+        let mut config = Config::default();
+        if self.is_ssh_enabled() {
+            config.ssh = Some(api::remote_access::AccessEnum::Enabled);
+        }
+        if self.is_cockpit_enabled() {
+            config.cockpit = Some(api::remote_access::AccessEnum::Enabled);
+        }
+
+        config
     }
 
     pub async fn write<P: AsRef<Path>>(&self, install_dir: P) -> Result<(), Error> {
@@ -150,11 +167,19 @@ impl State {
     pub fn set_user_config(&mut self, config: Config) {
         self.user_config = config;
         self.update_resolvables();
+        // ignoring error here is ok as it means just dismissed event
+        let _ = self.events.send(Event::ProposalChanged {
+            scope: Scope::RemoteAccess,
+        });
     }
 
     pub fn set_module_config(&mut self, id: String, config: Config) {
         self.agama_config.insert(id, config);
         self.update_resolvables();
+        // ignoring error here is ok as it means just dismissed event
+        let _ = self.events.send(Event::ProposalChanged {
+            scope: Scope::RemoteAccess,
+        });
     }
 
     fn update_resolvables(&mut self) {
@@ -190,8 +215,8 @@ pub struct Service {
 }
 
 impl Service {
-    pub fn starter(software: Handler<agama_software::Service>) -> Starter {
-        Starter::new(software)
+    pub fn starter(software: Handler<agama_software::Service>, events: Sender<Event>) -> Starter {
+        Starter::new(software, events)
     }
 }
 
@@ -226,6 +251,13 @@ impl MessageHandler<message::GetConfig> for Service {
 impl MessageHandler<message::SetAccess> for Service {
     async fn handle(&mut self, message: message::SetAccess) -> Result<(), Error> {
         Ok(self.state.set_module_config(message.id, message.config))
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::GetProposal> for Service {
+    async fn handle(&mut self, _message: message::GetProposal) -> Result<Config, Error> {
+        Ok(self.state.final_config())
     }
 }
 
