@@ -80,7 +80,7 @@ describe("VlanFields", () => {
     expect(await screen.findByLabelText("Parent device")).toBeInTheDocument();
     expect(await screen.findByLabelText("Encapsulation protocol")).toBeInTheDocument();
 
-    expect(screen.getByText(/Available devices: enp1s0 and enp2s0/)).toBeInTheDocument();
+    expect(screen.getByText("Physical or Virtual device name")).toBeInTheDocument();
     expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent("Default");
   });
 
@@ -102,5 +102,17 @@ describe("VlanFields", () => {
 
     expect(screen.queryByLabelText("Device name")).not.toBeInTheDocument();
     expect(screen.getByText("Device name")).toBeInTheDocument(); // ReadOnlyField label
+  });
+
+  it("filters parent device suggestions to exclude the current device name", async () => {
+    const { container } = installerRender(<TestForm defaultValues={{ vlanIface: "enp1s0" }} />);
+
+    const datalist = container.querySelector("#vlanParent-datalist");
+    expect(datalist).toBeInTheDocument();
+
+    const options = Array.from(datalist?.querySelectorAll("option") || []).map((o) => o.value);
+    // enp1s0 should be filtered out, enp2s0 should be present
+    expect(options).not.toContain("enp1s0");
+    expect(options).toContain("enp2s0");
   });
 });

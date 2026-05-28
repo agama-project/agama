@@ -21,11 +21,10 @@
  */
 
 import React from "react";
-import { sprintf } from "sprintf-js";
 import { defaultOptions, VlanProtocolMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
-import { _, N_, formatList } from "~/i18n";
+import { _, N_ } from "~/i18n";
 
 /**
  * Protocol options for the selector.
@@ -111,15 +110,18 @@ const VlanFields = withForm({
         </form.AppField>
         <form.AppField name="vlanParent">
           {(field) => (
-            <field.TextField
+            <field.SuggestionsTextField
               label={
                 // TRANSLATORS: label for the VLAN parent device field.
                 _("Parent device")
               }
               helperText={
-                // TRANSLATORS: helper text for the VLAN parent device field. %s is a list of available devices.
-                sprintf(_("Available devices: %s"), formatList(devices.map((d) => d.name)))
+                // TRANSLATORS: helper text for the VLAN parent device field.
+                _("Physical or Virtual device name")
               }
+              suggestions={devices
+                .map((d) => d.name)
+                .filter((name) => name !== form.getFieldValue("vlanIface"))}
             />
           )}
         </form.AppField>
