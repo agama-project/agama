@@ -24,7 +24,7 @@ import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
 import type { ValidationResult } from "~/components/form/validation-helpers";
 import { requiredString, optionalValidString } from "~/components/form/validation-helpers";
-import { requiredSize, optionalSize, sizeRange } from "~/components/storage/validation-helpers";
+import { requiredSize, sizeRange } from "~/components/storage/validation-helpers";
 import { _ } from "~/i18n";
 
 /** Form field types */
@@ -139,9 +139,7 @@ function validateMountPoint(fields: FormFields, usedMountPoints: string[]): stri
 
   // Check if mount point is already used (not validated here, must be passed from form)
   if (usedMountPoints.includes(value)) {
-    return _(
-      "Select or enter a mount point that is not already assigned to another device",
-    );
+    return _("Select or enter a mount point that is not already assigned to another device");
   }
 
   return undefined;

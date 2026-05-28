@@ -55,7 +55,12 @@ const TestForm = ({ onSubmit = jest.fn() }: { onSubmit?: () => void }) => {
             options={[
               { value: "option1", label: _("Option 1"), description: "First option" },
               { value: "option2", label: _("Option 2"), description: "Second option" },
-              { value: "option3", label: _("Option 3"), description: "Third option", isDisabled: true },
+              {
+                value: "option3",
+                label: _("Option 3"),
+                description: "Third option",
+                isDisabled: true,
+              },
             ]}
             helperText="Pick one option"
           />

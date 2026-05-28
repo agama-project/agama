@@ -60,6 +60,7 @@ const PartitionSourceFields = withForm({
           // When no partitions available, show read-only explanation
           if (!canReuse) {
             // Set the value for ReadOnlyField
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             form.setFieldValue(
               "partitionSource",
               sprintf(

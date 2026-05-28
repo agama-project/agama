@@ -33,15 +33,10 @@ import {
   useAddPartition,
   useEditPartition,
 } from "~/hooks/model/storage/config-model";
-import {
-  deviceSize,
-  createPartitionableLocation,
-  parseToBytes,
-} from "~/components/storage/utils";
+import { deviceSize, createPartitionableLocation, parseToBytes } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
 import { compact } from "~/utils";
 import { _ } from "~/i18n";
-import { STORAGE } from "~/routes/paths";
 
 import PartitionSourceFields from "./PartitionSourceFields";
 import FilesystemFields from "./FilesystemFields";
@@ -61,8 +56,12 @@ import type { Storage as System } from "~/model/system";
 function useDeviceModelFromParams(): Partitionable.Device | null {
   const { collection, index } = useParams();
   const location = createPartitionableLocation(collection, index);
-  if (!location) return null;
-  return usePartitionable(location.collection, location.index);
+  // Call hook unconditionally, but pass safe defaults if location is null
+  const device = usePartitionable(
+    location?.collection || "drives",
+    location?.index !== undefined ? location.index : 0,
+  );
+  return location ? device : null;
 }
 
 function useInitialPartitionConfig(): ConfigModelType.Partition | null {
@@ -81,11 +80,12 @@ function useUnusedMountPoints(): string[] {
 /** Unused partitions. Includes the currently used partition when editing (if any). */
 function useUnusedPartitions(): System.Device[] {
   const deviceModel = useDeviceModelFromParams();
-  if (!deviceModel) return [];
-
-  const systemDevice = useDevice(deviceModel.name);
-  const allPartitions = systemDevice?.partitions || [];
+  const systemDevice = useDevice(deviceModel?.name || "");
   const initialPartitionConfig = useInitialPartitionConfig();
+
+  if (!deviceModel || !systemDevice) return [];
+
+  const allPartitions = systemDevice.partitions || [];
   const configuredPartitionConfigs = configModel.partitionable
     .filterConfiguredExistingPartitions(deviceModel)
     .filter((p) => p.name !== initialPartitionConfig?.name)
@@ -200,7 +200,7 @@ function toFormValues(
     mountPoint: partitionConfig.mountPath || "",
     partitionSource: isReuse ? PARTITION_SOURCE.REUSE : PARTITION_SOURCE.NEW,
     selectedPartitionId: partitionConfig.name || "",
-    filesystem: isReuseFs ? FILESYSTEM_TYPE.AUTO : (fsConfig?.type || FILESYSTEM_TYPE.AUTO),
+    filesystem: isReuseFs ? FILESYSTEM_TYPE.AUTO : fsConfig?.type || FILESYSTEM_TYPE.AUTO,
     filesystemAction: isReuseFs ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
     filesystemLabel: fsConfig?.label || "",
     sizeMode,
