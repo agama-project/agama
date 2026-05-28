@@ -196,7 +196,12 @@ const SizeFields = withForm({
             ]}
           >
             {(mode) => (
-              <form.Subscribe selector={(s) => ({ mountPoint: s.values.mountPoint, filesystem: s.values.filesystem })}>
+              <form.Subscribe
+                selector={(s) => ({
+                  mountPoint: s.values.mountPoint,
+                  filesystem: s.values.filesystem,
+                })}
+              >
                 {({ mountPoint, filesystem }) => (
                   <SizeFieldsContent
                     form={form}

@@ -209,18 +209,20 @@ const FilesystemFieldsContent = withForm({
                               />
                             )}
                           </form.AppField>
-                          {filesystem === FILESYSTEM_TYPE.AUTO && defaultFilesystem && mountPoint && (
-                            <NestedContent margin="mxLg">
-                              <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-                                {sprintf(
-                                  // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-                                  _("%1$s will be used for %2$s."),
-                                  filesystemLabel(defaultFilesystem),
-                                  mountPoint,
-                                )}
-                              </Text>
-                            </NestedContent>
-                          )}
+                          {filesystem === FILESYSTEM_TYPE.AUTO &&
+                            defaultFilesystem &&
+                            mountPoint && (
+                              <NestedContent margin="mxLg">
+                                <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+                                  {sprintf(
+                                    // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+                                    _("%1$s will be used for %2$s."),
+                                    filesystemLabel(defaultFilesystem),
+                                    mountPoint,
+                                  )}
+                                </Text>
+                              </NestedContent>
+                            )}
                         </Stack>
                       </NestedContent>
                     );
