@@ -104,7 +104,7 @@ const PartitionSourceFields = withForm({
             {(value) => {
               if (value === PARTITION_SOURCE.REUSE) {
                 return (
-                  <NestedContent>
+                  <NestedContent margin="mxLg">
                     <form.AppField name="selectedPartitionId">
                       {(partField) => (
                         <partField.DropdownField
