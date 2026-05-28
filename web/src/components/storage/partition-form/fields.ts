@@ -32,28 +32,33 @@ import { _ } from "~/i18n";
 
 /** Form field types */
 
-type FormFields = {
+type MountPointFields = {
   mountPoint: string;
+};
 
-  // Partition source
+type PartitionSourceFields = {
   // Note: Normally "new" | "reuse", but when no partitions are available
   // to reuse, this field contains a display string for ReadOnlyField.
   partitionSource: string;
   selectedPartitionId: string;
+};
 
-  // Filesystem
+type FilesystemFields = {
   filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
   // Note: Normally "reuse" | "format", but when partition has no filesystem,
   // this field contains a display string for ReadOnlyField.
   filesystemAction: string;
   filesystemLabel: string;
+};
 
-  // Size
+type SizeFields = {
   sizeMode: "auto" | "fixed" | "range" | "expand";
   minSize: string;
   maxSize: string;
   fixedSize: string;
 };
+
+type FormFields = MountPointFields & PartitionSourceFields & FilesystemFields & SizeFields;
 
 /** Constants */
 
@@ -133,89 +138,123 @@ const MOUNT_POINT_REGEXP = /^swap$|^\/$|^(\/[^/\s]+)+$/;
  */
 const FILESYSTEM_LABEL_REGEXP = /^[\w-_.]*$/;
 
-function validateMountPoint(fields: FormFields, usedMountPoints: string[]): string | undefined {
+function validateMountPoint(
+  fields: FormFields,
+  usedMountPoints: string[],
+): FieldsValidationResult<MountPointFields> {
   const value = fields.mountPoint;
 
   if (value === "") {
-    return _("Mount point is required");
+    return { mountPoint: _("Mount point is required") };
   }
 
   if (!MOUNT_POINT_REGEXP.test(value)) {
-    return _("Select or enter a valid mount point");
+    return { mountPoint: _("Select or enter a valid mount point") };
   }
 
   // Check if mount point is already used (not validated here, must be passed from form)
   if (usedMountPoints.includes(value)) {
-    return _("Select or enter a mount point that is not already assigned to another device");
+    return {
+      mountPoint: _("Select or enter a mount point that is not already assigned to another device"),
+    };
   }
 
-  return undefined;
+  return {};
 }
 
-function validateSelectedPartition(fields: FormFields): string | undefined {
-  if (fields.partitionSource !== PARTITION_SOURCE.REUSE) return undefined;
-  return requiredString(fields.selectedPartitionId, _("Select a partition"));
+function validatePartitionSource(
+  fields: FormFields,
+): FieldsValidationResult<PartitionSourceFields> {
+  if (fields.partitionSource !== PARTITION_SOURCE.REUSE) return {};
+  return {
+    selectedPartitionId: requiredString(fields.selectedPartitionId, _("Select a partition")),
+  };
 }
 
-function validateFilesystem(fields: FormFields): string | undefined {
+function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
   // AUTO is always valid — the installer will pick an appropriate type.
-  if (fields.filesystem === FILESYSTEM_TYPE.AUTO) return undefined;
+  if (fields.filesystem === FILESYSTEM_TYPE.AUTO) {
+    return {
+      filesystemLabel: optionalValidString(
+        fields.filesystemLabel,
+        (v) => FILESYSTEM_LABEL_REGEXP.test(v),
+        _("Invalid label format"),
+      ),
+    };
+  }
 
   // Reusing the existing filesystem requires no explicit type selection.
   if (
     fields.partitionSource === PARTITION_SOURCE.REUSE &&
     fields.filesystemAction === FILESYSTEM_ACTION.REUSE
   ) {
-    return undefined;
+    return {
+      filesystemLabel: optionalValidString(
+        fields.filesystemLabel,
+        (v) => FILESYSTEM_LABEL_REGEXP.test(v),
+        _("Invalid label format"),
+      ),
+    };
   }
 
-  return requiredString(fields.filesystem, _("Select a filesystem type"));
+  return {
+    filesystem: requiredString(fields.filesystem, _("Select a filesystem type")),
+    filesystemLabel: optionalValidString(
+      fields.filesystemLabel,
+      (v) => FILESYSTEM_LABEL_REGEXP.test(v),
+      _("Invalid label format"),
+    ),
+  };
 }
 
-function validateFilesystemLabel(fields: FormFields): string | undefined {
-  return optionalValidString(
-    fields.filesystemLabel,
-    (v) => FILESYSTEM_LABEL_REGEXP.test(v),
-    _("Invalid label format"),
-  );
-}
-
-function validateMinSize(fields: FormFields): string | undefined {
-  if (fields.sizeMode !== SIZE_MODE.RANGE && fields.sizeMode !== SIZE_MODE.EXPAND) {
-    return undefined;
+function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFields> {
+  if (fields.sizeMode === SIZE_MODE.FIXED) {
+    return {
+      fixedSize: requiredSize(
+        fields.fixedSize,
+        _("Size is required"),
+        _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+      ),
+    };
   }
-  return requiredSize(
-    fields.minSize,
-    _("Minimum size is required"),
-    _("Invalid size format (e.g., 20 GiB, 100 MB)"),
-  );
-}
 
-function validateMaxSize(fields: FormFields): string | undefined {
-  if (fields.sizeMode !== SIZE_MODE.RANGE) return undefined;
+  if (fields.sizeMode === SIZE_MODE.RANGE) {
+    const minError = requiredSize(
+      fields.minSize,
+      _("Minimum size is required"),
+      _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+    );
 
-  const requiredError = requiredSize(
-    fields.maxSize,
-    _("Maximum size is required"),
-    _("Invalid size format (e.g., 20 GiB, 100 MB)"),
-  );
+    const maxError = requiredSize(
+      fields.maxSize,
+      _("Maximum size is required"),
+      _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+    );
 
-  if (requiredError) return requiredError;
+    if (minError || maxError) {
+      return { minSize: minError, maxSize: maxError };
+    }
 
-  return sizeRange(
-    fields.minSize,
-    fields.maxSize,
-    _("Minimum size cannot be greater than maximum size"),
-  );
-}
+    const rangeError = sizeRange(
+      fields.minSize,
+      fields.maxSize,
+      _("Minimum size cannot be greater than maximum size"),
+    );
 
-function validateFixedSize(fields: FormFields): string | undefined {
-  if (fields.sizeMode !== SIZE_MODE.FIXED) return undefined;
-  return requiredSize(
-    fields.fixedSize,
-    _("Size is required"),
-    _("Invalid size format (e.g., 20 GiB, 100 MB)"),
-  );
+    return { maxSize: rangeError };
+  }
+
+  if (fields.sizeMode === SIZE_MODE.EXPAND) {
+    return {
+      minSize: requiredSize(
+        fields.minSize,
+        _("Minimum size is required"),
+        _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+      ),
+    };
+  }
+
+  return {};
 }
 
 /**
@@ -232,13 +271,10 @@ export function validate(
   usedMountPoints: string[] = [],
 ): ValidationResult<FormFields> {
   const fieldErrors = shake({
-    mountPoint: validateMountPoint(fields, usedMountPoints),
-    selectedPartitionId: validateSelectedPartition(fields),
-    filesystem: validateFilesystem(fields),
-    filesystemLabel: validateFilesystemLabel(fields),
-    minSize: validateMinSize(fields),
-    maxSize: validateMaxSize(fields),
-    fixedSize: validateFixedSize(fields),
+    ...validateMountPoint(fields, usedMountPoints),
+    ...validatePartitionSource(fields),
+    ...validateFilesystemFields(fields),
+    ...validateSizeFields(fields),
   });
 
   return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
