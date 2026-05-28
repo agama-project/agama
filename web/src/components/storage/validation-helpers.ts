@@ -106,11 +106,7 @@ export function optionalSize(value: string, invalidMessage: string): string | un
  * sizeRange("10 GiB", "", "Min > Max") // undefined (max is optional)
  * sizeRange("invalid", "20 GiB", "Min > Max") // undefined (invalid caught elsewhere)
  */
-export function sizeRange(
-  minValue: string,
-  maxValue: string,
-  message: string,
-): string | undefined {
+export function sizeRange(minValue: string, maxValue: string, message: string): string | undefined {
   // Skip if either is missing or invalid (caught by field validators)
   if (!minValue || !maxValue) return undefined;
   if (!isValidSize(minValue) || !isValidSize(maxValue)) return undefined;
@@ -132,11 +128,7 @@ export function sizeRange(
  * sizeAtLeast("5 GiB", parseToBytes("10 GiB"), "Too small") // "Too small"
  * sizeAtLeast("", parseToBytes("10 GiB"), "Too small") // undefined
  */
-export function sizeAtLeast(
-  value: string,
-  minBytes: number,
-  message: string,
-): string | undefined {
+export function sizeAtLeast(value: string, minBytes: number, message: string): string | undefined {
   if (!value || !isValidSize(value)) return undefined;
 
   const bytes = parseToBytes(value);
@@ -154,11 +146,7 @@ export function sizeAtLeast(
  * sizeAtMost("30 GiB", parseToBytes("20 GiB"), "Too large") // "Too large"
  * sizeAtMost("", parseToBytes("20 GiB"), "Too large") // undefined
  */
-export function sizeAtMost(
-  value: string,
-  maxBytes: number,
-  message: string,
-): string | undefined {
+export function sizeAtMost(value: string, maxBytes: number, message: string): string | undefined {
   if (!value || !isValidSize(value)) return undefined;
 
   const bytes = parseToBytes(value);
