@@ -730,7 +730,7 @@ describe("ProductSelectionPage", () => {
       expect(screen.queryByText("Select a product to continue.")).not.toBeInTheDocument();
     });
 
-    it("renders warning when changing product (reset warning)", async () => {
+    it("renders a warning when changing product (reset warning)", async () => {
       mockProduct(tumbleweed);
       const { user } = installerRender(<ProductSelectionPage />);
 
@@ -739,6 +739,33 @@ describe("ProductSelectionPage", () => {
       const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
       await user.click(licenseCheckbox);
       screen.getByText("Changing the product will reset your current settings.");
+    });
+
+    it("renders a warning when changing mode for the same product", async () => {
+      mockProduct(productWithModes);
+      mockProductConfig({ id: productWithModes.id, mode: "standard" });
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+      const immutableMode = screen.getByRole("radio", { name: "Immutable" });
+      await user.click(immutableMode);
+      screen.getByText("Changing the product will reset your current settings.");
+    });
+
+    it("does not render the warning about product change when no product was previously selected", async () => {
+      mockProduct(undefined);
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+      const standardMode = screen.getByRole("radio", { name: "Standard" });
+      await user.click(standardMode);
+      expect(
+        screen.queryByText("Changing the product will reset your current settings."),
+      ).not.toBeInTheDocument();
     });
   });
 
