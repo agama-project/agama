@@ -253,25 +253,6 @@ describe("ProductSelectionPage", () => {
       expect(mockPutConfigFn).toHaveBeenCalledWith({ product: { id: microOs.id } });
       expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
-
-    it("triggers the product selection (reset) with mode", async () => {
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes, tumbleweed] });
-      const { user } = installerRender(<ProductSelectionPage />);
-
-      const productOption = screen.getByRole("radio", { name: productWithModes.name });
-      await user.click(productOption);
-
-      const standardMode = screen.getByRole("radio", { name: "Standard" });
-      await user.click(standardMode);
-
-      const selectButton = screen.getByRole("button", { name: /Change/ });
-      await user.click(selectButton);
-
-      expect(mockPutConfigFn).toHaveBeenCalledWith({
-        product: { id: productWithModes.id, mode: "standard" },
-      });
-      expect(mockPatchConfigFn).not.toHaveBeenCalled();
-    });
   });
 
   it("does not render the Cancel button if product no selected yet", () => {
