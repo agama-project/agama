@@ -819,6 +819,128 @@ All reusable field components (`TextField`, `SuggestionsTextField`, `PasswordFie
 etc.) must wire `onBlur={() => field.handleBlur()}` to support forms that use blur
 listeners for field coordination.
 
+#### Mistake 7: Using `as any` for type mismatches
+
+```typescript
+// ❌ WRONG - Using 'as any' to bypass type safety
+form.setFieldValue("partitionSource", displayString as any);
+
+// ❌ WRONG - Using 'as any' with type assertions
+const label = filesystemLabel(filesystem as any);
+
+// ✅ CORRECT - Use proper type assertions with specific types
+import type { ConfigModel } from "~/model/storage/config-model";
+const label = filesystemLabel(filesystem as ConfigModel.FilesystemType);
+
+// ✅ CORRECT - Restructure to avoid type mismatch
+// Instead of forcing a display string into a typed field,
+// render informative text outside the field:
+if (!canReuse) {
+  return (
+    <FormGroup label={_("Partition source")}>
+      <div>{explanationText}</div>
+    </FormGroup>
+  );
+}
+```
+
+**Why this matters:** The project does not allow `as any`. If you encounter a type
+mismatch, it's usually a sign that the code structure needs adjustment. Use specific
+type assertions (e.g., `as ConfigModel.FilesystemType`) when you know the type is
+correct but TypeScript can't infer it, or restructure the code to avoid the type issue
+entirely.
+
+#### Mistake 8: Forgetting `margin="mxLg"` on `NestedContent`
+
+```typescript
+// ❌ WRONG - Missing margin creates cramped nested fields
+{value === "reuse" && (
+  <NestedContent>
+    <form.AppField name="partition">
+      {(field) => <field.DropdownField label={_("Partition")} options={options} />}
+    </form.AppField>
+  </NestedContent>
+)}
+
+// ✅ CORRECT - Always add margin="mxLg" for proper air gap
+{value === "reuse" && (
+  <NestedContent margin="mxLg">
+    <form.AppField name="partition">
+      {(field) => <field.DropdownField label={_("Partition")} options={options} />}
+    </form.AppField>
+  </NestedContent>
+)}
+```
+
+**Why this matters:** `NestedContent` provides visual indentation for revealed fields,
+but without `margin="mxLg"` the nested content appears cramped against the parent
+field. This pattern is used consistently in `connection-form` and other forms to
+maintain proper spacing ("air gap") between form elements.
+
+#### Mistake 9: Using `isDisabled` on form fields
+
+```typescript
+// ❌ WRONG - Disabling fields instead of conditional rendering
+<field.DropdownField
+  label={_("File system type")}
+  isDisabled={!mountPoint}
+  options={filesystemOptions}
+/>
+
+// ✅ CORRECT - Don't render fields that can't be edited
+{mountPoint && (
+  <form.AppField name="filesystem">
+    {(field) => (
+      <field.DropdownField
+        label={_("File system type")}
+        options={filesystemOptions}
+      />
+    )}
+  </form.AppField>
+)}
+
+// ✅ ALSO CORRECT - Or let validation handle it
+// If the field is always relevant but requires another field first,
+// remove isDisabled and let form validation ensure proper order
+<field.DropdownField
+  label={_("File system type")}
+  options={filesystemOptions}
+/>
+```
+
+**Why this matters:** Per conventions, if a field cannot be edited, don't render it at
+all (or render informative text instead). Disabled fields create poor UX and
+accessibility issues. Validation should handle dependencies between fields, not UI
+state. Exception: fields may be conditionally rendered but should not use `isDisabled`.
+
+#### Mistake 10: Adding component dependencies without verification
+
+```typescript
+// ❌ WRONG - Adding RadioEnhanced without checking if it's used elsewhere
+import RadioEnhanced from "~/components/core/RadioEnhanced";
+
+export default function RadioGroupField({ options }) {
+  return options.map((opt) => (
+    <RadioEnhanced label={opt.label} /> // Unused elsewhere, adds unnecessary dependency
+  ));
+}
+
+// ✅ CORRECT - Use standard PatternFly components
+import { Radio } from "@patternfly/react-core";
+
+export default function RadioGroupField({ options }) {
+  return options.map((opt) => (
+    <Radio label={opt.label} /> // Standard component
+  ));
+}
+```
+
+**Why this matters:** Before importing a component, especially from `~/components/core`,
+verify it's actually used elsewhere in the codebase. If it's unused or was created
+speculatively, prefer using standard PatternFly components directly. This keeps the
+codebase simpler and reduces maintenance burden. Check usage with:
+`git grep "import.*RadioEnhanced"` or similar.
+
 ### Summary Table
 
 | Pattern         | Hook/Wrapper      | Register Fields              | Update Values          | onBlur Support            | Use Case                | Example                        |
