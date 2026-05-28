@@ -118,6 +118,7 @@ const FilesystemFields = withForm({
           ),
         );
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [usableFilesystems, filesystem]);
 
     const selectedPartition = device.partitions?.find((p) => p.name === selectedPartitionId);
