@@ -310,6 +310,8 @@ const ProductFormSubmitLabel = ({
 type ProductFormSubmitLabelHelpProps = {
   /** The product currently configured in the system */
   currentProduct?: Product;
+  /** The product mode configured in the system */
+  currentModeId?: string;
   /** The product selected by the user */
   selectedProduct?: Product;
   /** The product mode selected by the user */
@@ -326,6 +328,7 @@ type ProductFormSubmitLabelHelpProps = {
  */
 const ProductFormSubmitLabelHelp = ({
   currentProduct,
+  currentModeId,
   selectedProduct,
   selectedMode,
   hasEula,
@@ -339,7 +342,10 @@ const ProductFormSubmitLabelHelp = ({
     text = _("Select a product mode to continue.");
   } else if (hasEula && !isEulaAccepted) {
     text = _("License acceptance is required to continue.");
-  } else if (currentProduct && selectedProduct.id !== currentProduct.id) {
+  } else if (
+    currentProduct &&
+    (selectedProduct.id !== currentProduct?.id || selectedMode?.id !== currentModeId)
+  ) {
     text = _("Changing the product will reset your current settings.");
   } else {
     return;
@@ -548,6 +554,7 @@ const ProductForm = ({
         <StackItem>
           <ProductFormSubmitLabelHelp
             currentProduct={currentProduct}
+            currentModeId={currentModeId}
             selectedProduct={selectedProduct}
             selectedMode={selectedMode}
             hasEula={mountEulaCheckbox}
