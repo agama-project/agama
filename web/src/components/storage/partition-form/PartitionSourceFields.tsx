@@ -111,9 +111,13 @@ const PartitionSourceFields = withForm({
                         listeners={{
                           onMount: ({ value }) => {
                             if (!value && availablePartitions.length > 0) {
-                              form.setFieldValue("selectedPartitionId", availablePartitions[0].name, {
-                                dontUpdateMeta: true,
-                              });
+                              form.setFieldValue(
+                                "selectedPartitionId",
+                                availablePartitions[0].name,
+                                {
+                                  dontUpdateMeta: true,
+                                },
+                              );
                             }
                           },
                         }}
@@ -123,7 +127,9 @@ const PartitionSourceFields = withForm({
                             label={_("Partition")}
                             options={availablePartitions.map((p) => {
                               const fsLabel = p.filesystem?.label;
-                              const description = [p.description, fsLabel].filter(Boolean).join(" - ");
+                              const description = [p.description, fsLabel]
+                                .filter(Boolean)
+                                .join(" - ");
                               return {
                                 value: p.name,
                                 label: deviceLabel(p, true),
