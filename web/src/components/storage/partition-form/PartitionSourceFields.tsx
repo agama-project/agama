@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { FormGroup } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, PARTITION_SOURCE } from "./fields";
@@ -55,74 +54,77 @@ const PartitionSourceFields = withForm({
   render: function Render({ form, device, availablePartitions }) {
     const canReuse = availablePartitions.length > 0;
 
-    // When no partitions available, show informative text instead of a field
-    if (!canReuse) {
-      return (
-        <FormGroup label={_("Partition source")}>
-          <div>
-            {sprintf(
-              // TRANSLATORS: %s is device name like "/dev/vdd"
-              _("New partition (no partitions available on %s to reuse)"),
-              deviceLabel(device, true),
-            )}
-          </div>
-        </FormGroup>
-      );
-    }
+    // When no partitions available, set display text for ReadOnlyField
+    React.useEffect(() => {
+      if (!canReuse) {
+        const displayText = sprintf(
+          // TRANSLATORS: %s is device name like "/dev/vdd"
+          _("New partition (no partitions available on %s to reuse)"),
+          deviceLabel(device, true),
+        );
+        form.setFieldValue("partitionSource", displayText);
+      }
+    }, [canReuse, device, form]);
 
-    // When partitions are available, show radio group
     return (
       <form.AppField name="partitionSource">
-        {(field) => (
-          <field.RadioGroupField
-            label={_("Partition source")}
-            options={[
-              {
-                value: PARTITION_SOURCE.NEW,
-                label: _("New partition"),
-                description: sprintf(
-                  // TRANSLATORS: %s is device name like "/dev/vdd"
-                  _("Create a new partition on %s"),
-                  deviceLabel(device, true),
-                ),
-              },
-              {
-                value: PARTITION_SOURCE.REUSE,
-                label: sprintf(
-                  // TRANSLATORS: %d is count of available partitions
-                  _("Use existing partition (%d available)"),
-                  availablePartitions.length,
-                ),
-                description: sprintf(
-                  // TRANSLATORS: %s is device name like "/dev/vdd"
-                  _("Pick one of the existing partitions on %s"),
-                  deviceLabel(device, true),
-                ),
-              },
-            ]}
-          >
-            {(value) => {
-              if (value === PARTITION_SOURCE.REUSE) {
-                return (
-                  <NestedContent margin="mxLg">
-                    <form.AppField name="selectedPartitionId">
-                      {(partField) => (
-                        <partField.DropdownField
-                          label={_("Partition")}
-                          options={availablePartitions.map((p) => ({
-                            value: p.name,
-                            label: deviceLabel(p, true),
-                          }))}
-                        />
-                      )}
-                    </form.AppField>
-                  </NestedContent>
-                );
-              }
-              return null;
-            }}
-          </field.RadioGroupField>
-        )}
+        {(field) => {
+          if (!canReuse) {
+            return <field.ReadOnlyField label={_("Partition source")} />;
+          }
+
+          // When partitions are available, show radio group
+          return (
+            <field.RadioGroupField
+              label={_("Partition source")}
+              options={[
+                {
+                  value: PARTITION_SOURCE.NEW,
+                  label: _("New partition"),
+                  description: sprintf(
+                    // TRANSLATORS: %s is device name like "/dev/vdd"
+                    _("Create a new partition on %s"),
+                    deviceLabel(device, true),
+                  ),
+                },
+                {
+                  value: PARTITION_SOURCE.REUSE,
+                  label: sprintf(
+                    // TRANSLATORS: %d is count of available partitions
+                    _("Use existing partition (%d available)"),
+                    availablePartitions.length,
+                  ),
+                  description: sprintf(
+                    // TRANSLATORS: %s is device name like "/dev/vdd"
+                    _("Pick one of the existing partitions on %s"),
+                    deviceLabel(device, true),
+                  ),
+                },
+              ]}
+            >
+              {(value) => {
+                if (value === PARTITION_SOURCE.REUSE) {
+                  return (
+                    <NestedContent margin="mxLg">
+                      <form.AppField name="selectedPartitionId">
+                        {(partField) => (
+                          <partField.DropdownField
+                            label={_("Partition")}
+                            options={availablePartitions.map((p) => ({
+                              value: p.name,
+                              label: deviceLabel(p, true),
+                            }))}
+                          />
+                        )}
+                      </form.AppField>
+                    </NestedContent>
+                  );
+                }
+                return null;
+              }}
+            </field.RadioGroupField>
+          );
+        }}
       </form.AppField>
     );
   },

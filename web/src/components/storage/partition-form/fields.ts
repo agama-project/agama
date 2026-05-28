@@ -33,7 +33,9 @@ type FormFields = {
   mountPoint: string;
 
   // Partition source
-  partitionSource: "new" | "reuse";
+  // Note: Normally "new" | "reuse", but when no partitions are available
+  // to reuse, this field contains a display string for ReadOnlyField.
+  partitionSource: string;
   selectedPartitionId: string;
 
   // Filesystem
