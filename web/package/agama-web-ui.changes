@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu May 28 09:45:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reset the configuration only when changing the product (bsc#1258032).
+
+-------------------------------------------------------------------
 Mon May 25 12:36:17 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update shell-quote dependency (CVE-2026-9277, bsc#1266256).
