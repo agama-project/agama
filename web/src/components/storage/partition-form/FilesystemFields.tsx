@@ -32,6 +32,7 @@ import { sprintf } from "sprintf-js";
 import { unique } from "radashi";
 
 import type { Storage as System } from "~/model/system";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 type FilesystemFieldsProps = {
   device: System.Device;
@@ -103,12 +104,11 @@ const FilesystemFields = withForm({
     // change). It does nothing when filesystem is already AUTO or when the
     // current type is still supported by the new mount point.
     React.useEffect(() => {
-      // Type cast: filesystem field is string but filesystemLabel/usableFilesystems expect ConfigModel.FilesystemType
-      // This is safe because both functions' implementations accept any string
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (filesystem !== FILESYSTEM_TYPE.AUTO && !usableFilesystems.includes(filesystem as any)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const previousLabel = filesystemLabel(filesystem as any);
+      if (
+        filesystem !== FILESYSTEM_TYPE.AUTO &&
+        !usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)
+      ) {
+        const previousLabel = filesystemLabel(filesystem as ConfigModel.FilesystemType);
         form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
         setIncompatibleFsAlert(
           sprintf(
