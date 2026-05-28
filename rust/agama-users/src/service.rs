@@ -148,7 +148,7 @@ impl Service {
         if config
             .root
             .as_ref()
-            .is_some_and(|r| r.ssh_public_key.as_ref().is_some_and(|k| !k.is_empty()))
+            .is_some_and(|r| r.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()))
         {
             return true;
         }
@@ -156,7 +156,7 @@ impl Service {
         if config
             .first_user
             .as_ref()
-            .is_some_and(|u| u.ssh_public_key.as_ref().is_some_and(|k| !k.is_empty()))
+            .is_some_and(|u| u.ssh_public_keys.as_ref().is_some_and(|k| !k.is_empty()))
         {
             return true;
         }

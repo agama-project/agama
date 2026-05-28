@@ -126,7 +126,8 @@ impl InstallAction {
             .call(agama_remote::message::Finish)
             .await?;
 
-        // call files before storage finish as it unmounts /mnt/run which is important for chrooted scripts
+        // call files as last finish so all configs are in place,
+        // but before unmout of /mnt/run which is important for chrooted scripts (bsc#1257791)
         self.files
             .call(files::message::RunScripts::new(ScriptsGroup::Post))
             .await?;
@@ -192,6 +193,7 @@ impl SetConfigAction {
         //
         let mut steps = vec![
             gettext("Storing security settings"),
+            gettext("Configuring remote access"),
             gettext("Setting up the hostname"),
             gettext("Setting up the network proxy"),
             gettext("Setting up NTP"),
@@ -232,7 +234,10 @@ impl SetConfigAction {
         self.security
             .call(security::message::SetConfig::new(config.security.clone()))
             .await?;
-        // as remote access is fast call, lets just use it together with security
+
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
         self.remote_access
             .call(agama_remote::message::SetConfig::new(
                 config.remote_access.clone(),

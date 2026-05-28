@@ -202,17 +202,8 @@ impl Service {
         self.install_dir.join(PROXY_PATH)
     }
     pub async fn enable_services(&self) {
-        let res = enable_service(&self.install_dir, "setup-systemd-proxy-env.service").await;
-        if res.is_err() {
-            tracing::error!(
-                "Failed to enable setup-systemd-proxy-env.service: {:?}",
-                res
-            );
-        }
-        let res = enable_service(&self.install_dir, "setup-systemd-proxy-env.path").await;
-        if res.is_err() {
-            tracing::error!("Failed to enable setup-systemd-proxy-env.path: {:?}", res);
-        }
+        enable_service(&self.install_dir, "setup-systemd-proxy-env.service").await;
+        enable_service(&self.install_dir, "setup-systemd-proxy-env.path").await;
     }
 }
 

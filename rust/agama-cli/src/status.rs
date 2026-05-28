@@ -237,7 +237,7 @@ mod tests {
     #[test]
     fn test_status_report_new() {
         let full_status = default_status();
-        let report = StatusReport::new(status.clone());
+        let report = StatusReport::new(full_status.clone());
         assert_eq!(report.installation, InstallationEnum::Ready);
         assert_eq!(report.status, full_status.status);
         assert_eq!(report.issues, full_status.issues);

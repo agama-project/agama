@@ -31,7 +31,7 @@ use agama_utils::{
         remote_access::{Config, ExtendedConfig},
         Event, Scope,
     },
-    command::{enable_service, open_firewall},
+    command::{open_firewall, try_enable_service},
 };
 use async_trait::async_trait;
 use tokio::sync::broadcast::Sender;
@@ -164,7 +164,7 @@ impl State {
     }
 
     async fn enable_ssh<P: AsRef<Path>>(install_dir: P) -> Result<(), Error> {
-        enable_service(&install_dir, "sshd.service").await?;
+        try_enable_service(&install_dir, "sshd.service").await?;
 
         open_firewall(&install_dir, "ssh").await?;
 
@@ -172,7 +172,7 @@ impl State {
     }
 
     async fn enable_cockpit<P: AsRef<Path>>(install_dir: P) -> Result<(), Error> {
-        enable_service(&install_dir, "cockpit.socket").await?;
+        try_enable_service(&install_dir, "cockpit.socket").await?;
         open_firewall(&install_dir, "cockpit").await?;
 
         Ok(())

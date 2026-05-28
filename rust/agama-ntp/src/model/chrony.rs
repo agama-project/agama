@@ -152,10 +152,7 @@ impl ModelAdapter for Model {
 
         fs::write(path, content).map_err(Error::WriteConfig)?;
 
-        let res = enable_service(&self.install_dir, CHRONY_SERVICE_NAME).await;
-        if res.is_err() {
-            tracing::error!("Failed to enable chronyd service: {:?}", res);
-        }
+        enable_service(&self.install_dir, CHRONY_SERVICE_NAME).await;
 
         Ok(())
     }

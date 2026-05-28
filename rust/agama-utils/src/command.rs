@@ -152,8 +152,11 @@ pub enum ServiceError {
     IOError(#[from] std::io::Error),
 }
 
-/// Convenience function to enable a service
-pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) -> Result<(), ServiceError> {
+/// Convenience function to enable a service and return result of operation
+pub async fn try_enable_service<P: AsRef<Path>>(
+    root_dir: P,
+    name: &str,
+) -> Result<(), ServiceError> {
     let mut command = ChrootCommand::new(root_dir)?;
     command.args(["systemctl", "enable", name]);
 
@@ -166,6 +169,13 @@ pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) -> Result<(
         Err(ServiceError::SystemctlFailed(
             String::from_utf8_lossy(&output.stderr).to_string(),
         ))
+    }
+}
+
+/// Convenience function to enable a service and only logs error if it failed
+pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) {
+    if let Err(error) = try_enable_service(root_dir, name).await {
+        tracing::error!("Failed to enable the {name} service: {error}");
     }
 }
 
