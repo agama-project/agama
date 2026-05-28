@@ -102,9 +102,7 @@ const FilesystemFieldsContent = withForm({
       if (partitionSource === PARTITION_SOURCE.REUSE && !hasFilesystem) {
         form.setFieldValue(
           "filesystemAction",
-          _(
-            "Partition is not formatted. It will be formatted with the selected file system type.",
-          ),
+          _("Partition is not formatted. It will be formatted with the selected file system type."),
         );
       }
     }, [partitionSource, hasFilesystem, form]);
