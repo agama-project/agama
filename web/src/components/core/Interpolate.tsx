@@ -22,45 +22,66 @@
 
 import React from "react";
 
+type RenderFunction = (text: string) => React.ReactNode;
+
 export type InterpolateProps = {
   /**
-   * A translated sentence containing exactly one placeholder.
+   * A translated sentence containing one or more placeholders.
    */
   sentence: string;
+
   /**
-   * Render prop called with the text extracted from the placeholder.
+   * Render prop(s) called with the text extracted from the placeholder(s).
    *
-   * For `[marker]` sentences the text is whatever the translator wrote inside
-   * the brackets. For printf sentences the text is always an empty string.
+   * For printf placeholders (`%s`, `%d`, `%f`, `%i`) the render function
+   * always receives an empty string.
+   *
+   * For `[marker]` placeholders the extracted marker text is passed to the
+   * render function.
+   *
+   * Pass a single function for one placeholder, or an array of functions for
+   * multiple placeholders (matched in order).
    */
-  children: (text: string) => React.ReactNode;
+  children: RenderFunction | RenderFunction[];
 };
 
 /**
- * Renders a translated sentence that contains a single placeholder, replacing
- * it with arbitrary React content via a render prop.
+ * Renders a translated sentence containing one or more placeholders, replacing
+ * them with arbitrary React content via render prop(s).
  *
- * This is the standard way to inject React elements (links, bold text, etc.)
- * into a translated string without breaking the translation unit. Keeping the
- * full sentence as one string lets translators reorder words freely.
+ * This is the standard way to inject React elements (links, buttons, emphasized
+ * text, etc.) into a translated string without breaking the translation unit.
+ * Keeping the full sentence as one string lets translators reorder words
+ * freely.
  *
- * Two placeholder styles are supported:
+ * Two placeholder styles are supported (do not mix them in the same sentence):
  *
- * - `%s` / `%d` / `%f` / `%i`: standard gettext printf placeholders. Use these
- *   when the injected element has its own content (e.g. a link wrapping a
- *   dynamic count) and the translation already uses a printf specifier.
- * - `[marker]`: the text inside the brackets is extracted and passed to
- *   `children`. Use this when the translated string already carries the text
- *   for the injected element and you want to wrap it in a React node.
+ *  - `%s` / `%d` / `%f` / `%i`: printf-style placeholders. These are
+ *    positional placeholders where the caller supplies the full rendered
+ *    content. The render function always receives an empty string.
  *
- * Only one placeholder per sentence is supported. Passing more than one (or an
- * unmatched bracket) throws an error. A sentence with no placeholder is
- * rendered as plain text.
+ *  - `[marker]`: bracket placeholders. The text inside the brackets is
+ *    extracted and passed to the render function.
+ *
+ * Multiple placeholders are supported and matched in order against the provided
+ * render functions.
+ *
+ * Malformed or unmatched bracket placeholders are treated as plain text. A
+ * sentence with no placeholder is rendered unchanged.
  *
  * @example
  * // %d: caller supplies the full content; text argument is always "".
  * <Interpolate sentence={_("There are %d issues")}>
  *   {() => <Link to={ISSUES.root}>{count}</Link>}
+ * </Interpolate>
+ *
+ * @example
+ * // Multiple printf placeholders.
+ * <Interpolate sentence={_("Using %s and %s accounts")}>
+ *   {[
+ *     () => <Text isBold>{userName}</Text>,
+ *     () => <Text isBold>root</Text>,
+ *   ]}
  * </Interpolate>
  *
  * @example
@@ -72,39 +93,61 @@ export type InterpolateProps = {
  * @example
  * // [marker]: inline action embedded in helper text.
  * <Interpolate sentence={_("Select entries to edit or remove them. Or [remove all invalid entries.]")}>
- *   {(text) => <Button variant="link" isInline onClick={clearInvalid}>{text}</Button>}
+ *   {(text) => (
+ *     <Button variant="link" isInline onClick={clearInvalid}>
+ *       {text}
+ *     </Button>
+ *   )}
  * </Interpolate>
  */
 export default function Interpolate({ sentence, children }: InterpolateProps) {
-  // Supported printf specifiers: %s (string), %d (decimal), %f (float), %i (integer).
-  const printfParts = sentence.split(/%[sdfi]/);
+  const renderers = Array.isArray(children) ? children : [children];
 
-  if (printfParts.length > 1) {
-    if (printfParts.length > 2)
-      throw new Error("Interpolate: only one printf placeholder is supported.");
-    const [start, end] = printfParts;
-    return (
-      <>
-        {start}
-        {children("")}
-        {end}
-      </>
+  const printfRegex = /%[sdfi]/g;
+  const markerRegex = /\[([^[\]]*)\]/g;
+
+  const hasPrintf = printfRegex.test(sentence);
+  const hasMarkers = markerRegex.test(sentence);
+
+  if (hasPrintf && hasMarkers) {
+    throw new Error("Interpolate: cannot mix printf and [marker] placeholders.");
+  }
+
+  const matches = hasPrintf
+    ? [...sentence.matchAll(/%[sdfi]/g)]
+    : [...sentence.matchAll(/\[([^[\]]*)\]/g)];
+
+  if (matches.length === 0) {
+    return <>{sentence}</>;
+  }
+
+  if (matches.length !== renderers.length) {
+    throw new Error(
+      `Interpolate: found ${matches.length} placeholder(s) but received ${renderers.length} render function(s).`,
     );
   }
 
-  const parts = sentence.split(/[[\]]/);
+  const result: React.ReactNode[] = [];
 
-  if (parts.length === 1) return <>{sentence}</>;
+  let lastIndex = 0;
 
-  if (parts.length !== 3)
-    throw new Error("Interpolate: exactly one [marker] placeholder is supported.");
+  matches.forEach((match, index) => {
+    const matchText = match[0];
+    const matchIndex = match.index ?? 0;
 
-  const [start, text, end] = parts;
-  return (
-    <>
-      {start}
-      {children(text ?? "")}
-      {end}
-    </>
-  );
+    // Text before placeholder
+    result.push(sentence.slice(lastIndex, matchIndex));
+
+    // Marker text for [text], empty string for printf
+    const content = hasMarkers ? (match[1] ?? "") : "";
+
+    result.push(<React.Fragment key={index}>{renderers[index](content)}</React.Fragment>);
+
+    lastIndex = matchIndex + matchText.length;
+  });
+
+  // Trailing text
+  result.push(sentence.slice(lastIndex));
+
+  return <>{result}</>;
 }

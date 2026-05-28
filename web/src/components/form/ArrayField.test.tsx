@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
+import { parsePasteEntries } from "~/components/form/ArrayField";
 
 type TestFormProps = {
   defaultValues?: string[];
@@ -33,6 +34,8 @@ type TestFormProps = {
   helperText?: string;
   /** Simulates a TanStack Form field-level error returned by onSubmitAsync. */
   fieldError?: string;
+  splitPasteOn?: RegExp | string;
+  maxEntryWidth?: number;
 };
 
 function TestForm({
@@ -42,6 +45,8 @@ function TestForm({
   skipDuplicates = false,
   helperText,
   fieldError,
+  splitPasteOn,
+  maxEntryWidth,
 }: TestFormProps) {
   const form = useAppForm({
     defaultValues: { tags: defaultValues },
@@ -66,6 +71,8 @@ function TestForm({
               validateOnSubmit={validateOnSubmit}
               skipDuplicates={skipDuplicates}
               helperText={helperText}
+              splitPasteOn={splitPasteOn}
+              maxEntryWidth={maxEntryWidth}
             />
           )}
         </form.AppField>
@@ -467,6 +474,131 @@ describe("ArrayField", () => {
         "aria-selected",
         "false",
       );
+    });
+  });
+
+  describe("paste", () => {
+    it("adds multiple entries from a paste", async () => {
+      const { user } = installerRender(<TestForm />);
+      await user.click(screen.getByRole("textbox", { name: "Tags" }));
+      await user.paste("alpha beta gamma");
+      screen.getByText("alpha");
+      screen.getByText("beta");
+      screen.getByText("gamma");
+    });
+
+    it("does not intercept a single-token paste", async () => {
+      const { user } = installerRender(<TestForm />);
+      const input = screen.getByRole("textbox", { name: "Tags" });
+      await user.click(input);
+      await user.paste("alpha");
+      expect(input).toHaveValue("alpha");
+      expect(screen.queryByRole("option", { name: "alpha" })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("maxEntryWidth", () => {
+    it("renders entries as plain text when maxEntryWidth is not provided", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} />);
+      const entry = screen.getByRole("option");
+      expect(entry).toHaveAccessibleName("very-long-entry-name");
+      expect(entry.querySelector("span[class*='truncate']")).not.toBeInTheDocument();
+    });
+
+    it("wraps entries in truncate component when maxEntryWidth is provided", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
+      const entry = screen.getByRole("option");
+      const truncateSpan = entry.querySelector("span[class*='truncate']");
+      expect(truncateSpan).toBeInTheDocument();
+    });
+
+    it("preserves full text in aria-label when truncated", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
+      const entry = screen.getByRole("option");
+      expect(entry).toHaveAccessibleName("very-long-entry-name");
+    });
+
+    it("preserves full text in aria-label for invalid entries when truncated", () => {
+      const validateOnChange = (v: string) => (v === "invalid-entry" ? "Bad value" : undefined);
+      installerRender(
+        <TestForm
+          defaultValues={["invalid-entry"]}
+          validateOnChange={validateOnChange}
+          maxEntryWidth={10}
+        />,
+      );
+      const entry = screen.getByRole("option");
+      expect(entry).toHaveAccessibleName("invalid-entry is invalid: Bad value");
+    });
+
+    it("renders remove button with full text when truncated", () => {
+      installerRender(<TestForm defaultValues={["very-long-entry-name"]} maxEntryWidth={10} />);
+      screen.getByRole("button", { name: "Remove very-long-entry-name" });
+    });
+  });
+});
+
+// parsePasteEntries is tested directly because ArrayField uses <input type="text">
+// internally (despite managing multiple values in state). Text inputs strip
+// newlines per HTML spec when setting the value property, making it impossible to
+// integration-test paste splitting with newline patterns like splitPasteOn="\n".
+// Reference: https://html.spec.whatwg.org/multipage/input.html#text-(type=text)-state-and-search-state-(type=search)
+describe("parsePasteEntries", () => {
+  describe("default splitting (whitespace and commas)", () => {
+    it("splits on spaces", () => {
+      expect(parsePasteEntries("alpha beta gamma")).toEqual(["alpha", "beta", "gamma"]);
+    });
+
+    it("splits on commas", () => {
+      expect(parsePasteEntries("alpha,beta,gamma")).toEqual(["alpha", "beta", "gamma"]);
+    });
+
+    it("splits on mixed whitespace and commas", () => {
+      expect(parsePasteEntries("alpha, beta gamma,delta")).toEqual([
+        "alpha",
+        "beta",
+        "gamma",
+        "delta",
+      ]);
+    });
+
+    it("filters out blank entries", () => {
+      expect(parsePasteEntries("alpha  beta   gamma")).toEqual(["alpha", "beta", "gamma"]);
+    });
+
+    it("trims whitespace from entries", () => {
+      expect(parsePasteEntries("  alpha  ,  beta  ")).toEqual(["alpha", "beta"]);
+    });
+
+    it("returns empty array for blank input", () => {
+      expect(parsePasteEntries("")).toEqual([]);
+      expect(parsePasteEntries("   ")).toEqual([]);
+    });
+  });
+
+  describe("custom splitPasteOn pattern", () => {
+    it("splits on newlines when given \\n", () => {
+      expect(parsePasteEntries("alpha\nbeta\ngamma", "\n")).toEqual(["alpha", "beta", "gamma"]);
+    });
+
+    it("splits on custom regex pattern", () => {
+      expect(parsePasteEntries("alpha|beta|gamma", /\|/)).toEqual(["alpha", "beta", "gamma"]);
+    });
+
+    it("preserves spaces within entries when splitting on newlines", () => {
+      const input = "ssh-ed25519 AAAAC3Nz user@laptop\nssh-rsa AAAAB3Nz user@desktop";
+      expect(parsePasteEntries(input, "\n")).toEqual([
+        "ssh-ed25519 AAAAC3Nz user@laptop",
+        "ssh-rsa AAAAB3Nz user@desktop",
+      ]);
+    });
+
+    it("filters blank entries when splitting with custom pattern", () => {
+      expect(parsePasteEntries("alpha\n\nbeta\n", "\n")).toEqual(["alpha", "beta"]);
+    });
+
+    it("trims whitespace from entries even with custom pattern", () => {
+      expect(parsePasteEntries("  alpha  \n  beta  ", "\n")).toEqual(["alpha", "beta"]);
     });
   });
 });

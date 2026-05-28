@@ -475,6 +475,21 @@ const Page = ({
   );
 };
 
+/**
+ * Scrolls the page main container to the top.
+ *
+ * Useful for bringing alerts or validation errors into view after form
+ * submission. Defers scroll to next tick to ensure content is rendered.
+ */
+const scrollToTop = () => {
+  setTimeout(() => {
+    const pageMain = document.querySelector(".pf-v6-c-page__main");
+    if (pageMain) {
+      pageMain.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, 0);
+};
+
 Page.displayName = "agama/core/PageNext";
 Page.StickOnTop = StickyHeaderContent;
 Page.Content = Content;
@@ -484,5 +499,6 @@ Page.Cancel = Cancel;
 Page.Submit = Submit;
 Page.Action = Action;
 Page.Section = Section;
+Page.scrollToTop = scrollToTop;
 
 export default Page;

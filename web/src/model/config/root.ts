@@ -23,7 +23,8 @@
 type Config = {
   password?: string;
   hashedPassword?: boolean;
-  sshPublicKey?: string;
+  sshPublicKey?: string | string[];
+  sshPublicKeys?: string | string[];
 };
 
 export type { Config };
