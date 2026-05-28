@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 28 15:06:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Migrate partition form to TanStack Form and redesign filesystem
+  selection UI with improved accessibility.
+
+-------------------------------------------------------------------
 Thu May 28 09:45:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Reset the configuration only when changing the product (bsc#1258032).
