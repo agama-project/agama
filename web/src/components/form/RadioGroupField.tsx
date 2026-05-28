@@ -26,9 +26,9 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
+  Radio,
   Stack,
 } from "@patternfly/react-core";
-import RadioEnhanced from "~/components/core/RadioEnhanced";
 import Text from "~/components/core/Text";
 import { useFieldContext } from "~/hooks/form-contexts";
 import type { TranslatedString } from "~/i18n";
@@ -61,8 +61,6 @@ type RadioGroupFieldProps<T> = {
  * Supports a render prop `children` for dependent content that should appear
  * or change based on the selected value.
  *
- * Uses RadioEnhanced for consistent styling (larger font, bold when selected).
- *
  * @see useFieldContext for field component conventions.
  *
  * @example
@@ -93,7 +91,7 @@ export default function RadioGroupField<T extends string>({
     <FormGroup fieldId={field.name} label={label}>
       <Stack hasGutter>
         {options.map((opt) => (
-          <RadioEnhanced
+          <Radio
             key={opt.value}
             id={`${field.name}-${opt.value}`}
             name={field.name}
