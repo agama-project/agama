@@ -31,10 +31,11 @@ import {
 import RadioEnhanced from "~/components/core/RadioEnhanced";
 import Text from "~/components/core/Text";
 import { useFieldContext } from "~/hooks/form-contexts";
+import type { TranslatedString } from "~/i18n";
 
 export type RadioOption<T> = {
   value: T;
-  label: React.ReactNode;
+  label: TranslatedString;
   description?: React.ReactNode;
   isDisabled?: boolean;
 };

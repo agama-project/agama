@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { Alert, AlertActionCloseButton, NestedContent, Stack } from "@patternfly/react-core";
+import { Alert, AlertActionCloseButton, Stack } from "@patternfly/react-core";
+import NestedContent from "~/components/core/NestedContent";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, FILESYSTEM_TYPE, PARTITION_SOURCE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
@@ -104,9 +105,11 @@ const FilesystemFields = withForm({
           React.useEffect(() => {
             if (
               filesystem !== FILESYSTEM_TYPE.AUTO &&
-              !usableFilesystems.includes(filesystem)
+              !usableFilesystems.includes(filesystem as any)
             ) {
-              const previousLabel = filesystemLabel(filesystem);
+              // Type cast: filesystem field is string but filesystemLabel expects ConfigModel.FilesystemType
+              // This is safe because filesystemLabel's implementation accepts any string
+              const previousLabel = filesystemLabel(filesystem as any);
               form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
               setIncompatibleFsAlert(
                 sprintf(

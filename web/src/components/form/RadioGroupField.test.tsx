@@ -25,6 +25,7 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { formOptions } from "@tanstack/react-form";
 import { useAppForm } from "~/hooks/form";
+import { _ } from "~/i18n";
 import RadioGroupField from "./RadioGroupField";
 
 type FormFields = {
@@ -50,11 +51,11 @@ const TestForm = ({ onSubmit = jest.fn() }: { onSubmit?: () => void }) => {
       <form.AppField name="choice">
         {() => (
           <RadioGroupField
-            label="Choose an option"
+            label={_("Choose an option")}
             options={[
-              { value: "option1", label: "Option 1", description: "First option" },
-              { value: "option2", label: "Option 2", description: "Second option" },
-              { value: "option3", label: "Option 3", description: "Third option", isDisabled: true },
+              { value: "option1", label: _("Option 1"), description: "First option" },
+              { value: "option2", label: _("Option 2"), description: "Second option" },
+              { value: "option3", label: _("Option 3"), description: "Third option", isDisabled: true },
             ]}
             helperText="Pick one option"
           />
@@ -127,10 +128,10 @@ describe("RadioGroupField with children render prop", () => {
         <form.AppField name="choice">
           {() => (
             <RadioGroupField
-              label="Choose an option"
+              label={_("Choose an option")}
               options={[
-                { value: "option1", label: "Option 1" },
-                { value: "option2", label: "Option 2" },
+                { value: "option1", label: _("Option 1") },
+                { value: "option2", label: _("Option 2") },
               ]}
             >
               {(value) => value === "option2" && <div>Additional content for option 2</div>}

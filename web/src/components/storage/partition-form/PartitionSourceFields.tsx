@@ -21,9 +21,8 @@
  */
 
 import React from "react";
-import { NestedContent } from "@patternfly/react-core";
+import NestedContent from "~/components/core/NestedContent";
 import { withForm } from "~/hooks/form";
-import ReadOnlyField from "~/components/form/ReadOnlyField";
 import { defaultOptions, PARTITION_SOURCE } from "./fields";
 import { deviceLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -60,15 +59,16 @@ const PartitionSourceFields = withForm({
         {(field) => {
           // When no partitions available, show read-only explanation
           if (!canReuse) {
-            return (
-              <ReadOnlyField label={_("Partition source")}>
-                {sprintf(
-                  // TRANSLATORS: %s is device name like "/dev/vdd"
-                  _("New partition (no partitions available on %s to reuse)."),
-                  deviceLabel(device, true),
-                )}
-              </ReadOnlyField>
+            // Set the value for ReadOnlyField
+            form.setFieldValue(
+              "partitionSource",
+              sprintf(
+                // TRANSLATORS: %s is device name like "/dev/vdd"
+                _("New partition (no partitions available on %s to reuse)."),
+                deviceLabel(device, true),
+              ) as any,
             );
+            return <field.ReadOnlyField label={_("Partition source")} />;
           }
 
           // When partitions are available, show radio group
