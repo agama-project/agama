@@ -18,11 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! Defines the messages that can be handled by the remote access service.
+
 use agama_utils::{
     actor::Message,
     api::remote_access::{Config, ExtendedConfig},
 };
 
+/// Message to retrieve the current user-provided remote access configuration.
 #[derive(Clone)]
 pub struct GetConfig;
 
@@ -30,7 +33,9 @@ impl Message for GetConfig {
     type Reply = Config;
 }
 
+/// Message to set the user-provided remote access configuration.
 pub struct SetConfig<T> {
+    /// The configuration payload to apply.
     pub config: Option<T>,
 }
 
@@ -39,14 +44,22 @@ impl<T: Send + 'static> Message for SetConfig<T> {
 }
 
 impl<T> SetConfig<T> {
+    /// Creates a new `SetConfig` message.
+    ///
+    /// * `config`: The optional configuration to set.
     pub fn new(config: Option<T>) -> Self {
         Self { config }
     }
 }
 
-/// Message to set access for other parts of agama like agama-users.
+/// Message to set remote access requirements from other parts of Agama.
+///
+/// Other components (like the `agama-users` module) use this message to ensure
+/// that a specific remote access mechanism (like SSH) gets enabled when needed.
 pub struct SetAccess {
+    /// Module identifier (e.g., `"users"`).
     pub id: String,
+    /// The requested remote access configuration from the module.
     pub config: Config,
 }
 
@@ -55,16 +68,23 @@ impl Message for SetAccess {
 }
 
 impl SetAccess {
+    /// Creates a new `SetAccess` message.
+    ///
+    /// * `id`: String identifier for the requesting module.
+    /// * `config`: The configuration requested by the module.
     pub fn new(id: String, config: Config) -> Self {
         Self { id, config }
     }
 }
 
+/// Message to retrieve the resolved remote access configuration proposal.
+///
+/// The proposal is the resolved configuration computed from internal Agama needs
+/// and the explicit user configuration.
 #[derive(Clone)]
 pub struct GetProposal;
 
 impl Message for GetProposal {
-    // Proposal is basically resolved config computed from agama needs and user config
     type Reply = ExtendedConfig;
 }
 
