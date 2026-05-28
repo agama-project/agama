@@ -32,7 +32,7 @@ export interface FieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSet
   /**
    * Optional descriptive text displayed below the legend
    */
-  description?: string;
+  description?: React.ReactNode;
   /**
    * Content to render inside the fieldset
    */

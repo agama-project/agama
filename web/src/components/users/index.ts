@@ -20,6 +20,4 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as FirstUser } from "./FirstUser";
-export { default as RootUser } from "./RootUser";
 export { default as UsersPage } from "./UsersPage";

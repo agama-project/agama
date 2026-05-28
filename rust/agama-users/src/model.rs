@@ -84,7 +84,7 @@ impl Model {
         }
 
         let ssh_keys = user
-            .ssh_public_key
+            .ssh_public_keys
             .as_ref()
             .map(|k| k.to_vec())
             .unwrap_or_default();
@@ -106,7 +106,7 @@ impl Model {
 
     /// Reads root's data from given config and updates root setup accordingly
     async fn add_root_user(&self, root: &RootUserConfig) {
-        if root.password.is_none() && root.ssh_public_key.is_none() {
+        if root.password.is_none() && root.ssh_public_keys.is_none() {
             return;
         };
 
@@ -119,7 +119,7 @@ impl Model {
 
         // store sshPublicKeys for root if any
         let ssh_keys = root
-            .ssh_public_key
+            .ssh_public_keys
             .as_ref()
             .map(|k| k.to_vec())
             .unwrap_or_default();
