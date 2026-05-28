@@ -790,6 +790,10 @@ impl MessageHandler<message::GetProposal> for Service {
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
+        let remote_access = self
+            .remote_access
+            .call(agama_remote::message::GetProposal)
+            .await?;
 
         // If the software service is busy, it will not answer.
         let software = if self.is_software_available().await? {
@@ -802,6 +806,7 @@ impl MessageHandler<message::GetProposal> for Service {
             hostname,
             l10n,
             network,
+            remote_access,
             software,
             storage,
             users,

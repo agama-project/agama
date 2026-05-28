@@ -48,3 +48,14 @@ pub struct Config {
     #[merge(strategy = merge::option::overwrite_none)]
     pub cockpit: Option<AccessEnum>,
 }
+
+/// Remote Access extended configuration that is resolved
+#[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+#[schemars(rename = "remoteAccess.ExtendedConfig")]
+pub struct ExtendedConfig {
+    /// Remote access to SSH
+    pub ssh: AccessEnum,
+    /// Remote access to Cockpit
+    pub cockpit: AccessEnum,
+}

@@ -18,7 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::remote_access::Config};
+use agama_utils::{
+    actor::Message,
+    api::remote_access::{Config, ExtendedConfig},
+};
 
 #[derive(Clone)]
 pub struct GetConfig;
@@ -62,7 +65,7 @@ pub struct GetProposal;
 
 impl Message for GetProposal {
     // Proposal is basically resolved config computed from agama needs and user config
-    type Reply = Config;
+    type Reply = ExtendedConfig;
 }
 
 /// Execute actions at the end of the installation.

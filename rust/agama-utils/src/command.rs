@@ -161,11 +161,11 @@ pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) -> Result<(
 
     if output.status.success() {
         tracing::info!("Enabled the {name} service");
-        return Ok(());
+        Ok(())
     } else {
-        return Err(ServiceError::SystemctlFailed(
+        Err(ServiceError::SystemctlFailed(
             String::from_utf8_lossy(&output.stderr).to_string(),
-        ));
+        ))
     }
 }
 

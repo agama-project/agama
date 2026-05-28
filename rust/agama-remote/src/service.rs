@@ -26,7 +26,11 @@ use std::{
 use agama_software::Resolvable;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{self, event, remote_access::Config, Event, Scope},
+    api::{
+        self, event,
+        remote_access::{Config, ExtendedConfig},
+        Event, Scope,
+    },
     command::{enable_service, open_firewall},
 };
 use async_trait::async_trait;
@@ -102,31 +106,41 @@ impl State {
     }
 
     fn is_ssh_enabled(&self) -> bool {
-        self.user_config.ssh == Some(api::remote_access::AccessEnum::Enabled)
-            || self
-                .agama_config
-                .values()
-                .any(|config| config.ssh == Some(api::remote_access::AccessEnum::Enabled))
+        if let Some(config) = &self.user_config.ssh {
+            return config == &api::remote_access::AccessEnum::Enabled;
+        };
+
+        // no user explicit selection, so compute it from agama requirements
+        self.agama_config
+            .values()
+            .any(|config| config.ssh == Some(api::remote_access::AccessEnum::Enabled))
     }
 
     fn is_cockpit_enabled(&self) -> bool {
-        self.user_config.cockpit == Some(api::remote_access::AccessEnum::Enabled)
-            || self
-                .agama_config
-                .values()
-                .any(|config| config.cockpit == Some(api::remote_access::AccessEnum::Enabled))
+        if let Some(config) = &self.user_config.cockpit {
+            return config == &api::remote_access::AccessEnum::Enabled;
+        };
+
+        // no user explicit selection, so compute it from agama requirements
+        self.agama_config
+            .values()
+            .any(|config| config.cockpit == Some(api::remote_access::AccessEnum::Enabled))
     }
 
-    pub fn final_config(&self) -> Config {
-        let mut config = Config::default();
-        if self.is_ssh_enabled() {
-            config.ssh = Some(api::remote_access::AccessEnum::Enabled);
-        }
-        if self.is_cockpit_enabled() {
-            config.cockpit = Some(api::remote_access::AccessEnum::Enabled);
-        }
+    pub fn extended_config(&self) -> ExtendedConfig {
+        let ssh = if self.is_ssh_enabled() {
+            api::remote_access::AccessEnum::Enabled
+        } else {
+            api::remote_access::AccessEnum::Default
+        };
 
-        config
+        let cockpit = if self.is_cockpit_enabled() {
+            api::remote_access::AccessEnum::Enabled
+        } else {
+            api::remote_access::AccessEnum::Default
+        };
+
+        ExtendedConfig { ssh, cockpit }
     }
 
     pub async fn write<P: AsRef<Path>>(&self, install_dir: P) -> Result<(), Error> {
@@ -257,8 +271,8 @@ impl MessageHandler<message::SetAccess> for Service {
 
 #[async_trait]
 impl MessageHandler<message::GetProposal> for Service {
-    async fn handle(&mut self, _message: message::GetProposal) -> Result<Config, Error> {
-        Ok(self.state.final_config())
+    async fn handle(&mut self, _message: message::GetProposal) -> Result<ExtendedConfig, Error> {
+        Ok(self.state.extended_config())
     }
 }
 
