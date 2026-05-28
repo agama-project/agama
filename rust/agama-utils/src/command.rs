@@ -80,10 +80,10 @@ pub enum ChrootError {
 ///
 /// Example use:
 /// ```
-/// # use agama_users::ChrootCommand;
-/// # use agama_users::service;
-/// # fn main() -> Result<(), service::Error> {
-/// let cmd = ChrootCommand::new("/tmp".into())?
+/// # use agama_utils::command::ChrootCommand;
+/// # use agama_utils::command::ChrootError;
+/// # fn main() -> Result<(), ChrootError> {
+/// let cmd = ChrootCommand::new("/tmp")?
 ///   .cmd("echo")
 ///   .args(["Hello world!"]);
 /// # Ok(())
