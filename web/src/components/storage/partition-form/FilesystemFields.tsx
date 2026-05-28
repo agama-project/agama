@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Alert, AlertActionCloseButton, FormGroup, Stack } from "@patternfly/react-core";
+import { Alert, AlertActionCloseButton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
@@ -93,6 +93,22 @@ const FilesystemFieldsContent = withForm({
     const volume = useVolumeTemplate(mountPoint);
     const defaultFilesystem = volume.fsType;
 
+    const selectedPartition = device.partitions?.find((p) => p.name === selectedPartitionId);
+    const currentFsType = selectedPartition?.filesystem?.type;
+    const hasFilesystem = !!currentFsType;
+
+    // Set display text for ReadOnlyField when partition has no filesystem
+    React.useEffect(() => {
+      if (partitionSource === PARTITION_SOURCE.REUSE && !hasFilesystem) {
+        form.setFieldValue(
+          "filesystemAction",
+          _(
+            "Partition is not formatted. It will be formatted with the selected file system type.",
+          ),
+        );
+      }
+    }, [partitionSource, hasFilesystem, form]);
+
     const usableFilesystems = React.useMemo(() => {
       const volumeFilesystems = volume.outline.fsTypes || [];
       return unique([defaultFilesystem, ...volumeFilesystems]);
@@ -115,10 +131,6 @@ const FilesystemFieldsContent = withForm({
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [usableFilesystems, filesystem]);
-
-    const selectedPartition = device.partitions?.find((p) => p.name === selectedPartitionId);
-    const currentFsType = selectedPartition?.filesystem?.type;
-    const hasFilesystem = !!currentFsType;
 
     const filesystemOptions = [
       {
@@ -172,13 +184,9 @@ const FilesystemFieldsContent = withForm({
 
         {partitionSource === PARTITION_SOURCE.REUSE && !hasFilesystem && (
           <>
-            <FormGroup label={_("File system")}>
-              <Text>
-                {_(
-                  "Partition is not formatted. It will be formatted with the selected file system type.",
-                )}
-              </Text>
-            </FormGroup>
+            <form.AppField name="filesystemAction">
+              {(field) => <field.ReadOnlyField label={_("File system")} />}
+            </form.AppField>
             <form.AppField name="filesystem">
               {(field) => (
                 <field.DropdownField label={_("File system type")} options={filesystemOptions} />

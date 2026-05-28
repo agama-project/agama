@@ -43,7 +43,9 @@ type FormFields = {
 
   // Filesystem
   filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
-  filesystemAction: "reuse" | "format";
+  // Note: Normally "reuse" | "format", but when partition has no filesystem,
+  // this field contains a display string for ReadOnlyField.
+  filesystemAction: string;
   filesystemLabel: string;
 
   // Size
