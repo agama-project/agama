@@ -160,7 +160,7 @@ impl Model {
 
         // push user name and password into the pipe
         if let Some(mut stdin) = passwd_process.stdin.take() {
-            let data = format!("{}:{}", user_name, user_password.password);
+            let data = format!("{}:{}\n", user_name, user_password.password);
             stdin.write_all(data.as_bytes()).await?;
             let _ = stdin.shutdown().await;
         }

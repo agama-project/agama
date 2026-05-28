@@ -154,11 +154,7 @@ pub enum ServiceError {
 
 /// Convenience function to enable a service
 pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) -> Result<(), ServiceError> {
-    let command = ChrootCommand::new(root_dir);
-    let Ok(mut command) = command else {
-        return Err(ServiceError::ChrootFailed(command.unwrap_err()));
-    };
-
+    let mut command = ChrootCommand::new(root_dir)?;
     command.args(["systemctl", "enable", name]);
 
     let output = command.output().await?;
@@ -168,7 +164,7 @@ pub async fn enable_service<P: AsRef<Path>>(root_dir: P, name: &str) -> Result<(
         return Ok(());
     } else {
         return Err(ServiceError::SystemctlFailed(
-            output.stderr.try_into().unwrap_or_default(),
+            String::from_utf8_lossy(&output.stderr).to_string(),
         ));
     }
 }
