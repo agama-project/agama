@@ -163,7 +163,6 @@ const FilesystemFields = withForm({
             {(field) => (
               <field.DropdownField
                 label={_("File system type")}
-                isDisabled={!mountPoint}
                 options={filesystemOptions}
               />
             )}
