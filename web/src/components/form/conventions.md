@@ -1642,3 +1642,296 @@ The unified approach provides:
 - **Type safety**: Full TypeScript support throughout
 - **Performance**: Zero runtime validation overhead
 - **Developer experience**: Clear pattern, easy to learn and apply
+
+---
+
+## Common Migration Mistakes
+
+This section documents mistakes encountered during form migrations to help avoid repeating them in future work.
+
+### Mistake 1: Using hooks inside `form.Subscribe` children
+
+**❌ WRONG:**
+```typescript
+const MyFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <form.Subscribe selector={(s) => ({ value: s.values.someField })}>
+      {({ value }) => {
+        const data = useHook(value); // ❌ Hook inside Subscribe children
+        return <div>{data}</div>;
+      }}
+    </form.Subscribe>
+  ),
+});
+```
+
+**✅ CORRECT:**
+```typescript
+// Extract to separate withForm component
+const InnerContent = withForm({
+  ...defaultOptions,
+  props: { value: "" },
+  render: ({ form, value }) => {
+    const data = useHook(value); // ✅ Hook at component top level
+    return <div>{data}</div>;
+  },
+});
+
+const MyFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <form.Subscribe selector={(s) => ({ value: s.values.someField })}>
+      {({ value }) => <InnerContent form={form} value={value} />}
+    </form.Subscribe>
+  ),
+});
+```
+
+**Why:** Hooks must be called at component top level, not inside render prop children. The Subscribe render prop is a function, not a component.
+
+**Reference:** Partition form - FilesystemFields initially had hooks inside Subscribe, fixed by extracting FilesystemFieldsContent as a proper withForm component.
+
+### Mistake 2: Wrapping field groups in Stack when Form expects direct FormGroup children
+
+**❌ WRONG:**
+```typescript
+const MyFieldsContent = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <Stack hasGutter>
+      {/* ❌ Stack wrapper prevents Form from seeing FormGroup children */}
+      <form.AppField name="field1">
+        {(field) => <field.TextField label="Field 1" />}
+      </form.AppField>
+      <form.AppField name="field2">
+        {(field) => <field.TextField label="Field 2" />}
+      </form.AppField>
+    </Stack>
+  ),
+});
+```
+
+**Problem:** PatternFly Form adds spacing between FormGroup elements. When you return Subscribe → Stack → FormGroups, the Form component sees Subscribe (not FormGroup children), breaking the spacing hierarchy.
+
+**✅ CORRECT:**
+```typescript
+const MyFieldsContent = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <>
+      {/* ✅ Fragment lets Form see FormGroup children directly */}
+      <form.AppField name="field1">
+        {(field) => <field.TextField label="Field 1" />}
+      </form.AppField>
+      <form.AppField name="field2">
+        {(field) => <field.TextField label="Field 2" />}
+      </form.AppField>
+    </>
+  ),
+});
+```
+
+**Why:** PatternFly Form manages spacing between FormGroup elements. Return a fragment with form.AppField children (which render FormGroups), not wrapped in Stack. Only use Stack when you need explicit vertical spacing within a single field's content (like spacing between radio buttons).
+
+**Reference:** Partition form - FilesystemFieldsContent initially wrapped everything in Stack, causing layout overlap.
+
+### Mistake 3: Rendering nested content outside the parent Stack in RadioGroupField
+
+**Understanding the structure:**
+
+RadioGroupField needs Stack to space radio buttons vertically:
+```typescript
+<FormGroup>
+  <Stack hasGutter> {/* ← Spaces Radio buttons within the field */}
+    <Radio label="Option 1" />
+    <Radio label="Option 2" />
+  </Stack>
+</FormGroup>
+```
+
+PatternFly Form spaces FormGroups (different fields), but doesn't space elements within a single field. The Stack provides that internal spacing.
+
+**❌ WRONG:**
+```typescript
+<FormGroup>
+  <Stack hasGutter>
+    {options.map(opt => <Radio {...opt} />)}
+  </Stack>
+  {children?.(field.state.value)} {/* ❌ Outside Stack */}
+</FormGroup>
+```
+
+**Problem:** Children rendered outside Stack are direct FormGroup children. FormGroup adds extra spacing between its direct children, so nested content appears too far below.
+
+**✅ CORRECT:**
+```typescript
+<FormGroup>
+  <Stack hasGutter>
+    {options.map(opt => <Radio {...opt} />)}
+    {children?.(field.state.value)} {/* ✅ Inside Stack */}
+  </Stack>
+</FormGroup>
+```
+
+**Why:** Children are part of the radio group's vertical flow. Rendering them inside Stack keeps them in the natural flow with proper gutter spacing.
+
+**Reference:** Partition form - Fixed RadioGroupField to render children inside Stack.
+
+### Mistake 4: Cross-field validation returning errors for non-existent fields
+
+**❌ WRONG:**
+```typescript
+function validateSizeRange(fields: FormFields): string | undefined {
+  return sizeRange(fields.minSize, fields.maxSize, "Error message");
+}
+
+export function validate(fields: FormFields): ValidationResult<FormFields> {
+  const fieldErrors = shake({
+    minSize: validateMinSize(fields),
+    maxSize: validateMaxSize(fields),
+    sizeRange: validateSizeRange(fields), // ❌ "sizeRange" not in FormFields
+  });
+  
+  if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
+}
+```
+
+**Problem:** Returns error for "sizeRange" field which doesn't exist.
+
+**✅ CORRECT:**
+```typescript
+function validateMaxSize(fields: FormFields): string | undefined {
+  if (fields.sizeMode !== SIZE_MODE.RANGE) return undefined;
+  
+  const requiredError = requiredSize(fields.maxSize, "Required", "Invalid");
+  if (requiredError) return requiredError;
+  
+  // Cross-field validation incorporated
+  return sizeRange(fields.minSize, fields.maxSize, "Min > Max error");
+}
+
+export function validate(fields: FormFields): ValidationResult<FormFields> {
+  const fieldErrors = shake({
+    minSize: validateMinSize(fields),
+    maxSize: validateMaxSize(fields), // ✅ Shows error on maxSize
+  });
+  
+  if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
+}
+```
+
+**Why:** Cross-field errors must attach to actual fields. Pick which field should show the error (typically "max" or "end").
+
+**Reference:** Partition form - Incorporated validateSizeRange into validateMaxSize.
+
+### Mistake 5: Not pre-selecting first option in dependent dropdowns
+
+**❌ WRONG:**
+```typescript
+<form.AppField name="selectedItem">
+  {(field) => (
+    <field.DropdownField
+      label="Item"
+      options={items.map(i => ({ value: i.id, label: i.name }))}
+    />
+  )}
+</form.AppField>
+```
+
+**Problem:** Dropdown appears with no selection when items are available.
+
+**✅ CORRECT:**
+```typescript
+<form.AppField
+  name="selectedItem"
+  listeners={{
+    onMount: ({ value }) => {
+      if (!value && items.length > 0) {
+        form.setFieldValue("selectedItem", items[0].id, {
+          dontUpdateMeta: true,
+        });
+      }
+    },
+  }}
+>
+  {(field) => (
+    <field.DropdownField
+      label="Item"
+      options={items.map(i => ({ value: i.id, label: i.name }))}
+    />
+  )}
+</form.AppField>
+```
+
+**Why:** Conditional dropdowns should pre-select first option. `listeners.onMount` fires when field mounts. `dontUpdateMeta: true` prevents marking form dirty.
+
+**Reference:** Partition form - Added onMount to pre-select first partition. Pattern from DeviceSelector.
+
+### Mistake 6: Missing dropdown option descriptions
+
+**❌ WRONG:**
+```typescript
+options={partitions.map(p => ({
+  value: p.name,
+  label: deviceLabel(p, true),
+}))}
+```
+
+**Problem:** Users see "vdd1", "vdd2", "vdd3" without context.
+
+**✅ CORRECT:**
+```typescript
+options={partitions.map(p => {
+  const fsLabel = p.filesystem?.label;
+  const description = [p.description, fsLabel].filter(Boolean).join(" - ");
+  return {
+    value: p.name,
+    label: deviceLabel(p, true),
+    description: description || undefined,
+  };
+})}
+```
+
+**Why:** Descriptions provide essential context (size, type, label, etc.).
+
+**Reference:** Partition form - Added partition.description + filesystem label.
+
+### Mistake 7: Using FormGroup + Text instead of ReadOnlyField
+
+**❌ WRONG:**
+```typescript
+<FormGroup label="File system">
+  <Text>
+    Partition is not formatted. It will be formatted with selected type.
+  </Text>
+</FormGroup>
+```
+
+**Problem:** Creates orphan `<label>` without associated form control - invalid HTML and accessibility issue.
+
+**✅ CORRECT:**
+```typescript
+<form.AppField name="myField">
+  {(field) => <field.ReadOnlyField label="Label" />}
+</form.AppField>
+```
+
+**Why:** A `<label>` element requires an associated form control ([HTML spec](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)). ReadOnlyField provides proper semantic structure without accessibility issues.
+
+**Note:** The field must be typed as `string` in FormFields to accept display text. Add a comment explaining it can contain display strings for ReadOnlyField (see `partitionSource` and `filesystemAction` fields in partition form).
+
+**Reference:** Partition form - Initially used FormGroup + Text, corrected to ReadOnlyField following PartitionSourceFields pattern.
+
+### Summary Checklist for Form Migrations
+
+- ✅ No hooks inside `form.Subscribe` children (extract to withForm components)
+- ✅ Field group components return fragments, not wrapped in Stack
+- ✅ RadioGroupField children rendered inside Stack
+- ✅ Cross-field validation errors attached to actual form fields
+- ✅ Conditional dropdowns pre-select first option via `listeners.onMount`
+- ✅ Dropdown options include descriptions with identifying information
+- ✅ Use ReadOnlyField (not FormGroup + Text) for non-editable informational text
+- ✅ All XFields components use `withForm` pattern
+- ✅ TRANSLATORS comments above all translatable strings
+- ✅ Follow mockup specifications exactly (ask before being creative)
