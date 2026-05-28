@@ -308,6 +308,8 @@ const ProductFormSubmitLabel = ({
  * Props for ProductFormSubmitLabelHelp component
  */
 type ProductFormSubmitLabelHelpProps = {
+  /** The product currently configured in the system */
+  currentProduct?: Product;
   /** The product selected by the user */
   selectedProduct?: Product;
   /** The product mode selected by the user */
@@ -323,6 +325,7 @@ type ProductFormSubmitLabelHelpProps = {
  * Shows warnings for missing product selection or not accepted license.
  */
 const ProductFormSubmitLabelHelp = ({
+  currentProduct,
   selectedProduct,
   selectedMode,
   hasEula,
@@ -336,6 +339,8 @@ const ProductFormSubmitLabelHelp = ({
     text = _("Select a product mode to continue.");
   } else if (hasEula && !isEulaAccepted) {
     text = _("License acceptance is required to continue.");
+  } else if (currentProduct && selectedProduct.id !== currentProduct.id) {
+    text = _("Changing the product will reset your current settings.");
   } else {
     return;
   }
@@ -542,6 +547,7 @@ const ProductForm = ({
         </StackItem>
         <StackItem>
           <ProductFormSubmitLabelHelp
+            currentProduct={currentProduct}
             selectedProduct={selectedProduct}
             selectedMode={selectedMode}
             hasEula={mountEulaCheckbox}

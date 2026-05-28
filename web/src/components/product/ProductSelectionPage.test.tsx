@@ -729,6 +729,17 @@ describe("ProductSelectionPage", () => {
       ).not.toBeInTheDocument();
       expect(screen.queryByText("Select a product to continue.")).not.toBeInTheDocument();
     });
+
+    it("renders warning when changing product (reset warning)", async () => {
+      mockProduct(tumbleweed);
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const microOsOption = screen.getByRole("radio", { name: microOs.name });
+      await user.click(microOsOption);
+      const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
+      await user.click(licenseCheckbox);
+      screen.getByText("Changing the product will reset your current settings.");
+    });
   });
 
   describe("CurrentProductInfo", () => {
