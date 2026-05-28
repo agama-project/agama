@@ -23,6 +23,7 @@
 import React from "react";
 import { Alert, AlertActionCloseButton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
+import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, FILESYSTEM_TYPE, PARTITION_SOURCE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
@@ -148,11 +149,25 @@ const FilesystemFieldsContent = withForm({
         )}
 
         {partitionSource === PARTITION_SOURCE.NEW && (
-          <form.AppField name="filesystem">
-            {(field) => (
-              <field.DropdownField label={_("File system type")} options={filesystemOptions} />
+          <>
+            <form.AppField name="filesystem">
+              {(field) => (
+                <field.DropdownField label={_("File system type")} options={filesystemOptions} />
+              )}
+            </form.AppField>
+            {filesystem === FILESYSTEM_TYPE.AUTO && defaultFilesystem && mountPoint && (
+              <NestedContent margin="mxLg">
+                <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+                  {sprintf(
+                    // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+                    _("%1$s will be used for %2$s."),
+                    filesystemLabel(defaultFilesystem),
+                    mountPoint,
+                  )}
+                </Text>
+              </NestedContent>
             )}
-          </form.AppField>
+          </>
         )}
 
         {partitionSource === PARTITION_SOURCE.REUSE && (
@@ -185,14 +200,28 @@ const FilesystemFieldsContent = withForm({
                   if (action === FILESYSTEM_ACTION.FORMAT) {
                     return (
                       <NestedContent margin="mxLg">
-                        <form.AppField name="filesystem">
-                          {(fsField) => (
-                            <fsField.DropdownField
-                              label={_("File system type")}
-                              options={filesystemOptions}
-                            />
+                        <Stack hasGutter>
+                          <form.AppField name="filesystem">
+                            {(fsField) => (
+                              <fsField.DropdownField
+                                label={_("File system type")}
+                                options={filesystemOptions}
+                              />
+                            )}
+                          </form.AppField>
+                          {filesystem === FILESYSTEM_TYPE.AUTO && defaultFilesystem && mountPoint && (
+                            <NestedContent margin="mxLg">
+                              <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+                                {sprintf(
+                                  // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+                                  _("%1$s will be used for %2$s."),
+                                  filesystemLabel(defaultFilesystem),
+                                  mountPoint,
+                                )}
+                              </Text>
+                            </NestedContent>
                           )}
-                        </form.AppField>
+                        </Stack>
                       </NestedContent>
                     );
                   }
