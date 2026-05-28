@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import NestedContent from "~/components/core/NestedContent";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, PARTITION_SOURCE } from "./fields";
@@ -55,7 +55,7 @@ const PartitionSourceFields = withForm({
     const canReuse = availablePartitions.length > 0;
 
     // When no partitions available, set display text for ReadOnlyField
-    React.useEffect(() => {
+    useEffect(() => {
       if (!canReuse) {
         const displayText = sprintf(
           // TRANSLATORS: %s is device name like "/dev/vdd"
@@ -106,14 +106,30 @@ const PartitionSourceFields = withForm({
                 if (value === PARTITION_SOURCE.REUSE) {
                   return (
                     <NestedContent margin="mxLg">
-                      <form.AppField name="selectedPartitionId">
+                      <form.AppField
+                        name="selectedPartitionId"
+                        listeners={{
+                          onMount: ({ value }) => {
+                            if (!value && availablePartitions.length > 0) {
+                              form.setFieldValue("selectedPartitionId", availablePartitions[0].name, {
+                                dontUpdateMeta: true,
+                              });
+                            }
+                          },
+                        }}
+                      >
                         {(partField) => (
                           <partField.DropdownField
                             label={_("Partition")}
-                            options={availablePartitions.map((p) => ({
-                              value: p.name,
-                              label: deviceLabel(p, true),
-                            }))}
+                            options={availablePartitions.map((p) => {
+                              const fsLabel = p.filesystem?.label;
+                              const description = [p.description, fsLabel].filter(Boolean).join(" - ");
+                              return {
+                                value: p.name,
+                                label: deviceLabel(p, true),
+                                description: description || undefined,
+                              };
+                            })}
                           />
                         )}
                       </form.AppField>
