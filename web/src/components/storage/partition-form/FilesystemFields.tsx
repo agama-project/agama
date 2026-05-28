@@ -132,7 +132,7 @@ const FilesystemFieldsContent = withForm({
     ];
 
     return (
-      <Stack hasGutter>
+      <>
         {incompatibleFsAlert && (
           <Alert
             variant="info"
@@ -244,7 +244,7 @@ const FilesystemFieldsContent = withForm({
             )}
           </form.AppField>
         )}
-      </Stack>
+      </>
     );
   },
 });
