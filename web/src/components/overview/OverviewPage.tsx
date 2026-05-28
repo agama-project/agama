@@ -45,6 +45,7 @@ import NoDesktopAlert from "~/components/software/NoDesktopAlert";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
 import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
+import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import ProductLogo from "~/components/product/ProductLogo";
@@ -157,9 +158,12 @@ const OverviewPageContent = ({ product }) => {
           <ProductLogo product={product} width="40px" /> {product.name}
         </>
       }
+      noDefaultEndSlot
+      noDefaultProgressMonitor
       endSlot={
         <>
           <InstallerL10nOptions />
+          <ProgressStatusMonitor />
           <InstallerOptionsMenu hideLabel showChangeProductOption />
         </>
       }
