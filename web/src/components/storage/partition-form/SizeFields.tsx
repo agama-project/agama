@@ -49,19 +49,31 @@ const SizeFields = withForm({
             options={[
               {
                 value: SIZE_MODE.AUTO,
+                // TRANSLATORS: size mode option
                 label: _("Automatic"),
+                // TRANSLATORS: description for automatic size mode
+                description: _("Installer determines the size"),
               },
               {
                 value: SIZE_MODE.FIXED,
+                // TRANSLATORS: size mode option
                 label: _("Fixed"),
+                // TRANSLATORS: description for fixed size mode
+                description: _("Set a specific size"),
               },
               {
                 value: SIZE_MODE.RANGE,
+                // TRANSLATORS: size mode option
                 label: _("Range"),
+                // TRANSLATORS: description for range size mode
+                description: _("Set minimum and maximum"),
               },
               {
                 value: SIZE_MODE.EXPAND,
+                // TRANSLATORS: size mode option
                 label: _("Expand if possible"),
+                // TRANSLATORS: description for expand size mode
+                description: _("Set minimum; partition grows if space available"),
               },
             ]}
           >
