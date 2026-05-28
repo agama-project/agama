@@ -731,6 +731,7 @@ const ProductSelectionContent = () => {
         { label: <ProductSelectionTitle products={products} currentProduct={currentProduct} /> },
       ]}
       endSlot={<InstallerL10nOptions />}
+      noDefaultEndSlot
     >
       <Page.Content>
         <Flex gap={{ default: "gapXs" }} direction={{ default: "column" }}>
