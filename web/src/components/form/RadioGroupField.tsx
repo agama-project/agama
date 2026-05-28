@@ -103,6 +103,7 @@ export default function RadioGroupField<T extends string>({
             isDisabled={opt.isDisabled}
           />
         ))}
+        {children?.(field.state.value)}
       </Stack>
       {(error || helperText) && (
         <FormHelperText>
@@ -116,7 +117,6 @@ export default function RadioGroupField<T extends string>({
           </HelperText>
         </FormHelperText>
       )}
-      {children?.(field.state.value)}
     </FormGroup>
   );
 }
