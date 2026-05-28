@@ -250,7 +250,8 @@ impl MessageHandler<message::GetConfig> for Service {
 #[async_trait]
 impl MessageHandler<message::SetAccess> for Service {
     async fn handle(&mut self, message: message::SetAccess) -> Result<(), Error> {
-        Ok(self.state.set_module_config(message.id, message.config))
+        self.state.set_module_config(message.id, message.config);
+        Ok(())
     }
 }
 

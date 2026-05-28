@@ -613,11 +613,9 @@ impl Service {
             return Ok(false);
         }
 
-        let is_empty = status
+        let is_empty = !status
             .progresses
-            .iter()
-            .find(|p| p.scope == Scope::Software)
-            .is_none();
+            .iter().any(|p| p.scope == Scope::Software);
         Ok(is_empty)
     }
 
