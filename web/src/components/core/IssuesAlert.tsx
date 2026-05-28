@@ -21,34 +21,25 @@
  */
 
 import React from "react";
-import { Alert, List, ListItem } from "@patternfly/react-core";
+import { isEmpty } from "radashi";
+import { Alert, AlertProps, List, ListItem } from "@patternfly/react-core";
 import { _ } from "~/i18n";
-import Link from "./Link";
-import { PATHS } from "~/routes/software";
+
 import type { Issue } from "~/model/issue";
 
-export default function IssuesAlert({ issues }) {
-  if (issues === undefined || issues.length === 0) return;
+export default function IssuesAlert({ issues }: { issues: Issue[] }) {
+  if (isEmpty(issues)) return;
+  const props: Partial<AlertProps> = { isInline: true, variant: "warning" };
+
+  if (issues.length === 1) {
+    return <Alert {...props} title={issues[0].description} />;
+  }
 
   return (
-    <Alert
-      isInline
-      variant="warning"
-      title={_("Before starting the installation, you need to address the following problems:")}
-    >
+    <Alert {...props} title={_("You must fix these issues")}>
       <List>
-        {issues.map((i: Issue, idx: number) => (
-          <ListItem key={idx}>
-            {i.description}{" "}
-            {i.class === "solver" && (
-              <Link to={PATHS.conflicts} variant="link" isInline>
-                {
-                  // TRANSLATORS: Clickable link to show and resolve package dependency conflicts
-                  _("Review and fix")
-                }
-              </Link>
-            )}
-          </ListItem>
+        {issues.map((i, idx) => (
+          <ListItem key={idx}>{i.description}</ListItem>
         ))}
       </List>
     </Alert>

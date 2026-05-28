@@ -26,7 +26,7 @@ import { useFieldContext } from "~/hooks/form-contexts";
 
 type CheckboxFieldProps = {
   label: string;
-  description?: string;
+  description?: React.ReactNode;
 };
 
 /**

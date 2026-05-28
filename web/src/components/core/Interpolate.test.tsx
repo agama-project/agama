@@ -24,12 +24,24 @@ import React from "react";
 import { plainRender } from "~/test-utils";
 import Interpolate from "./Interpolate";
 
+let consoleErrorSpy: jest.SpyInstance;
+
 describe("Interpolate", () => {
+  beforeAll(() => {
+    consoleErrorSpy = jest.spyOn(console, "error");
+    consoleErrorSpy.mockImplementation();
+  });
+
+  afterAll(() => {
+    consoleErrorSpy.mockRestore();
+  });
+
   describe("with a printf placeholder", () => {
     it("renders surrounding text for %s", () => {
       const { container } = plainRender(
         <Interpolate sentence="Go to %s page">{() => <strong>settings</strong>}</Interpolate>,
       );
+
       expect(container.textContent).toBe("Go to settings page");
     });
 
@@ -37,11 +49,13 @@ describe("Interpolate", () => {
       const { container } = plainRender(
         <Interpolate sentence="There are %d issues">{() => <strong>3</strong>}</Interpolate>,
       );
+
       expect(container.textContent).toBe("There are 3 issues");
     });
 
     it("calls children with an empty string", () => {
       const received: string[] = [];
+
       plainRender(
         <Interpolate sentence="Go to %s page">
           {(text) => {
@@ -50,6 +64,7 @@ describe("Interpolate", () => {
           }}
         </Interpolate>,
       );
+
       expect(received).toEqual([""]);
     });
 
@@ -57,6 +72,7 @@ describe("Interpolate", () => {
       const { container } = plainRender(
         <Interpolate sentence="%s is at the start">{() => <strong>This</strong>}</Interpolate>,
       );
+
       expect(container.textContent).toBe("This is at the start");
     });
 
@@ -64,6 +80,7 @@ describe("Interpolate", () => {
       const { container } = plainRender(
         <Interpolate sentence="At the end: %s">{() => <strong>here</strong>}</Interpolate>,
       );
+
       expect(container.textContent).toBe("At the end: here");
     });
 
@@ -71,15 +88,32 @@ describe("Interpolate", () => {
       const { container } = plainRender(
         <Interpolate sentence="%s">{() => <strong>everything</strong>}</Interpolate>,
       );
+
       expect(container.textContent).toBe("everything");
     });
 
-    it("throws when multiple placeholders are present", () => {
+    it("supports multiple placeholders", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="First %s and second %d">
+          {[() => <strong>one</strong>, () => <strong>two</strong>]}
+        </Interpolate>,
+      );
+
+      expect(container.textContent).toBe("First one and second two");
+
+      const strongs = container.querySelectorAll("strong");
+
+      expect(strongs).toHaveLength(2);
+      expect(strongs[0]).toHaveTextContent("one");
+      expect(strongs[1]).toHaveTextContent("two");
+    });
+
+    it("throws when placeholder count does not match render functions", () => {
       expect(() =>
         plainRender(
           <Interpolate sentence="First %s and second %d">{() => <strong>X</strong>}</Interpolate>,
         ),
-      ).toThrow("Interpolate: only one printf placeholder is supported.");
+      ).toThrow("Interpolate: found 2 placeholder(s) but received 1 render function(s).");
     });
   });
 
@@ -90,6 +124,7 @@ describe("Interpolate", () => {
           {(text) => <strong>{text}</strong>}
         </Interpolate>,
       );
+
       expect(container.textContent).toBe("Go to settings page");
     });
 
@@ -99,6 +134,7 @@ describe("Interpolate", () => {
           {(text) => <strong>{text}</strong>}
         </Interpolate>,
       );
+
       expect(container.querySelector("strong")).toHaveTextContent("settings");
     });
 
@@ -108,6 +144,7 @@ describe("Interpolate", () => {
           {(text) => <strong>{text}</strong>}
         </Interpolate>,
       );
+
       expect(container.textContent).toBe("Start of the sentence");
       expect(container.querySelector("strong")).toHaveTextContent("Start");
     });
@@ -118,6 +155,7 @@ describe("Interpolate", () => {
           {(text) => <strong>{text}</strong>}
         </Interpolate>,
       );
+
       expect(container.textContent).toBe("End of the sentence");
       expect(container.querySelector("strong")).toHaveTextContent("sentence");
     });
@@ -126,7 +164,7 @@ describe("Interpolate", () => {
       const { container } = plainRender(
         <Interpolate sentence="[only]">{(text) => <strong>{text}</strong>}</Interpolate>,
       );
-      expect(container.textContent).toBe("only");
+
       expect(container.querySelector("strong")).toHaveTextContent("only");
     });
 
@@ -136,25 +174,51 @@ describe("Interpolate", () => {
           {(text) => <strong aria-label="injected">{text}</strong>}
         </Interpolate>,
       );
-      expect(container.querySelector("strong")).toBeEmptyDOMElement();
+
+      expect(container.querySelector("strong")).toHaveTextContent("");
     });
 
-    it("throws when multiple placeholders are present", () => {
+    it("supports multiple placeholders", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="Using [jdoe] and [root] accounts">
+          {[(text) => <strong>{text}</strong>, (text) => <em>{text}</em>]}
+        </Interpolate>,
+      );
+
+      expect(container.textContent).toBe("Using jdoe and root accounts");
+      expect(container.querySelector("strong")).toHaveTextContent("jdoe");
+      expect(container.querySelector("em")).toHaveTextContent("root");
+    });
+
+    it("throws when placeholder count does not match render functions", () => {
       expect(() =>
         plainRender(
           <Interpolate sentence="[first] and [second]">
             {(text) => <strong>{text}</strong>}
           </Interpolate>,
         ),
-      ).toThrow("Interpolate: exactly one [marker] placeholder is supported.");
+      ).toThrow("Interpolate: found 2 placeholder(s) but received 1 render function(s).");
     });
 
-    it("throws when a bracket is unmatched", () => {
+    it("treats unmatched brackets as plain text", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="[unclosed">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("[unclosed");
+      expect(container.querySelector("strong")).toBeNull();
+    });
+  });
+
+  describe("mixed placeholder styles", () => {
+    it("throws when mixing printf and marker placeholders", () => {
       expect(() =>
         plainRender(
-          <Interpolate sentence="[unclosed">{(text) => <strong>{text}</strong>}</Interpolate>,
+          <Interpolate sentence="Hello %s [world]">
+            {[() => <strong>A</strong>, () => <strong>B</strong>]}
+          </Interpolate>,
         ),
-      ).toThrow("Interpolate: exactly one [marker] placeholder is supported.");
+      ).toThrow("Interpolate: cannot mix printf and [marker] placeholders.");
     });
   });
 
@@ -165,6 +229,7 @@ describe("Interpolate", () => {
           {(text) => <strong>{text}</strong>}
         </Interpolate>,
       );
+
       expect(container.textContent).toBe("No placeholder here");
     });
 
@@ -174,6 +239,16 @@ describe("Interpolate", () => {
           {(text) => <strong>{text}</strong>}
         </Interpolate>,
       );
+
+      expect(container.querySelector("strong")).toBeNull();
+    });
+
+    it("treats malformed markers as plain text", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="Hello [world">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("Hello [world");
       expect(container.querySelector("strong")).toBeNull();
     });
   });
@@ -183,8 +258,25 @@ describe("Interpolate", () => {
       const { container } = plainRender(
         <Interpolate sentence="Before [marker] after">{() => null}</Interpolate>,
       );
+
       expect(container.textContent).toBe("Before  after");
       expect(container.querySelector("strong")).toBeNull();
+    });
+  });
+
+  describe("across multiple renders", () => {
+    it("renders correctly across renders", () => {
+      const first = plainRender(
+        <Interpolate sentence="[one]">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(first.container.textContent).toBe("one");
+
+      const second = plainRender(
+        <Interpolate sentence="[two]">{(text) => <strong>{text}</strong>}</Interpolate>,
+      );
+
+      expect(second.container.textContent).toBe("two");
     });
   });
 });

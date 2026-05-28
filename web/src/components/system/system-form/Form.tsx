@@ -159,6 +159,7 @@ export default function SystemPage() {
             id="systemForm"
             onSubmit={(e) => {
               e.preventDefault();
+              form.setErrorMap({ onSubmit: { fields: {} } });
               form.handleSubmit();
             }}
           >
