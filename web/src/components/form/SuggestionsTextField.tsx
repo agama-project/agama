@@ -31,37 +31,47 @@ import {
 import Text from "~/components/core/Text";
 import { useFieldContext } from "~/hooks/form-contexts";
 
-import type { TextInputProps } from "@patternfly/react-core";
-
-type TextFieldProps = {
+type SuggestionsTextFieldProps = {
   label: React.ReactNode;
   helperText?: React.ReactNode;
-  type?: TextInputProps["type"];
-  size?: number;
+  suggestions?: string[];
 };
 
 /**
- * A text input tied to a TanStack Form field via `useFieldContext`.
- * Must be used inside a `form.AppField` render prop.
+ * A text input with native datalist suggestions for TanStack Form.
+ * Must be used inside a form.AppField render prop.
+ *
+ * Uses HTML datalist for browser-native autocomplete behavior.
+ * User can type freely; suggestions are optional.
  *
  * @see useFieldContext for field component conventions.
  */
-export default function TextField({ label, helperText, type, size }: TextFieldProps) {
+export default function SuggestionsTextField({
+  label,
+  helperText,
+  suggestions = [],
+}: SuggestionsTextFieldProps) {
   const field = useFieldContext<string>();
   const error = field.state.meta.errors[0];
+  const datalistId = `${field.name}-datalist`;
 
   return (
     <FormGroup fieldId={field.name} label={label}>
       <TextInput
         id={field.name}
         name={field.name}
-        type={type}
-        size={size}
+        type="text"
+        list={datalistId}
         value={field.state.value}
         validated={error ? "error" : "default"}
         onChange={(_, value) => field.handleChange(value)}
         onBlur={() => field.handleBlur()}
       />
+      <datalist id={datalistId}>
+        {suggestions.map((suggestion, index) => (
+          <option key={`${suggestion}-${index}`} value={suggestion} />
+        ))}
+      </datalist>
       {(error || helperText) && (
         <FormHelperText>
           <HelperText>

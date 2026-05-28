@@ -1,8 +1,26 @@
 -------------------------------------------------------------------
-Tue May 26 18:38:34 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Thu May 28 18:38:34 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for configuring a VLAN using the UI
   (gh#agama-project/agama#3548).
+
+-------------------------------------------------------------------
+Thu May 28 14:05:33 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve discoverability of background tasks status
+  (gh#agama-project/agama#3560).
+
+-------------------------------------------------------------------
+Thu May 28 09:45:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Reset the configuration only when changing the product (bsc#1258032).
+
+-------------------------------------------------------------------
+Tue May 26 17:19:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Unify first-user and root authentication configuration into a
+  single workflow and add full SSH public key support
+  (gh#agama-project/agama#3531).
 
 -------------------------------------------------------------------
 Tue May 26 15:39:38 UTC 2026 - David Diaz <dgonzalez@suse.com>
