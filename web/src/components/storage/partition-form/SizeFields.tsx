@@ -68,7 +68,7 @@ const SizeFields = withForm({
             {(mode) => {
               if (mode === SIZE_MODE.AUTO) {
                 return (
-                  <NestedContent>
+                  <NestedContent margin="mxLg">
                     <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
                       {_(
                         "Installer will propose a suitable value based on available disk space and mount point role",
@@ -80,7 +80,7 @@ const SizeFields = withForm({
 
               if (mode === SIZE_MODE.FIXED) {
                 return (
-                  <NestedContent>
+                  <NestedContent margin="mxLg">
                     <form.AppField name="fixedSize">
                       {(sizeField) => (
                         <sizeField.TextField
@@ -95,7 +95,7 @@ const SizeFields = withForm({
 
               if (mode === SIZE_MODE.RANGE) {
                 return (
-                  <NestedContent>
+                  <NestedContent margin="mxLg">
                     <Stack hasGutter>
                       <form.AppField name="minSize">
                         {(sizeField) => (
@@ -120,7 +120,7 @@ const SizeFields = withForm({
 
               if (mode === SIZE_MODE.EXPAND) {
                 return (
-                  <NestedContent>
+                  <NestedContent margin="mxLg">
                     <form.AppField name="minSize">
                       {(sizeField) => (
                         <sizeField.TextField

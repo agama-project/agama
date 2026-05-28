@@ -200,7 +200,7 @@ const FilesystemFields = withForm({
                 {(action) => {
                   if (action === FILESYSTEM_ACTION.FORMAT) {
                     return (
-                      <NestedContent>
+                      <NestedContent margin="mxLg">
                         <form.AppField name="filesystem">
                           {(fsField) => (
                             <fsField.DropdownField
