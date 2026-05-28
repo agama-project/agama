@@ -68,6 +68,7 @@ const productWithModes: Product = {
 };
 
 const mockPutConfigFn = jest.fn();
+const mockPatchConfigFn = jest.fn();
 const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
 const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
@@ -81,6 +82,7 @@ jest.mock("~/components/product/LicenseDialog", () => () => <div>LicenseDialog M
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   putConfig: (payload) => mockPutConfigFn(payload),
+  patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
 jest.mock("~/hooks/model/system", () => ({
@@ -238,6 +240,38 @@ describe("ProductSelectionPage", () => {
       installerRender(<ProductSelectionPage />);
       screen.getByRole("link", { name: "Cancel" });
     });
+
+    it("triggers the product selection (reset) when user clicks the submission button", async () => {
+      const { user } = installerRender(<ProductSelectionPage />);
+      const productOption = screen.getByRole("radio", { name: microOs.name });
+      await user.click(productOption);
+      // microOs has a license, need to accept it
+      const licenseCheckbox = screen.getByRole("checkbox", { name: /I have read and accept/ });
+      await user.click(licenseCheckbox);
+      const selectButton = screen.getByRole("button", { name: /Change/ });
+      await user.click(selectButton);
+      expect(mockPutConfigFn).toHaveBeenCalledWith({ product: { id: microOs.id } });
+      expect(mockPatchConfigFn).not.toHaveBeenCalled();
+    });
+
+    it("triggers the product selection (reset) with mode", async () => {
+      mockUseSystemFn.mockReturnValue({ products: [productWithModes, tumbleweed] });
+      const { user } = installerRender(<ProductSelectionPage />);
+
+      const productOption = screen.getByRole("radio", { name: productWithModes.name });
+      await user.click(productOption);
+
+      const standardMode = screen.getByRole("radio", { name: "Standard" });
+      await user.click(standardMode);
+
+      const selectButton = screen.getByRole("button", { name: /Change/ });
+      await user.click(selectButton);
+
+      expect(mockPutConfigFn).toHaveBeenCalledWith({
+        product: { id: productWithModes.id, mode: "standard" },
+      });
+      expect(mockPatchConfigFn).not.toHaveBeenCalled();
+    });
   });
 
   it("does not render the Cancel button if product no selected yet", () => {
@@ -253,7 +287,8 @@ describe("ProductSelectionPage", () => {
     const selectButton = screen.getByRole("button", { name: "Select" });
     await user.click(productOption);
     await user.click(selectButton);
-    expect(mockPutConfigFn).toHaveBeenCalledWith({ product: { id: tumbleweed.id } });
+    expect(mockPatchConfigFn).toHaveBeenCalledWith({ product: { id: tumbleweed.id } });
+    expect(mockPutConfigFn).not.toHaveBeenCalled();
   });
 
   it("does not trigger the product selection if user selects a product but clicks o cancel button", async () => {
@@ -346,9 +381,10 @@ describe("ProductSelectionPage", () => {
       const selectButton = screen.getByRole("button", { name: /Select/ });
       await user.click(selectButton);
 
-      expect(mockPutConfigFn).toHaveBeenCalledWith({
+      expect(mockPatchConfigFn).toHaveBeenCalledWith({
         product: { id: productWithModes.id, mode: "standard" },
       });
+      expect(mockPutConfigFn).not.toHaveBeenCalled();
     });
 
     it("resets mode selection when switching to a product without modes", async () => {
