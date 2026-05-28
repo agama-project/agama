@@ -22,7 +22,7 @@
 
 import React from "react";
 import { ActionGroup, Form } from "@patternfly/react-core";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import Page from "~/components/core/Page";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useDevice } from "~/hooks/model/system/storage";
@@ -171,7 +171,7 @@ function toFormValues(
   const isReuseFs = fsConfig?.reuse === true;
 
   // Determine size mode
-  let sizeMode = SIZE_MODE.AUTO;
+  let sizeMode: "auto" | "fixed" | "range" | "expand" = SIZE_MODE.AUTO;
   let minSize = "";
   let maxSize = "";
   let fixedSize = "";
@@ -273,11 +273,9 @@ export default function PartitionForm() {
   return (
     <form.AppForm>
       <Page>
-        <Page.Header>
-          <h2>{initialPartition ? _("Edit partition") : _("Add partition")}</h2>
-        </Page.Header>
-
         <Page.Content>
+          <h2>{initialPartition ? _("Edit partition") : _("Add partition")}</h2>
+
           <Form
             onSubmit={(e) => {
               e.preventDefault();
@@ -313,7 +311,7 @@ export default function PartitionForm() {
 
             <ActionGroup>
               <form.SubmitButton label={_("Accept")} />
-              <form.CancelButton onClick={() => navigate(-1)} />
+              <form.CancelButton />
             </ActionGroup>
           </Form>
         </Page.Content>

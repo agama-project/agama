@@ -21,7 +21,8 @@
  */
 
 import React from "react";
-import { NestedContent, Stack } from "@patternfly/react-core";
+import { Stack } from "@patternfly/react-core";
+import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, SIZE_MODE } from "./fields";
