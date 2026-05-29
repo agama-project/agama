@@ -1,8 +1,7 @@
 use std::{env, process::exit};
 
 use suseconnect_agama::{
-    activate_product, announce_system, create_credentials_file, ConnectParams,
-    ProductSpecification, DEFAULT_CONFIG_FILE,
+    activate_product, announce_system, create_credentials_file, ConnectParams, ProductSpecification,
 };
 use url::Url;
 
@@ -29,7 +28,7 @@ pub fn main() {
     let result = create_credentials_file(
         &credentials.login,
         &credentials.password,
-        DEFAULT_CONFIG_FILE,
+        suseconnect_agama::GLOBAL_CREDENTIALS_FILE,
     );
     println!("{:?}", result);
     if result.is_err() {
