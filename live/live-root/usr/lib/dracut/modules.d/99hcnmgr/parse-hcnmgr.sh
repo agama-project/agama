@@ -128,7 +128,7 @@ MOD_CMDLINE="$CMDLINE"
 CHANGED=0
 
 # Unique bond names
-BOND_NAMES=$(echo "$MAPPINGS" | awk '{print $1}' | sort -u)
+BOND_NAMES=$(echo "$MAPPINGS" | xargs -n4 echo | awk '{print $1}' | sort -u)
 
 for BONDNAME in $BOND_NAMES; do
   SLAVES=""
@@ -217,7 +217,7 @@ for BONDNAME in $BOND_NAMES; do
               NEW_ARGS="$NEW_ARGS ip=$HNV_IP${SUFFIX}$BONDNAME:none"
               CHANGED=1
             else
-              info "parse-hcnmgr: HNV_IP $HNV_IP already has an interface, skipping bond assignment"
+              info "parse-hcnmgr: HNV_IP $HNV_IP already has an interface, no assignment to $BONDNAME"
             fi
             ;;
         esac
