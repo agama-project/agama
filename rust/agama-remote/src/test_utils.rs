@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,13 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-pub mod service;
-pub use service::{Service, Starter};
+use agama_utils::{actor::Handler, api::Event};
+use tokio::sync::broadcast::Sender;
 
-pub mod message;
+use crate::{Service, Starter};
 
-mod model;
-pub use model::{Model, ModelAdapter};
-
-mod password;
-pub use password::{PasswordCheckResult, PasswordChecker, PasswordCheckerError};
+/// Starts a testing remote service.
+pub async fn start_service(
+    software: Handler<agama_software::Service>,
+    events: Sender<Event>,
+) -> Handler<Service> {
+    Starter::new(software, events)
+        .start()
+        .expect("Could not spawn a testing remote service")
+}

@@ -201,9 +201,9 @@ impl Service {
     pub fn config_path(&self) -> PathBuf {
         self.install_dir.join(PROXY_PATH)
     }
-    pub fn enable_services(&self) {
-        enable_service(&self.install_dir, "setup-systemd-proxy-env.service");
-        enable_service(&self.install_dir, "setup-systemd-proxy-env.path");
+    pub async fn enable_services(&self) {
+        enable_service(&self.install_dir, "setup-systemd-proxy-env.service").await;
+        enable_service(&self.install_dir, "setup-systemd-proxy-env.path").await;
     }
 }
 
@@ -253,7 +253,7 @@ impl MessageHandler<message::Finish> for Service {
                 std::fs::create_dir_all(parent)?;
             }
             config.write_to(&path)?;
-            self.enable_services();
+            self.enable_services().await;
         }
         Ok(())
     }
