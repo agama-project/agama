@@ -35,6 +35,7 @@ type SuggestionsTextFieldProps = {
   label: React.ReactNode;
   helperText?: React.ReactNode;
   suggestions?: string[];
+  onSelect?: (value: string) => void;
 };
 
 /**
@@ -44,16 +45,41 @@ type SuggestionsTextFieldProps = {
  * Uses HTML datalist for browser-native autocomplete behavior.
  * User can type freely; suggestions are optional.
  *
+ * ## onSelect callback
+ *
+ * The `onSelect` callback is called when a suggestion is selected (via click or Enter key).
+ * It does NOT fire when the user manually types the same value character by character.
+ *
+ * **Detection mechanism:**
+ * - Tracks previous value in a ref
+ * - When onChange fires with a new value that matches a suggestion, triggers onSelect
+ * - This distinguishes selection from incremental typing
+ *
+ * **Use case:**
+ * Use `onSelect` when you need instant feedback for complete values (e.g., updating
+ * derived fields) but want to defer reactions while the user is still typing.
+ *
+ * @example
+ * <field.SuggestionsTextField
+ *   suggestions={["/home", "/var", "swap"]}
+ *   onSelect={(value) => {
+ *     // React immediately when user selects "/home" from dropdown
+ *     form.setFieldValue("derivedField", computeFromMountPoint(value));
+ *   }}
+ * />
+ *
  * @see useFieldContext for field component conventions.
  */
 export default function SuggestionsTextField({
   label,
   helperText,
   suggestions = [],
+  onSelect,
 }: SuggestionsTextFieldProps) {
   const field = useFieldContext<string>();
   const error = field.state.meta.errors[0];
   const datalistId = `${field.name}-datalist`;
+  const prevValueRef = React.useRef(field.state.value);
 
   return (
     <FormGroup fieldId={field.name} label={label}>
@@ -64,7 +90,14 @@ export default function SuggestionsTextField({
         list={datalistId}
         value={field.state.value}
         validated={error ? "error" : "default"}
-        onChange={(_, value) => field.handleChange(value)}
+        onChange={(_, value) => {
+          field.handleChange(value);
+          // Detect suggestion selection: value changed AND matches a suggestion
+          if (onSelect && value !== prevValueRef.current && suggestions.includes(value)) {
+            onSelect(value);
+          }
+          prevValueRef.current = value;
+        }}
         onBlur={() => field.handleBlur()}
       />
       <datalist id={datalistId}>
