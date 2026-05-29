@@ -54,6 +54,53 @@ type AutoFilesystemHintProps = {
 };
 
 /**
+ * Returns an informative message for when a partition must be formatted.
+ *
+ * Used when reusing a partition that either:
+ * - Has no filesystem
+ * - Has an incompatible filesystem for the selected mount point
+ *
+ * The message varies based on:
+ * - Whether partition currently has a filesystem
+ * - Whether only one filesystem type is allowed for the mount point
+ */
+function getFormatRequiredMessage(
+  hasFilesystem: boolean,
+  currentFsType: ConfigModel.FilesystemType | undefined,
+  isSingleType: boolean,
+  defaultFilesystem: ConfigModel.FilesystemType | undefined,
+): string {
+  if (hasFilesystem && currentFsType) {
+    // Partition has incompatible filesystem
+    if (isSingleType && defaultFilesystem) {
+      return sprintf(
+        // TRANSLATORS: %1$s is current filesystem type like "ext4", %2$s is required type like "swap"
+        _(
+          "Current file system (%1$s) is not compatible. Partition will be formatted with %2$s.",
+        ),
+        filesystemLabel(currentFsType),
+        filesystemLabel(defaultFilesystem),
+      );
+    }
+    return sprintf(
+      // TRANSLATORS: %s is current filesystem type like "ext4"
+      _("Current file system (%s) is not compatible. Partition will be formatted with the selected type."),
+      filesystemLabel(currentFsType),
+    );
+  }
+
+  // Partition has no filesystem
+  if (isSingleType && defaultFilesystem) {
+    return sprintf(
+      // TRANSLATORS: %s is filesystem type like "swap"
+      _("Partition is not formatted. It will be formatted with %s."),
+      filesystemLabel(defaultFilesystem),
+    );
+  }
+  return _("Partition is not formatted. It will be formatted with the selected file system type.");
+}
+
+/**
  * Inline hint shown when "Automatic" is selected, describing which filesystem
  * will be applied for the current mount point.
  *
@@ -201,6 +248,11 @@ const FilesystemFieldsContent = withForm({
       return unique([defaultFilesystem, ...volumeFilesystems]);
     }, [volume, defaultFilesystem]);
 
+    // Check if the current filesystem is compatible with the mount point.
+    // If not, we must format - can't keep an incompatible filesystem.
+    const canKeepCurrentFilesystem =
+      hasFilesystem && usableFilesystems.includes(currentFsType as ConfigModel.FilesystemType);
+
     const filesystemOptions = React.useMemo(
       () => [
         { value: FILESYSTEM_TYPE.AUTO, label: _("Default") },
@@ -254,17 +306,20 @@ const FilesystemFieldsContent = withForm({
           />
         )}
 
-        {isReuse && !hasFilesystem && (
+        {isReuse && !canKeepCurrentFilesystem && (
           <>
             <form.AppField name="filesystemAction">
-              {(field) => (
-                <field.ReadOnlyField
-                  label={_("File system")}
-                  text={_(
-                    "Partition is not formatted. It will be formatted with the selected file system type.",
-                  )}
-                />
-              )}
+              {(field) => {
+                const isSingleType = usableFilesystems.length === 1;
+                const message = getFormatRequiredMessage(
+                  hasFilesystem,
+                  currentFsType,
+                  isSingleType,
+                  defaultFilesystem,
+                );
+
+                return <field.ReadOnlyField label={_("File system")} text={message} />;
+              }}
             </form.AppField>
             <FilesystemTypeSelector
               form={form}
@@ -277,7 +332,7 @@ const FilesystemFieldsContent = withForm({
           </>
         )}
 
-        {isReuse && hasFilesystem && (
+        {isReuse && canKeepCurrentFilesystem && (
           <form.AppField name="filesystemAction">
             {(field) => (
               <field.RadioGroupField
