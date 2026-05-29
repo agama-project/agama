@@ -36,15 +36,6 @@ type PartitionFieldsProps = {
 };
 
 /**
- * Special value representing "create a new partition" in the partition dropdown.
- *
- * This constant is used as both the dropdown value AND the form field value
- * for the "New partition" option. When building the API payload, this value
- * is converted to undefined (no name = create new partition).
- */
-export const NEW_PARTITION_VALUE = "NEW";
-
-/**
  * Partition selection: new vs use existing partition.
  *
  * Shows a single dropdown for choosing between creating a new partition or
@@ -54,10 +45,8 @@ export const NEW_PARTITION_VALUE = "NEW";
  * ## Value mapping
  *
  * The `name` field determines whether to create new or reuse:
- * - NEW_PARTITION_VALUE: create a new partition
+ * - Empty string: create a new partition
  * - Partition name (e.g., "vdd2"): reuse the named partition
- *
- * When building the API payload, NEW_PARTITION_VALUE is converted to undefined.
  *
  * When no partitions are available, displays a ReadOnlyField explaining that
  * a new partition will be created (maintains consistent visual structure).
@@ -92,7 +81,7 @@ const PartitionFields = withForm({
     // Build dropdown options: "New partition" + divider + partition list
     const options: DropdownOption<string>[] = [
       {
-        value: NEW_PARTITION_VALUE,
+        value: "",
         label: _("New partition"),
       },
       { divider: true as const },
@@ -113,17 +102,7 @@ const PartitionFields = withForm({
     ];
 
     return (
-      <form.AppField
-        name="name"
-        listeners={{
-          // Initialize to NEW_PARTITION_VALUE when creating a new partition
-          onMount: ({ value }) => {
-            if (!value) {
-              form.setFieldValue("name", NEW_PARTITION_VALUE, { dontUpdateMeta: true });
-            }
-          },
-        }}
-      >
+      <form.AppField name="name">
         {(field) => <field.DropdownField label={_("Partition")} options={options} />}
       </form.AppField>
     );

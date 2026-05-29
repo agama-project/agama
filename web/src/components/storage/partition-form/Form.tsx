@@ -41,7 +41,7 @@ import { STORAGE } from "~/routes/paths";
 import { compact } from "~/utils";
 import { _ } from "~/i18n";
 
-import PartitionFields, { NEW_PARTITION_VALUE } from "./PartitionFields";
+import PartitionFields from "./PartitionFields";
 import FilesystemFields from "./FilesystemFields";
 import SizeFields from "./SizeFields";
 import {
@@ -402,7 +402,7 @@ function PartitionFormContent({
 
         {/* Size (only for new partitions) */}
         <form.Subscribe selector={(s) => s.values.name}>
-          {(name) => (name === "" || name === NEW_PARTITION_VALUE) && <SizeFields form={form} />}
+          {(name) => !isReusingPartition(name) && <SizeFields form={form} />}
         </form.Subscribe>
 
         <ActionGroup>

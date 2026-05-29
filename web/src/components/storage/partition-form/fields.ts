@@ -33,22 +33,16 @@ import { _ } from "~/i18n";
 /** Constants */
 
 /**
- * Special value for the `name` field indicating a new partition should be created.
- * Exported from PartitionFields.tsx.
- */
-const NEW_PARTITION_VALUE = "NEW";
-
-/**
  * Determines if the form is configured to reuse an existing partition.
  *
  * Returns `true` when the name field contains a partition name (e.g., "vdd2"),
- * `false` when creating a new partition (empty string or NEW_PARTITION_VALUE).
+ * `false` when creating a new partition (empty string).
  *
  * @param name - The partition name field value
  * @returns true if reusing an existing partition, false if creating new
  */
 export function isReusingPartition(name: string): boolean {
-  return name !== "" && name !== NEW_PARTITION_VALUE;
+  return name !== "";
 }
 
 export const FILESYSTEM_ACTION = {
@@ -118,10 +112,10 @@ type MountPointFields = {
 
 type PartitionFields = {
   /**
-   * Partition name for reusing an existing partition, or NEW_PARTITION_VALUE
-   * constant for creating a new partition.
+   * Partition name for reusing an existing partition, or empty string for
+   * creating a new partition.
    *
-   * When "NEW": a new partition will be created.
+   * When empty: a new partition will be created.
    * When partition name (e.g., "vdd2"): the named partition will be reused.
    */
   name: string;
@@ -149,7 +143,7 @@ export type PartitionFormData = FormFields;
 const defaultValues: FormFields = {
   mountPoint: "",
   committedMountPoint: "",
-  name: "", // Will be initialized to NEW_PARTITION_VALUE in PartitionFields
+  name: "",
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
@@ -213,7 +207,7 @@ function validateMountPoint(
 }
 
 function validatePartition(fields: FormFields): FieldsValidationResult<PartitionFields> {
-  // name field is always valid: "NEW" means new, partition name means reuse.
+  // name field is always valid: empty means new, partition name means reuse.
   // The dropdown UI ensures a valid selection.
   return {};
 }
