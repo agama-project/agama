@@ -179,7 +179,7 @@ const FilesystemFieldsContent = withForm({
 
     const filesystemOptions = React.useMemo(
       () => [
-        { value: FILESYSTEM_TYPE.AUTO, label: _("Automatic") },
+        { value: FILESYSTEM_TYPE.AUTO, label: _("Default") },
         ...usableFilesystems.map((fs) => ({ value: fs, label: filesystemLabel(fs) })),
       ],
       [usableFilesystems],
