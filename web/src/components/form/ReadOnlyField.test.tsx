@@ -25,13 +25,13 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 
-function ReadOnlyFieldForm() {
+function ReadOnlyFieldForm({ text }: { text?: string }) {
   const form = useAppForm({ defaultValues: { connectionType: "Bond" } });
 
   return (
     <form.AppForm>
       <form.AppField name="connectionType">
-        {(field) => <field.ReadOnlyField label="Type" />}
+        {(field) => <field.ReadOnlyField label="Type" text={text} />}
       </form.AppField>
     </form.AppForm>
   );
@@ -42,5 +42,12 @@ describe("ReadOnlyField", () => {
     installerRender(<ReadOnlyFieldForm />);
     screen.getByText("Type");
     screen.getByText("Bond");
+  });
+
+  it("renders custom text when provided", () => {
+    installerRender(<ReadOnlyFieldForm text="Custom display text" />);
+    screen.getByText("Type");
+    screen.getByText("Custom display text");
+    expect(screen.queryByText("Bond")).not.toBeInTheDocument();
   });
 });
