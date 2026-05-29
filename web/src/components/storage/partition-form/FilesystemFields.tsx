@@ -266,16 +266,24 @@ const FilesystemFieldsContent = withForm({
       if (filesystem === FILESYSTEM_TYPE.AUTO) return;
       if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;
 
-      // Current filesystem is not compatible with the mount point
+      // Current filesystem is not compatible with the mount point.
+      // Reset to AUTO (Default) and show alert only when multiple types are available.
+      // When only one type is available, the UI switches to ReadOnlyField automatically,
+      // making the change obvious without needing an alert.
       const previousLabel = filesystemLabel(filesystem as ConfigModel.FilesystemType);
+      const isSingleType = usableFilesystems.length === 1;
+
       form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
-      setIncompatibleFsAlert(
-        sprintf(
-          // TRANSLATORS: %s is a filesystem type name like "XFS" or "Btrfs"
-          _("Selected mount point does not support %s file system type, switched to Automatic"),
-          previousLabel,
-        ),
-      );
+
+      if (!isSingleType) {
+        setIncompatibleFsAlert(
+          sprintf(
+            // TRANSLATORS: %s is a filesystem type name like "XFS" or "Btrfs"
+            _("Selected mount point does not support %s file system type, switched to Default"),
+            previousLabel,
+          ),
+        );
+      }
     }, [usableFilesystems, filesystem, form]);
 
     return (
