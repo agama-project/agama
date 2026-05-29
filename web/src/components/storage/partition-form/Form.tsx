@@ -41,7 +41,7 @@ import { STORAGE } from "~/routes/paths";
 import { compact } from "~/utils";
 import { _ } from "~/i18n";
 
-import PartitionFields from "./PartitionFields";
+import PartitionFields, { NEW_PARTITION_VALUE } from "./PartitionFields";
 import FilesystemFields from "./FilesystemFields";
 import SizeFields from "./SizeFields";
 import {
@@ -120,7 +120,7 @@ function useUnusedPartitions(): System.Device[] {
  * default behaviour.
  */
 function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelType.Partition {
-  const isReusePartition = values.name !== "";
+  const isReusePartition = values.name !== "" && values.name !== NEW_PARTITION_VALUE;
 
   // Filesystem configuration
   const filesystem = (): ConfigModelType.Filesystem | undefined => {
@@ -171,7 +171,7 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
 
   return {
     mountPath: values.mountPoint,
-    name: values.name || undefined,
+    name: isReusePartition ? values.name : undefined,
     filesystem: filesystem(),
     size: size(),
   };
@@ -401,7 +401,7 @@ function PartitionFormContent({
 
         {/* Size (only for new partitions) */}
         <form.Subscribe selector={(s) => s.values.name}>
-          {(name) => name === "" && <SizeFields form={form} />}
+          {(name) => (name === "" || name === NEW_PARTITION_VALUE) && <SizeFields form={form} />}
         </form.Subscribe>
 
         <ActionGroup>

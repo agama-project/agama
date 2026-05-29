@@ -28,6 +28,7 @@ import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
+import { NEW_PARTITION_VALUE } from "./PartitionFields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -191,7 +192,7 @@ const FilesystemFieldsContent = withForm({
     const volume = useVolumeTemplate(committedMountPoint);
     const defaultFilesystem = volume.fsType;
 
-    const isReusePartition = name !== "";
+    const isReusePartition = name !== "" && name !== NEW_PARTITION_VALUE;
     const selectedPartition = device.partitions?.find((p) => p.name === name);
     const currentFsType = selectedPartition?.filesystem?.type;
     const hasFilesystem = !!currentFsType;
