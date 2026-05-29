@@ -38,11 +38,11 @@ type PartitionFieldsProps = {
 /**
  * Special value representing "create a new partition" in the partition dropdown.
  *
- * This constant is used as the dropdown value for the "New partition" option.
- * When selected, the form's `name` field is cleared (empty string), indicating
- * that a new partition should be created rather than reusing an existing one.
+ * This constant is used as both the dropdown value AND the form field value
+ * for the "New partition" option. When building the API payload, this value
+ * is converted to undefined (no name = create new partition).
  */
-const NEW_PARTITION_VALUE = "NEW";
+export const NEW_PARTITION_VALUE = "NEW";
 
 /**
  * Partition selection: new vs use existing partition.
@@ -54,11 +54,10 @@ const NEW_PARTITION_VALUE = "NEW";
  * ## Value mapping
  *
  * The `name` field determines whether to create new or reuse:
- * - Empty string: create a new partition
- * - Partition name: reuse the named partition
+ * - NEW_PARTITION_VALUE: create a new partition
+ * - Partition name (e.g., "vdd2"): reuse the named partition
  *
- * The dropdown uses NEW_PARTITION_VALUE internally for the "New partition"
- * option, which maps to empty string in the form field.
+ * When building the API payload, NEW_PARTITION_VALUE is converted to undefined.
  *
  * When no partitions are available, displays a ReadOnlyField explaining that
  * a new partition will be created (maintains consistent visual structure).
@@ -114,36 +113,19 @@ const PartitionFields = withForm({
     ];
 
     return (
-      <form.Subscribe selector={(s) => ({ name: s.values.name })}>
-        {({ name }) => {
-          // Derive dropdown value: NEW for empty, partition name for reuse
-          const dropdownValue = name === "" ? NEW_PARTITION_VALUE : name;
-
-          return (
-            <form.AppField
-              name="name"
-              listeners={{
-                // Initialize to NEW_PARTITION_VALUE for display when name is empty
-                onMount: () => {
-                  if (name === "") {
-                    form.setFieldValue("name", NEW_PARTITION_VALUE, { dontUpdateMeta: true });
-                  }
-                },
-                // Map dropdown value back to form field
-                onChange: ({ value }) => {
-                  if (value === NEW_PARTITION_VALUE) {
-                    // User selected "New partition" - clear the name field
-                    form.setFieldValue("name", "");
-                  }
-                  // Otherwise, value is already the partition name, set by field.handleChange
-                },
-              }}
-            >
-              {(field) => <field.DropdownField label={_("Partition")} options={options} />}
-            </form.AppField>
-          );
+      <form.AppField
+        name="name"
+        listeners={{
+          // Initialize to NEW_PARTITION_VALUE when creating a new partition
+          onMount: ({ value }) => {
+            if (!value) {
+              form.setFieldValue("name", NEW_PARTITION_VALUE, { dontUpdateMeta: true });
+            }
+          },
         }}
-      </form.Subscribe>
+      >
+        {(field) => <field.DropdownField label={_("Partition")} options={options} />}
+      </form.AppField>
     );
   },
 });

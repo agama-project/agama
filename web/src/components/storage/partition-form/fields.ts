@@ -99,11 +99,11 @@ type MountPointFields = {
 
 type PartitionFields = {
   /**
-   * Partition name for reusing an existing partition, or empty string for
-   * creating a new partition.
+   * Partition name for reusing an existing partition, or NEW_PARTITION_VALUE
+   * constant for creating a new partition.
    *
-   * When empty: a new partition will be created.
-   * When set: the named partition will be reused.
+   * When "NEW": a new partition will be created.
+   * When partition name (e.g., "vdd2"): the named partition will be reused.
    */
   name: string;
 };
@@ -130,7 +130,7 @@ export type PartitionFormData = FormFields;
 const defaultValues: FormFields = {
   mountPoint: "",
   committedMountPoint: "",
-  name: "",
+  name: "", // Will be initialized to NEW_PARTITION_VALUE in PartitionFields
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
@@ -194,13 +194,13 @@ function validateMountPoint(
 }
 
 function validatePartition(fields: FormFields): FieldsValidationResult<PartitionFields> {
-  // name field is always valid: empty means new, non-empty means reuse.
+  // name field is always valid: "NEW" means new, partition name means reuse.
   // The dropdown UI ensures a valid selection.
   return {};
 }
 
 function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
-  const isReusePartition = fields.name !== "";
+  const isReusePartition = fields.name !== "" && fields.name !== "NEW";
 
   // AUTO is always valid — the installer will pick an appropriate type.
   if (fields.filesystem === FILESYSTEM_TYPE.AUTO) {
