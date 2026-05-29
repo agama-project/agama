@@ -219,8 +219,6 @@ function validatePartition(fields: FormFields): FieldsValidationResult<Partition
 }
 
 function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
-  const isReuse = isReusingPartition(fields.name);
-
   // AUTO is always valid — the installer will pick an appropriate type.
   if (fields.filesystem === FILESYSTEM_TYPE.AUTO) {
     return {
@@ -233,7 +231,7 @@ function validateFilesystemFields(fields: FormFields): FieldsValidationResult<Fi
   }
 
   // Reusing the existing filesystem requires no explicit type selection.
-  if (isReuse && fields.filesystemAction === FILESYSTEM_ACTION.REUSE) {
+  if (isReusingPartition(fields.name) && fields.filesystemAction === FILESYSTEM_ACTION.REUSE) {
     return {
       filesystemLabel: optionalValidString(
         fields.filesystemLabel,
