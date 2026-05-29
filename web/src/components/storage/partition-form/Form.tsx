@@ -47,6 +47,7 @@ import SizeFields from "./SizeFields";
 import {
   defaultOptions,
   validate,
+  isReusingPartition,
   FILESYSTEM_TYPE,
   FILESYSTEM_ACTION,
   SIZE_MODE,
@@ -120,12 +121,12 @@ function useUnusedPartitions(): System.Device[] {
  * default behaviour.
  */
 function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelType.Partition {
-  const isReusePartition = values.name !== "" && values.name !== NEW_PARTITION_VALUE;
+  const isReuse = isReusingPartition(values.name);
 
   // Filesystem configuration
   const filesystem = (): ConfigModelType.Filesystem | undefined => {
     // Reuse existing filesystem
-    if (isReusePartition && values.filesystemAction === FILESYSTEM_ACTION.REUSE) {
+    if (isReuse && values.filesystemAction === FILESYSTEM_ACTION.REUSE) {
       return { reuse: true, default: true };
     }
 
@@ -171,7 +172,7 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
 
   return {
     mountPath: values.mountPoint,
-    name: isReusePartition ? values.name : undefined,
+    name: isReuse ? values.name : undefined,
     filesystem: filesystem(),
     size: size(),
   };
