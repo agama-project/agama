@@ -32,6 +32,25 @@ import { _ } from "~/i18n";
 
 /** Constants */
 
+/**
+ * Special value for the `name` field indicating a new partition should be created.
+ * Exported from PartitionFields.tsx.
+ */
+const NEW_PARTITION_VALUE = "NEW";
+
+/**
+ * Determines if the form is configured to reuse an existing partition.
+ *
+ * Returns `true` when the name field contains a partition name (e.g., "vdd2"),
+ * `false` when creating a new partition (empty string or NEW_PARTITION_VALUE).
+ *
+ * @param name - The partition name field value
+ * @returns true if reusing an existing partition, false if creating new
+ */
+export function isReusingPartition(name: string): boolean {
+  return name !== "" && name !== NEW_PARTITION_VALUE;
+}
+
 export const FILESYSTEM_ACTION = {
   REUSE: "reuse",
   FORMAT: "format",
@@ -200,7 +219,7 @@ function validatePartition(fields: FormFields): FieldsValidationResult<Partition
 }
 
 function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
-  const isReusePartition = fields.name !== "" && fields.name !== "NEW";
+  const isReuse = isReusingPartition(fields.name);
 
   // AUTO is always valid — the installer will pick an appropriate type.
   if (fields.filesystem === FILESYSTEM_TYPE.AUTO) {
@@ -214,7 +233,7 @@ function validateFilesystemFields(fields: FormFields): FieldsValidationResult<Fi
   }
 
   // Reusing the existing filesystem requires no explicit type selection.
-  if (isReusePartition && fields.filesystemAction === FILESYSTEM_ACTION.REUSE) {
+  if (isReuse && fields.filesystemAction === FILESYSTEM_ACTION.REUSE) {
     return {
       filesystemLabel: optionalValidString(
         fields.filesystemLabel,
