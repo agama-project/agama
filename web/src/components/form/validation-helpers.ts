@@ -136,6 +136,25 @@ export const intRange = (
 };
 
 /**
+ * Required inclusive integer range — undefined/null fails, present values are range-checked.
+ *
+ * @example
+ * requiredIntRange(undefined, 0, 10, "Required", "Must be 0-10") // "Required"
+ * requiredIntRange(5, 0, 10, "Required", "Must be 0-10") // undefined
+ * requiredIntRange(15, 0, 10, "Required", "Must be 0-10") // "Must be 0-10"
+ */
+export const requiredIntRange = (
+  value: number | undefined,
+  min: number,
+  max: number,
+  emptyMessage: string,
+  invalidMessage: string,
+): string | undefined => {
+  if (value === undefined || value === null) return emptyMessage;
+  return intRange(value, min, max, invalidMessage);
+};
+
+/**
  * Optional inclusive integer range — undefined passes, present values are range-checked.
  *
  * @example

@@ -945,5 +945,65 @@ describe("ConnectionForm", () => {
         });
       });
     });
+
+    describe("VLAN", () => {
+      it("shows an error when no device name is defined", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("VLAN"));
+        await user.type(await screen.findByLabelText("Name"), "test-vlan");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Device name is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows an error when no VLAN ID is defined", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("VLAN"));
+        await user.type(await screen.findByLabelText("Name"), "test-vlan");
+        await user.type(await screen.findByLabelText("Device name"), "eth0.100");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("VLAN ID is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows an error when no parent device is defined", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("VLAN"));
+        await user.type(await screen.findByLabelText("Name"), "test-vlan");
+        await user.type(await screen.findByLabelText("Device name"), "eth0.100");
+        await user.type(screen.getByLabelText("VLAN ID"), "100");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Parent device is required");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+
+      it("shows an error when parent device is the same as the device name", async () => {
+        const { user } = installerRender(<ConnectionForm />);
+
+        await user.click(screen.getByLabelText("Type"));
+        await user.click(screen.getByText("VLAN"));
+        await user.type(await screen.findByLabelText("Name"), "test-vlan");
+        await user.type(await screen.findByLabelText("Device name"), "eth0.100");
+        await user.type(screen.getByLabelText("VLAN ID"), "100");
+        await user.type(screen.getByLabelText("Parent device"), "eth0.100");
+
+        await user.click(screen.getByRole("button", { name: "Accept" }));
+
+        await screen.findByText("Parent device must be different from the device name");
+        expect(mockMutateAsync).not.toHaveBeenCalled();
+      });
+    });
   });
 });
