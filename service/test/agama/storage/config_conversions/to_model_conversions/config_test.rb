@@ -207,10 +207,11 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::Config do
         expect(config_model[:volumeGroups]).to eq(
           [
             {
-              vgName:         "vg0",
-              spacePolicy:    "keep",
-              targetDevices:  [],
-              logicalVolumes: [
+              vgName:              "vg0",
+              spacePolicy:         "keep",
+              targetDevices:       [],
+              targetDevicesPolicy: "useNeeded",
+              logicalVolumes:      [
                 {
                   delete:         false,
                   deleteIfNeeded: false,
