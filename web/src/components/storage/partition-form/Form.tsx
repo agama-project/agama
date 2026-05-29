@@ -25,6 +25,8 @@ import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
+import { deviceSize, createPartitionableLocation, parseToBytes } from "~/components/storage/utils";
+import { withFrozenQuery } from "~/components/form/with-frozen-query";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useDevice } from "~/hooks/model/system/storage";
 import {
@@ -34,8 +36,8 @@ import {
   useAddPartition,
   useEditPartition,
 } from "~/hooks/model/storage/config-model";
-import { deviceSize, createPartitionableLocation, parseToBytes } from "~/components/storage/utils";
 import configModel from "~/model/storage/config-model";
+import { STORAGE } from "~/routes/paths";
 import { compact } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -49,13 +51,20 @@ import {
   FILESYSTEM_TYPE,
   FILESYSTEM_ACTION,
   SIZE_MODE,
+  SizeMode,
 } from "./fields";
 
 import type { ConfigModel as ConfigModelType, Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
-import { STORAGE } from "~/routes/paths";
-import { BreadcrumbProps } from "~/components/core/Breadcrumbs";
+import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
+/**
+ * Resolves the partitionable device model from the current route params.
+ *
+ * Calls `usePartitionable` unconditionally (hook rules) with safe fallback
+ * values when the location cannot be parsed, then returns `null` if the route
+ * params do not map to a valid partitionable location.
+ */
 function useDeviceModelFromParams(): Partitionable.Device | null {
   const { collection, index } = useParams();
   const location = createPartitionableLocation(collection, index);
@@ -67,6 +76,13 @@ function useDeviceModelFromParams(): Partitionable.Device | null {
   return location ? device : null;
 }
 
+/**
+ * Returns the existing {@link ConfigModelType.Partition} being edited, or
+ * `null` when creating a new partition.
+ *
+ * The `partitionId` route param holds the mount path used to look up the
+ * partition within the device resolved by {@link useDeviceModelFromParams}.
+ */
 function useInitialPartitionConfig(): ConfigModelType.Partition | null {
   const { partitionId: mountPath } = useParams();
   const device = useDeviceModelFromParams();
@@ -97,7 +113,13 @@ function useUnusedPartitions(): System.Device[] {
   return allPartitions.filter((p) => !configuredPartitionConfigs.includes(p.name));
 }
 
-/** Build config model partition from form values */
+/**
+ * Builds a {@link ConfigModelType.Partition} from the validated form values.
+ *
+ * Size fields are omitted when reusing an existing partition; filesystem and
+ * size are each omitted when their respective form mode selects automatic or
+ * default behaviour.
+ */
 function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelType.Partition {
   // Partition name (only for reuse)
   const name = (): string | undefined => {
@@ -163,7 +185,48 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
   };
 }
 
-/** Convert partition config to form initial values */
+/**
+ * Infers size form fields from a stored {@link ConfigModelType.Partition}.
+ *
+ * Uses early returns to avoid nesting: each guard exits with defaults when
+ * the size cannot be determined, leaving the happy paths flat.
+ */
+function inferSizeFields(partitionConfig: ConfigModelType.Partition): {
+  sizeMode: SizeMode;
+  minSize: string;
+  maxSize: string;
+  fixedSize: string;
+} {
+  const defaults = { sizeMode: SIZE_MODE.AUTO, minSize: "", maxSize: "", fixedSize: "" } as const;
+
+  const isReuse = partitionConfig.name !== undefined;
+  if (isReuse) return defaults;
+
+  const sizeConfig = partitionConfig.size;
+  if (!sizeConfig || sizeConfig.default || sizeConfig.min === undefined) return defaults;
+
+  const minSize = deviceSize(sizeConfig.min, { exact: true });
+
+  if (sizeConfig.max === undefined) {
+    return { ...defaults, sizeMode: SIZE_MODE.EXPAND, minSize };
+  }
+
+  const maxSize = deviceSize(sizeConfig.max, { exact: true });
+
+  if (sizeConfig.min === sizeConfig.max) {
+    return { sizeMode: SIZE_MODE.FIXED, minSize: "", maxSize: "", fixedSize: minSize };
+  }
+
+  return { sizeMode: SIZE_MODE.RANGE, minSize, maxSize, fixedSize: "" };
+}
+
+/**
+ * Maps a stored {@link ConfigModelType.Partition} to initial form values for
+ * editing, or returns an empty object when creating a new partition.
+ *
+ * Reconstructs the size mode (auto / fixed / range / expand) from the stored
+ * min/max byte values, and infers the filesystem action from the `reuse` flag.
+ */
 function toFormValues(
   partitionConfig: ConfigModelType.Partition | null,
 ): Partial<typeof defaultOptions.defaultValues> {
@@ -173,48 +236,57 @@ function toFormValues(
   const fsConfig = partitionConfig.filesystem;
   const isReuseFs = fsConfig?.reuse === true;
 
-  // Determine size mode
-  let sizeMode: "auto" | "fixed" | "range" | "expand" = SIZE_MODE.AUTO;
-  let minSize = "";
-  let maxSize = "";
-  let fixedSize = "";
-
-  if (!isReuse && partitionConfig.size && !partitionConfig.size.default) {
-    const sizeConfig = partitionConfig.size;
-    if (sizeConfig.min !== undefined) {
-      minSize = deviceSize(sizeConfig.min, { exact: true });
-      if (sizeConfig.max !== undefined) {
-        maxSize = deviceSize(sizeConfig.max, { exact: true });
-        if (sizeConfig.min === sizeConfig.max) {
-          sizeMode = SIZE_MODE.FIXED;
-          fixedSize = minSize;
-          minSize = "";
-          maxSize = "";
-        } else {
-          sizeMode = SIZE_MODE.RANGE;
-        }
-      } else {
-        sizeMode = SIZE_MODE.EXPAND;
-      }
-    }
-  }
-
+  const mountPoint = partitionConfig.mountPath || "";
   return {
-    mountPoint: partitionConfig.mountPath || "",
+    mountPoint,
+    committedMountPoint: mountPoint,
     partitionSource: isReuse ? PARTITION_SOURCE.REUSE : PARTITION_SOURCE.NEW,
     selectedPartitionId: partitionConfig.name || "",
     filesystem: isReuseFs ? FILESYSTEM_TYPE.AUTO : fsConfig?.type || FILESYSTEM_TYPE.AUTO,
     filesystemAction: isReuseFs ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
     filesystemLabel: fsConfig?.label || "",
-    sizeMode,
-    minSize,
-    maxSize,
-    fixedSize,
+    ...inferSizeFields(partitionConfig),
   };
 }
 
 /**
- * Form for creating or editing a partition.
+ * Query data frozen on mount to protect the form from mid-interaction
+ * refetches. Does not include deviceModel or systemDevice — those are owned
+ * by PartitionForm, which uses them for the Page shield and null-check before
+ * rendering this component at all.
+ *
+ * @see withFrozenQuery
+ */
+type PartitionFormContentQuery = {
+  // Guaranteed non-null by PartitionForm's pre-render guard.
+  systemDevice: System.Device | undefined;
+  availablePartitions: System.Device[];
+  initialPartition: ConfigModelType.Partition | null;
+  unusedMountPoints: string[];
+  config: ReturnType<typeof useConfigModel>;
+};
+
+/**
+ * Aggregates the query hooks whose data feeds the form's defaultValues and
+ * field options. Called at the wrapper level by withFrozenQuery.
+ */
+function usePartitionFormContentQuery(): PartitionFormContentQuery {
+  const deviceModel = useDeviceModelFromParams();
+  return {
+    systemDevice: useDevice(deviceModel?.name),
+    availablePartitions: useUnusedPartitions(),
+    initialPartition: useInitialPartitionConfig(),
+    unusedMountPoints: useUnusedMountPoints(),
+    config: useConfigModel(),
+  };
+}
+
+/**
+ * Inner form for creating or editing a partition.
+ *
+ * Receives frozen query data as props via withFrozenQuery. Mutation hooks
+ * (useAddPartition, useEditPartition) and navigation are called internally
+ * and are intentionally not frozen — they must always be fresh.
  *
  * Allows configuring:
  * - Mount point (with suggestions)
@@ -222,21 +294,21 @@ function toFormValues(
  * - Filesystem type and label
  * - Size settings (only for new partitions)
  */
-export default function PartitionForm() {
+function PartitionFormContent({
+  systemDevice,
+  availablePartitions,
+  initialPartition,
+  unusedMountPoints,
+  config,
+}: PartitionFormContentQuery) {
+  // Route params and mutations are not frozen: they don't feed defaultValues
+  // and must always reflect the current state.
   const { collection, index } = useParams();
   const navigate = useNavigate();
-
-  const deviceModel = useDeviceModelFromParams();
-  const systemDevice = useDevice(deviceModel?.name);
-  const availablePartitions = useUnusedPartitions();
-  const initialPartition = useInitialPartitionConfig();
-  const unusedMountPoints = useUnusedMountPoints();
-  const config = useConfigModel();
-
   const addPartition = useAddPartition();
   const editPartition = useEditPartition();
 
-  // Get used mount points for validation (excluding current when editing)
+  // Get used mount points for validation (excluding current when editing).
   const usedMountPoints = React.useMemo(() => {
     if (!config) return [];
     const allUsed = configModel.usedMountPaths(config);
@@ -269,6 +341,111 @@ export default function PartitionForm() {
     },
   });
 
+  // Unreachable: PartitionForm only renders this component when systemDevice
+  // is defined. The guard keeps TypeScript satisfied without a cast.
+  if (!systemDevice) return null;
+
+  return (
+    <form.AppForm>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.setErrorMap({ onSubmit: { fields: {} } });
+          form.handleSubmit();
+        }}
+      >
+        {/* Mount point
+         *
+         * Uses a "committed value" pattern to avoid reacting to incomplete input.
+         * The `committedMountPoint` field tracks a stable value that only updates when:
+         * - The form mounts (onMount)
+         * - User selects a suggestion (onSelect callback)
+         * - User finishes typing (onBlur)
+         *
+         * Why: Prevents showing misleading filesystem options and size hints while
+         * user types "/ho..." before completing "/home". Also avoids expensive
+         * recalculations (useVolumeTemplate) on every keystroke.
+         *
+         * FilesystemFields and SizeFields use `committedMountPoint` instead of live
+         * `mountPoint` for all derived calculations.
+         */}
+        <form.AppField
+          name="mountPoint"
+          listeners={{
+            // Initialize committedMountPoint when form loads (for editing existing partitions).
+            onMount: ({ value }) => {
+              form.setFieldValue("committedMountPoint", value, { dontUpdateMeta: true });
+            },
+            // Update committedMountPoint when user finishes typing.
+            // Deferred to avoid showing incomplete/misleading information while typing.
+            onBlur: ({ value }) => {
+              form.setFieldValue("committedMountPoint", value, { dontUpdateMeta: true });
+            },
+          }}
+        >
+          {(field) => (
+            <field.SuggestionsTextField
+              label={_("Mount point")}
+              suggestions={unusedMountPoints}
+              helperText={_("e.g., /, /home, /var, swap")}
+              onSelect={(value) => {
+                // Update committedMountPoint immediately when user selects a suggestion
+                // (click or Enter key). Safe to show filesystem options and size hints
+                // immediately since the value is complete and intentional.
+                form.setFieldValue("committedMountPoint", value, { dontUpdateMeta: true });
+              }}
+            />
+          )}
+        </form.AppField>
+
+        {/* Partition source */}
+        <PartitionSourceFields
+          form={form}
+          device={systemDevice}
+          availablePartitions={availablePartitions}
+        />
+
+        {/* Filesystem */}
+        <FilesystemFields form={form} device={systemDevice} />
+
+        {/* Size (only for new partitions) */}
+        <form.Subscribe selector={(s) => s.values.partitionSource}>
+          {(source) => source === PARTITION_SOURCE.NEW && <SizeFields form={form} />}
+        </form.Subscribe>
+
+        <ActionGroup>
+          <form.SubmitButton label={_("Accept")} />
+          <form.CancelButton />
+        </ActionGroup>
+      </Form>
+    </form.AppForm>
+  );
+}
+
+/**
+ * Memoized, refetch-protected wrapper around {@link PartitionFormContent}.
+ *
+ * Freezes the result of {@link usePartitionFormContentQuery} on mount and
+ * passes it as props. Query refetches update the outer wrapper but never
+ * reach the form, preventing flickering and protecting user edits.
+ */
+const FrozenPartitionFormContent = withFrozenQuery(
+  usePartitionFormContentQuery,
+  PartitionFormContent,
+);
+
+/**
+ * Page shell for the partition create/edit flow.
+ *
+ * Owns the breadcrumbs and the device null-check (Resource Not Found). Uses
+ * live query data so the device name in the breadcrumb always reflects the
+ * current system state. Delegates the actual form to FrozenPartitionFormContent,
+ * which is protected from refetches.
+ */
+export default function PartitionForm() {
+  const deviceModel = useDeviceModelFromParams();
+  const systemDevice = useDevice(deviceModel?.name);
+
   const breadcrumbs: BreadcrumbProps[] = [
     // TRANSLATORS: breadcrumb label for the storage configuration section.
     { label: _("Storage"), path: STORAGE.root },
@@ -276,9 +453,7 @@ export default function PartitionForm() {
 
   if (deviceModel) {
     breadcrumbs.push(
-      {
-        label: deviceModel.name,
-      },
+      { label: deviceModel.name },
       // TRANSLATORS: breadcrumb label for the partition create/edit form.
       { label: _("Configure partition") },
     );
@@ -301,46 +476,7 @@ export default function PartitionForm() {
             linkPath={STORAGE.root}
           />
         ) : (
-          <form.AppForm>
-            <Form
-              onSubmit={(e) => {
-                e.preventDefault();
-                form.setErrorMap({ onSubmit: { fields: {} } });
-                form.handleSubmit();
-              }}
-            >
-              {/* Mount point */}
-              <form.AppField name="mountPoint">
-                {(field) => (
-                  <field.SuggestionsTextField
-                    label={_("Mount point")}
-                    suggestions={unusedMountPoints}
-                    helperText={_("e.g., /, /home, /var, swap")}
-                  />
-                )}
-              </form.AppField>
-
-              {/* Partition source */}
-              <PartitionSourceFields
-                form={form}
-                device={systemDevice}
-                availablePartitions={availablePartitions}
-              />
-
-              {/* Filesystem */}
-              <FilesystemFields form={form} device={systemDevice} />
-
-              {/* Size (only for new partitions) */}
-              <form.Subscribe selector={(s) => s.values.partitionSource}>
-                {(source) => source === PARTITION_SOURCE.NEW && <SizeFields form={form} />}
-              </form.Subscribe>
-
-              <ActionGroup>
-                <form.SubmitButton label={_("Accept")} />
-                <form.CancelButton />
-              </ActionGroup>
-            </Form>
-          </form.AppForm>
+          <FrozenPartitionFormContent />
         )}
       </Page.Content>
     </Page>

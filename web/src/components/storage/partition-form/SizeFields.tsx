@@ -32,7 +32,7 @@ import { deviceSize, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 
 type SizeFieldsContentProps = {
-  mountPoint: string;
+  committedMountPoint: string;
   filesystem: string;
   sizeMode: string;
 };
@@ -43,12 +43,15 @@ type SizeFieldsContentProps = {
 const SizeFieldsContent = withForm({
   ...defaultOptions,
   props: {
-    mountPoint: "",
+    committedMountPoint: "",
     filesystem: "",
     sizeMode: "",
   } as SizeFieldsContentProps,
-  render: function Render({ form, mountPoint, filesystem, sizeMode }) {
-    const volume = useVolumeTemplate(mountPoint);
+  render: function Render({ form, committedMountPoint, filesystem, sizeMode }) {
+    // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
+    // This prevents showing misleading size hints while user types "/ho..." and avoids
+    // expensive useVolumeTemplate recalculations on every keystroke.
+    const volume = useVolumeTemplate(committedMountPoint);
 
     const effectiveFilesystem = React.useMemo(() => {
       if (filesystem === FILESYSTEM_TYPE.AUTO) {
@@ -63,14 +66,14 @@ const SizeFieldsContent = withForm({
       const minSize = volume.minSize ? deviceSize(volume.minSize) : null;
       const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
 
-      if (minSize && fsLabel && mountPoint) {
+      if (minSize && fsLabel && committedMountPoint) {
         return sprintf(
           // TRANSLATORS: %1$s is minimum size (e.g., "20 GiB"), %2$s is mount point (e.g., "/home"), %3$s is filesystem (e.g., "XFS")
           _(
             "The installer will propose at least %1$s for this partition. Determined by the role of %2$s and the selected file system (%3$s).",
           ),
           minSize,
-          mountPoint,
+          committedMountPoint,
           fsLabel,
         );
       } else if (minSize) {
@@ -84,7 +87,7 @@ const SizeFieldsContent = withForm({
       return _(
         "Installer will propose a suitable value based on available disk space and mount point role",
       );
-    }, [volume, effectiveFilesystem, mountPoint]);
+    }, [volume, effectiveFilesystem, committedMountPoint]);
 
     if (sizeMode === SIZE_MODE.AUTO) {
       return (
@@ -198,14 +201,14 @@ const SizeFields = withForm({
             {(mode) => (
               <form.Subscribe
                 selector={(s) => ({
-                  mountPoint: s.values.mountPoint,
+                  committedMountPoint: s.values.committedMountPoint,
                   filesystem: s.values.filesystem,
                 })}
               >
-                {({ mountPoint, filesystem }) => (
+                {({ committedMountPoint, filesystem }) => (
                   <SizeFieldsContent
                     form={form}
-                    mountPoint={mountPoint}
+                    committedMountPoint={committedMountPoint}
                     filesystem={filesystem}
                     sizeMode={mode}
                   />

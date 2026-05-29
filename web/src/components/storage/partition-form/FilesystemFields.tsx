@@ -21,6 +21,8 @@
  */
 
 import React from "react";
+import { unique } from "radashi";
+import { sprintf } from "sprintf-js";
 import { Alert, AlertActionCloseButton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
@@ -29,8 +31,6 @@ import { defaultOptions, FILESYSTEM_TYPE, PARTITION_SOURCE, FILESYSTEM_ACTION } 
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
-import { sprintf } from "sprintf-js";
-import { unique } from "radashi";
 
 import type { Storage as System } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -42,14 +42,88 @@ type FilesystemFieldsProps = {
 type FilesystemFieldsContentProps = {
   device: System.Device;
   partitionSource: string;
-  mountPoint: string;
+  committedMountPoint: string;
   selectedPartitionId: string;
   filesystemAction: string;
   filesystem: string;
 };
 
+type AutoFilesystemHintProps = {
+  filesystem: string;
+  defaultFilesystem: ConfigModel.FilesystemType | undefined;
+  committedMountPoint: string;
+};
+
+/**
+ * Inline hint shown when "Automatic" is selected, describing which filesystem
+ * will be applied for the current mount point.
+ *
+ * Renders nothing when automatic is not selected, no default is known, or no
+ * mount point has been entered yet.
+ */
+function AutoFilesystemHint({
+  filesystem,
+  defaultFilesystem,
+  committedMountPoint,
+}: AutoFilesystemHintProps) {
+  if (filesystem !== FILESYSTEM_TYPE.AUTO || !defaultFilesystem || !committedMountPoint)
+    return null;
+
+  return (
+    <NestedContent margin="mxLg">
+      <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+        {sprintf(
+          // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+          _("%1$s will be used for %2$s."),
+          filesystemLabel(defaultFilesystem),
+          committedMountPoint,
+        )}
+      </Text>
+    </NestedContent>
+  );
+}
+
+/**
+ * Filesystem type dropdown paired with the auto-selection hint.
+ */
+function FilesystemTypeSelector({
+  form,
+  filesystem,
+  defaultFilesystem,
+  committedMountPoint,
+  filesystemOptions,
+}) {
+  return (
+    <>
+      <form.AppField name="filesystem">
+        {(field) => (
+          <field.DropdownField label={_("File system type")} options={filesystemOptions} />
+        )}
+      </form.AppField>
+      <AutoFilesystemHint
+        filesystem={filesystem}
+        defaultFilesystem={defaultFilesystem}
+        committedMountPoint={committedMountPoint}
+      />
+    </>
+  );
+}
+
 /**
  * Inner component that renders filesystem fields and handles auto-reset logic.
+ *
+ * ## Committed mount point pattern
+ *
+ * This component uses `committedMountPoint` (not live `mountPoint`) for calculating
+ * filesystem options and hints. This prevents showing misleading information while
+ * the user types incomplete values like "/ho" before finishing "/home".
+ *
+ * The `committedMountPoint` updates:
+ * - When user selects a suggestion (immediate)
+ * - When user blurs the field (deferred)
+ * - On form mount (initial value)
+ *
+ * See fields.ts `committedMountPoint` documentation for full pattern details.
  *
  * ## Auto-reset behavior
  *
@@ -61,9 +135,9 @@ type FilesystemFieldsContentProps = {
  *   2. Shows a dismissible informational alert explaining the reset, naming
  *      the filesystem type that was dropped (e.g. "XFS").
  *
- * The alert is dismissed by the user clicking "Understood". It does NOT appear
- * on initial render, only after the user has actively triggered a mount point
- * change that invalidates their prior selection.
+ * The reset happens via `useEffect` watching `usableFilesystems`, which recalculates
+ * when `committedMountPoint` changes. This ensures the user is not interrupted with
+ * alerts or dropdown changes while typing incomplete mount points.
  *
  * NOTE: This is a UX convenience, not validation. Validation in fields.ts does
  * not enforce filesystem/mount-point compatibility — it only checks that a
@@ -74,7 +148,7 @@ const FilesystemFieldsContent = withForm({
   props: {
     device: {} as System.Device,
     partitionSource: "",
-    mountPoint: "",
+    committedMountPoint: "",
     selectedPartitionId: "",
     filesystemAction: "",
     filesystem: "",
@@ -83,63 +157,52 @@ const FilesystemFieldsContent = withForm({
     form,
     device,
     partitionSource,
-    mountPoint,
+    committedMountPoint,
     selectedPartitionId,
     filesystemAction,
     filesystem,
   }) {
     const [incompatibleFsAlert, setIncompatibleFsAlert] = React.useState<string | null>(null);
 
-    const volume = useVolumeTemplate(mountPoint);
+    // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
+    // This prevents showing misleading filesystem options while user types "/ho..." and
+    // avoids expensive useVolumeTemplate recalculations on every keystroke.
+    const volume = useVolumeTemplate(committedMountPoint);
     const defaultFilesystem = volume.fsType;
 
     const selectedPartition = device.partitions?.find((p) => p.name === selectedPartitionId);
     const currentFsType = selectedPartition?.filesystem?.type;
     const hasFilesystem = !!currentFsType;
 
-    // Set display text for ReadOnlyField when partition has no filesystem
-    React.useEffect(() => {
-      if (partitionSource === PARTITION_SOURCE.REUSE && !hasFilesystem) {
-        form.setFieldValue(
-          "filesystemAction",
-          _("Partition is not formatted. It will be formatted with the selected file system type."),
-        );
-      }
-    }, [partitionSource, hasFilesystem, form]);
-
     const usableFilesystems = React.useMemo(() => {
       const volumeFilesystems = volume.outline.fsTypes || [];
       return unique([defaultFilesystem, ...volumeFilesystems]);
     }, [volume, defaultFilesystem]);
 
-    React.useEffect(() => {
-      if (
-        filesystem !== FILESYSTEM_TYPE.AUTO &&
-        !usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)
-      ) {
-        const previousLabel = filesystemLabel(filesystem as ConfigModel.FilesystemType);
-        form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
-        setIncompatibleFsAlert(
-          sprintf(
-            // TRANSLATORS: %s is a filesystem type name like "XFS" or "Btrfs"
-            _("Selected mount point does not support %s file system type, switched to Automatic"),
-            previousLabel,
-          ),
-        );
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [usableFilesystems, filesystem]);
+    const filesystemOptions = React.useMemo(
+      () => [
+        { value: FILESYSTEM_TYPE.AUTO, label: _("Automatic") },
+        ...usableFilesystems.map((fs) => ({ value: fs, label: filesystemLabel(fs) })),
+      ],
+      [usableFilesystems],
+    );
 
-    const filesystemOptions = [
-      {
-        value: FILESYSTEM_TYPE.AUTO,
-        label: _("Automatic"),
-      },
-      ...usableFilesystems.map((fs) => ({
-        value: fs,
-        label: filesystemLabel(fs),
-      })),
-    ];
+    // Check filesystem compatibility when usable filesystems change
+    React.useEffect(() => {
+      if (filesystem === FILESYSTEM_TYPE.AUTO) return;
+      if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;
+
+      // Current filesystem is not compatible with the mount point
+      const previousLabel = filesystemLabel(filesystem as ConfigModel.FilesystemType);
+      form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
+      setIncompatibleFsAlert(
+        sprintf(
+          // TRANSLATORS: %s is a filesystem type name like "XFS" or "Btrfs"
+          _("Selected mount point does not support %s file system type, switched to Automatic"),
+          previousLabel,
+        ),
+      );
+    }, [usableFilesystems, filesystem, form]);
 
     return (
       <>
@@ -159,49 +222,34 @@ const FilesystemFieldsContent = withForm({
         )}
 
         {partitionSource === PARTITION_SOURCE.NEW && (
-          <>
-            <form.AppField name="filesystem">
-              {(field) => (
-                <field.DropdownField label={_("File system type")} options={filesystemOptions} />
-              )}
-            </form.AppField>
-            {filesystem === FILESYSTEM_TYPE.AUTO && defaultFilesystem && mountPoint && (
-              <NestedContent margin="mxLg">
-                <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-                  {sprintf(
-                    // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-                    _("%1$s will be used for %2$s."),
-                    filesystemLabel(defaultFilesystem),
-                    mountPoint,
-                  )}
-                </Text>
-              </NestedContent>
-            )}
-          </>
+          <FilesystemTypeSelector
+            form={form}
+            filesystem={filesystem}
+            defaultFilesystem={defaultFilesystem}
+            committedMountPoint={committedMountPoint}
+            filesystemOptions={filesystemOptions}
+          />
         )}
 
         {partitionSource === PARTITION_SOURCE.REUSE && !hasFilesystem && (
           <>
             <form.AppField name="filesystemAction">
-              {(field) => <field.ReadOnlyField label={_("File system")} />}
-            </form.AppField>
-            <form.AppField name="filesystem">
               {(field) => (
-                <field.DropdownField label={_("File system type")} options={filesystemOptions} />
+                <field.ReadOnlyField
+                  label={_("File system")}
+                  text={_(
+                    "Partition is not formatted. It will be formatted with the selected file system type.",
+                  )}
+                />
               )}
             </form.AppField>
-            {filesystem === FILESYSTEM_TYPE.AUTO && defaultFilesystem && mountPoint && (
-              <NestedContent margin="mxLg">
-                <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-                  {sprintf(
-                    // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-                    _("%1$s will be used for %2$s."),
-                    filesystemLabel(defaultFilesystem),
-                    mountPoint,
-                  )}
-                </Text>
-              </NestedContent>
-            )}
+            <FilesystemTypeSelector
+              form={form}
+              filesystem={filesystem}
+              defaultFilesystem={defaultFilesystem}
+              committedMountPoint={committedMountPoint}
+              filesystemOptions={filesystemOptions}
+            />
           </>
         )}
 
@@ -228,37 +276,20 @@ const FilesystemFieldsContent = withForm({
                 ]}
               >
                 {(action) => {
-                  if (action === FILESYSTEM_ACTION.FORMAT) {
-                    return (
-                      <NestedContent margin="mxLg">
-                        <Stack hasGutter>
-                          <form.AppField name="filesystem">
-                            {(fsField) => (
-                              <fsField.DropdownField
-                                label={_("File system type")}
-                                options={filesystemOptions}
-                              />
-                            )}
-                          </form.AppField>
-                          {filesystem === FILESYSTEM_TYPE.AUTO &&
-                            defaultFilesystem &&
-                            mountPoint && (
-                              <NestedContent margin="mxLg">
-                                <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-                                  {sprintf(
-                                    // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-                                    _("%1$s will be used for %2$s."),
-                                    filesystemLabel(defaultFilesystem),
-                                    mountPoint,
-                                  )}
-                                </Text>
-                              </NestedContent>
-                            )}
-                        </Stack>
-                      </NestedContent>
-                    );
-                  }
-                  return null;
+                  if (action !== FILESYSTEM_ACTION.FORMAT) return null;
+                  return (
+                    <NestedContent margin="mxLg">
+                      <Stack hasGutter>
+                        <FilesystemTypeSelector
+                          form={form}
+                          filesystem={filesystem}
+                          defaultFilesystem={defaultFilesystem}
+                          committedMountPoint={committedMountPoint}
+                          filesystemOptions={filesystemOptions}
+                        />
+                      </Stack>
+                    </NestedContent>
+                  );
                 }}
               </field.RadioGroupField>
             )}
@@ -299,18 +330,24 @@ const FilesystemFields = withForm({
       <form.Subscribe
         selector={(s) => ({
           partitionSource: s.values.partitionSource,
-          mountPoint: s.values.mountPoint,
+          committedMountPoint: s.values.committedMountPoint,
           selectedPartitionId: s.values.selectedPartitionId,
           filesystemAction: s.values.filesystemAction,
           filesystem: s.values.filesystem,
         })}
       >
-        {({ partitionSource, mountPoint, selectedPartitionId, filesystemAction, filesystem }) => (
+        {({
+          partitionSource,
+          committedMountPoint,
+          selectedPartitionId,
+          filesystemAction,
+          filesystem,
+        }) => (
           <FilesystemFieldsContent
             form={form}
             device={device}
             partitionSource={partitionSource}
-            mountPoint={mountPoint}
+            committedMountPoint={committedMountPoint}
             selectedPartitionId={selectedPartitionId}
             filesystemAction={filesystemAction}
             filesystem={filesystem}
