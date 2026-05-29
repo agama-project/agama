@@ -32,11 +32,6 @@ import { _ } from "~/i18n";
 
 /** Constants */
 
-export const PARTITION_SOURCE = {
-  NEW: "new",
-  REUSE: "reuse",
-} as const;
-
 export const FILESYSTEM_ACTION = {
   REUSE: "reuse",
   FORMAT: "format",
@@ -102,9 +97,15 @@ type MountPointFields = {
   committedMountPoint: string;
 };
 
-type PartitionSourceFields = {
-  partitionSource: string; // "new" | "reuse"
-  selectedPartitionId: string;
+type PartitionFields = {
+  /**
+   * Partition name for reusing an existing partition, or empty string for
+   * creating a new partition.
+   *
+   * When empty: a new partition will be created.
+   * When set: the named partition will be reused.
+   */
+  name: string;
 };
 
 type FilesystemFields = {
@@ -120,7 +121,7 @@ type SizeFields = {
   fixedSize: string;
 };
 
-type FormFields = MountPointFields & PartitionSourceFields & FilesystemFields & SizeFields;
+type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;
 
 export type PartitionFormData = FormFields;
 
@@ -129,8 +130,7 @@ export type PartitionFormData = FormFields;
 const defaultValues: FormFields = {
   mountPoint: "",
   committedMountPoint: "",
-  partitionSource: PARTITION_SOURCE.NEW,
-  selectedPartitionId: "",
+  name: "",
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
@@ -193,16 +193,15 @@ function validateMountPoint(
   return {};
 }
 
-function validatePartitionSource(
-  fields: FormFields,
-): FieldsValidationResult<PartitionSourceFields> {
-  if (fields.partitionSource !== PARTITION_SOURCE.REUSE) return {};
-  return {
-    selectedPartitionId: requiredString(fields.selectedPartitionId, _("Select a partition")),
-  };
+function validatePartition(fields: FormFields): FieldsValidationResult<PartitionFields> {
+  // name field is always valid: empty means new, non-empty means reuse.
+  // The dropdown UI ensures a valid selection.
+  return {};
 }
 
 function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
+  const isReusePartition = fields.name !== "";
+
   // AUTO is always valid — the installer will pick an appropriate type.
   if (fields.filesystem === FILESYSTEM_TYPE.AUTO) {
     return {
@@ -215,10 +214,7 @@ function validateFilesystemFields(fields: FormFields): FieldsValidationResult<Fi
   }
 
   // Reusing the existing filesystem requires no explicit type selection.
-  if (
-    fields.partitionSource === PARTITION_SOURCE.REUSE &&
-    fields.filesystemAction === FILESYSTEM_ACTION.REUSE
-  ) {
+  if (isReusePartition && fields.filesystemAction === FILESYSTEM_ACTION.REUSE) {
     return {
       filesystemLabel: optionalValidString(
         fields.filesystemLabel,
@@ -303,7 +299,7 @@ export function validate(
 ): ValidationResult<FormFields> {
   const fieldErrors = shake({
     ...validateMountPoint(fields, usedMountPoints),
-    ...validatePartitionSource(fields),
+    ...validatePartition(fields),
     ...validateFilesystemFields(fields),
     ...validateSizeFields(fields),
   });

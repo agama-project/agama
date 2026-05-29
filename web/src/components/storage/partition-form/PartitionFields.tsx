@@ -22,7 +22,7 @@
 
 import React from "react";
 import { withForm } from "~/hooks/form";
-import { defaultOptions, PARTITION_SOURCE } from "./fields";
+import { defaultOptions } from "./fields";
 import { deviceLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -38,9 +38,9 @@ type PartitionFieldsProps = {
 /**
  * Special value representing "create a new partition" in the partition dropdown.
  *
- * This is used as the dropdown value for the "New partition" option. When this
- * value is selected, the form's `selectedPartitionId` is cleared and
- * `partitionSource` is set to "new".
+ * This constant is used as the dropdown value for the "New partition" option.
+ * When selected, the form's `name` field is cleared (empty string), indicating
+ * that a new partition should be created rather than reusing an existing one.
  */
 const NEW_PARTITION_VALUE = "NEW";
 
@@ -53,13 +53,12 @@ const NEW_PARTITION_VALUE = "NEW";
  *
  * ## Value mapping
  *
- * The dropdown value is derived from form state:
- * - When `partitionSource` is "new": dropdown shows NEW_PARTITION_VALUE
- * - When `partitionSource` is "reuse": dropdown shows `selectedPartitionId`
+ * The `name` field determines whether to create new or reuse:
+ * - Empty string: create a new partition
+ * - Partition name: reuse the named partition
  *
- * Selecting a value updates both fields:
- * - NEW_PARTITION_VALUE → `partitionSource` = "new", `selectedPartitionId` = ""
- * - Partition name → `partitionSource` = "reuse", `selectedPartitionId` = name
+ * The dropdown uses NEW_PARTITION_VALUE internally for the "New partition"
+ * option, which maps to empty string in the form field.
  *
  * When no partitions are available, displays a ReadOnlyField explaining that
  * a new partition will be created (maintains consistent visual structure).
@@ -73,96 +72,74 @@ const PartitionFields = withForm({
   render: function Render({ form, device, availablePartitions }) {
     const canReuse = availablePartitions.length > 0;
 
+    if (!canReuse) {
+      // No partitions available: show ReadOnlyField with explanation
+      return (
+        <form.AppField name="name">
+          {(field) => (
+            <field.ReadOnlyField
+              label={_("Partition")}
+              text={sprintf(
+                // TRANSLATORS: %s is device name like "/dev/vdd"
+                _("New partition (no partitions available on %s to reuse)."),
+                deviceLabel(device, true),
+              )}
+            />
+          )}
+        </form.AppField>
+      );
+    }
+
+    // Build dropdown options: "New partition" + divider + partition list
+    const options: DropdownOption<string>[] = [
+      {
+        value: NEW_PARTITION_VALUE,
+        label: _("New partition"),
+      },
+      { divider: true as const },
+      ...availablePartitions.map((p) => {
+        const fsLabel = p.filesystem?.label;
+        const description = [p.description, fsLabel].filter(Boolean).join(" - ");
+        return {
+          value: p.name,
+          label: sprintf(
+            // TRANSLATORS: %1$s is partition name like "vdd2", %2$s is size like "18.00 GiB"
+            _("Use %1$s (%2$s)"),
+            deviceLabel(p, false),
+            p.description || "",
+          ),
+          description: description || undefined,
+        };
+      }),
+    ];
+
     return (
-      <form.Subscribe
-        selector={(s) => ({
-          partitionSource: s.values.partitionSource,
-          selectedPartitionId: s.values.selectedPartitionId,
-        })}
-      >
-        {({ partitionSource, selectedPartitionId }) => {
-          if (!canReuse) {
-            // No partitions available: show ReadOnlyField with explanation
-            return (
-              <form.AppField name="partitionSource">
-                {(field) => (
-                  <field.ReadOnlyField
-                    label={_("Partition")}
-                    text={sprintf(
-                      // TRANSLATORS: %s is device name like "/dev/vdd"
-                      _("New partition (no partitions available on %s to reuse)."),
-                      deviceLabel(device, true),
-                    )}
-                  />
-                )}
-              </form.AppField>
-            );
-          }
-
-          // Derive dropdown value from form state
-          const dropdownValue =
-            partitionSource === PARTITION_SOURCE.NEW ? NEW_PARTITION_VALUE : selectedPartitionId;
-
-          // Build dropdown options: "New partition" + divider + partition list
-          const options: DropdownOption<string>[] = [
-            {
-              value: NEW_PARTITION_VALUE,
-              label: _("New partition"),
-            },
-            { divider: true as const },
-            ...availablePartitions.map((p) => {
-              const fsLabel = p.filesystem?.label;
-              const description = [p.description, fsLabel].filter(Boolean).join(" - ");
-              return {
-                value: p.name,
-                label: sprintf(
-                  // TRANSLATORS: %1$s is partition name like "vdd2", %2$s is size like "18.00 GiB"
-                  _("Use %1$s (%2$s)"),
-                  deviceLabel(p, false),
-                  p.description || "",
-                ),
-                description: description || undefined,
-              };
-            }),
-          ];
+      <form.Subscribe selector={(s) => ({ name: s.values.name })}>
+        {({ name }) => {
+          // Derive dropdown value: NEW for empty, partition name for reuse
+          const dropdownValue = name === "" ? NEW_PARTITION_VALUE : name;
 
           return (
             <form.AppField
-              name="selectedPartitionId"
+              name="name"
               listeners={{
-                // Sync dropdown value with form state on mount.
-                // The field value comes from toFormValues in Form.tsx, which sets it correctly
-                // for both new and reuse cases. We just need to map it to dropdown value.
+                // Initialize to NEW_PARTITION_VALUE for display when name is empty
                 onMount: () => {
-                  if (partitionSource === PARTITION_SOURCE.NEW) {
-                    form.setFieldValue("selectedPartitionId", NEW_PARTITION_VALUE, {
-                      dontUpdateMeta: true,
-                    });
+                  if (name === "") {
+                    form.setFieldValue("name", NEW_PARTITION_VALUE, { dontUpdateMeta: true });
                   }
                 },
-                // Sync form fields when dropdown value changes
+                // Map dropdown value back to form field
                 onChange: ({ value }) => {
                   if (value === NEW_PARTITION_VALUE) {
-                    // User selected "New partition"
-                    form.setFieldValue("partitionSource", PARTITION_SOURCE.NEW);
-                    // Clear selectedPartitionId (will be set back to NEW_PARTITION_VALUE in render)
-                    form.setFieldValue("selectedPartitionId", "");
-                  } else {
-                    // User selected an existing partition
-                    form.setFieldValue("partitionSource", PARTITION_SOURCE.REUSE);
-                    // selectedPartitionId is already set by field.handleChange
+                    // User selected "New partition" - clear the name field
+                    form.setFieldValue("name", "");
                   }
+                  // Otherwise, value is already the partition name, set by field.handleChange
                 },
               }}
             >
-              {(field) => (
-                <field.DropdownField
-                  label={_("Partition")}
-                  options={options}
-                  // Override the field value with the derived dropdown value
-                  // because the field itself stores "" for new partition
-                />
-              )}
+              {(field) => <field.DropdownField label={_("Partition")} options={options} />}
             </form.AppField>
           );
         }}

@@ -47,7 +47,6 @@ import SizeFields from "./SizeFields";
 import {
   defaultOptions,
   validate,
-  PARTITION_SOURCE,
   FILESYSTEM_TYPE,
   FILESYSTEM_ACTION,
   SIZE_MODE,
@@ -121,19 +120,12 @@ function useUnusedPartitions(): System.Device[] {
  * default behaviour.
  */
 function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelType.Partition {
-  // Partition name (only for reuse)
-  const name = (): string | undefined => {
-    if (values.partitionSource !== PARTITION_SOURCE.REUSE) return undefined;
-    return values.selectedPartitionId || undefined;
-  };
+  const isReusePartition = values.name !== "";
 
   // Filesystem configuration
   const filesystem = (): ConfigModelType.Filesystem | undefined => {
     // Reuse existing filesystem
-    if (
-      values.partitionSource === PARTITION_SOURCE.REUSE &&
-      values.filesystemAction === FILESYSTEM_ACTION.REUSE
-    ) {
+    if (isReusePartition && values.filesystemAction === FILESYSTEM_ACTION.REUSE) {
       return { reuse: true, default: true };
     }
 
@@ -179,7 +171,7 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
 
   return {
     mountPath: values.mountPoint,
-    name: name(),
+    name: values.name || undefined,
     filesystem: filesystem(),
     size: size(),
   };
@@ -240,8 +232,7 @@ function toFormValues(
   return {
     mountPoint,
     committedMountPoint: mountPoint,
-    partitionSource: isReuse ? PARTITION_SOURCE.REUSE : PARTITION_SOURCE.NEW,
-    selectedPartitionId: partitionConfig.name || "",
+    name: partitionConfig.name || "",
     filesystem: isReuseFs ? FILESYSTEM_TYPE.AUTO : fsConfig?.type || FILESYSTEM_TYPE.AUTO,
     filesystemAction: isReuseFs ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
     filesystemLabel: fsConfig?.label || "",
@@ -409,8 +400,8 @@ function PartitionFormContent({
         <FilesystemFields form={form} device={systemDevice} />
 
         {/* Size (only for new partitions) */}
-        <form.Subscribe selector={(s) => s.values.partitionSource}>
-          {(source) => source === PARTITION_SOURCE.NEW && <SizeFields form={form} />}
+        <form.Subscribe selector={(s) => s.values.name}>
+          {(name) => name === "" && <SizeFields form={form} />}
         </form.Subscribe>
 
         <ActionGroup>
