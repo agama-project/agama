@@ -47,23 +47,24 @@ get_dev_hcn() {
     local _ofpath=$(echo "$_dev" | sed -e "s/^\/proc\/device-tree//")
     if _devname=$(ofpathname -l "$_ofpath" 2>/dev/null); then
       if [ -e "/sys/class/net/$_devname" ]; then
-        info "ofpathname waiting for /sys/class/net device $_devname ready"
+        info "parse-hcnmgr: ofpathname waiting for /sys/class/net device $_devname ready"
         _mac=$(get_mac "$_dev")
         break
       fi
     fi
 
-    info "ofpathname return $?, devname is $_devname, and the retry counter $_wait"
+    info "parse-hcnmgr: ofpathname return $?, devname is $_devname, and the retry counter $_wait"
     sleep 15
     _wait=$((_wait - 1))
   done
 
   if [ -z "$_devname" ]; then
-    warn "get_dev_hcn: couldn't get dev name for $_dev"
+    warn "parse-hcnmgr: get_dev_hcn: couldn't get dev name for $_dev"
     return 1
   fi
 
   # Output the bond mapping: bondname devname mac mode
+  info "parse-hcnmgr: mapping found: bond$_hcnid $_devname ${_mac:-none} ${_mode:-none}"
   echo "bond$_hcnid $_devname ${_mac:-none} ${_mode:-none}"
   return 0
 }
@@ -77,6 +78,7 @@ if [ -d /proc/device-tree ]; then
     for dev in "$pci_dev"/ethernet*; do
       [ -d "$dev" ] || continue
       if [ -e "$dev"/ibm,hcn-id ]; then
+        info "parse-hcnmgr: checking PCI device $dev"
         res=$(get_dev_hcn "$dev")
         if [ -n "$res" ]; then
           MAPPINGS="$MAPPINGS $res"
@@ -90,6 +92,7 @@ if [ -d /proc/device-tree ]; then
     for dev in /proc/device-tree/vdevice/vnic* /proc/device-tree/vdevice/l-lan*; do
       [ -d "$dev" ] || continue
       if [ -e "$dev"/ibm,hcn-id ]; then
+        info "parse-hcnmgr: checking vdevice $dev"
         res=$(get_dev_hcn "$dev")
         if [ -n "$res" ]; then
           MAPPINGS="$MAPPINGS $res"
@@ -154,6 +157,8 @@ for BONDNAME in $BOND_NAMES; do
     shift 4
   done
 
+  info "parse-hcnmgr: processing bond $BONDNAME with slaves: $SLAVE_NAMES"
+
   # Add bond definition
   BOND_OPTS="mode=1,miimon=100,fail_over_mac=2"
   [ -n "$PRIMARY" ] && BOND_OPTS="$BOND_OPTS,primary=$PRIMARY"
@@ -169,14 +174,17 @@ for BONDNAME in $BOND_NAMES; do
       [ -z "$s" ] && continue
       s_dash=$(echo "$s" | tr ':' '-')
       if [ "$HNV_IP" = "$s" ] || [ "$HNV_IP" = "$s_dash" ]; then
+        info "parse-hcnmgr: HNV_IP matches slave $s, using $BONDNAME"
         CURRENT_HNV_IP="$BONDNAME"
         MATCHED=1
         break
       elif echo "$HNV_IP" | grep -q ":$s\(:\|$\)"; then
+        info "parse-hcnmgr: HNV_IP contains slave $s, replacing with $BONDNAME"
         CURRENT_HNV_IP=$(echo "$HNV_IP" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
       elif echo "$HNV_IP" | grep -q ":$s_dash\(:\|$\)"; then
+        info "parse-hcnmgr: HNV_IP contains slave MAC $s, replacing with $BONDNAME"
         CURRENT_HNV_IP=$(echo "$HNV_IP" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
@@ -187,13 +195,32 @@ for BONDNAME in $BOND_NAMES; do
       NEW_ARGS="$NEW_ARGS ip=$CURRENT_HNV_IP"
       CHANGED=1
     else
-      # Fallback if it doesn't match any specific bond but is just an IP
+      # Fallback if it doesn't match any specific bond but is just an IP or autoconf
       if ! echo "$HNV_IP" | grep -q ":bond[0-9]"; then
-        COLONS=$(echo "$HNV_IP" | tr -dc ':' | wc -c)
-        if [ "$COLONS" -eq 0 ]; then
-          NEW_ARGS="$NEW_ARGS ip=$HNV_IP:::::$BONDNAME:none"
-          CHANGED=1
-        fi
+        case "$HNV_IP" in
+          dhcp|on|any|dhcp6|auto6|ibft)
+            info "parse-hcnmgr: HNV_IP is autoconf $HNV_IP, applying to $BONDNAME"
+            NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HNV_IP"
+            CHANGED=1
+            ;;
+          *)
+            COLONS=$(echo "$HNV_IP" | tr -dc ':' | wc -c)
+            if [ "$COLONS" -lt 5 ]; then
+              # Append colons to make it at least 5 colons (6 fields)
+              NEEDED=$((5 - COLONS))
+              SUFFIX=""
+              while [ $NEEDED -gt 0 ]; do
+                SUFFIX="$SUFFIX:"
+                NEEDED=$((NEEDED - 1))
+              done
+              info "parse-hcnmgr: applying HNV_IP to $BONDNAME (static config)"
+              NEW_ARGS="$NEW_ARGS ip=$HNV_IP${SUFFIX}$BONDNAME:none"
+              CHANGED=1
+            else
+              info "parse-hcnmgr: HNV_IP $HNV_IP already has an interface, skipping bond assignment"
+            fi
+            ;;
+        esac
       fi
     fi
   fi
@@ -207,14 +234,17 @@ for BONDNAME in $BOND_NAMES; do
       [ -z "$s" ] && continue
       s_dash=$(echo "$s" | tr ':' '-')
       if [ "$HNV_ROUTE" = "$s" ] || [ "$HNV_ROUTE" = "$s_dash" ]; then
+        info "parse-hcnmgr: HNV_ROUTE matches slave $s, using $BONDNAME"
         CURRENT_HNV_ROUTE="$BONDNAME"
         MATCHED=1
         break
       elif echo "$HNV_ROUTE" | grep -q ":$s\(:\|$\)"; then
+        info "parse-hcnmgr: HNV_ROUTE contains slave $s, replacing with $BONDNAME"
         CURRENT_HNV_ROUTE=$(echo "$HNV_ROUTE" | sed "s/:$s\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
       elif echo "$HNV_ROUTE" | grep -q ":$s_dash\(:\|$\)"; then
+        info "parse-hcnmgr: HNV_ROUTE contains slave MAC $s, replacing with $BONDNAME"
         CURRENT_HNV_ROUTE=$(echo "$HNV_ROUTE" | sed "s/:$s_dash\(:\|$\)/:$BONDNAME\1/")
         MATCHED=1
         break
@@ -229,9 +259,11 @@ for BONDNAME in $BOND_NAMES; do
       if ! echo "$HNV_ROUTE" | grep -q ":bond[0-9]"; then
         COLONS=$(echo "$HNV_ROUTE" | tr -dc ':' | wc -c)
         if [ "$COLONS" -eq 0 ]; then
+          info "parse-hcnmgr: applying HNV_ROUTE to $BONDNAME"
           NEW_ARGS="$NEW_ARGS rd.route=$HNV_ROUTE::$BONDNAME"
           CHANGED=1
         elif [ "$COLONS" -eq 1 ]; then
+          info "parse-hcnmgr: applying HNV_ROUTE to $BONDNAME"
           NEW_ARGS="$NEW_ARGS rd.route=$HNV_ROUTE:$BONDNAME"
           CHANGED=1
         fi
@@ -242,6 +274,7 @@ for BONDNAME in $BOND_NAMES; do
   # Replace slaves in existing ip= and rd.route= arguments
   for slave in $SLAVE_NAMES; do
     if echo "$MOD_CMDLINE" | grep -q "$slave"; then
+      info "parse-hcnmgr: replacing slave $slave with $BONDNAME in existing cmdline"
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$slave\([: ]\|$\)/\1$BONDNAME\2/g")
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$slave\([: ]\|$\)/\1$BONDNAME\2/g")
       CHANGED=1
@@ -250,11 +283,13 @@ for BONDNAME in $BOND_NAMES; do
   for mac in $SLAVE_MACS; do
     mac_dash=$(echo "$mac" | tr ':' '-')
     if echo "$MOD_CMDLINE" | grep -q "$mac"; then
+      info "parse-hcnmgr: replacing slave MAC $mac with $BONDNAME in existing cmdline"
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac\([: ]\|$\)/\1$BONDNAME\2/g")
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$mac\([: ]\|$\)/\1$BONDNAME\2/g")
       CHANGED=1
     fi
     if echo "$MOD_CMDLINE" | grep -q "$mac_dash"; then
+      info "parse-hcnmgr: replacing slave MAC $mac_dash with $BONDNAME in existing cmdline"
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(ip=[^ ]*[:=]\)$mac_dash\([: ]\|$\)/\1$BONDNAME\2/g")
       MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed "s/\(rd.route=[^ ]*[:=]\)$mac_dash\([: ]\|$\)/\1$BONDNAME\2/g")
       CHANGED=1
