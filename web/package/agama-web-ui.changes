@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 28 14:05:33 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve discoverability of background tasks status
+  (gh#agama-project/agama#3560).
+
+-------------------------------------------------------------------
 Thu May 28 09:45:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Reset the configuration only when changing the product (bsc#1258032).
