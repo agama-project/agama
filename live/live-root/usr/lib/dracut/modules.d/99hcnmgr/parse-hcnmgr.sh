@@ -198,28 +198,28 @@ for BONDNAME in $BOND_NAMES; do
       # Fallback if it doesn't match any specific bond but is just an IP or autoconf
       if ! echo "$HNV_IP" | grep -q ":bond[0-9]"; then
         case "$HNV_IP" in
-          dhcp|on|any|dhcp6|auto6|ibft)
-            info "parse-hcnmgr: HNV_IP is autoconf $HNV_IP, applying to $BONDNAME"
-            NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HNV_IP"
+        dhcp | on | any | dhcp6 | auto6 | ibft)
+          info "parse-hcnmgr: HNV_IP is autoconf $HNV_IP, applying to $BONDNAME"
+          NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HNV_IP"
+          CHANGED=1
+          ;;
+        *)
+          COLONS=$(echo "$HNV_IP" | tr -dc ':' | wc -c)
+          if [ "$COLONS" -lt 5 ]; then
+            # Append colons to make it at least 5 colons (6 fields)
+            NEEDED=$((5 - COLONS))
+            SUFFIX=""
+            while [ $NEEDED -gt 0 ]; do
+              SUFFIX="$SUFFIX:"
+              NEEDED=$((NEEDED - 1))
+            done
+            info "parse-hcnmgr: applying HNV_IP to $BONDNAME (static config)"
+            NEW_ARGS="$NEW_ARGS ip=$HNV_IP${SUFFIX}$BONDNAME:none"
             CHANGED=1
-            ;;
-          *)
-            COLONS=$(echo "$HNV_IP" | tr -dc ':' | wc -c)
-            if [ "$COLONS" -lt 5 ]; then
-              # Append colons to make it at least 5 colons (6 fields)
-              NEEDED=$((5 - COLONS))
-              SUFFIX=""
-              while [ $NEEDED -gt 0 ]; do
-                SUFFIX="$SUFFIX:"
-                NEEDED=$((NEEDED - 1))
-              done
-              info "parse-hcnmgr: applying HNV_IP to $BONDNAME (static config)"
-              NEW_ARGS="$NEW_ARGS ip=$HNV_IP${SUFFIX}$BONDNAME:none"
-              CHANGED=1
-            else
-              info "parse-hcnmgr: HNV_IP $HNV_IP already has an interface, no assignment to $BONDNAME"
-            fi
-            ;;
+          else
+            info "parse-hcnmgr: HNV_IP $HNV_IP already has an interface, no assignment to $BONDNAME"
+          fi
+          ;;
         esac
       fi
     fi
@@ -314,18 +314,106 @@ if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
 
       # Fix connection names for slaves to match hcnmgr expectations: bond<ID>-<port>
       # This is needed because nm-initrd-generator uses the interface name as the connection ID.
+      # Also, nm-initrd-generator uses UUIDs for the master/controller field, but hcnmgr expects the name.
       if [ -d /run/NetworkManager/system-connections ]; then
+        # First pass: collect UUID to ID mappings
+        _uuid_map=""
         for _con in /run/NetworkManager/system-connections/*.nmconnection; do
           [ -f "$_con" ] || continue
-          _ifname=$(sed -n 's/^[[:space:]]*interface-name=[[:space:]]*//p' "$_con" | head -n1)
-          _master=$(sed -n 's/^[[:space:]]*master=[[:space:]]*//p' "$_con" | head -n1)
-          if [ -n "$_master" ] && [ -n "$_ifname" ] && echo " $BOND_NAMES " | grep -q " $_master "; then
-            _new_id="$_master-$_ifname"
-            if ! grep -q "^id=$_new_id$" "$_con"; then
-              info "parse-hcnmgr: updating connection ID for $_ifname to $_new_id"
-              sed -i "s/^[[:space:]]*id=.*/id=$_new_id/" "$_con"
-              [ "$_con" != "/run/NetworkManager/system-connections/$_new_id.nmconnection" ] && \
-                mv "$_con" "/run/NetworkManager/system-connections/$_new_id.nmconnection"
+          _id=$(sed -n 's/^[[:space:]]*id[[:space:]]*=[[:space:]]*//p' "$_con" | head -n1 | tr -d '\r\n"' | sed 's/[[:space:]]*$//')
+          _uuid=$(sed -n 's/^[[:space:]]*uuid[[:space:]]*=[[:space:]]*//p' "$_con" | head -n1 | tr -d '\r\n"' | sed 's/[[:space:]]*$//')
+          [ -n "$_uuid" ] && [ -n "$_id" ] && _uuid_map="$_uuid_map $_uuid:$_id"
+        done
+
+        for _con in /run/NetworkManager/system-connections/*.nmconnection; do
+          [ -f "$_con" ] || continue
+
+          _id=$(sed -n 's/^[[:space:]]*id[[:space:]]*=[[:space:]]*//p' "$_con" | head -n1 | tr -d '\r\n"' | sed 's/[[:space:]]*$//')
+          _ifname=$(sed -n 's/^[[:space:]]*interface-name[[:space:]]*=[[:space:]]*//p' "$_con" | head -n1 | tr -d '\r\n"' | sed 's/[[:space:]]*$//')
+          _master=$(sed -n 's/^[[:space:]]*master[[:space:]]*=[[:space:]]*//p' "$_con" | head -n1 | tr -d '\r\n"' | sed 's/[[:space:]]*$//')
+          _controller=$(sed -n 's/^[[:space:]]*controller[[:space:]]*=[[:space:]]*//p' "$_con" | head -n1 | tr -d '\r\n"' | sed 's/[[:space:]]*$//')
+          _mac=$(sed -n 's/^[[:space:]]*mac-address[[:space:]]*=[[:space:]]*//p' "$_con" | head -n1 | tr -d '\r\n"' | tr '[:upper:]' '[:lower:]' | tr -d ':')
+
+          # Resolve master/controller UUID to name
+          for _map in $_uuid_map; do
+            _m_uuid=${_map%:*}
+            _m_id=${_map#*:}
+            if [ "$_master" = "$_m_uuid" ]; then
+              info "parse-hcnmgr: resolving master UUID to $_m_id in $_id"
+              sed -i "s/^[[:space:]]*master[[:space:]]*=.*/master=$_m_id/" "$_con"
+              _master="$_m_id"
+              break
+            elif [ "$_controller" = "$_m_uuid" ]; then
+              info "parse-hcnmgr: resolving controller UUID to $_m_id in $_id"
+              sed -i "s/^[[:space:]]*controller[[:space:]]*=.*/controller=$_m_id/" "$_con"
+              _controller="$_m_id"
+              break
+            fi
+          done
+
+          # Fallback if interface-name is missing
+          [ -z "$_ifname" ] && _ifname="$_id"
+
+          # If we don't have a valid master name matching BOND_NAMES, or if we want to be sure,
+          # try to find the master and the correct ifname in MAPPINGS.
+          _found_master=""
+          _found_ifname=""
+
+          # Use awk to search MAPPINGS for a match by ifname or mac
+          _mapping_info=$(echo "$MAPPINGS" | awk -v iface="$_ifname" -v mac="$_mac" '
+            {
+              for (i=1; i<=NF; i+=4) {
+                m_bond=$(i); m_iface=$(i+1); m_mac=$(i+2);
+                gsub(/:/, "", m_mac); m_mac = tolower(m_mac);
+                if ((iface != "" && m_iface == iface) || (mac != "" && m_mac == mac)) {
+                  print m_bond, m_iface;
+                  exit;
+                }
+              }
+            }
+          ')
+
+          if [ -n "$_mapping_info" ]; then
+            _found_master=$(echo "$_mapping_info" | awk '{print $1}')
+            _found_ifname=$(echo "$_mapping_info" | awk '{print $2}')
+          elif [ -n "$_master" ] && echo " $BOND_NAMES " | grep -q " $_master "; then
+            _found_master="$_master"
+            _found_ifname="$_ifname"
+          elif [ -n "$_controller" ] && echo " $BOND_NAMES " | grep -q " $_controller "; then
+            _found_master="$_controller"
+            _found_ifname="$_ifname"
+          fi
+
+          if [ -n "$_found_master" ] && [ -n "$_found_ifname" ]; then
+            _new_id="$_found_master-$_found_ifname"
+
+            # Ensure controller or master field is correct and present
+            if grep -q "^[[:space:]]*controller=" "$_con"; then
+              sed -i "s/^[[:space:]]*controller[[:space:]]*=.*/controller=$_found_master/" "$_con"
+            elif grep -q "^[[:space:]]*master=" "$_con"; then
+              sed -i "s/^[[:space:]]*master[[:space:]]*=.*/master=$_found_master/" "$_con"
+            else
+              # Default to controller if neither is present (should not happen for a slave)
+              sed -i "/^\[connection\]/a controller=$_found_master" "$_con"
+            fi
+
+            # Ensure port-type or slave-type field is correct and present
+            if grep -q "^[[:space:]]*port-type=" "$_con"; then
+              sed -i "s/^[[:space:]]*port-type[[:space:]]*=.*/port-type=bond/" "$_con"
+            elif grep -q "^[[:space:]]*slave-type=" "$_con"; then
+              sed -i "s/^[[:space:]]*slave-type[[:space:]]*=.*/slave-type=bond/" "$_con"
+            else
+              # Default to port-type if neither is present
+              sed -i "/^\[connection\]/a port-type=bond" "$_con"
+            fi
+
+            if [ "$_id" != "$_new_id" ]; then
+              info "parse-hcnmgr: updating connection ID from $_id to $_new_id"
+              sed -i "s/^[[:space:]]*id[[:space:]]*=.*/id=$_new_id/" "$_con"
+              _new_con="/run/NetworkManager/system-connections/$_new_id.nmconnection"
+              if [ "$_con" != "$_new_con" ]; then
+                mv "$_con" "$_new_con"
+              fi
             fi
           fi
         done
