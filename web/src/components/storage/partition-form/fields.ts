@@ -30,36 +30,6 @@ import { requiredString, optionalValidString } from "~/components/form/validatio
 import { requiredSize, sizeRange } from "~/components/storage/validation-helpers";
 import { _ } from "~/i18n";
 
-/** Form field types */
-
-type MountPointFields = {
-  mountPoint: string;
-};
-
-type PartitionSourceFields = {
-  // Note: Normally "new" | "reuse", but when no partitions are available
-  // to reuse, this field contains a display string for ReadOnlyField.
-  partitionSource: string;
-  selectedPartitionId: string;
-};
-
-type FilesystemFields = {
-  filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
-  // Note: Normally "reuse" | "format", but when partition has no filesystem,
-  // this field contains a display string for ReadOnlyField.
-  filesystemAction: string;
-  filesystemLabel: string;
-};
-
-type SizeFields = {
-  sizeMode: "auto" | "fixed" | "range" | "expand";
-  minSize: string;
-  maxSize: string;
-  fixedSize: string;
-};
-
-type FormFields = MountPointFields & PartitionSourceFields & FilesystemFields & SizeFields;
-
 /** Constants */
 
 export const PARTITION_SOURCE = {
@@ -94,10 +64,71 @@ export const SIZE_MODE = {
   EXPAND: "expand",
 } as const;
 
+/** Form field types */
+
+export type SizeMode = (typeof SIZE_MODE)[keyof typeof SIZE_MODE];
+
+type MountPointFields = {
+  mountPoint: string;
+  /**
+   * Committed mount point value that updates on blur or suggestion selection,
+   * but NOT on every keystroke while typing.
+   *
+   * ## Why this exists
+   *
+   * The live `mountPoint` value is used for the text input field and validation.
+   * However, we don't want to react to incomplete values on every keystroke because:
+   *
+   * 1. **UX**: Showing filesystem hints for "/ho" before user finishes typing "/home"
+   *    would be confusing and disruptive. Same for size information based on partial input.
+   * 2. **Performance**: Avoids expensive recalculations (useVolumeTemplate, filesystem
+   *    options, size hints) on every keystroke.
+   *
+   * ## Update triggers
+   *
+   * This field updates in three scenarios:
+   * 1. **onMount**: When the form loads (for editing existing partitions)
+   * 2. **onSelect**: When user selects a suggestion from the dropdown (immediate)
+   * 3. **onBlur**: When user finishes typing a custom value (deferred)
+   *
+   * ## Usage
+   *
+   * - FilesystemFields and SizeFields use `committedMountPoint` for `useVolumeTemplate()`
+   * - This avoids showing misleading hints while typing "/ho..."
+   * - Once the user completes typing or selects "/home", information updates
+   *
+   * @see Form.tsx mountPoint field listeners for sync logic
+   */
+  committedMountPoint: string;
+};
+
+type PartitionSourceFields = {
+  partitionSource: string; // "new" | "reuse"
+  selectedPartitionId: string;
+};
+
+type FilesystemFields = {
+  filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
+  filesystemAction: string; // "reuse" | "format"
+  filesystemLabel: string;
+};
+
+type SizeFields = {
+  sizeMode: SizeMode;
+  minSize: string;
+  maxSize: string;
+  fixedSize: string;
+};
+
+type FormFields = MountPointFields & PartitionSourceFields & FilesystemFields & SizeFields;
+
+export type PartitionFormData = FormFields;
+
 /** Default values */
 
 const defaultValues: FormFields = {
   mountPoint: "",
+  committedMountPoint: "",
   partitionSource: PARTITION_SOURCE.NEW,
   selectedPartitionId: "",
   filesystem: FILESYSTEM_TYPE.AUTO,

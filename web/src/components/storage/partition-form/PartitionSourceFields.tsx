@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, PARTITION_SOURCE } from "./fields";
@@ -54,23 +54,20 @@ const PartitionSourceFields = withForm({
   render: function Render({ form, device, availablePartitions }) {
     const canReuse = availablePartitions.length > 0;
 
-    // When no partitions available, set display text for ReadOnlyField
-    useEffect(() => {
-      if (!canReuse) {
-        const displayText = sprintf(
-          // TRANSLATORS: %s is device name like "/dev/vdd"
-          _("New partition (no partitions available on %s to reuse)"),
-          deviceLabel(device, true),
-        );
-        form.setFieldValue("partitionSource", displayText);
-      }
-    }, [canReuse, device, form]);
-
     return (
       <form.AppField name="partitionSource">
         {(field) => {
           if (!canReuse) {
-            return <field.ReadOnlyField label={_("Partition source")} />;
+            return (
+              <field.ReadOnlyField
+                label={_("Partition source")}
+                text={sprintf(
+                  // TRANSLATORS: %s is device name like "/dev/vdd"
+                  _("New partition (no partitions available on %s to reuse)"),
+                  deviceLabel(device, true),
+                )}
+              />
+            );
           }
 
           // When partitions are available, show radio group
