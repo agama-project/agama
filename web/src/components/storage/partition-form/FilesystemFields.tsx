@@ -27,7 +27,7 @@ import { Alert, AlertActionCloseButton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
-import { defaultOptions, FILESYSTEM_TYPE, PARTITION_SOURCE, FILESYSTEM_ACTION } from "./fields";
+import { defaultOptions, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -41,9 +41,8 @@ type FilesystemFieldsProps = {
 
 type FilesystemFieldsContentProps = {
   device: System.Device;
-  partitionSource: string;
+  name: string;
   committedMountPoint: string;
-  selectedPartitionId: string;
   filesystemAction: string;
   filesystem: string;
 };
@@ -147,18 +146,16 @@ const FilesystemFieldsContent = withForm({
   ...defaultOptions,
   props: {
     device: {} as System.Device,
-    partitionSource: "",
+    name: "",
     committedMountPoint: "",
-    selectedPartitionId: "",
     filesystemAction: "",
     filesystem: "",
   } as FilesystemFieldsContentProps,
   render: function Render({
     form,
     device,
-    partitionSource,
+    name,
     committedMountPoint,
-    selectedPartitionId,
     filesystemAction,
     filesystem,
   }) {
@@ -170,7 +167,8 @@ const FilesystemFieldsContent = withForm({
     const volume = useVolumeTemplate(committedMountPoint);
     const defaultFilesystem = volume.fsType;
 
-    const selectedPartition = device.partitions?.find((p) => p.name === selectedPartitionId);
+    const isReusePartition = name !== "";
+    const selectedPartition = device.partitions?.find((p) => p.name === name);
     const currentFsType = selectedPartition?.filesystem?.type;
     const hasFilesystem = !!currentFsType;
 
@@ -221,7 +219,7 @@ const FilesystemFieldsContent = withForm({
           />
         )}
 
-        {partitionSource === PARTITION_SOURCE.NEW && (
+        {!isReusePartition && (
           <FilesystemTypeSelector
             form={form}
             filesystem={filesystem}
@@ -231,7 +229,7 @@ const FilesystemFieldsContent = withForm({
           />
         )}
 
-        {partitionSource === PARTITION_SOURCE.REUSE && !hasFilesystem && (
+        {isReusePartition && !hasFilesystem && (
           <>
             <form.AppField name="filesystemAction">
               {(field) => (
@@ -253,7 +251,7 @@ const FilesystemFieldsContent = withForm({
           </>
         )}
 
-        {partitionSource === PARTITION_SOURCE.REUSE && hasFilesystem && (
+        {isReusePartition && hasFilesystem && (
           <form.AppField name="filesystemAction">
             {(field) => (
               <field.RadioGroupField
@@ -329,26 +327,18 @@ const FilesystemFields = withForm({
     return (
       <form.Subscribe
         selector={(s) => ({
-          partitionSource: s.values.partitionSource,
+          name: s.values.name,
           committedMountPoint: s.values.committedMountPoint,
-          selectedPartitionId: s.values.selectedPartitionId,
           filesystemAction: s.values.filesystemAction,
           filesystem: s.values.filesystem,
         })}
       >
-        {({
-          partitionSource,
-          committedMountPoint,
-          selectedPartitionId,
-          filesystemAction,
-          filesystem,
-        }) => (
+        {({ name, committedMountPoint, filesystemAction, filesystem }) => (
           <FilesystemFieldsContent
             form={form}
             device={device}
-            partitionSource={partitionSource}
+            name={name}
             committedMountPoint={committedMountPoint}
-            selectedPartitionId={selectedPartitionId}
             filesystemAction={filesystemAction}
             filesystem={filesystem}
           />
