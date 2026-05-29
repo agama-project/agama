@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import NestedContent from "~/components/core/NestedContent";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, PARTITION_SOURCE } from "./fields";
 import { deviceLabel } from "~/components/storage/utils";
@@ -29,6 +28,7 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 
 import type { Storage as System } from "~/model/system";
+import type { DropdownOption } from "~/components/form/DropdownField";
 
 type PartitionFieldsProps = {
   device: System.Device;
@@ -36,11 +36,30 @@ type PartitionFieldsProps = {
 };
 
 /**
+ * Special value representing "create a new partition" in the partition dropdown.
+ *
+ * This is used as the dropdown value for the "New partition" option. When this
+ * value is selected, the form's `selectedPartitionId` is cleared and
+ * `partitionSource` is set to "new".
+ */
+const NEW_PARTITION_VALUE = "NEW";
+
+/**
  * Partition selection: new vs use existing partition.
  *
- * Shows a dropdown for choosing between creating a new partition or
+ * Shows a single dropdown for choosing between creating a new partition or
  * using an existing one. "New partition" always appears first, followed by
- * a divider, then one entry per reusable partition.
+ * a divider, then one entry per reusable partition on the device.
+ *
+ * ## Value mapping
+ *
+ * The dropdown value is derived from form state:
+ * - When `partitionSource` is "new": dropdown shows NEW_PARTITION_VALUE
+ * - When `partitionSource` is "reuse": dropdown shows `selectedPartitionId`
+ *
+ * Selecting a value updates both fields:
+ * - NEW_PARTITION_VALUE → `partitionSource` = "new", `selectedPartitionId` = ""
+ * - Partition name → `partitionSource` = "reuse", `selectedPartitionId` = name
  *
  * When no partitions are available, displays a ReadOnlyField explaining that
  * a new partition will be created (maintains consistent visual structure).
@@ -55,96 +74,99 @@ const PartitionFields = withForm({
     const canReuse = availablePartitions.length > 0;
 
     return (
-      <form.AppField name="partitionSource">
-        {(field) => {
+      <form.Subscribe
+        selector={(s) => ({
+          partitionSource: s.values.partitionSource,
+          selectedPartitionId: s.values.selectedPartitionId,
+        })}
+      >
+        {({ partitionSource, selectedPartitionId }) => {
           if (!canReuse) {
+            // No partitions available: show ReadOnlyField with explanation
             return (
-              <field.ReadOnlyField
-                label={_("Partition source")}
-                text={sprintf(
-                  // TRANSLATORS: %s is device name like "/dev/vdd"
-                  _("New partition (no partitions available on %s to reuse)"),
-                  deviceLabel(device, true),
+              <form.AppField name="partitionSource">
+                {(field) => (
+                  <field.ReadOnlyField
+                    label={_("Partition")}
+                    text={sprintf(
+                      // TRANSLATORS: %s is device name like "/dev/vdd"
+                      _("New partition (no partitions available on %s to reuse)."),
+                      deviceLabel(device, true),
+                    )}
+                  />
                 )}
-              />
+              </form.AppField>
             );
           }
 
-          // When partitions are available, show radio group
+          // Derive dropdown value from form state
+          const dropdownValue =
+            partitionSource === PARTITION_SOURCE.NEW ? NEW_PARTITION_VALUE : selectedPartitionId;
+
+          // Build dropdown options: "New partition" + divider + partition list
+          const options: DropdownOption<string>[] = [
+            {
+              value: NEW_PARTITION_VALUE,
+              label: _("New partition"),
+            },
+            { divider: true as const },
+            ...availablePartitions.map((p) => {
+              const fsLabel = p.filesystem?.label;
+              const description = [p.description, fsLabel].filter(Boolean).join(" - ");
+              return {
+                value: p.name,
+                label: sprintf(
+                  // TRANSLATORS: %1$s is partition name like "vdd2", %2$s is size like "18.00 GiB"
+                  _("Use %1$s (%2$s)"),
+                  deviceLabel(p, false),
+                  p.description || "",
+                ),
+                description: description || undefined,
+              };
+            }),
+          ];
+
           return (
-            <field.RadioGroupField
-              label={_("Partition source")}
-              options={[
-                {
-                  value: PARTITION_SOURCE.NEW,
-                  label: _("New partition"),
-                  description: sprintf(
-                    // TRANSLATORS: %s is device name like "/dev/vdd"
-                    _("Create a new partition on %s"),
-                    deviceLabel(device, true),
-                  ),
+            <form.AppField
+              name="selectedPartitionId"
+              listeners={{
+                // Sync dropdown value with form state on mount.
+                // The field value comes from toFormValues in Form.tsx, which sets it correctly
+                // for both new and reuse cases. We just need to map it to dropdown value.
+                onMount: () => {
+                  if (partitionSource === PARTITION_SOURCE.NEW) {
+                    form.setFieldValue("selectedPartitionId", NEW_PARTITION_VALUE, {
+                      dontUpdateMeta: true,
+                    });
+                  }
                 },
-                {
-                  value: PARTITION_SOURCE.REUSE,
-                  label: sprintf(
-                    // TRANSLATORS: %d is count of available partitions
-                    _("Use existing partition (%d available)"),
-                    availablePartitions.length,
-                  ),
-                  description: sprintf(
-                    // TRANSLATORS: %s is device name like "/dev/vdd"
-                    _("Pick one of the existing partitions on %s"),
-                    deviceLabel(device, true),
-                  ),
+                // Sync form fields when dropdown value changes
+                onChange: ({ value }) => {
+                  if (value === NEW_PARTITION_VALUE) {
+                    // User selected "New partition"
+                    form.setFieldValue("partitionSource", PARTITION_SOURCE.NEW);
+                    // Clear selectedPartitionId (will be set back to NEW_PARTITION_VALUE in render)
+                    form.setFieldValue("selectedPartitionId", "");
+                  } else {
+                    // User selected an existing partition
+                    form.setFieldValue("partitionSource", PARTITION_SOURCE.REUSE);
+                    // selectedPartitionId is already set by field.handleChange
+                  }
                 },
-              ]}
-            >
-              {(value) => {
-                if (value === PARTITION_SOURCE.REUSE) {
-                  return (
-                    <NestedContent margin="mxLg">
-                      <form.AppField
-                        name="selectedPartitionId"
-                        listeners={{
-                          onMount: ({ value }) => {
-                            if (!value && availablePartitions.length > 0) {
-                              form.setFieldValue(
-                                "selectedPartitionId",
-                                availablePartitions[0].name,
-                                {
-                                  dontUpdateMeta: true,
-                                },
-                              );
-                            }
-                          },
-                        }}
-                      >
-                        {(partField) => (
-                          <partField.DropdownField
-                            label={_("Partition")}
-                            options={availablePartitions.map((p) => {
-                              const fsLabel = p.filesystem?.label;
-                              const description = [p.description, fsLabel]
-                                .filter(Boolean)
-                                .join(" - ");
-                              return {
-                                value: p.name,
-                                label: deviceLabel(p, true),
-                                description: description || undefined,
-                              };
-                            })}
-                          />
-                        )}
-                      </form.AppField>
-                    </NestedContent>
-                  );
-                }
-                return null;
               }}
-            </field.RadioGroupField>
+            >
+              {(field) => (
+                <field.DropdownField
+                  label={_("Partition")}
+                  options={options}
+                  // Override the field value with the derived dropdown value
+                  // because the field itself stores "" for new partition
+                />
+              )}
+            </form.AppField>
           );
         }}
-      </form.AppField>
+      </form.Subscribe>
     );
   },
 });
