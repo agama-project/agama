@@ -28,6 +28,7 @@ import formStyles from "@patternfly/react-styles/css/components/Form/form";
 
 type ReadOnlyFieldProps = {
   label: React.ReactNode;
+  text?: React.ReactNode;
 };
 
 /**
@@ -45,8 +46,18 @@ type ReadOnlyFieldProps = {
  * <form.AppField name="connectionType">
  *   {(field) => <field.ReadOnlyField label={_("Type")} />}
  * </form.AppField>
+ *
+ * @example
+ * <form.AppField name="partitionSource">
+ *   {(field) => (
+ *     <field.ReadOnlyField
+ *       label={_("Partition source")}
+ *       text={_("New partition (no partitions available)")}
+ *     />
+ *   )}
+ * </form.AppField>
  */
-export default function ReadOnlyField({ label }: ReadOnlyFieldProps) {
+export default function ReadOnlyField({ label, text }: ReadOnlyFieldProps) {
   const field = useFieldContext<React.ReactNode>();
 
   return (
@@ -54,7 +65,7 @@ export default function ReadOnlyField({ label }: ReadOnlyFieldProps) {
       <div className={formStyles.formLabel}>
         <span className={formStyles.formLabelText}>{label}</span>
       </div>
-      <Text>{field.state.value}</Text>
+      <Text>{text ?? field.state.value}</Text>
     </div>
   );
 }
