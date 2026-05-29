@@ -83,7 +83,12 @@ function AutoFilesystemHint({
 }
 
 /**
- * Filesystem type dropdown paired with the auto-selection hint.
+ * Filesystem type selector: dropdown or ReadOnlyField depending on available options.
+ *
+ * When only one concrete filesystem type is available (excluding the "Default"
+ * option), shows a ReadOnlyField with the type name instead of a dropdown.
+ * This applies to mount points like swap and /boot/efi that constrain the
+ * filesystem to a single type.
  */
 function FilesystemTypeSelector({
   form,
@@ -91,7 +96,26 @@ function FilesystemTypeSelector({
   defaultFilesystem,
   committedMountPoint,
   filesystemOptions,
+  usableFilesystems,
 }) {
+  // Check if there's only one concrete type available (excluding "Default")
+  const isSingleType = usableFilesystems.length === 1;
+
+  if (isSingleType && defaultFilesystem) {
+    // Single type available: show ReadOnlyField with the type name
+    return (
+      <form.AppField name="filesystem">
+        {(field) => (
+          <field.ReadOnlyField
+            label={_("File system type")}
+            text={filesystemLabel(defaultFilesystem)}
+          />
+        )}
+      </form.AppField>
+    );
+  }
+
+  // Multiple types available: show dropdown with Default option
   return (
     <>
       <form.AppField name="filesystem">
@@ -226,6 +250,7 @@ const FilesystemFieldsContent = withForm({
             defaultFilesystem={defaultFilesystem}
             committedMountPoint={committedMountPoint}
             filesystemOptions={filesystemOptions}
+            usableFilesystems={usableFilesystems}
           />
         )}
 
@@ -247,6 +272,7 @@ const FilesystemFieldsContent = withForm({
               defaultFilesystem={defaultFilesystem}
               committedMountPoint={committedMountPoint}
               filesystemOptions={filesystemOptions}
+              usableFilesystems={usableFilesystems}
             />
           </>
         )}
@@ -284,6 +310,7 @@ const FilesystemFieldsContent = withForm({
                           defaultFilesystem={defaultFilesystem}
                           committedMountPoint={committedMountPoint}
                           filesystemOptions={filesystemOptions}
+                          usableFilesystems={usableFilesystems}
                         />
                       </Stack>
                     </NestedContent>
