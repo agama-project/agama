@@ -141,7 +141,7 @@ impl Service {
         None
     }
 
-    /// checks if users module needs to enable remote ssh access
+    /// checks if users service needs to enable remote ssh access
     fn need_ssh_access(&self) -> bool {
         let config = &self.full_config;
 

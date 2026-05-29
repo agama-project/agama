@@ -23,12 +23,12 @@ use tokio::sync::broadcast::Sender;
 
 use crate::{Service, Starter};
 
-/// Starts a testing security service.
+/// Starts a testing remote service.
 pub async fn start_service(
     software: Handler<agama_software::Service>,
     events: Sender<Event>,
 ) -> Handler<Service> {
     Starter::new(software, events)
         .start()
-        .expect("Could not spawn a testing security service")
+        .expect("Could not spawn a testing remote service")
 }

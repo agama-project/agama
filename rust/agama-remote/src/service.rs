@@ -119,7 +119,7 @@ impl State {
         }
     }
 
-    /// Checks if SSH access is enabled either by user configuration or module requests.
+    /// Checks if SSH access is enabled either by user configuration or service requests.
     fn is_ssh_enabled(&self) -> bool {
         if let Some(config) = &self.user_config.ssh {
             return config == &api::remote_access::AccessEnum::Enabled;
