@@ -128,7 +128,7 @@ MOD_CMDLINE="$CMDLINE"
 CHANGED=0
 
 # Unique bond names
-BOND_NAMES=$(echo "$MAPPINGS" | xargs -n4 echo | awk '{print $1}' | sort -u)
+BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) print $i}' | sort -u)
 
 for BONDNAME in $BOND_NAMES; do
   SLAVES=""
@@ -311,6 +311,26 @@ if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
     if [ -x "$generator" ]; then
       info "parse-hcnmgr: calling $generator"
       $generator -- $CMDLINE
+
+      # Fix connection names for slaves to match hcnmgr expectations: bond<ID>-<port>
+      # This is needed because nm-initrd-generator uses the interface name as the connection ID.
+      if [ -d /run/NetworkManager/system-connections ]; then
+        for _con in /run/NetworkManager/system-connections/*.nmconnection; do
+          [ -f "$_con" ] || continue
+          _ifname=$(sed -n 's/^[[:space:]]*interface-name=[[:space:]]*//p' "$_con" | head -n1)
+          _master=$(sed -n 's/^[[:space:]]*master=[[:space:]]*//p' "$_con" | head -n1)
+          if [ -n "$_master" ] && [ -n "$_ifname" ] && echo " $BOND_NAMES " | grep -q " $_master "; then
+            _new_id="$_master-$_ifname"
+            if ! grep -q "^id=$_new_id$" "$_con"; then
+              info "parse-hcnmgr: updating connection ID for $_ifname to $_new_id"
+              sed -i "s/^[[:space:]]*id=.*/id=$_new_id/" "$_con"
+              [ "$_con" != "/run/NetworkManager/system-connections/$_new_id.nmconnection" ] && \
+                mv "$_con" "/run/NetworkManager/system-connections/$_new_id.nmconnection"
+            fi
+          fi
+        done
+      fi
+
       mkdir -p /run/NetworkManager/initrd
       : >/run/NetworkManager/initrd/neednet
       break
