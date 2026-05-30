@@ -23,7 +23,7 @@
 import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
-import { Alert, Button, Stack } from "@patternfly/react-core";
+import { Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
@@ -130,14 +130,13 @@ function AutoFilesystemHint({
 /**
  * Filesystem type selector: dropdown or ReadOnlyField depending on available options.
  *
- * When only one concrete filesystem type is available (excluding the "Default"
- * option), shows a ReadOnlyField with the type name instead of a dropdown.
- * This applies to mount points like swap and /boot/efi that constrain the
- * filesystem to a single type.
+ * When "Default" is selected, an inline hint explains which filesystem will be
+ * used for the current mount point.
  *
- * Renders an optional dismissible alert immediately below the selector, used
- * to inform the user when a previously selected filesystem type was
- * automatically reset due to mount point incompatibility.
+ * When only one concrete filesystem type is available (excluding the "Default"
+ * option), shows a ReadOnlyField with the type name instead of a dropdown. This
+ * applies to mount points like swap and /boot/efi that constrain the filesystem
+ * to a single type.
  */
 function FilesystemTypeSelector({
   form,
@@ -146,8 +145,6 @@ function FilesystemTypeSelector({
   committedMountPoint,
   filesystemOptions,
   usableFilesystems,
-  incompatibleFsAlert,
-  onDismissAlert,
 }) {
   const isSingleType = usableFilesystems.length === 1;
 
@@ -170,19 +167,6 @@ function FilesystemTypeSelector({
             )}
           </form.AppField>
           <NestedContent margin="mxLg">
-            {incompatibleFsAlert && (
-              <Alert
-                variant="info"
-                isPlain
-                isInline
-                actionLinks={
-                  <Button variant="link" isInline onClick={onDismissAlert}>
-                    {_("Accept")}
-                  </Button>
-                }
-                title={incompatibleFsAlert}
-              />
-            )}
             <AutoFilesystemHint
               filesystem={filesystem}
               defaultFilesystem={defaultFilesystem}
@@ -215,19 +199,16 @@ function FilesystemTypeSelector({
  *
  * When the user changes the mount point AFTER having already picked a specific
  * filesystem type, the new mount point may not support that type (e.g. swap
- * does not support XFS). In that case this component:
+ * does not support XFS). In that case this component resets the selector to
+ * FILESYSTEM_TYPE.AUTO ("Default") so a compatible filesystem can be chosen
+ * automatically.
  *
- *   1. Resets the `filesystem` field to FILESYSTEM_TYPE.AUTO ("auto").
- *   2. Shows a dismissible informational alert explaining the reset, naming
- *      the filesystem type that was dropped (e.g. "XFS").
+ * he reset happens via `useEffect` watching `usableFilesystems`, which
+ * recalculates when `committedMountPoint` changes. This ensures compatibility
+ * is maintained without reacting to incomplete mount point input while the user
+ * is typing.
  *
- * The reset happens via `useEffect` watching `usableFilesystems`, which recalculates
- * when `committedMountPoint` changes. This ensures the user is not interrupted with
- * alerts or dropdown changes while typing incomplete mount points.
- *
- * NOTE: This is a UX convenience, not validation. Validation in fields.ts does
- * not enforce filesystem/mount-point compatibility — it only checks that a
- * value is present when required.
+ * NOTE: This is a UX convenience, not validation. Validations lives in fields.ts
  */
 const FilesystemFieldsContent = withForm({
   ...defaultOptions,
@@ -246,8 +227,6 @@ const FilesystemFieldsContent = withForm({
     filesystemAction,
     filesystem,
   }) {
-    const [incompatibleFsAlert, setIncompatibleFsAlert] = React.useState<string | null>(null);
-
     // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
     // This prevents showing misleading filesystem options while user types "/ho..." and
     // avoids expensive useVolumeTemplate recalculations on every keystroke.
@@ -283,30 +262,9 @@ const FilesystemFieldsContent = withForm({
       if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;
 
       // Current filesystem is not compatible with the mount point.
-      // Reset to AUTO (Default) and show alert only when multiple types are available.
-      // When only one type is available, the UI switches to ReadOnlyField automatically,
-      // making the change obvious without needing an alert.
-      const previousLabel = filesystemLabel(filesystem as ConfigModel.FilesystemType);
-      const isSingleType = usableFilesystems.length === 1;
-
+      // Reset to AUTO (Default)
       form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
-
-      if (!isSingleType) {
-        setIncompatibleFsAlert(
-          sprintf(
-            // TRANSLATORS: %1$s is a mount point like "/home", %2$s is a filesystem type name like "XFS" or "Btrfs"
-            _("Automatically changed to Default because %1$s does not support %2$s."),
-            committedMountPoint,
-            previousLabel,
-          ),
-        );
-      }
-    }, [usableFilesystems, committedMountPoint, filesystem, form]);
-
-    const alertProps = {
-      incompatibleFsAlert,
-      onDismissAlert: () => setIncompatibleFsAlert(null),
-    };
+    }, [usableFilesystems, filesystem, form]);
 
     return (
       <>
@@ -318,7 +276,6 @@ const FilesystemFieldsContent = withForm({
             committedMountPoint={committedMountPoint}
             filesystemOptions={filesystemOptions}
             usableFilesystems={usableFilesystems}
-            {...alertProps}
           />
         )}
 
@@ -344,7 +301,6 @@ const FilesystemFieldsContent = withForm({
               committedMountPoint={committedMountPoint}
               filesystemOptions={filesystemOptions}
               usableFilesystems={usableFilesystems}
-              {...alertProps}
             />
           </>
         )}
@@ -383,7 +339,6 @@ const FilesystemFieldsContent = withForm({
                           committedMountPoint={committedMountPoint}
                           filesystemOptions={filesystemOptions}
                           usableFilesystems={usableFilesystems}
-                          {...alertProps}
                         />
                       </Stack>
                     </NestedContent>
