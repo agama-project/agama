@@ -23,7 +23,7 @@
 import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
-import { Alert, AlertActionCloseButton, Stack } from "@patternfly/react-core";
+import { Alert, Button, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
@@ -75,16 +75,16 @@ function getFormatRequiredMessage(
     if (isSingleType && defaultFilesystem) {
       return sprintf(
         // TRANSLATORS: %1$s is current filesystem type like "ext4", %2$s is required type like "swap"
-        _(
-          "Current file system (%1$s) is not compatible. Partition will be formatted with %2$s.",
-        ),
+        _("Current file system (%1$s) is not compatible. Partition will be formatted with %2$s."),
         filesystemLabel(currentFsType),
         filesystemLabel(defaultFilesystem),
       );
     }
     return sprintf(
       // TRANSLATORS: %s is current filesystem type like "ext4"
-      _("Current file system (%s) is not compatible. Partition will be formatted with the selected type."),
+      _(
+        "Current file system (%s) is not compatible. Partition will be formatted with the selected type.",
+      ),
       filesystemLabel(currentFsType),
     );
   }
@@ -116,16 +116,14 @@ function AutoFilesystemHint({
     return null;
 
   return (
-    <NestedContent margin="mxLg">
-      <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-        {sprintf(
-          // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-          _("%1$s will be used for %2$s."),
-          filesystemLabel(defaultFilesystem),
-          committedMountPoint,
-        )}
-      </Text>
-    </NestedContent>
+    <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+      {sprintf(
+        // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+        _("%1$s will be used for %2$s."),
+        filesystemLabel(defaultFilesystem),
+        committedMountPoint,
+      )}
+    </Text>
   );
 }
 
@@ -136,6 +134,10 @@ function AutoFilesystemHint({
  * option), shows a ReadOnlyField with the type name instead of a dropdown.
  * This applies to mount points like swap and /boot/efi that constrain the
  * filesystem to a single type.
+ *
+ * Renders an optional dismissible alert immediately below the selector, used
+ * to inform the user when a previously selected filesystem type was
+ * automatically reset due to mount point incompatibility.
  */
 function FilesystemTypeSelector({
   form,
@@ -144,37 +146,51 @@ function FilesystemTypeSelector({
   committedMountPoint,
   filesystemOptions,
   usableFilesystems,
+  incompatibleFsAlert,
+  onDismissAlert,
 }) {
-  // Check if there's only one concrete type available (excluding "Default")
   const isSingleType = usableFilesystems.length === 1;
 
-  if (isSingleType && defaultFilesystem) {
-    // Single type available: show ReadOnlyField with the type name
-    return (
-      <form.AppField name="filesystem">
-        {(field) => (
-          <field.ReadOnlyField
-            label={_("File system type")}
-            text={filesystemLabel(defaultFilesystem)}
-          />
-        )}
-      </form.AppField>
-    );
-  }
-
-  // Multiple types available: show dropdown with Default option
   return (
     <>
-      <form.AppField name="filesystem">
-        {(field) => (
-          <field.DropdownField label={_("File system type")} options={filesystemOptions} />
-        )}
-      </form.AppField>
-      <AutoFilesystemHint
-        filesystem={filesystem}
-        defaultFilesystem={defaultFilesystem}
-        committedMountPoint={committedMountPoint}
-      />
+      {isSingleType && defaultFilesystem ? (
+        <form.AppField name="filesystem">
+          {(field) => (
+            <field.ReadOnlyField
+              label={_("File system type")}
+              text={filesystemLabel(defaultFilesystem)}
+            />
+          )}
+        </form.AppField>
+      ) : (
+        <>
+          <form.AppField name="filesystem">
+            {(field) => (
+              <field.DropdownField label={_("File system type")} options={filesystemOptions} />
+            )}
+          </form.AppField>
+          <NestedContent margin="mxLg">
+            {incompatibleFsAlert && (
+              <Alert
+                variant="info"
+                isPlain
+                isInline
+                actionLinks={
+                  <Button variant="link" isInline onClick={onDismissAlert}>
+                    {_("Accept")}
+                  </Button>
+                }
+                title={incompatibleFsAlert}
+              />
+            )}
+            <AutoFilesystemHint
+              filesystem={filesystem}
+              defaultFilesystem={defaultFilesystem}
+              committedMountPoint={committedMountPoint}
+            />
+          </NestedContent>
+        </>
+      )}
     </>
   );
 }
@@ -278,31 +294,22 @@ const FilesystemFieldsContent = withForm({
       if (!isSingleType) {
         setIncompatibleFsAlert(
           sprintf(
-            // TRANSLATORS: %s is a filesystem type name like "XFS" or "Btrfs"
-            _("Selected mount point does not support %s file system type, switched to Default"),
+            // TRANSLATORS: %1$s is a mount point like "/home", %2$s is a filesystem type name like "XFS" or "Btrfs"
+            _("Automatically changed to Default because %1$s does not support %2$s."),
+            committedMountPoint,
             previousLabel,
           ),
         );
       }
-    }, [usableFilesystems, filesystem, form]);
+    }, [usableFilesystems, committedMountPoint, filesystem, form]);
+
+    const alertProps = {
+      incompatibleFsAlert,
+      onDismissAlert: () => setIncompatibleFsAlert(null),
+    };
 
     return (
       <>
-        {incompatibleFsAlert && (
-          <Alert
-            variant="info"
-            isInline
-            actionClose={
-              <AlertActionCloseButton
-                // TRANSLATORS: closes the alert about automatic filesystem reset
-                aria-label={_("Understood")}
-                onClose={() => setIncompatibleFsAlert(null)}
-              />
-            }
-            title={incompatibleFsAlert}
-          />
-        )}
-
         {!isReuse && (
           <FilesystemTypeSelector
             form={form}
@@ -311,6 +318,7 @@ const FilesystemFieldsContent = withForm({
             committedMountPoint={committedMountPoint}
             filesystemOptions={filesystemOptions}
             usableFilesystems={usableFilesystems}
+            {...alertProps}
           />
         )}
 
@@ -336,6 +344,7 @@ const FilesystemFieldsContent = withForm({
               committedMountPoint={committedMountPoint}
               filesystemOptions={filesystemOptions}
               usableFilesystems={usableFilesystems}
+              {...alertProps}
             />
           </>
         )}
@@ -374,6 +383,7 @@ const FilesystemFieldsContent = withForm({
                           committedMountPoint={committedMountPoint}
                           filesystemOptions={filesystemOptions}
                           usableFilesystems={usableFilesystems}
+                          {...alertProps}
                         />
                       </Stack>
                     </NestedContent>
