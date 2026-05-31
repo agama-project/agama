@@ -237,13 +237,15 @@ function toFormValues(
   const isReuseFs = fsConfig?.reuse === true;
 
   const mountPoint = partitionConfig.mountPath || "";
+  const filesystemLabel = fsConfig?.label || "";
   return {
     mountPoint,
     committedMountPoint: mountPoint,
     name: partitionConfig.name || "",
     filesystem: isReuseFs ? FILESYSTEM_TYPE.AUTO : fsConfig?.type || FILESYSTEM_TYPE.AUTO,
     filesystemAction: isReuseFs ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
-    filesystemLabel: fsConfig?.label || "",
+    filesystemLabel,
+    showMoreFilesystemSettings: filesystemLabel !== "",
     ...inferSizeFields(partitionConfig),
   };
 }

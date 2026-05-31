@@ -34,6 +34,7 @@ import { _ } from "~/i18n";
 
 import type { Storage as System } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
+import LabelText from "~/components/form/LabelText";
 
 type FilesystemFieldsProps = {
   device: System.Device;
@@ -116,14 +117,37 @@ function AutoFilesystemHint({
     return null;
 
   return (
-    <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-      {sprintf(
-        // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-        _("%1$s will be used for %2$s."),
-        filesystemLabel(defaultFilesystem),
-        committedMountPoint,
+    <NestedContent margin="mxLg">
+      <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+        {sprintf(
+          // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+          _("%1$s will be used for %2$s."),
+          filesystemLabel(defaultFilesystem),
+          committedMountPoint,
+        )}
+      </Text>
+    </NestedContent>
+  );
+}
+
+/**
+ * Additional filesystem configuration fields shown when formatting.
+ *
+ * Currently includes:
+ * - Label (optional text field)
+ *
+ * Will be extended with more settings in the future.
+ */
+function FilesystemAdditionalFields({ form }) {
+  return (
+    <form.AppField name="filesystemLabel">
+      {(field) => (
+        <field.TextField
+          label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>}
+          helperText={_("Optional label for the filesystem")}
+        />
       )}
-    </Text>
+    </form.AppField>
   );
 }
 
@@ -137,16 +161,23 @@ function AutoFilesystemHint({
  * option), shows a ReadOnlyField with the type name instead of a dropdown. This
  * applies to mount points like swap and /boot/efi that constrain the filesystem
  * to a single type.
+ *
+ * When a concrete filesystem is selected for formatting, shows a checkbox to
+ * reveal additional filesystem settings (label, etc.) and renders those fields
+ * when checked.
  */
 function FilesystemTypeSelector({
   form,
   filesystem,
+  filesystemAction,
   defaultFilesystem,
   committedMountPoint,
   filesystemOptions,
   usableFilesystems,
 }) {
   const isSingleType = usableFilesystems.length === 1;
+  const showAdditionalSettings =
+    filesystem !== FILESYSTEM_TYPE.AUTO && filesystemAction === FILESYSTEM_ACTION.FORMAT;
 
   return (
     <>
@@ -166,13 +197,35 @@ function FilesystemTypeSelector({
               <field.DropdownField label={_("File system type")} options={filesystemOptions} />
             )}
           </form.AppField>
-          <NestedContent margin="mxLg">
-            <AutoFilesystemHint
-              filesystem={filesystem}
-              defaultFilesystem={defaultFilesystem}
-              committedMountPoint={committedMountPoint}
-            />
-          </NestedContent>
+          <AutoFilesystemHint
+            filesystem={filesystem}
+            defaultFilesystem={defaultFilesystem}
+            committedMountPoint={committedMountPoint}
+          />
+        </>
+      )}
+
+      {showAdditionalSettings && (
+        <>
+          <form.AppField name="showMoreFilesystemSettings">
+            {(field) => (
+              <field.CheckboxField
+                label={
+                  // TRANSLATORS: checkbox label for additional filesystem configuration options
+                  _("Define more file system settings")
+                }
+              />
+            )}
+          </form.AppField>
+          <form.Subscribe selector={(s) => s.values.showMoreFilesystemSettings}>
+            {(showMore) =>
+              showMore && (
+                <NestedContent margin="mxLg">
+                  <FilesystemAdditionalFields form={form} />
+                </NestedContent>
+              )
+            }
+          </form.Subscribe>
         </>
       )}
     </>
@@ -272,6 +325,7 @@ const FilesystemFieldsContent = withForm({
           <FilesystemTypeSelector
             form={form}
             filesystem={filesystem}
+            filesystemAction={filesystemAction}
             defaultFilesystem={defaultFilesystem}
             committedMountPoint={committedMountPoint}
             filesystemOptions={filesystemOptions}
@@ -297,6 +351,7 @@ const FilesystemFieldsContent = withForm({
             <FilesystemTypeSelector
               form={form}
               filesystem={filesystem}
+              filesystemAction={filesystemAction}
               defaultFilesystem={defaultFilesystem}
               committedMountPoint={committedMountPoint}
               filesystemOptions={filesystemOptions}
@@ -335,6 +390,7 @@ const FilesystemFieldsContent = withForm({
                         <FilesystemTypeSelector
                           form={form}
                           filesystem={filesystem}
+                          filesystemAction={filesystemAction}
                           defaultFilesystem={defaultFilesystem}
                           committedMountPoint={committedMountPoint}
                           filesystemOptions={filesystemOptions}
@@ -345,17 +401,6 @@ const FilesystemFieldsContent = withForm({
                   );
                 }}
               </field.RadioGroupField>
-            )}
-          </form.AppField>
-        )}
-
-        {filesystem !== FILESYSTEM_TYPE.AUTO && filesystemAction === FILESYSTEM_ACTION.FORMAT && (
-          <form.AppField name="filesystemLabel">
-            {(field) => (
-              <field.TextField
-                label={_("Label (optional)")}
-                helperText={_("Optional label for the filesystem")}
-              />
             )}
           </form.AppField>
         )}
