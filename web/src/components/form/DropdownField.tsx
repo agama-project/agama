@@ -101,7 +101,9 @@ export default function DropdownField<T extends string>({
   const field = useFieldContext<T>();
   const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
-  const selectedOption = options.find((opt) => !("divider" in opt) && opt.value === field.state.value);
+  const selectedOption = options.find(
+    (opt) => !("divider" in opt) && opt.value === field.state.value,
+  );
 
   return (
     <FormGroup fieldId={field.name} label={label}>
@@ -124,9 +126,7 @@ export default function DropdownField<T extends string>({
             isExpanded={isOpen}
             isDisabled={isDisabled}
           >
-            {selectedOption && "label" in selectedOption
-              ? selectedOption.label
-              : field.state.value}
+            {selectedOption && "label" in selectedOption ? selectedOption.label : field.state.value}
           </MenuToggle>
         )}
       >
