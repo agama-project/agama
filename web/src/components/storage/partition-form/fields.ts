@@ -125,6 +125,7 @@ type FilesystemFields = {
   filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
   filesystemAction: string; // "reuse" | "format"
   filesystemLabel: string;
+  showMoreFilesystemSettings: boolean;
 };
 
 type SizeFields = {
@@ -146,6 +147,7 @@ const defaultValues: FormFields = {
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
+  showMoreFilesystemSettings: false,
   sizeMode: SIZE_MODE.AUTO,
   minSize: "",
   maxSize: "",
