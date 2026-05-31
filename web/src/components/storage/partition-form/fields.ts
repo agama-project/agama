@@ -131,7 +131,6 @@ type SizeFields = {
   sizeMode: SizeMode;
   minSize: string;
   maxSize: string;
-  fixedSize: string;
 };
 
 type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;
@@ -150,7 +149,6 @@ const defaultValues: FormFields = {
   sizeMode: SIZE_MODE.AUTO,
   minSize: "",
   maxSize: "",
-  fixedSize: "",
 };
 
 export const defaultOptions = formOptions({ defaultValues });
@@ -206,12 +204,6 @@ function validateMountPoint(
   return {};
 }
 
-function validatePartition(fields: FormFields): FieldsValidationResult<PartitionFields> {
-  // name field is always valid: empty means new, partition name means reuse.
-  // The dropdown UI ensures a valid selection.
-  return {};
-}
-
 function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
   // AUTO is always valid — the installer will pick an appropriate type.
   if (fields.filesystem === FILESYSTEM_TYPE.AUTO) {
@@ -248,8 +240,8 @@ function validateFilesystemFields(fields: FormFields): FieldsValidationResult<Fi
 function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFields> {
   if (fields.sizeMode === SIZE_MODE.FIXED) {
     return {
-      fixedSize: requiredSize(
-        fields.fixedSize,
+      minSize: requiredSize(
+        fields.minSize,
         _("Size is required"),
         _("Invalid size format (e.g., 20 GiB, 100 MB)"),
       ),
@@ -310,7 +302,6 @@ export function validate(
 ): ValidationResult<FormFields> {
   const fieldErrors = shake({
     ...validateMountPoint(fields, usedMountPoints),
-    ...validatePartition(fields),
     ...validateFilesystemFields(fields),
     ...validateSizeFields(fields),
   });

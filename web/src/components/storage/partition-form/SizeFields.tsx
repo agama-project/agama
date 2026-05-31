@@ -21,21 +21,107 @@
  */
 
 import React from "react";
-import { Stack } from "@patternfly/react-core";
 import { sprintf } from "sprintf-js";
+import { Flex } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { defaultOptions, SIZE_MODE, FILESYSTEM_TYPE } from "./fields";
+import { defaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
 import { deviceSize, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
+
+/**
+ * Returns dropdown options for size mode selection.
+ *
+ * Defined as a function (not a module-level const) so that _() is called at
+ * render time, after the i18n system is initialized.
+ *
+ * The `satisfies` check ensures every SIZE_MODE value has a corresponding
+ * option — adding a new mode to the const without adding an option here
+ * is a compile error.
+ */
+function getSizeModeOptions() {
+  return [
+    {
+      value: SIZE_MODE.AUTO,
+      // TRANSLATORS: size mode option
+      label: _("Automatic"),
+      // TRANSLATORS: description for automatic size mode
+      description: _("Installer determines the size"),
+    },
+    {
+      value: SIZE_MODE.FIXED,
+      // TRANSLATORS: size mode option
+      label: _("Fixed"),
+      // TRANSLATORS: description for fixed size mode
+      description: _("Set a specific size"),
+    },
+    {
+      value: SIZE_MODE.RANGE,
+      // TRANSLATORS: size mode option
+      label: _("Range"),
+      // TRANSLATORS: description for range size mode
+      description: _("Set minimum and maximum"),
+    },
+    {
+      value: SIZE_MODE.EXPAND,
+      // TRANSLATORS: size mode option
+      label: _("Expand if possible"),
+      // TRANSLATORS: description for expand size mode
+      description: _("Set minimum; partition grows if space available"),
+    },
+  ] satisfies Array<{ value: SizeMode; label: string; description: string }>;
+}
 
 type SizeFieldsContentProps = {
   committedMountPoint: string;
   filesystem: string;
-  sizeMode: string;
+  sizeMode: SizeMode;
 };
+
+/**
+ * Derives the note shown when size mode is Automatic.
+ *
+ * Extracted from SizeFieldsContent to keep render logic flat and to allow
+ * direct unit testing of the note copy without mounting the component.
+ */
+function useAutomaticSizeNote(
+  volume: ReturnType<typeof useVolumeTemplate>,
+  effectiveFilesystem: string | undefined,
+  committedMountPoint: string,
+): string {
+  return React.useMemo(() => {
+    if (!volume) return _("Installer will propose a suitable size");
+
+    const minSize = volume.minSize ? deviceSize(volume.minSize) : null;
+    const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
+
+    if (minSize && fsLabel && committedMountPoint) {
+      return sprintf(
+        // TRANSLATORS: %1$s is minimum size (e.g., "20 GiB"), %2$s is mount point (e.g., "/home"), %3$s is filesystem (e.g., "XFS")
+        _(
+          "The installer will propose at least %1$s for this partition. Determined by the role of %2$s and the selected file system (%3$s).",
+        ),
+        minSize,
+        committedMountPoint,
+        fsLabel,
+      );
+    }
+
+    if (minSize) {
+      return sprintf(
+        // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
+        _("The installer will propose at least %s for this partition."),
+        minSize,
+      );
+    }
+
+    return _(
+      "Installer will propose a suitable value based on available disk space and mount point role",
+    );
+  }, [volume, effectiveFilesystem, committedMountPoint]);
+}
 
 /**
  * Inner component that renders size mode-specific inputs and info notes.
@@ -45,7 +131,7 @@ const SizeFieldsContent = withForm({
   props: {
     committedMountPoint: "",
     filesystem: "",
-    sizeMode: "",
+    sizeMode: SIZE_MODE.AUTO,
   } as SizeFieldsContentProps,
   render: function Render({ form, committedMountPoint, filesystem, sizeMode }) {
     // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
@@ -53,87 +139,47 @@ const SizeFieldsContent = withForm({
     // expensive useVolumeTemplate recalculations on every keystroke.
     const volume = useVolumeTemplate(committedMountPoint);
 
-    const effectiveFilesystem = React.useMemo(() => {
-      if (filesystem === FILESYSTEM_TYPE.AUTO) {
-        return volume?.fsType;
-      }
-      return filesystem;
-    }, [filesystem, volume]);
+    const effectiveFilesystem = React.useMemo(
+      () => (filesystem === FILESYSTEM_TYPE.AUTO ? volume?.fsType : filesystem),
+      [filesystem, volume],
+    );
 
-    const automaticSizeNote = React.useMemo(() => {
-      if (!volume) return _("Installer will propose a suitable size");
+    const automaticSizeNote = useAutomaticSizeNote(
+      volume,
+      effectiveFilesystem,
+      committedMountPoint,
+    );
 
-      const minSize = volume.minSize ? deviceSize(volume.minSize) : null;
-      const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
+    switch (sizeMode) {
+      case SIZE_MODE.AUTO:
+        return <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{automaticSizeNote}</Text>;
 
-      if (minSize && fsLabel && committedMountPoint) {
-        return sprintf(
-          // TRANSLATORS: %1$s is minimum size (e.g., "20 GiB"), %2$s is mount point (e.g., "/home"), %3$s is filesystem (e.g., "XFS")
-          _(
-            "The installer will propose at least %1$s for this partition. Determined by the role of %2$s and the selected file system (%3$s).",
-          ),
-          minSize,
-          committedMountPoint,
-          fsLabel,
-        );
-      } else if (minSize) {
-        return sprintf(
-          // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-          _("The installer will propose at least %s for this partition."),
-          minSize,
-        );
-      }
-
-      return _(
-        "Installer will propose a suitable value based on available disk space and mount point role",
-      );
-    }, [volume, effectiveFilesystem, committedMountPoint]);
-
-    if (sizeMode === SIZE_MODE.AUTO) {
-      return (
-        <NestedContent margin="mxLg">
-          <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{automaticSizeNote}</Text>
-        </NestedContent>
-      );
-    }
-
-    if (sizeMode === SIZE_MODE.FIXED) {
-      return (
-        <NestedContent margin="mxLg">
-          <form.AppField name="fixedSize">
-            {(sizeField) => (
-              <sizeField.TextField label={_("Value")} helperText={_("e.g., 20 GiB, 100 MB")} />
+      case SIZE_MODE.FIXED:
+        return (
+          <form.AppField name="minSize">
+            {(field) => (
+              <field.TextField label={_("Value")} helperText={_("e.g., 20 GiB, 100 MB")} />
             )}
           </form.AppField>
-        </NestedContent>
-      );
-    }
+        );
 
-    if (sizeMode === SIZE_MODE.RANGE) {
-      return (
-        <NestedContent margin="mxLg">
-          <Stack hasGutter>
+      case SIZE_MODE.RANGE:
+        return (
+          <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
             <form.AppField name="minSize">
-              {(sizeField) => (
-                <sizeField.TextField label={_("Minimum")} helperText={_("e.g., 10 GiB")} />
-              )}
+              {(field) => <field.TextField label={_("Minimum")} helperText={_("e.g., 10 GiB")} />}
             </form.AppField>
             <form.AppField name="maxSize">
-              {(sizeField) => (
-                <sizeField.TextField label={_("Maximum")} helperText={_("e.g., 40 GiB")} />
-              )}
+              {(field) => <field.TextField label={_("Maximum")} helperText={_("e.g., 40 GiB")} />}
             </form.AppField>
-          </Stack>
-        </NestedContent>
-      );
-    }
+          </Flex>
+        );
 
-    if (sizeMode === SIZE_MODE.EXPAND) {
-      return (
-        <NestedContent margin="mxLg">
+      case SIZE_MODE.EXPAND:
+        return (
           <form.AppField name="minSize">
-            {(sizeField) => (
-              <sizeField.TextField
+            {(field) => (
+              <field.TextField
                 label={_("Minimum")}
                 helperText={_(
                   "Minimum space guaranteed. Remaining disk space is shared among expandable partitions.",
@@ -141,11 +187,13 @@ const SizeFieldsContent = withForm({
               />
             )}
           </form.AppField>
-        </NestedContent>
-      );
-    }
+        );
 
-    return null;
+      default:
+        // Ensures TS errors here if a new SIZE_MODE value is added without a matching case.
+        sizeMode satisfies never;
+        return null;
+    }
   },
 });
 
@@ -163,61 +211,29 @@ const SizeFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
     return (
-      <form.AppField name="sizeMode">
-        {(field) => (
-          <field.DropdownField
-            label={_("Size")}
-            options={[
-              {
-                value: SIZE_MODE.AUTO,
-                // TRANSLATORS: size mode option
-                label: _("Automatic"),
-                // TRANSLATORS: description for automatic size mode
-                description: _("Installer determines the size"),
-              },
-              {
-                value: SIZE_MODE.FIXED,
-                // TRANSLATORS: size mode option
-                label: _("Fixed"),
-                // TRANSLATORS: description for fixed size mode
-                description: _("Set a specific size"),
-              },
-              {
-                value: SIZE_MODE.RANGE,
-                // TRANSLATORS: size mode option
-                label: _("Range"),
-                // TRANSLATORS: description for range size mode
-                description: _("Set minimum and maximum"),
-              },
-              {
-                value: SIZE_MODE.EXPAND,
-                // TRANSLATORS: size mode option
-                label: _("Expand if possible"),
-                // TRANSLATORS: description for expand size mode
-                description: _("Set minimum; partition grows if space available"),
-              },
-            ]}
-          >
-            {(mode) => (
-              <form.Subscribe
-                selector={(s) => ({
-                  committedMountPoint: s.values.committedMountPoint,
-                  filesystem: s.values.filesystem,
-                })}
-              >
-                {({ committedMountPoint, filesystem }) => (
-                  <SizeFieldsContent
-                    form={form}
-                    committedMountPoint={committedMountPoint}
-                    filesystem={filesystem}
-                    sizeMode={mode}
-                  />
-                )}
-              </form.Subscribe>
-            )}
-          </field.DropdownField>
-        )}
-      </form.AppField>
+      <>
+        <form.AppField name="sizeMode">
+          {(field) => <field.DropdownField label={_("Size")} options={getSizeModeOptions()} />}
+        </form.AppField>
+        <form.Subscribe
+          selector={(s) => ({
+            mode: s.values.sizeMode,
+            committedMountPoint: s.values.committedMountPoint,
+            filesystem: s.values.filesystem,
+          })}
+        >
+          {({ mode, committedMountPoint, filesystem }) => (
+            <NestedContent margin="mxLg">
+              <SizeFieldsContent
+                form={form}
+                committedMountPoint={committedMountPoint}
+                filesystem={filesystem}
+                sizeMode={mode}
+              />
+            </NestedContent>
+          )}
+        </form.Subscribe>
+      </>
     );
   },
 });
