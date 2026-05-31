@@ -30,27 +30,27 @@ import { sprintf } from "sprintf-js";
 
 import type { Storage as System } from "~/model/system";
 
-type PartitionSourceFieldsProps = {
+type PartitionFieldsProps = {
   device: System.Device;
   availablePartitions: System.Device[];
 };
 
 /**
- * Partition source selection: new vs use existing partition.
+ * Partition selection: new vs use existing partition.
  *
- * Shows radio buttons for choosing between creating a new partition or
- * using an existing one. When "use existing" is selected, reveals a partition
- * picker dropdown.
+ * Shows a dropdown for choosing between creating a new partition or
+ * using an existing one. "New partition" always appears first, followed by
+ * a divider, then one entry per reusable partition.
  *
  * When no partitions are available, displays a ReadOnlyField explaining that
  * a new partition will be created (maintains consistent visual structure).
  */
-const PartitionSourceFields = withForm({
+const PartitionFields = withForm({
   ...defaultOptions,
   props: {
     device: {} as System.Device,
     availablePartitions: [] as System.Device[],
-  } as PartitionSourceFieldsProps,
+  } as PartitionFieldsProps,
   render: function Render({ form, device, availablePartitions }) {
     const canReuse = availablePartitions.length > 0;
 
@@ -149,4 +149,4 @@ const PartitionSourceFields = withForm({
   },
 });
 
-export default PartitionSourceFields;
+export default PartitionFields;
