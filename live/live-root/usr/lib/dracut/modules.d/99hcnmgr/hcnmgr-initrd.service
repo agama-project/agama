@@ -1,5 +1,5 @@
 [Unit]
-Description=Hybrid Cloud Network Manager
+Description=Hybrid Cloud Network Manager (Initrd)
 DefaultDependencies=no
 Wants=nm-initrd.service systemd-udev-trigger.service
 After=systemd-udev-trigger.service
