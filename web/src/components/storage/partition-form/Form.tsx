@@ -148,21 +148,30 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
     if (values.sizeMode === SIZE_MODE.AUTO) return undefined;
 
     if (values.sizeMode === SIZE_MODE.FIXED) {
-      return values.fixedSize
+      return values.minSize
         ? {
             default: false,
-            min: parseToBytes(values.fixedSize),
-            max: parseToBytes(values.fixedSize),
+            min: parseToBytes(values.minSize),
+            max: parseToBytes(values.minSize),
           }
         : undefined;
     }
 
-    if (values.sizeMode === SIZE_MODE.RANGE || values.sizeMode === SIZE_MODE.EXPAND) {
+    if (values.sizeMode === SIZE_MODE.RANGE) {
       return values.minSize
         ? {
             default: false,
             min: parseToBytes(values.minSize),
             max: values.maxSize ? parseToBytes(values.maxSize) : undefined,
+          }
+        : undefined;
+    }
+
+    if (values.sizeMode === SIZE_MODE.EXPAND) {
+      return values.minSize
+        ? {
+            default: false,
+            min: parseToBytes(values.minSize),
           }
         : undefined;
     }
@@ -188,7 +197,6 @@ function inferSizeFields(partitionConfig: ConfigModelType.Partition): {
   sizeMode: SizeMode;
   minSize: string;
   maxSize: string;
-  fixedSize: string;
 } {
   const defaults = { sizeMode: SIZE_MODE.AUTO, minSize: "", maxSize: "", fixedSize: "" } as const;
 
@@ -207,10 +215,10 @@ function inferSizeFields(partitionConfig: ConfigModelType.Partition): {
   const maxSize = deviceSize(sizeConfig.max, { exact: true });
 
   if (sizeConfig.min === sizeConfig.max) {
-    return { sizeMode: SIZE_MODE.FIXED, minSize: "", maxSize: "", fixedSize: minSize };
+    return { sizeMode: SIZE_MODE.FIXED, minSize, maxSize: "" };
   }
 
-  return { sizeMode: SIZE_MODE.RANGE, minSize, maxSize, fixedSize: "" };
+  return { sizeMode: SIZE_MODE.RANGE, minSize, maxSize };
 }
 
 /**
@@ -225,7 +233,6 @@ function toFormValues(
 ): Partial<typeof defaultOptions.defaultValues> {
   if (!partitionConfig) return {};
 
-  const isReuse = partitionConfig.name !== undefined;
   const fsConfig = partitionConfig.filesystem;
   const isReuseFs = fsConfig?.reuse === true;
 
