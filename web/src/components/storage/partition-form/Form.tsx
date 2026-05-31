@@ -41,7 +41,7 @@ import { STORAGE } from "~/routes/paths";
 import { compact } from "~/utils";
 import { _ } from "~/i18n";
 
-import PartitionSourceFields from "./PartitionSourceFields";
+import PartitionFields from "./PartitionFields";
 import FilesystemFields from "./FilesystemFields";
 import SizeFields from "./SizeFields";
 import {
@@ -398,8 +398,8 @@ function PartitionFormContent({
           )}
         </form.AppField>
 
-        {/* Partition source */}
-        <PartitionSourceFields
+        {/* Partition */}
+        <PartitionFields
           form={form}
           device={systemDevice}
           availablePartitions={availablePartitions}
