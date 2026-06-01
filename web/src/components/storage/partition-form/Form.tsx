@@ -127,8 +127,8 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
 
   // Filesystem configuration
   const filesystem = (): ConfigModelType.Filesystem | undefined => {
-    // Reuse existing filesystem
-    if (isReuse && values.filesystemAction === FILESYSTEM_ACTION.REUSE) {
+    // Reuse existing filesystem (filesystem field holds REUSE sentinel)
+    if (values.filesystem === FILESYSTEM_ACTION.REUSE) {
       return { reuse: true, default: true };
     }
 
@@ -249,7 +249,12 @@ function toFormValues(
   if (!partitionConfig) return {};
 
   const fsConfig = partitionConfig.filesystem;
-  const isReuseFs = fsConfig?.reuse === true;
+  const isReusePartition = partitionConfig.name !== undefined;
+
+  // When editing an existing partition with a filesystem, default to keeping it (REUSE)
+  // unless the config explicitly says to format (reuse: false)
+  const shouldKeepFilesystem =
+    isReusePartition && fsConfig?.type !== undefined && fsConfig.reuse !== false;
 
   const mountPoint = partitionConfig.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";
@@ -257,8 +262,11 @@ function toFormValues(
     mountPoint,
     committedMountPoint: mountPoint,
     name: partitionConfig.name || "",
-    filesystem: isReuseFs ? FILESYSTEM_TYPE.AUTO : fsConfig?.type || FILESYSTEM_TYPE.AUTO,
-    filesystemAction: isReuseFs ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
+    // Default to REUSE when editing partition with filesystem; otherwise use actual type or AUTO
+    filesystem: shouldKeepFilesystem
+      ? FILESYSTEM_ACTION.REUSE
+      : fsConfig?.type || FILESYSTEM_TYPE.AUTO,
+    filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
     filesystemLabel,
     showMoreFilesystemSettings: filesystemLabel !== "",
     ...inferSizeFields(partitionConfig),
