@@ -225,8 +225,8 @@ function validateFilesystemFields(fields: FormFields): FieldsValidationResult<Fi
     };
   }
 
-  // Reusing the existing filesystem requires no explicit type selection.
-  if (isReusingPartition(fields.name) && fields.filesystemAction === FILESYSTEM_ACTION.REUSE) {
+  // Reusing the existing filesystem (filesystem field holds REUSE sentinel).
+  if (fields.filesystem === FILESYSTEM_ACTION.REUSE) {
     return {
       filesystemLabel: optionalValidString(
         fields.filesystemLabel,

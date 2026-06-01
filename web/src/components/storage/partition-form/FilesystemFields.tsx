@@ -23,13 +23,12 @@
 import React from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
-import { Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, isReusingPartition, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { filesystemLabel } from "~/components/storage/utils";
+import { deviceLabel, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 
 import type { Storage as System } from "~/model/system";
@@ -43,7 +42,6 @@ type FilesystemFieldsContentProps = {
   device: System.Device;
   name: string;
   committedMountPoint: string;
-  filesystemAction: string;
   filesystem: string;
 };
 
@@ -52,53 +50,6 @@ type AutoFilesystemHintProps = {
   defaultFilesystem: ConfigModel.FilesystemType | undefined;
   committedMountPoint: string;
 };
-
-/**
- * Returns an informative message for when a partition must be formatted.
- *
- * Used when reusing a partition that either:
- * - Has no filesystem
- * - Has an incompatible filesystem for the selected mount point
- *
- * The message varies based on:
- * - Whether partition currently has a filesystem
- * - Whether only one filesystem type is allowed for the mount point
- */
-function getFormatRequiredMessage(
-  hasFilesystem: boolean,
-  currentFsType: ConfigModel.FilesystemType | undefined,
-  isSingleType: boolean,
-  defaultFilesystem: ConfigModel.FilesystemType | undefined,
-): string {
-  if (hasFilesystem && currentFsType) {
-    // Partition has incompatible filesystem
-    if (isSingleType && defaultFilesystem) {
-      return sprintf(
-        // TRANSLATORS: %1$s is current filesystem type like "ext4", %2$s is required type like "swap"
-        _("Current file system (%1$s) is not compatible. Partition will be formatted with %2$s."),
-        filesystemLabel(currentFsType),
-        filesystemLabel(defaultFilesystem),
-      );
-    }
-    return sprintf(
-      // TRANSLATORS: %s is current filesystem type like "ext4"
-      _(
-        "Current file system (%s) is not compatible. Partition will be formatted with the selected type.",
-      ),
-      filesystemLabel(currentFsType),
-    );
-  }
-
-  // Partition has no filesystem
-  if (isSingleType && defaultFilesystem) {
-    return sprintf(
-      // TRANSLATORS: %s is filesystem type like "swap"
-      _("Partition is not formatted. It will be formatted with %s."),
-      filesystemLabel(defaultFilesystem),
-    );
-  }
-  return _("Partition is not formatted. It will be formatted with the selected file system type.");
-}
 
 /**
  * Inline hint shown when "Automatic" is selected, describing which filesystem
@@ -147,7 +98,6 @@ function AutoFilesystemHint({
 function FilesystemTypeSelector({
   form,
   filesystem,
-  filesystemAction,
   defaultFilesystem,
   committedMountPoint,
   filesystemOptions,
@@ -155,7 +105,7 @@ function FilesystemTypeSelector({
 }) {
   const isSingleType = usableFilesystems.length === 1;
   const showAdditionalSettings =
-    filesystem !== FILESYSTEM_TYPE.AUTO && filesystemAction === FILESYSTEM_ACTION.FORMAT;
+    filesystem !== FILESYSTEM_TYPE.AUTO && filesystem !== FILESYSTEM_ACTION.REUSE;
 
   return (
     <>
@@ -163,7 +113,7 @@ function FilesystemTypeSelector({
         <form.AppField name="filesystem">
           {(field) => (
             <field.ReadOnlyField
-              label={_("File system type")}
+              label={_("File system")}
               text={filesystemLabel(defaultFilesystem)}
             />
           )}
@@ -172,7 +122,7 @@ function FilesystemTypeSelector({
         <>
           <form.AppField name="filesystem">
             {(field) => (
-              <field.DropdownField label={_("File system type")} options={filesystemOptions} />
+              <field.DropdownField label={_("File system")} options={filesystemOptions} />
             )}
           </form.AppField>
           <AutoFilesystemHint
@@ -236,17 +186,9 @@ const FilesystemFieldsContent = withForm({
     device: {} as System.Device,
     name: "",
     committedMountPoint: "",
-    filesystemAction: "",
     filesystem: "",
   } as FilesystemFieldsContentProps,
-  render: function Render({
-    form,
-    device,
-    name,
-    committedMountPoint,
-    filesystemAction,
-    filesystem,
-  }) {
+  render: function Render({ form, device, name, committedMountPoint, filesystem }) {
     // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
     // This prevents showing misleading filesystem options while user types "/ho..." and
     // avoids expensive useVolumeTemplate recalculations on every keystroke.
@@ -268,17 +210,61 @@ const FilesystemFieldsContent = withForm({
     const canKeepCurrentFilesystem =
       hasFilesystem && usableFilesystems.includes(currentFsType as ConfigModel.FilesystemType);
 
-    const filesystemOptions = React.useMemo(
-      () => [
+    const filesystemOptions: Array<
+      { value: string; label: React.ReactNode; description?: React.ReactNode } | { divider: true }
+    > = React.useMemo(() => {
+      const formatOptions = [
         { value: FILESYSTEM_TYPE.AUTO, label: _("Default") },
         ...usableFilesystems.map((fs) => ({ value: fs, label: filesystemLabel(fs) })),
-      ],
-      [usableFilesystems],
-    );
+      ];
+
+      // When reusing a partition with a compatible filesystem, add "Keep current" option
+      if (canKeepCurrentFilesystem && currentFsType) {
+        return [
+          {
+            value: FILESYSTEM_ACTION.REUSE,
+            label: sprintf(
+              // TRANSLATORS: %s is filesystem type like "Btrfs"
+              _("Current (%s)"),
+              filesystemLabel(currentFsType),
+            ),
+            description: sprintf(
+              // TRANSLATORS: %s is device name like "/dev/vdd2"
+              _("Do not format %s and keep data"),
+              deviceLabel(device),
+            ),
+          },
+          { divider: true },
+          ...formatOptions,
+        ];
+      }
+
+      return formatOptions;
+    }, [usableFilesystems, canKeepCurrentFilesystem, currentFsType, device]);
+
+    // When user selects a different partition, initialize filesystem field appropriately
+    const previousNameRef = React.useRef(name);
+    React.useEffect(() => {
+      // Only run when partition selection actually changes
+      if (previousNameRef.current === name) return;
+      previousNameRef.current = name;
+
+      if (!isReuse) {
+        // Switched to new partition - reset to AUTO
+        form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
+      } else if (canKeepCurrentFilesystem) {
+        // Switched to existing partition with compatible filesystem - default to REUSE
+        form.setFieldValue("filesystem", FILESYSTEM_ACTION.REUSE);
+      } else {
+        // Switched to existing partition without/incompatible filesystem - set to AUTO
+        form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
+      }
+    }, [name, isReuse, canKeepCurrentFilesystem, form]);
 
     // Check filesystem compatibility when usable filesystems change
     React.useEffect(() => {
       if (filesystem === FILESYSTEM_TYPE.AUTO) return;
+      if (filesystem === FILESYSTEM_ACTION.REUSE) return;
       if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;
 
       // Current filesystem is not compatible with the mount point.
@@ -292,7 +278,6 @@ const FilesystemFieldsContent = withForm({
           <FilesystemTypeSelector
             form={form}
             filesystem={filesystem}
-            filesystemAction={filesystemAction}
             defaultFilesystem={defaultFilesystem}
             committedMountPoint={committedMountPoint}
             filesystemOptions={filesystemOptions}
@@ -301,75 +286,45 @@ const FilesystemFieldsContent = withForm({
         )}
 
         {isReuse && !canKeepCurrentFilesystem && (
-          <>
-            <form.AppField name="filesystemAction">
-              {(field) => {
-                const isSingleType = usableFilesystems.length === 1;
-                const message = getFormatRequiredMessage(
-                  hasFilesystem,
-                  currentFsType,
-                  isSingleType,
-                  defaultFilesystem,
-                );
-
-                return <field.ReadOnlyField label={_("File system")} text={message} />;
-              }}
-            </form.AppField>
-            <FilesystemTypeSelector
-              form={form}
-              filesystem={filesystem}
-              filesystemAction={filesystemAction}
-              defaultFilesystem={defaultFilesystem}
-              committedMountPoint={committedMountPoint}
-              filesystemOptions={filesystemOptions}
-              usableFilesystems={usableFilesystems}
-            />
-          </>
+          <FilesystemTypeSelector
+            form={form}
+            filesystem={filesystem}
+            defaultFilesystem={defaultFilesystem}
+            committedMountPoint={committedMountPoint}
+            filesystemOptions={filesystemOptions}
+            usableFilesystems={usableFilesystems}
+          />
         )}
 
         {isReuse && canKeepCurrentFilesystem && (
-          <form.AppField name="filesystemAction">
-            {(field) => (
-              <field.RadioGroupField
-                label={_("File system")}
-                options={[
-                  {
-                    value: FILESYSTEM_ACTION.REUSE,
-                    label: sprintf(
-                      // TRANSLATORS: %s is filesystem type like "Btrfs"
-                      _("Keep current (%s)"),
-                      filesystemLabel(currentFsType),
-                    ),
-                    description: _("Do not format, existing data will be preserved"),
-                  },
-                  {
-                    value: FILESYSTEM_ACTION.FORMAT,
-                    label: _("Format"),
-                    description: _("Choose a new file system, existing data will be destroyed"),
-                  },
-                ]}
-              >
-                {(action) => {
-                  if (action !== FILESYSTEM_ACTION.FORMAT) return null;
-                  return (
-                    <NestedContent margin="mxLg">
-                      <Stack hasGutter>
-                        <FilesystemTypeSelector
-                          form={form}
-                          filesystem={filesystem}
-                          filesystemAction={filesystemAction}
-                          defaultFilesystem={defaultFilesystem}
-                          committedMountPoint={committedMountPoint}
-                          filesystemOptions={filesystemOptions}
-                          usableFilesystems={usableFilesystems}
-                        />
-                      </Stack>
-                    </NestedContent>
-                  );
-                }}
-              </field.RadioGroupField>
+          <>
+            <form.AppField name="filesystem">
+              {(field) => (
+                <field.DropdownField label={_("File system")} options={filesystemOptions} />
+              )}
+            </form.AppField>
+            <form.Subscribe selector={(s) => s.values.filesystem}>
+              {(fs) =>
+                fs !== FILESYSTEM_ACTION.REUSE &&
+                fs !== undefined && (
+                  <Text
+                    textStyle="fontSizeSm"
+                    style={{ color: "var(--pf-t--global--color--status--warning--default)" }}
+                  >
+                    {/* TRANSLATORS: warning that formatting will destroy existing data */}
+                    {_("Existing data will be destroyed.")}
+                  </Text>
+                )
+              }
+            </form.Subscribe>
+            {filesystem !== FILESYSTEM_ACTION.REUSE && (
+              <AutoFilesystemHint
+                filesystem={filesystem}
+                defaultFilesystem={defaultFilesystem}
+                committedMountPoint={committedMountPoint}
+              />
             )}
-          </form.AppField>
+          </>
         )}
       </>
     );
@@ -396,17 +351,15 @@ const FilesystemFields = withForm({
         selector={(s) => ({
           name: s.values.name,
           committedMountPoint: s.values.committedMountPoint,
-          filesystemAction: s.values.filesystemAction,
           filesystem: s.values.filesystem,
         })}
       >
-        {({ name, committedMountPoint, filesystemAction, filesystem }) => (
+        {({ name, committedMountPoint, filesystem }) => (
           <FilesystemFieldsContent
             form={form}
             device={device}
             name={name}
             committedMountPoint={committedMountPoint}
-            filesystemAction={filesystemAction}
             filesystem={filesystem}
           />
         )}
