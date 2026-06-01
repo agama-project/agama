@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-15 15:23+0000\n"
-"PO-Revision-Date: 2026-05-16 20:12+0000\n"
+"PO-Revision-Date: 2026-05-27 14:12+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/uk/>\n"
@@ -150,16 +150,16 @@ msgstr ""
 #. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
 #. (e.g., "luks1", "random swap").
 #: service/lib/agama/storage/config_checkers/encryption.rb:95
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "%{crypt_method} is not available in this system."
-msgstr "Метод шифрування '%{crypt_method}' недоступний у цій системі."
+msgstr "%{crypt_method} недоступний у цій системі."
 
 #. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
 #. (e.g., "luks1", "random swap").
 #: service/lib/agama/storage/config_checkers/encryption.rb:112
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "%{crypt_method} is not suitable for a device different to swap."
-msgstr "'%{crypt_method}' не є прийнятним методом для шифрування пристрою."
+msgstr "%{crypt_method} не підходить для пристроїв, що не є розділами swap."
 
 #. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
 #. (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
@@ -213,9 +213,9 @@ msgstr "Потрібно не менше %s пристроїв для %s"
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
 #: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid "%{method} is not suitable to encrypt the physical volumes."
-msgstr "'%{method}' не є придатним методом для шифрування фізичних томів."
+msgstr "%{method} неприйнятний для шифрування фізичних томів."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
 #: service/lib/agama/storage/config_checkers/search.rb:76
