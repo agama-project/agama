@@ -130,8 +130,13 @@ type FilesystemFields = {
 
 type SizeFields = {
   sizeMode: SizeMode;
-  minSize: string;
-  maxSize: string;
+  // FIXED mode
+  fixedSize: string;
+  // RANGE mode
+  rangeMinSize: string;
+  rangeMaxSize: string;
+  // EXPAND mode
+  expandMinSize: string;
 };
 
 type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;
@@ -149,8 +154,10 @@ const defaultValues: FormFields = {
   filesystemLabel: "",
   showMoreFilesystemSettings: false,
   sizeMode: SIZE_MODE.AUTO,
-  minSize: "",
-  maxSize: "",
+  fixedSize: "",
+  rangeMinSize: "",
+  rangeMaxSize: "",
+  expandMinSize: "",
 };
 
 export const defaultOptions = formOptions({ defaultValues });
@@ -242,8 +249,8 @@ function validateFilesystemFields(fields: FormFields): FieldsValidationResult<Fi
 function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFields> {
   if (fields.sizeMode === SIZE_MODE.FIXED) {
     return {
-      minSize: requiredSize(
-        fields.minSize,
+      fixedSize: requiredSize(
+        fields.fixedSize,
         _("Size is required"),
         _("Invalid size format (e.g., 20 GiB, 100 MB)"),
       ),
@@ -252,34 +259,34 @@ function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFiel
 
   if (fields.sizeMode === SIZE_MODE.RANGE) {
     const minError = requiredSize(
-      fields.minSize,
+      fields.rangeMinSize,
       _("Minimum size is required"),
       _("Invalid size format (e.g., 20 GiB, 100 MB)"),
     );
 
     const maxError = requiredSize(
-      fields.maxSize,
+      fields.rangeMaxSize,
       _("Maximum size is required"),
       _("Invalid size format (e.g., 20 GiB, 100 MB)"),
     );
 
     if (minError || maxError) {
-      return { minSize: minError, maxSize: maxError };
+      return { rangeMinSize: minError, rangeMaxSize: maxError };
     }
 
     const rangeError = sizeRange(
-      fields.minSize,
-      fields.maxSize,
+      fields.rangeMinSize,
+      fields.rangeMaxSize,
       _("Minimum size cannot be greater than maximum size"),
     );
 
-    return { maxSize: rangeError };
+    return { rangeMaxSize: rangeError };
   }
 
   if (fields.sizeMode === SIZE_MODE.EXPAND) {
     return {
-      minSize: requiredSize(
-        fields.minSize,
+      expandMinSize: requiredSize(
+        fields.expandMinSize,
         _("Minimum size is required"),
         _("Invalid size format (e.g., 20 GiB, 100 MB)"),
       ),

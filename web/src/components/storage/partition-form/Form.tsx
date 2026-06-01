@@ -150,30 +150,30 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
     if (values.sizeMode === SIZE_MODE.AUTO) return undefined;
 
     if (values.sizeMode === SIZE_MODE.FIXED) {
-      return values.minSize
+      return values.fixedSize
         ? {
             default: false,
-            min: parseToBytes(values.minSize),
-            max: parseToBytes(values.minSize),
+            min: parseToBytes(values.fixedSize),
+            max: parseToBytes(values.fixedSize),
           }
         : undefined;
     }
 
     if (values.sizeMode === SIZE_MODE.RANGE) {
-      return values.minSize
+      return values.rangeMinSize
         ? {
             default: false,
-            min: parseToBytes(values.minSize),
-            max: values.maxSize ? parseToBytes(values.maxSize) : undefined,
+            min: parseToBytes(values.rangeMinSize),
+            max: values.rangeMaxSize ? parseToBytes(values.rangeMaxSize) : undefined,
           }
         : undefined;
     }
 
     if (values.sizeMode === SIZE_MODE.EXPAND) {
-      return values.minSize
+      return values.expandMinSize
         ? {
             default: false,
-            min: parseToBytes(values.minSize),
+            min: parseToBytes(values.expandMinSize),
           }
         : undefined;
     }
@@ -197,10 +197,18 @@ function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelT
  */
 function inferSizeFields(partitionConfig: ConfigModelType.Partition): {
   sizeMode: SizeMode;
-  minSize: string;
-  maxSize: string;
+  fixedSize: string;
+  rangeMinSize: string;
+  rangeMaxSize: string;
+  expandMinSize: string;
 } {
-  const defaults = { sizeMode: SIZE_MODE.AUTO, minSize: "", maxSize: "", fixedSize: "" } as const;
+  const defaults = {
+    sizeMode: SIZE_MODE.AUTO,
+    fixedSize: "",
+    rangeMinSize: "",
+    rangeMaxSize: "",
+    expandMinSize: "",
+  } as const;
 
   const isReuse = partitionConfig.name !== undefined;
   if (isReuse) return defaults;
@@ -208,19 +216,24 @@ function inferSizeFields(partitionConfig: ConfigModelType.Partition): {
   const sizeConfig = partitionConfig.size;
   if (!sizeConfig || sizeConfig.default || sizeConfig.min === undefined) return defaults;
 
-  const minSize = deviceSize(sizeConfig.min, { exact: true });
+  const minSizeValue = deviceSize(sizeConfig.min, { exact: true });
 
   if (sizeConfig.max === undefined) {
-    return { ...defaults, sizeMode: SIZE_MODE.EXPAND, minSize };
+    return { ...defaults, sizeMode: SIZE_MODE.EXPAND, expandMinSize: minSizeValue };
   }
 
-  const maxSize = deviceSize(sizeConfig.max, { exact: true });
+  const maxSizeValue = deviceSize(sizeConfig.max, { exact: true });
 
   if (sizeConfig.min === sizeConfig.max) {
-    return { sizeMode: SIZE_MODE.FIXED, minSize, maxSize: "" };
+    return { ...defaults, sizeMode: SIZE_MODE.FIXED, fixedSize: minSizeValue };
   }
 
-  return { sizeMode: SIZE_MODE.RANGE, minSize, maxSize };
+  return {
+    ...defaults,
+    sizeMode: SIZE_MODE.RANGE,
+    rangeMinSize: minSizeValue,
+    rangeMaxSize: maxSizeValue,
+  };
 }
 
 /**
