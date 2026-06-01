@@ -21,10 +21,11 @@
  */
 
 import React from "react";
+import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
-import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
+import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
 import { defaultOptions, isReusingPartition, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
@@ -67,21 +68,30 @@ function AutoFilesystemHint({
     return null;
 
   return (
-    <NestedContent margin="mxLg">
-      <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-        {sprintf(
-          // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-          _("%1$s will be used for %2$s."),
-          filesystemLabel(defaultFilesystem),
-          committedMountPoint,
-        )}
-      </Text>
-    </NestedContent>
+    <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+      {sprintf(
+        // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
+        _("%1$s will be used for %2$s."),
+        filesystemLabel(defaultFilesystem),
+        committedMountPoint,
+      )}
+    </Text>
   );
 }
 
+type FilesystemSelectorProps = {
+  form;
+  defaultFilesystem: ConfigModel.FilesystemType | undefined;
+  committedMountPoint: string;
+  filesystemOptions: Array<
+    { value: string; label: React.ReactNode; description?: React.ReactNode } | { divider: true }
+  >;
+  usableFilesystems: ConfigModel.FilesystemType[];
+  selectedPartition?: System.Device;
+};
+
 /**
- * Filesystem type selector: dropdown or ReadOnlyField depending on available options.
+ * Filesystem selector: dropdown or ReadOnlyField depending on available options.
  *
  * When "Default" is selected, an inline hint explains which filesystem will be
  * used for the current mount point.
@@ -91,61 +101,58 @@ function AutoFilesystemHint({
  * applies to mount points like swap and /boot/efi that constrain the filesystem
  * to a single type.
  *
- * When a concrete filesystem is selected for formatting, shows a checkbox to
- * reveal additional filesystem settings (label, etc.) and renders those fields
- * when checked.
+ * When reusing a partition and the user selects a format option, shows a warning
+ * that existing data will be destroyed.
  */
-function FilesystemTypeSelector({
+function FilesystemSelector({
   form,
-  filesystem,
   defaultFilesystem,
   committedMountPoint,
   filesystemOptions,
   usableFilesystems,
-}) {
+  selectedPartition,
+}: FilesystemSelectorProps) {
   const isSingleType = usableFilesystems.length === 1;
-  const showAdditionalSettings =
-    filesystem !== FILESYSTEM_TYPE.AUTO && filesystem !== FILESYSTEM_ACTION.REUSE;
+
+  if (isSingleType && defaultFilesystem) {
+    return (
+      <form.AppField name="filesystem">
+        {(field) => (
+          <field.ReadOnlyField label={_("File system")} text={filesystemLabel(defaultFilesystem)} />
+        )}
+      </form.AppField>
+    );
+  }
 
   return (
-    <>
-      {isSingleType && defaultFilesystem ? (
-        <form.AppField name="filesystem">
-          {(field) => (
-            <field.ReadOnlyField
-              label={_("File system")}
-              text={filesystemLabel(defaultFilesystem)}
-            />
+    <form.AppField name="filesystem">
+      {(field) => (
+        <field.DropdownField label={_("File system")} options={filesystemOptions}>
+          {(value) => (
+            <FieldNestedContent>
+              {value === FILESYSTEM_TYPE.AUTO && (
+                <AutoFilesystemHint
+                  filesystem={value}
+                  defaultFilesystem={defaultFilesystem}
+                  committedMountPoint={committedMountPoint}
+                />
+              )}
+              {selectedPartition && value !== FILESYSTEM_ACTION.REUSE && (
+                <HelperText>
+                  <HelperTextItem variant="warning">
+                    {sprintf(
+                      // TRANSLATORS: %s is partition name like "/dev/vdd2"
+                      _("Existing data on %s will be destroyed."),
+                      deviceLabel(selectedPartition),
+                    )}
+                  </HelperTextItem>
+                </HelperText>
+              )}
+            </FieldNestedContent>
           )}
-        </form.AppField>
-      ) : (
-        <>
-          <form.AppField name="filesystem">
-            {(field) => (
-              <field.DropdownField label={_("File system")} options={filesystemOptions} />
-            )}
-          </form.AppField>
-          <AutoFilesystemHint
-            filesystem={filesystem}
-            defaultFilesystem={defaultFilesystem}
-            committedMountPoint={committedMountPoint}
-          />
-        </>
+        </field.DropdownField>
       )}
-
-      {showAdditionalSettings && (
-        <form.AppField name="showMoreFilesystemSettings">
-          {(field) => (
-            <field.CheckboxField
-              label={
-                // TRANSLATORS: checkbox label for additional filesystem configuration options
-                _("Define more file system settings")
-              }
-            />
-          )}
-        </form.AppField>
-      )}
-    </>
+    </form.AppField>
   );
 }
 
@@ -272,59 +279,31 @@ const FilesystemFieldsContent = withForm({
       form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
     }, [usableFilesystems, filesystem, form]);
 
+    const showAdditionalSettings =
+      filesystem !== FILESYSTEM_TYPE.AUTO && filesystem !== FILESYSTEM_ACTION.REUSE;
+
     return (
       <>
-        {!isReuse && (
-          <FilesystemTypeSelector
-            form={form}
-            filesystem={filesystem}
-            defaultFilesystem={defaultFilesystem}
-            committedMountPoint={committedMountPoint}
-            filesystemOptions={filesystemOptions}
-            usableFilesystems={usableFilesystems}
-          />
-        )}
+        <FilesystemSelector
+          form={form}
+          defaultFilesystem={defaultFilesystem}
+          committedMountPoint={committedMountPoint}
+          filesystemOptions={filesystemOptions}
+          usableFilesystems={usableFilesystems}
+          selectedPartition={isReuse && canKeepCurrentFilesystem ? selectedPartition : undefined}
+        />
 
-        {isReuse && !canKeepCurrentFilesystem && (
-          <FilesystemTypeSelector
-            form={form}
-            filesystem={filesystem}
-            defaultFilesystem={defaultFilesystem}
-            committedMountPoint={committedMountPoint}
-            filesystemOptions={filesystemOptions}
-            usableFilesystems={usableFilesystems}
-          />
-        )}
-
-        {isReuse && canKeepCurrentFilesystem && (
-          <>
-            <form.AppField name="filesystem">
-              {(field) => (
-                <field.DropdownField label={_("File system")} options={filesystemOptions} />
-              )}
-            </form.AppField>
-            <form.Subscribe selector={(s) => s.values.filesystem}>
-              {(fs) =>
-                fs !== FILESYSTEM_ACTION.REUSE &&
-                fs !== undefined && (
-                  <Text
-                    textStyle="fontSizeSm"
-                    style={{ color: "var(--pf-t--global--color--status--warning--default)" }}
-                  >
-                    {/* TRANSLATORS: warning that formatting will destroy existing data */}
-                    {_("Existing data will be destroyed.")}
-                  </Text>
-                )
-              }
-            </form.Subscribe>
-            {filesystem !== FILESYSTEM_ACTION.REUSE && (
-              <AutoFilesystemHint
-                filesystem={filesystem}
-                defaultFilesystem={defaultFilesystem}
-                committedMountPoint={committedMountPoint}
+        {showAdditionalSettings && (
+          <form.AppField name="showMoreFilesystemSettings">
+            {(field) => (
+              <field.CheckboxField
+                label={
+                  // TRANSLATORS: checkbox label for additional filesystem configuration options
+                  _("Define more file system settings")
+                }
               />
             )}
-          </>
+          </form.AppField>
         )}
       </>
     );
