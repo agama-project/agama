@@ -5,7 +5,7 @@
 . /lib/dracut-lib.sh
 . /lib/net-lib.sh
 
-if _val=$(getargs ip=); then
+if getargs ip= >/dev/null || getargs hcn.ip= >/dev/null || getargs hcn.route= >/dev/null; then
   mkdir -p /run/agama/
   : >/run/agama/custom_dracut_network
 fi
