@@ -95,6 +95,30 @@ pub type TaskId = usize;
 /// Tasks return `Ok(())` on success or an error boxed as `Box<dyn Error + Send>`.
 pub type TaskResult = Result<(), Box<dyn std::error::Error + Send>>;
 
+/// Helper to convert any error into a TaskResult error.
+///
+/// This function boxes an error and casts it to the trait object type required by TaskResult.
+/// Use this to avoid verbose `.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)`
+/// expressions in task closures.
+///
+/// # Example
+///
+/// ```ignore
+/// task_manager
+///     .task("example", "Example task")
+///     .run(|| async move {
+///         some_operation()
+///             .await
+///             .map_err(task_error)
+///     })
+///     .await;
+/// ```
+pub fn task_error<E: std::error::Error + Send + 'static>(
+    e: E,
+) -> Box<dyn std::error::Error + Send> {
+    Box::new(e)
+}
+
 type BoxFuture = Pin<Box<dyn Future<Output = TaskResult> + Send>>;
 
 /// Metadata describing a task.

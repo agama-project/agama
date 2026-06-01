@@ -33,7 +33,9 @@ use tokio::sync::RwLock;
 
 use crate::{
     bootloader, checks, files, hostname, ipmi::Ipmi, iscsi, l10n, ntp, proxy, s390, security,
-    service, software, storage, task_manager::TaskManager, users,
+    service, software, storage,
+    task_manager::{task_error, TaskManager},
+    users,
 };
 
 /// Implements the installation process.
@@ -196,12 +198,7 @@ impl SetConfigAction {
     {
         self.task_manager
             .task(id, description)
-            .run(|| async move {
-                handler
-                    .call(message)
-                    .await
-                    .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)
-            })
+            .run(|| async move { handler.call(message).await.map_err(task_error) })
             .await;
     }
 
@@ -278,7 +275,7 @@ impl SetConfigAction {
                     .call(files::message::RunScripts::new(ScriptsGroup::Pre))
                     .await
                     .map(|_| ())
-                    .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)
+                    .map_err(task_error)
             })
             .await;
 
@@ -330,17 +327,17 @@ impl SetConfigAction {
                     let storage_system = storage_handler
                         .call(storage::message::GetSystem)
                         .await
-                        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)?;
+                        .map_err(task_error)?;
                     if storage_system.is_none() {
                         storage_handler
                             .call(storage::message::Probe)
                             .await
-                            .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)?
+                            .map_err(task_error)?
                     }
                     handler
                         .call(s390::message::SetConfig::new(s390_config))
                         .await
-                        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)
+                        .map_err(task_error)
                 })
                 .await;
         }
@@ -355,11 +352,8 @@ impl SetConfigAction {
                     handler
                         .update_config(network_config)
                         .await
-                        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)?;
-                    handler
-                        .apply()
-                        .await
-                        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)
+                        .map_err(task_error)?;
+                    handler.apply().await.map_err(task_error)
                 })
                 .await;
         }
@@ -410,7 +404,7 @@ impl SetConfigAction {
                             storage_config,
                         ))
                         .await
-                        .map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)?;
+                        .map_err(task_error)?;
                     let _ = future.await;
                     Ok(())
                 })
