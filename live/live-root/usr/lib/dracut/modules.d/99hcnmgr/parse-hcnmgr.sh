@@ -168,130 +168,128 @@ fi
 
 if [ -z "$MAPPINGS" ]; then
   info "parse-hcnmgr: no mappings found"
-  [ "$0" = "/init" ] || [ "$0" = "/lib/dracut/dracut-initqueue.sh" ] && return 0 || exit 0
-fi
+else
+  info "parse-hcnmgr: mappings found: $MAPPINGS"
 
-info "parse-hcnmgr: mappings found: $MAPPINGS"
+  # Command line processing
+  HCN_IP=$(getargs hcn.ip)
+  HCN_ROUTE=$(getargs hcn.route)
 
-# Command line processing
-[ -z "$CMDLINE" ] && [ -r /proc/cmdline ] && CMDLINE=$(cat /proc/cmdline)
-HCN_IP=$(getargs hcn.ip)
-HCN_ROUTE=$(getargs hcn.route)
+  NEW_ARGS=""
+  MOD_CMDLINE=$(getcmdline)
+  CHANGED=0
 
-NEW_ARGS=""
-MOD_CMDLINE="$CMDLINE"
-CHANGED=0
+  # Unique bond names from discovered mappings
+  BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) print $i}' | sort -u)
 
-# Unique bond names from discovered mappings
-BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) print $i}' | sort -u)
+  for BONDNAME in $BOND_NAMES; do
+    SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
 
-for BONDNAME in $BOND_NAMES; do
-  SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
-
-  # Extract slaves for this bond from MAPPINGS
-  set -- $MAPPINGS
-  while [ $# -ge 4 ]; do
-    if [ "$1" = "$BONDNAME" ]; then
-      SLAVE_NAMES="$SLAVE_NAMES $2"
-      [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
-      [ "$4" = "primary" ] && PRIMARY="$2"
-      SLAVES="${SLAVES:+$SLAVES,}$2"
-    fi
-    shift 4
-  done
-
-  info "parse-hcnmgr: processing bond $BONDNAME with slaves: $SLAVE_NAMES"
-
-  # Add bond definition to NEW_ARGS
-  BOND_OPTS="mode=1,miimon=100,fail_over_mac=2${PRIMARY:+,primary=$PRIMARY}"
-  NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:$BOND_OPTS"
-
-  # Process hcn.ip - replace slave names/MACs with bond name
-  if [ -n "$HCN_IP" ]; then
-    _matched=0
-    for _s in $SLAVE_NAMES $SLAVE_MACS; do
-      _s_dash=$(echo "$_s" | tr ':' '-')
-      # Check if HCN_IP contains the slave (as a whole word/field)
-      if echo ":$HCN_IP:" | grep -qE ":($_s|$_s_dash):"; then
-        _matched=1
-        # Replace with boundaries: start of string or colon -> bond name -> end of string or colon
-        _current_hcn_ip=$(echo "$HCN_IP" | sed -E "s/^($_s|$_s_dash)([: ]|$)/$BONDNAME\2/; s/([: ])($_s|$_s_dash)([: ]|$)/\1$BONDNAME\3/g")
-        NEW_ARGS="$NEW_ARGS ip=$_current_hcn_ip"
-        CHANGED=1
-        break
+    # Extract slaves for this bond from MAPPINGS
+    set -- $MAPPINGS
+    while [ $# -ge 4 ]; do
+      if [ "$1" = "$BONDNAME" ]; then
+        SLAVE_NAMES="$SLAVE_NAMES $2"
+        [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
+        [ "$4" = "primary" ] && PRIMARY="$2"
+        SLAVES="${SLAVES:+$SLAVES,}$2"
       fi
+      shift 4
     done
 
-    if [ $_matched -eq 0 ] && ! echo "$HCN_IP" | grep -q ":bond[0-9]"; then
-      case "$HCN_IP" in
-      dhcp | on | any | dhcp6 | auto6 | ibft)
-        info "parse-hcnmgr: applying $HCN_IP to $BONDNAME"
-        NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
-        CHANGED=1
-        ;;
-      *)
-        _colons=$(echo "$HCN_IP" | tr -dc ':' | wc -c)
-        if [ "$_colons" -lt 5 ]; then
-          _suffix=$(printf "%$((5 - _colons))s" | tr ' ' ':')
-          info "parse-hcnmgr: applying static IP to $BONDNAME"
-          NEW_ARGS="$NEW_ARGS ip=$HCN_IP${_suffix}$BONDNAME:none"
+    info "parse-hcnmgr: processing bond $BONDNAME with slaves: $SLAVE_NAMES"
+
+    # Add bond definition to NEW_ARGS
+    BOND_OPTS="mode=1,miimon=100,fail_over_mac=2${PRIMARY:+,primary=$PRIMARY}"
+    NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:$BOND_OPTS"
+
+    # Process hcn.ip - replace slave names/MACs with bond name
+    if [ -n "$HCN_IP" ]; then
+      _matched=0
+      for _s in $SLAVE_NAMES $SLAVE_MACS; do
+        _s_dash=$(echo "$_s" | tr ':' '-')
+        # Check if HCN_IP contains the slave (as a whole word/field)
+        if echo ":$HCN_IP:" | grep -qE ":($_s|$_s_dash):"; then
+          _matched=1
+          # Replace with boundaries: start of string or colon -> bond name -> end of string or colon
+          _current_hcn_ip=$(echo "$HCN_IP" | sed -E "s/^($_s|$_s_dash)([: ]|$)/$BONDNAME\2/; s/([: ])($_s|$_s_dash)([: ]|$)/\1$BONDNAME\3/g")
+          NEW_ARGS="$NEW_ARGS ip=$_current_hcn_ip"
+          CHANGED=1
+          break
+        fi
+      done
+
+      if [ $_matched -eq 0 ] && ! echo "$HCN_IP" | grep -q ":bond[0-9]"; then
+        case "$HCN_IP" in
+        dhcp | on | any | dhcp6 | auto6 | ibft)
+          info "parse-hcnmgr: applying $HCN_IP to $BONDNAME"
+          NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
+          CHANGED=1
+          ;;
+        *)
+          _colons=$(echo "$HCN_IP" | tr -dc ':' | wc -c)
+          if [ "$_colons" -lt 5 ]; then
+            _suffix=$(printf "%$((5 - _colons))s" | tr ' ' ':')
+            info "parse-hcnmgr: applying static IP to $BONDNAME"
+            NEW_ARGS="$NEW_ARGS ip=$HCN_IP${_suffix}$BONDNAME:none"
+            CHANGED=1
+          fi
+          ;;
+        esac
+      fi
+    fi
+
+    # Process hcn.route
+    if [ -n "$HCN_ROUTE" ]; then
+      _matched=0
+      for _s in $SLAVE_NAMES $SLAVE_MACS; do
+        _s_dash=$(echo "$_s" | tr ':' '-')
+        if echo ":$HCN_ROUTE:" | grep -qE ":($_s|$_s_dash):"; then
+          _matched=1
+          _current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s/^($_s|$_s_dash)([: ]|$)/$BONDNAME\2/; s/([: ])($_s|$_s_dash)([: ]|$)/\1$BONDNAME\3/g")
+          NEW_ARGS="$NEW_ARGS rd.route=$_current_hcn_route"
+          CHANGED=1
+          break
+        fi
+      done
+      if [ $_matched -eq 0 ] && ! echo "$HCN_ROUTE" | grep -q ":bond[0-9]"; then
+        _colons=$(echo "$HCN_ROUTE" | tr -dc ':' | wc -c)
+        if [ "$_colons" -le 1 ]; then
+          info "parse-hcnmgr: applying route to $BONDNAME"
+          NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE$([ "$_colons" -eq 0 ] && echo "::" || echo ":")$BONDNAME"
           CHANGED=1
         fi
-        ;;
-      esac
+      fi
     fi
-  fi
 
-  # Process hcn.route
-  if [ -n "$HCN_ROUTE" ]; then
-    _matched=0
+    # Replace slaves in existing command line (ip= and rd.route=)
     for _s in $SLAVE_NAMES $SLAVE_MACS; do
       _s_dash=$(echo "$_s" | tr ':' '-')
-      if echo ":$HCN_ROUTE:" | grep -qE ":($_s|$_s_dash):"; then
-        _matched=1
-        _current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s/^($_s|$_s_dash)([: ]|$)/$BONDNAME\2/; s/([: ])($_s|$_s_dash)([: ]|$)/\1$BONDNAME\3/g")
-        NEW_ARGS="$NEW_ARGS rd.route=$_current_hcn_route"
+      if echo "$MOD_CMDLINE" | grep -qE "$_s|$_s_dash"; then
+        info "parse-hcnmgr: replacing slave $_s/$_s_dash with $BONDNAME in cmdline"
+        MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed -E "s/([:=])($_s|$_s_dash)([: ]|$)/\1$BONDNAME\3/g")
         CHANGED=1
+      fi
+    done
+  done
+
+  # Write new configuration and update NetworkManager
+  if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
+    info "parse-hcnmgr: writing /etc/cmdline.d/99-hcnmgr.conf"
+    mkdir -p /etc/cmdline.d
+    echo "$NEW_ARGS" >/etc/cmdline.d/99-hcnmgr.conf
+
+    export CMDLINE="$MOD_CMDLINE $NEW_ARGS"
+
+    for _gen in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
+      if [ -x "$_gen" ]; then
+        info "parse-hcnmgr: calling $_gen"
+        "$_gen" -- $CMDLINE
+        fixup_nm_connections
+        mkdir -p /run/NetworkManager/initrd
+        : >/run/NetworkManager/initrd/neednet
         break
       fi
     done
-    if [ $_matched -eq 0 ] && ! echo "$HCN_ROUTE" | grep -q ":bond[0-9]"; then
-      _colons=$(echo "$HCN_ROUTE" | tr -dc ':' | wc -c)
-      if [ "$_colons" -le 1 ]; then
-        info "parse-hcnmgr: applying route to $BONDNAME"
-        NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE$([ "$_colons" -eq 0 ] && echo "::" || echo ":")$BONDNAME"
-        CHANGED=1
-      fi
-    fi
   fi
-
-  # Replace slaves in existing command line (ip= and rd.route=)
-  for _s in $SLAVE_NAMES $SLAVE_MACS; do
-    _s_dash=$(echo "$_s" | tr ':' '-')
-    if echo "$MOD_CMDLINE" | grep -qE "$_s|$_s_dash"; then
-      info "parse-hcnmgr: replacing slave $_s/$_s_dash with $BONDNAME in cmdline"
-      MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed -E "s/([:=])($_s|$_s_dash)([: ]|$)/\1$BONDNAME\3/g")
-      CHANGED=1
-    fi
-  done
-done
-
-# Write new configuration and update NetworkManager
-if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
-  info "parse-hcnmgr: writing /etc/cmdline.d/99-hcnmgr.conf"
-  mkdir -p /etc/cmdline.d
-  echo "$NEW_ARGS" >/etc/cmdline.d/99-hcnmgr.conf
-
-  export CMDLINE="$MOD_CMDLINE $NEW_ARGS"
-
-  for _gen in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
-    if [ -x "$_gen" ]; then
-      info "parse-hcnmgr: calling $_gen"
-      "$_gen" -- $CMDLINE
-      fixup_nm_connections
-      mkdir -p /run/NetworkManager/initrd
-      : >/run/NetworkManager/initrd/neednet
-      break
-    fi
-  done
 fi
