@@ -299,6 +299,14 @@ export interface EncryptionLuks2 {
 export interface EncryptionPervasiveLuks2 {
   pervasiveLuks2: {
     password: EncryptionPassword;
+    /**
+     * List of APQNs used to generate secure keys.
+     */
+    apqns?: string[];
+    /**
+     * Type of the generated secure key.
+     */
+    keyType?: "EP11-AES" | "CCA-AESCIPHER" | "CCA-AESDATA";
   };
 }
 /**
@@ -454,6 +462,10 @@ export interface SimplePhysicalVolumesGenerator {
 export interface AdvancedPhysicalVolumesGenerator {
   generate: {
     targetDevices: Alias[];
+    /**
+     * Policy for creating physical volumes: either using all the available space or only the needed space for allocating the logical volumes.
+     */
+    spacePolicy?: "useNeeded" | "useAvailable";
     encryption?: Encryption;
   };
 }

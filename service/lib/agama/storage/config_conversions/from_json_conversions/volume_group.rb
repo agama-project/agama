@@ -62,6 +62,7 @@ module Agama
               search:                      convert_search,
               extent_size:                 convert_extent_size,
               physical_volumes_devices:    convert_physical_volumes_devices,
+              physical_volumes_policy:     convert_physical_volumes_policy,
               physical_volumes_encryption: convert_physical_volumes_encryption,
               physical_volumes:            convert_physical_volumes,
               logical_volumes:             convert_logical_volumes
@@ -82,6 +83,17 @@ module Agama
             return unless generate_json
 
             generate_json.is_a?(Array) ? generate_json : generate_json[:targetDevices]
+          end
+
+          # @return [:use_needed, :use_available]
+          def convert_physical_volumes_policy
+            generate_json = physical_volume_generate_json&.fetch(:generate)
+            return :use_needed unless generate_json.is_a?(Hash)
+
+            value = generate_json[:spacePolicy]
+            return :use_available if value == "useAvailable"
+
+            :use_needed
           end
 
           # @return [Configs::Encryption, nil]

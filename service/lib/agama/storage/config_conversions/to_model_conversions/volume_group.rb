@@ -52,12 +52,13 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              name:           config.device_name,
-              vgName:         config.name,
-              extentSize:     config.extent_size&.to_i,
-              targetDevices:  convert_target_devices,
-              spacePolicy:    convert_space_policy,
-              logicalVolumes: convert_logical_volumes
+              name:                config.device_name,
+              vgName:              config.name,
+              extentSize:          config.extent_size&.to_i,
+              targetDevices:       convert_target_devices,
+              targetDevicesPolicy: convert_target_devices_policy,
+              spacePolicy:         convert_space_policy,
+              logicalVolumes:      convert_logical_volumes
             }
           end
 
@@ -68,6 +69,16 @@ module Agama
             config.physical_volumes_devices
               .map { |a| storage_config.partitionable(a)&.device_name }
               .compact
+          end
+
+          # Policy for creating physical volumes in the target devices.
+          #
+          # @return ["useNeeded", "useAvailable", nil]
+          def convert_target_devices_policy
+            {
+              use_needed:    "useNeeded",
+              use_available: "useAvailable"
+            }[config.physical_volumes_policy]
           end
 
           # @return [Array<Hash>]

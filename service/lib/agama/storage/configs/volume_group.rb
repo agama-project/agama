@@ -43,6 +43,17 @@ module Agama
         # @return [Array<String>]
         attr_accessor :physical_volumes_devices
 
+        # Space policy for automatically creating new physical volumes.
+        #
+        # Options:
+        # * :use_available The VG will be created to use all the available space of the target
+        #   devices, thus the VG size could be greater than the sum of LVs sizes.
+        # * :use_needed The created VG will match the requirements 1:1, so its size will be
+        #   exactly the sum of all the LVs sizes.
+        #
+        # @return [:use_needed, :use_available, nil]
+        attr_accessor :physical_volumes_policy
+
         # Encryption for the new physical volumes created at the {physical_volumes_devices}.
         #
         # @return [Encryption, nil]

@@ -295,6 +295,29 @@ describe("LvmPage", () => {
       mockUseVolumeGroup.mockReturnValue(mockRootVolumeGroup);
     });
 
+    it("shows helper text when targetDevicesPolicy is useNeeded", () => {
+      const vgWithUseNeeded = {
+        ...mockRootVolumeGroup,
+        targetDevicesPolicy: "useNeeded" as const,
+      };
+      mockUseVolumeGroup.mockReturnValue(vgWithUseNeeded);
+
+      installerRender(<LvmPage />);
+
+      screen.getByText(/This volume group only occupies the space required by its logical volumes/);
+      screen.getByText(/To expand it to cover all available disk space, recreate the volume group/);
+    });
+
+    it("does not show helper text when targetDevicesPolicy is not useNeeded", () => {
+      installerRender(<LvmPage />);
+
+      expect(
+        screen.queryByText(
+          /This volume group only occupies the space required by its logical volumes/,
+        ),
+      ).toBeNull();
+    });
+
     it("performs basic validations", async () => {
       const { user } = installerRender(<LvmPage />);
       const name = screen.getByRole("textbox", { name: "Name" });
