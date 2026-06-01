@@ -103,11 +103,24 @@ describe("VlanFields", () => {
     expect(ifaceField).toBeInTheDocument();
   });
 
-  it("does not allow defining the device name when editing", async () => {
+  it("allows defining the device name when editing", async () => {
     installerRender(<TestForm isEditing />);
 
-    expect(screen.queryByLabelText("Device name")).not.toBeInTheDocument();
-    expect(screen.getByText("Device name")).toBeInTheDocument(); // ReadOnlyField label
+    expect(await screen.findByLabelText("Device name")).toBeInTheDocument();
+  });
+
+  it("suggests the device name based on parent device and VLAN ID even when editing", async () => {
+    const { user } = installerRender(<TestForm isEditing />);
+
+    // Select parent device enp1s0
+    await user.click(screen.getByLabelText("Parent device"));
+    await user.click(screen.getByRole("option", { name: /enp1s0/ }));
+
+    // Set VLAN ID to 100
+    await user.type(screen.getByLabelText("VLAN ID"), "100");
+
+    // Device name should be suggested as enp1s0.100
+    expect(screen.getByLabelText("Device name")).toHaveValue("enp1s0.100");
   });
 
   it("filters parent device options to exclude the current device name and 'lo'", async () => {

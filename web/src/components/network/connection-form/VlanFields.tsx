@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { isEmpty } from "radashi";
 import { defaultOptions, VlanProtocolMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
@@ -54,10 +55,6 @@ const protocolOptions = () => [
   },
 ];
 
-type VlanFieldsProps = {
-  isEditing?: boolean;
-};
-
 /**
  * VLAN fields for a connection form.
  *
@@ -67,21 +64,18 @@ type VlanFieldsProps = {
  */
 const VlanFields = withForm({
   ...defaultOptions,
-  props: {
-    isEditing: false,
-  } as VlanFieldsProps,
-  render: function Render({ form, isEditing }) {
+  render: function Render({ form }) {
     const devices = useDevices();
 
     // Suggests a device name based on the parent device and VLAN ID, as long as
     // the user has not manually edited it.
-    const suggestIface = (parent?: string, id?: number) => {
-      if (isEditing || form.getFieldMeta("vlanIface")?.isDirty) return;
+    const suggestIface = () => {
+      if (form.getFieldMeta("vlanIface")?.isDirty) return;
 
-      const vlanParent = parent ?? form.getFieldValue("vlanParent");
-      const vlanId = id ?? form.getFieldValue("vlanId");
+      const vlanParent = form.getFieldValue("vlanParent");
+      const vlanId = form.getFieldValue("vlanId");
 
-      if (vlanParent && vlanId !== undefined) {
+      if (!isEmpty(vlanParent) && !isEmpty(vlanId)) {
         form.setFieldValue("vlanIface", `${vlanParent}.${vlanId}`, {
           dontUpdateMeta: true,
         });
@@ -106,7 +100,7 @@ const VlanFields = withForm({
                 form.setFieldValue("vlanParent", parentOptions[0].value, { dontUpdateMeta: true });
               }
             },
-            onChange: ({ value }: { value: string }) => suggestIface(value),
+            onChange: () => suggestIface(),
           }}
         >
           {(field) => (
@@ -123,7 +117,7 @@ const VlanFields = withForm({
         <form.AppField
           name="vlanId"
           listeners={{
-            onChange: ({ value }: { value: number }) => suggestIface(undefined, value),
+            onChange: () => suggestIface(),
           }}
         >
           {(field) => (
@@ -143,22 +137,18 @@ const VlanFields = withForm({
         </form.AppField>
 
         <form.AppField name="vlanIface">
-          {(field) =>
-            isEditing ? (
-              <field.ReadOnlyField label={_("Device name")} />
-            ) : (
-              <field.TextField
-                label={
-                  // TRANSLATORS: label for the network interface name field.
-                  _("Device name")
-                }
-                helperText={
-                  // TRANSLATORS: helper text for the VLAN device name field.
-                  _("E.g., eth0.100")
-                }
-              />
-            )
-          }
+          {(field) => (
+            <field.TextField
+              label={
+                // TRANSLATORS: label for the network interface name field.
+                _("Device name")
+              }
+              helperText={
+                // TRANSLATORS: helper text for the VLAN device name field.
+                _("E.g., eth0.100")
+              }
+            />
+          )}
         </form.AppField>
 
         <form.AppField name="vlanProtocol">
