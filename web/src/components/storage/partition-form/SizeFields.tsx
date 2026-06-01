@@ -22,7 +22,7 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { Flex } from "@patternfly/react-core";
+import { Content, Flex } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
@@ -83,6 +83,10 @@ type SizeFieldsContentProps = {
 /**
  * Derives the note shown when size mode is Automatic.
  *
+ * Returns structured data for two-line display:
+ * - sizeLabel: Prominent size information (e.g., "At least 20 GiB")
+ * - rationale: Subdued explanation of how size is determined
+ *
  * Extracted from SizeFieldsContent to keep render logic flat and to allow
  * direct unit testing of the note copy without mounting the component.
  */
@@ -90,36 +94,43 @@ function useAutomaticSizeNote(
   volume: ReturnType<typeof useVolumeTemplate>,
   effectiveFilesystem: string | undefined,
   committedMountPoint: string,
-): string {
+): { sizeLabel: string; rationale: string } {
   return React.useMemo(() => {
-    if (!volume) return _("Installer will propose a suitable size");
+    if (!volume) {
+      return {
+        sizeLabel: _("Automatic"),
+        rationale: _("Installer will propose a suitable size"),
+      };
+    }
 
     const minSize = volume.minSize ? deviceSize(volume.minSize) : null;
     const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
 
     if (minSize && fsLabel && committedMountPoint) {
-      return sprintf(
-        // TRANSLATORS: %1$s is minimum size (e.g., "20 GiB"), %2$s is mount point (e.g., "/home"), %3$s is filesystem (e.g., "XFS")
-        _(
-          "The installer will propose at least %1$s for this partition. Determined by the role of %2$s and the selected file system (%3$s).",
+      return {
+        // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
+        sizeLabel: sprintf(_("At least %s"), minSize),
+        // TRANSLATORS: %1$s is mount point (e.g., "/home"), %2$s is filesystem (e.g., "XFS")
+        rationale: sprintf(
+          _("Determined by the role of %1$s and the selected file system (%2$s)"),
+          committedMountPoint,
+          fsLabel,
         ),
-        minSize,
-        committedMountPoint,
-        fsLabel,
-      );
+      };
     }
 
     if (minSize) {
-      return sprintf(
+      return {
         // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-        _("The installer will propose at least %s for this partition."),
-        minSize,
-      );
+        sizeLabel: sprintf(_("At least %s"), minSize),
+        rationale: _("Determined by the mount point role"),
+      };
     }
 
-    return _(
-      "Installer will propose a suitable value based on available disk space and mount point role",
-    );
+    return {
+      sizeLabel: _("Automatic"),
+      rationale: _("Based on available disk space and mount point role"),
+    };
   }, [volume, effectiveFilesystem, committedMountPoint]);
 }
 
@@ -152,7 +163,12 @@ const SizeFieldsContent = withForm({
 
     switch (sizeMode) {
       case SIZE_MODE.AUTO:
-        return <Text textStyle={["fontSizeSm", "textColorSubtle"]}>{automaticSizeNote}</Text>;
+        return (
+          <>
+            <Content isEditorial>{automaticSizeNote.sizeLabel}</Content>
+            <Text component="small">{automaticSizeNote.rationale}</Text>
+          </>
+        );
 
       case SIZE_MODE.FIXED:
         return (
