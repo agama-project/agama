@@ -34,7 +34,6 @@ import { _ } from "~/i18n";
 
 import type { Storage as System } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
-import LabelText from "~/components/form/LabelText";
 
 type FilesystemFieldsProps = {
   device: System.Device;
@@ -131,27 +130,6 @@ function AutoFilesystemHint({
 }
 
 /**
- * Additional filesystem configuration fields shown when formatting.
- *
- * Currently includes:
- * - Label (optional text field)
- *
- * Will be extended with more settings in the future.
- */
-function FilesystemAdditionalFields({ form }) {
-  return (
-    <form.AppField name="filesystemLabel">
-      {(field) => (
-        <field.TextField
-          label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>}
-          helperText={_("Optional label for the filesystem")}
-        />
-      )}
-    </form.AppField>
-  );
-}
-
-/**
  * Filesystem type selector: dropdown or ReadOnlyField depending on available options.
  *
  * When "Default" is selected, an inline hint explains which filesystem will be
@@ -206,27 +184,16 @@ function FilesystemTypeSelector({
       )}
 
       {showAdditionalSettings && (
-        <>
-          <form.AppField name="showMoreFilesystemSettings">
-            {(field) => (
-              <field.CheckboxField
-                label={
-                  // TRANSLATORS: checkbox label for additional filesystem configuration options
-                  _("Define more file system settings")
-                }
-              />
-            )}
-          </form.AppField>
-          <form.Subscribe selector={(s) => s.values.showMoreFilesystemSettings}>
-            {(showMore) =>
-              showMore && (
-                <NestedContent margin="mxLg">
-                  <FilesystemAdditionalFields form={form} />
-                </NestedContent>
-              )
-            }
-          </form.Subscribe>
-        </>
+        <form.AppField name="showMoreFilesystemSettings">
+          {(field) => (
+            <field.CheckboxField
+              label={
+                // TRANSLATORS: checkbox label for additional filesystem configuration options
+                _("Define more file system settings")
+              }
+            />
+          )}
+        </form.AppField>
       )}
     </>
   );

@@ -25,6 +25,7 @@ import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
+import NestedContent from "~/components/core/NestedContent";
 import { deviceSize, createPartitionableLocation, parseToBytes } from "~/components/storage/utils";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
@@ -43,6 +44,7 @@ import { _ } from "~/i18n";
 
 import PartitionFields from "./PartitionFields";
 import FilesystemFields from "./FilesystemFields";
+import FilesystemAdditionalFields from "./FilesystemAdditionalFields";
 import SizeFields from "./SizeFields";
 import {
   defaultOptions,
@@ -408,6 +410,17 @@ function PartitionFormContent({
 
         {/* Filesystem */}
         <FilesystemFields form={form} device={systemDevice} />
+
+        {/* Filesystem additional settings (when checkbox is checked) */}
+        <form.Subscribe selector={(s) => s.values.showMoreFilesystemSettings}>
+          {(showMore) =>
+            showMore && (
+              <NestedContent margin="mxLg">
+                <FilesystemAdditionalFields form={form} />
+              </NestedContent>
+            )
+          }
+        </form.Subscribe>
 
         {/* Size (only for new partitions) */}
         <form.Subscribe selector={(s) => s.values.name}>
