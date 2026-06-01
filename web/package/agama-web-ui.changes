@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun  1 13:51:58 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Create new LVM volume groups using all the availabe space on the
+  selected disks (jsc#PED-14153).
+
+-------------------------------------------------------------------
 Thu May 28 18:38:34 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Added support for configuring a VLAN using the UI
