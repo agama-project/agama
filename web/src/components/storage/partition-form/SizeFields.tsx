@@ -25,6 +25,7 @@ import { sprintf } from "sprintf-js";
 import { Content, Flex } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
+import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { defaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
@@ -228,25 +229,29 @@ const SizeFields = withForm({
   render: function Render({ form }) {
     return (
       <>
-        <form.AppField name="sizeMode">
-          {(field) => <field.DropdownField label={_("Size")} options={getSizeModeOptions()} />}
-        </form.AppField>
         <form.Subscribe
           selector={(s) => ({
-            mode: s.values.sizeMode,
             committedMountPoint: s.values.committedMountPoint,
             filesystem: s.values.filesystem,
           })}
         >
-          {({ mode, committedMountPoint, filesystem }) => (
-            <NestedContent margin="mxLg">
-              <SizeFieldsContent
-                form={form}
-                committedMountPoint={committedMountPoint}
-                filesystem={filesystem}
-                sizeMode={mode}
-              />
-            </NestedContent>
+          {({ committedMountPoint, filesystem }) => (
+            <form.AppField name="sizeMode">
+              {(field) => (
+                <field.DropdownField label={_("Size")} options={getSizeModeOptions()}>
+                  {(value) => (
+                    <FieldNestedContent>
+                      <SizeFieldsContent
+                        form={form}
+                        committedMountPoint={committedMountPoint}
+                        filesystem={filesystem}
+                        sizeMode={value}
+                      />
+                    </FieldNestedContent>
+                  )}
+                </field.DropdownField>
+              )}
+            </form.AppField>
           )}
         </form.Subscribe>
       </>
