@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 12:49+0000\n"
+"POT-Creation-Date: 2026-05-22 12:43+0000\n"
 "PO-Revision-Date: 2026-02-26 19:04+0000\n"
 "Last-Translator: Topalski <fujinami_goops@slmail.me>\n"
 "Language-Team: Bulgarian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -29,115 +29,173 @@ msgstr "Не"
 msgid "Yes"
 msgstr "Да"
 
-#: agama-cli/src/progress.rs:116
-msgid "Calculating the installation proposal:"
-msgstr ""
-
-#: agama-cli/src/progress.rs:118
-#, fuzzy
-msgid "Installing the system:"
-msgstr "Конфигурирай системата"
-
-#: agama-cli/src/progress.rs:223 agama-cli/src/status.rs:77
-msgid "Installation is ready to start."
-msgstr ""
-
-#: agama-cli/src/progress.rs:226
-msgid "Waiting to start installation"
-msgstr ""
-
-#: agama-cli/src/progress.rs:234
-msgid "Installation successfully finished"
-msgstr ""
-
-#: agama-cli/src/progress.rs:235
-#, fuzzy
-msgid "Installation failed"
-msgstr "Инсталирай софтуер"
-
-#: agama-cli/src/progress.rs:248
-msgid ""
-"There are unanswered questions. Please use `agama questions` command or web "
-"interface to answer them:"
-msgstr ""
-
-#: agama-cli/src/progress.rs:260
-msgid "Installer is failed to calculate the installation proposal."
-msgstr ""
-
-#: agama-cli/src/progress.rs:264
-msgid "There are these issues blocking installation:"
-msgstr ""
-
-#: agama-cli/src/progress.rs:277
-msgid "Details"
-msgstr ""
-
-#: agama-cli/src/progress.rs:287
+#: agama-cli/src/monitor/ui.rs:38
 msgid "Manager"
 msgstr ""
 
-#: agama-cli/src/progress.rs:288
+#: agama-cli/src/monitor/ui.rs:39
 msgid "Network"
 msgstr ""
 
-#: agama-cli/src/progress.rs:289
-msgid "Hostname"
-msgstr ""
-
-#: agama-cli/src/progress.rs:290
-msgid "Localization"
-msgstr ""
-
-#: agama-cli/src/progress.rs:291
-msgid "Product"
-msgstr ""
-
-#: agama-cli/src/progress.rs:292
-msgid "Software"
-msgstr ""
-
-#: agama-cli/src/progress.rs:293
-msgid "Storage"
-msgstr ""
-
-#: agama-cli/src/progress.rs:294
-msgid "Files"
-msgstr ""
-
-#: agama-cli/src/progress.rs:295
-msgid "iSCSI"
-msgstr ""
-
-#: agama-cli/src/progress.rs:296
-msgid "DASD"
-msgstr ""
-
-#: agama-cli/src/progress.rs:297
-msgid "zFCP"
-msgstr ""
-
-#: agama-cli/src/progress.rs:298
-msgid "Users"
-msgstr ""
-
-#: agama-cli/src/progress.rs:299
+#: agama-cli/src/monitor/ui.rs:40
 msgid "NTP"
 msgstr ""
 
-#: agama-cli/src/progress.rs:349
-msgid "Current step"
+#: agama-cli/src/monitor/ui.rs:41
+msgid "Hostname"
 msgstr ""
 
-#: agama-cli/src/status.rs:75
+#: agama-cli/src/monitor/ui.rs:42
+msgid "Localization"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:43
+msgid "Product"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:44
+msgid "Software"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:45
+msgid "Storage"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:46
+msgid "Files"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:47
+msgid "iSCSI"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:48
+msgid "DASD"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:49
+msgid "zFCP"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:50
+msgid "Users"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:63
+msgid "There are pending questions:"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:73
+msgid ""
+"Please use the web interface (recommended) or the \"agama questions\" "
+"command to answer them."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:93
+#, fuzzy
+msgid "Installation complete."
+msgstr "Инсталирай софтуер"
+
+#: agama-cli/src/monitor/ui/content.rs:94
+msgid "You can reboot the machine to log in to the new system."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:75
 #, fuzzy
 msgid "Installation failed."
 msgstr "Инсталирай софтуер"
+
+#: agama-cli/src/monitor/ui/content.rs:98
+msgid "Use the \"agama logs\" command to collect the logs."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:129
+#: agama-cli/src/monitor/ui/content.rs:201
+msgid "Action needed:"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:137
+msgid "No product has been selected yet."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:222
+msgid "Ready for installation."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:223
+msgid "Waiting to start installation..."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:239
+msgid "Step"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:241
+msgid "of"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/issues.rs:64
+msgid "Waiting for these to be resolved."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:47
+msgid "Host: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:48
+msgid "Model: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:49
+msgid "Product: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:50
+msgid "Stage: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:51
+msgid "Status: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:76
+msgid "Busy"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:77
+#: agama-cli/src/monitor/ui/summary.rs:104
+msgid "Failed"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:78
+msgid "Idle"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:101
+#, fuzzy
+msgid "Installing"
+msgstr "Конфигурирай системата"
+
+#: agama-cli/src/monitor/ui/summary.rs:102
+msgid "Configuring"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:103
+msgid "Finished"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:117
+msgid "Not selected yet"
+msgstr ""
 
 #: agama-cli/src/status.rs:76
 #, fuzzy
 msgid "Installation finished successfully."
 msgstr "Инсталирай софтуер"
+
+#: agama-cli/src/status.rs:77
+msgid "Installation is ready to start."
+msgstr ""
 
 #: agama-cli/src/status.rs:78
 #, fuzzy
@@ -255,11 +313,11 @@ msgstr ""
 msgid "Storing bootloader settings"
 msgstr ""
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:511
 msgid "Writing network configuration"
 msgstr ""
 
-#: agama-network/src/service.rs:513
+#: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
 msgstr ""
 
@@ -325,52 +383,60 @@ msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:336
+#: agama-software/src/zypp_server.rs:292
+msgid "Starting packages installation"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:305
+msgid "Packages download and installation failed. Would you like to retry?"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:359
 msgid "Updating the list of repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:337
+#: agama-software/src/zypp_server.rs:360
 msgid "Refreshing metadata from the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:338
+#: agama-software/src/zypp_server.rs:361
 msgid "Calculating the software proposal"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:341
+#: agama-software/src/zypp_server.rs:364
 msgid "Registering the system"
 msgstr ""
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:411
+#: agama-software/src/zypp_server.rs:434
 msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:431
+#: agama-software/src/zypp_server.rs:454
 msgid "Could not read the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:465
+#: agama-software/src/zypp_server.rs:488
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:468
+#: agama-software/src/zypp_server.rs:491
 msgid "Failed to find the product in the repositories."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:531
+#: agama-software/src/zypp_server.rs:554
 msgid "There are conflicts in the software selection"
 msgstr ""
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:560
+#: agama-software/src/zypp_server.rs:583
 msgid "Could not select %s '%s' for installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:976
+#: agama-software/src/zypp_server.rs:999
 msgid "Failed to register the system"
 msgstr ""
 
@@ -382,3 +448,7 @@ msgstr ""
 #: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Installation failed"
+#~ msgstr "Инсталирай софтуер"

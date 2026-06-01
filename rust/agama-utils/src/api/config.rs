@@ -21,7 +21,7 @@
 use crate::api::{
     bootloader,
     files::{self, FileSourceError},
-    hostname, iscsi, l10n, network, ntp, proxy, question, s390, security,
+    hostname, iscsi, l10n, network, ntp, proxy, question, remote_access, s390, security,
     software::{self, ProductConfig},
     storage, users,
 };
@@ -55,6 +55,7 @@ pub struct Config {
     pub network: Option<network::Config>,
     pub ntp: Option<ntp::Config>,
     pub questions: Option<question::Config>,
+    pub remote_access: Option<remote_access::Config>,
     #[serde(flatten)]
     pub storage: Option<storage::Config>,
     pub iscsi: Option<iscsi::Config>,

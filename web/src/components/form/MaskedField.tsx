@@ -142,8 +142,8 @@ const Reminders = ({ hideReminders = [] }: { hideReminders?: ReminderType[] }) =
  * A masked input with show/hide toggle tied to a TanStack Form field via
  * `useFieldContext`. Must be used inside a `form.AppField` render prop.
  *
- * Useful for sensitive values like registration codes, API keys, or tokens
- * that should be hidden by default but allow the user to reveal them.
+ * Useful for sensitive values like passwords, registration codes, API keys, or
+ * tokens that should be hidden by default but allow the user to reveal them.
  *
  * Shows keyboard reminders by default (keymap and Caps Lock warnings).
  * Use `hideReminders` to selectively hide them.

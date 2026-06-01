@@ -24,7 +24,7 @@ pub use service::{Service, Starter};
 pub mod message;
 
 mod model;
-pub use model::{ChrootCommand, Model, ModelAdapter};
+pub use model::{Model, ModelAdapter};
 
 mod password;
 pub use password::{PasswordCheckResult, PasswordChecker, PasswordCheckerError};

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-08 12:49+0000\n"
-"PO-Revision-Date: 2026-05-08 05:04+0000\n"
+"POT-Creation-Date: 2026-05-22 12:43+0000\n"
+"PO-Revision-Date: 2026-05-23 02:12+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.5\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
@@ -29,113 +29,171 @@ msgstr "いいえ"
 msgid "Yes"
 msgstr "はい"
 
-#: agama-cli/src/progress.rs:116
-msgid "Calculating the installation proposal:"
-msgstr "インストールの提案内容を作成しています:"
-
-#: agama-cli/src/progress.rs:118
-msgid "Installing the system:"
-msgstr "システムをインストールしています:"
-
-#: agama-cli/src/progress.rs:223 agama-cli/src/status.rs:77
-msgid "Installation is ready to start."
-msgstr "インストールの開始準備ができています。"
-
-#: agama-cli/src/progress.rs:226
-msgid "Waiting to start installation"
-msgstr "インストールの開始を待っています"
-
-#: agama-cli/src/progress.rs:234
-msgid "Installation successfully finished"
-msgstr "インストールが成功しました"
-
-#: agama-cli/src/progress.rs:235
-msgid "Installation failed"
-msgstr "インストールが失敗しました"
-
-#: agama-cli/src/progress.rs:248
-msgid ""
-"There are unanswered questions. Please use `agama questions` command or web "
-"interface to answer them:"
-msgstr ""
-"未回答の質問が残っています。 agama questions` コマンドを利用するか、もしくは "
-"Web インターフェイスを利用して回答してください:"
-
-#: agama-cli/src/progress.rs:260
-msgid "Installer is failed to calculate the installation proposal."
-msgstr "インストーラは提案内容の作成に失敗しました。"
-
-#: agama-cli/src/progress.rs:264
-msgid "There are these issues blocking installation:"
-msgstr "下記の問題点がインストールを妨げています:"
-
-#: agama-cli/src/progress.rs:277
-msgid "Details"
-msgstr "詳細"
-
-#: agama-cli/src/progress.rs:287
+#: agama-cli/src/monitor/ui.rs:38
 msgid "Manager"
 msgstr "マネージャ"
 
-#: agama-cli/src/progress.rs:288
+#: agama-cli/src/monitor/ui.rs:39
 msgid "Network"
 msgstr "ネットワーク"
 
-#: agama-cli/src/progress.rs:289
-msgid "Hostname"
-msgstr "ホスト名"
-
-#: agama-cli/src/progress.rs:290
-msgid "Localization"
-msgstr "ローカライゼーション"
-
-#: agama-cli/src/progress.rs:291
-msgid "Product"
-msgstr "製品"
-
-#: agama-cli/src/progress.rs:292
-msgid "Software"
-msgstr "ソフトウエア"
-
-#: agama-cli/src/progress.rs:293
-msgid "Storage"
-msgstr "ストレージ"
-
-#: agama-cli/src/progress.rs:294
-msgid "Files"
-msgstr "ファイル"
-
-#: agama-cli/src/progress.rs:295
-msgid "iSCSI"
-msgstr "iSCSI"
-
-#: agama-cli/src/progress.rs:296
-msgid "DASD"
-msgstr "DASD"
-
-#: agama-cli/src/progress.rs:297
-msgid "zFCP"
-msgstr "zFCP"
-
-#: agama-cli/src/progress.rs:298
-msgid "Users"
-msgstr "ユーザ"
-
-#: agama-cli/src/progress.rs:299
+#: agama-cli/src/monitor/ui.rs:40
 msgid "NTP"
 msgstr "NTP"
 
-#: agama-cli/src/progress.rs:349
-msgid "Current step"
-msgstr "現在のステップ"
+#: agama-cli/src/monitor/ui.rs:41
+msgid "Hostname"
+msgstr "ホスト名"
 
-#: agama-cli/src/status.rs:75
+#: agama-cli/src/monitor/ui.rs:42
+msgid "Localization"
+msgstr "ローカライゼーション"
+
+#: agama-cli/src/monitor/ui.rs:43
+msgid "Product"
+msgstr "製品"
+
+#: agama-cli/src/monitor/ui.rs:44
+msgid "Software"
+msgstr "ソフトウエア"
+
+#: agama-cli/src/monitor/ui.rs:45
+msgid "Storage"
+msgstr "ストレージ"
+
+#: agama-cli/src/monitor/ui.rs:46
+msgid "Files"
+msgstr "ファイル"
+
+#: agama-cli/src/monitor/ui.rs:47
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#: agama-cli/src/monitor/ui.rs:48
+msgid "DASD"
+msgstr "DASD"
+
+#: agama-cli/src/monitor/ui.rs:49
+msgid "zFCP"
+msgstr "zFCP"
+
+#: agama-cli/src/monitor/ui.rs:50
+msgid "Users"
+msgstr "ユーザ"
+
+#: agama-cli/src/monitor/ui/content.rs:63
+msgid "There are pending questions:"
+msgstr "未解決の問題点があります:"
+
+#: agama-cli/src/monitor/ui/content.rs:73
+msgid ""
+"Please use the web interface (recommended) or the \"agama questions\" "
+"command to answer them."
+msgstr ""
+"Web インターフェイスを使用する (推奨) か、もしくは \"agama questions\" コマン"
+"ドを利用して回答してください。"
+
+#: agama-cli/src/monitor/ui/content.rs:93
+msgid "Installation complete."
+msgstr "インストールが完了しました。"
+
+#: agama-cli/src/monitor/ui/content.rs:94
+msgid "You can reboot the machine to log in to the new system."
+msgstr "あとはマシンを再起動して新しいシステムにログインするだけです。"
+
+#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:75
 msgid "Installation failed."
 msgstr "インストールが失敗しました。"
+
+#: agama-cli/src/monitor/ui/content.rs:98
+msgid "Use the \"agama logs\" command to collect the logs."
+msgstr "ログを収集するには、 \"agama logs\" コマンドをお使いください。"
+
+#: agama-cli/src/monitor/ui/content.rs:129
+#: agama-cli/src/monitor/ui/content.rs:201
+msgid "Action needed:"
+msgstr "対応が必要です:"
+
+#: agama-cli/src/monitor/ui/content.rs:137
+msgid "No product has been selected yet."
+msgstr "まだ製品を選択していません。"
+
+#: agama-cli/src/monitor/ui/content.rs:222
+msgid "Ready for installation."
+msgstr "インストールの準備ができています。"
+
+#: agama-cli/src/monitor/ui/content.rs:223
+msgid "Waiting to start installation..."
+msgstr "インストールの開始を待っています..."
+
+#: agama-cli/src/monitor/ui/content.rs:239
+msgid "Step"
+msgstr "ステップ"
+
+#: agama-cli/src/monitor/ui/content.rs:241
+msgid "of"
+msgstr "/"
+
+#: agama-cli/src/monitor/ui/issues.rs:64
+msgid "Waiting for these to be resolved."
+msgstr "これらの解決を待っています。"
+
+#: agama-cli/src/monitor/ui/summary.rs:47
+msgid "Host: "
+msgstr "ホスト: "
+
+#: agama-cli/src/monitor/ui/summary.rs:48
+msgid "Model: "
+msgstr "モデル: "
+
+#: agama-cli/src/monitor/ui/summary.rs:49
+msgid "Product: "
+msgstr "製品: "
+
+#: agama-cli/src/monitor/ui/summary.rs:50
+msgid "Stage: "
+msgstr "ステージ: "
+
+#: agama-cli/src/monitor/ui/summary.rs:51
+msgid "Status: "
+msgstr "状態: "
+
+#: agama-cli/src/monitor/ui/summary.rs:76
+msgid "Busy"
+msgstr "処理しています"
+
+#: agama-cli/src/monitor/ui/summary.rs:77
+#: agama-cli/src/monitor/ui/summary.rs:104
+msgid "Failed"
+msgstr "失敗"
+
+#: agama-cli/src/monitor/ui/summary.rs:78
+msgid "Idle"
+msgstr "待機"
+
+#: agama-cli/src/monitor/ui/summary.rs:101
+msgid "Installing"
+msgstr "インストールしています"
+
+#: agama-cli/src/monitor/ui/summary.rs:102
+msgid "Configuring"
+msgstr "設定しています"
+
+#: agama-cli/src/monitor/ui/summary.rs:103
+msgid "Finished"
+msgstr "完了"
+
+#: agama-cli/src/monitor/ui/summary.rs:117
+msgid "Not selected yet"
+msgstr "まだ選択していません"
 
 #: agama-cli/src/status.rs:76
 msgid "Installation finished successfully."
 msgstr "インストールが成功しました。"
+
+#: agama-cli/src/status.rs:77
+msgid "Installation is ready to start."
+msgstr "インストールの開始準備ができています。"
 
 #: agama-cli/src/status.rs:78
 msgid "Installation is in progress."
@@ -255,11 +313,11 @@ msgstr "ストレージの提案内容を準備しています"
 msgid "Storing bootloader settings"
 msgstr "ブートローダ設定を保存しています"
 
-#: agama-network/src/service.rs:512
+#: agama-network/src/service.rs:511
 msgid "Writing network configuration"
 msgstr "ネットワーク設定を書き込んでいます"
 
-#: agama-network/src/service.rs:513
+#: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
 msgstr "ネットワークサービスの状態を同期しています"
 
@@ -328,53 +386,61 @@ msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "内部エラーにより、ソフトウエアの提案内容を作成できませんでした。"
 
-#: agama-software/src/zypp_server.rs:336
+#: agama-software/src/zypp_server.rs:292
+msgid "Starting packages installation"
+msgstr "パッケージのインストールを開始しています"
+
+#: agama-software/src/zypp_server.rs:305
+msgid "Packages download and installation failed. Would you like to retry?"
+msgstr "パッケージのダウンロードとインストールが失敗しました。再試行しますか？"
+
+#: agama-software/src/zypp_server.rs:359
 msgid "Updating the list of repositories"
 msgstr "リポジトリの一覧を更新しています"
 
-#: agama-software/src/zypp_server.rs:337
+#: agama-software/src/zypp_server.rs:360
 msgid "Refreshing metadata from the repositories"
 msgstr "リポジトリのメタデータを更新しています"
 
-#: agama-software/src/zypp_server.rs:338
+#: agama-software/src/zypp_server.rs:361
 msgid "Calculating the software proposal"
 msgstr "ソフトウエアの提案内容を作成しています"
 
-#: agama-software/src/zypp_server.rs:341
+#: agama-software/src/zypp_server.rs:364
 msgid "Registering the system"
 msgstr "システムを登録しています"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:411
+#: agama-software/src/zypp_server.rs:434
 msgid "Could not remove the repository %s"
 msgstr "リポジトリ %s を削除できませんでした"
 
-#: agama-software/src/zypp_server.rs:431
+#: agama-software/src/zypp_server.rs:454
 msgid "Could not read the repositories"
 msgstr "リポジトリの読み込みができませんでした"
 
-#: agama-software/src/zypp_server.rs:465
+#: agama-software/src/zypp_server.rs:488
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "リポジトリ内の製品検索に失敗しました。システムの登録が必要と思われます。"
 
-#: agama-software/src/zypp_server.rs:468
+#: agama-software/src/zypp_server.rs:491
 msgid "Failed to find the product in the repositories."
 msgstr "リポジトリ内の製品検索に失敗しました。"
 
-#: agama-software/src/zypp_server.rs:531
+#: agama-software/src/zypp_server.rs:554
 msgid "There are conflicts in the software selection"
 msgstr "ソフトウエア選択において競合が発生しています"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:560
+#: agama-software/src/zypp_server.rs:583
 msgid "Could not select %s '%s' for installation"
 msgstr "%s '%s' をインストール用に選択できませんでした"
 
-#: agama-software/src/zypp_server.rs:976
+#: agama-software/src/zypp_server.rs:999
 msgid "Failed to register the system"
 msgstr "システムの登録に失敗しました"
 
@@ -387,6 +453,37 @@ msgstr ""
 #: agama-users/src/service.rs:153
 msgid "First user information is incomplete"
 msgstr "最初のユーザ情報が不十分です"
+
+#~ msgid "Lost the connection with the server."
+#~ msgstr "サーバとの接続が失われました。"
+
+#~ msgid "Calculating the installation proposal:"
+#~ msgstr "インストールの提案内容を作成しています:"
+
+#~ msgid "Installation successfully finished"
+#~ msgstr "インストールが成功しました"
+
+#~ msgid "Installation failed"
+#~ msgstr "インストールが失敗しました"
+
+#~ msgid ""
+#~ "There are unanswered questions. Please use `agama questions` command or "
+#~ "web interface to answer them:"
+#~ msgstr ""
+#~ "未回答の質問が残っています。 agama questions` コマンドを利用するか、もしく"
+#~ "は Web インターフェイスを利用して回答してください:"
+
+#~ msgid "Installer is failed to calculate the installation proposal."
+#~ msgstr "インストーラは提案内容の作成に失敗しました。"
+
+#~ msgid "There are these issues blocking installation:"
+#~ msgstr "下記の問題点がインストールを妨げています:"
+
+#~ msgid "Details"
+#~ msgstr "詳細"
+
+#~ msgid "Current step"
+#~ msgstr "現在のステップ"
 
 #~ msgid "Reading configuration"
 #~ msgstr "設定を読み込んでいます"

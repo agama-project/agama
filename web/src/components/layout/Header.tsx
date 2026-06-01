@@ -176,7 +176,9 @@ export default function Header({
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
               {startSlot && <ToolbarItem>{startSlot}</ToolbarItem>}
               {centerSlot && <ToolbarItem>{centerSlot}</ToolbarItem>}
-              {endSlot && <ToolbarItem>{endSlot}</ToolbarItem>}
+              {endSlot && (
+                <ToolbarItem columnGap={{ default: "columnGapXs" }}>{endSlot}</ToolbarItem>
+              )}
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>

@@ -48,6 +48,9 @@ export default {
   "%1$s, %2$s and [%3$d more]": [
     "%1$s, %2$s [さらに %3$d 個のアドレスがあります]"
   ],
+  "%d NTP server": [
+    "%d 個の NTP サーバ"
+  ],
   "%d connections available": [
     "%d 個の接続が利用可能です"
   ],
@@ -234,6 +237,9 @@ export default {
   "Activated": [
     "有効"
   ],
+  "Activating": [
+    "有効化中"
+  ],
   "Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "NPIV モードで動作しているコントローラを有効化した場合、その LUN は全て自動的に設定されます。"
   ],
@@ -351,8 +357,14 @@ export default {
   "At least one IPv6 address is required": [
     "1 つ以上の IPv6 アドレスを設定する必要があります"
   ],
+  "At least one NTP server is required": [
+    "1 つ以上の NTP サーバを設定する必要があります"
+  ],
   "At least one bond port is required": [
     "1 つ以上のボンディングポートを設定する必要があります"
+  ],
+  "At least one bridge port is required": [
+    "1 つ以上のブリッジポートを設定する必要があります"
   ],
   "At least one logical volume will be deleted": [
     "少なくとも 1 つ以上の論理ボリュームを削除します"
@@ -414,17 +426,8 @@ export default {
   "Beta": [
     "ベータ"
   ],
-  "Bind to MAC address": [
-    "MAC アドレスに結びつける"
-  ],
-  "Bind to device name": [
-    "デバイス名に結びつける"
-  ],
   "Binding": [
     "結びつけ方式"
-  ],
-  "Binding settings": [
-    "バインディング設定"
   ],
   "BitLocker": [
     "BitLocker"
@@ -455,6 +458,12 @@ export default {
   ],
   "Bridge": [
     "ブリッジ"
+  ],
+  "Bridge details": [
+    "ブリッジの詳細"
+  ],
+  "Bridge ports": [
+    "ブリッジポート"
   ],
   "Btrfs": [
     "btrfs"
@@ -576,15 +585,6 @@ export default {
   "Choose a volume group to define logical volumes": [
     "論理ボリュームを設定するボリュームグループを選択してください"
   ],
-  "Choose device to bind by MAC": [
-    "MAC アドレスでデバイスを識別します"
-  ],
-  "Choose device to bind by name": [
-    "名前でデバイスを識別します"
-  ],
-  "Choose how the connection should be associated with a network device. This helps control which device the connection uses.": [
-    "接続とネットワークデバイスとの関連づけ方式を指定してください。これにより、接続時に使用するデバイスを制御することができます。"
-  ],
   "Chosen by MAC": [
     "MAC アドレスで選択"
   ],
@@ -645,8 +645,14 @@ export default {
   "Configure partition at %s": [
     "%s でのパーティションの設定"
   ],
+  "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
+    "Network Time Protocol (NTP) サーバを設定することで、システムの日時を自動設定することができます。"
+  ],
   "Configure zFCP": [
     "zFCP の設定"
+  ],
+  "Configured as %s.": [
+    "%s として設定済みです。"
   ],
   "Configured for installation only": [
     "インストール専用に設定されています"
@@ -801,8 +807,14 @@ export default {
   "Deactivated": [
     "無効"
   ],
+  "Deactivating": [
+    "無効化中"
+  ],
   "Default": [
-    ""
+    "既定値"
+  ],
+  "Default NTP": [
+    "既定の NTP サーバ"
   ],
   "Default file system for %s": [
     "%s に対する既定のファイルシステム"
@@ -885,6 +897,9 @@ export default {
   "Device name is required": [
     "デバイス名を指定する必要があります"
   ],
+  "Disabled": [
+    "無効"
+  ],
   "Discard": [
     "破棄"
   ],
@@ -915,6 +930,9 @@ export default {
   "Disks": [
     "ディスク"
   ],
+  "Dismiss and clear registration data": [
+    "閉じて登録データを消去"
+  ],
   "Do not activate": [
     "有効化しない"
   ],
@@ -933,9 +951,6 @@ export default {
   "Do not use": [
     "使用しない"
   ],
-  "Down": [
-    "停止中"
-  ],
   "Download config": [
     "ダウンロード設定"
   ],
@@ -944,6 +959,9 @@ export default {
   ],
   "Download logs to troubleshoot or share with support.": [
     "ログをダウンロードして原因を調査するか、サポートに共有してください。"
+  ],
+  "E.g., %s": [
+    "例: %s"
   ],
   "E.g., 192.168.1.1": [
     "例: 192.168.1.1"
@@ -962,6 +980,9 @@ export default {
   ],
   "E.g., bond0": [
     "例: bond0"
+  ],
+  "E.g., br0": [
+    "例: br0"
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
     "例: downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
@@ -996,6 +1017,12 @@ export default {
   "Enable mutual verification": [
     "相互検証を有効にする"
   ],
+  "Enabled": [
+    "有効"
+  ],
+  "Enabled with the system default settings": [
+    "システム既定の設定で有効化します"
+  ],
   "Encrypt the system": [
     "システムの暗号化"
   ],
@@ -1020,7 +1047,7 @@ export default {
   "Encryption settings": [
     "暗号化の設定"
   ],
-  "Enter a hostname.": [
+  "Enter a hostname value.": [
     "ホスト名を入力してください。"
   ],
   "Enter a name": [
@@ -1029,14 +1056,20 @@ export default {
   "Enter a name for the volume group.": [
     "ボリュームグループに対する名前を入力してください。"
   ],
+  "Enter a registration code": [
+    "登録コードを入力してください"
+  ],
+  "Enter a server URL": [
+    "サーバ URL を入力してください"
+  ],
   "Enter or Tab to add": [
-    ""
+    "Enter キーまたは Tab キーで追加します"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    ""
+    "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間を移動します"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    ""
+    "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間の移動、 Escape キーで終了します"
   ],
   "Ethernet": [
     "イーサネット"
@@ -1051,7 +1084,7 @@ export default {
     "有効期限"
   ],
   "Explicitly enabled with manual settings": [
-    ""
+    "手動設定で明示的に有効化します"
   ],
   "Ext2": [
     "ext2"
@@ -1153,10 +1186,10 @@ export default {
     "デバイスをフォーマットしています"
   ],
   "Forward delay": [
-    ""
+    "伝送遅延"
   ],
   "Forward delay must be between 4 and 30 seconds": [
-    ""
+    "伝送遅延は 4 秒から 30 秒までの範囲でなければなりません"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
     "完全ディスク暗号化 (Full Disk Encryption; FDE) を使用することで、データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
@@ -1192,10 +1225,10 @@ export default {
     "システムに対するグラフィカルなデスクトップ環境です。"
   ],
   "Hello time": [
-    ""
+    "Hello タイム"
   ],
   "Hello time must be between 1 and 10 seconds": [
-    ""
+    "Hello タイムは 1 秒から 10 秒までの範囲でなければなりません"
   ],
   "Hide": [
     "隠す"
@@ -1206,11 +1239,17 @@ export default {
   "Hostname": [
     "ホスト名"
   ],
-  "Hostname could not be updated": [
-    "ホスト名を更新できませんでした"
+  "Hostname [will remain unchanged] across reboots and network changes.": [
+    "システムの再起動やネットワークの変更を行っても、ホスト名は [変更されません] 。"
   ],
-  "Hostname successfully updated": [
-    "ホスト名を更新しました"
+  "Hostname cannot be changed after registration": [
+    "登録後にはホスト名の変更を行うことはできません"
+  ],
+  "Hostname is dynamic and [may change after a reboot or network update].": [
+    "[システムの再起動やネットワーク側の変更により変わりうる] 一時的な名前です。"
+  ],
+  "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
+    "ホスト名／IP アドレス／完全修飾ドメイン名 (FQDN) のいずれかを入力します。例: pool.ntp.org"
   ],
   "I have read and accept the [license] for %s": [
     "%s に対する [ライセンス] を受け入れます"
@@ -1350,8 +1389,14 @@ export default {
   "Invalid IPv6 gateway": [
     "IPv6 ゲートウエイが正しくありません"
   ],
+  "Invalid NTP server address": [
+    "NTP サーバのアドレスが正しくありません"
+  ],
   "Invalid [zFCP] settings": [
     "正しくない [zFCP] 設定です"
+  ],
+  "Invalid hostname value.": [
+    "ホスト名の設定が正しくありません。"
   ],
   "Invalid settings": [
     "設定が正しくありません"
@@ -1447,7 +1492,7 @@ export default {
     "ライセンスの受け入れが必要です"
   ],
   "Listening and learning time (4-30 seconds).": [
-    ""
+    "待機／学習時間 (4-30 秒) 。"
   ],
   "Loading": [
     "読み込んでいます"
@@ -1519,10 +1564,10 @@ export default {
     "最大チャネル"
   ],
   "Max message age": [
-    ""
+    "メッセージ最大有効期間"
   ],
   "Max message age must be between 6 and 40 seconds": [
-    ""
+    "メッセージ最大有効期間は 6 秒から 40 秒までの範囲でなければなりません"
   ],
   "Members": [
     "メンバー"
@@ -1623,6 +1668,9 @@ export default {
   "Name": [
     "名前"
   ],
+  "Name %s": [
+    "名前: %s"
+  ],
   "Name is required": [
     "名前を指定する必要があります"
   ],
@@ -1670,6 +1718,9 @@ export default {
   ],
   "No additional patterns available": [
     "利用可能な追加パターンはありません"
+  ],
+  "No changes detected. System settings are already up to date.": [
+    "何も変更されていません。システム設定は既に最新の状態です。"
   ],
   "No connections match filters": [
     "フィルタに該当する接続がありません"
@@ -1767,9 +1818,6 @@ export default {
   "None": [
     "無し"
   ],
-  "None (unbound)": [
-    "無し (結びつけられていません)"
-  ],
   "None of the keymaps match the filter.": [
     "フィルタに該当するキーマップがありません。"
   ],
@@ -1810,7 +1858,7 @@ export default {
     "サポート対象外です (%s)"
   ],
   "Not used by this bridge": [
-    ""
+    "このブリッジでは使用しません"
   ],
   "Offline": [
     "オフライン"
@@ -1927,19 +1975,16 @@ export default {
     "少なくとも %s に影響する潜在的なデータ削除が発生します"
   ],
   "Priority": [
-    ""
+    "優先度"
   ],
   "Priority must be between 0 and 61440": [
-    ""
+    "優先度は 0 から 61440 までの範囲でなければなりません"
   ],
   "Proceeding may result in data loss": [
     "続行することによりデータ削除が発生する可能性があります"
   ],
   "Proceeding will delete existing data, including %s": [
     "続行することにより、 %s を含む既存のデータが削除されます"
-  ],
-  "Product is already registered": [
-    "製品は既に登録済みです"
   ],
   "Product not found": [
     "製品が見つかりません"
@@ -1948,16 +1993,19 @@ export default {
     "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
   "Protocol message interval (1-10 seconds).": [
-    ""
+    "プロトコルメッセージの送信間隔 (1-10 秒) 。"
   ],
   "Protocol message retention time (6-40 seconds).": [
-    ""
+    "プロトコルメッセージを保持する期間 (6-40 秒) 。"
   ],
   "Provide authentication": [
     "認証情報を設定"
   ],
   "Provide its password to log in to the system.": [
     "システムにログインするためのパスワードを入力してください。"
+  ],
+  "Provided by the network": [
+    "ネットワーク側から提示済み"
   ],
   "Public SSH Key": [
     "公開 SSH 鍵"
@@ -2013,6 +2061,9 @@ export default {
   "Registered": [
     "登録済み"
   ],
+  "Registered hostname will not change": [
+    "登録済みの場合、ホスト名は変更できません"
+  ],
   "Registered without a code": [
     "コード無しで登録済み"
   ],
@@ -2024,6 +2075,9 @@ export default {
   ],
   "Registration code": [
     "登録コード"
+  ],
+  "Registration in progress": [
+    "登録を行っています"
   ],
   "Registration server": [
     "登録サーバ"
@@ -2086,7 +2140,7 @@ export default {
     "確認してインストール"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
-    ""
+    "ルートブリッジの選択の際に使用されます (0-61440) 。 [小さいほど高い優先度になります] 。"
   ],
   "Root login with SSH key": [
     "SSH 鍵による root ログイン"
@@ -2125,7 +2179,7 @@ export default {
     "SSID"
   ],
   "STP": [
-    ""
+    "STP"
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
@@ -2238,14 +2292,20 @@ export default {
   "Server URL": [
     "サーバ URL"
   ],
+  "Server addresses": [
+    "サーバアドレス"
+  ],
   "Set DIAG off": [
     "DIAG を無効にする"
   ],
   "Set DIAG on": [
     "DIAG を有効にする"
   ],
-  "Set a permanent hostname that won’t change with network updates.": [
-    "ネットワーク側から指定された場合でも変化しない、固定のホスト名を設定します。"
+  "Set NTP servers manually": [
+    "NTP サーバを指定する"
+  ],
+  "Set manually": [
+    "手動設定"
   ],
   "Settings": [
     "設定"
@@ -2316,6 +2376,9 @@ export default {
   "Some IPv6 addresses are invalid": [
     "IPv6 アドレスの中に正しくないものがあります"
   ],
+  "Some NTP server addresses are invalid": [
+    "NTP サーバの中に正しくないものがあります"
+  ],
   "Some existing logical volumes may be shrunk": [
     "いくつかの既存の論理ボリュームを縮小するかもしれません"
   ],
@@ -2341,7 +2404,7 @@ export default {
     "何らかの問題が発生しました"
   ],
   "Spanning Tree Protocol (STP)": [
-    ""
+    "スパニングツリープロトコル (STP)"
   ],
   "Start configuring a basic installation": [
     "基本的なインストールの設定を開始する"
@@ -2352,11 +2415,14 @@ export default {
   "Startup": [
     "起動"
   ],
-  "Static addresses and gateway": [
-    "固定のアドレスとゲートウエイ"
+  "State": [
+    "状態"
   ],
-  "Static hostname": [
-    "固定のホスト名"
+  "Static": [
+    "固定"
+  ],
+  "Static addresses and gateway": [
+    "固定のアドレスとゲートウエイをそれぞれ設定します"
   ],
   "Status": [
     "状態"
@@ -2388,11 +2454,23 @@ export default {
   "Switch to another product": [
     "利用可能な %d 個の製品のいずれかに切り替え"
   ],
+  "System": [
+    "システム"
+  ],
   "System Information": [
     "システム情報"
   ],
+  "System settings could not be updated": [
+    "システム設定を更新できませんでした"
+  ],
+  "System settings successfully updated": [
+    "システム設定を更新しました"
+  ],
   "System will have no network connections": [
     "システムにはネットワーク接続は設定されません"
+  ],
+  "TPM sealing requires the new system to be booted directly on its first run.": [
+    "TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "TPM シーリングを使用するには、新しいシステムを直接起動する必要があります。"
@@ -2420,9 +2498,6 @@ export default {
   ],
   "The configured LVM groups will remain at %s": [
     "設定済みの LVM グループが %s に残されます"
-  ],
-  "The connection can be used by any available device.": [
-    "接続時に利用可能な任意のデバイスを使用するようにします。"
   ],
   "The connection could not be saved": [
     "接続を保存できませんでした"
@@ -2550,8 +2625,11 @@ export default {
   "The password is weak": [
     "パスワードが弱すぎます"
   ],
-  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system. TPM sealing requires the new system to be booted directly on its first run.": [
-    "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。 TPM シーリングを使用するには、新しいシステムの初回起動時に直接起動を行う必要があります。"
+  "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system.": [
+    "TPM 側でシステムの一貫性検証が成功すると、起動とデータへのアクセス処理に際してパスワードが不要になります。"
+  ],
+  "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
+    "製品は既に登録済みです。ここで変更を行っても、登録サーバ内に記録されているホスト名は変更されません。"
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
     "リポジトリ内には製品が見つかりませんでした。そのため、インストールを続行することができません。"
@@ -2652,9 +2730,6 @@ export default {
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
     "この拡張はサーバ内にはありません。拡張の追加についてはサーバ管理者にお尋ねください。"
   ],
-  "This hostname is dynamic and may change after a reboot or network update, as configured by the local network administrator.": [
-    "ホスト名は動的なものとなります。ご利用のネットワークの設定に依存しますが、再起動やネットワーク側の変更によって変わってしまう場合があります。"
-  ],
   "This license is not available in %s.": [
     "このライセンスは %s では提供されていません。"
   ],
@@ -2691,6 +2766,9 @@ export default {
   "TiB": [
     "TiB"
   ],
+  "Time Synchronization Servers": [
+    "時刻同期サーバ"
+  ],
   "Time zone": [
     "タイムゾーン"
   ],
@@ -2698,10 +2776,13 @@ export default {
     "tmpfs"
   ],
   "To change it, visit the [hostname] section before registering.": [
-    ""
+    "ホスト名を変更する場合は、登録する前に [ホスト名] セクションに移動してください。"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
+  ],
+  "Transient": [
+    "暫定"
   ],
   "Try to activate again": [
     "再有効化の試行"
@@ -2714,9 +2795,6 @@ export default {
   ],
   "Unable to modify the settings": [
     "設定を変更できませんでした"
-  ],
-  "Unbound": [
-    "特に指定しない"
   ],
   "Unexpected error": [
     "予期しないエラー"
@@ -2736,17 +2814,11 @@ export default {
   "Unused space": [
     "未使用の領域"
   ],
-  "Up": [
-    "動作中"
-  ],
   "Up to %s can be recovered by shrinking the device.": [
     "デバイスの縮小により、最大で %s が確保できます。"
   ],
   "Update available disks and activate crypt devices": [
     "利用可能なディスクの更新と暗号化デバイスの有効化"
-  ],
-  "Updating the hostname now or later will not change the currently registered hostname.": [
-    "ここでホスト名を変更した場合も後から変更した場合も、登録済みのホスト名は変更されないことに注意してください。"
   ],
   "Upload": [
     "アップロード"
@@ -2856,14 +2928,14 @@ export default {
   "Use password": [
     "パスワードの使用"
   ],
+  "Use product's default NTP servers": [
+    "製品既定の NTP サーバを使用"
+  ],
   "Use public SSH Key": [
     "公開 SSH 鍵の使用"
   ],
   "Use several devices": [
     "複数のデバイスを使用する"
-  ],
-  "Use static hostname": [
-    "固定のホスト名を使用する"
   ],
   "Use suggested username": [
     "提案されたユーザ名を使用する"
@@ -2898,6 +2970,18 @@ export default {
   "Using %d connections with %s": [
     "%d 個の接続 (%s) を使用"
   ],
+  "Using %s NTP servers, including [%s]": [
+    "%s 個の NTP サーバを使用 [%s ほか]"
+  ],
+  "Using %s as NTP server": [
+    "%s を NTP サーバとして使用"
+  ],
+  "Using %s keyboard layout": [
+    "[%s] キーボードレイアウトを使用しています"
+  ],
+  "Using [%s] keyboard layout": [
+    "[%s] キーボードレイアウトを使用しています"
+  ],
   "Using a hashed password.": [
     "ハッシュ化されたパスワードを使用します。"
   ],
@@ -2919,8 +3003,8 @@ export default {
   "Using partition %s": [
     "パーティション %s の使用"
   ],
-  "Using transient hostname: %s": [
-    "暫定的なホスト名を使用しています: %s"
+  "Using transient name, which may change after reboot or network changes": [
+    "システムの再起動やネットワーク側の変更により変わりうる一時的な名前を使用しています"
   ],
   "VLAN": [
     "VLAN"

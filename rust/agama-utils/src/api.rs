@@ -70,6 +70,7 @@ pub mod ntp;
 pub mod proxy;
 pub mod query;
 pub mod question;
+pub mod remote_access;
 pub mod s390;
 pub mod security;
 pub mod software;

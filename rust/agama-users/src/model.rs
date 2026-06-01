@@ -21,76 +21,21 @@
 use crate::service;
 use agama_utils::api::users::config::{FirstUserConfig, RootUserConfig, UserPassword};
 use agama_utils::api::users::Config;
+use agama_utils::command::ChrootCommand;
 use std::fs::{self, OpenOptions, Permissions};
 use std::io::Write;
-use std::ops::{Deref, DerefMut};
 use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Stdio;
+use tokio::io::AsyncWriteExt;
 
 /// Abstract the users-related configuration from the underlying system.
-pub trait ModelAdapter: Send + 'static {
+#[async_trait::async_trait]
+pub trait ModelAdapter: Send + Sync + 'static {
     /// Apply the changes to target system. It is expected to be called almost
     /// at the end of the installation.
-    fn install(&self, _config: &Config) -> Result<(), service::Error> {
+    async fn install(&self, _config: &Config) -> Result<(), service::Error> {
         Ok(())
-    }
-}
-
-/// A wrapper for common std::process::Command for use in chroot
-///
-/// It basically creates Command for chroot and command to be run
-/// in chrooted environment is passed as an argument.
-///
-/// Example use:
-/// ```
-/// # use agama_users::ChrootCommand;
-/// # use agama_users::service;
-/// # fn main() -> Result<(), service::Error> {
-/// let cmd = ChrootCommand::new("/tmp".into())?
-///   .cmd("echo")
-///   .args(["Hello world!"]);
-/// # Ok(())
-/// # }
-/// ```
-#[derive(Debug)]
-pub struct ChrootCommand {
-    command: Command,
-}
-
-impl ChrootCommand {
-    pub fn new(chroot: PathBuf) -> Result<Self, service::Error> {
-        if !chroot.is_dir() {
-            return Err(service::Error::CommandFailed(String::from(
-                "Failed to chroot",
-            )));
-        }
-
-        let mut cmd = Command::new("chroot");
-
-        cmd.arg(chroot);
-
-        Ok(Self { command: cmd })
-    }
-
-    pub fn cmd(mut self, command: &str) -> Self {
-        self.command.arg(command);
-
-        self
-    }
-}
-
-impl Deref for ChrootCommand {
-    type Target = Command;
-
-    fn deref(&self) -> &Self::Target {
-        &self.command
-    }
-}
-
-impl DerefMut for ChrootCommand {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.command
     }
 }
 
@@ -106,13 +51,14 @@ impl Model {
         }
     }
 
-    fn useradd(&self, user_name: &str) -> Result<(), service::Error> {
+    async fn useradd(&self, user_name: &str) -> Result<(), service::Error> {
         let useradd = ChrootCommand::new(self.install_dir.clone())?
             .cmd("useradd")
             // Explicitly enforce creating home here, so even if some product has as default no
             // home, we need it to be able to support user ssh keys.
             .args(["-m", user_name])
-            .output()?;
+            .output()
+            .await?;
 
         if !useradd.status.success() {
             tracing::error!("User {} creation failed", user_name);
@@ -126,61 +72,63 @@ impl Model {
     }
 
     /// Reads first user's data from given config and updates its setup accordingly
-    fn add_first_user(&self, user: &FirstUserConfig) {
+    async fn add_first_user(&self, user: &FirstUserConfig) {
         let Some(ref user_name) = user.user_name else {
             tracing::warn!("user name is missing in first user config");
             return;
         };
 
-        if let Err(err) = self.useradd(user_name) {
+        if let Err(err) = self.useradd(user_name).await {
             tracing::error!("Failed to create first user: {:?}", err);
             return;
         }
 
         let ssh_keys = user
-            .ssh_public_key
+            .ssh_public_keys
             .as_ref()
             .map(|k| k.to_vec())
             .unwrap_or_default();
 
         let keys_path = PathBuf::from(format!("home/{}/.ssh/authorized_keys", user_name));
-        self.activate_ssh(&keys_path, &ssh_keys, Some(user_name));
+        self.activate_ssh(&keys_path, &ssh_keys, Some(user_name))
+            .await;
 
-        self.set_user_group(user_name);
+        self.set_user_group(user_name).await;
         if let Some(ref user_password) = user.password {
-            if let Err(e) = self.set_user_password(user_name, user_password) {
+            if let Err(e) = self.set_user_password(user_name, user_password).await {
                 tracing::error!("Failed to set user password: {e}");
             }
         };
-        if let Err(e) = self.update_user_fullname(user) {
+        if let Err(e) = self.update_user_fullname(user).await {
             tracing::error!("Failed to set user fullname: {e}");
         }
     }
 
     /// Reads root's data from given config and updates root setup accordingly
-    fn add_root_user(&self, root: &RootUserConfig) {
-        if root.password.is_none() && root.ssh_public_key.is_none() {
+    async fn add_root_user(&self, root: &RootUserConfig) {
+        if root.password.is_none() && root.ssh_public_keys.is_none() {
             return;
         };
 
         // set password for root if any
         if let Some(ref root_password) = root.password {
-            if let Err(e) = self.set_user_password("root", root_password) {
+            if let Err(e) = self.set_user_password("root", root_password).await {
                 tracing::error!("Failed to set root password: {e}");
             }
         }
 
         // store sshPublicKeys for root if any
         let ssh_keys = root
-            .ssh_public_key
+            .ssh_public_keys
             .as_ref()
             .map(|k| k.to_vec())
             .unwrap_or_default();
 
-        self.activate_ssh(Path::new("root/.ssh/authorized_keys"), &ssh_keys, None);
+        self.activate_ssh(Path::new("root/.ssh/authorized_keys"), &ssh_keys, None)
+            .await;
     }
 
-    fn activate_ssh(&self, path: &Path, ssh_keys: &[String], user: Option<&str>) {
+    async fn activate_ssh(&self, path: &Path, ssh_keys: &[String], user: Option<&str>) {
         if ssh_keys.is_empty() {
             return;
         }
@@ -188,21 +136,15 @@ impl Model {
         // if some SSH keys were defined
         // - update authorized_keys file
         // - open SSH port and enable SSH service
-        if let Err(e) = self.update_authorized_keys(path, ssh_keys, user) {
+        if let Err(e) = self.update_authorized_keys(path, ssh_keys, user).await {
             tracing::error!("Failed to update authorized_keys file: {e}");
-        }
-        if let Err(e) = self.enable_sshd_service() {
-            tracing::error!("Failed to enable sshd service: {e}");
-        }
-        if let Err(e) = self.open_ssh_port() {
-            tracing::error!("Failed to open sshd port in firewall: {e}");
         }
     }
 
     /// Sets password for given user name
     ///
     /// echo "<user_name>:<password>" | chpasswd
-    fn set_user_password(
+    async fn set_user_password(
         &self,
         user_name: &str,
         user_password: &UserPassword,
@@ -218,11 +160,13 @@ impl Model {
 
         // push user name and password into the pipe
         if let Some(mut stdin) = passwd_process.stdin.take() {
-            writeln!(stdin, "{}:{}", user_name, user_password.password)?;
+            let data = format!("{}:{}\n", user_name, user_password.password);
+            stdin.write_all(data.as_bytes()).await?;
+            let _ = stdin.shutdown().await;
         }
 
         // proceed with the result
-        let passwd = passwd_process.wait_with_output()?;
+        let passwd = passwd_process.wait_with_output().await?;
 
         if !passwd.status.success() {
             tracing::error!("Failed to set password for user {}", user_name);
@@ -237,7 +181,7 @@ impl Model {
 
     /// Add user into the wheel group on best effort basis.
     /// If the group doesn't exist, log the error and continue.
-    fn set_user_group(&self, user_name: &str) {
+    async fn set_user_group(&self, user_name: &str) {
         let chroot = ChrootCommand::new(self.install_dir.clone());
         let Ok(chroot) = chroot else {
             tracing::error!("Failed to chroot: {:?}", chroot);
@@ -247,7 +191,8 @@ impl Model {
         let usermod = chroot
             .cmd("usermod")
             .args(["-a", "-G", "wheel", user_name])
-            .output();
+            .output()
+            .await;
         let Ok(usermod) = usermod else {
             tracing::error!("Failed to execute usermod {:?}", usermod);
             return;
@@ -263,7 +208,7 @@ impl Model {
     }
 
     /// Changes the owner and group of the target path inside the chroot environment.
-    fn chown(&self, user_name: &str, path: &Path) -> Result<(), service::Error> {
+    async fn chown(&self, user_name: &str, path: &Path) -> Result<(), service::Error> {
         let abs_path = Path::new("/").join(path);
         // unwrap here can be questionable if we want to support
         // non-utf8 paths, but I expect more problems with that idea
@@ -272,7 +217,8 @@ impl Model {
         let chown = ChrootCommand::new(self.install_dir.clone())?
             .cmd("chown")
             .args([format!("{}:", user_name), target_path])
-            .output()?;
+            .output()
+            .await?;
 
         if !chown.status.success() {
             tracing::error!("chown failed {:?}", chown.stderr);
@@ -286,7 +232,7 @@ impl Model {
     }
 
     /// Updates root's authorized_keys file with SSH key
-    fn update_authorized_keys(
+    async fn update_authorized_keys(
         &self,
         keys_path: &Path,
         ssh_keys: &[String],
@@ -302,7 +248,7 @@ impl Model {
             fs::set_permissions(dir, Permissions::from_mode(0o700))?;
 
             if let Some(user_name) = user {
-                self.chown(user_name, keys_path.parent().unwrap())?;
+                self.chown(user_name, keys_path.parent().unwrap()).await?;
             }
         }
 
@@ -324,64 +270,13 @@ impl Model {
         authorized_keys_file.flush()?;
 
         if let Some(user_name) = user {
-            self.chown(user_name, keys_path)?;
+            self.chown(user_name, keys_path).await?;
         }
 
         Ok(())
     }
 
-    /// Enables sshd service in the target system
-    fn enable_sshd_service(&self) -> Result<(), service::Error> {
-        let systemctl = ChrootCommand::new(self.install_dir.clone())?
-            .cmd("systemctl")
-            .args(["enable", "sshd.service"])
-            .output()?;
-
-        if !systemctl.status.success() {
-            tracing::error!("Enabling the sshd service failed");
-            return Err(service::Error::CommandFailed(format!(
-                "Cannot enable the sshd service: {}",
-                systemctl.status
-            )));
-        } else {
-            tracing::info!("The sshd service has been successfully enabled");
-        }
-
-        Ok(())
-    }
-
-    /// Opens the SSH port in firewall in the target system
-    fn open_ssh_port(&self) -> Result<(), service::Error> {
-        let firewall_cmd = ChrootCommand::new(self.install_dir.clone())?
-            .cmd("firewall-offline-cmd")
-            .args(["--add-service=ssh"])
-            .output()?;
-
-        // ignore error if the firewall is not installed, in that case we do need to open the port,
-        // chroot returns exit status 127 if the command is not found
-        if firewall_cmd.status.code() == Some(127) {
-            tracing::warn!("Command firewall-offline-cmd not found, firewall not installed?");
-            return Ok(());
-        }
-
-        if firewall_cmd.status.success() {
-            tracing::info!("The SSH port has been successfully opened in the firewall");
-        } else {
-            tracing::error!(
-                "Opening SSH port in firewall failed: exit: {}, stderr: {}",
-                firewall_cmd.status,
-                String::from_utf8_lossy(&firewall_cmd.stderr)
-            );
-
-            return Err(service::Error::CommandFailed(String::from(
-                "Cannot open SSH port in firewall",
-            )));
-        }
-
-        Ok(())
-    }
-
-    fn update_user_fullname(&self, user: &FirstUserConfig) -> Result<(), service::Error> {
+    async fn update_user_fullname(&self, user: &FirstUserConfig) -> Result<(), service::Error> {
         let Some(ref user_name) = user.user_name else {
             return Ok(());
         };
@@ -392,7 +287,8 @@ impl Model {
         let chfn = ChrootCommand::new(self.install_dir.clone())?
             .cmd("chfn")
             .args(["-f", full_name, user_name])
-            .output()?;
+            .output()
+            .await?;
 
         if !chfn.status.success() {
             tracing::error!(
@@ -410,13 +306,14 @@ impl Model {
     }
 }
 
+#[async_trait::async_trait]
 impl ModelAdapter for Model {
-    fn install(&self, config: &Config) -> Result<(), service::Error> {
+    async fn install(&self, config: &Config) -> Result<(), service::Error> {
         if let Some(first_user) = &config.first_user {
-            self.add_first_user(first_user);
+            self.add_first_user(first_user).await;
         }
         if let Some(root_user) = &config.root {
-            self.add_root_user(root_user);
+            self.add_root_user(root_user).await;
         }
 
         Ok(())

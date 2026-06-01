@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::api;
 use agama_lib::monitor::InstallationStatus;
 use agama_utils::api::status::Stage;
 use gettextrs::gettext;
@@ -89,17 +90,23 @@ impl fmt::Display for InstallationEnum {
 pub struct StatusReport {
     /// current state of the installation process
     pub installation: InstallationEnum,
-    /// more detailed data compiled from backend from status, questions and issues call
-    #[serde(flatten)]
-    pub data: InstallationStatus,
+    /// Data from InstallationStatus to be published via status command
+    /// Current installation status.
+    pub status: api::Status,
+    /// List of issues currently blocking or affecting the installation.
+    pub issues: Vec<api::IssueWithScope>,
+    /// List of unanswered questions.
+    pub questions: Vec<api::question::Question>,
 }
 
 impl StatusReport {
-    pub fn new(status: InstallationStatus) -> Self {
-        let installation_enum = InstallationEnum::from_status(&status);
+    pub fn new(full_status: InstallationStatus) -> Self {
+        let installation_enum = InstallationEnum::from_status(&full_status);
         Self {
             installation: installation_enum,
-            data: status,
+            status: full_status.status,
+            issues: full_status.issues,
+            questions: full_status.questions,
         }
     }
 }
@@ -109,15 +116,15 @@ impl fmt::Display for StatusReport {
         writeln!(f, "{}", self.installation)?;
         writeln!(f)?;
         write!(f, "{}", gettext("Details:"))?;
-        if !self.data.questions.is_empty() {
+        if !self.questions.is_empty() {
             write!(f, "\n{}", gettext("Open questions:"))?;
-            for q in &self.data.questions {
+            for q in &self.questions {
                 write!(f, "\n  - {}", q.spec.text)?;
             }
         }
-        if !self.data.issues.is_empty() {
+        if !self.issues.is_empty() {
             write!(f, "\n{}", gettext("Blocking issues:"))?;
-            for i in &self.data.issues {
+            for i in &self.issues {
                 write!(f, "\n  - {}", i.issue.description)?;
             }
         }
@@ -229,10 +236,12 @@ mod tests {
 
     #[test]
     fn test_status_report_new() {
-        let status = default_status();
-        let report = StatusReport::new(status.clone());
+        let full_status = default_status();
+        let report = StatusReport::new(full_status.clone());
         assert_eq!(report.installation, InstallationEnum::Ready);
-        assert_eq!(report.data, status);
+        assert_eq!(report.status, full_status.status);
+        assert_eq!(report.issues, full_status.issues);
+        assert_eq!(report.questions, full_status.questions);
     }
 
     #[test]

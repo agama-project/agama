@@ -1,9 +1,22 @@
 -------------------------------------------------------------------
-Fri May 22 14:37:35 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+Mon Jun  1 14:35:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added "agama-screenshot" helper script to take screenshots
   of the locally running Agama installer
   (gh#agama-project/agama#3537)
+
+-------------------------------------------------------------------
+Mon May 25 15:25:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Enable back ignition and combustion, apply a workaround for
+  detecting the first boot (disable detection, consider every boot
+  as the first boot) (related to bsc#1266257)
+
+-------------------------------------------------------------------
+Mon May 25 12:06:55 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Temporarily disabled ignition and combustion because they cannot
+  start properly in the Live ISO environment (bsc#1266257)
 
 -------------------------------------------------------------------
 Thu May 21 15:39:19 UTC 2026 - Volkan OZTUZUN <volkan.oztuzun@suse.com>

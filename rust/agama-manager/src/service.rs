@@ -58,6 +58,8 @@ pub enum Error {
     #[error(transparent)]
     L10n(#[from] l10n::service::Error),
     #[error(transparent)]
+    RemoteAccess(#[from] agama_remote::service::Error),
+    #[error(transparent)]
     Security(#[from] security::service::Error),
     #[error(transparent)]
     Software(#[from] software::service::Error),
@@ -355,10 +357,13 @@ impl Starter {
             None => hardware::Registry::new_from_system(),
         };
 
+        let remote_access =
+            agama_remote::Service::starter(software.clone(), self.events.clone()).start()?;
+
         let users = match self.users {
             Some(users) => users,
             None => {
-                users::Service::starter(self.events.clone(), issues.clone())
+                users::Service::starter(self.events.clone(), issues.clone(), remote_access.clone())
                     .start()
                     .await?
             }
@@ -396,6 +401,7 @@ impl Starter {
             proxy: proxy.clone(),
             ntp: ntp.clone(),
             questions: self.questions.clone(),
+            remote_access: remote_access.clone(),
             security: security.clone(),
             software: software.clone(),
             storage: storage.clone(),
@@ -415,6 +421,7 @@ impl Starter {
             network,
             proxy,
             ntp,
+            remote_access,
             software,
             storage,
             products: products::Registry::default(),
@@ -435,26 +442,27 @@ impl Starter {
 
 pub struct Service {
     bootloader: Handler<bootloader::Service>,
+    config: Config,
+    hardware: hardware::Registry,
     hostname: Handler<hostname::Service>,
     iscsi: Handler<iscsi::Service>,
-    proxy: Handler<proxy::Service>,
-    ntp: Handler<ntp::Service>,
-    l10n: Handler<l10n::Service>,
-    software: Handler<software::Service>,
-    network: NetworkSystemClient,
-    storage: Handler<storage::Service>,
     issues: Handler<issue::Service>,
-    progress: Handler<progress::Service>,
-    questions: Handler<question::Service>,
-    products: products::Registry,
+    l10n: Handler<l10n::Service>,
     licenses: licenses::Registry,
-    hardware: hardware::Registry,
+    network: NetworkSystemClient,
+    ntp: Handler<ntp::Service>,
     product: Option<Arc<RwLock<ProductSpec>>>,
-    config: Config,
-    system: manager::SystemInfo,
-    users: Handler<users::Service>,
+    products: products::Registry,
+    progress: Handler<progress::Service>,
+    proxy: Handler<proxy::Service>,
+    questions: Handler<question::Service>,
+    remote_access: Handler<agama_remote::Service>,
     s390: Option<Handler<s390::Service>>,
+    software: Handler<software::Service>,
+    storage: Handler<storage::Service>,
+    system: manager::SystemInfo,
     tasks: Handler<tasks::TasksRunner>,
+    users: Handler<users::Service>,
 }
 
 impl Service {
@@ -605,11 +613,7 @@ impl Service {
             return Ok(false);
         }
 
-        let is_empty = status
-            .progresses
-            .iter()
-            .find(|p| p.scope == Scope::Software)
-            .is_none();
+        let is_empty = !status.progresses.iter().any(|p| p.scope == Scope::Software);
         Ok(is_empty)
     }
 
@@ -709,6 +713,10 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
         let ntp = self.ntp.call(ntp::message::GetConfig).await?;
         let questions = self.questions.call(question::message::GetConfig).await?;
         let network = self.network.get_config().await?;
+        let remote_access = self
+            .remote_access
+            .call(agama_remote::message::GetConfig)
+            .await?;
         let storage = self.storage.call(storage::message::GetConfig).await?;
         let users = self.users.call(users::message::GetConfig).await?;
 
@@ -734,6 +742,7 @@ impl MessageHandler<message::GetExtendedConfig> for Service {
             ntp,
             questions,
             network: Some(network),
+            remote_access: Some(remote_access),
             security,
             software,
             storage,
@@ -781,6 +790,10 @@ impl MessageHandler<message::GetProposal> for Service {
         let storage = self.storage.call(storage::message::GetProposal).await?;
         let network = self.network.get_proposal().await?;
         let users = self.users.call(users::message::GetProposal).await?;
+        let remote_access = self
+            .remote_access
+            .call(agama_remote::message::GetProposal)
+            .await?;
 
         // If the software service is busy, it will not answer.
         let software = if self.is_software_available().await? {
@@ -793,6 +806,7 @@ impl MessageHandler<message::GetProposal> for Service {
             hostname,
             l10n,
             network,
+            remote_access,
             software,
             storage,
             users,
