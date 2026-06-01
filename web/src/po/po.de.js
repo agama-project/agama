@@ -164,6 +164,12 @@ export default {
     "1 Gerät ausgewählt. Verwenden Sie die Aktionssymbolleiste, um Änderungen anzuwenden.",
     "%s Geräte ausgewählt. Verwenden Sie die Aktionensymbolleiste, um Änderungen anzuwenden."
   ],
+  "802.1Q": [
+    ""
+  ],
+  "802.1ad": [
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Eine %1$s mit %2$s wird nach Möglichkeit für %3$s erstellt"
   ],
@@ -286,14 +292,14 @@ export default {
   "All": [
     "Alle"
   ],
+  "All background tasks completed": [
+    ""
+  ],
   "All content not configured to be mounted will be deleted": [
     "Jeder Inhalt, der nicht zum Einhängen konfiguriert ist, wird gelöscht"
   ],
   "All content will be deleted": [
     "Der gesamte Inhalt wird gelöscht"
-  ],
-  "All fields are required": [
-    "Alle Felder sind erforderlich"
   ],
   "All fields are required.": [
     "Alle Felder sind erforderlich."
@@ -306,9 +312,6 @@ export default {
   ],
   "Allow growing": [
     "Wachstum erlauben"
-  ],
-  "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "Neben der Definition des ersten Benutzers können auch die Authentifizierungsmethoden für den Root-Benutzer konfiguriert werden."
   ],
   "Already using all available devices": [
     "Alle verfügbaren Geräte werden bereits verwendet"
@@ -394,9 +397,6 @@ export default {
   ],
   "Before %s": [
     "Vor %s"
-  ],
-  "Before starting the installation, you need to address the following problems:": [
-    "Bevor Sie mit der Installation beginnen, müssen Sie sich mit folgenden Problemen befassen:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
     "Die folgenden %s Geräte sind offline und können nicht formatiert werden."
@@ -506,6 +506,9 @@ export default {
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Änderungen an diesen Einstellungen werden sofort im Abschnitt ‚Ergebnis‘ unten aktualisiert."
   ],
+  "Changing the product will reset your current settings.": [
+    ""
+  ],
   "Channel": [
     "Kanal"
   ],
@@ -539,9 +542,6 @@ export default {
   ],
   "Chosen by name": [
     "Nach Namen ausgewählt"
-  ],
-  "Clear": [
-    "Leeren"
   ],
   "Clear all filters": [
     "Alle Filter löschen"
@@ -602,15 +602,6 @@ export default {
   ],
   "Configured for installation only": [
     "Nur für die Installation konfiguriert"
-  ],
-  "Configured for root and user %s": [
-    "Für root und Benutzer %s konfiguriert"
-  ],
-  "Configured for the root user": [
-    "Für den root-Benutzer konfiguriert"
-  ],
-  "Configured for user %s": [
-    "Für Benutzer %s konfiguriert"
   ],
   "Configured with %d connection": [
     "Konfiguriert mit %d Verbindung",
@@ -694,9 +685,6 @@ export default {
   "Create another LVM volume group on %s": [
     "Weitere LVM-Volume-Gruppe auf %s erstellen"
   ],
-  "Create user": [
-    "Benutzer erstellen"
-  ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     ""
   ],
@@ -778,15 +766,6 @@ export default {
   "Define a new LVM on top of one or several disks": [
     "Einen neuen LVM auf einer oder mehreren Festplatten definieren"
   ],
-  "Define a user now": [
-    "Definieren Sie jetzt einen Benutzer"
-  ],
-  "Define the first user with admin (sudo) privileges for system management.": [
-    "Den ersten Benutzer mit Admin-Rechten (sudo) für die Systemverwaltung definieren."
-  ],
-  "Defined (hidden)": [
-    "Definiert (ausgeblendet)"
-  ],
   "Delete": [
     "Löschen"
   ],
@@ -837,9 +816,6 @@ export default {
   ],
   "Disabled": [
     "Deaktiviert"
-  ],
-  "Discard": [
-    "Verwerfen"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "Die maximale Größe verwerfen und mit der vereinfachten Konfiguration fortfahren"
@@ -937,9 +913,6 @@ export default {
   "Edit connection settings": [
     "Verbindungseinstellungen bearbeiten"
   ],
-  "Edit user": [
-    "Benutzer bearbeiten"
-  ],
   "Edit volume group": [
     "Volume-Gruppe bearbeiten"
   ],
@@ -957,6 +930,9 @@ export default {
   ],
   "Enabled with the system default settings": [
     "Mit den Systemstandard-Einstellungen aktiviert"
+  ],
+  "Encapsulation protocol": [
+    ""
   ],
   "Encrypt the system": [
     "System verschlüsseln"
@@ -1070,9 +1046,6 @@ export default {
   ],
   "Find space in %s": [
     "Speicherplatz in %s finden"
-  ],
-  "First user": [
-    "Erster Benutzer"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "Für fortgeschrittene Anforderungen können Benutzer zu dieser ganzseitigen Version mit eigenem Pfad wechseln, die mehr Platz für detaillierte Ansichten, zusätzliche Spalten, Filter und erweiterte Funktionen bietet."
@@ -1606,6 +1579,9 @@ export default {
   "No changes detected. System settings are already up to date.": [
     ""
   ],
+  "No changes to apply": [
+    ""
+  ],
   "No connections match filters": [
     "Keine Verbindungen entsprechen den Filtern"
   ],
@@ -1660,6 +1636,12 @@ export default {
   "No partitions will be automatically configured for booting. Use with caution.": [
     "Es werden keine Partitionen automatisch für das Booten konfiguriert. Seien Sie vorsichtig."
   ],
+  "No pending tasks": [
+    ""
+  ],
+  "No public key provided, SSH login might be restricted": [
+    ""
+  ],
   "No software RAID devices are available for selection.": [
     "Es stehen keine Software-RAID-Geräte zur Auswahl."
   ],
@@ -1674,9 +1656,6 @@ export default {
   ],
   "No targets matches filters": [
     "Keine Ziele entsprechen den Filtern"
-  ],
-  "No user defined yet.": [
-    "Noch kein Benutzer definiert."
   ],
   "No valid address.": [
     "Keine gültige Adresse."
@@ -1714,9 +1693,6 @@ export default {
   "Not configured yet": [
     "Noch nicht konfiguriert"
   ],
-  "Not defined": [
-    "Nicht definiert"
-  ],
   "Not implemented yet (%s)": [
     "Noch nicht ausgewählt (%s)"
   ],
@@ -1730,6 +1706,9 @@ export default {
     "Nicht unterstützt (%s)"
   ],
   "Not used by this bridge": [
+    ""
+  ],
+  "Numeric identifier (0–4094)": [
     ""
   ],
   "Offline": [
@@ -1749,6 +1728,9 @@ export default {
   ],
   "Package installation failed": [
     "Paketinstallation fehlgeschlagen"
+  ],
+  "Parent device must be different from the device name": [
+    ""
   ],
   "Partition %s": [
     "Partition %s"
@@ -1813,6 +1795,9 @@ export default {
   "Passwords do not match": [
     "Passwörter stimmen nicht überein"
   ],
+  "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)": [
+    ""
+  ],
   "Patterns selection": [
     "Musterauswahl"
   ],
@@ -1855,6 +1840,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Schutz für die in den neuen Dateisystemen gespeicherten Informationen, einschließlich Daten, Programme und Systemdateien."
   ],
+  "Protocol": [
+    ""
+  ],
   "Protocol message interval (1-10 seconds).": [
     "Intervall der Protokollnachrichten (1-10 Sekunden)."
   ],
@@ -1867,11 +1855,14 @@ export default {
   "Provide its password to log in to the system.": [
     "Geben Sie das Passwort für die Anmeldung am System ein."
   ],
-  "Public SSH Key": [
-    "Öffentlicher SSH-Schlüssel"
+  "Public key provided": [
+    ""
   ],
-  "Public SSH Key is empty.": [
-    "Öffentlicher SSH-Schlüssel ist leer."
+  "Public key provided for %s": [
+    ""
+  ],
+  "Public key provided for both": [
+    ""
   ],
   "Public network": [
     "Öffentliches Netzwerk"
@@ -1969,26 +1960,11 @@ export default {
   "Reused partitions will not be shrunk": [
     "Wiederverwendete Partitionen werden nicht verkleinert"
   ],
-  "Review and fix": [
-    "Überprüfen und korrigieren"
-  ],
   "Review and install": [
     "Überprüfen und installieren"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
     ""
-  ],
-  "Root login with SSH key": [
-    "Root-Anmeldung mit SSH-Schlüssel"
-  ],
-  "Root login with password": [
-    "Root-Anmeldung mit Passwort"
-  ],
-  "Root login with password and SSH key": [
-    "Root-Anmeldung mit Passwort und SSH-Schlüssel"
-  ],
-  "Root user": [
-    "Root-Benutzer"
   ],
   "Routes": [
     "Routen"
@@ -2128,6 +2104,12 @@ export default {
   ],
   "Set manually": [
     "Manuell festlegen"
+  ],
+  "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
+    ""
+  ],
+  "Sets up both and use either to log in": [
+    ""
   ],
   "Settings": [
     "Einstellungen"
@@ -2275,6 +2257,9 @@ export default {
   ],
   "System Information": [
     "Systeminformationen"
+  ],
+  "System status: Idle": [
+    ""
   ],
   "System will have no network connections": [
     "Das System hat keine Netzwerkverbindungen"
@@ -2605,12 +2590,6 @@ export default {
   "Update available disks and activate crypt devices": [
     "Verfügbare Festplatten aktualisieren und Kryptogeräte aktivieren"
   ],
-  "Upload": [
-    "Hochladen"
-  ],
-  "Upload, paste, or drop an SSH public key": [
-    "Öffentlichen SSH-Schlüssel hochladen, einfügen oder ablegen"
-  ],
   "Use": [
     "Verwenden"
   ],
@@ -2710,17 +2689,14 @@ export default {
   "Use for the selected product too": [
     "Auch für das ausgewählte Produkt verwenden"
   ],
-  "Use password": [
-    "Passwort verwenden"
-  ],
-  "Use public SSH Key": [
-    "Öffentlichen SSH-Schlüssel verwenden"
-  ],
   "Use several devices": [
     "Mehrere Geräte verwenden"
   ],
-  "Use suggested username": [
-    "Vorgeschlagenen Benutzernamen verwenden"
+  "Use the 802.1Q protocol explicitly.": [
+    ""
+  ],
+  "Use the 802.1ad protocol explicitly.": [
+    ""
   ],
   "Use the RAID without partitions": [
     "RAID ohne Partitionen verwenden"
@@ -2730,6 +2706,9 @@ export default {
   ],
   "Use the disk without partitions": [
     "Festplatte ohne Partitionen verwenden"
+  ],
+  "Use the system default (802.1Q).": [
+    ""
   ],
   "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
     "Verwenden Sie die Tabs, um Festplatten, RAID-Geräte und LVM-Volume-Gruppen zu durchsuchen."
@@ -2742,9 +2721,6 @@ export default {
   ],
   "Username": [
     "Benutzername"
-  ],
-  "Username suggestion dropdown": [
-    "Dropdown-Liste mit Vorschlägen für Benutzernamen"
   ],
   "Using %d connections with %s": [
     "Verwendung von %d Verbindungen mit %s"
@@ -2857,6 +2833,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Möglicherweise möchten Sie diese Einstellungen verwerfen und mit einer einfachen Konfiguration neu beginnen."
   ],
+  "You must fix these issues": [
+    ""
+  ],
   "You need to fix any invalid settings before proceeding with the installation.": [
     "Sie müssen alle ungültigen Einstellungen korrigieren, bevor Sie mit der Installation fortfahren können."
   ],
@@ -2895,9 +2874,6 @@ export default {
   ],
   "reset to defaults": [
     "Auf Standardeinstellungen zurücksetzen"
-  ],
-  "root": [
-    "root"
   ],
   "zFCP": [
     "zFCP"
