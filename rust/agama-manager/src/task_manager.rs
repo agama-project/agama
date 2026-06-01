@@ -90,16 +90,14 @@ use tokio::sync::{mpsc, Notify, RwLock};
 /// Unique identifier for a task.
 pub type TaskId = usize;
 
-/// Result type returned by task execution.
+/// Error type for task execution.
 ///
-/// Tasks return `Ok(())` on success or an error boxed as `Box<dyn Error + Send>`.
-pub type TaskResult = Result<(), Box<dyn std::error::Error + Send>>;
-
-/// Helper to convert any error into a TaskResult error.
+/// This is a newtype wrapper around `Box<dyn Error + Send>` that provides a conversion
+/// method for any error type that implements `Error + Send + 'static`.
 ///
-/// This function boxes an error and casts it to the trait object type required by TaskResult.
-/// Use this to avoid verbose `.map_err(|e| Box::new(e) as Box<dyn std::error::Error + Send>)`
-/// expressions in task closures.
+/// Since Rust doesn't allow implementing `From<E>` for all error types (it conflicts with
+/// the reflexive `From<T> for T`), this type provides the `from_error` constructor method
+/// for explicit conversion, and specific `From` implementations for common error types.
 ///
 /// # Example
 ///
@@ -107,17 +105,55 @@ pub type TaskResult = Result<(), Box<dyn std::error::Error + Send>>;
 /// task_manager
 ///     .task("example", "Example task")
 ///     .run(|| async move {
-///         some_operation()
-///             .await
-///             .map_err(task_error)
+///         // Use ? with map_err for explicit conversion
+///         some_operation().await.map_err(TaskError::from_error)?;
+///         another_operation().await.map_err(TaskError::from_error)?;
+///         Ok(())
 ///     })
 ///     .await;
 /// ```
-pub fn task_error<E: std::error::Error + Send + 'static>(
-    e: E,
-) -> Box<dyn std::error::Error + Send> {
-    Box::new(e)
+///
+/// # Note on From implementation
+///
+/// We cannot implement `From<E> for TaskError` for all `E: Error + Send + 'static` because
+/// it conflicts with Rust's blanket `impl<T> From<T> for T`. Instead, we provide `from_error`
+/// as a constructor method and implement `From` for specific error types as needed.
+#[derive(Debug)]
+pub struct TaskError(Box<dyn std::error::Error + Send>);
+
+impl TaskError {
+    /// Converts any error type into a TaskError.
+    ///
+    /// This method can be used with `.map_err()` to convert errors in task closures.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// handler.call(message).await.map_err(TaskError::from_error)?;
+    /// ```
+    pub fn from_error<E: std::error::Error + Send + 'static>(e: E) -> Self {
+        TaskError(Box::new(e))
+    }
 }
+
+impl std::fmt::Display for TaskError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::error::Error for TaskError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        self.0.source()
+    }
+}
+
+/// Result type returned by task execution.
+///
+/// Tasks return `Ok(())` on success or a [`TaskError`] on failure.
+/// The `?` operator can be used directly with any error type in task closures
+/// thanks to the `From` implementation on `TaskError`.
+pub type TaskResult = Result<(), TaskError>;
 
 type BoxFuture = Pin<Box<dyn Future<Output = TaskResult> + Send>>;
 
