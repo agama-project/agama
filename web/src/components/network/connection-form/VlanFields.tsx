@@ -21,10 +21,12 @@
  */
 
 import React from "react";
+import { isEmpty } from "radashi";
 import { defaultOptions, VlanProtocolMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { _, N_ } from "~/i18n";
+import Text from "~/components/core/Text";
 
 /**
  * Protocol options for the selector.
@@ -53,10 +55,6 @@ const protocolOptions = () => [
   },
 ];
 
-type VlanFieldsProps = {
-  isEditing?: boolean;
-};
-
 /**
  * VLAN fields for a connection form.
  *
@@ -66,33 +64,62 @@ type VlanFieldsProps = {
  */
 const VlanFields = withForm({
   ...defaultOptions,
-  props: {
-    isEditing: false,
-  } as VlanFieldsProps,
-  render: function Render({ form, isEditing }) {
+  render: function Render({ form }) {
     const devices = useDevices();
+
+    // Suggests a device name based on the parent device and VLAN ID, as long as
+    // the user has not manually edited it.
+    const suggestIface = () => {
+      if (form.getFieldMeta("vlanIface")?.isDirty) return;
+
+      const vlanParent = form.getFieldValue("vlanParent");
+      const vlanId = form.getFieldValue("vlanId");
+
+      if (!isEmpty(vlanParent) && !isEmpty(vlanId)) {
+        form.setFieldValue("vlanIface", `${vlanParent}.${vlanId}`, {
+          dontUpdateMeta: true,
+        });
+      }
+    };
+
+    const parentOptions = devices
+      .filter((d) => d.name !== "lo" && d.name !== form.getFieldValue("vlanIface"))
+      .map((d) => ({
+        value: d.name,
+        label: d.name,
+        description: <Text textStyle={["textColorSubtle", "fontSizeXs"]}>{d.macAddress}</Text>,
+      }));
 
     return (
       <>
-        <form.AppField name="vlanIface">
-          {(field) =>
-            isEditing ? (
-              <field.ReadOnlyField label={_("Device name")} />
-            ) : (
-              <field.TextField
-                label={
-                  // TRANSLATORS: label for the network interface name field.
-                  _("Device name")
-                }
-                helperText={
-                  // TRANSLATORS: helper text for the VLAN device name field.
-                  _("E.g., eth0.100")
-                }
-              />
-            )
-          }
+        <form.AppField
+          name="vlanParent"
+          listeners={{
+            onMount: ({ value }: { value: string }) => {
+              if (!value && parentOptions.length > 0) {
+                form.setFieldValue("vlanParent", parentOptions[0].value, { dontUpdateMeta: true });
+              }
+            },
+            onChange: () => suggestIface(),
+          }}
+        >
+          {(field) => (
+            <field.DropdownField
+              label={
+                // TRANSLATORS: label for the VLAN parent device field.
+                _("Parent device")
+              }
+              options={parentOptions}
+            />
+          )}
         </form.AppField>
-        <form.AppField name="vlanId">
+
+        <form.AppField
+          name="vlanId"
+          listeners={{
+            onChange: () => suggestIface(),
+          }}
+        >
           {(field) => (
             <field.NumberField
               label={
@@ -108,20 +135,18 @@ const VlanFields = withForm({
             />
           )}
         </form.AppField>
-        <form.AppField name="vlanParent">
+
+        <form.AppField name="vlanIface">
           {(field) => (
-            <field.SuggestionsTextField
+            <field.TextField
               label={
-                // TRANSLATORS: label for the VLAN parent device field.
-                _("Parent device")
+                // TRANSLATORS: label for the network interface name field.
+                _("Device name")
               }
               helperText={
-                // TRANSLATORS: helper text for the VLAN parent device field.
-                _("Physical or Virtual device name")
+                // TRANSLATORS: helper text for the VLAN device name field.
+                _("E.g., eth0.100")
               }
-              suggestions={devices
-                .map((d) => d.name)
-                .filter((name) => name !== form.getFieldValue("vlanIface"))}
             />
           )}
         </form.AppField>
