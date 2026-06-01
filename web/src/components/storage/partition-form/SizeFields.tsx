@@ -156,7 +156,7 @@ const SizeFieldsContent = withForm({
 
       case SIZE_MODE.FIXED:
         return (
-          <form.AppField name="minSize">
+          <form.AppField name="fixedSize">
             {(field) => (
               <field.TextField label={_("Value")} helperText={_("e.g., 20 GiB, 100 MB")} />
             )}
@@ -166,10 +166,10 @@ const SizeFieldsContent = withForm({
       case SIZE_MODE.RANGE:
         return (
           <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
-            <form.AppField name="minSize">
+            <form.AppField name="rangeMinSize">
               {(field) => <field.TextField label={_("Minimum")} helperText={_("e.g., 10 GiB")} />}
             </form.AppField>
-            <form.AppField name="maxSize">
+            <form.AppField name="rangeMaxSize">
               {(field) => <field.TextField label={_("Maximum")} helperText={_("e.g., 40 GiB")} />}
             </form.AppField>
           </Flex>
@@ -177,7 +177,7 @@ const SizeFieldsContent = withForm({
 
       case SIZE_MODE.EXPAND:
         return (
-          <form.AppField name="minSize">
+          <form.AppField name="expandMinSize">
             {(field) => (
               <field.TextField
                 label={_("Minimum")}
