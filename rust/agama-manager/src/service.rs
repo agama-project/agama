@@ -19,8 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    actions::FinishAction, bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n,
-    message, network, ntp, proxy, s390, security, software, storage, tasks, users,
+    actions::FinishAction,
+    bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n, message, network, ntp, proxy,
+    s390, security, software, storage,
+    task_manager::{TaskEvent, TaskManager},
+    tasks, users,
 };
 use agama_users::PasswordCheckResult;
 use agama_utils::{
@@ -389,6 +392,8 @@ impl Starter {
             }
         };
 
+        let task_manager = Arc::new(TaskManager::new());
+
         let runner = tasks::TasksRunner {
             bootloader: bootloader.clone(),
             files: files.clone(),
@@ -407,6 +412,7 @@ impl Starter {
             storage: storage.clone(),
             users: users.clone(),
             s390: s390.clone(),
+            task_manager: task_manager.clone(),
         };
         let tasks = actor::spawn(runner);
 
@@ -435,6 +441,7 @@ impl Starter {
             users,
             tasks,
             s390,
+            task_manager,
         };
 
         service.setup().await?;
@@ -467,6 +474,7 @@ pub struct Service {
     system: manager::SystemInfo,
     tasks: Handler<tasks::TasksRunner>,
     users: Handler<users::Service>,
+    task_manager: Arc<TaskManager>,
 }
 
 impl Service {
@@ -491,6 +499,27 @@ impl Service {
         } else {
             self.update_issues()?;
         };
+
+        let mut events = self.task_manager.take_event_receiver().await.unwrap();
+        tokio::spawn(async move {
+            while let Some(event) = events.recv().await {
+                match event {
+                    TaskEvent::Started { id, metadata } => {
+                        tracing::info!("task \"{}\" ({}) started", metadata.name, id)
+                    }
+                    TaskEvent::Completed {
+                        id,
+                        result,
+                        metadata,
+                    } => match result {
+                        Ok(()) => tracing::info!("task \"{}\" ({}) completed", metadata.name, id),
+                        Err(e) => {
+                            tracing::error!("task \"{}\" ({}) failed: {}", metadata.name, id, e)
+                        }
+                    },
+                }
+            }
+        });
 
         Ok(())
     }

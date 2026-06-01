@@ -18,10 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use std::sync::Arc;
+
 use crate::{
     actions::{FinishAction, InstallAction, SetConfigAction},
     bootloader, files, hostname, iscsi, l10n, ntp, proxy, s390, security, service, software,
     storage,
+    task_manager::TaskManager,
     tasks::message,
     users,
 };
@@ -57,6 +60,7 @@ pub struct TasksRunner {
     pub storage: Handler<storage::Service>,
     pub users: Handler<users::Service>,
     pub s390: Option<Handler<s390::Service>>,
+    pub task_manager: Arc<TaskManager>,
 }
 
 impl Actor for TasksRunner {
@@ -128,6 +132,7 @@ impl MessageHandler<message::SetConfig> for TasksRunner {
             storage: self.storage.clone(),
             users: self.users.clone(),
             s390: self.s390.clone(),
+            task_manager: self.task_manager.clone(),
         };
 
         if let Err(error) = action.run(message.product, message.config).await {
