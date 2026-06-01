@@ -43,8 +43,15 @@ const mockDevice2 = {
   state: DeviceState.DISCONNECTED,
 };
 
+const mockDeviceLo = {
+  name: "lo",
+  macAddress: "00:00:00:00:00:00",
+  type: CONNECTION_TYPE.ETHERNET,
+  state: DeviceState.CONNECTED,
+};
+
 jest.mock("~/hooks/model/system/network", () => ({
-  useDevices: () => [mockDevice1, mockDevice2],
+  useDevices: () => [mockDevice1, mockDevice2, mockDeviceLo],
 }));
 
 function TestForm({
@@ -80,7 +87,6 @@ describe("VlanFields", () => {
     expect(await screen.findByLabelText("Parent device")).toBeInTheDocument();
     expect(await screen.findByLabelText("Encapsulation protocol")).toBeInTheDocument();
 
-    expect(screen.getByText("Physical or Virtual device name")).toBeInTheDocument();
     expect(await screen.findByLabelText("Encapsulation protocol")).toHaveTextContent("Default");
   });
 
@@ -104,15 +110,49 @@ describe("VlanFields", () => {
     expect(screen.getByText("Device name")).toBeInTheDocument(); // ReadOnlyField label
   });
 
-  it("filters parent device suggestions to exclude the current device name", async () => {
-    const { container } = installerRender(<TestForm defaultValues={{ vlanIface: "enp1s0" }} />);
+  it("filters parent device options to exclude the current device name and 'lo'", async () => {
+    const { user } = installerRender(<TestForm defaultValues={{ vlanIface: "enp1s0" }} />);
 
-    const datalist = container.querySelector("#vlanParent-datalist");
-    expect(datalist).toBeInTheDocument();
+    // Open the dropdown
+    const parentToggle = await screen.findByLabelText("Parent device");
+    await user.click(parentToggle);
 
-    const options = Array.from(datalist?.querySelectorAll("option") || []).map((o) => o.value);
-    // enp1s0 should be filtered out, enp2s0 should be present
-    expect(options).not.toContain("enp1s0");
-    expect(options).toContain("enp2s0");
+    // enp1s0 should be filtered out
+    expect(screen.queryByRole("option", { name: /enp1s0/ })).not.toBeInTheDocument();
+    // lo should be filtered out
+    expect(screen.queryByRole("option", { name: /lo/ })).not.toBeInTheDocument();
+    // enp2s0 should be present
+    expect(screen.getByRole("option", { name: /enp2s0/ })).toBeInTheDocument();
+  });
+
+  it("suggests the device name based on parent device and VLAN ID", async () => {
+    const { user } = installerRender(<TestForm />);
+
+    // Select parent device enp1s0
+    await user.click(screen.getByLabelText("Parent device"));
+    await user.click(screen.getByRole("option", { name: /enp1s0/ }));
+
+    // Set VLAN ID to 100
+    await user.type(screen.getByLabelText("VLAN ID"), "100");
+
+    // Device name should be suggested as enp1s0.100
+    expect(screen.getByLabelText("Device name")).toHaveValue("enp1s0.100");
+  });
+
+  it("does not suggest the device name if it has been manually edited", async () => {
+    const { user } = installerRender(<TestForm />);
+
+    // Manually set device name
+    await user.type(screen.getByLabelText("Device name"), "custom-vlan");
+
+    // Select parent device enp1s0
+    await user.click(screen.getByLabelText("Parent device"));
+    await user.click(screen.getByRole("option", { name: /enp1s0/ }));
+
+    // Set VLAN ID to 100
+    await user.type(screen.getByLabelText("VLAN ID"), "100");
+
+    // Device name should remain as custom-vlan
+    expect(screen.getByLabelText("Device name")).toHaveValue("custom-vlan");
   });
 });

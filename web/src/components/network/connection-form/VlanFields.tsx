@@ -25,6 +25,7 @@ import { defaultOptions, VlanProtocolMode } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { _, N_ } from "~/i18n";
+import Text from "~/components/core/Text";
 
 /**
  * Protocol options for the selector.
@@ -72,8 +73,75 @@ const VlanFields = withForm({
   render: function Render({ form, isEditing }) {
     const devices = useDevices();
 
+    // Suggests a device name based on the parent device and VLAN ID, as long as
+    // the user has not manually edited it.
+    const suggestIface = (parent?: string, id?: number) => {
+      if (isEditing || form.getFieldMeta("vlanIface")?.isDirty) return;
+
+      const vlanParent = parent ?? form.getFieldValue("vlanParent");
+      const vlanId = id ?? form.getFieldValue("vlanId");
+
+      if (vlanParent && vlanId !== undefined) {
+        form.setFieldValue("vlanIface", `${vlanParent}.${vlanId}`, {
+          dontUpdateMeta: true,
+        });
+      }
+    };
+
+    const parentOptions = devices
+      .filter((d) => d.name !== "lo" && d.name !== form.getFieldValue("vlanIface"))
+      .map((d) => ({
+        value: d.name,
+        label: d.name,
+        description: <Text textStyle={["textColorSubtle", "fontSizeXs"]}>{d.macAddress}</Text>,
+      }));
+
     return (
       <>
+        <form.AppField
+          name="vlanParent"
+          listeners={{
+            onMount: ({ value }: { value: string }) => {
+              if (!value && parentOptions.length > 0) {
+                form.setFieldValue("vlanParent", parentOptions[0].value, { dontUpdateMeta: true });
+              }
+            },
+            onChange: ({ value }: { value: string }) => suggestIface(value),
+          }}
+        >
+          {(field) => (
+            <field.DropdownField
+              label={
+                // TRANSLATORS: label for the VLAN parent device field.
+                _("Parent device")
+              }
+              options={parentOptions}
+            />
+          )}
+        </form.AppField>
+
+        <form.AppField
+          name="vlanId"
+          listeners={{
+            onChange: ({ value }: { value: number }) => suggestIface(undefined, value),
+          }}
+        >
+          {(field) => (
+            <field.NumberField
+              label={
+                // TRANSLATORS: label for the VLAN ID field.
+                _("VLAN ID")
+              }
+              helperText={
+                // TRANSLATORS: helper text for the VLAN ID field.
+                _("Numeric identifier (0–4094)")
+              }
+              min={0}
+              max={4094}
+            />
+          )}
+        </form.AppField>
+
         <form.AppField name="vlanIface">
           {(field) =>
             isEditing ? (
@@ -91,39 +159,6 @@ const VlanFields = withForm({
               />
             )
           }
-        </form.AppField>
-        <form.AppField name="vlanId">
-          {(field) => (
-            <field.NumberField
-              label={
-                // TRANSLATORS: label for the VLAN ID field.
-                _("VLAN ID")
-              }
-              helperText={
-                // TRANSLATORS: helper text for the VLAN ID field.
-                _("Numeric identifier (0–4094)")
-              }
-              min={0}
-              max={4094}
-            />
-          )}
-        </form.AppField>
-        <form.AppField name="vlanParent">
-          {(field) => (
-            <field.SuggestionsTextField
-              label={
-                // TRANSLATORS: label for the VLAN parent device field.
-                _("Parent device")
-              }
-              helperText={
-                // TRANSLATORS: helper text for the VLAN parent device field.
-                _("Physical or Virtual device name")
-              }
-              suggestions={devices
-                .map((d) => d.name)
-                .filter((name) => name !== form.getFieldValue("vlanIface"))}
-            />
-          )}
         </form.AppField>
 
         <form.AppField name="vlanProtocol">
