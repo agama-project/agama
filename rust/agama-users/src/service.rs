@@ -239,7 +239,7 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
 
         let mut remote_config = access::Config::default();
         if self.need_ssh_access() {
-            remote_config.ssh = Some(api::access::AccessEnum::Enabled);
+            remote_config.ssh = Some(api::access::AccessValue::Enabled);
         }
 
         let res = self

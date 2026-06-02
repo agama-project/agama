@@ -122,39 +122,39 @@ impl State {
     /// Checks if SSH access is enabled either by user configuration or service requests.
     fn is_ssh_enabled(&self) -> bool {
         if let Some(config) = &self.user_config.ssh {
-            return config == &api::access::AccessEnum::Enabled;
+            return config == &api::access::AccessValue::Enabled;
         };
 
         // no user explicit selection, so compute it from agama requirements
         self.agama_config
             .values()
-            .any(|config| config.ssh == Some(api::access::AccessEnum::Enabled))
+            .any(|config| config.ssh == Some(api::access::AccessValue::Enabled))
     }
 
     /// Checks if Web Console access is enabled either by user configuration or module requests.
     fn is_web_console_enabled(&self) -> bool {
         if let Some(config) = &self.user_config.web_console {
-            return config == &api::access::AccessEnum::Enabled;
+            return config == &api::access::AccessValue::Enabled;
         };
 
         // no user explicit selection, so compute it from agama requirements
         self.agama_config
             .values()
-            .any(|config| config.web_console == Some(api::access::AccessEnum::Enabled))
+            .any(|config| config.web_console == Some(api::access::AccessValue::Enabled))
     }
 
     /// Returns the resolved extended configuration for remote access.
     pub fn extended_config(&self) -> ExtendedConfig {
         let ssh = if self.is_ssh_enabled() {
-            api::access::AccessEnum::Enabled
+            api::access::AccessValue::Enabled
         } else {
-            api::access::AccessEnum::Default
+            api::access::AccessValue::Default
         };
 
         let web_console = if self.is_web_console_enabled() {
-            api::access::AccessEnum::Enabled
+            api::access::AccessValue::Enabled
         } else {
-            api::access::AccessEnum::Default
+            api::access::AccessValue::Default
         };
 
         ExtendedConfig { ssh, web_console }
@@ -316,7 +316,7 @@ impl MessageHandler<message::Finish> for Service {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use agama_utils::api::access::AccessEnum;
+    use agama_utils::api::access::AccessValue;
     use tokio::sync::broadcast;
 
     fn create_test_state() -> State {
@@ -338,7 +338,7 @@ mod tests {
 
         // Add a module requesting SSH
         let mut module_config = Config::default();
-        module_config.ssh = Some(AccessEnum::Enabled);
+        module_config.ssh = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("users".to_string(), module_config);
@@ -352,19 +352,19 @@ mod tests {
         let mut state = create_test_state();
 
         // User explicitly enables SSH
-        state.user_config.ssh = Some(AccessEnum::Enabled);
+        state.user_config.ssh = Some(AccessValue::Enabled);
         assert!(state.is_ssh_enabled());
 
         // Module config asks for it, but user already enabled it
         let mut module_config = Config::default();
-        module_config.ssh = Some(AccessEnum::Enabled);
+        module_config.ssh = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("users".to_string(), module_config.clone());
         assert!(state.is_ssh_enabled());
 
         // User explicitly disables SSH (sets to Default)
-        state.user_config.ssh = Some(AccessEnum::Default);
+        state.user_config.ssh = Some(AccessValue::Default);
         // User config overrides module config
         assert!(!state.is_ssh_enabled());
     }
@@ -376,14 +376,14 @@ mod tests {
         assert!(!state.is_web_console_enabled());
 
         let mut module_config = Config::default();
-        module_config.web_console = Some(AccessEnum::Enabled);
+        module_config.web_console = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("storage".to_string(), module_config);
 
         assert!(state.is_web_console_enabled());
 
-        state.user_config.web_console = Some(AccessEnum::Default);
+        state.user_config.web_console = Some(AccessValue::Default);
         assert!(!state.is_web_console_enabled());
     }
 
@@ -393,21 +393,21 @@ mod tests {
 
         // Initially both are Default
         let ext_config = state.extended_config();
-        assert_eq!(ext_config.ssh, AccessEnum::Default);
-        assert_eq!(ext_config.web_console, AccessEnum::Default);
+        assert_eq!(ext_config.ssh, AccessValue::Default);
+        assert_eq!(ext_config.web_console, AccessValue::Default);
 
         // Enable SSH via module config
         let mut module_config = Config::default();
-        module_config.ssh = Some(AccessEnum::Enabled);
+        module_config.ssh = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("users".to_string(), module_config);
 
         // Enable Web Console via user config
-        state.user_config.web_console = Some(AccessEnum::Enabled);
+        state.user_config.web_console = Some(AccessValue::Enabled);
 
         let ext_config = state.extended_config();
-        assert_eq!(ext_config.ssh, AccessEnum::Enabled);
-        assert_eq!(ext_config.web_console, AccessEnum::Enabled);
+        assert_eq!(ext_config.ssh, AccessValue::Enabled);
+        assert_eq!(ext_config.web_console, AccessValue::Enabled);
     }
 }

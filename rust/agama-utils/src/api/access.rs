@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 /// Allows to specify explicit enablement of remote access for supported services
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum AccessEnum {
+pub enum AccessValue {
     /// Explicitly enabled
     Enabled,
     /// Default system configuration behavior that is product specific
@@ -42,11 +42,11 @@ pub struct Config {
     /// Remote access to SSH
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub ssh: Option<AccessEnum>,
+    pub ssh: Option<AccessValue>,
     /// Remote access to Web Console
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub web_console: Option<AccessEnum>,
+    pub web_console: Option<AccessValue>,
 }
 
 /// Remote Access extended configuration that is resolved
@@ -55,7 +55,7 @@ pub struct Config {
 #[schemars(rename = "access.ExtendedConfig")]
 pub struct ExtendedConfig {
     /// Remote access to SSH
-    pub ssh: AccessEnum,
+    pub ssh: AccessValue,
     /// Remote access to Web Console
-    pub web_console: AccessEnum,
+    pub web_console: AccessValue,
 }
