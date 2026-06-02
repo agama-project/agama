@@ -208,6 +208,89 @@ impl SetConfigAction {
             .await
     }
 
+    /// Helper to spawn S390 configuration task
+    async fn set_s390_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+        let s390 = self.s390.as_ref()?;
+        let handler = s390.clone();
+        let s390_config = config.s390.clone();
+        let storage_handler = self.storage.clone();
+
+        Some(
+            self.task_manager
+                .task("s390", Scope::Storage, &gettext("Configuring DASD devices"))
+                .run(|| async move {
+                    // Ensure storage was already probed before configuring s390
+                    let storage_system = storage_handler
+                        .call(storage::message::GetSystem)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    if storage_system.is_none() {
+                        storage_handler
+                            .call(storage::message::Probe)
+                            .await
+                            .map_err(TaskError::from_error)?
+                    }
+                    handler
+                        .call(s390::message::SetConfig::new(s390_config))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await,
+        )
+    }
+
+    /// Helper to spawn network configuration task
+    async fn set_network_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+        let network_config = config.network.clone()?;
+        let handler = self.network.clone();
+
+        Some(
+            self.task_manager
+                .task(
+                    "network",
+                    Scope::Network,
+                    &gettext("Setting up the network"),
+                )
+                .run(|| async move {
+                    handler
+                        .update_config(network_config)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    handler.apply().await.map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await,
+        )
+    }
+
+    /// Helper to spawn software configuration task
+    async fn set_software_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> crate::task_manager::TaskId {
+        let software_handler = self.software.clone();
+        let software_config = config.software.clone();
+
+        self.task_manager
+            .task(
+                "software",
+                Scope::Software,
+                &gettext("Preparing the software proposal"),
+            )
+            .depends_on(dependencies)
+            .run(move || async move {
+                software_handler
+                    .call(software::message::SetConfig::new(product, software_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                Ok(())
+            })
+            .await
+    }
+
     pub async fn run(
         self,
         product: Option<Arc<RwLock<ProductSpec>>>,
@@ -336,55 +419,12 @@ impl SetConfigAction {
 
         // S390 configuration (if available)
         let mut storage_deps = Vec::new();
-        if let Some(s390) = &self.s390 {
-            let handler = s390.clone();
-            let s390_config = config.s390.clone();
-            let storage_handler = self.storage.clone();
-            let s390_task = self
-                .task_manager
-                .task("s390", Scope::Storage, &gettext("Configuring DASD devices"))
-                .run(|| async move {
-                    // Ensure storage was already probed before configuring s390
-                    let storage_system = storage_handler
-                        .call(storage::message::GetSystem)
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    if storage_system.is_none() {
-                        storage_handler
-                            .call(storage::message::Probe)
-                            .await
-                            .map_err(TaskError::from_error)?
-                    }
-                    handler
-                        .call(s390::message::SetConfig::new(s390_config))
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    Ok(())
-                })
-                .await;
-            storage_deps.push(s390_task);
+        if let Some(task_id) = self.set_s390_config(&config).await {
+            storage_deps.push(task_id);
         }
 
         // Network configuration
-        if config.network.is_some() {
-            let handler = self.network.clone();
-            let network_config = config.network.clone().unwrap();
-            self.task_manager
-                .task(
-                    "network",
-                    Scope::Network,
-                    &gettext("Setting up the network"),
-                )
-                .run(|| async move {
-                    handler
-                        .update_config(network_config)
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    handler.apply().await.map_err(TaskError::from_error)?;
-                    Ok(())
-                })
-                .await;
-        }
+        self.set_network_config(&config).await;
 
         // Product-dependent configuration (software, storage, bootloader)
         if let Some(product) = product {
@@ -425,27 +465,12 @@ impl SetConfigAction {
                 .await;
 
             // Software configuration - depends on files, storage, and bootloader
-            let software_handler = self.software.clone();
-            let product_clone_for_task = Arc::clone(&product);
-            let software_config = config.software.clone();
             let _software_task = self
-                .task_manager
-                .task(
-                    "software",
-                    Scope::Software,
-                    &gettext("Preparing the software proposal"),
+                .set_software_config(
+                    Arc::clone(&product),
+                    &config,
+                    &[files_task, storage_task, bootloader_task, ntp_task],
                 )
-                .depends_on(&[files_task, storage_task, bootloader_task, ntp_task])
-                .run(move || async move {
-                    software_handler
-                        .call(software::message::SetConfig::new(
-                            product_clone_for_task,
-                            software_config,
-                        ))
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    Ok(())
-                })
                 .await;
 
             // SELinux configuration (after software)
