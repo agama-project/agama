@@ -329,14 +329,16 @@ impl SetConfigAction {
                 .await;
 
             // Software configuration - depends on files, storage, and bootloader
-            // Also configures SELinux after software is configured
-            let _software_task = self
+            let software_task = self
                 .set_software_config(
                     Arc::clone(&product),
                     &config,
                     &[files_task, storage_task, bootloader_task, ntp_task],
                 )
                 .await;
+
+            // SELinux configuration - depends on software configuration
+            self.set_selinux_config(software_task).await;
         }
 
         Ok(())
@@ -452,7 +454,7 @@ impl SetConfigAction {
             .await
     }
 
-    /// Helper to spawn software configuration task and configure SELinux
+    /// Helper to spawn software configuration task
     async fn set_software_config(
         &self,
         product: Arc<RwLock<ProductSpec>>,
@@ -461,7 +463,6 @@ impl SetConfigAction {
     ) -> crate::task_manager::TaskId {
         let software_handler = self.software.clone();
         let software_config = config.software.clone();
-        let bootloader_handler = self.bootloader.clone();
 
         self.task_manager
             .task(
@@ -476,7 +477,23 @@ impl SetConfigAction {
                     .await
                     .map_err(TaskError::from_error)?;
 
-                // SELinux configuration (after software SetConfig completes)
+                Ok(())
+            })
+            .await
+    }
+
+    /// Helper to spawn SELinux configuration task
+    async fn set_selinux_config(
+        &self,
+        depends_on: crate::task_manager::TaskId,
+    ) -> crate::task_manager::TaskId {
+        let software_handler = self.software.clone();
+        let bootloader_handler = self.bootloader.clone();
+
+        self.task_manager
+            .task("selinux", Scope::Security, &gettext("Configuring SELinux"))
+            .depends_on(&[depends_on])
+            .run(move || async move {
                 let selinux_selected = software_handler
                     .call(software::message::IsPatternSelected::new(
                         "selinux".to_string(),
@@ -494,9 +511,10 @@ impl SetConfigAction {
                     value: value.to_string(),
                 };
 
-                if let Err(error) = bootloader_handler.cast(message) {
-                    tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
-                }
+                bootloader_handler
+                    .call(message)
+                    .await
+                    .map_err(TaskError::from_error)?;
 
                 Ok(())
             })
