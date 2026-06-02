@@ -232,13 +232,14 @@ const FilesystemFieldsContent = withForm({
 
     // Auto-reset filesystem to Default when it becomes incompatible with the mount point.
     // Example: user selects XFS, then changes mount point to "swap" (which only supports swap fs).
+    // Also resets REUSE when selecting a partition that cannot keep its current filesystem.
     useEffect(() => {
       if (filesystem === FILESYSTEM_TYPE.AUTO) return;
-      if (filesystem === FILESYSTEM_ACTION.REUSE) return;
+      if (filesystem === FILESYSTEM_ACTION.REUSE && canKeepCurrentFilesystem) return;
       if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;
 
       form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
-    }, [usableFilesystems, filesystem, form]);
+    }, [usableFilesystems, filesystem, form, canKeepCurrentFilesystem]);
 
     return (
       <>

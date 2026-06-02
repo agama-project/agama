@@ -56,6 +56,12 @@ const mockDevice = {
       description: "20.00 GiB",
       filesystem: { sid: 200, type: "xfs" as const, label: "" },
     },
+    {
+      sid: 30,
+      name: "vdd3",
+      description: "30.00 GiB",
+      filesystem: undefined,
+    },
   ],
 };
 
@@ -154,6 +160,41 @@ describe("FilesystemFields", () => {
     it("does not show warning when Current option is selected", () => {
       installerRender(<TestForm defaultValues={defaultValues} />);
       expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when reusing a partition without filesystem", () => {
+    it("auto-resets to Default when filesystem is 'reuse'", async () => {
+      const { user } = installerRender(
+        <TestForm
+          defaultValues={{
+            name: "vdd3",
+            committedMountPoint: "/home",
+            filesystem: "reuse",
+          }}
+        />,
+      );
+
+      await user.click(screen.getByLabelText("File system"));
+      const options = screen.getAllByRole("option");
+      expect(options[0]).toHaveTextContent("Default");
+      expect(screen.queryByRole("option", { name: /Current/ })).not.toBeInTheDocument();
+    });
+
+    it("does not show Current option in dropdown", async () => {
+      const { user } = installerRender(
+        <TestForm
+          defaultValues={{
+            name: "vdd3",
+            committedMountPoint: "/home",
+            filesystem: FILESYSTEM_TYPE.AUTO,
+          }}
+        />,
+      );
+
+      await user.click(screen.getByLabelText("File system"));
+      expect(screen.queryByRole("option", { name: /Current/ })).not.toBeInTheDocument();
+      screen.getByRole("option", { name: "Default" });
     });
   });
 
