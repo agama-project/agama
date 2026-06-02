@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 28 15:59:07 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- When proposing a booting partition, try with the desired size
+  before falling back to the minimal (gh#agama-project/agama#3559).
+
+-------------------------------------------------------------------
 Tue May 19 12:28:48 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Always activate storage devices in order to detect multipath and

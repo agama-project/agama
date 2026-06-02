@@ -868,6 +868,23 @@
     },
     "iscsi": {
       "$ref": "iscsi.schema.json"
+    },
+    "remoteAccess": {
+      "title": "Remote access settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ssh": {
+          "title": "SSH remote access",
+          "type": "string",
+          "enum": ["enabled", "default"]
+        },
+        "cockpit": {
+          "title": "Cockpit remote access",
+          "type": "string",
+          "enum": ["enabled", "default"]
+        }
+      }
     }
   },
   "$defs": {

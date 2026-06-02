@@ -1,8 +1,20 @@
 -------------------------------------------------------------------
-Thu May 28 15:06:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue Jun  2 09:54:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Migrate partition form to TanStack Form and redesign filesystem
   selection UI with improved accessibility.
+
+-------------------------------------------------------------------
+Thu May 28 18:38:34 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for configuring a VLAN using the UI
+  (gh#agama-project/agama#3548).
+
+-------------------------------------------------------------------
+Thu May 28 14:05:33 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve discoverability of background tasks status
+  (gh#agama-project/agama#3560).
 
 -------------------------------------------------------------------
 Thu May 28 09:45:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

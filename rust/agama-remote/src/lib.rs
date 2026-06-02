@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,13 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+//! This crate implements the support for handling remote access settings,
+//! including certificates management.
+
 pub mod service;
 pub use service::{Service, Starter};
 
 pub mod message;
 
-mod model;
-pub use model::{Model, ModelAdapter};
-
-mod password;
-pub use password::{PasswordCheckResult, PasswordChecker, PasswordCheckerError};
+pub mod test_utils;

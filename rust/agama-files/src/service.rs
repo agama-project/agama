@@ -302,7 +302,7 @@ impl MessageHandler<message::Finish> for Service {
 
         let scripts = self.scripts.lock().await;
         if !scripts.by_group(ScriptsGroup::Init).is_empty() {
-            enable_service(&self.install_dir, "agama-scripts");
+            enable_service(&self.install_dir, "agama-scripts").await;
         }
 
         Ok(())
