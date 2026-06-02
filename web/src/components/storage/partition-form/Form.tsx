@@ -412,7 +412,7 @@ function PartitionFormContent({
             <field.SuggestionsTextField
               label={_("Mount point")}
               suggestions={unusedMountPoints}
-              helperText={_("e.g., /, /home, /var, swap")}
+              helperText={_("E.g., /home, /var/lib, swap")}
               onSelect={(value) => {
                 // Update committedMountPoint immediately when user selects a suggestion
                 // (click or Enter key). Safe to show filesystem options and size hints

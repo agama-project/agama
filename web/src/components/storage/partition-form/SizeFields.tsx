@@ -136,6 +136,28 @@ function useAutomaticSizeNote(
 }
 
 /**
+ * Help text explaining size value format and units.
+ *
+ * Shown for non-automatic size modes (Fixed, Range, Expand) to guide users
+ * on accepted input format. Uses singular or plural form.
+ */
+const SizeInputHelp = ({ singular = false }: { singular?: boolean }) => (
+  <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
+    <Text isBold textStyle="textColorSubtle">
+      {singular
+        ? /* TRANSLATORS: instruction for size input format */
+          _("Enter value as number followed by unit")
+        : /* TRANSLATORS: instruction for size input format (plural) */
+          _("Enter values as number followed by unit")}
+    </Text>
+    <Text component="small">
+      {/* TRANSLATORS: examples of valid size formats with integer and decimal */}
+      {_("Units can be binary (10 GiB, power of 2) or decimal (10.5 GB, power of 10)")}
+    </Text>
+  </Flex>
+);
+
+/**
  * Inner component that renders size mode-specific inputs and info notes.
  */
 const SizeFieldsContent = withForm({
@@ -175,37 +197,45 @@ const SizeFieldsContent = withForm({
 
       case SIZE_MODE.FIXED:
         return (
-          <form.AppField name="fixedSize">
-            {(field) => (
-              <field.TextField label={_("Value")} helperText={_("e.g., 20 GiB, 100 MB")} />
-            )}
-          </form.AppField>
+          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+            <SizeInputHelp singular />
+            <form.AppField name="fixedSize">
+              {(field) => <field.TextField label={_("Value")} />}
+            </form.AppField>
+          </Flex>
         );
 
       case SIZE_MODE.RANGE:
         return (
-          <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
-            <form.AppField name="rangeMinSize">
-              {(field) => <field.TextField label={_("Minimum")} helperText={_("e.g., 10 GiB")} />}
-            </form.AppField>
-            <form.AppField name="rangeMaxSize">
-              {(field) => <field.TextField label={_("Maximum")} helperText={_("e.g., 40 GiB")} />}
-            </form.AppField>
+          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+            <SizeInputHelp />
+            <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
+              <form.AppField name="rangeMinSize">
+                {(field) => <field.TextField label={_("Minimum")} />}
+              </form.AppField>
+              <form.AppField name="rangeMaxSize">
+                {(field) => <field.TextField label={_("Maximum")} />}
+              </form.AppField>
+            </Flex>
           </Flex>
         );
 
       case SIZE_MODE.EXPAND:
         return (
-          <form.AppField name="expandMinSize">
-            {(field) => (
-              <field.TextField
-                label={_("Minimum")}
-                helperText={_(
-                  "Minimum space guaranteed. Remaining disk space is shared among expandable partitions.",
-                )}
-              />
-            )}
-          </form.AppField>
+          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+            <SizeInputHelp singular />
+            <form.AppField name="expandMinSize">
+              {(field) => (
+                <field.TextField
+                  label={_("Minimum")}
+                  helperText={
+                    /* TRANSLATORS: helper text for expandable partition minimum size */
+                    _("May use additional space if available")
+                  }
+                />
+              )}
+            </form.AppField>
+          </Flex>
         );
 
       default:

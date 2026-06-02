@@ -21,16 +21,15 @@
  */
 
 import React from "react";
+import LabelText from "~/components/form/LabelText";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
-import LabelText from "~/components/form/LabelText";
 import { _ } from "~/i18n";
 
 /**
  * Additional filesystem settings fields.
  *
- * Renders optional filesystem label field. Displayed when user checks
- * "Define more file system settings" checkbox.
+ * Displayed when user checks "Define more file system settings" checkbox.
  */
 const FilesystemAdditionalFields = withForm({
   ...defaultOptions,
@@ -38,11 +37,7 @@ const FilesystemAdditionalFields = withForm({
     return (
       <form.AppField name="filesystemLabel">
         {(field) => (
-          <field.TextField
-            label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>}
-            // TRANSLATORS: helper text for optional filesystem label field
-            helperText={_("Optional label for the filesystem")}
-          />
+          <field.TextField label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>} />
         )}
       </form.AppField>
     );
