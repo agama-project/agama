@@ -97,31 +97,75 @@ mod tasks {
 
         writeln!(file, "fn dummy_cli_strings() {{")?;
 
-        fn extract_strings(cmd: &Command, file: &mut std::fs::File) -> std::io::Result<()> {
+        fn extract_strings(
+            cmd: &Command,
+            file: &mut std::fs::File,
+            path: &[&str],
+        ) -> std::io::Result<()> {
+            let mut current_path = path.to_vec();
+            current_path.push(cmd.get_name());
+            let context = current_path.join(" ");
+
             if let Some(about) = cmd.get_about() {
+                writeln!(file, "    // TRANSLATORS: command: {}", context)?;
                 writeln!(file, "    gettext_noop!({:?});", about.to_string())?;
             }
             if let Some(long_about) = cmd.get_long_about() {
+                writeln!(file, "    // TRANSLATORS: command: {}", context)?;
                 writeln!(file, "    gettext_noop!({:?});", long_about.to_string())?;
             }
 
+            fn format_arg(arg: &clap::Arg) -> String {
+                use std::fmt::Write;
+                let mut s = String::new();
+                if let Some(long) = arg.get_long() {
+                    write!(s, "--{}", long).unwrap();
+                } else if let Some(short) = arg.get_short() {
+                    write!(s, "-{}", short).unwrap();
+                } else {
+                    // Positional argument
+                    write!(s, "<{}>", arg.get_id().as_str().to_uppercase()).unwrap();
+                    return s;
+                }
+
+                if arg.get_action().takes_values() {
+                    if let Some(names) = arg.get_value_names() {
+                        write!(s, " <{}>", names.join(" ")).unwrap();
+                    } else {
+                        write!(s, " <{}>", arg.get_id().as_str().to_uppercase()).unwrap();
+                    }
+                }
+                s
+            }
+
             for arg in cmd.get_arguments() {
+                let arg_name = format_arg(arg);
                 if let Some(help) = arg.get_help() {
+                    writeln!(
+                        file,
+                        "    // TRANSLATORS: command: {} {}",
+                        context, arg_name
+                    )?;
                     writeln!(file, "    gettext_noop!({:?});", help.to_string())?;
                 }
                 if let Some(long_help) = arg.get_long_help() {
+                    writeln!(
+                        file,
+                        "    // TRANSLATORS: command: {} {}",
+                        context, arg_name
+                    )?;
                     writeln!(file, "    gettext_noop!({:?});", long_help.to_string())?;
                 }
             }
 
             for subcmd in cmd.get_subcommands() {
-                extract_strings(subcmd, file)?;
+                extract_strings(subcmd, file, &current_path)?;
             }
 
             Ok(())
         }
 
-        extract_strings(&cmd, &mut file)?;
+        extract_strings(&cmd, &mut file, &[])?;
         writeln!(file, "}}")?;
 
         println!("Generated CLI strings at {}.", path.display());
