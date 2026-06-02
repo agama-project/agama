@@ -20,10 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { HelperText, HelperTextItem } from "@patternfly/react-core";
+import React, { useEffect } from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
+import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
@@ -45,39 +45,6 @@ type FilesystemFieldsContentProps = {
   committedMountPoint: string;
   filesystem: string;
 };
-
-type AutoFilesystemHintProps = {
-  filesystem: string;
-  defaultFilesystem: ConfigModel.FilesystemType | undefined;
-  committedMountPoint: string;
-};
-
-/**
- * Inline hint shown when "Automatic" is selected, describing which filesystem
- * will be applied for the current mount point.
- *
- * Renders nothing when automatic is not selected, no default is known, or no
- * mount point has been entered yet.
- */
-function AutoFilesystemHint({
-  filesystem,
-  defaultFilesystem,
-  committedMountPoint,
-}: AutoFilesystemHintProps) {
-  if (filesystem !== FILESYSTEM_TYPE.AUTO || !defaultFilesystem || !committedMountPoint)
-    return null;
-
-  return (
-    <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-      {sprintf(
-        // TRANSLATORS: %1$s is filesystem type (e.g., "XFS"), %2$s is mount point (e.g., "/home")
-        _("%1$s will be used for %2$s."),
-        filesystemLabel(defaultFilesystem),
-        committedMountPoint,
-      )}
-    </Text>
-  );
-}
 
 type FilesystemSelectorProps = {
   form;
@@ -128,28 +95,34 @@ function FilesystemSelector({
     <form.AppField name="filesystem">
       {(field) => (
         <field.DropdownField label={_("File system")} options={filesystemOptions}>
-          {(value) => (
-            <FieldNestedContent>
-              {value === FILESYSTEM_TYPE.AUTO && (
-                <AutoFilesystemHint
-                  filesystem={value}
-                  defaultFilesystem={defaultFilesystem}
-                  committedMountPoint={committedMountPoint}
-                />
-              )}
-              {selectedPartition && value !== FILESYSTEM_ACTION.REUSE && (
-                <HelperText>
-                  <HelperTextItem variant="warning">
-                    {sprintf(
-                      // TRANSLATORS: %s is partition name like "/dev/vdd2"
-                      _("Existing data on %s will be destroyed."),
-                      deviceLabel(selectedPartition),
-                    )}
-                  </HelperTextItem>
-                </HelperText>
-              )}
-            </FieldNestedContent>
-          )}
+          {(value) => {
+            const showHint =
+              value === FILESYSTEM_TYPE.AUTO && !!defaultFilesystem && !!committedMountPoint;
+            const showWarning = selectedPartition && value !== FILESYSTEM_ACTION.REUSE;
+
+            if (!showHint && !showWarning) return null;
+
+            return (
+              <FieldNestedContent>
+                {showHint && (
+                  <Text isBold textStyle="textColorSubtle">
+                    {sprintf(_("Uses %1$s"), filesystemLabel(defaultFilesystem))}
+                  </Text>
+                )}
+                {showWarning && (
+                  <HelperText>
+                    <HelperTextItem variant="warning">
+                      {sprintf(
+                        // TRANSLATORS: %s is partition name like "/dev/vdd2"
+                        _("Existing data on %s will be destroyed."),
+                        deviceLabel(selectedPartition),
+                      )}
+                    </HelperTextItem>
+                  </HelperText>
+                )}
+              </FieldNestedContent>
+            );
+          }}
         </field.DropdownField>
       )}
     </form.AppField>
@@ -251,7 +224,7 @@ const FilesystemFieldsContent = withForm({
 
     // When user selects a different partition, initialize filesystem field appropriately
     const previousNameRef = React.useRef(name);
-    React.useEffect(() => {
+    useEffect(() => {
       // Only run when partition selection actually changes
       if (previousNameRef.current === name) return;
       previousNameRef.current = name;
@@ -269,7 +242,7 @@ const FilesystemFieldsContent = withForm({
     }, [name, isReuse, canKeepCurrentFilesystem, form]);
 
     // Check filesystem compatibility when usable filesystems change
-    React.useEffect(() => {
+    useEffect(() => {
       if (filesystem === FILESYSTEM_TYPE.AUTO) return;
       if (filesystem === FILESYSTEM_ACTION.REUSE) return;
       if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;

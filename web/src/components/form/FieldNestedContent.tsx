@@ -34,23 +34,38 @@ type FieldNestedContentProps = {
  *
  * Renders children inside a NestedContent with a Flex column layout.
  * Used for stacking multiple pieces of conditional content (hints, warnings)
- * within a FormGroup without creating extra vertical gaps.
+ * within a FormGroup, with explicit control over spacing instead of relying
+ * on the default PatternFly FormGroup gap.
+ *
+ * The caller is responsible for deciding whether to render this component.
+ * Mounting it with no visible children will still reserve the space taken
+ * by its margins, creating an unintended visual gap.
  *
  * @example
  * <form.AppField name="filesystem">
  *   {(field) => (
  *     <field.DropdownField label={_("File system")} options={options}>
- *       {(value) => (
- *         <FieldNestedContent>
- *           {value === "auto" && <Hint />}
- *           {value !== "reuse" && <Warning />}
- *         </FieldNestedContent>
- *       )}
+ *       {(value) => {
+ *         const showHint = value === "auto" && !!mountPoint;
+ *         const showWarning = value !== "reuse";
+ *
+ *         if (!showHint && !showWarning) return null;
+ *
+ *         return (
+ *           <FieldNestedContent>
+ *             {showHint && <Hint />}
+ *             {showWarning && <Warning />}
+ *           </FieldNestedContent>
+ *         );
+ *       }}
  *     </field.DropdownField>
  *   )}
  * </form.AppField>
  */
-export default function FieldNestedContent({ children, margin = "mMd" }: FieldNestedContentProps) {
+export default function FieldNestedContent({
+  children,
+  margin = ["mlMd", "mtMd"],
+}: FieldNestedContentProps) {
   return (
     <NestedContent margin={margin}>
       <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
