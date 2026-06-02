@@ -40,18 +40,21 @@ jest.mock("~/hooks/model/system/storage", () => ({
 }));
 
 const mockDevice = {
+  sid: 1,
   name: "/dev/vdd",
   description: "Virtual disk",
   partitions: [
     {
+      sid: 10,
       name: "vdd1",
       description: "10.00 GiB",
-      filesystem: { type: "ext4", label: "Data" },
+      filesystem: { sid: 100, type: "ext4" as const, label: "Data" },
     },
     {
+      sid: 20,
       name: "vdd2",
       description: "20.00 GiB",
-      filesystem: { type: "xfs", label: "" },
+      filesystem: { sid: 200, type: "xfs" as const, label: "" },
     },
   ],
 };
