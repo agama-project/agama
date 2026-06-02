@@ -374,21 +374,16 @@ function PartitionFormContent({
 
       try {
         if (initialPartition) {
-          await editPartition(
+          editPartition(
             partitionableLocation.collection,
             partitionableLocation.index,
             initialPartition.mountPath,
             payload,
           );
         } else {
-          await addPartition(
-            partitionableLocation.collection,
-            partitionableLocation.index,
-            payload,
-          );
+          addPartition(partitionableLocation.collection, partitionableLocation.index, payload);
         }
 
-        // Navigate on success — no need to return success status since we're leaving
         navigate(-1);
         return { patched: true as const };
       } catch (error) {
