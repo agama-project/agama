@@ -96,6 +96,8 @@ function useAutomaticSizeNote(
   effectiveFilesystem: string | undefined,
   committedMountPoint: string,
 ): { sizeLabel: string; rationale: string } {
+  // Memoized to avoid recalculating on every render. The computation includes
+  // conditionals, sprintf calls, and translations.
   return useMemo(() => {
     if (!volume) {
       return {
@@ -173,10 +175,7 @@ const SizeFieldsContent = withForm({
     // expensive useVolumeTemplate recalculations on every keystroke.
     const volume = useVolumeTemplate(committedMountPoint);
 
-    const effectiveFilesystem = useMemo(
-      () => (filesystem === FILESYSTEM_TYPE.AUTO ? volume?.fsType : filesystem),
-      [filesystem, volume],
-    );
+    const effectiveFilesystem = filesystem === FILESYSTEM_TYPE.AUTO ? volume?.fsType : filesystem;
 
     const automaticSizeNote = useAutomaticSizeNote(
       volume,

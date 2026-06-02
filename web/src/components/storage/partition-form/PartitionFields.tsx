@@ -22,7 +22,7 @@
 
 import React from "react";
 import { withForm } from "~/hooks/form";
-import { defaultOptions } from "./fields";
+import { defaultOptions, isReusingPartition, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { deviceLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
@@ -102,7 +102,29 @@ const PartitionFields = withForm({
     ];
 
     return (
-      <form.AppField name="name">
+      <form.AppField
+        name="name"
+        listeners={{
+          onChange: ({ value }) => {
+            const isReuse = isReusingPartition(value);
+            const selectedPartition = device.partitions?.find((p) => p.name === value);
+            const currentFsType = selectedPartition?.filesystem?.type;
+            const hasFilesystem = !!currentFsType;
+
+            if (!isReuse) {
+              // Switched to new partition - reset to AUTO
+              form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
+            } else if (hasFilesystem) {
+              // Switched to existing partition with filesystem - default to REUSE
+              // (compatibility check happens in FilesystemFields useEffect)
+              form.setFieldValue("filesystem", FILESYSTEM_ACTION.REUSE);
+            } else {
+              // Switched to existing partition without filesystem - set to AUTO
+              form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
+            }
+          },
+        }}
+      >
         {(field) => <field.DropdownField label={_("Partition")} options={options} />}
       </form.AppField>
     );
