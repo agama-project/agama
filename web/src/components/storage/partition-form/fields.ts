@@ -30,20 +30,7 @@ import { requiredString, optionalValidString } from "~/components/form/validatio
 import { requiredSize, sizeRange } from "~/components/storage/validation-helpers";
 import { _ } from "~/i18n";
 
-/** Constants */
-
-/**
- * Determines if the form is configured to reuse an existing partition.
- *
- * Returns `true` when the name field contains a partition name (e.g., "vdd2"),
- * `false` when creating a new partition (empty string).
- *
- * @param name - The partition name field value
- * @returns true if reusing an existing partition, false if creating new
- */
-export function isReusingPartition(name: string): boolean {
-  return name !== "";
-}
+/** Constants and helpers */
 
 export const FILESYSTEM_ACTION = {
   REUSE: "reuse",
@@ -71,6 +58,28 @@ export const SIZE_MODE = {
   RANGE: "range",
   EXPAND: "expand",
 } as const;
+
+/**
+ * Determines if the form is configured to reuse an existing partition.
+ *
+ * Returns `true` when the name field contains a partition name (e.g., "vdd2"),
+ * `false` when creating a new partition (empty string).
+ *
+ * @param name - The partition name field value
+ * @returns true if reusing an existing partition, false if creating new
+ */
+export function isReusingPartition(name: string): boolean {
+  return name !== "";
+}
+
+/**
+ * Checks if a filesystem value supports additional configuration.
+ *
+ * Returns false for "auto" and "reuse", true for all concrete filesystem types.
+ */
+export const supportsAdditionalConfig = (filesystem: string): boolean => {
+  return filesystem !== FILESYSTEM_TYPE.AUTO && filesystem !== FILESYSTEM_ACTION.REUSE;
+};
 
 /** Form field types */
 
