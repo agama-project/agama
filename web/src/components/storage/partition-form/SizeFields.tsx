@@ -30,6 +30,7 @@ import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { defaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
 import { deviceSize, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
+import { isEmpty } from "radashi";
 
 /**
  * Returns dropdown options for size mode selection.
@@ -240,16 +241,20 @@ const SizeFields = withForm({
             <form.AppField name="sizeMode">
               {(field) => (
                 <field.DropdownField label={_("Size")} options={getSizeModeOptions()}>
-                  {(value) => (
-                    <FieldNestedContent>
-                      <SizeFieldsContent
-                        form={form}
-                        committedMountPoint={committedMountPoint}
-                        filesystem={filesystem}
-                        sizeMode={value}
-                      />
-                    </FieldNestedContent>
-                  )}
+                  {(value) => {
+                    if (SIZE_MODE.AUTO && isEmpty(committedMountPoint)) return;
+
+                    return (
+                      <FieldNestedContent>
+                        <SizeFieldsContent
+                          form={form}
+                          committedMountPoint={committedMountPoint}
+                          filesystem={filesystem}
+                          sizeMode={value}
+                        />
+                      </FieldNestedContent>
+                    );
+                  }}
                 </field.DropdownField>
               )}
             </form.AppField>
