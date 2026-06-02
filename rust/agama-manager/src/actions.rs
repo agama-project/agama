@@ -292,7 +292,7 @@ impl SetConfigAction {
             .await
     }
 
-    /// Helper to spawn software configuration task
+    /// Helper to spawn software configuration task and configure SELinux
     async fn set_software_config(
         &self,
         product: Arc<RwLock<ProductSpec>>,
@@ -301,6 +301,7 @@ impl SetConfigAction {
     ) -> crate::task_manager::TaskId {
         let software_handler = self.software.clone();
         let software_config = config.software.clone();
+        let bootloader_handler = self.bootloader.clone();
 
         self.task_manager
             .task(
@@ -314,6 +315,29 @@ impl SetConfigAction {
                     .call(software::message::SetConfig::new(product, software_config))
                     .await
                     .map_err(TaskError::from_error)?;
+
+                // SELinux configuration (after software SetConfig completes)
+                let selinux_selected = software_handler
+                    .call(software::message::IsPatternSelected::new(
+                        "selinux".to_string(),
+                    ))
+                    .await
+                    .map_err(TaskError::from_error)?;
+
+                let value = if selinux_selected {
+                    "security=selinux"
+                } else {
+                    "security="
+                };
+                let message = agama_bootloader::message::SetKernelArg {
+                    id: "selinux".to_string(),
+                    value: value.to_string(),
+                };
+
+                if let Err(error) = bootloader_handler.cast(message) {
+                    tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
+                }
+
                 Ok(())
             })
             .await
@@ -473,6 +497,7 @@ impl SetConfigAction {
                 .await;
 
             // Software configuration - depends on files, storage, and bootloader
+            // Also configures SELinux after software is configured
             let _software_task = self
                 .set_software_config(
                     Arc::clone(&product),
@@ -480,28 +505,6 @@ impl SetConfigAction {
                     &[files_task, storage_task, bootloader_task, ntp_task],
                 )
                 .await;
-
-            // SELinux configuration (after software)
-            let selinux_selected = self
-                .software
-                .call(software::message::IsPatternSelected::new(
-                    "selinux".to_string(),
-                ))
-                .await?;
-
-            let value = if selinux_selected {
-                "security=selinux"
-            } else {
-                "security="
-            };
-            let message = agama_bootloader::message::SetKernelArg {
-                id: "selinux".to_string(),
-                value: value.to_string(),
-            };
-
-            if let Err(error) = self.bootloader.cast(message) {
-                tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
-            }
         }
 
         Ok(())
