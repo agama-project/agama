@@ -477,3 +477,18 @@ msgstr "Neověřen pro {0}"
 
 #~ msgid "The product must be registered"
 #~ msgstr "Produkt musí být zaregistrovaný"
+
+msgid "Agama's command-line interface"
+msgstr "Agama rozhraní příkazové řádky"
+
+
+msgid ""
+"Agama's command-line interface\n"
+"\n"
+"This program allows inspecting or changing Agama's configuration, handling "
+"installation profiles, starting the installation, monitoring the process, "
+"etc.\n"
+"\n"
+"Please, use the \"help\" command to learn more."
+msgstr "Přeložený dlouhý popis..."
+

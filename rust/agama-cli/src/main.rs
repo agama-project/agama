@@ -20,12 +20,57 @@
 
 use agama_cli::{run_command, Cli, CliResult};
 use agama_l10n::helpers as l10n_helpers;
-use clap::Parser;
+use clap::{CommandFactory, FromArgMatches};
+
+fn translate_command(mut cmd: clap::Command) -> clap::Command {
+    use gettextrs::gettext;
+
+    if let Some(about) = cmd.get_about().map(|a| a.to_string()) {
+        cmd = cmd.about(gettext(&about));
+    }
+    if let Some(long_about) = cmd.get_long_about().map(|a| a.to_string()) {
+        cmd = cmd.long_about(gettext(long_about));
+    }
+
+    let mut args = Vec::new();
+    for arg in cmd.get_arguments() {
+        let mut new_arg = arg.clone();
+        if let Some(help) = new_arg.get_help().map(|h| h.to_string()) {
+            new_arg = new_arg.help(gettext(help));
+        }
+        if let Some(long_help) = new_arg.get_long_help().map(|h| h.to_string()) {
+            new_arg = new_arg.long_help(gettext(long_help));
+        }
+        args.push(new_arg);
+    }
+
+    for arg in args {
+        let id = arg.get_id().clone();
+        cmd = cmd.mut_arg(&id, |_| arg.clone());
+    }
+
+    let mut subcommands = Vec::new();
+    for subcmd in cmd.get_subcommands() {
+        subcommands.push(translate_command(subcmd.clone()));
+    }
+
+    for subcmd in subcommands {
+        let name = subcmd.get_name().to_string();
+        cmd = cmd.mut_subcommand(&name, |_| subcmd.clone());
+    }
+
+    cmd
+}
 
 #[tokio::main]
 async fn main() -> CliResult {
     _ = l10n_helpers::init_locale();
-    let cli = Cli::parse();
+
+    let mut cmd = Cli::command();
+    cmd = translate_command(cmd);
+
+    let matches = cmd.get_matches();
+    let cli = Cli::from_arg_matches(&matches).unwrap_or_else(|err| err.exit());
 
     if let Err(error) = run_command(cli).await {
         eprintln!("{:?}", error);
