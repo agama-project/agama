@@ -22,13 +22,14 @@
 
 import React from "react";
 import { useParams, useNavigate } from "react-router";
-import { ActionGroup, Form } from "@patternfly/react-core";
+import { ActionGroup, Alert, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import NestedContent from "~/components/core/NestedContent";
 import { deviceSize, createPartitionableLocation, parseToBytes } from "~/components/storage/utils";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
+import { useFormSubmit } from "~/hooks/use-form-submit";
 import { useDevice } from "~/hooks/model/system/storage";
 import {
   useConfigModel,
@@ -318,6 +319,23 @@ function usePartitionFormContentQuery(): PartitionFormContentQuery {
  * - Partition source (new vs use existing)
  * - Filesystem type and label
  * - Size settings (only for new partitions)
+ *
+ * ## Patterns Used
+ *
+ * ### withFrozenQuery (see withFrozenQuery.tsx)
+ * Wraps this component so it receives frozen initial config as props.
+ * Query refetches never reach this component, preventing flickering and
+ * protecting user edits.
+ *
+ * ### useFormSubmit (see useFormSubmit.tsx)
+ * Encapsulates the submit lifecycle for forms that navigate away:
+ * - Validation error alerts via refs + Subscribe (no extra re-renders)
+ * - Server error handling
+ * - Clean error state management
+ *
+ * ### Field validation
+ * Stays in useAppForm's validators.onSubmitAsync where TanStack Form expects it.
+ * useFormSubmit's onSubmit is only called after field validation passes.
  */
 function PartitionFormContent({
   systemDevice,
@@ -341,28 +359,56 @@ function PartitionFormContent({
     return allUsed.filter((mp) => mp !== currentMountPoint);
   }, [config, initialPartition]);
 
+  // useFormSubmit is initialized before useAppForm so we can pass onSubmitAsync
+  // directly into the validators option — no mutation, no two-phase wiring.
+  const { onSubmitAsync, AlertSubscribe, formSubmitHandler } = useFormSubmit<
+    typeof defaultOptions.defaultValues
+  >({
+    scrollOnSuccess: false,
+    onSubmit: async (values) => {
+      const payload = buildPayload(values);
+      const partitionableLocation = createPartitionableLocation(collection, index);
+      if (!partitionableLocation) {
+        return { error: _("Invalid partition location") };
+      }
+
+      try {
+        if (initialPartition) {
+          await editPartition(
+            partitionableLocation.collection,
+            partitionableLocation.index,
+            initialPartition.mountPath,
+            payload,
+          );
+        } else {
+          await addPartition(
+            partitionableLocation.collection,
+            partitionableLocation.index,
+            payload,
+          );
+        }
+
+        // Navigate on success — no need to return success status since we're leaving
+        navigate(-1);
+        return { patched: true as const };
+      } catch (error) {
+        return { error: error instanceof Error ? error.message : String(error) };
+      }
+    },
+  });
+
   const form = useAppForm({
     ...mergeFormDefaults(defaultOptions, toFormValues(initialPartition)),
     validators: {
-      onSubmitAsync: async ({ value }) => validate(value, usedMountPoints),
-    },
-    onSubmit: async ({ value }) => {
-      const payload = buildPayload(value);
-      const partitionableLocation = createPartitionableLocation(collection, index);
-      if (!partitionableLocation) return;
+      onSubmitAsync: async (ctx) => {
+        // Field validation runs first. If it fails, TanStack Form surfaces
+        // errors per field and onSubmitAsync (business logic) is not called.
+        const fieldErrors = validate(ctx.value, usedMountPoints);
+        if (fieldErrors) return fieldErrors;
 
-      if (initialPartition) {
-        editPartition(
-          partitionableLocation.collection,
-          partitionableLocation.index,
-          initialPartition.mountPath,
-          payload,
-        );
-      } else {
-        addPartition(partitionableLocation.collection, partitionableLocation.index, payload);
-      }
-
-      navigate(-1);
+        // Business logic: payload building + API call.
+        return onSubmitAsync(ctx, form);
+      },
     },
   });
 
@@ -372,13 +418,21 @@ function PartitionFormContent({
 
   return (
     <form.AppForm>
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.setErrorMap({ onSubmit: { fields: {} } });
-          form.handleSubmit();
-        }}
-      >
+      <Form onSubmit={formSubmitHandler(form)}>
+        {/* Server error alert */}
+        <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
+          {(serverError) =>
+            serverError && (
+              <Alert isInline variant="danger" title={_("Partition could not be configured")}>
+                {serverError}
+              </Alert>
+            )
+          }
+        </form.Subscribe>
+
+        {/* Validation error alert — managed by useFormSubmit */}
+        <AlertSubscribe form={form} />
+
         {/* Mount point
          *
          * Uses a "committed value" pattern to avoid reacting to incomplete input.
