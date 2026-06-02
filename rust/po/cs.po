@@ -460,6 +460,10 @@ msgstr ""
 msgid "First user information is incomplete"
 msgstr "Nastavení prvního uživatele není kompletní"
 
+# FIXME manually translated during development, revert before merging
+msgid "Not authenticated in {0}"
+msgstr "Neověřen pro {0}"
+
 #, fuzzy
 #~ msgid "Calculating the installation proposal:"
 #~ msgstr "Vyhodnocuje se návrh softwaru"

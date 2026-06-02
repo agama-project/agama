@@ -19,10 +19,12 @@
 // find current contact information at www.suse.com.
 
 use agama_cli::{run_command, Cli, CliResult};
+use agama_l10n::helpers as l10n_helpers;
 use clap::Parser;
 
 #[tokio::main]
 async fn main() -> CliResult {
+    _ = l10n_helpers::init_locale();
     let cli = Cli::parse();
 
     if let Err(error) = run_command(cli).await {
