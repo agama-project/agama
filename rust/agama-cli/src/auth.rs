@@ -25,6 +25,8 @@ use url::Url;
 use crate::auth_tokens_file::AuthTokensFile;
 use crate::error::CliError;
 use agama_lib::http::BaseHTTPClient;
+use gettextrs::gettext;
+use i18n_format::i18n_format;
 use inquire::Password;
 use std::collections::HashMap;
 use std::io::{self, IsTerminal};
@@ -103,7 +105,7 @@ fn read_password() -> Result<String, CliError> {
 
 /// Asks interactively for the password. (For authentication, not for changing it)
 fn ask_password() -> Result<String, CliError> {
-    Password::new("Please enter the root password:")
+    Password::new(&gettext("Please enter the root password:"))
         .without_confirmation()
         .prompt()
         .map_err(CliError::InteractivePassword)
@@ -140,6 +142,7 @@ fn show(url: &Url) -> anyhow::Result<()> {
         }
     }
 
-    println!("Not authenticated in {}", hostname);
+    // TRANSLATORS: {0} is a host name
+    println!("{}", i18n_format!("Not authenticated in {0}", hostname));
     Ok(())
 }
