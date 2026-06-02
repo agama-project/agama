@@ -91,10 +91,9 @@ const PartitionFields = withForm({
         return {
           value: p.name,
           label: sprintf(
-            // TRANSLATORS: %1$s is partition name like "vdd2", %2$s is size like "18.00 GiB"
-            _("Use %1$s (%2$s)"),
+            // TRANSLATORS: %s is partition name and size like "vdd2 (8 MiB)"
+            _("Use %s"),
             deviceLabel(p, false),
-            p.description || "",
           ),
           description: description || undefined,
         };
