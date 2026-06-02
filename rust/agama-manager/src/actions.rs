@@ -248,7 +248,7 @@ impl SetConfigAction {
             .spawn_config_task(
                 "files_config",
                 Scope::Files,
-                &gettext("Importing user files"),
+                &gettext("Importing user files and scripts"),
                 self.files.clone(),
                 files::message::SetConfig::new(config.files.clone()),
             )
@@ -262,6 +262,7 @@ impl SetConfigAction {
                 Scope::Files,
                 &gettext("Running user pre-installation scripts"),
             )
+            .depends_on(&[files_task])
             .run(move || async move {
                 files_handler
                     .call(files::message::RunScripts::new(ScriptsGroup::Pre))
