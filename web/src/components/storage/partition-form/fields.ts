@@ -75,10 +75,11 @@ export function isReusingPartition(name: string): boolean {
 /**
  * Checks if a filesystem value supports additional configuration.
  *
- * Returns false for "auto" and "reuse", true for all concrete filesystem types.
+ * Returns false for "reuse", althought this will change in future work when
+ * adding more config apart of the Filesystem Label.
  */
 export const supportsAdditionalConfig = (filesystem: string): boolean => {
-  return filesystem !== FILESYSTEM_TYPE.AUTO && filesystem !== FILESYSTEM_ACTION.REUSE;
+  return filesystem !== FILESYSTEM_ACTION.REUSE;
 };
 
 /** Form field types */
