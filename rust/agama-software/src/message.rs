@@ -22,11 +22,12 @@ use agama_utils::{
     actor::Message,
     api::software::{Config, Proposal, SystemInfo},
     products::ProductSpec,
+    BoxFuture,
 };
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use crate::Resolvable;
+use crate::{service::Error, Resolvable};
 
 #[derive(Clone)]
 pub struct GetSystem;
@@ -61,7 +62,7 @@ pub struct SetConfig<T> {
 }
 
 impl<T: Send + 'static> Message for SetConfig<T> {
-    type Reply = ();
+    type Reply = BoxFuture<Result<(), Error>>;
 }
 
 impl<T> SetConfig<T> {

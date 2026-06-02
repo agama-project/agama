@@ -22,9 +22,10 @@ use std::{process::Command, sync::Arc};
 
 use agama_network::NetworkSystemClient;
 use agama_utils::{
-    actor::Handler,
+    actor::{Handler, MessageHandler},
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
     issue,
+    message::GetResolvables,
     products::ProductSpec,
     progress, question,
 };
@@ -215,9 +216,9 @@ impl SetConfigAction {
 
         if product.is_some() {
             steps.extend_from_slice(&[
-                gettext("Preparing the software proposal"),
                 gettext("Preparing the storage proposal"),
                 gettext("Storing bootloader settings"),
+                gettext("Preparing the software proposal"),
             ])
         }
 
@@ -331,28 +332,15 @@ impl SetConfigAction {
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
-                self.software
-                    .call(software::message::SetConfig::new(
-                        Arc::clone(product),
-                        config.software.clone(),
-                    ))
-                    .await?;
-
-                self.set_selinux().await?;
-
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
-                let future = self
+                let storage_future = self
                     .storage
                     .call(storage::message::SetConfig::new(
                         Arc::clone(product),
                         config.storage.clone(),
                     ))
                     .await?;
-                let _ = future.await;
+                let _ = storage_future.await;
 
-                // call bootloader always after storage to ensure that bootloader reflect new storage settings
                 self.progress
                     .call(progress::message::Next::new(Scope::Manager))
                     .await?;
@@ -361,6 +349,22 @@ impl SetConfigAction {
                         config.bootloader.clone(),
                     ))
                     .await?;
+
+                self.set_resolvables().await?;
+
+                self.progress
+                    .call(progress::message::Next::new(Scope::Manager))
+                    .await?;
+                let software_future = self
+                    .software
+                    .call(software::message::SetConfig::new(
+                        Arc::clone(product),
+                        config.software.clone(),
+                    ))
+                    .await?;
+                let _ = software_future.await;
+
+                self.set_selinux().await?;
             }
 
             None => {
@@ -415,6 +419,39 @@ impl SetConfigAction {
             tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
         }
 
+        Ok(())
+    }
+
+    // Sets the resolvables required by other services
+    async fn set_resolvables(&self) -> Result<(), service::Error> {
+        self.set_resolvables_for(self.files.clone(), "files")
+            .await?;
+        self.set_resolvables_for(self.files.clone(), "ntp").await?;
+        self.set_resolvables_for(self.storage.clone(), "storage")
+            .await?;
+        self.set_resolvables_for(self.bootloader.clone(), "bootloader")
+            .await?;
+        Ok(())
+    }
+
+    async fn set_resolvables_for<T>(
+        &self,
+        handler: Handler<T>,
+        id: &str,
+    ) -> Result<(), service::Error>
+    where
+        T: MessageHandler<GetResolvables>,
+    {
+        let resolvables = handler
+            .call(GetResolvables)
+            .await
+            .unwrap_or_else(|_| vec![]);
+        self.software
+            .call(software::message::SetResolvables::new(
+                id.to_string(),
+                resolvables,
+            ))
+            .await?;
         Ok(())
     }
 }

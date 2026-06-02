@@ -18,16 +18,14 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::future::Future;
-
 use agama_utils::{
-    actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader, iscsi, storage::Config, Issue},
+    actor::{self, run_in_background, Actor, Handler, MessageHandler},
+    api::{bootloader, iscsi, software::Resolvable, storage::Config, Issue},
     arch::Arch,
+    message::GetResolvables,
     BoxFuture,
 };
 use async_trait::async_trait;
-use tokio::sync::oneshot;
 
 use crate::{
     message,
@@ -199,6 +197,14 @@ impl MessageHandler<message::GetIssues> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.storage_proxy.resolvables().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetConfigFromModel> for Service {
     async fn handle(
         &mut self,
@@ -287,6 +293,17 @@ impl MessageHandler<message::bootloader::GetSystem> for Service {
         _message: message::bootloader::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
         let raw_json = self.bootloader_proxy.system().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::bootloader::GetResolvables> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::bootloader::GetResolvables,
+    ) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.bootloader_proxy.resolvables().await?;
         Ok(try_from_string(&raw_json)?)
     }
 }
@@ -451,21 +468,6 @@ impl MessageHandler<message::zfcp::SetConfig> for Service {
         }
         Ok(())
     }
-}
-
-fn run_in_background<F>(func: F) -> oneshot::Receiver<Result<(), Error>>
-where
-    F: Future<Output = Result<(), Error>> + Send + 'static,
-{
-    let (tx, rx) = oneshot::channel::<Result<(), Error>>();
-    tokio::spawn(async move {
-        let result = func.await;
-        if let Err(error) = &result {
-            tracing::error!("Failed to run background action: {error}");
-        }
-        _ = tx.send(result);
-    });
-    rx
 }
 
 /// Converts a string into a Value.

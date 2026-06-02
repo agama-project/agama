@@ -114,6 +114,7 @@ impl Service {
     }
 
     fn send_progress_changed(&self, progress: Progress) -> Result<(), Error> {
+        tracing::info!("progress changed: {}", progress);
         self.events.send(Event::ProgressChanged { progress })?;
         Ok(())
     }

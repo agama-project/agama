@@ -104,6 +104,7 @@
 //! ```
 
 use async_trait::async_trait;
+use std::future::Future;
 use std::marker::PhantomData;
 use tokio::sync::{mpsc, oneshot};
 
@@ -269,4 +270,26 @@ pub fn spawn<A: Actor>(mut actor: A) -> Handler<A> {
     });
 
     handler
+}
+
+/// Runs a future in a background task and returns a receiver to await the result.
+///
+/// This is useful for spawning long-running operations in the background while
+/// allowing callers to await completion through the returned oneshot receiver.
+///
+/// The function logs any errors before sending them through the channel.
+pub fn run_in_background<F, E>(func: F) -> oneshot::Receiver<Result<(), E>>
+where
+    F: Future<Output = Result<(), E>> + Send + 'static,
+    E: std::error::Error + Send + 'static,
+{
+    let (tx, rx) = oneshot::channel::<Result<(), E>>();
+    tokio::spawn(async move {
+        let result = func.await;
+        if let Err(error) = &result {
+            tracing::error!("Failed to run background action: {error}");
+        }
+        _ = tx.send(result);
+    });
+    rx
 }

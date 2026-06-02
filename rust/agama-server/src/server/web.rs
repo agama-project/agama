@@ -27,7 +27,6 @@ use agama_lib::{error::ServiceError, logs};
 use agama_manager::service::Error as ManagerError;
 use agama_manager::users::PasswordCheckResult;
 use agama_manager::{self as manager, message, users};
-use agama_software::Resolvable;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -39,7 +38,7 @@ use agama_utils::{
     },
     progress, question,
 };
-use aide::axum::routing::{get_with, post_with, put};
+use aide::axum::routing::{get_with, post_with};
 use aide::axum::ApiRouter;
 use aide::transform::TransformOperation;
 use axum::{
@@ -157,7 +156,6 @@ pub fn server_with_state(
             get(get_storage_model).put(set_storage_model),
         )
         .route("/private/solve_storage_model", get(solve_storage_model))
-        .route("/private/resolvables/{id}", put(set_resolvables))
         .route("/private/download_logs", get(download_logs))
         .route("/private/password_check", post(check_password))
         .nest_service("/private/profile", profile_routes)
@@ -639,21 +637,6 @@ async fn solve_storage_model(
         .await
         .map_err(|e| Error::from(e).internal_server_error())?;
     Ok(Json(solved_model))
-}
-
-async fn set_resolvables(
-    State(state): State<ServerState>,
-    Path(id): Path<String>,
-    Json(resolvables): Json<Vec<Resolvable>>,
-) -> Result<(), Response> {
-    state
-        .manager
-        .cast(agama_software::message::SetResolvables::new(
-            id,
-            resolvables,
-        ))
-        .map_err(|e| Error::from(e).internal_server_error())?;
-    Ok(())
 }
 
 fn to_option_response<T: Serialize>(value: Option<T>) -> Response {

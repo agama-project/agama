@@ -24,7 +24,7 @@ use std::sync::Arc;
 
 use agama_utils::{
     actor::Handler,
-    api::{event, storage::Config, Issue},
+    api::{event, software::Resolvable, storage::Config, Issue},
     issue,
     products::ProductSpec,
     progress, BoxFuture,
@@ -142,6 +142,10 @@ impl StorageClient for TestClient {
     }
 
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
+        Ok(vec![])
+    }
+
+    async fn get_resolvables(&self) -> Result<Vec<Resolvable>, Error> {
         Ok(vec![])
     }
 
