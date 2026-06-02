@@ -193,7 +193,8 @@ impl SetConfigAction {
         description: &str,
         handler: Handler<S>,
         message: M,
-    ) where
+    ) -> crate::task_manager::TaskId
+    where
         S: agama_utils::actor::MessageHandler<M> + 'static,
         M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
         S::Error: std::error::Error + Send + 'static,
@@ -204,7 +205,7 @@ impl SetConfigAction {
                 handler.call(message).await.map_err(TaskError::from_error)?;
                 Ok(())
             })
-            .await;
+            .await
     }
 
     pub async fn run(
@@ -255,24 +256,26 @@ impl SetConfigAction {
         .await;
 
         // NTP
-        self.spawn_config_task(
-            "ntp",
-            Scope::Ntp,
-            &gettext("Setting up NTP"),
-            self.ntp.clone(),
-            ntp::message::SetConfig::new(config.ntp.clone()),
-        )
-        .await;
+        let ntp_task = self
+            .spawn_config_task(
+                "ntp",
+                Scope::Ntp,
+                &gettext("Setting up NTP"),
+                self.ntp.clone(),
+                ntp::message::SetConfig::new(config.ntp.clone()),
+            )
+            .await;
 
         // Files configuration
-        self.spawn_config_task(
-            "files_config",
-            Scope::Files,
-            &gettext("Importing user files"),
-            self.files.clone(),
-            files::message::SetConfig::new(config.files.clone()),
-        )
-        .await;
+        let files_task = self
+            .spawn_config_task(
+                "files_config",
+                Scope::Files,
+                &gettext("Importing user files"),
+                self.files.clone(),
+                files::message::SetConfig::new(config.files.clone()),
+            )
+            .await;
 
         // Pre-installation scripts
         let files_handler = self.files.clone();
@@ -332,12 +335,14 @@ impl SetConfigAction {
         .await;
 
         // S390 configuration (if available)
+        let mut storage_deps = Vec::new();
         if let Some(s390) = &self.s390 {
             let handler = s390.clone();
             let s390_config = config.s390.clone();
             let storage_handler = self.storage.clone();
-            self.task_manager
-                .task("s390", Scope::DASD, &gettext("Configuring DASD devices"))
+            let s390_task = self
+                .task_manager
+                .task("s390", Scope::Storage, &gettext("Configuring DASD devices"))
                 .run(|| async move {
                     // Ensure storage was already probed before configuring s390
                     let storage_system = storage_handler
@@ -357,6 +362,7 @@ impl SetConfigAction {
                     Ok(())
                 })
                 .await;
+            storage_deps.push(s390_task);
         }
 
         // Network configuration
@@ -382,17 +388,67 @@ impl SetConfigAction {
 
         // Product-dependent configuration (software, storage, bootloader)
         if let Some(product) = product {
-            // Software configuration
-            self.spawn_config_task(
-                "software",
-                Scope::Software,
-                &gettext("Preparing the software proposal"),
-                self.software.clone(),
-                software::message::SetConfig::new(Arc::clone(&product), config.software.clone()),
-            )
-            .await;
+            // Storage configuration
+            let handler = self.storage.clone();
+            let product_clone = Arc::clone(&product);
+            let storage_config = config.storage.clone();
+            let storage_task = self
+                .task_manager
+                .task(
+                    "storage",
+                    Scope::Storage,
+                    &gettext("Preparing the storage proposal"),
+                )
+                .depends_on(&storage_deps)
+                .run(|| async move {
+                    let future = handler
+                        .call(storage::message::SetConfig::new(
+                            product_clone,
+                            storage_config,
+                        ))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    let _ = future.await;
+                    Ok(())
+                })
+                .await;
 
-            // SELinux configuration
+            // Bootloader configuration (after storage)
+            let bootloader_task = self
+                .spawn_config_task(
+                    "bootloader",
+                    Scope::Bootloader,
+                    &gettext("Storing bootloader settings"),
+                    self.bootloader.clone(),
+                    bootloader::message::SetConfig::new(config.bootloader.clone()),
+                )
+                .await;
+
+            // Software configuration - depends on files, storage, and bootloader
+            let software_handler = self.software.clone();
+            let product_clone_for_task = Arc::clone(&product);
+            let software_config = config.software.clone();
+            let _software_task = self
+                .task_manager
+                .task(
+                    "software",
+                    Scope::Software,
+                    &gettext("Preparing the software proposal"),
+                )
+                .depends_on(&[files_task, storage_task, bootloader_task, ntp_task])
+                .run(move || async move {
+                    software_handler
+                        .call(software::message::SetConfig::new(
+                            product_clone_for_task,
+                            software_config,
+                        ))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await;
+
+            // SELinux configuration (after software)
             let selinux_selected = self
                 .software
                 .call(software::message::IsPatternSelected::new(
@@ -413,39 +469,6 @@ impl SetConfigAction {
             if let Err(error) = self.bootloader.cast(message) {
                 tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
             }
-
-            // Storage configuration
-            let handler = self.storage.clone();
-            let product_clone = Arc::clone(&product);
-            let storage_config = config.storage.clone();
-            self.task_manager
-                .task(
-                    "storage",
-                    Scope::Storage,
-                    &gettext("Preparing the storage proposal"),
-                )
-                .run(|| async move {
-                    let future = handler
-                        .call(storage::message::SetConfig::new(
-                            product_clone,
-                            storage_config,
-                        ))
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    let _ = future.await;
-                    Ok(())
-                })
-                .await;
-
-            // Bootloader configuration (after storage)
-            self.spawn_config_task(
-                "bootloader",
-                Scope::Bootloader,
-                &gettext("Storing bootloader settings"),
-                self.bootloader.clone(),
-                bootloader::message::SetConfig::new(config.bootloader.clone()),
-            )
-            .await;
         }
 
         Ok(())

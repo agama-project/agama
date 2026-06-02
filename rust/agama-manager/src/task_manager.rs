@@ -333,12 +333,12 @@ impl Default for TaskManager {
 }
 
 impl TaskBuilder {
-    /// Add a dependency on another task.
+    /// Add dependencies on other tasks.
     ///
-    /// This task will not start executing until the specified task has completed.
-    /// Multiple dependencies can be added by calling this method multiple times.
-    pub fn depends_on(mut self, task_id: TaskId) -> Self {
-        self.dependencies.push(task_id);
+    /// This task will not start executing until all specified tasks have completed.
+    /// Accepts a slice of TaskIds to add multiple dependencies at once.
+    pub fn depends_on(mut self, task_ids: &[TaskId]) -> Self {
+        self.dependencies.extend_from_slice(task_ids);
         self
     }
 
@@ -396,5 +396,27 @@ mod tests {
 
         let display_string = format!("{}", task_error);
         assert_eq!(display_string, "access denied");
+    }
+
+    #[test]
+    fn test_depends_on_multiple_tasks() {
+        let manager = TaskManager::new();
+        let builder = manager.task("test", Scope::Manager, "Test task");
+
+        // Test that depends_on accepts a slice
+        let builder_with_deps = builder.depends_on(&[1, 2, 3]);
+
+        assert_eq!(builder_with_deps.dependencies, vec![1, 2, 3]);
+    }
+
+    #[test]
+    fn test_depends_on_empty_slice() {
+        let manager = TaskManager::new();
+        let builder = manager.task("test", Scope::Manager, "Test task");
+
+        // Test that depends_on works with empty slice
+        let builder_with_deps = builder.depends_on(&[]);
+
+        assert!(builder_with_deps.dependencies.is_empty());
     }
 }
