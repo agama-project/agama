@@ -242,7 +242,7 @@ const SizeFields = withForm({
               {(field) => (
                 <field.DropdownField label={_("Size")} options={getSizeModeOptions()}>
                   {(value) => {
-                    if (SIZE_MODE.AUTO && isEmpty(committedMountPoint)) return;
+                    if (value === SIZE_MODE.AUTO && isEmpty(committedMountPoint)) return;
 
                     return (
                       <FieldNestedContent>
