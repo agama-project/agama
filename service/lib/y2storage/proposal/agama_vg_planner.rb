@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -51,7 +51,7 @@ module Y2Storage
         Y2Storage::Planned::LvmVg.new(volume_group_name: vg_config.vg_name).tap do |planned|
           planned.extent_size = vg_config.extent_size
           planned.lvs = planned_lvs(vg_config)
-          planned.size_strategy = :use_needed
+          planned.size_strategy = vg_config.physical_volumes_policy || :use_needed
           planned.pvs_candidate_devices = devices_for_pvs(vg_config)
           configure_pvs_encryption(planned, vg_config)
           configure_reuse(planned, vg_config)

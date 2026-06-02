@@ -824,5 +824,76 @@ describe Y2Storage::AgamaProposal do
         expect(vg.lvm_lvs.map { |lv| lv.mount_point.path }).to contain_exactly("/")
       end
     end
+
+    context "when a volume group has generated physical volumes with useAvailable space policy" do
+      let(:scenario) { "disks.yaml" }
+
+      let(:config_json) do
+        {
+          drives:       [
+            { alias: "vda" },
+            { alias: "vdb" }
+          ],
+          volumeGroups: [
+            {
+              name:            "system",
+              physicalVolumes: [
+                {
+                  generate: {
+                    targetDevices: ["vda", "vdb"],
+                    spacePolicy:   "useAvailable"
+                  }
+                }
+              ],
+              logicalVolumes:  [
+                {
+                  name:       "root",
+                  size:       "10 GiB",
+                  filesystem: {
+                    path: "/",
+                    type: "btrfs"
+                  }
+                },
+                {
+                  name:       "home",
+                  size:       { min: "20 GiB" },
+                  filesystem: {
+                    path: "/home",
+                    type: "xfs"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      end
+
+      it "proposes the expected devices" do
+        devicegraph = proposal.propose
+
+        system = devicegraph.find_by_name("/dev/system")
+        expect(system.lvm_lvs.size).to eq 2
+
+        root = system.lvm_lvs.find { |lv| lv.lv_name == "root" }
+        home = system.lvm_lvs.find { |lv| lv.lv_name == "home" }
+
+        expect(root.size).to eq 10.GiB
+        expect(root.filesystem.type).to eq Y2Storage::Filesystems::Type::BTRFS
+        expect(root.filesystem.mount_path).to eq "/"
+
+        expect(home.size).to be > 20.GiB
+        expect(home.filesystem.type).to eq Y2Storage::Filesystems::Type::XFS
+        expect(home.filesystem.mount_path).to eq "/home"
+
+        # With useAvailable policy, PVs should use all available space on the target disks. There
+        # is ~20 GiB in vda and ~50 GiB in vdb.
+        expect(system.size).to be > 69.GiB
+
+        vda_pv = system.lvm_pvs.find { |pv| pv.plain_blk_device.partitionable.name == "/dev/vda" }
+        vdb_pv = system.lvm_pvs.find { |pv| pv.plain_blk_device.partitionable.name == "/dev/vdb" }
+        expect(vda_pv.plain_blk_device.size).to be > 19.GiB
+        expect(vdb_pv.plain_blk_device.size).to be > 49.GiB
+      end
+    end
   end
 end

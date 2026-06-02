@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun  1 13:47:34 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage schemas to allow configuring the space policy for
+  creating new LVM physical volumes (jsc#PED-14153).
+
+-------------------------------------------------------------------
 Fri May 29 09:47:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Add "access" key to profile to allow after installation

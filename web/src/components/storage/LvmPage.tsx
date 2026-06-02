@@ -35,6 +35,7 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { Page, SubtleContent } from "~/components/core";
+import { Icon } from "~/components/layout";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { deviceLabel } from "./utils";
 import { contentDescription, filesystemLabels, typeDescription } from "./utils/device";
@@ -51,6 +52,7 @@ import {
 } from "~/hooks/model/storage/config-model";
 import type { ConfigModel, Data } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
+import Text from "~/components/core/Text";
 
 /**
  * Hook that returns the devices that can be selected as target to automatically create LVM PVs.
@@ -84,6 +86,22 @@ function vgNameError(
 
 function targetDevicesError(targetDevices: System.Device[]): string | undefined {
   if (!targetDevices.length) return _("Select at least one disk.");
+}
+
+function UseNeededHelperText() {
+  return (
+    <Content>
+      <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+        <Icon name="emergency" />
+        <Text component="span">
+          {_(
+            "This volume group only occupies the space required by its logical volumes. " +
+              "To expand it to cover all available disk space, recreate the volume group.",
+          )}
+        </Text>
+      </Flex>
+    </Content>
+  );
 }
 
 /**
@@ -218,6 +236,7 @@ export default function LvmPage() {
                 />
               ))}
             </Gallery>
+            {volumeGroup?.targetDevicesPolicy === "useNeeded" && <UseNeededHelperText />}
           </FormGroup>
           {!volumeGroup && (
             <FormGroup label={_("Move mount points")} isStack>
