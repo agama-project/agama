@@ -55,7 +55,9 @@ const mockDevice = {
 
 function TestForm({ availablePartitions = mockDevice.partitions }) {
   const form = useAppForm({ ...defaultOptions });
-  return <PartitionFields form={form} device={mockDevice} availablePartitions={availablePartitions} />;
+  return (
+    <PartitionFields form={form} device={mockDevice} availablePartitions={availablePartitions} />
+  );
 }
 
 describe("PartitionFields", () => {

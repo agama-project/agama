@@ -100,13 +100,7 @@ describe("fields", () => {
       });
 
       it("accepts valid mount points", () => {
-        const validMountPoints = [
-          "/",
-          "/home",
-          "/var/lib",
-          "/usr/local/bin",
-          "swap",
-        ];
+        const validMountPoints = ["/", "/home", "/var/lib", "/usr/local/bin", "swap"];
 
         validMountPoints.forEach((mountPoint) => {
           const fields = { ...createBaseFields(), mountPoint };
@@ -181,15 +175,7 @@ describe("fields", () => {
 
       describe("filesystem label validation", () => {
         it("accepts valid labels", () => {
-          const validLabels = [
-            "",
-            "my-label",
-            "label_123",
-            "Label.name",
-            "abc123",
-            "___",
-            "---",
-          ];
+          const validLabels = ["", "my-label", "label_123", "Label.name", "abc123", "___", "---"];
 
           validLabels.forEach((filesystemLabel) => {
             const fields = { ...createBaseFields(), filesystemLabel };
@@ -405,9 +391,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.expandMinSize).toBe(
-            "Invalid size format (e.g., 20 GiB, 100 MB)",
-          );
+          expect(result?.fields?.expandMinSize).toBe("Invalid size format (e.g., 20 GiB, 100 MB)");
         });
 
         it("accepts valid expand min size", () => {
