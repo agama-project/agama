@@ -29,8 +29,8 @@ use aide::transform::TransformOperation;
 use axum::Json;
 use indexmap::IndexMap;
 use schemars::schema_for;
-use tokio::sync::broadcast;
 use serde_json::Value;
+use tokio::sync::broadcast;
 
 use crate::test_utils;
 use crate::web::error::ProblemDetailsResponse;
@@ -142,20 +142,21 @@ pub async fn build() -> OpenApi {
             let mut extracted_defs = serde_json::Map::new();
 
             // collect and remove $defs from the schema
-            extract_defs(&mut source_schema, format!("{}.", name).as_str(), &mut extracted_defs);
+            extract_defs(
+                &mut source_schema,
+                format!("{}.", name).as_str(),
+                &mut extracted_defs,
+            );
 
             schemas.insert(
                 format!("{}.{}", name, group),
-                serde_json::from_value(source_schema).unwrap()
+                serde_json::from_value(source_schema).unwrap(),
             );
 
             for (def_name, def_value) in extracted_defs {
-                schemas.insert(
-                    def_name,
-                    serde_json::from_value(def_value).unwrap()
-                );
+                schemas.insert(def_name, serde_json::from_value(def_value).unwrap());
             }
-        };
+        }
     }
 
     // Create securitySchemes section
@@ -198,7 +199,9 @@ pub async fn build() -> OpenApi {
     let mut api_json = serde_json::to_value(&api).unwrap();
 
     for (_, name, group) in schemas_to_import {
-        if let Some(schema) = api_json.pointer_mut(format!("/components/schemas/Config/properties/{}", name).as_str()) {
+        if let Some(schema) =
+            api_json.pointer_mut(format!("/components/schemas/Config/properties/{}", name).as_str())
+        {
             *schema = serde_json::json!({
                 "anyOf": [
                     { "$ref": format!("#/components/schemas/{}.{}", name, group) },
@@ -245,7 +248,7 @@ pub async fn build_json() -> Result<Value, serde_json::Error> {
 fn extract_defs(
     schema: &mut Value,
     prefix: &str,
-    extracted_defs: &mut serde_json::Map<String, Value>
+    extracted_defs: &mut serde_json::Map<String, Value>,
 ) {
     match schema {
         Value::Object(map) => {
