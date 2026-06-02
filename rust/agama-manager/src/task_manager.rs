@@ -22,10 +22,8 @@
 //!
 //! This module provides a clean API for managing background tasks with:
 //! - Required metadata (name and description)
-//! - Optional tags for categorization
 //! - Dependency management between tasks
 //! - Event notifications via channels
-//! - Task querying and filtering
 
 use agama_utils::api::Scope;
 use std::collections::{HashMap, HashSet};
@@ -77,8 +75,7 @@ pub type TaskResult = Result<(), TaskError>;
 
 /// Metadata describing a task.
 ///
-/// Contains human-readable information about a task including its name,
-/// description, and optional tags for categorization.
+/// Contains human-readable information about a task including its name and description.
 #[derive(Debug, Clone)]
 pub struct TaskMetadata {
     /// Short name identifying the task (e.g., "backup-db")
@@ -87,8 +84,6 @@ pub struct TaskMetadata {
     pub description: String,
     /// Scope that originated the task
     pub scope: Scope,
-    /// Tags for categorization and filtering
-    pub tags: Vec<String>,
 }
 
 impl TaskMetadata {
@@ -98,15 +93,7 @@ impl TaskMetadata {
             name: name.into(),
             scope,
             description: description.into(),
-            tags: Vec::new(),
         }
-    }
-
-    /// Add a tag to the metadata.
-    ///
-    /// Tags can be used to categorize tasks and filter them later.
-    pub fn add_tag(&mut self, tag: impl Into<String>) {
-        self.tags.push(tag.into());
     }
 }
 
@@ -328,20 +315,6 @@ impl TaskManager {
             .map(|(id, meta)| (*id, meta.clone()))
             .collect()
     }
-
-    /// Get all tasks that have a specific tag.
-    ///
-    /// Returns a vector of `(TaskId, TaskMetadata)` tuples for tasks
-    /// that include the specified tag.
-    pub async fn get_tasks_by_tag(&self, tag: &str) -> Vec<(TaskId, TaskMetadata)> {
-        let state = self.state.read().await;
-        state
-            .metadata
-            .iter()
-            .filter(|(_, meta)| meta.tags.iter().any(|t| t == tag))
-            .map(|(id, meta)| (*id, meta.clone()))
-            .collect()
-    }
 }
 
 impl Clone for TaskManager {
@@ -360,15 +333,6 @@ impl Default for TaskManager {
 }
 
 impl TaskBuilder {
-    /// Add a tag to the task.
-    ///
-    /// Tags can be used to categorize tasks and filter them later using
-    /// [`TaskManager::get_tasks_by_tag`].
-    pub fn tag(mut self, tag: impl Into<String>) -> Self {
-        self.metadata.add_tag(tag);
-        self
-    }
-
     /// Add a dependency on another task.
     ///
     /// This task will not start executing until the specified task has completed.
@@ -411,27 +375,6 @@ mod tests {
         assert_eq!(metadata.name, "process-data");
         assert_eq!(metadata.scope, Scope::Manager);
         assert_eq!(metadata.description, "Process user data");
-        assert!(metadata.tags.is_empty());
-    }
-
-    #[test]
-    fn test_task_metadata_add_tag() {
-        let mut metadata = TaskMetadata::new("backup", Scope::Storage, "Backup files");
-        metadata.add_tag("storage");
-        metadata.add_tag("critical");
-        assert_eq!(metadata.tags, vec!["storage", "critical"]);
-    }
-
-    #[test]
-    fn test_task_metadata_with_multiple_tags() {
-        let mut metadata = TaskMetadata::new("backup-db", Scope::Manager, "Backup database to S3");
-        metadata.add_tag("backup");
-        metadata.add_tag("critical");
-
-        assert_eq!(metadata.name, "backup-db");
-        assert_eq!(metadata.description, "Backup database to S3");
-        assert_eq!(metadata.scope, Scope::Manager);
-        assert_eq!(metadata.tags, vec!["backup", "critical"]);
     }
 
     #[test]
