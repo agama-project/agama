@@ -264,6 +264,34 @@ impl SetConfigAction {
         )
     }
 
+    /// Helper to spawn storage configuration task
+    async fn set_storage_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> crate::task_manager::TaskId {
+        let handler = self.storage.clone();
+        let storage_config = config.storage.clone();
+
+        self.task_manager
+            .task(
+                "storage",
+                Scope::Storage,
+                &gettext("Preparing the storage proposal"),
+            )
+            .depends_on(dependencies)
+            .run(move || async move {
+                let future = handler
+                    .call(storage::message::SetConfig::new(product, storage_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                let _ = future.await;
+                Ok(())
+            })
+            .await
+    }
+
     /// Helper to spawn software configuration task
     async fn set_software_config(
         &self,
@@ -429,28 +457,8 @@ impl SetConfigAction {
         // Product-dependent configuration (software, storage, bootloader)
         if let Some(product) = product {
             // Storage configuration
-            let handler = self.storage.clone();
-            let product_clone = Arc::clone(&product);
-            let storage_config = config.storage.clone();
             let storage_task = self
-                .task_manager
-                .task(
-                    "storage",
-                    Scope::Storage,
-                    &gettext("Preparing the storage proposal"),
-                )
-                .depends_on(&storage_deps)
-                .run(|| async move {
-                    let future = handler
-                        .call(storage::message::SetConfig::new(
-                            product_clone,
-                            storage_config,
-                        ))
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    let _ = future.await;
-                    Ok(())
-                })
+                .set_storage_config(Arc::clone(&product), &config, &storage_deps)
                 .await;
 
             // Bootloader configuration (after storage)
