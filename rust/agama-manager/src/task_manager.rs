@@ -331,15 +331,15 @@ impl TaskBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use test_context::{test_context, TestContext};
+    use test_context::{test_context, AsyncTestContext};
     use tokio::sync::broadcast;
 
     struct Context {
         manager: TaskManager,
     }
 
-    impl TestContext for Context {
-        fn setup() -> Context {
+    impl AsyncTestContext for Context {
+        async fn setup() -> Context {
             let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
 
             tokio::spawn(async move {
@@ -350,6 +350,10 @@ mod tests {
 
             let manager = TaskManager::new(events_tx);
             Context { manager }
+        }
+
+        async fn teardown(self) {
+            // Nothing to tear down
         }
     }
 
@@ -383,8 +387,8 @@ mod tests {
     }
 
     #[test_context(Context)]
-    #[test]
-    fn test_depends_on_multiple_tasks(ctx: &mut Context) {
+    #[tokio::test]
+    async fn test_depends_on_multiple_tasks(ctx: &mut Context) {
         let builder = ctx.manager.task("test", Scope::Manager, "Test task");
 
         // Test that depends_on accepts a slice
@@ -394,8 +398,8 @@ mod tests {
     }
 
     #[test_context(Context)]
-    #[test]
-    fn test_depends_on_empty_slice(ctx: &mut Context) {
+    #[tokio::test]
+    async fn test_depends_on_empty_slice(ctx: &mut Context) {
         let builder = ctx.manager.task("test", Scope::Manager, "Test task");
 
         // Test that depends_on works with empty slice
