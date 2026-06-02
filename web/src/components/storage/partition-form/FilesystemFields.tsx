@@ -120,7 +120,7 @@ function FilesystemSelector({
                     <HelperTextItem variant="warning">
                       {sprintf(
                         // TRANSLATORS: %s is partition name like "/dev/vdd2"
-                        _("Existing data on %s will be destroyed."),
+                        _("Existing data on %s will be destroyed when installation begins."),
                         deviceLabel(selectedPartition),
                       )}
                     </HelperTextItem>
