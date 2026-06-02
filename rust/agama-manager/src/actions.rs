@@ -194,7 +194,6 @@ impl SetConfigAction {
 
         // Security settings
         self.spawn_config_task(
-            "security",
             Scope::Security,
             &gettext("Storing security settings"),
             self.security.clone(),
@@ -204,7 +203,6 @@ impl SetConfigAction {
 
         // Remote access
         self.spawn_config_task(
-            "remote_access",
             Scope::RemoteAccess,
             &gettext("Configuring remote access"),
             self.remote_access.clone(),
@@ -214,7 +212,6 @@ impl SetConfigAction {
 
         // Hostname
         self.spawn_config_task(
-            "hostname",
             Scope::Hostname,
             &gettext("Setting up the hostname"),
             self.hostname.clone(),
@@ -224,7 +221,6 @@ impl SetConfigAction {
 
         // Proxy
         self.spawn_config_task(
-            "proxy",
             Scope::Proxy,
             &gettext("Setting up the network proxy"),
             self.proxy.clone(),
@@ -235,7 +231,6 @@ impl SetConfigAction {
         // NTP
         let ntp_task = self
             .spawn_config_task(
-                "ntp",
                 Scope::Ntp,
                 &gettext("Setting up NTP"),
                 self.ntp.clone(),
@@ -246,7 +241,6 @@ impl SetConfigAction {
         // Files configuration
         let files_task = self
             .spawn_config_task(
-                "files_config",
                 Scope::Files,
                 &gettext("Importing user files and scripts"),
                 self.files.clone(),
@@ -274,7 +268,6 @@ impl SetConfigAction {
 
         // Questions settings
         self.spawn_config_task(
-            "questions",
             Scope::Questions,
             &gettext("Storing questions settings"),
             self.questions.clone(),
@@ -284,7 +277,6 @@ impl SetConfigAction {
 
         // L10n settings
         self.spawn_config_task(
-            "l10n",
             Scope::L10n,
             &gettext("Storing localization settings"),
             self.l10n.clone(),
@@ -294,7 +286,6 @@ impl SetConfigAction {
 
         // Users settings
         self.spawn_config_task(
-            "users",
             Scope::Users,
             &gettext("Storing users settings"),
             self.users.clone(),
@@ -304,7 +295,6 @@ impl SetConfigAction {
 
         // iSCSI configuration
         self.spawn_config_task(
-            "iscsi",
             Scope::ISCSI,
             &gettext("Configuring iSCSI devices"),
             self.iscsi.clone(),
@@ -331,7 +321,6 @@ impl SetConfigAction {
             // Bootloader configuration (after storage)
             let bootloader_task = self
                 .spawn_config_task(
-                    "bootloader",
                     Scope::Bootloader,
                     &gettext("Storing bootloader settings"),
                     self.bootloader.clone(),
@@ -354,9 +343,10 @@ impl SetConfigAction {
     }
 
     /// Helper to spawn a task for a config message call
+    ///
+    /// The task ID is automatically derived from the scope by converting to lowercase.
     async fn spawn_config_task<S, M>(
         &self,
-        id: &str,
         scope: Scope,
         description: &str,
         handler: Handler<S>,
@@ -367,8 +357,10 @@ impl SetConfigAction {
         M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
         S::Error: std::error::Error + Send + 'static,
     {
+        let task_id = scope.to_string().to_lowercase();
+
         self.task_manager
-            .task(id, scope, description)
+            .task(&task_id, scope, description)
             .run(|| async move {
                 handler.call(message).await.map_err(TaskError::from_error)?;
                 Ok(())
