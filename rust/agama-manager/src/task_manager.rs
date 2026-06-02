@@ -81,9 +81,9 @@
 //! }
 //! ```
 
+use agama_utils::api::Scope;
 use std::collections::{HashMap, HashSet};
 use std::future::Future;
-use std::pin::Pin;
 use std::sync::Arc;
 use tokio::sync::{mpsc, Notify, RwLock};
 
@@ -155,8 +155,6 @@ impl std::error::Error for TaskError {
 /// thanks to the `From` implementation on `TaskError`.
 pub type TaskResult = Result<(), TaskError>;
 
-type BoxFuture = Pin<Box<dyn Future<Output = TaskResult> + Send>>;
-
 /// Metadata describing a task.
 ///
 /// Contains human-readable information about a task including its name,
@@ -167,7 +165,7 @@ type BoxFuture = Pin<Box<dyn Future<Output = TaskResult> + Send>>;
 /// ```
 /// use tasks::manager::TaskMetadata;
 ///
-/// let mut metadata = TaskMetadata::new("backup-db", "Backup database to S3");
+/// let mut metadata = TaskMetadata::new("backup-db", Scope::Manager, "Backup database to S3");
 /// metadata.add_tag("backup");
 /// metadata.add_tag("critical");
 ///
@@ -181,6 +179,8 @@ pub struct TaskMetadata {
     pub name: String,
     /// Human-readable description of what the task does
     pub description: String,
+    /// Scope that originated the task
+    pub scope: Scope,
     /// Tags for categorization and filtering
     pub tags: Vec<String>,
 }
@@ -198,9 +198,10 @@ impl TaskMetadata {
     /// assert_eq!(metadata.description, "Process user data");
     /// assert!(metadata.tags.is_empty());
     /// ```
-    pub fn new(name: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>, scope: Scope, description: impl Into<String>) -> Self {
         Self {
             name: name.into(),
+            scope,
             description: description.into(),
             tags: Vec::new(),
         }
@@ -379,16 +380,21 @@ impl TaskManager {
     ///     let manager = TaskManager::new();
     ///
     ///     let task = manager
-    ///         .task("backup", "Backup database to S3")
+    ///         .task("backup", Scope::Manager, "Backup database to S3")
     ///         .tag("backup")
     ///         .run(|| async { Ok(()) })
     ///         .await;
     /// }
     /// ```
-    pub fn task(&self, name: impl Into<String>, description: impl Into<String>) -> TaskBuilder {
+    pub fn task(
+        &self,
+        name: impl Into<String>,
+        scope: Scope,
+        description: impl Into<String>,
+    ) -> TaskBuilder {
         TaskBuilder {
             manager: self.clone(),
-            metadata: TaskMetadata::new(name, description),
+            metadata: TaskMetadata::new(name, scope, description),
             dependencies: Vec::new(),
         }
     }
@@ -612,6 +618,7 @@ impl TaskManager {
     /// # Example
     ///
     /// ```no_run
+    /// use agama_utils::api::Scope;
     /// use tasks::manager::TaskManager;
     ///
     /// #[tokio::main]
@@ -619,7 +626,7 @@ impl TaskManager {
     ///     let manager = TaskManager::new();
     ///
     ///     manager
-    ///         .task("backup-db", "Backup database")
+    ///         .task("backup-db", Scope::Manager, "Backup database")
     ///         .tag("backup")
     ///         .tag("critical")
     ///         .run(|| async { Ok(()) })
@@ -673,7 +680,7 @@ impl TaskBuilder {
     ///     let manager = TaskManager::new();
     ///
     ///     manager
-    ///         .task("process", "Process data")
+    ///         .task("process", Scope::Manager, "Process data")
     ///         .tag("processing")
     ///         .tag("high-priority")
     ///         .tag("batch")

@@ -35,6 +35,7 @@ pub use summary::Summary;
 /// Converts a Scope to a human-readable string
 pub fn scope_to_string(scope: &Scope) -> String {
     match scope {
+        Scope::Bootloader => gettext("Bootloader"),
         Scope::Manager => gettext("Manager"),
         Scope::Network => gettext("Network"),
         Scope::Ntp => gettext("NTP"),
@@ -49,5 +50,8 @@ pub fn scope_to_string(scope: &Scope) -> String {
         Scope::DASD => gettext("DASD"),
         Scope::ZFCP => gettext("zFCP"),
         Scope::Users => gettext("Users"),
+        Scope::Proxy => gettext("Proxy"),
+        Scope::Questions => gettext("Questions"),
+        Scope::Security => gettext("Security"),
     }
 }

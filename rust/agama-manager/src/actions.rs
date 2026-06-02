@@ -189,6 +189,7 @@ impl SetConfigAction {
     async fn spawn_config_task<S, M>(
         &self,
         id: &str,
+        scope: Scope,
         description: &str,
         handler: Handler<S>,
         message: M,
@@ -198,7 +199,7 @@ impl SetConfigAction {
         S::Error: std::error::Error + Send + 'static,
     {
         self.task_manager
-            .task(id, description)
+            .task(id, scope, description)
             .run(|| async move {
                 handler.call(message).await.map_err(TaskError::from_error)?;
                 Ok(())
@@ -216,6 +217,7 @@ impl SetConfigAction {
         // Security settings
         self.spawn_config_task(
             "security",
+            Scope::Security,
             &gettext("Storing security settings"),
             self.security.clone(),
             security::message::SetConfig::new(config.security.clone()),
@@ -225,6 +227,7 @@ impl SetConfigAction {
         // Remote access
         self.spawn_config_task(
             "remote_access",
+            Scope::RemoteAccess,
             &gettext("Configuring remote access"),
             self.remote_access.clone(),
             agama_remote::message::SetConfig::new(config.remote_access.clone()),
@@ -234,6 +237,7 @@ impl SetConfigAction {
         // Hostname
         self.spawn_config_task(
             "hostname",
+            Scope::Hostname,
             &gettext("Setting up the hostname"),
             self.hostname.clone(),
             hostname::message::SetConfig::new(config.hostname.clone()),
@@ -243,6 +247,7 @@ impl SetConfigAction {
         // Proxy
         self.spawn_config_task(
             "proxy",
+            Scope::Proxy,
             &gettext("Setting up the network proxy"),
             self.proxy.clone(),
             proxy::message::SetConfig::new(config.proxy.clone()),
@@ -252,6 +257,7 @@ impl SetConfigAction {
         // NTP
         self.spawn_config_task(
             "ntp",
+            Scope::Ntp,
             &gettext("Setting up NTP"),
             self.ntp.clone(),
             ntp::message::SetConfig::new(config.ntp.clone()),
@@ -261,6 +267,7 @@ impl SetConfigAction {
         // Files configuration
         self.spawn_config_task(
             "files_config",
+            Scope::Files,
             &gettext("Importing user files"),
             self.files.clone(),
             files::message::SetConfig::new(config.files.clone()),
@@ -272,6 +279,7 @@ impl SetConfigAction {
         self.task_manager
             .task(
                 "pre_scripts",
+                Scope::Files,
                 &gettext("Running user pre-installation scripts"),
             )
             .run(move || async move {
@@ -286,6 +294,7 @@ impl SetConfigAction {
         // Questions settings
         self.spawn_config_task(
             "questions",
+            Scope::Questions,
             &gettext("Storing questions settings"),
             self.questions.clone(),
             question::message::SetConfig::new(config.questions.clone()),
@@ -295,6 +304,7 @@ impl SetConfigAction {
         // L10n settings
         self.spawn_config_task(
             "l10n",
+            Scope::L10n,
             &gettext("Storing localization settings"),
             self.l10n.clone(),
             l10n::message::SetConfig::new(config.l10n.clone()),
@@ -304,6 +314,7 @@ impl SetConfigAction {
         // Users settings
         self.spawn_config_task(
             "users",
+            Scope::Users,
             &gettext("Storing users settings"),
             self.users.clone(),
             users::message::SetConfig::new(config.users.clone()),
@@ -313,6 +324,7 @@ impl SetConfigAction {
         // iSCSI configuration
         self.spawn_config_task(
             "iscsi",
+            Scope::ISCSI,
             &gettext("Configuring iSCSI devices"),
             self.iscsi.clone(),
             iscsi::message::SetConfig::new(config.iscsi.clone()),
@@ -325,7 +337,7 @@ impl SetConfigAction {
             let s390_config = config.s390.clone();
             let storage_handler = self.storage.clone();
             self.task_manager
-                .task("s390", &gettext("Configuring DASD devices"))
+                .task("s390", Scope::DASD, &gettext("Configuring DASD devices"))
                 .run(|| async move {
                     // Ensure storage was already probed before configuring s390
                     let storage_system = storage_handler
@@ -352,7 +364,11 @@ impl SetConfigAction {
             let handler = self.network.clone();
             let network_config = config.network.clone().unwrap();
             self.task_manager
-                .task("network", &gettext("Setting up the network"))
+                .task(
+                    "network",
+                    Scope::Network,
+                    &gettext("Setting up the network"),
+                )
                 .run(|| async move {
                     handler
                         .update_config(network_config)
@@ -369,6 +385,7 @@ impl SetConfigAction {
             // Software configuration
             self.spawn_config_task(
                 "software",
+                Scope::Software,
                 &gettext("Preparing the software proposal"),
                 self.software.clone(),
                 software::message::SetConfig::new(Arc::clone(&product), config.software.clone()),
@@ -402,7 +419,11 @@ impl SetConfigAction {
             let product_clone = Arc::clone(&product);
             let storage_config = config.storage.clone();
             self.task_manager
-                .task("storage", &gettext("Preparing the storage proposal"))
+                .task(
+                    "storage",
+                    Scope::Storage,
+                    &gettext("Preparing the storage proposal"),
+                )
                 .run(|| async move {
                     let future = handler
                         .call(storage::message::SetConfig::new(
@@ -419,6 +440,7 @@ impl SetConfigAction {
             // Bootloader configuration (after storage)
             self.spawn_config_task(
                 "bootloader",
+                Scope::Bootloader,
                 &gettext("Storing bootloader settings"),
                 self.bootloader.clone(),
                 bootloader::message::SetConfig::new(config.bootloader.clone()),
