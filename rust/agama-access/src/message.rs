@@ -22,7 +22,7 @@
 
 use agama_utils::{
     actor::Message,
-    api::remote_access::{Config, ExtendedConfig},
+    api::access::{Config, ExtendedConfig},
 };
 
 /// Message to retrieve the current user-provided remote access configuration.

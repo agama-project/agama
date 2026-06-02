@@ -21,7 +21,7 @@
 use crate::model::ModelAdapter;
 use crate::{message, PasswordCheckResult, PasswordChecker};
 use crate::{Model, PasswordCheckerError};
-use agama_utils::api::remote_access;
+use agama_utils::api::access;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -63,20 +63,20 @@ pub struct Starter {
     model: Option<Box<dyn ModelAdapter + Send + Sync + 'static>>,
     issues: Handler<issue::Service>,
     events: event::Sender,
-    remote_access: Handler<agama_remote::Service>,
+    access: Handler<agama_access::Service>,
 }
 
 impl Starter {
     pub fn new(
         events: event::Sender,
         issues: Handler<issue::Service>,
-        remote_access: Handler<agama_remote::Service>,
+        access: Handler<agama_access::Service>,
     ) -> Self {
         Self {
             model: None,
             events,
             issues,
-            remote_access,
+            access,
         }
     }
 
@@ -99,7 +99,7 @@ impl Starter {
             model,
             issues: self.issues,
             events: self.events,
-            remote_access: self.remote_access,
+            access: self.access,
         };
         service.setup()?;
         let handler = actor::spawn(service);
@@ -117,16 +117,16 @@ pub struct Service {
     // infrastructure stuff
     issues: Handler<issue::Service>,
     events: event::Sender,
-    remote_access: Handler<agama_remote::Service>,
+    access: Handler<agama_access::Service>,
 }
 
 impl Service {
     pub fn starter(
         events: event::Sender,
         issues: Handler<issue::Service>,
-        remote_access: Handler<agama_remote::Service>,
+        access: Handler<agama_access::Service>,
     ) -> Starter {
-        Starter::new(events, issues, remote_access)
+        Starter::new(events, issues, access)
     }
 
     pub fn setup(&self) -> Result<(), Error> {
@@ -237,14 +237,14 @@ impl MessageHandler<message::SetConfig<api::users::Config>> for Service {
 
         self.full_config = config;
 
-        let mut remote_config = remote_access::Config::default();
+        let mut remote_config = access::Config::default();
         if self.need_ssh_access() {
-            remote_config.ssh = Some(api::remote_access::AccessEnum::Enabled);
+            remote_config.ssh = Some(api::access::AccessValue::Enabled);
         }
 
         let res = self
-            .remote_access
-            .call(agama_remote::message::SetAccess::new(
+            .access
+            .call(agama_access::message::SetAccess::new(
                 "users".to_string(),
                 remote_config,
             ))

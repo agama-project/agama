@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 /// Allows to specify explicit enablement of remote access for supported services
 #[derive(Default, Clone, Copy, Debug, Serialize, Deserialize, PartialEq, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub enum AccessEnum {
+pub enum AccessValue {
     /// Explicitly enabled
     Enabled,
     /// Default system configuration behavior that is product specific
@@ -37,25 +37,25 @@ pub enum AccessEnum {
 /// Remote Access configuration
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "remoteAccess.Config")]
+#[schemars(rename = "access.Config")]
 pub struct Config {
     /// Remote access to SSH
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub ssh: Option<AccessEnum>,
-    /// Remote access to Cockpit
+    pub ssh: Option<AccessValue>,
+    /// Remote access to Web Console
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub cockpit: Option<AccessEnum>,
+    pub web_console: Option<AccessValue>,
 }
 
 /// Remote Access extended configuration that is resolved
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "remoteAccess.ExtendedConfig")]
+#[schemars(rename = "access.ExtendedConfig")]
 pub struct ExtendedConfig {
     /// Remote access to SSH
-    pub ssh: AccessEnum,
-    /// Remote access to Cockpit
-    pub cockpit: AccessEnum,
+    pub ssh: AccessValue,
+    /// Remote access to Web Console
+    pub web_console: AccessValue,
 }
