@@ -283,13 +283,16 @@ function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFiel
       return { rangeMinSize: minError, rangeMaxSize: maxError };
     }
 
-    const rangeError = sizeRange(
-      fields.rangeMinSize,
-      fields.rangeMaxSize,
-      _("Minimum size cannot be greater than maximum size"),
-    );
+    const hasRangeError = sizeRange(fields.rangeMinSize, fields.rangeMaxSize, "error");
 
-    return { rangeMaxSize: rangeError };
+    if (hasRangeError) {
+      return {
+        rangeMinSize: _("Must be smaller than maximum size"),
+        rangeMaxSize: _("Must be larger than minimum size"),
+      };
+    }
+
+    return {};
   }
 
   if (fields.sizeMode === SIZE_MODE.EXPAND) {
