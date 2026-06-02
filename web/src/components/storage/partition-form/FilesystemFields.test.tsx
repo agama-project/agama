@@ -179,9 +179,7 @@ describe("FilesystemFields", () => {
 
   describe("additional filesystem settings", () => {
     it("shows checkbox for additional settings when filesystem supports it", async () => {
-      const { user } = installerRender(
-        <TestForm defaultValues={{ filesystem: FILESYSTEM_TYPE.AUTO }} />,
-      );
+      installerRender(<TestForm defaultValues={{ filesystem: FILESYSTEM_TYPE.AUTO }} />);
       screen.getByLabelText(/Define more file system settings/);
     });
 
