@@ -122,26 +122,30 @@ pub async fn build() -> OpenApi {
 
     // Basic initialization of OpenApi struct is done and /components/schemas is ready
     // for data for sure, so we can feed it with statically defined schemas
+    // Example:
+    // storage.schema.json will be stored under /components/schema/storage.Config
+    let schemas_to_import = vec![
+        // (file path, schema name, schema parent)
+        ("share/storage.schema.json", "storage", "Config"),
+        ("share/dasd.schema.json", "dasd", "Config"),
+        ("share/iscsi.schema.json", "iscsi", "Config"),
+        ("share/zfcp.schema.json", "zfcp", "Config"),
+    ];
+
     if let Some(components) = &mut api.components {
         let schemas = &mut components.schemas;
 
-        // Example:
-        // storage.schema.json will be stored under /components/schema/storage.Config
-        let schemas_to_import = vec![
-            ("share/storage.schema.json", "storage.Config", "storage."),
-        ];
-
-        for (path, key, prefix) in schemas_to_import {
+        for (path, name, group) in &schemas_to_import {
             // TODO: deal with unwraps
             let raw_content = std::fs::read_to_string(path).unwrap();
             let mut source_schema: Value = serde_json::from_str(&raw_content).unwrap();
             let mut extracted_defs = serde_json::Map::new();
 
             // collect and remove $defs from the schema
-            extract_defs(&mut source_schema, prefix, &mut extracted_defs);
+            extract_defs(&mut source_schema, format!("{}.", name).as_str(), &mut extracted_defs);
 
             schemas.insert(
-                key.to_string(),
+                format!("{}.{}", name, group),
                 serde_json::from_value(source_schema).unwrap()
             );
 
@@ -188,16 +192,20 @@ pub async fn build() -> OpenApi {
     add_auth_endpoint(&mut api);
 
     // Update references to already merged statically defined schemas
+    // The "keys" like "storage" are generated from code but needs to
+    // be populated manualy
     // TODO: make it generic, currently "storage" is hardcoded
     let mut api_json = serde_json::to_value(&api).unwrap();
 
-    if let Some(storage) = api_json.pointer_mut("/components/schemas/Config/properties/storage") {
-        *storage = serde_json::json!({
-            "anyOf": [
-                { "$ref": "#/components/schemas/storage.Config" },
-                { "type": "null" }
-            ]
-        });
+    for (_, name, group) in schemas_to_import {
+        if let Some(schema) = api_json.pointer_mut(format!("/components/schemas/Config/properties/{}", name).as_str()) {
+            *schema = serde_json::json!({
+                "anyOf": [
+                    { "$ref": format!("#/components/schemas/{}.{}", name, group) },
+                    { "type": "null" }
+                ]
+            });
+        }
     }
 
     let api_json_string = serde_json::to_string(&api_json).unwrap();
