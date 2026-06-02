@@ -185,164 +185,6 @@ pub struct SetConfigAction {
 }
 
 impl SetConfigAction {
-    /// Helper to spawn a task for a config message call
-    async fn spawn_config_task<S, M>(
-        &self,
-        id: &str,
-        scope: Scope,
-        description: &str,
-        handler: Handler<S>,
-        message: M,
-    ) -> crate::task_manager::TaskId
-    where
-        S: agama_utils::actor::MessageHandler<M> + 'static,
-        M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
-        S::Error: std::error::Error + Send + 'static,
-    {
-        self.task_manager
-            .task(id, scope, description)
-            .run(|| async move {
-                handler.call(message).await.map_err(TaskError::from_error)?;
-                Ok(())
-            })
-            .await
-    }
-
-    /// Helper to spawn S390 configuration task
-    async fn set_s390_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
-        let s390 = self.s390.as_ref()?;
-        let handler = s390.clone();
-        let s390_config = config.s390.clone();
-        let storage_handler = self.storage.clone();
-
-        Some(
-            self.task_manager
-                .task("s390", Scope::Storage, &gettext("Configuring DASD devices"))
-                .run(|| async move {
-                    // Ensure storage was already probed before configuring s390
-                    let storage_system = storage_handler
-                        .call(storage::message::GetSystem)
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    if storage_system.is_none() {
-                        storage_handler
-                            .call(storage::message::Probe)
-                            .await
-                            .map_err(TaskError::from_error)?
-                    }
-                    handler
-                        .call(s390::message::SetConfig::new(s390_config))
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    Ok(())
-                })
-                .await,
-        )
-    }
-
-    /// Helper to spawn network configuration task
-    async fn set_network_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
-        let network_config = config.network.clone()?;
-        let handler = self.network.clone();
-
-        Some(
-            self.task_manager
-                .task(
-                    "network",
-                    Scope::Network,
-                    &gettext("Setting up the network"),
-                )
-                .run(|| async move {
-                    handler
-                        .update_config(network_config)
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    handler.apply().await.map_err(TaskError::from_error)?;
-                    Ok(())
-                })
-                .await,
-        )
-    }
-
-    /// Helper to spawn storage configuration task
-    async fn set_storage_config(
-        &self,
-        product: Arc<RwLock<ProductSpec>>,
-        config: &Config,
-        dependencies: &[crate::task_manager::TaskId],
-    ) -> crate::task_manager::TaskId {
-        let handler = self.storage.clone();
-        let storage_config = config.storage.clone();
-
-        self.task_manager
-            .task(
-                "storage",
-                Scope::Storage,
-                &gettext("Preparing the storage proposal"),
-            )
-            .depends_on(dependencies)
-            .run(move || async move {
-                let future = handler
-                    .call(storage::message::SetConfig::new(product, storage_config))
-                    .await
-                    .map_err(TaskError::from_error)?;
-                let _ = future.await;
-                Ok(())
-            })
-            .await
-    }
-
-    /// Helper to spawn software configuration task and configure SELinux
-    async fn set_software_config(
-        &self,
-        product: Arc<RwLock<ProductSpec>>,
-        config: &Config,
-        dependencies: &[crate::task_manager::TaskId],
-    ) -> crate::task_manager::TaskId {
-        let software_handler = self.software.clone();
-        let software_config = config.software.clone();
-        let bootloader_handler = self.bootloader.clone();
-
-        self.task_manager
-            .task(
-                "software",
-                Scope::Software,
-                &gettext("Preparing the software proposal"),
-            )
-            .depends_on(dependencies)
-            .run(move || async move {
-                software_handler
-                    .call(software::message::SetConfig::new(product, software_config))
-                    .await
-                    .map_err(TaskError::from_error)?;
-
-                // SELinux configuration (after software SetConfig completes)
-                let selinux_selected = software_handler
-                    .call(software::message::IsPatternSelected::new(
-                        "selinux".to_string(),
-                    ))
-                    .await
-                    .map_err(TaskError::from_error)?;
-
-                let value = if selinux_selected {
-                    "security=selinux"
-                } else {
-                    "security="
-                };
-                let message = agama_bootloader::message::SetKernelArg {
-                    id: "selinux".to_string(),
-                    value: value.to_string(),
-                };
-
-                if let Err(error) = bootloader_handler.cast(message) {
-                    tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
-                }
-
-                Ok(())
-            })
-            .await
-    }
-
     pub async fn run(
         self,
         product: Option<Arc<RwLock<ProductSpec>>>,
@@ -510,50 +352,162 @@ impl SetConfigAction {
         Ok(())
     }
 
-    async fn set_network(&self, config: &Config) -> Result<(), service::Error> {
-        let Some(network) = config.network.clone() else {
-            return Ok(());
-        };
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.network.update_config(network).await?;
-        self.network.apply().await?;
-
-        Ok(())
+    /// Helper to spawn a task for a config message call
+    async fn spawn_config_task<S, M>(
+        &self,
+        id: &str,
+        scope: Scope,
+        description: &str,
+        handler: Handler<S>,
+        message: M,
+    ) -> crate::task_manager::TaskId
+    where
+        S: agama_utils::actor::MessageHandler<M> + 'static,
+        M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
+        S::Error: std::error::Error + Send + 'static,
+    {
+        self.task_manager
+            .task(id, scope, description)
+            .run(|| async move {
+                handler.call(message).await.map_err(TaskError::from_error)?;
+                Ok(())
+            })
+            .await
     }
 
-    // Enables/Disables SELinux in the installed system.
-    //
-    // If the "selinux" pattern is selected, set the "security=selinux" boot
-    // kernel parameter.
-    //
-    // NOTE: this logic should live in another place, like "agama-security".
-    // It is temporarily here to fix bsc#1259890.
-    async fn set_selinux(&self) -> Result<(), service::Error> {
-        let selinux_selected = self
-            .software
-            .call(software::message::IsPatternSelected::new(
-                "selinux".to_string(),
-            ))
-            .await?;
+    /// Helper to spawn S390 configuration task
+    async fn set_s390_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+        let s390 = self.s390.as_ref()?;
+        let handler = s390.clone();
+        let s390_config = config.s390.clone();
+        let storage_handler = self.storage.clone();
 
-        let value = if selinux_selected {
-            "security=selinux"
-        } else {
-            "security="
-        };
-        let message = agama_bootloader::message::SetKernelArg {
-            id: "selinux".to_string(),
-            value: value.to_string(),
-        };
+        Some(
+            self.task_manager
+                .task("s390", Scope::Storage, &gettext("Configuring DASD devices"))
+                .run(|| async move {
+                    // Ensure storage was already probed before configuring s390
+                    let storage_system = storage_handler
+                        .call(storage::message::GetSystem)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    if storage_system.is_none() {
+                        storage_handler
+                            .call(storage::message::Probe)
+                            .await
+                            .map_err(TaskError::from_error)?
+                    }
+                    handler
+                        .call(s390::message::SetConfig::new(s390_config))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await,
+        )
+    }
 
-        if let Err(error) = self.bootloader.cast(message) {
-            tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
-        }
+    /// Helper to spawn network configuration task
+    async fn set_network_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+        let network_config = config.network.clone()?;
+        let handler = self.network.clone();
 
-        Ok(())
+        Some(
+            self.task_manager
+                .task(
+                    "network",
+                    Scope::Network,
+                    &gettext("Setting up the network"),
+                )
+                .run(|| async move {
+                    handler
+                        .update_config(network_config)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    handler.apply().await.map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await,
+        )
+    }
+
+    /// Helper to spawn storage configuration task
+    async fn set_storage_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> crate::task_manager::TaskId {
+        let handler = self.storage.clone();
+        let storage_config = config.storage.clone();
+
+        self.task_manager
+            .task(
+                "storage",
+                Scope::Storage,
+                &gettext("Preparing the storage proposal"),
+            )
+            .depends_on(dependencies)
+            .run(move || async move {
+                let future = handler
+                    .call(storage::message::SetConfig::new(product, storage_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                let _ = future.await;
+                Ok(())
+            })
+            .await
+    }
+
+    /// Helper to spawn software configuration task and configure SELinux
+    async fn set_software_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> crate::task_manager::TaskId {
+        let software_handler = self.software.clone();
+        let software_config = config.software.clone();
+        let bootloader_handler = self.bootloader.clone();
+
+        self.task_manager
+            .task(
+                "software",
+                Scope::Software,
+                &gettext("Preparing the software proposal"),
+            )
+            .depends_on(dependencies)
+            .run(move || async move {
+                software_handler
+                    .call(software::message::SetConfig::new(product, software_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+
+                // SELinux configuration (after software SetConfig completes)
+                let selinux_selected = software_handler
+                    .call(software::message::IsPatternSelected::new(
+                        "selinux".to_string(),
+                    ))
+                    .await
+                    .map_err(TaskError::from_error)?;
+
+                let value = if selinux_selected {
+                    "security=selinux"
+                } else {
+                    "security="
+                };
+                let message = agama_bootloader::message::SetKernelArg {
+                    id: "selinux".to_string(),
+                    value: value.to_string(),
+                };
+
+                if let Err(error) = bootloader_handler.cast(message) {
+                    tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
+                }
+
+                Ok(())
+            })
+            .await
     }
 }
 
