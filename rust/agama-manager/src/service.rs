@@ -19,10 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    actions::FinishAction,
-    bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n, message, network, ntp, proxy,
-    s390, security, software, storage,
-    task_manager::{TaskEvent, TaskManager},
+    actions::FinishAction, bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n,
+    message, network, ntp, proxy, s390, security, software, storage, task_manager::TaskManager,
     tasks, users,
 };
 use agama_users::PasswordCheckResult;
@@ -392,7 +390,7 @@ impl Starter {
             }
         };
 
-        let task_manager = Arc::new(TaskManager::new());
+        let task_manager = Arc::new(TaskManager::new(self.events.clone()));
 
         let runner = tasks::TasksRunner {
             bootloader: bootloader.clone(),
@@ -441,11 +439,11 @@ impl Starter {
             users,
             tasks,
             s390,
-            task_manager,
+            task_manager: task_manager.clone(),
         };
 
         service.setup().await?;
-        Ok(actor::spawn(service))
+        Ok(actor::spawn(service));
     }
 }
 
@@ -499,27 +497,6 @@ impl Service {
         } else {
             self.update_issues()?;
         };
-
-        let mut events = self.task_manager.take_event_receiver().await.unwrap();
-        tokio::spawn(async move {
-            while let Some(event) = events.recv().await {
-                match event {
-                    TaskEvent::Started { id, metadata } => {
-                        tracing::info!("task \"{}\" ({}) started", metadata.name, id)
-                    }
-                    TaskEvent::Completed {
-                        id,
-                        result,
-                        metadata,
-                    } => match result {
-                        Ok(()) => tracing::info!("task \"{}\" ({}) completed", metadata.name, id),
-                        Err(e) => {
-                            tracing::error!("task \"{}\" ({}) failed: {}", metadata.name, id, e)
-                        }
-                    },
-                }
-            }
-        });
 
         Ok(())
     }

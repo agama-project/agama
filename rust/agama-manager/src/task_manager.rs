@@ -25,11 +25,15 @@
 //! - Dependency management between tasks
 //! - Event notifications via channels
 
-use agama_utils::api::{self, Scope};
+use agama_utils::api::{
+    self,
+    event::{self, Event},
+    Scope,
+};
 use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::sync::Arc;
-use tokio::sync::{mpsc, Notify, RwLock};
+use tokio::sync::{Notify, RwLock};
 
 /// Unique identifier for a task.
 pub type TaskId = usize;
@@ -107,38 +111,10 @@ impl From<TaskMetadata> for api::status::Task {
     }
 }
 
-/// Events emitted by the task manager during task execution.
-///
-/// Subscribe to these events to monitor task progress and handle completions.
-#[derive(Debug)]
-pub enum TaskEvent {
-    /// A task has started executing.
-    ///
-    /// Emitted after all dependencies have completed and the task begins work.
-    Started {
-        /// Unique identifier of the task
-        id: TaskId,
-        /// Metadata including name, description, and tags
-        metadata: TaskMetadata,
-    },
-    /// A task has completed execution.
-    ///
-    /// Emitted when a task finishes, whether successful or failed.
-    Completed {
-        /// Unique identifier of the task
-        id: TaskId,
-        /// Metadata including name, description, and tags
-        metadata: TaskMetadata,
-        /// Result of the task execution
-        result: TaskResult,
-    },
-}
-
 struct TaskManagerState {
     completed: HashSet<TaskId>,
     next_id: TaskId,
     notify: Arc<Notify>,
-    event_tx: mpsc::UnboundedSender<TaskEvent>,
     metadata: HashMap<TaskId, TaskMetadata>,
 }
 
@@ -157,7 +133,7 @@ struct TaskManagerState {
 /// share the same underlying state via `Arc`.
 pub struct TaskManager {
     state: Arc<RwLock<TaskManagerState>>,
-    event_rx: Arc<RwLock<Option<mpsc::UnboundedReceiver<TaskEvent>>>>,
+    events: event::Sender,
 }
 
 /// Builder for configuring and running a task.
@@ -172,20 +148,17 @@ pub struct TaskBuilder {
 
 impl TaskManager {
     /// Create a new task manager.
-    pub fn new() -> Self {
-        let (event_tx, event_rx) = mpsc::unbounded_channel();
-
+    pub fn new(events: event::Sender) -> Self {
         let state = TaskManagerState {
             completed: HashSet::new(),
             next_id: 0,
             notify: Arc::new(Notify::new()),
-            event_tx,
             metadata: HashMap::new(),
         };
 
         Self {
             state: Arc::new(RwLock::new(state)),
-            event_rx: Arc::new(RwLock::new(Some(event_rx))),
+            events,
         }
     }
 
@@ -235,14 +208,12 @@ impl TaskManager {
         }
 
         let state = Arc::clone(&self.state);
+        let events = self.events.clone();
 
         tokio::spawn(async move {
-            let (notify, event_tx) = {
+            let notify = {
                 let state_guard = state.read().await;
-                (
-                    Arc::clone(&state_guard.notify),
-                    state_guard.event_tx.clone(),
-                )
+                Arc::clone(&state_guard.notify)
             };
 
             // Wait for dependencies
@@ -261,20 +232,16 @@ impl TaskManager {
                 notify.notified().await;
             }
 
-            // Send started event
-            let _ = event_tx.send(TaskEvent::Started {
-                id: task_id,
-                metadata: metadata.clone(),
+            // TODO: propagate event and work errors.
+
+            let _ = events.send(Event::TaskStarted {
+                task: metadata.clone().into(),
             });
 
-            // Execute work
-            let result = work().await;
+            let _ = work().await;
 
-            // Send completed event
-            let _ = event_tx.send(TaskEvent::Completed {
-                id: task_id,
-                metadata,
-                result,
+            let _ = events.send(Event::TaskFinished {
+                task: metadata.clone().into(),
             });
 
             // Mark as completed
@@ -282,14 +249,6 @@ impl TaskManager {
             state_guard.completed.insert(task_id);
             state_guard.notify.notify_waiters();
         });
-    }
-
-    /// Take ownership of the event receiver.
-    ///
-    /// Can only be called once. Returns `None` if already called.
-    /// Use this to receive events from all tasks.
-    pub async fn take_event_receiver(&self) -> Option<mpsc::UnboundedReceiver<TaskEvent>> {
-        self.event_rx.write().await.take()
     }
 
     /// Check if a task has completed.
@@ -331,14 +290,8 @@ impl Clone for TaskManager {
     fn clone(&self) -> Self {
         Self {
             state: Arc::clone(&self.state),
-            event_rx: Arc::clone(&self.event_rx),
+            events: self.events.clone(),
         }
-    }
-}
-
-impl Default for TaskManager {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -378,6 +331,27 @@ impl TaskBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test_context::{test_context, TestContext};
+    use tokio::sync::broadcast;
+
+    struct Context {
+        manager: TaskManager,
+    }
+
+    impl TestContext for Context {
+        fn setup() -> Context {
+            let (events_tx, mut events_rx) = broadcast::channel::<Event>(16);
+
+            tokio::spawn(async move {
+                while let Ok(event) = events_rx.recv().await {
+                    println!("{:?}", event);
+                }
+            });
+
+            let manager = TaskManager::new(events_tx);
+            Context { manager }
+        }
+    }
 
     #[test]
     fn test_task_metadata_new() {
@@ -408,10 +382,10 @@ mod tests {
         assert_eq!(display_string, "access denied");
     }
 
+    #[test_context(Context)]
     #[test]
-    fn test_depends_on_multiple_tasks() {
-        let manager = TaskManager::new();
-        let builder = manager.task("test", Scope::Manager, "Test task");
+    fn test_depends_on_multiple_tasks(ctx: &mut Context) {
+        let builder = ctx.manager.task("test", Scope::Manager, "Test task");
 
         // Test that depends_on accepts a slice
         let builder_with_deps = builder.depends_on(&[1, 2, 3]);
@@ -419,10 +393,10 @@ mod tests {
         assert_eq!(builder_with_deps.dependencies, vec![1, 2, 3]);
     }
 
+    #[test_context(Context)]
     #[test]
-    fn test_depends_on_empty_slice() {
-        let manager = TaskManager::new();
-        let builder = manager.task("test", Scope::Manager, "Test task");
+    fn test_depends_on_empty_slice(ctx: &mut Context) {
+        let builder = ctx.manager.task("test", Scope::Manager, "Test task");
 
         // Test that depends_on works with empty slice
         let builder_with_deps = builder.depends_on(&[]);
