@@ -50,6 +50,7 @@ import {
   defaultOptions,
   validate,
   isReusingPartition,
+  supportsAdditionalConfig,
   FILESYSTEM_TYPE,
   FILESYSTEM_ACTION,
   SIZE_MODE,
@@ -433,9 +434,15 @@ function PartitionFormContent({
         <FilesystemFields form={form} device={systemDevice} />
 
         {/* Filesystem additional settings (when checkbox is checked) */}
-        <form.Subscribe selector={(s) => s.values.showMoreFilesystemSettings}>
-          {(showMore) =>
-            showMore && (
+        <form.Subscribe
+          selector={(s) => ({
+            showMore: s.values.showMoreFilesystemSettings,
+            filesystem: s.values.filesystem,
+          })}
+        >
+          {({ showMore, filesystem }) =>
+            showMore &&
+            supportsAdditionalConfig(filesystem) && (
               <NestedContent margin="mxLg">
                 <FilesystemAdditionalFields form={form} />
               </NestedContent>

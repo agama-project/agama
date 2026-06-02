@@ -27,7 +27,13 @@ import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
-import { defaultOptions, isReusingPartition, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
+import {
+  defaultOptions,
+  isReusingPartition,
+  FILESYSTEM_TYPE,
+  FILESYSTEM_ACTION,
+  supportsAdditionalConfig,
+} from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { deviceLabel, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -252,9 +258,6 @@ const FilesystemFieldsContent = withForm({
       form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
     }, [usableFilesystems, filesystem, form]);
 
-    const showAdditionalSettings =
-      filesystem !== FILESYSTEM_TYPE.AUTO && filesystem !== FILESYSTEM_ACTION.REUSE;
-
     return (
       <>
         <FilesystemSelector
@@ -266,7 +269,7 @@ const FilesystemFieldsContent = withForm({
           selectedPartition={isReuse && canKeepCurrentFilesystem ? selectedPartition : undefined}
         />
 
-        {showAdditionalSettings && (
+        {supportsAdditionalConfig(filesystem) && (
           <form.AppField name="showMoreFilesystemSettings">
             {(field) => (
               <field.CheckboxField
