@@ -40,8 +40,12 @@ call_xgettext() {
     --language=Rust \
     --keyword=gettext \
     --keyword=gettext_noop \
-    --keyword=i18n_format!
+    --keyword='gettext_noop!' \
+    --keyword='i18n_format!'
 }
+
+# Generate strings from clap derive macros into out/cli_strings.rs
+cargo xtask cli-strings
 
 find . \
   -path './target*' \

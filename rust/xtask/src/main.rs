@@ -85,6 +85,48 @@ mod tasks {
 
         Ok(())
     }
+
+    /// Generate CLI strings for translation.
+    pub fn generate_cli_strings() -> std::io::Result<()> {
+        use clap::Command;
+        let cmd = Cli::command();
+
+        let out_dir = output_dir()?;
+        let path = out_dir.join("cli_strings.rs");
+        let mut file = std::fs::File::create(&path)?;
+
+        writeln!(file, "fn dummy_cli_strings() {{")?;
+
+        fn extract_strings(cmd: &Command, file: &mut std::fs::File) -> std::io::Result<()> {
+            if let Some(about) = cmd.get_about() {
+                writeln!(file, "    gettext_noop!({:?});", about.to_string())?;
+            }
+            if let Some(long_about) = cmd.get_long_about() {
+                writeln!(file, "    gettext_noop!({:?});", long_about.to_string())?;
+            }
+
+            for arg in cmd.get_arguments() {
+                if let Some(help) = arg.get_help() {
+                    writeln!(file, "    gettext_noop!({:?});", help.to_string())?;
+                }
+                if let Some(long_help) = arg.get_long_help() {
+                    writeln!(file, "    gettext_noop!({:?});", long_help.to_string())?;
+                }
+            }
+
+            for subcmd in cmd.get_subcommands() {
+                extract_strings(subcmd, file)?;
+            }
+
+            Ok(())
+        }
+
+        extract_strings(&cmd, &mut file)?;
+        writeln!(file, "}}")?;
+
+        println!("Generated CLI strings at {}.", path.display());
+        Ok(())
+    }
 }
 
 fn output_dir() -> std::io::Result<PathBuf> {
@@ -107,6 +149,7 @@ async fn main() -> std::io::Result<()> {
         "markdown" => tasks::generate_markdown(),
         "manpages" => tasks::generate_manpages(),
         "openapi" => tasks::generate_openapi().await,
+        "cli-strings" => tasks::generate_cli_strings(),
         other => {
             eprintln!("Unknown task '{}'", other);
             std::process::exit(1);
