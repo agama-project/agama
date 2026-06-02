@@ -20,10 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { sprintf } from "sprintf-js";
-import { Content, Flex } from "@patternfly/react-core";
-import NestedContent from "~/components/core/NestedContent";
+import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
@@ -96,7 +95,7 @@ function useAutomaticSizeNote(
   effectiveFilesystem: string | undefined,
   committedMountPoint: string,
 ): { sizeLabel: string; rationale: string } {
-  return React.useMemo(() => {
+  return useMemo(() => {
     if (!volume) {
       return {
         sizeLabel: _("Automatic"),
@@ -110,10 +109,10 @@ function useAutomaticSizeNote(
     if (minSize && fsLabel && committedMountPoint) {
       return {
         // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-        sizeLabel: sprintf(_("At least %s"), minSize),
+        sizeLabel: sprintf(_("Minimum %s"), minSize),
         // TRANSLATORS: %1$s is mount point (e.g., "/home"), %2$s is filesystem (e.g., "XFS")
         rationale: sprintf(
-          _("Determined by the role of %1$s and the selected file system (%2$s)"),
+          _("Determined by the %1$s role and %2$s filesystem."),
           committedMountPoint,
           fsLabel,
         ),
@@ -123,7 +122,7 @@ function useAutomaticSizeNote(
     if (minSize) {
       return {
         // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-        sizeLabel: sprintf(_("At least %s"), minSize),
+        sizeLabel: sprintf(_("Minimum %s"), minSize),
         rationale: _("Determined by the mount point role"),
       };
     }
@@ -151,7 +150,7 @@ const SizeFieldsContent = withForm({
     // expensive useVolumeTemplate recalculations on every keystroke.
     const volume = useVolumeTemplate(committedMountPoint);
 
-    const effectiveFilesystem = React.useMemo(
+    const effectiveFilesystem = useMemo(
       () => (filesystem === FILESYSTEM_TYPE.AUTO ? volume?.fsType : filesystem),
       [filesystem, volume],
     );
@@ -165,10 +164,12 @@ const SizeFieldsContent = withForm({
     switch (sizeMode) {
       case SIZE_MODE.AUTO:
         return (
-          <>
-            <Content isEditorial>{automaticSizeNote.sizeLabel}</Content>
+          <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
+            <Text isBold textStyle="textColorSubtle">
+              {automaticSizeNote.sizeLabel}
+            </Text>
             <Text component="small">{automaticSizeNote.rationale}</Text>
-          </>
+          </Flex>
         );
 
       case SIZE_MODE.FIXED:
