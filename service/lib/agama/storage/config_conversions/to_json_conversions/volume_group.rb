@@ -64,15 +64,21 @@ module Agama
             devices = config.physical_volumes_devices
             return if devices.empty?
 
+            space_policy = config.physical_volumes_policy
             encryption = config.physical_volumes_encryption
-            return { generate: devices } unless encryption
 
-            {
-              generate: {
-                targetDevices: devices,
-                encryption:    ToJSONConversions::Encryption.new(encryption).convert
-              }
-            }
+            # Only use advanced format if there's encryption or non-default space policy
+            if encryption.nil? && (space_policy.nil? || space_policy == :use_needed)
+              return { generate: devices }
+            end
+
+            generate = { targetDevices: devices }
+            generate[:spacePolicy] = "useAvailable" if space_policy == :use_available
+            if encryption
+              generate[:encryption] = ToJSONConversions::Encryption.new(encryption).convert
+            end
+
+            { generate: generate }
           end
 
           # @return [Array<Hash>]

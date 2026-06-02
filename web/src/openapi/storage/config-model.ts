@@ -94,6 +94,7 @@ export interface VolumeGroup {
   vgName: string;
   extentSize?: number;
   targetDevices?: string[];
+  targetDevicesPolicy?: "useNeeded" | "useAvailable";
   spacePolicy?: SpacePolicy;
   logicalVolumes?: LogicalVolume[];
 }

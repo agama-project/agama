@@ -98,6 +98,9 @@
           "type": "array",
           "items": { "type": "string" }
         },
+        "targetDevicesPolicy": {
+          "enum": ["useNeeded", "useAvailable"]
+        },
         "spacePolicy": { "$ref": "#/$defs/spacePolicy" },
         "logicalVolumes": {
           "type": "array",

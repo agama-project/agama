@@ -27,9 +27,9 @@ use agama_software::Resolvable;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
-        self, event,
-        remote_access::{Config, ExtendedConfig},
-        Event, Scope,
+        self,
+        access::{Config, ExtendedConfig},
+        event, Event, Scope,
     },
     command::{open_firewall, try_enable_service},
 };
@@ -122,42 +122,42 @@ impl State {
     /// Checks if SSH access is enabled either by user configuration or service requests.
     fn is_ssh_enabled(&self) -> bool {
         if let Some(config) = &self.user_config.ssh {
-            return config == &api::remote_access::AccessEnum::Enabled;
+            return config == &api::access::AccessValue::Enabled;
         };
 
         // no user explicit selection, so compute it from agama requirements
         self.agama_config
             .values()
-            .any(|config| config.ssh == Some(api::remote_access::AccessEnum::Enabled))
+            .any(|config| config.ssh == Some(api::access::AccessValue::Enabled))
     }
 
-    /// Checks if Cockpit access is enabled either by user configuration or module requests.
-    fn is_cockpit_enabled(&self) -> bool {
-        if let Some(config) = &self.user_config.cockpit {
-            return config == &api::remote_access::AccessEnum::Enabled;
+    /// Checks if Web Console access is enabled either by user configuration or module requests.
+    fn is_web_console_enabled(&self) -> bool {
+        if let Some(config) = &self.user_config.web_console {
+            return config == &api::access::AccessValue::Enabled;
         };
 
         // no user explicit selection, so compute it from agama requirements
         self.agama_config
             .values()
-            .any(|config| config.cockpit == Some(api::remote_access::AccessEnum::Enabled))
+            .any(|config| config.web_console == Some(api::access::AccessValue::Enabled))
     }
 
     /// Returns the resolved extended configuration for remote access.
     pub fn extended_config(&self) -> ExtendedConfig {
         let ssh = if self.is_ssh_enabled() {
-            api::remote_access::AccessEnum::Enabled
+            api::access::AccessValue::Enabled
         } else {
-            api::remote_access::AccessEnum::Default
+            api::access::AccessValue::Default
         };
 
-        let cockpit = if self.is_cockpit_enabled() {
-            api::remote_access::AccessEnum::Enabled
+        let web_console = if self.is_web_console_enabled() {
+            api::access::AccessValue::Enabled
         } else {
-            api::remote_access::AccessEnum::Default
+            api::access::AccessValue::Default
         };
 
-        ExtendedConfig { ssh, cockpit }
+        ExtendedConfig { ssh, web_console }
     }
 
     /// Applies the remote access configuration to the target system.
@@ -172,12 +172,12 @@ impl State {
                 tracing::error!("Failed to enable ssh: {}", error);
             }
         }
-        if self.is_cockpit_enabled() {
+        if self.is_web_console_enabled() {
             // TODO: when we can report install issues, we should report
             // it here which individual remote access enablement failed
-            let res = Self::enable_cockpit(&install_dir).await;
+            let res = Self::enable_web_console(&install_dir).await;
             if let Err(error) = res {
-                tracing::error!("Failed to enable cockpit: {}", error);
+                tracing::error!("Failed to enable web_console: {}", error);
             }
         }
         Ok(())
@@ -192,8 +192,8 @@ impl State {
         Ok(())
     }
 
-    /// Enables the Cockpit service and opens the corresponding firewall port.
-    async fn enable_cockpit<P: AsRef<Path>>(install_dir: P) -> Result<(), Error> {
+    /// Enables the Web Console service and opens the corresponding firewall port.
+    async fn enable_web_console<P: AsRef<Path>>(install_dir: P) -> Result<(), Error> {
         try_enable_service(&install_dir, "cockpit.socket").await?;
         open_firewall(&install_dir, "cockpit").await?;
 
@@ -206,7 +206,7 @@ impl State {
         self.update_resolvables();
         // ignoring error here is ok as it means just dismissed event
         let _ = self.events.send(Event::ProposalChanged {
-            scope: Scope::RemoteAccess,
+            scope: Scope::Access,
         });
     }
 
@@ -216,14 +216,14 @@ impl State {
         self.update_resolvables();
         // ignoring error here is ok as it means just dismissed event
         let _ = self.events.send(Event::ProposalChanged {
-            scope: Scope::RemoteAccess,
+            scope: Scope::Access,
         });
     }
 
     /// Updates the software resolvables based on the current remote access state.
     fn update_resolvables(&mut self) {
         let mut resolvables = vec![];
-        if self.is_cockpit_enabled() {
+        if self.is_web_console_enabled() {
             resolvables.push(Resolvable {
                 name: "cockpit".to_string(),
                 r#type: agama_software::ResolvableType::Pattern,
@@ -237,7 +237,7 @@ impl State {
         }
         if let Some(software) = &self.software {
             let res = software.cast(agama_software::message::SetResolvables {
-                id: "remote_access".to_string(),
+                id: "access".to_string(),
                 resolvables,
             });
             if let Err(error) = res {
@@ -252,7 +252,7 @@ impl State {
 
 /// Remote access service.
 ///
-/// Manages the remote access configuration (like SSH and Cockpit) for the target system.
+/// Manages the remote access configuration (like SSH and Web Console) for the target system.
 pub struct Service {
     /// Internal state of the service.
     state: State,
@@ -272,10 +272,10 @@ impl Actor for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetConfig<api::remote_access::Config>> for Service {
+impl MessageHandler<message::SetConfig<api::access::Config>> for Service {
     async fn handle(
         &mut self,
-        message: message::SetConfig<api::remote_access::Config>,
+        message: message::SetConfig<api::access::Config>,
     ) -> Result<(), Error> {
         self.state
             .set_user_config(message.config.unwrap_or_default());
@@ -285,10 +285,7 @@ impl MessageHandler<message::SetConfig<api::remote_access::Config>> for Service 
 
 #[async_trait]
 impl MessageHandler<message::GetConfig> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetConfig,
-    ) -> Result<api::remote_access::Config, Error> {
+    async fn handle(&mut self, _message: message::GetConfig) -> Result<api::access::Config, Error> {
         // FIXME: remember what is set and what not
         Ok(self.state.user_config.clone())
     }
@@ -319,7 +316,7 @@ impl MessageHandler<message::Finish> for Service {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use agama_utils::api::remote_access::AccessEnum;
+    use agama_utils::api::access::AccessValue;
     use tokio::sync::broadcast;
 
     fn create_test_state() -> State {
@@ -341,7 +338,7 @@ mod tests {
 
         // Add a module requesting SSH
         let mut module_config = Config::default();
-        module_config.ssh = Some(AccessEnum::Enabled);
+        module_config.ssh = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("users".to_string(), module_config);
@@ -355,39 +352,39 @@ mod tests {
         let mut state = create_test_state();
 
         // User explicitly enables SSH
-        state.user_config.ssh = Some(AccessEnum::Enabled);
+        state.user_config.ssh = Some(AccessValue::Enabled);
         assert!(state.is_ssh_enabled());
 
         // Module config asks for it, but user already enabled it
         let mut module_config = Config::default();
-        module_config.ssh = Some(AccessEnum::Enabled);
+        module_config.ssh = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("users".to_string(), module_config.clone());
         assert!(state.is_ssh_enabled());
 
         // User explicitly disables SSH (sets to Default)
-        state.user_config.ssh = Some(AccessEnum::Default);
+        state.user_config.ssh = Some(AccessValue::Default);
         // User config overrides module config
         assert!(!state.is_ssh_enabled());
     }
 
     #[test]
-    fn test_is_cockpit_enabled() {
+    fn test_is_web_console_enabled() {
         let mut state = create_test_state();
 
-        assert!(!state.is_cockpit_enabled());
+        assert!(!state.is_web_console_enabled());
 
         let mut module_config = Config::default();
-        module_config.cockpit = Some(AccessEnum::Enabled);
+        module_config.web_console = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("storage".to_string(), module_config);
 
-        assert!(state.is_cockpit_enabled());
+        assert!(state.is_web_console_enabled());
 
-        state.user_config.cockpit = Some(AccessEnum::Default);
-        assert!(!state.is_cockpit_enabled());
+        state.user_config.web_console = Some(AccessValue::Default);
+        assert!(!state.is_web_console_enabled());
     }
 
     #[test]
@@ -396,21 +393,21 @@ mod tests {
 
         // Initially both are Default
         let ext_config = state.extended_config();
-        assert_eq!(ext_config.ssh, AccessEnum::Default);
-        assert_eq!(ext_config.cockpit, AccessEnum::Default);
+        assert_eq!(ext_config.ssh, AccessValue::Default);
+        assert_eq!(ext_config.web_console, AccessValue::Default);
 
         // Enable SSH via module config
         let mut module_config = Config::default();
-        module_config.ssh = Some(AccessEnum::Enabled);
+        module_config.ssh = Some(AccessValue::Enabled);
         state
             .agama_config
             .insert("users".to_string(), module_config);
 
-        // Enable Cockpit via user config
-        state.user_config.cockpit = Some(AccessEnum::Enabled);
+        // Enable Web Console via user config
+        state.user_config.web_console = Some(AccessValue::Enabled);
 
         let ext_config = state.extended_config();
-        assert_eq!(ext_config.ssh, AccessEnum::Enabled);
-        assert_eq!(ext_config.cockpit, AccessEnum::Enabled);
+        assert_eq!(ext_config.ssh, AccessValue::Enabled);
+        assert_eq!(ext_config.web_console, AccessValue::Enabled);
     }
 }

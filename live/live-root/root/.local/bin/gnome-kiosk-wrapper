@@ -13,4 +13,7 @@ if gnome-kiosk --help 2> /dev/null | grep -q 'enable-vt-switch'; then
     OPTS="--enable-vt-switch";
 fi;
 
-exec /usr/bin/gnome-kiosk $OPTS
+# run in unsafe mode to allow taking screenshots (additionally it allows DBus
+# introspection), as nothing else is running besides Agama and you need root
+# permissions to talk to the DBus session then it actually is not that unsafe
+exec /usr/bin/gnome-kiosk --unsafe-mode $OPTS

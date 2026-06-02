@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun  1 14:35:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "agama-screenshot" helper script to take screenshots
+  of the locally running Agama installer
+  (gh#agama-project/agama#3537)
+
+-------------------------------------------------------------------
 Mon May 25 15:25:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Enable back ignition and combustion, apply a workaround for

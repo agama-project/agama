@@ -42,6 +42,7 @@ use serde::{Deserialize, Serialize};
 #[strum(serialize_all = "camelCase")]
 #[serde(rename_all = "camelCase")]
 pub enum Scope {
+    Access,
     Bootloader,
     Manager,
     Network,
@@ -51,7 +52,6 @@ pub enum Scope {
     Product,
     Proxy,
     Questions,
-    RemoteAccess,
     Security,
     Software,
     Storage,

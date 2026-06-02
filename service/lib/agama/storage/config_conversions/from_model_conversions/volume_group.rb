@@ -80,6 +80,7 @@ module Agama
               search:                      convert_search,
               extent_size:                 convert_extent_size,
               physical_volumes_devices:    convert_physical_volumes_devices,
+              physical_volumes_policy:     convert_physical_volumes_policy,
               physical_volumes_encryption: convert_physical_volumes_encryption,
               logical_volumes:             convert_volumes
             }
@@ -101,6 +102,16 @@ module Agama
             target_names
               .map { |n| target(n)&.ensure_alias }
               .compact
+          end
+
+          # @return [:use_needed, :use_available]
+          def convert_physical_volumes_policy
+            value = volume_group_model[:targetDevicesPolicy]
+
+            {
+              "useNeeded"    => :use_needed,
+              "useAvailable" => :use_available
+            }[value] || :use_available
           end
 
           # @return [Configs::Encryption, nil]
