@@ -92,10 +92,21 @@ fn output_dir() -> std::io::Result<PathBuf> {
     Ok(out_dir)
 }
 
+fn print_help() {
+    println!("Usage: cargo xtask <task>");
+    println!("\nTasks:");
+    println!("  completions    Generate auto-completion snippets for common shells");
+    println!("  markdown       Generate Agama's CLI documentation in markdown format");
+    println!("  manpages       Generate Agama's CLI man pages");
+    println!("  openapi        Generate Agama's OpenAPI specification");
+    println!("  help           Print this help message");
+}
+
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     let Some(task) = env::args().nth(1) else {
         eprintln!("You must specify a xtask");
+        print_help();
         std::process::exit(1);
     };
 
@@ -104,8 +115,13 @@ async fn main() -> std::io::Result<()> {
         "markdown" => tasks::generate_markdown(),
         "manpages" => tasks::generate_manpages(),
         "openapi" => tasks::generate_openapi().await,
+        "help" | "-h" | "--help" => {
+            print_help();
+            Ok(())
+        }
         other => {
             eprintln!("Unknown task '{}'", other);
+            print_help();
             std::process::exit(1);
         }
     }
