@@ -26,60 +26,6 @@
 //! - Dependency management between tasks
 //! - Event notifications via channels
 //! - Task querying and filtering
-//!
-//! # Example
-//!
-//! ```no_run
-//! use tasks::manager::{TaskManager, TaskEvent};
-//! use tokio::time::{sleep, Duration};
-//!
-//! #[tokio::main]
-//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let manager = TaskManager::new();
-//!     let mut events = manager.take_event_receiver().await.unwrap();
-//!
-//!     // Spawn event handler
-//!     tokio::spawn(async move {
-//!         while let Some(event) = events.recv().await {
-//!             match event {
-//!                 TaskEvent::Started { id, metadata } => {
-//!                     println!("Task {} started: {}", id, metadata.name);
-//!                 }
-//!                 TaskEvent::Completed { id, result, .. } => {
-//!                     println!("Task {} completed: {:?}", id, result);
-//!                 }
-//!             }
-//!         }
-//!     });
-//!
-//!     // Create tasks with dependencies
-//!     let download = manager
-//!         .task("download", "Download data from API")
-//!         .tag("network")
-//!         .run(|| async {
-//!             sleep(Duration::from_millis(100)).await;
-//!             Ok(())
-//!         })
-//!         .await;
-//!
-//!     let process = manager
-//!         .task("process", "Process downloaded data")
-//!         .tag("processing")
-//!         .depends_on(download)
-//!         .run(|| async {
-//!             sleep(Duration::from_millis(100)).await;
-//!             Ok(())
-//!         })
-//!         .await;
-//!
-//!     // Query tasks by tag
-//!     sleep(Duration::from_millis(300)).await;
-//!     let network_tasks = manager.get_tasks_by_tag("network").await;
-//!     println!("Found {} network tasks", network_tasks.len());
-//!
-//!     Ok(())
-//! }
-//! ```
 
 use agama_utils::api::Scope;
 use std::collections::{HashMap, HashSet};
@@ -97,27 +43,9 @@ pub type TaskId = usize;
 ///
 /// Since Rust doesn't allow implementing `From<E>` for all error types (it conflicts with
 /// the reflexive `From<T> for T`), this type provides the `from_error` constructor method
-/// for explicit conversion, and specific `From` implementations for common error types.
+/// for explicit conversion.
 ///
-/// # Example
-///
-/// ```ignore
-/// task_manager
-///     .task("example", "Example task")
-///     .run(|| async move {
-///         // Use ? with map_err for explicit conversion
-///         some_operation().await.map_err(TaskError::from_error)?;
-///         another_operation().await.map_err(TaskError::from_error)?;
-///         Ok(())
-///     })
-///     .await;
-/// ```
-///
-/// # Note on From implementation
-///
-/// We cannot implement `From<E> for TaskError` for all `E: Error + Send + 'static` because
-/// it conflicts with Rust's blanket `impl<T> From<T> for T`. Instead, we provide `from_error`
-/// as a constructor method and implement `From` for specific error types as needed.
+/// Use `.map_err(TaskError::from_error)` to convert errors in task closures.
 #[derive(Debug)]
 pub struct TaskError(Box<dyn std::error::Error + Send>);
 
@@ -125,12 +53,6 @@ impl TaskError {
     /// Converts any error type into a TaskError.
     ///
     /// This method can be used with `.map_err()` to convert errors in task closures.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// handler.call(message).await.map_err(TaskError::from_error)?;
-    /// ```
     pub fn from_error<E: std::error::Error + Send + 'static>(e: E) -> Self {
         TaskError(Box::new(e))
     }
@@ -151,28 +73,12 @@ impl std::error::Error for TaskError {
 /// Result type returned by task execution.
 ///
 /// Tasks return `Ok(())` on success or a [`TaskError`] on failure.
-/// The `?` operator can be used directly with any error type in task closures
-/// thanks to the `From` implementation on `TaskError`.
 pub type TaskResult = Result<(), TaskError>;
 
 /// Metadata describing a task.
 ///
 /// Contains human-readable information about a task including its name,
 /// description, and optional tags for categorization.
-///
-/// # Example
-///
-/// ```
-/// use tasks::manager::TaskMetadata;
-///
-/// let mut metadata = TaskMetadata::new("backup-db", Scope::Manager, "Backup database to S3");
-/// metadata.add_tag("backup");
-/// metadata.add_tag("critical");
-///
-/// assert_eq!(metadata.name, "backup-db");
-/// assert_eq!(metadata.description, "Backup database to S3");
-/// assert_eq!(metadata.tags, vec!["backup", "critical"]);
-/// ```
 #[derive(Debug, Clone)]
 pub struct TaskMetadata {
     /// Short name identifying the task (e.g., "backup-db")
@@ -187,17 +93,6 @@ pub struct TaskMetadata {
 
 impl TaskMetadata {
     /// Create new task metadata with a name and description.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use tasks::manager::TaskMetadata;
-    ///
-    /// let metadata = TaskMetadata::new("process-data", "Process user data");
-    /// assert_eq!(metadata.name, "process-data");
-    /// assert_eq!(metadata.description, "Process user data");
-    /// assert!(metadata.tags.is_empty());
-    /// ```
     pub fn new(name: impl Into<String>, scope: Scope, description: impl Into<String>) -> Self {
         Self {
             name: name.into(),
@@ -210,17 +105,6 @@ impl TaskMetadata {
     /// Add a tag to the metadata.
     ///
     /// Tags can be used to categorize tasks and filter them later.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use tasks::manager::TaskMetadata;
-    ///
-    /// let mut metadata = TaskMetadata::new("backup", "Backup files");
-    /// metadata.add_tag("storage");
-    /// metadata.add_tag("critical");
-    /// assert_eq!(metadata.tags, vec!["storage", "critical"]);
-    /// ```
     pub fn add_tag(&mut self, tag: impl Into<String>) {
         self.tags.push(tag.into());
     }
@@ -274,32 +158,6 @@ struct TaskManagerState {
 ///
 /// `TaskManager` is `Clone` and can be shared across threads. All clones
 /// share the same underlying state via `Arc`.
-///
-/// # Example
-///
-/// ```no_run
-/// use tasks::manager::{TaskManager, TaskEvent};
-///
-/// #[tokio::main]
-/// async fn main() {
-///     let manager = TaskManager::new();
-///     let mut events = manager.take_event_receiver().await.unwrap();
-///
-///     // Handle events
-///     tokio::spawn(async move {
-///         while let Some(event) = events.recv().await {
-///             // Process event
-///         }
-///     });
-///
-///     // Create task
-///     let task_id = manager
-///         .task("my-task", "Description of my task")
-///         .tag("important")
-///         .run(|| async { Ok(()) })
-///         .await;
-/// }
-/// ```
 pub struct TaskManager {
     state: Arc<RwLock<TaskManagerState>>,
     event_rx: Arc<RwLock<Option<mpsc::UnboundedReceiver<TaskEvent>>>>,
@@ -309,24 +167,6 @@ pub struct TaskManager {
 ///
 /// Created by [`TaskManager::task`]. Use this to add tags, dependencies,
 /// and finally execute the task with [`run`](TaskBuilder::run).
-///
-/// # Example
-///
-/// ```no_run
-/// use tasks::manager::TaskManager;
-///
-/// #[tokio::main]
-/// async fn main() {
-///     let manager = TaskManager::new();
-///
-///     let task_id = manager
-///         .task("process", "Process data")
-///         .tag("processing")
-///         .tag("high-priority")
-///         .run(|| async { Ok(()) })
-///         .await;
-/// }
-/// ```
 pub struct TaskBuilder {
     manager: TaskManager,
     metadata: TaskMetadata,
@@ -335,14 +175,6 @@ pub struct TaskBuilder {
 
 impl TaskManager {
     /// Create a new task manager.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use tasks::manager::TaskManager;
-    ///
-    /// let manager = TaskManager::new();
-    /// ```
     pub fn new() -> Self {
         let (event_tx, event_rx) = mpsc::unbounded_channel();
 
@@ -369,23 +201,6 @@ impl TaskManager {
     ///
     /// * `name` - Short identifier for the task (e.g., "backup-db")
     /// * `description` - Human-readable description of what the task does
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///
-    ///     let task = manager
-    ///         .task("backup", Scope::Manager, "Backup database to S3")
-    ///         .tag("backup")
-    ///         .run(|| async { Ok(()) })
-    ///         .await;
-    /// }
-    /// ```
     pub fn task(
         &self,
         name: impl Into<String>,
@@ -476,31 +291,6 @@ impl TaskManager {
     ///
     /// Can only be called once. Returns `None` if already called.
     /// Use this to receive events from all tasks.
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::{TaskManager, TaskEvent};
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///     let mut events = manager.take_event_receiver().await.unwrap();
-    ///
-    ///     tokio::spawn(async move {
-    ///         while let Some(event) = events.recv().await {
-    ///             match event {
-    ///                 TaskEvent::Started { id, metadata } => {
-    ///                     println!("Task {}: {}", id, metadata.name);
-    ///                 }
-    ///                 TaskEvent::Completed { id, result, .. } => {
-    ///                     println!("Task {} done: {:?}", id, result);
-    ///                 }
-    ///             }
-    ///         }
-    ///     });
-    /// }
-    /// ```
     pub async fn take_event_receiver(&self) -> Option<mpsc::UnboundedReceiver<TaskEvent>> {
         self.event_rx.write().await.take()
     }
@@ -508,48 +298,12 @@ impl TaskManager {
     /// Check if a task has completed.
     ///
     /// Returns `true` if the task has finished executing (successfully or not).
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///     let task_id = manager
-    ///         .task("test", "Test task")
-    ///         .run(|| async { Ok(()) })
-    ///         .await;
-    ///
-    ///     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
-    ///
-    ///     if manager.is_task_completed(task_id).await {
-    ///         println!("Task completed!");
-    ///     }
-    /// }
-    /// ```
     pub async fn is_task_completed(&self, task_id: TaskId) -> bool {
         let state = self.state.read().await;
         state.completed.contains(&task_id)
     }
 
     /// Get the number of completed tasks.
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///     // ... create and run tasks ...
-    ///
-    ///     let count = manager.completed_count().await;
-    ///     println!("Completed {} tasks", count);
-    /// }
-    /// ```
     pub async fn completed_count(&self) -> usize {
         let state = self.state.read().await;
         state.completed.len()
@@ -558,25 +312,6 @@ impl TaskManager {
     /// Get metadata for a specific task.
     ///
     /// Returns `None` if the task ID doesn't exist or hasn't been registered yet.
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///     let task_id = manager
-    ///         .task("backup", "Backup database")
-    ///         .run(|| async { Ok(()) })
-    ///         .await;
-    ///
-    ///     if let Some(metadata) = manager.get_metadata(task_id).await {
-    ///         println!("Task: {} - {}", metadata.name, metadata.description);
-    ///     }
-    /// }
-    /// ```
     pub async fn get_metadata(&self, task_id: TaskId) -> Option<TaskMetadata> {
         let state = self.state.read().await;
         state.metadata.get(&task_id).cloned()
@@ -585,22 +320,6 @@ impl TaskManager {
     /// Get metadata for all tasks.
     ///
     /// Returns a vector of `(TaskId, TaskMetadata)` tuples for all registered tasks.
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///     // ... create tasks ...
-    ///
-    ///     for (id, metadata) in manager.get_all_metadata().await {
-    ///         println!("[{}] {}: {}", id, metadata.name, metadata.description);
-    ///     }
-    /// }
-    /// ```
     pub async fn get_all_metadata(&self) -> Vec<(TaskId, TaskMetadata)> {
         let state = self.state.read().await;
         state
@@ -614,30 +333,6 @@ impl TaskManager {
     ///
     /// Returns a vector of `(TaskId, TaskMetadata)` tuples for tasks
     /// that include the specified tag.
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use agama_utils::api::Scope;
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///
-    ///     manager
-    ///         .task("backup-db", Scope::Manager, "Backup database")
-    ///         .tag("backup")
-    ///         .tag("critical")
-    ///         .run(|| async { Ok(()) })
-    ///         .await;
-    ///
-    ///     // Find all critical tasks
-    ///     for (id, metadata) in manager.get_tasks_by_tag("critical").await {
-    ///         println!("Critical: {} - {}", metadata.name, metadata.description);
-    ///     }
-    /// }
-    /// ```
     pub async fn get_tasks_by_tag(&self, tag: &str) -> Vec<(TaskId, TaskMetadata)> {
         let state = self.state.read().await;
         state
@@ -669,25 +364,6 @@ impl TaskBuilder {
     ///
     /// Tags can be used to categorize tasks and filter them later using
     /// [`TaskManager::get_tasks_by_tag`].
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///
-    ///     manager
-    ///         .task("process", Scope::Manager, "Process data")
-    ///         .tag("processing")
-    ///         .tag("high-priority")
-    ///         .tag("batch")
-    ///         .run(|| async { Ok(()) })
-    ///         .await;
-    /// }
-    /// ```
     pub fn tag(mut self, tag: impl Into<String>) -> Self {
         self.metadata.add_tag(tag);
         self
@@ -697,28 +373,6 @@ impl TaskBuilder {
     ///
     /// This task will not start executing until the specified task has completed.
     /// Multiple dependencies can be added by calling this method multiple times.
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///
-    ///     let download = manager
-    ///         .task("download", "Download data")
-    ///         .run(|| async { Ok(()) })
-    ///         .await;
-    ///
-    ///     let process = manager
-    ///         .task("process", "Process data")
-    ///         .depends_on(download)  // Wait for download to complete
-    ///         .run(|| async { Ok(()) })
-    ///         .await;
-    /// }
-    /// ```
     pub fn depends_on(mut self, task_id: TaskId) -> Self {
         self.dependencies.push(task_id);
         self
@@ -734,28 +388,6 @@ impl TaskBuilder {
     ///
     /// * `F` - Closure that returns a future
     /// * `Fut` - Future that resolves to [`TaskResult`]
-    ///
-    /// # Example
-    ///
-    /// ```no_run
-    /// use tasks::manager::TaskManager;
-    ///
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     let manager = TaskManager::new();
-    ///
-    ///     let task_id = manager
-    ///         .task("work", "Do some work")
-    ///         .run(|| async {
-    ///             // Perform work here
-    ///             println!("Working...");
-    ///             Ok(())
-    ///         })
-    ///         .await;
-    ///
-    ///     println!("Spawned task {}", task_id);
-    /// }
-    /// ```
     pub async fn run<F, Fut>(self, work: F) -> TaskId
     where
         F: FnOnce() -> Fut + Send + 'static,
@@ -766,5 +398,60 @@ impl TaskBuilder {
             .spawn_task(task_id, self.metadata, self.dependencies, work)
             .await;
         task_id
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_task_metadata_new() {
+        let metadata = TaskMetadata::new("process-data", Scope::Manager, "Process user data");
+        assert_eq!(metadata.name, "process-data");
+        assert_eq!(metadata.scope, Scope::Manager);
+        assert_eq!(metadata.description, "Process user data");
+        assert!(metadata.tags.is_empty());
+    }
+
+    #[test]
+    fn test_task_metadata_add_tag() {
+        let mut metadata = TaskMetadata::new("backup", Scope::Storage, "Backup files");
+        metadata.add_tag("storage");
+        metadata.add_tag("critical");
+        assert_eq!(metadata.tags, vec!["storage", "critical"]);
+    }
+
+    #[test]
+    fn test_task_metadata_with_multiple_tags() {
+        let mut metadata = TaskMetadata::new("backup-db", Scope::Manager, "Backup database to S3");
+        metadata.add_tag("backup");
+        metadata.add_tag("critical");
+
+        assert_eq!(metadata.name, "backup-db");
+        assert_eq!(metadata.description, "Backup database to S3");
+        assert_eq!(metadata.scope, Scope::Manager);
+        assert_eq!(metadata.tags, vec!["backup", "critical"]);
+    }
+
+    #[test]
+    fn test_task_error_from_error() {
+        use std::io;
+
+        let io_error = io::Error::new(io::ErrorKind::NotFound, "file not found");
+        let task_error = TaskError::from_error(io_error);
+
+        assert_eq!(task_error.to_string(), "file not found");
+    }
+
+    #[test]
+    fn test_task_error_display() {
+        use std::io;
+
+        let io_error = io::Error::new(io::ErrorKind::PermissionDenied, "access denied");
+        let task_error = TaskError::from_error(io_error);
+
+        let display_string = format!("{}", task_error);
+        assert_eq!(display_string, "access denied");
     }
 }
