@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri May 29 09:47:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
-- Add "remoteAccess" key to profile to allow after installation
+- Add "access" key to profile to allow after installation
   remote access via ssh or cockpit (jsc#AGM-151)
 
 -------------------------------------------------------------------

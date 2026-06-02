@@ -37,25 +37,25 @@ pub enum AccessEnum {
 /// Remote Access configuration
 #[derive(Clone, Debug, Default, Serialize, Deserialize, Merge, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "remoteAccess.Config")]
+#[schemars(rename = "access.Config")]
 pub struct Config {
     /// Remote access to SSH
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
     pub ssh: Option<AccessEnum>,
-    /// Remote access to Cockpit
+    /// Remote access to Web Console
     #[serde(skip_serializing_if = "Option::is_none")]
     #[merge(strategy = merge::option::overwrite_none)]
-    pub cockpit: Option<AccessEnum>,
+    pub web_console: Option<AccessEnum>,
 }
 
 /// Remote Access extended configuration that is resolved
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-#[schemars(rename = "remoteAccess.ExtendedConfig")]
+#[schemars(rename = "access.ExtendedConfig")]
 pub struct ExtendedConfig {
     /// Remote access to SSH
     pub ssh: AccessEnum,
-    /// Remote access to Cockpit
-    pub cockpit: AccessEnum,
+    /// Remote access to Web Console
+    pub web_console: AccessEnum,
 }

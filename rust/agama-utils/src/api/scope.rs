@@ -48,7 +48,7 @@ pub enum Scope {
     Hostname,
     L10n,
     Product,
-    RemoteAccess,
+    Access,
     Software,
     Storage,
     Files,
