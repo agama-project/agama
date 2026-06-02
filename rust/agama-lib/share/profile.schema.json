@@ -1,4 +1,4 @@
-{
+
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json",
   "title": "Profile",
@@ -98,9 +98,9 @@
         }
       ]
     },
-    "dasd": { "$ref": "dasd.schema.json" },
+    "dasd": { "$ref": "../../share/dasd.schema.json" },
     "zfcp": {
-      "$ref": "zfcp.schema.json"
+      "$ref": "../../share/zfcp.schema.json"
     },
     "hostname": {
       "title": "Hostname settings",
@@ -856,7 +856,7 @@
       }
     },
     "storage": {
-      "$ref": "storage.schema.json"
+      "$ref": "../../share/storage.schema.json"
     },
     "legacyAutoyastStorage": {
       "title": "Legacy AutoYaST storage settings",
@@ -867,7 +867,7 @@
       }
     },
     "iscsi": {
-      "$ref": "iscsi.schema.json"
+      "$ref": "../../share/iscsi.schema.json"
     },
     "access": {
       "description": "Allows to explicitly specify how machine has to be accessed after installation.",
