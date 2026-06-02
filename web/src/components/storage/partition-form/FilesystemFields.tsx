@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { unique } from "radashi";
 import { sprintf } from "sprintf-js";
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
@@ -186,7 +186,9 @@ const FilesystemFieldsContent = withForm({
     const currentFsType = selectedPartition?.filesystem?.type;
     const hasFilesystem = !!currentFsType;
 
-    const usableFilesystems = React.useMemo(() => {
+    // Memoized because it's used as a useEffect dependency below. Without memoization,
+    // the effect would re-run on every render (new array reference each time).
+    const usableFilesystems = useMemo(() => {
       const volumeFilesystems = volume.outline.fsTypes || [];
       return unique([defaultFilesystem, ...volumeFilesystems]);
     }, [volume, defaultFilesystem]);
@@ -198,7 +200,7 @@ const FilesystemFieldsContent = withForm({
 
     const filesystemOptions: Array<
       { value: string; label: React.ReactNode; description?: React.ReactNode } | { divider: true }
-    > = React.useMemo(() => {
+    > = useMemo(() => {
       const formatOptions = [
         { value: FILESYSTEM_TYPE.AUTO, label: _("Default") },
         ...usableFilesystems.map((fs) => ({ value: fs, label: filesystemLabel(fs) })),
@@ -228,33 +230,13 @@ const FilesystemFieldsContent = withForm({
       return formatOptions;
     }, [usableFilesystems, canKeepCurrentFilesystem, currentFsType, device]);
 
-    // When user selects a different partition, initialize filesystem field appropriately
-    const previousNameRef = React.useRef(name);
-    useEffect(() => {
-      // Only run when partition selection actually changes
-      if (previousNameRef.current === name) return;
-      previousNameRef.current = name;
-
-      if (!isReuse) {
-        // Switched to new partition - reset to AUTO
-        form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
-      } else if (canKeepCurrentFilesystem) {
-        // Switched to existing partition with compatible filesystem - default to REUSE
-        form.setFieldValue("filesystem", FILESYSTEM_ACTION.REUSE);
-      } else {
-        // Switched to existing partition without/incompatible filesystem - set to AUTO
-        form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
-      }
-    }, [name, isReuse, canKeepCurrentFilesystem, form]);
-
-    // Check filesystem compatibility when usable filesystems change
+    // Auto-reset filesystem to Default when it becomes incompatible with the mount point.
+    // Example: user selects XFS, then changes mount point to "swap" (which only supports swap fs).
     useEffect(() => {
       if (filesystem === FILESYSTEM_TYPE.AUTO) return;
       if (filesystem === FILESYSTEM_ACTION.REUSE) return;
       if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;
 
-      // Current filesystem is not compatible with the mount point.
-      // Reset to AUTO (Default)
       form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
     }, [usableFilesystems, filesystem, form]);
 

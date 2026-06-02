@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
@@ -352,7 +352,8 @@ function PartitionFormContent({
   const editPartition = useEditPartition();
 
   // Get used mount points for validation (excluding current when editing).
-  const usedMountPoints = React.useMemo(() => {
+  // Memoized to maintain stable array reference for form validators.
+  const usedMountPoints = useMemo(() => {
     if (!config) return [];
     const allUsed = configModel.usedMountPaths(config);
     const currentMountPoint = initialPartition?.mountPath;
