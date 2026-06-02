@@ -25,7 +25,7 @@
 //! - Dependency management between tasks
 //! - Event notifications via channels
 
-use agama_utils::api::Scope;
+use agama_utils::api::{self, Scope};
 use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::sync::Arc;
@@ -93,6 +93,16 @@ impl TaskMetadata {
             name: name.into(),
             scope,
             description: description.into(),
+        }
+    }
+}
+
+impl From<TaskMetadata> for api::status::Task {
+    fn from(value: TaskMetadata) -> Self {
+        Self {
+            name: value.name,
+            description: value.description,
+            scope: value.scope,
         }
     }
 }
