@@ -443,7 +443,7 @@ impl Starter {
         };
 
         service.setup().await?;
-        Ok(actor::spawn(service));
+        Ok(actor::spawn(service))
     }
 }
 
