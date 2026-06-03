@@ -91,10 +91,13 @@ mod tasks {
         use clap::Command;
         let cmd = Cli::command();
 
-        let out_dir = output_dir()?;
-        let path = out_dir.join("cli_strings.rs");
+        let path = std::path::PathBuf::from("agama-cli/src/cli_strings.rs");
         let mut file = std::fs::File::create(&path)?;
 
+        writeln!(
+            file,
+            "// NOTE: This file is generated. Run `cargo xtask cli-strings` to update it."
+        )?;
         writeln!(file, "fn dummy_cli_strings() {{")?;
 
         const SEPARATORS: &[&str] = &[".\n\n", "\n\n"];

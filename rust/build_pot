@@ -44,7 +44,7 @@ call_xgettext() {
     --keyword='i18n_format!'
 }
 
-# Generate strings from clap derive macros into out/cli_strings.rs
+# Generate strings from clap derive macros into agama-cli/src/cli_strings.rs
 cargo xtask cli-strings
 
 find . \
