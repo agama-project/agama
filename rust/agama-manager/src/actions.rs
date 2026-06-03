@@ -357,7 +357,7 @@ impl SetConfigAction {
         M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
         S::Error: std::error::Error + Send + 'static,
     {
-        let task_id = scope.to_string().to_lowercase();
+        let task_id = format!("{}_config", scope.to_string().to_lowercase());
 
         self.task_manager
             .task(&task_id, scope, description)
@@ -436,7 +436,7 @@ impl SetConfigAction {
 
         self.task_manager
             .task(
-                "storage",
+                "storage_config",
                 Scope::Storage,
                 &gettext("Preparing the storage proposal"),
             )
@@ -464,7 +464,7 @@ impl SetConfigAction {
 
         self.task_manager
             .task(
-                "software",
+                "software_config",
                 Scope::Software,
                 &gettext("Preparing the software proposal"),
             )
@@ -489,7 +489,11 @@ impl SetConfigAction {
         let bootloader_handler = self.bootloader.clone();
 
         self.task_manager
-            .task("selinux", Scope::Security, &gettext("Configuring SELinux"))
+            .task(
+                "selinux_config",
+                Scope::Security,
+                &gettext("Configuring SELinux"),
+            )
             .depends_on(&[depends_on])
             .run(move || async move {
                 let selinux_selected = software_handler
