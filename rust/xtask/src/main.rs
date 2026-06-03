@@ -97,6 +97,38 @@ mod tasks {
 
         writeln!(file, "fn dummy_cli_strings() {{")?;
 
+        fn write_extracted_strings(
+            file: &mut std::fs::File,
+            context: &str,
+            short: Option<String>,
+            long: Option<String>,
+        ) -> std::io::Result<()> {
+            if let Some(ref s) = short {
+                writeln!(file, "    // TRANSLATORS: command: {}", context)?;
+                writeln!(file, "    gettext_noop!({:?});", s)?;
+            }
+            if let Some(ref l) = long {
+                if let Some(ref s) = short {
+                    if l.starts_with(s) && l != s {
+                        let suffix = &l[s.len()..];
+                        writeln!(
+                            file,
+                            "    // TRANSLATORS: command: {} (long suffix)",
+                            context
+                        )?;
+                        writeln!(file, "    gettext_noop!({:?});", suffix)?;
+                    } else if l != s {
+                        writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
+                        writeln!(file, "    gettext_noop!({:?});", l)?;
+                    }
+                } else {
+                    writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
+                    writeln!(file, "    gettext_noop!({:?});", l)?;
+                }
+            }
+            Ok(())
+        }
+
         fn extract_strings(
             cmd: &Command,
             file: &mut std::fs::File,
@@ -109,29 +141,7 @@ mod tasks {
             let about = cmd.get_about().map(|a| a.to_string());
             let long_about = cmd.get_long_about().map(|a| a.to_string());
 
-            if let Some(ref ab) = about {
-                writeln!(file, "    // TRANSLATORS: command: {}", context)?;
-                writeln!(file, "    gettext_noop!({:?});", ab)?;
-            }
-            if let Some(ref lab) = long_about {
-                if let Some(ref ab) = about {
-                    if lab.starts_with(ab) && lab != ab {
-                        let suffix = &lab[ab.len()..];
-                        writeln!(
-                            file,
-                            "    // TRANSLATORS: command: {} (long suffix)",
-                            context
-                        )?;
-                        writeln!(file, "    gettext_noop!({:?});", suffix)?;
-                    } else if lab != ab {
-                        writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
-                        writeln!(file, "    gettext_noop!({:?});", lab)?;
-                    }
-                } else {
-                    writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
-                    writeln!(file, "    gettext_noop!({:?});", lab)?;
-                }
-            }
+            write_extracted_strings(file, &context, about, long_about)?;
 
             fn format_arg(arg: &clap::Arg) -> String {
                 use std::fmt::Write;
@@ -160,42 +170,9 @@ mod tasks {
                 let arg_name = format_arg(arg);
                 let help = arg.get_help().map(|h| h.to_string());
                 let long_help = arg.get_long_help().map(|h| h.to_string());
+                let arg_context = format!("{} {}", context, arg_name);
 
-                if let Some(ref hp) = help {
-                    writeln!(
-                        file,
-                        "    // TRANSLATORS: command: {} {}",
-                        context, arg_name
-                    )?;
-                    writeln!(file, "    gettext_noop!({:?});", hp)?;
-                }
-                if let Some(ref lhp) = long_help {
-                    if let Some(ref hp) = help {
-                        if lhp.starts_with(hp) && lhp != hp {
-                            let suffix = &lhp[hp.len()..];
-                            writeln!(
-                                file,
-                                "    // TRANSLATORS: command: {} {} (long suffix)",
-                                context, arg_name
-                            )?;
-                            writeln!(file, "    gettext_noop!({:?});", suffix)?;
-                        } else if lhp != hp {
-                            writeln!(
-                                file,
-                                "    // TRANSLATORS: command: {} {} (long)",
-                                context, arg_name
-                            )?;
-                            writeln!(file, "    gettext_noop!({:?});", lhp)?;
-                        }
-                    } else {
-                        writeln!(
-                            file,
-                            "    // TRANSLATORS: command: {} {} (long)",
-                            context, arg_name
-                        )?;
-                        writeln!(file, "    gettext_noop!({:?});", lhp)?;
-                    }
-                }
+                write_extracted_strings(file, &arg_context, help, long_help)?;
             }
 
             for subcmd in cmd.get_subcommands() {
