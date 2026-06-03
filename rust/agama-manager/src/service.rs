@@ -19,8 +19,10 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    actions::FinishAction, bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n,
-    message, network, ntp, proxy, s390, security, software, storage, task_manager::TaskManager,
+    actions::FinishAction,
+    bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n, message, network, ntp, proxy,
+    s390, security, software, storage,
+    task_manager::{self, TaskManager},
     tasks, users,
 };
 use agama_users::PasswordCheckResult;
@@ -655,7 +657,11 @@ impl Actor for Service {
 impl MessageHandler<progress::message::GetStatus> for Service {
     /// It returns the status of the installation.
     async fn handle(&mut self, message: progress::message::GetStatus) -> Result<Status, Error> {
-        let status = self.progress.call(message).await?;
+        let tasks = self.task_manager.get_all_metadata().await;
+        // TODO: drop status from progress service. The stage should be kept by the manager.
+        let mut status = self.progress.call(message).await?;
+        status.tasks = tasks.into_iter().map(|(_, m)| m.into()).collect();
+
         Ok(status)
     }
 }
