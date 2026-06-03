@@ -29,7 +29,7 @@ async fn main() -> CliResult {
     _ = l10n_helpers::init_locale();
 
     let mut cmd = Cli::command();
-    cmd = translate::translate_command(cmd);
+    cmd = translate::translate_command(&translate::GettextTranslator, cmd);
 
     let matches = cmd.get_matches();
     let cli = Cli::from_arg_matches(&matches).unwrap_or_else(|err| err.exit());

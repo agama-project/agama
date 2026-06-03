@@ -30,30 +30,46 @@ fn split_by_separator<'a>(short: &str, long: &'a str) -> Option<(&'static str, &
     None
 }
 
+/// A trait representing string translation capability.
+pub trait Translator {
+    /// Translates a given string.
+    fn translate(&self, s: &str) -> String;
+}
+
+/// Production implementation of `Translator` using `gettextrs::gettext`.
+pub struct GettextTranslator;
+
+impl Translator for GettextTranslator {
+    fn translate(&self, s: &str) -> String {
+        gettextrs::gettext(s)
+    }
+}
+
 /// Translates the short and long help/about strings, splitting the long description
 /// into a prefix and suffix if it starts with the short prefix, translating them separately,
 /// and recombining the translated parts to prevent redundant translation work.
-pub fn translate_help_strings(
+pub fn translate_help_strings<T: Translator>(
+    translator: &T,
     short: Option<String>,
     long: Option<String>,
 ) -> (Option<String>, Option<String>) {
-    use gettextrs::gettext;
-
-    let trans_short = short.as_ref().map(gettext);
+    let trans_short = short.as_ref().map(|s| translator.translate(s));
 
     let trans_long = if let Some(ref l) = long {
         if let Some(ref s) = short {
             if let Some((sep, suffix)) = split_by_separator(s, l) {
-                let trans_prefix = trans_short.clone().unwrap_or_else(|| gettext(s));
-                let trans_suffix = gettext(suffix);
+                let trans_prefix = trans_short
+                    .clone()
+                    .unwrap_or_else(|| translator.translate(s));
+                let trans_suffix = translator.translate(suffix);
                 Some(format!("{}{}{}", trans_prefix, sep, trans_suffix))
             } else if l != s {
-                Some(gettext(l))
+                Some(translator.translate(l))
             } else {
                 trans_short.clone()
             }
         } else {
-            Some(gettext(l))
+            Some(translator.translate(l))
         }
     } else {
         None
@@ -64,11 +80,11 @@ pub fn translate_help_strings(
 
 /// Recursively iterates through a `clap::Command` tree, translating command
 /// and argument help/about strings via `translate_help_strings`.
-pub fn translate_command(mut cmd: clap::Command) -> clap::Command {
+pub fn translate_command<T: Translator>(translator: &T, mut cmd: clap::Command) -> clap::Command {
     let about = cmd.get_about().map(|a| a.to_string());
     let long_about = cmd.get_long_about().map(|a| a.to_string());
 
-    let (trans_about, trans_long_about) = translate_help_strings(about, long_about);
+    let (trans_about, trans_long_about) = translate_help_strings(translator, about, long_about);
 
     if let Some(tab) = trans_about {
         cmd = cmd.about(tab);
@@ -84,7 +100,7 @@ pub fn translate_command(mut cmd: clap::Command) -> clap::Command {
         let help = new_arg.get_help().map(|h| h.to_string());
         let long_help = new_arg.get_long_help().map(|h| h.to_string());
 
-        let (trans_help, trans_long_help) = translate_help_strings(help, long_help);
+        let (trans_help, trans_long_help) = translate_help_strings(translator, help, long_help);
 
         if let Some(thp) = trans_help {
             new_arg = new_arg.help(thp);
@@ -103,7 +119,7 @@ pub fn translate_command(mut cmd: clap::Command) -> clap::Command {
 
     let mut subcommands = Vec::new();
     for subcmd in cmd.get_subcommands() {
-        subcommands.push(translate_command(subcmd.clone()));
+        subcommands.push(translate_command(translator, subcmd.clone()));
     }
 
     for subcmd in subcommands {
@@ -119,6 +135,14 @@ mod tests {
     use super::*;
     use clap::{Arg, Command};
 
+    struct MockTranslator;
+
+    impl Translator for MockTranslator {
+        fn translate(&self, s: &str) -> String {
+            format!("Tr({})", s)
+        }
+    }
+
     #[test]
     fn test_translate_command_split_recombine() {
         let cmd = Command::new("test-cmd")
@@ -128,15 +152,18 @@ mod tests {
                 Arg::new("test-arg")
                     .long("test")
                     .help("Short arg help")
-                    .long_help("Short arg help\n\nLong arg suffix"),
+                    .long_help("Short arg help.\n\nLong arg suffix"),
             );
 
-        let translated = translate_command(cmd);
+        let translated = translate_command(&MockTranslator, cmd);
 
-        assert_eq!(translated.get_about().unwrap().to_string(), "Short prefix");
+        assert_eq!(
+            translated.get_about().unwrap().to_string(),
+            "Tr(Short prefix)"
+        );
         assert_eq!(
             translated.get_long_about().unwrap().to_string(),
-            "Short prefix\n\nLong suffix description"
+            "Tr(Short prefix)\n\nTr(Long suffix description)"
         );
 
         let arg = translated
@@ -144,10 +171,10 @@ mod tests {
             .find(|a| a.get_id() == "test-arg")
             .unwrap();
 
-        assert_eq!(arg.get_help().unwrap().to_string(), "Short arg help");
+        assert_eq!(arg.get_help().unwrap().to_string(), "Tr(Short arg help)");
         assert_eq!(
             arg.get_long_help().unwrap().to_string(),
-            "Short arg help\n\nLong arg suffix"
+            "Tr(Short arg help).\n\nTr(Long arg suffix)"
         );
     }
 }
