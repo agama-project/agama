@@ -60,6 +60,8 @@ impl Stage {
 /// Represents a background task.
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, JsonSchema)]
 pub struct Task {
+    /// Id of the task
+    pub id: usize,
     /// Short name identifying the task (e.g., "storage_config")
     pub name: String,
     /// Human-readable description of what the task does

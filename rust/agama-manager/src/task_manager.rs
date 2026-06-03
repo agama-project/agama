@@ -30,7 +30,7 @@ use agama_utils::api::{
     event::{self, Event},
     Scope,
 };
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::future::Future;
 use std::sync::Arc;
 use tokio::sync::{Notify, RwLock};
@@ -82,6 +82,8 @@ pub type TaskResult = Result<(), TaskError>;
 /// Contains human-readable information about a task including its name and description.
 #[derive(Debug, Clone)]
 pub struct TaskMetadata {
+    /// Id of the task
+    pub id: TaskId,
     /// Short name identifying the task (e.g., "backup-db")
     pub name: String,
     /// Human-readable description of what the task does
@@ -92,8 +94,14 @@ pub struct TaskMetadata {
 
 impl TaskMetadata {
     /// Create new task metadata with a name and description.
-    pub fn new(name: impl Into<String>, scope: Scope, description: impl Into<String>) -> Self {
+    pub fn new(
+        id: TaskId,
+        name: impl Into<String>,
+        scope: Scope,
+        description: impl Into<String>,
+    ) -> Self {
         Self {
+            id,
             name: name.into(),
             scope,
             description: description.into(),
@@ -104,6 +112,7 @@ impl TaskMetadata {
 impl From<TaskMetadata> for api::status::Task {
     fn from(value: TaskMetadata) -> Self {
         Self {
+            id: value.id,
             name: value.name,
             description: value.description,
             scope: value.scope,
@@ -115,7 +124,7 @@ struct TaskManagerState {
     completed: HashSet<TaskId>,
     next_id: TaskId,
     notify: Arc<Notify>,
-    metadata: HashMap<TaskId, TaskMetadata>,
+    metadata: Vec<TaskMetadata>,
 }
 
 /// Manager for executing async tasks with dependencies.
@@ -142,7 +151,9 @@ pub struct TaskManager {
 /// and finally execute the task with [`run`](TaskBuilder::run).
 pub struct TaskBuilder {
     manager: TaskManager,
-    metadata: TaskMetadata,
+    name: String,
+    scope: Scope,
+    description: String,
     dependencies: Vec<TaskId>,
 }
 
@@ -153,7 +164,7 @@ impl TaskManager {
             completed: HashSet::new(),
             next_id: 0,
             notify: Arc::new(Notify::new()),
-            metadata: HashMap::new(),
+            metadata: Vec::new(),
         };
 
         Self {
@@ -179,7 +190,9 @@ impl TaskManager {
     ) -> TaskBuilder {
         TaskBuilder {
             manager: self.clone(),
-            metadata: TaskMetadata::new(name, scope, description),
+            name: name.into(),
+            scope,
+            description: description.into(),
             dependencies: Vec::new(),
         }
     }
@@ -191,20 +204,17 @@ impl TaskManager {
         id
     }
 
-    async fn spawn_task<F, Fut>(
-        &self,
-        task_id: TaskId,
-        metadata: TaskMetadata,
-        dependencies: Vec<TaskId>,
-        work: F,
-    ) where
+    async fn spawn_task<F, Fut>(&self, metadata: TaskMetadata, dependencies: Vec<TaskId>, work: F)
+    where
         F: FnOnce() -> Fut + Send + 'static,
         Fut: Future<Output = TaskResult> + Send + 'static,
     {
+        let task_id = metadata.id;
+
         // Store metadata
         {
             let mut state = self.state.write().await;
-            state.metadata.insert(task_id, metadata.clone());
+            state.metadata.push(metadata.clone());
         }
 
         let state = Arc::clone(&self.state);
@@ -240,14 +250,14 @@ impl TaskManager {
 
             let _ = work().await;
 
-            let _ = events.send(Event::TaskFinished {
-                task: metadata.clone().into(),
-            });
-
             // Mark as completed
             let mut state_guard = state.write().await;
             state_guard.completed.insert(task_id);
             state_guard.notify.notify_waiters();
+
+            let _ = events.send(Event::TaskFinished {
+                task: metadata.clone().into(),
+            });
         });
     }
 
@@ -270,30 +280,28 @@ impl TaskManager {
     /// Returns `None` if the task ID doesn't exist or hasn't been registered yet.
     pub async fn get_metadata(&self, task_id: TaskId) -> Option<TaskMetadata> {
         let state = self.state.read().await;
-        state.metadata.get(&task_id).cloned()
+        state.metadata.iter().find(|m| m.id == task_id).cloned()
     }
 
     /// Get metadata for all tasks.
     ///
-    /// Returns a vector of `(TaskId, TaskMetadata)` tuples for all registered tasks.
-    pub async fn get_all_metadata(&self) -> Vec<(TaskId, TaskMetadata)> {
+    /// Returns a vector of `TaskMetadata` for all registered tasks.
+    pub async fn get_all_metadata(&self) -> Vec<TaskMetadata> {
         let state = self.state.read().await;
-        state
-            .metadata
-            .iter()
-            .map(|(id, meta)| (*id, meta.clone()))
-            .collect()
+        state.metadata.clone()
     }
 
     /// Get metadata for pending tasks.
     ///
-    /// Returns a vector of `(TaskId, TaskMetadata)` tuples for the pending tasks.
-    pub async fn get_pending_metadata(&self) -> Vec<(TaskId, TaskMetadata)> {
+    /// Returns a vector of `TaskMetadata` for the pending tasks.
+    pub async fn get_pending_metadata(&self) -> Vec<TaskMetadata> {
         let state = self.state.read().await;
-        let completed = state.completed.clone();
-        let mut tasks = self.get_all_metadata().await;
-        tasks.retain(|(id, _)| !completed.contains(id));
-        tasks
+        state
+            .metadata
+            .iter()
+            .filter(|m| !state.completed.contains(&m.id))
+            .cloned()
+            .collect()
     }
 }
 
@@ -332,8 +340,9 @@ impl TaskBuilder {
         Fut: Future<Output = TaskResult> + Send + 'static,
     {
         let task_id = self.manager.next_id().await;
+        let metadata = TaskMetadata::new(task_id, self.name, self.scope, self.description);
         self.manager
-            .spawn_task(task_id, self.metadata, self.dependencies, work)
+            .spawn_task(metadata, self.dependencies, work)
             .await;
         task_id
     }
@@ -370,7 +379,8 @@ mod tests {
 
     #[test]
     fn test_task_metadata_new() {
-        let metadata = TaskMetadata::new("process-data", Scope::Manager, "Process user data");
+        let metadata = TaskMetadata::new(42, "process-data", Scope::Manager, "Process user data");
+        assert_eq!(metadata.id, 42);
         assert_eq!(metadata.name, "process-data");
         assert_eq!(metadata.scope, Scope::Manager);
         assert_eq!(metadata.description, "Process user data");

@@ -660,7 +660,7 @@ impl MessageHandler<progress::message::GetStatus> for Service {
         let pending_tasks = self.task_manager.get_pending_metadata().await;
         // TODO: drop status from progress service. The stage should be kept by the manager.
         let mut status = self.progress.call(message).await?;
-        status.tasks = pending_tasks.into_iter().map(|(_, m)| m.into()).collect();
+        status.tasks = pending_tasks.into_iter().map(|m| m.into()).collect();
 
         Ok(status)
     }
