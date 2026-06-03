@@ -106,13 +106,31 @@ mod tasks {
             current_path.push(cmd.get_name());
             let context = current_path.join(" ");
 
-            if let Some(about) = cmd.get_about() {
+            let about = cmd.get_about().map(|a| a.to_string());
+            let long_about = cmd.get_long_about().map(|a| a.to_string());
+
+            if let Some(ref ab) = about {
                 writeln!(file, "    // TRANSLATORS: command: {}", context)?;
-                writeln!(file, "    gettext_noop!({:?});", about.to_string())?;
+                writeln!(file, "    gettext_noop!({:?});", ab)?;
             }
-            if let Some(long_about) = cmd.get_long_about() {
-                writeln!(file, "    // TRANSLATORS: command: {}", context)?;
-                writeln!(file, "    gettext_noop!({:?});", long_about.to_string())?;
+            if let Some(ref lab) = long_about {
+                if let Some(ref ab) = about {
+                    if lab.starts_with(ab) && lab != ab {
+                        let suffix = &lab[ab.len()..];
+                        writeln!(
+                            file,
+                            "    // TRANSLATORS: command: {} (long suffix)",
+                            context
+                        )?;
+                        writeln!(file, "    gettext_noop!({:?});", suffix)?;
+                    } else if lab != ab {
+                        writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
+                        writeln!(file, "    gettext_noop!({:?});", lab)?;
+                    }
+                } else {
+                    writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
+                    writeln!(file, "    gettext_noop!({:?});", lab)?;
+                }
             }
 
             fn format_arg(arg: &clap::Arg) -> String {
@@ -140,21 +158,43 @@ mod tasks {
 
             for arg in cmd.get_arguments() {
                 let arg_name = format_arg(arg);
-                if let Some(help) = arg.get_help() {
+                let help = arg.get_help().map(|h| h.to_string());
+                let long_help = arg.get_long_help().map(|h| h.to_string());
+
+                if let Some(ref hp) = help {
                     writeln!(
                         file,
                         "    // TRANSLATORS: command: {} {}",
                         context, arg_name
                     )?;
-                    writeln!(file, "    gettext_noop!({:?});", help.to_string())?;
+                    writeln!(file, "    gettext_noop!({:?});", hp)?;
                 }
-                if let Some(long_help) = arg.get_long_help() {
-                    writeln!(
-                        file,
-                        "    // TRANSLATORS: command: {} {}",
-                        context, arg_name
-                    )?;
-                    writeln!(file, "    gettext_noop!({:?});", long_help.to_string())?;
+                if let Some(ref lhp) = long_help {
+                    if let Some(ref hp) = help {
+                        if lhp.starts_with(hp) && lhp != hp {
+                            let suffix = &lhp[hp.len()..];
+                            writeln!(
+                                file,
+                                "    // TRANSLATORS: command: {} {} (long suffix)",
+                                context, arg_name
+                            )?;
+                            writeln!(file, "    gettext_noop!({:?});", suffix)?;
+                        } else if lhp != hp {
+                            writeln!(
+                                file,
+                                "    // TRANSLATORS: command: {} {} (long)",
+                                context, arg_name
+                            )?;
+                            writeln!(file, "    gettext_noop!({:?});", lhp)?;
+                        }
+                    } else {
+                        writeln!(
+                            file,
+                            "    // TRANSLATORS: command: {} {} (long)",
+                            context, arg_name
+                        )?;
+                        writeln!(file, "    gettext_noop!({:?});", lhp)?;
+                    }
                 }
             }
 
