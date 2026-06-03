@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
-- Fix software progress in opensuse where it incorrectly report
+- Fix software progress in openSUSE where it incorrectly report
   proposing software selection instead of refreshing repositories
   (gh#agama-project/agama#3579)
 
