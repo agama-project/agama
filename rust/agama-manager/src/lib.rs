@@ -27,6 +27,7 @@ pub mod message;
 pub mod hardware;
 pub mod ipmi;
 
+pub use agama_access as access;
 pub use agama_bootloader as bootloader;
 pub use agama_files as files;
 pub use agama_hostname as hostname;
@@ -35,7 +36,6 @@ pub use agama_l10n as l10n;
 pub use agama_network as network;
 pub use agama_ntp as ntp;
 pub use agama_proxy as proxy;
-pub use agama_remote as remote_access;
 pub use agama_s390 as s390;
 pub use agama_security as security;
 pub use agama_software as software;

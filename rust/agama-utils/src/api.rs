@@ -58,6 +58,7 @@ pub use proposal::Proposal;
 mod action;
 pub use {action::Action, action::FinishMethod};
 
+pub mod access;
 pub mod bootloader;
 #[cfg(feature = "curl")]
 pub mod files;
@@ -70,7 +71,6 @@ pub mod ntp;
 pub mod proxy;
 pub mod query;
 pub mod question;
-pub mod remote_access;
 pub mod s390;
 pub mod security;
 pub mod software;

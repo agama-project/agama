@@ -1,8 +1,5 @@
 # EditorConfig is awesome: https://EditorConfig.org
 
-# top-most EditorConfig file
-root = true
-
 # 2 space indentation
 [{*.rb,bin/agamactl}]
 indent_style = space
