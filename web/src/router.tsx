@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { createHashRouter, Outlet } from "react-router";
+import { createHashRouter, Navigate, Outlet } from "react-router";
 import App from "~/App";
 import Protected from "~/Protected";
 import ErrorPage from "~/components/core/ErrorPage";
@@ -38,8 +38,36 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { SYSTEM, ROOT as PATHS } from "./routes/paths";
+import { SYSTEM, USER, ROOT as PATHS } from "./routes/paths";
 import { N_ } from "~/i18n";
+
+// Redirects for legacy routes that have been consolidated or renamed. These
+// help prevent 404s for bookmarked URLs or external links after route
+// refactors. While direct access to these routes is not a fully supported or
+// common use case, maintaining redirects preserves backward compatibility.
+//
+// Using `replace` prevents unnecessary browser history entries, ensuring
+// expected back-button behavior. These redirects are intended as a temporary
+// compatibility measure and should be retained for some time to allow
+// bookmarked URLs and external links to naturally transition.
+const legacyRedirects = () => [
+  {
+    path: "/hostname",
+    element: <Navigate to={SYSTEM.root} replace />,
+  },
+  {
+    path: "/users/first",
+    element: <Navigate to={USER.root} replace />,
+  },
+  {
+    path: "/users/first/edit",
+    element: <Navigate to={USER.root} replace />,
+  },
+  {
+    path: "/users/root/edit",
+    element: <Navigate to={USER.root} replace />,
+  },
+];
 
 const rootRoutes = () => [
   {
@@ -57,6 +85,7 @@ const rootRoutes = () => [
   storageRoutes(),
   softwareRoutes(),
   usersRoutes(),
+  ...legacyRedirects(),
 ];
 
 const protectedRoutes = () => [
