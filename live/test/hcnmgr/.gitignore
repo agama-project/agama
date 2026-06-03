@@ -1,0 +1,6 @@
+# Temporary test directories
+/tmp/hcnmgr-tests/
+
+# BATS temporary files
+*.tmp
+*.bats.tmp
