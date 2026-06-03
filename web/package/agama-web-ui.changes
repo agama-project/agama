@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jun  3 08:48:42 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enhanced the VLAN connection form (gh#agama-project/agama/#3571).
+
+-------------------------------------------------------------------
 Mon Jun  1 13:51:58 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Create new LVM volume groups using all the availabe space on the
