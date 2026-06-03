@@ -284,6 +284,17 @@ impl TaskManager {
             .map(|(id, meta)| (*id, meta.clone()))
             .collect()
     }
+
+    /// Get metadata for pending tasks.
+    ///
+    /// Returns a vector of `(TaskId, TaskMetadata)` tuples for the pending tasks.
+    pub async fn get_pending_metadata(&self) -> Vec<(TaskId, TaskMetadata)> {
+        let state = self.state.read().await;
+        let completed = state.completed.clone();
+        let mut tasks = self.get_all_metadata().await;
+        tasks.retain(|(id, _)| !completed.contains(id));
+        tasks
+    }
 }
 
 impl Clone for TaskManager {
