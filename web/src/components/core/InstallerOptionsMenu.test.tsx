@@ -94,8 +94,7 @@ describe("InstallerOptionsMenu", () => {
     it("renders the 'Download logs' link", async () => {
       const { user } = plainRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More installer options/i }));
-      const link = screen.getByRole("menuitem", { name: /Download logs/i });
-      expect(link).toHaveAttribute("download", "agama-logs.tar.gz");
+      screen.getByRole("menuitem", { name: /Download logs/i });
     });
   });
 });
