@@ -136,26 +136,7 @@ pub async fn build() -> OpenApi {
         let schemas = &mut components.schemas;
 
         for (path, name, group) in &schemas_to_import {
-            // TODO: deal with unwraps
-            let raw_content = std::fs::read_to_string(path).unwrap();
-            let mut source_schema: Value = serde_json::from_str(&raw_content).unwrap();
-            let mut extracted_defs = serde_json::Map::new();
-
-            // collect and remove $defs from the schema
-            extract_defs(
-                &mut source_schema,
-                format!("{}.", name).as_str(),
-                &mut extracted_defs,
-            );
-
-            schemas.insert(
-                format!("{}.{}", name, group),
-                serde_json::from_value(source_schema).unwrap(),
-            );
-
-            for (def_name, def_value) in extracted_defs {
-                schemas.insert(def_name, serde_json::from_value(def_value).unwrap());
-            }
+            import_schema(schemas, path, name, group);
         }
     }
 
@@ -285,6 +266,51 @@ fn extract_defs(
             }
         }
         _ => {}
+    }
+}
+
+/// Imports statically defined json schema json given path
+/// into schemas part of the OpenApi schema and stores it
+/// under given name as descendant of particular parent.
+fn import_schema(
+    schemas: &mut IndexMap<String, SchemaObject>,
+    path: &str,
+    name: &str,
+    parent: &str,
+) {
+    let Ok(raw_content) = std::fs::read_to_string(path) else {
+        eprintln!("Schema not found at {}", path);
+        return;
+    };
+    let Ok(mut source_schema) = serde_json::from_str(&raw_content) else {
+        eprintln!("Schema {} cannot be parsed", path);
+        return;
+    };
+    let mut extracted_defs = serde_json::Map::new();
+
+    // collect and remove $defs from the schema, prepend with prefix to
+    // avoid collisions
+    extract_defs(
+        &mut source_schema,
+        format!("{}.", name).as_str(),
+        &mut extracted_defs,
+    );
+
+    let Ok(source_schema_json) = serde_json::from_value(source_schema) else {
+        eprintln!("Error during updating the OpenApi schema");
+        return;
+    };
+
+    // insert provided schema
+    schemas.insert(format!("{}.{}", name, parent), source_schema_json);
+
+    // put extracted defs into schemas
+    for (def_name, def_value) in extracted_defs {
+        let Ok(def_value_json) = serde_json::from_value(def_value) else {
+            eprintln!("Error during updating the OpenApi schema, failed conversion");
+            return;
+        };
+        schemas.insert(def_name, def_value_json);
     }
 }
 
