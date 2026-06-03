@@ -18,6 +18,9 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+/// Translates the short and long help/about strings, splitting the long description
+/// into a prefix and suffix if it starts with the short prefix, translating them separately,
+/// and recombining the translated parts to prevent redundant translation work.
 pub fn translate_help_strings(
     short: Option<String>,
     long: Option<String>,
@@ -48,6 +51,8 @@ pub fn translate_help_strings(
     (trans_short, trans_long)
 }
 
+/// Recursively iterates through a `clap::Command` tree, translating command
+/// and argument help/about strings via `translate_help_strings`.
 pub fn translate_command(mut cmd: clap::Command) -> clap::Command {
     let about = cmd.get_about().map(|a| a.to_string());
     let long_about = cmd.get_long_about().map(|a| a.to_string());
