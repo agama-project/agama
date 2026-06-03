@@ -423,14 +423,18 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
                         <DeviceSelector
                           form={form}
                           by="iface"
+                          label={_("Name")}
                           sync={{ field: "ifaceMac", with: (d) => d.macAddress }}
+                          exclude={["lo"]}
                         />
                       )}
                       {bindingMode === "mac" && (
                         <DeviceSelector
                           form={form}
                           by="mac"
+                          label={_("MAC")}
                           sync={{ field: "iface", with: (d) => d.name }}
+                          exclude={["lo"]}
                         />
                       )}
                     </>

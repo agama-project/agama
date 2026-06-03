@@ -49,14 +49,16 @@ jest.mock("~/hooks/model/system/network", () => ({
 }));
 
 type SyncProp = React.ComponentProps<typeof DeviceSelector>["sync"];
+type ExcludeProp = React.ComponentProps<typeof DeviceSelector>["exclude"];
 
 let sync: SyncProp;
+let exclude: ExcludeProp = [];
 
 function TestSelectors() {
   const form = useAppForm({ ...defaultOptions });
   return (
     <>
-      <DeviceSelector form={form} by="iface" sync={sync} />
+      <DeviceSelector form={form} by="iface" sync={sync} exclude={exclude} />
       <DeviceSelector form={form} by="mac" />
     </>
   );
@@ -65,6 +67,7 @@ function TestSelectors() {
 describe("DeviceSelector", () => {
   beforeEach(() => {
     sync = undefined;
+    exclude = [];
   });
 
   describe("when mounting with no device selected", () => {
@@ -137,6 +140,58 @@ describe("DeviceSelector", () => {
         "aria-selected",
         "true",
       );
+    });
+  });
+
+  describe("when exclude is provided as an array", () => {
+    beforeEach(() => {
+      exclude = ["enp1s0"];
+    });
+
+    it("does not show excluded devices as options", async () => {
+      const { user } = installerRender(<TestSelectors />);
+      await user.click(screen.getByLabelText("Device name"));
+      expect(screen.queryByRole("option", { name: /^enp1s0/ })).not.toBeInTheDocument();
+      screen.getByRole("option", { name: /^enp2s0/ });
+    });
+  });
+
+  describe("when exclude is provided as an object with devices", () => {
+    beforeEach(() => {
+      exclude = { devices: ["enp1s0"] };
+    });
+
+    it("does not show excluded devices as options", async () => {
+      const { user } = installerRender(<TestSelectors />);
+      await user.click(screen.getByLabelText("Device name"));
+      expect(screen.queryByRole("option", { name: /^enp1s0/ })).not.toBeInTheDocument();
+      screen.getByRole("option", { name: /^enp2s0/ });
+    });
+  });
+
+  describe("when exclude is provided as an object with types", () => {
+    beforeEach(() => {
+      exclude = { types: [CONNECTION_TYPE.ETHERNET] };
+    });
+
+    it("does not show devices with excluded types as options", async () => {
+      const { user } = installerRender(<TestSelectors />);
+      await user.click(screen.getByLabelText("Device name"));
+      expect(screen.queryByRole("option", { name: /^enp1s0/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: /^enp2s0/ })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when exclude is provided with both devices and types", () => {
+    beforeEach(() => {
+      exclude = { devices: ["enp1s0"], types: [CONNECTION_TYPE.WIFI] };
+    });
+
+    it("does not show devices matching either filter", async () => {
+      const { user } = installerRender(<TestSelectors />);
+      await user.click(screen.getByLabelText("Device name"));
+      expect(screen.queryByRole("option", { name: /^enp1s0/ })).not.toBeInTheDocument();
+      screen.getByRole("option", { name: /^enp2s0/ });
     });
   });
 });

@@ -24,9 +24,9 @@ import React from "react";
 import { isEmpty } from "radashi";
 import { defaultOptions, VlanProtocolMode } from "./fields";
 import { withForm } from "~/hooks/form";
-import { useDevices } from "~/hooks/model/system/network";
 import { _, N_ } from "~/i18n";
-import Text from "~/components/core/Text";
+import { CONNECTION_TYPE } from "~/utils/network";
+import DeviceSelector from "./DeviceSelector";
 
 /**
  * Protocol options for the selector.
@@ -65,8 +65,6 @@ const protocolOptions = () => [
 const VlanFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
-    const devices = useDevices();
-
     // Suggests a device name based on the parent device and VLAN ID, as long as
     // the user has not manually edited it.
     const suggestIface = () => {
@@ -82,37 +80,24 @@ const VlanFields = withForm({
       }
     };
 
-    const parentOptions = devices
-      .filter((d) => d.name !== "lo" && d.name !== form.getFieldValue("vlanIface"))
-      .map((d) => ({
-        value: d.name,
-        label: d.name,
-        description: <Text textStyle={["textColorSubtle", "fontSizeXs"]}>{d.macAddress}</Text>,
-      }));
-
     return (
       <>
-        <form.AppField
+        <DeviceSelector
+          form={form}
+          by="iface"
           name="vlanParent"
+          label={
+            // TRANSLATORS: label for the VLAN parent device field.
+            _("Parent device")
+          }
+          exclude={{
+            devices: [form.getFieldValue("vlanIface")],
+            types: [CONNECTION_TYPE.VLAN, CONNECTION_TYPE.LOOPBACK],
+          }}
           listeners={{
-            onMount: ({ value }: { value: string }) => {
-              if (!value && parentOptions.length > 0) {
-                form.setFieldValue("vlanParent", parentOptions[0].value, { dontUpdateMeta: true });
-              }
-            },
             onChange: () => suggestIface(),
           }}
-        >
-          {(field) => (
-            <field.DropdownField
-              label={
-                // TRANSLATORS: label for the VLAN parent device field.
-                _("Parent device")
-              }
-              options={parentOptions}
-            />
-          )}
-        </form.AppField>
+        />
 
         <form.AppField
           name="vlanId"

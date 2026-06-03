@@ -46,7 +46,7 @@ const mockDevice2 = {
 const mockDeviceLo = {
   name: "lo",
   macAddress: "00:00:00:00:00:00",
-  type: CONNECTION_TYPE.ETHERNET,
+  type: CONNECTION_TYPE.LOOPBACK,
   state: DeviceState.CONNECTED,
 };
 
