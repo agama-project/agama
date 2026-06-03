@@ -97,6 +97,18 @@ mod tasks {
 
         writeln!(file, "fn dummy_cli_strings() {{")?;
 
+        const SEPARATORS: &[&str] = &[".\n\n", "\n\n"];
+
+        fn split_by_separator<'a>(short: &str, long: &'a str) -> Option<(&'static str, &'a str)> {
+            for sep in SEPARATORS {
+                let prefix = format!("{}{}", short, sep);
+                if long.starts_with(&prefix) {
+                    return Some((sep, &long[prefix.len()..]));
+                }
+            }
+            None
+        }
+
         fn write_extracted_strings(
             file: &mut std::fs::File,
             context: &str,
@@ -109,8 +121,7 @@ mod tasks {
             }
             if let Some(ref l) = long {
                 if let Some(ref s) = short {
-                    if l.starts_with(s) && l != s {
-                        let suffix = &l[s.len()..];
+                    if let Some((_sep, suffix)) = split_by_separator(s, l) {
                         writeln!(
                             file,
                             "    // TRANSLATORS: command: {} (long suffix)",

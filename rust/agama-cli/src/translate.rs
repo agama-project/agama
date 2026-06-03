@@ -18,6 +18,18 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+const SEPARATORS: &[&str] = &[".\n\n", "\n\n"];
+
+fn split_by_separator<'a>(short: &str, long: &'a str) -> Option<(&'static str, &'a str)> {
+    for sep in SEPARATORS {
+        let prefix = format!("{}{}", short, sep);
+        if long.starts_with(&prefix) {
+            return Some((sep, &long[prefix.len()..]));
+        }
+    }
+    None
+}
+
 /// Translates the short and long help/about strings, splitting the long description
 /// into a prefix and suffix if it starts with the short prefix, translating them separately,
 /// and recombining the translated parts to prevent redundant translation work.
@@ -31,11 +43,10 @@ pub fn translate_help_strings(
 
     let trans_long = if let Some(ref l) = long {
         if let Some(ref s) = short {
-            if l.starts_with(s) && l != s {
-                let suffix = &l[s.len()..];
+            if let Some((sep, suffix)) = split_by_separator(s, l) {
                 let trans_prefix = trans_short.clone().unwrap_or_else(|| gettext(s));
                 let trans_suffix = gettext(suffix);
-                Some(format!("{}{}", trans_prefix, trans_suffix))
+                Some(format!("{}{}{}", trans_prefix, sep, trans_suffix))
             } else if l != s {
                 Some(gettext(l))
             } else {
