@@ -734,6 +734,36 @@ const translateEntries = (
       .map(([key, value]) => [key, _(value)]),
   );
 
+/**
+ * Fetches a resource and triggers a browser file download.
+ *
+ * The download is performed via `fetch` so the caller can `await` completion,
+ * enabling UI feedback (e.g. a loading indicator) that can be dismissed once
+ * the browser Save dialog appears.
+ *
+ * @param url - URL of the resource to download.
+ * @param filename - Suggested filename for the downloaded file.
+ *
+ * @throws {Error} If the server responds with a non-OK HTTP status.
+ *
+ * @example
+ * await download("/api/private/download_logs", "agama-logs.tar.gz");
+ */
+const download = async (url: string, filename: string): Promise<void> => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+  const blob = await response.blob();
+  const anchor = document.createElement("a");
+  anchor.href = URL.createObjectURL(blob);
+  anchor.download = filename;
+  try {
+    anchor.click();
+  } finally {
+    URL.revokeObjectURL(anchor.href);
+  }
+};
+
 export {
   compact,
   hex,
@@ -748,4 +778,5 @@ export {
   mergeSources,
   extendCollection,
   translateEntries,
+  download,
 };
