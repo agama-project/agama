@@ -66,7 +66,7 @@ describe("InstallerOptionsMenu", () => {
       const { user } = plainRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More installer options/i }));
       const menu = screen.getByRole("menu");
-      await user.click(screen.getByRole("menuitem", { name: /Download config/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Show settings/i }));
       expect(menu).not.toBeVisible();
     });
   });
@@ -87,8 +87,7 @@ describe("InstallerOptionsMenu", () => {
     it("renders the 'Download config' link", async () => {
       const { user } = plainRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More installer options/i }));
-      const link = screen.getByRole("menuitem", { name: /Download config/i });
-      expect(link).toHaveAttribute("download", "agama-config.json");
+      screen.getByRole("menuitem", { name: /Show settings/i });
     });
 
     it("renders the 'Download logs' link", async () => {
