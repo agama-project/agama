@@ -120,20 +120,20 @@ mod tasks {
                 writeln!(file, "    gettext_noop!({:?});", s)?;
             }
             if let Some(ref l) = long {
+                let mut suffix_written = false;
                 if let Some(ref s) = short {
                     if let Some((_sep, suffix)) = split_by_separator(s, l) {
-                        writeln!(
-                            file,
-                            "    // TRANSLATORS: command: {} (long suffix)",
-                            context
-                        )?;
+                        writeln!(file, "    // TRANSLATORS: command: {} (details)", context)?;
                         writeln!(file, "    gettext_noop!({:?});", suffix)?;
-                    } else if l != s {
-                        writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
-                        writeln!(file, "    gettext_noop!({:?});", l)?;
+                        suffix_written = true;
                     }
-                } else {
-                    writeln!(file, "    // TRANSLATORS: command: {} (long)", context)?;
+                }
+                if !suffix_written && long != short {
+                    writeln!(
+                        file,
+                        "    // TRANSLATORS: command: {} (summary AND details)",
+                        context
+                    )?;
                     writeln!(file, "    gettext_noop!({:?});", l)?;
                 }
             }
