@@ -86,7 +86,7 @@ async fn main() -> anyhow::Result<()> {
     loop {
         sleep(Duration::from_secs(1)).await;
         let status = manager_client.status().await?;
-        if status.progresses.is_empty() {
+        if status.tasks.is_empty() {
             break;
         }
     }
