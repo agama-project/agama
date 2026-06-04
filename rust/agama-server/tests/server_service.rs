@@ -105,10 +105,7 @@ async fn test_get_extended_config(ctx: &mut Context) -> Result<(), Box<dyn Error
 // In the future we plan to add an specific event.
 async fn wait_until_finished(events: &mut event::Receiver) {
     while let Ok(event) = events.recv().await {
-        if matches!(
-            event,
-            Event::TaskFinished { remaining, .. } if remaining == 0)
-        {
+        if matches!(event, Event::TaskFinished { remaining: 0, .. }) {
             break;
         }
     }

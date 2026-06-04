@@ -190,8 +190,8 @@ async fn wait_until_idle(http: &BaseHTTPClient, ws: &mut WebSocketClient) -> any
         eprintln!("There are already running operations. Waiting for them to finish...");
         loop {
             match ws.receive().await? {
-                api::Event::ProgressFinished { .. } => break,
-                api::Event::TaskFinished { remaining, .. } if remaining == 0 => break,
+                api::Event::ProgressFinished { .. }
+                | api::Event::TaskFinished { remaining: 0, .. } => break,
                 _ => (),
             }
         }
