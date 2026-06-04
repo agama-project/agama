@@ -97,9 +97,12 @@ pub enum ValidationOutcome {
 ///
 /// ```
 /// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
-/// # use std::path::Path;
-/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-///   .join("share/profile.schema.json");
+/// # use std::path::PathBuf;
+/// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+///
+/// path.pop();
+/// path.push("share/profile.schema.json");
+///
 /// let validator = ProfileValidator::new(&path)
 ///   .expect("the default validator");
 ///
@@ -111,8 +114,11 @@ pub enum ValidationOutcome {
 /// assert!(matches!(result, ValidationOutcome::NotValid(_)));
 ///
 /// // or a file
-/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-///   .join("share/examples/profile_tw.json");
+/// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+///
+/// path.pop();
+/// path.push("share/examples/profile_tw.json");
+///
 /// let result = validator.validate_file(&path).unwrap();
 /// assert!(matches!(result, ValidationOutcome::Valid));
 /// ```
