@@ -252,7 +252,7 @@ impl SetConfigAction {
             .task(
                 "pre_scripts",
                 Scope::Files,
-                &gettext("Running user pre-installation scripts"),
+                gettext("Running user pre-installation scripts"),
             )
             .depends_on(&[files_task])
             .run(move || async move {
@@ -377,7 +377,7 @@ impl SetConfigAction {
 
         Some(
             self.task_manager
-                .task("s390", Scope::Storage, &gettext("Configuring DASD devices"))
+                .task("s390", Scope::Storage, gettext("Configuring DASD devices"))
                 .run(|| async move {
                     // Ensure storage was already probed before configuring s390
                     let storage_system = storage_handler
@@ -410,7 +410,7 @@ impl SetConfigAction {
                 .task(
                     "network",
                     Scope::Network,
-                    &gettext("Setting up the network"),
+                    gettext("Setting up the network"),
                 )
                 .run(|| async move {
                     handler
@@ -438,7 +438,7 @@ impl SetConfigAction {
             .task(
                 "storage_config",
                 Scope::Storage,
-                &gettext("Preparing the storage proposal"),
+                gettext("Preparing the storage proposal"),
             )
             .depends_on(dependencies)
             .run(move || async move {
@@ -466,7 +466,7 @@ impl SetConfigAction {
             .task(
                 "software_config",
                 Scope::Software,
-                &gettext("Preparing the software proposal"),
+                gettext("Preparing the software proposal"),
             )
             .depends_on(dependencies)
             .run(move || async move {
@@ -492,7 +492,7 @@ impl SetConfigAction {
             .task(
                 "selinux_config",
                 Scope::Security,
-                &gettext("Configuring SELinux"),
+                gettext("Configuring SELinux"),
             )
             .depends_on(&[depends_on])
             .run(move || async move {

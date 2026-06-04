@@ -19,10 +19,8 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    actions::FinishAction,
-    bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n, message, network, ntp, proxy,
-    s390, security, software, storage,
-    task_manager::{self, TaskManager},
+    actions::FinishAction, bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n,
+    message, network, ntp, proxy, s390, security, software, storage, task_manager::TaskManager,
     tasks, users,
 };
 use agama_users::PasswordCheckResult;
@@ -454,7 +452,6 @@ pub struct Service {
     config: Config,
     hardware: hardware::Registry,
     hostname: Handler<hostname::Service>,
-    files: Handler<files::Service>,
     iscsi: Handler<iscsi::Service>,
     issues: Handler<issue::Service>,
     l10n: Handler<l10n::Service>,
@@ -468,7 +465,6 @@ pub struct Service {
     questions: Handler<question::Service>,
     access: Handler<agama_access::Service>,
     s390: Option<Handler<s390::Service>>,
-    security: Handler<security::Service>,
     software: Handler<software::Service>,
     storage: Handler<storage::Service>,
     system: manager::SystemInfo,
