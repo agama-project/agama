@@ -1,10 +1,19 @@
+-------------------------------------------------------------------  
+Thu Jun  4 14:56:26 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the installation settings UI by showing and explaining the
+  current configuration before downloading it
+  (gh#agama-project/agama#3581).
+- Provide user feedback when collecting and downloading installer logs
+  from the web UI (gh#agama-project/agama#3580).
+
 -------------------------------------------------------------------
 Thu Jun  4 13:27:59 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Block a page until all its tasks are completed (part of
   bsc#1266276).
 
--------------------------------------------------------------------  
+-------------------------------------------------------------------
 Wed Jun  3 08:48:42 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Enhanced the VLAN connection form (gh#agama-project/agama/#3571).
