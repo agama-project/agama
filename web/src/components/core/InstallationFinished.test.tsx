@@ -61,7 +61,7 @@ describe("InstallationFinished", () => {
   it("includes an option for downloading the config", async () => {
     const { user } = installerRender(<InstallationFinished />);
     await user.click(screen.getByRole("button", { name: /More installer options/i }));
-    screen.getByRole("menuitem", { name: /Show settings/i });
+    screen.getByRole("menuitem", { name: /Show installation settings/i });
   });
 
   describe("when using grub2 with TPM", () => {
