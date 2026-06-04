@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 12:43+0000\n"
+"POT-Creation-Date: 2026-05-29 13:56+0000\n"
 "PO-Revision-Date: 2026-02-26 19:04+0000\n"
 "Last-Translator: Topalski <fujinami_goops@slmail.me>\n"
 "Language-Team: Bulgarian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -54,30 +54,34 @@ msgid "Product"
 msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:44
-msgid "Software"
+msgid "Remote Access"
 msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:45
-msgid "Storage"
+msgid "Software"
 msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:46
-msgid "Files"
+msgid "Storage"
 msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:47
-msgid "iSCSI"
+msgid "Files"
 msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:48
-msgid "DASD"
+msgid "iSCSI"
 msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:49
-msgid "zFCP"
+msgid "DASD"
 msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:50
+msgid "zFCP"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:51
 msgid "Users"
 msgstr ""
 
@@ -100,7 +104,7 @@ msgstr "Инсталирай софтуер"
 msgid "You can reboot the machine to log in to the new system."
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:75
+#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:76
 #, fuzzy
 msgid "Installation failed."
 msgstr "Инсталирай софтуер"
@@ -188,46 +192,46 @@ msgstr ""
 msgid "Not selected yet"
 msgstr ""
 
-#: agama-cli/src/status.rs:76
+#: agama-cli/src/status.rs:77
 #, fuzzy
 msgid "Installation finished successfully."
 msgstr "Инсталирай софтуер"
 
-#: agama-cli/src/status.rs:77
+#: agama-cli/src/status.rs:78
 msgid "Installation is ready to start."
 msgstr ""
 
-#: agama-cli/src/status.rs:78
+#: agama-cli/src/status.rs:79
 #, fuzzy
 msgid "Installation is in progress."
 msgstr "Инсталирай софтуер"
 
-#: agama-cli/src/status.rs:79
+#: agama-cli/src/status.rs:80
 #, fuzzy
 msgid "Installation is being proposed."
 msgstr "Инсталирай софтуер"
 
-#: agama-cli/src/status.rs:80
+#: agama-cli/src/status.rs:81
 msgid ""
 "There are unanswered questions. Please use `agama questions` command or web "
 "interface to answer them."
 msgstr ""
 
-#: agama-cli/src/status.rs:81
+#: agama-cli/src/status.rs:82
 msgid ""
 "The installer failed to calculate the installation proposal. There are "
 "issues blocking the installation."
 msgstr ""
 
-#: agama-cli/src/status.rs:111
+#: agama-cli/src/status.rs:118
 msgid "Details:"
 msgstr ""
 
-#: agama-cli/src/status.rs:113
+#: agama-cli/src/status.rs:120
 msgid "Open questions:"
 msgstr ""
 
-#: agama-cli/src/status.rs:119
+#: agama-cli/src/status.rs:126
 msgid "Blocking issues:"
 msgstr ""
 
@@ -241,75 +245,80 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:87
+#: agama-manager/src/actions.rs:88
 msgid "Prepare the system"
 msgstr "Подготви системата"
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:89
 msgid "Install software"
 msgstr "Инсталирай софтуер"
 
-#: agama-manager/src/actions.rs:89
+#: agama-manager/src/actions.rs:90
 msgid "Configure the system"
 msgstr "Конфигурирай системата"
 
-#: agama-manager/src/actions.rs:189
+#: agama-manager/src/actions.rs:195
 msgid "Storing security settings"
 msgstr "Запазване настройки за сигурност"
 
-#: agama-manager/src/actions.rs:190
+#: agama-manager/src/actions.rs:196
+#, fuzzy
+msgid "Configuring remote access"
+msgstr "Конфигурирай системата"
+
+#: agama-manager/src/actions.rs:197
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/actions.rs:191
+#: agama-manager/src/actions.rs:198
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/actions.rs:192
+#: agama-manager/src/actions.rs:199
 msgid "Setting up NTP"
 msgstr ""
 
-#: agama-manager/src/actions.rs:193
+#: agama-manager/src/actions.rs:200
 msgid "Importing user files"
 msgstr ""
 
-#: agama-manager/src/actions.rs:194
+#: agama-manager/src/actions.rs:201
 msgid "Running user pre-installation scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:195
+#: agama-manager/src/actions.rs:202
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:196
+#: agama-manager/src/actions.rs:203
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:197
+#: agama-manager/src/actions.rs:204
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:198
+#: agama-manager/src/actions.rs:205
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:202
+#: agama-manager/src/actions.rs:209
 msgid "Configuring DASD devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:206
+#: agama-manager/src/actions.rs:213
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:211
+#: agama-manager/src/actions.rs:218
 msgid "Preparing the software proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:212
+#: agama-manager/src/actions.rs:219
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:213
+#: agama-manager/src/actions.rs:220
 msgid "Storing bootloader settings"
 msgstr ""
 
@@ -440,12 +449,12 @@ msgstr ""
 msgid "Failed to register the system"
 msgstr ""
 
-#: agama-users/src/service.rs:140
+#: agama-users/src/service.rs:178
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 
-#: agama-users/src/service.rs:153
+#: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
 msgstr ""
 

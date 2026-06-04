@@ -5,6 +5,11 @@ Thu Jun  4 13:27:59 UTC 2026 - José Iván López González <jlopez@suse.com>
   bsc#1266276).
 
 -------------------------------------------------------------------  
+Wed Jun  3 08:48:42 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enhanced the VLAN connection form (gh#agama-project/agama/#3571).
+
+-------------------------------------------------------------------
 Tue Jun  2 17:45:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add redirections for legacy routes to preserve backward

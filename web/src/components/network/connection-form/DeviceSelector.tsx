@@ -22,7 +22,7 @@
 
 import React from "react";
 import Text from "~/components/core/Text";
-import { defaultOptions } from "./fields";
+import { defaultOptions, FormFields } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { Device } from "~/types/network";
@@ -33,6 +33,31 @@ type SyncConfig = {
   field: "iface" | "ifaceMac";
   /** Returns the value to write into the synced field for a given device. */
   with: (device: Device) => string;
+};
+
+type ExcludeFilter = {
+  /** Device names to exclude from the options list. */
+  devices?: string[];
+  /** Device types to exclude from the options list. */
+  types?: string[];
+};
+
+type DeviceSelectorProps = {
+  /** Whether to show device names or MAC addresses as the primary value. */
+  by: "iface" | "mac";
+  /** Form field name to bind to. Defaults to "iface" or "ifaceMac" based on `by`. */
+  name?: keyof FormFields;
+  /** Label for the dropdown. Defaults to "Device name" or "MAC address" based on `by`. */
+  label?: React.ReactNode;
+  /** Sync configuration to update another field when a device is selected. */
+  sync?: SyncConfig;
+  /** Filter to exclude devices and types from the options list. */
+  exclude?: ExcludeFilter;
+  /** Additional TanStack Form field listeners. */
+  listeners?: {
+    onMount?: (context: { value: string }) => void;
+    onChange?: (context: { value: string }) => void;
+  };
 };
 
 /**
@@ -48,17 +73,38 @@ type SyncConfig = {
 const DeviceSelector = withForm({
   ...defaultOptions,
   props: {
-    by: "iface" as "iface" | "mac",
+    by: "iface",
+    name: undefined,
+    label: undefined,
     sync: undefined,
-  } as { by: "iface" | "mac"; sync?: SyncConfig },
-  render: function Render({ form, by, sync }) {
-    const devices = useDevices();
+    exclude: {},
+    listeners: undefined,
+  } as DeviceSelectorProps,
+  render: function Render({
+    form,
+    by,
+    name: nameProp,
+    label: labelProp,
+    sync,
+    exclude = {},
+    listeners: listenersProp,
+  }) {
+    const excludeDevices = exclude.devices || [];
+    const excludeTypes = exclude.types || [];
+
+    const devices = useDevices().filter((d) => {
+      if (excludeDevices.includes(d.name)) return false;
+      if (excludeTypes.includes(d.type)) return false;
+      return true;
+    });
+
     const valueKey = by === "iface" ? "name" : "macAddress";
 
-    const name = by === "iface" ? "iface" : "ifaceMac";
+    const name = nameProp ?? (by === "iface" ? "iface" : "ifaceMac");
     // TRANSLATORS: accessible label for the device selector. MAC address refers
     // to the hardware identifier of the network interface.
-    const label = by === "iface" ? _("Device name") : _("MAC address");
+    const defaultLabel = by === "iface" ? _("Device name") : _("Device MAC address");
+    const label = labelProp ?? defaultLabel;
     const options = devices.map((d) => {
       const value = d[valueKey];
       return {
@@ -93,11 +139,12 @@ const DeviceSelector = withForm({
             });
         },
       }),
+      ...listenersProp,
     };
 
     return (
       <form.AppField name={name} listeners={listeners}>
-        {(field) => <field.DropdownField label={<Text srOnly>{label}</Text>} options={options} />}
+        {(field) => <field.DropdownField label={label} options={options} />}
       </form.AppField>
     );
   },

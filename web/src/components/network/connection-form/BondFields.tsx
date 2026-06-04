@@ -56,6 +56,7 @@ const BondFields = withForm({
   } as BondFieldsProps,
   render: function Render({ form, isEditing }) {
     const devices = useDevices();
+    const availableDevices = devices.filter((d) => d.name !== "lo");
 
     return (
       <>
@@ -111,7 +112,7 @@ const BondFields = withForm({
               }
               helperText={
                 // TRANSLATORS: helper text for the bond ports field. %s is a list of available devices.
-                sprintf(_("Available devices: %s"), formatList(devices.map((d) => d.name)))
+                sprintf(_("Available devices: %s"), formatList(availableDevices.map((d) => d.name)))
               }
               skipDuplicates
             />

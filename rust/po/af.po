@@ -8,26 +8,26 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-29 13:56+0000\n"
-"PO-Revision-Date: 2026-03-11 07:04+0000\n"
-"Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
-"Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
-"master/fi/>\n"
-"Language: fi\n"
+"PO-Revision-Date: 2026-05-31 11:12+0000\n"
+"Last-Translator: Feike Donia <feikedonia@proton.me>\n"
+"Language-Team: Afrikaans <https://l10n.opensuse.org/projects/agama/agama-"
+"rust-master/af/>\n"
+"Language: af\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 2026.5\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "No"
-msgstr "Ei"
+msgstr "Nee"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
-msgstr "Kyllä"
+msgstr "Ja"
 
 #: agama-cli/src/monitor/ui.rs:38
 msgid "Manager"
@@ -35,80 +35,79 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui.rs:39
 msgid "Network"
-msgstr ""
+msgstr "Netwerk"
 
 #: agama-cli/src/monitor/ui.rs:40
 msgid "NTP"
-msgstr ""
+msgstr "NTP"
 
 #: agama-cli/src/monitor/ui.rs:41
 msgid "Hostname"
-msgstr ""
+msgstr "Bedienernaam"
 
 #: agama-cli/src/monitor/ui.rs:42
 msgid "Localization"
-msgstr ""
+msgstr "Lokalisering"
 
 #: agama-cli/src/monitor/ui.rs:43
-#, fuzzy
 msgid "Product"
-msgstr "tuote"
+msgstr "Produk"
 
 #: agama-cli/src/monitor/ui.rs:44
 msgid "Remote Access"
-msgstr ""
+msgstr "Toegang-op-afstand"
 
 #: agama-cli/src/monitor/ui.rs:45
 msgid "Software"
-msgstr ""
+msgstr "Sagteware"
 
 #: agama-cli/src/monitor/ui.rs:46
 msgid "Storage"
-msgstr ""
+msgstr "Berging"
 
 #: agama-cli/src/monitor/ui.rs:47
 msgid "Files"
-msgstr ""
+msgstr "Lêers"
 
 #: agama-cli/src/monitor/ui.rs:48
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #: agama-cli/src/monitor/ui.rs:49
 msgid "DASD"
-msgstr ""
+msgstr "DASD"
 
 #: agama-cli/src/monitor/ui.rs:50
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #: agama-cli/src/monitor/ui.rs:51
 msgid "Users"
-msgstr ""
+msgstr "Gebruikers"
 
 #: agama-cli/src/monitor/ui/content.rs:63
 msgid "There are pending questions:"
-msgstr ""
+msgstr "Daar is hangende vrae:"
 
 #: agama-cli/src/monitor/ui/content.rs:73
 msgid ""
 "Please use the web interface (recommended) or the \"agama questions\" "
 "command to answer them."
 msgstr ""
+"Gebruik asseblief die webkoppelvlak (aanbeveel) of die \"agama questions\"-"
+"opdrag om hulle te beantwoord."
 
 #: agama-cli/src/monitor/ui/content.rs:93
-#, fuzzy
 msgid "Installation complete."
-msgstr "Asenna ohjelmistoja"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:94
 msgid "You can reboot the machine to log in to the new system."
 msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:76
-#, fuzzy
 msgid "Installation failed."
-msgstr "Asenna ohjelmistoja"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:98
 msgid "Use the \"agama logs\" command to collect the logs."
@@ -137,7 +136,7 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:241
 msgid "of"
-msgstr ""
+msgstr "van"
 
 #: agama-cli/src/monitor/ui/issues.rs:64
 msgid "Waiting for these to be resolved."
@@ -145,16 +144,15 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
-msgstr ""
+msgstr "Bediener: "
 
 #: agama-cli/src/monitor/ui/summary.rs:48
 msgid "Model: "
 msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:49
-#, fuzzy
 msgid "Product: "
-msgstr "tuote"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:50
 msgid "Stage: "
@@ -166,7 +164,7 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:76
 msgid "Busy"
-msgstr ""
+msgstr "Besig"
 
 #: agama-cli/src/monitor/ui/summary.rs:77
 #: agama-cli/src/monitor/ui/summary.rs:104
@@ -178,14 +176,12 @@ msgid "Idle"
 msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:101
-#, fuzzy
 msgid "Installing"
-msgstr "Rekisteröidään järjestelmää"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:102
-#, fuzzy
 msgid "Configuring"
-msgstr "Tehdään DASD-laitteiden asetuksia"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:103
 msgid "Finished"
@@ -196,23 +192,20 @@ msgid "Not selected yet"
 msgstr ""
 
 #: agama-cli/src/status.rs:77
-#, fuzzy
 msgid "Installation finished successfully."
-msgstr "Asenna ohjelmistoja"
+msgstr ""
 
 #: agama-cli/src/status.rs:78
 msgid "Installation is ready to start."
 msgstr ""
 
 #: agama-cli/src/status.rs:79
-#, fuzzy
 msgid "Installation is in progress."
-msgstr "Asenna ohjelmistoja"
+msgstr ""
 
 #: agama-cli/src/status.rs:80
-#, fuzzy
 msgid "Installation is being proposed."
-msgstr "Asenna ohjelmistoja"
+msgstr ""
 
 #: agama-cli/src/status.rs:81
 msgid ""
@@ -250,86 +243,83 @@ msgstr ""
 
 #: agama-manager/src/actions.rs:88
 msgid "Prepare the system"
-msgstr "Valmistele järjestelmä"
+msgstr "Stelsel word voorbereid"
 
 #: agama-manager/src/actions.rs:89
 msgid "Install software"
-msgstr "Asenna ohjelmistoja"
+msgstr ""
 
 #: agama-manager/src/actions.rs:90
 msgid "Configure the system"
-msgstr "Tee järjestelmän asetukset"
+msgstr ""
 
 #: agama-manager/src/actions.rs:195
 msgid "Storing security settings"
-msgstr "Tallennetaan tietoturva-asetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:196
-#, fuzzy
 msgid "Configuring remote access"
-msgstr "Tehdään DASD-laitteiden asetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:197
 msgid "Setting up the hostname"
-msgstr "Asetataan isäntänimi"
+msgstr ""
 
 #: agama-manager/src/actions.rs:198
 msgid "Setting up the network proxy"
-msgstr "Asetetaan verkkovälipalvelinta"
+msgstr ""
 
 #: agama-manager/src/actions.rs:199
-#, fuzzy
 msgid "Setting up NTP"
-msgstr "Tehdään verkkoasetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:200
 msgid "Importing user files"
-msgstr "Tuodaan käyttäjän tiedostoja"
+msgstr ""
 
 #: agama-manager/src/actions.rs:201
 msgid "Running user pre-installation scripts"
-msgstr "Suoritetaan käyttäjään esiasennuskomentojonoja"
+msgstr "Begin van gebruikersvoorinstallasieskripte"
 
 #: agama-manager/src/actions.rs:202
 msgid "Storing questions settings"
-msgstr "Tallentaan kysymysasetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:203
 msgid "Storing localization settings"
-msgstr "Tallennetaan kotoistusasetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:204
 msgid "Storing users settings"
-msgstr "Tallennetaan käyttäjien asetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:205
 msgid "Configuring iSCSI devices"
-msgstr "Tehdään iSCSI-laitteiden asetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:209
 msgid "Configuring DASD devices"
-msgstr "Tehdään DASD-laitteiden asetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:213
 msgid "Setting up the network"
-msgstr "Tehdään verkkoasetuksia"
+msgstr ""
 
 #: agama-manager/src/actions.rs:218
 msgid "Preparing the software proposal"
-msgstr "Valmistellaan ohjelmistoehdotusta"
+msgstr ""
 
 #: agama-manager/src/actions.rs:219
 msgid "Preparing the storage proposal"
-msgstr "Valmistellaan tallennustilaehdotusta"
+msgstr ""
 
 #: agama-manager/src/actions.rs:220
 msgid "Storing bootloader settings"
-msgstr "Tallennetaan käynnistyslataimen asetuksia"
+msgstr ""
 
 #: agama-network/src/service.rs:511
-#, fuzzy
 msgid "Writing network configuration"
-msgstr "Kirjoitetaan asetuksia"
+msgstr ""
 
 #: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
@@ -337,69 +327,66 @@ msgstr ""
 
 #: agama-security/src/service.rs:226
 msgid "Reject"
-msgstr "Hylkää"
+msgstr ""
 
 #: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
-msgstr "Luota"
+msgstr ""
 
 #: agama-security/src/service.rs:227
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
-"Itse allekirjoitettua varmennetta yritetään tuoda. Haluatko luottaa siihen "
-"ja rekisteröidä tuotteen?"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr "Ohita"
+msgstr ""
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr "Yritä uudelleen"
+msgstr ""
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
-msgstr "Pakettikomentojonoa suoritettaessa oli ongelma."
+msgstr ""
 
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr "Jatka"
+msgstr ""
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
+#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
-"Avain {0} ({1}) sormenjäljellä {2} on tuntematon. Haluatko luottaa tähän "
-"avaimeen?"
 
 #: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
-msgstr "Ohita tämä kohta"
+msgstr ""
 
 #: agama-software/src/model/packages.rs:55
 msgid "package"
-msgstr "paketti"
+msgstr ""
 
 #: agama-software/src/model/packages.rs:56
 msgid "pattern"
-msgstr "kuvio"
+msgstr ""
 
 #: agama-software/src/model/packages.rs:57
 msgid "product"
-msgstr "tuote"
+msgstr ""
 
 #: agama-software/src/service.rs:287
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
-msgstr "Ohjelmistoehdotusta ei voi luoda sisäisen virheen takia."
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:292
 msgid "Starting packages installation"
@@ -411,75 +398,58 @@ msgstr ""
 
 #: agama-software/src/zypp_server.rs:359
 msgid "Updating the list of repositories"
-msgstr "Päivitetään ohjelmalähteiden luetteloa"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:360
 msgid "Refreshing metadata from the repositories"
-msgstr "Päivitetään metatietoja ohjelmalähteistä"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:361
 msgid "Calculating the software proposal"
-msgstr "Lasketaan ohjelmistoehdotusta"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:364
 msgid "Registering the system"
-msgstr "Rekisteröidään järjestelmää"
+msgstr ""
 
 #. TRANSLATORS: %s is the alias of the repository.
 #: agama-software/src/zypp_server.rs:434
 msgid "Could not remove the repository %s"
-msgstr "Ohjelmalähdettä %s ei voi poistaa"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:454
 msgid "Could not read the repositories"
-msgstr "Ohjelmalähteitä ei voi lukea"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:488
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
-"Tuotetta ei löydy ohjelmalähteistä. Järjestelmä tulee mahdollisesti "
-"rekisteröidä."
 
 #: agama-software/src/zypp_server.rs:491
 msgid "Failed to find the product in the repositories."
-msgstr "Tuotetta ei löydy ohjelmalähteistä."
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:554
 msgid "There are conflicts in the software selection"
-msgstr "Ohjelmistoasetuksissa on ristiriitoja"
+msgstr ""
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
 #: agama-software/src/zypp_server.rs:583
 msgid "Could not select %s '%s' for installation"
-msgstr "Asennukseen ei voi valita: %s ”%s”"
+msgstr ""
 
 #: agama-software/src/zypp_server.rs:999
 msgid "Failed to register the system"
-msgstr "Järjestelmä rekisteröinti ei onnistu"
+msgstr ""
 
 #: agama-users/src/service.rs:178
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Määritetään käyttäjää, pääkäyttäjän salasana tai julkinen SSH-avain vaaditaan"
 
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
-msgstr "Ensimmäisen käyttäjän tiedot eivät ole riittävät"
-
-#, fuzzy
-#~ msgid "Calculating the installation proposal:"
-#~ msgstr "Lasketaan ohjelmistoehdotusta"
-
-#, fuzzy
-#~ msgid "Installation failed"
-#~ msgstr "Asenna ohjelmistoja"
-
-#~ msgid "Reading configuration"
-#~ msgstr "Luetaan asetuksia"
-
-#~ msgid "The product must be registered"
-#~ msgstr "Tuote tulaa olla rekisteröity"
+msgstr ""
