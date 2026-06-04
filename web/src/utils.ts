@@ -735,6 +735,17 @@ const translateEntries = (
   );
 
 /**
+ * Returns the current date and time as an ISO 8601 string with colons and
+ * dots replaced by hyphens, e.g. `2024-01-15T10-30-00-000Z`.
+ *
+ * @returns A string in the form `YYYY-MM-DDTHH-MM-SS-mmmZ`.
+ *
+ * @example
+ * const filename = `agama-logs-${isoTimestamp()}.tar.gz`;
+ */
+const isoTimestamp = (): string => new Date().toISOString().replace(/[:.]/g, "-");
+
+/**
  * Fetches a resource and triggers a browser file download.
  *
  * The download is performed via `fetch` so the caller can `await` completion,
@@ -778,5 +789,6 @@ export {
   mergeSources,
   extendCollection,
   translateEntries,
+  isoTimestamp,
   download,
 };

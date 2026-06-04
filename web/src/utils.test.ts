@@ -32,6 +32,7 @@ import {
   mergeSources,
   extendCollection,
   translateEntries,
+  isoTimestamp,
   download,
 } from "./utils";
 
@@ -1148,11 +1149,38 @@ describe("translateEntries", () => {
   });
 });
 
-const mockClick = jest.fn();
-const mockRevokeObjectURL = jest.fn();
-const mockCreateObjectURL = jest.fn(() => "blob:mock-url");
+describe("isoTimestamp", () => {
+  const FIXED_ISO = "2026-06-03T10:30:00.000Z";
+  const FIXED_SAFE = "2026-06-03T10-30-00-000Z";
+
+  beforeAll(() => {
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => ({ toISOString: () => FIXED_ISO }) as unknown as Date);
+  });
+
+  it("returns the current date and time in ISO 8601 format", () => {
+    expect(isoTimestamp()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/);
+  });
+
+  it("replaces colons with hyphens", () => {
+    expect(isoTimestamp()).not.toContain(":");
+  });
+
+  it("replaces dots with hyphens", () => {
+    expect(isoTimestamp()).not.toContain(".");
+  });
+
+  it("returns the expected value for a known date", () => {
+    expect(isoTimestamp()).toBe(FIXED_SAFE);
+  });
+});
 
 describe("download", () => {
+  const mockClick = jest.fn();
+  const mockRevokeObjectURL = jest.fn();
+  const mockCreateObjectURL = jest.fn(() => "blob:mock-url");
+
   beforeAll(() => {
     URL.createObjectURL = mockCreateObjectURL;
     URL.revokeObjectURL = mockRevokeObjectURL;

@@ -68,6 +68,10 @@ impl Progress {
 
     pub fn advance(&mut self) -> Result<(), Error> {
         if self.index >= self.size {
+            tracing::error!(
+                "Trying to call next step when there are no more steps. {:#?}",
+                self
+            );
             return Err(Error::MissingStep(self.scope));
         }
 
