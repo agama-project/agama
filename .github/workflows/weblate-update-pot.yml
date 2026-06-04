@@ -10,7 +10,7 @@ on:
       # run on every change in master, the action actually checks if there is
       # any change in the translations, if there is no change it does not upload
       # the files to Weblate so it should be OK to run it quite often
-      - master
+      - translatable-cli-help-builder
 
     paths:
       # run only if any file which can contain translatable strings is modified,
@@ -71,7 +71,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           path: agama-weblate
-          repository: ${{ github.repository_owner }}/agama-weblate
+          repository: mvidner/agama-weblate
           token:  ${{ secrets.GH_TOKEN }}
 
       - name: Configure Git user and email
