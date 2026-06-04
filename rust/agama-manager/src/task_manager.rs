@@ -270,28 +270,6 @@ impl TaskManager {
         });
     }
 
-    /// Check if a task has completed.
-    ///
-    /// Returns `true` if the task has finished executing (successfully or not).
-    pub async fn is_task_completed(&self, task_id: TaskId) -> bool {
-        let state = self.state.read().await;
-        state.completed.contains(&task_id)
-    }
-
-    /// Get the number of completed tasks.
-    pub async fn completed_count(&self) -> usize {
-        let state = self.state.read().await;
-        state.completed.len()
-    }
-
-    /// Get metadata for a specific task.
-    ///
-    /// Returns `None` if the task ID doesn't exist or hasn't been registered yet.
-    pub async fn get_metadata(&self, task_id: TaskId) -> Option<TaskMetadata> {
-        let state = self.state.read().await;
-        state.metadata.iter().find(|m| m.id == task_id).cloned()
-    }
-
     /// Get metadata for all tasks.
     ///
     /// Returns a vector of `TaskMetadata` for all registered tasks.

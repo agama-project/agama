@@ -25,7 +25,7 @@ use agama_server::{
     server::web::{server_with_state, ServerState},
 };
 use agama_utils::{
-    api::{event, status::Task, Event},
+    api::{event, Event},
     question, test,
 };
 use axum::http::{Method, Request, StatusCode};
