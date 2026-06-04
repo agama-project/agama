@@ -33,6 +33,8 @@ dependencies = [
  "agama-transfer",
  "agama-utils",
  "anyhow",
+ "gettext-rs",
+ "i18n-format",
  "tempfile",
  "tokio",
  "tracing",

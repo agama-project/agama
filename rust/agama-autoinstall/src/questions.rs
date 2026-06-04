@@ -20,7 +20,6 @@
 
 //! This module offers a mechanism to ask questions to users.
 
-use agama_l10n::helpers::gettext_noop;
 use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient as QuestionsHTTPClient};
 use agama_utils::api::question::QuestionSpec;
 
@@ -36,14 +35,18 @@ impl UserQuestions {
     }
 
     /// Asks the user whether to retry loading the profile.
-    pub async fn should_retry(&self, text: &str, error: &str) -> anyhow::Result<bool> {
+    pub async fn should_retry(&self, text: &str, error: &str, url: &str) -> anyhow::Result<Option<String>> {
         let question = QuestionSpec::new(text, "load.retry")
-            .with_action_ids(&[gettext_noop("Yes"), gettext_noop("No")])
+            .with_yes_no_actions()
             .with_default_action("No")
-            .with_data(&[("error", error)]);
+            .with_data(&[("error", error), ("originalValue", url)]);
 
         let question = self.questions.create_question(&question).await?;
         let answer = self.questions.get_answer(question.id).await?;
-        Ok(answer.action == "Yes")
+        if answer.action == "No" {
+            Ok(None)
+        } else { 
+            Ok(Some(answer.value.unwrap_or(url.to_string())))
+        }
     }
 }

@@ -21,6 +21,7 @@
 use crate::{ConfigLoader, UserQuestions};
 use agama_lib::http::BaseHTTPClient;
 use anyhow::anyhow;
+use i18n_format::i18n_format;
 
 /// List of pre-defined locations for profiles.
 const PREDEFINED_LOCATIONS: [&str; 9] = [
@@ -80,11 +81,14 @@ impl ConfigAutoLoader {
 
     /// Loads configuration files specified by the user.
     async fn load_user_config(&self, loader: ConfigLoader, urls: &[String]) -> anyhow::Result<()> {
-        for url in urls {
+        for url_ref in urls {
+            let mut url = url_ref.to_string();
             tracing::info!("Loading configuration from {url}");
-            while let Err(error) = loader.load(url).await {
+            while let Err(error) = loader.load(&url).await {
                 tracing::error!("Could not load configuration from {url}: {error}");
-                if !self.should_retry(url, &error.to_string()).await? {
+                if let Some(new_url) = self.should_retry(&url, &error.to_string()).await? {
+                    url = new_url;
+                } else {
                     return Err(error);
                 }
             }
@@ -107,13 +111,13 @@ impl ConfigAutoLoader {
         Err(anyhow!("No configuration was found"))
     }
 
-    async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<bool> {
-        let msg = format!(
+    async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<Option<String>> {
+        let msg = i18n_format!(
             r#"
-                It was not possible to load the configuration from {url}.
+                It was not possible to load the configuration from {0}.
                 It was unreachable or invalid. Do you want to try again?
-                "#
+                "#, url
         );
-        self.questions.should_retry(&msg, error).await
+        self.questions.should_retry(&msg, error, url).await
     }
 }
