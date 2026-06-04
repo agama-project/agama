@@ -20,7 +20,7 @@
 
 command -v getargs >/dev/null || . /lib/dracut-lib.sh
 
-if ! getargbool 0 rd.hcn; then
+if ! getargbool rd.hcn; then
   warn "hcnmgr: HCN not enabled"
   if (return 0 2>/dev/null); then
     return 0
@@ -79,8 +79,67 @@ get_dev_hcn() {
   return 0
 }
 
+# Get a value from a keyfile (INI format)
+# Usage: gkeyfile_get <file> <section> <key>
+gkeyfile_get() {
+  awk -v sec="$2" -v key="$3" '
+    $0 ~ "^\\[.*\\]" {
+      current_sec = $0
+      gsub(/^\\[|\\][[:space:]]*$/, "", current_sec)
+      in_sec = (current_sec == sec)
+    }
+    in_sec {
+      idx = index($0, "=")
+      if (idx > 0) {
+        k = substr($0, 1, idx - 1)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", k)
+        if (k == key) {
+          val = substr($0, idx + 1)
+          gsub(/^[[:space:]]+|[[:space:]]+$|"/, "", val)
+          print val
+          exit
+        }
+      }
+    }
+  ' "$1"
+}
+
+# Check if a key exists in a keyfile (INI format)
+# Usage: gkeyfile_has <file> <section> <key>
+gkeyfile_has() {
+  awk -v sec="$2" -v key="$3" '
+    $0 ~ "^\\[.*\\]" {
+      current_sec = $0
+      gsub(/^\\[|\\][[:space:]]*$/, "", current_sec)
+      in_sec = (current_sec == sec)
+    }
+    in_sec {
+      idx = index($0, "=")
+      if (idx > 0) {
+        k = substr($0, 1, idx - 1)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", k)
+        if (k == key) {
+          found = 1
+          exit
+        }
+      }
+    }
+    END { exit !found }
+  ' "$1"
+}
+
+# Set a value in a keyfile (INI format)
+# Usage: gkeyfile_set <file> <section> <key> <val>
+gkeyfile_set() {
+  if gkeyfile_has "$1" "$2" "$3"; then
+    sed -i "/^\[$2\]/,/^\[/ s/^\([[:space:]]*$3[[:space:]]*=[[:space:]]*\).*/\1$4/" "$1"
+  else
+    sed -i "/^\[$2\]/a $3=$4" "$1"
+  fi
+}
+
 # Parse a NetworkManager connection file and extract key fields
-# Returns: id uuid ifname master controller mac (space-separated)
+# Returns: id|uuid|ifname|master|controller|mac (pipe-separated)
 parse_nm_connection() {
   awk -F'=' '
         /^[[:space:]]*id[[:space:]]*=/ {
@@ -108,7 +167,7 @@ parse_nm_connection() {
             mac = tolower($2)
         }
         END {
-            print id, uuid, ifname, master, controller, mac
+            print id "|" uuid "|" ifname "|" master "|" controller "|" mac
         }
     ' "$1"
 }
@@ -131,7 +190,7 @@ parse_nm_connection() {
 # This function only modifies connections that are related to HCN bonds
 # (either bond interfaces themselves or slaves found in MAPPINGS)
 fixup_nm_connections() {
-  local conn_dir="/run/NetworkManager/system-connections"
+  local conn_dir="${NM_CONN_DIR:-/run/NetworkManager/system-connections}"
   [ -d "$conn_dir" ] || return 0
 
   local con id uuid ifname master controller mac uuid_map
@@ -140,7 +199,7 @@ fixup_nm_connections() {
   # First pass: build UUID to ID mapping for resolution
   for con in "$conn_dir"/*.nmconnection; do
     [ -e "$con" ] || continue
-    read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$con")
 EOF
     [ -n "$uuid" ] && [ -n "$id" ] && uuid_map="$uuid_map $uuid:$id"
@@ -151,18 +210,24 @@ EOF
     [ -e "$con" ] || continue
 
     # Extract connection details
-    read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$con")
 EOF
+
+    # Guard: Ensure we have at least id and uuid
+    if [ -z "$id" ] || [ -z "$uuid" ]; then
+      info "hcnmgr: skipping invalid connection file $con"
+      continue
+    fi
 
     # Resolve UUIDs to names for master/controller
     for map in $uuid_map; do
       if [ "$master" = "${map%:*}" ]; then
         master=${map#*:}
-        sed -i "s/^[[:space:]]*master[[:space:]]*=.*/master=$master/" "$con"
+        gkeyfile_set "$con" connection master "$master"
       elif [ "$controller" = "${map%:*}" ]; then
         controller=${map#*:}
-        sed -i "s/^[[:space:]]*controller[[:space:]]*=.*/controller=$controller/" "$con"
+        gkeyfile_set "$con" connection controller "$controller"
       fi
     done
 
@@ -200,27 +265,25 @@ EOF
       info "hcnmgr: fixing up connection $id (HCN-related)"
 
       # Ensure controller/master and port-type/slave-type are correct
-      if grep -q "^[[:space:]]*controller=" "$con"; then
-        sed -i "s/^[[:space:]]*controller[[:space:]]*=.*/controller=$found_master/" "$con"
-      elif grep -q "^[[:space:]]*master=" "$con"; then
-        sed -i "s/^[[:space:]]*master[[:space:]]*=.*/master=$found_master/" "$con"
+      if gkeyfile_has "$con" connection controller; then
+        gkeyfile_set "$con" connection controller "$found_master"
+      elif gkeyfile_has "$con" connection master; then
+        gkeyfile_set "$con" connection master "$found_master"
       else
-        sed -i "/^\[connection\]/a controller=$found_master" "$con"
+        gkeyfile_set "$con" connection controller "$found_master"
       fi
 
-      if grep -q "^[[:space:]]*port-type=" "$con"; then
-        sed -i "s/^[[:space:]]*port-type[[:space:]]*=.*/port-type=bond/" "$con"
-      elif grep -q "^[[:space:]]*slave-type=" "$con"; then
-        sed -i "s/^[[:space:]]*slave-type[[:space:]]*=.*/slave-type=bond/" "$con"
+      if gkeyfile_has "$con" connection slave-type; then
+        gkeyfile_set "$con" connection slave-type bond
       else
-        sed -i "/^\[connection\]/a port-type=bond" "$con"
+        gkeyfile_set "$con" connection port-type bond
       fi
 
       # Rename connection ID and file to match expectations
       new_id="$found_master-$found_ifname"
       if [ "$id" != "$new_id" ]; then
         info "hcnmgr: renaming connection $id to $new_id"
-        sed -i "s/^[[:space:]]*id[[:space:]]*=.*/id=$new_id/" "$con"
+        gkeyfile_set "$con" connection id "$new_id"
         mv "$con" "$conn_dir/$new_id.nmconnection"
       fi
     fi
@@ -307,7 +370,7 @@ else
       # No slave matched and no bond name present - apply to first bond
       has_bond_ip=0
       case "$HCN_IP" in
-        *:bond[0-9]*) has_bond_ip=1 ;;
+      *:bond[0-9]*) has_bond_ip=1 ;;
       esac
       if [ $matched -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
         case "$HCN_IP" in
@@ -327,12 +390,12 @@ else
           if [ "$colons" -lt 5 ]; then
             # Pad with colons to reach standard ip= format
             case $((5 - colons)) in
-              1) suffix=":" ;;
-              2) suffix="::" ;;
-              3) suffix=":::" ;;
-              4) suffix="::::" ;;
-              5) suffix=":::::" ;;
-              *) suffix="" ;;
+            1) suffix=":" ;;
+            2) suffix="::" ;;
+            3) suffix=":::" ;;
+            4) suffix="::::" ;;
+            5) suffix=":::::" ;;
+            *) suffix="" ;;
             esac
             info "hcnmgr: applying static IP config to $BONDNAME"
             NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
@@ -360,7 +423,7 @@ else
       # No slave matched and no bond name present - apply to first bond
       has_bond_route=0
       case "$HCN_ROUTE" in
-        *:bond[0-9]*) has_bond_route=1 ;;
+      *:bond[0-9]*) has_bond_route=1 ;;
       esac
       if [ $matched -eq 0 ] && [ $has_bond_route -eq 0 ]; then
         temp_route=${HCN_ROUTE}
@@ -409,7 +472,7 @@ else
           fixup_nm_connections
           mkdir -p /run/NetworkManager/initrd
           : >/run/NetworkManager/initrd/neednet
-          echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh
+          echo '[ -f /tmp/nm.done ]' >"$hookdir"/initqueue/finished/nm.sh
           generator_found=1
         else
           warn "hcnmgr: nm-initrd-generator failed"

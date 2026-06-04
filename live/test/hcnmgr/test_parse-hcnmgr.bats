@@ -45,6 +45,9 @@ teardown() {
 load_script_functions() {
     # Extract and source only the helper functions from parse-hcnmgr.sh
     # This allows us to test individual functions
+    source <(sed -n '/^gkeyfile_get()/,/^}/p' "$SCRIPT_PATH")
+    source <(sed -n '/^gkeyfile_has()/,/^}/p' "$SCRIPT_PATH")
+    source <(sed -n '/^gkeyfile_set()/,/^}/p' "$SCRIPT_PATH")
     source <(sed -n '/^xdump4()/,/^}/p' "$SCRIPT_PATH")
     source <(sed -n '/^get_mac()/,/^}/p' "$SCRIPT_PATH")
     source <(sed -n '/^parse_nm_connection()/,/^}/p' "$SCRIPT_PATH")
@@ -108,7 +111,7 @@ export -f info warn getargs getcmdline
 @test "parse_nm_connection: parses bond connection correctly" {
     load_script_functions
 
-    read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$MOCK_NM_INITRD_DIR/bond333e80f5.nmconnection")
 EOF
 
@@ -123,7 +126,7 @@ EOF
 @test "parse_nm_connection: parses slave with controller UUID" {
     load_script_functions
 
-    read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$MOCK_NM_INITRD_DIR/enP32775p1s0.nmconnection")
 EOF
 
@@ -138,7 +141,7 @@ EOF
 @test "parse_nm_connection: parses fixed connection with bond name as controller" {
     load_script_functions
 
-    read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$MOCK_HCNMGR_DIR/bond333e80f5-enP32775p1s0.nmconnection")
 EOF
 
@@ -200,15 +203,14 @@ EOSCRIPT
     export MAPPINGS="bond333e80f5 enP32775p1s0 2e7a3083f500 primary bond333e80f5 env6 2e7a322d3d06 none"
     export BOND_NAMES="bond333e80f5"
 
-    # Source fixup function
-    source <(sed -n '/^parse_nm_connection()/,/^}/p; /^fixup_nm_connections()/,/^}/p' "$SCRIPT_PATH")
+    # Source fixup function and its helpers
+    source <(sed -n '/^gkeyfile_get()/,/^}/p; /^gkeyfile_has()/,/^}/p; /^gkeyfile_set()/,/^}/p; /^parse_nm_connection()/,/^}/p; /^fixup_nm_connections()/,/^}/p' "$SCRIPT_PATH")
 
-    # Run fixup with mocked connection directory
-    cd "$TEST_WORK_DIR"
-    sed -i "s|/run/NetworkManager/system-connections|$MOCK_RUN_DIR/NetworkManager/system-connections|g" \
-        <(declare -f fixup_nm_connections)
+    # Set mocked connection directory
+    export NM_CONN_DIR="$MOCK_RUN_DIR/NetworkManager/system-connections"
 
     # Execute fixup
+    cd "$TEST_WORK_DIR"
     fixup_nm_connections
 
     # Verify the slave connection was renamed
@@ -226,99 +228,15 @@ EOSCRIPT
     export MAPPINGS="bond333e80f5 enP32775p1s0 2e7a3083f500 primary bond333e80f5 env6 2e7a322d3d06 none"
     export BOND_NAMES="bond333e80f5"
 
-    # Source fixup function
-    source <(sed -n '/^parse_nm_connection()/,/^}/p; /^fixup_nm_connections()/,/^}/p' "$SCRIPT_PATH")
+    # Source fixup function and its helpers
+    source <(sed -n '/^gkeyfile_get()/,/^}/p; /^gkeyfile_has()/,/^}/p; /^gkeyfile_set()/,/^}/p; /^parse_nm_connection()/,/^}/p; /^fixup_nm_connections()/,/^}/p' "$SCRIPT_PATH")
 
-    # Override conn_dir in the function
-    fixup_nm_connections_test() {
-        local conn_dir="$MOCK_RUN_DIR/NetworkManager/system-connections"
-        [ -d "$conn_dir" ] || return 0
+    # Set mocked connection directory
+    export NM_CONN_DIR="$MOCK_RUN_DIR/NetworkManager/system-connections"
 
-        local con id uuid ifname master controller mac uuid_map
-        local found_master found_ifname mapping_info new_id
-
-        # First pass: build UUID to ID mapping
-        for con in "$conn_dir"/*.nmconnection; do
-            [ -e "$con" ] || continue
-            read -r id uuid ifname master controller mac <<EOF
-$(parse_nm_connection "$con")
-EOF
-            [ -n "$uuid" ] && [ -n "$id" ] && uuid_map="$uuid_map $uuid:$id"
-        done
-
-        # Second pass: fixup files
-        for con in "$conn_dir"/*.nmconnection; do
-            [ -e "$con" ] || continue
-
-            read -r id uuid ifname master controller mac <<EOF
-$(parse_nm_connection "$con")
-EOF
-
-            # Resolve UUIDs to names
-            for map in $uuid_map; do
-                if [ "$master" = "${map%:*}" ]; then
-                    master=${map#*:}
-                    sed -i "s/^[[:space:]]*master[[:space:]]*=.*/master=$master/" "$con"
-                elif [ "$controller" = "${map%:*}" ]; then
-                    controller=${map#*:}
-                    sed -i "s/^[[:space:]]*controller[[:space:]]*=.*/controller=$controller/" "$con"
-                fi
-            done
-
-            [ -z "$ifname" ] && ifname="$id"
-
-            # Search MAPPINGS
-            mapping_info=$(echo "$MAPPINGS" | awk -v iface="$ifname" -v mac="$mac" '
-                {
-                    for (i=1; i<=NF; i+=4) {
-                        m_bond = $(i)
-                        m_iface = $(i+1)
-                        m_mac = $(i+2)
-                        gsub(/:/, "", m_mac)
-                        m_mac = tolower(m_mac)
-                        if ((iface != "" && m_iface == iface) || (mac != "" && m_mac == mac)) {
-                            print m_bond, m_iface
-                            exit
-                        }
-                    }
-                }
-            ')
-
-            if [ -n "$mapping_info" ]; then
-                found_master=${mapping_info% *}
-                found_ifname=${mapping_info#* }
-            elif echo " $BOND_NAMES " | grep -q " ${master:-$controller} "; then
-                found_master=${master:-$controller}
-                found_ifname=$ifname
-            fi
-
-            if [ -n "$found_master" ]; then
-                if grep -q "^[[:space:]]*controller=" "$con"; then
-                    sed -i "s/^[[:space:]]*controller[[:space:]]*=.*/controller=$found_master/" "$con"
-                elif grep -q "^[[:space:]]*master=" "$con"; then
-                    sed -i "s/^[[:space:]]*master[[:space:]]*=.*/master=$found_master/" "$con"
-                else
-                    sed -i "/^\[connection\]/a controller=$found_master" "$con"
-                fi
-
-                if grep -q "^[[:space:]]*port-type=" "$con"; then
-                    sed -i "s/^[[:space:]]*port-type[[:space:]]*=.*/port-type=bond/" "$con"
-                elif grep -q "^[[:space:]]*slave-type=" "$con"; then
-                    sed -i "s/^[[:space:]]*slave-type[[:space:]]*=.*/slave-type=bond/" "$con"
-                else
-                    sed -i "/^\[connection\]/a port-type=bond" "$con"
-                fi
-
-                new_id="$found_master-$found_ifname"
-                if [ "$id" != "$new_id" ]; then
-                    sed -i "s/^[[:space:]]*id[[:space:]]*=.*/id=$new_id/" "$con"
-                    mv "$con" "$conn_dir/$new_id.nmconnection"
-                fi
-            fi
-        done
-    }
-
-    fixup_nm_connections_test
+    # Execute fixup
+    cd "$TEST_WORK_DIR"
+    fixup_nm_connections
 
     # Verify renamed files exist
     [ -f "$MOCK_RUN_DIR/NetworkManager/system-connections/bond333e80f5-enP32775p1s0.nmconnection" ]
@@ -352,7 +270,7 @@ EOF
     source <(sed -n '/^parse_nm_connection()/,/^}/p' "$SCRIPT_PATH")
 
     # Test MAC parsing with our mock file
-    read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$MOCK_RUN_DIR/NetworkManager/system-connections/test-slave.nmconnection")
 EOF
 
@@ -538,7 +456,7 @@ uuid=test-uuid
 mac-address=2E:7A:30:83:F5:00
 EOF
 
-    read -r id uuid ifname master controller mac <<EOF
+    IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$TEST_WORK_DIR/test.nmconnection")
 EOF
 
@@ -572,8 +490,8 @@ EOF
     # We verify this by checking the function only contains one awk call
     function_body=$(sed -n '/^parse_nm_connection()/,/^}/p' "$SCRIPT_PATH")
 
-    awk_count=$(echo "$function_body" | grep -c "awk")
-    sed_count=$(echo "$function_body" | grep -c "sed -n")
+    awk_count=$(echo "$function_body" | grep -c "awk" || true)
+    sed_count=$(echo "$function_body" | grep -c "sed -n" || true)
 
     # Should have 1 awk and 0 sed -n calls
     [ "$awk_count" -eq 1 ]

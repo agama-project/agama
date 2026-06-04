@@ -117,7 +117,7 @@ teardown() {
     source <(sed -n '/^parse_nm_connection()/,/^}/p' "$SCRIPT_PATH")
 
     # Parse the bond connection to get UUID mapping
-    read -r bond_id bond_uuid _rest <<EOF
+    IFS='|' read -r bond_id bond_uuid _rest <<EOF
 $(parse_nm_connection "$TEST_WORK_DIR/connections/bond333e80f5.nmconnection")
 EOF
 
@@ -360,12 +360,12 @@ EOF
     source <(sed -n '/^parse_nm_connection()/,/^}/p' "$SCRIPT_PATH")
 
     # Parse nm-initrd-generator slave connection
-    read -r nm_id nm_uuid nm_ifname nm_master nm_controller nm_mac <<EOF
+    IFS='|' read -r nm_id nm_uuid nm_ifname nm_master nm_controller nm_mac <<EOF
 $(parse_nm_connection "$FIXTURE_DIR/nm-initrd-generator-connections/enP32775p1s0.nmconnection")
 EOF
 
     # Parse expected hcnmgr slave connection
-    read -r hcn_id hcn_uuid hcn_ifname hcn_master hcn_controller hcn_mac <<EOF
+    IFS='|' read -r hcn_id hcn_uuid hcn_ifname hcn_master hcn_controller hcn_mac <<EOF
 $(parse_nm_connection "$FIXTURE_DIR/hcnmgr-connections/bond333e80f5-enP32775p1s0.nmconnection")
 EOF
 
