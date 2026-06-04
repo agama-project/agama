@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  4 12:01:27 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Consider the old init scripts location for backward compatibility
+  (gh#agama-project/agama#3564).
+
+-------------------------------------------------------------------
 Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix software progress in openSUSE where it incorrectly report
