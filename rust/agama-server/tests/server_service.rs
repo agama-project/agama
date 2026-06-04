@@ -25,7 +25,7 @@ use agama_server::{
     server::web::{server_with_state, ServerState},
 };
 use agama_utils::{
-    api::{event, Event},
+    api::{event, status::Task, Event},
     question, test,
 };
 use axum::http::{Method, Request, StatusCode};
@@ -104,8 +104,15 @@ async fn test_get_extended_config(ctx: &mut Context) -> Result<(), Box<dyn Error
 // NOTE: temporarily it waits for the "selinux_config" task to be completed.
 // In the future we plan to add an specific event.
 async fn wait_until_finished(events: &mut event::Receiver) {
+    const TASK_NAME: &str = "software_config";
     while let Ok(event) = events.recv().await {
-        if matches!(event, Event::TaskFinished { remaining: 0, .. }) {
+        if matches!(
+            event,
+            Event::TaskFinished {
+                task: Task { name, .. }, ..
+            }
+            if name.as_str() == TASK_NAME)
+        {
             break;
         }
     }
