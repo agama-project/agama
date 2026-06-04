@@ -355,7 +355,7 @@ impl SetConfigAction {
 
     /// Helper to spawn a task for a config message call
     ///
-    /// The task ID is automatically derived from the scope by converting to lowercase.
+    /// The task name is automatically derived from the scope by converting to lowercase.
     async fn spawn_config_task<S, M>(
         &self,
         scope: Scope,
@@ -369,10 +369,10 @@ impl SetConfigAction {
         M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
         S::Error: std::error::Error + Send + 'static,
     {
-        let task_id = format!("{}_config", scope.to_string().to_lowercase());
+        let name = format!("{}_config", scope.to_string().to_lowercase());
 
         self.task_manager
-            .task(&task_id, scope, description)
+            .task(&name, scope, description)
             .depends_on(dependencies)
             .run(|| async move {
                 handler.call(message).await.map_err(TaskError::from_error)?;

@@ -82,13 +82,14 @@ pub type TaskResult = Result<(), TaskError>;
 /// Contains human-readable information about a task including its name and description.
 #[derive(Debug, Clone)]
 pub struct TaskMetadata {
-    /// Id of the task
+    /// Id of the task.
     pub id: TaskId,
-    /// Short name identifying the task (e.g., "backup-db")
+    /// Short name identifying the task (e.g., "backup-db").
     pub name: String,
-    /// Human-readable description of what the task does
+    /// Short and human-readable description of what the task does. It should
+    /// be translatable.
     pub description: String,
-    /// Scope that originated the task
+    /// Scope that originated the task.
     pub scope: Scope,
 }
 
@@ -120,10 +121,15 @@ impl From<TaskMetadata> for api::status::Task {
     }
 }
 
+/// Holds the TaskManager state.
 struct TaskManagerState {
+    /// Set of completed tasks.
     completed: HashSet<TaskId>,
+    /// Next task ID to use.
     next_id: TaskId,
+    /// Notification mechanism provided by Tokio.
     notify: Arc<Notify>,
+    /// Tasks metadata, include task ID, name, description, etc.
     metadata: Vec<TaskMetadata>,
 }
 
