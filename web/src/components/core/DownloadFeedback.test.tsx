@@ -69,7 +69,7 @@ describe("DownloadFeedback", () => {
 
     await user.click(screen.getByRole("button", { name: "Download" }));
 
-    screen.getByRole("heading", { name: "Info alert: Preparing download" });
+    screen.getByRole("heading", { name: "Info alert: Installation logs download" });
   });
 
   it("replaces the pending alert with a success alert once download completes", async () => {
@@ -79,9 +79,11 @@ describe("DownloadFeedback", () => {
     await user.click(screen.getByRole("button", { name: "Download" }));
 
     await waitFor(() =>
-      expect(screen.queryByRole("heading", { name: "Info alert: Preparing download" })).toBeNull(),
+      expect(
+        screen.queryByRole("heading", { name: "Info alert: Installation logs download" }),
+      ).toBeNull(),
     );
-    screen.getByRole("heading", { name: "Success alert: Download started" });
+    screen.getByRole("heading", { name: "Success alert: Installation logs download" });
   });
 
   it("includes the generated filename in the success alert", async () => {
@@ -90,9 +92,7 @@ describe("DownloadFeedback", () => {
 
     await user.click(screen.getByRole("button", { name: "Download" }));
 
-    await waitFor(() =>
-      screen.getByText(`You should find agama-logs-${FIXED_DATE}.tar.gz in your downloads folder.`),
-    );
+    await waitFor(() => screen.getByText(/agama-logs-2026-06-03T10-30-00-000Z\.tar\.gz/));
   });
 
   it("passes the generated filename to the download utility", async () => {
@@ -109,10 +109,14 @@ describe("DownloadFeedback", () => {
     const { user } = renderDownloadFeedback({ successTimeout: 10 });
 
     await user.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() => screen.getByRole("heading", { name: "Success alert: Download started" }));
+    await waitFor(() =>
+      screen.getByRole("heading", { name: "Success alert: Installation logs download" }),
+    );
 
     await waitFor(() =>
-      expect(screen.queryByRole("heading", { name: "Success alert: Download started" })).toBeNull(),
+      expect(
+        screen.queryByRole("heading", { name: "Success alert: Installation logs download" }),
+      ).toBeNull(),
     );
   });
 
@@ -123,7 +127,9 @@ describe("DownloadFeedback", () => {
     await user.click(screen.getByRole("button", { name: "Download" }));
     await user.click(screen.getByRole("button", { name: /close/i }));
 
-    expect(screen.queryByRole("heading", { name: "Info alert: Preparing download" })).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: "Info alert: Installation logs download" }),
+    ).toBeNull();
   });
 
   it("dismisses the success alert when the user closes it manually", async () => {
@@ -131,10 +137,14 @@ describe("DownloadFeedback", () => {
     const { user } = renderDownloadFeedback();
 
     await user.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() => screen.getByRole("heading", { name: "Success alert: Download started" }));
+    await waitFor(() =>
+      screen.getByRole("heading", { name: "Success alert: Installation logs download" }),
+    );
     await user.click(screen.getByRole("button", { name: /close/i }));
 
-    expect(screen.queryByRole("heading", { name: "Success alert: Download started" })).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: "Success alert: Installation logs download" }),
+    ).toBeNull();
   });
 
   it("dismisses the pending alert silently on error without showing an error alert", async () => {
@@ -144,9 +154,13 @@ describe("DownloadFeedback", () => {
     await user.click(screen.getByRole("button", { name: "Download" }));
 
     await waitFor(() =>
-      expect(screen.queryByRole("heading", { name: "Info alert: Preparing download" })).toBeNull(),
+      expect(
+        screen.queryByRole("heading", { name: "Info alert: Installation logs download" }),
+      ).toBeNull(),
     );
-    expect(screen.queryByRole("heading", { name: "Success alert: Download started" })).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: "Success alert: Installation logs download" }),
+    ).toBeNull();
   });
 
   it("does not auto-dismiss if the user already closed the success alert", async () => {
@@ -154,12 +168,16 @@ describe("DownloadFeedback", () => {
     const { user } = renderDownloadFeedback({ successTimeout: 10 });
 
     await user.click(screen.getByRole("button", { name: "Download" }));
-    await waitFor(() => screen.getByRole("heading", { name: "Success alert: Download started" }));
+    await waitFor(() =>
+      screen.getByRole("heading", { name: "Success alert: Installation logs download" }),
+    );
 
     await user.click(screen.getByRole("button", { name: /close/i }));
 
     // Wait longer than the timeout to confirm it does not reappear
     await new Promise((resolve) => setTimeout(resolve, 20));
-    expect(screen.queryByRole("heading", { name: "Success alert: Download started" })).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: "Success alert: Installation logs download" }),
+    ).toBeNull();
   });
 });
