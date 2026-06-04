@@ -532,15 +532,16 @@ msgstr "Agama rozhraní příkazové řádky"
 
 
 msgid ""
-"Agama's command-line interface\n"
-"\n"
 "This program allows inspecting or changing Agama's configuration, handling "
 "installation profiles, starting the installation, monitoring the process, "
 "etc.\n"
 "\n"
 "Please, use the \"help\" command to learn more."
-msgstr "Přeložený dlouhý popis..."
-
+msgstr ""
+"Tento program umožňuje prohlížet nebo měnit nastavení programu Agama, "
+"spravovat instalační profily, spouštět instalaci, sledovat průběh instalace atd.\n"
+"\n"
+"Další informace získáte pomocí příkazu \"help\"."
 
 msgid "Whether to accept invalid (self-signed, ...) certificates or not"
 msgstr "Zda přijímat neplatné (self-signed, ...) certifikáty nebo ne"
