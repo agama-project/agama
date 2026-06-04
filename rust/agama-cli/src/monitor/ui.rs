@@ -35,23 +35,41 @@ pub use summary::Summary;
 /// Converts a Scope to a human-readable string
 pub fn scope_to_string(scope: &Scope) -> String {
     match scope {
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Bootloader => gettext("Bootloader"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Manager => gettext("Manager"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Network => gettext("Network"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Ntp => gettext("NTP"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Hostname => gettext("Hostname"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::L10n => gettext("Localization"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Product => gettext("Product"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Access => gettext("Remote Access"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Software => gettext("Software"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Storage => gettext("Storage"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Files => gettext("Files"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::ISCSI => gettext("iSCSI"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::DASD => gettext("DASD"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::ZFCP => gettext("zFCP"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Users => gettext("Users"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Proxy => gettext("Proxy"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Questions => gettext("Questions"),
+        // TRANSLATORS: an installation "scope", used in the "agama monitor" command
         Scope::Security => gettext("Security"),
     }
 }
