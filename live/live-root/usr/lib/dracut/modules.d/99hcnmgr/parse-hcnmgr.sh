@@ -396,13 +396,30 @@ else
       exit 1
     fi
 
-    # Source NetworkManager dracut library functions
-    command -v nm_generate_connections >/dev/null || . /usr/lib/dracut/modules.d/35network-manager/nm-lib.sh
-
     export CMDLINE="$MOD_CMDLINE $NEW_ARGS"
-    info "hcnmgr: generating NetworkManager connections"
-    nm_generate_connections
-    fixup_nm_connections
-    nm_reload_connections
+
+    # Find and execute nm-initrd-generator
+    # Try standard paths first, then fall back to PATH search
+    generator_found=0
+    for gen in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator $(command -v nm-initrd-generator 2>/dev/null); do
+      if [ -n "$gen" ] && [ -x "$gen" ]; then
+        info "hcnmgr: calling $gen"
+        # shellcheck disable=SC2086
+        if "$gen" -- $CMDLINE; then
+          fixup_nm_connections
+          mkdir -p /run/NetworkManager/initrd
+          : >/run/NetworkManager/initrd/neednet
+          echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh
+          generator_found=1
+        else
+          warn "hcnmgr: nm-initrd-generator failed"
+        fi
+        break
+      fi
+    done
+
+    if [ $generator_found -eq 0 ]; then
+      warn "hcnmgr: nm-initrd-generator not found"
+    fi
   fi
 fi
