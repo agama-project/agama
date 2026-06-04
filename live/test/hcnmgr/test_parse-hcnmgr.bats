@@ -395,7 +395,7 @@ EOF
     [ "$BOND_ARG" = "bond=bond333e80f5:enP32775p1s0,env6:mode=1,miimon=100,fail_over_mac=2,primary=enP32775p1s0" ]
 }
 
-@test "cmdline generation: applies hcn.ip=dhcp to first bond" {
+@test "cmdline generation: applies ip=dhcp to first bond" {
     MAPPINGS="bond333e80f5 enP32775p1s0 2e7a3083f500 primary bond333e80f5 env6 2e7a322d3d06 none"
     BOND_NAMES="bond333e80f5"
     HCN_IP="dhcp"
@@ -436,7 +436,7 @@ EOF
     [ "$IP_ARG" = "ip=10.2.2.69::10.2.0.1:255.255.255.0::bond333e80f5:none" ]
 }
 
-@test "cmdline generation: replaces slave interface with bond in hcn.ip" {
+@test "cmdline generation: replaces slave interface with bond in ip" {
     MAPPINGS="bond333e80f5 enP32775p1s0 2e7a3083f500 primary bond333e80f5 env6 2e7a322d3d06 none"
     BOND_NAMES="bond333e80f5"
     HCN_IP="10.2.2.69::10.2.0.1:255.255.255.0::env6:off"
@@ -459,7 +459,7 @@ EOF
     [ "$IP_ARG" = "ip=10.2.2.69::10.2.0.1:255.255.255.0::bond333e80f5:off" ]
 }
 
-@test "cmdline generation: applies hcn.route to first bond" {
+@test "cmdline generation: applies rd.route to first bond" {
     MAPPINGS="bond333e80f5 enP32775p1s0 2e7a3083f500 primary"
     BOND_NAMES="bond333e80f5"
     HCN_ROUTE="192.168.1.0/24:10.2.0.1"
@@ -477,7 +477,7 @@ EOF
     [ "$ROUTE_ARG" = "rd.route=192.168.1.0/24:10.2.0.1:bond333e80f5" ]
 }
 
-@test "cmdline generation: replaces slave in hcn.route with bond" {
+@test "cmdline generation: replaces slave in rd.route with bond" {
     MAPPINGS="bond333e80f5 enP32775p1s0 2e7a3083f500 primary bond333e80f5 env6 2e7a322d3d06 none"
     BOND_NAMES="bond333e80f5"
     HCN_ROUTE="default:10.2.0.1:enP32775p1s0"

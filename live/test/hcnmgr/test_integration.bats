@@ -166,7 +166,7 @@ EOF
 # ========================================
 
 @test "integration: scenario 1 - DHCP on bond" {
-    # User boots with: hcn.ip=dhcp
+    # User boots with: ip=dhcp
     # Expected output: bond=bond333e80f5:... ip=bond333e80f5:dhcp
 
     BONDNAME="bond333e80f5"
@@ -208,7 +208,7 @@ EOF
 }
 
 @test "integration: scenario 3 - route on slave interface (should be replaced)" {
-    # User boots with: hcn.route=default:10.2.0.1:enP32775p1s0
+    # User boots with: rd.route=default:10.2.0.1:enP32775p1s0
     # Expected: slave replaced with bond
 
     BONDNAME="bond333e80f5"
