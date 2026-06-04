@@ -26,7 +26,13 @@ import DownloadFeedback from "./DownloadFeedback";
 import { plainRender } from "~/test-utils";
 
 const mockDownload = jest.fn();
-jest.mock("~/utils", () => ({ download: (...args) => mockDownload(...args) }));
+jest.mock("~/utils", () => {
+  const original = jest.requireActual("~/utils");
+  return {
+    ...original,
+    download: (...args) => mockDownload(...args),
+  };
+});
 
 const FIXED_DATE = "2026-06-03T10-30-00-000Z";
 jest

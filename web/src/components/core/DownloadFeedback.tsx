@@ -31,7 +31,7 @@ import {
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
-import { download } from "~/utils";
+import { download, isoTimestamp } from "~/utils";
 import { _ } from "~/i18n";
 
 export type DownloadFeedbackProps = {
@@ -86,8 +86,7 @@ export default function DownloadFeedback({
   const [filename, setFilename] = useState("");
 
   const handleDownload = async () => {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const name = `${filenamePrefix}-${timestamp}.${extension}`;
+    const name = `${filenamePrefix}-${isoTimestamp()}.${extension}`;
 
     setFilename(name);
     setAlert("pending");
