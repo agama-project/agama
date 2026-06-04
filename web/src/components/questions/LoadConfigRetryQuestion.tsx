@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Content, Stack } from "@patternfly/react-core";
+import React, { useState } from "react";
+import { Content, Form, FormGroup, Stack, TextInput } from "@patternfly/react-core";
 import { NestedContent, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
@@ -40,8 +40,10 @@ export default function RetryLoadConfigQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
+  const [url, setUrl] = useState(question.data?.originalValue || "");
+
   const actionCallback = (action: string) => {
-    question.answer = { action };
+    question.answer = { action, value: url };
     answerCallback(question);
   };
 
@@ -56,6 +58,12 @@ export default function RetryLoadConfigQuestion({
             <Content component="pre">{error}</Content>
           </NestedContent>
         )}
+        <Form>
+          {/* TRANSLATORS: field label */}
+          <FormGroup label={_("Source URL")} fieldId="url">
+            <TextInput id="url" value={url} onChange={(_event, value) => setUrl(value)} />
+          </FormGroup>
+        </Form>
       </Stack>
       <Popup.Actions>
         <QuestionActions

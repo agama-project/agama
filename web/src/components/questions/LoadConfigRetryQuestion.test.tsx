@@ -32,6 +32,7 @@ const question: Question = {
   text: "It was not possible to load the configuration from http://wrong.config.file. It was unreachable or invalid. Do you want to try again?",
   field: { type: FieldType.None },
   data: {
+    originalValue: "http://wrong.config.file",
     error: `Could not generate the configuration: Retrieving data from URL http://wrong.config.file
 
   Caused by:
@@ -65,20 +66,35 @@ it("renders the error output", () => {
   screen.getByText(/Could not resolve/);
 });
 
-it("calls the callback with answer value", async () => {
+it("renders the url input field with initial value", () => {
+  renderQuestion();
+
+  const urlInput = screen.getByRole("textbox", { name: "Source URL" });
+  expect(urlInput).toHaveValue("http://wrong.config.file");
+});
+
+it("calls the callback with answer value and modified url", async () => {
   const { user } = plainRender(
     <LoadConfigRetryQuestion question={question} answerCallback={answerFn} />,
   );
 
+  const urlInput = screen.getByRole("textbox", { name: "Source URL" });
+  await user.clear(urlInput);
+  await user.type(urlInput, "http://correct.config.file");
+
   const yesButton = await screen.findByRole("button", { name: "Yes" });
   await user.click(yesButton);
 
-  expect(question.answer).toEqual(expect.objectContaining({ action: "yes" }));
+  expect(question.answer).toEqual(
+    expect.objectContaining({ action: "yes", value: "http://correct.config.file" }),
+  );
   expect(answerFn).toHaveBeenCalledWith(question);
 
   const noButton = await screen.findByRole("button", { name: "No" });
   await user.click(noButton);
 
-  expect(question.answer).toEqual(expect.objectContaining({ action: "no" }));
+  expect(question.answer).toEqual(
+    expect.objectContaining({ action: "no", value: "http://correct.config.file" }),
+  );
   expect(answerFn).toHaveBeenCalledWith(question);
 });
