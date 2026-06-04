@@ -22,7 +22,7 @@
 
 import React from "react";
 import Text from "~/components/core/Text";
-import { defaultOptions } from "./fields";
+import { defaultOptions, FormFields } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
 import { Device } from "~/types/network";
@@ -46,7 +46,7 @@ type DeviceSelectorProps = {
   /** Whether to show device names or MAC addresses as the primary value. */
   by: "iface" | "mac";
   /** Form field name to bind to. Defaults to "iface" or "ifaceMac" based on `by`. */
-  name?: string;
+  name?: keyof FormFields;
   /** Label for the dropdown. Defaults to "Device name" or "MAC address" based on `by`. */
   label?: React.ReactNode;
   /** Sync configuration to update another field when a device is selected. */
@@ -100,10 +100,7 @@ const DeviceSelector = withForm({
 
     const valueKey = by === "iface" ? "name" : "macAddress";
 
-    // When a custom name is provided, it might not match the form schema exactly
-    // (e.g., "vlanParent" instead of "iface"), so we cast to satisfy TypeScript.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const name = (nameProp ?? (by === "iface" ? "iface" : "ifaceMac")) as any;
+    const name = nameProp ?? (by === "iface" ? "iface" : "ifaceMac");
     // TRANSLATORS: accessible label for the device selector. MAC address refers
     // to the hardware identifier of the network interface.
     const defaultLabel = by === "iface" ? _("Device name") : _("Device MAC address");

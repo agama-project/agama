@@ -97,7 +97,7 @@ type VlanFormFields = {
   vlanProtocol: VlanProtocolMode;
 };
 
-type FormFields = CommonFormFields &
+export type FormFields = CommonFormFields &
   IpFormFields &
   BondFormFields &
   BridgeFormFields &

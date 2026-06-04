@@ -42,6 +42,12 @@ const mockDevices = [
     type: CONNECTION_TYPE.ETHERNET,
     state: DeviceState.DISCONNECTED,
   },
+  {
+    name: "wlan0",
+    macAddress: "11:22:33:44:55:66",
+    type: CONNECTION_TYPE.WIFI,
+    state: DeviceState.DISCONNECTED,
+  },
 ];
 
 jest.mock("~/hooks/model/system/network", () => ({
@@ -166,6 +172,7 @@ describe("DeviceSelector", () => {
       await user.click(screen.getByLabelText("Device name"));
       expect(screen.queryByRole("option", { name: /^enp1s0/ })).not.toBeInTheDocument();
       expect(screen.queryByRole("option", { name: /^enp2s0/ })).not.toBeInTheDocument();
+      screen.getByRole("option", { name: /^wlan0/ });
     });
   });
 
@@ -178,6 +185,7 @@ describe("DeviceSelector", () => {
       const { user } = installerRender(<TestSelectors />);
       await user.click(screen.getByLabelText("Device name"));
       expect(screen.queryByRole("option", { name: /^enp1s0/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole("option", { name: /^wlan0/ })).not.toBeInTheDocument();
       screen.getByRole("option", { name: /^enp2s0/ });
     });
   });
