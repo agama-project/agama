@@ -417,7 +417,6 @@ impl Starter {
         let mut service = Service {
             questions: self.questions,
             progress,
-            files,
             issues,
             bootloader,
             hostname,
@@ -427,7 +426,6 @@ impl Starter {
             proxy,
             ntp,
             access,
-            security,
             software,
             storage,
             products: products::Registry::default(),
