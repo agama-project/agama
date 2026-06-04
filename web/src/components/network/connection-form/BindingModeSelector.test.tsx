@@ -38,6 +38,6 @@ describe("BindingModeSelector", () => {
     await user.click(screen.getByLabelText("Device binding"));
     screen.getByRole("option", { name: /^None.*all devices/ });
     screen.getByRole("option", { name: /^Chosen by name.*name in the system/ });
-    screen.getByRole("option", { name: /^Chosen by MAC.*physical address/ });
+    screen.getByRole("option", { name: /^Chosen by MAC address.*physical address/ });
   });
 });

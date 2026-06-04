@@ -100,14 +100,14 @@ describe("DeviceSelector", () => {
   describe("when by is mac", () => {
     it("shows MAC addresses as options", async () => {
       const { user } = installerRender(<TestSelectors />);
-      await user.click(screen.getByLabelText("MAC address"));
+      await user.click(screen.getByLabelText("Device MAC address"));
       screen.getByRole("option", { name: /^00:11:22:33:44:55/ });
       screen.getByRole("option", { name: /^AA:BB:CC:DD:EE:FF/ });
     });
 
     it("shows device names as option descriptions", async () => {
       const { user } = installerRender(<TestSelectors />);
-      await user.click(screen.getByLabelText("MAC address"));
+      await user.click(screen.getByLabelText("Device MAC address"));
       screen.getByRole("option", { name: /enp1s0/ });
       screen.getByRole("option", { name: /enp2s0/ });
     });
@@ -118,7 +118,7 @@ describe("DeviceSelector", () => {
       const { user } = installerRender(<TestSelectors />);
       await user.click(screen.getByLabelText("Device name"));
       await user.click(screen.getByRole("option", { name: /^enp2s0/ }));
-      await user.click(screen.getByLabelText("MAC address"));
+      await user.click(screen.getByLabelText("Device MAC address"));
       expect(screen.getByRole("option", { name: /^AA:BB:CC:DD:EE:FF/ })).not.toHaveAttribute(
         "aria-selected",
         "true",
@@ -135,7 +135,7 @@ describe("DeviceSelector", () => {
       const { user } = installerRender(<TestSelectors />);
       await user.click(screen.getByLabelText("Device name"));
       await user.click(screen.getByRole("option", { name: /^enp2s0/ }));
-      await user.click(screen.getByLabelText("MAC address"));
+      await user.click(screen.getByLabelText("Device MAC address"));
       expect(screen.getByRole("option", { name: /^AA:BB:CC:DD:EE:FF/ })).toHaveAttribute(
         "aria-selected",
         "true",

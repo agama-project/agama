@@ -272,7 +272,7 @@ describe("ConnectionForm", () => {
     it("does not show device or MAC fields when mode is Any", () => {
       installerRender(<ConnectionForm />);
       expect(screen.queryByLabelText("Device name")).not.toBeInTheDocument();
-      expect(screen.queryByLabelText("MAC address")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Device MAC address")).not.toBeInTheDocument();
     });
 
     it("submits with iface when binding by iface name", async () => {
@@ -293,8 +293,8 @@ describe("ConnectionForm", () => {
       await user.click(screen.getByLabelText("Device name"));
       await user.click(screen.getByRole("option", { name: /^enp2s0/ }));
       await user.click(screen.getByLabelText("Device binding"));
-      await user.click(screen.getByRole("option", { name: /^Chosen by MAC/ }));
-      await user.click(screen.getByLabelText("MAC address"));
+      await user.click(screen.getByRole("option", { name: /^Chosen by MAC address/ }));
+      await user.click(screen.getByLabelText("Device MAC address"));
       expect(screen.getByRole("option", { name: /^AA:BB:CC:DD:EE:FF/ })).toHaveAttribute(
         "aria-selected",
         "true",

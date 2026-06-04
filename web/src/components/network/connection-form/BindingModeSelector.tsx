@@ -45,8 +45,8 @@ const BINDING_MODE_OPTIONS = [
   {
     value: "mac",
     // TRANSLATORS: option label for binding by MAC address
-    label: N_("Chosen by MAC"),
-    // TRANSLATORS: description for the "Chosen by MAC" binding mode. MAC is the
+    label: N_("Chosen by MAC address"),
+    // TRANSLATORS: description for the "Chosen by MAC address" binding mode. MAC address is the
     // hardware address, persisting across interface renames.
     description: N_("Identify the connection device by its physical address"),
   },

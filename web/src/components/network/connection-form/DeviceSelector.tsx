@@ -106,7 +106,7 @@ const DeviceSelector = withForm({
     const name = (nameProp ?? (by === "iface" ? "iface" : "ifaceMac")) as any;
     // TRANSLATORS: accessible label for the device selector. MAC address refers
     // to the hardware identifier of the network interface.
-    const defaultLabel = by === "iface" ? _("Device name") : _("MAC address");
+    const defaultLabel = by === "iface" ? _("Device name") : _("Device MAC address");
     const label = labelProp ?? defaultLabel;
     const options = devices.map((d) => {
       const value = d[valueKey];
