@@ -420,11 +420,7 @@ impl SetConfigAction {
 
         Some(
             self.task_manager
-                .task(
-                    "network",
-                    Scope::Network,
-                    gettext("Setting up the network"),
-                )
+                .task("network", Scope::Network, gettext("Setting up the network"))
                 .run(|| async move {
                     handler
                         .update_config(network_config)
