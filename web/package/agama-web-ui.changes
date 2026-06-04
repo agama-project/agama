@@ -6,6 +6,12 @@ Thu Jun  4 14:26:23 UTC 2026 - David Diaz <dgonzalez@suse.com>
   (gh#agama-project/agama#3581).
 - Provide user feedback when collecting and downloading installer logs
   from the web UI (gh#agama-project/agama#3580).
+  
+-------------------------------------------------------------------
+
+Wed Jun  3 08:48:42 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enhanced the VLAN connection form (gh#agama-project/agama/#3571).
 
 -------------------------------------------------------------------
 Tue Jun  2 17:45:07 UTC 2026 - David Diaz <dgonzalez@suse.com>

@@ -162,6 +162,12 @@ export default {
   "1 device selected. Use the actions toolbar to apply changes.": [
     "%s perangkat dipilih. Gunakan bilah alat tindakan untuk menerapkan perubahan."
   ],
+  "802.1Q": [
+    ""
+  ],
+  "802.1ad": [
+    ""
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s dari %2$s akan dibuat untuk %3$s jika memungkinkan"
   ],
@@ -291,14 +297,14 @@ export default {
   "All": [
     "Semua"
   ],
+  "All background tasks completed": [
+    ""
+  ],
   "All content not configured to be mounted will be deleted": [
     "Semua konten yang tidak dikonfigurasi untuk di-mount akan dihapus"
   ],
   "All content will be deleted": [
     "Semua konten akan dihapus"
-  ],
-  "All fields are required": [
-    "Semua bidang wajib diisi"
   ],
   "All fields are required.": [
     "Semua bidang wajib diisi."
@@ -311,9 +317,6 @@ export default {
   ],
   "Allow growing": [
     "Izinkan pertumbuhan"
-  ],
-  "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "Selain mendefinisikan pengguna pertama, metode autentikasi untuk pengguna root dapat dikonfigurasi."
   ],
   "Already using all available devices": [
     "Sudah menggunakan semua perangkat yang tersedia"
@@ -416,9 +419,6 @@ export default {
   ],
   "Before %s": [
     "Sebelum %s"
-  ],
-  "Before starting the installation, you need to address the following problems:": [
-    "Sebelum memulai penginstalan, Anda perlu mengatasi masalah berikut ini:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
     "Di bawah ini, %s perangkat dalam keadaan luring dan tidak dapat diformat."
@@ -558,6 +558,9 @@ export default {
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Perubahan pada pengaturan ini akan segera memperbarui bagian 'Hasil' di bawah ini."
   ],
+  "Changing the product will reset your current settings.": [
+    ""
+  ],
   "Channel": [
     "Saluran"
   ],
@@ -590,9 +593,6 @@ export default {
   ],
   "Chosen by name": [
     "Dipilih berdasarkan nama"
-  ],
-  "Clear": [
-    "Hapus"
   ],
   "Clear all filters": [
     "Hapus semua filter"
@@ -656,15 +656,6 @@ export default {
   ],
   "Configured for installation only": [
     "Dikonfigurasi hanya untuk pemasangan"
-  ],
-  "Configured for root and user %s": [
-    "Dikonfigurasi untuk root dan pengguna %s"
-  ],
-  "Configured for the root user": [
-    "Dikonfigurasi untuk pengguna root"
-  ],
-  "Configured for user %s": [
-    "Dikonfigurasi untuk pengguna %s"
   ],
   "Configured with %d connection": [
     "Dikonfigurasi dengan %d koneksi"
@@ -749,9 +740,6 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "Buat grup volume LVM lain di %s"
-  ],
-  "Create user": [
-    "Membuat pengguna"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Kumpulan paket yang dikurasi untuk kasus penggunaan umum dan fitur untuk memperluas sistem."
@@ -840,15 +828,6 @@ export default {
   "Define a new LVM on top of one or several disks": [
     "Buat partisi LVM baru di atas satu atau beberapa disk"
   ],
-  "Define a user now": [
-    "Tentukan pengguna sekarang"
-  ],
-  "Define the first user with admin (sudo) privileges for system management.": [
-    "Tentukan pengguna pertama dengan hak akses admin (sudo) untuk pengelolaan sistem."
-  ],
-  "Defined (hidden)": [
-    "Didefinisikan (tersembunyi)"
-  ],
   "Delete": [
     "Menghapus"
   ],
@@ -899,9 +878,6 @@ export default {
   ],
   "Disabled": [
     "Dinonaktifkan"
-  ],
-  "Discard": [
-    "Buang"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "Buang ukuran maksimum dan lanjutkan dengan konfigurasi sederhana"
@@ -1002,9 +978,6 @@ export default {
   "Edit connection settings": [
     "Edit pengaturan koneksi"
   ],
-  "Edit user": [
-    "Edit pengguna"
-  ],
   "Edit volume group": [
     "Edit grup volume"
   ],
@@ -1022,6 +995,9 @@ export default {
   ],
   "Enabled with the system default settings": [
     "Diaktifkan dengan pengaturan bawaan sistem"
+  ],
+  "Encapsulation protocol": [
+    ""
   ],
   "Encrypt the system": [
     "Mengenkripsi sistem"
@@ -1142,9 +1118,6 @@ export default {
   ],
   "Find space in %s": [
     "Temukan ruang di %s"
-  ],
-  "First user": [
-    "Pengguna pertama"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "Untuk kebutuhan yang lebih canggih, pengguna dapat beralih ke versi jalur khusus halaman penuh ini yang menyediakan ruang lebih luas untuk tampilan detail, kolom tambahan, filter, dan fungsionalitas yang diperluas."
@@ -1722,6 +1695,9 @@ export default {
   "No changes detected. System settings are already up to date.": [
     "Tidak ada perubahan yang terdeteksi. Pengaturan sistem sudah mutakhir."
   ],
+  "No changes to apply": [
+    ""
+  ],
   "No connections match filters": [
     "Tidak ada koneksi yang cocok dengan filter"
   ],
@@ -1785,6 +1761,12 @@ export default {
   "No patterns match the filter": [
     "Tidak ada pola yang cocok dengan filter"
   ],
+  "No pending tasks": [
+    ""
+  ],
+  "No public key provided, SSH login might be restricted": [
+    ""
+  ],
   "No software RAID devices are available for selection.": [
     "Tidak ada perangkat RAID perangkat lunak yang tersedia untuk dipilih."
   ],
@@ -1799,9 +1781,6 @@ export default {
   ],
   "No targets matches filters": [
     "Tidak ada target yang cocok dengan filter"
-  ],
-  "No user defined yet.": [
-    "Belum ada pengguna yang ditetapkan."
   ],
   "No valid address.": [
     "Tidak ada alamat yang valid."
@@ -1842,9 +1821,6 @@ export default {
   "Not configured yet": [
     "Belum dikonfigurasi"
   ],
-  "Not defined": [
-    "Tidak didefinisikan"
-  ],
   "Not implemented yet (%s)": [
     "Belum diimplementasikan (%s)"
   ],
@@ -1859,6 +1835,9 @@ export default {
   ],
   "Not used by this bridge": [
     "Tidak digunakan oleh bridge ini"
+  ],
+  "Numeric identifier (0–4094)": [
+    ""
   ],
   "Offline": [
     "Luring"
@@ -1883,6 +1862,9 @@ export default {
   ],
   "Package installation failed": [
     "Pemasangan paket gagal"
+  ],
+  "Parent device must be different from the device name": [
+    ""
   ],
   "Partition %s": [
     "Partisi %s"
@@ -1947,6 +1929,9 @@ export default {
   "Passwords do not match": [
     "Kata sandi tidak cocok"
   ],
+  "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)": [
+    ""
+  ],
   "Patterns selection": [
     "Pemilihan pola"
   ],
@@ -1992,6 +1977,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
+  "Protocol": [
+    ""
+  ],
   "Protocol message interval (1-10 seconds).": [
     "Interval pesan protokol (1-10 detik)."
   ],
@@ -2007,11 +1995,14 @@ export default {
   "Provided by the network": [
     "Disediakan oleh jaringan"
   ],
-  "Public SSH Key": [
-    "Kunci SSH Publik"
+  "Public key provided": [
+    ""
   ],
-  "Public SSH Key is empty.": [
-    "Kunci SSH Publik kosong."
+  "Public key provided for %s": [
+    ""
+  ],
+  "Public key provided for both": [
+    ""
   ],
   "Public network": [
     "Jaringan publik"
@@ -2133,26 +2124,11 @@ export default {
   "Reused partitions will not be shrunk": [
     "Partisi yang digunakan kembali tidak akan diperkecil"
   ],
-  "Review and fix": [
-    "Periksa dan perbaiki"
-  ],
   "Review and install": [
     "Tinjau dan instal"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
     "Pemilihan bridge root (0-61440). [Semakin rendah, semakin tinggi prioritas]."
-  ],
-  "Root login with SSH key": [
-    "Login root dengan kunci SSH"
-  ],
-  "Root login with password": [
-    "Login root dengan kata sandi"
-  ],
-  "Root login with password and SSH key": [
-    "Login root dengan kata sandi dan kunci SSH"
-  ],
-  "Root user": [
-    "Pengguna root"
   ],
   "Routes": [
     "Route"
@@ -2306,6 +2282,12 @@ export default {
   ],
   "Set manually": [
     "Ditetapkan secara manual"
+  ],
+  "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
+    ""
+  ],
+  "Sets up both and use either to log in": [
+    ""
   ],
   "Settings": [
     "Pengaturan"
@@ -2465,6 +2447,9 @@ export default {
   ],
   "System settings successfully updated": [
     "Pengaturan sistem berhasil diperbarui"
+  ],
+  "System status: Idle": [
+    ""
   ],
   "System will have no network connections": [
     "Sistem tidak akan memiliki koneksi jaringan"
@@ -2820,12 +2805,6 @@ export default {
   "Update available disks and activate crypt devices": [
     "Perbarui disk yang tersedia dan aktifkan perangkat enkripsi"
   ],
-  "Upload": [
-    "Unggah"
-  ],
-  "Upload, paste, or drop an SSH public key": [
-    "Unggah, tempel, atau jatuhkan kunci publik SSH"
-  ],
   "Use": [
     "Gunakan"
   ],
@@ -2925,20 +2904,17 @@ export default {
   "Use for the selected product too": [
     "Gunakan juga untuk produk yang dipilih"
   ],
-  "Use password": [
-    "Gunakan kata sandi"
-  ],
   "Use product's default NTP servers": [
     "Gunakan server NTP bawaan produk"
-  ],
-  "Use public SSH Key": [
-    "Gunakan Kunci SSH Publik"
   ],
   "Use several devices": [
     "Gunakan beberapa perangkat"
   ],
-  "Use suggested username": [
-    "Gunakan nama pengguna yang disarankan"
+  "Use the 802.1Q protocol explicitly.": [
+    ""
+  ],
+  "Use the 802.1ad protocol explicitly.": [
+    ""
   ],
   "Use the RAID without partitions": [
     "Gunakan RAID tanpa partisi"
@@ -2948,6 +2924,9 @@ export default {
   ],
   "Use the disk without partitions": [
     "Gunakan disk tanpa partisi"
+  ],
+  "Use the system default (802.1Q).": [
+    ""
   ],
   "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
     "Gunakan tab untuk menelusuri disk, perangkat RAID, dan grup volume LVM."
@@ -2960,9 +2939,6 @@ export default {
   ],
   "Username": [
     "Nama pengguna"
-  ],
-  "Username suggestion dropdown": [
-    "Tarik-turun saran nama pengguna"
   ],
   "Using %d additional pattern": [
     "Menggunakan %d pola tambahan"
@@ -3090,6 +3066,9 @@ export default {
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Anda mungkin ingin menghapus pengaturan tersebut dan memulai dari awal dengan konfigurasi yang sederhana."
   ],
+  "You must fix these issues": [
+    ""
+  ],
   "You need to fix any invalid settings before proceeding with the installation.": [
     "Anda perlu memperbaiki pengaturan yang tidak valid sebelum melanjutkan instalasi."
   ],
@@ -3128,9 +3107,6 @@ export default {
   ],
   "reset to defaults": [
     "kembalikan ke default"
-  ],
-  "root": [
-    "root"
   ],
   "zFCP": [
     "zFCP"

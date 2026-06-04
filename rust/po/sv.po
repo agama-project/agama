@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 12:43+0000\n"
-"PO-Revision-Date: 2026-05-18 09:12+0000\n"
+"POT-Creation-Date: 2026-05-29 13:56+0000\n"
+"PO-Revision-Date: 2026-05-31 07:12+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sv/>\n"
@@ -54,30 +54,34 @@ msgid "Product"
 msgstr "Produkt"
 
 #: agama-cli/src/monitor/ui.rs:44
+msgid "Remote Access"
+msgstr "Fjärråtkomst"
+
+#: agama-cli/src/monitor/ui.rs:45
 msgid "Software"
 msgstr "Programvara"
 
-#: agama-cli/src/monitor/ui.rs:45
+#: agama-cli/src/monitor/ui.rs:46
 msgid "Storage"
 msgstr "Lagring"
 
-#: agama-cli/src/monitor/ui.rs:46
+#: agama-cli/src/monitor/ui.rs:47
 msgid "Files"
 msgstr "Filer"
 
-#: agama-cli/src/monitor/ui.rs:47
+#: agama-cli/src/monitor/ui.rs:48
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: agama-cli/src/monitor/ui.rs:48
+#: agama-cli/src/monitor/ui.rs:49
 msgid "DASD"
 msgstr "DASD"
 
-#: agama-cli/src/monitor/ui.rs:49
+#: agama-cli/src/monitor/ui.rs:50
 msgid "zFCP"
 msgstr "zFCP"
 
-#: agama-cli/src/monitor/ui.rs:50
+#: agama-cli/src/monitor/ui.rs:51
 msgid "Users"
 msgstr "Användare"
 
@@ -101,7 +105,7 @@ msgstr "Installation slutförd."
 msgid "You can reboot the machine to log in to the new system."
 msgstr "Du kan starta om maskinen för att logga in på det nya systemet."
 
-#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:75
+#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:76
 msgid "Installation failed."
 msgstr "Installation misslyckades."
 
@@ -140,74 +144,70 @@ msgstr "Väntar på att dessa ska lösas."
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
-msgstr ""
+msgstr "Värd: "
 
 #: agama-cli/src/monitor/ui/summary.rs:48
 msgid "Model: "
-msgstr ""
+msgstr "Modell: "
 
 #: agama-cli/src/monitor/ui/summary.rs:49
-#, fuzzy
 msgid "Product: "
-msgstr "Produkt"
+msgstr "Produkt: "
 
 #: agama-cli/src/monitor/ui/summary.rs:50
 msgid "Stage: "
-msgstr ""
+msgstr "Steg: "
 
 #: agama-cli/src/monitor/ui/summary.rs:51
 msgid "Status: "
-msgstr ""
+msgstr "Status: "
 
 #: agama-cli/src/monitor/ui/summary.rs:76
 msgid "Busy"
-msgstr ""
+msgstr "Upptagen"
 
 #: agama-cli/src/monitor/ui/summary.rs:77
 #: agama-cli/src/monitor/ui/summary.rs:104
 msgid "Failed"
-msgstr ""
+msgstr "Misslyckades"
 
 #: agama-cli/src/monitor/ui/summary.rs:78
 msgid "Idle"
-msgstr ""
+msgstr "Overksam"
 
 #: agama-cli/src/monitor/ui/summary.rs:101
-#, fuzzy
 msgid "Installing"
-msgstr "Installerar systemet:"
+msgstr "Installerar"
 
 #: agama-cli/src/monitor/ui/summary.rs:102
-#, fuzzy
 msgid "Configuring"
-msgstr "Konfigurerar DASD-enheter"
+msgstr "Konfigurerar"
 
 #: agama-cli/src/monitor/ui/summary.rs:103
 msgid "Finished"
-msgstr ""
+msgstr "Slutfört"
 
 #: agama-cli/src/monitor/ui/summary.rs:117
-#, fuzzy
 msgid "Not selected yet"
-msgstr "Ingen produkt har valts ännu."
+msgstr "Inte vald än"
 
-#: agama-cli/src/status.rs:76
+#: agama-cli/src/status.rs:77
 msgid "Installation finished successfully."
 msgstr "Installation har slutförts framgångsrikt."
 
-#: agama-cli/src/status.rs:77
+#: agama-cli/src/status.rs:78
 msgid "Installation is ready to start."
 msgstr "Installation är redo att starta."
 
-#: agama-cli/src/status.rs:78
+#: agama-cli/src/status.rs:79
 msgid "Installation is in progress."
 msgstr "Installationen pågår."
 
-#: agama-cli/src/status.rs:79
+#: agama-cli/src/status.rs:80
 msgid "Installation is being proposed."
 msgstr "Installation föreslås."
 
-#: agama-cli/src/status.rs:80
+#: agama-cli/src/status.rs:81
 msgid ""
 "There are unanswered questions. Please use `agama questions` command or web "
 "interface to answer them."
@@ -215,7 +215,7 @@ msgstr ""
 "Det finns obesvarade frågor. Vänligen använd `agama questions` kommandot "
 "eller webbgränssnittet för att besvara dem."
 
-#: agama-cli/src/status.rs:81
+#: agama-cli/src/status.rs:82
 msgid ""
 "The installer failed to calculate the installation proposal. There are "
 "issues blocking the installation."
@@ -223,15 +223,15 @@ msgstr ""
 "Installationsprogrammet misslyckades med att beräkna installationsförslag. "
 "Det finns problem som blockerar installationen."
 
-#: agama-cli/src/status.rs:111
+#: agama-cli/src/status.rs:118
 msgid "Details:"
 msgstr "Detaljer:"
 
-#: agama-cli/src/status.rs:113
+#: agama-cli/src/status.rs:120
 msgid "Open questions:"
 msgstr "Öppna frågor:"
 
-#: agama-cli/src/status.rs:119
+#: agama-cli/src/status.rs:126
 msgid "Blocking issues:"
 msgstr "Blockerande problem:"
 
@@ -245,75 +245,79 @@ msgstr "Misslyckades med att hämta skriptet %s. Vill du försöka igen?"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Misslyckades med att skriva filen %s. Vill du försöka igen?"
 
-#: agama-manager/src/actions.rs:87
+#: agama-manager/src/actions.rs:88
 msgid "Prepare the system"
 msgstr "Förbered systemet"
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:89
 msgid "Install software"
 msgstr "Installera programvara"
 
-#: agama-manager/src/actions.rs:89
+#: agama-manager/src/actions.rs:90
 msgid "Configure the system"
 msgstr "Konfigurera systemet"
 
-#: agama-manager/src/actions.rs:189
+#: agama-manager/src/actions.rs:195
 msgid "Storing security settings"
 msgstr "Lagrar säkerhetsinställningar"
 
-#: agama-manager/src/actions.rs:190
+#: agama-manager/src/actions.rs:196
+msgid "Configuring remote access"
+msgstr "Konfigurerar fjärråtkomst"
+
+#: agama-manager/src/actions.rs:197
 msgid "Setting up the hostname"
 msgstr "Ställer in värdnamnet"
 
-#: agama-manager/src/actions.rs:191
+#: agama-manager/src/actions.rs:198
 msgid "Setting up the network proxy"
 msgstr "Ställer in nätverksproxy"
 
-#: agama-manager/src/actions.rs:192
+#: agama-manager/src/actions.rs:199
 msgid "Setting up NTP"
 msgstr "Ställer in NTP"
 
-#: agama-manager/src/actions.rs:193
+#: agama-manager/src/actions.rs:200
 msgid "Importing user files"
 msgstr "Importerar användarfiler"
 
-#: agama-manager/src/actions.rs:194
+#: agama-manager/src/actions.rs:201
 msgid "Running user pre-installation scripts"
 msgstr "Kör användargenererade förinstallationsskript"
 
-#: agama-manager/src/actions.rs:195
+#: agama-manager/src/actions.rs:202
 msgid "Storing questions settings"
 msgstr "Lagrar frågeinställningar"
 
-#: agama-manager/src/actions.rs:196
+#: agama-manager/src/actions.rs:203
 msgid "Storing localization settings"
 msgstr "Lagrar lokaliseringsinställningar"
 
-#: agama-manager/src/actions.rs:197
+#: agama-manager/src/actions.rs:204
 msgid "Storing users settings"
 msgstr "Lagrar användarinställningar"
 
-#: agama-manager/src/actions.rs:198
+#: agama-manager/src/actions.rs:205
 msgid "Configuring iSCSI devices"
 msgstr "Konfigurerar iSCSI-enheter"
 
-#: agama-manager/src/actions.rs:202
+#: agama-manager/src/actions.rs:209
 msgid "Configuring DASD devices"
 msgstr "Konfigurerar DASD-enheter"
 
-#: agama-manager/src/actions.rs:206
+#: agama-manager/src/actions.rs:213
 msgid "Setting up the network"
 msgstr "Konfigurerar nätverket"
 
-#: agama-manager/src/actions.rs:211
+#: agama-manager/src/actions.rs:218
 msgid "Preparing the software proposal"
 msgstr "Förbereder programvaruförslag"
 
-#: agama-manager/src/actions.rs:212
+#: agama-manager/src/actions.rs:219
 msgid "Preparing the storage proposal"
 msgstr "Förbereder lagringsförslag"
 
-#: agama-manager/src/actions.rs:213
+#: agama-manager/src/actions.rs:220
 msgid "Storing bootloader settings"
 msgstr "Lagrar starthanterare inställningar"
 
@@ -451,14 +455,14 @@ msgstr "Kunde inte välja %s '%s' för installation"
 msgid "Failed to register the system"
 msgstr "Misslyckades att registrera systemet"
 
-#: agama-users/src/service.rs:140
+#: agama-users/src/service.rs:178
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Det krävs att man definierar en användare, ställer in root-lösenordet eller "
 "anger en offentlig SSH-nyckel"
 
-#: agama-users/src/service.rs:153
+#: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
 msgstr "Informationen om den första användaren är ofullständig"
 
