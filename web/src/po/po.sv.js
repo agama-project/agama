@@ -807,7 +807,7 @@ export default {
     "Slutför"
   ],
   "Finished": [
-    "Slutförd"
+    "Slutfört"
   ],
   "First user": [
     "Första användare"
@@ -1335,7 +1335,7 @@ export default {
     "Inte skyddat nätverk"
   ],
   "Not selected yet": [
-    "Inte valt ännu"
+    "Inte vald än"
   ],
   "Not supported (%s)": [
     "Stöds inte (%s)"
