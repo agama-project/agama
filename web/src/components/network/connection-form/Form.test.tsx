@@ -83,7 +83,7 @@ describe("ConnectionForm", () => {
   it("renders common connection fields and options", () => {
     installerRender(<ConnectionForm />);
     screen.getByLabelText("Name");
-    screen.getByLabelText("Device");
+    screen.getByLabelText("Device binding");
     screen.getByText("IPv4 Settings");
     screen.getByText("IPv6 Settings");
     screen.getByText("Use custom DNS servers");
@@ -129,7 +129,7 @@ describe("ConnectionForm", () => {
       // Switch to Ethernet and select a binding mode
       await user.click(screen.getByLabelText("Type"));
       await user.click(screen.getByText("Ethernet"));
-      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByLabelText("Device binding"));
       await user.click(screen.getByRole("option", { name: /^Chosen by name/ }));
 
       // Switch back to Bond - the device name should be preserved
@@ -178,8 +178,8 @@ describe("ConnectionForm", () => {
 
       // It should not show the Bridge's device name field anymore
       expect(screen.queryByDisplayValue("br0")).not.toBeInTheDocument();
-      // Binding mode should be back to "Any" (default)
-      expect(screen.getByLabelText("Device")).toHaveTextContent("Any");
+      // Binding mode should be back to "None" (default)
+      expect(screen.getByLabelText("Device binding")).toHaveTextContent("None");
     });
 
     it("submits with bridge settings", async () => {
@@ -278,7 +278,7 @@ describe("ConnectionForm", () => {
     it("submits with iface when binding by iface name", async () => {
       const { user } = installerRender(<ConnectionForm />);
       await user.type(screen.getByLabelText("Name"), "Testing Connection 1");
-      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByLabelText("Device binding"));
       await user.click(screen.getByRole("option", { name: /^Chosen by name/ }));
       await user.click(screen.getByRole("button", { name: "Accept" }));
       await waitFor(() =>
@@ -288,11 +288,11 @@ describe("ConnectionForm", () => {
 
     it("preserves the selected device when switching binding modes", async () => {
       const { user } = installerRender(<ConnectionForm />);
-      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByLabelText("Device binding"));
       await user.click(screen.getByRole("option", { name: /^Chosen by name/ }));
       await user.click(screen.getByLabelText("Device name"));
       await user.click(screen.getByRole("option", { name: /^enp2s0/ }));
-      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByLabelText("Device binding"));
       await user.click(screen.getByRole("option", { name: /^Chosen by MAC/ }));
       await user.click(screen.getByLabelText("MAC address"));
       expect(screen.getByRole("option", { name: /^AA:BB:CC:DD:EE:FF/ })).toHaveAttribute(
@@ -300,7 +300,7 @@ describe("ConnectionForm", () => {
         "true",
       );
       await user.click(screen.getByRole("option", { name: /^00:11:22:33:44:55/ }));
-      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByLabelText("Device binding"));
       await user.click(screen.getByRole("option", { name: /^Chosen by name/ }));
       await user.click(screen.getByLabelText("Device name"));
       expect(screen.getByRole("option", { name: /^enp1s0/ })).toHaveAttribute(
@@ -312,7 +312,7 @@ describe("ConnectionForm", () => {
     it("submits with macAddress when binding by MAC", async () => {
       const { user } = installerRender(<ConnectionForm />);
       await user.type(screen.getByLabelText("Name"), "Testing Connection 1");
-      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByLabelText("Device binding"));
       await user.click(screen.getByRole("option", { name: /^Chosen by MAC/ }));
       await user.click(screen.getByRole("button", { name: "Accept" }));
       await waitFor(() =>
@@ -698,9 +698,9 @@ describe("ConnectionForm", () => {
       const { user } = installerRender(<ConnectionForm />);
       await user.clear(screen.getByLabelText("Name"));
       await user.type(screen.getByLabelText("Name"), "My Connection");
-      await user.click(screen.getByLabelText("Device"));
+      await user.click(screen.getByLabelText("Device binding"));
       await user.click(screen.getByRole("option", { name: /^Chosen by name/ }));
-      expect(screen.getByLabelText("Name")).toHaveValue("My Connection");
+      expect(screen.getByLabelText(/^Name$/)).toHaveValue("My Connection");
     });
   });
 

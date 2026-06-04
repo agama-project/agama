@@ -28,9 +28,9 @@ import { _, N_ } from "~/i18n";
 const BINDING_MODE_OPTIONS = [
   {
     value: "none",
-    // TRANSLATORS: option label meaning the connection works with any network device.
-    label: N_("Any"),
-    // TRANSLATORS: description for the "Any" binding mode. The connection is
+    // TRANSLATORS: option label meaning the connection has no specific device binding.
+    label: N_("None"),
+    // TRANSLATORS: description for the "None" binding mode. The connection is
     // not limited to a specific device.
     description: N_("The connection is available for all devices"),
   },
@@ -65,7 +65,7 @@ const BindingModeSelector = withForm({
         {(field) => (
           <field.DropdownField
             // TRANSLATORS: label for the device binding dropdown.
-            label={_("Device")}
+            label={_("Device binding")}
             options={BINDING_MODE_OPTIONS.map(({ value, label, description }) => ({
               value,
               // eslint-disable-next-line agama-i18n/string-literals
