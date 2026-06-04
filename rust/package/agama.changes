@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  4 13:33:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Wait until all pending tasks are finished before starting the
+  (bsc#1266276).
+
+-------------------------------------------------------------------
 Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix software progress in openSUSE where it incorrectly report
