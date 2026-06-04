@@ -31,6 +31,7 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
+import ConfigDialog from "~/components/core/ConfigDialog";
 import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -60,40 +61,46 @@ export default function InstallerOptionsMenu({
   showChangeProductOption = false,
 }: InstallerOptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+  const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
 
   return (
-    <Dropdown
-      popperProps={{ position: "right", appendTo: () => document.body }}
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      onSelect={toggle}
-      onActionClick={toggle}
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          onClick={toggle}
-          // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
-          aria-label={_("More installer options")}
-          isExpanded={isOpen}
-          isFullHeight
-          variant="plain"
-        >
-          <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-            {!hideLabel && _("More")} <Icon name="expand_circle_down" />
-          </Flex>
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
-        <DropdownItem key="download-config" to={ROOT.config} download="agama-config.json">
-          {_("Download config")}
-        </DropdownItem>
-        <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-          {_("Download logs")}
-        </DropdownItem>
-      </DropdownList>
-    </Dropdown>
+    <>
+      <Dropdown
+        popperProps={{ position: "right", appendTo: () => document.body }}
+        isOpen={isOpen}
+        onOpenChange={toggle}
+        onSelect={toggle}
+        onActionClick={toggle}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            onClick={toggle}
+            // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
+            aria-label={_("More installer options")}
+            isExpanded={isOpen}
+            isFullHeight
+            variant="plain"
+          >
+            <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+              {!hideLabel && _("More")} <Icon name="expand_circle_down" />
+            </Flex>
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>
+          {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
+          <DropdownItem key="download-config" onClick={toggleConfig}>
+            {_("Show installation settings")}
+          </DropdownItem>
+          <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
+            {_("Download logs")}
+          </DropdownItem>
+        </DropdownList>
+      </Dropdown>
+
+      {isConfigOpen && <ConfigDialog onClose={toggleConfig} />}
+    </>
   );
 }
