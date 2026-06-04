@@ -250,7 +250,7 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         <DescriptionListDescription>{device.state}</DescriptionListDescription>
       </DescriptionListGroup>
       <DescriptionListGroup>
-        <DescriptionListTerm>{_("MAC")}</DescriptionListTerm>
+        <DescriptionListTerm>{_("MAC address")}</DescriptionListTerm>
         <DescriptionListDescription>{device.macAddress}</DescriptionListDescription>
       </DescriptionListGroup>
       <DescriptionListGroup>

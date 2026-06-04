@@ -97,7 +97,7 @@ type VlanFormFields = {
   vlanProtocol: VlanProtocolMode;
 };
 
-type FormFields = CommonFormFields &
+export type FormFields = CommonFormFields &
   IpFormFields &
   BondFormFields &
   BridgeFormFields &
@@ -426,18 +426,6 @@ const validateBridgeFields = (
  * Validates VLAN-specific fields.
  */
 const validateVlanFields = (fields: VlanFormFields): FieldsValidationResult<VlanFormFields> => {
-  const vlanParentError = (() => {
-    const error = requiredString(fields.vlanParent, _("Parent device is required"));
-    if (error) return error;
-
-    if (fields.vlanParent === fields.vlanIface) {
-      // TRANSLATORS: validation error for the VLAN parent device field.
-      return _("Parent device must be different from the device name");
-    }
-
-    return undefined;
-  })();
-
   return {
     // TRANSLATORS: validation error for the VLAN device name field.
     vlanIface: requiredString(fields.vlanIface, _("Device name is required")),
@@ -449,7 +437,6 @@ const validateVlanFields = (fields: VlanFormFields): FieldsValidationResult<Vlan
       _("VLAN ID is required"),
       _("VLAN ID must be between 0 and 4094"),
     ),
-    vlanParent: vlanParentError,
   };
 };
 
