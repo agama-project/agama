@@ -22,6 +22,7 @@
 
 import React from "react";
 import {
+  Flex,
   Masthead,
   MastheadContent,
   MastheadMain,
@@ -31,8 +32,8 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
 import Breadcrumbs from "~/components/core/Breadcrumbs";
+import ProductLogo from "~/components/product/ProductLogo";
 import { SkipTo } from "~/components/core";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
@@ -41,6 +42,21 @@ import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
+/**
+ * FIXME: nasty hack for prototyping
+ */
+
+const productsShortName = {
+  Kalpa: "Kalpa",
+  openSUSE_Leap: "Leap 16.1",
+  openSUSE_Leap_Micro: "Leap Micro 6.2",
+  MicroOS: "MicroOS",
+  Tumbleweed: "Tumbleweed",
+  Slowroll: "Slowroll",
+  SLES: "SLES 16.1 Beta",
+  SLES_SAP: "SLES for SAP 16.1 Beta",
+};
 
 /**
  * Props for the Header component.
@@ -138,25 +154,21 @@ export default function Header({
       <MastheadMain className={spacingStyles.pXs}>
         {!hideSkipToContent && <SkipTo />}
         {title ? (
-          <Title headingLevel="h1" className={textStyles.fontSizeXl}>
+          <Title headingLevel="h1" className={textStyles.fontSizeLg}>
             {title}
           </Title>
         ) : (
           <Breadcrumbs>
             {product && breadcrumbs && (
-              <Breadcrumbs.Item
-                hideDivider
-                isEditorial
-                path={ROOT.overview}
-                label={
-                  <Icon
-                    name="list_alt"
-                    width="1.4em"
-                    height="1.4em"
-                    style={{ verticalAlign: "middle" }}
-                  />
-                }
-              />
+              <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+                <ProductLogo product={product} width="35px" />
+                <Breadcrumbs.Item
+                  hideDivider
+                  isEditorial
+                  path={ROOT.overview}
+                  label={<>{productsShortName[product.id]}</>}
+                />
+              </Flex>
             )}
             {breadcrumbs &&
               breadcrumbs.map((props, i) => (

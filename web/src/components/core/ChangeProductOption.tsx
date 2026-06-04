@@ -101,9 +101,11 @@ export default function ChangeProductOption({
 
   return (
     <Component to={`${to}?byUser`} {...props}>
-      <Wrapper {...wrapperProps}>
-        {showIcon && <Icon name="edit_square" />} {getLabel()}
-      </Wrapper>
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+        <Wrapper {...wrapperProps}>
+          {showIcon && <Icon name="amend" width="1.6rem" height="1.6rem" />} {getLabel()}
+        </Wrapper>
+      </Flex>
     </Component>
   );
 }

@@ -21,7 +21,7 @@
  */
 
 import React, { Suspense, useId } from "react";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
@@ -47,16 +47,19 @@ import {
 } from "@patternfly/react-core";
 import { isEmpty, isObject } from "radashi";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
+import { Icon } from "~/components/layout";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
-import ReviewAndInstallButton from "~/components/core/ReviewAndInstallButton";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import Questions from "~/components/questions/Questions";
 import { _, TranslatedString } from "~/i18n";
 
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import InstallerL10nOptions from "./InstallerL10nOptions";
+import InstallerOptionsMenu from "./InstallerOptionsMenu";
+import { PRODUCT, ROOT } from "~/routes/paths";
 
 /**
  * Props accepted by Page.Section
@@ -357,6 +360,8 @@ type PageProps = (StandardPageProps | MinimalPageProps) & {
    * Default: `false` (ReviewAndInstallButton is added)
    */
   noDefaultEndSlot?: boolean;
+
+  showL10nValues?: boolean;
 };
 
 /**
@@ -451,11 +456,13 @@ const StandardLayout = ({
 const Page = ({
   variant = "standard",
   endSlot,
+  showL10nValues = false,
   noDefaultProgressMonitor = false,
-  noDefaultEndSlot = false,
   children,
   ...props
 }: PageProps): React.ReactNode => {
+  const location = useLocation();
+
   if (variant === "minimal") {
     return <MinimalLayout>{children}</MinimalLayout>;
   }
@@ -463,9 +470,24 @@ const Page = ({
   // Build endSlot content: [custom endSlot] [ReviewAndInstallButton] [ProgressStatusMonitor]
   const endSlotContent = (
     <>
-      {endSlot}
-      {!noDefaultEndSlot && <ReviewAndInstallButton />}
+      <InstallerL10nOptions showValues={showL10nValues} />
       {!noDefaultProgressMonitor && <ProgressStatusMonitor />}
+      <Button variant="plain">
+        <Icon isMiddleAligned name="routine" />
+      </Button>
+      {endSlot}
+      <InstallerOptionsMenu
+        hideLabel
+        showChangeProductOption={
+          ![
+            PRODUCT.changeProduct,
+            ROOT.installation,
+            ROOT.installationProgress,
+            ROOT.installationFinished,
+            ROOT.installationFinished,
+          ].includes(location.pathname)
+        }
+      />
     </>
   );
 

@@ -22,6 +22,7 @@
 
 import React, { useState } from "react";
 import {
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownList,
@@ -49,6 +50,14 @@ export type InstallerOptionsMenuProps = {
    * another product or mode make sense (e.g., the Overview page).
    */
   showChangeProductOption?: boolean;
+};
+
+const ItemContent = ({ icon, text }) => {
+  return (
+    <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+      <Icon name={icon} width="1.6rem" height="1.6rem" /> {text}
+    </Flex>
+  );
 };
 
 /**
@@ -86,13 +95,20 @@ export default function InstallerOptionsMenu({
       )}
     >
       <DropdownList>
-        {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
+        <DropdownItem key="terminal">
+          <ItemContent icon="terminal" text={_("Terminal")} />
+        </DropdownItem>
         <DropdownItem key="download-config" to={ROOT.config} download="agama-config.json">
-          {_("Download config")}
+          <ItemContent icon="file_json" text={_("Show settings")} />
         </DropdownItem>
         <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-          {_("Download logs")}
+          <ItemContent icon="archive" text={_("Download logs")} />
         </DropdownItem>
+        {showChangeProductOption && (
+          <>
+            <Divider /> <ChangeProductOption component="dropdownitem" showIcon />
+          </>
+        )}
       </DropdownList>
     </Dropdown>
   );
