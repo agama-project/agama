@@ -139,13 +139,6 @@ impl MessageHandler<message::SetConfig> for TasksRunner {
             tracing::error!("Failed to set the configuration: {error}");
         }
 
-        //
-        // Make sure to finish the progress
-        //
-        _ = self
-            .progress
-            .call(progress::message::Finish::new(Scope::Manager))
-            .await;
         Ok(())
     }
 }
