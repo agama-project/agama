@@ -291,6 +291,7 @@ export default function ConnectionsTable() {
                   all: _("All"),
                   [CONNECTION_TYPE.WIFI]: connectionTypeLabel(CONNECTION_TYPE.WIFI),
                   [CONNECTION_TYPE.ETHERNET]: connectionTypeLabel(CONNECTION_TYPE.ETHERNET),
+                  [CONNECTION_TYPE.VLAN]: connectionTypeLabel(CONNECTION_TYPE.VLAN),
                   [CONNECTION_TYPE.BOND]: connectionTypeLabel(CONNECTION_TYPE.BOND),
                   [CONNECTION_TYPE.BRIDGE]: connectionTypeLabel(CONNECTION_TYPE.BRIDGE),
                 }}

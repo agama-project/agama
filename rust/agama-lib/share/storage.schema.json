@@ -289,6 +289,11 @@
               "type": "array",
               "items": { "$ref": "#/$defs/alias" }
             },
+            "spacePolicy": {
+              "description": "Policy for creating physical volumes: either using all the available space or only the needed space for allocating the logical volumes.",
+              "enum": ["useNeeded", "useAvailable"],
+              "default": "useNeeded"
+            },
             "encryption": { "$ref": "#/$defs/encryption" }
           }
         }

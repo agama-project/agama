@@ -46,6 +46,7 @@ pub struct InstallAction {
     pub network: NetworkSystemClient,
     pub proxy: Handler<proxy::Service>,
     pub ntp: Handler<ntp::Service>,
+    pub access: Handler<agama_access::Service>,
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
     pub files: Handler<files::Service>,
@@ -121,8 +122,10 @@ impl InstallAction {
         self.hostname.call(hostname::message::Install).await?;
         self.users.call(users::message::Install).await?;
         self.storage.call(storage::message::Finish).await?;
+        self.access.call(agama_access::message::Finish).await?;
 
-        // call files before storage finish as it unmounts /mnt/run which is important for chrooted scripts
+        // call files as last finish so all configs are in place,
+        // but before unmout of /mnt/run which is important for chrooted scripts (bsc#1257791)
         self.files
             .call(files::message::RunScripts::new(ScriptsGroup::Post))
             .await?;
@@ -167,6 +170,7 @@ pub struct SetConfigAction {
     pub ntp: Handler<ntp::Service>,
     pub progress: Handler<progress::Service>,
     pub questions: Handler<question::Service>,
+    pub access: Handler<agama_access::Service>,
     pub security: Handler<security::Service>,
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
@@ -187,6 +191,7 @@ impl SetConfigAction {
         //
         let mut steps = vec![
             gettext("Storing security settings"),
+            gettext("Configuring remote access"),
             gettext("Setting up the hostname"),
             gettext("Setting up the network proxy"),
             gettext("Setting up NTP"),
@@ -226,6 +231,13 @@ impl SetConfigAction {
         //
         self.security
             .call(security::message::SetConfig::new(config.security.clone()))
+            .await?;
+
+        self.progress
+            .call(progress::message::Next::new(Scope::Manager))
+            .await?;
+        self.access
+            .call(agama_access::message::SetConfig::new(config.access.clone()))
             .await?;
 
         self.progress

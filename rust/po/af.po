@@ -1,0 +1,455 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR SuSE Linux Products GmbH, Nuernberg
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-29 13:56+0000\n"
+"PO-Revision-Date: 2026-05-31 11:12+0000\n"
+"Last-Translator: Feike Donia <feikedonia@proton.me>\n"
+"Language-Team: Afrikaans <https://l10n.opensuse.org/projects/agama/agama-"
+"rust-master/af/>\n"
+"Language: af\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.5\n"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
+#: agama-utils/src/question/start.rs:54
+msgid "No"
+msgstr "Nee"
+
+#: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
+#: agama-utils/src/question/start.rs:54
+msgid "Yes"
+msgstr "Ja"
+
+#: agama-cli/src/monitor/ui.rs:38
+msgid "Manager"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:39
+msgid "Network"
+msgstr "Netwerk"
+
+#: agama-cli/src/monitor/ui.rs:40
+msgid "NTP"
+msgstr "NTP"
+
+#: agama-cli/src/monitor/ui.rs:41
+msgid "Hostname"
+msgstr "Bedienernaam"
+
+#: agama-cli/src/monitor/ui.rs:42
+msgid "Localization"
+msgstr "Lokalisering"
+
+#: agama-cli/src/monitor/ui.rs:43
+msgid "Product"
+msgstr "Produk"
+
+#: agama-cli/src/monitor/ui.rs:44
+msgid "Remote Access"
+msgstr "Toegang-op-afstand"
+
+#: agama-cli/src/monitor/ui.rs:45
+msgid "Software"
+msgstr "Sagteware"
+
+#: agama-cli/src/monitor/ui.rs:46
+msgid "Storage"
+msgstr "Berging"
+
+#: agama-cli/src/monitor/ui.rs:47
+msgid "Files"
+msgstr "Lêers"
+
+#: agama-cli/src/monitor/ui.rs:48
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#: agama-cli/src/monitor/ui.rs:49
+msgid "DASD"
+msgstr "DASD"
+
+#: agama-cli/src/monitor/ui.rs:50
+msgid "zFCP"
+msgstr "zFCP"
+
+#: agama-cli/src/monitor/ui.rs:51
+msgid "Users"
+msgstr "Gebruikers"
+
+#: agama-cli/src/monitor/ui/content.rs:63
+msgid "There are pending questions:"
+msgstr "Daar is hangende vrae:"
+
+#: agama-cli/src/monitor/ui/content.rs:73
+msgid ""
+"Please use the web interface (recommended) or the \"agama questions\" "
+"command to answer them."
+msgstr ""
+"Gebruik asseblief die webkoppelvlak (aanbeveel) of die \"agama questions\"-"
+"opdrag om hulle te beantwoord."
+
+#: agama-cli/src/monitor/ui/content.rs:93
+msgid "Installation complete."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:94
+msgid "You can reboot the machine to log in to the new system."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:76
+msgid "Installation failed."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:98
+msgid "Use the \"agama logs\" command to collect the logs."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:129
+#: agama-cli/src/monitor/ui/content.rs:201
+msgid "Action needed:"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:137
+msgid "No product has been selected yet."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:222
+msgid "Ready for installation."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:223
+msgid "Waiting to start installation..."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:239
+msgid "Step"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/content.rs:241
+msgid "of"
+msgstr "van"
+
+#: agama-cli/src/monitor/ui/issues.rs:64
+msgid "Waiting for these to be resolved."
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:47
+msgid "Host: "
+msgstr "Bediener: "
+
+#: agama-cli/src/monitor/ui/summary.rs:48
+msgid "Model: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:49
+msgid "Product: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:50
+msgid "Stage: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:51
+msgid "Status: "
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:76
+msgid "Busy"
+msgstr "Besig"
+
+#: agama-cli/src/monitor/ui/summary.rs:77
+#: agama-cli/src/monitor/ui/summary.rs:104
+msgid "Failed"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:78
+msgid "Idle"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:101
+msgid "Installing"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:102
+msgid "Configuring"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:103
+msgid "Finished"
+msgstr ""
+
+#: agama-cli/src/monitor/ui/summary.rs:117
+msgid "Not selected yet"
+msgstr ""
+
+#: agama-cli/src/status.rs:77
+msgid "Installation finished successfully."
+msgstr ""
+
+#: agama-cli/src/status.rs:78
+msgid "Installation is ready to start."
+msgstr ""
+
+#: agama-cli/src/status.rs:79
+msgid "Installation is in progress."
+msgstr ""
+
+#: agama-cli/src/status.rs:80
+msgid "Installation is being proposed."
+msgstr ""
+
+#: agama-cli/src/status.rs:81
+msgid ""
+"There are unanswered questions. Please use `agama questions` command or web "
+"interface to answer them."
+msgstr ""
+
+#: agama-cli/src/status.rs:82
+msgid ""
+"The installer failed to calculate the installation proposal. There are "
+"issues blocking the installation."
+msgstr ""
+
+#: agama-cli/src/status.rs:118
+msgid "Details:"
+msgstr ""
+
+#: agama-cli/src/status.rs:120
+msgid "Open questions:"
+msgstr ""
+
+#: agama-cli/src/status.rs:126
+msgid "Blocking issues:"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by the script name.
+#: agama-files/src/service.rs:198
+msgid "Failed to retrieve the script %s. Do you want to try again?"
+msgstr ""
+
+#. TRANSLATORS: %s is replaced by the script name.
+#: agama-files/src/service.rs:222
+msgid "Failed to write the file %s. Do you want to try again?"
+msgstr ""
+
+#: agama-manager/src/actions.rs:88
+msgid "Prepare the system"
+msgstr "Stelsel word voorbereid"
+
+#: agama-manager/src/actions.rs:89
+msgid "Install software"
+msgstr ""
+
+#: agama-manager/src/actions.rs:90
+msgid "Configure the system"
+msgstr ""
+
+#: agama-manager/src/actions.rs:195
+msgid "Storing security settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:196
+msgid "Configuring remote access"
+msgstr ""
+
+#: agama-manager/src/actions.rs:197
+msgid "Setting up the hostname"
+msgstr ""
+
+#: agama-manager/src/actions.rs:198
+msgid "Setting up the network proxy"
+msgstr ""
+
+#: agama-manager/src/actions.rs:199
+msgid "Setting up NTP"
+msgstr ""
+
+#: agama-manager/src/actions.rs:200
+msgid "Importing user files"
+msgstr ""
+
+#: agama-manager/src/actions.rs:201
+msgid "Running user pre-installation scripts"
+msgstr "Begin van gebruikersvoorinstallasieskripte"
+
+#: agama-manager/src/actions.rs:202
+msgid "Storing questions settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:203
+msgid "Storing localization settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:204
+msgid "Storing users settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:205
+msgid "Configuring iSCSI devices"
+msgstr ""
+
+#: agama-manager/src/actions.rs:209
+msgid "Configuring DASD devices"
+msgstr ""
+
+#: agama-manager/src/actions.rs:213
+msgid "Setting up the network"
+msgstr ""
+
+#: agama-manager/src/actions.rs:218
+msgid "Preparing the software proposal"
+msgstr ""
+
+#: agama-manager/src/actions.rs:219
+msgid "Preparing the storage proposal"
+msgstr ""
+
+#: agama-manager/src/actions.rs:220
+msgid "Storing bootloader settings"
+msgstr ""
+
+#: agama-network/src/service.rs:511
+msgid "Writing network configuration"
+msgstr ""
+
+#: agama-network/src/service.rs:512
+msgid "Syncing the network service state"
+msgstr ""
+
+#: agama-security/src/service.rs:226
+msgid "Reject"
+msgstr ""
+
+#: agama-security/src/service.rs:226
+#: agama-software/src/callbacks/security.rs:111
+msgid "Trust"
+msgstr ""
+
+#: agama-security/src/service.rs:227
+msgid ""
+"Trying to import a self-signed certificate. Do you want to trust it and "
+"register the product?"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+msgid "Ignore"
+msgstr ""
+
+#: agama-software/src/callbacks/commit_download.rs:48
+#: agama-software/src/callbacks/install.rs:56
+#: agama-software/src/callbacks/install.rs:81
+msgid "Retry"
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:78
+msgid "There was a problem running a package script."
+msgstr ""
+
+#: agama-software/src/callbacks/install.rs:81
+msgid "Continue"
+msgstr ""
+
+#. TRANSLATORS: substituting: key ID, (key name), fingerprint
+#: agama-software/src/callbacks/security.rs:104
+#, rust-format
+msgid ""
+"The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
+"key?"
+msgstr ""
+
+#: agama-software/src/callbacks/security.rs:111
+msgid "Skip"
+msgstr ""
+
+#: agama-software/src/model/packages.rs:55
+msgid "package"
+msgstr ""
+
+#: agama-software/src/model/packages.rs:56
+msgid "pattern"
+msgstr ""
+
+#: agama-software/src/model/packages.rs:57
+msgid "product"
+msgstr ""
+
+#: agama-software/src/service.rs:287
+msgid ""
+"Due to an internal error, it was not possible to create a software proposal."
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:292
+msgid "Starting packages installation"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:305
+msgid "Packages download and installation failed. Would you like to retry?"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:359
+msgid "Updating the list of repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:360
+msgid "Refreshing metadata from the repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:361
+msgid "Calculating the software proposal"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:364
+msgid "Registering the system"
+msgstr ""
+
+#. TRANSLATORS: %s is the alias of the repository.
+#: agama-software/src/zypp_server.rs:434
+msgid "Could not remove the repository %s"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:454
+msgid "Could not read the repositories"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:488
+msgid ""
+"Failed to find the product in the repositories. You might need to register "
+"the system."
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:491
+msgid "Failed to find the product in the repositories."
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:554
+msgid "There are conflicts in the software selection"
+msgstr ""
+
+#. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
+#. and the second %s is the name of the resolvable.
+#: agama-software/src/zypp_server.rs:583
+msgid "Could not select %s '%s' for installation"
+msgstr ""
+
+#: agama-software/src/zypp_server.rs:999
+msgid "Failed to register the system"
+msgstr ""
+
+#: agama-users/src/service.rs:178
+msgid ""
+"Defining a user, setting the root password or a SSH public key is required"
+msgstr ""
+
+#: agama-users/src/service.rs:191
+msgid "First user information is incomplete"
+msgstr ""

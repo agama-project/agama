@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Wed Jun  3 08:48:42 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Enhanced the VLAN connection form (gh#agama-project/agama/#3571).
+
+-------------------------------------------------------------------
+Tue Jun  2 17:45:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add redirections for legacy routes to preserve backward
+  compatibility after route refactors (gh#agama-project/agama#3578).
+
+-------------------------------------------------------------------
+Mon Jun  1 13:51:58 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Create new LVM volume groups using all the availabe space on the
+  selected disks (jsc#PED-14153).
+
+-------------------------------------------------------------------
+Thu May 28 18:38:34 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Added support for configuring a VLAN using the UI
+  (gh#agama-project/agama#3548).
+
+-------------------------------------------------------------------
 Thu May 28 14:05:33 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve discoverability of background tasks status

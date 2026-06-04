@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix software progress in openSUSE where it incorrectly report
+  proposing software selection instead of refreshing repositories
+  (gh#agama-project/agama#3579)
+
+-------------------------------------------------------------------
+Mon Jun  1 13:47:34 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage schemas to allow configuring the space policy for
+  creating new LVM physical volumes (jsc#PED-14153).
+
+-------------------------------------------------------------------
+Fri May 29 09:47:43 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add "access" key to profile to allow after installation
+  remote access via ssh or cockpit (jsc#AGM-151)
+
+-------------------------------------------------------------------
 Wed May 27 13:40:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use "sshPublicKeys" by default (gh#agama-project/agama#3531).

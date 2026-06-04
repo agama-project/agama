@@ -114,11 +114,12 @@ describe Agama::Storage::ConfigConversions::ToModel do
           ],
           volumeGroups: [
             {
-              name:           "/dev/test",
-              vgName:         "test",
-              targetDevices:  ["/dev/vda"],
-              spacePolicy:    "keep",
-              logicalVolumes: [
+              name:                "/dev/test",
+              vgName:              "test",
+              targetDevices:       ["/dev/vda"],
+              targetDevicesPolicy: "useNeeded",
+              spacePolicy:         "keep",
+              logicalVolumes:      [
                 {
                   name:           "/dev/test/lv1",
                   filesystem:     {

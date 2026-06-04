@@ -41,6 +41,7 @@ pub fn scope_to_string(scope: &Scope) -> String {
         Scope::Hostname => gettext("Hostname"),
         Scope::L10n => gettext("Localization"),
         Scope::Product => gettext("Product"),
+        Scope::Access => gettext("Remote Access"),
         Scope::Software => gettext("Software"),
         Scope::Storage => gettext("Storage"),
         Scope::Files => gettext("Files"),

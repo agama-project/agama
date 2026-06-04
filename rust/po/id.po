@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 12:43+0000\n"
+"POT-Creation-Date: 2026-05-29 13:56+0000\n"
 "PO-Revision-Date: 2026-05-24 10:12+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -54,30 +54,34 @@ msgid "Product"
 msgstr "Produk"
 
 #: agama-cli/src/monitor/ui.rs:44
+msgid "Remote Access"
+msgstr ""
+
+#: agama-cli/src/monitor/ui.rs:45
 msgid "Software"
 msgstr "Perangkat Lunak"
 
-#: agama-cli/src/monitor/ui.rs:45
+#: agama-cli/src/monitor/ui.rs:46
 msgid "Storage"
 msgstr "Penyimpanan"
 
-#: agama-cli/src/monitor/ui.rs:46
+#: agama-cli/src/monitor/ui.rs:47
 msgid "Files"
 msgstr "Berkas"
 
-#: agama-cli/src/monitor/ui.rs:47
+#: agama-cli/src/monitor/ui.rs:48
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: agama-cli/src/monitor/ui.rs:48
+#: agama-cli/src/monitor/ui.rs:49
 msgid "DASD"
 msgstr "DASD"
 
-#: agama-cli/src/monitor/ui.rs:49
+#: agama-cli/src/monitor/ui.rs:50
 msgid "zFCP"
 msgstr "zFCP"
 
-#: agama-cli/src/monitor/ui.rs:50
+#: agama-cli/src/monitor/ui.rs:51
 msgid "Users"
 msgstr "Pengguna"
 
@@ -101,7 +105,7 @@ msgstr "Instalasi selesai."
 msgid "You can reboot the machine to log in to the new system."
 msgstr "Anda dapat me-reboot mesin untuk masuk ke sistem baru."
 
-#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:75
+#: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:76
 msgid "Installation failed."
 msgstr "Instalasi gagal."
 
@@ -187,23 +191,23 @@ msgstr "Selesai"
 msgid "Not selected yet"
 msgstr "Belum dipilih"
 
-#: agama-cli/src/status.rs:76
+#: agama-cli/src/status.rs:77
 msgid "Installation finished successfully."
 msgstr "Instalasi selesai dengan sukses."
 
-#: agama-cli/src/status.rs:77
+#: agama-cli/src/status.rs:78
 msgid "Installation is ready to start."
 msgstr "Instalasi siap dimulai."
 
-#: agama-cli/src/status.rs:78
+#: agama-cli/src/status.rs:79
 msgid "Installation is in progress."
 msgstr "Instalasi sedang berlangsung."
 
-#: agama-cli/src/status.rs:79
+#: agama-cli/src/status.rs:80
 msgid "Installation is being proposed."
 msgstr "Instalasi sedang diusulkan."
 
-#: agama-cli/src/status.rs:80
+#: agama-cli/src/status.rs:81
 msgid ""
 "There are unanswered questions. Please use `agama questions` command or web "
 "interface to answer them."
@@ -211,7 +215,7 @@ msgstr ""
 "Ada pertanyaan yang belum terjawab. Gunakan perintah `agama questions` atau "
 "antarmuka web untuk menjawabnya."
 
-#: agama-cli/src/status.rs:81
+#: agama-cli/src/status.rs:82
 msgid ""
 "The installer failed to calculate the installation proposal. There are "
 "issues blocking the installation."
@@ -219,15 +223,15 @@ msgstr ""
 "Penginstal gagal menghitung proposal instalasi. Ada masalah yang menghalangi "
 "instalasi."
 
-#: agama-cli/src/status.rs:111
+#: agama-cli/src/status.rs:118
 msgid "Details:"
 msgstr "Detail:"
 
-#: agama-cli/src/status.rs:113
+#: agama-cli/src/status.rs:120
 msgid "Open questions:"
 msgstr "Pertanyaan terbuka:"
 
-#: agama-cli/src/status.rs:119
+#: agama-cli/src/status.rs:126
 msgid "Blocking issues:"
 msgstr "Masalah yang menghalangi:"
 
@@ -241,75 +245,80 @@ msgstr "Gagal mengambil skrip %s. Apakah Anda ingin mencoba lagi?"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Gagal menulis file %s. Apakah Anda ingin mencoba lagi?"
 
-#: agama-manager/src/actions.rs:87
+#: agama-manager/src/actions.rs:88
 msgid "Prepare the system"
 msgstr "Siapkan sistem"
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:89
 msgid "Install software"
 msgstr "Instal perangkat lunak"
 
-#: agama-manager/src/actions.rs:89
+#: agama-manager/src/actions.rs:90
 msgid "Configure the system"
 msgstr "Konfigurasikan sistem"
 
-#: agama-manager/src/actions.rs:189
+#: agama-manager/src/actions.rs:195
 msgid "Storing security settings"
 msgstr "Menyimpan pengaturan keamanan"
 
-#: agama-manager/src/actions.rs:190
+#: agama-manager/src/actions.rs:196
+#, fuzzy
+msgid "Configuring remote access"
+msgstr "Mengonfigurasi perangkat DASD"
+
+#: agama-manager/src/actions.rs:197
 msgid "Setting up the hostname"
 msgstr "Menyiapkan nama host"
 
-#: agama-manager/src/actions.rs:191
+#: agama-manager/src/actions.rs:198
 msgid "Setting up the network proxy"
 msgstr "Menyiapkan proksi jaringan"
 
-#: agama-manager/src/actions.rs:192
+#: agama-manager/src/actions.rs:199
 msgid "Setting up NTP"
 msgstr "Mengatur NTP"
 
-#: agama-manager/src/actions.rs:193
+#: agama-manager/src/actions.rs:200
 msgid "Importing user files"
 msgstr "Mengimpor berkas pengguna"
 
-#: agama-manager/src/actions.rs:194
+#: agama-manager/src/actions.rs:201
 msgid "Running user pre-installation scripts"
 msgstr "Menjalankan skrip pra-instalasi pengguna"
 
-#: agama-manager/src/actions.rs:195
+#: agama-manager/src/actions.rs:202
 msgid "Storing questions settings"
 msgstr "Menyimpan pengaturan pertanyaan"
 
-#: agama-manager/src/actions.rs:196
+#: agama-manager/src/actions.rs:203
 msgid "Storing localization settings"
 msgstr "Menyimpan pengaturan lokalisasi"
 
-#: agama-manager/src/actions.rs:197
+#: agama-manager/src/actions.rs:204
 msgid "Storing users settings"
 msgstr "Menyimpan pengaturan pengguna"
 
-#: agama-manager/src/actions.rs:198
+#: agama-manager/src/actions.rs:205
 msgid "Configuring iSCSI devices"
 msgstr "Mengonfigurasi perangkat iSCSI"
 
-#: agama-manager/src/actions.rs:202
+#: agama-manager/src/actions.rs:209
 msgid "Configuring DASD devices"
 msgstr "Mengonfigurasi perangkat DASD"
 
-#: agama-manager/src/actions.rs:206
+#: agama-manager/src/actions.rs:213
 msgid "Setting up the network"
 msgstr "Menyiapkan jaringan"
 
-#: agama-manager/src/actions.rs:211
+#: agama-manager/src/actions.rs:218
 msgid "Preparing the software proposal"
 msgstr "Menyiapkan usulan perangkat lunak"
 
-#: agama-manager/src/actions.rs:212
+#: agama-manager/src/actions.rs:219
 msgid "Preparing the storage proposal"
 msgstr "Menyiapkan usulan penyimpanan"
 
-#: agama-manager/src/actions.rs:213
+#: agama-manager/src/actions.rs:220
 msgid "Storing bootloader settings"
 msgstr "Menyimpan pengaturan bootloader"
 
@@ -447,14 +456,14 @@ msgstr "Tidak dapat memilih %s '%s' untuk instalasi"
 msgid "Failed to register the system"
 msgstr "Gagal mendaftarkan sistem"
 
-#: agama-users/src/service.rs:140
+#: agama-users/src/service.rs:178
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
 "Diperlukan penetapan pengguna, pengaturan kata sandi root, atau kunci publik "
 "SSH"
 
-#: agama-users/src/service.rs:153
+#: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
 msgstr "Informasi pengguna pertama tidak lengkap"
 

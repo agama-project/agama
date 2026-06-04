@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
+require "agama/storage/bootloader_config"
 require "agama/storage/config_conversions/from_json_conversions/volume_group"
 require "agama/storage/config_conversions/to_json_conversions/volume_group"
 require "y2storage/refinements"
@@ -148,6 +149,37 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::VolumeGroup do
           )
         end
 
+        context "and #physical_volumes_policy is configured" do
+          let(:physical_volumes) do
+            [
+              "pv1",
+              "pv2",
+              {
+                generate: {
+                  targetDevices: ["disk1"],
+                  spacePolicy:   "useAvailable"
+                }
+              }
+            ]
+          end
+
+          it "generates the expected JSON" do
+            config_json = subject.convert
+            expect(config_json[:physicalVolumes]).to eq(
+              [
+                "pv1",
+                "pv2",
+                {
+                  generate: {
+                    targetDevices: ["disk1"],
+                    spacePolicy:   "useAvailable"
+                  }
+                }
+              ]
+            )
+          end
+        end
+
         context "and #physical_volumes_encryption is configured" do
           let(:physical_volumes) do
             [
@@ -180,6 +212,43 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::VolumeGroup do
                 }
               ]
             )
+          end
+
+          context "and #physical_volumes_policy is also configured" do
+            let(:physical_volumes) do
+              [
+                "pv1",
+                "pv2",
+                {
+                  generate: {
+                    targetDevices: ["disk1"],
+                    spacePolicy:   "useAvailable",
+                    encryption:    {
+                      luks1: { password: "12345" }
+                    }
+                  }
+                }
+              ]
+            end
+
+            it "generates the expected JSON" do
+              config_json = subject.convert
+              expect(config_json[:physicalVolumes]).to eq(
+                [
+                  "pv1",
+                  "pv2",
+                  {
+                    generate: {
+                      targetDevices: ["disk1"],
+                      spacePolicy:   "useAvailable",
+                      encryption:    {
+                        luks1: { password: "12345" }
+                      }
+                    }
+                  }
+                ]
+              )
+            end
           end
         end
       end

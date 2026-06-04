@@ -77,6 +77,15 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::VolumeGroup do
       end
     end
 
+    context "if 'targetDevicesPolicy' is not specified" do
+      let(:model_json) { {} }
+
+      it "sets #physical_volumes_policy to :use_available" do
+        config = subject.convert
+        expect(config.physical_volumes_policy).to eq(:use_available)
+      end
+    end
+
     context "if 'logicalVolumes' is not specified" do
       let(:model_json) { {} }
 
@@ -135,6 +144,35 @@ describe Agama::Storage::ConfigConversions::FromModelConversions::VolumeGroup do
       it "sets #physical_volumes_devices to the expected value" do
         config = subject.convert
         expect(config.physical_volumes_devices).to eq([drive.alias, md_raid.alias])
+      end
+    end
+
+    context "if 'targetDevicesPolicy' is specified" do
+      context "with 'useNeeded'" do
+        let(:model_json) { { targetDevicesPolicy: "useNeeded" } }
+
+        it "sets #physical_volumes_policy to :use_needed" do
+          config = subject.convert
+          expect(config.physical_volumes_policy).to eq(:use_needed)
+        end
+      end
+
+      context "with 'useAvailable'" do
+        let(:model_json) { { targetDevicesPolicy: "useAvailable" } }
+
+        it "sets #physical_volumes_policy to :use_available" do
+          config = subject.convert
+          expect(config.physical_volumes_policy).to eq(:use_available)
+        end
+      end
+
+      context "with an unknown value" do
+        let(:model_json) { { targetDevicesPolicy: "unknownValue" } }
+
+        it "sets #physical_volumes_policy to :use_available" do
+          config = subject.convert
+          expect(config.physical_volumes_policy).to eq(:use_available)
+        end
       end
     end
 
