@@ -259,6 +259,7 @@ impl TaskManager {
 
             if let Err(e) = events.send(Event::TaskFinished {
                 task: metadata.clone().into(),
+                remaining: state_guard.metadata.len(),
             }) {
                 tracing::warn!("Failed to send TaskFinished event: {}", e);
             }

@@ -184,13 +184,15 @@ async fn wait_until_idle(http: &BaseHTTPClient, ws: &mut WebSocketClient) -> any
     let manager = ManagerHTTPClient::new(http.clone());
     loop {
         let status = manager.status().await?;
-        if status.progresses.is_empty() {
+        if status.progresses.is_empty() && status.tasks.is_empty() {
             break;
         }
         eprintln!("There are already running operations. Waiting for them to finish...");
         loop {
-            if matches!(ws.receive().await?, api::Event::ProgressFinished { .. }) {
-                break;
+            match ws.receive().await? {
+                api::Event::ProgressFinished { .. } => break,
+                api::Event::TaskFinished { remaining, .. } if remaining == 0 => break,
+                _ => (),
             }
         }
     }

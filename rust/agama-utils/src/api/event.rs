@@ -80,6 +80,7 @@ pub enum Event {
     // Task finished.
     TaskFinished {
         task: Task,
+        remaining: usize,
     },
 }
 
