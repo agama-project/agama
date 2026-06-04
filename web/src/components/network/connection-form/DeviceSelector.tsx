@@ -51,8 +51,8 @@ type DeviceSelectorProps = {
   label?: React.ReactNode;
   /** Sync configuration to update another field when a device is selected. */
   sync?: SyncConfig;
-  /** Device names to exclude from the options list, or an object with devices and types to exclude. */
-  exclude?: string[] | ExcludeFilter;
+  /** Filter to exclude devices and types from the options list. */
+  exclude?: ExcludeFilter;
   /** Additional TanStack Form field listeners. */
   listeners?: {
     onMount?: (context: { value: string }) => void;
@@ -77,7 +77,7 @@ const DeviceSelector = withForm({
     name: undefined,
     label: undefined,
     sync: undefined,
-    exclude: [],
+    exclude: {},
     listeners: undefined,
   } as DeviceSelectorProps,
   render: function Render({
@@ -86,11 +86,11 @@ const DeviceSelector = withForm({
     name: nameProp,
     label: labelProp,
     sync,
-    exclude = [],
+    exclude = {},
     listeners: listenersProp,
   }) {
-    const excludeDevices = Array.isArray(exclude) ? exclude : exclude.devices || [];
-    const excludeTypes = Array.isArray(exclude) ? [] : exclude.types || [];
+    const excludeDevices = exclude.devices || [];
+    const excludeTypes = exclude.types || [];
 
     const devices = useDevices().filter((d) => {
       if (excludeDevices.includes(d.name)) return false;

@@ -52,7 +52,7 @@ type SyncProp = React.ComponentProps<typeof DeviceSelector>["sync"];
 type ExcludeProp = React.ComponentProps<typeof DeviceSelector>["exclude"];
 
 let sync: SyncProp;
-let exclude: ExcludeProp = [];
+let exclude: ExcludeProp = {};
 
 function TestSelectors() {
   const form = useAppForm({ ...defaultOptions });
@@ -67,7 +67,7 @@ function TestSelectors() {
 describe("DeviceSelector", () => {
   beforeEach(() => {
     sync = undefined;
-    exclude = [];
+    exclude = {};
   });
 
   describe("when mounting with no device selected", () => {
@@ -140,19 +140,6 @@ describe("DeviceSelector", () => {
         "aria-selected",
         "true",
       );
-    });
-  });
-
-  describe("when exclude is provided as an array", () => {
-    beforeEach(() => {
-      exclude = ["enp1s0"];
-    });
-
-    it("does not show excluded devices as options", async () => {
-      const { user } = installerRender(<TestSelectors />);
-      await user.click(screen.getByLabelText("Device name"));
-      expect(screen.queryByRole("option", { name: /^enp1s0/ })).not.toBeInTheDocument();
-      screen.getByRole("option", { name: /^enp2s0/ });
     });
   });
 

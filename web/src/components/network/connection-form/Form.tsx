@@ -425,7 +425,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
                           by="iface"
                           label={_("Name")}
                           sync={{ field: "ifaceMac", with: (d) => d.macAddress }}
-                          exclude={["lo"]}
+                          exclude={{ devices: ["lo"] }}
                         />
                       )}
                       {bindingMode === "mac" && (
@@ -434,7 +434,7 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
                           by="mac"
                           label={_("MAC")}
                           sync={{ field: "iface", with: (d) => d.name }}
-                          exclude={["lo"]}
+                          exclude={{ devices: ["lo"] }}
                         />
                       )}
                     </>
