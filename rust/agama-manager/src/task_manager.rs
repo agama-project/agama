@@ -30,7 +30,7 @@ use agama_utils::api::{
     event::{self, Event},
     Scope,
 };
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::sync::Arc;
 use tokio::sync::{Notify, RwLock};
@@ -130,7 +130,7 @@ struct TaskManagerState {
     /// Notification mechanism provided by Tokio.
     notify: Arc<Notify>,
     /// Tasks metadata, include task ID, name, description, etc.
-    metadata: Vec<TaskMetadata>,
+    metadata: HashMap<TaskId, TaskMetadata>,
 }
 
 /// Manager for executing async tasks with dependencies.
@@ -170,7 +170,7 @@ impl TaskManager {
             completed: HashSet::new(),
             next_id: 0,
             notify: Arc::new(Notify::new()),
-            metadata: Vec::new(),
+            metadata: HashMap::new(),
         };
 
         Self {
@@ -220,7 +220,7 @@ impl TaskManager {
         // Store metadata
         {
             let mut state = self.state.write().await;
-            state.metadata.push(metadata.clone());
+            state.metadata.insert(task_id, metadata.clone());
         }
 
         let state = Arc::clone(&self.state);
@@ -263,9 +263,7 @@ impl TaskManager {
             state_guard.completed.insert(task_id);
             state_guard.notify.notify_waiters();
 
-            if let Some(index) = state_guard.metadata.iter().position(|t| t.id == task_id) {
-                state_guard.metadata.swap_remove(index);
-            }
+            state_guard.metadata.remove(&task_id);
 
             if let Err(e) = events.send(Event::TaskFinished {
                 task: metadata.clone().into(),
@@ -281,7 +279,7 @@ impl TaskManager {
     /// Returns a vector of `TaskMetadata` for all registered tasks.
     pub async fn get_all_metadata(&self) -> Vec<TaskMetadata> {
         let state = self.state.read().await;
-        state.metadata.clone()
+        state.metadata.values().cloned().collect()
     }
 }
 
