@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 #
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,7 +22,20 @@
 
 # This script runs the user-defined Agama init scripts.
 
-: "${SCRIPTS_DIR:=/var/lib/agama/scripts/init}"
+NEW_SCRIPTS_DIR="/var/lib/agama/scripts/init"
+OLD_SCRIPTS_DIR="/var/log/agama-installation/scripts/init"
+
+# Use SCRIPTS_DIR from environment if set, otherwise try the new location
+# first, then fall back to the old location for backward compatibility.
+if [ -z "$SCRIPTS_DIR" ]; then
+    if [ -d "$NEW_SCRIPTS_DIR" ]; then
+        SCRIPTS_DIR="$NEW_SCRIPTS_DIR"
+    elif [ -d "$OLD_SCRIPTS_DIR" ]; then
+        SCRIPTS_DIR="$OLD_SCRIPTS_DIR"
+    else
+        SCRIPTS_DIR="$NEW_SCRIPTS_DIR"
+    fi
+fi
 
 systemctl disable agama-scripts.service
 
