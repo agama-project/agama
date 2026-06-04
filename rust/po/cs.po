@@ -509,10 +509,6 @@ msgstr "vzor"
 msgid "product"
 msgstr "produkt"
 
-# FIXME manually translated during development, revert before merging
-msgid "Not authenticated in {0}"
-msgstr "Neověřen pro {0}"
-
 #, fuzzy
 #~ msgid "Calculating the installation proposal:"
 #~ msgstr "Vyhodnocuje se návrh softwaru"
@@ -526,26 +522,3 @@ msgstr "Neověřen pro {0}"
 
 #~ msgid "The product must be registered"
 #~ msgstr "Produkt musí být zaregistrovaný"
-
-msgid "Agama's command-line interface"
-msgstr "Agama rozhraní příkazové řádky"
-
-
-msgid ""
-"This program allows inspecting or changing Agama's configuration, handling "
-"installation profiles, starting the installation, monitoring the process, "
-"etc.\n"
-"\n"
-"Please, use the \"help\" command to learn more."
-msgstr ""
-"Tento program umožňuje prohlížet nebo měnit nastavení programu Agama, "
-"spravovat instalační profily, spouštět instalaci, sledovat průběh instalace atd.\n"
-"\n"
-"Další informace získáte pomocí příkazu \"help\"."
-
-msgid "Whether to accept invalid (self-signed, ...) certificates or not"
-msgstr "Zda přijímat neplatné (self-signed, ...) certifikáty nebo ne"
-
-msgid "Run subcommands (if possible) in local mode - without trying to connect to remote agama server"
-msgstr "Spustit pod-příkazy (pokud možno) v lokálním módu - bez pokusu o připojení k serveru agama"
-
