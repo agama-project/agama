@@ -196,6 +196,7 @@ impl SetConfigAction {
             &gettext("Storing security settings"),
             self.security.clone(),
             security::message::SetConfig::new(config.security.clone()),
+            &[],
         )
         .await;
 
@@ -205,6 +206,7 @@ impl SetConfigAction {
             &gettext("Configuring remote access"),
             self.access.clone(),
             agama_access::message::SetConfig::new(config.access.clone()),
+            &[],
         )
         .await;
 
@@ -214,6 +216,7 @@ impl SetConfigAction {
             &gettext("Setting up the hostname"),
             self.hostname.clone(),
             hostname::message::SetConfig::new(config.hostname.clone()),
+            &[],
         )
         .await;
 
@@ -223,6 +226,7 @@ impl SetConfigAction {
             &gettext("Setting up the network proxy"),
             self.proxy.clone(),
             proxy::message::SetConfig::new(config.proxy.clone()),
+            &[],
         )
         .await;
 
@@ -233,6 +237,7 @@ impl SetConfigAction {
                 &gettext("Setting up NTP"),
                 self.ntp.clone(),
                 ntp::message::SetConfig::new(config.ntp.clone()),
+                &[],
             )
             .await;
 
@@ -243,6 +248,7 @@ impl SetConfigAction {
                 &gettext("Importing user files and scripts"),
                 self.files.clone(),
                 files::message::SetConfig::new(config.files.clone()),
+                &[],
             )
             .await;
 
@@ -270,6 +276,7 @@ impl SetConfigAction {
             &gettext("Storing questions settings"),
             self.questions.clone(),
             question::message::SetConfig::new(config.questions.clone()),
+            &[],
         )
         .await;
 
@@ -279,6 +286,7 @@ impl SetConfigAction {
             &gettext("Storing localization settings"),
             self.l10n.clone(),
             l10n::message::SetConfig::new(config.l10n.clone()),
+            &[],
         )
         .await;
 
@@ -288,6 +296,7 @@ impl SetConfigAction {
             &gettext("Storing users settings"),
             self.users.clone(),
             users::message::SetConfig::new(config.users.clone()),
+            &[],
         )
         .await;
 
@@ -297,6 +306,7 @@ impl SetConfigAction {
             &gettext("Configuring iSCSI devices"),
             self.iscsi.clone(),
             iscsi::message::SetConfig::new(config.iscsi.clone()),
+            &[],
         )
         .await;
 
@@ -323,6 +333,7 @@ impl SetConfigAction {
                     &gettext("Storing bootloader settings"),
                     self.bootloader.clone(),
                     bootloader::message::SetConfig::new(config.bootloader.clone()),
+                    &[storage_task],
                 )
                 .await;
 
@@ -351,6 +362,7 @@ impl SetConfigAction {
         description: &str,
         handler: Handler<S>,
         message: M,
+        dependencies: &[crate::task_manager::TaskId],
     ) -> crate::task_manager::TaskId
     where
         S: agama_utils::actor::MessageHandler<M> + 'static,
@@ -361,6 +373,7 @@ impl SetConfigAction {
 
         self.task_manager
             .task(&task_id, scope, description)
+            .depends_on(dependencies)
             .run(|| async move {
                 handler.call(message).await.map_err(TaskError::from_error)?;
                 Ok(())
