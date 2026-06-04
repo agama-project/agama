@@ -444,7 +444,6 @@ impl Monitor {
                     .find(|t| t.id == task.id)
                     .is_none()
                 {
-                    println!("Adding task");
                     status.status.tasks.push(task);
                 }
             }
