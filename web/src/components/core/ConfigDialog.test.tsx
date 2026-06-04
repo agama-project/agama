@@ -79,7 +79,7 @@ describe("ConfigDialog", () => {
 
     renderConfigDialog();
 
-    screen.getByRole("dialog", { name: "Installation settings" });
+    screen.getByRole("dialog", { name: "Installation settings in JSON format" });
   });
 
   it("shows a spinner while the config is loading", () => {

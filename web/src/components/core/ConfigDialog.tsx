@@ -24,7 +24,6 @@ import React, { useEffect, useState } from "react";
 import { Content, Flex, Spinner } from "@patternfly/react-core";
 import { CodeEditor, Language } from "@patternfly/react-code-editor";
 import Popup from "~/components/core/Popup";
-import Text from "~/components/core/Text";
 import { ROOT } from "~/routes/paths";
 import { isoTimestamp } from "~/utils";
 import { _ } from "~/i18n";
@@ -61,13 +60,15 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
     <Popup
       isOpen
       // TRANSLATORS: dialog title
-      title={_("Installation settings")}
+      title={_("Installation settings in JSON format")}
       onClose={onClose}
       variant="medium"
     >
       <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-        <Content isEditorial>
-          {_("The content below shows the selected installation settings in JSON format.")}
+        <Content>
+          {_(
+            "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.",
+          )}
         </Content>
         <CodeEditor
           isReadOnly
@@ -82,7 +83,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           code={config}
           emptyState={<Spinner />}
           language={Language.json}
-          height="400px"
+          height="360px"
           editorProps={{
             // Based on https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-customizing-the-appearence-scrollbars and with the help of TypeScript suggestions.
             options: {
@@ -97,13 +98,6 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
             },
           }}
         />
-        <Content>
-          <Text textStyle="fontSizeXs">
-            {_(
-              "You can download it to reproduce this installation later using the installer unattended mode through the command-line interface.",
-            )}
-          </Text>
-        </Content>
       </Flex>
 
       <Popup.Actions>
