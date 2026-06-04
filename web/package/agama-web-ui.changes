@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Jun  4 14:26:23 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the installation settings UI by showing and explaining the
+  current configuration before downloading it
+  (gh#agama-project/agama#3581).
+- Provide user feedback when collecting and downloading installer logs
+  from the web UI (gh#agama-project/agama#3580).
+
+-------------------------------------------------------------------
 Tue Jun  2 17:45:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add redirections for legacy routes to preserve backward
