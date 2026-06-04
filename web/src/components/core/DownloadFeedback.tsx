@@ -124,7 +124,7 @@ export default function DownloadFeedback({
                 <Divider />
                 <Text textStyle="fontSizeXs">
                   {_(
-                    "Data collection make take a while. The download will start automatically once the file is ready.",
+                    "Data collection may take a while. The download will start automatically once the file is ready.",
                   )}
                 </Text>
               </StackItem>
