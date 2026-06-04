@@ -242,22 +242,26 @@ impl TaskManager {
                 notify.notified().await;
             }
 
-            // TODO: propagate event and work errors.
-
-            let _ = events.send(Event::TaskStarted {
+            if let Err(e) = events.send(Event::TaskStarted {
                 task: metadata.clone().into(),
-            });
+            }) {
+                tracing::warn!("Failed to send TaskStarted event: {}", e);
+            }
 
-            let _ = work().await;
+            if let Err(e) = work().await {
+                tracing::error!("Task '{}' failed: {}", metadata.name, e);
+            }
 
             // Mark as completed
             let mut state_guard = state.write().await;
             state_guard.completed.insert(task_id);
             state_guard.notify.notify_waiters();
 
-            let _ = events.send(Event::TaskFinished {
+            if let Err(e) = events.send(Event::TaskFinished {
                 task: metadata.clone().into(),
-            });
+            }) {
+                tracing::warn!("Failed to send TaskFinished event: {}", e);
+            }
         });
     }
 
