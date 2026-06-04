@@ -25,23 +25,24 @@ import { isEmpty } from "radashi";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { useProgress } from "~/hooks/model/progress";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
+import { useStatus } from "~/hooks/model/status";
 import type { Scope } from "~/model/status";
 
 /**
- * Custom hook that manages loading state for operations with progress tracking.
+ * Custom hook that manages loading state for operations with progress and task tracking.
  *
- * This hook coordinates between progress status from the backend and query
- * refetch completion to provide a seamless loading experience. It ensures the
- * UI remains in a loading state until both the backend operation completes AND
- * all related queries have been refetched with fresh data.
+ * This hook coordinates between progress status, task status from the backend,
+ * and query refetch completion to provide a seamless loading experience. It
+ * ensures the UI remains in a loading state until backend operations complete,
+ * tasks finish, AND all related queries have been refetched with fresh data.
  *
- * @param scope - The progress scope to monitor (e.g., "software", "storage")
+ * @param scope - The progress/task scope to monitor (e.g., "software", "storage")
  * @param queryKeys - Array of TanStack Query keys to track for refetches after
  *   progress completes. Defaults to COMMON_PROPOSAL_KEYS if not provided.
  *
  * @returns Object containing:
- *   - `loading`: Boolean indicating whether an operation is in progress or
- *     waiting for queries to refetch
+ *   - `loading`: Boolean indicating whether an operation is in progress, tasks
+ *     are pending, or waiting for queries to refetch
  *   - `progress`: The current progress object from the backend, or undefined
  *     if no matching progress is active
  *
@@ -74,8 +75,8 @@ import type { Scope } from "~/model/status";
  *
  * In short, the hook works as follow
  *
- *   1. Backend operation starts → `loading` becomes `true`
- *   2. Backend operation finishes → hook waits for queries to refetch
+ *   1. Backend operation starts or tasks are created → `loading` becomes `true`
+ *   2. Backend operation finishes and tasks complete → hook waits for queries to refetch
  *   3. useTrackQueriesRefetch reports all queries refetched with fresh data →
  *      `loading` becomes `false`
  *
@@ -84,6 +85,7 @@ import type { Scope } from "~/model/status";
  *  to prevents showing stale data to users.
  *
  * @see {@link useProgress} - For monitoring backend progress status
+ * @see {@link useStatus} - For monitoring backend task status
  * @see {@link useTrackQueriesRefetch} - For tracking query refetch completion
  */
 export function useProgressTracking(
@@ -91,8 +93,9 @@ export function useProgressTracking(
   queryKeys: readonly string[] = COMMON_PROPOSAL_KEYS,
 ) {
   const progress = useProgress(scope);
+  const status = useStatus();
   const [loading, setLoading] = useState(false);
-  const progressFinishedAtRef = useRef(null);
+  const progressFinishedAtRef = useRef<number | null>(null);
 
   const { startTracking } = useTrackQueriesRefetch(queryKeys, (_, completedAt) => {
     if (progressFinishedAtRef.current && completedAt > progressFinishedAtRef.current) {
@@ -101,16 +104,24 @@ export function useProgressTracking(
     }
   });
 
+  // Filter tasks by scope
+  const tasks = scope
+    ? status?.tasks.filter((task) => task.scope === scope) || []
+    : status?.tasks || [];
+  const taskCount = tasks.length;
+
   const progressesFinished = scope ? !progress : isEmpty(progress);
+  const tasksFinished = taskCount === 0;
+  const allFinished = progressesFinished && tasksFinished;
 
   useEffect(() => {
-    if (progressesFinished && loading && !progressFinishedAtRef.current) {
+    if (allFinished && loading && !progressFinishedAtRef.current) {
       progressFinishedAtRef.current = Date.now();
       startTracking();
     }
-  }, [progressesFinished, startTracking, loading, progressFinishedAtRef]);
+  }, [allFinished, startTracking, loading, progressFinishedAtRef]);
 
-  if (!progressesFinished && !loading) {
+  if (!allFinished && !loading) {
     setLoading(true);
     progressFinishedAtRef.current = null;
   }

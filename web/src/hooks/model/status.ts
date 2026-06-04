@@ -47,7 +47,7 @@ function useStatusChanges() {
 
     return client.onEvent((event) => {
       queryClient.setQueryData(["status"], (data: Status) => {
-        let newTasks: Task[] = [];
+        let newTasks: Task[] | null = null;
 
         if (event.type === "TaskStarted") {
           newTasks = [...data.tasks, event.task];
@@ -58,7 +58,7 @@ function useStatusChanges() {
         }
 
         // Only set query data if tasks have changed
-        if (!isArrayEqual(newTasks, data.tasks)) {
+        if (newTasks && !isArrayEqual(newTasks, data.tasks)) {
           return { ...data, tasks: newTasks };
         }
       });
