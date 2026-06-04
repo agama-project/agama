@@ -21,8 +21,16 @@
  */
 
 import React, { useState } from "react";
-import { sprintf } from "sprintf-js";
-import { Alert, AlertActionCloseButton, AlertGroup } from "@patternfly/react-core";
+import {
+  Alert,
+  AlertActionCloseButton,
+  AlertGroup,
+  Divider,
+  Stack,
+  StackItem,
+} from "@patternfly/react-core";
+import Text from "~/components/core/Text";
+import Interpolate from "~/components/core/Interpolate";
 import { download } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -44,6 +52,16 @@ export type DownloadFeedbackProps = {
   /** Milliseconds before the success alert auto-dismisses (e.g. 8000). */
   successTimeout?: number;
 };
+
+const MainText = ({ filename }) => (
+  <Interpolate
+    sentence={_(
+      "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.",
+    )}
+  >
+    {() => <code>{filename}</code>}
+  </Interpolate>
+);
 
 /**
  * Wraps a downloadable resource with user feedback. Renders a toast alert
@@ -76,12 +94,18 @@ export default function DownloadFeedback({
 
     try {
       await download(url, name);
-      setAlert("success");
-      setTimeout(() => setAlert(null), successTimeout);
+      setAlert((value) => {
+        if (value === "pending") {
+          setTimeout(() => setAlert(null), successTimeout);
+          return "success";
+        }
+      });
     } catch {
       setAlert(null);
     }
   };
+
+  const title = _("Installation logs download");
 
   return (
     <>
@@ -89,23 +113,36 @@ export default function DownloadFeedback({
         {alert === "pending" && (
           <Alert
             variant="info"
-            title={_("Preparing download")}
+            title={title}
             actionClose={<AlertActionCloseButton onClose={() => setAlert(null)} />}
           >
-            {_(
-              "This can take a while. The download will start automatically once the file is ready.",
-            )}
+            <Stack hasGutter>
+              <StackItem>
+                <MainText filename={filename} />
+              </StackItem>
+              <StackItem>
+                <Divider />
+                <Text textStyle="fontSizeXs">
+                  {_(
+                    "Data collection make take a while. The download will start automatically once the file is ready.",
+                  )}
+                </Text>
+              </StackItem>
+            </Stack>
           </Alert>
         )}
 
         {alert === "success" && (
           <Alert
             variant="success"
-            title={_("Download started")}
+            title={title}
             actionClose={<AlertActionCloseButton onClose={() => setAlert(null)} />}
           >
-            {/* TRANSLATORS: %s is replaced by the filename, e.g. agama-logs-2024-01-15T10-30-00-000Z.tar.gz */}
-            {sprintf(_("You should find %s in your downloads folder."), filename)}
+            <Stack hasGutter>
+              <StackItem>
+                <MainText filename={filename} />
+              </StackItem>
+            </Stack>
           </Alert>
         )}
       </AlertGroup>
