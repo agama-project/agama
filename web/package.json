@@ -96,6 +96,7 @@
     "@patternfly/patternfly": "6.4.0",
     "@patternfly/react-code-editor": "6.4.1",
     "@patternfly/react-core": "6.4.1",
+    "@patternfly/react-styles": "6.4.0",
     "@patternfly/react-table": "6.4.1",
     "@tanstack/react-form": "^1.28.4",
     "@tanstack/react-query": "^5.90.21",
