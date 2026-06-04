@@ -168,7 +168,7 @@ impl InstallationStatus {
     }
 
     pub fn is_idle(&self) -> bool {
-        self.status.progresses.is_empty()
+        self.status.progresses.is_empty() && self.status.tasks.is_empty()
     }
 
     pub fn has_finished(&self) -> bool {
