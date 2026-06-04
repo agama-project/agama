@@ -80,7 +80,7 @@ proc/device-tree/
 Two sets of NetworkManager connection files are provided:
 
 1. **nm-initrd-generator-connections/** - Initial state (UUID controllers)
-2. **hcnmg-connections/** - Expected state after fixup (bond name controllers)
+2. **hcnmgr-connections/** - Expected state after fixup (bond name controllers)
 
 This allows validation of the complete transformation process.
 

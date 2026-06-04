@@ -339,7 +339,7 @@ EOF
     # NetworkManager connection files should have 600 permissions
 
     mkdir -p "$TEST_WORK_DIR/connections"
-    cp "$FIXTURE_DIR/hcnmg-connections/bond333e80f5.nmconnection" \
+    cp "$FIXTURE_DIR/hcnmgr-connections/bond333e80f5.nmconnection" \
        "$TEST_WORK_DIR/connections/"
 
     # In real scenario, nm-initrd-generator creates with 600
@@ -366,7 +366,7 @@ EOF
 
     # Parse expected hcnmgr slave connection
     read -r hcn_id hcn_uuid hcn_ifname hcn_master hcn_controller hcn_mac <<EOF
-$(parse_nm_connection "$FIXTURE_DIR/hcnmg-connections/bond333e80f5-enP32775p1s0.nmconnection")
+$(parse_nm_connection "$FIXTURE_DIR/hcnmgr-connections/bond333e80f5-enP32775p1s0.nmconnection")
 EOF
 
     # Verify transformation expectations

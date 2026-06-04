@@ -50,7 +50,7 @@ live/test/hcnmgr/
 ├── proc/device-tree/         # Mock device-tree
 ├── sys/class/net/            # Mock sysfs
 ├── nm-initrd-generator-connections/  # Before fixup
-├── hcnmg-connections/        # After fixup (expected)
+├── hcnmgr-connections/        # After fixup (expected)
 └── system-connections/       # Additional test data
 ```
 

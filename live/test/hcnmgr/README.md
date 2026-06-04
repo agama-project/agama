@@ -27,7 +27,7 @@ live/test/hcnmgr/
 │   ├── bond333e80f5.nmconnection    # Bond master
 │   ├── enP32775p1s0.nmconnection    # Slave (controller=UUID)
 │   └── env6.nmconnection            # Slave (controller=UUID)
-├── hcnmg-connections/               # Expected connections after fixup
+├── hcnmgr-connections/               # Expected connections after fixup
 │   ├── bond333e80f5.nmconnection    # Bond master
 │   ├── bond333e80f5-enP32775p1s0.nmconnection  # Slave (controller=bond name)
 │   └── bond333e80f5-env6.nmconnection          # Slave (controller=bond name)

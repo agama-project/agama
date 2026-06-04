@@ -10,7 +10,7 @@ SCRIPT_PATH="${FIXTURE_DIR}/../../live-root/usr/lib/dracut/modules.d/99hcnmgr/pa
 MOCK_PROC="${FIXTURE_DIR}/proc"
 MOCK_SYS="${FIXTURE_DIR}/sys"
 MOCK_NM_INITRD_DIR="${FIXTURE_DIR}/nm-initrd-generator-connections"
-MOCK_HCNMGR_DIR="${FIXTURE_DIR}/hcnmg-connections"
+MOCK_HCNMGR_DIR="${FIXTURE_DIR}/hcnmgr-connections"
 
 # Helper functions for testing
 setup_file() {
