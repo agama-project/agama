@@ -86,6 +86,7 @@ async fn main() -> anyhow::Result<()> {
     loop {
         sleep(Duration::from_secs(1)).await;
         let status = manager_client.status().await?;
+        tracing::info!("installer status: {:?}", &status);
         if status.progresses.is_empty() && status.tasks.is_empty() {
             break;
         }

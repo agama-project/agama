@@ -376,6 +376,9 @@ impl Monitor {
         let mut g = self.status.lock().await;
         let status = &mut *g;
 
+        // Mark that we've seen activity
+        self.seen_busy = true;
+
         // store only events that are important for monitor
         match event {
             Event::StageChanged { stage } => {
@@ -419,9 +422,6 @@ impl Monitor {
                 status.questions.retain(|q| q.id != id);
             }
             Event::ProgressChanged { progress } => {
-                // Mark that we've seen activity
-                self.seen_busy = true;
-
                 let index = status
                     .status
                     .progresses
@@ -435,6 +435,21 @@ impl Monitor {
             }
             Event::ProgressFinished { scope } => {
                 status.status.progresses.retain(|p| p.scope != scope);
+            }
+            Event::TaskStarted { task } => {
+                if status
+                    .status
+                    .tasks
+                    .iter()
+                    .find(|t| t.id == task.id)
+                    .is_none()
+                {
+                    println!("Adding task");
+                    status.status.tasks.push(task);
+                }
+            }
+            Event::TaskFinished { task, .. } => {
+                status.status.tasks.retain(|t| t.id != task.id);
             }
             _ => {
                 // other events are not interesting for monitor
