@@ -1,7 +1,7 @@
 {
   "$comment": "Software configuration",
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/software.schema.json",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/share/software.schema.json",
   "title": "Config",
   "description": "Software configuration.",
   "type": "object",
