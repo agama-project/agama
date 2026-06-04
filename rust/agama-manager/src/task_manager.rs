@@ -257,6 +257,10 @@ impl TaskManager {
             state_guard.completed.insert(task_id);
             state_guard.notify.notify_waiters();
 
+            if let Some(index) = state_guard.metadata.iter().position(|t| t.id == task_id) {
+                state_guard.metadata.swap_remove(index);
+            }
+
             if let Err(e) = events.send(Event::TaskFinished {
                 task: metadata.clone().into(),
                 remaining: state_guard.metadata.len(),
@@ -294,19 +298,6 @@ impl TaskManager {
     pub async fn get_all_metadata(&self) -> Vec<TaskMetadata> {
         let state = self.state.read().await;
         state.metadata.clone()
-    }
-
-    /// Get metadata for pending tasks.
-    ///
-    /// Returns a vector of `TaskMetadata` for the pending tasks.
-    pub async fn get_pending_metadata(&self) -> Vec<TaskMetadata> {
-        let state = self.state.read().await;
-        state
-            .metadata
-            .iter()
-            .filter(|m| !state.completed.contains(&m.id))
-            .cloned()
-            .collect()
     }
 }
 
