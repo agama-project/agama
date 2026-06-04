@@ -10,9 +10,9 @@
 #    - Scans vdevices (VNIC and Virtual Ethernet)
 # 3. Build MAPPINGS: bond names -> slave devices with MACs and modes
 # 4. Process kernel command line (ip=, rd.route=) and replace slave references with bonds
-# 5. Generate NetworkManager connections via nm-initrd-generator
+# 5. Generate NetworkManager connections via nm_generate_connections()
 # 6. Fix up generated connections to use correct bond masters and naming
-# 7. Signal NetworkManager to start via /tmp/nm.done hook
+# 7. Reload NetworkManager connections via nm_reload_connections()
 #
 # Usage:
 #   Add rd.hcn=1 to kernel command line to enable HCN configuration
@@ -115,6 +115,8 @@ parse_nm_connection() {
 
 # Function to fix up NetworkManager connection files
 #
+# IMPORTANT: This function should ONLY be called when rd.hcn=1 is set
+#
 # nm-initrd-generator creates connections with:
 #   - Interface names as connection IDs (e.g., "eth0")
 #   - UUIDs as master/controller references instead of bond names
@@ -125,6 +127,9 @@ parse_nm_connection() {
 #   - Bond names as master/controller references (e.g., "bond0")
 #   - Correct slave-type/port-type set to 'bond'
 #   - Match slaves to correct bonds based on MAPPINGS
+#
+# This function only modifies connections that are related to HCN bonds
+# (either bond interfaces themselves or slaves found in MAPPINGS)
 fixup_nm_connections() {
   local conn_dir="/run/NetworkManager/system-connections"
   [ -d "$conn_dir" ] || return 0
@@ -141,7 +146,7 @@ EOF
     [ -n "$uuid" ] && [ -n "$id" ] && uuid_map="$uuid_map $uuid:$id"
   done
 
-  # Second pass: fixup files
+  # Second pass: fixup files (only those related to HCN bonds)
   for con in "$conn_dir"/*.nmconnection; do
     [ -e "$con" ] || continue
 
@@ -165,6 +170,7 @@ EOF
     [ -z "$ifname" ] && ifname="$id"
 
     # Search MAPPINGS for this connection to find the correct master
+    # Only connections in MAPPINGS or with HCN bond masters will be modified
     mapping_info=$(echo "$MAPPINGS" | awk -v iface="$ifname" -v mac="$mac" '
             {
                 for (i=1; i<=NF; i+=4) {
@@ -189,7 +195,10 @@ EOF
       found_ifname=$ifname
     fi
 
+    # Only modify connections that are HCN-related
     if [ -n "$found_master" ]; then
+      info "hcnmgr: fixing up connection $id (HCN-related)"
+
       # Ensure controller/master and port-type/slave-type are correct
       if grep -q "^[[:space:]]*controller=" "$con"; then
         sed -i "s/^[[:space:]]*controller[[:space:]]*=.*/controller=$found_master/" "$con"
@@ -387,30 +396,13 @@ else
       exit 1
     fi
 
+    # Source NetworkManager dracut library functions
+    command -v nm_generate_connections >/dev/null || . /usr/lib/dracut/modules.d/35network-manager/nm-lib.sh
+
     export CMDLINE="$MOD_CMDLINE $NEW_ARGS"
-
-    # Find and execute nm-initrd-generator
-    # Try standard paths first, then fall back to PATH search
-    generator_found=0
-    for gen in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator $(command -v nm-initrd-generator 2>/dev/null); do
-      if [ -n "$gen" ] && [ -x "$gen" ]; then
-        info "hcnmgr: calling $gen"
-        # shellcheck disable=SC2086
-        if "$gen" -- $CMDLINE; then
-          fixup_nm_connections
-          mkdir -p /run/NetworkManager/initrd
-          : >/run/NetworkManager/initrd/neednet
-          echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh
-          generator_found=1
-        else
-          warn "hcnmgr: nm-initrd-generator failed"
-        fi
-        break
-      fi
-    done
-
-    if [ $generator_found -eq 0 ]; then
-      warn "hcnmgr: nm-initrd-generator not found"
-    fi
+    info "hcnmgr: generating NetworkManager connections"
+    nm_generate_connections
+    fixup_nm_connections
+    nm_reload_connections
   fi
 fi
