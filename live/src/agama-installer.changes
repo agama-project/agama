@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun  2 11:40:18 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Display the media check result and wait for a key press on all
+  system consoles to easily continue booting the installer system,
+  needed especially for openQA (bsc#1267263)
+
+-------------------------------------------------------------------
 Mon Jun  1 14:35:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added "agama-screenshot" helper script to take screenshots

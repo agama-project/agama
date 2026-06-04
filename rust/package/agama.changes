@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix software progress in openSUSE where it incorrectly report
+  proposing software selection instead of refreshing repositories
+  (gh#agama-project/agama#3579)
+
+-------------------------------------------------------------------
 Mon Jun  1 13:47:34 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Extend storage schemas to allow configuring the space policy for

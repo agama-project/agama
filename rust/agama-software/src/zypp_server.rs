@@ -383,6 +383,9 @@ impl ZyppServer {
             if !issues.is_empty() {
                 return Self::send_issues_and_finish(issues, tx, progress);
             }
+
+            // registration phase finishes
+            progress.cast(progress::message::Next::new(Scope::Software))?;
         }
 
         self.trusted_keys = state.trusted_gpg_keys;
@@ -390,7 +393,6 @@ impl ZyppServer {
         self.unsigned_repos = state.unsigned_repos;
         security.set_unsigned_repos(self.unsigned_repos.clone());
 
-        progress.cast(progress::message::Next::new(Scope::Software))?;
         let old_aliases: Vec<_> = old_state
             .repositories
             .iter()
@@ -440,6 +442,7 @@ impl ZyppServer {
             }
         }
 
+        // all repos are added or removed as needed
         progress.cast(progress::message::Next::new(Scope::Software))?;
         if !to_add.is_empty() || !to_remove.is_empty() {
             let result = zypp.load_source(
@@ -457,6 +460,9 @@ impl ZyppServer {
                 );
             }
         }
+
+        // repositories refresh finished
+        progress.cast(progress::message::Next::new(Scope::Software))?;
 
         // reset everything to start from scratch
         zypp.reset_resolvables();
