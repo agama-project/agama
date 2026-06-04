@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  4 09:36:59 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Make `agama` command-line help translatable
+  (gh#agama-project/agama#3576).
+
+-------------------------------------------------------------------
 Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix software progress in openSUSE where it incorrectly report
