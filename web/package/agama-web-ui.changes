@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  4 13:27:59 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Block a page until all its tasks are completed (part of
+  bsc#1266276).
+
+-------------------------------------------------------------------
 Mon Jun  1 13:51:58 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Create new LVM volume groups using all the availabe space on the
