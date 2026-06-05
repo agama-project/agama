@@ -69,7 +69,7 @@ function InstallationFinished() {
   const isGrub2WithTpm = useIsGrub2WithTpm();
 
   return (
-    <Page noDefaultProgressMonitor endSlot={<InstallerOptionsMenu hideLabel />}>
+    <Page noDefaultProgressMonitor noDefaultEndSlot endSlot={<InstallerOptionsMenu hideLabel />}>
       <Page.Content>
         <SplitInfoLayout
           icon="done_all"

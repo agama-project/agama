@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun  5 12:25:54 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix race condition in download success alert.
+- Do not show "Review and install" button in installation pages
+  (gh#agama-project/agama#3588).
+
+-------------------------------------------------------------------
 Thu Jun  4 14:56:26 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve the installation settings UI by showing and explaining the
