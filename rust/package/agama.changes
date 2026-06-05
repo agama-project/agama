@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Jun  5 09:10:56 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt manager to set the list of resolvables. It asks each module
+  about its requirements and configures the software service
+  (bsc#1266276).
+
+-------------------------------------------------------------------
+Thu Jun  4 13:33:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Wait until all pending tasks are finished before starting the installation
+  (bsc#1266276).
+
+-------------------------------------------------------------------
 Wed Jun  3 10:05:13 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix software progress in openSUSE where it incorrectly report

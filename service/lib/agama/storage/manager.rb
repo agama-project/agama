@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/config"
-require "agama/http/clients"
+require "agama/http/clients/questions"
 require "agama/issue"
 require "agama/storage/actions_generator"
 require "agama/storage/bootloader_manager"
@@ -144,16 +144,6 @@ module Agama
         client.run == :next
       end
 
-      # Adds the required packages to the list of resolvables to install.
-      def add_packages
-        packages = devicegraph.used_features.pkg_list
-        packages += ISCSI::Manager::PACKAGES if need_iscsi?
-        return if packages.empty?
-
-        logger.info "Selecting these packages for installation: #{packages}"
-        http_client.set_resolvables(PROPOSAL_ID, :package, packages)
-      end
-
       # Performs the final steps on the target file system(s).
       def finish
         Finisher.new(logger, product_config).run
@@ -189,6 +179,17 @@ module Agama
         probed = Y2Storage::StorageManager.instance.probed
         staging = Y2Storage::StorageManager.instance.staging
         ActionsGenerator.new(probed, staging).generate
+      end
+
+      # Required packages for the used features.
+      #
+      # @return [Array<String>]
+      def packages
+        return [] unless proposal.success?
+
+        packages = devicegraph.used_features.pkg_list
+        packages += ISCSI::Manager::PACKAGES if need_iscsi?
+        packages
       end
 
       # Changes the service's locale
@@ -252,6 +253,13 @@ module Agama
         bootloader.install
       end
 
+      # Required packages for bootloader.
+      #
+      # @return [Array<String>]
+      def bootloader_packages
+        bootloader.packages
+      end
+
     private
 
       PROPOSAL_ID = "storage_proposal"
@@ -305,10 +313,6 @@ module Agama
       # @return [Agama::HTTP::Clients::Questions]
       def questions_client
         @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
-      end
-
-      def http_client
-        @http_client = Agama::HTTP::Clients::Main.new(::Logger.new($stdout))
       end
     end
   end

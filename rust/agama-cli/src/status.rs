@@ -59,7 +59,7 @@ impl InstallationEnum {
         if !status.issues.is_empty() {
             return Self::Issues;
         };
-        if status.status.progresses.is_empty() {
+        if status.status.progresses.is_empty() && status.status.tasks.is_empty() {
             return Self::Ready;
         }
         if status.status.stage == Stage::Configuring {
@@ -141,6 +141,7 @@ mod tests {
         progress::Progress,
         question::{Question, QuestionSpec},
         scope::Scope,
+        status::Task,
     };
 
     fn default_status() -> InstallationStatus {
@@ -207,13 +208,29 @@ mod tests {
     }
 
     #[test]
-    fn test_from_status_proposing() {
+    fn test_from_status_proposing_with_progress() {
         let mut status = default_status();
         status.status.stage = Stage::Configuring;
         status
             .status
             .progresses
             .push(Progress::new(Scope::Manager, 1, "step".to_string()));
+        assert_eq!(
+            InstallationEnum::from_status(&status),
+            InstallationEnum::Proposing
+        );
+    }
+
+    #[test]
+    fn test_from_status_proposing_with_tasks() {
+        let mut status = default_status();
+        status.status.stage = Stage::Configuring;
+        status.status.tasks.push(Task {
+            id: 1,
+            name: "network_config".to_string(),
+            description: "Configuring network".to_string(),
+            scope: Scope::Network,
+        });
         assert_eq!(
             InstallationEnum::from_status(&status),
             InstallationEnum::Proposing
@@ -261,7 +278,7 @@ mod tests {
             .questions
             .push(Question::new(1, QuestionSpec::new("text", "class")));
 
-        // Precedence 1: Question over issues and proposing
+        // Precedence 1: Question over issues and proposin
         assert_eq!(
             InstallationEnum::from_status(&status),
             InstallationEnum::Question
