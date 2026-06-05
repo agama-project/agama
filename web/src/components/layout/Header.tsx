@@ -37,26 +37,17 @@ import ProductLogo from "~/components/product/ProductLogo";
 import { SkipTo } from "~/components/core";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
 import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import Text from "../core/Text";
 
 /**
  * FIXME: nasty hack for prototyping
  */
-
-const productsShortName = {
-  Kalpa: "Kalpa",
-  openSUSE_Leap: "Leap 16.1",
-  openSUSE_Leap_Micro: "Leap Micro 6.2",
-  MicroOS: "MicroOS",
-  Tumbleweed: "Tumbleweed",
-  Slowroll: "Slowroll",
-  SLES: "SLES 16.1 Beta",
-  SLES_SAP: "SLES for SAP 16.1 Beta",
-};
 
 /**
  * Props for the Header component.
@@ -158,28 +149,37 @@ export default function Header({
             {title}
           </Title>
         ) : (
-          <Breadcrumbs>
-            {product && breadcrumbs && (
-              <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-                <ProductLogo product={product} width="35px" />
-                <Breadcrumbs.Item
-                  hideDivider
-                  isEditorial
-                  path={ROOT.overview}
-                  label={<>{productsShortName[product.id]}</>}
-                />
-              </Flex>
-            )}
-            {breadcrumbs &&
-              breadcrumbs.map((props, i) => (
-                <Breadcrumbs.Item
-                  isEditorial={i === 0}
-                  key={i}
-                  isCurrent={i === breadcrumbs.length - 1}
-                  {...props}
-                />
-              ))}
-          </Breadcrumbs>
+          <Flex alignItems={{ default: "alignItemsCenter" }}>
+            <ProductLogo product={product} width="35px" />
+            <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
+              {product && (
+                <Title headingLevel="h1" className={textStyles.fontSizeXs}>
+                  <Text textStyle={"textColorSubtle"}>{product.name}</Text>
+                </Title>
+              )}
+              <Breadcrumbs>
+                {product && breadcrumbs && (
+                  <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+                    <Breadcrumbs.Item
+                      hideDivider
+                      isEditorial
+                      path={ROOT.overview}
+                      label={<>{_("Overview")}</>}
+                    />
+                  </Flex>
+                )}
+                {breadcrumbs &&
+                  breadcrumbs.map((props, i) => (
+                    <Breadcrumbs.Item
+                      isEditorial={i === 0}
+                      key={i}
+                      isCurrent={i === breadcrumbs.length - 1}
+                      {...props}
+                    />
+                  ))}
+              </Breadcrumbs>
+            </Flex>
+          </Flex>
         )}
       </MastheadMain>
       <MastheadContent>
