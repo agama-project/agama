@@ -1,0 +1,97 @@
+name: "CI - shfmt Check"
+
+permissions:
+  contents: read
+
+on:
+  push:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used below for the pull request event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-shfmt.yml
+      # all shell files
+      - "**.sh"
+      # all files in "bin" subdirectories
+      - "**/bin/*"
+      # not Markdown in "bin"
+      - "!**.md"
+      # not Ruby files in "bin"
+      - "!service/bin/*"
+      # explicitly list files without the *.sh suffix outside the "bin" subdirectories
+      # run this command in the checkout root directory to get the list:
+      #  shfmt -f . | grep -v -e "\.sh$" -e "/bin/" -e "^live/dist/" | sort
+      - doc/dbus/make-index
+      - live/src/fix_bootconfig
+      - rust/build_pot
+      - rust/share/agama-journal
+      - rust/share/agama-zypp-journal
+      - web/build_pot
+      - web/build_pot_container
+
+  pull_request:
+    paths:
+      # NOTE: GitHub Actions do not allow using YAML references, the same path
+      # list is used above for the push event. Keep both lists in sync!!
+
+      # this file as well
+      - .github/workflows/ci-shfmt.yml
+      # all shell files
+      - "**.sh"
+      # all files in "bin" subdirectories
+      - "**/bin/*"
+      # not Markdown in "bin"
+      - "!**.md"
+      # not Ruby files in "bin"
+      - "!service/bin/*"
+      # explicitly list files without the *.sh suffix outside the "bin" subdirectories
+      # run this command in the checkout root directory to get the list:
+      #  shfmt -f . | grep -v -e "\.sh$" -e "/bin/" -e "^live/dist/" | sort
+      - doc/dbus/make-index
+      - live/src/fix_bootconfig
+      - rust/build_pot
+      - rust/share/agama-journal
+      - rust/share/agama-zypp-journal
+      - web/build_pot
+      - web/build_pot_container
+
+jobs:
+  shfmt:
+    runs-on: ubuntu-latest
+
+    container:
+      image: registry.opensuse.org/opensuse/tumbleweed:latest
+
+    steps:
+
+    - name: Configure and refresh repositories
+      # disable unused repositories to have faster refresh
+      run: zypper modifyrepo -d repo-non-oss repo-openh264 repo-update && zypper ref
+
+    - name: Install needed packages
+      run: zypper --non-interactive install --no-recommends --allow-downgrade
+           git shfmt diffutils yq
+
+    - name: Git Checkout
+      uses: actions/checkout@v6
+
+    - name: Run shfmt check (run `shfmt -w .` to fix )
+      run: shfmt -d .
+
+    - name: Verify "paths" list is up to date
+      # we use bash process substitution, make sure this runs in bash
+      shell: bash
+      run: |
+        # Extract explicit file paths from the workflow (ignoring globs, negations, and YAML files)
+        PUSH_PATHS=$(yq ".on.push.paths[]" .github/workflows/ci-shfmt.yml | grep -v -e "\*" -e "^!" -e "\.yml$" | sort -u)
+        
+        # Get the actual file list that shfmt sees in the repository
+        FOUND_PATHS=$(shfmt -f . | grep -v -e "\.sh$" -e "/bin/" -e "^live/dist/" | sort)
+        
+        # compare the lists, they should be the same
+        if ! diff -u <(echo "$PUSH_PATHS" ) <(echo "$FOUND_PATHS"); then
+          echo
+          echo "::error file=.github/workflows/ci-shfmt.yml::The 'paths' list is out of date!"
+          exit 1
+        fi
