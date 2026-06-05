@@ -22,15 +22,28 @@
 
 import React, { useMemo } from "react";
 import { sprintf } from "sprintf-js";
+import { useParams } from "react-router";
 import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { defaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
-import { deviceSize, filesystemLabel } from "~/components/storage/utils";
+import {
+  deviceSize,
+  filesystemLabel,
+  createPartitionableLocation,
+  findPartitionableDevice,
+} from "~/components/storage/utils";
 import { _ } from "~/i18n";
 import { isEmpty } from "radashi";
+import {
+  useConfigModel,
+  usePartitionable,
+  useSolvedConfigModel,
+} from "~/hooks/model/storage/config-model";
+import configModel from "~/model/storage/config-model";
+import type { ConfigModel } from "~/model/storage/config-model";
 
 /**
  * Returns dropdown options for size mode selection.
@@ -75,6 +88,80 @@ function getSizeModeOptions() {
   ] satisfies Array<{ value: SizeMode; label: string; description: string }>;
 }
 
+/**
+ * Calculates the solved sizes for a partition configuration.
+ *
+ * This hook is called during render if committedMountPoint or filesystem change.
+ *
+ * @returns Object with min and max size strings, or null if sizes cannot be calculated
+ */
+function useSolvedSizes(
+  mountPoint: string,
+  filesystem: string,
+): { min: string; max: string } | null {
+  const { collection, index } = useParams();
+  const model = useConfigModel();
+  const location = createPartitionableLocation(collection, index);
+  const device = usePartitionable(
+    location?.collection || "drives",
+    location?.index !== undefined ? location.index : 0,
+  );
+
+  // Build a sparse model (a model in which the size of the relevant partition is omitted) to be
+  // used by useSolvedConfigModel.
+  const sparseModel = useMemo(() => {
+    // Just to make sure, no call without mountPoint is expected
+    if (!mountPoint || !device || !location) {
+      return undefined;
+    }
+
+    const modelCollection = collection === "drives" ? "drives" : "mdRaids";
+
+    // Build partition config without size to force automatic calculation
+    const partitionConfig: ConfigModel.Partition = {
+      mountPath: mountPoint,
+      name: undefined, // Always treat as new partition for size calculation
+      filesystem:
+        filesystem === FILESYSTEM_TYPE.AUTO
+          ? undefined
+          : {
+              default: false,
+              type: filesystem as ConfigModel.FilesystemType,
+              label: undefined,
+            },
+      size: undefined, // Force automatic sizing
+    };
+
+    try {
+      const initialPartitionCfg = configModel.partitionable.findPartition(device, mountPoint);
+      const idx = Number(index);
+      return initialPartitionCfg
+        ? configModel.partition.edit(model, modelCollection, idx, mountPoint, partitionConfig)
+        : configModel.partition.add(model, modelCollection, idx, partitionConfig);
+    } catch {
+      return undefined;
+    }
+  }, [mountPoint, filesystem, device, location, collection, index, model]);
+
+  // Always call the hook (Rules of Hooks), but pass undefined when we shouldn't calculate
+  const solvedModel = useSolvedConfigModel(sparseModel);
+
+  // Extract and format the solved sizes
+  return useMemo(() => {
+    if (!solvedModel || !location) return null;
+
+    const solvedDevice = findPartitionableDevice(solvedModel, collection, index);
+    const solvedPartition = solvedDevice?.partitions?.find((p) => p.mountPath === mountPoint);
+
+    if (!solvedPartition?.size) return null;
+
+    return {
+      min: solvedPartition.size.min ? deviceSize(solvedPartition.size.min) : undefined,
+      max: solvedPartition.size.max ? deviceSize(solvedPartition.size.max) : undefined,
+    };
+  }, [solvedModel, location, collection, index, mountPoint]);
+}
+
 type SizeFieldsContentProps = {
   committedMountPoint: string;
   filesystem: string;
@@ -95,18 +182,19 @@ function useAutomaticSizeNote(
   volume: ReturnType<typeof useVolumeTemplate>,
   effectiveFilesystem: string | undefined,
   committedMountPoint: string,
+  sizes: { min: string; max: string } | null,
 ): { sizeLabel: string; rationale: string } {
   // Memoized to avoid recalculating on every render. The computation includes
   // conditionals, sprintf calls, and translations.
   return useMemo(() => {
-    if (!volume) {
+    if (!volume || !sizes) {
       return {
         sizeLabel: _("Automatic"),
         rationale: _("Installer will propose a suitable size"),
       };
     }
 
-    const minSize = volume.minSize ? deviceSize(volume.minSize) : null;
+    const minSize = sizes.min;
     const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
 
     if (minSize && fsLabel && committedMountPoint) {
@@ -134,7 +222,7 @@ function useAutomaticSizeNote(
       sizeLabel: _("Automatic"),
       rationale: _("Based on available disk space and mount point role"),
     };
-  }, [volume, effectiveFilesystem, committedMountPoint]);
+  }, [volume, effectiveFilesystem, committedMountPoint, sizes]);
 }
 
 /**
@@ -177,10 +265,14 @@ const SizeFieldsContent = withForm({
 
     const effectiveFilesystem = filesystem === FILESYSTEM_TYPE.AUTO ? volume?.fsType : filesystem;
 
+    // Calculate solved sizes - only recalculates when committedMountPoint or filesystem change
+    const solvedSizes = useSolvedSizes(committedMountPoint, filesystem);
+
     const automaticSizeNote = useAutomaticSizeNote(
       volume,
       effectiveFilesystem,
       committedMountPoint,
+      solvedSizes,
     );
 
     switch (sizeMode) {
