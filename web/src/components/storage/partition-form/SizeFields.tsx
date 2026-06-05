@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { sprintf } from "sprintf-js";
 import { useParams } from "react-router";
 import { Flex } from "@patternfly/react-core";
@@ -89,6 +89,38 @@ function getSizeModeOptions() {
 }
 
 /**
+ * Builds a model in which the size of the relevant partition is omitted, to be used
+ * by useSolvedConfigModel.
+ */
+function useSparseModel(mountPoint: string, filesystem: string): ConfigModel.Config {
+  const { collection, index } = useParams();
+  const model = useConfigModel();
+
+  const partitionConfig: ConfigModel.Partition = {
+    mountPath: mountPoint,
+    name: undefined, // Always treat as new partition for size calculation
+    filesystem:
+      filesystem === FILESYSTEM_TYPE.AUTO
+        ? undefined
+        : {
+            default: false,
+            type: filesystem as ConfigModel.FilesystemType,
+            label: undefined,
+          },
+    size: undefined, // Force automatic sizing
+  };
+
+  const location = createPartitionableLocation(collection, index);
+  const device = usePartitionable(location.collection, location.index);
+  const initialPartitionCfg = configModel.partitionable.findPartition(device, mountPoint);
+  const idx = location.index;
+
+  return initialPartitionCfg
+    ? configModel.partition.edit(model, location.collection, idx, mountPoint, partitionConfig)
+    : configModel.partition.add(model, location.collection, idx, partitionConfig);
+}
+
+/**
  * Calculates the solved sizes for a partition configuration.
  *
  * This hook is called during render if committedMountPoint or filesystem change.
@@ -100,66 +132,22 @@ function useSolvedSizes(
   filesystem: string,
 ): { min: string; max: string } | null {
   const { collection, index } = useParams();
-  const model = useConfigModel();
-  const location = createPartitionableLocation(collection, index);
-  const device = usePartitionable(
-    location?.collection || "drives",
-    location?.index !== undefined ? location.index : 0,
-  );
 
-  // Build a sparse model (a model in which the size of the relevant partition is omitted) to be
-  // used by useSolvedConfigModel.
-  const sparseModel = useMemo(() => {
-    // Just to make sure, no call without mountPoint is expected
-    if (!mountPoint || !device || !location) {
-      return undefined;
-    }
-
-    const modelCollection = collection === "drives" ? "drives" : "mdRaids";
-
-    // Build partition config without size to force automatic calculation
-    const partitionConfig: ConfigModel.Partition = {
-      mountPath: mountPoint,
-      name: undefined, // Always treat as new partition for size calculation
-      filesystem:
-        filesystem === FILESYSTEM_TYPE.AUTO
-          ? undefined
-          : {
-              default: false,
-              type: filesystem as ConfigModel.FilesystemType,
-              label: undefined,
-            },
-      size: undefined, // Force automatic sizing
-    };
-
-    try {
-      const initialPartitionCfg = configModel.partitionable.findPartition(device, mountPoint);
-      const idx = Number(index);
-      return initialPartitionCfg
-        ? configModel.partition.edit(model, modelCollection, idx, mountPoint, partitionConfig)
-        : configModel.partition.add(model, modelCollection, idx, partitionConfig);
-    } catch {
-      return undefined;
-    }
-  }, [mountPoint, filesystem, device, location, collection, index, model]);
-
-  // Always call the hook (Rules of Hooks), but pass undefined when we shouldn't calculate
+  const sparseModel = useSparseModel(mountPoint, filesystem);
   const solvedModel = useSolvedConfigModel(sparseModel);
 
+  if (!solvedModel) return null;
+
+  const solvedDevice = findPartitionableDevice(solvedModel, collection, index);
+  const solvedPartition = solvedDevice?.partitions?.find((p) => p.mountPath === mountPoint);
+
+  if (!solvedPartition?.size) return null;
+
   // Extract and format the solved sizes
-  return useMemo(() => {
-    if (!solvedModel || !location) return null;
-
-    const solvedDevice = findPartitionableDevice(solvedModel, collection, index);
-    const solvedPartition = solvedDevice?.partitions?.find((p) => p.mountPath === mountPoint);
-
-    if (!solvedPartition?.size) return null;
-
-    return {
-      min: solvedPartition.size.min ? deviceSize(solvedPartition.size.min) : undefined,
-      max: solvedPartition.size.max ? deviceSize(solvedPartition.size.max) : undefined,
-    };
-  }, [solvedModel, location, collection, index, mountPoint]);
+  return {
+    min: solvedPartition.size.min ? deviceSize(solvedPartition.size.min) : undefined,
+    max: solvedPartition.size.max ? deviceSize(solvedPartition.size.max) : undefined,
+  };
 }
 
 type SizeFieldsContentProps = {
@@ -184,45 +172,41 @@ function useAutomaticSizeNote(
   committedMountPoint: string,
   sizes: { min: string; max: string } | null,
 ): { sizeLabel: string; rationale: string } {
-  // Memoized to avoid recalculating on every render. The computation includes
-  // conditionals, sprintf calls, and translations.
-  return useMemo(() => {
-    if (!volume || !sizes) {
-      return {
-        sizeLabel: _("Automatic"),
-        rationale: _("Installer will propose a suitable size"),
-      };
-    }
-
-    const minSize = sizes.min;
-    const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
-
-    if (minSize && fsLabel && committedMountPoint) {
-      return {
-        // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-        sizeLabel: sprintf(_("Minimum %s"), minSize),
-        // TRANSLATORS: %1$s is mount point (e.g., "/home"), %2$s is filesystem (e.g., "XFS")
-        rationale: sprintf(
-          _("Determined by the %1$s role and %2$s filesystem."),
-          committedMountPoint,
-          fsLabel,
-        ),
-      };
-    }
-
-    if (minSize) {
-      return {
-        // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-        sizeLabel: sprintf(_("Minimum %s"), minSize),
-        rationale: _("Determined by the mount point role"),
-      };
-    }
-
+  if (!volume || !sizes) {
     return {
       sizeLabel: _("Automatic"),
-      rationale: _("Based on available disk space and mount point role"),
+      rationale: _("Installer will propose a suitable size"),
     };
-  }, [volume, effectiveFilesystem, committedMountPoint, sizes]);
+  }
+
+  const minSize = sizes.min;
+  const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
+
+  if (minSize && fsLabel && committedMountPoint) {
+    return {
+      // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
+      sizeLabel: sprintf(_("Minimum %s"), minSize),
+      // TRANSLATORS: %1$s is mount point (e.g., "/home"), %2$s is filesystem (e.g., "XFS")
+      rationale: sprintf(
+        _("Determined by the %1$s role and %2$s filesystem."),
+        committedMountPoint,
+        fsLabel,
+      ),
+    };
+  }
+
+  if (minSize) {
+    return {
+      // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
+      sizeLabel: sprintf(_("Minimum %s"), minSize),
+      rationale: _("Determined by the mount point role"),
+    };
+  }
+
+  return {
+    sizeLabel: _("Automatic"),
+    rationale: _("Based on available disk space and mount point role"),
+  };
 }
 
 /**
