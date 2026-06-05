@@ -29,7 +29,7 @@ use crate::{
 use agama_utils::{
     actor::Handler,
     api::{event, RawConfig},
-    issue, progress,
+    issue, progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -121,10 +121,13 @@ impl DASDClient for TestDASDClient {
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
+    async fn set_config(
+        &self,
+        config: Option<RawConfig>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
+        Ok(Box::pin(async { Ok(()) }))
     }
 }
 
@@ -194,10 +197,13 @@ impl ZFCPClient for TestZFCPClient {
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), zfcp::client::Error> {
+    async fn set_config(
+        &self,
+        config: Option<RawConfig>,
+    ) -> Result<BoxFuture<Result<(), zfcp::client::Error>>, zfcp::client::Error> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
+        Ok(Box::pin(async { Ok(()) }))
     }
 }
 

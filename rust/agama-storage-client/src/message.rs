@@ -18,18 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::sync::Arc;
-
+use crate::service;
 use agama_utils::{
     actor::Message,
     api::{storage::Config, Issue},
     products::ProductSpec,
     BoxFuture,
 };
+use std::sync::Arc;
 use tokio::sync::RwLock;
-
-use crate::service;
-
 pub mod bootloader;
 pub mod dasd;
 pub mod iscsi;

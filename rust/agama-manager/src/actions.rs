@@ -18,8 +18,13 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{process::Command, sync::Arc};
-
+use crate::{
+    bootloader, checks, files, hostname,
+    ipmi::Ipmi,
+    iscsi, l10n, ntp, proxy, s390, security, service, software, storage,
+    task_manager::{self, TaskError, TaskManager},
+    users,
+};
 use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Handler, MessageHandler},
@@ -30,15 +35,8 @@ use agama_utils::{
     progress, question,
 };
 use gettextrs::gettext;
+use std::{process::Command, sync::Arc};
 use tokio::sync::RwLock;
-
-use crate::{
-    bootloader, checks, files, hostname,
-    ipmi::Ipmi,
-    iscsi, l10n, ntp, proxy, s390, security, service, software, storage,
-    task_manager::{TaskError, TaskManager},
-    users,
-};
 
 /// Implements the installation process.
 ///
@@ -313,7 +311,10 @@ impl SetConfigAction {
 
         // S390 configuration (if available)
         let mut storage_deps = Vec::new();
-        if let Some(task_id) = self.set_s390_config(&config).await {
+        if let Some(task_id) = self.set_zfcp_config(&config).await {
+            storage_deps.push(task_id);
+        }
+        if let Some(task_id) = self.set_dasd_config(&config).await {
             storage_deps.push(task_id);
         }
 
@@ -382,18 +383,37 @@ impl SetConfigAction {
             .await
     }
 
-    /// Helper to spawn S390 configuration task
-    async fn set_s390_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
-        let s390 = self.s390.as_ref()?;
-        let handler = s390.clone();
-        let s390_config = config.s390.clone();
+    /// Helper to spawn zFCP configuration task
+    async fn set_zfcp_config(&self, config: &Config) -> Option<task_manager::TaskId> {
+        let handler = self.s390.clone()?;
+        let zfcp_config = config.s390.clone().and_then(|c| c.zfcp);
+
+        Some(
+            self.task_manager
+                .task("zfcp", Scope::ZFCP, gettext("Configuring zFCP devices"))
+                .run(|| async move {
+                    let future = handler
+                        .call(s390::message::SetZFCPConfig::new(zfcp_config))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    let _ = future.await;
+                    Ok(())
+                })
+                .await,
+        )
+    }
+
+    /// Helper to spawn DASD configuration task
+    async fn set_dasd_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+        let handler = self.s390.clone()?;
+        let dasd_config = config.s390.clone().and_then(|c| c.dasd);
         let storage_handler = self.storage.clone();
 
         Some(
             self.task_manager
-                .task("s390", Scope::Storage, gettext("Configuring DASD devices"))
+                .task("dasd", Scope::DASD, gettext("Configuring DASD devices"))
                 .run(|| async move {
-                    // Ensure storage was already probed before configuring s390
+                    // Ensure storage was already probed before configuring DASD
                     let storage_system = storage_handler
                         .call(storage::message::GetSystem)
                         .await
@@ -404,10 +424,11 @@ impl SetConfigAction {
                             .await
                             .map_err(TaskError::from_error)?
                     }
-                    handler
-                        .call(s390::message::SetConfig::new(s390_config))
+                    let future = handler
+                        .call(s390::message::SetDASDConfig::new(dasd_config))
                         .await
                         .map_err(TaskError::from_error)?;
+                    let _ = future.await;
                     Ok(())
                 })
                 .await,

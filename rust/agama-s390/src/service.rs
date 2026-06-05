@@ -29,7 +29,7 @@ use agama_utils::{
         event,
         s390::{Config, SystemInfo},
     },
-    issue, progress,
+    issue, progress, BoxFuture,
 };
 use async_trait::async_trait;
 
@@ -195,16 +195,24 @@ impl MessageHandler<message::GetConfig> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::SetConfig> for Service {
-    async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        if let Some(config) = message.config {
-            self.dasd.set_config(config.dasd).await?;
-            self.zfcp.set_config(config.zfcp).await?;
-        } else {
-            self.dasd.set_config(None).await?;
-            self.zfcp.set_config(None).await?;
-        }
-        Ok(())
+impl MessageHandler<message::SetZFCPConfig> for Service {
+    async fn handle(
+        &mut self,
+        message: message::SetZFCPConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self.zfcp.set_config(message.config).await?;
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::SetDASDConfig> for Service {
+    async fn handle(
+        &mut self,
+        message: message::SetDASDConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self.dasd.set_config(message.config).await?;
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }
 

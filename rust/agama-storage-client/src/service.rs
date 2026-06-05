@@ -401,12 +401,23 @@ impl MessageHandler<message::dasd::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::dasd::SetConfig> for Service {
-    async fn handle(&mut self, message: message::dasd::SetConfig) -> Result<(), Error> {
-        if let Some(proxy) = &self.dasd_proxy {
-            let config = serde_json::to_string(&message.config)?;
-            proxy.set_config(&config).await?;
-        }
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::dasd::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let dasd_proxy = self.dasd_proxy.clone();
+        let response = run_in_background(async move {
+            if let Some(proxy) = dasd_proxy {
+                let config = serde_json::to_string(&message.config)?;
+                proxy.set_config(&config).await?;
+            }
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 
@@ -464,12 +475,23 @@ impl MessageHandler<message::zfcp::GetIssues> for Service {
 
 #[async_trait]
 impl MessageHandler<message::zfcp::SetConfig> for Service {
-    async fn handle(&mut self, message: message::zfcp::SetConfig) -> Result<(), Error> {
-        if let Some(proxy) = &self.zfcp_proxy {
-            let config = serde_json::to_string(&message.config)?;
-            proxy.set_config(&config).await?;
-        }
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::zfcp::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let zfcp_proxy = self.zfcp_proxy.clone();
+        let response = run_in_background(async move {
+            if let Some(proxy) = zfcp_proxy {
+                let config = serde_json::to_string(&message.config)?;
+                proxy.set_config(&config).await?;
+            }
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 
