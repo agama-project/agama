@@ -80,6 +80,7 @@ pub type TaskResult = Result<(), TaskError>;
 /// Metadata describing a task.
 ///
 /// Contains human-readable information about a task including its name and description.
+/// The actual task is a closure passed to [`TaskBuilder::run`].
 #[derive(Debug, Clone)]
 pub struct TaskMetadata {
     /// Id of the task.
@@ -125,7 +126,7 @@ impl From<TaskMetadata> for api::status::Task {
 struct TaskManagerState {
     /// Set of completed tasks.
     completed: HashSet<TaskId>,
-    /// Next task ID to use.
+    /// First free ID for a new task
     next_id: TaskId,
     /// Notification mechanism provided by Tokio.
     notify: Arc<Notify>,
