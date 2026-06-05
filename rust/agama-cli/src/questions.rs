@@ -23,36 +23,49 @@ use std::{fs::File, io::BufReader};
 use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient};
 use agama_utils::api::question::{AnswerRule, Policy, QuestionSpec};
 use anyhow::anyhow;
-use clap::{Args, Subcommand, ValueEnum};
+use clap::{value_parser, Arg, ArgMatches, Command, ValueEnum};
+use gettextrs::gettext;
 use serde::Deserialize;
 
-// TODO: use for answers also JSON to be consistent
-#[derive(Subcommand, Debug)]
-pub enum QuestionsCommands {
-    /// Set the mode for answering questions.
-    Mode(ModesArgs),
-
-    /// Load predefined answers.
-    ///
-    /// It allows predefining answers for specific questions in order to skip them in interactive
-    /// mode or change the answer in automatic mode.
-    ///
-    /// Please check Agama documentation for more details and examples:
-    /// https://github.com/openSUSE/agama/blob/master/doc/questions.
-    Answers {
-        /// Path to a file containing the answers in JSON format.
-        path: String,
-    },
-    /// Prints the list of questions that are waiting for an answer in JSON format
-    List,
-    /// Reads a question definition in JSON from stdin and prints the response when it is answered.
-    Ask,
-}
-
-#[derive(Args, Debug)]
-pub struct ModesArgs {
-    #[arg(value_enum)]
-    value: Modes,
+pub fn build_questions_cmd() -> Command {
+    Command::new("questions")
+        .about(gettext("Handle installer questions."))
+        .long_about(gettext("Agama might require user intervention at any time. The reasons include providing some\n\
+                             missing information (e.g., the password to decrypt a file system) or deciding what to do in\n\
+                             case of an error (e.g., cannot connect to the repository).\n\
+                             \n\
+                             This command allows answering such questions directly from the command-line."))
+        .subcommand(
+            Command::new("mode")
+                .about(gettext("Set the mode for answering questions."))
+                .arg(
+                    Arg::new("value")
+                        .required(true)
+                        .value_parser(value_parser!(Modes))
+                )
+        )
+        .subcommand(
+            Command::new("answers")
+                .about(gettext("Load predefined answers."))
+                .long_about(gettext("It allows predefining answers for specific questions in order to skip them in interactive\n\
+                                     mode or change the answer in automatic mode.\n\
+                                     \n\
+                                     Please check Agama documentation for more details and examples:\n\
+                                     https://github.com/openSUSE/agama/blob/master/doc/questions."))
+                .arg(
+                    Arg::new("path")
+                        .required(true)
+                        .help(gettext("Path to a file containing the answers in JSON format."))
+                )
+        )
+        .subcommand(
+            Command::new("list")
+                .about(gettext("Prints the list of questions that are waiting for an answer in JSON format"))
+        )
+        .subcommand(
+            Command::new("ask")
+                .about(gettext("Reads a question definition in JSON from stdin and prints the response when it is answered."))
+        )
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
@@ -105,12 +118,19 @@ async fn ask_question(client: HTTPClient) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub async fn run(client: BaseHTTPClient, subcommand: QuestionsCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, sub_matches: &ArgMatches) -> anyhow::Result<()> {
     let client = HTTPClient::new(client);
-    match subcommand {
-        QuestionsCommands::Mode(value) => set_mode(client, value.value).await,
-        QuestionsCommands::Answers { path } => set_answers(client, &path).await,
-        QuestionsCommands::List => list_questions(client).await,
-        QuestionsCommands::Ask => ask_question(client).await,
+    match sub_matches.subcommand() {
+        Some(("mode", matches)) => {
+            let value = *matches.get_one::<Modes>("value").unwrap();
+            set_mode(client, value).await
+        }
+        Some(("answers", matches)) => {
+            let path = matches.get_one::<String>("path").unwrap().clone();
+            set_answers(client, &path).await
+        }
+        Some(("list", _)) => list_questions(client).await,
+        Some(("ask", _)) => ask_question(client).await,
+        _ => Ok(()),
     }
 }

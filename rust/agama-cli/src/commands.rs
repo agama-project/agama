@@ -20,129 +20,121 @@
 
 use std::path::PathBuf;
 
-use crate::auth::AuthCommands;
-use crate::config::ConfigCommands;
-use crate::logs::LogsCommands;
-use crate::questions::QuestionsCommands;
 use crate::FinishMethod;
-use clap::{Subcommand, ValueEnum};
+use clap::{value_parser, Arg, ArgAction, Command, ValueEnum};
+use gettextrs::gettext;
 
 #[derive(ValueEnum, Debug, Clone)]
 pub enum Format {
-    /// json format suitable for machine processing
     Json,
-    /// textual format that is optimized to be read for humans, can change in future and can be localized
     Text,
 }
 
-#[derive(Subcommand, Debug)]
-pub enum Commands {
-    /// Inspect or change the installation settings.
-    ///
-    /// You can inspect and change installation settings from the command-line. The "show"
-    /// subcommand generates a "profile" which is a JSON document describing the current
-    /// configuration.
-    ///
-    /// If you want to change any configuration value, you can load a profile (complete or partial)
-    /// using the "load" subcommand.
-    #[command(subcommand)]
-    Config(ConfigCommands),
+pub fn build_config_cmd() -> Command {
+    crate::config::build_config_cmd()
+}
 
-    /// Analyze the system.
-    ///
-    /// In Agama's jargon, the term 'probing' refers to the process of 'analyzing' the system. This
-    /// includes reading software repositories, analyzing storage devices, and more. The 'probe'
-    /// command initiates this analysis process and returns immediately.
+pub fn build_probe_cmd() -> Command {
+    Command::new("probe")
+        .about(gettext("Analyze the system."))
+        .long_about(gettext("In Agama's jargon, the term 'probing' refers to the process of 'analyzing' the system. This\n\
+                             includes reading software repositories, analyzing storage devices, and more. The 'probe'\n\
+                             command initiates this analysis process and returns immediately.\n\
+                             \n\
+                             TODO: do we really need a \"probe\" action?"))
+}
 
-    /// TODO: do we really need a "probe" action?
-    Probe,
+pub fn build_install_cmd() -> Command {
+    Command::new("install")
+        .about(gettext("Start the system installation."))
+        .long_about(gettext("This command starts the installation process.  Beware it is a destructive operation because\n\
+                             it will set up the storage devices, install the packages, etc.\n\
+                             \n\
+                             When the preconditions for the installation are not met, it informs the user and returns,\n\
+                             making no changes to the system."))
+}
 
-    /// Start the system installation.
-    ///
-    /// This command starts the installation process.  Beware it is a destructive operation because
-    /// it will set up the storage devices, install the packages, etc.
-    ///
-    /// When the preconditions for the installation are not met, it informs the user and returns,
-    /// making no changes to the system.
-    Install,
+pub fn build_questions_cmd() -> Command {
+    crate::questions::build_questions_cmd()
+}
 
-    /// Handle installer questions.
-    ///
-    /// Agama might require user intervention at any time. The reasons include providing some
-    /// missing information (e.g., the password to decrypt a file system) or deciding what to do in
-    /// case of an error (e.g., cannot connect to the repository).
-    ///
-    /// This command allows answering such questions directly from the command-line.
-    #[command(subcommand)]
-    Questions(QuestionsCommands),
+pub fn build_logs_cmd() -> Command {
+    crate::logs::build_logs_cmd()
+}
 
-    /// Collect the installer logs.
-    ///
-    /// The installer logs are stored in a compressed archive for further inspection. The file
-    /// includes system and Agama-specific logs and configuration files. They are crucial to
-    /// troubleshoot and debug problems.
-    #[command(subcommand)]
-    Logs(LogsCommands),
+pub fn build_auth_cmd() -> Command {
+    crate::auth::build_auth_cmd()
+}
 
-    /// Authenticate with Agama's server.
-    ///
-    /// Unless you are executing this program as root, you need to authenticate with Agama's server
-    /// for most operations. You can log in by specifying the root password through the "auth login"
-    /// command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is
-    /// stored to authenticate the following requests.
-    ///
-    /// If you run this program as root, you can skip the authentication step because it
-    /// automatically uses the master token at /run/agama/token. Only the root user must have access
-    /// to such a file.
-    ///
-    /// You can logout at any time by using the "auth logout" command, although this command does
-    /// not affect the root user.
-    #[command(subcommand)]
-    Auth(AuthCommands),
+pub fn build_download_cmd() -> Command {
+    Command::new("download")
+        .about(gettext("Download file from a given (AutoYaST) URL"))
+        .long_about(gettext("The purpose of this command is to download files using AutoYaST supported schemas (e.g. device://).\n\
+                             It can be used to download additional scripts, configuration files and so on.\n\
+                             You can use it for downloading Agama autoinstallation profiles.\n\
+                             If you want to convert an AutoYaST profile, use \"agama config generate\"."))
+        .arg(
+            Arg::new("url")
+                .required(true)
+                .help(gettext("URL reference pointing to file for download. If a relative URL is\n\
+                               provided, it will be resolved against the current working directory."))
+        )
+        .arg(
+            Arg::new("destination")
+                .required(true)
+                .value_parser(value_parser!(PathBuf))
+                .help(gettext("File name"))
+        )
+}
 
-    /// Download file from a given (AutoYaST) URL
-    ///
-    /// The purpose of this command is to download files using AutoYaST supported schemas (e.g. device://).
-    /// It can be used to download additional scripts, configuration files and so on.
-    /// You can use it for downloading Agama autoinstallation profiles.
-    /// If you want to convert an AutoYaST profile, use "agama config generate".
-    Download {
-        /// URL reference pointing to file for download. If a relative URL is
-        /// provided, it will be resolved against the current working directory.
-        url: String,
-        /// File name
-        destination: PathBuf,
-    },
-    /// Finish the installation.
-    Finish {
-        /// What to do after finishing the installation. Possible values:
-        ///
-        /// stop - do not reboot and the Agama backend continues running.
-        ///
-        /// reboot - reboot into the installed system. This value is the
-        ///          default. It can be overriden by setting the inst.finish
-        ///          kernel command-line argument.
-        ///
-        /// halt - halt the installed machine.
-        ///
-        /// poweroff - power off the installed machine.
-        method: Option<FinishMethod>,
-    },
+pub fn build_finish_cmd() -> Command {
+    Command::new("finish")
+        .about(gettext("Finish the installation."))
+        .arg(
+            Arg::new("method")
+                .value_parser(value_parser!(FinishMethod))
+                .help(gettext(
+                    "What to do after finishing the installation. Possible values:\n\
+                               \n\
+                               stop - do not reboot and the Agama backend continues running.\n\
+                               \n\
+                               reboot - reboot into the installed system. This value is the\n\
+                                        default. It can be overriden by setting the inst.finish\n\
+                                        kernel command-line argument.\n\
+                               \n\
+                               halt - halt the installed machine.\n\
+                               \n\
+                               poweroff - power off the installed machine.",
+                )),
+        )
+}
 
-    /// Continuously monitors the Agama service until it finishes.
-    Monitor,
+pub fn build_monitor_cmd() -> Command {
+    Command::new("monitor").about(gettext(
+        "Continuously monitors the Agama service until it finishes.",
+    ))
+}
 
-    /// Prints the current state of the installation (e.g., waiting, blocked, running, or finished).
-    Status {
-        /// Specify in which format status will be shown
-        #[arg(long, value_enum, default_value_t = Format::Text)]
-        format: Format,
-    },
+pub fn build_status_cmd() -> Command {
+    Command::new("status")
+        .about(gettext("Prints the current state of the installation (e.g., waiting, blocked, running, or finished)."))
+        .arg(
+            Arg::new("format")
+                .long("format")
+                .value_parser(value_parser!(Format))
+                .default_value("text")
+                .help(gettext("Specify in which format status will be shown"))
+        )
+}
 
-    /// Display Agama events.
-    Events {
-        /// Display the events in a more human-readable way.
-        #[arg(short, long)]
-        pretty: bool,
-    },
+pub fn build_events_cmd() -> Command {
+    Command::new("events")
+        .about(gettext("Display Agama events."))
+        .arg(
+            Arg::new("pretty")
+                .short('p')
+                .long("pretty")
+                .action(ArgAction::SetTrue)
+                .help(gettext("Display the events in a more human-readable way.")),
+        )
 }

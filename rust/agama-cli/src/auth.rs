@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{auth::AuthToken, error::ServiceError};
-use clap::Subcommand;
+use clap::{ArgMatches, Command};
 use url::Url;
 
 use crate::auth_tokens_file::AuthTokensFile;
@@ -59,28 +59,46 @@ impl AuthHTTPClient {
     }
 }
 
-#[derive(Subcommand, Debug)]
-pub enum AuthCommands {
-    /// Authenticate with Agama's server and store the token.
-    ///
-    /// This command tries to get the password from the standard input. If it is not there, it asks
-    /// the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The
-    /// token will be automatically sent to authenticate the following requests.
-    Login,
-    /// Deauthenticate by removing the token.
-    Logout,
-    /// Print the used token to the standard output.
-    Show,
+pub fn build_auth_cmd() -> Command {
+    Command::new("auth")
+        .about(gettext("Authenticate with Agama's server."))
+        .long_about(gettext("Unless you are executing this program as root, you need to authenticate with Agama's server\n\
+                             for most operations. You can log in by specifying the root password through the \"auth login\"\n\
+                             command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is\n\
+                             stored to authenticate the following requests.\n\
+                             \n\
+                             If you run this program as root, you can skip the authentication step because it\n\
+                             automatically uses the master token at /run/agama/token. Only the root user must have access\n\
+                             to such a file.\n\
+                             \n\
+                             You can logout at any time by using the \"auth logout\" command, although this command does\n\
+                             not affect the root user."))
+        .subcommand(
+            Command::new("login")
+                .about(gettext("Authenticate with Agama's server and store the token."))
+                .long_about(gettext("This command tries to get the password from the standard input. If it is not there, it asks\n\
+                                     the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The\n\
+                                     token will be automatically sent to authenticate the following requests."))
+        )
+        .subcommand(
+            Command::new("logout")
+                .about(gettext("Deauthenticate by removing the token."))
+        )
+        .subcommand(
+            Command::new("show")
+                .about(gettext("Print the used token to the standard output."))
+        )
 }
 
 /// Main entry point called from agama CLI main loop
-pub async fn run(client: BaseHTTPClient, subcommand: AuthCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, sub_matches: &ArgMatches) -> anyhow::Result<()> {
     let auth_client = AuthHTTPClient::load(client)?;
 
-    match subcommand {
-        AuthCommands::Login => login(auth_client, read_password()?).await,
-        AuthCommands::Logout => logout(auth_client),
-        AuthCommands::Show => show(&auth_client.api.base_url),
+    match sub_matches.subcommand() {
+        Some(("login", _)) => login(auth_client, read_password()?).await,
+        Some(("logout", _)) => logout(auth_client),
+        Some(("show", _)) => show(&auth_client.api.base_url),
+        _ => Ok(()),
     }
 }
 
