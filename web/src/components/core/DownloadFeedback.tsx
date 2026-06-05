@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Alert,
   AlertActionCloseButton,
@@ -84,6 +84,7 @@ export default function DownloadFeedback({
 }: DownloadFeedbackProps) {
   const [alert, setAlert] = useState<"pending" | "success" | null>(null);
   const [filename, setFilename] = useState("");
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleDownload = async () => {
     const name = `${filenamePrefix}-${isoTimestamp()}.${extension}`;
@@ -95,13 +96,21 @@ export default function DownloadFeedback({
       await download(url, name);
       setAlert((value) => {
         if (value === "pending") {
-          setTimeout(() => setAlert(null), successTimeout);
+          timeoutRef.current = setTimeout(() => setAlert(null), successTimeout);
           return "success";
         }
       });
     } catch {
       setAlert(null);
     }
+  };
+
+  const handleSuccessClose = () => {
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setAlert(null);
   };
 
   const title = _("Installation logs download");
@@ -135,7 +144,7 @@ export default function DownloadFeedback({
           <Alert
             variant="success"
             title={title}
-            actionClose={<AlertActionCloseButton onClose={() => setAlert(null)} />}
+            actionClose={<AlertActionCloseButton onClose={handleSuccessClose} />}
           >
             <Stack hasGutter>
               <StackItem>
