@@ -34,7 +34,7 @@ export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page noDefaultProgressMonitor endSlot={<InstallerOptionsMenu hideLabel />}>
+    <Page noDefaultProgressMonitor noDefaultEndSlot endSlot={<InstallerOptionsMenu hideLabel />}>
       <Page.Content>
         <SplitInfoLayout
           icon="deployed_code_update"
