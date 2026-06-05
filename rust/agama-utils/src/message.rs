@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -17,15 +17,19 @@
 //
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
-//
-mod config;
-pub use config::*;
 
-mod system_info;
-pub use system_info::*;
+//! Common actor messages shared across agama services.
 
-mod proposal;
-pub use proposal::{Proposal, SelectedBy, SoftwareProposal};
+use crate::actor::Message;
+use crate::api::software::Resolvable;
 
-mod resolvable;
-pub use resolvable::{Resolvable, ResolvableType};
+/// Message to query resolvables from a service.
+///
+/// Services that need software packages should implement a handler
+/// for this message that returns the list of packages/patterns/products
+/// they require based on their current configuration.
+pub struct GetResolvables;
+
+impl Message for GetResolvables {
+    type Reply = Vec<Resolvable>;
+}

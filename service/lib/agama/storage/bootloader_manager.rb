@@ -19,7 +19,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/http/clients"
 require "agama/storage/bootloader_config"
 require "agama/storage/bootloader_config_solver"
 require "agama/storage/bootloader_prober"
@@ -76,8 +75,6 @@ module Agama
         bootloader.propose
         # then also apply changes to that proposal
         write_config
-        # and set packages needed for given config
-        install_packages
         # TODO: error handling (including catching exceptions and filling issues)
         @logger.info "Bootloader config #{bootloader.inspect}"
       rescue ::Bootloader::NoRoot
@@ -91,16 +88,14 @@ module Agama
         Yast::WFM.CallFunction("inst_bootloader", [])
       end
 
-    private
-
-      def install_packages
-        bootloader = ::Bootloader::BootloaderFactory.current
-        http_client = Agama::HTTP::Clients::Main.new(::Logger.new($stdout))
-        packages = bootloader.packages
-        @logger.info "Installing bootloader packages: #{packages}"
-
-        http_client.set_resolvables("agama-bootloader", :package, packages)
+      # Required packages.
+      #
+      # @return [Array<String>]
+      def packages
+        ::Bootloader::BootloaderFactory.current.packages
       end
+
+    private
 
       def write_config
         bootloader = ::Bootloader::BootloaderFactory.current

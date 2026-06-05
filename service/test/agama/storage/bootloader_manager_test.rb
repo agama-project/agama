@@ -20,7 +20,6 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-
 require "agama/storage/bootloader_manager"
 require "agama/storage/bootloader_prober"
 require "agama/config"
@@ -33,7 +32,6 @@ describe Agama::Storage::BootloaderManager do
   let(:product_config) { instance_double(Agama::Config, data: product_data) }
   let(:product_data) { {} }
   let(:bootloader_obj) { instance_double(::Bootloader::Grub2, name: "grub2", propose: nil) }
-  let(:http_client) { instance_double(Agama::HTTP::Clients::Main) }
 
   before do
     allow(Yast::BootStorage).to receive(:reset_disks)
@@ -42,8 +40,6 @@ describe Agama::Storage::BootloaderManager do
     allow(::Bootloader::BootloaderFactory).to receive(:current=)
     allow(::Bootloader::BootloaderFactory).to receive(:current).and_return(bootloader_obj)
     allow(bootloader_obj).to receive(:packages).and_return([])
-    allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
-    allow(http_client).to receive(:set_resolvables)
   end
 
   describe "#probed?" do
@@ -240,6 +236,18 @@ describe Agama::Storage::BootloaderManager do
           agama_bootloader.configure(product_config)
         end
       end
+    end
+  end
+
+  describe "#packages" do
+    let(:bootloader_packages) { ["grub2", "grub2-x86_64-efi"] }
+
+    before do
+      allow(bootloader_obj).to receive(:packages).and_return(bootloader_packages)
+    end
+
+    it "returns packages required by the current bootloader" do
+      expect(agama_bootloader.packages).to eq(bootloader_packages)
     end
   end
 

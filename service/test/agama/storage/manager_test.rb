@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2022-2025] SUSE LLC
+# Copyright (c) [2022-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,7 +21,7 @@
 
 require_relative "../../test_helper"
 require_relative "storage_helpers"
-require "agama/http/clients"
+require "agama/http/clients/questions"
 require "agama/config"
 require "agama/http"
 require "agama/issue"
@@ -50,13 +50,11 @@ describe Agama::Storage::Manager do
   end
   let(:config) { Agama::Config.new(YAML.load_file(config_path)) }
   let(:tmp_dir) { Dir.mktmpdir }
-  let(:http_client) { instance_double(Agama::HTTP::Clients::Main) }
 
   before do
     mock_storage(devicegraph: scenario)
     allow(Agama::Storage::Proposal).to receive(:new).and_return(proposal)
     allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions_client)
-    allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
     allow(Bootloader::FinishClient).to receive(:new).and_return(bootloader_finish)
     # mock writting config as proposal call can do storage probing, which fails in CI
     allow_any_instance_of(Agama::Storage::BootloaderManager).to receive(:write_config)
@@ -313,10 +311,10 @@ describe Agama::Storage::Manager do
     end
   end
 
-  describe "#add_packages" do
+  describe "#packages" do
     before do
       allow(y2storage_manager).to receive(:staging).and_return(proposed_devicegraph)
-      allow(Agama::HTTP::Clients::Main).to receive(:new).and_return(http_client)
+      allow(proposal).to receive(:success?).and_return(proposal_success)
     end
 
     let(:proposed_devicegraph) do
@@ -331,29 +329,42 @@ describe Agama::Storage::Manager do
       )
     end
 
-    it "adds storage software to install" do
-      expect(http_client).to receive(:set_resolvables)
-        .with("storage_proposal", :package, match(include("btrfsprogs", "snapper")))
+    let(:proposal_success) { true }
 
-      storage.add_packages
+    it "returns packages for storage features" do
+      expect(storage.packages).to include("btrfsprogs", "snapper")
     end
 
     context "if iSCSI was used" do
       before do
-        allow_any_instance_of(Agama::Storage::ISCSI::Manager)
-          .to receive(:configured?).and_return(false)
+        allow(used_features).to receive(:any?).and_return(true)
       end
 
-      let(:used_features) do
-        instance_double(Y2Storage::StorageFeaturesList, pkg_list: [], any?: true)
+      it "includes the iSCSI packages" do
+        expect(storage.packages).to include("open-iscsi", "iscsiuio")
       end
+    end
 
-      it "adds the iSCSI software to install" do
-        expect(http_client).to receive(:set_resolvables)
-          .with("storage_proposal", :package, match(include("open-iscsi", "iscsiuio")))
+    context "if proposal was not successful" do
+      let(:proposal_success) { false }
 
-        storage.add_packages
+      it "returns an empty array" do
+        expect(storage.packages).to eq([])
       end
+    end
+  end
+
+  describe "#bootloader_packages" do
+    let(:bootloader) { instance_double(Agama::Storage::BootloaderManager) }
+    let(:bootloader_packages) { ["grub2", "grub2-x86_64-efi"] }
+
+    before do
+      allow(storage).to receive(:bootloader).and_return(bootloader)
+      allow(bootloader).to receive(:packages).and_return(bootloader_packages)
+    end
+
+    it "returns packages required by the bootloader" do
+      expect(storage.bootloader_packages).to eq(bootloader_packages)
     end
   end
 

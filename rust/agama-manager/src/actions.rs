@@ -22,9 +22,10 @@ use std::{process::Command, sync::Arc};
 
 use agama_network::NetworkSystemClient;
 use agama_utils::{
-    actor::Handler,
+    actor::{Handler, MessageHandler},
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
     issue,
+    message::GetResolvables,
     products::ProductSpec,
     progress, question,
 };
@@ -470,6 +471,10 @@ impl SetConfigAction {
     ) -> crate::task_manager::TaskId {
         let software_handler = self.software.clone();
         let software_config = config.software.clone();
+        let bootloader_handler = self.bootloader.clone();
+        let files_handler = self.files.clone();
+        let ntp_handler = self.ntp.clone();
+        let storage_handler = self.storage.clone();
 
         self.task_manager
             .task(
@@ -479,6 +484,12 @@ impl SetConfigAction {
             )
             .depends_on(dependencies)
             .run(move || async move {
+                Self::set_resolvables_for(&software_handler, "files", files_handler).await;
+                Self::set_resolvables_for(&software_handler, "ntp", ntp_handler).await;
+                Self::set_resolvables_for(&software_handler, "storage", storage_handler).await;
+                Self::set_resolvables_for(&software_handler, "bootloader", bootloader_handler)
+                    .await;
+
                 software_handler
                     .call(software::message::SetConfig::new(product, software_config))
                     .await
@@ -530,6 +541,25 @@ impl SetConfigAction {
                 Ok(())
             })
             .await
+    }
+
+    async fn set_resolvables_for<T>(
+        software: &Handler<software::Service>,
+        id: &str,
+        handler: Handler<T>,
+    ) where
+        T: MessageHandler<GetResolvables>,
+    {
+        let resolvables = handler.call(GetResolvables).await.unwrap_or_default();
+        let result = software
+            .call(software::message::SetResolvables::new(
+                id.to_string(),
+                resolvables,
+            ))
+            .await;
+        if let Err(error) = result {
+            tracing::error!("Failed to set resolvables for '{id}': {error}");
+        }
     }
 }
 

@@ -24,7 +24,8 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::bootloader::Config,
+    api::{bootloader::Config, software::Resolvable},
+    message::GetResolvables,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -135,5 +136,12 @@ impl MessageHandler<message::SetKernelArg> for Service {
 impl MessageHandler<message::SetLocale> for Service {
     async fn handle(&mut self, _message: message::SetLocale) -> Result<(), Error> {
         Ok(())
+    }
+}
+
+#[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        Ok(self.client.get_resolvables().await?)
     }
 }
