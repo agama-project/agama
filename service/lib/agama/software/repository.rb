@@ -60,7 +60,13 @@ module Agama
             "priority" => priority
           )
 
-          repo_id ? find(repo_id) : nil
+          return nil unless repo_id
+
+          repo = find(repo_id)
+          # set the original URL, the Pkg.SourceGeneralData() used in Y2Packager::Repository.find
+          # returns the URL without the user password so it would be lost
+          repo.url = url if repo
+          repo
         end
       end
 
