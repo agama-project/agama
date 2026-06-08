@@ -167,7 +167,7 @@ export default {
     "მისამართის მონაცემების სია"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    ""
+    "მოირგეთ ქვემორე პარამეტრები, რომ ქნათ ისე, რომ ახალი სისტემა ხელმისაწვდომ ადგილში ჩაეტიოს."
   ],
   "All conflicts have been resolved, or none were detected. You can safely continue with your setup.": [
     ""
@@ -1039,7 +1039,7 @@ export default {
     "%s-სთვის სივრცის გამოყოფა შეუძლებელია."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    ""
+    "ჩამტვირთავი დანაყოფისთვის და %s-ისთვის ადგილის გამოყოფა შეუძლებელია."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     ""
@@ -1647,7 +1647,7 @@ export default {
     "აირჩიეთ, ან შეიყვანეთ მიმაგრების წერტილი"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    ""
+    "აირჩიეთ, ან შეიყვანეთ მიმაგრები წერტილი, რომელიც სხვა მოწყობილობაზე უკვე მინიჭებული არაა"
   ],
   "Select or enter a valid mount point": [
     "აირჩიეთ, ან შეიყვანეთ სწორი მიმაგრების წერტილი"
@@ -1933,7 +1933,7 @@ export default {
     "ასევე წაიშლება ლოგიკური ტომები"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
-    ""
+    "მაქსიმუმი უნდა იყოს რიცხვი, რომელსაც მოჰყვება ისეთი ერთეულები, როგორიცაა, მაგალითად, GiB, ან GB"
   ],
   "The maximum must be a number optionally followed by a unit like GiB or GB": [
     ""
@@ -1942,7 +1942,7 @@ export default {
     "მინიმუმი მაქსიმუმზე მეტი ვერ იქნება"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
-    ""
+    "მინიმუმი უნდა იყოს რიცხვი, რომელსაც მოჰყვება ისეთი ერთეული, როგორიცაა, მაგალითად, GiB, ან GB"
   ],
   "The minimum must be a number optionally followed by a unit like GiB or GB": [
     ""
