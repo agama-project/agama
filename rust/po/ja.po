@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 13:56+0000\n"
-"PO-Revision-Date: 2026-05-30 02:12+0000\n"
+"POT-Creation-Date: 2026-06-05 13:38+0000\n"
+"PO-Revision-Date: 2026-06-06 02:12+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ja/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.5\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
@@ -29,61 +29,95 @@ msgstr "いいえ"
 msgid "Yes"
 msgstr "はい"
 
-#: agama-cli/src/monitor/ui.rs:38
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:39
+msgid "Bootloader"
+msgstr "ブートローダ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:41
 msgid "Manager"
 msgstr "マネージャ"
 
-#: agama-cli/src/monitor/ui.rs:39
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:43
 msgid "Network"
 msgstr "ネットワーク"
 
-#: agama-cli/src/monitor/ui.rs:40
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:45
 msgid "NTP"
 msgstr "NTP"
 
-#: agama-cli/src/monitor/ui.rs:41
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:47
 msgid "Hostname"
 msgstr "ホスト名"
 
-#: agama-cli/src/monitor/ui.rs:42
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:49
 msgid "Localization"
 msgstr "ローカライゼーション"
 
-#: agama-cli/src/monitor/ui.rs:43
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:51
 msgid "Product"
 msgstr "製品"
 
-#: agama-cli/src/monitor/ui.rs:44
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:53
 msgid "Remote Access"
 msgstr "リモートアクセス"
 
-#: agama-cli/src/monitor/ui.rs:45
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:55
 msgid "Software"
 msgstr "ソフトウエア"
 
-#: agama-cli/src/monitor/ui.rs:46
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:57
 msgid "Storage"
 msgstr "ストレージ"
 
-#: agama-cli/src/monitor/ui.rs:47
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:59
 msgid "Files"
 msgstr "ファイル"
 
-#: agama-cli/src/monitor/ui.rs:48
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:61
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: agama-cli/src/monitor/ui.rs:49
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:63
 msgid "DASD"
 msgstr "DASD"
 
-#: agama-cli/src/monitor/ui.rs:50
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:65
 msgid "zFCP"
 msgstr "zFCP"
 
-#: agama-cli/src/monitor/ui.rs:51
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:67
 msgid "Users"
 msgstr "ユーザ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:69
+msgid "Proxy"
+msgstr "プロキシ"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:71
+msgid "Questions"
+msgstr "問題点"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:73
+msgid "Security"
+msgstr "セキュリティ"
 
 #: agama-cli/src/monitor/ui/content.rs:63
 msgid "There are pending questions:"
@@ -236,90 +270,94 @@ msgid "Blocking issues:"
 msgstr "インストールの実行を妨害している問題点:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:198
+#: agama-files/src/service.rs:184
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "スクリプト %s の取得に失敗しました。再試行しますか？"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:222
+#: agama-files/src/service.rs:208
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "ファイル %s の書き込みに失敗しました。再試行しますか？"
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:92
 msgid "Prepare the system"
 msgstr "システムの準備"
 
-#: agama-manager/src/actions.rs:89
+#: agama-manager/src/actions.rs:93
 msgid "Install software"
 msgstr "ソフトウエアのインストール"
 
-#: agama-manager/src/actions.rs:90
+#: agama-manager/src/actions.rs:94
 msgid "Configure the system"
 msgstr "システムの設定"
 
-#: agama-manager/src/actions.rs:195
+#: agama-manager/src/actions.rs:197
 msgid "Storing security settings"
 msgstr "セキュリティ設定を保存しています"
 
-#: agama-manager/src/actions.rs:196
+#: agama-manager/src/actions.rs:207
 msgid "Configuring remote access"
 msgstr "リモートアクセスを設定しています"
 
-#: agama-manager/src/actions.rs:197
+#: agama-manager/src/actions.rs:217
 msgid "Setting up the hostname"
 msgstr "ホスト名を設定しています"
 
-#: agama-manager/src/actions.rs:198
+#: agama-manager/src/actions.rs:227
 msgid "Setting up the network proxy"
 msgstr "ネットワークプロキシを設定しています"
 
-#: agama-manager/src/actions.rs:199
+#: agama-manager/src/actions.rs:238
 msgid "Setting up NTP"
 msgstr "NTP を設定しています"
 
-#: agama-manager/src/actions.rs:200
-msgid "Importing user files"
-msgstr "ユーザファイルを取り込んでいます"
+#: agama-manager/src/actions.rs:249
+msgid "Importing user files and scripts"
+msgstr "ユーザファイルとスクリプトを取り込んでいます"
 
-#: agama-manager/src/actions.rs:201
+#: agama-manager/src/actions.rs:262
 msgid "Running user pre-installation scripts"
 msgstr "ユーザ指定のインストール前スクリプトを実行しています"
 
-#: agama-manager/src/actions.rs:202
+#: agama-manager/src/actions.rs:277
 msgid "Storing questions settings"
 msgstr "質問設定を保存しています"
 
-#: agama-manager/src/actions.rs:203
+#: agama-manager/src/actions.rs:287
 msgid "Storing localization settings"
 msgstr "言語設定を保存しています"
 
-#: agama-manager/src/actions.rs:204
+#: agama-manager/src/actions.rs:297
 msgid "Storing users settings"
 msgstr "ユーザ設定を保存しています"
 
-#: agama-manager/src/actions.rs:205
+#: agama-manager/src/actions.rs:307
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI デバイスを設定しています"
 
-#: agama-manager/src/actions.rs:209
+#: agama-manager/src/actions.rs:334
+msgid "Storing bootloader settings"
+msgstr "ブートローダ設定を保存しています"
+
+#: agama-manager/src/actions.rs:394
 msgid "Configuring DASD devices"
 msgstr "DASD デバイスを設定しています"
 
-#: agama-manager/src/actions.rs:213
+#: agama-manager/src/actions.rs:424
 msgid "Setting up the network"
 msgstr "ネットワークを設定しています"
 
-#: agama-manager/src/actions.rs:218
-msgid "Preparing the software proposal"
-msgstr "ソフトウエアの提案内容を準備しています"
-
-#: agama-manager/src/actions.rs:219
+#: agama-manager/src/actions.rs:451
 msgid "Preparing the storage proposal"
 msgstr "ストレージの提案内容を準備しています"
 
-#: agama-manager/src/actions.rs:220
-msgid "Storing bootloader settings"
-msgstr "ブートローダ設定を保存しています"
+#: agama-manager/src/actions.rs:483
+msgid "Preparing the software proposal"
+msgstr "ソフトウエアの提案内容を準備しています"
+
+#: agama-manager/src/actions.rs:515
+msgid "Configuring SELinux"
+msgstr "SELinux を設定しています"
 
 #: agama-network/src/service.rs:511
 msgid "Writing network configuration"
@@ -377,78 +415,66 @@ msgstr ""
 msgid "Skip"
 msgstr "飛ばす"
 
-#: agama-software/src/model/packages.rs:55
-msgid "package"
-msgstr "パッケージ"
-
-#: agama-software/src/model/packages.rs:56
-msgid "pattern"
-msgstr "パターン"
-
-#: agama-software/src/model/packages.rs:57
-msgid "product"
-msgstr "製品"
-
 #: agama-software/src/service.rs:287
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "内部エラーにより、ソフトウエアの提案内容を作成できませんでした。"
 
-#: agama-software/src/zypp_server.rs:292
+#: agama-software/src/zypp_server.rs:293
 msgid "Starting packages installation"
 msgstr "パッケージのインストールを開始しています"
 
-#: agama-software/src/zypp_server.rs:305
+#: agama-software/src/zypp_server.rs:306
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "パッケージのダウンロードとインストールが失敗しました。再試行しますか？"
 
-#: agama-software/src/zypp_server.rs:359
+#: agama-software/src/zypp_server.rs:360
 msgid "Updating the list of repositories"
 msgstr "リポジトリの一覧を更新しています"
 
-#: agama-software/src/zypp_server.rs:360
+#: agama-software/src/zypp_server.rs:361
 msgid "Refreshing metadata from the repositories"
 msgstr "リポジトリのメタデータを更新しています"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:362
 msgid "Calculating the software proposal"
 msgstr "ソフトウエアの提案内容を作成しています"
 
-#: agama-software/src/zypp_server.rs:364
+#: agama-software/src/zypp_server.rs:365
 msgid "Registering the system"
 msgstr "システムを登録しています"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:434
+#: agama-software/src/zypp_server.rs:437
 msgid "Could not remove the repository %s"
 msgstr "リポジトリ %s を削除できませんでした"
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:458
 msgid "Could not read the repositories"
 msgstr "リポジトリの読み込みができませんでした"
 
-#: agama-software/src/zypp_server.rs:488
+#: agama-software/src/zypp_server.rs:495
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "リポジトリ内の製品検索に失敗しました。システムの登録が必要と思われます。"
 
-#: agama-software/src/zypp_server.rs:491
+#: agama-software/src/zypp_server.rs:498
 msgid "Failed to find the product in the repositories."
 msgstr "リポジトリ内の製品検索に失敗しました。"
 
-#: agama-software/src/zypp_server.rs:554
+#: agama-software/src/zypp_server.rs:561
 msgid "There are conflicts in the software selection"
 msgstr "ソフトウエア選択において競合が発生しています"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:583
+#: agama-software/src/zypp_server.rs:590
 msgid "Could not select %s '%s' for installation"
 msgstr "%s '%s' をインストール用に選択できませんでした"
 
-#: agama-software/src/zypp_server.rs:999
+#: agama-software/src/zypp_server.rs:1008
 msgid "Failed to register the system"
 msgstr "システムの登録に失敗しました"
 
@@ -461,6 +487,18 @@ msgstr ""
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
 msgstr "最初のユーザ情報が不十分です"
+
+#: agama-utils/src/api/software/resolvable.rs:63
+msgid "package"
+msgstr "パッケージ"
+
+#: agama-utils/src/api/software/resolvable.rs:64
+msgid "pattern"
+msgstr "パターン"
+
+#: agama-utils/src/api/software/resolvable.rs:65
+msgid "product"
+msgstr "製品"
 
 #~ msgid "Lost the connection with the server."
 #~ msgstr "サーバとの接続が失われました。"

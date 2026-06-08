@@ -8,517 +8,495 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-05 13:38+0000\n"
-"PO-Revision-Date: 2026-03-25 18:04+0000\n"
-"Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
-"Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
-"master/cs/>\n"
-"Language: cs\n"
+"PO-Revision-Date: 2026-06-06 07:12+0000\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
+"master/ka/>\n"
+"Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.16.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "No"
-msgstr "Ne"
+msgstr "არა"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
 msgid "Yes"
-msgstr "Ano"
+msgstr "დიახ"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:39
 msgid "Bootloader"
-msgstr ""
+msgstr "ჩამტვირთავი"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:41
 msgid "Manager"
-msgstr ""
+msgstr "მმართველი"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:43
 msgid "Network"
-msgstr ""
+msgstr "ქსელი"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:45
 msgid "NTP"
-msgstr ""
+msgstr "NTP"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:47
 msgid "Hostname"
-msgstr ""
+msgstr "ჰოსტის სახელი"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:49
 msgid "Localization"
-msgstr ""
+msgstr "ლოკალიზაცია"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:51
-#, fuzzy
 msgid "Product"
-msgstr "produkt"
+msgstr "პროდუქტი"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:53
 msgid "Remote Access"
-msgstr ""
+msgstr "დაშორებული წვდომა"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:55
 msgid "Software"
-msgstr ""
+msgstr "პროგრამები"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:57
 msgid "Storage"
-msgstr ""
+msgstr "საცავი"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:59
 msgid "Files"
-msgstr ""
+msgstr "ფაილები"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:61
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:63
 msgid "DASD"
-msgstr ""
+msgstr "DASD"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:65
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:67
 msgid "Users"
-msgstr ""
+msgstr "მომხმარებლები"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:69
 msgid "Proxy"
-msgstr ""
+msgstr "პროქსი"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:71
 msgid "Questions"
-msgstr ""
+msgstr "კითხვები"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:73
 msgid "Security"
-msgstr ""
+msgstr "უსაფრთხოება"
 
 #: agama-cli/src/monitor/ui/content.rs:63
 msgid "There are pending questions:"
-msgstr ""
+msgstr "დარჩენილია კითხვები:"
 
 #: agama-cli/src/monitor/ui/content.rs:73
 msgid ""
 "Please use the web interface (recommended) or the \"agama questions\" "
 "command to answer them."
 msgstr ""
+"პასუხის გასაცემად გამოიყენეთ ვებინტერფეისი (რეკომენდებულია), ან ბრძანება "
+"\"agama questions\"."
 
 #: agama-cli/src/monitor/ui/content.rs:93
-#, fuzzy
 msgid "Installation complete."
-msgstr "Instalovat software"
+msgstr "დაყენება დასრულდა."
 
 #: agama-cli/src/monitor/ui/content.rs:94
 msgid "You can reboot the machine to log in to the new system."
-msgstr ""
+msgstr "შეგიძლიათ, გადატვირთოთ მანაქანა და შეხვიდეთ ახალ სისტემაში."
 
 #: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:76
-#, fuzzy
 msgid "Installation failed."
-msgstr "Instalovat software"
+msgstr "დაყენება ჩავარდა."
 
 #: agama-cli/src/monitor/ui/content.rs:98
 msgid "Use the \"agama logs\" command to collect the logs."
-msgstr ""
+msgstr "ჟურნალის ჩანაწერების შესაგროვებლად გამოიყენეთ ბრძანება \"agama logs\"."
 
 #: agama-cli/src/monitor/ui/content.rs:129
 #: agama-cli/src/monitor/ui/content.rs:201
 msgid "Action needed:"
-msgstr ""
+msgstr "საჭიროა ქმედება:"
 
 #: agama-cli/src/monitor/ui/content.rs:137
 msgid "No product has been selected yet."
-msgstr ""
+msgstr "ჯერ პროდუქტი არჩეული არაა."
 
 #: agama-cli/src/monitor/ui/content.rs:222
 msgid "Ready for installation."
-msgstr ""
+msgstr "დაყენებისთვის მზადაა."
 
 #: agama-cli/src/monitor/ui/content.rs:223
 msgid "Waiting to start installation..."
-msgstr ""
+msgstr "დაყენების დაწყების მოლოდინი..."
 
 #: agama-cli/src/monitor/ui/content.rs:239
 msgid "Step"
-msgstr ""
+msgstr "ნაბიჯი"
 
 #: agama-cli/src/monitor/ui/content.rs:241
 msgid "of"
-msgstr ""
+msgstr "/"
 
 #: agama-cli/src/monitor/ui/issues.rs:64
 msgid "Waiting for these to be resolved."
-msgstr ""
+msgstr "ამათი გადაჭრის მოლოდინი."
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
-msgstr ""
+msgstr "ჰოსტი: "
 
 #: agama-cli/src/monitor/ui/summary.rs:48
 msgid "Model: "
-msgstr ""
+msgstr "მოდელი: "
 
 #: agama-cli/src/monitor/ui/summary.rs:49
-#, fuzzy
 msgid "Product: "
-msgstr "produkt"
+msgstr "პროდუქტი: "
 
 #: agama-cli/src/monitor/ui/summary.rs:50
 msgid "Stage: "
-msgstr ""
+msgstr "ფაზა: "
 
 #: agama-cli/src/monitor/ui/summary.rs:51
 msgid "Status: "
-msgstr ""
+msgstr "სტატუსი: "
 
 #: agama-cli/src/monitor/ui/summary.rs:76
 msgid "Busy"
-msgstr ""
+msgstr "დაკავებულია"
 
 #: agama-cli/src/monitor/ui/summary.rs:77
 #: agama-cli/src/monitor/ui/summary.rs:104
 msgid "Failed"
-msgstr ""
+msgstr "ჩავარდა"
 
 #: agama-cli/src/monitor/ui/summary.rs:78
 msgid "Idle"
-msgstr ""
+msgstr "უქმე"
 
 #: agama-cli/src/monitor/ui/summary.rs:101
-#, fuzzy
 msgid "Installing"
-msgstr "Systém se registruje"
+msgstr "მიმდინარეობს დაყენება"
 
 #: agama-cli/src/monitor/ui/summary.rs:102
-#, fuzzy
 msgid "Configuring"
-msgstr "Konfigurují se zařízení DASD"
+msgstr "მორგება"
 
 #: agama-cli/src/monitor/ui/summary.rs:103
 msgid "Finished"
-msgstr ""
+msgstr "დასრულებულია"
 
 #: agama-cli/src/monitor/ui/summary.rs:117
 msgid "Not selected yet"
-msgstr ""
+msgstr "ჯერ არჩეული არაა"
 
 #: agama-cli/src/status.rs:77
-#, fuzzy
 msgid "Installation finished successfully."
-msgstr "Instalovat software"
+msgstr "დაყენება წარმატებით დასრულდა."
 
 #: agama-cli/src/status.rs:78
 msgid "Installation is ready to start."
-msgstr ""
+msgstr "დაყენება მზადაა დასაწყებად."
 
 #: agama-cli/src/status.rs:79
-#, fuzzy
 msgid "Installation is in progress."
-msgstr "Instalovat software"
+msgstr "მიმდინარეობს დაყენება."
 
 #: agama-cli/src/status.rs:80
-#, fuzzy
 msgid "Installation is being proposed."
-msgstr "Instalovat software"
+msgstr "მიმდინარეობს დაყენების შეთავაზება."
 
 #: agama-cli/src/status.rs:81
 msgid ""
 "There are unanswered questions. Please use `agama questions` command or web "
 "interface to answer them."
 msgstr ""
+"არსებობს პასუხგაუცემელი კითხვები. საპასუხოდ გამოიყენეთ ვებინტერფეისი, ან "
+"ბრძანება 'agama questions'."
 
 #: agama-cli/src/status.rs:82
 msgid ""
 "The installer failed to calculate the installation proposal. There are "
 "issues blocking the installation."
 msgstr ""
+"დაყენების პროგრამამ ვერ გამოთვალა დაყენების შეთავაზება. არსებობს პრობლემები, "
+"რომლებიც ბლოკავენ დაყენებას."
 
 #: agama-cli/src/status.rs:118
 msgid "Details:"
-msgstr ""
+msgstr "დეტალები:"
 
 #: agama-cli/src/status.rs:120
 msgid "Open questions:"
-msgstr ""
+msgstr "ღია კითხვები:"
 
 #: agama-cli/src/status.rs:126
 msgid "Blocking issues:"
-msgstr ""
+msgstr "მბლოკავი პრობლემები:"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:184
 msgid "Failed to retrieve the script %s. Do you want to try again?"
-msgstr "Nepodařilo se načíst skript %s. Chcete to zkusit znovu?"
+msgstr "სკრიპტის %s მიღება ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:208
 msgid "Failed to write the file %s. Do you want to try again?"
-msgstr "Nepodařilo se zapsat do souboru %s. Chcete to zkusit znovu?"
+msgstr "ფაილის %s ჩაწერა ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
 #: agama-manager/src/actions.rs:92
 msgid "Prepare the system"
-msgstr "Nachystat systém"
+msgstr "სისტემის მომზადება"
 
 #: agama-manager/src/actions.rs:93
 msgid "Install software"
-msgstr "Instalovat software"
+msgstr "პროგრამების დაყენება"
 
 #: agama-manager/src/actions.rs:94
 msgid "Configure the system"
-msgstr "Nakonfigurovat systém"
+msgstr "სისტემის მორგება"
 
 #: agama-manager/src/actions.rs:197
 msgid "Storing security settings"
-msgstr "Ukládají se bezpečnostní nastavení"
+msgstr "უსაფრთხოების პარამეტრების დამახსოვრება"
 
 #: agama-manager/src/actions.rs:207
-#, fuzzy
 msgid "Configuring remote access"
-msgstr "Konfigurují se zařízení DASD"
+msgstr "დაშორებული წვდომის მორგება"
 
 #: agama-manager/src/actions.rs:217
 msgid "Setting up the hostname"
-msgstr "Nastavuje se jméno hostitele"
+msgstr "ჰოსტის სახელის დაყენება"
 
 #: agama-manager/src/actions.rs:227
 msgid "Setting up the network proxy"
-msgstr "Nastavuje se síťová proxy"
+msgstr "ქსელური პროქსის მორგება"
 
 #: agama-manager/src/actions.rs:238
-#, fuzzy
 msgid "Setting up NTP"
-msgstr "Nastavuje konfigurace sítě"
+msgstr "NTP-ის მორგება"
 
 #: agama-manager/src/actions.rs:249
-#, fuzzy
 msgid "Importing user files and scripts"
-msgstr "Importují se uživatelské soubory"
+msgstr "მომხმარებლის ფაილებისა და სკრიპტების შემოტანა"
 
 #: agama-manager/src/actions.rs:262
 msgid "Running user pre-installation scripts"
-msgstr "Spouští se uživatelské předinstalační skripty"
+msgstr "მომხმარებლის დაყენებისწინა სკრიპტების გაშვება"
 
 #: agama-manager/src/actions.rs:277
 msgid "Storing questions settings"
-msgstr "Ukládá se nastavení otázek"
+msgstr "კითხვის პარამეტრების დამახსოვრება"
 
 #: agama-manager/src/actions.rs:287
 msgid "Storing localization settings"
-msgstr "Ukládá se nastavení lokalizace"
+msgstr "ლოკალიზაიის პარამეტრების დამახსოვრება"
 
 #: agama-manager/src/actions.rs:297
 msgid "Storing users settings"
-msgstr "Ukládají se uživatelská nastavení"
+msgstr "მომხმარებლის პარამეტრების დამახსოვრება"
 
 #: agama-manager/src/actions.rs:307
 msgid "Configuring iSCSI devices"
-msgstr "Konfigurují se zařízení iSCSI"
+msgstr "iSCSI მოწყობილობების დამახსოვრება"
 
 #: agama-manager/src/actions.rs:334
 msgid "Storing bootloader settings"
-msgstr "Ukládá se nastavení zavaděče"
+msgstr "ჩამტვირთავის პარამეტრების დამახსოვრება"
 
 #: agama-manager/src/actions.rs:394
 msgid "Configuring DASD devices"
-msgstr "Konfigurují se zařízení DASD"
+msgstr "DASD მოწყობილობების მორგება"
 
 #: agama-manager/src/actions.rs:424
 msgid "Setting up the network"
-msgstr "Nastavuje konfigurace sítě"
+msgstr "ქსელის მორგება"
 
 #: agama-manager/src/actions.rs:451
 msgid "Preparing the storage proposal"
-msgstr "Připravuje se návrh úložiště"
+msgstr "საცავის შეთავაზების მომზადება"
 
 #: agama-manager/src/actions.rs:483
 msgid "Preparing the software proposal"
-msgstr "Připravuje se návrh softwaru"
+msgstr "პროგრამების შეთავაზების მომზადება"
 
 #: agama-manager/src/actions.rs:515
-#, fuzzy
 msgid "Configuring SELinux"
-msgstr "Konfigurují se zařízení DASD"
+msgstr "SELinux-ის მორგება"
 
 #: agama-network/src/service.rs:511
 msgid "Writing network configuration"
-msgstr "Zapisuji síťové nastavení"
+msgstr "ქსელის კონფიგურაციის ჩაწერა"
 
 #: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
-msgstr "Synchronizace stavu síťové služby"
+msgstr "ქსელის სერვისის მდგომარეობის სინქრონიზაცია"
 
 #: agama-security/src/service.rs:226
 msgid "Reject"
-msgstr "Odmítnout"
+msgstr "უარყოფა"
 
 #: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
-msgstr "Důvěřovat"
+msgstr "ნდობა"
 
 #: agama-security/src/service.rs:227
 msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
-"Zkouší se naimportovat certifikát podepsaný sebou samým. Důvěřujete "
-"certifikátu a chcete zaregistrovat produkt?"
+"თვითხელმოწერილი სერტიფიკატის შემოტანის მცდელობა. გნებავთ, ენდოთ მას და "
+"დაარეგისტრიროთ პროდუქტი?"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr "Ignorovat"
+msgstr "იგნორი"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr "Opakovat"
+msgstr "თავიდან ცდა"
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
-msgstr "Vyskytla se chyba při běhu skriptu balíku."
+msgstr "პრობლემა პაჯეტის სკრიპტის შესრულებისას."
 
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr "Pokračovat"
+msgstr "გაგრძელება"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
+#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
-msgstr ""
-"Klíč {0} ({1}) s otiskem {2} není známý. Chcete důvěřovat tomuto klíči?"
+msgstr "გასაღები {0} ({1}) ანაბეჭდით {2} უცნობია. გნებავთ, ენდოთ ამ გასაღებს?"
 
 #: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
-msgstr "Přeskočit"
+msgstr "გამოტოვება"
 
 #: agama-software/src/service.rs:287
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
-msgstr "Kvůli vnitřní chybě nebylo možné vytvořit návrh softwaru."
+msgstr "შიდა შეცდომის გამო პროგრამების შეთავაზების შექმნა შეუძლებელია."
 
 #: agama-software/src/zypp_server.rs:293
 msgid "Starting packages installation"
-msgstr ""
+msgstr "პაკეტების დაყენების დაწყება"
 
 #: agama-software/src/zypp_server.rs:306
 msgid "Packages download and installation failed. Would you like to retry?"
-msgstr ""
+msgstr "პაკეტების გადმოწერა და დაყენება ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
 #: agama-software/src/zypp_server.rs:360
 msgid "Updating the list of repositories"
-msgstr "Aktualizuji seznam repozitářů"
+msgstr "რეპოზიტორიების სიის განახლება"
 
 #: agama-software/src/zypp_server.rs:361
 msgid "Refreshing metadata from the repositories"
-msgstr "Obnovuji metadata repozitářů"
+msgstr "რეპოზიტორიების მეტამონაცემთა განახლება"
 
 #: agama-software/src/zypp_server.rs:362
 msgid "Calculating the software proposal"
-msgstr "Vyhodnocuje se návrh softwaru"
+msgstr "პროგრამების შეთავაზების გამოთვლა"
 
 #: agama-software/src/zypp_server.rs:365
 msgid "Registering the system"
-msgstr "Systém se registruje"
+msgstr "სისტემის რეგიტრაცია"
 
 #. TRANSLATORS: %s is the alias of the repository.
 #: agama-software/src/zypp_server.rs:437
 msgid "Could not remove the repository %s"
-msgstr "Nepodařilo se odebrat repozitář %s"
+msgstr "რეპოზიტორიის %s წაშლა შეუძლებელია"
 
 #: agama-software/src/zypp_server.rs:458
 msgid "Could not read the repositories"
-msgstr "Nepodařilo se načíst repozitáře"
+msgstr "რეპოზიტორიების წაკითხვა შეუძლებელია"
 
 #: agama-software/src/zypp_server.rs:495
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
-"Nepodařilo se najít produkt v repozitářích. Možná je nutné systém "
-"zaregistrovat."
+"რეპოზიტორიებში პროდუქტის პოვნა შეუძლებელია. შეიძლება, სისტემის რეგისტრაციაა "
+"საჭირო."
 
 #: agama-software/src/zypp_server.rs:498
 msgid "Failed to find the product in the repositories."
-msgstr "Nepodařilo se najít produkt v repozitářích."
+msgstr "რეპოზიტორიებში პროდუქტის მოძებნა ჩავარდა."
 
 #: agama-software/src/zypp_server.rs:561
 msgid "There are conflicts in the software selection"
-msgstr "Při výběru softwaru došlo ke konfliktům"
+msgstr "პროგრამების არჩევანში კონფლიქტებია"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
 #: agama-software/src/zypp_server.rs:590
 msgid "Could not select %s '%s' for installation"
-msgstr "Nepodařilo se vybrat %s '%s' k instalaci"
+msgstr "დაყენებისთვის %s-ის '%s' არჩევა შეუძლებელია"
 
 #: agama-software/src/zypp_server.rs:1008
 msgid "Failed to register the system"
-msgstr "Registrace systému selhala"
+msgstr "სისტემის რეგისტრაცია ჩავარდა"
 
 #: agama-users/src/service.rs:178
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Je vyžadováno definování uživatele a nastavení rootovského hesla nebo SSH "
-"klíče"
+"მომხმარებლის აღწერა, root პაროლის დაყენება და SSH საჯარო გასაღები აუცილებელია"
 
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
-msgstr "Nastavení prvního uživatele není kompletní"
+msgstr "პირველი მომხმარებლის ინფორმაცია დაუსრულებელია"
 
 #: agama-utils/src/api/software/resolvable.rs:63
 msgid "package"
-msgstr "balíček"
+msgstr "პაკეტი"
 
 #: agama-utils/src/api/software/resolvable.rs:64
 msgid "pattern"
-msgstr "vzor"
+msgstr "ნიმუში"
 
 #: agama-utils/src/api/software/resolvable.rs:65
 msgid "product"
-msgstr "produkt"
-
-#, fuzzy
-#~ msgid "Calculating the installation proposal:"
-#~ msgstr "Vyhodnocuje se návrh softwaru"
-
-#, fuzzy
-#~ msgid "Installation failed"
-#~ msgstr "Instalovat software"
-
-#~ msgid "Reading configuration"
-#~ msgstr "Načítám konfiguraci"
-
-#~ msgid "The product must be registered"
-#~ msgstr "Produkt musí být zaregistrovaný"
+msgstr "პროდუქტი"

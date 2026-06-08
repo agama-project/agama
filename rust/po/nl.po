@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 13:56+0000\n"
+"POT-Creation-Date: 2026-06-05 13:38+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -29,61 +29,96 @@ msgstr "Nee"
 msgid "Yes"
 msgstr "Ja"
 
-#: agama-cli/src/monitor/ui.rs:38
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:39
+msgid "Bootloader"
+msgstr ""
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:41
 msgid "Manager"
 msgstr "Beheerder"
 
-#: agama-cli/src/monitor/ui.rs:39
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:43
 msgid "Network"
 msgstr "Netwerk"
 
-#: agama-cli/src/monitor/ui.rs:40
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:45
 msgid "NTP"
 msgstr "NTP"
 
-#: agama-cli/src/monitor/ui.rs:41
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:47
 msgid "Hostname"
 msgstr "Hostnaam"
 
-#: agama-cli/src/monitor/ui.rs:42
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:49
 msgid "Localization"
 msgstr "Lokalisering"
 
-#: agama-cli/src/monitor/ui.rs:43
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:51
 msgid "Product"
 msgstr "Product"
 
-#: agama-cli/src/monitor/ui.rs:44
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:53
 msgid "Remote Access"
 msgstr "Toegang-op-afstand"
 
-#: agama-cli/src/monitor/ui.rs:45
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:55
 msgid "Software"
 msgstr "Software"
 
-#: agama-cli/src/monitor/ui.rs:46
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:57
 msgid "Storage"
 msgstr "Opslag"
 
-#: agama-cli/src/monitor/ui.rs:47
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:59
 msgid "Files"
 msgstr "Bestanden"
 
-#: agama-cli/src/monitor/ui.rs:48
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:61
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: agama-cli/src/monitor/ui.rs:49
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:63
 msgid "DASD"
 msgstr "DASD"
 
-#: agama-cli/src/monitor/ui.rs:50
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:65
 msgid "zFCP"
 msgstr "zFCP"
 
-#: agama-cli/src/monitor/ui.rs:51
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:67
 msgid "Users"
 msgstr "Gebruikers"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:69
+msgid "Proxy"
+msgstr ""
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:71
+#, fuzzy
+msgid "Questions"
+msgstr "Vragen die nog openstaan:"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:73
+msgid "Security"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:63
 msgid "There are pending questions:"
@@ -236,91 +271,97 @@ msgid "Blocking issues:"
 msgstr "Blokkerende problemen:"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:198
+#: agama-files/src/service.rs:184
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr "Kon het script %s niet ophalen. Wilt u het opnieuw proberen?"
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:222
+#: agama-files/src/service.rs:208
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Kon het bestand %s niet bewerken. Wilt u het opnieuw proberen?"
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:92
 msgid "Prepare the system"
 msgstr "Het systeem voorbereiden"
 
-#: agama-manager/src/actions.rs:89
+#: agama-manager/src/actions.rs:93
 msgid "Install software"
 msgstr "Software installeren"
 
-#: agama-manager/src/actions.rs:90
+#: agama-manager/src/actions.rs:94
 msgid "Configure the system"
 msgstr "Het systeem configureren"
 
-#: agama-manager/src/actions.rs:195
+#: agama-manager/src/actions.rs:197
 msgid "Storing security settings"
 msgstr "Beveiligingsinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:196
+#: agama-manager/src/actions.rs:207
 msgid "Configuring remote access"
 msgstr "Toegang-op-afstand configureren"
 
-#: agama-manager/src/actions.rs:197
+#: agama-manager/src/actions.rs:217
 msgid "Setting up the hostname"
 msgstr "De hostnaam instellen"
 
-#: agama-manager/src/actions.rs:198
+#: agama-manager/src/actions.rs:227
 msgid "Setting up the network proxy"
 msgstr "De netwerk-proxy instellen"
 
-#: agama-manager/src/actions.rs:199
+#: agama-manager/src/actions.rs:238
 msgid "Setting up NTP"
 msgstr "NTP instellen"
 
-#: agama-manager/src/actions.rs:200
-msgid "Importing user files"
+#: agama-manager/src/actions.rs:249
+#, fuzzy
+msgid "Importing user files and scripts"
 msgstr "Gebruikersbestanden importeren"
 
-#: agama-manager/src/actions.rs:201
+#: agama-manager/src/actions.rs:262
 msgid "Running user pre-installation scripts"
 msgstr "Gebruikerspre-installatiescripts uitvoeren"
 
-#: agama-manager/src/actions.rs:202
+#: agama-manager/src/actions.rs:277
 #, fuzzy
 msgid "Storing questions settings"
 msgstr "De antwoorden op de gestelde vragen uitwerken"
 
-#: agama-manager/src/actions.rs:203
+#: agama-manager/src/actions.rs:287
 msgid "Storing localization settings"
 msgstr "Lokaliseringsinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:204
+#: agama-manager/src/actions.rs:297
 msgid "Storing users settings"
 msgstr "Gebruikersinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:205
+#: agama-manager/src/actions.rs:307
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:209
+#: agama-manager/src/actions.rs:334
+msgid "Storing bootloader settings"
+msgstr "Bootloader-instellingen opslaan"
+
+#: agama-manager/src/actions.rs:394
 msgid "Configuring DASD devices"
 msgstr "DASD-apparaten configureren"
 
-#: agama-manager/src/actions.rs:213
+#: agama-manager/src/actions.rs:424
 msgid "Setting up the network"
 msgstr "Het netwerk instellen"
 
-#: agama-manager/src/actions.rs:218
-msgid "Preparing the software proposal"
-msgstr "Het softwarevoorstel voorbereiden"
-
-#: agama-manager/src/actions.rs:219
+#: agama-manager/src/actions.rs:451
 msgid "Preparing the storage proposal"
 msgstr "Het opslagvoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:220
-msgid "Storing bootloader settings"
-msgstr "Bootloader-instellingen opslaan"
+#: agama-manager/src/actions.rs:483
+msgid "Preparing the software proposal"
+msgstr "Het softwarevoorstel voorbereiden"
+
+#: agama-manager/src/actions.rs:515
+#, fuzzy
+msgid "Configuring SELinux"
+msgstr "Configureren…"
 
 #: agama-network/src/service.rs:511
 msgid "Writing network configuration"
@@ -368,7 +409,6 @@ msgstr "Doorgaan"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
-#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -380,58 +420,46 @@ msgstr ""
 msgid "Skip"
 msgstr "Overslaan"
 
-#: agama-software/src/model/packages.rs:55
-msgid "package"
-msgstr "pakket"
-
-#: agama-software/src/model/packages.rs:56
-msgid "pattern"
-msgstr "patroon"
-
-#: agama-software/src/model/packages.rs:57
-msgid "product"
-msgstr "product"
-
 #: agama-software/src/service.rs:287
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Kon geen softwarevoorstel doen door een interne fout."
 
-#: agama-software/src/zypp_server.rs:292
+#: agama-software/src/zypp_server.rs:293
 msgid "Starting packages installation"
 msgstr "Pakketinstallatie starten"
 
-#: agama-software/src/zypp_server.rs:305
+#: agama-software/src/zypp_server.rs:306
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
 "Kon geen pakketten downloaden of installeren. Wilt u het opnieuw proberen?"
 
-#: agama-software/src/zypp_server.rs:359
+#: agama-software/src/zypp_server.rs:360
 msgid "Updating the list of repositories"
 msgstr "Lijst met pakketbronnen bijwerken"
 
-#: agama-software/src/zypp_server.rs:360
+#: agama-software/src/zypp_server.rs:361
 msgid "Refreshing metadata from the repositories"
 msgstr "Metagegevens van de pakketbronnen vernieuwen"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:362
 msgid "Calculating the software proposal"
 msgstr "Het softwarevoorstel berekenen"
 
-#: agama-software/src/zypp_server.rs:364
+#: agama-software/src/zypp_server.rs:365
 msgid "Registering the system"
 msgstr "Het systeem registreren"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:434
+#: agama-software/src/zypp_server.rs:437
 msgid "Could not remove the repository %s"
 msgstr "Kon het pakketbron %s niet verwijderen"
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:458
 msgid "Could not read the repositories"
 msgstr "Kon de pakketbronnen niet lezen"
 
-#: agama-software/src/zypp_server.rs:488
+#: agama-software/src/zypp_server.rs:495
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -439,22 +467,22 @@ msgstr ""
 "Kon het product niet vinden in de pakketbronnen. Mogelijk moet u het systeem "
 "registreren."
 
-#: agama-software/src/zypp_server.rs:491
+#: agama-software/src/zypp_server.rs:498
 msgid "Failed to find the product in the repositories."
 msgstr "Kon het product niet vinden in de pakketbronnen."
 
-#: agama-software/src/zypp_server.rs:554
+#: agama-software/src/zypp_server.rs:561
 msgid "There are conflicts in the software selection"
 msgstr "Er zijn conflicten in de softwareselectie"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:583
+#: agama-software/src/zypp_server.rs:590
 #, fuzzy
 msgid "Could not select %s '%s' for installation"
 msgstr "Kon het %s ‘%s’ niet selecteren voor installatie"
 
-#: agama-software/src/zypp_server.rs:999
+#: agama-software/src/zypp_server.rs:1008
 msgid "Failed to register the system"
 msgstr "Kon het systeem niet registreren"
 
@@ -468,3 +496,15 @@ msgstr ""
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
 msgstr "De informatie over de eerste gebruiker is onvolledig"
+
+#: agama-utils/src/api/software/resolvable.rs:63
+msgid "package"
+msgstr "pakket"
+
+#: agama-utils/src/api/software/resolvable.rs:64
+msgid "pattern"
+msgstr "patroon"
+
+#: agama-utils/src/api/software/resolvable.rs:65
+msgid "product"
+msgstr "product"
