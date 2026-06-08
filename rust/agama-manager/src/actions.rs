@@ -70,6 +70,17 @@ impl InstallAction {
             .call(progress::message::SetStage::new(Stage::Installing))
             .await?;
 
+        self.progress
+            .call(progress::message::StartWithSteps::new(
+                Scope::Manager,
+                vec![
+                    gettext("Prepare the system"),
+                    gettext("Install software"),
+                    gettext("Configure the system"),
+                ],
+            ))
+            .await?;
+
         //
         // Preparation phase
         //
@@ -79,7 +90,7 @@ impl InstallAction {
                 .task(
                     "storage_install",
                     Scope::Storage,
-                    gettext("Prepare the system"),
+                    gettext("Preparing storage"),
                 )
                 .run(|| async move {
                     storage
@@ -117,14 +128,19 @@ impl InstallAction {
         //
         let software_task = {
             let software = self.software.clone();
+            let progress = self.progress.clone();
             self.task_manager
                 .task(
                     "software_install",
                     Scope::Software,
-                    gettext("Install software"),
+                    gettext("Installing software"),
                 )
                 .depends_on(&[post_part_scripts_task])
                 .run(|| async move {
+                    progress
+                        .call(progress::message::Next::new(Scope::Manager))
+                        .await
+                        .map_err(TaskError::from_error)?;
                     software
                         .call(software::message::Install)
                         .await
@@ -148,11 +164,20 @@ impl InstallAction {
             let users = self.users.clone();
             let storage = self.storage.clone();
             let access = self.access.clone();
+            let progress = self.progress.clone();
 
             self.task_manager
-                .task("configure", Scope::Manager, gettext("Configure the system"))
+                .task(
+                    "configure",
+                    Scope::Manager,
+                    gettext("Configuring the system"),
+                )
                 .depends_on(&[software_task])
                 .run(|| async move {
+                    progress
+                        .call(progress::message::Next::new(Scope::Manager))
+                        .await
+                        .map_err(TaskError::from_error)?;
                     l10n.call(l10n::message::Install)
                         .await
                         .map_err(TaskError::from_error)?;
