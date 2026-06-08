@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-15 15:23+0000\n"
+"POT-Creation-Date: 2026-06-05 13:42+0000\n"
 "PO-Revision-Date: 2026-05-02 19:04+0000\n"
 "Last-Translator: Victor hck <victorhck@opensuse.org>\n"
 "Language-Team: Spanish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -53,39 +53,39 @@ msgid "Performing iSCSI discovery"
 msgstr "Realizando descubrimiento iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:191
+#: service/lib/agama/dbus/storage/manager.rb:196
 msgid "Preparing bootloader proposal"
 msgstr "Preparando la propuesta del gestor de arranque"
 
-#: service/lib/agama/dbus/storage/manager.rb:194
+#: service/lib/agama/dbus/storage/manager.rb:199
 msgid "Preparing the storage devices"
 msgstr "Preparando los dispositivos de almacenamiento"
 
-#: service/lib/agama/dbus/storage/manager.rb:197
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr "Escribiendo el gestor de arranque sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:205
+#: service/lib/agama/dbus/storage/manager.rb:210
 msgid "Finishing installation"
 msgstr "Finalizando instalación"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:212
+#: service/lib/agama/dbus/storage/manager.rb:217
 msgid "Unmounting devices"
 msgstr "Desmontando dispositivos"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:249
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "Activar dispositivos de almacenamiento"
 
-#: service/lib/agama/dbus/storage/manager.rb:252
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr "Probando los dispositivos de almacenamiento"
 
-#: service/lib/agama/dbus/storage/manager.rb:255
+#: service/lib/agama/dbus/storage/manager.rb:262
 msgid "Applying storage configuration"
 msgstr "Aplicando configuración de almacenamiento"
 
@@ -487,7 +487,7 @@ msgstr "Configurando instantáneas del sistema de archivos"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:300
+#: service/lib/agama/storage/manager.rb:308
 msgid "There is no suitable device for installation"
 msgstr "No hay un dispositivo adecuado para la instalación"
 
