@@ -32,8 +32,7 @@ import {
 import Icon from "~/components/layout/Icon";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
-import DownloadFeedback from "~/components/core/DownloadFeedback";
-import { ROOT } from "~/routes/paths";
+import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import { _ } from "~/i18n";
 
 /**
@@ -66,14 +65,14 @@ export default function InstallerOptionsMenu({
   const toggle = () => setIsOpen(!isOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
 
-  // DownloadFeedback must wrap the entire Dropdown rather than just the
+  // DownloadLogsFeedback must wrap the entire Dropdown rather than just the
   // DropdownItem. When the dropdown closes, PatternFly unmounts its children,
-  // which would reset DownloadFeedback's alert state and dismiss the pending
-  // toast prematurely. Keeping it as the outermost element ensures it stays
-  // mounted regardless of the dropdown lifecycle.
+  // which would reset the feedback alert state and dismiss the pending toast
+  // prematurely. Keeping it as the outermost element ensures it stays mounted
+  // regardless of the dropdown lifecycle.
   return (
     <>
-      <DownloadFeedback url={ROOT.logs} filenamePrefix="agama-logs" extension="tar.gz">
+      <DownloadLogsFeedback>
         {({ download: downloadLogs }) => (
           <Dropdown
             popperProps={{ position: "right", appendTo: () => document.body }}
@@ -107,7 +106,7 @@ export default function InstallerOptionsMenu({
             </DropdownList>
           </Dropdown>
         )}
-      </DownloadFeedback>
+      </DownloadLogsFeedback>
       {isConfigOpen && <ConfigDialog onClose={toggleConfig} />}
     </>
   );
