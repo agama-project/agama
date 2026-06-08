@@ -1,6 +1,80 @@
-// Base element styles.
+// Base reset and element styles.
 //
-// Low-level normalization and defaults applied to bare HTML elements.
+// A small, modern normalization layer applied after PatternFly. Kept
+// deliberately conservative so it complements PF's own normalization rather
+// than fighting it: rules target bare elements, so PF's class-based component
+// styles always win by specificity.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// Defer the base line-height to PF's token so typography stays consistent.
+// The installer is screen-constrained; long-form content can opt into a
+// roomier value via .agama-prose.
+html {
+  line-height: var(--pf-t--global--font--line-height--100);
+}
+
+.agama-prose {
+  line-height: var(--pf-t--global--font--line-height--200);
+}
+
+// Make replaced media responsive. svg is intentionally excluded so inline
+// icons keep their explicit sizing.
+img,
+picture,
+video,
+canvas {
+  max-width: 100%;
+}
+
+// Inherit typography on form controls. Beyond consistency, this prevents
+// mobile Safari from zooming in when focusing inputs with a sub-16px font.
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+// Text-wrapping progressive enhancements (ignored where unsupported): guard
+// against long unbroken strings and let the browser balance short blocks.
+h1,
+h2,
+h3,
+h4 {
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+p,
+li,
+figcaption {
+  text-wrap: pretty;
+}
+
+// Remove the focus ring for non-keyboard focus; the keyboard style lives in
+// the :focus-visible rule below.
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+// Respect users who prefer reduced motion. This is the only place !important
+// is warranted: the override must win over any animation or transition
+// regardless of specificity.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 strong {
   font-weight: var(--pf-t--global--font--weight--400);
