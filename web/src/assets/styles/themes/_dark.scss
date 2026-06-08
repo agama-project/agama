@@ -86,6 +86,24 @@
     --agm-t--brand--text--color,
     var(--pf-t--global--text--color--inverse)
   );
+  // Subtle brand surfaces (selected toggle-group buttons, selected items, ...).
+  --pf-t--global--color--brand--subtle--default: color-mix(
+    in srgb,
+    var(--agm-t--brand--color, var(--agm-t--color--jungle--40)) 22%,
+    transparent
+  );
+  --pf-t--global--text--color--on-brand--subtle--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--subtle--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--subtle--clicked: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
 
   --agm-t--action--background--color--hover: color-mix(
     in srgb,

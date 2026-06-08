@@ -92,6 +92,25 @@
     --agm-t--brand--text--color,
     var(--pf-t--global--text--color--inverse)
   );
+  // Subtle brand surfaces (selected toggle-group buttons, selected items, ...)
+  // follow the brand role: a tint for the background, brand for text and border.
+  --pf-t--global--color--brand--subtle--default: color-mix(
+    in srgb,
+    var(--agm-t--brand--color, var(--agm-t--color--pine--50)) 14%,
+    transparent
+  );
+  --pf-t--global--text--color--on-brand--subtle--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--pine--50)
+  );
+  --pf-t--global--border--color--brand--subtle--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--pine--50)
+  );
+  --pf-t--global--border--color--brand--subtle--clicked: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--pine--50)
+  );
 
   --agm-t--action--background--color--hover: var(--agm-t--color--jungle--10);
   --pf-t--global--background--color--action--plain--hover: var(
