@@ -83,9 +83,10 @@ get_dev_hcn() {
 # Usage: gkeyfile_get <file> <section> <key>
 gkeyfile_get() {
   awk -v sec="$2" -v key="$3" '
-    $0 ~ "^\\[.*\\]" {
+    $0 ~ "^[[:space:]]*\\[.*\\][[:space:]]*$" {
       current_sec = $0
-      gsub(/^\\[|\\][[:space:]]*$/, "", current_sec)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", current_sec)
+      current_sec = substr(current_sec, 2, length(current_sec) - 2)
       in_sec = (current_sec == sec)
     }
     in_sec {
@@ -108,9 +109,10 @@ gkeyfile_get() {
 # Usage: gkeyfile_has <file> <section> <key>
 gkeyfile_has() {
   awk -v sec="$2" -v key="$3" '
-    $0 ~ "^\\[.*\\]" {
+    $0 ~ "^[[:space:]]*\\[.*\\][[:space:]]*$" {
       current_sec = $0
-      gsub(/^\\[|\\][[:space:]]*$/, "", current_sec)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", current_sec)
+      current_sec = substr(current_sec, 2, length(current_sec) - 2)
       in_sec = (current_sec == sec)
     }
     in_sec {

@@ -105,6 +105,81 @@ export -f info warn getargs getcmdline
 }
 
 # ========================================
+# Test: gkeyfile helper functions
+# ========================================
+
+@test "gkeyfile_get: retrieves correct value from section" {
+    load_script_functions
+    local test_file="$TEST_WORK_DIR/test_get.nmconnection"
+    cat << 'EOF' > "$test_file"
+[connection]
+id=env6
+uuid=c201ab5d-802d-4b7e-ae5c-2be903eab719
+type=ethernet
+controller=58bf4ee6-2df6-48e1-93c4-84ab96db479b
+
+[ethernet]
+cloned-mac-address=00:11:22:33:44:55
+EOF
+
+    [ "$(gkeyfile_get "$test_file" connection id)" = "env6" ]
+    [ "$(gkeyfile_get "$test_file" connection controller)" = "58bf4ee6-2df6-48e1-93c4-84ab96db479b" ]
+    [ "$(gkeyfile_get "$test_file" ethernet cloned-mac-address)" = "00:11:22:33:44:55" ]
+    [ -z "$(gkeyfile_get "$test_file" connection non_existent_key)" ]
+}
+
+@test "gkeyfile_has: checks key existence in section" {
+    load_script_functions
+    local test_file="$TEST_WORK_DIR/test_has.nmconnection"
+    cat << 'EOF' > "$test_file"
+[connection]
+id=env6
+uuid=c201ab5d-802d-4b7e-ae5c-2be903eab719
+type=ethernet
+
+[ethernet]
+EOF
+
+    run gkeyfile_has "$test_file" connection id
+    [ "$status" -eq 0 ]
+
+    run gkeyfile_has "$test_file" connection uuid
+    [ "$status" -eq 0 ]
+
+    run gkeyfile_has "$test_file" connection non_existent_key
+    [ "$status" -ne 0 ]
+
+    run gkeyfile_has "$test_file" ethernet id
+    [ "$status" -ne 0 ]
+}
+
+@test "gkeyfile_set: updates existing key or appends new key" {
+    load_script_functions
+    local test_file="$TEST_WORK_DIR/test_set.nmconnection"
+    cat << 'EOF' > "$test_file"
+[connection]
+id=env6
+uuid=c201ab5d-802d-4b7e-ae5c-2be903eab719
+type=ethernet
+
+[ethernet]
+EOF
+
+    # Update an existing key
+    gkeyfile_set "$test_file" connection id "bond156efe56-env6"
+    [ "$(gkeyfile_get "$test_file" connection id)" = "bond156efe56-env6" ]
+    # Ensure no duplicates of "id" were created
+    local id_count=$(grep -c "^id=" "$test_file")
+    [ "$id_count" -eq 1 ]
+
+    # Set a new key
+    gkeyfile_set "$test_file" connection controller "bond156efe56"
+    [ "$(gkeyfile_get "$test_file" connection controller)" = "bond156efe56" ]
+    local controller_count=$(grep -c "^controller=" "$test_file")
+    [ "$controller_count" -eq 1 ]
+}
+
+# ========================================
 # Test: parse_nm_connection function
 # ========================================
 
