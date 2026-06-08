@@ -321,8 +321,8 @@ else
   info "hcnmgr: discovered mappings: $MAPPINGS"
 
   # Command line processing
-  HCN_IP=$(getargs ip)
-  HCN_ROUTE=$(getargs rd.route)
+  HCN_IP=$(getargs rd.hcn.ip)
+  HCN_ROUTE=$(getargs rd.hcn.route)
 
   NEW_ARGS=""
   command -v getcmdline >/dev/null || . /lib/dracut-lib.sh
