@@ -72,7 +72,6 @@ module Agama
         # Applies the given serialized DASD config.
         #
         # @todo Raise error if the config is not valid.
-        # @raise [Agama::TaskRunner::BusyError] If an async task is running, see {TaskRunner}.
         #
         # @param serialized_config [String] Serialized DASD config according to the JSON schema.
         def configure(serialized_config)
