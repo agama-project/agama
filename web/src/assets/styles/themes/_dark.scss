@@ -4,14 +4,38 @@
 // provides the full, professionally designed dark token set (~430 tokens:
 // surfaces, text, borders and every component internal).
 //
-// Intentionally no Agama overrides yet: we are validating pure PF dark as the
-// baseline first. Brand customizations (Jungle accents, a Pine page canvas,
-// the install CTA) will be layered back in deliberately, one at a time, with
-// visual verification, once the baseline is confirmed.
+// We keep PF's neutral dark surfaces, text and borders untouched (they are
+// well designed and any Agama override at a bare :root would clobber them, as
+// happened before). We only layer brand ACCENTS, scoped to PF's own dark
+// selector and loaded after _semantic.scss so they win by source order at
+// equal specificity. The :where() keeps specificity identical to a bare :root.
 //
-// Any override added here must be scoped to PF's own dark selector
-// (:root:where(.pf-v6-theme-dark) {}) and stays in this file, loaded after
-// _semantic.scss so it wins by source order at equal specificity.
+// Rule of thumb: every color token belongs in a theme scope, never at a bare
+// :root. Light values live in _semantic.scss under :not(.pf-v6-theme-dark);
+// dark values live here.
+//
+// The lightened Jungle (#40ce8a, jungle--40) is the dark brand/accent color;
+// raw Jungle and Pine both fail contrast on dark.
+//
+// Still deferred: a Pine (#0c322c) page canvas matching the Agama website. It
+// needs a deliberate pass that recolors the page and its main sections
+// together while keeping elevated surfaces neutral (tracked in the plan).
 //
 // "System" auto-dark is class-based, so it is toggled by the ThemeSelector via
 // matchMedia rather than a media query here.
+
+:root:where(.pf-v6-theme-dark) {
+  // Brand and links use the lightened Jungle for the Agama identity.
+  --pf-t--global--color--brand--default: var(--agm-t--color--jungle--40);
+  --pf-t--global--color--brand--hover: var(--agm-t--color--jungle--50);
+  --pf-t--global--color--brand--clicked: var(--agm-t--color--jungle--40);
+  --pf-t--global--text--color--link--default: var(--agm-t--color--jungle--40);
+
+  // Restore the interaction tint (left undefined once light colors were scoped
+  // away from dark) with a subtle Jungle wash that reads on dark surfaces.
+  --agm-t--action--background--color--hover: color-mix(
+    in srgb,
+    var(--agm-t--color--jungle--40) 18%,
+    transparent
+  );
+}
