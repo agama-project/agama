@@ -136,7 +136,11 @@ pub async fn build() -> OpenApi {
         // Proposal schemas
         ("share/proposal.storage.schema.json", "storage", "Proposal"),
         // System info schemas
-        ("share/system.bootloader.schema.json", "bootloader", "SystemInfo"),
+        (
+            "share/system.bootloader.schema.json",
+            "bootloader",
+            "SystemInfo",
+        ),
         ("share/system.dasd.schema.json", "dasd", "SystemInfo"),
         ("share/system.iscsi.schema.json", "iscsi", "SystemInfo"),
         ("share/system.storage.schema.json", "storage", "SystemInfo"),
@@ -192,8 +196,8 @@ pub async fn build() -> OpenApi {
     let mut api_json = serde_json::to_value(&api).unwrap();
 
     for (_, name, group) in schemas_to_import {
-        if let Some(schema) =
-            api_json.pointer_mut(format!("/components/schemas/{}/properties/{}", group, name).as_str())
+        if let Some(schema) = api_json
+            .pointer_mut(format!("/components/schemas/{}/properties/{}", group, name).as_str())
         {
             *schema = serde_json::json!({
                 "anyOf": [
