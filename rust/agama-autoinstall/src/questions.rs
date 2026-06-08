@@ -48,12 +48,12 @@ impl UserQuestions {
                 ("Retry", localized_retry.as_str()),
                 ("Manual", localized_manual.as_str()),
             ])
-            .with_default_action("No")
+            .with_default_action("Manual")
             .with_data(&[("error", error), ("originalValue", url)]);
 
         let question = self.questions.create_question(&question).await?;
         let answer = self.questions.get_answer(question.id).await?;
-        if answer.action == "No" {
+        if answer.action == "Manual" {
             Ok(None)
         } else {
             Ok(Some(answer.value.unwrap_or(url.to_string())))
