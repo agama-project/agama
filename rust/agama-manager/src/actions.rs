@@ -150,11 +150,7 @@ impl InstallAction {
             let access = self.access.clone();
 
             self.task_manager
-                .task(
-                    "configure",
-                    Scope::Manager,
-                    gettext("Configure the system"),
-                )
+                .task("configure", Scope::Manager, gettext("Configure the system"))
                 .depends_on(&[software_task])
                 .run(|| async move {
                     l10n.call(l10n::message::Install)

@@ -20,8 +20,10 @@
 
 use crate::{
     actions::{FinishAction, InstallAction, SetConfigAction},
-    bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n, message, network, ntp,
-    proxy, s390, security, software, storage, task_manager::TaskManager, users,
+    bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n, message, network, ntp, proxy,
+    s390, security, software, storage,
+    task_manager::TaskManager,
+    users,
 };
 use agama_users::PasswordCheckResult;
 use agama_utils::{
@@ -895,8 +897,8 @@ impl MessageHandler<message::RunAction> for Service {
 
                 tracing::info!("Installation tasks spawned");
 
-                let method = api::FinishMethod::from_kernel_cmdline()
-                    .unwrap_or(api::FinishMethod::Stop);
+                let method =
+                    api::FinishMethod::from_kernel_cmdline().unwrap_or(api::FinishMethod::Stop);
                 let finish = FinishAction::new(method);
                 finish.run();
             }
