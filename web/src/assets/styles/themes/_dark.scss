@@ -26,9 +26,27 @@
 
 :root:where(.pf-v6-theme-dark) {
   // Brand and links use the lightened Jungle for the Agama identity.
+  //
+  // The whole brand family must be set, not just the generic token: PF's dark
+  // theme wires text/icon brand colors independently of color--brand--default
+  // (in light they derive from it). Overriding only the generic leaves the
+  // radio accent (icon--color--brand) and secondary button text
+  // (text--color--brand) on PF blue while the border (which derives from the
+  // generic) turns green, producing a mismatch.
+  --agm--dark--brand--hover: color-mix(in srgb, var(--agm-t--color--jungle--40) 80%, white);
+
   --pf-t--global--color--brand--default: var(--agm-t--color--jungle--40);
-  --pf-t--global--color--brand--hover: var(--agm-t--color--jungle--50);
+  --pf-t--global--color--brand--hover: var(--agm--dark--brand--hover);
   --pf-t--global--color--brand--clicked: var(--agm-t--color--jungle--40);
+  --pf-t--global--text--color--brand--default: var(--agm-t--color--jungle--40);
+  --pf-t--global--text--color--brand--hover: var(--agm--dark--brand--hover);
+  --pf-t--global--text--color--brand--clicked: var(--agm-t--color--jungle--40);
+  --pf-t--global--icon--color--brand--default: var(--agm-t--color--jungle--40);
+  --pf-t--global--icon--color--brand--hover: var(--agm--dark--brand--hover);
+  --pf-t--global--icon--color--brand--clicked: var(--agm-t--color--jungle--40);
+  --pf-t--global--border--color--brand--default: var(--agm-t--color--jungle--40);
+  --pf-t--global--border--color--brand--hover: var(--agm--dark--brand--hover);
+  --pf-t--global--border--color--brand--clicked: var(--agm-t--color--jungle--40);
   --pf-t--global--text--color--link--default: var(--agm-t--color--jungle--40);
 
   // Restore the interaction tint (left undefined once light colors were scoped
