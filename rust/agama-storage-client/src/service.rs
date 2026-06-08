@@ -22,10 +22,10 @@ use std::future::Future;
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader, iscsi, software::Resolvable, storage::Config, Issue},
+    api::{bootloader, iscsi, storage::Config, Issue},
     arch::Arch,
     message::GetResolvables,
-    BoxFuture,
+    BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use tokio::sync::oneshot;

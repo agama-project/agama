@@ -24,8 +24,9 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader::Config, software::Resolvable},
+    api::bootloader::Config,
     message::GetResolvables,
+    Resolvable,
 };
 use async_trait::async_trait;
 use serde_json::Value;

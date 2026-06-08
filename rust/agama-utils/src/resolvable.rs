@@ -19,12 +19,11 @@
 // find current contact information at www.suse.com.
 
 use gettextrs::gettext;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::fmt;
 
 /// Represents a software resolvable.
-#[derive(Clone, Debug, Deserialize, PartialEq, JsonSchema)]
+#[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Resolvable {
     pub name: String,
     #[serde(rename = "type")]
@@ -49,7 +48,7 @@ impl Resolvable {
 }
 
 /// Software resolvable type (package or pattern).
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, JsonSchema, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "camelCase")]
 pub enum ResolvableType {
     Package = 0,

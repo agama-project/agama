@@ -21,10 +21,7 @@
 //! Implements a client to access Agama's D-Bus API related to Bootloader management.
 
 use crate::storage_client::{self, message};
-use agama_utils::{
-    actor::Handler,
-    api::{bootloader::Config, software::Resolvable},
-};
+use agama_utils::{actor::Handler, api::bootloader::Config, Resolvable};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

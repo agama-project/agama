@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -36,6 +36,9 @@ pub mod products;
 pub mod progress;
 pub mod question;
 pub mod test;
+
+mod resolvable;
+pub use resolvable::{Resolvable, ResolvableType};
 
 use std::future::Future;
 use std::pin::Pin;

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -22,11 +22,7 @@
 
 use std::sync::Arc;
 
-use agama_utils::{
-    actor::Handler,
-    api::{bootloader::Config, software::Resolvable},
-    issue,
-};
+use agama_utils::{actor::Handler, api::bootloader::Config, issue, Resolvable};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
