@@ -516,8 +516,6 @@ impl Service {
             Scope::Network,
             steps,
         ));
-        self.progress
-            .cast(progress::message::Next::new(Scope::Network))?;
 
         if let Err(e) = self.adapter.write(&self.state).await {
             self.progress

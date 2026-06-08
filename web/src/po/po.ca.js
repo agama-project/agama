@@ -175,6 +175,12 @@ export default {
     "1 dispositiu seleccionat. Useu la barra d'eines d'accions per aplicar els canvis.",
     "%s dispositius seleccionats. Useu la barra d'eines d'accions per aplicar els canvis."
   ],
+  "802.1Q": [
+    "802.1Q"
+  ],
+  "802.1ad": [
+    "802.1ad"
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "Si és possible, es crearà una %1$s de %2$s per a %3$s"
   ],
@@ -304,17 +310,20 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Ajusteu la configuració següent perquè el sistema nou s'adapti a l'espai disponible."
   ],
+  "Administrator account": [
+    "Compte d'administrador"
+  ],
   "All": [
     "Tot"
+  ],
+  "All background tasks completed": [
+    "S'han completat totes les tasques en segon pla."
   ],
   "All content not configured to be mounted will be deleted": [
     "Se suprimirà tot el contingut que no estigui configurat per ser muntat"
   ],
   "All content will be deleted": [
     "Se'n suprimirà tot el contingut"
-  ],
-  "All fields are required": [
-    "Tots els camps són obligatoris."
   ],
   "All fields are required.": [
     "Tots els camps són obligatoris."
@@ -327,9 +336,6 @@ export default {
   ],
   "Allow growing": [
     "Permet-ne l'eixamplament"
-  ],
-  "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "A més de definir el primer usuari, es poden configurar mètodes d'autenticació per a l'usuari d'arrel."
   ],
   "Already using all available devices": [
     "Ja s'usen tots els dispositius disponibles"
@@ -344,9 +350,6 @@ export default {
   "An existing partition will be used for %s": [
     "S'usarà una partició existent per a %s",
     "S'usaran les particions existents per a %s"
-  ],
-  "Any": [
-    "Qualsevol"
   ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Qualsevol volum lògic existent se suprimirà i se'n perdran totes les dades."
@@ -377,6 +380,9 @@ export default {
   ],
   "At least one NTP server is required": [
     "Cal com a mínim un servidor NTP."
+  ],
+  "At least one SSH public key is required": [
+    "Cal com a mínim una clau pública SSH."
   ],
   "At least one bond port is required": [
     "Cal com a mínim un port de vinculació."
@@ -434,9 +440,6 @@ export default {
   ],
   "Before %s": [
     "Abans: %s"
-  ],
-  "Before starting the installation, you need to address the following problems:": [
-    "Abans de començar la instal·lació, heu de resoldre els problemes següents:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
     "Els dispositius següents, %s, són fora de línia i no es poden formatar."
@@ -574,8 +577,17 @@ export default {
   "Change volume group menu": [
     "Canvieu el menú del grup de volums"
   ],
+  "Changes could not be applied": [
+    "No s'han pogut aplicar els canvis."
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Els canvis en aquesta configuració actualitzaran immediatament la secció de Resultat que hi ha a continuació."
+  ],
+  "Changes successfully applied": [
+    "Els canvis s'han aplicat correctament."
+  ],
+  "Changing the product will reset your current settings.": [
+    "Si canvieu el producte, es restablirà la configuració actual."
   ],
   "Channel": [
     "Canal"
@@ -605,14 +617,14 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Trieu un grup de volums per definir-ne els volums lògics"
   ],
-  "Chosen by MAC": [
-    "Triat per MAC"
+  "Choose whether to enable the root account.": [
+    "Trieu si voleu habilitar el compte d'arrel."
+  ],
+  "Chosen by MAC address": [
+    "Triat per adreça MAC"
   ],
   "Chosen by name": [
     "Triat pel nom"
-  ],
-  "Clear": [
-    "Esborra"
   ],
   "Clear all filters": [
     "Esborra tots els filtres"
@@ -625,6 +637,9 @@ export default {
   ],
   "Close": [
     "Tanca"
+  ],
+  "Configuration added to clipboard": [
+    "Configuració afegida al porta-retalls"
   ],
   "Configuration from the network plus static addresses and gateway": [
     "Configuració des de la xarxa més adreces estàtiques i passarel·la"
@@ -676,15 +691,6 @@ export default {
   ],
   "Configured for installation only": [
     "Configuració només per a la instal·lació"
-  ],
-  "Configured for root and user %s": [
-    "Configurat per a l'arrel i l'usuari %s"
-  ],
-  "Configured for the root user": [
-    "Configurat per a l'usuari d'arrel"
-  ],
-  "Configured for user %s": [
-    "Configurat per a l'usuari %s"
   ],
   "Configured with %d connection": [
     "Configurat amb %d connexió",
@@ -756,6 +762,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
   ],
+  "Copy to the clipboard": [
+    "Copia-ho al porta-retalls"
+  ],
   "Could not authenticate against the server.": [
     "No s'ha pogut autenticar amb el servidor."
   ],
@@ -770,9 +779,6 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "Crea un altre grup de volums d'LVM a %s"
-  ],
-  "Create user": [
-    "Crea un usuari"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Conjunts de paquets seleccionats per a casos d'ús comuns i funcions per ampliar el sistema."
@@ -822,6 +828,9 @@ export default {
   "DNS servers": [
     "Servidors DNS"
   ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    "La recopilació de dades pot trigar una estona. La baixada començarà automàticament un cop el fitxer estigui a punt."
+  ],
   "Deactivate": [
     "Desactiva"
   ],
@@ -861,14 +870,8 @@ export default {
   "Define a new LVM on top of one or several disks": [
     "Definiu un LVM nou en un o diversos discs"
   ],
-  "Define a user now": [
-    "Definiu un usuari ara"
-  ],
-  "Define the first user with admin (sudo) privileges for system management.": [
-    "Definiu el primer usuari amb privilegis d'administrador (sudo) per a la gestió del sistema."
-  ],
-  "Defined (hidden)": [
-    "Definit (ocult)"
+  "Define an administrator user": [
+    "Definiu un usuari administrador"
   ],
   "Delete": [
     "Suprimeix"
@@ -909,6 +912,12 @@ export default {
   "Device %s menu": [
     "Menú del dispositiu %s"
   ],
+  "Device MAC address": [
+    "Adreça MAC del dispositiu"
+  ],
+  "Device binding": [
+    "Vinculació de dispositius"
+  ],
   "Device details": [
     "Detalls del dispositiu"
   ],
@@ -920,9 +929,6 @@ export default {
   ],
   "Disabled": [
     "Inhabilitat"
-  ],
-  "Discard": [
-    "Descarta'l"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "Descarta la mida màxima i continua la configuració simplificada"
@@ -972,7 +978,7 @@ export default {
   "Do not use": [
     "No l'usis"
   ],
-  "Download config": [
+  "Download configuration": [
     "Baixa la configuració"
   ],
   "Download logs": [
@@ -1008,6 +1014,9 @@ export default {
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
     "P. ex., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
   ],
+  "E.g., eth0.100": [
+    "P. ex., eth0.100"
+  ],
   "E.g., example.com": [
     "P. ex., exemple.com"
   ],
@@ -1022,9 +1031,6 @@ export default {
   ],
   "Edit connection settings": [
     "Edita la configuració de la connexió"
-  ],
-  "Edit user": [
-    "Edita l'usuari"
   ],
   "Edit volume group": [
     "Edita el grup de volums"
@@ -1043,6 +1049,9 @@ export default {
   ],
   "Enabled with the system default settings": [
     "Habilitat amb la configuració predeterminada del sistema"
+  ],
+  "Encapsulation protocol": [
+    "Protocol d'encapsulació"
   ],
   "Encrypt the system": [
     "Encripta el sistema"
@@ -1091,9 +1100,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar per les entrades, Esc per sortir-ne"
-  ],
-  "Ethernet": [
-    "Xarxa amb fil"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1166,8 +1172,8 @@ export default {
   "Find space in %s": [
     "Cerca espai a %s"
   ],
-  "First user": [
-    "Usuari primer"
+  "Fix the errors below and try again": [
+    "Corregiu els errors següents i torneu-ho a intentar"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "Per a necessitats més avançades, els usuaris poden canviar a aquesta pàgina completa, una versió de camí dedicat que ofereix més espai per a vistes detallades, columnes addicionals, filtres i funcionalitats ampliades."
@@ -1219,6 +1225,9 @@ export default {
   ],
   "Full name": [
     "Nom complet"
+  ],
+  "Full name is required": [
+    "Cal el nom complet."
   ],
   "Gateway": [
     "Passarel·la"
@@ -1375,11 +1384,17 @@ export default {
   "Installation in progress": [
     "Instal·lació en curs"
   ],
+  "Installation logs download": [
+    "Baixada de registres d'instal·lació"
+  ],
   "Installation only": [
     "Només instal·lació"
   ],
   "Installation settings": [
     "Paràmetres per a la instal·lació"
+  ],
+  "Installation settings in JSON format": [
+    "Paràmetres de la instal·lació en format JSON"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     "La configuració d'instal·lació s'actualitzarà automàticament per coincidir amb els valors predeterminats del producte nou."
@@ -1416,6 +1431,9 @@ export default {
   ],
   "Invalid NTP server address": [
     "Adreça de servidor NTP no vàlida"
+  ],
+  "Invalid SSH Key": [
+    "Clau SSH no vàlida"
   ],
   "Invalid [zFCP] settings": [
     "Configuració de [zFCP] no vàlida"
@@ -1537,6 +1555,12 @@ export default {
   "Log in as %s": [
     "Inicieu sessió com a %s"
   ],
+  "Log in using a password": [
+    "Inicia la sessió amb una contrasenya."
+  ],
+  "Log in using a trusted SSH public key": [
+    "Inicia la sessió amb una clau pública SSH de confiança."
+  ],
   "Logical volume name": [
     "Nom del volum lògic"
   ],
@@ -1563,12 +1587,6 @@ export default {
   ],
   "Login form": [
     "Forma d'entrada"
-  ],
-  "Loopback": [
-    "Loopback"
-  ],
-  "MAC": [
-    "MAC"
   ],
   "MAC address": [
     "Adreça MAC"
@@ -1749,6 +1767,9 @@ export default {
   "No changes detected. System settings are already up to date.": [
     "No s'ha detectat cap canvi. La configuració del sistema ja està actualitzada."
   ],
+  "No changes to apply": [
+    "No hi ha cap canvi per aplicar."
+  ],
   "No connections match filters": [
     "Cap connexió coincideix amb els filtres"
   ],
@@ -1812,6 +1833,12 @@ export default {
   "No patterns match the filter": [
     "No hi ha patrons que coincideixin amb el filtre."
   ],
+  "No pending tasks": [
+    "No hi ha cap tasca pendent."
+  ],
+  "No public key provided, SSH login might be restricted": [
+    "No s'ha proporcionat cap clau pública. L'inici de sessió SSH pot estar restringit."
+  ],
   "No software RAID devices are available for selection.": [
     "No hi ha cap dispositiu de RAID de programari disponible per a la selecció."
   ],
@@ -1826,9 +1853,6 @@ export default {
   ],
   "No targets matches filters": [
     "Cap destinació no coincideix amb els filtres"
-  ],
-  "No user defined yet.": [
-    "Encara no s'ha definit cap usuari."
   ],
   "No valid address.": [
     "Adreça no vàlida."
@@ -1869,9 +1893,6 @@ export default {
   "Not configured yet": [
     "Encara no s'ha configurat"
   ],
-  "Not defined": [
-    "No definit"
-  ],
   "Not implemented yet (%s)": [
     "Encara no s'ha implementat (%s)"
   ],
@@ -1886,6 +1907,9 @@ export default {
   ],
   "Not used by this bridge": [
     "No usat per aquest pont"
+  ],
+  "Numeric identifier (0–4094)": [
+    "Identificador numèric (0–4094)"
   ],
   "Offline": [
     "Fora de línia"
@@ -1910,6 +1934,9 @@ export default {
   ],
   "Package installation failed": [
     "Ha fallat la instal·lació del paquet."
+  ],
+  "Parent device": [
+    "Dispositiu principal"
   ],
   "Partition %s": [
     "Partició %s"
@@ -1959,8 +1986,14 @@ export default {
   "Password Required": [
     "Cal una contrasenya."
   ],
+  "Password and SSH Public Key": [
+    "Contrasenya i clau pública SSH"
+  ],
   "Password confirmation": [
     "Confirmació de la contrasenya"
+  ],
+  "Password confirmation is required": [
+    "Cal la confirmació de la contrasenya."
   ],
   "Password input": [
     "Introducció de contrasenya"
@@ -1968,11 +2001,17 @@ export default {
   "Password is empty.": [
     "La contrasenya està buida."
   ],
+  "Password is required": [
+    "Cal una contrasenya."
+  ],
   "Password visibility button": [
     "Botó de visibilitat de la contrasenya"
   ],
   "Passwords do not match": [
     "Les contrasenyes no coincideixen."
+  ],
+  "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)": [
+    "Enganxeu-hi o introduïu-hi una o més claus SSH públiques (per exemple: ssh-ed25519 AAAA...)"
   ],
   "Patterns selection": [
     "Selecció de patrons"
@@ -2019,6 +2058,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Protecció de la informació desada als sistemes de fitxers nous, incloses dades, programes i fitxers del sistema."
   ],
+  "Protocol": [
+    "Protocol"
+  ],
   "Protocol message interval (1-10 seconds).": [
     "Interval de missatge de protocol (1-10 segons)."
   ],
@@ -2034,11 +2076,14 @@ export default {
   "Provided by the network": [
     "Proporcionat per la xarxa"
   ],
-  "Public SSH Key": [
-    "Clau pública SSH"
+  "Public key provided": [
+    "Clau pública proporcionada"
   ],
-  "Public SSH Key is empty.": [
-    "La clau SSH pública és buida."
+  "Public key provided for %s": [
+    "Clau pública proporcionada per a %s"
+  ],
+  "Public key provided for both": [
+    "Clau pública proporcionada per a tots dos"
   ],
   "Public network": [
     "Xarxa pública"
@@ -2160,26 +2205,20 @@ export default {
   "Reused partitions will not be shrunk": [
     "Les particions reutilitzades no s'encongiran"
   ],
-  "Review and fix": [
-    "Revisa i corregeix"
-  ],
   "Review and install": [
     "Revisa i instal·la"
+  ],
+  "Root account": [
+    "Compte d'arrel"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
     "Selecció del pont d'arrel (0-61440). [Com més baixa és més alta la prioritat]."
   ],
-  "Root login with SSH key": [
-    "Inici de sessió d'arrel amb clau SSH"
+  "Root login is off": [
+    "L'inici de sessió d'arrel està desactivat."
   ],
-  "Root login with password": [
-    "Inici de sessió d'arrel amb contrasenya"
-  ],
-  "Root login with password and SSH key": [
-    "Inici de sessió d'arrel amb contrasenya i clau SSH"
-  ],
-  "Root user": [
-    "Usuari d'arrel"
+  "Root login method": [
+    "Mètode d'inici de sessió d'arrel"
   ],
   "Routes": [
     "Camins"
@@ -2201,6 +2240,12 @@ export default {
   ],
   "SHA256 fingerprint": [
     "Empremta digital SHA256"
+  ],
+  "SSH Public Key": [
+    "Clau pública SSH"
+  ],
+  "SSH Public Keys": [
+    "Claus públiques SSH"
   ],
   "SSID": [
     "SSID"
@@ -2335,6 +2380,12 @@ export default {
   "Set manually": [
     "Establert manualment"
   ],
+  "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
+    "Estableix un compte d'inici de sessió principal. Pot executar ordres d'administrador amb [sudo] però és independent del compte d'arrel."
+  ],
+  "Sets up both and use either to log in": [
+    "Les estableix totes dues i usa qualsevol de les dues per iniciar la sessió."
+  ],
   "Settings": [
     "Configuració"
   ],
@@ -2353,6 +2404,9 @@ export default {
   ],
   "Show information about %s": [
     "Mostra informació quant a %s"
+  ],
+  "Show installation settings": [
+    "Mostra els paràmetres d'instal·lació"
   ],
   "Show less": [
     "Mostra'n menys"
@@ -2407,6 +2461,9 @@ export default {
   ],
   "Some NTP server addresses are invalid": [
     "Algunes adreces de servidor NTP no són vàlides."
+  ],
+  "Some SSH public keys are invalid": [
+    "Algunes claus públiques SSH no són vàlides."
   ],
   "Some existing logical volumes may be shrunk": [
     "Es poden encongir alguns volums lògics existents"
@@ -2496,6 +2553,13 @@ export default {
   ],
   "System settings successfully updated": [
     "La configuració del sistema s'ha actualitzat correctament."
+  ],
+  "System status: %s task active": [
+    "Estat del sistema: %s tasca activa",
+    "Estat del sistema: %s tasques actives"
+  ],
+  "System status: Idle": [
+    "Estat del sistema: inactiu"
   ],
   "System will have no network connections": [
     "El sistema no tindrà connexions de xarxa."
@@ -2606,6 +2670,9 @@ export default {
   ],
   "The extension was registered without any registration code.": [
     "L'extensió s'ha registrat sense cap codi de registre."
+  ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    "El fitxer %s conté un registre de l'activitat de l'instal·lador fins ara, útil per diagnosticar problemes d'instal·lació."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "La mida final pot ser més grossa per omplir l'espai lliure extra."
@@ -2799,6 +2866,9 @@ export default {
   "This uses the existing file system at the disk": [
     "Això usa el sistema de fitxers existent al disc"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    "Aquest grup de volums només ocupa l'espai requerit pels seus volums lògics. Per expandir-lo perquè ocupi tot l'espai de disc disponible, torneu a crear el grup de volums."
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
   ],
@@ -2858,12 +2928,6 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Actualitza els discs disponibles i activa els dispositius d'encriptació"
-  ],
-  "Upload": [
-    "Carrega"
-  ],
-  "Upload, paste, or drop an SSH public key": [
-    "Carregueu, enganxeu o deixeu-hi anar una clau pública SSH"
   ],
   "Use": [
     "Usa'l"
@@ -2964,20 +3028,17 @@ export default {
   "Use for the selected product too": [
     "Usa-la també per al producte seleccionat"
   ],
-  "Use password": [
-    "Usa contrasenya"
-  ],
   "Use product's default NTP servers": [
     "Usa els servidors NTP predeterminats del producte"
-  ],
-  "Use public SSH Key": [
-    "Usa una clau pública SSH"
   ],
   "Use several devices": [
     "Usa diversos dispositius"
   ],
-  "Use suggested username": [
-    "Usa el nom d'usuari suggerit"
+  "Use the 802.1Q protocol explicitly.": [
+    "Usa explícitament el protocol 802.1Q."
+  ],
+  "Use the 802.1ad protocol explicitly.": [
+    "Usa explícitament el protocol 802.1ad."
   ],
   "Use the RAID without partitions": [
     "Usa la RAID sense particions"
@@ -2988,11 +3049,17 @@ export default {
   "Use the disk without partitions": [
     "Usa el disc sense particions"
   ],
+  "Use the system default (802.1Q).": [
+    "Usa el valor per defecte del sistema (802.1Q)."
+  ],
   "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
     "Useu les pestanyes per navegar pels discs, els dispositius RAID i els grups de volums d'LVM."
   ],
   "Use these same settings for the selected product": [
     "Usa aquests mateixos paràmetres per al producte seleccionat"
+  ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    "Useu això per reproduir aquesta instal·lació més tard mitjançant la interfície de línia d'ordres de l'instal·lador o el mode sense supervisió."
   ],
   "User name": [
     "Nom d'usuari"
@@ -3000,8 +3067,8 @@ export default {
   "Username": [
     "Nom d'usuari"
   ],
-  "Username suggestion dropdown": [
-    "Menú desplegable de suggeriments de nom d'usuari"
+  "Username is required": [
+    "Cal el nom d'usuari."
   ],
   "Using %d additional pattern": [
     "S'usa %d patró addicional",
@@ -3012,6 +3079,12 @@ export default {
   ],
   "Using %s NTP servers, including [%s]": [
     "S'usen %s servidors NTP, incloent-hi [%s]"
+  ],
+  "Using %s account": [
+    "S'usa el compte %s"
+  ],
+  "Using %s and %s accounts": [
+    "S'usen els comptes %s i %s"
   ],
   "Using %s as NTP server": [
     "S'usa %s com a servidor NTP"
@@ -3048,6 +3121,18 @@ export default {
   ],
   "VLAN": [
     "VLAN"
+  ],
+  "VLAN ID": [
+    "ID de la VLAN"
+  ],
+  "VLAN ID is required": [
+    "Cal un ID de VLAN."
+  ],
+  "VLAN ID must be between 0 and 4094": [
+    "L'ID de VLAN ha de ser entre 0 i 4094."
+  ],
+  "VLAN details": [
+    "Detalls de la VLAN"
   ],
   "View license": [
     "Mostra la llicència"
@@ -3097,9 +3182,6 @@ export default {
   "When ready, click on the [install] button at the end of the page.": [
     "Quan estigueu a punt, feu clic al botó [Instal·la] al final de la pàgina."
   ],
-  "Wi-Fi": [
-    "Sense fil"
-  ],
   "Wi-Fi connection form": [
     "Formulari de connexió sense fil"
   ],
@@ -3129,6 +3211,9 @@ export default {
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "És possible que vulgueu descartar aquests paràmetres i començar des de zero amb una configuració simple."
+  ],
+  "You must fix these issues": [
+    "Heu de solucionar aquests problemes"
   ],
   "You need to fix any invalid settings before proceeding with the installation.": [
     "Cal que corregiu qualsevol configuració no vàlida abans de continuar la instal·lació."
@@ -3168,9 +3253,6 @@ export default {
   ],
   "reset to defaults": [
     "restableix els valors predeterminats"
-  ],
-  "root": [
-    "arrel"
   ],
   "zFCP": [
     "zFCP"

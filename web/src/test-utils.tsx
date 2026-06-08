@@ -134,6 +134,11 @@ const progressesMock = jest.fn().mockReturnValue([]);
 const stageMock = jest.fn().mockReturnValue("configuring");
 
 /**
+ * Internal mock for manipulating tasks
+ */
+const tasksMock = jest.fn().mockReturnValue([]);
+
+/**
  * Allows mocking useStatus#progresses for testing purpose
  *
  * @example
@@ -164,10 +169,19 @@ const mockProgresses = (progresses: Status["progresses"]) =>
  */
 const mockStage = (stage: Status["stage"]) => stageMock.mockReturnValue(stage);
 
+/**
+ * Allows mocking useStatus#tasks for testing purpose
+ *
+ * @example
+ *   mockTasks([{ id: 1, name: "software-proposal", description: "Calculating...", scope: "software" }]);
+ */
+const mockTasks = (tasks: Status["tasks"]) => tasksMock.mockReturnValue(tasks);
+
 jest.mock("~/hooks/model/status", () => ({
   useStatus: () => ({
     progresses: progressesMock(),
     stage: stageMock(),
+    tasks: tasksMock(),
   }),
 }));
 
@@ -453,6 +467,7 @@ export {
   getColumnValues,
   mockProgresses,
   mockStage,
+  mockTasks,
   mockProduct,
   mockProductConfig,
   mockL10n,

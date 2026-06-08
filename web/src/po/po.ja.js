@@ -162,6 +162,12 @@ export default {
   "1 device selected. Use the actions toolbar to apply changes.": [
     "%s 個のデバイスを選択しています。変更を適用するには処理ツールバーをお使いください。"
   ],
+  "802.1Q": [
+    "802.1Q"
+  ],
+  "802.1ad": [
+    "802.1ad"
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "可能であれば、 %2$s の %1$s を %3$s 向けに作成します"
   ],
@@ -288,17 +294,20 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "新しいシステムが利用可能な容量内に収まるように設定を調整してください。"
   ],
+  "Administrator account": [
+    "管理者アカウント"
+  ],
   "All": [
     "全て"
+  ],
+  "All background tasks completed": [
+    "全てのバックグラウンド処理が完了しました"
   ],
   "All content not configured to be mounted will be deleted": [
     "マウントするように設定していない全ての内容を削除する"
   ],
   "All content will be deleted": [
     "全ての内容を削除する"
-  ],
-  "All fields are required": [
-    "全ての項目に入力する必要があります"
   ],
   "All fields are required.": [
     "全ての項目に入力する必要があります。"
@@ -312,9 +321,6 @@ export default {
   "Allow growing": [
     "サイズ拡大を許可する"
   ],
-  "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
-  ],
   "Already using all available devices": [
     "既に利用可能な全てのデバイスを使用しています"
   ],
@@ -326,9 +332,6 @@ export default {
   ],
   "An existing partition will be used for %s": [
     "%s に対して既存のパーティションを使用する"
-  ],
-  "Any": [
-    "任意"
   ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "全ての論理ボリュームを削除し、ボリュームグループ内に存在するデータを全て消去します。"
@@ -359,6 +362,9 @@ export default {
   ],
   "At least one NTP server is required": [
     "1 つ以上の NTP サーバを設定する必要があります"
+  ],
+  "At least one SSH public key is required": [
+    "1 つ以上の SSH 公開鍵を設定する必要があります"
   ],
   "At least one bond port is required": [
     "1 つ以上のボンディングポートを設定する必要があります"
@@ -416,9 +422,6 @@ export default {
   ],
   "Before %s": [
     "変更前: %s"
-  ],
-  "Before starting the installation, you need to address the following problems:": [
-    "インストールを開始する前に、下記の問題に対応する必要があります:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
     "下記 %s 個のデバイスがオフラインになっているため、フォーマットできません。"
@@ -555,8 +558,17 @@ export default {
   "Change volume group menu": [
     "ボリュームグループメニューの変更"
   ],
+  "Changes could not be applied": [
+    "変更を適用することができませんでした"
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "これらの設定を変更すると、下記の '結果' セクションに即時に反映されます。"
+  ],
+  "Changes successfully applied": [
+    "変更の適用に成功しました"
+  ],
+  "Changing the product will reset your current settings.": [
+    "製品を変更すると、現在までに設定した内容がリセットされます。"
   ],
   "Channel": [
     "チャネル"
@@ -585,14 +597,14 @@ export default {
   "Choose a volume group to define logical volumes": [
     "論理ボリュームを設定するボリュームグループを選択してください"
   ],
-  "Chosen by MAC": [
+  "Choose whether to enable the root account.": [
+    "root アカウントを有効化するかどうかを洗濯してください。"
+  ],
+  "Chosen by MAC address": [
     "MAC アドレスで選択"
   ],
   "Chosen by name": [
     "名前で選択"
-  ],
-  "Clear": [
-    "消去"
   ],
   "Clear all filters": [
     "全てのフィルタを消去"
@@ -605,6 +617,9 @@ export default {
   ],
   "Close": [
     "閉じる"
+  ],
+  "Configuration added to clipboard": [
+    "クリップボードに設定を追加しました"
   ],
   "Configuration from the network plus static addresses and gateway": [
     "ネットワーク側からの設定に加え、固定のアドレスとゲートウエイを設定します"
@@ -656,15 +671,6 @@ export default {
   ],
   "Configured for installation only": [
     "インストール専用に設定されています"
-  ],
-  "Configured for root and user %s": [
-    "root ユーザと一般ユーザ %s を設定済み"
-  ],
-  "Configured for the root user": [
-    "root ユーザのみ設定済み"
-  ],
-  "Configured for user %s": [
-    "ユーザ %s のみ設定済み"
   ],
   "Configured with %d connection": [
     "%d 個の接続を設定済み"
@@ -735,6 +741,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "このパッケージをインストールせずに続行してしまうと、システムは正しく動作しない可能性があるほか、場合によっては全く起動しなくなることもあり得ます。"
   ],
+  "Copy to the clipboard": [
+    "クリップボードにコピー"
+  ],
   "Could not authenticate against the server.": [
     "サーバに対して認証できませんでした。"
   ],
@@ -749,9 +758,6 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "%s 内に他の LVM ボリュームグループを作成"
-  ],
-  "Create user": [
-    "ユーザの作成"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "一般的な用途のほか、システムの機能拡張のために厳選したパッケージセットです。"
@@ -801,6 +807,9 @@ export default {
   "DNS servers": [
     "DNS サーバ"
   ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    "データ収集にはしばらくの時間がかかります。ファイルの準備ができ次第、自動的にダウンロードが始まります。"
+  ],
   "Deactivate": [
     "無効化"
   ],
@@ -840,14 +849,8 @@ export default {
   "Define a new LVM on top of one or several disks": [
     "1 つもしくは複数のディスクに対して新しい LVM を設定する"
   ],
-  "Define a user now": [
-    "今すぐユーザを設定する"
-  ],
-  "Define the first user with admin (sudo) privileges for system management.": [
-    "システム管理時に使用する管理者 (sudo) 権限を持つ最初のユーザを設定します。"
-  ],
-  "Defined (hidden)": [
-    "設定済み (非表示)"
+  "Define an administrator user": [
+    "管理者ユーザを設定する"
   ],
   "Delete": [
     "削除"
@@ -888,6 +891,12 @@ export default {
   "Device %s menu": [
     "デバイス %s メニュー"
   ],
+  "Device MAC address": [
+    "デバイス MAC アドレス"
+  ],
+  "Device binding": [
+    "デバイスバインディング"
+  ],
   "Device details": [
     "デバイスの詳細"
   ],
@@ -899,9 +908,6 @@ export default {
   ],
   "Disabled": [
     "無効"
-  ],
-  "Discard": [
-    "破棄"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "最大サイズの設定を破棄してシンプルな設定にして続ける"
@@ -951,8 +957,8 @@ export default {
   "Do not use": [
     "使用しない"
   ],
-  "Download config": [
-    "ダウンロード設定"
+  "Download configuration": [
+    "設定のダウンロード"
   ],
   "Download logs": [
     "ログのダウンロード"
@@ -987,6 +993,9 @@ export default {
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
     "例: downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
   ],
+  "E.g., eth0.100": [
+    "例: eth0.100"
+  ],
   "E.g., example.com": [
     "例: example.com"
   ],
@@ -1001,9 +1010,6 @@ export default {
   ],
   "Edit connection settings": [
     "接続設定の編集"
-  ],
-  "Edit user": [
-    "ユーザの編集"
   ],
   "Edit volume group": [
     "ボリュームグループの編集"
@@ -1022,6 +1028,9 @@ export default {
   ],
   "Enabled with the system default settings": [
     "システム既定の設定で有効化します"
+  ],
+  "Encapsulation protocol": [
+    "カプセル化プロトコル"
   ],
   "Encrypt the system": [
     "システムの暗号化"
@@ -1070,9 +1079,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間の移動、 Escape キーで終了します"
-  ],
-  "Ethernet": [
-    "イーサネット"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1143,8 +1149,8 @@ export default {
   "Find space in %s": [
     "%s 内での容量検出"
   ],
-  "First user": [
-    "最初のユーザ"
+  "Fix the errors below and try again": [
+    "エラーを修正してやり直してください"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "より高度な設定を行う必要がある場合は、フルページに切り替えてください。これにより、より詳細な表示や追加の列、フィルタや拡張機能などが利用できるようになります。"
@@ -1196,6 +1202,9 @@ export default {
   ],
   "Full name": [
     "フルネーム"
+  ],
+  "Full name is required": [
+    "フルネームを指定する必要があります"
   ],
   "Gateway": [
     "ゲートウエイ"
@@ -1350,11 +1359,17 @@ export default {
   "Installation in progress": [
     "インストールを行っています"
   ],
+  "Installation logs download": [
+    "インストールログのダウンロード"
+  ],
   "Installation only": [
     "インストール時のみ"
   ],
   "Installation settings": [
     "インストール設定"
+  ],
+  "Installation settings in JSON format": [
+    "JSON 形式でのインストール設定"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     "インストール設定は新たに選択した製品の既定値にあわせて自動調整されます。"
@@ -1391,6 +1406,9 @@ export default {
   ],
   "Invalid NTP server address": [
     "NTP サーバのアドレスが正しくありません"
+  ],
+  "Invalid SSH Key": [
+    "SSH 鍵が正しくありません"
   ],
   "Invalid [zFCP] settings": [
     "正しくない [zFCP] 設定です"
@@ -1512,6 +1530,12 @@ export default {
   "Log in as %s": [
     "%s としてログイン"
   ],
+  "Log in using a password": [
+    "パスワードを利用してログインします"
+  ],
+  "Log in using a trusted SSH public key": [
+    "信頼済みの SSH 公開鍵を利用してログインします"
+  ],
   "Logical volume name": [
     "論理ボリューム名"
   ],
@@ -1538,12 +1562,6 @@ export default {
   ],
   "Login form": [
     "ログインフォーム"
-  ],
-  "Loopback": [
-    "ループバック"
-  ],
-  "MAC": [
-    "MAC"
   ],
   "MAC address": [
     "MAC アドレス"
@@ -1722,6 +1740,9 @@ export default {
   "No changes detected. System settings are already up to date.": [
     "何も変更されていません。システム設定は既に最新の状態です。"
   ],
+  "No changes to apply": [
+    "適用すべき変更はありません"
+  ],
   "No connections match filters": [
     "フィルタに該当する接続がありません"
   ],
@@ -1785,6 +1806,12 @@ export default {
   "No patterns match the filter": [
     "フィルタに該当するパターンがありません"
   ],
+  "No pending tasks": [
+    "処理待ちのタスクはありません"
+  ],
+  "No public key provided, SSH login might be restricted": [
+    "公開鍵を設定していません。 SSH でのログインが制限されるかもしれません"
+  ],
   "No software RAID devices are available for selection.": [
     "選択可能なソフトウエア RAID デバイスがありません。"
   ],
@@ -1799,9 +1826,6 @@ export default {
   ],
   "No targets matches filters": [
     "フィルタに該当するターゲットがありません"
-  ],
-  "No user defined yet.": [
-    "ユーザを設定していません。"
   ],
   "No valid address.": [
     "アドレスが正しくありません。"
@@ -1842,9 +1866,6 @@ export default {
   "Not configured yet": [
     "まだ設定していません"
   ],
-  "Not defined": [
-    "未設定"
-  ],
   "Not implemented yet (%s)": [
     "実装されていません (%s)"
   ],
@@ -1859,6 +1880,9 @@ export default {
   ],
   "Not used by this bridge": [
     "このブリッジでは使用しません"
+  ],
+  "Numeric identifier (0–4094)": [
+    "識別子番号 (0-4094)"
   ],
   "Offline": [
     "オフライン"
@@ -1883,6 +1907,9 @@ export default {
   ],
   "Package installation failed": [
     "インストールのインストール失敗"
+  ],
+  "Parent device": [
+    "親デバイス"
   ],
   "Partition %s": [
     "パーティション %s"
@@ -1932,8 +1959,14 @@ export default {
   "Password Required": [
     "パスワードが必要です"
   ],
+  "Password and SSH Public Key": [
+    "パスワードおよび SSH 公開鍵"
+  ],
   "Password confirmation": [
     "パスワードの確認"
+  ],
+  "Password confirmation is required": [
+    "パスワードの確認にも入力する必要があります"
   ],
   "Password input": [
     "パスワード入力"
@@ -1941,11 +1974,17 @@ export default {
   "Password is empty.": [
     "パスワードが指定されていません。"
   ],
+  "Password is required": [
+    "パスワードを設定する必要があります"
+  ],
   "Password visibility button": [
     "パスワード表示ボタン"
   ],
   "Passwords do not match": [
     "パスワードが合致しません"
+  ],
+  "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)": [
+    "1 つまたは複数の SSH 公開鍵 (例: ssh-ed25519 AAAA...) を貼り付けるか入力してください"
   ],
   "Patterns selection": [
     "パターンの選択"
@@ -1992,6 +2031,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "データやプログラム、システムファイルなど、新しく作成するファイルシステム内に配置される情報への保護を行います。"
   ],
+  "Protocol": [
+    "プロトコル"
+  ],
   "Protocol message interval (1-10 seconds).": [
     "プロトコルメッセージの送信間隔 (1-10 秒) 。"
   ],
@@ -2007,11 +2049,14 @@ export default {
   "Provided by the network": [
     "ネットワーク側から提示済み"
   ],
-  "Public SSH Key": [
-    "公開 SSH 鍵"
+  "Public key provided": [
+    "公開鍵を設定済み"
   ],
-  "Public SSH Key is empty.": [
-    "公開 SSH 鍵が設定されていません。"
+  "Public key provided for %s": [
+    "%s に対して公開鍵を設定済み"
+  ],
+  "Public key provided for both": [
+    "両方に対して公開鍵を設定済み"
   ],
   "Public network": [
     "公衆ネットワーク"
@@ -2133,26 +2178,20 @@ export default {
   "Reused partitions will not be shrunk": [
     "再利用したパーティションは縮小しない"
   ],
-  "Review and fix": [
-    "確認と修正"
-  ],
   "Review and install": [
     "確認してインストール"
+  ],
+  "Root account": [
+    "root アカウント"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
     "ルートブリッジの選択の際に使用されます (0-61440) 。 [小さいほど高い優先度になります] 。"
   ],
-  "Root login with SSH key": [
-    "SSH 鍵による root ログイン"
+  "Root login is off": [
+    "root でのログインを無効化します"
   ],
-  "Root login with password": [
-    "パスワードによる root ログイン"
-  ],
-  "Root login with password and SSH key": [
-    "パスワードと SSH 鍵の両方による root ログイン"
-  ],
-  "Root user": [
-    "root ユーザ"
+  "Root login method": [
+    "root ログインの方式"
   ],
   "Routes": [
     "ルート"
@@ -2174,6 +2213,12 @@ export default {
   ],
   "SHA256 fingerprint": [
     "SHA256 フィンガープリント"
+  ],
+  "SSH Public Key": [
+    "SSH 公開鍵"
+  ],
+  "SSH Public Keys": [
+    "SSH 公開鍵"
   ],
   "SSID": [
     "SSID"
@@ -2307,6 +2352,12 @@ export default {
   "Set manually": [
     "手動設定"
   ],
+  "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
+    "主に使用するログインアカウントを設定してください。このユーザは [sudo] を利用して管理者権限でコマンドを実行することができますが、 root アカウントとは区別されます。"
+  ],
+  "Sets up both and use either to log in": [
+    "両方を設定し、いずれか片方を利用してログインします"
+  ],
   "Settings": [
     "設定"
   ],
@@ -2324,6 +2375,9 @@ export default {
   ],
   "Show information about %s": [
     "%s に関する情報を表示"
+  ],
+  "Show installation settings": [
+    "インストール設定の表示"
   ],
   "Show less": [
     "表示を減らす"
@@ -2378,6 +2432,9 @@ export default {
   ],
   "Some NTP server addresses are invalid": [
     "NTP サーバの中に正しくないものがあります"
+  ],
+  "Some SSH public keys are invalid": [
+    "SSH 公開鍵の中に正しくないものがあります"
   ],
   "Some existing logical volumes may be shrunk": [
     "いくつかの既存の論理ボリュームを縮小するかもしれません"
@@ -2465,6 +2522,12 @@ export default {
   ],
   "System settings successfully updated": [
     "システム設定を更新しました"
+  ],
+  "System status: %s task active": [
+    "システムの状態: %s 個の処理が動作中です"
+  ],
+  "System status: Idle": [
+    "システムの状態: 待機中です"
   ],
   "System will have no network connections": [
     "システムにはネットワーク接続は設定されません"
@@ -2573,6 +2636,9 @@ export default {
   ],
   "The extension was registered without any registration code.": [
     "登録コード無しで拡張の登録を行いました。"
+  ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    "ファイル %s には、ここまでにインストーラが実施した処理の記録が含まれています。インストール時に何らかの問題が発生した場合の解析に有用です。"
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "最終的なサイズは、連続した空き容量にあわせて拡大される可能性があります。"
@@ -2760,6 +2826,9 @@ export default {
   "This uses the existing file system at the disk": [
     "これはディスク内の既存ファイルシステムを使用します"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    "このボリュームグループは、論理ボリュームによって必要とされる領域のみを占有します。利用可能なディスク領域全てを使用するようにしたい場合は、ボリュームグループを作成し直してください。"
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "ここでの設定はインストーラ自身にのみ適用され、インストールする製品には適用されません。製品に対する設定を行いたい場合は、ローカライゼーション設定のページで行ってください。"
   ],
@@ -2819,12 +2888,6 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "利用可能なディスクの更新と暗号化デバイスの有効化"
-  ],
-  "Upload": [
-    "アップロード"
-  ],
-  "Upload, paste, or drop an SSH public key": [
-    "SSH 公開鍵のアップロード／貼り付け／ドロップ"
   ],
   "Use": [
     "使用"
@@ -2925,20 +2988,17 @@ export default {
   "Use for the selected product too": [
     "選択した製品に対しても使用する"
   ],
-  "Use password": [
-    "パスワードの使用"
-  ],
   "Use product's default NTP servers": [
     "製品既定の NTP サーバを使用"
-  ],
-  "Use public SSH Key": [
-    "公開 SSH 鍵の使用"
   ],
   "Use several devices": [
     "複数のデバイスを使用する"
   ],
-  "Use suggested username": [
-    "提案されたユーザ名を使用する"
+  "Use the 802.1Q protocol explicitly.": [
+    "明示的に 802.1Q プロトコルを使用します。"
+  ],
+  "Use the 802.1ad protocol explicitly.": [
+    "明示的に 802.1ad プロトコルを使用します。"
   ],
   "Use the RAID without partitions": [
     "パーティション無しで RAID を使用する"
@@ -2949,11 +3009,17 @@ export default {
   "Use the disk without partitions": [
     "パーティション無しでディスクを使用する"
   ],
+  "Use the system default (802.1Q).": [
+    "システムの既定値 (802.1Q) を使用します。"
+  ],
   "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
     "ディスクや RAID, LVM ボリュームグループを参照するには、タブをお使いください。"
   ],
   "Use these same settings for the selected product": [
     "選択した製品に対しても同じ設定を使用する"
+  ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    "インストーラのコマンドラインや無人モードを利用して、今回と同じインストールを再度実施することができるようになります。"
   ],
   "User name": [
     "ユーザ名"
@@ -2961,8 +3027,8 @@ export default {
   "Username": [
     "ユーザ名"
   ],
-  "Username suggestion dropdown": [
-    "ユーザ名の提案ドロップダウン"
+  "Username is required": [
+    "ユーザ名を指定する必要があります"
   ],
   "Using %d additional pattern": [
     "%d 個の追加パターンを使用します"
@@ -2973,11 +3039,17 @@ export default {
   "Using %s NTP servers, including [%s]": [
     "%s 個の NTP サーバを使用 [%s ほか]"
   ],
+  "Using %s account": [
+    "アカウント %s を作成します"
+  ],
+  "Using %s and %s accounts": [
+    "アカウント %s および %s を作成します"
+  ],
   "Using %s as NTP server": [
     "%s を NTP サーバとして使用"
   ],
   "Using %s keyboard layout": [
-    "[%s] キーボードレイアウトを使用しています"
+    "%s キーボードレイアウトを使用しています"
   ],
   "Using [%s] keyboard layout": [
     "[%s] キーボードレイアウトを使用しています"
@@ -3008,6 +3080,18 @@ export default {
   ],
   "VLAN": [
     "VLAN"
+  ],
+  "VLAN ID": [
+    "VLAN ID"
+  ],
+  "VLAN ID is required": [
+    "VLAN ID を指定する必要があります"
+  ],
+  "VLAN ID must be between 0 and 4094": [
+    "VLAN ID は 0 から 4094 までの範囲でなければなりません"
+  ],
+  "VLAN details": [
+    "VLAN 詳細"
   ],
   "View license": [
     "ライセンスの表示"
@@ -3057,9 +3141,6 @@ export default {
   "When ready, click on the [install] button at the end of the page.": [
     "準備ができたら、ページ末尾にある [インストール] ボタンを押してください。"
   ],
-  "Wi-Fi": [
-    "Wi-Fi"
-  ],
   "Wi-Fi connection form": [
     "WiFi 接続フォーム"
   ],
@@ -3089,6 +3170,9 @@ export default {
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "これらの設定を破棄してシンプルな設定からやり直すこともできます。"
+  ],
+  "You must fix these issues": [
+    "これらの問題を解決しなければいけません"
   ],
   "You need to fix any invalid settings before proceeding with the installation.": [
     "インストールを続行する前に、設定を修正する必要があります。"
@@ -3128,9 +3212,6 @@ export default {
   ],
   "reset to defaults": [
     "既定値に戻す"
-  ],
-  "root": [
-    "root"
   ],
   "zFCP": [
     "zFCP"

@@ -76,6 +76,7 @@ const BridgeFields = withForm({
   } as BridgeFieldsProps,
   render: function Render({ form, isEditing }) {
     const devices = useDevices();
+    const availableDevices = devices.filter((d) => d.name !== "lo");
 
     return (
       <>
@@ -106,7 +107,7 @@ const BridgeFields = withForm({
               }
               helperText={
                 // TRANSLATORS: helper text for the bridge ports field. %s is a list of available devices.
-                sprintf(_("Available devices: %s"), formatList(devices.map((d) => d.name)))
+                sprintf(_("Available devices: %s"), formatList(availableDevices.map((d) => d.name)))
               }
               skipDuplicates
             />

@@ -22,8 +22,9 @@ use std::future::Future;
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader, iscsi, storage::Config, Issue},
+    api::{bootloader, iscsi, software::Resolvable, storage::Config, Issue},
     arch::Arch,
+    message::GetResolvables,
     BoxFuture,
 };
 use async_trait::async_trait;
@@ -199,6 +200,14 @@ impl MessageHandler<message::GetIssues> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.storage_proxy.resolvables().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetConfigFromModel> for Service {
     async fn handle(
         &mut self,
@@ -287,6 +296,17 @@ impl MessageHandler<message::bootloader::GetSystem> for Service {
         _message: message::bootloader::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
         let raw_json = self.bootloader_proxy.system().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
+impl MessageHandler<message::bootloader::GetResolvables> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::bootloader::GetResolvables,
+    ) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.bootloader_proxy.resolvables().await?;
         Ok(try_from_string(&raw_json)?)
     }
 }

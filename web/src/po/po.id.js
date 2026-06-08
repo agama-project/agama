@@ -162,6 +162,12 @@ export default {
   "1 device selected. Use the actions toolbar to apply changes.": [
     "%s perangkat dipilih. Gunakan bilah alat tindakan untuk menerapkan perubahan."
   ],
+  "802.1Q": [
+    "802.1Q"
+  ],
+  "802.1ad": [
+    "802.1ad"
+  ],
   "A %1$s of %2$s will be created for %3$s if possible": [
     "%1$s dari %2$s akan dibuat untuk %3$s jika memungkinkan"
   ],
@@ -288,17 +294,20 @@ export default {
   "Adjust the settings below to make the new system fit into the available space.": [
     "Sesuaikan pengaturan di bawah ini agar sistem baru dapat disesuaikan dengan ruang yang tersedia."
   ],
+  "Administrator account": [
+    "Akun administrator"
+  ],
   "All": [
     "Semua"
+  ],
+  "All background tasks completed": [
+    "Semua tugas latar belakang selesai"
   ],
   "All content not configured to be mounted will be deleted": [
     "Semua konten yang tidak dikonfigurasi untuk di-mount akan dihapus"
   ],
   "All content will be deleted": [
     "Semua konten akan dihapus"
-  ],
-  "All fields are required": [
-    "Semua bidang wajib diisi"
   ],
   "All fields are required.": [
     "Semua bidang wajib diisi."
@@ -312,9 +321,6 @@ export default {
   "Allow growing": [
     "Izinkan pertumbuhan"
   ],
-  "Alongside defining the first user, authentication methods for the root user can be configured.": [
-    "Selain mendefinisikan pengguna pertama, metode autentikasi untuk pengguna root dapat dikonfigurasi."
-  ],
   "Already using all available devices": [
     "Sudah menggunakan semua perangkat yang tersedia"
   ],
@@ -326,9 +332,6 @@ export default {
   ],
   "An existing partition will be used for %s": [
     "Partisi yang sudah ada akan digunakan untuk %s"
-  ],
-  "Any": [
-    "Semua"
   ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Semua volume logis yang ada akan dihapus dan semua data dalam grup volume akan hilang."
@@ -359,6 +362,9 @@ export default {
   ],
   "At least one NTP server is required": [
     "Setidaknya satu server NTP diperlukan"
+  ],
+  "At least one SSH public key is required": [
+    "Setidaknya satu kunci publik SSH diperlukan"
   ],
   "At least one bond port is required": [
     "Setidaknya satu port bond diperlukan"
@@ -416,9 +422,6 @@ export default {
   ],
   "Before %s": [
     "Sebelum %s"
-  ],
-  "Before starting the installation, you need to address the following problems:": [
-    "Sebelum memulai penginstalan, Anda perlu mengatasi masalah berikut ini:"
   ],
   "Below %s devices are offline and cannot be formatted.": [
     "Di bawah ini, %s perangkat dalam keadaan luring dan tidak dapat diformat."
@@ -555,8 +558,17 @@ export default {
   "Change volume group menu": [
     "Menu grup volume ubah"
   ],
+  "Changes could not be applied": [
+    "Perubahan tidak dapat diterapkan"
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Perubahan pada pengaturan ini akan segera memperbarui bagian 'Hasil' di bawah ini."
+  ],
+  "Changes successfully applied": [
+    "Perubahan berhasil diterapkan"
+  ],
+  "Changing the product will reset your current settings.": [
+    "Mengubah produk akan mengatur ulang pengaturan Anda saat ini."
   ],
   "Channel": [
     "Saluran"
@@ -585,14 +597,14 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Pilih grup volume untuk mendefinisikan volume logis"
   ],
-  "Chosen by MAC": [
-    "Dipilih berdasarkan MAC"
+  "Choose whether to enable the root account.": [
+    "Pilih apakah akan mengaktifkan akun root."
+  ],
+  "Chosen by MAC address": [
+    "Dipilih berdasarkan alamat MAC"
   ],
   "Chosen by name": [
     "Dipilih berdasarkan nama"
-  ],
-  "Clear": [
-    "Hapus"
   ],
   "Clear all filters": [
     "Hapus semua filter"
@@ -605,6 +617,9 @@ export default {
   ],
   "Close": [
     "Tutup"
+  ],
+  "Configuration added to clipboard": [
+    "Konfigurasi ditambahkan ke papan klip"
   ],
   "Configuration from the network plus static addresses and gateway": [
     "Konfigurasi dari jaringan ditambah alamat statis dan gateway"
@@ -656,15 +671,6 @@ export default {
   ],
   "Configured for installation only": [
     "Dikonfigurasi hanya untuk pemasangan"
-  ],
-  "Configured for root and user %s": [
-    "Dikonfigurasi untuk root dan pengguna %s"
-  ],
-  "Configured for the root user": [
-    "Dikonfigurasi untuk pengguna root"
-  ],
-  "Configured for user %s": [
-    "Dikonfigurasi untuk pengguna %s"
   ],
   "Configured with %d connection": [
     "Dikonfigurasi dengan %d koneksi"
@@ -735,6 +741,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Melanjutkan tanpa memasang paket dapat mengakibatkan sistem rusak. Dalam beberapa kasus, sistem bahkan mungkin tidak dapat melakukan booting."
   ],
+  "Copy to the clipboard": [
+    "Salin ke papan klip"
+  ],
   "Could not authenticate against the server.": [
     "Tidak dapat mengautentikasi terhadap server."
   ],
@@ -749,9 +758,6 @@ export default {
   ],
   "Create another LVM volume group on %s": [
     "Buat grup volume LVM lain di %s"
-  ],
-  "Create user": [
-    "Membuat pengguna"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Kumpulan paket yang dikurasi untuk kasus penggunaan umum dan fitur untuk memperluas sistem."
@@ -801,6 +807,9 @@ export default {
   "DNS servers": [
     "Server DNS"
   ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    "Pengumpulan data mungkin memakan waktu beberapa saat. Unduhan akan dimulai secara otomatis setelah berkas siap."
+  ],
   "Deactivate": [
     "Nonaktifkan"
   ],
@@ -840,14 +849,8 @@ export default {
   "Define a new LVM on top of one or several disks": [
     "Buat partisi LVM baru di atas satu atau beberapa disk"
   ],
-  "Define a user now": [
-    "Tentukan pengguna sekarang"
-  ],
-  "Define the first user with admin (sudo) privileges for system management.": [
-    "Tentukan pengguna pertama dengan hak akses admin (sudo) untuk pengelolaan sistem."
-  ],
-  "Defined (hidden)": [
-    "Didefinisikan (tersembunyi)"
+  "Define an administrator user": [
+    "Tentukan pengguna administrator"
   ],
   "Delete": [
     "Menghapus"
@@ -888,6 +891,12 @@ export default {
   "Device %s menu": [
     "Menu Perangkat %s"
   ],
+  "Device MAC address": [
+    "Alamat MAC perangkat"
+  ],
+  "Device binding": [
+    "Pengikatan perangkat"
+  ],
   "Device details": [
     "Rincian perangkat"
   ],
@@ -899,9 +908,6 @@ export default {
   ],
   "Disabled": [
     "Dinonaktifkan"
-  ],
-  "Discard": [
-    "Buang"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "Buang ukuran maksimum dan lanjutkan dengan konfigurasi sederhana"
@@ -951,7 +957,7 @@ export default {
   "Do not use": [
     "Jangan gunakan"
   ],
-  "Download config": [
+  "Download configuration": [
     "Unduh konfigurasi"
   ],
   "Download logs": [
@@ -987,6 +993,9 @@ export default {
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
     "Misal, downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
   ],
+  "E.g., eth0.100": [
+    "Misalnya, eth0.100"
+  ],
   "E.g., example.com": [
     "Mis., example.com"
   ],
@@ -1001,9 +1010,6 @@ export default {
   ],
   "Edit connection settings": [
     "Edit pengaturan koneksi"
-  ],
-  "Edit user": [
-    "Edit pengguna"
   ],
   "Edit volume group": [
     "Edit grup volume"
@@ -1022,6 +1028,9 @@ export default {
   ],
   "Enabled with the system default settings": [
     "Diaktifkan dengan pengaturan bawaan sistem"
+  ],
+  "Encapsulation protocol": [
+    "Protokol enkapsulasi"
   ],
   "Encrypt the system": [
     "Mengenkripsi sistem"
@@ -1070,9 +1079,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Masukkan atau tekan Tab untuk menambah, Backspace atau Delete untuk menghapus, tombol panah untuk menavigasi entri, Escape untuk keluar"
-  ],
-  "Ethernet": [
-    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1143,8 +1149,8 @@ export default {
   "Find space in %s": [
     "Temukan ruang di %s"
   ],
-  "First user": [
-    "Pengguna pertama"
+  "Fix the errors below and try again": [
+    "Perbaiki kesalahan di bawah ini dan coba lagi"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "Untuk kebutuhan yang lebih canggih, pengguna dapat beralih ke versi jalur khusus halaman penuh ini yang menyediakan ruang lebih luas untuk tampilan detail, kolom tambahan, filter, dan fungsionalitas yang diperluas."
@@ -1196,6 +1202,9 @@ export default {
   ],
   "Full name": [
     "Nama lengkap"
+  ],
+  "Full name is required": [
+    "Nama lengkap diperlukan"
   ],
   "Gateway": [
     "Gateway"
@@ -1350,11 +1359,17 @@ export default {
   "Installation in progress": [
     "Instalasi sedang berlangsung"
   ],
+  "Installation logs download": [
+    "Unduhan log instalasi"
+  ],
   "Installation only": [
     "Hanya instalasi"
   ],
   "Installation settings": [
     "Pengaturan instalasi"
+  ],
+  "Installation settings in JSON format": [
+    "Pengaturan instalasi dalam format JSON"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     "Pengaturan instalasi akan diperbarui secara otomatis agar sesuai dengan default produk baru."
@@ -1391,6 +1406,9 @@ export default {
   ],
   "Invalid NTP server address": [
     "Alamat server NTP tidak valid"
+  ],
+  "Invalid SSH Key": [
+    "Kunci SSH Tidak Valid"
   ],
   "Invalid [zFCP] settings": [
     "Pengaturan [zFCP] tidak valid"
@@ -1512,6 +1530,12 @@ export default {
   "Log in as %s": [
     "Masuk sebagai %s"
   ],
+  "Log in using a password": [
+    "Login menggunakan kata sandi"
+  ],
+  "Log in using a trusted SSH public key": [
+    "Login menggunakan kunci publik SSH yang dipercaya"
+  ],
   "Logical volume name": [
     "Nama volume logis"
   ],
@@ -1538,12 +1562,6 @@ export default {
   ],
   "Login form": [
     "Formulir masuk"
-  ],
-  "Loopback": [
-    "Loopback"
-  ],
-  "MAC": [
-    "MAC"
   ],
   "MAC address": [
     "Alamat MAC"
@@ -1722,6 +1740,9 @@ export default {
   "No changes detected. System settings are already up to date.": [
     "Tidak ada perubahan yang terdeteksi. Pengaturan sistem sudah mutakhir."
   ],
+  "No changes to apply": [
+    "Tidak ada perubahan yang diterapkan"
+  ],
   "No connections match filters": [
     "Tidak ada koneksi yang cocok dengan filter"
   ],
@@ -1785,6 +1806,12 @@ export default {
   "No patterns match the filter": [
     "Tidak ada pola yang cocok dengan filter"
   ],
+  "No pending tasks": [
+    "Tidak ada tugas yang tertunda"
+  ],
+  "No public key provided, SSH login might be restricted": [
+    "Tidak ada kunci publik yang disediakan, login SSH mungkin dibatasi"
+  ],
   "No software RAID devices are available for selection.": [
     "Tidak ada perangkat RAID perangkat lunak yang tersedia untuk dipilih."
   ],
@@ -1799,9 +1826,6 @@ export default {
   ],
   "No targets matches filters": [
     "Tidak ada target yang cocok dengan filter"
-  ],
-  "No user defined yet.": [
-    "Belum ada pengguna yang ditetapkan."
   ],
   "No valid address.": [
     "Tidak ada alamat yang valid."
@@ -1842,9 +1866,6 @@ export default {
   "Not configured yet": [
     "Belum dikonfigurasi"
   ],
-  "Not defined": [
-    "Tidak didefinisikan"
-  ],
   "Not implemented yet (%s)": [
     "Belum diimplementasikan (%s)"
   ],
@@ -1859,6 +1880,9 @@ export default {
   ],
   "Not used by this bridge": [
     "Tidak digunakan oleh bridge ini"
+  ],
+  "Numeric identifier (0–4094)": [
+    "Identifikator numerik (0–4094)"
   ],
   "Offline": [
     "Luring"
@@ -1883,6 +1907,9 @@ export default {
   ],
   "Package installation failed": [
     "Pemasangan paket gagal"
+  ],
+  "Parent device": [
+    "Perangkat induk"
   ],
   "Partition %s": [
     "Partisi %s"
@@ -1932,8 +1959,14 @@ export default {
   "Password Required": [
     "Diperlukan Kata Sandi"
   ],
+  "Password and SSH Public Key": [
+    "Kata sandi dan Kunci Publik SSH"
+  ],
   "Password confirmation": [
     "Konfirmasi kata sandi"
+  ],
+  "Password confirmation is required": [
+    "Konfirmasi kata sandi diperlukan"
   ],
   "Password input": [
     "Masukan kata sandi"
@@ -1941,11 +1974,17 @@ export default {
   "Password is empty.": [
     "Kata sandi kosong."
   ],
+  "Password is required": [
+    "Kata sandi diperlukan"
+  ],
   "Password visibility button": [
     "Tombol visibilitas kata sandi"
   ],
   "Passwords do not match": [
     "Kata sandi tidak cocok"
+  ],
+  "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)": [
+    "Tempel atau masukkan satu atau lebih kunci publik SSH (misalnya ssh-ed25519 AAAA...)"
   ],
   "Patterns selection": [
     "Pemilihan pola"
@@ -1992,6 +2031,9 @@ export default {
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
     "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
   ],
+  "Protocol": [
+    "Protokol"
+  ],
   "Protocol message interval (1-10 seconds).": [
     "Interval pesan protokol (1-10 detik)."
   ],
@@ -2007,11 +2049,14 @@ export default {
   "Provided by the network": [
     "Disediakan oleh jaringan"
   ],
-  "Public SSH Key": [
-    "Kunci SSH Publik"
+  "Public key provided": [
+    "Kunci publik disediakan"
   ],
-  "Public SSH Key is empty.": [
-    "Kunci SSH Publik kosong."
+  "Public key provided for %s": [
+    "Kunci publik disediakan untuk %s"
+  ],
+  "Public key provided for both": [
+    "Kunci publik disediakan untuk keduanya"
   ],
   "Public network": [
     "Jaringan publik"
@@ -2133,26 +2178,20 @@ export default {
   "Reused partitions will not be shrunk": [
     "Partisi yang digunakan kembali tidak akan diperkecil"
   ],
-  "Review and fix": [
-    "Periksa dan perbaiki"
-  ],
   "Review and install": [
     "Tinjau dan instal"
+  ],
+  "Root account": [
+    "Akun root"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
     "Pemilihan bridge root (0-61440). [Semakin rendah, semakin tinggi prioritas]."
   ],
-  "Root login with SSH key": [
-    "Login root dengan kunci SSH"
+  "Root login is off": [
+    "Login root mati"
   ],
-  "Root login with password": [
-    "Login root dengan kata sandi"
-  ],
-  "Root login with password and SSH key": [
-    "Login root dengan kata sandi dan kunci SSH"
-  ],
-  "Root user": [
-    "Pengguna root"
+  "Root login method": [
+    "Metode login root"
   ],
   "Routes": [
     "Route"
@@ -2174,6 +2213,12 @@ export default {
   ],
   "SHA256 fingerprint": [
     "Tanda tangan SHA256"
+  ],
+  "SSH Public Key": [
+    "Kunci Publik SSH"
+  ],
+  "SSH Public Keys": [
+    "Kunci Publik SSH"
   ],
   "SSID": [
     "SSID"
@@ -2307,6 +2352,12 @@ export default {
   "Set manually": [
     "Ditetapkan secara manual"
   ],
+  "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
+    "Mengatur akun login utama. Akun ini dapat menjalankan perintah administrator menggunakan [sudo] tetapi terpisah dari akun root."
+  ],
+  "Sets up both and use either to log in": [
+    "Mengatur keduanya dan gunakan salah satu untuk login"
+  ],
   "Settings": [
     "Pengaturan"
   ],
@@ -2324,6 +2375,9 @@ export default {
   ],
   "Show information about %s": [
     "Menampilkan informasi tentang %s"
+  ],
+  "Show installation settings": [
+    "Tampilkan pengaturan instalasi"
   ],
   "Show less": [
     "Tampilkan lebih sedikit"
@@ -2378,6 +2432,9 @@ export default {
   ],
   "Some NTP server addresses are invalid": [
     "Beberapa alamat server NTP tidak valid"
+  ],
+  "Some SSH public keys are invalid": [
+    "Beberapa kunci publik SSH tidak valid"
   ],
   "Some existing logical volumes may be shrunk": [
     "Beberapa volume logis yang sudah ada mungkin akan diperkecil"
@@ -2465,6 +2522,12 @@ export default {
   ],
   "System settings successfully updated": [
     "Pengaturan sistem berhasil diperbarui"
+  ],
+  "System status: %s task active": [
+    "Status sistem: %s tugas aktif"
+  ],
+  "System status: Idle": [
+    "Status sistem: Idle (menganggur)"
   ],
   "System will have no network connections": [
     "Sistem tidak akan memiliki koneksi jaringan"
@@ -2573,6 +2636,9 @@ export default {
   ],
   "The extension was registered without any registration code.": [
     "Ekstensi tersebut didaftarkan tanpa kode pendaftaran."
+  ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    "Berkas %s berisi catatan aktivitas penginstal sejauh ini, berguna untuk mendiagnosis masalah instalasi."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Ukuran akhir dapat dibuat lebih besar untuk mengisi ruang kosong yang tersisa."
@@ -2760,6 +2826,9 @@ export default {
   "This uses the existing file system at the disk": [
     "Ini menggunakan sistem berkas yang ada di disk"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    "Grup volume ini hanya menempati ruang yang diperlukan oleh volume logisnya. Untuk memperluasnya agar mencakup semua ruang disk yang tersedia, buat ulang grup volume."
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Hal ini hanya akan memengaruhi antarmuka penginstal, bukan produk yang akan diinstal. Anda dapat menyesuaikan lokalisasi produk nanti di halaman Pengaturan Lokalisasi."
   ],
@@ -2819,12 +2888,6 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Perbarui disk yang tersedia dan aktifkan perangkat enkripsi"
-  ],
-  "Upload": [
-    "Unggah"
-  ],
-  "Upload, paste, or drop an SSH public key": [
-    "Unggah, tempel, atau jatuhkan kunci publik SSH"
   ],
   "Use": [
     "Gunakan"
@@ -2925,20 +2988,17 @@ export default {
   "Use for the selected product too": [
     "Gunakan juga untuk produk yang dipilih"
   ],
-  "Use password": [
-    "Gunakan kata sandi"
-  ],
   "Use product's default NTP servers": [
     "Gunakan server NTP bawaan produk"
-  ],
-  "Use public SSH Key": [
-    "Gunakan Kunci SSH Publik"
   ],
   "Use several devices": [
     "Gunakan beberapa perangkat"
   ],
-  "Use suggested username": [
-    "Gunakan nama pengguna yang disarankan"
+  "Use the 802.1Q protocol explicitly.": [
+    "Gunakan protokol 802.1Q secara eksplisit."
+  ],
+  "Use the 802.1ad protocol explicitly.": [
+    "Gunakan protokol 802.1ad secara eksplisit."
   ],
   "Use the RAID without partitions": [
     "Gunakan RAID tanpa partisi"
@@ -2949,11 +3009,17 @@ export default {
   "Use the disk without partitions": [
     "Gunakan disk tanpa partisi"
   ],
+  "Use the system default (802.1Q).": [
+    "Gunakan default sistem (802.1Q)."
+  ],
   "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
     "Gunakan tab untuk menelusuri disk, perangkat RAID, dan grup volume LVM."
   ],
   "Use these same settings for the selected product": [
     "Gunakan pengaturan yang sama untuk produk yang dipilih"
+  ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    "Gunakan ini untuk mereproduksi instalasi ini nanti menggunakan antarmuka baris perintah penginstal atau mode tanpa pengawasan."
   ],
   "User name": [
     "Nama pengguna"
@@ -2961,8 +3027,8 @@ export default {
   "Username": [
     "Nama pengguna"
   ],
-  "Username suggestion dropdown": [
-    "Tarik-turun saran nama pengguna"
+  "Username is required": [
+    "Nama pengguna diperlukan"
   ],
   "Using %d additional pattern": [
     "Menggunakan %d pola tambahan"
@@ -2972,6 +3038,12 @@ export default {
   ],
   "Using %s NTP servers, including [%s]": [
     "Menggunakan %s server NTP, termasuk [%s]"
+  ],
+  "Using %s account": [
+    "Menggunakan akun %s"
+  ],
+  "Using %s and %s accounts": [
+    "Menggunakan akun %s dan %s"
   ],
   "Using %s as NTP server": [
     "Menggunakan %s sebagai server NTP"
@@ -3008,6 +3080,18 @@ export default {
   ],
   "VLAN": [
     "VLAN"
+  ],
+  "VLAN ID": [
+    "ID VLAN"
+  ],
+  "VLAN ID is required": [
+    "ID VLAN diperlukan"
+  ],
+  "VLAN ID must be between 0 and 4094": [
+    "ID VLAN harus berada antara 0 dan 4094"
+  ],
+  "VLAN details": [
+    "Detail VLAN"
   ],
   "View license": [
     "Lihat lisensi"
@@ -3057,9 +3141,6 @@ export default {
   "When ready, click on the [install] button at the end of the page.": [
     "Saat siap, klik tombol [instal] di akhir halaman."
   ],
-  "Wi-Fi": [
-    "Wi-Fi"
-  ],
   "Wi-Fi connection form": [
     "Formulir Koneksi Wi-Fi"
   ],
@@ -3089,6 +3170,9 @@ export default {
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
     "Anda mungkin ingin menghapus pengaturan tersebut dan memulai dari awal dengan konfigurasi yang sederhana."
+  ],
+  "You must fix these issues": [
+    "Anda harus memperbaiki masalah-masalah ini"
   ],
   "You need to fix any invalid settings before proceeding with the installation.": [
     "Anda perlu memperbaiki pengaturan yang tidak valid sebelum melanjutkan instalasi."
@@ -3128,9 +3212,6 @@ export default {
   ],
   "reset to defaults": [
     "kembalikan ke default"
-  ],
-  "root": [
-    "root"
   ],
   "zFCP": [
     "zFCP"

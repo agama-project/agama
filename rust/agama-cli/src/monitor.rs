@@ -88,8 +88,9 @@ async fn run_headless(
         match update {
             MonitorUpdate::Status(status) => {
                 println!(
-                    "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
+                    "stage: {:?}, active tasks: {}, progresses: {}, issues: {}, questions: {}",
                     status.status.stage,
+                    status.status.tasks.len(),
                     status.status.progresses.len(),
                     status.issues.len(),
                     status.questions.len()

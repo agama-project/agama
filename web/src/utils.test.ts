@@ -32,6 +32,8 @@ import {
   mergeSources,
   extendCollection,
   translateEntries,
+  isoTimestamp,
+  download,
 } from "./utils";
 
 import type { Target as ConfigTarget } from "~/openapi/config/iscsi";
@@ -1144,5 +1146,107 @@ describe("translateEntries", () => {
 
   it("returns an empty object when given an empty record", () => {
     expect(translateEntries({})).toEqual({});
+  });
+});
+
+describe("isoTimestamp", () => {
+  const FIXED_ISO = "2026-06-03T10:30:00.000Z";
+  const FIXED_SAFE = "2026-06-03T10-30-00-000Z";
+
+  beforeAll(() => {
+    jest
+      .spyOn(global, "Date")
+      .mockImplementation(() => ({ toISOString: () => FIXED_ISO }) as unknown as Date);
+  });
+
+  it("returns the current date and time in ISO 8601 format", () => {
+    expect(isoTimestamp()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/);
+  });
+
+  it("replaces colons with hyphens", () => {
+    expect(isoTimestamp()).not.toContain(":");
+  });
+
+  it("replaces dots with hyphens", () => {
+    expect(isoTimestamp()).not.toContain(".");
+  });
+
+  it("returns the expected value for a known date", () => {
+    expect(isoTimestamp()).toBe(FIXED_SAFE);
+  });
+});
+
+describe("download", () => {
+  const mockClick = jest.fn();
+  const mockRevokeObjectURL = jest.fn();
+  const mockCreateObjectURL = jest.fn(() => "blob:mock-url");
+
+  beforeAll(() => {
+    URL.createObjectURL = mockCreateObjectURL;
+    URL.revokeObjectURL = mockRevokeObjectURL;
+
+    jest.spyOn(document, "createElement").mockImplementation((tag: string) => {
+      if (tag !== "a") return document.createElement(tag);
+
+      return { click: mockClick, href: "", download: "" } as unknown as HTMLElement;
+    });
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("triggers a file download on a successful response", async () => {
+    const blob = new Blob(["content"], { type: "application/gzip" });
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, blob: () => Promise.resolve(blob) });
+
+    await download("/api/private/download_logs", "agama-logs.tar.gz");
+
+    expect(fetch).toHaveBeenCalledWith("/api/private/download_logs");
+    expect(mockCreateObjectURL).toHaveBeenCalledWith(blob);
+    expect(mockClick).toHaveBeenCalled();
+    expect(mockRevokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
+  });
+
+  it("sets the suggested filename on the anchor", async () => {
+    const blob = new Blob([]);
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, blob: () => Promise.resolve(blob) });
+
+    const anchor = { click: mockClick, href: "", download: "" } as unknown as HTMLAnchorElement;
+    jest.spyOn(document, "createElement").mockReturnValue(anchor);
+
+    await download("/api/private/download_logs", "agama-logs.tar.gz");
+
+    expect(anchor.download).toBe("agama-logs.tar.gz");
+  });
+
+  it("throws when the server responds with a non-OK status", async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 503 });
+
+    await expect(download("/api/private/download_logs", "agama-logs.tar.gz")).rejects.toThrow(
+      "Request failed: 503",
+    );
+  });
+
+  it("does not create an anchor when the request fails", async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 });
+    const createElement = jest.spyOn(document, "createElement");
+
+    await expect(download("/api/private/download_logs", "agama-logs.tar.gz")).rejects.toThrow();
+
+    expect(createElement).not.toHaveBeenCalledWith("a");
+  });
+
+  it("revokes the object URL even if click throws", async () => {
+    const blob = new Blob([]);
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, blob: () => Promise.resolve(blob) });
+    mockClick.mockImplementation(() => {
+      throw new Error("click failed");
+    });
+
+    await expect(download("/api/private/download_logs", "agama-logs.tar.gz")).rejects.toThrow(
+      "click failed",
+    );
+    expect(mockRevokeObjectURL).toHaveBeenCalledWith("blob:mock-url");
   });
 });

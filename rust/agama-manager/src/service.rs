@@ -20,7 +20,8 @@
 
 use crate::{
     actions::FinishAction, bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n,
-    message, network, ntp, proxy, s390, security, software, storage, tasks, users,
+    message, network, ntp, proxy, s390, security, software, storage, task_manager::TaskManager,
+    tasks, users,
 };
 use agama_users::PasswordCheckResult;
 use agama_utils::{
@@ -317,7 +318,7 @@ impl Starter {
 
         let ntp = match self.ntp {
             Some(ntp) => ntp,
-            None => ntp::Service::starter(self.events.clone(), software.clone()).start()?,
+            None => ntp::Service::starter(self.events.clone()).start()?,
         };
 
         let iscsi = match self.iscsi {
@@ -337,7 +338,7 @@ impl Starter {
         let files = match self.files {
             Some(files) => files,
             None => {
-                files::Service::starter(progress.clone(), self.questions.clone(), software.clone())
+                files::Service::starter(progress.clone(), self.questions.clone())
                     .start()
                     .await?
             }
@@ -389,6 +390,8 @@ impl Starter {
             }
         };
 
+        let task_manager = Arc::new(TaskManager::new(self.events.clone()));
+
         let runner = tasks::TasksRunner {
             bootloader: bootloader.clone(),
             files: files.clone(),
@@ -407,6 +410,7 @@ impl Starter {
             storage: storage.clone(),
             users: users.clone(),
             s390: s390.clone(),
+            task_manager: task_manager.clone(),
         };
         let tasks = actor::spawn(runner);
 
@@ -433,6 +437,7 @@ impl Starter {
             users,
             tasks,
             s390,
+            task_manager: task_manager.clone(),
         };
 
         service.setup().await?;
@@ -463,6 +468,7 @@ pub struct Service {
     system: manager::SystemInfo,
     tasks: Handler<tasks::TasksRunner>,
     users: Handler<users::Service>,
+    task_manager: Arc<TaskManager>,
 }
 
 impl Service {
@@ -645,7 +651,11 @@ impl Actor for Service {
 impl MessageHandler<progress::message::GetStatus> for Service {
     /// It returns the status of the installation.
     async fn handle(&mut self, message: progress::message::GetStatus) -> Result<Status, Error> {
-        let status = self.progress.call(message).await?;
+        let pending_tasks = self.task_manager.get_all_metadata().await;
+        // TODO: drop status from progress service. The stage should be kept by the manager.
+        let mut status = self.progress.call(message).await?;
+        status.tasks = pending_tasks.into_iter().map(|m| m.into()).collect();
+
         Ok(status)
     }
 }
