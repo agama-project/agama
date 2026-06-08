@@ -166,8 +166,7 @@ export default function ProgressBackdrop({
                   gap={{ default: "gapMd" }}
                   alignItems={{ default: "alignItemsCenter" }}
                   flexWrap={{ default: "nowrap" }}
-                  className={textStyles.fontSizeLg}
-                  style={{ textWrap: "balance" }}
+                  className={[textStyles.fontSizeLg, "text-balance"].join(" ")}
                 >
                   <Spinner size="md" aria-hidden />
                   <FlexItem>

@@ -104,11 +104,7 @@ export default function SplitInfoLayout({
         )}
 
         <GridItem md={6} order={{ md: "3" }}>
-          <Title
-            headingLevel="h1"
-            style={{ textWrap: "balance" }}
-            className={textStyles.fontSize_3xl}
-          >
+          <Title headingLevel="h1" className={[textStyles.fontSize_3xl, "text-balance"].join(" ")}>
             {firstRowStart}
           </Title>
         </GridItem>

@@ -148,14 +148,7 @@ export default function Header({
                 hideDivider
                 isEditorial
                 path={ROOT.overview}
-                label={
-                  <Icon
-                    name="list_alt"
-                    width="1.4em"
-                    height="1.4em"
-                    style={{ verticalAlign: "middle" }}
-                  />
-                }
+                label={<Icon name="list_alt" width="1.4em" height="1.4em" verticalAlign="middle" />}
               />
             )}
             {breadcrumbs &&

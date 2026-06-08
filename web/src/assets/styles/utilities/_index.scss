@@ -11,3 +11,10 @@
 .w-14ch {
   inline-size: 14ch;
 }
+
+// Balance multi-line text so wrapped lines are more even. The base reset
+// already applies this to bare h1-h4; this utility covers other elements
+// (paragraphs, helper text, PF Title/Text/Content components).
+.text-balance {
+  text-wrap: balance;
+}
