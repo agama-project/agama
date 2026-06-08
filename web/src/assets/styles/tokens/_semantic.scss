@@ -7,21 +7,23 @@
 // change as the interface customization is refined.
 
 :root {
-  --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog);
+  --agm-t--action--background--color--hover: var(--agm-t--color--jungle--10);
+
+  --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog--50);
   --pf-t--global--background--color--action--plain--hover: var(
     --agm-t--action--background--color--hover
   );
   --pf-t--global--background--color--action--plain--alt--hover: var(
     --agm-t--action--background--color--hover
   );
-  --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle);
+  --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle--50);
 
-  --agm-t--install--button--background: var(--agm-t--color--pine);
-  --agm-t--install--button--background--hover: var(--agm-t--color--pine--shade--100);
+  --agm-t--install--button--background: var(--agm-t--color--pine--50);
+  --agm-t--install--button--background--hover: var(--agm-t--color--pine--40);
   --agm-t--install--button--color: var(--pf-t--color--white);
 
-  --pf-t--global--color--brand--default: var(--agm-t--color--pine);
-  --pf-t--global--color--brand--hover: var(--agm-t--color--pine--shade--100);
+  --pf-t--global--color--brand--default: var(--agm-t--color--pine--50);
+  --pf-t--global--color--brand--hover: var(--agm-t--color--pine--40);
   --pf-t--global--font--family--100: "SUSE Text", "Noto Sans", verdana;
   --pf-t--global--font--family--200: "SUSE Display", "Noto Sans", verdana;
   --pf-t--global--font--family--300: "Roboto Mono", monospace;
@@ -40,12 +42,12 @@
   --pf-t--global--font--weight--300: 700;
   --pf-t--global--font--weight--400: 800;
   --pf-t--global--color--status--warning--200: #fe7c3f;
-  --pf-t--global--color--status--info--default: var(--agm-t--color--waterhole);
-  --pf-t--global--icon--color--status--info--default: var(--agm-t--color--waterhole);
+  --pf-t--global--color--status--info--default: var(--agm-t--color--waterhole--50);
+  --pf-t--global--icon--color--status--info--default: var(--agm-t--color--waterhole--50);
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
   --pf-t--global--background--color--disabled--default: #dcdbdc;
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
-  --pf-t--global--color--brand--clicked: var(--agm-t--color--pine);
-  --pf-t--global--text--color--link--default: var(--agm-t--color--pine);
+  --pf-t--global--color--brand--clicked: var(--agm-t--color--pine--50);
+  --pf-t--global--text--color--link--default: var(--agm-t--color--pine--50);
 }

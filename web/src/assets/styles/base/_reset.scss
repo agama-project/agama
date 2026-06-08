@@ -22,13 +22,13 @@ input[type="checkbox"] {
 // Custom style for :focus-visible appearance
 a:focus-visible,
 button:focus-visible {
-  outline: 2px solid var(--agm-t--color--waterhole);
+  outline: 2px solid var(--agm-t--color--waterhole--50);
   outline-offset: 3px;
 }
 
 fieldset {
   border: 0;
-  border-top: 1px solid var(--agm-t--color--fog);
+  border-top: 1px solid var(--agm-t--color--fog--50);
   padding: 0;
   padding-block-start: var(--pf-t--global--spacer--md);
   margin: 0;
