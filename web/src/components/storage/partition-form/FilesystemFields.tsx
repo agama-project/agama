@@ -21,7 +21,7 @@
  */
 
 import React, { useEffect, useMemo } from "react";
-import { unique } from "radashi";
+import { unique, isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
@@ -35,7 +35,7 @@ import {
   supportsAdditionalConfig,
 } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { deviceLabel, filesystemLabel } from "~/components/storage/utils";
+import { deviceLabel, filesystemLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 
 import type { Storage as System } from "~/model/system";
@@ -61,7 +61,30 @@ type FilesystemSelectorProps = {
   >;
   usableFilesystems: ConfigModel.FilesystemType[];
   selectedPartition?: System.Device;
+  isFallback: boolean;
 };
+
+function keepFsText(filesystem) {
+  // TRANSLATORS: %s is a filesystem (eg. XFS)
+  return sprintf(_("%s (keep data)"), filesystemLabel(filesystem));
+}
+
+function defaultFsText(filesystem, mountPoint, isFallback) {
+  if (isFallback) {
+    return sprintf(
+      // TRANSLATORS: %s is a filesystem type (eg. XFS)
+      _("%s (default file system for generic partitions)"),
+      filesystemLabel(filesystem),
+    );
+  }
+
+  return sprintf(
+    // TRANSLATORS: %1$s is a filesystem (eg. XFS), %2$s is a mount point (eg. "/home")
+    _("%1$s (default file system for %2$s)"),
+    filesystemLabel(filesystem),
+    formattedPath(mountPoint),
+  );
+}
 
 /**
  * Filesystem selector: dropdown or ReadOnlyField depending on available options.
@@ -84,6 +107,7 @@ function FilesystemSelector({
   filesystemOptions,
   usableFilesystems,
   selectedPartition,
+  isFallback,
 }: FilesystemSelectorProps) {
   const isSingleType = usableFilesystems.length === 1;
 
@@ -102,17 +126,24 @@ function FilesystemSelector({
       {(field) => (
         <field.DropdownField label={_("File system")} options={filesystemOptions}>
           {(value) => {
-            const showHint =
+            const currentFsType = selectedPartition?.filesystem?.type;
+            const isKeeping = value === FILESYSTEM_ACTION.REUSE && currentFsType;
+            const isAuto =
               value === FILESYSTEM_TYPE.AUTO && !!defaultFilesystem && !!committedMountPoint;
-            const showWarning = selectedPartition && value !== FILESYSTEM_ACTION.REUSE;
+            const showHint = isKeeping || isAuto;
+            const showWarning = selectedPartition && !isKeeping;
 
             if (!showHint && !showWarning) return null;
+
+            const fsText = isKeeping
+              ? keepFsText(currentFsType)
+              : defaultFsText(defaultFilesystem, committedMountPoint, isFallback);
 
             return (
               <FieldNestedContent>
                 {showHint && (
                   <Text isBold textStyle="textColorSubtle">
-                    {sprintf(_("Uses %1$s"), filesystemLabel(defaultFilesystem))}
+                    {fsText}
                   </Text>
                 )}
                 {showWarning && (
@@ -180,6 +211,7 @@ const FilesystemFieldsContent = withForm({
     // avoids expensive useVolumeTemplate recalculations on every keystroke.
     const volume = useVolumeTemplate(committedMountPoint);
     const defaultFilesystem = volume.fsType;
+    const isFallbackVolume = isEmpty(volume.mountPath);
 
     const isReuse = isReusingPartition(name);
     const selectedPartition = device.partitions?.find((p) => p.name === name);
@@ -211,11 +243,7 @@ const FilesystemFieldsContent = withForm({
         return [
           {
             value: FILESYSTEM_ACTION.REUSE,
-            label: sprintf(
-              // TRANSLATORS: %s is filesystem type like "Btrfs"
-              _("Current (%s)"),
-              filesystemLabel(currentFsType),
-            ),
+            label: _("Current"),
             description: sprintf(
               // TRANSLATORS: %s is device name like "/dev/vdd2"
               _("Do not format %s and keep data"),
@@ -250,6 +278,7 @@ const FilesystemFieldsContent = withForm({
           filesystemOptions={filesystemOptions}
           usableFilesystems={usableFilesystems}
           selectedPartition={isReuse && canKeepCurrentFilesystem ? selectedPartition : undefined}
+          isFallback={isFallbackVolume}
         />
 
         {supportsAdditionalConfig(filesystem) && (

@@ -31,11 +31,11 @@ import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { defaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
 import {
   deviceSize,
-  filesystemLabel,
   createPartitionableLocation,
   findPartitionableDevice,
+  formattedPath,
 } from "~/components/storage/utils";
-import { _ } from "~/i18n";
+import { _, formatList } from "~/i18n";
 import { isEmpty } from "radashi";
 import {
   useConfigModel,
@@ -62,7 +62,7 @@ function getSizeModeOptions() {
       // TRANSLATORS: size mode option
       label: _("Automatic"),
       // TRANSLATORS: description for automatic size mode
-      description: _("Installer determines the size"),
+      description: _("Let the installer set the size"),
     },
     {
       value: SIZE_MODE.FIXED,
@@ -83,7 +83,7 @@ function getSizeModeOptions() {
       // TRANSLATORS: size mode option
       label: _("Expand if possible"),
       // TRANSLATORS: description for expand size mode
-      description: _("Set minimum; partition grows if space available"),
+      description: _("Set minimum; use more space if available"),
     },
   ] satisfies Array<{ value: SizeMode; label: string; description: string }>;
 }
@@ -156,6 +156,131 @@ type SizeFieldsContentProps = {
   sizeMode: SizeMode;
 };
 
+function autoSizeSource(volume) {
+  if (isEmpty(volume.mountPath)) {
+    return "default size for generic partitions";
+  }
+
+  if (volume.autoSize) {
+    // TRANSLATORS: %s is an already escaped path like "/home"
+    return sprintf(_("size for %s with the current settings"), formattedPath(volume.mountPath));
+  }
+
+  // TRANSLATORS: %s is an already escaped path like "/home"
+  return sprintf(_("default size for %s"), formattedPath(volume.mountPath));
+}
+
+function autoSizeLabel(sizes, volume) {
+  const why = autoSizeSource(volume);
+
+  if (!sizes.max) {
+    // TRANSLATORS: %1$s is a size, %2$s is a sentence explaining why that minimum is used
+    return sprintf(_("Minimum: %1$s (%2$s)"), sizes.min, why);
+  }
+
+  if (sizes.min === sizes.max) {
+    // TRANSLATORS: %1$s is a size, %2$s is a sentence explaining why that size is used
+    return sprintf(_("Value: %1$s (%2$s)"), sizes.min, why);
+  }
+
+  // TRANSLATORS: %1$s and %2$s are sizes, %3%s is a sentence explaining why those limits are used
+  return sprintf(_("Range: %1$s - %2$s (%3$s)"), sizes.min, sizes.max, why);
+}
+
+function autoSizeRationale(volume) {
+  if (!volume.autoSize) {
+    return null;
+  }
+
+  const otherPaths = volume.outline.sizeRelevantVolumes.map((p) => formattedPath(p)) || [];
+  const snapshots = !!volume.outline.snapshotsAffectSizes;
+  const ram = !!volume.outline.adjustByRam;
+
+  if (ram && snapshots) {
+    if (otherPaths.length === 1) {
+      return sprintf(
+        // TRANSLATORS: %s is an already formatted mount point (eg. "/home")
+        _(
+          "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %s.",
+        ),
+        otherPaths[0],
+      );
+    }
+
+    if (otherPaths.length > 1) {
+      // TRANSLATORS: %s is an already formatted list of mount paths (eg. "/home" and "/var/lib")
+      return sprintf(
+        _(
+          "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %s.",
+        ),
+        formatList(otherPaths),
+      );
+    }
+
+    return _(
+      "Can be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.",
+    );
+  }
+
+  if (ram) {
+    if (otherPaths.length === 1) {
+      return sprintf(
+        // TRANSLATORS: %s is an already formatted mount point (eg. "/home")
+        _(
+          "Can be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %s.",
+        ),
+        otherPaths[0],
+      );
+    }
+
+    return sprintf(
+      // TRANSLATORS: %s is an already formatted list of mount paths (eg. "/home" and "/var/lib")
+      _(
+        "Can be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %s.",
+      ),
+      formatList(otherPaths),
+    );
+  }
+
+  if (snapshots) {
+    if (otherPaths.length === 1) {
+      return sprintf(
+        // TRANSLATORS: %s is an already formatted mount point (eg. "/home")
+        _(
+          "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %s.",
+        ),
+        otherPaths[0],
+      );
+    }
+
+    if (otherPaths.length > 1) {
+      return sprintf(
+        // TRANSLATORS: %s is an already formatted list of mount paths (eg. "/home" and "/var/lib")
+        _(
+          "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %s.",
+        ),
+        formatList(otherPaths),
+      );
+    }
+
+    return _("Can be dynamically adjusted based on the usage of Btrfs snapshots.");
+  }
+
+  if (otherPaths.length === 1) {
+    return sprintf(
+      // TRANSLATORS: %s is an already formatted mount point (eg. "/home")
+      _("Can be dynamically adjusted based on the presence of a separate file system for %s."),
+      otherPaths[0],
+    );
+  }
+
+  return sprintf(
+    // TRANSLATORS: %s is an already formatted list of mount paths (eg. "/home" and "/var/lib")
+    _("Can be dynamically adjusted based on the presence of separate file systems for %s."),
+    formatList(otherPaths),
+  );
+}
+
 /**
  * Derives the note shown when size mode is Automatic.
  *
@@ -168,44 +293,19 @@ type SizeFieldsContentProps = {
  */
 function useAutomaticSizeNote(
   volume: ReturnType<typeof useVolumeTemplate>,
-  effectiveFilesystem: string | undefined,
-  committedMountPoint: string,
   sizes: { min: string; max: string } | null,
 ): { sizeLabel: string; rationale: string } {
-  if (!volume || !sizes) {
+  if (sizes) {
     return {
-      sizeLabel: _("Automatic"),
-      rationale: _("Installer will propose a suitable size"),
+      sizeLabel: autoSizeLabel(sizes, volume),
+      rationale: autoSizeRationale(volume),
     };
   }
 
-  const minSize = sizes.min;
-  const fsLabel = effectiveFilesystem ? filesystemLabel(effectiveFilesystem) : null;
-
-  if (minSize && fsLabel && committedMountPoint) {
-    return {
-      // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-      sizeLabel: sprintf(_("Minimum %s"), minSize),
-      // TRANSLATORS: %1$s is mount point (e.g., "/home"), %2$s is filesystem (e.g., "XFS")
-      rationale: sprintf(
-        _("Determined by the %1$s role and %2$s filesystem."),
-        committedMountPoint,
-        fsLabel,
-      ),
-    };
-  }
-
-  if (minSize) {
-    return {
-      // TRANSLATORS: %s is minimum size (e.g., "20 GiB")
-      sizeLabel: sprintf(_("Minimum %s"), minSize),
-      rationale: _("Determined by the mount point role"),
-    };
-  }
-
+  // This should actually never be displayed
   return {
     sizeLabel: _("Automatic"),
-    rationale: _("Based on available disk space and mount point role"),
+    rationale: _("Based on the mount point"),
   };
 }
 
@@ -217,16 +317,10 @@ function useAutomaticSizeNote(
  */
 const SizeInputHelp = ({ singular = false }: { singular?: boolean }) => (
   <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
-    <Text isBold textStyle="textColorSubtle">
-      {singular
-        ? /* TRANSLATORS: instruction for size input format */
-          _("Enter value as number followed by unit")
-        : /* TRANSLATORS: instruction for size input format (plural) */
-          _("Enter values as number followed by unit")}
-    </Text>
     <Text component="small">
-      {/* TRANSLATORS: examples of valid size formats with integer and decimal */}
-      {_("Units can be binary (10 GiB, power of 2) or decimal (10.5 GB, power of 10)")}
+      {singular
+        ? "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10)"
+        : "The limits must be numbers followed by a unit of the form GiB (power of 2) or GB (power of 10)"}
     </Text>
   </Flex>
 );
@@ -247,17 +341,9 @@ const SizeFieldsContent = withForm({
     // expensive useVolumeTemplate recalculations on every keystroke.
     const volume = useVolumeTemplate(committedMountPoint);
 
-    const effectiveFilesystem = filesystem === FILESYSTEM_TYPE.AUTO ? volume?.fsType : filesystem;
-
     // Calculate solved sizes - only recalculates when committedMountPoint or filesystem change
     const solvedSizes = useSolvedSizes(committedMountPoint, filesystem);
-
-    const automaticSizeNote = useAutomaticSizeNote(
-      volume,
-      effectiveFilesystem,
-      committedMountPoint,
-      solvedSizes,
-    );
+    const automaticSizeNote = useAutomaticSizeNote(volume, solvedSizes);
 
     switch (sizeMode) {
       case SIZE_MODE.AUTO:
@@ -273,17 +359,16 @@ const SizeFieldsContent = withForm({
       case SIZE_MODE.FIXED:
         return (
           <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <SizeInputHelp singular />
             <form.AppField name="fixedSize">
               {(field) => <field.TextField label={_("Value")} />}
             </form.AppField>
+            <SizeInputHelp singular />
           </Flex>
         );
 
       case SIZE_MODE.RANGE:
         return (
           <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <SizeInputHelp />
             <Flex alignItems={{ default: "alignItemsFlexEnd" }} gap={{ default: "gapMd" }}>
               <form.AppField name="rangeMinSize">
                 {(field) => <field.TextField label={_("Minimum")} />}
@@ -292,24 +377,17 @@ const SizeFieldsContent = withForm({
                 {(field) => <field.TextField label={_("Maximum")} />}
               </form.AppField>
             </Flex>
+            <SizeInputHelp />
           </Flex>
         );
 
       case SIZE_MODE.EXPAND:
         return (
           <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            <SizeInputHelp singular />
             <form.AppField name="expandMinSize">
-              {(field) => (
-                <field.TextField
-                  label={_("Minimum")}
-                  helperText={
-                    /* TRANSLATORS: helper text for expandable partition minimum size */
-                    _("May use additional space if available")
-                  }
-                />
-              )}
+              {(field) => <field.TextField label={_("Minimum")} />}
             </form.AppField>
+            <SizeInputHelp singular />
           </Flex>
         );
 

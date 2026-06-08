@@ -68,8 +68,8 @@ const PartitionFields = withForm({
             <field.ReadOnlyField
               label={_("Partition")}
               text={sprintf(
-                // TRANSLATORS: %s is device name like "/dev/vdd"
-                _("New partition (no partitions available on %s to reuse)."),
+                // TRANSLATORS: %s is a disk name with its size (eg. "sda, 10 GiB")
+                _("New partition. There are no available existing partitions on %s."),
                 deviceLabel(device, true),
               )}
             />
@@ -83,19 +83,19 @@ const PartitionFields = withForm({
       {
         value: "",
         label: _("New partition"),
+        // TRANSLATORS: %s is a disk name with its size (eg. "sda, 10 GiB")
+        description: sprintf(_("Create a new partition on %s"), deviceLabel(device, true)),
       },
       { divider: true as const },
       ...availablePartitions.map((p) => {
         const fsLabel = p.filesystem?.label;
-        const description = [p.description, fsLabel].filter(Boolean).join(" - ");
+        const label = [deviceLabel(p, true), fsLabel].filter(Boolean).join(" - ");
+        // TRANSLATORS: %s is a description like "XFS partition")
+        const description = sprintf(_("Use current %s"), p.description);
         return {
           value: p.name,
-          label: sprintf(
-            // TRANSLATORS: %s is partition name and size like "vdd2 (8 MiB)"
-            _("Use %s"),
-            deviceLabel(p, false),
-          ),
-          description: description || undefined,
+          label,
+          description,
         };
       }),
     ];

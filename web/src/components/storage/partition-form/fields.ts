@@ -261,8 +261,8 @@ function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFiel
     return {
       fixedSize: requiredSize(
         fields.fixedSize,
-        _("Size is required"),
-        _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+        _("Value is required"),
+        _("Invalid format (e.g. 20 GiB)"),
       ),
     };
   }
@@ -270,14 +270,14 @@ function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFiel
   if (fields.sizeMode === SIZE_MODE.RANGE) {
     const minError = requiredSize(
       fields.rangeMinSize,
-      _("Minimum size is required"),
-      _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+      _("Minimum is required"),
+      _("Invalid format (e.g. 20 GiB)"),
     );
 
     const maxError = requiredSize(
       fields.rangeMaxSize,
-      _("Maximum size is required"),
-      _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+      _("Maximum is required"),
+      _("Invalid format (e.g. 20 GiB)"),
     );
 
     if (minError || maxError) {
@@ -300,8 +300,8 @@ function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFiel
     return {
       expandMinSize: requiredSize(
         fields.expandMinSize,
-        _("Minimum size is required"),
-        _("Invalid size format (e.g., 20 GiB, 100 MB)"),
+        _("Minimum is required"),
+        _("Invalid format (e.g. 20 GiB)"),
       ),
     };
   }
