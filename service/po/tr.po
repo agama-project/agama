@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-15 12:11+0000\n"
-"PO-Revision-Date: 2025-10-05 22:59+0000\n"
-"Last-Translator: Emin Tufan Çetin <cetin@users.noreply.l10n.opensuse.org>\n"
+"PO-Revision-Date: 2026-06-04 00:12+0000\n"
+"Last-Translator: yakup <mtopac2027@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/tr/>\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -47,7 +47,7 @@ msgstr "Diskleri hazırla"
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Yazılımı yükle"
+msgstr "Yazılım yükle"
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
@@ -157,7 +157,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Paket komudu çalıştırılırken bir hata meydana geldi."
+msgstr "Paket komut dosyasını çalıştırırken bir sorun oluştu."
 
 #. Callback to handle unsigned files
 #.
@@ -255,7 +255,7 @@ msgstr "Depo meta verileri yenileniyor"
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Yazılım önerisi hesaplanıyor"
+msgstr "Yazılım teklifi hesaplanıyor"
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
@@ -792,8 +792,8 @@ msgstr[1] "Aşağıdaki seçilen cihazlar sistemde bulunamadı: %{devices}"
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Bir kullanıcı tanımlamak, kök parolasını veya bir SSH genel anahtarını "
-"ayarlamak gerekir"
+"Bir kullanıcı tanımlamak, root şifresini veya SSH ortak anahtarını ayarlamak "
+"gerekir"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Linux Güvenlik Modüllerini Seçme"
