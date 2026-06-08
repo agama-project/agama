@@ -1,59 +1,128 @@
 // Dark color axis.
 //
 // PatternFly's built-in dark theme (activated by .pf-v6-theme-dark on <html>)
-// provides the full, professionally designed dark token set (~430 tokens:
-// surfaces, text, borders and every component internal).
+// provides the full, professionally designed dark token set. Here we map the
+// curated `--agm-t--*` roles (see _semantic.scss) onto PF tokens for dark, with
+// the Agama dark value as the fallback default and the role as the product
+// override hook.
 //
-// We keep PF's neutral dark surfaces, text and borders untouched (they are
-// well designed and any Agama override at a bare :root would clobber them, as
-// happened before). We only layer brand ACCENTS, scoped to PF's own dark
-// selector and loaded after _semantic.scss so they win by source order at
-// equal specificity. The :where() keeps specificity identical to a bare :root.
+// The lightened Jungle (#40ce8a, jungle--40) is the dark brand/accent; raw
+// Jungle and Pine both fail contrast on dark. Unlike light, PF wires
+// text/icon/border brand independently in dark, so each is mapped explicitly.
 //
-// Rule of thumb: every color token belongs in a theme scope, never at a bare
-// :root. Light values live in _semantic.scss under :not(.pf-v6-theme-dark);
-// dark values live here.
-//
-// The lightened Jungle (#40ce8a, jungle--40) is the dark brand/accent color;
-// raw Jungle and Pine both fail contrast on dark.
-//
-// Still deferred: a Pine (#0c322c) page canvas matching the Agama website. It
-// needs a deliberate pass that recolors the page and its main sections
-// together while keeping elevated surfaces neutral (tracked in the plan).
-//
-// "System" auto-dark is class-based, so it is toggled by the ThemeSelector via
-// matchMedia rather than a media query here.
+// High contrast is excluded (PF's high-contrast theme governs it). Scoped to
+// PF's dark selector and loaded after _semantic.scss, so it wins by source order
+// at equal specificity. "System" auto-dark is toggled by AppearanceSettings via
+// matchMedia, not a media query here.
 
-:root:where(.pf-v6-theme-dark) {
-  // Brand and links use the lightened Jungle for the Agama identity.
-  //
-  // The whole brand family must be set, not just the generic token: PF's dark
-  // theme wires text/icon brand colors independently of color--brand--default
-  // (in light they derive from it). Overriding only the generic leaves the
-  // radio accent (icon--color--brand) and secondary button text
-  // (text--color--brand) on PF blue while the border (which derives from the
-  // generic) turns green, producing a mismatch.
-  --agm--dark--brand--hover: color-mix(in srgb, var(--agm-t--color--jungle--40) 80%, white);
+:root:where(.pf-v6-theme-dark:not(.pf-v6-theme-high-contrast)) {
+  --agm-t--brand--color--hover-default: color-mix(
+    in srgb,
+    var(--agm-t--color--jungle--40) 80%,
+    white
+  );
 
-  --pf-t--global--color--brand--default: var(--agm-t--color--jungle--40);
-  --pf-t--global--color--brand--hover: var(--agm--dark--brand--hover);
-  --pf-t--global--color--brand--clicked: var(--agm-t--color--jungle--40);
-  --pf-t--global--text--color--brand--default: var(--agm-t--color--jungle--40);
-  --pf-t--global--text--color--brand--hover: var(--agm--dark--brand--hover);
-  --pf-t--global--text--color--brand--clicked: var(--agm-t--color--jungle--40);
-  --pf-t--global--icon--color--brand--default: var(--agm-t--color--jungle--40);
-  --pf-t--global--icon--color--brand--hover: var(--agm--dark--brand--hover);
-  --pf-t--global--icon--color--brand--clicked: var(--agm-t--color--jungle--40);
-  --pf-t--global--border--color--brand--default: var(--agm-t--color--jungle--40);
-  --pf-t--global--border--color--brand--hover: var(--agm--dark--brand--hover);
-  --pf-t--global--border--color--brand--clicked: var(--agm-t--color--jungle--40);
-  --pf-t--global--text--color--link--default: var(--agm-t--color--jungle--40);
+  --pf-t--global--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--text--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--icon--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--icon--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--icon--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--border--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--link--default: var(
+    --agm-t--link--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--on-brand--default: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+  --pf-t--global--text--color--on-brand--hover: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+  --pf-t--global--text--color--on-brand--clicked: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
 
-  // Restore the interaction tint (left undefined once light colors were scoped
-  // away from dark) with a subtle Jungle wash that reads on dark surfaces.
   --agm-t--action--background--color--hover: color-mix(
     in srgb,
     var(--agm-t--color--jungle--40) 18%,
     transparent
+  );
+
+  --pf-t--global--background--color--primary--default: var(
+    --agm-t--surface--color,
+    var(--pf-t--global--dark--background--color--200)
+  );
+  --pf-t--global--background--color--secondary--default: var(
+    --agm-t--surface--color--raised,
+    var(--pf-t--global--dark--background--color--100)
+  );
+  --pf-t--global--background--color--floating--default: var(
+    --agm-t--surface--color--floating,
+    var(--pf-t--global--dark--background--color--300)
+  );
+  --pf-t--global--text--color--regular: var(
+    --agm-t--text--color,
+    var(--pf-t--global--dark--text--color--100)
+  );
+  --pf-t--global--text--color--subtle: var(
+    --agm-t--text--color--subtle,
+    var(--pf-t--global--dark--text--color--200)
+  );
+  --pf-t--global--icon--color--regular: var(
+    --agm-t--text--color,
+    var(--pf-t--global--dark--icon--color--100)
+  );
+  --pf-t--global--border--color--default: var(
+    --agm-t--border--color,
+    var(--pf-t--global--dark--border--color--100)
+  );
+  --pf-t--global--border--color--subtle: var(
+    --agm-t--border--color,
+    var(--pf-t--global--dark--border--color--100)
   );
 }

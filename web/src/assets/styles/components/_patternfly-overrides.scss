@@ -83,7 +83,7 @@
 }
 
 .pf-v6-c-menu__item.pf-m-selected {
-  --pf-v6-c-menu__item-select-icon--Color: var(--agm-t--color--jungle--50);
+  --pf-v6-c-menu__item-select-icon--Color: var(--pf-t--global--icon--color--brand--default);
 }
 
 .pf-v6-c-nav__link {
@@ -193,7 +193,7 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   );
 
   a.pf-m-primary {
-    background: var(--agm-t--color--waterhole--50);
+    background: var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
     font-size: var(--pf-t--global--font--size--md);
   }
 }

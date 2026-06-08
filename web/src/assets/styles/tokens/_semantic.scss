@@ -1,22 +1,34 @@
 // Semantic tokens.
 //
-// Maps the raw palette (see _palette.scss) and font settings onto PatternFly
-// global tokens and Agama semantic tokens consumed across the UI.
+// This is the layer products override (via assets/appearance/<id>.css). Instead
+// of touching dozens of cryptic PatternFly tokens, a product sets a small set of
+// understandable `--agm-t--*` role tokens; this file maps each onto all the
+// relevant PF tokens, so coverage (page, cards, masthead, modals, menus,
+// borders, button text, ...) is guaranteed.
 //
-// Two scopes:
-//   - `:root` for theme-independent tokens (typography, sizing, radius). These
-//     apply in every theme.
-//   - `:root:where(:not(.pf-v6-theme-dark))` for color/surface tokens. These
-//     are our LIGHT brand values; scoping them away from dark lets PatternFly's
-//     built-in dark theme supply dark values instead of our light ones leaking
-//     through (our :root overrides load after PF and would otherwise win).
-//     The :where() keeps specificity identical to a bare :root.
+// Layering: raw palette (_palette.scss) -> these role tokens -> PF tokens. Each
+// PF token is mapped as `var(--agm-t--ROLE, <default>)`, where <default> is the
+// Agama value (so leaving a role unset keeps the stock look) and the role is the
+// product override hook.
 //
-// Dark brand overrides (when we want to diverge from PF dark) live in
-// themes/_dark.scss, scoped to .pf-v6-theme-dark.
+// The curated role tokens:
+//   --agm-t--brand--color (+ --hover/--clicked)  brand / accent
+//   --agm-t--brand--text--color                   text on a brand background (buttons)
+//   --agm-t--link--color                          link text
+//   --agm-t--action--background--color--hover     hover / selection background
+//   --agm-t--surface--color                       page and card backgrounds
+//   --agm-t--surface--color--raised               masthead and secondary surfaces
+//   --agm-t--surface--color--floating             modal / menu / popover backgrounds
+//   --agm-t--text--color (+ --subtle)             body text and regular icons
+//   --agm-t--border--color                        borders
+//   --agm-t--focus--color                         keyboard focus ring (see base/_reset)
+//   --agm-t--status--{info,caution,danger,success,custom}--color
+//                                                 alert / status variants
+//                                                 (caution maps to PF "warning")
 //
-// Temporary as part of the migration to PF6; token names are expected to
-// change as the interface customization is refined.
+// High contrast is intentionally excluded from every block here: it is an
+// accessibility mode, so PatternFly's high-contrast theme governs it fully and
+// neither Agama nor a product recolors it.
 
 :root {
   --pf-t--global--font--family--100: "SUSE Text", "Noto Sans", verdana;
@@ -40,25 +52,48 @@
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
 
-  // PF 6.5 switched link underlines to dashed; keep them solid.
+  // PF 6.5 switched link underlines to dashed; keep them solid and matching text.
   --pf-t--global--text-decoration--link--style--default: var(
     --pf-t--global--text-decoration--style--100
   );
   --pf-t--global--text-decoration--link--style--hover: var(
     --pf-t--global--text-decoration--style--100
   );
-
-  // Underlines should match the text color (PF defaults them to a separate
-  // border color). currentcolor resolves to each element's own text color.
   --pf-t--global--text-decoration--color--default: currentcolor;
   --pf-t--global--text-decoration--color--hover: currentcolor;
 }
 
-// Light color/surface tokens. Excluded from dark so PF's dark theme wins there.
-:root:where(:not(.pf-v6-theme-dark)) {
-  --agm-t--action--background--color--hover: var(--agm-t--color--jungle--10);
+// Light theme (excluding high contrast). Defaults are the Agama light values;
+// products override the roles. In light, PF derives text/icon/border brand from
+// color--brand--default, so only that one needs mapping.
+:root:where(:not(.pf-v6-theme-dark, .pf-v6-theme-high-contrast)) {
+  --pf-t--global--color--brand--default: var(--agm-t--brand--color, var(--agm-t--color--pine--50));
+  --pf-t--global--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--color--pine--40)
+  );
+  --pf-t--global--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--pine--50)
+  );
+  --pf-t--global--text--color--link--default: var(
+    --agm-t--link--color,
+    var(--agm-t--color--pine--50)
+  );
+  --pf-t--global--text--color--on-brand--default: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+  --pf-t--global--text--color--on-brand--hover: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+  --pf-t--global--text--color--on-brand--clicked: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
 
-  --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog--50);
+  --agm-t--action--background--color--hover: var(--agm-t--color--jungle--10);
   --pf-t--global--background--color--action--plain--hover: var(
     --agm-t--action--background--color--hover
   );
@@ -67,17 +102,107 @@
   );
   --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle--50);
 
+  --pf-t--global--background--color--primary--default: var(
+    --agm-t--surface--color,
+    var(--pf-t--global--background--color--100)
+  );
+  --pf-t--global--background--color--secondary--default: var(
+    --agm-t--surface--color--raised,
+    var(--agm-t--color--fog--50)
+  );
+  --pf-t--global--background--color--floating--default: var(
+    --agm-t--surface--color--floating,
+    var(--pf-t--global--background--color--100)
+  );
+  --pf-t--global--text--color--regular: var(
+    --agm-t--text--color,
+    var(--pf-t--global--text--color--100)
+  );
+  --pf-t--global--text--color--subtle: var(
+    --agm-t--text--color--subtle,
+    var(--pf-t--global--text--color--200)
+  );
+  // Regular icons (nav, masthead toolbar, plain toggles) follow the text role.
+  --pf-t--global--icon--color--regular: var(
+    --agm-t--text--color,
+    var(--pf-t--global--icon--color--100)
+  );
+  --pf-t--global--border--color--default: var(
+    --agm-t--border--color,
+    var(--pf-t--global--border--color--50)
+  );
+  --pf-t--global--border--color--subtle: var(
+    --agm-t--border--color,
+    var(--pf-t--global--border--color--50)
+  );
+
   --agm-t--install--button--background: var(--agm-t--color--pine--50);
   --agm-t--install--button--background--hover: var(--agm-t--color--pine--40);
   --agm-t--install--button--color: var(--pf-t--color--white);
-
-  --pf-t--global--color--brand--default: var(--agm-t--color--pine--50);
-  --pf-t--global--color--brand--hover: var(--agm-t--color--pine--40);
-  --pf-t--global--color--brand--clicked: var(--agm-t--color--pine--50);
-  --pf-t--global--text--color--link--default: var(--agm-t--color--pine--50);
-
-  --pf-t--global--color--status--warning--200: #fe7c3f;
-  --pf-t--global--color--status--info--default: var(--agm-t--color--waterhole--50);
-  --pf-t--global--icon--color--status--info--default: var(--agm-t--color--waterhole--50);
   --pf-t--global--background--color--disabled--default: #dcdbdc;
+
+  // Status / alert variants. Each role drives the variant's text, icon and
+  // border (so alerts, labels and status icons follow it). Defaults keep the
+  // Agama / PatternFly values. The "caution" role maps to PF's "warning"
+  // variant (Agama avoids the word "warning").
+  --pf-t--global--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--50)
+  );
+  --pf-t--global--icon--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--50)
+  );
+  --pf-t--global--border--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--50)
+  );
+  --pf-t--global--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--pf-t--global--color--status--warning--100)
+  );
+  --pf-t--global--icon--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--pf-t--global--color--status--warning--100)
+  );
+  --pf-t--global--border--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--pf-t--global--color--status--warning--100)
+  );
+  --pf-t--global--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--pf-t--global--color--status--danger--100)
+  );
+  --pf-t--global--icon--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--pf-t--global--color--status--danger--100)
+  );
+  --pf-t--global--border--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--pf-t--global--color--status--danger--100)
+  );
+  --pf-t--global--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--pf-t--global--color--status--success--100)
+  );
+  --pf-t--global--icon--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--pf-t--global--color--status--success--100)
+  );
+  --pf-t--global--border--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--pf-t--global--color--status--success--100)
+  );
+  --pf-t--global--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--pf-t--global--color--status--custom--100)
+  );
+  --pf-t--global--icon--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--pf-t--global--color--status--custom--100)
+  );
+  --pf-t--global--border--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--pf-t--global--color--status--custom--100)
+  );
 }

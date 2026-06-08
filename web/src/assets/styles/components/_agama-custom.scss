@@ -111,7 +111,7 @@ nav.agm-breadcrumb h1 {
     bottom: -1.5em;
     left: 50%;
     width: 1px;
-    background: #ccc;
+    background: var(--pf-t--global--border--color--default);
   }
 
   .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 1"],
