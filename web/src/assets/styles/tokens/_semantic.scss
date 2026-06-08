@@ -39,6 +39,19 @@
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
+
+  // PF 6.5 switched link underlines to dashed; keep them solid.
+  --pf-t--global--text-decoration--link--style--default: var(
+    --pf-t--global--text-decoration--style--100
+  );
+  --pf-t--global--text-decoration--link--style--hover: var(
+    --pf-t--global--text-decoration--style--100
+  );
+
+  // Underlines should match the text color (PF defaults them to a separate
+  // border color). currentcolor resolves to each element's own text color.
+  --pf-t--global--text-decoration--color--default: currentcolor;
+  --pf-t--global--text-decoration--color--hover: currentcolor;
 }
 
 // Light color/surface tokens. Excluded from dark so PF's dark theme wins there.
