@@ -1,0 +1,20 @@
+// Raw color palette.
+//
+// Brand-sourced literal values. These are the lowest layer of the token
+// system: semantic tokens (see _semantic.scss) reference these, never the
+// other way around.
+//
+// Temporary as part of the migration to PF6; token names are expected to
+// change as the interface customization is refined.
+
+:root {
+  --agm-t--color--pine: #0c322c;
+  --agm-t--color--pine--shade--100: #025937;
+  --agm-t--color--jungle: #30ba78;
+  --agm-t--color--jungle--hover: #c0efde;
+  --agm-t--color--fog: #efefef;
+  --agm-t--color--midnight: #192072;
+  --agm-t--color--waterhole: #2453ff;
+
+  --agm-t--action--background--color--hover: #eafaf4;
+}

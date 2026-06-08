@@ -1,0 +1,44 @@
+// Base element styles.
+//
+// Low-level normalization and defaults applied to bare HTML elements.
+
+strong {
+  font-weight: var(--pf-t--global--font--weight--400);
+}
+
+div[aria-live]:empty {
+  display: none;
+}
+
+pre {
+  white-space: pre-line;
+}
+
+input[type="checkbox"] {
+  inline-size: var(--pf-t--global--font--size--md);
+  block-size: var(--pf-t--global--font--size--md);
+}
+
+// Custom style for :focus-visible appearance
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--agm-t--color--waterhole);
+  outline-offset: 3px;
+}
+
+fieldset {
+  border: 0;
+  border-top: 1px solid var(--agm-t--color--fog);
+  padding: 0;
+  padding-block-start: var(--pf-t--global--spacer--md);
+  margin: 0;
+  display: grid;
+  gap: var(--pf-v6-c-form--GridGap);
+
+  legend {
+    font-size: var(--pf-t--global--font--size--md);
+    font-weight: var(--pf-t--global--font--weight--200);
+    margin-inline-start: var(--pf-t--global--spacer--sm);
+    padding: 0 var(--pf-t--global--spacer--sm);
+  }
+}

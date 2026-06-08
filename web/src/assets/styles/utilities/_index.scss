@@ -1,0 +1,13 @@
+// Utility classes.
+//
+// Small, single-purpose layout helpers not provided by PatternFly.
+
+.sticky-top {
+  position: sticky;
+  top: 1em;
+}
+
+// Some utilities not found at PF
+.w-14ch {
+  inline-size: 14ch;
+}
