@@ -390,7 +390,9 @@ const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppearanceProvider>{children}</AppearanceProvider>
+    </QueryClientProvider>
   );
   return {
     user: userEvent.setup(),

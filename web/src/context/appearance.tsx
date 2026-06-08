@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import usePersistedState from "~/hooks/use-persisted-state";
 
 /**
@@ -51,6 +51,8 @@ type AppearanceContextValue = {
   setColorScheme: (value: ColorScheme) => void;
   contrast: Contrast;
   setContrast: (value: Contrast) => void;
+  /** Whether dark is currently active (resolves "system" against the OS). */
+  isDark: boolean;
 };
 
 const AppearanceContext = createContext<AppearanceContextValue | undefined>(undefined);
@@ -59,7 +61,7 @@ const AppearanceContext = createContext<AppearanceContextValue | undefined>(unde
  * Resolves whether dark should be active for the given color scheme, taking the
  * OS preference into account when following the system.
  */
-function isDark(colorScheme: ColorScheme): boolean {
+function resolveDark(colorScheme: ColorScheme): boolean {
   if (colorScheme === "dark") return true;
   if (colorScheme === "light") return false;
   return window.matchMedia(PREFERS_DARK).matches;
@@ -81,7 +83,7 @@ function isHighContrast(contrast: Contrast): boolean {
  */
 function applyTheme(colorScheme: ColorScheme, contrast: Contrast): void {
   const root = document.documentElement;
-  root.classList.toggle(DARK_CLASS, isDark(colorScheme));
+  root.classList.toggle(DARK_CLASS, resolveDark(colorScheme));
   root.classList.toggle(HIGH_CONTRAST_CLASS, isHighContrast(contrast));
   root.style.colorScheme = colorScheme === "system" ? "light dark" : colorScheme;
 }
@@ -99,25 +101,34 @@ function applyTheme(colorScheme: ColorScheme, contrast: Contrast): void {
 export function AppearanceProvider({ children }: React.PropsWithChildren): React.ReactNode {
   const [colorScheme, setColorScheme] = usePersistedState<ColorScheme>(COLOR_SCHEME_KEY, "system");
   const [contrast, setContrast] = usePersistedState<Contrast>(CONTRAST_KEY, "system");
+  const [isDark, setIsDark] = useState<boolean>(() => resolveDark(colorScheme));
+
+  // Applies the current appearance to the document root and exposes the
+  // resolved dark state. Stable across renders for the chosen axes.
+  const apply = useCallback(() => {
+    applyTheme(colorScheme, contrast);
+    setIsDark(resolveDark(colorScheme));
+  }, [colorScheme, contrast]);
 
   useEffect(() => {
-    applyTheme(colorScheme, contrast);
-  }, [colorScheme, contrast]);
+    apply();
+  }, [apply]);
 
   // Re-apply when an OS preference changes, but only for the axes following it.
   useEffect(() => {
-    const onChange = () => applyTheme(colorScheme, contrast);
     const queries: MediaQueryList[] = [];
 
     if (colorScheme === "system") queries.push(window.matchMedia(PREFERS_DARK));
     if (contrast === "system") queries.push(window.matchMedia(PREFERS_CONTRAST));
-    queries.forEach((query) => query.addEventListener("change", onChange));
+    queries.forEach((query) => query.addEventListener("change", apply));
 
-    return () => queries.forEach((query) => query.removeEventListener("change", onChange));
-  }, [colorScheme, contrast]);
+    return () => queries.forEach((query) => query.removeEventListener("change", apply));
+  }, [apply, colorScheme, contrast]);
 
   return (
-    <AppearanceContext.Provider value={{ colorScheme, setColorScheme, contrast, setContrast }}>
+    <AppearanceContext.Provider
+      value={{ colorScheme, setColorScheme, contrast, setContrast, isDark }}
+    >
       {children}
     </AppearanceContext.Provider>
   );
