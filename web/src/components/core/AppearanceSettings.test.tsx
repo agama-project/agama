@@ -45,7 +45,7 @@ describe("AppearanceSettings", () => {
   it("applies the dark theme on the document root when Dark is selected", async () => {
     const { user } = renderSelector();
     await openSelector(user);
-    await user.click(screen.getByRole("button", { name: "Dark" }));
+    await user.click(screen.getByRole("button", { name: "Dark color scheme" }));
 
     expect(document.documentElement).toHaveClass("pf-v6-theme-dark");
   });
@@ -53,7 +53,7 @@ describe("AppearanceSettings", () => {
   it("applies high contrast when High is selected", async () => {
     const { user } = renderSelector();
     await openSelector(user);
-    await user.click(screen.getByRole("button", { name: "High" }));
+    await user.click(screen.getByRole("button", { name: "High contrast" }));
 
     expect(document.documentElement).toHaveClass("pf-v6-theme-high-contrast");
   });
@@ -61,8 +61,8 @@ describe("AppearanceSettings", () => {
   it("removes the dark theme again when switching back to Light", async () => {
     const { user } = renderSelector();
     await openSelector(user);
-    await user.click(screen.getByRole("button", { name: "Dark" }));
-    await user.click(screen.getByRole("button", { name: "Light" }));
+    await user.click(screen.getByRole("button", { name: "Dark color scheme" }));
+    await user.click(screen.getByRole("button", { name: "Light color scheme" }));
 
     expect(document.documentElement).not.toHaveClass("pf-v6-theme-dark");
   });
@@ -70,8 +70,33 @@ describe("AppearanceSettings", () => {
   it("persists the selection so it survives a reload", async () => {
     const { user } = renderSelector();
     await openSelector(user);
-    await user.click(screen.getByRole("button", { name: "Dark" }));
+    await user.click(screen.getByRole("button", { name: "Dark color scheme" }));
 
     expect(localStorage.getItem("agm-color-scheme")).toBe('"dark"');
+  });
+
+  it("exposes the selected option to assistive technology via aria-pressed", async () => {
+    const { user } = renderSelector();
+    await openSelector(user);
+    await user.click(screen.getByRole("button", { name: "Dark color scheme" }));
+
+    expect(screen.getByRole("button", { name: "Dark color scheme" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Light color scheme" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+  });
+
+  it("disambiguates the two System options with distinct accessible names", async () => {
+    const { user } = renderSelector();
+    await openSelector(user);
+
+    // getByRole throws when the name is missing or ambiguous, so resolving each
+    // option by its distinct accessible name is itself the assertion.
+    screen.getByRole("button", { name: "System color scheme" });
+    screen.getByRole("button", { name: "System contrast" });
   });
 });

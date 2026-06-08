@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useId } from "react";
 import {
   Button,
   Content,
@@ -46,6 +46,8 @@ import { _ } from "~/i18n";
  */
 export default function AppearanceSettings(): React.ReactNode {
   const { colorScheme, setColorScheme, contrast, setContrast } = useAppearance();
+  const colorSchemeId = useId();
+  const contrastId = useId();
 
   // TRANSLATORS: accessible name for the button that opens the appearance settings
   const appearanceLabel = _("Appearance");
@@ -57,46 +59,62 @@ export default function AppearanceSettings(): React.ReactNode {
   const settings = (
     <Stack hasGutter>
       <StackItem>
-        <Content component="small">{colorSchemeLabel}</Content>
-        <ToggleGroup aria-label={colorSchemeLabel}>
+        <Content component="small" id={colorSchemeId}>
+          {colorSchemeLabel}
+        </Content>
+        <ToggleGroup aria-labelledby={colorSchemeId}>
           <ToggleGroupItem
-            // TRANSLATORS: color scheme option that follows the operating system setting
+            // TRANSLATORS: short label for the option shown in the UI
             text={_("System")}
+            // TRANSLATORS: accessible name for the color scheme option that follows the OS
+            aria-label={_("System color scheme")}
             isSelected={colorScheme === "system"}
             onChange={() => setColorScheme("system")}
           />
           <ToggleGroupItem
-            // TRANSLATORS: bright color scheme option
+            // TRANSLATORS: short label for the option shown in the UI
             text={_("Light")}
+            // TRANSLATORS: accessible name for the bright color scheme option
+            aria-label={_("Light color scheme")}
             isSelected={colorScheme === "light"}
             onChange={() => setColorScheme("light")}
           />
           <ToggleGroupItem
-            // TRANSLATORS: dark color scheme option
+            // TRANSLATORS: short label for the option shown in the UI
             text={_("Dark")}
+            // TRANSLATORS: accessible name for the dark color scheme option
+            aria-label={_("Dark color scheme")}
             isSelected={colorScheme === "dark"}
             onChange={() => setColorScheme("dark")}
           />
         </ToggleGroup>
       </StackItem>
       <StackItem>
-        <Content component="small">{contrastLabel}</Content>
-        <ToggleGroup aria-label={contrastLabel}>
+        <Content component="small" id={contrastId}>
+          {contrastLabel}
+        </Content>
+        <ToggleGroup aria-labelledby={contrastId}>
           <ToggleGroupItem
-            // TRANSLATORS: contrast option that follows the operating system setting
+            // TRANSLATORS: short label for the option shown in the UI
             text={_("System")}
+            // TRANSLATORS: accessible name for the contrast option that follows the OS
+            aria-label={_("System contrast")}
             isSelected={contrast === "system"}
             onChange={() => setContrast("system")}
           />
           <ToggleGroupItem
-            // TRANSLATORS: normal contrast option
+            // TRANSLATORS: short label for the option shown in the UI
             text={_("Standard")}
+            // TRANSLATORS: accessible name for the normal contrast option
+            aria-label={_("Standard contrast")}
             isSelected={contrast === "standard"}
             onChange={() => setContrast("standard")}
           />
           <ToggleGroupItem
-            // TRANSLATORS: increased contrast option for improved readability
+            // TRANSLATORS: short label for the option shown in the UI
             text={_("High")}
+            // TRANSLATORS: accessible name for the increased contrast option
+            aria-label={_("High contrast")}
             isSelected={contrast === "high"}
             onChange={() => setContrast("high")}
           />
