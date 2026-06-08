@@ -31,7 +31,7 @@ use crate::{
 use agama_network::NetworkSystemClient;
 use agama_utils::{
     actor::{Actor, Handler, MessageHandler},
-    api::{FinishMethod, Scope},
+    api::FinishMethod,
     issue, progress, question,
 };
 use async_trait::async_trait;
@@ -84,6 +84,7 @@ impl MessageHandler<message::Install> for TasksRunner {
             files: self.files.clone(),
             progress: self.progress.clone(),
             users: self.users.clone(),
+            task_manager: self.task_manager.clone(),
         };
 
         tracing::info!("Installation started");
@@ -92,14 +93,7 @@ impl MessageHandler<message::Install> for TasksRunner {
             .await
             .inspect_err(|e| tracing::error!("Installation failed: {e}"))?;
 
-        //
-        // Make sure to finish the progress
-        //
-        _ = self
-            .progress
-            .call(progress::message::Finish::new(Scope::Manager))
-            .await;
-        tracing::info!("Installation finished");
+        tracing::info!("Installation tasks spawned");
 
         //
         // Finish the installer (using the default option).

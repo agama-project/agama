@@ -54,107 +54,186 @@ pub struct InstallAction {
     pub files: Handler<files::Service>,
     pub progress: Handler<progress::Service>,
     pub users: Handler<users::Service>,
+    pub task_manager: Arc<TaskManager>,
 }
 
 impl InstallAction {
-    /// Runs the installation process on a separate Tokio task.
-    pub async fn run(mut self) -> Result<(), service::Error> {
+    /// Runs the installation process by spawning tasks via TaskManager.
+    pub async fn run(self) -> Result<(), service::Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
         checks::check_issues(&self.issues).await?;
         checks::check_progress(&self.progress).await?;
 
         tracing::info!("Installation started");
-        if let Err(error) = self.install().await {
-            tracing::error!("Installation failed: {error}");
-            self.set_stage(Stage::Failed).await;
-            return Err(error);
-        }
 
-        tracing::info!("Installation finished");
-        Ok(())
-    }
-
-    async fn install(&mut self) -> Result<(), service::Error> {
-        // NOTE: consider a NextState message?
         self.progress
             .call(progress::message::SetStage::new(Stage::Installing))
             .await?;
 
         //
-        // Preparation
+        // Preparation phase
         //
-        self.progress
-            .call(progress::message::StartWithSteps::new(
-                Scope::Manager,
-                vec![
+        let storage_task = {
+            let storage = self.storage.clone();
+            self.task_manager
+                .task(
+                    "storage_install",
+                    Scope::Storage,
                     gettext("Prepare the system"),
+                )
+                .run(|| async move {
+                    storage
+                        .call(storage::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await
+        };
+
+        let post_part_scripts_task = {
+            let files = self.files.clone();
+            self.task_manager
+                .task(
+                    "post_partitioning_scripts",
+                    Scope::Files,
+                    gettext("Running post-partitioning scripts"),
+                )
+                .depends_on(&[storage_task])
+                .run(|| async move {
+                    files
+                        .call(files::message::RunScripts::new(
+                            ScriptsGroup::PostPartitioning,
+                        ))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await
+        };
+
+        //
+        // Installation phase
+        //
+        let software_task = {
+            let software = self.software.clone();
+            self.task_manager
+                .task(
+                    "software_install",
+                    Scope::Software,
                     gettext("Install software"),
+                )
+                .depends_on(&[post_part_scripts_task])
+                .run(|| async move {
+                    software
+                        .call(software::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await
+        };
+
+        //
+        // Configuration phase - runs sequentially
+        //
+        let config_task = {
+            let l10n = self.l10n.clone();
+            let software = self.software.clone();
+            let files = self.files.clone();
+            let network = self.network.clone();
+            let proxy = self.proxy.clone();
+            let ntp = self.ntp.clone();
+            let hostname = self.hostname.clone();
+            let users = self.users.clone();
+            let storage = self.storage.clone();
+            let access = self.access.clone();
+
+            self.task_manager
+                .task(
+                    "configure",
+                    Scope::Manager,
                     gettext("Configure the system"),
-                ],
-            ))
-            .await?;
+                )
+                .depends_on(&[software_task])
+                .run(|| async move {
+                    l10n.call(l10n::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    software
+                        .call(software::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    files
+                        .call(files::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    network.install().await.map_err(TaskError::from_error)?;
+                    proxy
+                        .call(proxy::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    ntp.call(ntp::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    hostname
+                        .call(hostname::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    users
+                        .call(users::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    storage
+                        .call(storage::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    access
+                        .call(agama_access::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
 
-        self.storage.call(storage::message::Install).await?;
-        self.files
-            .call(files::message::RunScripts::new(
-                ScriptsGroup::PostPartitioning,
-            ))
-            .await?;
+                    // call files as last finish so all configs are in place,
+                    // but before unmount of /mnt/run which is important for chrooted scripts (bsc#1257791)
+                    files
+                        .call(files::message::RunScripts::new(ScriptsGroup::Post))
+                        .await
+                        .map_err(TaskError::from_error)?;
 
-        //
-        // Installation
-        //
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.software.call(software::message::Install).await?;
+                    storage
+                        .call(storage::message::Umount)
+                        .await
+                        .map_err(TaskError::from_error)?;
 
-        //
-        // Configuration
-        //
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.l10n.call(l10n::message::Install).await?;
-        self.software.call(software::message::Finish).await?;
-        self.files.call(files::message::Finish).await?;
-        self.network.install().await?;
-        self.proxy.call(proxy::message::Finish).await?;
-        self.ntp.call(ntp::message::Finish).await?;
-        self.hostname.call(hostname::message::Install).await?;
-        self.users.call(users::message::Install).await?;
-        self.storage.call(storage::message::Finish).await?;
-        self.access.call(agama_access::message::Finish).await?;
+                    Ok(())
+                })
+                .await
+        };
 
-        // call files as last finish so all configs are in place,
-        // but before unmout of /mnt/run which is important for chrooted scripts (bsc#1257791)
-        self.files
-            .call(files::message::RunScripts::new(ScriptsGroup::Post))
-            .await?;
+        // Final progress and stage updates - depend on configuration
+        let progress = self.progress.clone();
+        self.task_manager
+            .task(
+                "finish_progress",
+                Scope::Manager,
+                gettext("Finishing installation"),
+            )
+            .depends_on(&[config_task])
+            .run(|| async move {
+                progress
+                    .call(progress::message::Finish::new(Scope::Manager))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                progress
+                    .call(progress::message::SetStage::new(Stage::Finished))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                Ok(())
+            })
+            .await;
 
-        self.storage.call(storage::message::Umount).await?;
-
-        //
-        // Finish progress and changes
-        //
-        self.progress
-            .call(progress::message::Finish::new(Scope::Manager))
-            .await?;
-
-        self.progress
-            .call(progress::message::SetStage::new(Stage::Finished))
-            .await?;
+        tracing::info!("Installation tasks spawned");
         Ok(())
-    }
-
-    async fn set_stage(&self, stage: Stage) {
-        if let Err(error) = self
-            .progress
-            .call(progress::message::SetStage::new(stage))
-            .await
-        {
-            tracing::error!("It was not possible to set the stage to {}: {error}", stage);
-        }
     }
 }
 
