@@ -35,9 +35,19 @@ impl UserQuestions {
     }
 
     /// Asks the user whether to retry loading the profile.
-    pub async fn should_retry(&self, text: &str, error: &str, url: &str) -> anyhow::Result<Option<String>> {
+    pub async fn should_retry(
+        &self,
+        text: &str,
+        error: &str,
+        url: &str,
+    ) -> anyhow::Result<Option<String>> {
+        let localized_retry = gettextrs::gettext("Reload configuration");
+        let localized_manual = gettextrs::gettext("Skip and configure manually");
         let question = QuestionSpec::new(text, "load.retry")
-            .with_yes_no_actions()
+            .with_actions(&[
+                ("Retry", localized_retry.as_str()),
+                ("Manual", localized_manual.as_str()),
+            ])
             .with_default_action("No")
             .with_data(&[("error", error), ("originalValue", url)]);
 
@@ -45,7 +55,7 @@ impl UserQuestions {
         let answer = self.questions.get_answer(question.id).await?;
         if answer.action == "No" {
             Ok(None)
-        } else { 
+        } else {
             Ok(Some(answer.value.unwrap_or(url.to_string())))
         }
     }

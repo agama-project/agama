@@ -21,7 +21,6 @@
 use crate::{ConfigLoader, UserQuestions};
 use agama_lib::http::BaseHTTPClient;
 use anyhow::anyhow;
-use i18n_format::i18n_format;
 
 /// List of pre-defined locations for profiles.
 const PREDEFINED_LOCATIONS: [&str; 9] = [
@@ -112,11 +111,8 @@ impl ConfigAutoLoader {
     }
 
     async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<Option<String>> {
-        let msg = i18n_format!(
-            r#"
-                It was not possible to load the configuration from {0}.
-                It was unreachable or invalid. Do you want to try again?
-                "#, url
+        let msg = gettextrs::gettext(
+            "Configuration cannot be applied because it is invalid or could not be reached.",
         );
         self.questions.should_retry(&msg, error, url).await
     }

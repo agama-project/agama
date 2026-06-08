@@ -51,3 +51,4 @@ export { default as SkipTo } from "./SkipTo";
 export { default as Annotation } from "./Annotation";
 export { default as SwitchEnhanced } from "./SwitchEnhanced";
 export { default as SelectableDataTable } from "./SelectableDataTable";
+export { default as Text } from "./Text";

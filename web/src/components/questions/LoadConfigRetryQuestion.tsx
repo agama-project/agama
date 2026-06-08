@@ -21,8 +21,18 @@
  */
 
 import React, { useState } from "react";
-import { Content, Form, FormGroup, Stack, TextInput } from "@patternfly/react-core";
+import {
+  CodeBlock,
+  Content,
+  ExpandableSection,
+  Flex,
+  Form,
+  FormGroup,
+  Stack,
+  TextInput,
+} from "@patternfly/react-core";
 import { NestedContent, Popup } from "~/components/core";
+import Text from "~/components/core/Text";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
@@ -50,21 +60,38 @@ export default function RetryLoadConfigQuestion({
   const error = question.data?.error;
 
   return (
-    <Popup isOpen title={_("Configuration unreachable or invalid")}>
-      <Stack hasGutter>
+    <Popup isOpen title={_("Cannot apply configuration")}>
+      <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
         <Content isEditorial>{question.text}</Content>
-        {error && (
-          <NestedContent>
-            <Content component="pre">{error}</Content>
-          </NestedContent>
-        )}
-        <Form>
+        <Form isWidthLimited={false}>
           {/* TRANSLATORS: field label */}
-          <FormGroup label={_("Source URL")} fieldId="url">
-            <TextInput id="url" value={url} onChange={(_event, value) => setUrl(value)} />
+          <FormGroup label={_("Location")} fieldId="location">
+            <TextInput
+              id="location"
+              size={1000}
+              value={url}
+              onChange={(_event, value) => setUrl(value)}
+            />
           </FormGroup>
         </Form>
-      </Stack>
+        <Content>
+          <Text isBold>
+            {_("Verify that the location is correct and the configuration is valid.")}
+          </Text>
+        </Content>
+        {error && (
+          <ExpandableSection
+            toggleTextExpanded={_("Hide technical details")}
+            toggleTextCollapsed={_("Show technical details (English only)")}
+          >
+            <NestedContent>
+              <CodeBlock>
+                <Stack hasGutter>{error}</Stack>
+              </CodeBlock>
+            </NestedContent>
+          </ExpandableSection>
+        )}
+      </Flex>
       <Popup.Actions>
         <QuestionActions
           actions={question.actions}

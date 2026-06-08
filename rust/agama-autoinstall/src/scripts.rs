@@ -29,8 +29,8 @@ use agama_lib::http::BaseHTTPClient;
 use agama_transfer::Transfer;
 use agama_utils::command::{create_log_file, run_with_retry};
 use anyhow::anyhow;
-use url::Url;
 use i18n_format::i18n_format;
+use url::Url;
 
 use crate::UserQuestions;
 
@@ -133,7 +133,8 @@ impl ScriptsRunner {
         let msg = i18n_format!(
             r#"
                 It was not possible to load the script from {0}. Do you want to try again?
-                "#, url
+                "#,
+            url
         );
         self.questions.should_retry(&msg, error, url).await
     }
