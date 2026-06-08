@@ -49,6 +49,13 @@
   }
 }
 
+// Material Symbol icons (rendered by the Icon component) ship without a fill,
+// so they default to black and turn nearly invisible on the dark theme. Make
+// them inherit the surrounding text color so they adapt to the active theme.
+svg[data-icon-name] {
+  fill: currentcolor;
+}
+
 .agm-three-dots-icon {
   font-size: 1.1rem;
   vertical-align: text-top;

@@ -2,25 +2,11 @@
 //
 // PatternFly's built-in high-contrast theme (activated by
 // .pf-v6-theme-high-contrast on <html>) raises contrast across the token
-// system (text, surfaces, borders) and composes with the dark axis via
-// .pf-v6-theme-dark.pf-v6-theme-high-contrast. Agama only overrides tokens PF
-// does not own.
+// system and composes with the dark axis via
+// .pf-v6-theme-dark.pf-v6-theme-high-contrast. This axis is independent of OS
+// forced-colors mode, which is handled separately.
 //
-// This is the contrast axis and is independent of OS forced-colors mode, which
-// is handled separately and automatically.
-//
-// Loaded after _dark.scss, so in the dark + high-contrast combination the
-// overrides here take precedence for any shared token.
-//
-// TODO: extend once the contrast audit (scss-refactor-plan.md Phase 10) shows
-// which Agama tokens wash out; keep this list minimal until then.
-
-:root:where(.pf-v6-theme-high-contrast) {
-  // Keep the action hover perceptible: PF does not touch this Agama token, and
-  // a faint tint disappears at higher contrast, so give it a firmer alpha.
-  --agm-t--action--background--color--hover: color-mix(
-    in srgb,
-    var(--agm-t--color--jungle--50) 28%,
-    transparent
-  );
-}
+// Intentionally no Agama overrides yet: validating pure PF first (see
+// _dark.scss). Any override added later must be scoped to
+// :root:where(.pf-v6-theme-high-contrast) {} and stays in this file, loaded
+// after _dark.scss.

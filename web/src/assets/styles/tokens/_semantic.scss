@@ -3,27 +3,22 @@
 // Maps the raw palette (see _palette.scss) and font settings onto PatternFly
 // global tokens and Agama semantic tokens consumed across the UI.
 //
+// Two scopes:
+//   - `:root` for theme-independent tokens (typography, sizing, radius). These
+//     apply in every theme.
+//   - `:root:where(:not(.pf-v6-theme-dark))` for color/surface tokens. These
+//     are our LIGHT brand values; scoping them away from dark lets PatternFly's
+//     built-in dark theme supply dark values instead of our light ones leaking
+//     through (our :root overrides load after PF and would otherwise win).
+//     The :where() keeps specificity identical to a bare :root.
+//
+// Dark brand overrides (when we want to diverge from PF dark) live in
+// themes/_dark.scss, scoped to .pf-v6-theme-dark.
+//
 // Temporary as part of the migration to PF6; token names are expected to
 // change as the interface customization is refined.
 
 :root {
-  --agm-t--action--background--color--hover: var(--agm-t--color--jungle--10);
-
-  --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog--50);
-  --pf-t--global--background--color--action--plain--hover: var(
-    --agm-t--action--background--color--hover
-  );
-  --pf-t--global--background--color--action--plain--alt--hover: var(
-    --agm-t--action--background--color--hover
-  );
-  --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle--50);
-
-  --agm-t--install--button--background: var(--agm-t--color--pine--50);
-  --agm-t--install--button--background--hover: var(--agm-t--color--pine--40);
-  --agm-t--install--button--color: var(--pf-t--color--white);
-
-  --pf-t--global--color--brand--default: var(--agm-t--color--pine--50);
-  --pf-t--global--color--brand--hover: var(--agm-t--color--pine--40);
   --pf-t--global--font--family--100: "SUSE Text", "Noto Sans", verdana;
   --pf-t--global--font--family--200: "SUSE Display", "Noto Sans", verdana;
   --pf-t--global--font--family--300: "Roboto Mono", monospace;
@@ -41,13 +36,35 @@
   --pf-t--global--font--weight--200: 600;
   --pf-t--global--font--weight--300: 700;
   --pf-t--global--font--weight--400: 800;
+  --pf-t--global--breakpoint--lg: 64rem;
+  --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
+  --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
+}
+
+// Light color/surface tokens. Excluded from dark so PF's dark theme wins there.
+:root:where(:not(.pf-v6-theme-dark)) {
+  --agm-t--action--background--color--hover: var(--agm-t--color--jungle--10);
+
+  --pf-t--global--background--color--secondary--default: var(--agm-t--color--fog--50);
+  --pf-t--global--background--color--action--plain--hover: var(
+    --agm-t--action--background--color--hover
+  );
+  --pf-t--global--background--color--action--plain--alt--hover: var(
+    --agm-t--action--background--color--hover
+  );
+  --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle--50);
+
+  --agm-t--install--button--background: var(--agm-t--color--pine--50);
+  --agm-t--install--button--background--hover: var(--agm-t--color--pine--40);
+  --agm-t--install--button--color: var(--pf-t--color--white);
+
+  --pf-t--global--color--brand--default: var(--agm-t--color--pine--50);
+  --pf-t--global--color--brand--hover: var(--agm-t--color--pine--40);
+  --pf-t--global--color--brand--clicked: var(--agm-t--color--pine--50);
+  --pf-t--global--text--color--link--default: var(--agm-t--color--pine--50);
+
   --pf-t--global--color--status--warning--200: #fe7c3f;
   --pf-t--global--color--status--info--default: var(--agm-t--color--waterhole--50);
   --pf-t--global--icon--color--status--info--default: var(--agm-t--color--waterhole--50);
-  --pf-t--global--breakpoint--lg: 64rem;
-  --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
   --pf-t--global--background--color--disabled--default: #dcdbdc;
-  --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
-  --pf-t--global--color--brand--clicked: var(--agm-t--color--pine--50);
-  --pf-t--global--text--color--link--default: var(--agm-t--color--pine--50);
 }

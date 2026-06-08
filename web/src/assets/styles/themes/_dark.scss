@@ -1,49 +1,17 @@
 // Dark color axis.
 //
 // PatternFly's built-in dark theme (activated by .pf-v6-theme-dark on <html>)
-// provides the full dark token set: surfaces, text, borders and every
-// component internal (~430 tokens). We only re-point the handful of Agama
-// brand tokens that PF cannot know about, so the brand reads correctly on a
-// dark canvas.
+// provides the full, professionally designed dark token set (~430 tokens:
+// surfaces, text, borders and every component internal).
 //
-// Two locked brand decisions drive this:
-//   - Pine (#0c322c) is the deep surface, matching the Agama website.
-//   - The lightened Jungle (#40ce8a, jungle--40) is the brand/action color;
-//     raw Jungle fails contrast on dark.
+// Intentionally no Agama overrides yet: we are validating pure PF dark as the
+// baseline first. Brand customizations (Jungle accents, a Pine page canvas,
+// the install CTA) will be layered back in deliberately, one at a time, with
+// visual verification, once the baseline is confirmed.
 //
-// Scoped to PF's own dark selector and loaded after _semantic.scss, so these
-// win over the light defaults at equal specificity. The :where() keeps
-// specificity identical to a bare :root, so source order decides.
+// Any override added here must be scoped to PF's own dark selector
+// (:root:where(.pf-v6-theme-dark) {}) and stays in this file, loaded after
+// _semantic.scss so it wins by source order at equal specificity.
 //
 // "System" auto-dark is class-based, so it is toggled by the ThemeSelector via
 // matchMedia rather than a media query here.
-//
-// TODO: surface and hover values are derived from brand tokens via color-mix
-// as a starting point; pin final hex per step against the brand palette and
-// verify WCAG (see scss-refactor-plan.md open items).
-
-:root:where(.pf-v6-theme-dark) {
-  // Brand and links use the lightened Jungle.
-  --pf-t--global--color--brand--default: var(--agm-t--color--jungle--40);
-  --pf-t--global--color--brand--hover: var(--agm-t--color--jungle--50);
-  --pf-t--global--color--brand--clicked: var(--agm-t--color--jungle--40);
-  --pf-t--global--text--color--link--default: var(--agm-t--color--jungle--40);
-
-  // Pine as the deep surface; a touch lighter for elevated surfaces.
-  --pf-t--global--background--color--primary--default: var(--agm-t--color--pine--50);
-  --pf-t--global--background--color--secondary--default: color-mix(
-    in srgb,
-    var(--agm-t--color--pine--50) 88%,
-    white
-  );
-
-  // Install CTA and interaction states tuned for dark surfaces.
-  --agm-t--install--button--background: var(--agm-t--color--jungle--40);
-  --agm-t--install--button--background--hover: var(--agm-t--color--jungle--50);
-  --pf-t--global--background--color--action--plain--alt--clicked: var(--agm-t--color--jungle--40);
-  --agm-t--action--background--color--hover: color-mix(
-    in srgb,
-    var(--agm-t--color--jungle--40) 18%,
-    transparent
-  );
-}
