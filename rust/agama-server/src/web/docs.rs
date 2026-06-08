@@ -126,10 +126,21 @@ pub async fn build() -> OpenApi {
     // storage.schema.json will be stored under /components/schema/storage.Config
     let schemas_to_import = vec![
         // (file path, schema name, schema parent)
-        ("share/storage.schema.json", "storage", "Config"),
+        // Config schemas
         ("share/dasd.schema.json", "dasd", "Config"),
         ("share/iscsi.schema.json", "iscsi", "Config"),
+        ("share/storage.model.schema.json", "storage.model", "Config"),
+        ("share/storage.schema.json", "storage", "Config"),
+        ("share/software.schema.json", "software", "Config"),
         ("share/zfcp.schema.json", "zfcp", "Config"),
+        // Proposal schemas
+        ("share/proposal.storage.schema.json", "storage", "Proposal"),
+        // System info schemas
+        ("share/system.bootloader.schema.json", "bootloader", "SystemInfo"),
+        ("share/system.dasd.schema.json", "dasd", "SystemInfo"),
+        ("share/system.iscsi.schema.json", "iscsi", "SystemInfo"),
+        ("share/system.storage.schema.json", "storage", "SystemInfo"),
+        ("share/system.zfcp.schema.json", "zfcp", "SystemInfo"),
     ];
 
     if let Some(components) = &mut api.components {
@@ -176,12 +187,11 @@ pub async fn build() -> OpenApi {
     // Update references to already merged statically defined schemas
     // The "keys" like "storage" are generated from code but needs to
     // be populated manualy
-    // TODO: make it generic, currently "storage" is hardcoded
     let mut api_json = serde_json::to_value(&api).unwrap();
 
     for (_, name, group) in schemas_to_import {
         if let Some(schema) =
-            api_json.pointer_mut(format!("/components/schemas/Config/properties/{}", name).as_str())
+            api_json.pointer_mut(format!("/components/schemas/{}/properties/{}", group, name).as_str())
         {
             *schema = serde_json::json!({
                 "anyOf": [
