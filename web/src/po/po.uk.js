@@ -215,6 +215,20 @@ export default {
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
     "Для нового розділу %3$s буде використано типовий діапазон розмірів між %1$s і %2$s"
   ],
+  "A logical volume may be deleted": [
+    "Логічний том можна видалити"
+  ],
+  "A logical volume may be shrunk": [
+    "Логічний том можна зменшити"
+  ],
+  "A logical volume will be deleted": [
+    "Логічний том буде видалений"
+  ],
+  "A new logical volume will be created for %s": [
+    "Для %s буде створено новий логічний том",
+    "Для %s будуть створені нові логічні томи",
+    "Для %s будуть створені нові логічні томи"
+  ],
   "A new partition will be created for %s": [
     "Для %s буде створено новий розділ",
     "Для %s будуть створені нові розділи",
@@ -261,6 +275,9 @@ export default {
   "Activated": [
     "Активовано"
   ],
+  "Activating": [
+    "Активуємо"
+  ],
   "Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
     "Увімкнення контролера, що працює в режимі NPIV, автоматично налаштовує всі його LUN."
   ],
@@ -287,6 +304,9 @@ export default {
   ],
   "Add logical volume": [
     "Додати логічний том"
+  ],
+  "Add or use logical volume": [
+    "Додати або скористатись логічним томом"
   ],
   "Add or use partition": [
     "Створити або використати розділ"
@@ -339,19 +359,27 @@ export default {
   "Already using all available disks": [
     "Вже використані всі наявні диски"
   ],
+  "An existing logical volume will be used for %s": [
+    "Для %s буде використано наявний логічний том",
+    "Для %s будуть використані наявні логічні томи",
+    "Для %s будуть використані наявні логічні томи"
+  ],
   "An existing partition will be used for %s": [
     "Для %s буде використано наявний розділ",
     "Для %s будуть використані наявні розділи",
     "Для %s будуть використані наявні розділи"
   ],
-  "Any": [
-    "Будь-який"
+  "Any existing logical volume will be removed and all data in the volume group will be lost.": [
+    "Усі наявні логічні томи будуть видалені, а всі дані в групі томів будуть втрачені."
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
     "Всі розділи буде видалено, а всі дані на диску буде втрачено."
   ],
   "Any partition needed to boot will be configured.": [
     "Усі розділи, необхідні для завантаження, буде налаштовано."
+  ],
+  "As a new logical volume on %s": [
+    "Як новий логічний том на %s"
   ],
   "As a new partition on %s": [
     "Як новий розділ на %s"
@@ -368,11 +396,20 @@ export default {
   "At least one IPv6 address is required": [
     "Потрібна принаймні одна адреса IPv6"
   ],
+  "At least one NTP server is required": [
+    "Потрібен принаймні один NTP-сервер"
+  ],
+  "At least one SSH public key is required": [
+    "Потрібен принаймні один відкритий ключ SSH"
+  ],
   "At least one bond port is required": [
     "Потрібен принаймні один порт для збору даних"
   ],
   "At least one bridge port is required": [
     "Потрібен принаймні один порт-міст"
+  ],
+  "At least one logical volume will be deleted": [
+    "Буде видалено принаймні один логічний том"
   ],
   "At least one partition will be deleted": [
     "Принаймні один розділ буде видалено"
@@ -538,6 +575,18 @@ export default {
   "Change product or mode": [
     "Змінити продукт або режим"
   ],
+  "Change the device to configure": [
+    "Змініть пристрій для налаштування"
+  ],
+  "Change the device to create %s": [
+    "Змініть пристрій для створення %s"
+  ],
+  "Change the device to format as %s": [
+    "Змініть пристрій для форматування як %s"
+  ],
+  "Change the device to install the system": [
+    "Змініть пристрій для встановлення системи"
+  ],
   "Change the file system or mount point": [
     "Змінити файлову систему або точку монтування"
   ],
@@ -547,8 +596,14 @@ export default {
   "Change volume group menu": [
     "Змінити меню групи томів"
   ],
+  "Changes could not be applied": [
+    "Зміни не вдалося застосувати"
+  ],
   "Changes in these settings will immediately update the 'Result' section below.": [
     "Зміни в цих налаштуваннях негайно оновлять розділ «Результат» нижче."
+  ],
+  "Changes successfully applied": [
+    "Зміни успішно застосовано"
   ],
   "Changing the product will reset your current settings.": [
     "Зміна продукту призведе до скидання ваших поточних налаштувань."
@@ -584,9 +639,6 @@ export default {
   ],
   "Choose whether to enable the root account.": [
     "Виберіть, чи потрібно ввімкнути обліковий запис root."
-  ],
-  "Chosen by MAC": [
-    "Вибрано за MAC-адресою"
   ],
   "Chosen by name": [
     "Вибрано за назвою"
@@ -725,6 +777,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Продовження роботи без встановлення пакунка може призвести до поломки системи. У деяких випадках система може навіть не завантажитися."
   ],
+  "Copy to the clipboard": [
+    ""
+  ],
   "Could not authenticate against the server.": [
     "Не вдалося виконати автентифікацію на сервері."
   ],
@@ -751,6 +806,9 @@ export default {
   ],
   "Current content": [
     "Поточний вміст"
+  ],
+  "Current logical volumes will be kept": [
+    "Поточні логічні томи будуть збережені"
   ],
   "Current partitions will be kept": [
     "Поточні розділи буде збережено"
@@ -785,11 +843,17 @@ export default {
   "DNS servers": [
     "DNS-сервери"
   ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    ""
+  ],
   "Deactivate": [
     "Деактивувати"
   ],
   "Deactivated": [
     "Деактивовано"
+  ],
+  "Deactivating": [
+    "Деактивуємо"
   ],
   "Default": [
     "Типово"
@@ -799,6 +863,9 @@ export default {
   ],
   "Default file system for %s": [
     "Типова файлова система для %s"
+  ],
+  "Default file system for generic logical volume": [
+    "Типова файлова система для звичайного логічного тому"
   ],
   "Default file system for generic mount paths": [
     "Типова файлова система для звичайних шляхів монтування"
@@ -817,6 +884,9 @@ export default {
   ],
   "Define a new LVM on top of one or several disks": [
     "Визначення нового LVM над одним або кількома дисками"
+  ],
+  "Define an administrator user": [
+    "Створити обліковий запис адміністратора"
   ],
   "Delete": [
     "Вилучити"
@@ -841,6 +911,9 @@ export default {
   ],
   "Destroy current data and format device as": [
     "Знищити поточні дані і відформатувати пристрій як"
+  ],
+  "Destroy current data and format logical volume as": [
+    "Знищити поточні дані і відформатувати логічний том як"
   ],
   "Destroy current data and format partition as": [
     "Знищити поточні дані і відформатувати розділ як"
@@ -913,9 +986,6 @@ export default {
   ],
   "Do not use": [
     "Не використовувати"
-  ],
-  "Download config": [
-    "Завантажити конфігурацію"
   ],
   "Download logs": [
     "Завантажити журнали"
@@ -1013,6 +1083,9 @@ export default {
   "Encryption settings": [
     "Налаштування шифрування"
   ],
+  "Enter a hostname value.": [
+    "Введіть значення імені хоста."
+  ],
   "Enter a name": [
     "Введіть ім'я"
   ],
@@ -1033,9 +1106,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Натисніть Enter або Tab, щоб додати, Backspace або Delete, щоб видалити, клавіші зі стрілками для переходу між записами, Escape для виходу"
-  ],
-  "Ethernet": [
-    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1164,6 +1234,9 @@ export default {
   "Full name": [
     "Повне ім'я"
   ],
+  "Full name is required": [
+    "Потрібно внести повне ім'я"
+  ],
   "Gateway": [
     "Шлюз"
   ],
@@ -1274,6 +1347,9 @@ export default {
   "If that is not intended, cancel and select a desktop in the [software] settings.": [
     "Якщо це не було Вашим наміром, скасуйте дію та виберіть робочий стіл у налаштуваннях [програми]."
   ],
+  "If unsure, cancel and review [storage] settings.": [
+    "Якщо Ви не впевнені, скасуйте та перегляньте налаштування [storage]."
+  ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
     "Якщо Ви хочете вимкнути цю перевірку, вкажіть \"inst.ay_check=0\" у командному рядку ядра"
   ],
@@ -1357,8 +1433,17 @@ export default {
   "Invalid IPv6 gateway": [
     "Недійсний шлюз IPv6"
   ],
+  "Invalid NTP server address": [
+    "Неправильна адреса NTP-сервера"
+  ],
+  "Invalid SSH Key": [
+    "Недійсний SSH-ключ"
+  ],
   "Invalid [zFCP] settings": [
     "Неправильні налаштування [zFCP]"
+  ],
+  "Invalid hostname value.": [
+    "Неправильне значення імені хоста."
   ],
   "Invalid settings": [
     "Неправильні налаштування"
@@ -1483,20 +1568,29 @@ export default {
   "Logical volume name": [
     "Назва логічного тому"
   ],
+  "Logical volumes": [
+    "Логічні томи"
+  ],
   "Logical volumes for %s": [
     "Логічні томи для %s"
+  ],
+  "Logical volumes that are not reused will be removed and that data will be lost.": [
+    "Логічні томи, не використані повторно, будуть видалені, а дані — втрачені."
+  ],
+  "Logical volumes that are not reused will be resized as needed.": [
+    "Розмір логічних томів, які не використовуються повторно, буде змінено за необхідності."
+  ],
+  "Logical volumes that are not reused would be resized if needed.": [
+    "Розмір логічних томів, які не використовуються повторно, у разі потреби буде змінено."
+  ],
+  "Logical volumes will be used and created for %s": [
+    "Буде використано та створено логічні томи для %s"
   ],
   "Login": [
     "Вхід"
   ],
   "Login form": [
     "Форма входу"
-  ],
-  "Loopback": [
-    "Зациклення"
-  ],
-  "MAC": [
-    "MAC-адреса"
   ],
   "MAC address": [
     "MAC адреса"
@@ -1521,6 +1615,9 @@ export default {
   ],
   "Max message age must be between 6 and 40 seconds": [
     "Максимальний час існування повідомлення повинен становити від 6 до 40 секунд"
+  ],
+  "Members": [
+    "Учасники"
   ],
   "Memory": [
     "Пам'ять"
@@ -1663,6 +1760,9 @@ export default {
   ],
   "No Wi-Fi networks were found": [
     "Мережі Wi-Fi не знайдені"
+  ],
+  "No additional logical volumes will be created": [
+    "Додаткових логічних томів не буде створено"
   ],
   "No additional partitions will be created": [
     "Додаткові розділи не створюватимуться"
@@ -1823,6 +1923,12 @@ export default {
   "On boot": [
     "При завантаженні"
   ],
+  "Only reused logical volumes and space not assigned to any logical volume will be used.": [
+    "Використовуватимуться лише повторно використані логічні томи та простір, який не виділено жодному логічному тому."
+  ],
+  "Only reused logical volumes will be used.": [
+    "Буде використано лише повторно використовувані логічні томи."
+  ],
   "Only reused partitions and space not assigned to any partition will be used.": [
     "Будуть використовуватися тільки повторно використовувані розділи і простір, не призначений жодному розділу."
   ],
@@ -1837,12 +1943,6 @@ export default {
   ],
   "Parent device": [
     "Базовий пристрій"
-  ],
-  "Parent device is required": [
-    "Необхідно підключити головний пристрій"
-  ],
-  "Parent device must be different from the device name": [
-    "Назва батьківського пристрою має відрізнятися від назви пристрою"
   ],
   "Partition %s": [
     "Розділ %s"
@@ -1892,14 +1992,23 @@ export default {
   "Password Required": [
     "Потрібен пароль"
   ],
+  "Password and SSH Public Key": [
+    "Пароль та відкритий ключ SSH"
+  ],
   "Password confirmation": [
     "Підтвердження пароля"
+  ],
+  "Password confirmation is required": [
+    "Потрібно підтвердити пароль"
   ],
   "Password input": [
     "Ввід пароля"
   ],
   "Password is empty.": [
     "Пароль порожній."
+  ],
+  "Password is required": [
+    "Потрібно ввести пароль"
   ],
   "Password visibility button": [
     "Кнопка виявлення пароля"
@@ -1919,8 +2028,8 @@ export default {
   "Performs auto LUN scan": [
     "Виконує автоматичне сканування LUN"
   ],
-  "Physical or Virtual device name": [
-    "Назва фізичного або віртуального пристрою"
+  "Physical volumes": [
+    "Фізичні томи"
   ],
   "PiB": [
     "ПіБ"
@@ -1969,6 +2078,9 @@ export default {
   ],
   "Provide its password to log in to the system.": [
     "Вкажіть його пароль для входу в систему."
+  ],
+  "Provided by the network": [
+    "Надано мережею"
   ],
   "Public key provided": [
     "Надано відкритий ключ"
@@ -2027,6 +2139,9 @@ export default {
   "Registered": [
     "Зареєстровано"
   ],
+  "Registered hostname will not change": [
+    "Зареєстроване ім'я хоста не зміниться"
+  ],
   "Registered without a code": [
     "Зареєстровано без коду"
   ],
@@ -2056,6 +2171,9 @@ export default {
   ],
   "Remove the configuration for this disk": [
     "Видалити конфігурацію для цього диска"
+  ],
+  "Remove the configuration for this volume group": [
+    "Видалити конфігурацію для цієї групи томів"
   ],
   "Required space with current selection: [%s]": [
     "Необхідний простір для поточного виділення: [%s]"
@@ -2087,6 +2205,9 @@ export default {
   "Retrieving error details": [
     "Отримання інформації про помилку"
   ],
+  "Reused logical volumes will not be shrunk": [
+    "Повторно використані томи не будуть зменшені"
+  ],
   "Reused partitions will not be shrunk": [
     "Повторно використані розділи не будуть зменшені"
   ],
@@ -2098,6 +2219,12 @@ export default {
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
     "Вибір кореневого мосту (0–61440). [Чим менше значення, тим вищий пріоритет]."
+  ],
+  "Root login is off": [
+    "Вхід з паролем користувача Root вимкнено"
+  ],
+  "Root login method": [
+    "Спосіб входу з правами адміністратора"
   ],
   "Routes": [
     "Маршрути"
@@ -2119,6 +2246,12 @@ export default {
   ],
   "SHA256 fingerprint": [
     "Відбиток SHA256"
+  ],
+  "SSH Public Key": [
+    "Відкритий ключ SSH"
+  ],
+  "SSH Public Keys": [
+    "Відкриті SSH-ключі"
   ],
   "SSID": [
     "Назва мережі"
@@ -2218,6 +2351,12 @@ export default {
   "Select the zFCP controllers to activate:": [
     "Виберіть контролери zFCP, які потрібно активувати:"
   ],
+  "Select what to do with each logical volume in order to find space for allocating the new system.": [
+    "Виберіть, що робити з кожним логічним томом, щоб знайти місце для розміщення нової системи."
+  ],
+  "Select what to do with each logical volume.": [
+    "Оберіть, що робити з кожним логічним томом."
+  ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
     "Виберіть, що робити з кожним розділом, щоб знайти місце для розміщення нової системи."
   ],
@@ -2226,6 +2365,9 @@ export default {
   ],
   "Selected disk cannot be changed": [
     "Обраний диск неможливо змінити"
+  ],
+  "Selected volume group cannot be changed": [
+    "Обрану групу томів неможливо змінити"
   ],
   "Server URL": [
     "URL сервера"
@@ -2254,6 +2396,9 @@ export default {
   "Settings": [
     "Налаштування"
   ],
+  "Several logical volumes will be deleted": [
+    "Буде видалено кілька логічних томів"
+  ],
   "Several partitions will be deleted": [
     "Кілька розділів буде видалено"
   ],
@@ -2273,6 +2418,9 @@ export default {
   ],
   "Show more": [
     "Показати більше"
+  ],
+  "Shrink existing logical volumes": [
+    "Зменшення наявних логічних томів"
   ],
   "Shrink existing partitions": [
     "Зменшення наявних розділів"
@@ -2316,8 +2464,23 @@ export default {
   "Some IPv6 addresses are invalid": [
     "Деякі адреси IPv6 є недійсними"
   ],
+  "Some NTP server addresses are invalid": [
+    "Деякі адреси NTP-серверів є недійсними"
+  ],
+  "Some SSH public keys are invalid": [
+    "Деякі відкриті ключі SSH є недійсними"
+  ],
+  "Some existing logical volumes may be shrunk": [
+    "Деякі наявні логічні томи можуть бути зменшені"
+  ],
   "Some existing partitions may be shrunk": [
     "Деякі наявні розділи можуть бути зменшені"
+  ],
+  "Some logical volumes may be deleted": [
+    "Деякі логічні томи можуть бути видалені"
+  ],
+  "Some logical volumes may be shrunk": [
+    "Деякі логічні томи можуть бути зменшені"
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
     "Деякі елементи у вашому профілі AutoYaST не підтримуються."
@@ -2345,6 +2508,9 @@ export default {
   ],
   "State": [
     "Стан"
+  ],
+  "Static": [
+    "Статичне"
   ],
   "Static addresses and gateway": [
     "Статичні адреси та шлюз"
@@ -2389,6 +2555,9 @@ export default {
   "System Information": [
     "Інформація про систему"
   ],
+  "System settings could not be updated": [
+    "Не вдалося оновити системні налаштування"
+  ],
   "System settings successfully updated": [
     "Налаштування системи успішно оновлено"
   ],
@@ -2402,6 +2571,9 @@ export default {
   ],
   "System will have no network connections": [
     "Система не матиме мережевих підключень"
+  ],
+  "TPM sealing requires the new system to be booted directly on its first run.": [
+    "Для запуску TPM-захисту необхідно, щоб нова система завантажилася безпосередньо під час першого запуску."
   ],
   "TPM sealing requires the new system to be booted directly.": [
     "Запечатування TPM вимагає прямого завантаження нової системи."
@@ -2461,8 +2633,14 @@ export default {
     "Поточна конфігурація сховища має такі проблеми:",
     "Поточна конфігурація сховища має такі проблеми:"
   ],
+  "The data is kept, but the current logical volumes will be resized as needed.": [
+    "Дані зберігаються, але розмір поточних логічних томів буде змінено в міру необхідності."
+  ],
   "The data is kept, but the current partitions will be resized as needed.": [
     "Дані зберігаються, але розмір поточних розділів буде змінено в міру необхідності."
+  ],
+  "The data is kept. Only the space not assigned to any logical volume will be used.": [
+    "Дані зберігаються. Використовуватиметься лише той простір, який не виділено для жодного логічного тому."
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
     "Дані зберігаються. Буде використано тільки простір, не відведений для будь-якого розділу."
@@ -2502,6 +2680,9 @@ export default {
   ],
   "The extension was registered without any registration code.": [
     "Розширення було зареєстровано без коду реєстрації."
+  ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    ""
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Кінцевий розмір може бути більшим, щоб заповнити вільний простір."
@@ -2634,6 +2815,9 @@ export default {
   "There are not disks available for the installation. You may need to configure some device.": [
     "Диски для встановлення не доступні. Можливо, вам потрібно налаштувати якийсь пристрій."
   ],
+  "There are not usable logical volumes": [
+    "Існують не придатні для використання логічні томи"
+  ],
   "There are not usable partitions": [
     "Існують не придатні для використання розділи"
   ],
@@ -2698,6 +2882,9 @@ export default {
   "This uses the existing file system at the disk": [
     "Для цього використовується наявна файлова система на диску"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    ""
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Це вплине тільки на інтерфейс установника, не на продукт, що встановлюється. Змінити параметри локалізації продукту Ви зможете пізніше на сторінці налаштувань локалізації."
   ],
@@ -2718,6 +2905,9 @@ export default {
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "Щоб забезпечити можливість завантаження нової системи, програмі встановлення може знадобитися створити або налаштувати деякі розділи на відповідному диску."
+  ],
+  "Transient": [
+    "Перехідний"
   ],
   "Try to activate again": [
     "Спробуйте активувати ще раз"
@@ -2757,6 +2947,9 @@ export default {
   ],
   "Use": [
     "Використати"
+  ],
+  "Use LVM volume group %s": [
+    "Використати групу томів LVM %s"
   ],
   "Use RAID %s": [
     "Використати RAID-масив %s"
@@ -2851,6 +3044,9 @@ export default {
   "Use for the selected product too": [
     "Використовувати також для обраного продукту"
   ],
+  "Use product's default NTP servers": [
+    "Використовувати типові NTP-сервери продукту"
+  ],
   "Use several devices": [
     "Використати кілька пристроїв"
   ],
@@ -2878,11 +3074,17 @@ export default {
   "Use these same settings for the selected product": [
     "Використовувати ці ж налаштування для обраного продукту"
   ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    ""
+  ],
   "User name": [
     "Ім'я користувача"
   ],
   "Username": [
     "Ім'я користувача"
+  ],
+  "Username is required": [
+    "Ім'я користувача вводити обов'язково"
   ],
   "Using %d additional pattern": [
     "Використовуємо %d додатковий шаблон",
@@ -2915,6 +3117,9 @@ export default {
   ],
   "Using an advanced storage configuration": [
     "Використання розширеної конфігурації сховища"
+  ],
+  "Using an existing logical volume": [
+    "Використання існуючого логічного тому"
   ],
   "Using an existing partition": [
     "Використовуючи наявний розділ"
@@ -2949,14 +3154,23 @@ export default {
   "View license": [
     "Переглянути ліцензію"
   ],
+  "Volume %s": [
+    "Том %s"
+  ],
   "Volume group %s": [
     "Група томів %s"
+  ],
+  "Volume group %s menu": [
+    "Меню групи томів %s"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
     "Група томів „%s“ вже існує. Введіть іншу назву."
   ],
   "Volume groups cannot be formatted": [
     "Групи томів не можна відформатувати"
+  ],
+  "Volumes %s": [
+    "Томи %s"
   ],
   "WPA & WPA2 Personal": [
     "WPA і WPA2 Personal"
@@ -2984,9 +3198,6 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Коли все буде готово, натисніть кнопку [Встановити] внизу сторінки."
-  ],
-  "Wi-Fi": [
-    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Форма з'єднання Wi-Fi"
