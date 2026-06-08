@@ -351,9 +351,6 @@ export default {
     "En befintlig partition kommer att användas för %s",
     "Flera befintliga partitioner kommer att användas för %s"
   ],
-  "Any": [
-    "Vilken som helst"
-  ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Alla befintliga logiska volymer kommer att tas bort och all data i volymgruppen kommer att gå förlorad."
   ],
@@ -623,9 +620,6 @@ export default {
   "Choose whether to enable the root account.": [
     "Välj huruvida du vill aktivera root-kontot."
   ],
-  "Chosen by MAC": [
-    "Vald av MAC"
-  ],
   "Chosen by name": [
     "Vald efter namn"
   ],
@@ -762,6 +756,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Att fortsätta utan att installera paketet kan resultera i ett trasigt system. I vissa fall kanske systemet inte ens startar."
   ],
+  "Copy to the clipboard": [
+    ""
+  ],
   "Could not authenticate against the server.": [
     "Kunde inte autentisera mot servern."
   ],
@@ -824,6 +821,9 @@ export default {
   ],
   "DNS servers": [
     "DNS-servrar"
+  ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    ""
   ],
   "Deactivate": [
     "Inaktivera"
@@ -966,9 +966,6 @@ export default {
   "Do not use": [
     "Använd inte"
   ],
-  "Download config": [
-    "Ladda ner konfiguration"
-  ],
   "Download logs": [
     "Ladda ner loggar"
   ],
@@ -1088,9 +1085,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenter för att navigera i poster, Escape för att avsluta"
-  ],
-  "Ethernet": [
-    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1573,12 +1567,6 @@ export default {
   "Login form": [
     "Inloggningsformulär"
   ],
-  "Loopback": [
-    "Loopback"
-  ],
-  "MAC": [
-    "MAC"
-  ],
   "MAC address": [
     "MAC adress"
   ],
@@ -1929,12 +1917,6 @@ export default {
   "Parent device": [
     "Överordnad enhet"
   ],
-  "Parent device is required": [
-    "Överordnad enhet krävs"
-  ],
-  "Parent device must be different from the device name": [
-    "Överordnad enhet måste ha ett annat namn än enhetsnamnet"
-  ],
   "Partition %s": [
     "Partition %s"
   ],
@@ -2018,9 +2000,6 @@ export default {
   ],
   "Performs auto LUN scan": [
     "Utför automatisk LUN-skanning"
-  ],
-  "Physical or Virtual device name": [
-    "Fysisk eller virtuell enhetsnamn"
   ],
   "Physical volumes": [
     "Fysiska volymer"
@@ -2668,6 +2647,9 @@ export default {
   "The extension was registered without any registration code.": [
     "Tillägget registrerades utan någon registreringskod."
   ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    ""
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Den slutliga storleken kan bli större för att fylla det extra fria utrymmet."
   ],
@@ -2860,6 +2842,9 @@ export default {
   "This uses the existing file system at the disk": [
     "Detta använder det befintliga filsystemet på disken"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    "Denna volymgrupp upptar endast det utrymme som krävs av dess logiska volymer. Om du vill expandera den till att täcka allt tillgängligt diskutrymme, återskapa volymgruppen."
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Detta påverkar endast installationsgränssnittet, inte produkten som ska installeras. Du kan justera produktens lokalisering senare på sidan Lokaliseringsinställningar."
   ],
@@ -3049,6 +3034,9 @@ export default {
   "Use these same settings for the selected product": [
     "Använd samma inställningar för den valda produkten"
   ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    ""
+  ],
   "User name": [
     "Användarnamn"
   ],
@@ -3169,9 +3157,6 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "När du är redo, klicka på [installera] knappen längst ner på sidan."
-  ],
-  "Wi-Fi": [
-    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "WiFi anslutningsformulär"

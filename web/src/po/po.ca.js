@@ -351,9 +351,6 @@ export default {
     "S'usarà una partició existent per a %s",
     "S'usaran les particions existents per a %s"
   ],
-  "Any": [
-    "Qualsevol"
-  ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Qualsevol volum lògic existent se suprimirà i se'n perdran totes les dades."
   ],
@@ -623,8 +620,8 @@ export default {
   "Choose whether to enable the root account.": [
     "Trieu si voleu habilitar el compte d'arrel."
   ],
-  "Chosen by MAC": [
-    "Triat per MAC"
+  "Chosen by MAC address": [
+    "Triat per adreça MAC"
   ],
   "Chosen by name": [
     "Triat pel nom"
@@ -640,6 +637,9 @@ export default {
   ],
   "Close": [
     "Tanca"
+  ],
+  "Configuration added to clipboard": [
+    "Configuració afegida al porta-retalls"
   ],
   "Configuration from the network plus static addresses and gateway": [
     "Configuració des de la xarxa més adreces estàtiques i passarel·la"
@@ -762,6 +762,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Continuar sense instal·lar el paquet pot resultar en un sistema trencat. En alguns casos, és possible que el sistema ni tan sols arrenqui."
   ],
+  "Copy to the clipboard": [
+    "Copia-ho al porta-retalls"
+  ],
   "Could not authenticate against the server.": [
     "No s'ha pogut autenticar amb el servidor."
   ],
@@ -824,6 +827,9 @@ export default {
   ],
   "DNS servers": [
     "Servidors DNS"
+  ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    "La recopilació de dades pot trigar una estona. La baixada començarà automàticament un cop el fitxer estigui a punt."
   ],
   "Deactivate": [
     "Desactiva"
@@ -906,6 +912,12 @@ export default {
   "Device %s menu": [
     "Menú del dispositiu %s"
   ],
+  "Device MAC address": [
+    "Adreça MAC del dispositiu"
+  ],
+  "Device binding": [
+    "Vinculació de dispositius"
+  ],
   "Device details": [
     "Detalls del dispositiu"
   ],
@@ -966,7 +978,7 @@ export default {
   "Do not use": [
     "No l'usis"
   ],
-  "Download config": [
+  "Download configuration": [
     "Baixa la configuració"
   ],
   "Download logs": [
@@ -1088,9 +1100,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar per les entrades, Esc per sortir-ne"
-  ],
-  "Ethernet": [
-    "Xarxa amb fil"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1375,11 +1384,17 @@ export default {
   "Installation in progress": [
     "Instal·lació en curs"
   ],
+  "Installation logs download": [
+    "Baixada de registres d'instal·lació"
+  ],
   "Installation only": [
     "Només instal·lació"
   ],
   "Installation settings": [
     "Paràmetres per a la instal·lació"
+  ],
+  "Installation settings in JSON format": [
+    "Paràmetres de la instal·lació en format JSON"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     "La configuració d'instal·lació s'actualitzarà automàticament per coincidir amb els valors predeterminats del producte nou."
@@ -1572,12 +1587,6 @@ export default {
   ],
   "Login form": [
     "Forma d'entrada"
-  ],
-  "Loopback": [
-    "Loopback"
-  ],
-  "MAC": [
-    "MAC"
   ],
   "MAC address": [
     "Adreça MAC"
@@ -1929,12 +1938,6 @@ export default {
   "Parent device": [
     "Dispositiu principal"
   ],
-  "Parent device is required": [
-    "Cal un dispositiu principal."
-  ],
-  "Parent device must be different from the device name": [
-    "El dispositiu principal ha de ser diferent del nom del dispositiu."
-  ],
   "Partition %s": [
     "Partició %s"
   ],
@@ -2018,9 +2021,6 @@ export default {
   ],
   "Performs auto LUN scan": [
     "Fa una exploració automàtica de LUN"
-  ],
-  "Physical or Virtual device name": [
-    "Nom del dispositiu físic o virtual"
   ],
   "Physical volumes": [
     "Volums físics"
@@ -2405,6 +2405,9 @@ export default {
   "Show information about %s": [
     "Mostra informació quant a %s"
   ],
+  "Show installation settings": [
+    "Mostra els paràmetres d'instal·lació"
+  ],
   "Show less": [
     "Mostra'n menys"
   ],
@@ -2668,6 +2671,9 @@ export default {
   "The extension was registered without any registration code.": [
     "L'extensió s'ha registrat sense cap codi de registre."
   ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    "El fitxer %s conté un registre de l'activitat de l'instal·lador fins ara, útil per diagnosticar problemes d'instal·lació."
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "La mida final pot ser més grossa per omplir l'espai lliure extra."
   ],
@@ -2860,6 +2866,9 @@ export default {
   "This uses the existing file system at the disk": [
     "Això usa el sistema de fitxers existent al disc"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    "Aquest grup de volums només ocupa l'espai requerit pels seus volums lògics. Per expandir-lo perquè ocupi tot l'espai de disc disponible, torneu a crear el grup de volums."
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
   ],
@@ -3049,6 +3058,9 @@ export default {
   "Use these same settings for the selected product": [
     "Usa aquests mateixos paràmetres per al producte seleccionat"
   ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    "Useu això per reproduir aquesta instal·lació més tard mitjançant la interfície de línia d'ordres de l'instal·lador o el mode sense supervisió."
+  ],
   "User name": [
     "Nom d'usuari"
   ],
@@ -3169,9 +3181,6 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Quan estigueu a punt, feu clic al botó [Instal·la] al final de la pàgina."
-  ],
-  "Wi-Fi": [
-    "Sense fil"
   ],
   "Wi-Fi connection form": [
     "Formulari de connexió sense fil"

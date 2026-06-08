@@ -333,9 +333,6 @@ export default {
   "An existing partition will be used for %s": [
     "%s に対して既存のパーティションを使用する"
   ],
-  "Any": [
-    "任意"
-  ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "全ての論理ボリュームを削除し、ボリュームグループ内に存在するデータを全て消去します。"
   ],
@@ -603,7 +600,7 @@ export default {
   "Choose whether to enable the root account.": [
     "root アカウントを有効化するかどうかを洗濯してください。"
   ],
-  "Chosen by MAC": [
+  "Chosen by MAC address": [
     "MAC アドレスで選択"
   ],
   "Chosen by name": [
@@ -620,6 +617,9 @@ export default {
   ],
   "Close": [
     "閉じる"
+  ],
+  "Configuration added to clipboard": [
+    "クリップボードに設定を追加しました"
   ],
   "Configuration from the network plus static addresses and gateway": [
     "ネットワーク側からの設定に加え、固定のアドレスとゲートウエイを設定します"
@@ -741,6 +741,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "このパッケージをインストールせずに続行してしまうと、システムは正しく動作しない可能性があるほか、場合によっては全く起動しなくなることもあり得ます。"
   ],
+  "Copy to the clipboard": [
+    "クリップボードにコピー"
+  ],
   "Could not authenticate against the server.": [
     "サーバに対して認証できませんでした。"
   ],
@@ -803,6 +806,9 @@ export default {
   ],
   "DNS servers": [
     "DNS サーバ"
+  ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    "データ収集にはしばらくの時間がかかります。ファイルの準備ができ次第、自動的にダウンロードが始まります。"
   ],
   "Deactivate": [
     "無効化"
@@ -885,6 +891,12 @@ export default {
   "Device %s menu": [
     "デバイス %s メニュー"
   ],
+  "Device MAC address": [
+    "デバイス MAC アドレス"
+  ],
+  "Device binding": [
+    "デバイスバインディング"
+  ],
   "Device details": [
     "デバイスの詳細"
   ],
@@ -945,8 +957,8 @@ export default {
   "Do not use": [
     "使用しない"
   ],
-  "Download config": [
-    "ダウンロード設定"
+  "Download configuration": [
+    "設定のダウンロード"
   ],
   "Download logs": [
     "ログのダウンロード"
@@ -1067,9 +1079,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間の移動、 Escape キーで終了します"
-  ],
-  "Ethernet": [
-    "イーサネット"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1350,11 +1359,17 @@ export default {
   "Installation in progress": [
     "インストールを行っています"
   ],
+  "Installation logs download": [
+    "インストールログのダウンロード"
+  ],
   "Installation only": [
     "インストール時のみ"
   ],
   "Installation settings": [
     "インストール設定"
+  ],
+  "Installation settings in JSON format": [
+    "JSON 形式でのインストール設定"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     "インストール設定は新たに選択した製品の既定値にあわせて自動調整されます。"
@@ -1547,12 +1562,6 @@ export default {
   ],
   "Login form": [
     "ログインフォーム"
-  ],
-  "Loopback": [
-    "ループバック"
-  ],
-  "MAC": [
-    "MAC"
   ],
   "MAC address": [
     "MAC アドレス"
@@ -1902,12 +1911,6 @@ export default {
   "Parent device": [
     "親デバイス"
   ],
-  "Parent device is required": [
-    "親デバイスを設定する必要があります"
-  ],
-  "Parent device must be different from the device name": [
-    "親デバイスとデバイス名は異なるものでなければなりません"
-  ],
   "Partition %s": [
     "パーティション %s"
   ],
@@ -1991,9 +1994,6 @@ export default {
   ],
   "Performs auto LUN scan": [
     "自動 LUN スキャンを実行"
-  ],
-  "Physical or Virtual device name": [
-    "物理デバイスまたは仮想デバイスの名前"
   ],
   "Physical volumes": [
     "物理ボリューム"
@@ -2376,6 +2376,9 @@ export default {
   "Show information about %s": [
     "%s に関する情報を表示"
   ],
+  "Show installation settings": [
+    "インストール設定の表示"
+  ],
   "Show less": [
     "表示を減らす"
   ],
@@ -2634,6 +2637,9 @@ export default {
   "The extension was registered without any registration code.": [
     "登録コード無しで拡張の登録を行いました。"
   ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    "ファイル %s には、ここまでにインストーラが実施した処理の記録が含まれています。インストール時に何らかの問題が発生した場合の解析に有用です。"
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "最終的なサイズは、連続した空き容量にあわせて拡大される可能性があります。"
   ],
@@ -2819,6 +2825,9 @@ export default {
   ],
   "This uses the existing file system at the disk": [
     "これはディスク内の既存ファイルシステムを使用します"
+  ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    "このボリュームグループは、論理ボリュームによって必要とされる領域のみを占有します。利用可能なディスク領域全てを使用するようにしたい場合は、ボリュームグループを作成し直してください。"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "ここでの設定はインストーラ自身にのみ適用され、インストールする製品には適用されません。製品に対する設定を行いたい場合は、ローカライゼーション設定のページで行ってください。"
@@ -3009,6 +3018,9 @@ export default {
   "Use these same settings for the selected product": [
     "選択した製品に対しても同じ設定を使用する"
   ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    "インストーラのコマンドラインや無人モードを利用して、今回と同じインストールを再度実施することができるようになります。"
+  ],
   "User name": [
     "ユーザ名"
   ],
@@ -3028,16 +3040,16 @@ export default {
     "%s 個の NTP サーバを使用 [%s ほか]"
   ],
   "Using %s account": [
-    "アカウント %s を使用しています"
+    "アカウント %s を作成します"
   ],
   "Using %s and %s accounts": [
-    "アカウント %s および %s を使用しています"
+    "アカウント %s および %s を作成します"
   ],
   "Using %s as NTP server": [
     "%s を NTP サーバとして使用"
   ],
   "Using %s keyboard layout": [
-    "[%s] キーボードレイアウトを使用しています"
+    "%s キーボードレイアウトを使用しています"
   ],
   "Using [%s] keyboard layout": [
     "[%s] キーボードレイアウトを使用しています"
@@ -3128,9 +3140,6 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "準備ができたら、ページ末尾にある [インストール] ボタンを押してください。"
-  ],
-  "Wi-Fi": [
-    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "WiFi 接続フォーム"
