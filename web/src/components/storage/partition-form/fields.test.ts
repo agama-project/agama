@@ -243,7 +243,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.fixedSize).toBe("Size is required");
+          expect(result?.fields?.fixedSize).toBe("Value is required");
         });
 
         it("returns error for invalid size format", () => {
@@ -255,7 +255,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.fixedSize).toBe("Invalid size format (e.g., 20 GiB, 100 MB)");
+          expect(result?.fields?.fixedSize).toBe("Invalid format (e.g. 20 GiB)");
         });
 
         it("accepts valid size format", () => {
@@ -285,7 +285,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.rangeMinSize).toBe("Minimum size is required");
+          expect(result?.fields?.rangeMinSize).toBe("Minimum is required");
         });
 
         it("returns error when max size is empty", () => {
@@ -298,7 +298,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.rangeMaxSize).toBe("Maximum size is required");
+          expect(result?.fields?.rangeMaxSize).toBe("Maximum is required");
         });
 
         it("returns error when both sizes are empty", () => {
@@ -311,8 +311,8 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.rangeMinSize).toBe("Minimum size is required");
-          expect(result?.fields?.rangeMaxSize).toBe("Maximum size is required");
+          expect(result?.fields?.rangeMinSize).toBe("Minimum is required");
+          expect(result?.fields?.rangeMaxSize).toBe("Maximum is required");
         });
 
         it("returns error when min size is invalid format", () => {
@@ -325,7 +325,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.rangeMinSize).toBe("Invalid size format (e.g., 20 GiB, 100 MB)");
+          expect(result?.fields?.rangeMinSize).toBe("Invalid format (e.g. 20 GiB)");
         });
 
         it("returns error when max size is invalid format", () => {
@@ -338,7 +338,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.rangeMaxSize).toBe("Invalid size format (e.g., 20 GiB, 100 MB)");
+          expect(result?.fields?.rangeMaxSize).toBe("Invalid format (e.g. 20 GiB)");
         });
 
         it("returns error when min size is larger than max size", () => {
@@ -379,7 +379,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.expandMinSize).toBe("Minimum size is required");
+          expect(result?.fields?.expandMinSize).toBe("Minimum is required");
         });
 
         it("returns error for invalid size format", () => {
@@ -391,7 +391,7 @@ describe("fields", () => {
           const result = validate(fields);
 
           expect(result).toBeDefined();
-          expect(result?.fields?.expandMinSize).toBe("Invalid size format (e.g., 20 GiB, 100 MB)");
+          expect(result?.fields?.expandMinSize).toBe("Invalid format (e.g. 20 GiB)");
         });
 
         it("accepts valid expand min size", () => {

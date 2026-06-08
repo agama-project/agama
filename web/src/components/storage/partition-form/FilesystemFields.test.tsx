@@ -107,7 +107,7 @@ describe("FilesystemFields", () => {
           }}
         />,
       );
-      screen.getByText(/Uses XFS/);
+      screen.getByText(/XFS.*default file system for/);
     });
 
     it("does not show hint when Default is selected without mount point", () => {
@@ -119,7 +119,7 @@ describe("FilesystemFields", () => {
           }}
         />,
       );
-      expect(screen.queryByText(/Uses/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/default file system for/)).not.toBeInTheDocument();
     });
   });
 
@@ -134,7 +134,7 @@ describe("FilesystemFields", () => {
       const { user } = installerRender(<TestForm defaultValues={defaultValues} />);
       await user.click(screen.getByLabelText("File system"));
       const options = screen.getAllByRole("option");
-      expect(options[0]).toHaveTextContent(/Current \(Ext4\)/);
+      expect(options[0]).toHaveTextContent(/Current/);
     });
 
     it("includes keep data description in Current option", async () => {

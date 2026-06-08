@@ -22,17 +22,52 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockParams } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { defaultOptions, SIZE_MODE } from "./fields";
 import SizeFields from "./SizeFields";
+
+const mockConfigModel = {
+  drives: [
+    {
+      name: "/dev/vdd",
+      partitions: [],
+    },
+  ],
+  volumeGroups: [],
+};
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  useConfigModel: () => mockConfigModel,
+  usePartitionable: () => mockConfigModel.drives[0],
+  useSolvedConfigModel: (config) => {
+    if (!config) return mockConfigModel;
+    const solvedConfig = JSON.parse(JSON.stringify(config));
+    solvedConfig.drives?.forEach((drive) => {
+      drive.partitions?.forEach((partition) => {
+        if (partition.mountPath && !partition.size) {
+          partition.size = {
+            min: 20 * 1024 * 1024 * 1024,
+            max: partition.mountPath === "/" ? 100 * 1024 * 1024 * 1024 : undefined,
+          };
+        }
+      });
+    });
+    return solvedConfig;
+  },
+}));
 
 jest.mock("~/hooks/model/system/storage", () => ({
   useVolumeTemplate: () => ({
     minSize: 20 * 1024 * 1024 * 1024,
     fsType: "xfs",
+    autoSize: true,
+    mountPath: "/home",
     outline: {
       fsTypes: ["xfs", "ext4"],
+      sizeRelevantVolumes: [],
+      snapshotsAffectSizes: false,
+      adjustByRam: false,
     },
   }),
 }));
@@ -50,6 +85,10 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
 }
 
 describe("SizeFields", () => {
+  beforeEach(() => {
+    mockParams({ collection: "drives", index: "0" });
+  });
+
   it("renders the size mode selector", () => {
     installerRender(<TestForm />);
     screen.getByLabelText("Size");
@@ -59,7 +98,7 @@ describe("SizeFields", () => {
     it("shows automatic size note when mount point is committed", () => {
       installerRender(<TestForm defaultValues={{ committedMountPoint: "/home" }} />);
       screen.getByText(/Minimum/);
-      screen.getByText(/Determined by/);
+      screen.getByText(/size for .* with the current settings/);
     });
 
     it("does not show size note when mount point is empty", () => {
@@ -82,8 +121,8 @@ describe("SizeFields", () => {
       const { user } = installerRender(<TestForm defaultValues={defaultValues} />);
       await user.click(screen.getByLabelText("Size"));
       await user.click(screen.getByRole("option", { name: /^Fixed/ }));
-      screen.getByText(/Enter value as number followed by unit/);
-      screen.getByText(/Units can be binary/);
+      screen.getByText(/The size must be a number followed by a unit/);
+      screen.getByText(/GiB.*power of 2/);
     });
   });
 
@@ -102,7 +141,7 @@ describe("SizeFields", () => {
       const { user } = installerRender(<TestForm defaultValues={defaultValues} />);
       await user.click(screen.getByLabelText("Size"));
       await user.click(screen.getByRole("option", { name: /^Range/ }));
-      screen.getByText(/Enter values as number followed by unit/);
+      screen.getByText(/The limits must be numbers followed by a unit/);
     });
   });
 
@@ -116,11 +155,11 @@ describe("SizeFields", () => {
       screen.getByLabelText("Minimum");
     });
 
-    it("shows helper text about additional space", async () => {
+    it("shows format instructions", async () => {
       const { user } = installerRender(<TestForm defaultValues={defaultValues} />);
       await user.click(screen.getByLabelText("Size"));
       await user.click(screen.getByRole("option", { name: /^Expand/ }));
-      screen.getByText(/May use additional space if available/);
+      screen.getByText(/The size must be a number followed by a unit/);
     });
   });
 
@@ -137,10 +176,10 @@ describe("SizeFields", () => {
     it("shows descriptions for each option", async () => {
       const { user } = installerRender(<TestForm />);
       await user.click(screen.getByLabelText("Size"));
-      screen.getByRole("option", { name: /Installer determines the size/ });
+      screen.getByRole("option", { name: /Let the installer set the size/ });
       screen.getByRole("option", { name: /Set a specific size/ });
       screen.getByRole("option", { name: /Set minimum and maximum/ });
-      screen.getByRole("option", { name: /grows if space available/ });
+      screen.getByRole("option", { name: /use more space if available/ });
     });
   });
 });

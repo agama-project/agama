@@ -70,6 +70,26 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
   usePartitionable: () => mockPartitionable,
   useAddPartition: () => mockAddPartition,
   useEditPartition: () => mockEditPartition,
+  useSolvedConfigModel: (config) => {
+    // Return a solved model with partition sizes calculated
+    if (!config) return mockConfigModel;
+
+    // Find the partition in the config and add solved sizes
+    const solvedConfig = JSON.parse(JSON.stringify(config));
+    solvedConfig.drives?.forEach((drive) => {
+      drive.partitions?.forEach((partition) => {
+        if (partition.mountPath && !partition.size) {
+          // Add default solved sizes based on mount point
+          partition.size = {
+            min: 20 * 1024 * 1024 * 1024, // 20 GiB
+            max: partition.mountPath === "/" ? 100 * 1024 * 1024 * 1024 : undefined,
+          };
+        }
+      });
+    });
+
+    return solvedConfig;
+  },
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
@@ -79,13 +99,25 @@ jest.mock("~/hooks/model/system/storage", () => ({
       return {
         minSize: 2 * 1024 * 1024 * 1024,
         fsType: "swap",
-        outline: { fsTypes: ["swap"] },
+        autoSize: false,
+        outline: {
+          fsTypes: ["swap"],
+          sizeRelevantVolumes: [],
+          snapshotsAffectSizes: false,
+          adjustByRam: false,
+        },
       };
     }
     return {
       minSize: 20 * 1024 * 1024 * 1024,
       fsType: "xfs",
-      outline: { fsTypes: ["xfs", "ext4", "btrfs"] },
+      autoSize: mountPath === "/" || mountPath === "/home",
+      outline: {
+        fsTypes: ["xfs", "ext4", "btrfs"],
+        sizeRelevantVolumes: [],
+        snapshotsAffectSizes: false,
+        adjustByRam: false,
+      },
     };
   },
 }));
@@ -94,13 +126,13 @@ describe("PartitionForm", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockParams({ collection: "drives", index: "0" });
-    mockConfigModel = {
-      drives: [],
-      volumeGroups: [],
-    };
     mockPartitionable = {
       name: "/dev/vdd",
       partitions: [],
+    };
+    mockConfigModel = {
+      drives: [mockPartitionable],
+      volumeGroups: [],
     };
   });
 
@@ -116,7 +148,7 @@ describe("PartitionForm", () => {
     it("shows 'New partition' as default partition option", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.click(screen.getByLabelText("Partition"));
-      expect(screen.getByRole("option", { name: "New partition" })).toHaveAttribute(
+      expect(screen.getByRole("option", { name: /New partition/ })).toHaveAttribute(
         "aria-selected",
         "true",
       );
@@ -194,18 +226,18 @@ describe("PartitionForm", () => {
       const { user } = installerRender(<PartitionForm />);
       await user.type(screen.getByLabelText("Mount point"), "/home");
       await user.tab();
-      await screen.findByText(/Uses XFS/);
+      await screen.findByText(/XFS.*default file system for/);
     });
 
     it("updates filesystem hint when mount point changes", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.type(screen.getByLabelText("Mount point"), "/home");
       await user.tab();
-      await screen.findByText(/Uses XFS/);
+      await screen.findByText(/XFS.*default file system for/);
       await user.clear(screen.getByLabelText("Mount point"));
       await user.type(screen.getByLabelText("Mount point"), "/var");
       await user.tab();
-      expect(screen.queryByText(/Uses XFS/)).toBeInTheDocument();
+      expect(screen.queryByText(/XFS.*default file system for/)).toBeInTheDocument();
     });
 
     it("shows filesystem as read-only when mount point requires specific filesystem", async () => {
@@ -222,15 +254,15 @@ describe("PartitionForm", () => {
     it("lists available partitions for reuse", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.click(screen.getByLabelText("Partition"));
-      screen.getByRole("option", { name: /Use vdd1/ });
-      screen.getByRole("option", { name: /Use vdd2/ });
+      screen.getByRole("option", { name: /vdd1/ });
+      screen.getByRole("option", { name: /vdd2/ });
     });
 
     it("switches filesystem to reuse when selecting existing partition with filesystem", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.click(screen.getByLabelText("Partition"));
-      await user.click(screen.getByRole("option", { name: /Use vdd1/ }));
-      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current \(Ext4\)/);
+      await user.click(screen.getByRole("option", { name: /vdd1/ }));
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
     });
   });
 
@@ -239,7 +271,7 @@ describe("PartitionForm", () => {
       const { user } = installerRender(<PartitionForm />);
       await user.type(screen.getByLabelText("Mount point"), "/home");
       await user.tab();
-      screen.getByText(/Uses XFS/);
+      screen.getByText(/XFS.*default file system for/);
     });
 
     it("allows selecting specific filesystem type", async () => {
@@ -262,8 +294,7 @@ describe("PartitionForm", () => {
       const { user } = installerRender(<PartitionForm />);
       await user.type(screen.getByLabelText("Mount point"), "/home");
       await user.tab();
-      screen.getByText(/Minimum/);
-      screen.getByText(/Determined by/);
+      await screen.findByText(/Minimum.*GiB/);
     });
 
     it("allows setting fixed size", async () => {
@@ -325,7 +356,7 @@ describe("PartitionForm", () => {
       await user.click(screen.getByRole("option", { name: /^Fixed/ }));
       await user.type(screen.getByLabelText("Value"), "invalid");
       await user.click(screen.getByRole("button", { name: "Accept" }));
-      await screen.findByText(/Invalid size format/);
+      await screen.findByText(/Invalid format/);
       expect(mockAddPartition).not.toHaveBeenCalled();
     });
 

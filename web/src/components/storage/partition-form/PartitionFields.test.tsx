@@ -64,7 +64,7 @@ describe("PartitionFields", () => {
   describe("when no partitions are available", () => {
     it("shows a read-only field explaining that a new partition will be created", () => {
       installerRender(<TestForm availablePartitions={[]} />);
-      screen.getByText(/New partition \(no partitions available on vdd to reuse\)\./);
+      screen.getByText(/New partition. There are no available/);
     });
   });
 
@@ -72,15 +72,15 @@ describe("PartitionFields", () => {
     it("shows a dropdown with 'New partition' option", async () => {
       const { user } = installerRender(<TestForm />);
       await user.click(screen.getByLabelText("Partition"));
-      screen.getByRole("option", { name: "New partition" });
+      screen.getByRole("option", { name: /New partition/ });
     });
 
     it("shows existing partitions as options", async () => {
       const { user } = installerRender(<TestForm />);
       await user.click(screen.getByLabelText("Partition"));
-      screen.getByRole("option", { name: /Use vdd1/ });
-      screen.getByRole("option", { name: /Use vdd2/ });
-      screen.getByRole("option", { name: /Use vdd3/ });
+      screen.getByRole("option", { name: /vdd1/ });
+      screen.getByRole("option", { name: /vdd2/ });
+      screen.getByRole("option", { name: /vdd3/ });
     });
 
     it("includes partition size in the option label", async () => {
@@ -100,7 +100,7 @@ describe("PartitionFields", () => {
     it("pre-selects 'New partition' by default", async () => {
       const { user } = installerRender(<TestForm />);
       await user.click(screen.getByLabelText("Partition"));
-      expect(screen.getByRole("option", { name: "New partition" })).toHaveAttribute(
+      expect(screen.getByRole("option", { name: /New partition/ })).toHaveAttribute(
         "aria-selected",
         "true",
       );
