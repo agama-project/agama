@@ -238,6 +238,14 @@ function inferSizeFields(partitionConfig: ConfigModelType.Partition): {
   };
 }
 
+function fsConfigValue(fsConfig) {
+  if (fsConfig?.default) {
+    return FILESYSTEM_TYPE.AUTO;
+  }
+
+  return fsConfig?.type || FILESYSTEM_TYPE.AUTO;
+}
+
 /**
  * Maps a stored {@link ConfigModelType.Partition} to initial form values for
  * editing, or returns an empty object when creating a new partition.
@@ -265,9 +273,7 @@ function toFormValues(
     committedMountPoint: mountPoint,
     name: partitionConfig.name || "",
     // Default to REUSE when editing partition with filesystem; otherwise use actual type or AUTO
-    filesystem: shouldKeepFilesystem
-      ? FILESYSTEM_ACTION.REUSE
-      : fsConfig?.type || FILESYSTEM_TYPE.AUTO,
+    filesystem: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
     filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
     filesystemLabel,
     showMoreFilesystemSettings: filesystemLabel !== "",
