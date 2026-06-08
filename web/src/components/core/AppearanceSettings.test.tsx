@@ -23,20 +23,20 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { ThemeProvider } from "~/context/theme";
-import ThemeSelector from "~/components/core/ThemeSelector";
+import { AppearanceProvider } from "~/context/appearance";
+import AppearanceSettings from "~/components/core/AppearanceSettings";
 
 const renderSelector = () =>
   plainRender(
-    <ThemeProvider>
-      <ThemeSelector />
-    </ThemeProvider>,
+    <AppearanceProvider>
+      <AppearanceSettings />
+    </AppearanceProvider>,
   );
 
 const openSelector = async (user: ReturnType<typeof plainRender>["user"]) =>
-  user.click(screen.getByRole("button", { name: "Theme" }));
+  user.click(screen.getByRole("button", { name: "Appearance" }));
 
-describe("ThemeSelector", () => {
+describe("AppearanceSettings", () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.className = "";

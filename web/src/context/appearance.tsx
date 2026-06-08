@@ -46,14 +46,14 @@ const HIGH_CONTRAST_CLASS = "pf-v6-theme-high-contrast";
 const PREFERS_DARK = "(prefers-color-scheme: dark)";
 const PREFERS_CONTRAST = "(prefers-contrast: more)";
 
-type ThemeContextValue = {
+type AppearanceContextValue = {
   colorScheme: ColorScheme;
   setColorScheme: (value: ColorScheme) => void;
   contrast: Contrast;
   setContrast: (value: Contrast) => void;
 };
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+const AppearanceContext = createContext<AppearanceContextValue | undefined>(undefined);
 
 /**
  * Resolves whether dark should be active for the given color scheme, taking the
@@ -87,16 +87,16 @@ function applyTheme(colorScheme: ColorScheme, contrast: Contrast): void {
 }
 
 /**
- * Provides the active theme and setters, and keeps the document root in sync.
+ * Provides the active appearance and setters, and keeps the document root in sync.
  *
- * The theme has two independent axes: a color scheme (System/Light/Dark) and a
- * contrast level (Standard/High). Both persist per-browser. When following the
- * system, the color scheme re-evaluates as the OS preference changes.
+ * Appearance has two independent axes: a color scheme (System/Light/Dark) and a
+ * contrast level (System/Standard/High). Both persist per-browser. When
+ * following the system, each axis re-evaluates as the OS preference changes.
  *
  * The initial paint is handled by the flash-prevention script in index.html;
  * this provider takes over once React mounts and on every later change.
  */
-export function ThemeProvider({ children }: React.PropsWithChildren): React.ReactNode {
+export function AppearanceProvider({ children }: React.PropsWithChildren): React.ReactNode {
   const [colorScheme, setColorScheme] = usePersistedState<ColorScheme>(COLOR_SCHEME_KEY, "system");
   const [contrast, setContrast] = usePersistedState<Contrast>(CONTRAST_KEY, "system");
 
@@ -117,19 +117,20 @@ export function ThemeProvider({ children }: React.PropsWithChildren): React.Reac
   }, [colorScheme, contrast]);
 
   return (
-    <ThemeContext.Provider value={{ colorScheme, setColorScheme, contrast, setContrast }}>
+    <AppearanceContext.Provider value={{ colorScheme, setColorScheme, contrast, setContrast }}>
       {children}
-    </ThemeContext.Provider>
+    </AppearanceContext.Provider>
   );
 }
 
 /**
- * Reads the active theme and its setters. Must be used within a ThemeProvider.
+ * Reads the active appearance and its setters. Must be used within an
+ * AppearanceProvider.
  */
-export function useTheme(): ThemeContextValue {
-  const context = useContext(ThemeContext);
+export function useAppearance(): AppearanceContextValue {
+  const context = useContext(AppearanceContext);
   if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    throw new Error("useAppearance must be used within an AppearanceProvider");
   }
   return context;
 }

@@ -52,7 +52,7 @@ import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
 import ReviewAndInstallButton from "~/components/core/ReviewAndInstallButton";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
-import ThemeSelector from "~/components/core/ThemeSelector";
+import AppearanceSettings from "~/components/core/AppearanceSettings";
 import Questions from "~/components/questions/Questions";
 import { _, TranslatedString } from "~/i18n";
 
@@ -462,13 +462,13 @@ const Page = ({
   }
 
   // Build endSlot content:
-  // [custom endSlot] [ReviewAndInstallButton] [ProgressStatusMonitor] [ThemeSelector]
+  // [custom endSlot] [ReviewAndInstallButton] [ProgressStatusMonitor] [AppearanceSettings]
   const endSlotContent = (
     <>
       {endSlot}
       {!noDefaultEndSlot && <ReviewAndInstallButton />}
       {!noDefaultProgressMonitor && <ProgressStatusMonitor />}
-      <ThemeSelector />
+      <AppearanceSettings />
     </>
   );
 
