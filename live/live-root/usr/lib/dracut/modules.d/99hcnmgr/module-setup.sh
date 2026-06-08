@@ -37,13 +37,13 @@ install() {
   # This prevents conflicts when rd.hcn=1 is used with standard ip= parameters
   local bypassed=0
   if [[ -e "${initdir}/var/lib/dracut/hooks/cmdline/99-nm-config.sh" ]]; then
-    sed -i 's/nm_generate_connections/:/g' "${initdir}/var/lib/dracut/hooks/cmdline/99-nm-config.sh" && bypassed=$((bypassed + 1))
+    sed -i 's#nm_generate_connections#:#g' "${initdir}/var/lib/dracut/hooks/cmdline/99-nm-config.sh" && bypassed=$((bypassed + 1))
   fi
   if [[ -e "${initdir}/usr/lib/systemd/system/NetworkManager-config-initrd.service" ]]; then
-    sed -i 's/\/usr\/libexec\/nm-initrd-generator/:/g' "${initdir}/usr/lib/systemd/system/NetworkManager-config-initrd.service" && bypassed=$((bypassed + 1))
+    sed -i 's#/usr/libexec/nm-initrd-generator#:#g' "${initdir}/usr/lib/systemd/system/NetworkManager-config-initrd.service" && bypassed=$((bypassed + 1))
   fi
   if [[ -e "${initdir}/usr/lib/systemd/system/NetworkManager-config-initrd.service.d/NetworkManager-config-initrd-dracut.conf" ]]; then
-    sed -i -E 's/\/usr\/lib(exec)?\/nm-initrd-generator -- \$\(getcmdline\)/:/g' "${initdir}/usr/lib/systemd/system/NetworkManager-config-initrd.service.d/NetworkManager-config-initrd-dracut.conf" && bypassed=$((bypassed + 1))
+    sed -i -E 's#/usr/lib(exec)?/nm-initrd-generator -- \$\(getcmdline\)#:#g' "${initdir}/usr/lib/systemd/system/NetworkManager-config-initrd.service.d/NetworkManager-config-initrd-dracut.conf" && bypassed=$((bypassed + 1))
   fi
   [[ $bypassed -eq 0 ]] && dwarn "hcnmgr: Could not bypass any NetworkManager generator hooks - this may cause conflicts"
 }

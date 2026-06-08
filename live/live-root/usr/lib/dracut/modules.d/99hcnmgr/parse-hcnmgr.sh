@@ -132,7 +132,7 @@ gkeyfile_has() {
 # Usage: gkeyfile_set <file> <section> <key> <val>
 gkeyfile_set() {
   if gkeyfile_has "$1" "$2" "$3"; then
-    sed -i "/^\[$2\]/,/^\[/ s/^\([[:space:]]*$3[[:space:]]*=[[:space:]]*\).*/\1$4/" "$1"
+    sed -i "/^\[$2\]/,/^\[/ s|^\([[:space:]]*$3[[:space:]]*=[[:space:]]*\).*|\1$4|" "$1"
   else
     sed -i "/^\[$2\]/a $3=$4" "$1"
   fi
@@ -360,7 +360,7 @@ else
         if strstr ":$HCN_IP:" ":$slave:" || strstr ":$HCN_IP:" ":$slave_dash:"; then
           matched=1
           # Replace slave with bond name (handle boundaries)
-          current_hcn_ip=$(echo "$HCN_IP" | sed -E "s/^($slave|$slave_dash)([: ]|$)/$BONDNAME\2/; s/([: ])($slave|$slave_dash)([: ]|$)/\1$BONDNAME\3/g")
+          current_hcn_ip=$(echo "$HCN_IP" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
           NEW_ARGS="$NEW_ARGS ip=$current_hcn_ip"
           CHANGED=1
           break
@@ -413,7 +413,7 @@ else
         slave_dash=$(str_replace "$slave" ":" "-")
         if strstr ":$HCN_ROUTE:" ":$slave:" || strstr ":$HCN_ROUTE:" ":$slave_dash:"; then
           matched=1
-          current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s/^($slave|$slave_dash)([: ]|$)/$BONDNAME\2/; s/([: ])($slave|$slave_dash)([: ]|$)/\1$BONDNAME\3/g")
+          current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
           NEW_ARGS="$NEW_ARGS rd.route=$current_hcn_route"
           CHANGED=1
           break
@@ -445,7 +445,7 @@ else
       slave_dash=$(str_replace "$slave" ":" "-")
       if strstr "$MOD_CMDLINE" "$slave" || strstr "$MOD_CMDLINE" "$slave_dash"; then
         info "hcnmgr: replacing slave $slave in cmdline with $BONDNAME"
-        MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed -E "s/([:=])($slave|$slave_dash)([: ]|$)/\1$BONDNAME\3/g")
+        MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed -E "s#([:=])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
         CHANGED=1
       fi
     done
