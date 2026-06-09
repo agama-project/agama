@@ -22,7 +22,8 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockStage } from "~/test-utils";
+import { installerRender, mockRoutes, mockStage } from "~/test-utils";
+import { ROOT } from "~/routes/paths";
 import InstallationFinished from "~/components/core/InstallationFinished";
 
 const mockUseIsGrub2WithTpm = jest.fn();
@@ -34,6 +35,7 @@ describe("InstallationFinished", () => {
   beforeEach(() => {
     mockUseIsGrub2WithTpm.mockReturnValue(false);
     mockStage("finished");
+    mockRoutes(ROOT.installationFinished);
   });
 
   it("shows the finished installation screen", () => {

@@ -22,13 +22,10 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockProduct, mockRoutes, mockL10n } from "~/test-utils";
-import { useSystem } from "~/hooks/model/system";
+import { installerRender, mockProduct, mockRoutes, mockL10n, mockSystem } from "~/test-utils";
 import { Product } from "~/model/system";
 import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
-import { System } from "~/model/system/network";
-import { ConnectivityState } from "~/types/network";
 import * as utils from "~/utils";
 import { ROOT } from "~/routes/paths";
 import InstallerL10nOptions, { InstallerL10nOptionsProps } from "./InstallerL10nOptions";
@@ -53,18 +50,6 @@ const tumbleweed: Product = {
   registration: false,
 };
 
-const network: System = {
-  connections: [],
-  devices: [],
-  state: {
-    connectivity: ConnectivityState.FULL,
-    copyNetwork: true,
-    networkingEnabled: true,
-    wirelessEnabled: true,
-  },
-  accessPoints: [],
-};
-
 const mockChangeUIKeymap = jest.fn();
 const mockChangeUILanguage = jest.fn();
 const mockPatchConfigFn = jest.fn();
@@ -76,14 +61,6 @@ jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   configureL10nAction: (payload) => mockConfigureL10nActionFn(payload),
   patchConfig: (payload) => mockPatchConfigFn(payload),
-}));
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: (): ReturnType<typeof useSystem> => ({
-    l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
-    network,
-  }),
 }));
 
 jest.mock("~/hooks/model/status", () => ({
@@ -107,6 +84,7 @@ describe("InstallerL10nOptions", () => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
     mockProgressesFn.mockReturnValue([]);
     mockStateFn.mockReturnValue("configuring");
+    mockSystem({ l10n: { locales, keymaps } });
     mockProduct(tumbleweed);
     mockL10n({
       language: "de-DE",

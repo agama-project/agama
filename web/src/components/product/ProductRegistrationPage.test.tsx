@@ -65,10 +65,6 @@ let mockRegistrationInfo: RegistrationInfo | undefined;
 let mockConfig: Config;
 let mockIssues: Issue[] = [];
 
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({ l10n: { locale: "en_US" } }),
-}));
-
 jest.mock("~/hooks/model/system/software", () => ({
   useSystem: () => ({ registration: mockRegistrationInfo }),
 }));

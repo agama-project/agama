@@ -21,7 +21,7 @@
  */
 
 import React, { Suspense, useId } from "react";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
@@ -50,10 +50,12 @@ import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
-import ReviewAndInstallButton from "~/components/core/ReviewAndInstallButton";
+import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
+import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import AppearanceSettings from "~/components/core/AppearanceSettings";
 import Questions from "~/components/questions/Questions";
+import { PRODUCT, ROOT } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 
 import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
@@ -352,12 +354,12 @@ type PageProps = (StandardPageProps | MinimalPageProps) & {
   noDefaultProgressMonitor?: boolean;
 
   /**
-   * If true, the default ReviewAndInstallButton will not be
-   * automatically added to endSlot.
+   * Whether the localization selector in the header should display its current
+   * values (language and keyboard) next to the icons.
    *
-   * Default: `false` (ReviewAndInstallButton is added)
+   * Default: `false` (icon-only, to save space in the header)
    */
-  noDefaultEndSlot?: boolean;
+  showL10nValues?: boolean;
 };
 
 /**
@@ -376,15 +378,47 @@ const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
 /**
  * Standard page layout with header, optional progress tracking, and optional
  * qestions rendering.
+ *
+ * It also composes the header's trailing slot shared by every standard page:
+ * the localization selector, the progress status monitor, any page-specific
+ * content, the appearance settings, and the installer options menu.
  */
 const StandardLayout = ({
   progress,
   children,
   showQuestions = true,
+  endSlot,
+  noDefaultProgressMonitor = false,
+  showL10nValues = false,
   ...headerProps
-}: Omit<StandardPageProps, "variant">) => {
+}: Omit<StandardPageProps, "variant"> & {
+  noDefaultProgressMonitor?: boolean;
+  showL10nValues?: boolean;
+}) => {
+  const location = useLocation();
+
+  // Changing the product or mode makes no sense on the product selection page
+  // itself nor during/after the installation.
+  const showChangeProductOption = ![
+    PRODUCT.changeProduct,
+    ROOT.installation,
+    ROOT.installationProgress,
+    ROOT.installationFinished,
+    ROOT.installationExit,
+  ].includes(location.pathname);
+
+  const endSlotContent = (
+    <>
+      <InstallerL10nOptions showValues={showL10nValues} />
+      {!noDefaultProgressMonitor && <ProgressStatusMonitor />}
+      {endSlot}
+      <AppearanceSettings />
+      <InstallerOptionsMenu hideLabel showChangeProductOption={showChangeProductOption} />
+    </>
+  );
+
   return (
-    <PFPage isContentFilled masthead={<Header {...headerProps} />}>
+    <PFPage isContentFilled masthead={<Header {...headerProps} endSlot={endSlotContent} />}>
       <Suspense fallback={<Loading />}>
         <PageGroup tabIndex={-1} id="main-content">
           {children || <Outlet />}
@@ -449,34 +483,12 @@ const StandardLayout = ({
  * </Page>
  * ```
  */
-const Page = ({
-  variant = "standard",
-  endSlot,
-  noDefaultProgressMonitor = false,
-  noDefaultEndSlot = false,
-  children,
-  ...props
-}: PageProps): React.ReactNode => {
+const Page = ({ variant = "standard", children, ...props }: PageProps): React.ReactNode => {
   if (variant === "minimal") {
     return <MinimalLayout>{children}</MinimalLayout>;
   }
 
-  // Build endSlot content:
-  // [custom endSlot] [ReviewAndInstallButton] [ProgressStatusMonitor] [AppearanceSettings]
-  const endSlotContent = (
-    <>
-      {endSlot}
-      {!noDefaultEndSlot && <ReviewAndInstallButton />}
-      {!noDefaultProgressMonitor && <ProgressStatusMonitor />}
-      <AppearanceSettings />
-    </>
-  );
-
-  return (
-    <StandardLayout {...props} endSlot={endSlotContent}>
-      {children || <Outlet />}
-    </StandardLayout>
-  );
+  return <StandardLayout {...props}>{children}</StandardLayout>;
 };
 
 /**

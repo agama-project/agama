@@ -76,7 +76,9 @@ export default function ChangeProductOption({
   showIcon = false,
   ...props
 }: ChangeProductOptionProps) {
-  const { products, software } = useSystem();
+  const system = useSystem();
+  const products = system?.products ?? [];
+  const software = system?.software;
   const { stage } = useStatus();
   const resolvedPath = useHref(PATHS.changeProduct);
   const to = component === "a" ? href(PATHS.changeProduct) : resolvedPath;

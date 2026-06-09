@@ -32,7 +32,6 @@ import {
 } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
-import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
@@ -69,7 +68,7 @@ function InstallationFinished() {
   const isGrub2WithTpm = useIsGrub2WithTpm();
 
   return (
-    <Page noDefaultProgressMonitor noDefaultEndSlot endSlot={<InstallerOptionsMenu hideLabel />}>
+    <Page noDefaultProgressMonitor>
       <Page.Content>
         <SplitInfoLayout
           icon="done_all"

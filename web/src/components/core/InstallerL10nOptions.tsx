@@ -87,9 +87,7 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
  * Not available in remote installations.
  */
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
-  const {
-    l10n: { keymaps },
-  } = useSystem();
+  const keymaps = useSystem()?.l10n?.keymaps ?? [];
 
   if (!localConnection()) {
     return (
@@ -569,9 +567,7 @@ export default function InstallerL10nOptions({
   onClose,
 }: InstallerL10nOptionsProps) {
   const location = useLocation();
-  const {
-    l10n: { locales },
-  } = useSystem();
+  const locales = useSystem()?.l10n?.locales ?? [];
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { stage } = useStatus();
   const selectedProduct = useProductInfo();

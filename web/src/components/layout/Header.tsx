@@ -108,12 +108,11 @@ export type HeaderProps = {
    * interaction patterns, though it is often a button or a link.
    *
    * **Common Use Cases:**
-   * - Global navigation links (e.g., "Install").
    * - Button triggers for high-priority settings (e.g., L10n settings).
    * - Primary call-to-action buttons for the current workflow.
    *
    * @example
-   * <Header endSlot={<Link to="/overview">Review and Install</Link>} />
+   * <Header endSlot={<Button>Retry</Button>} />
    */
   endSlot?: React.ReactNode;
 
