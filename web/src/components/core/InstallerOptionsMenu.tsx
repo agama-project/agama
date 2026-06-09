@@ -99,7 +99,7 @@ export default function InstallerOptionsMenu({
                 variant="plain"
               >
                 <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-                  {!hideLabel && _("More")} <Icon name="expand_circle_down" />
+                  {!hideLabel && _("More")} <Icon name="expand_circle_down" isMiddleAligned />
                 </Flex>
               </MenuToggle>
             )}

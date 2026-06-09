@@ -152,7 +152,7 @@ export default function AppearanceSettings(): React.ReactNode {
       appendTo={() => document.body}
     >
       <Button variant="plain" aria-label={appearanceLabel}>
-        <Icon name="routine" />
+        <Icon name="routine" isMiddleAligned />
       </Button>
     </Popover>
   );
