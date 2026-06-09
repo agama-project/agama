@@ -22,22 +22,24 @@ use std::{fs::File, io::BufReader};
 
 use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient};
 use agama_utils::api::question::{AnswerRule, Policy, QuestionSpec};
+use agama_utils::make_long;
 use anyhow::anyhow;
 use clap::{value_parser, Arg, ArgMatches, Command, ValueEnum};
 use gettextrs::gettext;
 use serde::Deserialize;
 
 pub fn build_questions_cmd() -> Command {
+    let about = gettext("Handle installer questions");
     Command::new("questions")
         .subcommand_required(true)
         .arg_required_else_help(true)
-        .about(gettext("Handle installer questions"))
-        .long_about(gettext("Handle installer questions.\n\n\
-        Agama might require user intervention at any time. The reasons include providing some \
+        .about(&about)
+        .long_about(make_long(&about, &gettext(
+                             "Agama might require user intervention at any time. The reasons include providing some \
                              missing information (e.g., the password to decrypt a file system) or deciding what to do in \
                              case of an error (e.g., cannot connect to the repository).\n\
                              \n\
-                             This command allows answering such questions directly from the command-line."))
+                             This command allows answering such questions directly from the command-line.")))
         .subcommand(
             Command::new("mode")
                 .about(gettext("Set the mode for answering questions"))
@@ -49,20 +51,23 @@ pub fn build_questions_cmd() -> Command {
                 )
         )
         .subcommand(
-            Command::new("answers")
-                .about(gettext("Load predefined answers"))
-                .long_about(gettext("Load predefined answers.\n\n\
-                        It allows predefining answers for specific questions in order to skip them in interactive \
-                                     mode or change the answer in automatic mode.\n\
-                                     \n\
-                                     Please check Agama documentation for more details and examples: \
-                                     https://github.com/openSUSE/agama/blob/master/doc/questions."))
-                .arg(
-                    Arg::new("path")
-                        .value_name("PATH")
-                        .required(true)
-                        .help(gettext("Path to a file containing the answers in JSON format"))
-                )
+            {
+                let about = gettext("Load predefined answers");
+                Command::new("answers")
+                    .about(&about)
+                    .long_about(make_long(&about, &gettext(
+                                 "It allows predefining answers for specific questions in order to skip them in interactive \
+                                 mode or change the answer in automatic mode.\n\
+                                 \n\
+                                 Please check Agama documentation for more details and examples: \
+                                 https://github.com/openSUSE/agama/blob/master/doc/questions.")))
+                    .arg(
+                        Arg::new("path")
+                            .value_name("PATH")
+                            .required(true)
+                            .help(gettext("Path to a file containing the answers in JSON format"))
+                    )
+            }
         )
         .subcommand(
             Command::new("list")

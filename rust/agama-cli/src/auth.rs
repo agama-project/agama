@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{auth::AuthToken, error::ServiceError};
+use agama_utils::make_long;
 use clap::{ArgMatches, Command};
 use url::Url;
 
@@ -60,12 +61,13 @@ impl AuthHTTPClient {
 }
 
 pub fn build_auth_cmd() -> Command {
+    let about = gettext("Authenticate with Agama's server");
     Command::new("auth")
         .subcommand_required(true)
         .arg_required_else_help(true)
-        .about(gettext("Authenticate with Agama's server"))
-        .long_about(gettext("Authenticate with Agama's server.\n\n\
-        Unless you are executing this program as root, you need to authenticate with Agama's server \
+        .about(&about)
+        .long_about(make_long(&about, &gettext(
+                             "Unless you are executing this program as root, you need to authenticate with Agama's server \
                              for most operations. You can log in by specifying the root password through the \"auth login\" \
                              command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is \
                              stored to authenticate the following requests.\n\
@@ -75,14 +77,17 @@ pub fn build_auth_cmd() -> Command {
                              to such a file.\n\
                              \n\
                              You can logout at any time by using the \"auth logout\" command, although this command does \
-                             not affect the root user."))
+                             not affect the root user.")))
         .subcommand(
-            Command::new("login")
-                .about(gettext("Authenticate with Agama's server and store the token"))
-                .long_about(gettext("Authenticate with Agama's server and store the token.\n\n\
-                        This command tries to get the password from the standard input. If it is not there, it asks \
-                                     the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The \
-                                     token will be automatically sent to authenticate the following requests."))
+            {
+                let about = gettext("Authenticate with Agama's server and store the token");
+                Command::new("login")
+                    .about(&about)
+                    .long_about(make_long(&about, &gettext(
+                                 "This command tries to get the password from the standard input. If it is not there, it asks \
+                                 the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The \
+                                 token will be automatically sent to authenticate the following requests.")))
+            }
         )
         .subcommand(
             Command::new("logout")

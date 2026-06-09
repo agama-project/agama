@@ -35,6 +35,7 @@ use agama_lib::{
 };
 use agama_transfer::Transfer;
 use agama_utils::api::{self, status::Stage, FinishMethod, IssueWithScope};
+use agama_utils::make_long;
 use anyhow::Context;
 use clap::{Arg, ArgAction, ArgMatches, Command};
 use fluent_uri::UriRef;
@@ -87,18 +88,17 @@ impl GlobalOpts {
 }
 
 pub fn build_cli() -> Command {
+    let about = gettext("Agama's command-line interface");
     Command::new("agama")
         .subcommand_required(true)
         .arg_required_else_help(true)
-        .about(gettext("Agama's command-line interface"))
-        .long_about(gettext(
-            "Agama's command-line interface\n\
-            \n\
-            This program allows inspecting or changing Agama's configuration, handling installation \
+        .about(&about)
+        .long_about(make_long(&about, &gettext(
+            "This program allows inspecting or changing Agama's configuration, handling installation \
             profiles, starting the installation, monitoring the process, etc.\n\
             \n\
             Please, use the \"help\" command to learn more.",
-        ))
+        )))
         .arg(
             Arg::new("host")
                 .value_name("HOST")

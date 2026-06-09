@@ -20,20 +20,22 @@
 
 use agama_lib::http::BaseHTTPClient;
 use agama_lib::manager::http_client::ManagerHTTPClient;
+use agama_utils::make_long;
 use clap::{Arg, ArgMatches, Command};
 use gettextrs::gettext;
 use std::io;
 use std::path::PathBuf;
 
 pub fn build_logs_cmd() -> Command {
+    let about = gettext("Collect the installer logs");
     Command::new("logs")
         .subcommand_required(true)
         .arg_required_else_help(true)
-        .about(gettext("Collect the installer logs"))
-        .long_about(gettext("Collect the installer logs.\n\n\
-        The installer logs are stored in a compressed archive for further inspection. The file \
+        .about(&about)
+        .long_about(make_long(&about, &gettext(
+                             "The installer logs are stored in a compressed archive for further inspection. The file \
                              includes system and Agama-specific logs and configuration files. They are crucial to \
-                             troubleshoot and debug problems."))
+                             troubleshoot and debug problems.")))
         .subcommand(
             Command::new("store")
                 .about(gettext("Collect and store the logs in a tar archive"))
