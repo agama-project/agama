@@ -122,10 +122,12 @@ shared_examples "with filesystem" do
       expect(model_json[:mountPath]).to eq("/test")
       expect(model_json[:filesystem]).to eq(
         {
-          reuse:   true,
-          default: false,
-          type:    "xfs",
-          label:   "test"
+          reuse:        true,
+          default:      false,
+          type:         "xfs",
+          label:        "test",
+          mkfsOptions:  ["version=2"],
+          mountOptions: ["rw"]
         }
       )
     end

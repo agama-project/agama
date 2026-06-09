@@ -142,7 +142,9 @@
         "reuse": { "type": "boolean" },
         "default": { "type": "boolean" },
         "type": { "$ref": "#/$defs/filesystemType" },
-        "label": { "type": "string" }
+        "label": { "type": "string" },
+        "mkfsOptions": { "type": "array", "items": { "type": "string" } },
+        "mountOptions": { "type": "array", "items": { "type": "string" } }
       }
     },
     "filesystemType": {

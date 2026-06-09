@@ -41,10 +41,12 @@ module Agama
           # @return [Hash]
           def conversions
             {
-              reuse: model_json.dig(:filesystem, :reuse),
-              path:  model_json[:mountPath],
-              type:  convert_type,
-              label: model_json.dig(:filesystem, :label)
+              reuse:         model_json.dig(:filesystem, :reuse),
+              path:          model_json[:mountPath],
+              type:          convert_type,
+              label:         model_json.dig(:filesystem, :label),
+              mkfs_options:  model_json.dig(:filesystem, :mkfsOptions),
+              mount_options: model_json.dig(:filesystem, :mountOptions)
             }
           end
 
