@@ -88,13 +88,15 @@ impl GlobalOpts {
 }
 
 pub fn build_cli() -> Command {
+    // TRANSLATORS: CLI help for: agama
     let about = gettext("Agama's command-line interface");
     Command::new("agama")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        .long_about(make_long(&about, &gettext(
-            "This program allows inspecting or changing Agama's configuration, handling installation \
+        // TRANSLATORS: CLI help for: agama (details)
+        .long_about(make_long(&about, &gettext("\
+            This program allows inspecting or changing Agama's configuration, handling installation \
             profiles, starting the installation, monitoring the process, etc.\n\
             \n\
             Please, use the \"help\" command to learn more.",
@@ -104,8 +106,9 @@ pub fn build_cli() -> Command {
                 .value_name("HOST")
                 .long("host")
                 .default_value("http://localhost")
-                .long_help(gettext(
-                    "URI pointing to Agama's remote host.\n\
+                // TRANSLATORS: CLI help for: agama --host <HOST>
+                .long_help(gettext("\
+                    URI pointing to Agama's remote host.\n\
                     \n\
                           Examples: https://my-server.lan my-server.local localhost:10443",
                 ))
@@ -115,6 +118,7 @@ pub fn build_cli() -> Command {
                 .long("insecure")
                 .action(ArgAction::SetTrue)
                 .default_value("false")
+                // TRANSLATORS: CLI help for: agama --insecure
                 .help(gettext("Whether to accept invalid (self-signed, ...) certificates or not"))
         )
         .arg(
@@ -122,6 +126,7 @@ pub fn build_cli() -> Command {
                 .long("local")
                 .action(ArgAction::SetTrue)
                 .default_value("false")
+                // TRANSLATORS: CLI help for: agama --local
                 .help(gettext("Some commands could be able to work even without connection to the agama server"))
         )
         .subcommand(crate::commands::build_config_cmd())

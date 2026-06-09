@@ -27,17 +27,20 @@ use std::io;
 use std::path::PathBuf;
 
 pub fn build_logs_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama logs
     let about = gettext("Collect the installer logs");
     Command::new("logs")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        .long_about(make_long(&about, &gettext(
-                             "The installer logs are stored in a compressed archive for further inspection. The file \
+        // TRANSLATORS: CLI help for: agama logs (details)
+        .long_about(make_long(&about, &gettext("\
+                             The installer logs are stored in a compressed archive for further inspection. The file \
                              includes system and Agama-specific logs and configuration files. They are crucial to \
                              troubleshoot and debug problems.")))
         .subcommand(
             Command::new("store")
+                // TRANSLATORS: CLI help for: agama logs store
                 .about(gettext("Collect and store the logs in a tar archive"))
                 .arg(
                     Arg::new("destination")
@@ -45,12 +48,14 @@ pub fn build_logs_cmd() -> Command {
                         .short('d')
                         .long("destination")
                         .value_parser(clap::value_parser!(PathBuf))
+                        // TRANSLATORS: CLI help for: agama logs store --destination <DESTINATION>
                         .help(gettext("Path to destination directory and, optionally, the archive file name. The extension will \
                                        be added automatically"))
                 )
         )
         .subcommand(
             Command::new("list")
+                // TRANSLATORS: CLI help for: agama logs list
                 .about(gettext("List the logs to collect"))
         )
 }

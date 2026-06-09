@@ -29,19 +29,22 @@ use gettextrs::gettext;
 use serde::Deserialize;
 
 pub fn build_questions_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama questions
     let about = gettext("Handle installer questions");
     Command::new("questions")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        .long_about(make_long(&about, &gettext(
-                             "Agama might require user intervention at any time. The reasons include providing some \
+        // TRANSLATORS: CLI help for: agama questions (details)
+        .long_about(make_long(&about, &gettext("\
+                             Agama might require user intervention at any time. The reasons include providing some \
                              missing information (e.g., the password to decrypt a file system) or deciding what to do in \
                              case of an error (e.g., cannot connect to the repository).\n\
                              \n\
                              This command allows answering such questions directly from the command-line.")))
         .subcommand(
             Command::new("mode")
+                // TRANSLATORS: CLI help for: agama questions mode
                 .about(gettext("Set the mode for answering questions"))
                 .arg(
                     Arg::new("value")
@@ -52,11 +55,13 @@ pub fn build_questions_cmd() -> Command {
         )
         .subcommand(
             {
+                // TRANSLATORS: CLI help for: agama questions answers
                 let about = gettext("Load predefined answers");
                 Command::new("answers")
                     .about(&about)
-                    .long_about(make_long(&about, &gettext(
-                                 "It allows predefining answers for specific questions in order to skip them in interactive \
+                    // TRANSLATORS: CLI help for: agama questions answers (details)
+                    .long_about(make_long(&about, &gettext("\
+                                 It allows predefining answers for specific questions in order to skip them in interactive \
                                  mode or change the answer in automatic mode.\n\
                                  \n\
                                  Please check Agama documentation for more details and examples: \
@@ -65,16 +70,19 @@ pub fn build_questions_cmd() -> Command {
                         Arg::new("path")
                             .value_name("PATH")
                             .required(true)
+                            // TRANSLATORS: CLI help for: agama questions answers <PATH>
                             .help(gettext("Path to a file containing the answers in JSON format"))
                     )
             }
         )
         .subcommand(
             Command::new("list")
+                // TRANSLATORS: CLI help for: agama questions list
                 .about(gettext("Prints the list of questions that are waiting for an answer in JSON format"))
         )
         .subcommand(
             Command::new("ask")
+                // TRANSLATORS: CLI help for: agama questions ask
                 .about(gettext("Reads a question definition in JSON from stdin and prints the response when it is answered"))
         )
 }
