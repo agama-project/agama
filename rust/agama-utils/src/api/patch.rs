@@ -33,9 +33,13 @@ pub struct Patch {
 }
 
 impl Patch {
-    pub fn with_update(config: &Config) -> Result<Self, serde_json::Error> {
+    pub fn with_update(config: Value) -> Result<Self, serde_json::Error> {
         Ok(Self {
-            update: Some(serde_json::to_value(config)?),
+            update: Some(config),
         })
+    }
+
+    pub fn with_config(config: &Config) -> Result<Self, serde_json::Error> {
+        Self::with_update(serde_json::to_value(config)?)
     }
 }

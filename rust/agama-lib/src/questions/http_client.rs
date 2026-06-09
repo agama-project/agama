@@ -101,7 +101,7 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch::with_update(&config)?;
+        let patch = Patch::with_config(&config)?;
 
         self.client.patch_void("/config", &patch).await?;
         Ok(())
@@ -120,7 +120,7 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch::with_update(&config)?;
+        let patch = Patch::with_config(&config)?;
         self.client.patch_void("/config", &patch).await?;
         Ok(())
     }
