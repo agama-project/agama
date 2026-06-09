@@ -26,10 +26,10 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{event, software::Resolvable, storage::Config},
+    api::{event, storage::Config},
     issue,
     message::GetResolvables,
-    progress, BoxFuture,
+    progress, BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use serde_json::Value;

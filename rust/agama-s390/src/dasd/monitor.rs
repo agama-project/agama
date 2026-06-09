@@ -18,10 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::{
-    storage,
-    storage_client::proxies::{dasd, DASDProxy},
-};
+use crate::storage_client::proxies::{dasd, DASDProxy};
 use agama_utils::{
     actor::Handler,
     api::{
@@ -47,8 +44,6 @@ pub enum Error {
     DBus(#[from] zbus::Error),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
-    #[error(transparent)]
-    Storage(#[from] storage::service::Error),
 }
 
 #[derive(Debug, Deserialize)]
@@ -72,7 +67,6 @@ impl From<ProgressData> for Progress {
 }
 
 pub struct Monitor {
-    storage: Handler<storage::Service>,
     progress: Handler<progress::Service>,
     events: event::Sender,
     connection: Connection,
@@ -80,13 +74,11 @@ pub struct Monitor {
 
 impl Monitor {
     pub fn new(
-        storage: Handler<storage::Service>,
         progress: Handler<progress::Service>,
         events: event::Sender,
         connection: Connection,
     ) -> Self {
         Self {
-            storage,
             progress,
             events,
             connection,
@@ -135,7 +127,6 @@ impl Monitor {
     fn handle_system_changed(&self, _signal: dasd::SystemChanged) -> Result<(), Error> {
         self.events
             .send(Event::SystemChanged { scope: Scope::DASD })?;
-        self.storage.cast(storage::message::Probe)?;
         Ok(())
     }
 

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun  9 13:31:32 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix dectection of task changes (related to bsc#1266276).
+
+-------------------------------------------------------------------
 Tue Jun  9 09:41:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add dark and high-contrast styles, enabling per-product branding
