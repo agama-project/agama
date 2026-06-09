@@ -70,6 +70,15 @@ export type HeaderProps = {
   breadcrumbs?: BreadcrumbProps[];
 
   /**
+   * Whether to omit the leading "Installation" breadcrumb that links back to
+   * the main summary page.
+   *
+   * Set it on the summary page itself, where linking back to it would be
+   * redundant and the breadcrumb only needs to name the current location.
+   */
+  hideSummaryLink?: boolean;
+
+  /**
    * The first slot in the trailing actions group.
    *
    * While intended for status indicators like the progress monitor,
@@ -121,20 +130,80 @@ export type HeaderProps = {
 };
 
 /**
- * Internal component for building the page header
+ * Main breadcrumb navigation for the page, shown together with the product
+ * logo and name.
+ *
+ * Used when the header has no explicit title; the last breadcrumb item is the
+ * current page and acts as the heading (h1). A leading "Installation" item
+ * linking back to the main page is prepended unless `hideSummaryLink` is set.
+ */
+function MainBreadcrumbs({
+  breadcrumbs,
+  hideSummaryLink,
+}: Pick<HeaderProps, "breadcrumbs" | "hideSummaryLink">) {
+  const product = useProductInfo();
+
+  // Assemble the breadcrumb items first, so rendering only needs to know that
+  // the first item never shows a leading divider.
+  const items: BreadcrumbProps[] = [];
+
+  // Prepend the link back to the main summary page, unless hideSummaryLink is
+  // set or there is no product and breadcrumbs to accompany it.
+  if (product && breadcrumbs && !hideSummaryLink) {
+    items.push({
+      isEditorial: true,
+      path: ROOT.overview,
+      // TRANSLATORS: First breadcrumb item, linking back to the main page
+      // where the whole installation can be reviewed.
+      label: _("Installation"),
+    });
+  }
+
+  breadcrumbs?.forEach((item, index) =>
+    items.push({
+      ...item,
+      isEditorial: index === 0,
+      isCurrent: index === breadcrumbs.length - 1,
+    }),
+  );
+
+  return (
+    <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+      <ProductLogo product={product} width="35px" />
+      <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
+        {product && (
+          <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>
+            {product.name}
+          </Text>
+        )}
+        <Breadcrumbs>
+          {items.map((item, index) => (
+            <Breadcrumbs.Item key={index} {...item} hideDivider={index === 0 || item.hideDivider} />
+          ))}
+        </Breadcrumbs>
+      </Flex>
+    </Flex>
+  );
+}
+
+/**
+ * Page header (masthead) with the heading on the left and the trailing action
+ * slots on the right.
+ *
+ * The heading is either the given `title` or, when omitted, the main
+ * breadcrumb navigation with the product logo and name.
  *
  * Built on top of {@link https://www.patternfly.org/components/masthead | PF/Masthead}
  */
 export default function Header({
   title,
   breadcrumbs,
+  hideSummaryLink = false,
   startSlot,
   centerSlot,
   endSlot,
   hideSkipToContent = false,
 }: HeaderProps): React.ReactNode {
-  const product = useProductInfo();
-
   return (
     <Masthead>
       <MastheadMain className={spacingStyles.pXs}>
@@ -144,37 +213,7 @@ export default function Header({
             {title}
           </Title>
         ) : (
-          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-            <ProductLogo product={product} width="35px" />
-            <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
-              {product && (
-                <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>
-                  {product.name}
-                </Text>
-              )}
-              <Breadcrumbs>
-                {product && breadcrumbs && (
-                  <Breadcrumbs.Item
-                    hideDivider
-                    isEditorial
-                    path={ROOT.overview}
-                    // TRANSLATORS: First breadcrumb item, linking back to the main
-                    // page where the whole installation can be reviewed.
-                    label={_("Installation")}
-                  />
-                )}
-                {breadcrumbs &&
-                  breadcrumbs.map((props, i) => (
-                    <Breadcrumbs.Item
-                      isEditorial={i === 0}
-                      key={i}
-                      isCurrent={i === breadcrumbs.length - 1}
-                      {...props}
-                    />
-                  ))}
-              </Breadcrumbs>
-            </Flex>
-          </Flex>
+          <MainBreadcrumbs breadcrumbs={breadcrumbs} hideSummaryLink={hideSummaryLink} />
         )}
       </MastheadMain>
       <MastheadContent>

@@ -45,7 +45,6 @@ import NoDesktopAlert from "~/components/software/NoDesktopAlert";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
-import ProductLogo from "~/components/product/ProductLogo";
 import { startInstallation } from "~/api";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
@@ -150,11 +149,10 @@ const OverviewPageContent = ({ product }) => {
 
   return (
     <Page
-      title={
-        <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-          <ProductLogo product={product} width="35px" /> {product.name}
-        </Flex>
-      }
+      hideSummaryLink
+      // TRANSLATORS: Breadcrumb item for the main page, where the whole
+      // installation can be reviewed.
+      breadcrumbs={[{ label: _("Installation") }]}
     >
       <Page.Content>
         <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>

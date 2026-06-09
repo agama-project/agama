@@ -51,6 +51,13 @@ describe("Header", () => {
     screen.getByRole("link", { name: "Installation" });
   });
 
+  it("omits the 'Installation' breadcrumb when hideSummaryLink is set", () => {
+    installerRender(<Header hideSummaryLink breadcrumbs={[{ label: "Installation summary" }]} />);
+    screen.getByText(tumbleweed.name);
+    expect(screen.queryByRole("link", { name: "Installation" })).toBeNull();
+    screen.getByRole("heading", { name: "Installation summary", level: 1 });
+  });
+
   it("renders skip to content link", async () => {
     plainRender(<Header />);
     screen.getByRole("link", { name: "Skip to content" });
