@@ -326,14 +326,9 @@ impl Starter {
         let iscsi = match self.iscsi {
             Some(iscsi) => iscsi,
             None => {
-                iscsi::Service::starter(
-                    storage.clone(),
-                    self.events.clone(),
-                    progress.clone(),
-                    self.dbus.clone(),
-                )
-                .start()
-                .await?
+                iscsi::Service::starter(self.events.clone(), progress.clone(), self.dbus.clone())
+                    .start()
+                    .await?
             }
         };
 
@@ -378,7 +373,6 @@ impl Starter {
                     None
                 } else {
                     let s390 = s390::Service::starter(
-                        storage.clone(),
                         self.events.clone(),
                         progress.clone(),
                         issues.clone(),
@@ -507,6 +501,7 @@ impl Service {
 
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
         self.set_product(&config)?;
+        let old_config = self.config.clone();
         self.config = config;
 
         let action = SetConfigAction {
@@ -529,7 +524,10 @@ impl Service {
             task_manager: self.task_manager.clone(),
         };
 
-        if let Err(error) = action.run(self.product.clone(), self.config.clone()).await {
+        if let Err(error) = action
+            .run(self.product.clone(), self.config.clone(), old_config)
+            .await
+        {
             tracing::error!("Failed to set the configuration: {error}");
         }
 

@@ -20,7 +20,7 @@
 
 use crate::{
     dasd::{self, client::DASDClient},
-    message, storage, storage_client,
+    message, storage_client,
     zfcp::{self, client::ZFCPClient},
 };
 use agama_utils::{
@@ -50,7 +50,6 @@ pub enum Error {
 }
 
 pub struct Starter {
-    storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
@@ -61,14 +60,12 @@ pub struct Starter {
 
 impl Starter {
     pub fn new(
-        storage: Handler<storage::Service>,
         events: event::Sender,
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         connection: zbus::Connection,
     ) -> Self {
         Self {
-            storage,
             events,
             progress,
             issues,
@@ -115,7 +112,6 @@ impl Starter {
         let handler = actor::spawn(service);
 
         let dasd_monitor = dasd::Monitor::new(
-            self.storage.clone(),
             self.progress.clone(),
             self.events.clone(),
             self.connection.clone(),
@@ -125,7 +121,6 @@ impl Starter {
         // FIXME: allow mocking storage_client instead of preventing its creation during tests.
         if let Some(storage_client) = storage_client {
             let zfcp_monitor = zfcp::Monitor::new(
-                self.storage,
                 self.progress,
                 self.issues,
                 self.events,
@@ -146,13 +141,12 @@ pub struct Service {
 
 impl Service {
     pub fn starter(
-        storage: Handler<storage::Service>,
         events: event::Sender,
         progress: Handler<progress::Service>,
         issues: Handler<issue::Service>,
         connection: zbus::Connection,
     ) -> Starter {
-        Starter::new(storage, events, progress, issues, connection)
+        Starter::new(events, progress, issues, connection)
     }
 }
 

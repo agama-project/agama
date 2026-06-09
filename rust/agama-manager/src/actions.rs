@@ -286,6 +286,7 @@ impl SetConfigAction {
         self,
         product: Option<Arc<RwLock<ProductSpec>>>,
         config: Config,
+        old_config: Config,
     ) -> Result<(), service::Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
 
@@ -422,9 +423,21 @@ impl SetConfigAction {
 
         // Product-dependent configuration (software, storage, bootloader)
         if let Some(product) = product {
+            // TODO: improve this check. In some cases, appying the very same config might imply a
+            // change in the devices. For example, let say iSCSI config fails because a network
+            // problem. A second attempt with the same config could success, so a probing would be
+            // needed.
+            let force_storage_probe =
+                (config.iscsi != old_config.iscsi) || (config.s390 != old_config.s390);
+
             // Storage configuration
             let storage_task = self
-                .set_storage_config(Arc::clone(&product), &config, &storage_deps)
+                .set_storage_config(
+                    Arc::clone(&product),
+                    &config,
+                    &storage_deps,
+                    force_storage_probe,
+                )
                 .await;
 
             // Bootloader configuration (after storage)
@@ -528,7 +541,6 @@ impl SetConfigAction {
     async fn set_dasd_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
         let handler = self.s390.clone()?;
         let dasd_config = config.s390.clone().and_then(|c| c.dasd);
-        let storage_handler = self.storage.clone();
 
         Some(
             self.task_manager
@@ -538,17 +550,6 @@ impl SetConfigAction {
                     gettext("Configuring DASD devices"),
                 )
                 .run(|| async move {
-                    // Ensure storage was already probed before configuring DASD
-                    let storage_system = storage_handler
-                        .call(storage::message::GetSystem)
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    if storage_system.is_none() {
-                        storage_handler
-                            .call(storage::message::Probe)
-                            .await
-                            .map_err(TaskError::from_error)?
-                    }
                     let future = handler
                         .call(s390::message::SetDASDConfig::new(dasd_config))
                         .await
@@ -590,6 +591,7 @@ impl SetConfigAction {
         product: Arc<RwLock<ProductSpec>>,
         config: &Config,
         dependencies: &[crate::task_manager::TaskId],
+        force_probe: bool,
     ) -> crate::task_manager::TaskId {
         let handler = self.storage.clone();
         let storage_config = config.storage.clone();
@@ -602,6 +604,13 @@ impl SetConfigAction {
             )
             .depends_on(dependencies)
             .run(move || async move {
+                if force_probe {
+                    tracing::info!("Forcing a storage probing");
+                    handler
+                        .call(storage::message::Probe)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                }
                 let future = handler
                     .call(storage::message::SetConfig::new(product, storage_config))
                     .await

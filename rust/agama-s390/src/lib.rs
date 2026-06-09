@@ -26,7 +26,6 @@ pub mod message;
 pub mod test_utils;
 pub mod zfcp;
 
-use agama_storage as storage;
 use agama_storage_client as storage_client;
 
 #[cfg(test)]
@@ -53,16 +52,9 @@ mod tests {
             let connection = test::dbus::connection().await.unwrap();
             let progress = progress::Service::starter(events.clone()).start();
             let issues = issue::Service::starter(events.clone()).start();
-            let storage = storage::test_utils::start_service(
-                events.clone(),
-                issues.clone(),
-                progress.clone(),
-                connection.clone(),
-            )
-            .await;
             let dasd = TestDASDClient::new();
             let zfcp = TestZFCPClient::new();
-            let handler = Service::starter(storage, events, progress, issues, connection)
+            let handler = Service::starter(events, progress, issues, connection)
                 .with_dasd(dasd.clone())
                 .with_zfcp(zfcp.clone())
                 .start()

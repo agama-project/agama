@@ -121,7 +121,6 @@ dependencies = [
 name = "agama-iscsi"
 version = "0.1.0"
 dependencies = [
- "agama-storage",
  "agama-storage-client",
  "agama-utils",
  "async-trait",
@@ -295,7 +294,6 @@ dependencies = [
 name = "agama-s390"
 version = "0.1.0"
 dependencies = [
- "agama-storage",
  "agama-storage-client",
  "agama-utils",
  "async-trait",

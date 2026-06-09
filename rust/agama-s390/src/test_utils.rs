@@ -23,7 +23,6 @@
 use crate::{
     dasd::client::{DASDClient, Error},
     service::{Service, Starter},
-    storage,
     zfcp::{self, client::ZFCPClient},
 };
 use agama_utils::{
@@ -209,7 +208,6 @@ impl ZFCPClient for TestZFCPClient {
 
 /// Starts a testing s390 service.
 pub async fn start_service(
-    storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
@@ -217,7 +215,7 @@ pub async fn start_service(
 ) -> Handler<Service> {
     let dasd = TestDASDClient::new();
     let zfcp = TestZFCPClient::new();
-    Starter::new(storage, events, progress, issues, connection)
+    Starter::new(events, progress, issues, connection)
         .with_dasd(dasd)
         .with_zfcp(zfcp)
         .start()

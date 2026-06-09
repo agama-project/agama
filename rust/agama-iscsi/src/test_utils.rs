@@ -23,7 +23,6 @@
 use crate::{
     client::{DiscoverResult, Error, ISCSIClient},
     service::{Service, Starter},
-    storage,
 };
 use agama_utils::{
     actor::Handler,
@@ -127,13 +126,12 @@ impl ISCSIClient for TestClient {
 
 /// Starts a testing iSCSI service.
 pub async fn start_service(
-    storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
     connection: zbus::Connection,
 ) -> Handler<Service> {
     let client = TestClient::new();
-    Starter::new(storage, events, progress, connection)
+    Starter::new(events, progress, connection)
         .with_client(client)
         .start()
         .await
