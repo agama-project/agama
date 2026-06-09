@@ -131,7 +131,6 @@ pub async fn build() -> OpenApi {
         ("share/iscsi.schema.json", "iscsi", "Config"),
         ("share/storage.model.schema.json", "storage.model", "Config"),
         ("share/storage.schema.json", "storage", "Config"),
-        ("share/software.schema.json", "software", "Config"),
         ("share/zfcp.schema.json", "zfcp", "Config"),
         // Proposal schemas
         ("share/proposal.storage.schema.json", "storage", "Proposal"),
@@ -201,7 +200,7 @@ pub async fn build() -> OpenApi {
         {
             *schema = serde_json::json!({
                 "anyOf": [
-                    { "$ref": format!("#/components/schemas/{}.{}", name, group) },
+                    { "$ref": format!("#/components/schemas/{}{}", name, group) },
                     { "type": "null" }
                 ]
             });
@@ -340,7 +339,7 @@ fn import_schema(
     // avoid collisions
     extract_defs(
         &mut source_schema,
-        format!("{}.", name).as_str(),
+        format!("{}", name).as_str(),
         &mut extracted_defs,
     );
 
@@ -350,7 +349,7 @@ fn import_schema(
     };
 
     // insert provided schema
-    schemas.insert(format!("{}.{}", name, parent), source_schema_json);
+    schemas.insert(format!("{}{}", name, parent), source_schema_json);
 
     // put extracted defs into schemas
     for (def_name, def_value) in extracted_defs {
