@@ -59,7 +59,7 @@ export default function RetryLoadConfigQuestion({
   const error = question.data?.error;
 
   return (
-    <Popup isOpen title={_("Cannot apply configuration")}>
+    <Popup isOpen variant="medium" title={_("Cannot apply configuration")}>
       <Stack hasGutter>
         <Content isEditorial>{question.text}</Content>
         <Form isWidthLimited={false}>
