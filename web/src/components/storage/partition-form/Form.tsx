@@ -486,6 +486,11 @@ function PartitionFormContent({
           availablePartitions={availablePartitions}
         />
 
+        {/* Size (only for new partitions) */}
+        <form.Subscribe selector={(s) => s.values.name}>
+          {(name) => !isReusingPartition(name) && <SizeFields form={form} />}
+        </form.Subscribe>
+
         {/* Filesystem */}
         <FilesystemFields form={form} device={systemDevice} />
 
@@ -504,11 +509,6 @@ function PartitionFormContent({
               </NestedContent>
             )
           }
-        </form.Subscribe>
-
-        {/* Size (only for new partitions) */}
-        <form.Subscribe selector={(s) => s.values.name}>
-          {(name) => !isReusingPartition(name) && <SizeFields form={form} />}
         </form.Subscribe>
 
         <ActionGroup>
