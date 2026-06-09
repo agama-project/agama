@@ -26,7 +26,9 @@ use gettextrs::gettext;
 
 #[derive(ValueEnum, Debug, Clone)]
 pub enum Format {
+    /// json format suitable for machine processing
     Json,
+    /// textual format that is optimized to be read for humans, can change in future and can be localized
     Text,
 }
 
