@@ -265,8 +265,6 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
         .body(json.to_string())
         .unwrap();
 
-    wait_until_finished(&mut ctx.events).await;
-
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::OK);
     let request = Request::builder()
@@ -276,6 +274,7 @@ async fn test_patch_config_success(ctx: &mut Context) -> Result<(), Box<dyn Erro
 
     let response = ctx.client.send_request(request).await;
     assert_eq!(response.status(), StatusCode::OK);
+    wait_until_finished(&mut ctx.events).await;
 
     let body = body_to_string(response.into_body()).await;
     assert!(body.contains(r#""l10n":{"keymap":"en"}"#));
