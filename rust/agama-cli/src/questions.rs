@@ -41,7 +41,16 @@ pub enum QuestionsCommands {
     /// https://github.com/openSUSE/agama/blob/master/doc/questions.
     Answers {
         /// Path to a file containing the answers in JSON format.
-        path: String,
+        #[arg(required_unless_present_any = ["interactive", "tui"])]
+        path: Option<String>,
+
+        /// Interactively answer questions
+        #[arg(long, short)]
+        interactive: bool,
+
+        /// Interactively answer questions using TUI
+        #[arg(long, short)]
+        tui: bool,
     },
     /// Prints the list of questions that are waiting for an answer in JSON format
     List,
@@ -109,7 +118,17 @@ pub async fn run(client: BaseHTTPClient, subcommand: QuestionsCommands) -> anyho
     let client = HTTPClient::new(client);
     match subcommand {
         QuestionsCommands::Mode(value) => set_mode(client, value.value).await,
-        QuestionsCommands::Answers { path } => set_answers(client, &path).await,
+        QuestionsCommands::Answers { path, interactive, tui } => {
+            if tui {
+                crate::questions_tui::run_tui(client).await
+            } else if interactive {
+                crate::questions_ui::run_interactive(client).await
+            } else if let Some(path) = path {
+                set_answers(client, &path).await
+            } else {
+                Ok(())
+            }
+        },
         QuestionsCommands::List => list_questions(client).await,
         QuestionsCommands::Ask => ask_question(client).await,
     }

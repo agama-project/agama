@@ -334,8 +334,8 @@ pub enum QuestionField {
 /// Selector option.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct SelectionOption {
-    id: String,
-    label: String,
+    pub id: String,
+    pub label: String,
 }
 
 impl SelectionOption {

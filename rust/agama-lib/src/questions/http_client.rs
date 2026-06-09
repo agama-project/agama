@@ -125,6 +125,12 @@ impl HTTPClient {
         Ok(())
     }
 
+    pub async fn answer_question(&self, id: u32, answer: Answer) -> Result<(), QuestionsHTTPClientError> {
+        let update = UpdateQuestion::Answer { id, answer };
+        self.client.patch_void("/questions", &update).await?;
+        Ok(())
+    }
+
     pub async fn delete_question(&self, id: u32) -> Result<(), QuestionsHTTPClientError> {
         let update = UpdateQuestion::Delete { id };
         self.client.patch_void("/questions", &update).await?;
