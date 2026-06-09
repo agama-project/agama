@@ -88,31 +88,41 @@ impl GlobalOpts {
 
 pub fn build_cli() -> Command {
     Command::new("agama")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
         .about(gettext("Agama's command-line interface"))
-        .long_about(gettext("This program allows inspecting or changing Agama's configuration, handling installation\n\
-                             profiles, starting the installation, monitoring the process, etc.\n\
-                             \n\
-                             Please, use the \"help\" command to learn more."))
+        .long_about(gettext(
+            "Agama's command-line interface\n\
+            \n\
+            This program allows inspecting or changing Agama's configuration, handling installation \
+            profiles, starting the installation, monitoring the process, etc.\n\
+            \n\
+            Please, use the \"help\" command to learn more.",
+        ))
         .arg(
             Arg::new("host")
+                .value_name("HOST")
                 .long("host")
                 .default_value("http://localhost")
-                .help(gettext("URI pointing to Agama's remote host.\n\
-                               \n\
-                               Examples: https://my-server.lan my-server.local localhost:10443"))
+                .long_help(gettext(
+                    "URI pointing to Agama's remote host.\n\
+                    \n\
+                          Examples: https://my-server.lan my-server.local localhost:10443",
+                ))
         )
         .arg(
             Arg::new("insecure")
                 .long("insecure")
                 .action(ArgAction::SetTrue)
+                .default_value("false")
                 .help(gettext("Whether to accept invalid (self-signed, ...) certificates or not"))
         )
         .arg(
             Arg::new("local")
                 .long("local")
                 .action(ArgAction::SetTrue)
-                .help(gettext("Some commands could be able to work even without connection to\n\
-                               the agama server"))
+                .default_value("false")
+                .help(gettext("Some commands could be able to work even without connection to the agama server"))
         )
         .subcommand(crate::commands::build_config_cmd())
         .subcommand(crate::commands::build_probe_cmd())

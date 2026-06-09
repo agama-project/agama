@@ -36,21 +36,22 @@ pub fn build_config_cmd() -> Command {
 
 pub fn build_probe_cmd() -> Command {
     Command::new("probe")
-        .about(gettext("Analyze the system."))
-        .long_about(gettext("In Agama's jargon, the term 'probing' refers to the process of 'analyzing' the system. This\n\
-                             includes reading software repositories, analyzing storage devices, and more. The 'probe'\n\
-                             command initiates this analysis process and returns immediately.\n\
-                             \n\
+        .about(gettext("Analyze the system"))
+        .long_about(gettext("Analyze the system.\n\n\
+                             In Agama's jargon, the term 'probing' refers to the process of 'analyzing' the system. This \
+                             includes reading software repositories, analyzing storage devices, and more. The 'probe' \
+                             command initiates this analysis process and returns immediately. \
                              TODO: do we really need a \"probe\" action?"))
 }
 
 pub fn build_install_cmd() -> Command {
     Command::new("install")
-        .about(gettext("Start the system installation."))
-        .long_about(gettext("This command starts the installation process.  Beware it is a destructive operation because\n\
+        .about(gettext("Start the system installation"))
+        .long_about(gettext("Start the system installation.\n\n\
+                             This command starts the installation process.  Beware it is a destructive operation because \
                              it will set up the storage devices, install the packages, etc.\n\
                              \n\
-                             When the preconditions for the installation are not met, it informs the user and returns,\n\
+                             When the preconditions for the installation are not met, it informs the user and returns, \
                              making no changes to the system."))
 }
 
@@ -69,18 +70,21 @@ pub fn build_auth_cmd() -> Command {
 pub fn build_download_cmd() -> Command {
     Command::new("download")
         .about(gettext("Download file from a given (AutoYaST) URL"))
-        .long_about(gettext("The purpose of this command is to download files using AutoYaST supported schemas (e.g. device://).\n\
-                             It can be used to download additional scripts, configuration files and so on.\n\
-                             You can use it for downloading Agama autoinstallation profiles.\n\
+        .long_about(gettext("Download file from a given (AutoYaST) URL\n\n\
+                             The purpose of this command is to download files using AutoYaST supported schemas (e.g. device://). \
+                             It can be used to download additional scripts, configuration files and so on. \
+                             You can use it for downloading Agama autoinstallation profiles. \
                              If you want to convert an AutoYaST profile, use \"agama config generate\"."))
         .arg(
             Arg::new("url")
+                .value_name("URL")
                 .required(true)
-                .help(gettext("URL reference pointing to file for download. If a relative URL is\n\
-                               provided, it will be resolved against the current working directory."))
+                .help(gettext("URL reference pointing to file for download. If a relative URL is \
+                              provided, it will be resolved against the current working directory"))
         )
         .arg(
             Arg::new("destination")
+                .value_name("DESTINATION")
                 .required(true)
                 .value_parser(value_parser!(PathBuf))
                 .help(gettext("File name"))
@@ -89,37 +93,39 @@ pub fn build_download_cmd() -> Command {
 
 pub fn build_finish_cmd() -> Command {
     Command::new("finish")
-        .about(gettext("Finish the installation."))
+        .about(gettext("Finish the installation"))
         .arg(
             Arg::new("method")
+                .value_name("METHOD")
                 .value_parser(value_parser!(FinishMethod))
                 .help(gettext(
                     "What to do after finishing the installation. Possible values:\n\
                                \n\
-                               stop - do not reboot and the Agama backend continues running.\n\
+                               \x20  stop - do not reboot and the Agama backend continues running.\n\
                                \n\
-                               reboot - reboot into the installed system. This value is the\n\
-                                        default. It can be overriden by setting the inst.finish\n\
+                               \x20  reboot - reboot into the installed system. This value is the \
+                                        default. It can be overriden by setting the inst.finish \
                                         kernel command-line argument.\n\
                                \n\
-                               halt - halt the installed machine.\n\
+                               \x20  halt - halt the installed machine.\n\
                                \n\
-                               poweroff - power off the installed machine.",
+                               \x20  poweroff - power off the installed machine.",
                 )),
         )
 }
 
 pub fn build_monitor_cmd() -> Command {
     Command::new("monitor").about(gettext(
-        "Continuously monitors the Agama service until it finishes.",
+        "Continuously monitors the Agama service until it finishes",
     ))
 }
 
 pub fn build_status_cmd() -> Command {
     Command::new("status")
-        .about(gettext("Prints the current state of the installation (e.g., waiting, blocked, running, or finished)."))
+        .about(gettext("Prints the current state of the installation (e.g., waiting, blocked, running, or finished)"))
         .arg(
             Arg::new("format")
+                .value_name("FORMAT")
                 .long("format")
                 .value_parser(value_parser!(Format))
                 .default_value("text")
@@ -129,12 +135,12 @@ pub fn build_status_cmd() -> Command {
 
 pub fn build_events_cmd() -> Command {
     Command::new("events")
-        .about(gettext("Display Agama events."))
+        .about(gettext("Display Agama events"))
         .arg(
             Arg::new("pretty")
                 .short('p')
                 .long("pretty")
                 .action(ArgAction::SetTrue)
-                .help(gettext("Display the events in a more human-readable way.")),
+                .help(gettext("Display the events in a more human-readable way")),
         )
 }

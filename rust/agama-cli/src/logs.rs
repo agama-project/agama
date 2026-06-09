@@ -27,20 +27,24 @@ use std::path::PathBuf;
 
 pub fn build_logs_cmd() -> Command {
     Command::new("logs")
-        .about(gettext("Collect the installer logs."))
-        .long_about(gettext("The installer logs are stored in a compressed archive for further inspection. The file\n\
-                             includes system and Agama-specific logs and configuration files. They are crucial to\n\
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .about(gettext("Collect the installer logs"))
+        .long_about(gettext("Collect the installer logs.\n\n\
+        The installer logs are stored in a compressed archive for further inspection. The file \
+                             includes system and Agama-specific logs and configuration files. They are crucial to \
                              troubleshoot and debug problems."))
         .subcommand(
             Command::new("store")
-                .about(gettext("Collect and store the logs in a tar archive."))
+                .about(gettext("Collect and store the logs in a tar archive"))
                 .arg(
                     Arg::new("destination")
+                .value_name("DESTINATION")
                         .short('d')
                         .long("destination")
                         .value_parser(clap::value_parser!(PathBuf))
-                        .help(gettext("Path to destination directory and, optionally, the archive file name. The extension will\n\
-                                       be added automatically."))
+                        .help(gettext("Path to destination directory and, optionally, the archive file name. The extension will \
+                                       be added automatically"))
                 )
         )
         .subcommand(

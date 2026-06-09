@@ -29,33 +29,39 @@ use serde::Deserialize;
 
 pub fn build_questions_cmd() -> Command {
     Command::new("questions")
-        .about(gettext("Handle installer questions."))
-        .long_about(gettext("Agama might require user intervention at any time. The reasons include providing some\n\
-                             missing information (e.g., the password to decrypt a file system) or deciding what to do in\n\
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .about(gettext("Handle installer questions"))
+        .long_about(gettext("Handle installer questions.\n\n\
+        Agama might require user intervention at any time. The reasons include providing some \
+                             missing information (e.g., the password to decrypt a file system) or deciding what to do in \
                              case of an error (e.g., cannot connect to the repository).\n\
                              \n\
                              This command allows answering such questions directly from the command-line."))
         .subcommand(
             Command::new("mode")
-                .about(gettext("Set the mode for answering questions."))
+                .about(gettext("Set the mode for answering questions"))
                 .arg(
                     Arg::new("value")
+                        .value_name("VALUE")
                         .required(true)
                         .value_parser(value_parser!(Modes))
                 )
         )
         .subcommand(
             Command::new("answers")
-                .about(gettext("Load predefined answers."))
-                .long_about(gettext("It allows predefining answers for specific questions in order to skip them in interactive\n\
+                .about(gettext("Load predefined answers"))
+                .long_about(gettext("Load predefined answers.\n\n\
+                        It allows predefining answers for specific questions in order to skip them in interactive \
                                      mode or change the answer in automatic mode.\n\
                                      \n\
-                                     Please check Agama documentation for more details and examples:\n\
+                                     Please check Agama documentation for more details and examples: \
                                      https://github.com/openSUSE/agama/blob/master/doc/questions."))
                 .arg(
                     Arg::new("path")
+                        .value_name("PATH")
                         .required(true)
-                        .help(gettext("Path to a file containing the answers in JSON format."))
+                        .help(gettext("Path to a file containing the answers in JSON format"))
                 )
         )
         .subcommand(
@@ -64,7 +70,7 @@ pub fn build_questions_cmd() -> Command {
         )
         .subcommand(
             Command::new("ask")
-                .about(gettext("Reads a question definition in JSON from stdin and prints the response when it is answered."))
+                .about(gettext("Reads a question definition in JSON from stdin and prints the response when it is answered"))
         )
 }
 

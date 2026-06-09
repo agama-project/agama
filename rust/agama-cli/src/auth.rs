@@ -61,32 +61,36 @@ impl AuthHTTPClient {
 
 pub fn build_auth_cmd() -> Command {
     Command::new("auth")
-        .about(gettext("Authenticate with Agama's server."))
-        .long_about(gettext("Unless you are executing this program as root, you need to authenticate with Agama's server\n\
-                             for most operations. You can log in by specifying the root password through the \"auth login\"\n\
-                             command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is\n\
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .about(gettext("Authenticate with Agama's server"))
+        .long_about(gettext("Authenticate with Agama's server.\n\n\
+        Unless you are executing this program as root, you need to authenticate with Agama's server \
+                             for most operations. You can log in by specifying the root password through the \"auth login\" \
+                             command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is \
                              stored to authenticate the following requests.\n\
                              \n\
-                             If you run this program as root, you can skip the authentication step because it\n\
-                             automatically uses the master token at /run/agama/token. Only the root user must have access\n\
+                             If you run this program as root, you can skip the authentication step because it \
+                             automatically uses the master token at /run/agama/token. Only the root user must have access \
                              to such a file.\n\
                              \n\
-                             You can logout at any time by using the \"auth logout\" command, although this command does\n\
+                             You can logout at any time by using the \"auth logout\" command, although this command does \
                              not affect the root user."))
         .subcommand(
             Command::new("login")
-                .about(gettext("Authenticate with Agama's server and store the token."))
-                .long_about(gettext("This command tries to get the password from the standard input. If it is not there, it asks\n\
-                                     the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The\n\
+                .about(gettext("Authenticate with Agama's server and store the token"))
+                .long_about(gettext("Authenticate with Agama's server and store the token.\n\n\
+                        This command tries to get the password from the standard input. If it is not there, it asks \
+                                     the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The \
                                      token will be automatically sent to authenticate the following requests."))
         )
         .subcommand(
             Command::new("logout")
-                .about(gettext("Deauthenticate by removing the token."))
+                .about(gettext("Deauthenticate by removing the token"))
         )
         .subcommand(
             Command::new("show")
-                .about(gettext("Print the used token to the standard output."))
+                .about(gettext("Print the used token to the standard output"))
         )
 }
 
