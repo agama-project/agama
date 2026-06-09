@@ -236,6 +236,12 @@ type InstallerL10nOptionsVariants = "all" | "language" | "keyboard";
 type ToggleProps = Pick<ButtonProps, "onClick"> & {
   language?: string;
   keymap?: string;
+  /**
+   * Whether to render the current values (language and keymap) next to the
+   * icons. When false, only the icons are shown and the accessible name comes
+   * from the button's aria-label.
+   */
+  showValues?: boolean;
 };
 
 /**
@@ -454,10 +460,10 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
 };
 
 /** Icon representing the language settings. Used in toggle buttons. */
-const LanguageIcon = () => <Icon name="translate" />;
+const LanguageIcon = () => <Icon isMiddleAligned name="translate" />;
 
 /** Icon representing the keyboard settings. Used in toggle buttons. */
-const KeyboardIcon = () => <Icon name="keyboard" />;
+const KeyboardIcon = () => <Icon isMiddleAligned name="keyboard" />;
 
 /** A layout helper that centers its children with spacing. Used in toggle buttons. */
 const CenteredContent = ({
@@ -470,26 +476,29 @@ const CenteredContent = ({
 );
 
 /** Toggle button for accessing only language settings. */
-const LanguageOnlyToggle = ({ onClick, language }: ToggleProps) => (
+const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => (
   <Button onClick={onClick} aria-label={_("Change display language")} variant="plain">
     <CenteredContent>
-      <LanguageIcon /> {language}
+      <LanguageIcon />
+      {showValues && language}
     </CenteredContent>
   </Button>
 );
 
 /** Toggle button for accessing only keymap settings. */
-const KeyboardOnlyToggle = ({ onClick, keymap }: ToggleProps) => (
+const KeyboardOnlyToggle = ({ onClick, keymap, showValues }: ToggleProps) => (
   <Button onClick={onClick} aria-label={_("Change keyboard layout")} variant="plain">
     <CenteredContent alignItems="alignItemsFlexEnd">
-      <KeyboardIcon /> <code>{keymap}</code>
+      <KeyboardIcon />
+      {showValues && <code>{keymap}</code>}
     </CenteredContent>
   </Button>
 );
 
 /** Toggle button for accessing both language and keyboard layout settings. */
-const AllSettingsToggle = ({ onClick, language, keymap }: ToggleProps) => {
-  if (!localConnection()) return <LanguageOnlyToggle onClick={onClick} language={language} />;
+const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProps) => {
+  if (!localConnection())
+    return <LanguageOnlyToggle onClick={onClick} language={language} showValues={showValues} />;
 
   return (
     <Button
@@ -498,7 +507,10 @@ const AllSettingsToggle = ({ onClick, language, keymap }: ToggleProps) => {
       variant="plain"
     >
       <CenteredContent>
-        <LanguageIcon /> {language} <KeyboardIcon /> <code>{keymap}</code>
+        <LanguageIcon />
+        {showValues && language}
+        <KeyboardIcon />
+        {showValues && <code>{keymap}</code>}
       </CenteredContent>
     </Button>
   );
@@ -534,6 +546,11 @@ export type InstallerL10nOptionsProps = {
    * the selected variant.
    */
   toggle?: (props: ToggleProps) => JSX.Element;
+  /**
+   * Whether the toggle should display the current values next to the icons.
+   * Defaults to false (icon-only) to save space in crowded headers.
+   */
+  showValues?: boolean;
   /** Optional callback when the dialog is closed. */
   onClose?: () => void;
 };
@@ -547,6 +564,7 @@ export type InstallerL10nOptionsProps = {
  */
 export default function InstallerL10nOptions({
   variant = "all",
+  showValues = false,
   toggle,
   onClose,
 }: InstallerL10nOptionsProps) {
@@ -644,6 +662,7 @@ export default function InstallerL10nOptions({
   return (
     <>
       <Toggle
+        showValues={showValues}
         language={supportedLanguages[language]}
         keymap={keymap}
         onClick={() => dispatchDialogAction({ type: "OPEN" })}

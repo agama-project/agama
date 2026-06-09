@@ -146,13 +146,22 @@ describe("InstallerL10nOptions", () => {
   });
 
   describe("when using variant=all", () => {
-    it("renders a button with current language and keymap values", () => {
-      installerRender(<InstallerL10nOptions />);
+    it("renders a button with current language and keymap values when showValues is set", () => {
+      installerRender(<InstallerL10nOptions showValues />);
       const toggle = screen.getByRole("button", {
         name: "Change display language and keyboard layout",
       });
       expect(toggle).toHaveTextContent("Deutsch");
       expect(toggle).toHaveTextContent("us");
+    });
+
+    it("renders an icon-only button keeping its accessible name by default", () => {
+      installerRender(<InstallerL10nOptions />);
+      const toggle = screen.getByRole("button", {
+        name: "Change display language and keyboard layout",
+      });
+      expect(toggle).not.toHaveTextContent("Deutsch");
+      expect(toggle).not.toHaveTextContent("us");
     });
 
     it("allows setting display language and keyboard layout", async () => {
@@ -248,7 +257,7 @@ describe("InstallerL10nOptions", () => {
       });
 
       it("does not render keymap value in the toggle button", () => {
-        installerRender(<InstallerL10nOptions />);
+        installerRender(<InstallerL10nOptions showValues />);
         const toggle = screen.getByRole("button", {
           name: "Change display language",
         });
@@ -273,7 +282,7 @@ describe("InstallerL10nOptions", () => {
 
   describe("when using variant=language", () => {
     it("renders a button only with current language value", () => {
-      installerRender(<InstallerL10nOptions variant="language" />);
+      installerRender(<InstallerL10nOptions variant="language" showValues />);
       const toggle = screen.getByRole("button", {
         name: "Change display language",
       });
@@ -361,7 +370,7 @@ describe("InstallerL10nOptions", () => {
 
   describe("when using variant=keyboard", () => {
     it("renders a button only with current keymap value", () => {
-      installerRender(<InstallerL10nOptions variant="keyboard" />);
+      installerRender(<InstallerL10nOptions variant="keyboard" showValues />);
       const toggle = screen.getByRole("button", {
         name: "Change keyboard layout",
       });
