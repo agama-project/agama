@@ -25,7 +25,6 @@ import {
   CodeBlock,
   Content,
   ExpandableSection,
-  Flex,
   Form,
   FormGroup,
   Stack,
@@ -61,10 +60,10 @@ export default function RetryLoadConfigQuestion({
 
   return (
     <Popup isOpen title={_("Cannot apply configuration")}>
-      <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+      <Stack hasGutter>
         <Content isEditorial>{question.text}</Content>
         <Form isWidthLimited={false}>
-          {/* TRANSLATORS: field label */}
+          {/* TRANSLATORS: field label for location of configuration file */}
           <FormGroup label={_("Location")} fieldId="location">
             <TextInput
               id="location"
@@ -76,22 +75,29 @@ export default function RetryLoadConfigQuestion({
         </Form>
         <Content>
           <Text isBold>
+            {/* TRANSLATORS: help text in popup to clarify what user should do */}
             {_("Verify that the location is correct and the configuration is valid.")}
           </Text>
         </Content>
         {error && (
           <ExpandableSection
-            toggleTextExpanded={_("Hide technical details")}
-            toggleTextCollapsed={_("Show technical details (English only)")}
+            toggleTextExpanded={
+              /* TRANSLATORS: Clickable text to hide technical details from popup window */
+              _("Hide technical details")
+            }
+            toggleTextCollapsed={
+              /* TRANSLATORS: Clickable text to show technical details at popup window */
+              _("Show technical details (English only)")
+            }
           >
             <NestedContent>
               <CodeBlock>
-                <Stack hasGutter>{error}</Stack>
+                <pre>{error}</pre>
               </CodeBlock>
             </NestedContent>
           </ExpandableSection>
         )}
-      </Flex>
+      </Stack>
       <Popup.Actions>
         <QuestionActions
           actions={question.actions}
