@@ -90,7 +90,7 @@ describe("ChangeProductOption", () => {
     it("renders with an icon when showIcon is true", () => {
       const { container } = installerRender(<ChangeProductOption showIcon />);
       const icon = container.querySelector("svg");
-      expect(icon).toHaveAttribute("data-icon-name", "edit_square");
+      expect(icon).toHaveAttribute("data-icon-name", "amend");
     });
 
     it("does not render an icon by default", () => {

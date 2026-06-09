@@ -40,8 +40,8 @@ type ChangeProductOptionProps = Omit<DropdownItemProps, "to" | "component" | "ch
      */
     component?: "dropdownitem" | "a";
     /**
-     * Whether to display an edit icon before the label.
-     * When true, displays an "edit_square" icon.
+     * Whether to display an icon before the label hinting that the option
+     * leads to changing the current selection.
      */
     showIcon?: boolean;
   };
@@ -93,17 +93,13 @@ export default function ChangeProductOption({
   };
 
   const Component = component === "a" ? Link : DropdownItem;
-  const Wrapper = component === "a" ? Flex : React.Fragment;
-  const wrapperProps =
-    component === "a"
-      ? { gap: { default: "gapXs" } as const, alignItems: { default: "alignItemsCenter" } as const }
-      : {};
 
   return (
     <Component to={`${to}?byUser`} {...props}>
-      <Wrapper {...wrapperProps}>
-        {showIcon && <Icon name="edit_square" />} {getLabel()}
-      </Wrapper>
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+        {showIcon && <Icon name="amend" width="1.6rem" height="1.6rem" />}
+        {getLabel()}
+      </Flex>
     </Component>
   );
 }

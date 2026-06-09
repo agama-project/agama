@@ -22,6 +22,7 @@
 
 import React, { useState } from "react";
 import {
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownList,
@@ -29,7 +30,7 @@ import {
   MenuToggle,
   MenuToggleElement,
 } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
+import Icon, { IconProps } from "~/components/layout/Icon";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
@@ -51,6 +52,14 @@ export type InstallerOptionsMenuProps = {
    */
   showChangeProductOption?: boolean;
 };
+
+/** Renders a menu item label with a leading icon, aligned consistently. */
+const ItemContent = ({ icon, text }: { icon: IconProps["name"]; text: string }) => (
+  <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+    <Icon name={icon} width="1.6rem" height="1.6rem" />
+    {text}
+  </Flex>
+);
 
 /**
  * A dropdown menu containing some installer options, such as
@@ -96,13 +105,24 @@ export default function InstallerOptionsMenu({
             )}
           >
             <DropdownList>
-              {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
+              {/* TODO: placeholder for the upcoming terminal access; wires a
+                  console.log until the feature is implemented. */}
+              <DropdownItem key="terminal" onClick={() => console.log("Open terminal")}>
+                {/* TRANSLATORS: menu entry to open a terminal during installation */}
+                <ItemContent icon="terminal" text={_("Terminal")} />
+              </DropdownItem>
               <DropdownItem key="show-settings" onClick={toggleConfig}>
-                {_("Show installation settings")}
+                <ItemContent icon="file_json" text={_("Show installation settings")} />
               </DropdownItem>
               <DropdownItem key="download-logs" onClick={downloadLogs}>
-                {_("Download logs")}
+                <ItemContent icon="archive" text={_("Download logs")} />
               </DropdownItem>
+              {showChangeProductOption && (
+                <>
+                  <Divider component="li" />
+                  <ChangeProductOption component="dropdownitem" showIcon />
+                </>
+              )}
             </DropdownList>
           </Dropdown>
         )}
