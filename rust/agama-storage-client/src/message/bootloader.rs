@@ -18,7 +18,8 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_utils::{actor::Message, api::bootloader, Resolvable};
+use crate::service;
+use agama_utils::{actor::Message, api::bootloader, BoxFuture, Resolvable};
 
 pub struct GetConfig;
 
@@ -52,5 +53,5 @@ impl SetConfig {
 }
 
 impl Message for SetConfig {
-    type Reply = ();
+    type Reply = BoxFuture<Result<(), service::Error>>;
 }

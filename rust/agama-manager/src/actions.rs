@@ -399,27 +399,26 @@ impl SetConfigAction {
         )
         .await;
 
-        // iSCSI configuration
-        self.spawn_config_task(
-            Scope::ISCSI,
-            &gettext("Configuring iSCSI devices"),
-            self.iscsi.clone(),
-            iscsi::message::SetConfig::new(config.iscsi.clone()),
-            &[],
-        )
-        .await;
-
-        // S390 configuration (if available)
-        let mut storage_deps = Vec::new();
-        if let Some(task_id) = self.set_zfcp_config(&config).await {
-            storage_deps.push(task_id);
-        }
-        if let Some(task_id) = self.set_dasd_config(&config).await {
-            storage_deps.push(task_id);
-        }
+        let mut iscsi_deps = Vec::new();
 
         // Network configuration
-        self.set_network_config(&config).await;
+        if let Some(task_id) = self.set_network_config(&config).await {
+            iscsi_deps.push(task_id);
+        }
+
+        let mut storage_deps = Vec::new();
+
+        // iSCSI configuration
+        let iscsi_task = self.set_iscsi_config(&config, &iscsi_deps).await;
+        storage_deps.push(iscsi_task);
+
+        // S390 configuration (if available)
+        if let Some(zfcp_task) = self.set_zfcp_config(&config).await {
+            storage_deps.push(zfcp_task);
+        }
+        if let Some(dasd_task) = self.set_dasd_config(&config).await {
+            storage_deps.push(dasd_task);
+        }
 
         // Product-dependent configuration (software, storage, bootloader)
         if let Some(product) = product {
@@ -429,15 +428,7 @@ impl SetConfigAction {
                 .await;
 
             // Bootloader configuration (after storage)
-            let bootloader_task = self
-                .spawn_config_task(
-                    Scope::Bootloader,
-                    &gettext("Storing bootloader settings"),
-                    self.bootloader.clone(),
-                    bootloader::message::SetConfig::new(config.bootloader.clone()),
-                    &[storage_task],
-                )
-                .await;
+            let bootloader_task = self.set_bootloader_config(&config, &[storage_task]).await;
 
             // Software configuration - depends on files, storage, and bootloader
             let software_task = self
@@ -483,6 +474,32 @@ impl SetConfigAction {
             .await
     }
 
+    /// Helper to spawn iSCSI configuration task
+    async fn set_iscsi_config(
+        &self,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> task_manager::TaskId {
+        let handler = self.iscsi.clone();
+        let iscsi_config = config.iscsi.clone();
+        self.task_manager
+            .task(
+                "iscsi_config",
+                Scope::ISCSI,
+                gettext("Configuring iSCSI devices"),
+            )
+            .depends_on(dependencies)
+            .run(|| async move {
+                let future = handler
+                    .call(iscsi::message::SetConfig::new(iscsi_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                let _ = future.await;
+                Ok(())
+            })
+            .await
+    }
+
     /// Helper to spawn zFCP configuration task
     async fn set_zfcp_config(&self, config: &Config) -> Option<task_manager::TaskId> {
         let handler = self.s390.clone()?;
@@ -490,7 +507,11 @@ impl SetConfigAction {
 
         Some(
             self.task_manager
-                .task("zfcp", Scope::ZFCP, gettext("Configuring zFCP devices"))
+                .task(
+                    "zfcp_config",
+                    Scope::ZFCP,
+                    gettext("Configuring zFCP devices"),
+                )
                 .run(|| async move {
                     let future = handler
                         .call(s390::message::SetZFCPConfig::new(zfcp_config))
@@ -511,7 +532,11 @@ impl SetConfigAction {
 
         Some(
             self.task_manager
-                .task("dasd", Scope::DASD, gettext("Configuring DASD devices"))
+                .task(
+                    "dasd_config",
+                    Scope::DASD,
+                    gettext("Configuring DASD devices"),
+                )
                 .run(|| async move {
                     // Ensure storage was already probed before configuring DASD
                     let storage_system = storage_handler
@@ -542,7 +567,11 @@ impl SetConfigAction {
 
         Some(
             self.task_manager
-                .task("network", Scope::Network, gettext("Setting up the network"))
+                .task(
+                    "network_config",
+                    Scope::Network,
+                    gettext("Setting up the network"),
+                )
                 .run(|| async move {
                     handler
                         .update_config(network_config)
@@ -575,6 +604,32 @@ impl SetConfigAction {
             .run(move || async move {
                 let future = handler
                     .call(storage::message::SetConfig::new(product, storage_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                let _ = future.await;
+                Ok(())
+            })
+            .await
+    }
+
+    /// Helper to spawn bootloader configuration task
+    async fn set_bootloader_config(
+        &self,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> task_manager::TaskId {
+        let handler = self.bootloader.clone();
+        let bootloader_config = config.bootloader.clone();
+        self.task_manager
+            .task(
+                "bootloader_config",
+                Scope::Bootloader,
+                gettext("Storing bootloader settings"),
+            )
+            .depends_on(dependencies)
+            .run(|| async move {
+                let future = handler
+                    .call(bootloader::message::SetConfig::new(bootloader_config))
                     .await
                     .map_err(TaskError::from_error)?;
                 let _ = future.await;

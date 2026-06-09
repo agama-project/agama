@@ -27,7 +27,7 @@ use crate::{
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{event, iscsi::Config},
-    progress,
+    progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -138,9 +138,12 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.client.set_config(message.config).await?;
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self.client.set_config(message.config).await?;
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }
 

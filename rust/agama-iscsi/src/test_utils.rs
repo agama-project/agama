@@ -31,7 +31,7 @@ use agama_utils::{
         event,
         iscsi::{Config, DiscoverConfig},
     },
-    progress,
+    progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -109,10 +109,13 @@ impl ISCSIClient for TestClient {
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
+    async fn set_config(
+        &self,
+        config: Option<Config>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
+        Ok(Box::pin(async move { Ok(()) }))
     }
 
     async fn discover(&self, _config: DiscoverConfig) -> Result<DiscoverResult, Error> {

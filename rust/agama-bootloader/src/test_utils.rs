@@ -22,7 +22,7 @@
 
 use std::sync::Arc;
 
-use agama_utils::{actor::Handler, api::bootloader::Config, issue, Resolvable};
+use agama_utils::{actor::Handler, api::bootloader::Config, issue, BoxFuture, Resolvable};
 use async_trait::async_trait;
 use tokio::sync::Mutex;
 
@@ -91,10 +91,10 @@ impl BootloaderClient for TestClient {
         Ok(vec![])
     }
 
-    async fn set_config(&self, config: &Config) -> Result<(), Error> {
+    async fn set_config(&self, config: &Config) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let mut state = self.state.lock().await;
         state.config = config.clone();
-        Ok(())
+        Ok(Box::pin(async { Ok(()) }))
     }
 
     async fn set_kernel_arg(&mut self, _id: String, _value: String) {}

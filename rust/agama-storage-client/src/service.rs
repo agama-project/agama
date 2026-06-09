@@ -313,11 +313,20 @@ impl MessageHandler<message::bootloader::GetResolvables> for Service {
 
 #[async_trait]
 impl MessageHandler<message::bootloader::SetConfig> for Service {
-    async fn handle(&mut self, message: message::bootloader::SetConfig) -> Result<(), Error> {
-        self.bootloader_proxy
-            .set_config(&message.config.to_string())
-            .await?;
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::bootloader::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let proxy = self.bootloader_proxy.clone();
+        let response = run_in_background(async move {
+            proxy.set_config(&message.config.to_string()).await?;
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 
@@ -353,9 +362,21 @@ impl MessageHandler<message::iscsi::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::iscsi::SetConfig> for Service {
-    async fn handle(&mut self, message: message::iscsi::SetConfig) -> Result<(), Error> {
-        let config = serde_json::to_string(&message.config)?;
-        Ok(self.iscsi_proxy.set_config(&config).await?)
+    async fn handle(
+        &mut self,
+        message: message::iscsi::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let proxy = self.iscsi_proxy.clone();
+        let response = run_in_background(async move {
+            let config = serde_json::to_string(&message.config)?;
+            proxy.set_config(&config).await?;
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 
