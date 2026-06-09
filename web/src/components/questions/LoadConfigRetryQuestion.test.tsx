@@ -30,7 +30,7 @@ const question: Question = {
   id: 1,
   class: "retry",
   text: "It was not possible to load the configuration from http://wrong.config.file. It was unreachable or invalid. Do you want to try again?",
-  field: { type: FieldType.None },
+  field: { type: FieldType.String },
   data: {
     originalValue: "http://wrong.config.file",
     error: `Could not generate the configuration: Retrieving data from URL http://wrong.config.file
@@ -40,10 +40,10 @@ const question: Question = {
   1: [6] Could not resolve hostname (Could not resolve host: wrong.config.file)`,
   },
   actions: [
-    { id: "yes", label: "Yes" },
-    { id: "no", label: "No" },
+    { id: "retry", label: "Reload configuration" },
+    { id: "skip", label: "Skip and configure manually" },
   ],
-  defaultAction: "no",
+  defaultAction: "skip",
 };
 
 const answerFn = jest.fn();
@@ -69,7 +69,7 @@ it("renders the error output", () => {
 it("renders the url input field with initial value", () => {
   renderQuestion();
 
-  const urlInput = screen.getByRole("textbox", { name: "Source URL" });
+  const urlInput = screen.getByRole("textbox", { name: "Location" });
   expect(urlInput).toHaveValue("http://wrong.config.file");
 });
 
@@ -78,23 +78,23 @@ it("calls the callback with answer value and modified url", async () => {
     <LoadConfigRetryQuestion question={question} answerCallback={answerFn} />,
   );
 
-  const urlInput = screen.getByRole("textbox", { name: "Source URL" });
+  const urlInput = screen.getByRole("textbox", { name: "Location" });
   await user.clear(urlInput);
   await user.type(urlInput, "http://correct.config.file");
 
-  const yesButton = await screen.findByRole("button", { name: "Yes" });
+  const yesButton = await screen.findByRole("button", { name: "Reload configuration" });
   await user.click(yesButton);
 
   expect(question.answer).toEqual(
-    expect.objectContaining({ action: "yes", value: "http://correct.config.file" }),
+    expect.objectContaining({ action: "retry", value: "http://correct.config.file" }),
   );
   expect(answerFn).toHaveBeenCalledWith(question);
 
-  const noButton = await screen.findByRole("button", { name: "No" });
+  const noButton = await screen.findByRole("button", { name: "Skip and configure manually" });
   await user.click(noButton);
 
   expect(question.answer).toEqual(
-    expect.objectContaining({ action: "no", value: "http://correct.config.file" }),
+    expect.objectContaining({ action: "skip", value: "http://correct.config.file" }),
   );
   expect(answerFn).toHaveBeenCalledWith(question);
 });
