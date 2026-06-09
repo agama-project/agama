@@ -18,6 +18,12 @@ html {
   line-height: var(--pf-t--global--font--line-height--100);
 }
 
+// Fill any area not covered by the page layout (e.g. the sliver above the
+// masthead) with the page surface, so the canvas is seamless in every theme.
+body {
+  background-color: var(--pf-t--global--background--color--primary--default);
+}
+
 .agama-prose {
   line-height: var(--pf-t--global--font--line-height--200);
 }

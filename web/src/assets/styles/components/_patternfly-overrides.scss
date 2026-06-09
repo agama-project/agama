@@ -53,6 +53,10 @@
 .pf-v6-c-page__main-section.pf-m-sticky-top {
   --pf-v6-c-page__main-section--PaddingBlockStart: var(--pf-t--global--spacer--sm);
   --pf-v6-c-page__main-section--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+
+  // Sticky sections are transparent by default, exposing the area behind them
+  // as a mismatched strip; paint them with the page surface so they blend.
+  background-color: var(--pf-t--global--background--color--primary--default);
 }
 
 .pf-v6-c-page__main-group.pf-m-sticky-bottom {
