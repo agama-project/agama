@@ -43,9 +43,18 @@ const TestTrigger = ({ download }: { download: () => void }) => (
   <button onClick={download}>Download</button>
 );
 
-const renderDownloadFeedback = (props = {}) => {
+const TestTitle = () => <>Installation logs download</>;
+const TestContent = ({ filename }: { filename?: string }) => <div>{filename}</div>;
+
+const renderDownloadFeedback = (successTimeout?: number) => {
   const { user } = plainRender(
-    <DownloadFeedback url="/api/logs" filenamePrefix="agama-logs" extension="tar.gz" {...props}>
+    <DownloadFeedback
+      url="/api/logs"
+      filenamePrefix="agama-logs"
+      extension="tar.gz"
+      info={{ title: TestTitle, content: TestContent }}
+      success={{ title: TestTitle, content: TestContent, timeout: successTimeout }}
+    >
       {({ download }) => <TestTrigger download={download} />}
     </DownloadFeedback>,
   );
@@ -106,7 +115,7 @@ describe("DownloadFeedback", () => {
 
   it("auto-dismisses the success alert after the timeout", async () => {
     mockDownload.mockResolvedValue(undefined);
-    const { user } = renderDownloadFeedback({ successTimeout: 10 });
+    const { user } = renderDownloadFeedback(10);
 
     await user.click(screen.getByRole("button", { name: "Download" }));
     await waitFor(() =>
@@ -165,7 +174,7 @@ describe("DownloadFeedback", () => {
 
   it("does not auto-dismiss if the user already closed the success alert", async () => {
     mockDownload.mockResolvedValue(undefined);
-    const { user } = renderDownloadFeedback({ successTimeout: 10 });
+    const { user } = renderDownloadFeedback(10);
 
     await user.click(screen.getByRole("button", { name: "Download" }));
     await waitFor(() =>
