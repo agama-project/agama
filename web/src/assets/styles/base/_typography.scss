@@ -1,8 +1,5 @@
 // Font face declarations.
 //
-// Temporary as part of the migration to PF6; expected to change as the
-// interface customization is refined.
-//
 // Note: font paths stay "./fonts/" even though this partial lives in base/.
 // Dart Sass does not rebase url(); it emits the path verbatim into the
 // compiled output, which css-loader resolves relative to the entrypoint

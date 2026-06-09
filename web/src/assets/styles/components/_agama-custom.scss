@@ -82,7 +82,7 @@ nav.agm-breadcrumb h1 {
   font-size: inherit;
 }
 
-// FIXME: make ir more generic, if possible, or even without CSS but not
+// FIXME: make it more generic, if possible, or even without CSS but not
 // rendering such a label if "storage instructions" are more than one
 .storage-structure:has(> li:nth-child(2)) span.action-text {
   display: none;

@@ -4,10 +4,6 @@
 // reference them), then base element styles, then component styles and
 // utilities. This file is imported last in src/index.tsx so Agama styles win
 // over PatternFly by source order.
-//
-// Temporary CSS rules as part of the migration to PF6. They are expected to
-// change significantly, especially the token names, as the interface
-// customization is refined.
 
 @use "tokens/palette.scss";
 @use "tokens/semantic.scss";
