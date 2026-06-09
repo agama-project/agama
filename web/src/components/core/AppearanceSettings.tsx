@@ -131,7 +131,7 @@ export default function AppearanceSettings(): React.ReactNode {
             sentence={
               // TRANSLATORS: explains the "Automatic" appearance option; %s is
               // replaced by the "Automatic" option name (shown quoted)
-              "%s honors the browser and system preferences"
+              _("%s honors the browser and system preferences")
             }
           >
             {/* TRANSLATORS: the "Automatic" appearance option name */}
