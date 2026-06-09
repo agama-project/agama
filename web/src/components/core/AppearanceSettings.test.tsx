@@ -90,13 +90,20 @@ describe("AppearanceSettings", () => {
     );
   });
 
-  it("disambiguates the two System options with distinct accessible names", async () => {
+  it("disambiguates the two Automatic options with distinct accessible names", async () => {
     const { user } = renderSelector();
     await openSelector(user);
 
     // getByRole throws when the name is missing or ambiguous, so resolving each
     // option by its distinct accessible name is itself the assertion.
-    screen.getByRole("button", { name: "System color scheme" });
-    screen.getByRole("button", { name: "System contrast" });
+    screen.getByRole("button", { name: "Automatic color scheme" });
+    screen.getByRole("button", { name: "Automatic contrast" });
+  });
+
+  it("explains what the Automatic option does", async () => {
+    const { user } = renderSelector();
+    await openSelector(user);
+
+    screen.getByText(/honors the browser and system preferences/);
   });
 });

@@ -24,6 +24,7 @@ import React, { useId } from "react";
 import {
   Button,
   Content,
+  Divider,
   Popover,
   Stack,
   StackItem,
@@ -31,12 +32,15 @@ import {
   ToggleGroupItem,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import Text from "~/components/core/Text";
 import { useAppearance } from "~/context/appearance";
 import { _ } from "~/i18n";
+import Interpolate from "./Interpolate";
 
 /**
  * Lets the user adjust the interface appearance along two independent axes: the
- * color scheme (System/Light/Dark) and the contrast level (System/Standard/High).
+ * color scheme (Automatic/Light/Dark) and the contrast level
+ * (Automatic/Standard/High). "Automatic" follows the browser/OS preference.
  *
  * Rendered as an icon button that opens a popover with a button group per axis.
  * A popover (not a menu/dropdown) is used so the groups are reachable by
@@ -51,9 +55,9 @@ export default function AppearanceSettings(): React.ReactNode {
 
   // TRANSLATORS: accessible name for the button that opens the appearance settings
   const appearanceLabel = _("Appearance");
-  // TRANSLATORS: label for the group of color scheme options (System, Light, Dark)
+  // TRANSLATORS: label for the group of color scheme options (Automatic, Light, Dark)
   const colorSchemeLabel = _("Color scheme");
-  // TRANSLATORS: label for the group of contrast options (System, Standard, High)
+  // TRANSLATORS: label for the group of contrast options (Automatic, Standard, High)
   const contrastLabel = _("Contrast");
 
   const settings = (
@@ -65,9 +69,9 @@ export default function AppearanceSettings(): React.ReactNode {
         <ToggleGroup aria-labelledby={colorSchemeId}>
           <ToggleGroupItem
             // TRANSLATORS: short label for the option shown in the UI
-            text={_("System")}
+            text={_("Automatic")}
             // TRANSLATORS: accessible name for the color scheme option that follows the OS
-            aria-label={_("System color scheme")}
+            aria-label={_("Automatic color scheme")}
             isSelected={colorScheme === "system"}
             onChange={() => setColorScheme("system")}
           />
@@ -96,9 +100,9 @@ export default function AppearanceSettings(): React.ReactNode {
         <ToggleGroup aria-labelledby={contrastId}>
           <ToggleGroupItem
             // TRANSLATORS: short label for the option shown in the UI
-            text={_("System")}
+            text={_("Automatic")}
             // TRANSLATORS: accessible name for the contrast option that follows the OS
-            aria-label={_("System contrast")}
+            aria-label={_("Automatic contrast")}
             isSelected={contrast === "system"}
             onChange={() => setContrast("system")}
           />
@@ -119,6 +123,21 @@ export default function AppearanceSettings(): React.ReactNode {
             onChange={() => setContrast("high")}
           />
         </ToggleGroup>
+      </StackItem>
+      <StackItem>
+        <Divider />
+        <Text component="small" textStyle={["textColorSubtle", "fontSizeXs"]}>
+          <Interpolate
+            sentence={
+              // TRANSLATORS: explains the "Automatic" appearance option; %s is
+              // replaced by the "Automatic" option name (shown quoted)
+              "%s honors the browser and system preferences"
+            }
+          >
+            {/* TRANSLATORS: the "Automatic" appearance option name */}
+            {() => <span className="in-quotes">{_("Automatic")}</span>}
+          </Interpolate>
+        </Text>
       </StackItem>
     </Stack>
   );
