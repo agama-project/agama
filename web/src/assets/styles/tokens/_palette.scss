@@ -1,0 +1,24 @@
+// Raw color palette.
+//
+// Brand-sourced literal values, named with the PF-aligned numeric scale
+// (--agm-t--color--<hue>--<step>, mirroring --pf-t--color--<hue>--<step>): step
+// 50 is each color's canonical brand value, lower steps are lighter and higher
+// steps darker. Only the steps the UI currently uses are defined; add more as
+// needed.
+//
+// This is the lowest layer of the token system: semantic tokens (see
+// _semantic.scss) reference these, never the other way around.
+//
+// Brand: https://brand.suse.com/brand-system/color-palette
+
+:root {
+  --agm-t--color--pine--40: #025937;
+  --agm-t--color--pine--50: #0c322c;
+
+  --agm-t--color--jungle--10: #eafaf4;
+  --agm-t--color--jungle--40: #40ce8a;
+  --agm-t--color--jungle--50: #30ba78;
+
+  --agm-t--color--fog--50: #efefef;
+  --agm-t--color--waterhole--50: #2453ff;
+}

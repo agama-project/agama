@@ -36,6 +36,7 @@ import { render, renderHook, within } from "@testing-library/react";
 import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
 import { StorageUiStateProvider } from "~/context/storage-ui-state";
+import { AppearanceProvider } from "~/context/appearance";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
 import { Question } from "~/model/question";
@@ -329,7 +330,11 @@ const Providers = ({ children }) => {
     client.onClose = noop;
   }
 
-  return <StorageUiStateProvider>{children}</StorageUiStateProvider>;
+  return (
+    <AppearanceProvider>
+      <StorageUiStateProvider>{children}</StorageUiStateProvider>
+    </AppearanceProvider>
+  );
 };
 
 /**
@@ -385,7 +390,9 @@ const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});
 
   const Wrapper = ({ children }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppearanceProvider>{children}</AppearanceProvider>
+    </QueryClientProvider>
   );
   return {
     user: userEvent.setup(),
