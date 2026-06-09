@@ -48,11 +48,11 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 /**
  * Props for the Header component.
  *
- * The layout follows a flexible horizontal structure where the primary content
- * (Title/Breadcrumbs) is on the left, and up to three slots are grouped at the
- * end of the toolbar:
+ * The layout follows a horizontal structure where the heading (title or
+ * breadcrumbs) sits on the leading edge and the additional content is grouped
+ * at the trailing edge of the toolbar:
  *
- * [Title | Breadcrumbs]...........[startSlot] [centerSlot] [endSlot]
+ * [Title | Breadcrumbs]..............................[additionalContent]
  *
  * openSUSE Tumbleweed..........................Option v | English/US
  */
@@ -79,51 +79,12 @@ export type HeaderProps = {
   hideSummaryLink?: boolean;
 
   /**
-   * The first slot in the trailing actions group.
+   * Content rendered at the trailing edge of the header, opposite the heading.
    *
-   * While intended for status indicators like the progress monitor,
-   * it is a flexible container for any page-specific utility.
+   * A flexible container for any node (selectors, status indicators, menus,
+   * buttons...).
    */
-  startSlot?: React.ReactNode;
-
-  /**
-   * The middle slot in the trailing actions group, positioned between
-   * the start and end slots.
-   *
-   * This area is typically used for contextual actions, such as secondary
-   * navigation or configuration menus. Like its sibling slots, it accepts any
-   * React node to provide enough flexibility to fulfill page requirements.
-   *
-   * @example
-   * ```tsx
-   * <Header
-   *   title="Storage"
-   *   centerSlot={
-   *     <Dropdown>
-   *       <DropdownItem>Advanced settings</DropdownItem>
-   *       <DropdownItem>Export configuration</DropdownItem>
-   *     </Dropdown>
-   *   }
-   * />
-   * ```
-   */
-  centerSlot?: React.ReactNode;
-
-  /**
-   * The final slot at the very edge of the header.
-   *
-   * This is intended for content that requires maximum discoverability.
-   * Like the other slots, it accepts any React node to accommodate various
-   * interaction patterns, though it is often a button or a link.
-   *
-   * **Common Use Cases:**
-   * - Button triggers for high-priority settings (e.g., L10n settings).
-   * - Primary call-to-action buttons for the current workflow.
-   *
-   * @example
-   * <Header endSlot={<Button>Retry</Button>} />
-   */
-  endSlot?: React.ReactNode;
+  additionalContent?: React.ReactNode;
 
   /** Whether to hide the "Skip to content" accessibility link. */
   hideSkipToContent?: boolean;
@@ -187,8 +148,8 @@ function MainBreadcrumbs({
 }
 
 /**
- * Page header (masthead) with the heading on the left and the trailing action
- * slots on the right.
+ * Page header (masthead) with the heading on the leading edge and the
+ * additional content on the trailing edge.
  *
  * The heading is either the given `title` or, when omitted, the main
  * breadcrumb navigation with the product logo and name.
@@ -199,9 +160,7 @@ export default function Header({
   title,
   breadcrumbs,
   hideSummaryLink = false,
-  startSlot,
-  centerSlot,
-  endSlot,
+  additionalContent,
   hideSkipToContent = false,
 }: HeaderProps): React.ReactNode {
   return (
@@ -220,10 +179,10 @@ export default function Header({
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
-              {startSlot && <ToolbarItem>{startSlot}</ToolbarItem>}
-              {centerSlot && <ToolbarItem>{centerSlot}</ToolbarItem>}
-              {endSlot && (
-                <ToolbarItem columnGap={{ default: "columnGapXs" }}>{endSlot}</ToolbarItem>
+              {additionalContent && (
+                <ToolbarItem columnGap={{ default: "columnGapXs" }}>
+                  {additionalContent}
+                </ToolbarItem>
               )}
             </ToolbarGroup>
           </ToolbarContent>

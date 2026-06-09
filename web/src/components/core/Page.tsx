@@ -342,12 +342,12 @@ interface MinimalPageProps extends BasePageProps {
 /**
  * Props for the `Page` component.
  *
- * Combines the standard and minimal variants with additional slot controls.
+ * Combines the standard and minimal variants with additional content controls.
  */
 type PageProps = (StandardPageProps | MinimalPageProps) & {
   /**
    * If true, the ProgressStatusMonitor will not be automatically
-   * injected at the beginning of endSlot.
+   * injected among the header default tools.
    *
    * Default: `false` (ProgressStatusMonitor is injected)
    */
@@ -379,15 +379,16 @@ const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
  * Standard page layout with header, optional progress tracking, and optional
  * qestions rendering.
  *
- * It also composes the header's trailing slot shared by every standard page:
- * the localization selector, the progress status monitor, any page-specific
- * content, the appearance settings, and the installer options menu.
+ * It also composes the header's trailing content shared by every standard
+ * page: any page-specific content first, followed by the default tools (the
+ * localization selector, the progress status monitor, the appearance settings,
+ * and the installer options menu).
  */
 const StandardLayout = ({
   progress,
   children,
   showQuestions = true,
-  endSlot,
+  additionalContent,
   noDefaultProgressMonitor = false,
   showL10nValues = false,
   ...headerProps
@@ -407,18 +408,21 @@ const StandardLayout = ({
     ROOT.installationExit,
   ].includes(location.pathname);
 
-  const endSlotContent = (
+  const headerContent = (
     <>
-      <InstallerL10nOptions showValues={showL10nValues} />
+      {additionalContent}
       {!noDefaultProgressMonitor && <ProgressStatusMonitor />}
-      {endSlot}
+      <InstallerL10nOptions showValues={showL10nValues} />
       <AppearanceSettings />
       <InstallerOptionsMenu hideLabel showChangeProductOption={showChangeProductOption} />
     </>
   );
 
   return (
-    <PFPage isContentFilled masthead={<Header {...headerProps} endSlot={endSlotContent} />}>
+    <PFPage
+      isContentFilled
+      masthead={<Header {...headerProps} additionalContent={headerContent} />}
+    >
       <Suspense fallback={<Loading />}>
         <PageGroup tabIndex={-1} id="main-content">
           {children || <Outlet />}

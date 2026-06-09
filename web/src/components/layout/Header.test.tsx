@@ -70,18 +70,20 @@ describe("Header", () => {
     screen.queryByRole("link", { name: "Skip to content" });
   });
 
-  it("renders given content for slots", () => {
+  it("renders the given additional content", () => {
     plainRender(
       <Header
         title="Storage"
-        startSlot={<div role="progressbar" aria-label="Installation progress" />}
-        centerSlot={
-          <div role="menu" aria-label="Page actions">
-            <button role="menuitem">Export configuration</button>
-            <button role="menuitem">Advanced settings</button>
-          </div>
+        additionalContent={
+          <>
+            <div role="progressbar" aria-label="Installation progress" />
+            <div role="menu" aria-label="Page actions">
+              <button role="menuitem">Export configuration</button>
+              <button role="menuitem">Advanced settings</button>
+            </div>
+            <button>Install</button>
+          </>
         }
-        endSlot={<button>Install</button>}
       />,
     );
 
