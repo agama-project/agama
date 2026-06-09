@@ -27,11 +27,12 @@ const LINK_ID = "agm-product-appearance";
 /**
  * Loads the optional per-product appearance stylesheet into the document head.
  *
- * A product can ship `assets/appearance/<product-id>.css` to override appearance
- * tokens (brand colors and more) for any of the light, dark and high-contrast
- * themes. The stylesheet is appended after the Agama styles, so its `:root`
- * token overrides win by source order. A missing file is harmless: the browser
- * ignores the failed stylesheet and no overrides apply.
+ * A product can ship `src/assets/products/<product-id>.css` (served at
+ * `assets/appearance/<product-id>.css`) to override appearance tokens (brand
+ * colors and more) for any of the light, dark and high-contrast themes. The
+ * stylesheet is appended after the Agama styles, so its `:root` token overrides
+ * win by source order. A missing file is harmless: the browser ignores the
+ * failed stylesheet and no overrides apply.
  *
  * @param productId - active product id; the stylesheet is named after it.
  */

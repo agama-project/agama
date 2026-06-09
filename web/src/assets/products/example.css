@@ -1,10 +1,11 @@
 /*
  * Per-product appearance overrides: comprehensive example.
  *
- * Copy this file to `assets/appearance/<product-id>.css` (named after the
+ * Copy this file to `src/assets/products/<product-id>.css` (named after the
  * product id, e.g. `Tumbleweed.css`) and keep only the roles you want to
- * change. Agama loads the matching file at runtime, after its own styles.
- * A product without such a file simply uses the Agama defaults.
+ * change. Agama copies it to assets/appearance/ and loads the matching file at
+ * runtime, after its own styles. A product without such a file simply uses the
+ * Agama defaults.
  *
  * Override the curated `--agm-t--*` role tokens below; Agama maps each onto all
  * the relevant PatternFly tokens, so coverage (page, cards, masthead, modals,

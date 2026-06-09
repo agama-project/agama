@@ -39,7 +39,7 @@ const copy_files = [
   "./src/languages.json",
   { from: "./src/assets/products/*.svg", to: "assets/logos/[name][ext]" },
   // Per-product appearance overrides, loaded at runtime by product id.
-  { from: "./src/assets/appearance/*.css", to: "assets/appearance/[name][ext]" },
+  { from: "./src/assets/products/*.css", to: "assets/appearance/[name][ext]" },
 ];
 
 const plugins = [
