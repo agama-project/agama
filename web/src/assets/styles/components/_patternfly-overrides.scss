@@ -81,6 +81,15 @@
   font-size: var(--pf-t--global--font--size--md);
 }
 
+// Default (nonstatus) labels follow the brand-subtle surface instead of a fixed
+// gray, so they stay a distinct, highlighted chip while adapting to the active
+// theme and product overrides. Colored variants (blue, green, danger, ...) keep
+// their own colors via their higher-specificity modifier selectors.
+.pf-v6-c-label {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--global--color--brand--subtle--default);
+  --pf-v6-c-label--Color: var(--pf-t--global--text--color--on-brand--subtle--default);
+}
+
 .pf-v6-c-menu {
   --pf-v6-c-menu--BoxShadow: var(--pf-t--global--box-shadow--lg);
   // background: #eafaf8;
