@@ -621,8 +621,9 @@ impl Service {
             return Ok(false);
         }
 
-        let is_empty = !status.progresses.iter().any(|p| p.scope == Scope::Software);
-        Ok(is_empty)
+        let is_busy = status.progresses.iter().any(|p| p.scope == Scope::Software)
+            || status.tasks.iter().any(|p| p.scope == Scope::Software);
+        Ok(!is_busy)
     }
 
     /// Returns the product configuration.
