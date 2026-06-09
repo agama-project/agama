@@ -48,7 +48,7 @@ impl AsyncTestContext for Context {
         let schema_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../agama-lib/share");
         std::env::set_var("AGAMA_SCHEMA_DIR", schema_dir.display().to_string());
 
-        let (events_tx, events_rx) = channel(16);
+        let (events_tx, events_rx) = channel(100);
         let dbus = test::dbus::connection().await.unwrap();
 
         let questions = question::start(events_tx.clone()).await.unwrap();
@@ -101,19 +101,22 @@ async fn test_get_extended_config(ctx: &mut Context) -> Result<(), Box<dyn Error
 
 // Waits until the configuration is applied.
 //
-// NOTE: temporarily it waits for the "selinux_config" task to be completed.
+// NOTE: temporarily it waits for the "software_config" task to be completed.
 // In the future we plan to add an specific event.
 async fn wait_until_finished(events: &mut event::Receiver) {
     const TASK_NAME: &str = "software_config";
-    while let Ok(event) = events.recv().await {
-        if matches!(
-            event,
-            Event::TaskFinished {
-                task: Task { name, .. }, ..
+    loop {
+        match events.recv().await {
+            Ok(Event::TaskFinished {
+                task: Task { name, .. },
+                ..
+            }) if name.as_str() == TASK_NAME => break,
+
+            Ok(_event) => {}
+
+            Err(error) => {
+                eprintln!("Error receiving events: {error}");
             }
-            if name.as_str() == TASK_NAME)
-        {
-            break;
         }
     }
 }
