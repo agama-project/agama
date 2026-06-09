@@ -9,7 +9,7 @@ check() {
   [ "$_arch" = "ppc64" ] || [ "$_arch" = "ppc64le" ] || return 1
 
   require_binaries hexdump ofpathname pseries_platform || return 1
-  return 0
+  return 255
 }
 
 # called by dracut
