@@ -22,10 +22,10 @@
 
 import { act } from "react";
 import { renderHook, waitFor } from "@testing-library/react";
-import { mockProgresses } from "~/test-utils";
+import { mockProgresses, mockTasks } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
-import type { Progress } from "~/model/status";
+import type { Progress, Task } from "~/model/status";
 import { useProgressTracking } from "./use-progress-tracking";
 
 jest.mock("~/hooks/use-track-queries-refetch");
@@ -50,6 +50,20 @@ const fakeStorageProgress: Progress = {
   index: 1,
 };
 
+const fakeSoftwareTask: Task = {
+  id: 1,
+  name: "software-proposal",
+  description: "Calculating software proposal",
+  scope: "software",
+};
+
+const fakeStorageTask: Task = {
+  id: 2,
+  name: "storage-probe",
+  description: "Probing storage devices",
+  scope: "storage",
+};
+
 describe("useProgressTracking", () => {
   let mockStartTracking: jest.Mock;
   let mockRefetchCallback: (startedAt: number, completedAt: number) => void;
@@ -63,6 +77,9 @@ describe("useProgressTracking", () => {
       mockRefetchCallback = callback;
       return { startTracking: mockStartTracking };
     });
+
+    // Default: no tasks
+    mockTasks([]);
   });
 
   afterEach(() => {
@@ -219,6 +236,115 @@ describe("useProgressTracking", () => {
       });
 
       expect(result.current.loading).toBe(true);
+    });
+  });
+
+  describe("task tracking", () => {
+    it("returns loading true when there are tasks for the given scope", () => {
+      mockTasks([fakeSoftwareTask]);
+      const { result } = renderHook(() => useProgressTracking("software"));
+
+      expect(result.current.loading).toBe(true);
+    });
+
+    it("returns loading false when there are no tasks for the given scope", () => {
+      mockTasks([fakeStorageTask]);
+      const { result } = renderHook(() => useProgressTracking("software"));
+
+      expect(result.current.loading).toBe(false);
+    });
+
+    it("returns loading true when there are multiple tasks for the same scope", () => {
+      const secondSoftwareTask = { ...fakeSoftwareTask, id: 3 };
+      mockTasks([fakeSoftwareTask, secondSoftwareTask, fakeStorageTask]);
+      const { result } = renderHook(() => useProgressTracking("software"));
+
+      expect(result.current.loading).toBe(true);
+    });
+
+    it("returns loading true when there are tasks and no scope is provided", () => {
+      mockTasks([fakeSoftwareTask, fakeStorageTask]);
+      const { result } = renderHook(() => useProgressTracking());
+
+      expect(result.current.loading).toBe(true);
+    });
+
+    it("keeps loading true until all queries refetch after tasks complete", async () => {
+      const { result, rerender } = renderHook(() => useProgressTracking("software"));
+
+      // Start with tasks
+      mockTasks([fakeSoftwareTask]);
+      rerender();
+
+      expect(result.current.loading).toBe(true);
+
+      // Complete tasks
+      jest.setSystemTime(1000);
+      mockTasks([]);
+      rerender();
+
+      await waitFor(() => {
+        expect(mockStartTracking).toHaveBeenCalledTimes(1);
+      });
+
+      expect(result.current.loading).toBe(true);
+
+      // Queries refetch after tasks finished
+      jest.setSystemTime(2000);
+
+      act(() => {
+        mockRefetchCallback(1000, 2000);
+      });
+
+      expect(result.current.loading).toBe(false);
+    });
+
+    it("keeps loading true when both progress and tasks exist", () => {
+      mockProgresses([fakeSoftwareProgress]);
+      mockTasks([fakeSoftwareTask]);
+      const { result } = renderHook(() => useProgressTracking("software"));
+
+      expect(result.current.loading).toBe(true);
+      expect(result.current.progress).toBe(fakeSoftwareProgress);
+    });
+
+    it("waits for refetch only after both progress and tasks complete", async () => {
+      const { result, rerender } = renderHook(() => useProgressTracking("software"));
+
+      // Start with both progress and tasks
+      mockProgresses([fakeSoftwareProgress]);
+      mockTasks([fakeSoftwareTask]);
+      rerender();
+
+      expect(result.current.loading).toBe(true);
+
+      // Progress completes but task still running
+      jest.setSystemTime(1000);
+      mockProgresses([]);
+      mockTasks([fakeSoftwareTask]);
+      rerender();
+
+      expect(result.current.loading).toBe(true);
+      expect(mockStartTracking).not.toHaveBeenCalled();
+
+      // Task also completes
+      jest.setSystemTime(2000);
+      mockTasks([]);
+      rerender();
+
+      await waitFor(() => {
+        expect(mockStartTracking).toHaveBeenCalledTimes(1);
+      });
+
+      expect(result.current.loading).toBe(true);
+
+      // Queries refetch
+      jest.setSystemTime(3000);
+      act(() => {
+        mockRefetchCallback(2000, 3000);
+      });
+
+      expect(result.current.loading).toBe(false);
     });
   });
 });

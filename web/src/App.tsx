@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -50,24 +50,25 @@ const Content = () => {
 
   const location = useLocation();
   const product = useProductInfo();
-  const { progresses, stage } = useStatus();
+  const status = useStatus();
 
   console.log("App Content component", {
-    progresses,
-    stage,
+    stage: status?.stage,
+    tasks: status?.tasks,
+    progresses: status?.progresses,
     product,
     location: location.pathname,
   });
 
-  if (stage === "failed") {
+  if (status?.stage === "failed") {
     return <InstallationFailed />;
   }
 
-  if (stage === "installing") {
+  if (status?.stage === "installing") {
     return <InstallationProgress />;
   }
 
-  if (stage === "finished") {
+  if (status?.stage === "finished") {
     return <InstallationFinished />;
   }
 

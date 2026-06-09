@@ -312,9 +312,6 @@ export default {
     "Une partition existante sera utilisée pour %s",
     "Les partitions existantes seront utilisées pour %s"
   ],
-  "Any": [
-    "N'importe"
-  ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Tout volume logique existant sera supprimé et toutes les données du groupe de volumes seront perdues."
   ],
@@ -523,9 +520,6 @@ export default {
   "Choose a volume group to define logical volumes": [
     "Choisissez un groupe de volumes pour définir des volumes logiques"
   ],
-  "Chosen by MAC": [
-    "Choisi par MAC"
-  ],
   "Chosen by name": [
     "Choisi par nom"
   ],
@@ -656,6 +650,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Si vous poursuivez sans installer le paquet, votre système risque d'être défectueux. Dans certains cas, le système peut même ne pas démarrer."
   ],
+  "Copy to the clipboard": [
+    ""
+  ],
   "Could not authenticate against the server.": [
     "Impossible de s'authentifier auprès du serveur."
   ],
@@ -715,6 +712,9 @@ export default {
   ],
   "DNS servers": [
     "Serveurs DNS"
+  ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    ""
   ],
   "Deactivate": [
     "Désactiver"
@@ -835,9 +835,6 @@ export default {
   ],
   "Do not use": [
     "Ne pas utiliser"
-  ],
-  "Download config": [
-    "Télécharger config"
   ],
   "Download logs": [
     "Télécharger les journaux"
@@ -1368,12 +1365,6 @@ export default {
   "Login form": [
     "Formulaire de connexion"
   ],
-  "Loopback": [
-    ""
-  ],
-  "MAC": [
-    "MAC"
-  ],
   "MAC address": [
     "Adresse MAC"
   ],
@@ -1675,9 +1666,6 @@ export default {
   ],
   "Package installation failed": [
     "L'installation du paquet a échoué"
-  ],
-  "Parent device must be different from the device name": [
-    ""
   ],
   "Partition %s": [
     "Partition %s"
@@ -2283,6 +2271,9 @@ export default {
   "The extension was registered without any registration code.": [
     "L'extension a été enregistrée sans aucun code d'enregistrement."
   ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    ""
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     "La taille finale peut être supérieure afin de remplir l'espace libre supplémentaire."
   ],
@@ -2463,6 +2454,9 @@ export default {
   "This uses the existing file system at the disk": [
     "Cette opération utilise le système de fichiers existant sur le disque"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    ""
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Cela n'affectera que l'interface du programme d'installation, et non le produit à installer. Vous pouvez ajuster la localisation du produit ultérieurement dans la page Paramètres de localisation."
   ],
@@ -2637,6 +2631,9 @@ export default {
   "Use these same settings for the selected product": [
     "Utiliser les mêmes paramètres pour le produit sélectionné"
   ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    ""
+  ],
   "User name": [
     "Nom d'utilisateur"
   ],
@@ -2726,9 +2723,6 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Lorsque vous êtes prêt(e), cliquez sur le bouton [installer] à la fin de la page."
-  ],
-  "Wi-Fi": [
-    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Formulaire de connexion Wi-Fi"

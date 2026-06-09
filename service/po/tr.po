@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-15 15:23+0000\n"
-"PO-Revision-Date: 2025-10-05 22:59+0000\n"
-"Last-Translator: Emin Tufan Çetin <cetin@users.noreply.l10n.opensuse.org>\n"
+"POT-Creation-Date: 2026-06-05 13:42+0000\n"
+"PO-Revision-Date: 2026-06-04 13:44+0000\n"
+"Last-Translator: yakup <mtopac2027@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/tr/>\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -37,12 +37,12 @@ msgstr "Depolama aygıtları araştırılıyor"
 #. not block the service in order to make possible to attend other requests.
 #: service/lib/agama/dbus/storage/dasd.rb:94
 msgid "Configuring DASD"
-msgstr ""
+msgstr "DASD'nin Yapılandırılması"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:80
 msgid "Configuring iSCSI"
-msgstr ""
+msgstr "iSCSI'yi Yapılandırma"
 
 #. Performs an iSCSI discovery.
 #.
@@ -50,44 +50,44 @@ msgstr ""
 #. @return [Number] 0 success; 1 failure.
 #: service/lib/agama/dbus/storage/iscsi.rb:105
 msgid "Performing iSCSI discovery"
-msgstr ""
+msgstr "iSCSI keşfi gerçekleştiriliyor"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:191
+#: service/lib/agama/dbus/storage/manager.rb:196
 msgid "Preparing bootloader proposal"
 msgstr "Bootloader bölümü hazırlanıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:194
+#: service/lib/agama/dbus/storage/manager.rb:199
 msgid "Preparing the storage devices"
 msgstr "Depolama cihazları hazırlanıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:197
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr "bootloader sysconfig yazılıyor"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:205
+#: service/lib/agama/dbus/storage/manager.rb:210
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Kurulumu iptal et"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:212
+#: service/lib/agama/dbus/storage/manager.rb:217
 #, fuzzy
 msgid "Unmounting devices"
 msgstr "Depolama aygıtlarının bağlantısını kesme"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:249
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "Depolama aygıtlarını etkinleştiriliyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:252
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr "Depolama aygıtları araştırılıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:255
+#: service/lib/agama/dbus/storage/manager.rb:262
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Depolama yapılandırmasını ayarlama"
@@ -392,7 +392,7 @@ msgstr "LVM mantıksal birimi"
 
 #: service/lib/agama/storage/config_checkers/search.rb:391
 msgid "LVM volume group"
-msgstr ""
+msgstr "LVM disk grubu"
 
 #: service/lib/agama/storage/config_checkers/search.rb:393
 msgid "device"
@@ -483,7 +483,7 @@ msgstr "Dosya sistemi anlık görüntülerini yapılandırma"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:300
+#: service/lib/agama/storage/manager.rb:308
 #, fuzzy
 msgid "There is no suitable device for installation"
 msgstr "Kurulum için cihaz seçilmedi"
@@ -522,7 +522,7 @@ msgstr "Depolama aygıtlarının bağlantısını kesme"
 #: service/lib/agama/storage/zfcp/manager.rb:206
 #, c-format
 msgid "The zFCP controller %s cannot be activated"
-msgstr ""
+msgstr "zFCP kontrolcüsü %s etkinleştirilemiyor"
 
 #. Activates a device if it is not active yet.
 #.
@@ -551,7 +551,7 @@ msgstr "Önyükleme aygıtı otomatik olarak seçilemez"
 #: service/lib/agama/storage/zfcp/manager.rb:307
 #, c-format
 msgid "Unknown zFCP controller %s"
-msgstr ""
+msgstr "Bilinmeyen zFCP denetleyicisi %s"
 
 #. Issue if the device is missing.
 #.
@@ -560,7 +560,7 @@ msgstr ""
 #: service/lib/agama/storage/zfcp/manager.rb:326
 #, c-format
 msgid "Unknown zFCP LUN %s"
-msgstr ""
+msgstr "Bilinmeyen zFCP LUN %s"
 
 #~ msgid "Certificate:"
 #~ msgstr "Sertifika:"

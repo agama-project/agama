@@ -25,23 +25,26 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import DownloadLogsButton from "./DownloadLogsButton";
 
+const mockDownload = jest.fn();
+jest.mock("~/utils", () => {
+  const original = jest.requireActual("~/utils");
+  return {
+    ...original,
+    download: (...args) => mockDownload(...args),
+  };
+});
+
 describe("DownloadLogsButton", () => {
   it("renders a button with 'Download logs' label", () => {
     plainRender(<DownloadLogsButton />);
-    screen.getByRole("link", { name: /Download logs/i });
+    screen.getByRole("button", { name: /Download logs/i });
   });
 
-  it("has correct download attributes", () => {
-    plainRender(<DownloadLogsButton />);
-    const button = screen.getByRole("link", { name: /Download logs/i });
-    expect(button).toHaveAttribute("href", "/api/private/download_logs");
-    expect(button).toHaveAttribute("download", "agama-logs.tar.gz");
-  });
-
-  it("renders as an anchor element", () => {
-    plainRender(<DownloadLogsButton />);
-    const button = screen.getByRole("link", { name: /Download logs/i });
-    expect(button.tagName).toBe("A");
+  it("triggers the download when clicked", async () => {
+    const { user } = plainRender(<DownloadLogsButton />);
+    const button = screen.getByRole("button", { name: /Download logs/i });
+    await user.click(button);
+    expect(mockDownload).toHaveBeenCalled();
   });
 
   it("accepts custom props", () => {
@@ -51,7 +54,7 @@ describe("DownloadLogsButton", () => {
 
   it("allows overriding size and variant", () => {
     plainRender(<DownloadLogsButton size="sm" variant="secondary" />);
-    const button = screen.getByRole("link", { name: /Download logs/i });
+    const button = screen.getByRole("button", { name: /Download logs/i });
     expect(button).toHaveClass("pf-m-secondary");
     expect(button).toHaveClass("pf-m-small");
   });

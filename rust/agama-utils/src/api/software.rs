@@ -26,3 +26,6 @@ pub use system_info::*;
 
 mod proposal;
 pub use proposal::{Proposal, SelectedBy, SoftwareProposal};
+
+mod resolvable;
+pub use resolvable::{Resolvable, ResolvableType};

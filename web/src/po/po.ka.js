@@ -308,7 +308,7 @@ export default {
     "მისამართი და ნაგულისხმევი რაუტერი მინიჭებულია ქსელიდან"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    ""
+    "მოირგეთ ქვემორე პარამეტრები, რომ ქნათ ისე, რომ ახალი სისტემა ხელმისაწვდომ ადგილში ჩაეტიოს."
   ],
   "Administrator account": [
     "ადმინისტრატორის ანგარიში"
@@ -350,9 +350,6 @@ export default {
   "An existing partition will be used for %s": [
     "არსებული დანაყოფი იქნება გამოყენებული %s-სთვის",
     "არსებული დანაყოფები იქნება გამოყენებული %s-სთვის"
-  ],
-  "Any": [
-    "ნებისმიერი"
   ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     ""
@@ -623,8 +620,8 @@ export default {
   "Choose whether to enable the root account.": [
     "აირჩიეთ, იქნება ჩართული root-ის ანგარიში, თუ არა."
   ],
-  "Chosen by MAC": [
-    "არჩეულია MAC-ით"
+  "Chosen by MAC address": [
+    "არჩეულია MAC მისამართით"
   ],
   "Chosen by name": [
     "არჩეულია სახელით"
@@ -640,6 +637,9 @@ export default {
   ],
   "Close": [
     "დახურვა"
+  ],
+  "Configuration added to clipboard": [
+    "კონფიგურაცია დაემატა ბუფერს"
   ],
   "Configuration from the network plus static addresses and gateway": [
     "კონფიგურაცია ქსელიდან, პლუს სტატიკური მისამართები და ნაგულისხმევი რაუტერი"
@@ -762,6 +762,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     ""
   ],
+  "Copy to the clipboard": [
+    "ბუფერში კოპირება"
+  ],
   "Could not authenticate against the server.": [
     "სერვერთან ავთენტიკაცია შეუძლებელია."
   ],
@@ -824,6 +827,9 @@ export default {
   ],
   "DNS servers": [
     "DNS სერვერები"
+  ],
+  "Data collection may take a while. The download will start automatically once the file is ready.": [
+    ""
   ],
   "Deactivate": [
     "დეაქტივაცია"
@@ -906,6 +912,12 @@ export default {
   "Device %s menu": [
     "მოწყობილობის მენიუ %s"
   ],
+  "Device MAC address": [
+    "მოწყობილობის MAC მისამართი"
+  ],
+  "Device binding": [
+    "მოწყობილობის მიბმა"
+  ],
   "Device details": [
     "მოწყობილობის დეტალები"
   ],
@@ -966,7 +978,7 @@ export default {
   "Do not use": [
     "არ გამოიყენო"
   ],
-  "Download config": [
+  "Download configuration": [
     "კონფიგურაციის გადმოწერა"
   ],
   "Download logs": [
@@ -1088,9 +1100,6 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     ""
-  ],
-  "Ethernet": [
-    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1273,7 +1282,7 @@ export default {
     "ჰოსტის სახელი დინამიკურია [და შეიძლება, შეიცვალოს გადატვირთვის, ან ქსელის ცვლილების შემდეგ]."
   ],
   "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
-    ""
+    "ჰოსტის სახელები, IP მისამართები, ან სრულად შედგენილი დომენის სახელები (FQDN). მაგ: pool.ntp.org"
   ],
   "I have read and accept the [license] for %s": [
     "მე წავიკითხე და დავეთანხმე ლიცენზიას %s-სთვის"
@@ -1375,11 +1384,17 @@ export default {
   "Installation in progress": [
     "მიმდინარეობს დაყენება"
   ],
+  "Installation logs download": [
+    "დაყენების ჟურნალის გადმოწერა"
+  ],
   "Installation only": [
     "მხოლოდ დაყენება"
   ],
   "Installation settings": [
     "დაყენების მორგება"
+  ],
+  "Installation settings in JSON format": [
+    "დაყენების პარამეტრები JSON ფორმატში"
   ],
   "Installation settings will automatically update to match the new product's defaults.": [
     "დაყენების პარამეტრები ავტომატურად განახლდება, რომ დაემთხვეს ახალი პროდუქტის ნაგულისხმევ მნშვნელობებს."
@@ -1463,7 +1478,7 @@ export default {
     "%s-სთვის სივრცის გამოყოფა შეუძლებელია."
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    ""
+    "ჩამტვირთავი დანაყოფისთვის და %s-ისთვის ადგილის გამოყოფა შეუძლებელია."
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
     ""
@@ -1573,12 +1588,6 @@ export default {
   "Login form": [
     "შესვლის ფორმა"
   ],
-  "Loopback": [
-    "მარყუჟი"
-  ],
-  "MAC": [
-    "MAC"
-  ],
   "MAC address": [
     "MAC მისამართი"
   ],
@@ -1601,7 +1610,7 @@ export default {
     "შეტყობინების მაქს. ასაკი"
   ],
   "Max message age must be between 6 and 40 seconds": [
-    ""
+    "შეტყობინების მაქს. ასაკი 6-40 წამებს შორის უნდა იყოს"
   ],
   "Members": [
     "წევრები"
@@ -1756,7 +1765,7 @@ export default {
     "დამატებით ნიმუშები ხელმისაწვდომი არაა"
   ],
   "No changes detected. System settings are already up to date.": [
-    ""
+    "ცვლილებები აღმოჩენილი არაა. სისტემის პარამეტრები უკვე განახლებულია."
   ],
   "No changes to apply": [
     "გადასატარებელი ცვლილებების გარეშე"
@@ -1929,12 +1938,6 @@ export default {
   "Parent device": [
     "მშობელი მოწყობილობა"
   ],
-  "Parent device is required": [
-    "მშობელი მოწყობილობა აუცილებელია"
-  ],
-  "Parent device must be different from the device name": [
-    ""
-  ],
   "Partition %s": [
     "დანაყოფი %s"
   ],
@@ -2008,7 +2011,7 @@ export default {
     "პაროლები არ ემთხვევა"
   ],
   "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)": [
-    ""
+    "ჩასვით, ან შეიყვანეთ ერთი, ან მეტი საჯარო SSH გასაღები (მაგ: ssh-ed25519 AAAA...)"
   ],
   "Patterns selection": [
     "ნიმუშების არჩევანი"
@@ -2018,9 +2021,6 @@ export default {
   ],
   "Performs auto LUN scan": [
     "ასრულებს ავტომატურ LUN-ის სკანირებას"
-  ],
-  "Physical or Virtual device name": [
-    "ფიზიკური, ან ვირტუალური მოწყობილობის სახელი"
   ],
   "Physical volumes": [
     "ფიზიკური ტომები"
@@ -2330,7 +2330,7 @@ export default {
     "აირჩიეთ, ან შეიყვანეთ მიმაგრების წერტილი"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    ""
+    "აირჩიეთ, ან შეიყვანეთ მიმაგრები წერტილი, რომელიც სხვა მოწყობილობაზე უკვე მინიჭებული არაა"
   ],
   "Select or enter a valid mount point": [
     "აირჩიეთ, ან შეიყვანეთ სწორი მიმაგრების წერტილი"
@@ -2384,7 +2384,7 @@ export default {
     ""
   ],
   "Sets up both and use either to log in": [
-    ""
+    "მოირგებს ორივეს და გამოიყენეთ ერთერთი შესასვლელად"
   ],
   "Settings": [
     "მორგება"
@@ -2404,6 +2404,9 @@ export default {
   ],
   "Show information about %s": [
     "ინფორმაციის ჩვენება %s-ის შესახებ"
+  ],
+  "Show installation settings": [
+    "დაყენების პარამეტრების ჩვენება"
   ],
   "Show less": [
     "ნაკლების ჩვენება"
@@ -2668,6 +2671,9 @@ export default {
   "The extension was registered without any registration code.": [
     "ეს გაფართოება დარეგისტრირებულია რეგისტრაციის კოდის გარეშე."
   ],
+  "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
+    ""
+  ],
   "The final size can be bigger in order to fill the extra free space.": [
     ""
   ],
@@ -2706,13 +2712,13 @@ export default {
     "ასევე წაიშლება ლოგიკური ტომები"
   ],
   "The maximum must be a number followed by a unit like GiB or GB": [
-    ""
+    "მაქსიმუმი უნდა იყოს რიცხვი, რომელსაც მოჰყვება ისეთი ერთეულები, როგორიცაა, მაგალითად, GiB, ან GB"
   ],
   "The minimum cannot be greater than the maximum": [
     "მინიმუმი მაქსიმუმზე მეტი ვერ იქნება"
   ],
   "The minimum must be a number followed by a unit like GiB or GB": [
-    ""
+    "მინიმუმი უნდა იყოს რიცხვი, რომელსაც მოჰყვება ისეთი ერთეული, როგორიცაა, მაგალითად, GiB, ან GB"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     ""
@@ -2860,6 +2866,9 @@ export default {
   "This uses the existing file system at the disk": [
     "ეს იყენებს დისკზე არსებულ ფაილურ სისტემას"
   ],
+  "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
+    ""
+  ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     ""
   ],
@@ -2876,7 +2885,7 @@ export default {
     "Tmpfs"
   ],
   "To change it, visit the [hostname] section before registering.": [
-    ""
+    "შესაცვლელად რეგისტრაციამდე ეწვიეთ სექციას [ჰოსტის სახელი]."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     ""
@@ -3049,6 +3058,9 @@ export default {
   "Use these same settings for the selected product": [
     "იგივე პარამეტრების გამოყენება მონიშნული პროდუქტისთვის"
   ],
+  "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
+    ""
+  ],
   "User name": [
     "მომხმარებლის სახელი"
   ],
@@ -3169,9 +3181,6 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "როცა მზად იქნებით, გვერდის ბოლოში დააწკაპუნეთ ღილაკზე [დაყენება]."
-  ],
-  "Wi-Fi": [
-    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "WiFi მიერთება წყაროდან"

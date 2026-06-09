@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 13:56+0000\n"
-"PO-Revision-Date: 2026-05-24 13:12+0000\n"
+"POT-Creation-Date: 2026-06-05 13:38+0000\n"
+"PO-Revision-Date: 2026-06-07 17:12+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 2026.5\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #: agama-autoinstall/src/questions.rs:41 agama-utils/src/api/question.rs:293
 #: agama-utils/src/question/start.rs:54
@@ -29,96 +29,132 @@ msgstr "Nie"
 msgid "Yes"
 msgstr "Áno"
 
-#: agama-cli/src/monitor/ui.rs:38
-msgid "Manager"
-msgstr ""
-
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:39
-msgid "Network"
-msgstr ""
+msgid "Bootloader"
+msgstr "Správca štartu"
 
-#: agama-cli/src/monitor/ui.rs:40
-msgid "NTP"
-msgstr ""
-
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:41
-msgid "Hostname"
-msgstr ""
+msgid "Manager"
+msgstr "Správca"
 
-#: agama-cli/src/monitor/ui.rs:42
-msgid "Localization"
-msgstr ""
-
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:43
-msgid "Product"
-msgstr ""
+msgid "Network"
+msgstr "Sieť"
 
-#: agama-cli/src/monitor/ui.rs:44
-msgid "Remote Access"
-msgstr ""
-
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:45
-msgid "Software"
-msgstr ""
+msgid "NTP"
+msgstr "NTP"
 
-#: agama-cli/src/monitor/ui.rs:46
-msgid "Storage"
-msgstr ""
-
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:47
-msgid "Files"
-msgstr ""
+msgid "Hostname"
+msgstr "Názov hostiteľa"
 
-#: agama-cli/src/monitor/ui.rs:48
-msgid "iSCSI"
-msgstr ""
-
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:49
-msgid "DASD"
-msgstr ""
+msgid "Localization"
+msgstr "Lokalizácia"
 
-#: agama-cli/src/monitor/ui.rs:50
-msgid "zFCP"
-msgstr ""
-
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:51
+msgid "Product"
+msgstr "Produkt"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:53
+msgid "Remote Access"
+msgstr "Vzdialený prístup"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:55
+msgid "Software"
+msgstr "Softvér"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:57
+msgid "Storage"
+msgstr "Úložisko"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:59
+msgid "Files"
+msgstr "Súbory"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:61
+msgid "iSCSI"
+msgstr "iSCSI"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:63
+msgid "DASD"
+msgstr "DASD"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:65
+msgid "zFCP"
+msgstr "zFCP"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:67
 msgid "Users"
-msgstr ""
+msgstr "Používatelia"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:69
+msgid "Proxy"
+msgstr "Proxy"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:71
+msgid "Questions"
+msgstr "Otázky"
+
+#. TRANSLATORS: an installation "scope", used in the "agama monitor" command
+#: agama-cli/src/monitor/ui.rs:73
+msgid "Security"
+msgstr "Bezpečnosť"
 
 #: agama-cli/src/monitor/ui/content.rs:63
 msgid "There are pending questions:"
-msgstr ""
+msgstr "Zostávajú otvorené otázky:"
 
 #: agama-cli/src/monitor/ui/content.rs:73
 msgid ""
 "Please use the web interface (recommended) or the \"agama questions\" "
 "command to answer them."
 msgstr ""
+"Na ich zodpovedanie použite webové rozhranie (odporúčané) alebo príkaz "
+"\"agama questions\"."
 
 #: agama-cli/src/monitor/ui/content.rs:93
 msgid "Installation complete."
-msgstr ""
+msgstr "Inštalácia bola dokončená."
 
 #: agama-cli/src/monitor/ui/content.rs:94
 msgid "You can reboot the machine to log in to the new system."
-msgstr ""
+msgstr "Po reštartovaní počítača sa môžete prihlásiť do nového systému."
 
 #: agama-cli/src/monitor/ui/content.rs:97 agama-cli/src/status.rs:76
 msgid "Installation failed."
-msgstr ""
+msgstr "Inštalácia zlyhala."
 
 #: agama-cli/src/monitor/ui/content.rs:98
 msgid "Use the \"agama logs\" command to collect the logs."
-msgstr ""
+msgstr "Na získanie záznamov použite príkaz \"agama logs\"."
 
 #: agama-cli/src/monitor/ui/content.rs:129
 #: agama-cli/src/monitor/ui/content.rs:201
 msgid "Action needed:"
-msgstr ""
+msgstr "Potrebné kroky:"
 
 #: agama-cli/src/monitor/ui/content.rs:137
 msgid "No product has been selected yet."
-msgstr ""
+msgstr "Zatiaľ nebol vybraný žiadny produkt."
 
 #: agama-cli/src/monitor/ui/content.rs:222
 msgid "Ready for installation."
@@ -230,90 +266,93 @@ msgid "Blocking issues:"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:198
+#: agama-files/src/service.rs:184
 msgid "Failed to retrieve the script %s. Do you want to try again?"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
-#: agama-files/src/service.rs:222
+#: agama-files/src/service.rs:208
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:88
+#: agama-manager/src/actions.rs:92
 msgid "Prepare the system"
 msgstr ""
 
-#: agama-manager/src/actions.rs:89
+#: agama-manager/src/actions.rs:93
 msgid "Install software"
 msgstr "Inštalovať softvér"
 
-#: agama-manager/src/actions.rs:90
+#: agama-manager/src/actions.rs:94
 msgid "Configure the system"
 msgstr "Nakonfigurovať systém"
 
-#: agama-manager/src/actions.rs:195
+#: agama-manager/src/actions.rs:197
 msgid "Storing security settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:196
-#, fuzzy
+#: agama-manager/src/actions.rs:207
 msgid "Configuring remote access"
-msgstr "Nakonfigurovať systém"
+msgstr "Konfigurácia vzdialeného prístupu"
 
-#: agama-manager/src/actions.rs:197
+#: agama-manager/src/actions.rs:217
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/actions.rs:198
+#: agama-manager/src/actions.rs:227
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/actions.rs:199
+#: agama-manager/src/actions.rs:238
 msgid "Setting up NTP"
 msgstr ""
 
-#: agama-manager/src/actions.rs:200
-msgid "Importing user files"
+#: agama-manager/src/actions.rs:249
+msgid "Importing user files and scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:201
+#: agama-manager/src/actions.rs:262
 msgid "Running user pre-installation scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:202
+#: agama-manager/src/actions.rs:277
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:203
+#: agama-manager/src/actions.rs:287
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:204
+#: agama-manager/src/actions.rs:297
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:205
+#: agama-manager/src/actions.rs:307
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:209
+#: agama-manager/src/actions.rs:334
+msgid "Storing bootloader settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:394
 msgid "Configuring DASD devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:213
+#: agama-manager/src/actions.rs:424
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:218
-msgid "Preparing the software proposal"
-msgstr ""
-
-#: agama-manager/src/actions.rs:219
+#: agama-manager/src/actions.rs:451
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:220
-msgid "Storing bootloader settings"
+#: agama-manager/src/actions.rs:483
+msgid "Preparing the software proposal"
+msgstr ""
+
+#: agama-manager/src/actions.rs:515
+msgid "Configuring SELinux"
 msgstr ""
 
 #: agama-network/src/service.rs:511
@@ -369,77 +408,65 @@ msgstr ""
 msgid "Skip"
 msgstr "Preskočiť"
 
-#: agama-software/src/model/packages.rs:55
-msgid "package"
-msgstr ""
-
-#: agama-software/src/model/packages.rs:56
-msgid "pattern"
-msgstr ""
-
-#: agama-software/src/model/packages.rs:57
-msgid "product"
-msgstr ""
-
 #: agama-software/src/service.rs:287
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:292
+#: agama-software/src/zypp_server.rs:293
 msgid "Starting packages installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:305
+#: agama-software/src/zypp_server.rs:306
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:359
+#: agama-software/src/zypp_server.rs:360
 msgid "Updating the list of repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:360
+#: agama-software/src/zypp_server.rs:361
 msgid "Refreshing metadata from the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:362
 msgid "Calculating the software proposal"
 msgstr "Kalkulácia softvérového návrhu"
 
-#: agama-software/src/zypp_server.rs:364
+#: agama-software/src/zypp_server.rs:365
 msgid "Registering the system"
 msgstr ""
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:434
+#: agama-software/src/zypp_server.rs:437
 msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:458
 msgid "Could not read the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:488
+#: agama-software/src/zypp_server.rs:495
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:491
+#: agama-software/src/zypp_server.rs:498
 msgid "Failed to find the product in the repositories."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:554
+#: agama-software/src/zypp_server.rs:561
 msgid "There are conflicts in the software selection"
 msgstr ""
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:583
+#: agama-software/src/zypp_server.rs:590
 msgid "Could not select %s '%s' for installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:999
+#: agama-software/src/zypp_server.rs:1008
 msgid "Failed to register the system"
 msgstr ""
 
@@ -452,4 +479,16 @@ msgstr ""
 
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
+msgstr ""
+
+#: agama-utils/src/api/software/resolvable.rs:63
+msgid "package"
+msgstr ""
+
+#: agama-utils/src/api/software/resolvable.rs:64
+msgid "pattern"
+msgstr ""
+
+#: agama-utils/src/api/software/resolvable.rs:65
+msgid "product"
 msgstr ""

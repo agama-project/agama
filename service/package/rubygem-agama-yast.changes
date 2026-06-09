@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun  5 08:57:32 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend D-Bus API to allow getting the resolvables required by
+  storage and bootloader (needed for bsc#1266276).
+- Stop calling to software directly from the D-Bus service.
+
+-------------------------------------------------------------------
 Mon Jun  1 13:49:08 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Allow configuring the space policy for creating LVM physical
