@@ -360,8 +360,7 @@ impl Starter {
             None => hardware::Registry::new_from_system(),
         };
 
-        let access =
-            agama_access::Service::starter(software.clone(), self.events.clone()).start()?;
+        let access = agama_access::Service::starter(self.events.clone()).start()?;
 
         let users = match self.users {
             Some(users) => users,

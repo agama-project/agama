@@ -592,6 +592,7 @@ impl SetConfigAction {
     ) -> crate::task_manager::TaskId {
         let software_handler = self.software.clone();
         let software_config = config.software.clone();
+        let access_handler = self.access.clone();
         let bootloader_handler = self.bootloader.clone();
         let files_handler = self.files.clone();
         let ntp_handler = self.ntp.clone();
@@ -605,6 +606,7 @@ impl SetConfigAction {
             )
             .depends_on(dependencies)
             .run(move || async move {
+                Self::set_resolvables_for(&software_handler, "access", access_handler).await;
                 Self::set_resolvables_for(&software_handler, "files", files_handler).await;
                 Self::set_resolvables_for(&software_handler, "ntp", ntp_handler).await;
                 Self::set_resolvables_for(&software_handler, "storage", storage_handler).await;
