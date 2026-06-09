@@ -376,21 +376,69 @@ else
       esac
       if [ $matched -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
         case "$HCN_IP" in
-        dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft)
+        dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
           info "hcnmgr: applying $HCN_IP to $BONDNAME"
           NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
           CHANGED=1
           ;;
+        *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
+          # Format: ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
+          # Extract optional MTU field (after the method, could be followed by more colons)
+          temp_ip=${HCN_IP}
+          # Count colons to determine if there are extra fields
+          colons=0
+          while [ "${temp_ip#*:}" != "$temp_ip" ]; do
+            colons=$((colons + 1))
+            temp_ip=${temp_ip#*:}
+          done
+          # Format: interface:method[:mtu]
+          # We need at least 1 colon (interface:method), optionally 2 for MTU
+          if [ "$colons" -ge 1 ]; then
+            info "hcnmgr: applying DHCP/auto config with optional MTU to $BONDNAME"
+            NEW_ARGS="$NEW_ARGS ip=$BONDNAME:${HCN_IP#*:}"
+            CHANGED=1
+          fi
+          ;;
         *)
           # Static IP configuration - count colons to determine format
+          # Standard format: ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
+          # Minimum fields: client-IP:gateway:netmask:hostname:interface:method (5 colons)
+          # Extended: adds :dns1 and/or :dns2 (up to 7 colons)
           temp_ip=${HCN_IP}
           colons=0
           while [ "${temp_ip#*:}" != "$temp_ip" ]; do
             colons=$((colons + 1))
             temp_ip=${temp_ip#*:}
           done
-          if [ "$colons" -lt 5 ]; then
-            # Pad with colons to reach standard ip= format
+
+          if [ "$colons" -ge 5 ]; then
+            # Already has interface field, just need to replace it with bond name
+            # Extract fields: we need to replace the 6th field (interface) with BONDNAME
+            # Preserve any DNS fields that may follow
+            IFS=':' read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 <<EOF
+$HCN_IP
+EOF
+            # Reconstruct with bond name as interface (f6 position)
+            # Note: f7 and beyond might be method:dns1:dns2 or just method
+            if [ -n "$f9" ]; then
+              # Has dns2 field
+              info "hcnmgr: applying static IP config with DNS1 and DNS2 to $BONDNAME"
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8:$f9"
+            elif [ -n "$f8" ]; then
+              # Has dns1 field
+              info "hcnmgr: applying static IP config with DNS1 to $BONDNAME"
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8"
+            elif [ -n "$f7" ]; then
+              # Standard format with method
+              info "hcnmgr: applying static IP config to $BONDNAME"
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7"
+            else
+              # Fallback - just interface name
+              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME"
+            fi
+            CHANGED=1
+          elif [ "$colons" -lt 5 ]; then
+            # Pad with colons to reach standard ip= format (legacy behavior)
             case $((5 - colons)) in
             1) suffix=":" ;;
             2) suffix="::" ;;
@@ -399,7 +447,7 @@ else
             5) suffix=":::::" ;;
             *) suffix="" ;;
             esac
-            info "hcnmgr: applying static IP config to $BONDNAME"
+            info "hcnmgr: applying static IP config to $BONDNAME (padded)"
             NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
             CHANGED=1
           fi
