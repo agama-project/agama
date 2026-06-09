@@ -49,7 +49,7 @@ function useStatusChanges() {
       queryClient.setQueryData(["status"], (data: Status) => {
         let newTasks: Task[] | null = null;
 
-        if (event.type === "TaskStarted") {
+        if (event.type === "TaskAdded") {
           newTasks = [...data.tasks, event.task];
         }
 
