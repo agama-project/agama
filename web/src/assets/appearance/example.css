@@ -15,8 +15,10 @@
  *   - light: :root:where(:not(.pf-v6-theme-dark))
  *   - dark:  :root:where(.pf-v6-theme-dark)
  *
- * High contrast is intentionally NOT customizable: it is governed entirely by
- * PatternFly's high-contrast theme so accessibility is never compromised.
+ * High contrast is governed by PatternFly by default so accessibility is never
+ * compromised. You MAY brand its accent (--agm-t--brand--color /
+ * --agm-t--link--color) in the high-contrast blocks at the bottom of this file;
+ * surfaces and text stay at PF's high-contrast values.
  *
  * Contrast between the values you choose is your responsibility (WCAG); the API
  * only guarantees that each role reaches every related component.
@@ -80,4 +82,22 @@
   --agm-t--status--danger--color: #f66;
   --agm-t--status--success--color: #6f6;
   --agm-t--status--custom--color: #9f9;
+}
+
+/*
+ * High contrast (optional). Brand the accent only; surfaces and text stay at
+ * PatternFly's accessible high-contrast values, and unset roles keep PF's.
+ *
+ * Set values PER VARIANT: light high contrast is on a white surface and dark
+ * high contrast on a black one, so a single accent rarely contrasts on both.
+ * Use a dark accent for light-HC and a bright one for dark-HC.
+ */
+:root:where(.pf-v6-theme-high-contrast:not(.pf-v6-theme-dark)) {
+  --agm-t--brand--color: #00a; /* dark accent on the white HC surface */
+  --agm-t--link--color: #00a;
+}
+
+:root:where(.pf-v6-theme-dark.pf-v6-theme-high-contrast) {
+  --agm-t--brand--color: #ff0; /* bright accent on the black HC surface */
+  --agm-t--link--color: #0ff;
 }
