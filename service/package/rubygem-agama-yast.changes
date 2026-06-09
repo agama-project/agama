@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun  9 13:21:28 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Avoid running DASD formatting in a separate thread (related to
+  bsc#1266276).
+
+-------------------------------------------------------------------
 Fri Jun  5 08:57:32 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Extend D-Bus API to allow getting the resolvables required by
