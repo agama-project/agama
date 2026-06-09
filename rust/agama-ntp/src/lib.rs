@@ -32,7 +32,7 @@ mod tests {
             ntp::{Config, Source, SourceType},
             Event,
         },
-        issue, Resolvable,
+        Resolvable,
     };
     use async_trait::async_trait;
     use std::{
