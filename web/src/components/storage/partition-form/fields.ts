@@ -72,16 +72,6 @@ export function isReusingPartition(name: string): boolean {
   return name !== "";
 }
 
-/**
- * Checks if a filesystem value supports additional configuration.
- *
- * Returns false for "reuse", althought this will change in future work when
- * adding more config apart of the Filesystem Label.
- */
-export const supportsAdditionalConfig = (filesystem: string): boolean => {
-  return filesystem !== FILESYSTEM_ACTION.REUSE;
-};
-
 /** Form field types */
 
 export type SizeMode = (typeof SIZE_MODE)[keyof typeof SIZE_MODE];
@@ -135,6 +125,8 @@ type FilesystemFields = {
   filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
   filesystemAction: string; // "reuse" | "format"
   filesystemLabel: string;
+  mkfsOptions: string[];
+  mountOptions: string[];
   showMoreFilesystemSettings: boolean;
 };
 
@@ -162,6 +154,8 @@ const defaultValues: FormFields = {
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
+  mkfsOptions: [],
+  mountOptions: [],
   showMoreFilesystemSettings: false,
   sizeMode: SIZE_MODE.AUTO,
   fixedSize: "",

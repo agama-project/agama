@@ -264,6 +264,38 @@ describe("PartitionForm", () => {
       await user.click(screen.getByRole("option", { name: /vdd1/ }));
       expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
     });
+
+    it("allows setting mount options when reusing partition", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.click(screen.getByLabelText("Partition"));
+      await user.click(screen.getByRole("option", { name: /vdd1/ }));
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      await user.click(screen.getByLabelText(/Define more file system settings/));
+      const mountOptionsInput = screen.getByLabelText(/Mount options.*optional/i);
+      await user.type(mountOptionsInput, "rw,noatime");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() =>
+        expect(mockAddPartition).toHaveBeenCalledWith(
+          "drives",
+          0,
+          expect.objectContaining({
+            filesystem: expect.objectContaining({
+              reuse: true,
+              mountOptions: ["rw,noatime"],
+            }),
+          }),
+        ),
+      );
+    });
+
+    it("does not allow to set the label when reusing partition", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.click(screen.getByLabelText("Partition"));
+      await user.click(screen.getByRole("option", { name: /vdd1/ }));
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      await user.click(screen.getByLabelText(/Define more file system settings/));
+      expect(screen.queryByLabelText(/Label.*optional/i)).not.toBeInTheDocument();
+    });
   });
 
   describe("filesystem selection", () => {
@@ -286,6 +318,58 @@ describe("PartitionForm", () => {
       const { user } = installerRender(<PartitionForm />);
       await user.click(screen.getByLabelText(/Define more file system settings/));
       screen.getByLabelText(/Label.*optional/i);
+    });
+
+    it("shows mount options field when additional settings are enabled", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.click(screen.getByLabelText(/Define more file system settings/));
+      screen.getByLabelText(/Mount options.*optional/i);
+    });
+
+    it("shows format options field when additional settings are enabled", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.click(screen.getByLabelText(/Define more file system settings/));
+      screen.getByLabelText(/Format options.*optional/i);
+    });
+
+    it("submits mkfsOptions when provided", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      await user.click(screen.getByLabelText(/Define more file system settings/));
+      const mkfsOptionsInput = screen.getByLabelText(/Format options.*optional/i);
+      await user.type(mkfsOptionsInput, "-O ^64bit");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() =>
+        expect(mockAddPartition).toHaveBeenCalledWith(
+          "drives",
+          0,
+          expect.objectContaining({
+            filesystem: expect.objectContaining({
+              mkfsOptions: ["-O ^64bit"],
+            }),
+          }),
+        ),
+      );
+    });
+
+    it("submits mountOptions when provided", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/data");
+      await user.click(screen.getByLabelText(/Define more file system settings/));
+      const mountOptionsInput = screen.getByLabelText(/Mount options.*optional/i);
+      await user.type(mountOptionsInput, "rw,noatime");
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+      await waitFor(() =>
+        expect(mockAddPartition).toHaveBeenCalledWith(
+          "drives",
+          0,
+          expect.objectContaining({
+            filesystem: expect.objectContaining({
+              mountOptions: ["rw,noatime"],
+            }),
+          }),
+        ),
+      );
     });
   });
 
@@ -381,7 +465,12 @@ describe("PartitionForm", () => {
         partitions: [
           {
             mountPath: "/home",
-            filesystem: { type: "xfs", label: "HomeData" },
+            filesystem: {
+              type: "xfs",
+              label: "HomeData",
+              mkfsOptions: [],
+              mountOptions: [],
+            },
             size: { min: 50 * 1024 * 1024 * 1024, max: 50 * 1024 * 1024 * 1024, default: false },
           },
         ],
