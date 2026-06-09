@@ -23,8 +23,7 @@
 import React from "react";
 import { Button, ButtonProps, Flex } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
-import DownloadFeedback from "~/components/core/DownloadFeedback";
-import { ROOT } from "~/routes/paths";
+import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import { _ } from "~/i18n";
 
 /**
@@ -40,16 +39,14 @@ export default function DownloadLogsButton(
   props: Omit<ButtonProps, "onClick" | "href" | "download">,
 ) {
   return (
-    <DownloadFeedback url={ROOT.logs} filenamePrefix="agama-logs" extension="tar.gz">
-      {({ download: downloadLogs }) => {
-        return (
-          <Button variant="plain" size="default" {...props} onClick={downloadLogs}>
-            <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-              <Icon name="download" /> {_("Download logs")}
-            </Flex>
-          </Button>
-        );
-      }}
-    </DownloadFeedback>
+    <DownloadLogsFeedback>
+      {({ download: downloadLogs }) => (
+        <Button variant="plain" size="default" {...props} onClick={downloadLogs}>
+          <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+            <Icon name="download" /> {_("Download logs")}
+          </Flex>
+        </Button>
+      )}
+    </DownloadLogsFeedback>
   );
 }

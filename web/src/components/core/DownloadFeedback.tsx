@@ -21,18 +21,17 @@
  */
 
 import React, { useRef, useState } from "react";
-import {
-  Alert,
-  AlertActionCloseButton,
-  AlertGroup,
-  Divider,
-  Stack,
-  StackItem,
-} from "@patternfly/react-core";
-import Text from "~/components/core/Text";
-import Interpolate from "~/components/core/Interpolate";
+import { Alert, AlertActionCloseButton, AlertGroup } from "@patternfly/react-core";
 import { download, isoTimestamp } from "~/utils";
-import { _ } from "~/i18n";
+
+type FeedbackComponent = React.ComponentType<{ filename?: string }>;
+
+type AlertConfig = {
+  /** Alert title component. */
+  title: FeedbackComponent;
+  /** Alert content component. */
+  content: FeedbackComponent;
+};
 
 export type DownloadFeedbackProps = {
   /** URL of the resource to download. */
@@ -49,19 +48,14 @@ export type DownloadFeedbackProps = {
    * element such as a button or dropdown item.
    */
   children: (props: { download: () => void }) => React.ReactNode;
-  /** Milliseconds before the success alert auto-dismisses (e.g. 8000). */
-  successTimeout?: number;
+  /** Configuration for the info alert shown while preparing the download. */
+  info: AlertConfig;
+  /** Configuration for the success alert shown after download starts. */
+  success: AlertConfig & {
+    /** Milliseconds before the alert auto-dismisses (default: 8000). */
+    timeout?: number;
+  };
 };
-
-const MainText = ({ filename }) => (
-  <Interpolate
-    sentence={_(
-      "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.",
-    )}
-  >
-    {() => <code>{filename}</code>}
-  </Interpolate>
-);
 
 /**
  * Wraps a downloadable resource with user feedback. Renders a toast alert
@@ -69,7 +63,21 @@ const MainText = ({ filename }) => (
  * starts, then delegates trigger rendering to its children via a render prop.
  *
  * @example
- * <DownloadFeedback url={ROOT.logs} filenamePrefix="agama-logs" extension="tar.gz">
+ * function Title() {
+ *   return <>{_("Download logs")}</>;
+ * }
+ *
+ * function Content({ filename }) {
+ *   return <div>Downloading {filename}...</div>;
+ * }
+ *
+ * <DownloadFeedback
+ *   url={ROOT.logs}
+ *   filenamePrefix="agama-logs"
+ *   extension="tar.gz"
+ *   info={{ title: Title, content: Content }}
+ *   success={{ title: Title, content: Content }}
+ * >
  *   {({ download }) => (
  *     <DropdownItem onClick={download}>{_("Download logs")}</DropdownItem>
  *   )}
@@ -79,7 +87,8 @@ export default function DownloadFeedback({
   url,
   filenamePrefix,
   extension,
-  successTimeout = 8000,
+  info: { title: InfoTitle, content: InfoContent },
+  success: { title: SuccessTitle, content: SuccessContent, timeout: successTimeout = 8000 },
   children,
 }: DownloadFeedbackProps) {
   const [alert, setAlert] = useState<"pending" | "success" | null>(null);
@@ -113,44 +122,26 @@ export default function DownloadFeedback({
     setAlert(null);
   };
 
-  const title = _("Installation logs download");
-
   return (
     <>
       <AlertGroup isToast>
         {alert === "pending" && (
           <Alert
             variant="info"
-            title={title}
+            title={<InfoTitle filename={filename} />}
             actionClose={<AlertActionCloseButton onClose={() => setAlert(null)} />}
           >
-            <Stack hasGutter>
-              <StackItem>
-                <MainText filename={filename} />
-              </StackItem>
-              <StackItem>
-                <Divider />
-                <Text textStyle="fontSizeXs">
-                  {_(
-                    "Data collection may take a while. The download will start automatically once the file is ready.",
-                  )}
-                </Text>
-              </StackItem>
-            </Stack>
+            <InfoContent filename={filename} />
           </Alert>
         )}
 
         {alert === "success" && (
           <Alert
             variant="success"
-            title={title}
+            title={<SuccessTitle filename={filename} />}
             actionClose={<AlertActionCloseButton onClose={handleSuccessClose} />}
           >
-            <Stack hasGutter>
-              <StackItem>
-                <MainText filename={filename} />
-              </StackItem>
-            </Stack>
+            <SuccessContent filename={filename} />
           </Alert>
         )}
       </AlertGroup>

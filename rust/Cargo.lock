@@ -12,7 +12,6 @@ checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 name = "agama-access"
 version = "0.1.0"
 dependencies = [
- "agama-software",
  "agama-utils",
  "async-trait",
  "gettext-rs",
@@ -124,7 +123,6 @@ dependencies = [
 name = "agama-iscsi"
 version = "0.1.0"
 dependencies = [
- "agama-storage",
  "agama-storage-client",
  "agama-utils",
  "async-trait",
@@ -298,7 +296,6 @@ dependencies = [
 name = "agama-s390"
 version = "0.1.0"
 dependencies = [
- "agama-storage",
  "agama-storage-client",
  "agama-utils",
  "async-trait",

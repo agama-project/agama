@@ -85,8 +85,7 @@ function InstallationFinished() {
             <Stack hasGutter>
               <HelperText>
                 <HelperTextItem
-                  className={alignmentStyles.textAlignEnd}
-                  style={{ textWrap: "balance" }}
+                  className={[alignmentStyles.textAlignEnd, "text-balance"].join(" ")}
                 >
                   {_("You can reboot the machine to log in to the new system.")}
                 </HelperTextItem>

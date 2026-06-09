@@ -1,0 +1,129 @@
+// Agama custom styles.
+//
+// App-specific component and layout styles that are not direct PatternFly
+// overrides (see _patternfly-overrides.scss for those).
+
+.installation-settings-summary {
+  display: grid;
+  gap: 0.5em;
+}
+
+@media (width >= 64rem) {
+  .installation-settings-summary {
+    grid-template-columns: repeat(2, minmax(250px, 1fr));
+  }
+}
+
+#productSelectionForm img {
+  max-inline-size: 100px;
+}
+
+.agm-sticky-category-header {
+  position: sticky;
+  background: var(--pf-t--global--background--color--primary--default);
+  z-index: 2;
+  padding-block-start: var(--pf-t--global--spacer--sm);
+  padding-block-end: var(--pf-t--global--spacer--sm);
+  border-bottom: var(--pf-t--global--border--width--regular) solid rgb(0 0 0 / 10%);
+}
+
+#productSelectionForm {
+  input[type="radio"] {
+    align-self: center;
+    inline-size: 1.2em;
+    block-size: 1.2em;
+  }
+
+  .pf-v6-c-card {
+    img {
+      max-inline-size: 80px;
+    }
+
+    label {
+      cursor: pointer;
+    }
+  }
+
+  .pf-v6-c-radio {
+    row-gap: 0;
+  }
+}
+
+// Material Symbol icons (rendered by the Icon component) ship without a fill,
+// so they default to black and turn nearly invisible on the dark theme. Make
+// them inherit the surrounding text color so they adapt to the active theme.
+svg[data-icon-name] {
+  fill: currentcolor;
+}
+
+.agm-three-dots-icon {
+  font-size: 1.1rem;
+  vertical-align: text-top;
+}
+
+.no-default-icon {
+  .pf-v6-c-button__icon {
+    display: none;
+  }
+}
+
+span.in-quotes {
+  &::before {
+    content: open-quote;
+  }
+
+  &::after {
+    content: close-quote;
+  }
+}
+
+nav.agm-breadcrumb h1 {
+  // Allow heading in breadcrumb use fontSize from its parent
+  font-size: inherit;
+}
+
+// FIXME: make it more generic, if possible, or even without CSS but not
+// rendering such a label if "storage instructions" are more than one
+.storage-structure:has(> li:nth-child(2)) span.action-text {
+  display: none;
+}
+
+.agm-split-info-layout-container {
+  height: 100%;
+  place-content: center;
+}
+
+.agm-split-info-layout {
+  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  position: relative;
+}
+
+.agm-split-info-layout > .pf-v6-l-grid__item {
+  text-align: center;
+  justify-self: center;
+}
+
+@media (width >= 768px) {
+  .agm-split-info-layout::before {
+    content: "";
+    position: absolute;
+    top: -1em;
+    bottom: -1.5em;
+    left: 50%;
+    width: 1px;
+    background: var(--pf-t--global--border--color--default);
+  }
+
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 1"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 3"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 5"] {
+    justify-self: end;
+    text-align: end;
+  }
+
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 4"],
+  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 6"] {
+    justify-self: start;
+    text-align: start;
+  }
+}

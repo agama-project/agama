@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -31,12 +31,12 @@ use agama_utils::{
             user_file, Script, ScriptsConfig, UserFile,
         },
         question::QuestionSpec,
-        software::Resolvable,
     },
     command::enable_service,
     message::GetResolvables,
     progress,
     question::{self, ask_question, AskError},
+    Resolvable,
 };
 use async_trait::async_trait;
 use gettextrs::gettext;
