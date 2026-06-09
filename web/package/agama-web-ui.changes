@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 08 15:06:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Migrate partition form to TanStack Form and redesign filesystem
+  selection UI with improved accessibility.
+
+-------------------------------------------------------------------
 Fri Jun  5 12:25:54 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fix race condition in download success alert.

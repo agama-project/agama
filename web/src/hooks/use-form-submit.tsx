@@ -72,6 +72,14 @@ type Options<TValues> = {
 
   /** Alert title shown when form has validation errors. Defaults to a generic message. */
   errorTitle?: string;
+
+  /**
+   * Whether to scroll to top on successful submit.
+   *
+   * Defaults to true (always scroll). Set to false for forms that navigate away
+   * on success — scrolling is unnecessary since the user won't see the page.
+   */
+  scrollOnSuccess?: boolean;
 };
 
 /**
@@ -160,6 +168,7 @@ export function useFormSubmit<TValues>({
   successTitle = _("Changes successfully applied"),
   noChangesTitle = _("No changes to apply"),
   errorTitle = _("Fix the errors below and try again"),
+  scrollOnSuccess = true,
 }: Options<TValues>) {
   /**
    * Track submit outcome without triggering re-renders.
@@ -256,19 +265,23 @@ export function useFormSubmit<TValues>({
             return <Alert isInline variant="danger" title={errorTitle} />;
           }
 
-          // Show success/info alert
-          const showSuccessOrInfo =
-            !isDirty && !isSubmitting && (wasPatched.current || hadNoChanges.current);
+          // Show success/info alert (skip for forms that navigate away)
+          if (scrollOnSuccess) {
+            const showSuccessOrInfo =
+              !isDirty && !isSubmitting && (wasPatched.current || hadNoChanges.current);
 
-          if (!showSuccessOrInfo) return null;
+            if (showSuccessOrInfo) {
+              return (
+                <Alert
+                  isInline
+                  variant={wasPatched.current ? "success" : "info"}
+                  title={wasPatched.current ? successTitle : noChangesTitle}
+                />
+              );
+            }
+          }
 
-          return (
-            <Alert
-              isInline
-              variant={wasPatched.current ? "success" : "info"}
-              title={wasPatched.current ? successTitle : noChangesTitle}
-            />
-          );
+          return null;
         }}
       </form.Subscribe>
     );
@@ -278,17 +291,35 @@ export function useFormSubmit<TValues>({
    * Returns an onSubmit handler for the <Form> element.
    *
    * Clears previous server errors, sets validation error flag (checked by
-   * AlertSubscribe), scrolls to top so users see alerts or validation errors,
-   * and triggers TanStack Form submission.
+   * AlertSubscribe), triggers TanStack Form submission, and scrolls to top
+   * when errors occur.
+   *
+   * Scrolling behavior:
+   * - scrollOnSuccess=true (default): always scroll immediately
+   * - scrollOnSuccess=false: only scroll after submit if there are errors
+   *
    * Receives the form instance at call time since it's created after this hook.
    */
   function formSubmitHandler(form: FormInstance<TValues>) {
-    return (e: React.FormEvent) => {
+    return async (e: React.FormEvent) => {
       e.preventDefault();
       form.setErrorMap({ onSubmit: { fields: {} } });
       submitAttempted.current = true;
-      form.handleSubmit();
-      Page.scrollToTop();
+
+      if (scrollOnSuccess) {
+        // Scroll immediately for forms that stay mounted
+        Page.scrollToTop();
+        form.handleSubmit();
+      } else {
+        // Wait for submit to complete, then scroll only if errors occurred
+        await form.handleSubmit();
+        // Check if there were errors (no success/noChanges flags set)
+        setTimeout(() => {
+          if (!wasPatched.current && !hadNoChanges.current) {
+            Page.scrollToTop();
+          }
+        }, 0);
+      }
     };
   }
 

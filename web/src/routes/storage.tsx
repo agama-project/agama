@@ -29,7 +29,7 @@ import SpacePolicySelectionPage from "~/components/storage/SpacePolicySelectionP
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
-import PartitionPage from "~/components/storage/PartitionPage";
+import PartitionForm from "~/components/storage/partition-form/Form";
 import LvmPage from "~/components/storage/LvmPage";
 import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
@@ -71,11 +71,11 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.addPartition,
-      element: <PartitionPage />,
+      element: <PartitionForm />,
     },
     {
       path: PATHS.editPartition,
-      element: <PartitionPage />,
+      element: <PartitionForm />,
     },
     {
       path: PATHS.volumeGroup.add,
