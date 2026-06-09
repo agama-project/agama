@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 import type { Product } from "~/model/system";
 import Header from "./Header";
 
@@ -43,6 +43,12 @@ describe("Header", () => {
   it("renders given title as heading level 1", () => {
     plainRender(<Header title={tumbleweed.name} />);
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
+  });
+
+  it("renders the product name and the 'Installation' breadcrumb when no title is given", () => {
+    installerRender(<Header breadcrumbs={[{ label: "Authentication", path: "/auth" }]} />);
+    screen.getByText(tumbleweed.name);
+    screen.getByRole("link", { name: "Installation" });
   });
 
   it("renders skip to content link", async () => {

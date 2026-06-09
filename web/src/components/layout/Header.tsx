@@ -22,6 +22,7 @@
 
 import React from "react";
 import {
+  Flex,
   Masthead,
   MastheadContent,
   MastheadMain,
@@ -31,11 +32,13 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
 import Breadcrumbs from "~/components/core/Breadcrumbs";
+import Text from "~/components/core/Text";
+import ProductLogo from "~/components/product/ProductLogo";
 import { SkipTo } from "~/components/core";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
@@ -142,25 +145,37 @@ export default function Header({
             {title}
           </Title>
         ) : (
-          <Breadcrumbs>
-            {product && breadcrumbs && (
-              <Breadcrumbs.Item
-                hideDivider
-                isEditorial
-                path={ROOT.overview}
-                label={<Icon name="list_alt" width="1.4em" height="1.4em" verticalAlign="middle" />}
-              />
-            )}
-            {breadcrumbs &&
-              breadcrumbs.map((props, i) => (
-                <Breadcrumbs.Item
-                  isEditorial={i === 0}
-                  key={i}
-                  isCurrent={i === breadcrumbs.length - 1}
-                  {...props}
-                />
-              ))}
-          </Breadcrumbs>
+          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+            <ProductLogo product={product} width="35px" />
+            <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
+              {product && (
+                <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>
+                  {product.name}
+                </Text>
+              )}
+              <Breadcrumbs>
+                {product && breadcrumbs && (
+                  <Breadcrumbs.Item
+                    hideDivider
+                    isEditorial
+                    path={ROOT.overview}
+                    // TRANSLATORS: First breadcrumb item, linking back to the main
+                    // page where the whole installation can be reviewed.
+                    label={_("Installation")}
+                  />
+                )}
+                {breadcrumbs &&
+                  breadcrumbs.map((props, i) => (
+                    <Breadcrumbs.Item
+                      isEditorial={i === 0}
+                      key={i}
+                      isCurrent={i === breadcrumbs.length - 1}
+                      {...props}
+                    />
+                  ))}
+              </Breadcrumbs>
+            </Flex>
+          </Flex>
         )}
       </MastheadMain>
       <MastheadContent>
