@@ -199,10 +199,7 @@ pub async fn build() -> OpenApi {
             .pointer_mut(format!("/components/schemas/{}/properties/{}", group, name).as_str())
         {
             *schema = serde_json::json!({
-                "anyOf": [
-                    { "$ref": format!("#/components/schemas/{}{}", name, group) },
-                    { "type": "null" }
-                ]
+                "$ref": (format!("#/components/schemas/{}{}", name, group))
             });
         }
     }
@@ -296,10 +293,10 @@ fn rewrite_storage_refs(value: &mut serde_json::Value) {
         serde_json::Value::Object(map) => {
             if let Some(serde_json::Value::String(ref_str)) = map.get_mut("$ref") {
                 if ref_str == "device.storage.schema.json" {
-                    *ref_str = "#/components/schemas/storage.Device".to_string();
+                    *ref_str = "#/components/schemas/storageDevice".to_string();
                 } else if ref_str.starts_with("device.storage.schema.json#/$defs/") {
                     let def_name = ref_str.trim_start_matches("device.storage.schema.json#/$defs/");
-                    *ref_str = format!("#/components/schemas/storage.{}", def_name);
+                    *ref_str = format!("#/components/schemas/storage{}", def_name);
                 }
             }
 
@@ -337,11 +334,7 @@ fn import_schema(
 
     // collect and remove $defs from the schema, prepend with prefix to
     // avoid collisions
-    extract_defs(
-        &mut source_schema,
-        format!("{}", name).as_str(),
-        &mut extracted_defs,
-    );
+    extract_defs(&mut source_schema, name, &mut extracted_defs);
 
     let Ok(source_schema_json) = serde_json::from_value(source_schema) else {
         eprintln!("Error during updating the OpenApi schema");
