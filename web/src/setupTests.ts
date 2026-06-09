@@ -12,4 +12,20 @@ if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   globalThis.TextDecoder = NodeTextDecoder as typeof TextDecoder;
 }
 
+// jsdom does not implement matchMedia; provide a minimal stub so theming code
+// (which reads prefers-color-scheme) works in tests.
+if (!window.matchMedia) {
+  window.matchMedia = (query: string): MediaQueryList =>
+    ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    }) as unknown as MediaQueryList;
+}
+
 jest.mock("~/context/installerL10n");
