@@ -149,9 +149,27 @@ const icons = {
   pending: Pending,
 };
 
+/**
+ * Named icon sizes, mapped to CSS classes that set the size via a customizable
+ * `--agm-t--icon--size--*` token (see styles/components). A product can resize
+ * icons consistently without touching the call sites.
+ */
+const SIZE_CLASSES = {
+  xs: "agm-icon-xs",
+  sm: "agm-icon-sm",
+  md: "agm-icon-md",
+  lg: "agm-icon-lg",
+  xl: "agm-icon-xl",
+  "2xl": "agm-icon-2xl",
+  "3xl": "agm-icon-3xl",
+  "4xl": "agm-icon-4xl",
+} as const;
+
 export type IconProps = React.SVGAttributes<SVGElement> & {
   /** Name of the desired icon */
   name: keyof typeof icons;
+  /** Named size for the icon. */
+  size?: keyof typeof SIZE_CLASSES;
   /** Vertical alignment of the icon */
   verticalAlign?: "baseline" | "middle" | "text-top" | "text-bottom" | "sub" | "super";
   /**
@@ -185,8 +203,10 @@ export type IconProps = React.SVGAttributes<SVGElement> & {
  */
 export default function Icon({
   name,
+  size,
   verticalAlign,
   isMiddleAligned,
+  className,
   style,
   ...otherProps
 }: IconProps): JSX.Element | null {
@@ -200,13 +220,19 @@ export default function Icon({
 
   // isMiddleAligned shortcut takes precedence over verticalAlign
   const align = isMiddleAligned ? "text-top" : verticalAlign;
-
   const iconStyle = {
     ...(align && { verticalAlign: align }),
     ...style,
   };
+  const classes = [size && SIZE_CLASSES[size], className].filter(Boolean).join(" ") || undefined;
 
   return (
-    <IconComponent aria-hidden="true" data-icon-name={name} {...otherProps} style={iconStyle} />
+    <IconComponent
+      aria-hidden="true"
+      data-icon-name={name}
+      {...otherProps}
+      className={classes}
+      style={iconStyle}
+    />
   );
 }

@@ -56,6 +56,41 @@ svg[data-icon-name] {
   fill: currentcolor;
 }
 
+// Named icon sizes for the Icon `size` prop. The size is driven by font-size
+// (icons are 1em) and reads a customizable role token, so a product can resize
+// them without touching markup.
+.agm-icon-xs {
+  font-size: var(--agm-t--icon--size--xs);
+}
+
+.agm-icon-sm {
+  font-size: var(--agm-t--icon--size--sm);
+}
+
+.agm-icon-md {
+  font-size: var(--agm-t--icon--size--md);
+}
+
+.agm-icon-lg {
+  font-size: var(--agm-t--icon--size--lg);
+}
+
+.agm-icon-xl {
+  font-size: var(--agm-t--icon--size--xl);
+}
+
+.agm-icon-2xl {
+  font-size: var(--agm-t--icon--size--2xl);
+}
+
+.agm-icon-3xl {
+  font-size: var(--agm-t--icon--size--3xl);
+}
+
+.agm-icon-4xl {
+  font-size: var(--agm-t--icon--size--4xl);
+}
+
 .agm-three-dots-icon {
   font-size: 1.1rem;
   vertical-align: text-top;

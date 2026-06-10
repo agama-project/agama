@@ -57,7 +57,7 @@ export type InstallerOptionsMenuProps = {
 /** Renders a menu item label with a leading icon, aligned consistently. */
 const ItemContent = ({ icon, text }: { icon: IconProps["name"]; text: string }) => (
   <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-    <Icon name={icon} width="1.6rem" height="1.6rem" />
+    <Icon name={icon} size="lg" />
     {text}
   </Flex>
 );

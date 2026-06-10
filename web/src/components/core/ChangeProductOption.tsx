@@ -99,7 +99,7 @@ export default function ChangeProductOption({
   return (
     <Component to={`${to}?byUser`} {...props}>
       <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-        {showIcon && <Icon name="amend" width="1.6rem" height="1.6rem" />}
+        {showIcon && <Icon name="amend" size="lg" />}
         {getLabel()}
       </Flex>
     </Component>
