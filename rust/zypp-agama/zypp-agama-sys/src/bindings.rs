@@ -692,6 +692,7 @@ unsafe extern "C" {
         zypp: *mut Zypp,
         alias: *const ::std::os::raw::c_char,
         url: *const ::std::os::raw::c_char,
+        priority: ::std::os::raw::c_uint,
         status: *mut Status,
         callback: ZyppProgressCallback,
         user_data: *mut ::std::os::raw::c_void,

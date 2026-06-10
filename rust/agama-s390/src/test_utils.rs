@@ -23,13 +23,12 @@
 use crate::{
     dasd::client::{DASDClient, Error},
     service::{Service, Starter},
-    storage,
     zfcp::{self, client::ZFCPClient},
 };
 use agama_utils::{
     actor::Handler,
     api::{event, RawConfig},
-    issue, progress,
+    issue, progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -121,10 +120,13 @@ impl DASDClient for TestDASDClient {
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
+    async fn set_config(
+        &self,
+        config: Option<RawConfig>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
+        Ok(Box::pin(async { Ok(()) }))
     }
 }
 
@@ -194,16 +196,18 @@ impl ZFCPClient for TestZFCPClient {
         Ok(state.config.clone())
     }
 
-    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), zfcp::client::Error> {
+    async fn set_config(
+        &self,
+        config: Option<RawConfig>,
+    ) -> Result<BoxFuture<Result<(), zfcp::client::Error>>, zfcp::client::Error> {
         let mut state = self.state.lock().await;
         state.config = config;
-        Ok(())
+        Ok(Box::pin(async { Ok(()) }))
     }
 }
 
 /// Starts a testing s390 service.
 pub async fn start_service(
-    storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
     issues: Handler<issue::Service>,
@@ -211,7 +215,7 @@ pub async fn start_service(
 ) -> Handler<Service> {
     let dasd = TestDASDClient::new();
     let zfcp = TestZFCPClient::new();
-    Starter::new(storage, events, progress, issues, connection)
+    Starter::new(events, progress, issues, connection)
         .with_dasd(dasd)
         .with_zfcp(zfcp)
         .start()

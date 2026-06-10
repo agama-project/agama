@@ -343,6 +343,7 @@ impl<'a> SoftwareStateBuilder<'a> {
                         alias,
                         url: url.to_string(),
                         enabled: true,
+                        priority: None,
                     }
                 })
                 .collect()
@@ -358,6 +359,7 @@ impl<'a> SoftwareStateBuilder<'a> {
                         alias,
                         url: r.url.clone(),
                         enabled: true,
+                        priority: None,
                     }
                 })
                 .collect()
@@ -455,6 +457,7 @@ pub struct Repository {
     pub name: String,
     pub url: String,
     pub enabled: bool,
+    pub priority: Option<u32>,
 }
 
 impl From<&RepositoryConfig> for Repository {
@@ -464,6 +467,7 @@ impl From<&RepositoryConfig> for Repository {
             alias: value.alias.clone(),
             url: value.url.clone(),
             enabled: value.enabled.unwrap_or(true),
+            priority: value.priority.and_then(|p| u32::try_from(p).ok()),
         }
     }
 }
@@ -475,6 +479,7 @@ impl From<&agama_utils::api::software::Repository> for Repository {
             alias: value.alias.clone(),
             url: value.url.clone(),
             enabled: value.enabled,
+            priority: None,
         }
     }
 }
@@ -769,6 +774,26 @@ mod tests {
             "user-repo-0".to_string(),
         ];
         assert_eq!(expected_aliases, aliases);
+        assert_eq!(state.repositories[3].priority, None);
+    }
+
+    #[test]
+    fn test_add_user_repository_priority() {
+        let product = build_product_spec("tumbleweed", None);
+        let mut config = build_user_config(None);
+        let repository = config
+            .software
+            .as_mut()
+            .and_then(|s| s.extra_repositories.as_mut())
+            .and_then(|r| r.first_mut())
+            .unwrap();
+        repository.priority = Some(30);
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .build();
+
+        assert_eq!(state.repositories[3].priority, Some(30));
     }
 
     #[test]
