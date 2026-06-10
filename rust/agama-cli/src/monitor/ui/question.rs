@@ -55,11 +55,8 @@ impl QuestionUiState {
                 self.input_text = orig.clone();
             }
         } else {
-            match &question.spec.field {
-                QuestionField::None => {
-                    self.app_mode = AppMode::ActionSelection;
-                }
-                _ => {}
+            if question.spec.field == QuestionField::None {
+                self.app_mode = AppMode::ActionSelection;
             }
         }
     }

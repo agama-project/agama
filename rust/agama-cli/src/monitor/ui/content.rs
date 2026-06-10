@@ -28,7 +28,7 @@ use ratatui::{
     layout::{Constraint, Layout, Rect},
     style::{Modifier, Style},
     text::{Line, Span},
-    widgets::{Paragraph, Widget, Wrap},
+    widgets::{Paragraph, Widget},
 };
 
 use crate::monitor::ui::{issues::IssuesList, progress::Progress};
