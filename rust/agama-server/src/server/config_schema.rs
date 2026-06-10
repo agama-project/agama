@@ -27,8 +27,8 @@ use agama_lib::{
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("The config does not match the schema: {0}")]
-    Schema(String),
+    #[error("The config does not match the schema: {0:?}")]
+    Schema(Vec<String>),
     #[error(transparent)]
     ProfileValidator(#[from] ProfileError),
     #[error(transparent)]
@@ -40,6 +40,6 @@ pub fn check(json: &serde_json::Value) -> Result<(), Error> {
     let result = ProfileValidator::default_schema()?.validate_str(&raw_json)?;
     match result {
         ValidationOutcome::Valid => Ok(()),
-        ValidationOutcome::NotValid(reasons) => Err(Error::Schema(reasons.join(", "))),
+        ValidationOutcome::NotValid(reasons) => Err(Error::Schema(reasons)),
     }
 }
