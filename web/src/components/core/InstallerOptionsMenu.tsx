@@ -118,9 +118,14 @@ export default function InstallerOptionsMenu({
                 <ItemContent icon="terminal" text={_("Terminal")} />
               </DropdownItem>
               <DropdownItem key="show-settings" onClick={toggleConfig}>
-                <ItemContent icon="file_json" text={_("Show installation settings")} />
+                {/* TRANSLATORS: menu entry that opens the installation
+                    configuration as a JSON file: the machine-readable
+                    representation of the same settings the UI otherwise shows
+                    as widgets across its screens. */}
+                <ItemContent icon="file_json" text={_("Show configuration")} />
               </DropdownItem>
               <DropdownItem key="download-logs" onClick={downloadLogs}>
+                {/* TRANSLATORS: menu entry to download the installer logs as an archive */}
                 <ItemContent icon="archive" text={_("Download logs")} />
               </DropdownItem>
               {showChangeProductOption && (

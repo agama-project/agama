@@ -82,7 +82,7 @@ describe("InstallerOptionsMenu", () => {
       const { user } = plainRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
       const menu = screen.getByRole("menu");
-      await user.click(screen.getByRole("menuitem", { name: /Show installation settings/i }));
+      await user.click(screen.getByRole("menuitem", { name: /Show configuration/i }));
       expect(menu).not.toBeVisible();
     });
   });
@@ -103,7 +103,7 @@ describe("InstallerOptionsMenu", () => {
     it("renders the 'Download config' link", async () => {
       const { user } = plainRender(<InstallerOptionsMenu />);
       await user.click(screen.getByRole("button", { name: /More options/i }));
-      screen.getByRole("menuitem", { name: /Show installation settings/i });
+      screen.getByRole("menuitem", { name: /Show configuration/i });
     });
 
     it("renders the 'Download logs' link", async () => {
