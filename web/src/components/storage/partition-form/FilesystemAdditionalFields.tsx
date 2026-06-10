@@ -23,6 +23,7 @@
 import React from "react";
 import LabelText from "~/components/form/LabelText";
 import { withForm } from "~/hooks/form";
+import FilesystemLabelField from "~/components/storage/shared/FilesystemLabelField";
 import { defaultOptions, FILESYSTEM_ACTION } from "./fields";
 import { _ } from "~/i18n";
 import Interpolate from "~/components/core/Interpolate";
@@ -46,15 +47,7 @@ const FilesystemAdditionalFields = withForm({
       <form.Subscribe selector={(s) => ({ filesystem: s.values.filesystem })}>
         {({ filesystem }) => (
           <>
-            {isNewFilesystem(filesystem) && (
-              <form.AppField name="filesystemLabel">
-                {(field) => (
-                  <field.TextField
-                    label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>}
-                  />
-                )}
-              </form.AppField>
-            )}
+            {isNewFilesystem(filesystem) && <FilesystemLabelField form={form} />}
             <form.AppField name="mountOptions">
               {(field) => (
                 <field.ArrayField
