@@ -22,28 +22,32 @@
 
 import React from "react";
 import { sprintf } from "sprintf-js";
-import { useParams } from "react-router";
 import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { sharedDefaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
-import {
-  deviceSize,
-  createPartitionableLocation,
-  findPartitionableDevice,
-  formattedPath,
-} from "~/components/storage/utils";
+import { sharedDefaultOptions, SIZE_MODE, type SizeMode } from "./fields";
+import { formattedPath } from "~/components/storage/utils";
 import { _, formatList } from "~/i18n";
 import { isEmpty } from "radashi";
-import {
-  useConfigModel,
-  usePartitionable,
-  useSolvedConfigModel,
-} from "~/hooks/model/storage/config-model";
-import configModel from "~/model/storage/config-model";
-import type { ConfigModel } from "~/model/storage/config-model";
+
+/**
+ * Solved sizes returned by a {@link UseSolvedSizes} hook: the min and max sizes
+ * the installer would assign, formatted for display, or `null` when they cannot
+ * be computed.
+ */
+export type SolvedSizes = { min: string; max: string } | null;
+
+/**
+ * Hook signature the host form provides to compute the automatic (solved) sizes
+ * for the current mount point and filesystem.
+ *
+ * The computation is form-specific (partitions and logical volumes solve sizes
+ * differently), so SizeFields receives it as a prop instead of owning it. The
+ * hook is called unconditionally during render, following the rules of hooks.
+ */
+export type UseSolvedSizes = (mountPoint: string, filesystem: string) => SolvedSizes;
 
 /**
  * Returns dropdown options for size mode selection.
@@ -88,72 +92,11 @@ function getSizeModeOptions() {
   ] satisfies Array<{ value: SizeMode; label: string; description: string }>;
 }
 
-/**
- * Builds a model in which the size of the relevant partition is omitted, to be used
- * by useSolvedConfigModel.
- */
-function useSparseModel(mountPoint: string, filesystem: string): ConfigModel.Config {
-  const { collection, index } = useParams();
-  const model = useConfigModel();
-
-  const partitionConfig: ConfigModel.Partition = {
-    mountPath: mountPoint,
-    name: undefined, // Always treat as new partition for size calculation
-    filesystem:
-      filesystem === FILESYSTEM_TYPE.AUTO
-        ? undefined
-        : {
-            default: false,
-            type: filesystem as ConfigModel.FilesystemType,
-            label: undefined,
-          },
-    size: undefined, // Force automatic sizing
-  };
-
-  const location = createPartitionableLocation(collection, index);
-  const device = usePartitionable(location.collection, location.index);
-  const initialPartitionCfg = configModel.partitionable.findPartition(device, mountPoint);
-  const idx = location.index;
-
-  return initialPartitionCfg
-    ? configModel.partition.edit(model, location.collection, idx, mountPoint, partitionConfig)
-    : configModel.partition.add(model, location.collection, idx, partitionConfig);
-}
-
-/**
- * Calculates the solved sizes for a partition configuration.
- *
- * This hook is called during render if committedMountPoint or filesystem change.
- *
- * @returns Object with min and max size strings, or null if sizes cannot be calculated
- */
-function useSolvedSizes(
-  mountPoint: string,
-  filesystem: string,
-): { min: string; max: string } | null {
-  const { collection, index } = useParams();
-
-  const sparseModel = useSparseModel(mountPoint, filesystem);
-  const solvedModel = useSolvedConfigModel(sparseModel);
-
-  if (!solvedModel) return null;
-
-  const solvedDevice = findPartitionableDevice(solvedModel, collection, index);
-  const solvedPartition = solvedDevice?.partitions?.find((p) => p.mountPath === mountPoint);
-
-  if (!solvedPartition?.size) return null;
-
-  // Extract and format the solved sizes
-  return {
-    min: solvedPartition.size.min ? deviceSize(solvedPartition.size.min) : undefined,
-    max: solvedPartition.size.max ? deviceSize(solvedPartition.size.max) : undefined,
-  };
-}
-
 type SizeFieldsContentProps = {
   committedMountPoint: string;
   filesystem: string;
   sizeMode: SizeMode;
+  useSolvedSizes: UseSolvedSizes;
 };
 
 function autoSizeSource(volume) {
@@ -293,7 +236,7 @@ function autoSizeRationale(volume) {
  */
 function useAutomaticSizeNote(
   volume: ReturnType<typeof useVolumeTemplate>,
-  sizes: { min: string; max: string } | null,
+  sizes: SolvedSizes,
 ): { sizeLabel: string; rationale: string } {
   if (sizes) {
     return {
@@ -335,13 +278,14 @@ const SizeFieldsContent = withForm({
     filesystem: "",
     sizeMode: SIZE_MODE.AUTO,
   } as SizeFieldsContentProps,
-  render: function Render({ form, committedMountPoint, filesystem, sizeMode }) {
+  render: function Render({ form, committedMountPoint, filesystem, sizeMode, useSolvedSizes }) {
     // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
     // This prevents showing misleading size hints while user types "/ho..." and avoids
     // expensive useVolumeTemplate recalculations on every keystroke.
     const volume = useVolumeTemplate(committedMountPoint);
 
-    // Calculate solved sizes - only recalculates when committedMountPoint or filesystem change
+    // Calculate solved sizes - only recalculates when committedMountPoint or filesystem change.
+    // The host form provides the size-solving logic (partition vs logical volume).
     const solvedSizes = useSolvedSizes(committedMountPoint, filesystem);
     const automaticSizeNote = useAutomaticSizeNote(volume, solvedSizes);
 
@@ -411,7 +355,10 @@ const SizeFieldsContent = withForm({
  */
 const SizeFields = withForm({
   ...sharedDefaultOptions,
-  render: function Render({ form }) {
+  props: {
+    useSolvedSizes: (() => null) as UseSolvedSizes,
+  },
+  render: function Render({ form, useSolvedSizes }) {
     return (
       <>
         <form.Subscribe
@@ -434,6 +381,7 @@ const SizeFields = withForm({
                           committedMountPoint={committedMountPoint}
                           filesystem={filesystem}
                           sizeMode={value}
+                          useSolvedSizes={useSolvedSizes}
                         />
                       </FieldNestedContent>
                     );

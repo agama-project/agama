@@ -49,6 +49,7 @@ import SizeFields from "~/components/storage/shared/SizeFields";
 import PartitionFields from "./PartitionFields";
 import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAdditionalFields";
 import FilesystemFields from "./FilesystemFields";
+import { useSolvedSizes } from "./use-solved-sizes";
 import {
   defaultOptions,
   validate,
@@ -472,7 +473,9 @@ function PartitionFormContent({
 
         {/* Size (only for new partitions) */}
         <form.Subscribe selector={(s) => s.values.name}>
-          {(name) => !isReusingPartition(name) && <SizeFields form={form} />}
+          {(name) =>
+            !isReusingPartition(name) && <SizeFields form={form} useSolvedSizes={useSolvedSizes} />
+          }
         </form.Subscribe>
 
         {/* Filesystem */}
