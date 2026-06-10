@@ -63,46 +63,46 @@ impl AuthHTTPClient {
 pub fn build_auth_cmd() -> Command {
     // TRANSLATORS: CLI help for: agama auth
     let about = gettext("Authenticate with Agama's server");
+    // TRANSLATORS: CLI help for: agama auth (details)
+    let long_about = make_long(&about, &gettext("\
+        Unless you are executing this program as root, you need to authenticate with Agama's server \
+        for most operations. You can log in by specifying the root password through the \"auth login\" \
+        command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is \
+        stored to authenticate the following requests.\n\
+        \n\
+        If you run this program as root, you can skip the authentication step because it \
+        automatically uses the master token at /run/agama/token. Only the root user must have access \
+        to such a file.\n\
+        \n\
+        You can logout at any time by using the \"auth logout\" command, although this command does \
+        not affect the root user."));
     Command::new("auth")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        // TRANSLATORS: CLI help for: agama auth (details)
-        .long_about(make_long(&about, &gettext("\
-                             Unless you are executing this program as root, you need to authenticate with Agama's server \
-                             for most operations. You can log in by specifying the root password through the \"auth login\" \
-                             command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is \
-                             stored to authenticate the following requests.\n\
-                             \n\
-                             If you run this program as root, you can skip the authentication step because it \
-                             automatically uses the master token at /run/agama/token. Only the root user must have access \
-                             to such a file.\n\
-                             \n\
-                             You can logout at any time by using the \"auth logout\" command, although this command does \
-                             not affect the root user.")))
-        .subcommand(
-            {
-                // TRANSLATORS: CLI help for: agama auth login
-                let about = gettext("Authenticate with Agama's server and store the token");
-                Command::new("login")
-                    .about(&about)
-                    // TRANSLATORS: CLI help for: agama auth login (details)
-                    .long_about(make_long(&about, &gettext("\
-                                 This command tries to get the password from the standard input. If it is not there, it asks \
-                                 the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The \
-                                 token will be automatically sent to authenticate the following requests.")))
-            }
-        )
+        .long_about(long_about)
+        .subcommand(build_auth_login_cmd())
         .subcommand(
             Command::new("logout")
                 // TRANSLATORS: CLI help for: agama auth logout
-                .about(gettext("Deauthenticate by removing the token"))
+                .about(gettext("Deauthenticate by removing the token")),
         )
         .subcommand(
             Command::new("show")
                 // TRANSLATORS: CLI help for: agama auth show
-                .about(gettext("Print the used token to the standard output"))
+                .about(gettext("Print the used token to the standard output")),
         )
+}
+
+fn build_auth_login_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama auth login
+    let about = gettext("Authenticate with Agama's server and store the token");
+    // TRANSLATORS: CLI help for: agama auth login (details)
+    let long_about = make_long(&about, &gettext("\
+        This command tries to get the password from the standard input. If it is not there, it asks \
+        the user interactively. Upon successful login, it stores the token in .agama/agama-jwt. The \
+        token will be automatically sent to authenticate the following requests."));
+    Command::new("login").about(&about).long_about(long_about)
 }
 
 /// Main entry point called from agama CLI main loop
