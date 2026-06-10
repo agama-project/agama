@@ -28,7 +28,7 @@ import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { defaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
+import { sharedDefaultOptions, SIZE_MODE, FILESYSTEM_TYPE, type SizeMode } from "./fields";
 import {
   deviceSize,
   createPartitionableLocation,
@@ -329,7 +329,7 @@ const SizeInputHelp = ({ singular = false }: { singular?: boolean }) => (
  * Inner component that renders size mode-specific inputs and info notes.
  */
 const SizeFieldsContent = withForm({
-  ...defaultOptions,
+  ...sharedDefaultOptions,
   props: {
     committedMountPoint: "",
     filesystem: "",
@@ -410,7 +410,7 @@ const SizeFieldsContent = withForm({
  * - Expand if possible: TextField for minimum with helper text
  */
 const SizeFields = withForm({
-  ...defaultOptions,
+  ...sharedDefaultOptions,
   render: function Render({ form }) {
     return (
       <>

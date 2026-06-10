@@ -45,10 +45,10 @@ import { _ } from "~/i18n";
 import { isEmpty } from "radashi";
 
 import MountPointField from "~/components/storage/shared/MountPointField";
+import SizeFields from "~/components/storage/shared/SizeFields";
 import PartitionFields from "./PartitionFields";
 import FilesystemFields from "./FilesystemFields";
 import FilesystemAdditionalFields from "./FilesystemAdditionalFields";
-import SizeFields from "./SizeFields";
 import {
   defaultOptions,
   validate,

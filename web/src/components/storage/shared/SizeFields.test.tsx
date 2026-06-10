@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender, mockParams } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { defaultOptions, SIZE_MODE } from "./fields";
+import { sharedDefaultOptions, SIZE_MODE } from "./fields";
 import SizeFields from "./SizeFields";
 
 const mockConfigModel = {
@@ -74,9 +74,9 @@ jest.mock("~/hooks/model/system/storage", () => ({
 
 function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
   const form = useAppForm({
-    ...defaultOptions,
+    ...sharedDefaultOptions,
     defaultValues: {
-      ...defaultOptions.defaultValues,
+      ...sharedDefaultOptions.defaultValues,
       ...defaultValues,
     },
   });
