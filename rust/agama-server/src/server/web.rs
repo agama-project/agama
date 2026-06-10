@@ -22,11 +22,12 @@
 
 use crate::profile::profile_service;
 use crate::server::config_schema;
-use crate::web::error::ErrorResponse;
+use crate::web::error::ProblemDetailsExt;
 use agama_lib::logs;
 use agama_manager::service::Error as ManagerError;
 use agama_manager::users::PasswordCheckResult;
 use agama_manager::{self as manager, message, users};
+use agama_utils::api::ProblemDetails;
 use agama_utils::{
     actor::Handler,
     api::{
@@ -70,19 +71,32 @@ pub enum Error {
 }
 
 impl Error {
+    /// Converts this error into RFC 9457 Problem Details
+    pub fn into_problem_details(self) -> ProblemDetails {
+        match self {
+            Error::ConfigSchema(e) => e.into_problem_details(),
+            Error::Json(e) => ProblemDetails::invalid_json(e.to_string()),
+            Error::Manager(e) => ProblemDetails::internal_error(e.to_string()),
+            Error::Questions(e) => ProblemDetails::internal_error(e.to_string()),
+            Error::MissingLanguageTag => {
+                ProblemDetails::generic("Missing Language Tag", "The language tag is required")
+            }
+        }
+    }
+
     /// Creates a BAD_REQUEST (400) response from this error.
     fn bad_request(self) -> Response {
-        ErrorResponse::bad_request(self)
+        self.into_problem_details().into_response()
     }
 
     /// Creates an INTERNAL_SERVER_ERROR (500) response from this error.
     fn internal_server_error(self) -> Response {
-        ErrorResponse::internal_server_error(self)
+        self.into_problem_details().into_response()
     }
 
     /// Creates an UNPROCESSABLE_ENTITY (422) response from this error.
     fn unprocessable_entity(self) -> Response {
-        ErrorResponse::unprocessable_entity(self)
+        self.into_problem_details().into_response()
     }
 }
 
@@ -178,7 +192,7 @@ fn get_status_docs(op: TransformOperation) -> TransformOperation {
         )
         .tag("System & Monitoring")
         .response_with::<200, Json<Status>, _>(|res| res.description("Status of the installation"))
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -205,7 +219,7 @@ fn get_system_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<SystemInfo>, _>(|res| {
             res.description("System information retrieved successfully")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -232,7 +246,7 @@ fn get_extended_config_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<Config>, _>(|res| {
             res.description("Extended configuration retrieved successfully")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -255,7 +269,7 @@ fn get_config_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<Config>, _>(|res| {
             res.description("Configuration retrieved successfully")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -290,10 +304,10 @@ fn put_config_docs(op: TransformOperation) -> TransformOperation {
         .tag("Configuration")
         .input::<Json<Config>>() // Override the auto-detected Json<Value> with Config schema
         .response::<200, ()>()
-        .response_with::<400, Json<ErrorResponse>, _>(|res| {
+        .response_with::<400, Json<ProblemDetails>, _>(|res| {
             res.description("Invalid configuration schema or malformed JSON")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -329,10 +343,10 @@ fn patch_config_docs(op: TransformOperation) -> TransformOperation {
         )
         .tag("Configuration")
         .response::<200, ()>()
-        .response_with::<400, Json<ErrorResponse>, _>(|res| {
+        .response_with::<400, Json<ProblemDetails>, _>(|res| {
             res.description("Invalid configuration schema or malformed JSON")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -360,7 +374,7 @@ fn get_proposal_docs(op: TransformOperation) -> TransformOperation {
             res.description("Proposal successfully retrieved")
         })
         .response::<404, ()>()
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -400,7 +414,7 @@ fn get_issues_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<Vec<IssueWithScope>>, _>(|res| {
             res.description("List of issues with their scopes")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -427,7 +441,7 @@ fn get_questions_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<Vec<Question>>, _>(|res| {
             res.description("List of pending questions")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -456,8 +470,8 @@ fn ask_question_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<Question>, _>(|res| {
             res.description("Question created successfully")
         })
-        .response_with::<400, Json<ErrorResponse>, _>(|res| res.description("Malformed JSON"))
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<400, Json<ProblemDetails>, _>(|res| res.description("Malformed JSON"))
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -495,8 +509,8 @@ fn update_question_docs(op: TransformOperation) -> TransformOperation {
         )
         .tag("Issues & Questions")
         .response::<200, ()>()
-        .response_with::<400, Json<ErrorResponse>, _>(|res| res.description("Malformed JSON"))
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<400, Json<ProblemDetails>, _>(|res| res.description("Malformed JSON"))
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -554,11 +568,11 @@ fn get_license_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<LicenseContent>, _>(|res| {
             res.description("License retrieved successfully")
         })
-        .response_with::<400, Json<ErrorResponse>, _>(|res| {
+        .response_with::<400, Json<ProblemDetails>, _>(|res| {
             res.description("The specified language tag is not valid")
         })
         .response::<404, ()>()
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }
@@ -591,10 +605,10 @@ fn run_action_docs(op: TransformOperation) -> TransformOperation {
         )
         .tag("Actions")
         .response::<200, ()>()
-        .response_with::<422, Json<ErrorResponse>, _>(|res| {
+        .response_with::<422, Json<ProblemDetails>, _>(|res| {
             res.description("Action blocked by backend state (e.g., pending issues or system busy)")
         })
-        .response_with::<500, Json<ErrorResponse>, _>(|res| {
+        .response_with::<500, Json<ProblemDetails>, _>(|res| {
             res.description("Internal server error")
         })
 }

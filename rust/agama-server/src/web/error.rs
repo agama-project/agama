@@ -18,8 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-//! Shared error handling utilities for HTTP API responses.
+//! Error handling utilities for HTTP API responses.
+//!
+//! This module provides server-specific functionality for RFC 9457 Problem Details.
+//! The core types and constructor methods are defined in `agama_utils::api::ProblemDetails`.
 
+use agama_utils::api::ProblemDetails;
 use aide::OperationIo;
 use axum::{
     http::StatusCode,
@@ -29,40 +33,127 @@ use axum::{
 use schemars::JsonSchema;
 use serde::Serialize;
 
-/// Error response returned by API endpoints
-#[derive(Serialize, JsonSchema, OperationIo)]
-#[aide(output)]
-pub struct ErrorResponse {
-    /// Error message
-    pub error: String,
+/// Extension trait for server-specific ProblemDetails functionality
+pub trait ProblemDetailsExt {
+    /// Returns the HTTP status code for this problem
+    fn status_code(&self) -> StatusCode;
+
+    /// Convert to HTTP response (convenience method)
+    fn into_response(self) -> Response;
 }
 
-impl ErrorResponse {
-    /// Creates a new error response with the given message.
-    pub fn new(error: impl std::error::Error) -> Self {
-        Self {
-            error: error.to_string(),
+impl ProblemDetailsExt for ProblemDetails {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            ProblemDetails::SchemaValidationFailed { .. } => StatusCode::BAD_REQUEST,
+            ProblemDetails::InvalidJson { .. } => StatusCode::BAD_REQUEST,
+            ProblemDetails::NetworkError { .. } => StatusCode::BAD_GATEWAY,
+            ProblemDetails::FileSystemError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            ProblemDetails::DBusError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            ProblemDetails::InternalError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            ProblemDetails::NotFound { .. } => StatusCode::NOT_FOUND,
+            ProblemDetails::Unauthorized { .. } => StatusCode::UNAUTHORIZED,
+            ProblemDetails::Generic { .. } => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 
-    /// Creates an HTTP response with the given status code.
-    pub fn into_response_with_status(self, status: StatusCode) -> Response {
-        tracing::warn!("Server return error {} with status {}", self.error, status);
-        (status, Json(self)).into_response()
+    fn into_response(self) -> Response {
+        ProblemDetailsResponse::from(self).into_response()
+    }
+}
+
+/// Wrapper to make ProblemDetails work with aide's OpenAPI generation and axum responses
+#[derive(Debug, Clone, Serialize, JsonSchema, OperationIo)]
+#[aide(output)]
+#[serde(transparent)]
+#[schemars(transparent)]
+pub struct ProblemDetailsResponse(pub ProblemDetails);
+
+impl ProblemDetailsResponse {
+    /// Create a new ProblemDetailsResponse from ProblemDetails
+    pub fn new(problem: ProblemDetails) -> Self {
+        Self(problem)
+    }
+}
+
+impl From<ProblemDetails> for ProblemDetailsResponse {
+    fn from(problem: ProblemDetails) -> Self {
+        Self(problem)
+    }
+}
+
+impl IntoResponse for ProblemDetailsResponse {
+    fn into_response(self) -> Response {
+        let status = self.0.status_code();
+        (
+            status,
+            [(axum::http::header::CONTENT_TYPE, "application/problem+json")],
+            Json(self.0),
+        )
+            .into_response()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_schema_validation_failed() {
+        let problem = ProblemDetails::schema_validation_failed(vec![
+            "/network/hostname: is required".to_string(),
+        ]);
+
+        assert_eq!(problem.status_code(), StatusCode::BAD_REQUEST);
+
+        let json = serde_json::to_value(&problem).unwrap();
+        // Title is translated, so just check it's present and non-empty
+        assert!(json["title"].is_string());
+        assert!(!json["title"].as_str().unwrap().is_empty());
+        assert!(json["errors"].is_array());
+        assert_eq!(json["errors"][0], "/network/hostname: is required");
+        // Ensure status field is NOT in JSON
+        assert!(json.get("status").is_none());
     }
 
-    /// Creates a BAD_REQUEST (400) response.
-    pub fn bad_request(error: impl std::error::Error) -> Response {
-        Self::new(error).into_response_with_status(StatusCode::BAD_REQUEST)
+    #[test]
+    fn test_network_error() {
+        let problem = ProblemDetails::network_error_with_status(
+            "https://example.com",
+            503,
+            "Connection timeout",
+        );
+
+        assert_eq!(problem.status_code(), StatusCode::BAD_GATEWAY);
+
+        let json = serde_json::to_value(&problem).unwrap();
+        assert_eq!(json["url"], "https://example.com");
+        assert_eq!(json["httpStatus"], 503);
     }
 
-    /// Creates an INTERNAL_SERVER_ERROR (500) response.
-    pub fn internal_server_error(error: impl std::error::Error) -> Response {
-        Self::new(error).into_response_with_status(StatusCode::INTERNAL_SERVER_ERROR)
+    #[test]
+    fn test_dbus_error() {
+        let problem = ProblemDetails::dbus_error_full(
+            "org.freedesktop.NetworkManager",
+            Some("/org/freedesktop/NetworkManager".to_string()),
+            Some("GetDevices".to_string()),
+            "Method call failed",
+        );
+
+        assert_eq!(problem.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
+
+        let json = serde_json::to_value(&problem).unwrap();
+        assert_eq!(json["service"], "org.freedesktop.NetworkManager");
+        assert_eq!(json["objectPath"], "/org/freedesktop/NetworkManager");
+        assert_eq!(json["method"], "GetDevices");
     }
 
-    /// Creates an UNPROCESSABLE_ENTITY (422) response.
-    pub fn unprocessable_entity(error: impl std::error::Error) -> Response {
-        Self::new(error).into_response_with_status(StatusCode::UNPROCESSABLE_ENTITY)
+    #[test]
+    fn test_generic_problem() {
+        let problem = ProblemDetails::generic("Custom Error", "Something unusual happened");
+
+        let json = serde_json::to_value(&problem).unwrap();
+        assert_eq!(json["type"], "about:blank"); // RFC 9457 standard generic type
+        assert_eq!(json["title"], "Custom Error");
     }
 }

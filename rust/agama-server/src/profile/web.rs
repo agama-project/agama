@@ -18,9 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::web::error::ErrorResponse;
+use crate::web::error::ProblemDetailsExt;
 use agama_lib::profile::AutoyastError;
 use agama_transfer::Transfer;
+use agama_utils::api::ProblemDetails;
 
 use agama_lib::profile::{
     AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome,
@@ -69,11 +70,11 @@ enum ProfileError {
 
 impl IntoResponse for ProfileError {
     fn into_response(self) -> Response {
-        match self {
+        let problem = match self {
             // Server errors (500)
-            ProfileError::ValidatorSetup(_) => ErrorResponse::internal_server_error(self),
+            ProfileError::ValidatorSetup(_) => ProblemDetails::internal_error(self.to_string()),
             ProfileError::Autoyast(AutoyastError::Execute(..)) => {
-                ErrorResponse::internal_server_error(self)
+                ProblemDetails::internal_error(self.to_string())
             }
             // Client errors (400)
             ProfileError::UrlRetrieval { .. }
@@ -83,8 +84,11 @@ impl IntoResponse for ProfileError {
             | ProfileError::EvaluationError(_)
             | ProfileError::UrlParse(_)
             | ProfileError::Autoyast(_)
-            | ProfileError::BadRequest(_) => ErrorResponse::bad_request(self),
-        }
+            | ProfileError::BadRequest(_) => {
+                ProblemDetails::generic("Profile Error", self.to_string())
+            }
+        };
+        problem.into_response()
     }
 }
 
