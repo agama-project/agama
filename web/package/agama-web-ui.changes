@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun 10 19:25:37 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Migrate logical volume form to TanStack Form and extract shared
+  storage form components (mount point, filesystem, and size fields)
+  reused by the partition and logical volume forms.
+
+-------------------------------------------------------------------
 Mon Jun 08 15:06:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Migrate partition form to TanStack Form and redesign filesystem

@@ -21,8 +21,9 @@
  */
 
 /**
- * @fixme This file, PartitionPage and LogicalVolumePage need to be refactored in order to avoid
- *  code duplication.
+ * @fixme This file should be migrated to TanStack Form and the shared storage
+ *  form components (see partition-form and logical-volume-form) to avoid code
+ *  duplication.
  */
 
 import React from "react";
