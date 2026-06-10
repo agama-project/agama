@@ -739,9 +739,13 @@ const ProductSelectionContent = () => {
           </Content>
           {currentProduct && (
             <SubtleContent>
-              {_(
-                "Installation settings will automatically update to match the new product's defaults.",
-              )}
+              {
+                // TRANSLATORS: hint shown when changing the already selected
+                // product, explaining that the current configuration is lost.
+                _(
+                  "The current configuration will be discarded to apply the default settings of the new product.",
+                )
+              }
             </SubtleContent>
           )}
         </Flex>
