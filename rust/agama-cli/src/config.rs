@@ -45,41 +45,20 @@ const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 pub fn build_config_cmd() -> Command {
     // TRANSLATORS: CLI help for: agama config
     let about = gettext("Inspect or change the installation settings");
+    // TRANSLATORS: CLI help for: agama config (details)
+    let long_about = make_long(&about, &gettext("\
+        You can inspect and change installation settings from the command-line. The \"show\" \
+        subcommand generates a \"profile\" which is a JSON document describing the current \
+        configuration.\n\
+        \n\
+        If you want to change any configuration value, you can load a profile (complete or partial) \
+        using the \"load\" subcommand."));
     Command::new("config")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        // TRANSLATORS: CLI help for: agama config (details)
-        .long_about(make_long(&about, &gettext("\
-                             You can inspect and change installation settings from the command-line. The \"show\" \
-                             subcommand generates a \"profile\" which is a JSON document describing the current \
-                             configuration.\n\
-                             \n\
-                             If you want to change any configuration value, you can load a profile (complete or partial) \
-                             using the \"load\" subcommand.")))
-        .subcommand(
-            {
-                // TRANSLATORS: CLI help for: agama config show
-                let about = gettext("Generate an installation profile with the current settings");
-                Command::new("show")
-                    .about(&about)
-                    // TRANSLATORS: CLI help for: agama config show (details)
-                    .long_about(make_long(&about, &gettext("\
-                                         It is possible that many configuration settings do not have a value. Those settings \
-                                         are not included in the output.\n\
-                                         \n\
-                                         The output of command can be used as input for the \"agama config load\".")))
-                    .arg(
-                        Arg::new("output")
-                            .short('o')
-                            .long("output")
-                            .value_name("FILE_PATH")
-                            .value_parser(clap::value_parser!(CliOutput))
-                            // TRANSLATORS: CLI help for: agama config show --output <FILE_PATH>
-                            .help(gettext("Save the output here (goes to stdout if not given)"))
-                    )
-            }
-        )
+        .long_about(long_about)
+        .subcommand(build_config_show_cmd())
         .subcommand(
             Command::new("load")
                 // TRANSLATORS: CLI help for: agama config load
@@ -89,86 +68,132 @@ pub fn build_config_cmd() -> Command {
                         .value_name("URL_OR_PATH")
                         .value_parser(clap::value_parser!(CliInput))
                         // TRANSLATORS: CLI help for: agama config load <URL_OR_PATH>
-                        .help(gettext("JSON file: URL or path or `-` for standard input"))
-                )
+                        .help(gettext("JSON file: URL or path or `-` for standard input")),
+                ),
         )
-        .subcommand(
-            {
-                // TRANSLATORS: CLI help for: agama config validate
-                let about = gettext("Validate a profile using JSON Schema");
-                Command::new("validate")
-                    .about(&about)
-                    // TRANSLATORS: CLI help for: agama config validate (details)
-                    .long_about(make_long(&about, &gettext("\
-                                 Schema is available at /usr/share/agama/schema/profile.schema.json \
-                                 Note: validation is always done as part of all other \"agama config\" commands.")))
-                    .arg(
-                        Arg::new("url_or_path")
-                            .value_name("URL_OR_PATH")
-                            .required(true)
-                            .value_parser(clap::value_parser!(CliInput))
-                            // TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
-                            .help(gettext("JSON file, URL or path or `-` for standard input"))
-                    )
-                    .arg(
-                        Arg::new("local")
-                            .long("local")
-                            .action(ArgAction::SetTrue)
-                            .default_value("false")
-                            // TRANSLATORS: CLI help for: agama config validate --local
-                            .help(gettext("Run subcommands (if possible) in local mode - without trying to connect to remote agama server"))
-                    )
-            }
+        .subcommand(build_config_validate_cmd())
+        .subcommand(build_config_generate_cmd())
+        .subcommand(build_config_edit_cmd())
+}
+
+fn build_config_show_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama config show
+    let about = gettext("Generate an installation profile with the current settings");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama config show (details)
+            "\
+        It is possible that many configuration settings do not have a value. Those settings \
+        are not included in the output.\n\
+        \n\
+        The output of command can be used as input for the \"agama config load\".",
+        ),
+    );
+    Command::new("show")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("output")
+                .short('o')
+                .long("output")
+                .value_name("FILE_PATH")
+                .value_parser(clap::value_parser!(CliOutput))
+                .help(gettext(
+                    // TRANSLATORS: CLI help for: agama config show --output <FILE_PATH>
+                    "Save the output here (goes to stdout if not given)",
+                )),
         )
-        .subcommand(
-            {
-                // TRANSLATORS: CLI help for: agama config generate
-                let about = gettext("Generate and print a native Agama JSON configuration from any kind and location");
-                Command::new("generate")
-                    .about(&about)
-                    // TRANSLATORS: CLI help for: agama config generate (details)
-                    .long_about(make_long(&about, &gettext("\
-                                         Kinds:\n\
-                                         - JSON\n\
-                                         - Jsonnet, injecting the hardware information\n\
-                                         - AutoYaST profile, including ERB and rules/classes\n\
-                                         \n\
-                                         Locations:\n\
-                                         - path\n\
-                                         - URL (including AutoYaST specific schemes)\n\
-                                         \n\
-                                         For an example of Jsonnet-based profile, see\n\
-                                         https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet")))
-                    .arg(
-                        Arg::new("url_or_path")
-                            .value_name("URL_OR_PATH")
-                            .value_parser(clap::value_parser!(CliInput))
-                            // TRANSLATORS: CLI help for: agama config generate <URL_OR_PATH>
-                            .help(gettext("JSON file: URL or path or `-` for standard input"))
-                    )
-            }
+}
+
+fn build_config_validate_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama config validate
+    let about = gettext("Validate a profile using JSON Schema");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama config validate (details)
+            "\
+        Schema is available at /usr/share/agama/schema/profile.schema.json \
+        Note: validation is always done as part of all other \"agama config\" commands.",
+        ),
+    );
+    Command::new("validate")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("url_or_path")
+                .value_name("URL_OR_PATH")
+                .required(true)
+                .value_parser(clap::value_parser!(CliInput))
+                // TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
+                .help(gettext("JSON file, URL or path or `-` for standard input"))
         )
-        .subcommand(
-            {
-                // TRANSLATORS: CLI help for: agama config edit
-                let about = gettext("Edit and update installation option using an external editor");
-                Command::new("edit")
-                    .about(&about)
-                    // TRANSLATORS: CLI help for: agama config edit (details)
-                    .long_about(make_long(&about, &gettext("\
-                                 The changes are not applied if the editor exits with an error code.\n\
-                                 \n\
-                                 If an editor is not specified, it honors the EDITOR environment variable. It falls back to \
-                                 `/usr/bin/vi` as a last resort.")))
-                    .arg(
-                        Arg::new("editor")
-                            .value_name("EDITOR")
-                            .short('e')
-                            .long("editor")
-                            // TRANSLATORS: CLI help for: agama config edit --editor <EDITOR>
-                            .help(gettext("Editor command (including additional arguments if needed)"))
-                    )
-            }
+        .arg(
+            Arg::new("local")
+                .long("local")
+                .action(ArgAction::SetTrue)
+                .default_value("false")
+                // TRANSLATORS: CLI help for: agama config validate --local
+                .help(gettext("Run subcommands (if possible) in local mode - without trying to connect to remote agama server"))
+        )
+}
+
+fn build_config_generate_cmd() -> Command {
+    let about =
+        // TRANSLATORS: CLI help for: agama config generate
+        gettext("Generate and print a native Agama JSON configuration from any kind and location");
+    // TRANSLATORS: CLI help for: agama config generate (details)
+    let long_about = make_long(&about, &gettext("\
+        Kinds:\n\
+        - JSON\n\
+        - Jsonnet, injecting the hardware information\n\
+        - AutoYaST profile, including ERB and rules/classes\n\
+        \n\
+        Locations:\n\
+        - path\n\
+        - URL (including AutoYaST specific schemes)\n\
+        \n\
+        For an example of Jsonnet-based profile, see\n\
+        https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet"));
+    Command::new("generate")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("url_or_path")
+                .value_name("URL_OR_PATH")
+                .value_parser(clap::value_parser!(CliInput))
+                // TRANSLATORS: CLI help for: agama config generate <URL_OR_PATH>
+                .help(gettext("JSON file: URL or path or `-` for standard input")),
+        )
+}
+
+fn build_config_edit_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama config edit
+    let about = gettext("Edit and update installation option using an external editor");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama config edit (details)
+            "\
+        The changes are not applied if the editor exits with an error code.\n\
+        \n\
+        If an editor is not specified, it honors the EDITOR environment variable. It falls back to \
+        `/usr/bin/vi` as a last resort.",
+        ),
+    );
+    Command::new("edit")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("editor")
+                .value_name("EDITOR")
+                .short('e')
+                .long("editor")
+                .help(gettext(
+                    // TRANSLATORS: CLI help for: agama config edit --editor <EDITOR>
+                    "Editor command (including additional arguments if needed)",
+                )),
         )
 }
 

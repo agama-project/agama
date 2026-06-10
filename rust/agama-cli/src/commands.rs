@@ -40,28 +40,26 @@ pub fn build_config_cmd() -> Command {
 pub fn build_probe_cmd() -> Command {
     // TRANSLATORS: CLI help for: agama probe
     let about = gettext("Analyze the system");
-    Command::new("probe")
-        .about(&about)
-        // TRANSLATORS: CLI help for: agama probe (details)
-        .long_about(make_long(&about, &gettext("\
-                             In Agama's jargon, the term 'probing' refers to the process of 'analyzing' the system. This \
-                             includes reading software repositories, analyzing storage devices, and more. The 'probe' \
-                             command initiates this analysis process and returns immediately. \
-                             TODO: do we really need a \"probe\" action?")))
+    // TRANSLATORS: CLI help for: agama probe (details)
+    let long_about = make_long(&about, &gettext("\
+        In Agama's jargon, the term 'probing' refers to the process of 'analyzing' the system. This \
+        includes reading software repositories, analyzing storage devices, and more. The 'probe' \
+        command initiates this analysis process and returns immediately. \
+        TODO: do we really need a \"probe\" action?"));
+    Command::new("probe").about(&about).long_about(long_about)
 }
 
 pub fn build_install_cmd() -> Command {
     // TRANSLATORS: CLI help for: agama install
     let about = gettext("Start the system installation");
-    Command::new("install")
-        .about(&about)
-        // TRANSLATORS: CLI help for: agama install (details)
-        .long_about(make_long(&about, &gettext("\
-                             This command starts the installation process.  Beware it is a destructive operation because \
-                             it will set up the storage devices, install the packages, etc.\n\
-                             \n\
-                             When the preconditions for the installation are not met, it informs the user and returns, \
-                             making no changes to the system.")))
+    // TRANSLATORS: CLI help for: agama install (details)
+    let long_about = make_long(&about, &gettext("\
+        This command starts the installation process.  Beware it is a destructive operation because \
+        it will set up the storage devices, install the packages, etc.\n\
+        \n\
+        When the preconditions for the installation are not met, it informs the user and returns, \
+        making no changes to the system."));
+    Command::new("install").about(&about).long_about(long_about)
 }
 
 pub fn build_questions_cmd() -> Command {
@@ -79,21 +77,24 @@ pub fn build_auth_cmd() -> Command {
 pub fn build_download_cmd() -> Command {
     // TRANSLATORS: CLI help for: agama download
     let about = gettext("Download file from a given (AutoYaST) URL");
+    // TRANSLATORS: CLI help for: agama download (details)
+    let long_about = make_long(&about, &gettext("\
+        The purpose of this command is to download files using AutoYaST supported schemas (e.g. device://). \
+        It can be used to download additional scripts, configuration files and so on. \
+        You can use it for downloading Agama autoinstallation profiles. \
+        If you want to convert an AutoYaST profile, use \"agama config generate\"."));
     Command::new("download")
         .about(&about)
-        // TRANSLATORS: CLI help for: agama download (details)
-        .long_about(make_long(&about, &gettext("\
-                             The purpose of this command is to download files using AutoYaST supported schemas (e.g. device://). \
-                             It can be used to download additional scripts, configuration files and so on. \
-                             You can use it for downloading Agama autoinstallation profiles. \
-                             If you want to convert an AutoYaST profile, use \"agama config generate\".")))
+        .long_about(long_about)
         .arg(
             Arg::new("url")
                 .value_name("URL")
                 .required(true)
-                // TRANSLATORS: CLI help for: agama download <URL>
-                .help(gettext("URL reference pointing to file for download. If a relative URL is \
-                              provided, it will be resolved against the current working directory"))
+                .help(gettext(
+                    // TRANSLATORS: CLI help for: agama download <URL>
+                    "URL reference pointing to file for download. If a relative URL is \
+                              provided, it will be resolved against the current working directory",
+                )),
         )
         .arg(
             Arg::new("destination")
@@ -101,7 +102,7 @@ pub fn build_download_cmd() -> Command {
                 .required(true)
                 .value_parser(value_parser!(PathBuf))
                 // TRANSLATORS: CLI help for: agama download <DESTINATION>
-                .help(gettext("File name"))
+                .help(gettext("File name")),
         )
 }
 

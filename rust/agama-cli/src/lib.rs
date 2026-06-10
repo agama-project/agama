@@ -90,17 +90,22 @@ impl GlobalOpts {
 pub fn build_cli() -> Command {
     // TRANSLATORS: CLI help for: agama
     let about = gettext("Agama's command-line interface");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama (details)
+            "\
+        This program allows inspecting or changing Agama's configuration, handling installation \
+        profiles, starting the installation, monitoring the process, etc.\n\
+        \n\
+        Please, use the \"help\" command to learn more.",
+        ),
+    );
     Command::new("agama")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        // TRANSLATORS: CLI help for: agama (details)
-        .long_about(make_long(&about, &gettext("\
-            This program allows inspecting or changing Agama's configuration, handling installation \
-            profiles, starting the installation, monitoring the process, etc.\n\
-            \n\
-            Please, use the \"help\" command to learn more.",
-        )))
+        .long_about(long_about)
         .arg(
             Arg::new("host")
                 .value_name("HOST")

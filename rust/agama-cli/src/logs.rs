@@ -29,15 +29,21 @@ use std::path::PathBuf;
 pub fn build_logs_cmd() -> Command {
     // TRANSLATORS: CLI help for: agama logs
     let about = gettext("Collect the installer logs");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama logs (details)
+            "\
+        The installer logs are stored in a compressed archive for further inspection. The file \
+        includes system and Agama-specific logs and configuration files. They are crucial to \
+        troubleshoot and debug problems.",
+        ),
+    );
     Command::new("logs")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        // TRANSLATORS: CLI help for: agama logs (details)
-        .long_about(make_long(&about, &gettext("\
-                             The installer logs are stored in a compressed archive for further inspection. The file \
-                             includes system and Agama-specific logs and configuration files. They are crucial to \
-                             troubleshoot and debug problems.")))
+        .long_about(long_about)
         .subcommand(
             Command::new("store")
                 // TRANSLATORS: CLI help for: agama logs store

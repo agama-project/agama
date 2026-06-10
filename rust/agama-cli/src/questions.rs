@@ -31,17 +31,18 @@ use serde::Deserialize;
 pub fn build_questions_cmd() -> Command {
     // TRANSLATORS: CLI help for: agama questions
     let about = gettext("Handle installer questions");
+    // TRANSLATORS: CLI help for: agama questions (details)
+    let long_about = make_long(&about, &gettext("\
+        Agama might require user intervention at any time. The reasons include providing some \
+        missing information (e.g., the password to decrypt a file system) or deciding what to do in \
+        case of an error (e.g., cannot connect to the repository).\n\
+        \n\
+        This command allows answering such questions directly from the command-line."));
     Command::new("questions")
         .subcommand_required(true)
         .arg_required_else_help(true)
         .about(&about)
-        // TRANSLATORS: CLI help for: agama questions (details)
-        .long_about(make_long(&about, &gettext("\
-                             Agama might require user intervention at any time. The reasons include providing some \
-                             missing information (e.g., the password to decrypt a file system) or deciding what to do in \
-                             case of an error (e.g., cannot connect to the repository).\n\
-                             \n\
-                             This command allows answering such questions directly from the command-line.")))
+        .long_about(long_about)
         .subcommand(
             Command::new("mode")
                 // TRANSLATORS: CLI help for: agama questions mode
@@ -53,28 +54,7 @@ pub fn build_questions_cmd() -> Command {
                         .value_parser(value_parser!(Modes))
                 )
         )
-        .subcommand(
-            {
-                // TRANSLATORS: CLI help for: agama questions answers
-                let about = gettext("Load predefined answers");
-                Command::new("answers")
-                    .about(&about)
-                    // TRANSLATORS: CLI help for: agama questions answers (details)
-                    .long_about(make_long(&about, &gettext("\
-                                 It allows predefining answers for specific questions in order to skip them in interactive \
-                                 mode or change the answer in automatic mode.\n\
-                                 \n\
-                                 Please check Agama documentation for more details and examples: \
-                                 https://github.com/openSUSE/agama/blob/master/doc/questions.")))
-                    .arg(
-                        Arg::new("path")
-                            .value_name("PATH")
-                            .required(true)
-                            // TRANSLATORS: CLI help for: agama questions answers <PATH>
-                            .help(gettext("Path to a file containing the answers in JSON format"))
-                    )
-            }
-        )
+        .subcommand(build_questions_answers_cmd())
         .subcommand(
             Command::new("list")
                 // TRANSLATORS: CLI help for: agama questions list
@@ -84,6 +64,35 @@ pub fn build_questions_cmd() -> Command {
             Command::new("ask")
                 // TRANSLATORS: CLI help for: agama questions ask
                 .about(gettext("Reads a question definition in JSON from stdin and prints the response when it is answered"))
+        )
+}
+
+fn build_questions_answers_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama questions answers
+    let about = gettext("Load predefined answers");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama questions answers (details)
+            "\
+        It allows predefining answers for specific questions in order to skip them in interactive \
+        mode or change the answer in automatic mode.\n\
+        \n\
+        Please check Agama documentation for more details and examples: \
+        https://github.com/openSUSE/agama/blob/master/doc/questions.",
+        ),
+    );
+    Command::new("answers")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("path")
+                .value_name("PATH")
+                .required(true)
+                .help(gettext(
+                    // TRANSLATORS: CLI help for: agama questions answers <PATH>
+                    "Path to a file containing the answers in JSON format",
+                )),
         )
 }
 
