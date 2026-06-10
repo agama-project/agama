@@ -311,9 +311,9 @@ const TextWithLinkToL10n = ({ text, onClick }: TextWithLinkToL10nProps) => {
 const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
   const checkboxDescription = _(
     // TRANSLATORS: Explains where users can find more language and keymap
-    // options for the product to install. Keep the text in square brackets []
-    // as it will be replaced with a clickable link.
-    "More language and keyboard layout options for the selected product may be available in [Localization] page.",
+    // options for the product to install. The text in square brackets [] is a
+    // link to the localization page; keep the brackets.
+    "The [language and region] settings for the product may offer more options to choose from.",
   );
 
   return (
@@ -357,10 +357,10 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
 
 const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
   const checkboxDescription = _(
-    // TRANSLATORS: Explains where users can find more languages options for the
-    // product to install. Keep the text in square brackets [] as it will be
-    // replaced with a clickable link.
-    "More languages might be available for the selected product at [Localization] page",
+    // TRANSLATORS: Explains where users can find more language options for the
+    // product to install. The text in square brackets [] is a link to the
+    // localization page; keep the brackets.
+    "The [language and region] settings for the product may offer more options to choose from.",
   );
 
   return (
@@ -415,9 +415,9 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
 
   const checkboxDescription = _(
     // TRANSLATORS: Explains where users can find more keymap options for the
-    // product to install. Keep the text in square brackets [] as it will be
-    // replaced with a clickable link.
-    "More keymap layout might be available for the selected product at [Localization] page",
+    // product to install. The text in square brackets [] is a link to the
+    // localization page; keep the brackets.
+    "The [language and region] settings for the product may offer more options to choose from.",
   );
 
   return (

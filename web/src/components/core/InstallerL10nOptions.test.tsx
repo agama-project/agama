@@ -225,7 +225,7 @@ describe("InstallerL10nOptions", () => {
 
     it("includes a link to localization page", async () => {
       await renderAndOpen();
-      screen.getByRole("link", { name: "Localization" });
+      screen.getByRole("link", { name: "language and region" });
     });
 
     describe("but a product is not selected yet", () => {
@@ -242,7 +242,7 @@ describe("InstallerL10nOptions", () => {
 
       it("does not include a link to localization page", async () => {
         await renderAndOpen();
-        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
+        expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
 
@@ -341,7 +341,7 @@ describe("InstallerL10nOptions", () => {
 
     it("includes a link to localization page", async () => {
       await renderAndOpen({ variant: "language" });
-      screen.getByRole("link", { name: "Localization" });
+      screen.getByRole("link", { name: "language and region" });
     });
 
     describe("but a product is not selected yet", () => {
@@ -358,7 +358,7 @@ describe("InstallerL10nOptions", () => {
 
       it("does not include a link to localization page", async () => {
         await renderAndOpen({ variant: "language" });
-        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
+        expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
   });
@@ -434,7 +434,7 @@ describe("InstallerL10nOptions", () => {
 
     it("includes a link to localization page", async () => {
       await renderAndOpen({ variant: "keyboard" });
-      screen.getByRole("link", { name: "Localization" });
+      screen.getByRole("link", { name: "language and region" });
     });
 
     describe("but in a remote connection", () => {
@@ -462,7 +462,7 @@ describe("InstallerL10nOptions", () => {
 
       it("does not include a link to localization page", async () => {
         await renderAndOpen({ variant: "keyboard" });
-        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
+        expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
   });

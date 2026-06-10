@@ -78,7 +78,7 @@ it("renders an clarification about settings", () => {
   installerRender(<L10nPage />);
   screen.getByText(/These are the settings for the product to install/);
   const clarification = screen.getByText(
-    /The installer language and keyboard layout can be adjusted via/,
+    /The installer language and keyboard layout can be adjusted using/,
   );
   // The header also renders the localization options, so scope the assertion
   // to the clarification text to target the inline control.
