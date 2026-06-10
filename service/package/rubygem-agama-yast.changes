@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 10 13:43:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- always send all params to product activation as new
+  suseconnect-ng do not transfer it from announce system (bsc#1268015) 
+
+-------------------------------------------------------------------
 Fri Jun  5 06:37:05 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Fixed using a custom password-protected installation repository
