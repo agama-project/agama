@@ -1,0 +1,157 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React from "react";
+import { screen, waitFor } from "@testing-library/react";
+import { installerRender, mockParams } from "~/test-utils";
+
+// Mock scrollTo which is not available in jsdom
+Element.prototype.scrollTo = jest.fn();
+
+const mockNavigate = jest.fn();
+const mockAddLogicalVolume = jest.fn();
+const mockEditLogicalVolume = jest.fn();
+
+const volumeGroupConfig = {
+  name: "/dev/system",
+  vgName: "system",
+  spacePolicy: "keep",
+  logicalVolumes: [],
+};
+
+const existingLogicalVolume = {
+  name: "/dev/system/data",
+  description: "5.00 GiB",
+  filesystem: { type: "ext4", label: "Data" },
+};
+
+const systemVolumeGroup = {
+  name: "/dev/system",
+  description: "Volume group",
+  logicalVolumes: [existingLogicalVolume],
+};
+
+let mockVolumeGroup: object | undefined;
+let mockAvailableLogicalVolumes: object[];
+let mockInitialLogicalVolume: object | null;
+let mockVolumeGroupConfig: object | null;
+
+jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
+  useNavigate: () => mockNavigate,
+}));
+
+jest.mock("./data", () => ({
+  useVolumeGroupConfig: () => mockVolumeGroupConfig,
+  useVolumeGroup: () => mockVolumeGroup,
+  useUnusedLogicalVolumes: () => mockAvailableLogicalVolumes,
+  useInitialLogicalVolumeConfig: () => mockInitialLogicalVolume,
+  useUnusedMountPoints: () => ["/home", "/var", "swap"],
+}));
+
+jest.mock("./use-solved-sizes", () => ({
+  useSolvedSizes: () => null,
+}));
+
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  useConfigModel: () => ({ drives: [], volumeGroups: [] }),
+  useAddLogicalVolume: () => mockAddLogicalVolume,
+  useEditLogicalVolume: () => mockEditLogicalVolume,
+}));
+
+jest.mock("~/hooks/model/system/storage", () => ({
+  useVolumeTemplate: () => ({
+    minSize: 20 * 1024 * 1024 * 1024,
+    fsType: "xfs",
+    autoSize: false,
+    mountPath: "/home",
+    outline: {
+      fsTypes: ["xfs", "ext4", "btrfs"],
+      sizeRelevantVolumes: [],
+      snapshotsAffectSizes: false,
+      adjustByRam: false,
+    },
+  }),
+}));
+
+// Import the tested component last.
+import LogicalVolumeForm from "./Form";
+
+describe("LogicalVolumeForm", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockParams({ id: "0" });
+    mockVolumeGroupConfig = volumeGroupConfig;
+    mockVolumeGroup = systemVolumeGroup;
+    mockAvailableLogicalVolumes = [existingLogicalVolume];
+    mockInitialLogicalVolume = null;
+  });
+
+  describe("when the volume group config is missing", () => {
+    it("shows a resource not found message", () => {
+      mockVolumeGroupConfig = null;
+      installerRender(<LogicalVolumeForm />);
+      screen.getByText("Go to storage page");
+    });
+  });
+
+  describe("when creating a new logical volume on an existing volume group", () => {
+    it("renders the mount point, source selector, name and filesystem fields", () => {
+      installerRender(<LogicalVolumeForm />);
+      screen.getByLabelText("Mount point");
+      screen.getByLabelText("Logical volume");
+      screen.getByLabelText("Logical volume name");
+      screen.getByLabelText("File system");
+    });
+  });
+
+  describe("when the volume group is new", () => {
+    it("shows a read-only source field instead of the selector", () => {
+      mockVolumeGroup = undefined;
+      mockAvailableLogicalVolumes = [];
+      installerRender(<LogicalVolumeForm />);
+      // The read-only field shows the fixed text instead of a combobox.
+      screen.getByText("New logical volume");
+      expect(screen.queryByRole("button", { name: "Logical volume" })).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when editing an existing logical volume", () => {
+    beforeEach(() => {
+      mockInitialLogicalVolume = {
+        mountPath: "/home",
+        lvName: "home",
+        name: undefined,
+        filesystem: { type: "xfs", label: "" },
+        size: undefined,
+      };
+    });
+
+    it("submits the edited logical volume", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByRole("button", { name: "Accept" }));
+
+      await waitFor(() => expect(mockEditLogicalVolume).toHaveBeenCalled());
+      expect(mockEditLogicalVolume).toHaveBeenCalledWith(0, "/home", expect.any(Object));
+    });
+  });
+});
