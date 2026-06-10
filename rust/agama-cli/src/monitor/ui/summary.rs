@@ -75,7 +75,8 @@ impl Display for BusyState {
         let value = match self {
             BusyState::Busy => gettext("Busy"),
             BusyState::Failed => gettext("Failed"),
-            BusyState::Idle | BusyState::Waiting => gettext("Idle"),
+            BusyState::Idle => gettext("Idle"),
+            BusyState::Waiting => gettext("Waiting for user"),
         };
 
         write!(f, "{}", value)

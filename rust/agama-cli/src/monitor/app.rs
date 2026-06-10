@@ -19,9 +19,9 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
-    questions::http_client::HTTPClient,
     http::{BaseHTTPClient, WebSocketClient},
     monitor::{InstallationStatus, Monitor, MonitorUpdate},
+    questions::http_client::HTTPClient,
 };
 use anyhow::{anyhow, Result};
 use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
@@ -251,17 +251,23 @@ impl MonitorApp {
                 Message::Terminal(event) => {
                     // Always allow global exit keys (Ctrl-C)
                     if let Event::Key(key_event) = event {
-                        if key_event.kind == KeyEventKind::Press 
-                            && key_event.code == KeyCode::Char('c') 
-                            && key_event.modifiers == KeyModifiers::CONTROL {
+                        if key_event.kind == KeyEventKind::Press
+                            && key_event.code == KeyCode::Char('c')
+                            && key_event.modifiers == KeyModifiers::CONTROL
+                        {
                             terminal_handle.abort();
                             return Ok(());
                         }
                     }
 
                     let mut handled = false;
-                    let pending_question = self.status.questions.iter().find(|q| q.answer.is_none()).cloned();
-                    
+                    let pending_question = self
+                        .status
+                        .questions
+                        .iter()
+                        .find(|q| q.answer.is_none())
+                        .cloned();
+
                     if let Some(q) = pending_question {
                         // Ensure state matches the question
                         if self.question_ui.question_id != Some(q.id) {
