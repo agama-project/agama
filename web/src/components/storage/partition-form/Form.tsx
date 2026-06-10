@@ -44,6 +44,7 @@ import { compact } from "~/utils";
 import { _ } from "~/i18n";
 import { isEmpty } from "radashi";
 
+import MountPointField from "~/components/storage/shared/MountPointField";
 import PartitionFields from "./PartitionFields";
 import FilesystemFields from "./FilesystemFields";
 import FilesystemAdditionalFields from "./FilesystemAdditionalFields";
@@ -459,49 +460,8 @@ function PartitionFormContent({
         {/* Validation error alert — managed by useFormSubmit */}
         <AlertSubscribe form={form} />
 
-        {/* Mount point
-         *
-         * Uses a "committed value" pattern to avoid reacting to incomplete input.
-         * The `committedMountPoint` field tracks a stable value that only updates when:
-         * - The form mounts (onMount)
-         * - User selects a suggestion (onSelect callback)
-         * - User finishes typing (onBlur)
-         *
-         * Why: Prevents showing misleading filesystem options and size hints while
-         * user types "/ho..." before completing "/home". Also avoids expensive
-         * recalculations (useVolumeTemplate) on every keystroke.
-         *
-         * FilesystemFields and SizeFields use `committedMountPoint` instead of live
-         * `mountPoint` for all derived calculations.
-         */}
-        <form.AppField
-          name="mountPoint"
-          listeners={{
-            // Initialize committedMountPoint when form loads (for editing existing partitions).
-            onMount: ({ value }) => {
-              form.setFieldValue("committedMountPoint", value, { dontUpdateMeta: true });
-            },
-            // Update committedMountPoint when user finishes typing.
-            // Deferred to avoid showing incomplete/misleading information while typing.
-            onBlur: ({ value }) => {
-              form.setFieldValue("committedMountPoint", value, { dontUpdateMeta: true });
-            },
-          }}
-        >
-          {(field) => (
-            <field.SuggestionsTextField
-              label={_("Mount point")}
-              suggestions={unusedMountPoints}
-              helperText={_("E.g., /home, /var/lib, swap")}
-              onSelect={(value) => {
-                // Update committedMountPoint immediately when user selects a suggestion
-                // (click or Enter key). Safe to show filesystem options and size hints
-                // immediately since the value is complete and intentional.
-                form.setFieldValue("committedMountPoint", value, { dontUpdateMeta: true });
-              }}
-            />
-          )}
-        </form.AppField>
+        {/* Mount point */}
+        <MountPointField form={form} suggestions={unusedMountPoints} />
 
         {/* Partition */}
         <PartitionFields
