@@ -47,8 +47,8 @@ import { isEmpty } from "radashi";
 import MountPointField from "~/components/storage/shared/MountPointField";
 import SizeFields from "~/components/storage/shared/SizeFields";
 import PartitionFields from "./PartitionFields";
+import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAdditionalFields";
 import FilesystemFields from "./FilesystemFields";
-import FilesystemAdditionalFields from "./FilesystemAdditionalFields";
 import {
   defaultOptions,
   validate,
