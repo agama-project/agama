@@ -146,7 +146,7 @@ type SizeFields = {
   expandMinSize: string;
 };
 
-type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;
+export type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;
 
 export type PartitionFormData = FormFields;
 

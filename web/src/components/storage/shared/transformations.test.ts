@@ -26,7 +26,6 @@ import {
   buildSizeConfig,
   inferSizeFields,
   fsConfigValue,
-  FILESYSTEM_ACTION,
   SIZE_MODE,
 } from "./transformations";
 
@@ -328,7 +327,7 @@ describe("inferSizeFields", () => {
 
   it("returns AUTO mode when size is default", () => {
     const result = inferSizeFields({
-      size: { default: true },
+      size: { default: true, min: 0 },
     });
 
     expect(result).toEqual({

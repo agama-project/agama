@@ -84,7 +84,7 @@ type LogicalVolumeNameFields = {
   lvName: string;
 };
 
-type FormFields = MountPointFields &
+export type FormFields = MountPointFields &
   LogicalVolumeSourceFields &
   LogicalVolumeNameFields &
   FilesystemFields &
