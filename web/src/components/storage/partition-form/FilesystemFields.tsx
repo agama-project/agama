@@ -22,12 +22,11 @@
 
 import React, { useEffect, useMemo } from "react";
 import { unique, isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
 import { withForm } from "~/hooks/form";
 import FilesystemSelector from "~/components/storage/shared/FilesystemSelector";
+import { buildFilesystemOptions } from "~/components/storage/shared/helpers";
 import { defaultOptions, isReusingPartition, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { deviceLabel, filesystemLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 
 import type { Storage as System } from "~/model/system";
@@ -108,33 +107,10 @@ const FilesystemFieldsContent = withForm({
     const canKeepCurrentFilesystem =
       hasFilesystem && usableFilesystems.includes(currentFsType as ConfigModel.FilesystemType);
 
-    const filesystemOptions: Array<
-      { value: string; label: React.ReactNode; description?: React.ReactNode } | { divider: true }
-    > = useMemo(() => {
-      const formatOptions = [
-        { value: FILESYSTEM_TYPE.AUTO, label: _("Default") },
-        ...usableFilesystems.map((fs) => ({ value: fs, label: filesystemLabel(fs) })),
-      ];
-
-      // When reusing a partition with a compatible filesystem, add "Keep current" option
-      if (canKeepCurrentFilesystem && currentFsType) {
-        return [
-          {
-            value: FILESYSTEM_ACTION.REUSE,
-            label: _("Current"),
-            description: sprintf(
-              // TRANSLATORS: %s is device name like "/dev/vdd2"
-              _("Do not format %s and keep data"),
-              deviceLabel(device),
-            ),
-          },
-          { divider: true },
-          ...formatOptions,
-        ];
-      }
-
-      return formatOptions;
-    }, [usableFilesystems, canKeepCurrentFilesystem, currentFsType, device]);
+    const filesystemOptions = useMemo(
+      () => buildFilesystemOptions(usableFilesystems, { device, canKeepCurrentFilesystem }),
+      [usableFilesystems, canKeepCurrentFilesystem, device],
+    );
 
     // Auto-reset filesystem to Default when it becomes incompatible with the mount point.
     // Example: user selects XFS, then changes mount point to "swap" (which only supports swap fs).

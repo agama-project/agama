@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { parseToBytes } from "./utils";
+import { parseToBytes } from "~/components/storage/utils";
 import {
   SIZE_FORMAT_REGEXP,
   isValidSize,

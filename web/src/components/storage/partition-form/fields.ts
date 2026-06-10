@@ -26,8 +26,13 @@ import type {
   ValidationResult,
   FieldsValidationResult,
 } from "~/components/form/validation-helpers";
-import { requiredString, optionalValidString } from "~/components/form/validation-helpers";
-import { requiredSize, sizeRange } from "~/components/storage/validation-helpers";
+import { requiredString } from "~/components/form/validation-helpers";
+import {
+  requiredSize,
+  sizeRange,
+  validateMountPoint as validateMountPointValue,
+  optionalFilesystemLabel,
+} from "~/components/storage/shared/validation-helpers";
 import { _ } from "~/i18n";
 
 /** Constants and helpers */
@@ -168,85 +173,23 @@ export const defaultOptions = formOptions({ defaultValues });
 
 /** Validation functions */
 
-/**
- * Mount point validation regex.
- *
- * Matches:
- * - "swap" (special case)
- * - "/" (root)
- * - Valid absolute paths like "/home", "/var/lib", etc.
- *
- * Does not match:
- * - Empty strings
- * - Relative paths
- * - Paths with spaces or invalid characters
- */
-const MOUNT_POINT_REGEXP = /^swap$|^\/$|^(\/[^/\s]+)+$/;
-
-/**
- * Filesystem label validation regex.
- *
- * Allows:
- * - Word characters (letters, digits, underscores)
- * - Hyphens, dots
- * - Empty string (label is optional)
- */
-const FILESYSTEM_LABEL_REGEXP = /^[\w-_.]*$/;
-
 function validateMountPoint(
   fields: FormFields,
   usedMountPoints: string[],
 ): FieldsValidationResult<MountPointFields> {
-  const value = fields.mountPoint;
-
-  if (value === "") {
-    return { mountPoint: _("Mount point is required") };
-  }
-
-  if (!MOUNT_POINT_REGEXP.test(value)) {
-    return { mountPoint: _("Select or enter a valid mount point") };
-  }
-
-  // Check if mount point is already used (not validated here, must be passed from form)
-  if (usedMountPoints.includes(value)) {
-    return {
-      mountPoint: _("Select or enter a mount point that is not already assigned to another device"),
-    };
-  }
-
-  return {};
+  return { mountPoint: validateMountPointValue(fields.mountPoint, usedMountPoints) };
 }
 
 function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
-  // AUTO is always valid — the installer will pick an appropriate type.
-  if (fields.filesystem === FILESYSTEM_TYPE.AUTO) {
-    return {
-      filesystemLabel: optionalValidString(
-        fields.filesystemLabel,
-        (v) => FILESYSTEM_LABEL_REGEXP.test(v),
-        _("Invalid label format"),
-      ),
-    };
-  }
-
-  // Reusing the existing filesystem (filesystem field holds REUSE sentinel).
-  if (fields.filesystem === FILESYSTEM_ACTION.REUSE) {
-    return {
-      filesystemLabel: optionalValidString(
-        fields.filesystemLabel,
-        (v) => FILESYSTEM_LABEL_REGEXP.test(v),
-        _("Invalid label format"),
-      ),
-    };
+  // AUTO and REUSE are always valid filesystem selections; only the optional
+  // label needs checking. A concrete type additionally requires a selection.
+  if (fields.filesystem === FILESYSTEM_TYPE.AUTO || fields.filesystem === FILESYSTEM_ACTION.REUSE) {
+    return { filesystemLabel: optionalFilesystemLabel(fields.filesystemLabel) };
   }
 
   return {
     filesystem: requiredString(fields.filesystem, _("Select a filesystem type")),
-    filesystemLabel: optionalValidString(
-      fields.filesystemLabel,
-      (v) => FILESYSTEM_LABEL_REGEXP.test(v),
-      _("Invalid label format"),
-    ),
+    filesystemLabel: optionalFilesystemLabel(fields.filesystemLabel),
   };
 }
 
