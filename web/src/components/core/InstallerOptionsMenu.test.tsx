@@ -111,11 +111,5 @@ describe("InstallerOptionsMenu", () => {
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Download logs/i });
     });
-
-    it("renders the 'Terminal' entry", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More options/i }));
-      screen.getByRole("menuitem", { name: /Terminal/i });
-    });
   });
 });

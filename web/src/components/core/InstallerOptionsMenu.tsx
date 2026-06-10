@@ -75,7 +75,7 @@ export default function InstallerOptionsMenu({
   const toggle = () => setIsOpen(!isOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
   // TRANSLATORS: label for the button that opens the menu with additional
-  // actions (open a terminal, show settings, download logs, change product...)
+  // actions (show settings, download logs, change product...)
   const toggleLabel = _("More options");
 
   // DownloadLogsFeedback must wrap the entire Dropdown rather than just the
@@ -111,12 +111,6 @@ export default function InstallerOptionsMenu({
             )}
           >
             <DropdownList>
-              {/* TODO: placeholder for the upcoming terminal access; wires a
-                  console.log until the feature is implemented. */}
-              <DropdownItem key="terminal" onClick={() => console.log("Open terminal")}>
-                {/* TRANSLATORS: menu entry to open a terminal during installation */}
-                <ItemContent icon="terminal" text={_("Terminal")} />
-              </DropdownItem>
               <DropdownItem key="show-settings" onClick={toggleConfig}>
                 {/* TRANSLATORS: menu entry that opens the installation
                     configuration as a JSON file: the machine-readable

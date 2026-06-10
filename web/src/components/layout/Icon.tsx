@@ -72,7 +72,6 @@ import RestartAlt from "@icons/restart_alt.svg?component";
 import Routine from "@icons/routine.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
-import Terminal from "@icons/terminal.svg?component";
 import Translate from "@icons/translate.svg?component";
 import UnfoldLess from "@icons/unfold_less.svg?component";
 import UnfoldMore from "@icons/unfold_more.svg?component";
@@ -134,7 +133,6 @@ const icons = {
   routine: Routine,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
-  terminal: Terminal,
   translate: Translate,
   unfold_less: UnfoldLess,
   unfold_more: UnfoldMore,
