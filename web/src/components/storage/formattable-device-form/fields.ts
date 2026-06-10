@@ -43,7 +43,7 @@ export { FILESYSTEM_TYPE, FILESYSTEM_ACTION };
 
 /** Form field types */
 
-type FormFields = MountPointFields & FilesystemFields;
+export type FormFields = MountPointFields & FilesystemFields;
 
 export type FormattableDeviceFormData = FormFields;
 

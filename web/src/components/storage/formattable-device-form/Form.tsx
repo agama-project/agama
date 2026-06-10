@@ -23,7 +23,6 @@
 import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
-import { isEmpty } from "radashi";
 import Page from "~/components/core/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import NestedContent from "~/components/core/NestedContent";
@@ -40,97 +39,12 @@ import MountPointField from "~/components/storage/shared/MountPointField";
 import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAdditionalFields";
 import FilesystemFields from "./FilesystemFields";
 import { useDeviceModelFromParams, useDeviceFromParams, useUnusedMountPoints } from "./queries";
-import { defaultOptions, validate, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
+import { buildPayload, toFormValues } from "./transformations";
+import { defaultOptions, validate } from "./fields";
 
-import type {
-  ConfigModel as ConfigModelType,
-  Data,
-  Partitionable,
-} from "~/model/storage/config-model";
+import type { Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
-
-/** Maps a stored filesystem config to the `filesystem` field value. */
-function fsConfigValue(fsConfig: ConfigModelType.Filesystem | undefined): string {
-  if (fsConfig?.default) return FILESYSTEM_TYPE.AUTO;
-  return fsConfig?.type || FILESYSTEM_TYPE.AUTO;
-}
-
-/**
- * Maps the stored device config to initial form values for editing, or returns
- * an empty object when the device has no filesystem config yet.
- */
-function toFormValues(
-  deviceModel: Partitionable.Device,
-): Partial<typeof defaultOptions.defaultValues> {
-  const fsConfig = deviceModel.filesystem;
-
-  // Keeping the current filesystem unless the config explicitly says to format
-  // (reuse: false).
-  const shouldKeepFilesystem = fsConfig !== undefined && fsConfig.reuse === true;
-
-  const mountPoint = deviceModel.mountPath || "";
-  const filesystemLabel = fsConfig?.label || "";
-  const mkfsOptions = fsConfig?.mkfsOptions || [];
-  const mountOptions = fsConfig?.mountOptions || [];
-  const showMoreFilesystemSettings =
-    filesystemLabel !== "" || !!mkfsOptions.length || !!mountOptions.length;
-
-  return {
-    mountPoint,
-    committedMountPoint: mountPoint,
-    filesystem: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
-    filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
-    filesystemLabel,
-    mkfsOptions,
-    mountOptions,
-    showMoreFilesystemSettings,
-  };
-}
-
-/**
- * Builds a formattable device config from the validated form values. The
- * filesystem settings are omitted when their modes select automatic behavior.
- */
-function buildPayload(values: typeof defaultOptions.defaultValues): Data.Formattable {
-  const fsExtraSetting = (attr: "filesystemLabel" | "mkfsOptions" | "mountOptions") => {
-    if (!values.showMoreFilesystemSettings) return undefined;
-    if (isEmpty(values[attr])) return undefined;
-    return values[attr];
-  };
-
-  const filesystem = (): ConfigModelType.Filesystem | undefined => {
-    if (values.filesystem === FILESYSTEM_ACTION.REUSE) {
-      return {
-        reuse: true,
-        default: true,
-        mountOptions: (fsExtraSetting("mountOptions") as string[]) || undefined,
-      };
-    }
-
-    if (values.filesystem === FILESYSTEM_TYPE.AUTO) {
-      return {
-        default: true,
-        label: (fsExtraSetting("filesystemLabel") as string) || undefined,
-        mkfsOptions: (fsExtraSetting("mkfsOptions") as string[]) || undefined,
-        mountOptions: (fsExtraSetting("mountOptions") as string[]) || undefined,
-      };
-    }
-
-    return {
-      default: false,
-      type: values.filesystem as ConfigModelType.FilesystemType,
-      label: (fsExtraSetting("filesystemLabel") as string) || undefined,
-      mkfsOptions: (fsExtraSetting("mkfsOptions") as string[]) || undefined,
-      mountOptions: (fsExtraSetting("mountOptions") as string[]) || undefined,
-    };
-  };
-
-  return {
-    mountPath: values.mountPoint,
-    filesystem: filesystem(),
-  };
-}
 
 /**
  * Query data frozen on mount to protect the form from mid-interaction
