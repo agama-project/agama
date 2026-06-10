@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Jun 10 12:07:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Redesign the installer header: replace the "Review and Install"
+  button with breadcrumb navigation, show the product and the
+  installer tools (localization, configuration, appearance and
+  status) on every page, and add tooltips, clearer labels and a
+  customizable icon size scale (gh#agama-project/agama#3607).
+
+-------------------------------------------------------------------
 Tue Jun  9 09:41:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add dark and high-contrast styles, enabling per-product branding
