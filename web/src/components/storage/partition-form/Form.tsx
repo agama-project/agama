@@ -33,14 +33,11 @@ import { useFormSubmit } from "~/hooks/use-form-submit";
 import { useDevice } from "~/hooks/model/system/storage";
 import {
   useConfigModel,
-  useMissingMountPaths,
-  usePartitionable,
   useAddPartition,
   useEditPartition,
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
-import { compact } from "~/utils";
 import { _ } from "~/i18n";
 import { isEmpty } from "radashi";
 
@@ -51,6 +48,12 @@ import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAd
 import FilesystemFields from "./FilesystemFields";
 import { useSolvedSizes } from "./use-solved-sizes";
 import {
+  useDeviceModelFromParams,
+  useInitialPartitionConfig,
+  useUnusedMountPoints,
+  useUnusedPartitions,
+} from "./queries";
+import {
   defaultOptions,
   validate,
   isReusingPartition,
@@ -60,64 +63,9 @@ import {
   SizeMode,
 } from "./fields";
 
-import type { ConfigModel as ConfigModelType, Partitionable } from "~/model/storage/config-model";
+import type { ConfigModel as ConfigModelType } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
-
-/**
- * Resolves the partitionable device model from the current route params.
- *
- * Calls `usePartitionable` unconditionally (hook rules) with safe fallback
- * values when the location cannot be parsed, then returns `null` if the route
- * params do not map to a valid partitionable location.
- */
-function useDeviceModelFromParams(): Partitionable.Device | null {
-  const { collection, index } = useParams();
-  const location = createPartitionableLocation(collection, index);
-  // Call hook unconditionally, but pass safe defaults if location is null
-  const device = usePartitionable(
-    location?.collection || "drives",
-    location?.index !== undefined ? location.index : 0,
-  );
-  return location ? device : null;
-}
-
-/**
- * Returns the existing {@link ConfigModelType.Partition} being edited, or
- * `null` when creating a new partition.
- *
- * The `partitionId` route param holds the mount path used to look up the
- * partition within the device resolved by {@link useDeviceModelFromParams}.
- */
-function useInitialPartitionConfig(): ConfigModelType.Partition | null {
-  const { partitionId: mountPath } = useParams();
-  const device = useDeviceModelFromParams();
-  return mountPath && device ? configModel.partitionable.findPartition(device, mountPath) : null;
-}
-
-/** Unused predefined mount points. Includes the currently used mount point when editing. */
-function useUnusedMountPoints(): string[] {
-  const unusedMountPaths = useMissingMountPaths();
-  const initialPartitionConfig = useInitialPartitionConfig();
-  return compact([initialPartitionConfig?.mountPath, ...unusedMountPaths]);
-}
-
-/** Unused partitions. Includes the currently used partition when editing (if any). */
-function useUnusedPartitions(): System.Device[] {
-  const deviceModel = useDeviceModelFromParams();
-  const systemDevice = useDevice(deviceModel?.name || "");
-  const initialPartitionConfig = useInitialPartitionConfig();
-
-  if (!deviceModel || !systemDevice) return [];
-
-  const allPartitions = systemDevice.partitions || [];
-  const configuredPartitionConfigs = configModel.partitionable
-    .filterConfiguredExistingPartitions(deviceModel)
-    .filter((p) => p.name !== initialPartitionConfig?.name)
-    .map((p) => p.name);
-
-  return allPartitions.filter((p) => !configuredPartitionConfigs.includes(p.name));
-}
 
 /**
  * Builds a {@link ConfigModelType.Partition} from the validated form values.

@@ -53,7 +53,7 @@ import {
   useUnusedLogicalVolumes,
   useInitialLogicalVolumeConfig,
   useUnusedMountPoints,
-} from "./data";
+} from "./queries";
 import {
   defaultOptions,
   validate,

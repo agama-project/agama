@@ -21,12 +21,11 @@
  */
 
 /**
- * Data hooks for the logical volume form.
+ * Query hooks for the logical volume form.
  *
- * These resolve the volume group and logical volume models from the route
- * params and the config model. They feed both the form's default values / field
- * options and the size-solving hook, so they live in one place to avoid
- * duplication.
+ * These compose route params with config model queries to derive the data the
+ * form needs. They feed both the form's default values and field options, so
+ * they live in one place to avoid duplication.
  */
 
 import { useParams } from "react-router";

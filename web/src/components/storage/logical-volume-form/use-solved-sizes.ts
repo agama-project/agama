@@ -25,7 +25,7 @@ import { useConfigModel, useSolvedConfigModel } from "~/hooks/model/storage/conf
 import configModel from "~/model/storage/config-model";
 import { deviceSize } from "~/components/storage/utils";
 import { FILESYSTEM_TYPE } from "./fields";
-import { useVolumeGroupConfig, useInitialLogicalVolumeConfig } from "./data";
+import { useVolumeGroupConfig, useInitialLogicalVolumeConfig } from "./queries";
 import type { SolvedSizes } from "~/components/storage/shared/SizeFields";
 import type { ConfigModel } from "~/model/storage/config-model";
 

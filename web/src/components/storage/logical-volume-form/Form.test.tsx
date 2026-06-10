@@ -60,7 +60,7 @@ jest.mock("react-router", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock("./data", () => ({
+jest.mock("./queries", () => ({
   useVolumeGroupConfig: () => mockVolumeGroupConfig,
   useVolumeGroup: () => mockVolumeGroup,
   useUnusedLogicalVolumes: () => mockAvailableLogicalVolumes,
