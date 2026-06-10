@@ -56,10 +56,15 @@ load_script_functions() {
 # Mock dracut library functions
 info() { echo "INFO: $*" >&2; }
 warn() { echo "WARN: $*" >&2; }
-getargs() { eval echo "\$MOCK_GETARGS_$1"; }
-getcmdline() { echo "$MOCK_CMDLINE"; }
+# getargs now supports multiple values for rd.hcn.ip and rd.hcn.route
+getargs() {
+    # Convert dots and dashes to underscores for variable name
+    local var_name="MOCK_GETARGS_$(echo "$1" | tr '.-' '__')"
+    eval echo "\$$var_name"
+}
+strstr() { [ "${1#*"$2"*}" != "$1" ]; }
 
-export -f info warn getargs getcmdline
+export -f info warn getargs strstr
 
 # ========================================
 # Test: xdump4 helper function
@@ -281,8 +286,8 @@ EOSCRIPT
     # Source fixup function and its helpers
     source <(sed -n '/^gkeyfile_get()/,/^}/p; /^gkeyfile_has()/,/^}/p; /^gkeyfile_set()/,/^}/p; /^parse_nm_connection()/,/^}/p; /^fixup_nm_connections()/,/^}/p' "$SCRIPT_PATH")
 
-    # Set mocked connection directory
-    export NM_CONN_DIR="$MOCK_RUN_DIR/NetworkManager/system-connections"
+    # Set mocked connection directory (now uses HCN_RUNTIME_CONN_DIR)
+    export HCN_RUNTIME_CONN_DIR="$MOCK_RUN_DIR/NetworkManager/system-connections"
 
     # Execute fixup
     cd "$TEST_WORK_DIR"
@@ -306,8 +311,8 @@ EOSCRIPT
     # Source fixup function and its helpers
     source <(sed -n '/^gkeyfile_get()/,/^}/p; /^gkeyfile_has()/,/^}/p; /^gkeyfile_set()/,/^}/p; /^parse_nm_connection()/,/^}/p; /^fixup_nm_connections()/,/^}/p' "$SCRIPT_PATH")
 
-    # Set mocked connection directory
-    export NM_CONN_DIR="$MOCK_RUN_DIR/NetworkManager/system-connections"
+    # Set mocked connection directory (now uses HCN_RUNTIME_CONN_DIR)
+    export HCN_RUNTIME_CONN_DIR="$MOCK_RUN_DIR/NetworkManager/system-connections"
 
     # Execute fixup
     cd "$TEST_WORK_DIR"

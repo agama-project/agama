@@ -9,14 +9,14 @@
 #    - Scans PCI devices (SR-IOV ethernet adapters)
 #    - Scans vdevices (VNIC and Virtual Ethernet)
 # 3. Build MAPPINGS: bond names -> slave devices with MACs and modes
-# 4. Process kernel command line (ip=, rd.route=) and replace slave references with bonds
-# 5. Generate NetworkManager connections via nm_generate_connections()
+# 4. Process rd.hcn.ip= and rd.hcn.route= parameters and replace slave references with bonds
+# 5. Generate NetworkManager connections to a temporary directory via nm-initrd-generator
 # 6. Fix up generated connections to use correct bond masters and naming
-# 7. Reload NetworkManager connections via nm_reload_connections()
+# 7. Copy connections to /etc/NetworkManager/system-connections for persistence
 #
 # Usage:
 #   Add rd.hcn=1 to kernel command line to enable HCN configuration
-#   Use standard ip= and rd.route= parameters (not hcn.ip/hcn.route)
+#   Use rd.hcn.ip= and rd.hcn.route= parameters
 
 command -v getargs >/dev/null || . /lib/dracut-lib.sh
 
@@ -192,7 +192,7 @@ parse_nm_connection() {
 # This function only modifies connections that are related to HCN bonds
 # (either bond interfaces themselves or slaves found in MAPPINGS)
 fixup_nm_connections() {
-  local conn_dir="${NM_CONN_DIR:-/run/NetworkManager/system-connections}"
+  local conn_dir="${HCN_RUNTIME_CONN_DIR:-$NM_RUNTIME_CONN_DIR}"
   [ -d "$conn_dir" ] || return 0
 
   local con id uuid ifname master controller mac uuid_map
@@ -321,13 +321,13 @@ else
   info "hcnmgr: discovered mappings: $MAPPINGS"
 
   # Command line processing
-  HCN_IP=$(getargs rd.hcn.ip)
-  HCN_ROUTE=$(getargs rd.hcn.route)
-
+  NM_CONF_DIR="/etc/NetworkManager"
+  NM_CONF_CONN_DIR="$NM_CONF_DIR/system-connections"
+  NM_RUNTIME_DIR="/run/NetworkManager"
+  NM_RUNTIME_CONN_DIR="$NM_RUNTIME_DIR/system-connections"
+  HCN_RUNTIME_DIR="/run/hcn"
+  HCN_RUNTIME_CONN_DIR="$HCN_RUNTIME_DIR/system-connections"
   NEW_ARGS=""
-  command -v getcmdline >/dev/null || . /lib/dracut-lib.sh
-  MOD_CMDLINE=$(getcmdline)
-  CHANGED=0
 
   # Extract unique bond names from discovered mappings
   BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
@@ -353,8 +353,8 @@ else
     BOND_OPTS="mode=1,miimon=100,fail_over_mac=2${PRIMARY:+,primary=$PRIMARY}"
     NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:$BOND_OPTS"
 
-    # Process hcn.ip - replace slave names/MACs with bond name
-    if [ -n "$HCN_IP" ]; then
+    # Process rd.hcn.ip= - replace slave names/MACs with bond name
+    for HCN_IP in $(getargs rd.hcn.ip); do
       matched=0
       for slave in $SLAVE_NAMES $SLAVE_MACS; do
         slave_dash=$(str_replace "$slave" ":" "-")
@@ -364,7 +364,6 @@ else
           # Replace slave with bond name (handle boundaries)
           current_hcn_ip=$(echo "$HCN_IP" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
           NEW_ARGS="$NEW_ARGS ip=$current_hcn_ip"
-          CHANGED=1
           break
         fi
       done
@@ -379,10 +378,9 @@ else
         dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
           info "hcnmgr: applying $HCN_IP to $BONDNAME"
           NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
-          CHANGED=1
           ;;
         *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
-          # Format: ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
+          # Format: rd.hcn.ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
           # Extract optional MTU field (after the method, could be followed by more colons)
           temp_ip=${HCN_IP}
           # Count colons to determine if there are extra fields
@@ -396,12 +394,11 @@ else
           if [ "$colons" -ge 1 ]; then
             info "hcnmgr: applying DHCP/auto config with optional MTU to $BONDNAME"
             NEW_ARGS="$NEW_ARGS ip=$BONDNAME:${HCN_IP#*:}"
-            CHANGED=1
           fi
           ;;
         *)
           # Static IP configuration - count colons to determine format
-          # Standard format: ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
+          # Standard format: rd.hcn.ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
           # Minimum fields: client-IP:gateway:netmask:hostname:interface:method (5 colons)
           # Extended: adds :dns1 and/or :dns2 (up to 7 colons)
           temp_ip=${HCN_IP}
@@ -415,6 +412,7 @@ else
             # Already has interface field, just need to replace it with bond name
             # Extract fields: we need to replace the 6th field (interface) with BONDNAME
             # Preserve any DNS fields that may follow
+            # shellcheck disable=SC2034
             IFS=':' read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 <<EOF
 $HCN_IP
 EOF
@@ -436,7 +434,6 @@ EOF
               # Fallback - just interface name
               NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME"
             fi
-            CHANGED=1
           elif [ "$colons" -lt 5 ]; then
             # Pad with colons to reach standard ip= format (legacy behavior)
             case $((5 - colons)) in
@@ -449,15 +446,14 @@ EOF
             esac
             info "hcnmgr: applying static IP config to $BONDNAME (padded)"
             NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
-            CHANGED=1
           fi
           ;;
         esac
       fi
-    fi
+    done
 
-    # Process hcn.route - replace slave names/MACs with bond name
-    if [ -n "$HCN_ROUTE" ]; then
+    # Process rd.hcn.route= - replace slave names/MACs with bond name
+    for HCN_ROUTE in $(getargs rd.hcn.route); do
       matched=0
       for slave in $SLAVE_NAMES $SLAVE_MACS; do
         slave_dash=$(str_replace "$slave" ":" "-")
@@ -465,7 +461,6 @@ EOF
           matched=1
           current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
           NEW_ARGS="$NEW_ARGS rd.route=$current_hcn_route"
-          CHANGED=1
           break
         fi
       done
@@ -485,50 +480,44 @@ EOF
         if [ "$colons" -le 1 ]; then
           info "hcnmgr: applying route to $BONDNAME"
           NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE$([ "$colons" -eq 0 ] && echo "::" || echo ":")$BONDNAME"
-          CHANGED=1
         fi
-      fi
-    fi
-
-    # Replace slave references in existing command line (ip= and rd.route=)
-    for slave in $SLAVE_NAMES $SLAVE_MACS; do
-      slave_dash=$(str_replace "$slave" ":" "-")
-      if strstr "$MOD_CMDLINE" "$slave" || strstr "$MOD_CMDLINE" "$slave_dash"; then
-        info "hcnmgr: replacing slave $slave in cmdline with $BONDNAME"
-        MOD_CMDLINE=$(echo "$MOD_CMDLINE" | sed -E "s#([:=])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
-        CHANGED=1
       fi
     done
   done
 
   # Write new configuration and update NetworkManager
-  if [ $CHANGED -eq 1 ] || [ -n "$NEW_ARGS" ]; then
-    info "hcnmgr: writing /etc/cmdline.d/99-hcnmgr.conf"
-    if ! echo "$NEW_ARGS" >/etc/cmdline.d/99-hcnmgr.conf; then
-      warn "hcnmgr: failed to write configuration file"
-      exit 1
-    fi
+  if [ -n "$NEW_ARGS" ]; then
+    # Create runtime directory to store HCN connections
+    mkdir -p "$HCN_RUNTIME_CONN_DIR"
 
-    export CMDLINE="$MOD_CMDLINE $NEW_ARGS"
+    # Write new cmdline options
+    info "hcnmgr: new cmdline arguments: $NEW_ARGS"
+    echo "$NEW_ARGS" > "$HCN_RUNTIME_DIR"/cmdline
 
     # Find and execute nm-initrd-generator
-    # Try standard paths first, then fall back to PATH search
     generator_found=0
-    for gen in /usr/lib/NetworkManager/nm-initrd-generator /usr/libexec/nm-initrd-generator $(command -v nm-initrd-generator 2>/dev/null); do
-      if [ -n "$gen" ] && [ -x "$gen" ]; then
-        info "hcnmgr: calling $gen"
-        # shellcheck disable=SC2086
-        if "$gen" -- $CMDLINE; then
+    for gen in /usr/lib/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
+      [ -x "$gen" ] || continue
+      generator_found=1
+      info "hcnmgr: calling $gen"
+      rm -f "$HCN_RUNTIME_CONN_DIR"/*
+      # shellcheck disable=SC2086
+      if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -- $NEW_ARGS; then
+        if [ "$(ls -A "$HCN_RUNTIME_CONN_DIR")" ]; then
           fixup_nm_connections
-          mkdir -p /run/NetworkManager/initrd
-          : >/run/NetworkManager/initrd/neednet
-          echo '[ -f /tmp/nm.done ]' >"$hookdir"/initqueue/finished/nm.sh
-          generator_found=1
+          # Persist these new HCN connections to /etc
+          mkdir -p "$NM_CONF_CONN_DIR"
+          cp -rf "$HCN_RUNTIME_CONN_DIR"/* "$NM_CONF_CONN_DIR"
+          mkdir -p "$NM_RUNTIME_DIR"/initrd
+          : > "$NM_RUNTIME_DIR"/initrd/neednet
+          echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh
         else
-          warn "hcnmgr: nm-initrd-generator failed"
+          warn "hcnmgr: nm-initrd-generator did not generate any connections"
         fi
-        break
+      else
+        warn "hcnmgr: nm-initrd-generator failed"
       fi
+      break
     done
 
     if [ $generator_found -eq 0 ]; then
