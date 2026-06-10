@@ -4,7 +4,7 @@
 # Discovers HCN configurations from device-tree and sets up bonding
 #
 # Workflow:
-# 1. Check if rd.hcn is enabled via kernel parameter, exit early if not
+# 1. Check if HCN is enabled (rd.hcn=1, rd.hcn.ip, or rd.hcn.route), exit early if not
 # 2. Discover HCN devices from device-tree (/proc/device-tree)
 #    - Scans PCI devices (SR-IOV ethernet adapters)
 #    - Scans vdevices (VNIC and Virtual Ethernet)
@@ -15,13 +15,15 @@
 # 7. Copy connections to /etc/NetworkManager/system-connections for persistence
 #
 # Usage:
-#   Add rd.hcn=1 to kernel command line to enable HCN configuration
-#   Use rd.hcn.ip= and rd.hcn.route= parameters
+#   rd.hcn=1              - Create bond connections only (no IP configuration)
+#   rd.hcn.ip=<config>    - Create bonds with HCN-specific IP configuration
+#   rd.hcn.route=<config> - Create bonds with HCN-specific route configuration
 
 command -v getargs >/dev/null || . /lib/dracut-lib.sh
 
-if ! getargbool rd.hcn; then
-  warn "hcnmgr: HCN not enabled"
+# Check if HCN is enabled via any of the three methods
+if ! getargbool 0 rd.hcn && ! getargs rd.hcn.ip >/dev/null && ! getargs rd.hcn.route >/dev/null; then
+  info "hcnmgr: HCN not enabled (no rd.hcn=1, rd.hcn.ip, or rd.hcn.route), skipping"
   if (return 0 2>/dev/null); then
     return 0
   else
