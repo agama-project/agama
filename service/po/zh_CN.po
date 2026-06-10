@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 09:45+0000\n"
+"POT-Creation-Date: 2026-06-05 13:42+0000\n"
 "PO-Revision-Date: 2025-08-05 03:27+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (China) <https://l10n.opensuse.org/projects/agama/"
@@ -53,41 +53,41 @@ msgid "Performing iSCSI discovery"
 msgstr ""
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:187
+#: service/lib/agama/dbus/storage/manager.rb:196
 msgid "Preparing bootloader proposal"
 msgstr "正在准备引导加载程序提案"
 
-#: service/lib/agama/dbus/storage/manager.rb:190
+#: service/lib/agama/dbus/storage/manager.rb:199
 msgid "Preparing the storage devices"
 msgstr "正在准备存储设备"
 
-#: service/lib/agama/dbus/storage/manager.rb:193
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr "正在写入引导加载程序 sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:201
+#: service/lib/agama/dbus/storage/manager.rb:210
 #, fuzzy
 msgid "Finishing installation"
 msgstr "中止安装"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:217
 #, fuzzy
 msgid "Unmounting devices"
 msgstr "正在卸载存储设备"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:237
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "正在激活存储设备"
 
-#: service/lib/agama/dbus/storage/manager.rb:240
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr "正在探测存储设备"
 
-#: service/lib/agama/dbus/storage/manager.rb:243
+#: service/lib/agama/dbus/storage/manager.rb:262
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "正在调整存储配置"
@@ -138,24 +138,32 @@ msgstr "不存在别名为 '%s' 的引导设备"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:73
+#: service/lib/agama/storage/config_checkers/encryption.rb:79
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr "未提供通行口令（使用 '%{crypt_method}' 方法时需要提供）。"
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:89
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:95
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not available in this system."
 msgstr "此系统中无法使用 '%{crypt_method}' 加密方法。"
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:117
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:112
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for a device different to swap."
+msgstr "'%{crypt_method}' 方法不适合用来加密该设备。"
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
+#. "grub2").
+#: service/lib/agama/storage/config_checkers/encryption.rb:131
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for the bootloader %{bootloader}."
 msgstr "'%{crypt_method}' 方法不适合用来加密该设备。"
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
@@ -172,13 +180,13 @@ msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "文件系统类型 '%{filesystem}' 不适合 '%{path}'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/logical_volume.rb:93
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:100
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr "不存在别名为 '%s' 的 LVM 精简池卷"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
-#: service/lib/agama/storage/config_checkers/md_raid.rb:97
+#: service/lib/agama/storage/config_checkers/md_raid.rb:102
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
 msgstr "不存在别名为 '%s' 的 MD RAID 成员设备"
@@ -186,23 +194,23 @@ msgstr "不存在别名为 '%s' 的 MD RAID 成员设备"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+#: service/lib/agama/storage/config_checkers/md_raid.rb:115
 msgid "There is a MD RAID without level"
 msgstr "某个 MD RAID 没有标签"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:123
+#: service/lib/agama/storage/config_checkers/md_raid.rb:128
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "%s 至少需要 %s 个设备"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
-#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
-#, perl-brace-format
-msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
+#, fuzzy, perl-brace-format
+msgid "%{method} is not suitable to encrypt the physical volumes."
 msgstr "'%{method}' 方法不适合用来加密物理卷。"
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
@@ -365,18 +373,18 @@ msgstr "设备"
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:80
+#: service/lib/agama/storage/config_checkers/volume_group.rb:85
 msgid "There is a volume group without name"
 msgstr "某个卷组没有名称"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:112
+#: service/lib/agama/storage/config_checkers/volume_group.rb:117
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "不存在别名为 '%s' 的 LVM 物理卷"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:139
+#: service/lib/agama/storage/config_checkers/volume_group.rb:144
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -384,7 +392,7 @@ msgid ""
 msgstr "卷组 '%s' 的目标设备列表中混合了重复使用的设备和新设备"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:159
+#: service/lib/agama/storage/config_checkers/volume_group.rb:164
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr "别名为 '%s' 的 LVM 物理卷没有目标设备"
@@ -443,7 +451,7 @@ msgstr "正在配置文件系统快照"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:251
+#: service/lib/agama/storage/manager.rb:308
 #, fuzzy
 msgid "There is no suitable device for installation"
 msgstr "未选择用于安装的设备"
@@ -451,14 +459,14 @@ msgstr "未选择用于安装的设备"
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:305
+#: service/lib/agama/storage/proposal.rb:351
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr "无法使用当前配置计算有效的存储设置"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:315
+#: service/lib/agama/storage/proposal.rb:361
 #, fuzzy
 msgid "A problem occurred while calculating the storage setup"
 msgstr "计算存储设置时发生问题"
@@ -805,3 +813,16 @@ msgstr ""
 
 #~ msgid "Restoring original repositories"
 #~ msgstr "正在还原初始软件仓库"
+
+#, perl-brace-format
+#~ msgid "Encryption method '%{crypt_method}' is not available in this system."
+#~ msgstr "此系统中无法使用 '%{crypt_method}' 加密方法。"
+
+#, perl-brace-format
+#~ msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#~ msgstr "'%{crypt_method}' 方法不适合用来加密该设备。"
+
+#, perl-brace-format
+#~ msgid ""
+#~ "'%{method}' is not a suitable method to encrypt the physical volumes."
+#~ msgstr "'%{method}' 方法不适合用来加密物理卷。"

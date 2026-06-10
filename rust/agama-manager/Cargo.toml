@@ -12,6 +12,7 @@ agama-iscsi = { path = "../agama-iscsi" }
 agama-l10n = { path = "../agama-l10n" }
 agama-network = { path = "../agama-network" }
 agama-ntp = { path = "../agama-ntp" }
+agama-access = { path = "../agama-access" }
 agama-s390 = { path = "../agama-s390" }
 agama-security = { path = "../agama-security" }
 agama-software = { path = "../agama-software" }

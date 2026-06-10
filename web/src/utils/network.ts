@@ -78,35 +78,36 @@ const isVirtual = (type: ConnectionType): boolean =>
   ).includes(type);
 
 /**
- * Translatable labels for connection types.
+ * Labels for connection types.
  */
 const CONNECTION_TYPE_LABELS: Record<ConnectionType, string> = {
-  [CONNECTION_TYPE.ETHERNET]: N_("Ethernet"),
-  [CONNECTION_TYPE.WIFI]: N_("Wi-Fi"),
-  [CONNECTION_TYPE.LOOPBACK]: N_("Loopback"),
-  [CONNECTION_TYPE.BOND]: N_("Bond"),
-  [CONNECTION_TYPE.BRIDGE]: N_("Bridge"),
-  [CONNECTION_TYPE.VLAN]: N_("VLAN"),
-  [CONNECTION_TYPE.UNKNOWN]: N_("Unknown"),
+  [CONNECTION_TYPE.ETHERNET]: "Ethernet",
+  [CONNECTION_TYPE.WIFI]: "Wi-Fi",
+  [CONNECTION_TYPE.LOOPBACK]: "Loopback",
+  [CONNECTION_TYPE.BOND]: "Bond",
+  [CONNECTION_TYPE.BRIDGE]: "Bridge",
+  [CONNECTION_TYPE.VLAN]: "VLAN",
+  [CONNECTION_TYPE.UNKNOWN]: "Unknown",
 };
 
 /**
- * Returns the translated label for a connection type.
+ * Returns the label for a connection type.
  */
-// eslint-disable-next-line agama-i18n/string-literals
-const connectionTypeLabel = (type: ConnectionType): string => _(CONNECTION_TYPE_LABELS[type]);
+const connectionTypeLabel = (type: ConnectionType): string => CONNECTION_TYPE_LABELS[type];
 
 /**
  * Returns the type for the given connection.
  */
 const connectionType = (connection: Connection): ConnectionType => {
-  const { wireless, bond, bridge } = connection;
+  const { wireless, bond, bridge, vlan } = connection;
   if (wireless) {
     return CONNECTION_TYPE.WIFI;
   } else if (bond) {
     return CONNECTION_TYPE.BOND;
   } else if (bridge) {
     return CONNECTION_TYPE.BRIDGE;
+  } else if (vlan) {
+    return CONNECTION_TYPE.VLAN;
   } else {
     return CONNECTION_TYPE.ETHERNET;
   }

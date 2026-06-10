@@ -90,6 +90,7 @@ jest.mock("~/hooks/model/status", () => ({
   ...jest.requireActual("~/hooks/model/status"),
   useStatus: (): ReturnType<typeof useStatus> => ({
     stage: mockStateFn(),
+    tasks: [],
     progresses: mockProgressesFn(),
   }),
 }));

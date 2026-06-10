@@ -27,7 +27,7 @@ use agama_utils::{
     api::{event, storage::Config, Issue},
     issue,
     products::ProductSpec,
-    progress, BoxFuture,
+    progress, BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -142,6 +142,10 @@ impl StorageClient for TestClient {
     }
 
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
+        Ok(vec![])
+    }
+
+    async fn get_resolvables(&self) -> Result<Vec<Resolvable>, Error> {
         Ok(vec![])
     }
 

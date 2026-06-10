@@ -31,10 +31,7 @@ use ratatui::{
     widgets::{Paragraph, Widget, Wrap},
 };
 
-use crate::monitor::{
-    theme::Theme,
-    ui::{issues::IssuesList, progress::Progress},
-};
+use crate::monitor::ui::{issues::IssuesList, progress::Progress};
 
 /// Represents the main content of the monitor.
 ///
@@ -42,7 +39,6 @@ use crate::monitor::{
 /// the list of questions, etc.
 pub struct Content<'a> {
     status: &'a InstallationStatus,
-    theme: &'a Theme,
 }
 
 impl<'a> Content<'a> {
@@ -50,27 +46,23 @@ impl<'a> Content<'a> {
     ///
     /// * `status`: current installation status.
     /// * `theme`: UI theme to apply.
-    pub fn new(status: &'a InstallationStatus, theme: &'a Theme) -> Self {
-        Self { status, theme }
+    pub fn new(status: &'a InstallationStatus) -> Self {
+        Self { status }
     }
 
     /// Renders questions
     fn render_questions(&self, area: Rect, buf: &mut Buffer) {
         let content_area = Rect {
-            x: area.x + 1,
+            x: area.x,
             y: area.y,
             width: area.width.saturating_sub(2),
             height: area.height,
         };
 
-        let mut lines = vec![
-            Line::from(""),
-            Line::from(Span::styled(
-                gettext("There are pending questions:"),
-                Style::default().add_modifier(Modifier::BOLD),
-            )),
-            Line::from(""),
-        ];
+        let mut lines = vec![Line::from(Span::styled(
+            gettext("There are pending questions:"),
+            Style::default().add_modifier(Modifier::BOLD),
+        ))];
 
         for question in &self.status.questions {
             lines.push(Line::from(format!("  - {}", question.spec.text)));
@@ -90,7 +82,7 @@ impl<'a> Content<'a> {
     /// Renders final status (finished or failed)
     fn render_final_status(&self, area: Rect, buf: &mut Buffer) {
         let content_area = Rect {
-            x: area.x + 1,
+            x: area.x,
             y: area.y,
             width: area.width.saturating_sub(2),
             height: area.height,
@@ -109,7 +101,6 @@ impl<'a> Content<'a> {
         };
 
         let lines = vec![
-            Line::from(""),
             Line::from(Span::styled(
                 title,
                 Style::default().add_modifier(Modifier::BOLD),
@@ -127,14 +118,13 @@ impl<'a> Content<'a> {
     /// Renders a message about no product being selected.
     fn render_no_product(&self, area: Rect, buf: &mut Buffer) {
         let content_area = Rect {
-            x: area.x + 1,
+            x: area.x,
             y: area.y,
             width: area.width.saturating_sub(2),
             height: area.height,
         };
 
         let mut lines = vec![
-            Line::from(""),
             Line::from(Span::styled(
                 gettext("Action needed:"),
                 Style::default().add_modifier(Modifier::BOLD),
@@ -153,7 +143,7 @@ impl<'a> Content<'a> {
     /// Renders installation progress.
     fn render_progress(&self, area: Rect, buf: &mut Buffer) {
         let content_area = Rect {
-            x: area.x + 1,
+            x: area.x,
             y: area.y,
             width: area.width.saturating_sub(2),
             height: area.height,
@@ -167,7 +157,7 @@ impl<'a> Content<'a> {
             .iter()
             .partition(|p| p.scope == Scope::Manager);
 
-        let mut current_y = content_area.y + 1;
+        let mut current_y = content_area.y;
 
         let mut has_master_progress = false;
         if let Some(progress) = master_progresses.first() {
@@ -183,7 +173,7 @@ impl<'a> Content<'a> {
         }
 
         for progress in &detail_progresses {
-            let widget = Progress::new(progress, !has_master_progress, self.theme);
+            let widget = Progress::new(progress, !has_master_progress);
             let height = widget.height() + 1;
             let area = Rect {
                 y: current_y,
@@ -201,8 +191,8 @@ impl<'a> Content<'a> {
         let layout = Layout::vertical([Constraint::Length(2), Constraint::Fill(1)]);
 
         let [title_area, issues_area] = layout.areas(Rect {
-            x: area.x + 1,
-            y: area.y + 1,
+            x: area.x,
+            y: area.y,
             width: area.width.saturating_sub(2),
             height: area.height,
         });
@@ -220,7 +210,7 @@ impl<'a> Content<'a> {
     /// Renders current stage message.
     fn render_stage(&self, area: Rect, buf: &mut Buffer) {
         let content_area = Rect {
-            x: area.x + 1,
+            x: area.x,
             y: area.y,
             width: area.width.saturating_sub(2),
             height: area.height,
@@ -234,13 +224,10 @@ impl<'a> Content<'a> {
             _ => return,
         };
 
-        let lines = vec![
-            Line::default(),
-            Line::from(Span::styled(
-                message,
-                Style::default().add_modifier(Modifier::DIM),
-            )),
-        ];
+        let lines = vec![Line::from(Span::styled(
+            message,
+            Style::default().add_modifier(Modifier::DIM),
+        ))];
 
         Paragraph::new(lines).render(content_area, buf);
     }
@@ -257,7 +244,6 @@ impl<'a> Content<'a> {
 
         // Manager progress (with some air gap)
         let lines = vec![
-            Line::from(""),
             Line::from(Span::styled(
                 format!("{}: {}", step_label, progress.step),
                 Style::default().add_modifier(Modifier::DIM),

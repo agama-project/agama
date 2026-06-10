@@ -747,8 +747,7 @@
             {
               "type": "array",
               "items": { "type": "string" },
-              "title": "List of SSH Keys",
-              "minItems": 1
+              "title": "List of SSH Keys"
             }
           ]
         },
@@ -762,8 +761,7 @@
             {
               "type": "array",
               "items": { "type": "string" },
-              "title": "List of SSH Keys",
-              "minItems": 1
+              "title": "List of SSH Keys"
             }
           ]
         }
@@ -793,8 +791,7 @@
             {
               "type": "array",
               "items": { "type": "string" },
-              "title": "List of SSH Keys",
-              "minItems": 1
+              "title": "List of SSH Keys"
             }
           ]
         },
@@ -808,8 +805,7 @@
             {
               "type": "array",
               "items": { "type": "string" },
-              "title": "List of SSH Keys",
-              "minItems": 1
+              "title": "List of SSH Keys"
             }
           ]
         }
@@ -872,6 +868,23 @@
     },
     "iscsi": {
       "$ref": "iscsi.schema.json"
+    },
+    "access": {
+      "description": "Allows to explicitly specify how machine has to be accessed after installation.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ssh": {
+          "description": "Allows to specify if ssh access has to be enabled after installation or keep product defaults.",
+          "type": "string",
+          "enum": ["enabled", "default"]
+        },
+        "webConsole": {
+          "description": "Allows to specify if web console access has to be enabled after installation or keep product defaults.",
+          "type": "string",
+          "enum": ["enabled", "default"]
+        }
+      }
     }
   },
   "$defs": {

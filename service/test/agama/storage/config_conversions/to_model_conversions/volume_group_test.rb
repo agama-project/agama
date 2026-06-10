@@ -135,6 +135,48 @@ describe Agama::Storage::ConfigConversions::ToModelConversions::VolumeGroup do
       it "generates the expected JSON" do
         model_json = subject.convert
         expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+        expect(model_json[:targetDevicesPolicy]).to eq("useNeeded")
+      end
+
+      context "with 'useNeeded' policy" do
+        let(:physical_volumes) do
+          [{ generate: { targetDevices: ["disk1", "disk2"], spacePolicy: "useNeeded" } }]
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+          expect(model_json[:targetDevicesPolicy]).to eq("useNeeded")
+        end
+      end
+
+      context "with 'useAvailable' policy" do
+        let(:physical_volumes) do
+          [{ generate: { targetDevices: ["disk1", "disk2"], spacePolicy: "useAvailable" } }]
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+          expect(model_json[:targetDevicesPolicy]).to eq("useAvailable")
+        end
+      end
+
+      context "without any specific policy" do
+        let(:physical_volumes) do
+          [{ generate: { targetDevices: ["disk1", "disk2"] } }]
+        end
+
+        before do
+          vg = config.volume_groups.first
+          vg.physical_volumes_policy = nil
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:targetDevices]).to eq(["/dev/vda", "/dev/vdb"])
+          expect(model_json[:targetDevicesPolicy]).to be_nil
+        end
       end
     end
 

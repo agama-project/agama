@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 09:45+0000\n"
-"PO-Revision-Date: 2025-10-05 22:59+0000\n"
-"Last-Translator: Emin Tufan Çetin <cetin@users.noreply.l10n.opensuse.org>\n"
+"POT-Creation-Date: 2026-06-05 13:42+0000\n"
+"PO-Revision-Date: 2026-06-04 13:44+0000\n"
+"Last-Translator: yakup <mtopac2027@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/tr/>\n"
 "Language: tr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.13.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -37,12 +37,12 @@ msgstr "Depolama aygıtları araştırılıyor"
 #. not block the service in order to make possible to attend other requests.
 #: service/lib/agama/dbus/storage/dasd.rb:94
 msgid "Configuring DASD"
-msgstr ""
+msgstr "DASD'nin Yapılandırılması"
 
 #. Do not configure if there is nothing to change.
 #: service/lib/agama/dbus/storage/iscsi.rb:80
 msgid "Configuring iSCSI"
-msgstr ""
+msgstr "iSCSI'yi Yapılandırma"
 
 #. Performs an iSCSI discovery.
 #.
@@ -50,44 +50,44 @@ msgstr ""
 #. @return [Number] 0 success; 1 failure.
 #: service/lib/agama/dbus/storage/iscsi.rb:105
 msgid "Performing iSCSI discovery"
-msgstr ""
+msgstr "iSCSI keşfi gerçekleştiriliyor"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:187
+#: service/lib/agama/dbus/storage/manager.rb:196
 msgid "Preparing bootloader proposal"
 msgstr "Bootloader bölümü hazırlanıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:190
+#: service/lib/agama/dbus/storage/manager.rb:199
 msgid "Preparing the storage devices"
 msgstr "Depolama cihazları hazırlanıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:193
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr "bootloader sysconfig yazılıyor"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:201
+#: service/lib/agama/dbus/storage/manager.rb:210
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Kurulumu iptal et"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:217
 #, fuzzy
 msgid "Unmounting devices"
 msgstr "Depolama aygıtlarının bağlantısını kesme"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:237
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "Depolama aygıtlarını etkinleştiriliyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:240
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr "Depolama aygıtları araştırılıyor"
 
-#: service/lib/agama/dbus/storage/manager.rb:243
+#: service/lib/agama/dbus/storage/manager.rb:262
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Depolama yapılandırmasını ayarlama"
@@ -142,25 +142,33 @@ msgstr "'%s' takma adlı bir önyükleme aygıtı yok"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:73
+#: service/lib/agama/storage/config_checkers/encryption.rb:79
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
 "Parola sağlanmadı ('%{crypt_method}' metodunu kullanmak için gereklidir)."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:89
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:95
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not available in this system."
 msgstr "Bu sistemde '%{crypt_method}' şifreleme yöntemi mevcut değil."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:117
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:112
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for a device different to swap."
+msgstr "'%{crypt_method}' cihazı şifrelemek için uygun bir yöntem değil."
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
+#. "grub2").
+#: service/lib/agama/storage/config_checkers/encryption.rb:131
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for the bootloader %{bootloader}."
 msgstr "'%{crypt_method}' cihazı şifrelemek için uygun bir yöntem değil."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
@@ -177,13 +185,13 @@ msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "'%{filesystem}' dosya sistemi türü '%{path}' için uygun değil"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/logical_volume.rb:93
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:100
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr "'%s' takma adlı LVM ince havuz birimi yok"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
-#: service/lib/agama/storage/config_checkers/md_raid.rb:97
+#: service/lib/agama/storage/config_checkers/md_raid.rb:102
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
 msgstr "'%s' takma adlı bir MD RAID üye aygıtı yok"
@@ -191,23 +199,23 @@ msgstr "'%s' takma adlı bir MD RAID üye aygıtı yok"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+#: service/lib/agama/storage/config_checkers/md_raid.rb:115
 msgid "There is a MD RAID without level"
 msgstr "Seviyesi olmayan bir MD RAID var"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:123
+#: service/lib/agama/storage/config_checkers/md_raid.rb:128
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "%s için en az %s cihaz gereklidir"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
-#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
-#, perl-brace-format
-msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
+#, fuzzy, perl-brace-format
+msgid "%{method} is not suitable to encrypt the physical volumes."
 msgstr ""
 "'%{method}' fiziksel birimleri şifrelemek için uygun bir yöntem değildir."
 
@@ -384,7 +392,7 @@ msgstr "LVM mantıksal birimi"
 
 #: service/lib/agama/storage/config_checkers/search.rb:391
 msgid "LVM volume group"
-msgstr ""
+msgstr "LVM disk grubu"
 
 #: service/lib/agama/storage/config_checkers/search.rb:393
 msgid "device"
@@ -393,18 +401,18 @@ msgstr "cihaz"
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:80
+#: service/lib/agama/storage/config_checkers/volume_group.rb:85
 msgid "There is a volume group without name"
 msgstr "Adı olmayan bir birim grubu var"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:112
+#: service/lib/agama/storage/config_checkers/volume_group.rb:117
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "'%s' takma adlı LVM fiziksel birimi yok"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:139
+#: service/lib/agama/storage/config_checkers/volume_group.rb:144
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -414,7 +422,7 @@ msgstr ""
 "yeni aygıtları karıştırıyor"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:159
+#: service/lib/agama/storage/config_checkers/volume_group.rb:164
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr "'%s' takma adlı LVM fiziksel birimleri için hedef aygıt yok"
@@ -475,7 +483,7 @@ msgstr "Dosya sistemi anlık görüntülerini yapılandırma"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:251
+#: service/lib/agama/storage/manager.rb:308
 #, fuzzy
 msgid "There is no suitable device for installation"
 msgstr "Kurulum için cihaz seçilmedi"
@@ -483,14 +491,14 @@ msgstr "Kurulum için cihaz seçilmedi"
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:305
+#: service/lib/agama/storage/proposal.rb:351
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr "Mevcut yapılandırmayla geçerli bir depolama kurulumu hesaplanamıyor"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:315
+#: service/lib/agama/storage/proposal.rb:361
 #, fuzzy
 msgid "A problem occurred while calculating the storage setup"
 msgstr "Depolama kurulumu hesaplanırken bir sorun oluştu"
@@ -514,7 +522,7 @@ msgstr "Depolama aygıtlarının bağlantısını kesme"
 #: service/lib/agama/storage/zfcp/manager.rb:206
 #, c-format
 msgid "The zFCP controller %s cannot be activated"
-msgstr ""
+msgstr "zFCP kontrolcüsü %s etkinleştirilemiyor"
 
 #. Activates a device if it is not active yet.
 #.
@@ -543,7 +551,7 @@ msgstr "Önyükleme aygıtı otomatik olarak seçilemez"
 #: service/lib/agama/storage/zfcp/manager.rb:307
 #, c-format
 msgid "Unknown zFCP controller %s"
-msgstr ""
+msgstr "Bilinmeyen zFCP denetleyicisi %s"
 
 #. Issue if the device is missing.
 #.
@@ -552,7 +560,7 @@ msgstr ""
 #: service/lib/agama/storage/zfcp/manager.rb:326
 #, c-format
 msgid "Unknown zFCP LUN %s"
-msgstr ""
+msgstr "Bilinmeyen zFCP LUN %s"
 
 #~ msgid "Certificate:"
 #~ msgstr "Sertifika:"
@@ -855,3 +863,17 @@ msgstr ""
 
 #~ msgid "Restoring original repositories"
 #~ msgstr "Orijinal depoları geri yükleniyor"
+
+#, perl-brace-format
+#~ msgid "Encryption method '%{crypt_method}' is not available in this system."
+#~ msgstr "Bu sistemde '%{crypt_method}' şifreleme yöntemi mevcut değil."
+
+#, perl-brace-format
+#~ msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#~ msgstr "'%{crypt_method}' cihazı şifrelemek için uygun bir yöntem değil."
+
+#, perl-brace-format
+#~ msgid ""
+#~ "'%{method}' is not a suitable method to encrypt the physical volumes."
+#~ msgstr ""
+#~ "'%{method}' fiziksel birimleri şifrelemek için uygun bir yöntem değildir."

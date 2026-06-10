@@ -6,6 +6,32 @@
     <link rel="stylesheet" href="index.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Agama</title>
+    <!--
+      Apply the persisted theme before first paint to avoid a flash of the wrong
+      theme. Runs before React boots, so it reads localStorage directly; the
+      keys and JSON encoding must match src/context/appearance.tsx.
+    -->
+    <script>
+      (function () {
+        try {
+          var root = document.documentElement;
+          var colorScheme = JSON.parse(localStorage.getItem("agm-color-scheme") || '"system"');
+          var contrast = JSON.parse(localStorage.getItem("agm-contrast") || '"system"');
+          var dark =
+            colorScheme === "dark" ||
+            (colorScheme === "system" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          var highContrast =
+            contrast === "high" ||
+            (contrast === "system" && window.matchMedia("(prefers-contrast: more)").matches);
+          root.classList.toggle("pf-v6-theme-dark", dark);
+          root.classList.toggle("pf-v6-theme-high-contrast", highContrast);
+          root.style.colorScheme = colorScheme === "system" ? "light dark" : colorScheme;
+        } catch (e) {
+          /* ignore: fall back to the default light theme */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

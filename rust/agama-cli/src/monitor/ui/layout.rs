@@ -23,34 +23,18 @@
 use ratatui::layout::{Constraint, Layout, Rect};
 
 /// Height of the status bar row
-const STATUS_BAR_HEIGHT: u16 = 1;
+const SUMMARY_HEIGHT: u16 = 5;
 /// Height of the gap between status bar and product name
 const GAP_HEIGHT: u16 = 1;
-/// Height of the product name row
-const PRODUCT_HEIGHT: u16 = 1;
-/// Height of the separator line
-const SEPARATOR_HEIGHT: u16 = 1;
 /// Total height of the header (status bar + gap + product + separator)
-const HEADER_HEIGHT: u16 = STATUS_BAR_HEIGHT + GAP_HEIGHT + PRODUCT_HEIGHT + SEPARATOR_HEIGHT;
-/// Height of the hints separator line
-const HINTS_SEPARATOR_HEIGHT: u16 = 1;
-/// Height of the hints row
-const HINTS_HEIGHT: u16 = 1;
+const HEADER_HEIGHT: u16 = SUMMARY_HEIGHT + GAP_HEIGHT;
 
 /// Layout areas for the monitor UI
 pub struct MonitorLayout {
     /// Status bar (row 1)
-    pub status_bar: Rect,
-    /// Product name (row 3)
-    pub product: Rect,
-    /// Separator line (row 4)
-    pub separator: Rect,
+    pub summary: Rect,
     /// Content area (middle)
     pub content: Rect,
-    /// Hints separator (bottom - 2)
-    pub hints_separator: Rect,
-    /// Hints footer (bottom - 1)
-    pub hints: Rect,
 }
 
 /// Creates the main layout for the monitor UI
@@ -59,38 +43,27 @@ pub struct MonitorLayout {
 ///
 ///   - Row 1: Status bar (status, phase, hostname, IP, machine)
 ///   - Row 2: Empty gap
-///   - Row 3: Product name
-///   - Row 4: Separator line
-///   - Middle: Dynamic content (progress, issues, messages) - with air gaps
-///   - Footer: Hints separator and keyboard hints
-pub fn create_layout(area: Rect) -> MonitorLayout {
+///   - Row 3: Composed by two columns:
+///     - Left: indentation
+///     - Right: separator + content (progress, issues, messages)
+///   - Content: Dynamic content (progress, issues, messages) - with air gaps
+pub fn create_layout(area: Rect, indentation: u16) -> MonitorLayout {
     // Calculate content height: total - header
     // Leave room for hints at bottom but don't make them sticky
     let content_height = area.height.saturating_sub(HEADER_HEIGHT);
 
     let chunks = Layout::vertical([
-        Constraint::Length(STATUS_BAR_HEIGHT),
+        Constraint::Length(SUMMARY_HEIGHT),
         Constraint::Length(GAP_HEIGHT),
-        Constraint::Length(PRODUCT_HEIGHT),
-        Constraint::Length(SEPARATOR_HEIGHT),
-        Constraint::Length(content_height), // Content + hints (non-sticky)
+        Constraint::Length(content_height),
     ])
     .split(area);
 
-    // Split content area to have hints at bottom (but not screen-sticky)
-    let content_and_hints = Layout::vertical([
-        Constraint::Min(1),                         // Content area (flexible)
-        Constraint::Length(HINTS_SEPARATOR_HEIGHT), // Hints separator
-        Constraint::Length(HINTS_HEIGHT),           // Hints footer
-    ])
-    .split(chunks[4]);
+    let main =
+        Layout::horizontal([Constraint::Length(indentation), Constraint::Min(10)]).split(chunks[2]);
 
     MonitorLayout {
-        status_bar: chunks[0],
-        product: chunks[2],
-        separator: chunks[3],
-        content: content_and_hints[0],
-        hints_separator: content_and_hints[1],
-        hints: content_and_hints[2],
+        summary: chunks[0],
+        content: main[1],
     }
 }

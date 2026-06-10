@@ -41,10 +41,15 @@ use tokio::process;
 use uuid::Uuid;
 
 #[derive(PartialEq)]
+/// Configuration for determining which parts of the network state should be retrieved or managed.
 pub struct StateConfig {
+    /// Whether to include access points in the state.
     pub access_points: bool,
+    /// Whether to include devices in the state.
     pub devices: bool,
+    /// Whether to include connections in the state.
     pub connections: bool,
+    /// Whether to include general state information.
     pub general_state: bool,
 }
 
@@ -60,11 +65,17 @@ impl Default for StateConfig {
 }
 
 #[derive(Default, Clone, Debug, PartialEq)]
+/// Represents the overall network state, including configuration and runtime information.
 pub struct NetworkState {
+    /// The user-defined configuration for the network.
     pub user_config: Option<Config>,
+    /// General network state and settings.
     pub general_state: GeneralState,
+    /// List of detected wireless access points.
     pub access_points: Vec<AccessPoint>,
+    /// List of network devices present in the system.
     pub devices: Vec<Device>,
+    /// List of network connections (profiles).
     pub connections: Vec<Connection>,
 }
 
@@ -72,6 +83,7 @@ impl NetworkState {
     /// Returns a NetworkState struct with the given general_state, access_points, devices
     /// and connections.
     ///
+    /// * `user_config`: User-defined network configuration.
     /// * `general_state`: General network configuration
     /// * `access_points`: Access points to include in the state.
     /// * `devices`: devices to include in the state.
@@ -144,7 +156,26 @@ impl NetworkState {
         self.devices.iter_mut().find(|c| c.name == name)
     }
 
+    /// Updates the current state from the one read from the system.
+    ///
+    /// It replaces all the state except for the `user_config`.
+    ///
+    /// Returns true if the state has changed.
+    ///
+    /// * `state`: The new network state to sync from.
+    pub fn sync_from(&mut self, mut state: NetworkState) -> bool {
+        state.user_config = self.user_config.clone();
+        if *self != state {
+            *self = state;
+            true
+        } else {
+            false
+        }
+    }
+
     /// Returns the controller's connection for the given connection Uuid.
+    ///
+    /// * `uuid`: connection UUID.
     pub fn get_controlled_by(&mut self, uuid: Uuid) -> Vec<&Connection> {
         let uuid = Some(uuid);
         self.connections
@@ -156,6 +187,8 @@ impl NetworkState {
     /// Adds a new connection.
     ///
     /// It uses the `id` to decide whether the connection already exists.
+    ///
+    /// * `conn`: The connection to add.
     pub fn add_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         if self.get_connection(&conn.id).is_some() {
             return Err(NetworkStateError::ConnectionExists(conn.id));
@@ -207,6 +240,9 @@ impl NetworkState {
         self.enable_service(self.target_dir()).await
     }
 
+    /// Enables the NetworkManager service in the given path.
+    ///
+    /// * `path`: The path to the root directory where the service should be enabled.
     pub async fn enable_service(&self, path: &str) -> Result<(), NetworkStateError> {
         let mut command = process::Command::new("chroot");
         command.args([path, "systemctl", "enable", "NetworkManager.service"]);
@@ -225,6 +261,10 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Copies the network configuration files from one directory to another.
+    ///
+    /// * `from`: The source directory.
+    /// * `to`: The destination directory.
     fn copy_files(&self, from: &Path, to: &Path) -> Result<(), NetworkStateError> {
         if !from.exists() {
             return Ok(());
@@ -258,6 +298,9 @@ impl NetworkState {
         "/mnt"
     }
 
+    /// Sanitizes the connection collection to match the current state.
+    ///
+    /// * `connections`: The connection collection to sanitize.
     fn sanitized_connection_collection(
         &self,
         connections: NetworkConnectionsCollection,
@@ -296,72 +339,110 @@ impl NetworkState {
     /// provided it will iterate over the connections adding or updating them.
     ///
     /// If the general state is provided it will sets the options given.
+    ///
+    /// * `config`: The new configuration to apply.
     pub fn update_state(&mut self, config: Config) -> Result<(), NetworkStateError> {
         if self.user_config.as_ref() == Some(&config) {
             tracing::info!("There is no user config change");
             return Ok(());
         }
 
-        let updated_config = config.clone();
+        if let Some(connections) = &config.connections {
+            let changed_connections = self.changed_connections(connections);
 
-        if let Some(connections) = config.connections {
-            let mut collection = self.sanitized_connection_collection(connections.clone())?;
-            for conn in collection.iter_mut() {
-                if let Some(current_conn) = self.get_connection(&conn.id) {
-                    let mut updated = current_conn.clone();
-                    updated.merge_connection(conn)?;
-                    if updated != *current_conn {
+            if !changed_connections.is_empty() {
+                let collection = self.sanitized_connection_collection(
+                    NetworkConnectionsCollection(changed_connections.clone()),
+                )?;
+                for conn in collection.iter() {
+                    if self.get_connection(&conn.id).is_some() {
                         tracing::info!("Updating connection {}", &conn.id);
-                        self.update_connection(updated)?;
-                    }
-                } else {
-                    tracing::info!("Adding connection {}", &conn.id);
-                    self.add_connection(conn.clone())?;
-                }
-            }
-
-            // Although the current sanitized_connection_collection already handled the definition
-            // of port connections with the pertinent controller, the orphaned ports are problematic and
-            // needs to be handled in a particular way.
-            for conn in connections.0 {
-                if conn.bridge.is_some() || conn.bond.is_some() {
-                    let mut ports = vec![];
-                    if let Some(model) = conn.bridge {
-                        ports = model.ports;
-                    }
-                    if let Some(model) = conn.bond {
-                        ports = model.ports;
-                    }
-
-                    if let Some(controller) = self.get_connection(conn.id.as_str()).cloned() {
-                        self.set_ports(&controller, ports)?;
+                        self.update_connection(conn.clone())?;
+                    } else {
+                        tracing::info!("Adding connection {}", &conn.id);
+                        self.add_connection(conn.clone())?;
                     }
                 }
+
+                // Although the current sanitized_connection_collection already handled the definition
+                // of port connections with the pertinent controller, the orphaned ports are problematic and
+                // needs to be handled in a particular way.
+                for conn in &changed_connections {
+                    let ports = conn
+                        .bridge
+                        .as_ref()
+                        .map(|b| &b.ports)
+                        .or_else(|| conn.bond.as_ref().map(|b| &b.ports));
+
+                    if let Some(ports) = ports {
+                        if let Some(controller) = self.get_connection(&conn.id).cloned() {
+                            self.set_ports(&controller, ports.clone())?;
+                        }
+                    }
+                }
+            } else {
+                tracing::info!("There is no connections change");
             }
         }
 
-        if let Some(state) = config.state {
-            if let Some(wireless_enabled) = state.wireless_enabled {
-                self.general_state.wireless_enabled = wireless_enabled;
-            }
-
-            if let Some(networking_enabled) = state.networking_enabled {
-                self.general_state.networking_enabled = networking_enabled;
-            }
-
-            if let Some(copy_network) = state.copy_network {
-                self.general_state.copy_network = copy_network;
-            }
+        if let Some(state) = &config.state {
+            self.update_general_state(state.clone());
         }
 
-        self.user_config = Some(updated_config);
+        self.user_config = Some(config);
 
         Ok(())
+    }
+
+    /// Returns the connections that have changed.
+    ///
+    /// * `connections`: The connections to check.
+    fn changed_connections(
+        &self,
+        connections: &NetworkConnectionsCollection,
+    ) -> Vec<NetworkConnection> {
+        connections
+            .0
+            .iter()
+            .filter(|conn| {
+                if let Some(user_config) = &self.user_config {
+                    user_config
+                        .connections
+                        .as_ref()
+                        .and_then(|c| c.0.iter().find(|cc| cc.id == conn.id))
+                        .map(|cc| conn != &cc)
+                        .unwrap_or(true)
+                } else {
+                    tracing::info!("There is no user config");
+                    true
+                }
+            })
+            .cloned()
+            .collect()
+    }
+
+    /// Updates the general state from the given settings.
+    ///
+    /// * `state`: The new general state settings.
+    fn update_general_state(&mut self, state: StateSettings) {
+        if let Some(wireless_enabled) = state.wireless_enabled {
+            self.general_state.wireless_enabled = wireless_enabled;
+        }
+
+        if let Some(networking_enabled) = state.networking_enabled {
+            self.general_state.networking_enabled = networking_enabled;
+        }
+
+        if let Some(copy_network) = state.copy_network {
+            self.general_state.copy_network = copy_network;
+        }
     }
 
     /// Updates a connection with a new one.
     ///
     /// It uses the `uuid` to decide which connection to update.
+    ///
+    /// * `conn`: The connection to update.
     pub fn update_connection(&mut self, conn: Connection) -> Result<(), NetworkStateError> {
         let Some(old_conn) = self.get_connection_by_uuid_mut(conn.uuid) else {
             return Err(NetworkStateError::UnknownConnection(conn.uuid.to_string()));
@@ -374,6 +455,8 @@ impl NetworkState {
     /// Removes a connection from the state.
     ///
     /// Additionally, it registers the connection to be removed when the changes are applied.
+    ///
+    /// * `uuid`: The UUID of the connection to remove.
     pub fn remove_connection(&mut self, uuid: Uuid) -> Result<(), NetworkStateError> {
         let Some(position) = self.connections.iter().position(|d| d.uuid == uuid) else {
             return Err(NetworkStateError::UnknownConnection(uuid.to_string()));
@@ -383,11 +466,18 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Adds a new device to the state.
+    ///
+    /// * `device`: The device to add.
     pub fn add_device(&mut self, device: Device) -> Result<(), NetworkStateError> {
         self.devices.push(device);
         Ok(())
     }
 
+    /// Updates a device in the state.
+    ///
+    /// * `name`: The name of the device to update.
+    /// * `device`: The new device information.
     pub fn update_device(&mut self, name: &str, device: Device) -> Result<(), NetworkStateError> {
         let Some(old_device) = self.get_device_mut(name) else {
             return Err(NetworkStateError::UnknownDevice(device.name.clone()));
@@ -397,6 +487,9 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Removes a device from the state.
+    ///
+    /// * `name`: The name of the device to remove.
     pub fn remove_device(&mut self, name: &str) -> Result<(), NetworkStateError> {
         let Some(position) = self.devices.iter().position(|d| d.name == name) else {
             return Err(NetworkStateError::UnknownDevice(name.to_string()));
@@ -406,6 +499,9 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Adds a new access point to the state.
+    ///
+    /// * `ap`: The access point to add.
     pub fn add_access_point(&mut self, ap: AccessPoint) -> Result<(), NetworkStateError> {
         if let Some(position) = self
             .access_points
@@ -419,6 +515,9 @@ impl NetworkState {
         Ok(())
     }
 
+    /// Removes an access point from the state.
+    ///
+    /// * `hw_address`: The hardware address of the access point to remove.
     pub fn remove_access_point(&mut self, hw_address: &str) -> Result<(), NetworkStateError> {
         let Some(position) = self
             .access_points
@@ -530,6 +629,142 @@ mod tests {
         state.update_connection(conn1).unwrap();
         let found = state.get_connection_by_uuid(uuid).unwrap();
         assert_eq!(found.firewall_zone, Some("public".to_string()));
+    }
+
+    #[test]
+    fn test_update_state_optimized() {
+        let mut state = NetworkState::default();
+        let uuid = Uuid::new_v4();
+        let mut conn0 = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn0.uuid = uuid;
+        conn0.ip_config.method4 = Some(Ipv4Method::Manual);
+        state.add_connection(conn0).unwrap();
+
+        // Initial config
+        let net_conn = NetworkConnection {
+            id: "eth0".to_string(),
+            method4: Some(Ipv4Method::Manual),
+            ..Default::default()
+        };
+        let config = Config {
+            connections: Some(NetworkConnectionsCollection(vec![net_conn.clone()])),
+            ..Default::default()
+        };
+        state.update_state(config).unwrap();
+        assert_eq!(
+            state
+                .user_config
+                .as_ref()
+                .unwrap()
+                .connections
+                .as_ref()
+                .unwrap()
+                .0[0]
+                .method4,
+            Some(Ipv4Method::Manual)
+        );
+
+        // Update with SAME config, it should skip processing (pre-filtered)
+        let config2 = Config {
+            connections: Some(NetworkConnectionsCollection(vec![net_conn.clone()])),
+            state: Some(StateSettings {
+                copy_network: Some(true),
+                ..Default::default()
+            }),
+        };
+        // This should NOT fail even if we modify the runtime state manually and it differs
+        state.get_connection_mut("eth0").unwrap().ip_config.method4 = Some(Ipv4Method::Auto);
+        state.update_state(config2).unwrap();
+        // Since it was skipped, method4 remains Auto in runtime
+        assert_eq!(
+            state.get_connection("eth0").unwrap().ip_config.method4,
+            Some(Ipv4Method::Auto)
+        );
+        // But general state should be updated
+        assert_eq!(state.general_state.copy_network, true);
+
+        // Update with DIFFERENT config
+        let net_conn_diff = NetworkConnection {
+            id: "eth0".to_string(),
+            method4: Some(Ipv4Method::Auto),
+            ..Default::default()
+        };
+        let config3 = Config {
+            connections: Some(NetworkConnectionsCollection(vec![net_conn_diff])),
+            ..Default::default()
+        };
+        state.update_state(config3).unwrap();
+        // Now it should be updated
+        assert_eq!(
+            state.get_connection("eth0").unwrap().ip_config.method4,
+            Some(Ipv4Method::Auto)
+        );
+    }
+
+    #[test]
+    fn test_changed_connections() {
+        let mut state = NetworkState::default();
+        let conn1 = NetworkConnection {
+            id: "eth1".to_string(),
+            method4: Some(Ipv4Method::Auto),
+            ..Default::default()
+        };
+        let conn2 = NetworkConnection {
+            id: "eth2".to_string(),
+            method4: Some(Ipv4Method::Manual),
+            ..Default::default()
+        };
+
+        // Initially all are changed (new)
+        let collection = NetworkConnectionsCollection(vec![conn1.clone(), conn2.clone()]);
+        let changed = state.changed_connections(&collection);
+        assert_eq!(changed.len(), 2);
+
+        // Set initial user config
+        state.user_config = Some(Config {
+            connections: Some(collection),
+            ..Default::default()
+        });
+
+        // No changes
+        let collection = NetworkConnectionsCollection(vec![conn1.clone(), conn2.clone()]);
+        let changed = state.changed_connections(&collection);
+        assert_eq!(changed.len(), 0);
+
+        // One changed, one new
+        let conn1_mod = NetworkConnection {
+            id: "eth1".to_string(),
+            method4: Some(Ipv4Method::Manual),
+            ..Default::default()
+        };
+        let conn3 = NetworkConnection {
+            id: "eth3".to_string(),
+            ..Default::default()
+        };
+        let collection =
+            NetworkConnectionsCollection(vec![conn1_mod.clone(), conn2.clone(), conn3.clone()]);
+        let changed = state.changed_connections(&collection);
+        assert_eq!(changed.len(), 2);
+        assert!(changed.iter().any(|c| c.id == "eth1"));
+        assert!(changed.iter().any(|c| c.id == "eth3"));
+    }
+
+    #[test]
+    fn test_update_state_only_general_state() {
+        let mut state = NetworkState::default();
+        state.general_state.copy_network = false;
+
+        let config = Config {
+            connections: None,
+            state: Some(StateSettings {
+                copy_network: Some(true),
+                ..Default::default()
+            }),
+        };
+
+        state.update_state(config).unwrap();
+        assert_eq!(state.general_state.copy_network, true);
+        assert!(state.user_config.is_some());
     }
 
     #[test]
@@ -731,7 +966,7 @@ mod tests {
 
 pub const NOT_COPY_NETWORK_PATH: &str = "/run/agama/not_copy_network";
 
-/// Network state
+/// General network state and settings.
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct GeneralState {
     pub hostname: String,
@@ -771,6 +1006,10 @@ pub struct Connection {
 }
 
 impl Connection {
+    /// Creates a new connection with the given ID and device type.
+    ///
+    /// * `id`: The connection identifier.
+    /// * `device_type`: The type of the device.
     pub fn new(id: String, device_type: DeviceType) -> Self {
         let config = match device_type {
             DeviceType::Ethernet => ConnectionConfig::Ethernet,
@@ -798,95 +1037,6 @@ impl Connection {
 
     pub fn is_up(&self) -> bool {
         self.status == Status::Up
-    }
-
-    /// Merges the current connection with the configuration provided.
-    pub fn merge_connection(&mut self, conn: &Connection) -> Result<(), NetworkStateError> {
-        if conn.ip_config.method4.is_some() {
-            self.ip_config.method4 = conn.ip_config.method4;
-        }
-        if conn.ip_config.method6.is_some() {
-            self.ip_config.method6 = conn.ip_config.method6;
-        }
-
-        if conn.status != Status::Keep {
-            self.status = conn.status;
-        }
-
-        self.autoconnect = conn.autoconnect;
-        self.persistent = conn.persistent;
-
-        if conn.ip_config.ignore_auto_dns {
-            self.ip_config.ignore_auto_dns = conn.ip_config.ignore_auto_dns;
-        }
-
-        match &conn.config {
-            ConnectionConfig::Vlan(vlan_config) => {
-                self.config = vlan_config.clone().into();
-            }
-            ConnectionConfig::Wireless(wireless_config) => {
-                self.config = wireless_config.clone().into();
-            }
-            ConnectionConfig::Bond(bond_config) => {
-                self.config = bond_config.clone().into();
-            }
-            ConnectionConfig::Bridge(bridge_config) => {
-                self.config = bridge_config.clone().into();
-            }
-            _ => {}
-        }
-
-        if conn.ieee_8021x_config.is_some() {
-            self.ieee_8021x_config = conn.ieee_8021x_config.clone();
-        }
-
-        if conn.mac_address.is_some() {
-            self.mac_address = conn.mac_address;
-        }
-
-        if !conn.custom_mac_address.to_string().is_empty() {
-            self.custom_mac_address = conn.custom_mac_address.clone();
-        }
-
-        if !conn.match_config.driver.is_empty() {
-            self.match_config.driver = conn.match_config.driver.clone();
-        }
-
-        if !conn.match_config.interface.is_empty() {
-            self.match_config.interface = conn.match_config.interface.clone();
-        }
-
-        if !conn.match_config.path.is_empty() {
-            self.match_config.path = conn.match_config.path.clone();
-        }
-
-        if !conn.match_config.kernel.is_empty() {
-            self.match_config.kernel = conn.match_config.kernel.clone();
-        }
-
-        if !conn.ip_config.addresses.is_empty() {
-            self.ip_config.addresses = conn.ip_config.addresses.clone();
-        }
-        if !conn.ip_config.nameservers.is_empty() {
-            self.ip_config.nameservers = conn.ip_config.nameservers.clone();
-        }
-        if !conn.ip_config.dns_searchlist.is_empty() {
-            self.ip_config.dns_searchlist = conn.ip_config.dns_searchlist.clone();
-        }
-        if conn.ip_config.gateway4.is_some() {
-            self.ip_config.gateway4 = conn.ip_config.gateway4;
-        }
-        if conn.ip_config.gateway6.is_some() {
-            self.ip_config.gateway6 = conn.ip_config.gateway6;
-        }
-        if conn.interface.is_some() {
-            self.interface = conn.interface.clone();
-        }
-        if conn.mtu != 0 {
-            self.mtu = conn.mtu;
-        }
-
-        Ok(())
     }
 
     pub fn is_down(&self) -> bool {
@@ -917,6 +1067,47 @@ impl Connection {
             || matches!(self.config, ConnectionConfig::Bond(_))
             || matches!(self.config, ConnectionConfig::Vlan(_))
             || matches!(self.config, ConnectionConfig::Bridge(_))
+    }
+
+    /// Determines whether the connection is bound to a specific interface or MAC address.
+    pub fn is_bound(&self) -> bool {
+        !self.interface.as_deref().unwrap_or("").is_empty() || self.mac_address.is_some()
+    }
+
+    /// Determines whether the connection is compatible with the given device name and MAC address.
+    pub fn is_compatible(&self, device_name: &str, device_mac: &MacAddress) -> bool {
+        if let Some(interface) = &self.interface {
+            if !interface.is_empty() && interface != device_name {
+                return false;
+            }
+        }
+        if let Some(mac) = self.mac_address {
+            if let MacAddress::MacAddress(d_mac) = device_mac {
+                if mac != *d_mac {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        true
+    }
+
+    /// Determines whether the connection matches the given device name or MAC address.
+    pub fn matches_device(&self, device_name: &str, device_mac: &MacAddress) -> bool {
+        if let Some(interface) = &self.interface {
+            if !interface.is_empty() && interface == device_name {
+                return true;
+            }
+        }
+        if let Some(mac) = self.mac_address {
+            if let MacAddress::MacAddress(d_mac) = device_mac {
+                if mac == *d_mac {
+                    return true;
+                }
+            }
+        }
+        false
     }
 }
 

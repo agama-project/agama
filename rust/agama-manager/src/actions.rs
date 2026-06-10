@@ -18,23 +18,25 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{process::Command, sync::Arc};
-
+use crate::{
+    bootloader, checks, files, hostname,
+    ipmi::Ipmi,
+    iscsi, l10n, ntp, proxy, s390, security, service, software, storage,
+    task_manager::{self, TaskError, TaskManager},
+    users,
+};
 use agama_network::NetworkSystemClient;
 use agama_utils::{
-    actor::Handler,
+    actor::{Handler, MessageHandler},
     api::{files::scripts::ScriptsGroup, status::Stage, Config, FinishMethod, Scope},
     issue,
+    message::GetResolvables,
     products::ProductSpec,
     progress, question,
 };
 use gettextrs::gettext;
+use std::{process::Command, sync::Arc};
 use tokio::sync::RwLock;
-
-use crate::{
-    bootloader, checks, files, hostname, ipmi::Ipmi, iscsi, l10n, ntp, proxy, s390, security,
-    service, software, storage, users,
-};
 
 /// Implements the installation process.
 ///
@@ -46,40 +48,28 @@ pub struct InstallAction {
     pub network: NetworkSystemClient,
     pub proxy: Handler<proxy::Service>,
     pub ntp: Handler<ntp::Service>,
+    pub access: Handler<agama_access::Service>,
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
     pub files: Handler<files::Service>,
     pub progress: Handler<progress::Service>,
     pub users: Handler<users::Service>,
+    pub task_manager: Arc<TaskManager>,
 }
 
 impl InstallAction {
-    /// Runs the installation process on a separate Tokio task.
-    pub async fn run(mut self) -> Result<(), service::Error> {
+    /// Runs the installation process by spawning tasks via TaskManager.
+    pub async fn run(self) -> Result<(), service::Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
         checks::check_issues(&self.issues).await?;
         checks::check_progress(&self.progress).await?;
 
         tracing::info!("Installation started");
-        if let Err(error) = self.install().await {
-            tracing::error!("Installation failed: {error}");
-            self.set_stage(Stage::Failed).await;
-            return Err(error);
-        }
 
-        tracing::info!("Installation finished");
-        Ok(())
-    }
-
-    async fn install(&mut self) -> Result<(), service::Error> {
-        // NOTE: consider a NextState message?
         self.progress
             .call(progress::message::SetStage::new(Stage::Installing))
             .await?;
 
-        //
-        // Preparation
-        //
         self.progress
             .call(progress::message::StartWithSteps::new(
                 Scope::Manager,
@@ -91,65 +81,180 @@ impl InstallAction {
             ))
             .await?;
 
-        self.storage.call(storage::message::Install).await?;
-        self.files
-            .call(files::message::RunScripts::new(
-                ScriptsGroup::PostPartitioning,
-            ))
-            .await?;
+        //
+        // Preparation phase
+        //
+        let storage_task = {
+            let storage = self.storage.clone();
+            self.task_manager
+                .task(
+                    "storage_install",
+                    Scope::Storage,
+                    gettext("Preparing storage"),
+                )
+                .run(|| async move {
+                    storage
+                        .call(storage::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await
+        };
+
+        let post_part_scripts_task = {
+            let files = self.files.clone();
+            self.task_manager
+                .task(
+                    "post_partitioning_scripts",
+                    Scope::Files,
+                    gettext("Running post-partitioning scripts"),
+                )
+                .depends_on(&[storage_task])
+                .run(|| async move {
+                    files
+                        .call(files::message::RunScripts::new(
+                            ScriptsGroup::PostPartitioning,
+                        ))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await
+        };
 
         //
-        // Installation
+        // Installation phase
         //
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.software.call(software::message::Install).await?;
+        let software_task = {
+            let software = self.software.clone();
+            let progress = self.progress.clone();
+            self.task_manager
+                .task(
+                    "software_install",
+                    Scope::Software,
+                    gettext("Installing software"),
+                )
+                .depends_on(&[post_part_scripts_task])
+                .run(|| async move {
+                    progress
+                        .call(progress::message::Next::new(Scope::Manager))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    software
+                        .call(software::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await
+        };
 
         //
-        // Configuration
+        // Configuration phase - runs sequentially
         //
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.l10n.call(l10n::message::Install).await?;
-        self.software.call(software::message::Finish).await?;
-        self.files.call(files::message::Finish).await?;
-        self.network.install().await?;
-        self.proxy.call(proxy::message::Finish).await?;
-        self.ntp.call(ntp::message::Finish).await?;
-        self.hostname.call(hostname::message::Install).await?;
-        self.users.call(users::message::Install).await?;
-        self.storage.call(storage::message::Finish).await?;
+        let config_task = {
+            let l10n = self.l10n.clone();
+            let software = self.software.clone();
+            let files = self.files.clone();
+            let network = self.network.clone();
+            let proxy = self.proxy.clone();
+            let ntp = self.ntp.clone();
+            let hostname = self.hostname.clone();
+            let users = self.users.clone();
+            let storage = self.storage.clone();
+            let access = self.access.clone();
+            let progress = self.progress.clone();
 
-        // call files before storage finish as it unmounts /mnt/run which is important for chrooted scripts
-        self.files
-            .call(files::message::RunScripts::new(ScriptsGroup::Post))
-            .await?;
+            self.task_manager
+                .task(
+                    "configure",
+                    Scope::Manager,
+                    gettext("Configuring the system"),
+                )
+                .depends_on(&[software_task])
+                .run(|| async move {
+                    progress
+                        .call(progress::message::Next::new(Scope::Manager))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    l10n.call(l10n::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    software
+                        .call(software::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    files
+                        .call(files::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    network.install().await.map_err(TaskError::from_error)?;
+                    proxy
+                        .call(proxy::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    ntp.call(ntp::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    hostname
+                        .call(hostname::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    users
+                        .call(users::message::Install)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    storage
+                        .call(storage::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    access
+                        .call(agama_access::message::Finish)
+                        .await
+                        .map_err(TaskError::from_error)?;
 
-        self.storage.call(storage::message::Umount).await?;
+                    // call files as last finish so all configs are in place,
+                    // but before unmount of /mnt/run which is important for chrooted scripts (bsc#1257791)
+                    files
+                        .call(files::message::RunScripts::new(ScriptsGroup::Post))
+                        .await
+                        .map_err(TaskError::from_error)?;
 
-        //
-        // Finish progress and changes
-        //
-        self.progress
-            .call(progress::message::Finish::new(Scope::Manager))
-            .await?;
+                    storage
+                        .call(storage::message::Umount)
+                        .await
+                        .map_err(TaskError::from_error)?;
 
-        self.progress
-            .call(progress::message::SetStage::new(Stage::Finished))
-            .await?;
+                    Ok(())
+                })
+                .await
+        };
+
+        // Final progress and stage updates - depend on configuration
+        let progress = self.progress.clone();
+        self.task_manager
+            .task(
+                "finish_progress",
+                Scope::Manager,
+                gettext("Finishing installation"),
+            )
+            .depends_on(&[config_task])
+            .run(|| async move {
+                progress
+                    .call(progress::message::Finish::new(Scope::Manager))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                progress
+                    .call(progress::message::SetStage::new(Stage::Finished))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                Ok(())
+            })
+            .await;
+
+        tracing::info!("Installation tasks spawned");
         Ok(())
-    }
-
-    async fn set_stage(&self, stage: Stage) {
-        if let Err(error) = self
-            .progress
-            .call(progress::message::SetStage::new(stage))
-            .await
-        {
-            tracing::error!("It was not possible to set the stage to {}: {error}", stage);
-        }
     }
 }
 
@@ -167,11 +272,13 @@ pub struct SetConfigAction {
     pub ntp: Handler<ntp::Service>,
     pub progress: Handler<progress::Service>,
     pub questions: Handler<question::Service>,
+    pub access: Handler<agama_access::Service>,
     pub security: Handler<security::Service>,
     pub software: Handler<software::Service>,
     pub storage: Handler<storage::Service>,
     pub users: Handler<users::Service>,
     pub s390: Option<Handler<s390::Service>>,
+    pub task_manager: Arc<TaskManager>,
 }
 
 impl SetConfigAction {
@@ -179,227 +286,467 @@ impl SetConfigAction {
         self,
         product: Option<Arc<RwLock<ProductSpec>>>,
         config: Config,
+        old_config: Config,
     ) -> Result<(), service::Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
 
-        //
-        // Preparation
-        //
-        let mut steps = vec![
-            gettext("Storing security settings"),
-            gettext("Setting up the hostname"),
-            gettext("Setting up the network proxy"),
-            gettext("Setting up NTP"),
-            gettext("Importing user files"),
-            gettext("Running user pre-installation scripts"),
-            gettext("Storing questions settings"),
-            gettext("Storing localization settings"),
-            gettext("Storing users settings"),
-            gettext("Configuring iSCSI devices"),
-        ];
+        // Security settings
+        self.spawn_config_task(
+            Scope::Security,
+            &gettext("Storing security settings"),
+            self.security.clone(),
+            security::message::SetConfig::new(config.security.clone()),
+            &[],
+        )
+        .await;
 
-        if self.s390.is_some() {
-            steps.push(gettext("Configuring DASD devices"));
+        // Remote access
+        self.spawn_config_task(
+            Scope::Access,
+            &gettext("Configuring remote access"),
+            self.access.clone(),
+            agama_access::message::SetConfig::new(config.access.clone()),
+            &[],
+        )
+        .await;
+
+        // Hostname
+        self.spawn_config_task(
+            Scope::Hostname,
+            &gettext("Setting up the hostname"),
+            self.hostname.clone(),
+            hostname::message::SetConfig::new(config.hostname.clone()),
+            &[],
+        )
+        .await;
+
+        // Proxy
+        self.spawn_config_task(
+            Scope::Proxy,
+            &gettext("Setting up the network proxy"),
+            self.proxy.clone(),
+            proxy::message::SetConfig::new(config.proxy.clone()),
+            &[],
+        )
+        .await;
+
+        // NTP
+        let ntp_task = self
+            .spawn_config_task(
+                Scope::Ntp,
+                &gettext("Setting up NTP"),
+                self.ntp.clone(),
+                ntp::message::SetConfig::new(config.ntp.clone()),
+                &[],
+            )
+            .await;
+
+        // Files configuration
+        let files_task = self
+            .spawn_config_task(
+                Scope::Files,
+                &gettext("Importing user files and scripts"),
+                self.files.clone(),
+                files::message::SetConfig::new(config.files.clone()),
+                &[],
+            )
+            .await;
+
+        // Pre-installation scripts
+        let files_handler = self.files.clone();
+        self.task_manager
+            .task(
+                "pre_scripts",
+                Scope::Files,
+                gettext("Running user pre-installation scripts"),
+            )
+            .depends_on(&[files_task])
+            .run(move || async move {
+                files_handler
+                    .call(files::message::RunScripts::new(ScriptsGroup::Pre))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                Ok(())
+            })
+            .await;
+
+        // Questions settings
+        self.spawn_config_task(
+            Scope::Questions,
+            &gettext("Storing questions settings"),
+            self.questions.clone(),
+            question::message::SetConfig::new(config.questions.clone()),
+            &[],
+        )
+        .await;
+
+        // L10n settings
+        self.spawn_config_task(
+            Scope::L10n,
+            &gettext("Storing localization settings"),
+            self.l10n.clone(),
+            l10n::message::SetConfig::new(config.l10n.clone()),
+            &[],
+        )
+        .await;
+
+        // Users settings
+        self.spawn_config_task(
+            Scope::Users,
+            &gettext("Storing users settings"),
+            self.users.clone(),
+            users::message::SetConfig::new(config.users.clone()),
+            &[],
+        )
+        .await;
+
+        let mut iscsi_deps = Vec::new();
+
+        // Network configuration
+        if let Some(task_id) = self.set_network_config(&config).await {
+            iscsi_deps.push(task_id);
         }
 
-        if config.network.is_some() {
-            steps.push(gettext("Setting up the network"));
+        let mut storage_deps = Vec::new();
+
+        // iSCSI configuration
+        let iscsi_task = self.set_iscsi_config(&config, &iscsi_deps).await;
+        storage_deps.push(iscsi_task);
+
+        // S390 configuration (if available)
+        if let Some(zfcp_task) = self.set_zfcp_config(&config).await {
+            storage_deps.push(zfcp_task);
+        }
+        if let Some(dasd_task) = self.set_dasd_config(&config).await {
+            storage_deps.push(dasd_task);
         }
 
-        if product.is_some() {
-            steps.extend_from_slice(&[
-                gettext("Preparing the software proposal"),
-                gettext("Preparing the storage proposal"),
-                gettext("Storing bootloader settings"),
-            ])
+        // Product-dependent configuration (software, storage, bootloader)
+        if let Some(product) = product {
+            // TODO: improve this check. In some cases, appying the very same config might imply a
+            // change in the devices. For example, let say iSCSI config fails because a network
+            // problem. A second attempt with the same config could success, so a probing would be
+            // needed.
+            let force_storage_probe =
+                (config.iscsi != old_config.iscsi) || (config.s390 != old_config.s390);
+
+            // Storage configuration
+            let storage_task = self
+                .set_storage_config(
+                    Arc::clone(&product),
+                    &config,
+                    &storage_deps,
+                    force_storage_probe,
+                )
+                .await;
+
+            // Bootloader configuration (after storage)
+            let bootloader_task = self.set_bootloader_config(&config, &[storage_task]).await;
+
+            // Software configuration - depends on files, storage, and bootloader
+            let software_task = self
+                .set_software_config(
+                    Arc::clone(&product),
+                    &config,
+                    &[files_task, storage_task, bootloader_task, ntp_task],
+                )
+                .await;
+
+            // SELinux configuration - depends on software configuration
+            self.set_selinux_config(software_task).await;
         }
 
-        self.progress
-            .call(progress::message::StartWithSteps::new(
-                Scope::Manager,
-                steps,
-            ))
-            .await?;
+        Ok(())
+    }
 
-        //
-        // Set the configuration for each service
-        //
-        self.security
-            .call(security::message::SetConfig::new(config.security.clone()))
-            .await?;
+    /// Helper to spawn a task for a config message call
+    ///
+    /// The task name is automatically derived from the scope by converting to lowercase.
+    async fn spawn_config_task<S, M>(
+        &self,
+        scope: Scope,
+        description: &str,
+        handler: Handler<S>,
+        message: M,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> crate::task_manager::TaskId
+    where
+        S: agama_utils::actor::MessageHandler<M> + 'static,
+        M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
+        S::Error: std::error::Error + Send + 'static,
+    {
+        let name = format!("{}_config", scope.to_string().to_lowercase());
 
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.hostname
-            .call(hostname::message::SetConfig::new(config.hostname.clone()))
-            .await?;
+        self.task_manager
+            .task(&name, scope, description)
+            .depends_on(dependencies)
+            .run(|| async move {
+                handler.call(message).await.map_err(TaskError::from_error)?;
+                Ok(())
+            })
+            .await
+    }
 
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.proxy
-            .call(proxy::message::SetConfig::new(config.proxy.clone()))
-            .await?;
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.ntp
-            .call(ntp::message::SetConfig::new(config.ntp.clone()))
-            .await?;
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.files
-            .call(files::message::SetConfig::new(config.files.clone()))
-            .await?;
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.files
-            .call(files::message::RunScripts::new(ScriptsGroup::Pre))
-            .await?;
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.questions
-            .call(question::message::SetConfig::new(config.questions.clone()))
-            .await?;
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.l10n
-            .call(l10n::message::SetConfig::new(config.l10n.clone()))
-            .await?;
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.users
-            .call(users::message::SetConfig::new(config.users.clone()))
-            .await?;
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.iscsi
-            .call(iscsi::message::SetConfig::new(config.iscsi.clone()))
-            .await?;
-
-        if let Some(s390) = &self.s390 {
-            self.progress
-                .call(progress::message::Next::new(Scope::Manager))
-                .await?;
-            // Ensure storage was already probed before configuring s390. Otherwise, probing could
-            // fail later if DASD is formatting in a background process (bsc#1259354).
-            let storage_system = self.storage.call(storage::message::GetSystem).await?;
-            if storage_system.is_none() {
-                self.storage.call(storage::message::Probe).await?
-            }
-            s390.call(s390::message::SetConfig::new(config.s390.clone()))
-                .await?;
-        }
-
-        // FIXME: report the error in a proper way.
-        if let Err(error) = self.set_network(&config).await {
-            tracing::error!("Failed to set up the network: {error}");
-        }
-
-        match &product {
-            Some(product) => {
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
-                self.software
-                    .call(software::message::SetConfig::new(
-                        Arc::clone(product),
-                        config.software.clone(),
-                    ))
-                    .await?;
-
-                self.set_selinux().await?;
-
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
-                let future = self
-                    .storage
-                    .call(storage::message::SetConfig::new(
-                        Arc::clone(product),
-                        config.storage.clone(),
-                    ))
-                    .await?;
+    /// Helper to spawn iSCSI configuration task
+    async fn set_iscsi_config(
+        &self,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> task_manager::TaskId {
+        let handler = self.iscsi.clone();
+        let iscsi_config = config.iscsi.clone();
+        self.task_manager
+            .task(
+                "iscsi_config",
+                Scope::ISCSI,
+                gettext("Configuring iSCSI devices"),
+            )
+            .depends_on(dependencies)
+            .run(|| async move {
+                let future = handler
+                    .call(iscsi::message::SetConfig::new(iscsi_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
                 let _ = future.await;
+                Ok(())
+            })
+            .await
+    }
 
-                // call bootloader always after storage to ensure that bootloader reflect new storage settings
-                self.progress
-                    .call(progress::message::Next::new(Scope::Manager))
-                    .await?;
-                self.bootloader
-                    .call(bootloader::message::SetConfig::new(
-                        config.bootloader.clone(),
+    /// Helper to spawn zFCP configuration task
+    async fn set_zfcp_config(&self, config: &Config) -> Option<task_manager::TaskId> {
+        let handler = self.s390.clone()?;
+        let zfcp_config = config.s390.clone().and_then(|c| c.zfcp);
+
+        Some(
+            self.task_manager
+                .task(
+                    "zfcp_config",
+                    Scope::ZFCP,
+                    gettext("Configuring zFCP devices"),
+                )
+                .run(|| async move {
+                    let future = handler
+                        .call(s390::message::SetZFCPConfig::new(zfcp_config))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    let _ = future.await;
+                    Ok(())
+                })
+                .await,
+        )
+    }
+
+    /// Helper to spawn DASD configuration task
+    async fn set_dasd_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+        let handler = self.s390.clone()?;
+        let dasd_config = config.s390.clone().and_then(|c| c.dasd);
+
+        Some(
+            self.task_manager
+                .task(
+                    "dasd_config",
+                    Scope::DASD,
+                    gettext("Configuring DASD devices"),
+                )
+                .run(|| async move {
+                    let future = handler
+                        .call(s390::message::SetDASDConfig::new(dasd_config))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    let _ = future.await;
+                    Ok(())
+                })
+                .await,
+        )
+    }
+
+    /// Helper to spawn network configuration task
+    async fn set_network_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+        let network_config = config.network.clone()?;
+        let handler = self.network.clone();
+
+        Some(
+            self.task_manager
+                .task(
+                    "network_config",
+                    Scope::Network,
+                    gettext("Setting up the network"),
+                )
+                .run(|| async move {
+                    handler
+                        .update_config(network_config)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    handler.apply().await.map_err(TaskError::from_error)?;
+                    Ok(())
+                })
+                .await,
+        )
+    }
+
+    /// Helper to spawn storage configuration task
+    async fn set_storage_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+        force_probe: bool,
+    ) -> crate::task_manager::TaskId {
+        let handler = self.storage.clone();
+        let storage_config = config.storage.clone();
+
+        self.task_manager
+            .task(
+                "storage_config",
+                Scope::Storage,
+                gettext("Preparing the storage proposal"),
+            )
+            .depends_on(dependencies)
+            .run(move || async move {
+                if force_probe {
+                    tracing::info!("Forcing a storage probing");
+                    handler
+                        .call(storage::message::Probe)
+                        .await
+                        .map_err(TaskError::from_error)?;
+                }
+                let future = handler
+                    .call(storage::message::SetConfig::new(product, storage_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                let _ = future.await;
+                Ok(())
+            })
+            .await
+    }
+
+    /// Helper to spawn bootloader configuration task
+    async fn set_bootloader_config(
+        &self,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> task_manager::TaskId {
+        let handler = self.bootloader.clone();
+        let bootloader_config = config.bootloader.clone();
+        self.task_manager
+            .task(
+                "bootloader_config",
+                Scope::Bootloader,
+                gettext("Storing bootloader settings"),
+            )
+            .depends_on(dependencies)
+            .run(|| async move {
+                let future = handler
+                    .call(bootloader::message::SetConfig::new(bootloader_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+                let _ = future.await;
+                Ok(())
+            })
+            .await
+    }
+
+    /// Helper to spawn software configuration task
+    async fn set_software_config(
+        &self,
+        product: Arc<RwLock<ProductSpec>>,
+        config: &Config,
+        dependencies: &[crate::task_manager::TaskId],
+    ) -> crate::task_manager::TaskId {
+        let software_handler = self.software.clone();
+        let software_config = config.software.clone();
+        let access_handler = self.access.clone();
+        let bootloader_handler = self.bootloader.clone();
+        let files_handler = self.files.clone();
+        let ntp_handler = self.ntp.clone();
+        let storage_handler = self.storage.clone();
+
+        self.task_manager
+            .task(
+                "software_config",
+                Scope::Software,
+                gettext("Preparing the software proposal"),
+            )
+            .depends_on(dependencies)
+            .run(move || async move {
+                Self::set_resolvables_for(&software_handler, "access", access_handler).await;
+                Self::set_resolvables_for(&software_handler, "files", files_handler).await;
+                Self::set_resolvables_for(&software_handler, "ntp", ntp_handler).await;
+                Self::set_resolvables_for(&software_handler, "storage", storage_handler).await;
+                Self::set_resolvables_for(&software_handler, "bootloader", bootloader_handler)
+                    .await;
+
+                software_handler
+                    .call(software::message::SetConfig::new(product, software_config))
+                    .await
+                    .map_err(TaskError::from_error)?;
+
+                Ok(())
+            })
+            .await
+    }
+
+    /// Helper to spawn SELinux configuration task
+    async fn set_selinux_config(
+        &self,
+        depends_on: crate::task_manager::TaskId,
+    ) -> crate::task_manager::TaskId {
+        let software_handler = self.software.clone();
+        let bootloader_handler = self.bootloader.clone();
+
+        self.task_manager
+            .task(
+                "selinux_config",
+                Scope::Security,
+                gettext("Configuring SELinux"),
+            )
+            .depends_on(&[depends_on])
+            .run(move || async move {
+                let selinux_selected = software_handler
+                    .call(software::message::IsPatternSelected::new(
+                        "selinux".to_string(),
                     ))
-                    .await?;
-            }
+                    .await
+                    .map_err(TaskError::from_error)?;
 
-            None => {
-                // TODO: reset software and storage proposals.
-                tracing::info!("No product is selected.");
-            }
-        }
+                let value = if selinux_selected {
+                    "security=selinux"
+                } else {
+                    "security="
+                };
+                let message = agama_bootloader::message::SetKernelArg {
+                    id: "selinux".to_string(),
+                    value: value.to_string(),
+                };
 
-        Ok(())
+                bootloader_handler
+                    .call(message)
+                    .await
+                    .map_err(TaskError::from_error)?;
+
+                Ok(())
+            })
+            .await
     }
 
-    async fn set_network(&self, config: &Config) -> Result<(), service::Error> {
-        let Some(network) = config.network.clone() else {
-            return Ok(());
-        };
-
-        self.progress
-            .call(progress::message::Next::new(Scope::Manager))
-            .await?;
-        self.network.update_config(network).await?;
-        self.network.apply().await?;
-
-        Ok(())
-    }
-
-    // Enables/Disables SELinux in the installed system.
-    //
-    // If the "selinux" pattern is selected, set the "security=selinux" boot
-    // kernel parameter.
-    //
-    // NOTE: this logic should live in another place, like "agama-security".
-    // It is temporarily here to fix bsc#1259890.
-    async fn set_selinux(&self) -> Result<(), service::Error> {
-        let selinux_selected = self
-            .software
-            .call(software::message::IsPatternSelected::new(
-                "selinux".to_string(),
+    async fn set_resolvables_for<T>(
+        software: &Handler<software::Service>,
+        id: &str,
+        handler: Handler<T>,
+    ) where
+        T: MessageHandler<GetResolvables>,
+    {
+        let resolvables = handler.call(GetResolvables).await.unwrap_or_default();
+        let result = software
+            .call(software::message::SetResolvables::new(
+                id.to_string(),
+                resolvables,
             ))
-            .await?;
-
-        let value = if selinux_selected {
-            "security=selinux"
-        } else {
-            "security="
-        };
-        let message = agama_bootloader::message::SetKernelArg {
-            id: "selinux".to_string(),
-            value: value.to_string(),
-        };
-
-        if let Err(error) = self.bootloader.cast(message) {
-            tracing::warn!("Failed to send to bootloader new selinux state: {error:?}");
+            .await;
+        if let Err(error) = result {
+            tracing::error!("Failed to set resolvables for '{id}': {error}");
         }
-
-        Ok(())
     }
 }
 

@@ -12,6 +12,7 @@ members = [
     "agama-proxy",
     "agama-network",
     "agama-ntp",
+    "agama-access",
     "agama-s390",
     "agama-security",
     "agama-server",

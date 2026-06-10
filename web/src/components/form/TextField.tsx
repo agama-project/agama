@@ -60,6 +60,7 @@ export default function TextField({ label, helperText, type, size }: TextFieldPr
         value={field.state.value}
         validated={error ? "error" : "default"}
         onChange={(_, value) => field.handleChange(value)}
+        onBlur={() => field.handleBlur()}
       />
       {(error || helperText) && (
         <FormHelperText>

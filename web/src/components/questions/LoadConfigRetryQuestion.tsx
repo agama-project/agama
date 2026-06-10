@@ -20,9 +20,18 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { Content, Stack } from "@patternfly/react-core";
+import React, { useState } from "react";
+import {
+  CodeBlock,
+  Content,
+  ExpandableSection,
+  Form,
+  FormGroup,
+  Stack,
+  TextInput,
+} from "@patternfly/react-core";
 import { NestedContent, Popup } from "~/components/core";
+import Text from "~/components/core/Text";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
@@ -40,21 +49,53 @@ export default function RetryLoadConfigQuestion({
   question: Question;
   answerCallback: AnswerCallback;
 }): React.ReactNode {
+  const [url, setUrl] = useState(question.data?.originalValue || "");
+
   const actionCallback = (action: string) => {
-    question.answer = { action };
+    question.answer = { action, value: url };
     answerCallback(question);
   };
 
   const error = question.data?.error;
 
   return (
-    <Popup isOpen title={_("Configuration unreachable or invalid")}>
+    <Popup isOpen variant="medium" title={_("Cannot apply configuration")}>
       <Stack hasGutter>
         <Content isEditorial>{question.text}</Content>
+        <Form isWidthLimited={false}>
+          {/* TRANSLATORS: field label for location of configuration file */}
+          <FormGroup label={_("Location")} fieldId="location">
+            <TextInput
+              id="location"
+              size={1000}
+              value={url}
+              onChange={(_event, value) => setUrl(value)}
+            />
+          </FormGroup>
+        </Form>
+        <Content>
+          <Text isBold>
+            {/* TRANSLATORS: help text in popup to clarify what user should do */}
+            {_("Verify that the location is correct and the configuration is valid.")}
+          </Text>
+        </Content>
         {error && (
-          <NestedContent>
-            <Content component="pre">{error}</Content>
-          </NestedContent>
+          <ExpandableSection
+            toggleTextExpanded={
+              /* TRANSLATORS: Clickable text to hide technical details from popup window */
+              _("Hide technical details")
+            }
+            toggleTextCollapsed={
+              /* TRANSLATORS: Clickable text to show technical details at popup window */
+              _("Show technical details (English only)")
+            }
+          >
+            <NestedContent>
+              <CodeBlock>
+                <pre>{error}</pre>
+              </CodeBlock>
+            </NestedContent>
+          </ExpandableSection>
         )}
       </Stack>
       <Popup.Actions>

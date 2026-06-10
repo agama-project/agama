@@ -58,6 +58,7 @@ pub use proposal::Proposal;
 mod action;
 pub use {action::Action, action::FinishMethod};
 
+pub mod access;
 pub mod bootloader;
 #[cfg(feature = "curl")]
 pub mod files;

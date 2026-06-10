@@ -27,7 +27,6 @@ require "agama/dbus/storage_service"
 require "agama/storage/dasd/manager"
 require "agama/storage/iscsi/adapter"
 require "agama/storage/zfcp/manager"
-require "agama/task_runner"
 require "yast"
 
 describe Agama::DBus::StorageService do
@@ -59,8 +58,6 @@ describe Agama::DBus::StorageService do
   let(:dasd) { instance_double(Agama::Storage::DASD::Manager) }
   let(:zfcp) { instance_double(Agama::Storage::ZFCP::Manager) }
 
-  let(:task_runner) { instance_double(Agama::TaskRunner) }
-
   before do
     allow(Agama::DBus::Bus).to receive(:current).and_return(bus)
     allow(bus).to receive(:request_service).with("org.opensuse.Agama.Storage1")
@@ -68,16 +65,15 @@ describe Agama::DBus::StorageService do
     allow(Y2Storage::Inhibitors).to receive(:new).and_return inhibitors
     allow(Agama::Storage::Manager).to receive(:new).with(logger: logger)
       .and_return(manager)
-    allow(Agama::DBus::Storage::Manager).to receive(:new).with(manager, task_runner, logger: logger)
+    allow(Agama::DBus::Storage::Manager).to receive(:new).with(manager, logger: logger)
       .and_return(manager_obj)
     allow(Agama::DBus::Storage::ISCSI).to receive(:new).and_return(iscsi_obj)
-    allow(Agama::DBus::Storage::DASD).to receive(:new).with(dasd, task_runner, logger: logger)
+    allow(Agama::DBus::Storage::DASD).to receive(:new).with(dasd, logger: logger)
       .and_return(dasd_obj)
     allow(Agama::Storage::DASD::Manager).to receive(:new).and_return(dasd)
     allow(Agama::DBus::Storage::ZFCP).to receive(:new).and_return(zfcp_obj)
     allow(Agama::Storage::ZFCP::Manager).to receive(:new).and_return(zfcp)
     allow_any_instance_of(Agama::Storage::ISCSI::Adapter).to receive(:activate)
-    allow(Agama::TaskRunner).to receive(:new).and_return(task_runner)
   end
 
   describe "#start" do

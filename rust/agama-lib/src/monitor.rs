@@ -27,7 +27,7 @@
 //!
 //! ```no_run
 //! use agama_lib::http::{BaseHTTPClient, WebSocketClient};
-//! use agama_lib::monitor::Monitor;
+//! use agama_lib::monitor::{Monitor, MonitorUpdate};
 //! use agama_lib::auth::AuthToken;
 //! use url::Url;
 //!
@@ -42,9 +42,25 @@
 //! let (mut updates, status) = Monitor::connect(ws_client, &http_client, stop_on_idle).await?;
 //! println!("Current stage: {:?}", status.status.stage);
 //!
-//! // Receive status updates (channel closes when monitoring stops)
-//! while let Ok(status) = updates.recv().await {
-//!     println!("Status updated! Issues count: {}", status.issues.len());
+//! // Receive monitor updates
+//! while let Some(update) = updates.recv().await {
+//!     match update {
+//!         MonitorUpdate::Status(status) => {
+//!             println!("Status updated! Issues count: {}", status.issues.len());
+//!         }
+//!         MonitorUpdate::Finished => {
+//!             println!("Installation became idle");
+//!             break;
+//!         }
+//!         MonitorUpdate::Disconnected => {
+//!             println!("Connection lost");
+//!             break;
+//!         }
+//!         MonitorUpdate::Error(e) => {
+//!             println!("Error: {}", e);
+//!             break;
+//!         }
+//!     }
 //! }
 //! println!("Monitoring finished");
 //! # Ok(())
@@ -55,7 +71,7 @@ use std::fmt;
 
 use agama_utils::api::{self, Config, Event};
 use serde::{Deserialize, Serialize};
-use tokio::sync::{broadcast, Mutex};
+use tokio::sync::{mpsc, Mutex};
 
 use crate::{
     http::{BaseHTTPClient, WebSocketClient},
@@ -116,6 +132,8 @@ pub struct SystemInfo {
     pub machine: String,
     /// Product identifier
     pub product_id: Option<String>,
+    /// Product mode
+    pub product_mode: Option<String>,
 }
 
 /// Extended status information with combination of status, issues and questions
@@ -131,13 +149,26 @@ pub struct InstallationStatus {
     pub system_info: SystemInfo,
 }
 
+/// Monitor update message
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub enum MonitorUpdate {
+    /// Status update during monitoring
+    Status(InstallationStatus),
+    /// Installation became idle (when stop_on_idle is enabled)
+    Finished,
+    /// WebSocket connection was closed or lost
+    Disconnected,
+    /// An error occurred during monitoring
+    Error(String),
+}
+
 impl InstallationStatus {
     pub fn has_product(&self) -> bool {
         self.system_info.product_id.is_some()
     }
 
     pub fn is_idle(&self) -> bool {
-        self.status.progresses.is_empty()
+        self.status.progresses.is_empty() && self.status.tasks.is_empty()
     }
 
     pub fn has_finished(&self) -> bool {
@@ -157,10 +188,13 @@ pub struct Monitor {
     ///
     /// A mutex is needed to avoid race conditions.
     status: Mutex<InstallationStatus>,
-    /// Channel to broadcast status updates to subscribers.
-    updates: broadcast::Sender<InstallationStatus>,
+    /// Channel to send status updates to the subscriber.
+    updates: mpsc::Sender<MonitorUpdate>,
     /// Whether to stop monitoring when the installation goes idle.
     stop_on_idle: bool,
+    /// Whether we've seen the system become busy (at least one progress event).
+    /// Used with stop_on_idle to avoid exiting before work starts.
+    seen_busy: bool,
 }
 
 impl Monitor {
@@ -193,16 +227,21 @@ impl Monitor {
     /// * `http_client`: HTTP client to talk to the service.
     /// * `stop_on_idle`: whether to automatically stop monitoring when the installation goes idle.
     ///
-    /// Returns a receiver for status updates and the initial status.
-    /// The monitor runs on a separate Tokio task and emits InstallationStatus updates.
-    /// When stop_on_idle is true, monitoring will stop when the installation becomes idle.
-    /// When the monitor stops (connection lost or stop_on_idle), the channel will close.
+    /// Returns a receiver for monitor updates and the initial status.
+    /// The monitor runs on a separate Tokio task and emits MonitorUpdate messages:
+    ///
+    /// - `MonitorUpdate::Status(status)` for status changes
+    /// - `MonitorUpdate::Finished` when the installation becomes idle (if stop_on_idle is true)
+    /// - `MonitorUpdate::Disconnected` when the WebSocket connection is closed
+    /// - `MonitorUpdate::Error(msg)` when an error occurs during monitoring
+    ///
+    /// After a terminal message (Finished, Disconnected, or Error), the channel will close.
     pub async fn connect(
         websocket_client: WebSocketClient,
         http_client: &BaseHTTPClient,
         stop_on_idle: bool,
-    ) -> Result<(broadcast::Receiver<InstallationStatus>, InstallationStatus), MonitorError> {
-        let (tx, rx) = broadcast::channel(100);
+    ) -> Result<(mpsc::Receiver<MonitorUpdate>, InstallationStatus), MonitorError> {
+        let (tx, rx) = mpsc::channel(100);
 
         let initial_status = Self::get_installation_status(http_client).await?;
 
@@ -212,6 +251,7 @@ impl Monitor {
             status: Mutex::new(initial_status.clone()),
             updates: tx,
             stop_on_idle,
+            seen_busy: !initial_status.is_idle(), // If starting busy, mark as seen
         };
 
         tokio::spawn(async move { monitor.run().await });
@@ -243,13 +283,14 @@ impl Monitor {
             .model
             .unwrap_or_else(|| "Unknown Machine".to_string());
 
-        let product_id = Self::fetch_product_id(http_client).await?;
+        let (product_id, product_mode) = Self::fetch_product_id(http_client).await?;
 
         let system = SystemInfo {
             hostname,
             ip,
             machine,
             product_id,
+            product_mode,
         };
 
         Ok(system)
@@ -257,19 +298,20 @@ impl Monitor {
 
     async fn fetch_product_id(
         http_client: &BaseHTTPClient,
-    ) -> Result<Option<String>, MonitorError> {
+    ) -> Result<(Option<String>, Option<String>), MonitorError> {
         let config: Config = http_client
-            .get("/config")
+            .get("/extended_config")
             .await
             .map_err(|e| MonitorError::Manager(ManagerHTTPClientError::HTTP(e)))?;
 
-        let product_id = config
-            .software
-            .as_ref()
-            .and_then(|p| p.product.as_ref())
-            .and_then(|p| p.id.clone());
+        let product_config = config.software.as_ref().and_then(|p| p.product.as_ref());
 
-        Ok(product_id)
+        let (id, mode) = match product_config {
+            Some(product) => (product.id.clone(), product.mode.clone()),
+            None => (None, None),
+        };
+
+        Ok((id, mode))
     }
 
     /// Runs the monitor.
@@ -278,22 +320,35 @@ impl Monitor {
     /// - A critical error occurs
     /// - stop_on_idle is true and the installation becomes idle
     ///
-    /// When the loop exits, the broadcast sender is dropped, closing the channel.
+    /// Before exiting, sends a terminal message (Finished, Disconnected, or Error).
+    /// When the loop exits, the sender is dropped, closing the channel.
     async fn run(&mut self) {
-        loop {
+        // Send initial status so the UI renders immediately
+        let initial_status = self.status.lock().await.clone();
+        let _ = self
+            .updates
+            .send(MonitorUpdate::Status(initial_status))
+            .await;
+
+        let final_message = loop {
             let event = self.ws_client.receive().await;
             match self.handle_event(event).await {
-                Ok(should_exit) => {
-                    if should_exit {
-                        break;
-                    }
+                Ok(Some(msg)) => {
+                    // Received an explicit stop signal
+                    break msg;
+                }
+                Ok(None) => {
+                    // Continue monitoring
                 }
                 Err(err) => {
                     tracing::error!("Critical error happen during event handling: {:?}", err);
-                    break;
+                    break MonitorUpdate::Error(err.to_string());
                 }
             }
-        }
+        };
+
+        // Send final message
+        let _ = self.updates.send(final_message).await;
         // Channel closes automatically when self.updates is dropped
     }
 
@@ -304,15 +359,25 @@ impl Monitor {
     ///
     /// * `event`: Agama event.
     ///
-    /// Returns `Ok(true)` if the monitor should exit, `Ok(false)` to continue.
+    /// Returns `Ok(Some(message))` if the monitor should exit with the given terminal message,
+    /// `Ok(None)` to continue monitoring.
     async fn handle_event(
         &mut self,
         event: Result<Event, crate::http::WebSocketError>,
-    ) -> Result<bool, crate::http::WebSocketError> {
-        let event = event?;
+    ) -> Result<Option<MonitorUpdate>, crate::http::WebSocketError> {
+        let event = match event {
+            Ok(e) => e,
+            Err(crate::http::WebSocketError::Closed) => {
+                return Ok(Some(MonitorUpdate::Disconnected));
+            }
+            Err(e) => return Err(e),
+        };
 
         let mut g = self.status.lock().await;
         let status = &mut *g;
+
+        // Mark that we've seen activity
+        self.seen_busy = true;
 
         // store only events that are important for monitor
         match event {
@@ -325,14 +390,17 @@ impl Monitor {
                 let issues = manager.issues().await;
                 let Ok(issues) = issues else {
                     tracing::error!("Failed to get list of issues: {:?}", issues);
-                    return Ok(false);
+                    return Ok(None);
                 };
                 status.issues = issues;
 
                 // Refresh product ID as it might have changed
                 // (e.g., when a product is selected, it triggers IssuesChanged)
                 match Self::fetch_product_id(&self.http_client).await {
-                    Ok(product_id) => status.system_info.product_id = product_id,
+                    Ok((product_id, product_mode)) => {
+                        status.system_info.product_id = product_id;
+                        status.system_info.product_mode = product_mode;
+                    }
                     Err(e) => tracing::error!("Failed to refresh product name: {:?}", e),
                 }
             }
@@ -342,7 +410,7 @@ impl Monitor {
                 let questions = questions.get_questions().await;
                 let Ok(questions) = questions else {
                     tracing::error!("Failed to get list of questions: {:?}", questions);
-                    return Ok(false);
+                    return Ok(None);
                 };
                 let questions = questions
                     .into_iter()
@@ -368,17 +436,36 @@ impl Monitor {
             Event::ProgressFinished { scope } => {
                 status.status.progresses.retain(|p| p.scope != scope);
             }
+            Event::TaskStarted { task } => {
+                if status
+                    .status
+                    .tasks
+                    .iter()
+                    .find(|t| t.id == task.id)
+                    .is_none()
+                {
+                    status.status.tasks.push(task);
+                }
+            }
+            Event::TaskFinished { task, .. } => {
+                status.status.tasks.retain(|t| t.id != task.id);
+            }
             _ => {
                 // other events are not interesting for monitor
-                return Ok(false);
+                return Ok(None);
             }
         }
 
         // Send update (ignore if send failed to avoid flooding logs)
-        let _ = self.updates.send(g.clone());
+        let _ = self.updates.send(MonitorUpdate::Status(g.clone())).await;
 
         // Check if we should exit
-        let should_exit = self.stop_on_idle && g.is_idle();
-        Ok(should_exit)
+        // Only exit on idle if we've seen the system become busy first.
+        // This prevents exiting before work starts (e.g., when config load is about to begin).
+        if self.stop_on_idle && self.seen_busy && g.is_idle() {
+            Ok(Some(MonitorUpdate::Finished))
+        } else {
+            Ok(None)
+        }
     }
 }

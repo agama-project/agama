@@ -27,6 +27,7 @@ pub mod message;
 pub mod hardware;
 pub mod ipmi;
 
+pub use agama_access as access;
 pub use agama_bootloader as bootloader;
 pub use agama_files as files;
 pub use agama_hostname as hostname;
@@ -42,7 +43,7 @@ pub use agama_storage as storage;
 pub use agama_users as users;
 
 pub(crate) mod checks;
-pub(crate) mod tasks;
+pub(crate) mod task_manager;
 
 pub mod test_utils;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useInstallerClient } from "~/context/installer";
 import { getStatus } from "~/api";
 
-import type { Status, Progress } from "~/model/status";
+import type { Status, Progress, Task } from "~/model/status";
 
 const statusQuery = {
   queryKey: ["status"],
@@ -42,6 +42,29 @@ function useStatusChanges() {
   const client = useInstallerClient();
 
   // FIXME: refactor to use a single subscription.
+  useEffect(() => {
+    if (!client) return;
+
+    return client.onEvent((event) => {
+      queryClient.setQueryData(["status"], (data: Status) => {
+        let newTasks: Task[] | null = null;
+
+        if (event.type === "TaskAdded") {
+          newTasks = [...data.tasks, event.task];
+        }
+
+        if (event.type === "TaskFinished") {
+          newTasks = remove(data.tasks, (t) => t.id === event.task.id);
+        }
+
+        // Only set query data if tasks have changed
+        if (newTasks && !isArrayEqual(newTasks, data.tasks)) {
+          return { ...data, tasks: newTasks };
+        }
+      });
+    });
+  }, [client, queryClient]);
+
   useEffect(() => {
     if (!client) return;
 

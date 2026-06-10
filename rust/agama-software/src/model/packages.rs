@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -18,51 +18,17 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use gettextrs::gettext;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
-use std::fmt;
+// Re-export types from agama-utils
+pub use agama_utils::ResolvableType;
 
-/// Represents a software resolvable.
-#[derive(Clone, Debug, Deserialize, PartialEq, JsonSchema)]
-pub struct Resolvable {
-    pub name: String,
-    #[serde(rename = "type")]
-    pub r#type: ResolvableType,
+/// Extension trait to convert ResolvableType to zypp_agama::ResolvableKind
+pub trait ResolvableTypeExt {
+    fn to_zypp_kind(&self) -> zypp_agama::ResolvableKind;
 }
 
-impl Resolvable {
-    pub fn new(name: &str, r#type: ResolvableType) -> Self {
-        Self {
-            name: name.to_string(),
-            r#type,
-        }
-    }
-}
-
-/// Software resolvable type (package or pattern).
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, JsonSchema, PartialEq, Eq, Hash)]
-#[serde(rename_all = "camelCase")]
-pub enum ResolvableType {
-    Package = 0,
-    Pattern = 1,
-    Product = 2,
-}
-
-impl fmt::Display for ResolvableType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let label = match self {
-            ResolvableType::Package => gettext("package"),
-            ResolvableType::Pattern => gettext("pattern"),
-            ResolvableType::Product => gettext("product"),
-        };
-        write!(f, "{}", label)
-    }
-}
-
-impl From<ResolvableType> for zypp_agama::ResolvableKind {
-    fn from(value: ResolvableType) -> Self {
-        match value {
+impl ResolvableTypeExt for ResolvableType {
+    fn to_zypp_kind(&self) -> zypp_agama::ResolvableKind {
+        match self {
             ResolvableType::Package => zypp_agama::ResolvableKind::Package,
             ResolvableType::Product => zypp_agama::ResolvableKind::Product,
             ResolvableType::Pattern => zypp_agama::ResolvableKind::Pattern,

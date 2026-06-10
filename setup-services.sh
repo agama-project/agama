@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/bash -x
 
 # Using a git checkout in the current directory and set up the services, so that it can be used by:
 # - the web frontend (as set up by setup-web.sh)

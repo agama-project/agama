@@ -64,6 +64,8 @@
         <package name="avahi"/>
         <package name="bind-utils"/>
         <package name="systemd"/>
+        <package name="ignition"/>
+        <package name="combustion"/>
         <package name="procps"/>
         <package name="iputils"/>
         <package name="hyper-v" arch="aarch64,x86_64"/>

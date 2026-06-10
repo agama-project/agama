@@ -52,6 +52,7 @@ import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
 import ReviewAndInstallButton from "~/components/core/ReviewAndInstallButton";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
+import AppearanceSettings from "~/components/core/AppearanceSettings";
 import Questions from "~/components/questions/Questions";
 import { _, TranslatedString } from "~/i18n";
 
@@ -343,22 +344,18 @@ interface MinimalPageProps extends BasePageProps {
  */
 type PageProps = (StandardPageProps | MinimalPageProps) & {
   /**
-   * If true, the default component in the start slot
-   * (`<ProgressStatusMonitor />`) will not be rendered.
+   * If true, the ProgressStatusMonitor will not be automatically
+   * injected at the beginning of endSlot.
    *
-   * Pass a custom `startSlot` to render custom content instead.
-   *
-   * Default: `false` (renders default ProgressStatusMonitor if no `startSlot` provided)
+   * Default: `false` (ProgressStatusMonitor is injected)
    */
-  noDefaultStartSlot?: boolean;
+  noDefaultProgressMonitor?: boolean;
 
   /**
-   * If true, the default component in the end slot
-   * (`<ReviewAndInstallButton />`) will not be rendered.
+   * If true, the default ReviewAndInstallButton will not be
+   * automatically added to endSlot.
    *
-   * Pass a custom `endSlot` to render custom content instead.
-   *
-   * Default: `false` (renders default ReviewAndInstallButton if no `endSlot` provided)
+   * Default: `false` (ReviewAndInstallButton is added)
    */
   noDefaultEndSlot?: boolean;
 };
@@ -454,10 +451,9 @@ const StandardLayout = ({
  */
 const Page = ({
   variant = "standard",
-  startSlot,
   endSlot,
-  noDefaultStartSlot,
-  noDefaultEndSlot,
+  noDefaultProgressMonitor = false,
+  noDefaultEndSlot = false,
   children,
   ...props
 }: PageProps): React.ReactNode => {
@@ -465,14 +461,37 @@ const Page = ({
     return <MinimalLayout>{children}</MinimalLayout>;
   }
 
-  const startSlotContent = startSlot ?? (noDefaultStartSlot ? null : <ProgressStatusMonitor />);
-  const endSlotContent = endSlot ?? (noDefaultEndSlot ? null : <ReviewAndInstallButton />);
+  // Build endSlot content:
+  // [custom endSlot] [ReviewAndInstallButton] [ProgressStatusMonitor] [AppearanceSettings]
+  const endSlotContent = (
+    <>
+      {endSlot}
+      {!noDefaultEndSlot && <ReviewAndInstallButton />}
+      {!noDefaultProgressMonitor && <ProgressStatusMonitor />}
+      <AppearanceSettings />
+    </>
+  );
 
   return (
-    <StandardLayout {...props} startSlot={startSlotContent} endSlot={endSlotContent}>
+    <StandardLayout {...props} endSlot={endSlotContent}>
       {children || <Outlet />}
     </StandardLayout>
   );
+};
+
+/**
+ * Scrolls the page main container to the top.
+ *
+ * Useful for bringing alerts or validation errors into view after form
+ * submission. Defers scroll to next tick to ensure content is rendered.
+ */
+const scrollToTop = () => {
+  setTimeout(() => {
+    const pageMain = document.querySelector(".pf-v6-c-page__main");
+    if (pageMain) {
+      pageMain.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, 0);
 };
 
 Page.displayName = "agama/core/PageNext";
@@ -484,5 +503,6 @@ Page.Cancel = Cancel;
 Page.Submit = Submit;
 Page.Action = Action;
 Page.Section = Section;
+Page.scrollToTop = scrollToTop;
 
 export default Page;

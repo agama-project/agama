@@ -18,7 +18,12 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{progress::Progress, s390::dasd, scope::Scope, status::Stage};
+use crate::api::{
+    progress::Progress,
+    s390::dasd,
+    scope::Scope,
+    status::{Stage, Task},
+};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast;
 
@@ -68,6 +73,19 @@ pub enum Event {
     },
     /// DASD format finished (contains exit status of the format operation).
     DASDFormatFinished,
+    // New task added (but not started yet).
+    TaskAdded {
+        task: Task,
+    },
+    // New task started.
+    TaskStarted {
+        task: Task,
+    },
+    // Task finished.
+    TaskFinished {
+        task: Task,
+        remaining: usize,
+    },
 }
 
 pub type Sender = broadcast::Sender<Event>;

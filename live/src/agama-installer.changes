@@ -1,4 +1,42 @@
 -------------------------------------------------------------------
+Fri Jun  5 13:42:42 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "plymouth.ignore-serial-consoles" boot option on ppc64le
+  (bsc#1249569)
+
+-------------------------------------------------------------------
+Tue Jun  2 11:40:18 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Display the media check result and wait for a key press on all
+  system consoles to easily continue booting the installer system,
+  needed especially for openQA (bsc#1267263)
+
+-------------------------------------------------------------------
+Mon Jun  1 14:35:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Added "agama-screenshot" helper script to take screenshots
+  of the locally running Agama installer
+  (gh#agama-project/agama#3537)
+
+-------------------------------------------------------------------
+Mon May 25 15:25:49 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Enable back ignition and combustion, apply a workaround for
+  detecting the first boot (disable detection, consider every boot
+  as the first boot) (related to bsc#1266257)
+
+-------------------------------------------------------------------
+Mon May 25 12:06:55 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Temporarily disabled ignition and combustion because they cannot
+  start properly in the Live ISO environment (bsc#1266257)
+
+-------------------------------------------------------------------
+Thu May 21 15:39:19 UTC 2026 - Volkan OZTUZUN <volkan.oztuzun@suse.com>
+
+- Add ignition and combustion to the live image package list.
+
+-------------------------------------------------------------------
 Sat May 16 07:54:44 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 21

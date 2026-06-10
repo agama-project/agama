@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{hostname, l10n, network, software, users};
+use crate::api::{access::ExtendedConfig, hostname, l10n, network, software, users};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -31,6 +31,7 @@ pub struct Proposal {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub l10n: Option<l10n::Proposal>,
     pub network: network::Proposal,
+    pub access: ExtendedConfig,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub software: Option<software::Proposal>,
     #[serde(skip_serializing_if = "Option::is_none")]

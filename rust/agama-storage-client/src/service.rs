@@ -24,7 +24,8 @@ use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{bootloader, iscsi, storage::Config, Issue},
     arch::Arch,
-    BoxFuture,
+    message::GetResolvables,
+    BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use tokio::sync::oneshot;
@@ -199,6 +200,14 @@ impl MessageHandler<message::GetIssues> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.storage_proxy.resolvables().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::GetConfigFromModel> for Service {
     async fn handle(
         &mut self,
@@ -292,12 +301,32 @@ impl MessageHandler<message::bootloader::GetSystem> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::bootloader::GetResolvables> for Service {
+    async fn handle(
+        &mut self,
+        _message: message::bootloader::GetResolvables,
+    ) -> Result<Vec<Resolvable>, Error> {
+        let raw_json = self.bootloader_proxy.resolvables().await?;
+        Ok(try_from_string(&raw_json)?)
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::bootloader::SetConfig> for Service {
-    async fn handle(&mut self, message: message::bootloader::SetConfig) -> Result<(), Error> {
-        self.bootloader_proxy
-            .set_config(&message.config.to_string())
-            .await?;
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::bootloader::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let proxy = self.bootloader_proxy.clone();
+        let response = run_in_background(async move {
+            proxy.set_config(&message.config.to_string()).await?;
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 
@@ -333,9 +362,21 @@ impl MessageHandler<message::iscsi::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::iscsi::SetConfig> for Service {
-    async fn handle(&mut self, message: message::iscsi::SetConfig) -> Result<(), Error> {
-        let config = serde_json::to_string(&message.config)?;
-        Ok(self.iscsi_proxy.set_config(&config).await?)
+    async fn handle(
+        &mut self,
+        message: message::iscsi::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let proxy = self.iscsi_proxy.clone();
+        let response = run_in_background(async move {
+            let config = serde_json::to_string(&message.config)?;
+            proxy.set_config(&config).await?;
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 
@@ -381,12 +422,23 @@ impl MessageHandler<message::dasd::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::dasd::SetConfig> for Service {
-    async fn handle(&mut self, message: message::dasd::SetConfig) -> Result<(), Error> {
-        if let Some(proxy) = &self.dasd_proxy {
-            let config = serde_json::to_string(&message.config)?;
-            proxy.set_config(&config).await?;
-        }
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::dasd::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let dasd_proxy = self.dasd_proxy.clone();
+        let response = run_in_background(async move {
+            if let Some(proxy) = dasd_proxy {
+                let config = serde_json::to_string(&message.config)?;
+                proxy.set_config(&config).await?;
+            }
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 
@@ -444,12 +496,23 @@ impl MessageHandler<message::zfcp::GetIssues> for Service {
 
 #[async_trait]
 impl MessageHandler<message::zfcp::SetConfig> for Service {
-    async fn handle(&mut self, message: message::zfcp::SetConfig) -> Result<(), Error> {
-        if let Some(proxy) = &self.zfcp_proxy {
-            let config = serde_json::to_string(&message.config)?;
-            proxy.set_config(&config).await?;
-        }
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::zfcp::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let zfcp_proxy = self.zfcp_proxy.clone();
+        let response = run_in_background(async move {
+            if let Some(proxy) = zfcp_proxy {
+                let config = serde_json::to_string(&message.config)?;
+                proxy.set_config(&config).await?;
+            }
+            Ok(())
+        });
+        Ok(Box::pin(async move {
+            response
+                .await
+                .map_err(|_| Error::Actor(actor::Error::Response(Self::name())))?
+        }))
     }
 }
 

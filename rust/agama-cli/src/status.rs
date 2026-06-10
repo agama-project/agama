@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::api;
 use agama_lib::monitor::InstallationStatus;
 use agama_utils::api::status::Stage;
 use gettextrs::gettext;
@@ -58,7 +59,7 @@ impl InstallationEnum {
         if !status.issues.is_empty() {
             return Self::Issues;
         };
-        if status.status.progresses.is_empty() {
+        if status.status.progresses.is_empty() && status.status.tasks.is_empty() {
             return Self::Ready;
         }
         if status.status.stage == Stage::Configuring {
@@ -89,17 +90,23 @@ impl fmt::Display for InstallationEnum {
 pub struct StatusReport {
     /// current state of the installation process
     pub installation: InstallationEnum,
-    /// more detailed data compiled from backend from status, questions and issues call
-    #[serde(flatten)]
-    pub data: InstallationStatus,
+    /// Data from InstallationStatus to be published via status command
+    /// Current installation status.
+    pub status: api::Status,
+    /// List of issues currently blocking or affecting the installation.
+    pub issues: Vec<api::IssueWithScope>,
+    /// List of unanswered questions.
+    pub questions: Vec<api::question::Question>,
 }
 
 impl StatusReport {
-    pub fn new(status: InstallationStatus) -> Self {
-        let installation_enum = InstallationEnum::from_status(&status);
+    pub fn new(full_status: InstallationStatus) -> Self {
+        let installation_enum = InstallationEnum::from_status(&full_status);
         Self {
             installation: installation_enum,
-            data: status,
+            status: full_status.status,
+            issues: full_status.issues,
+            questions: full_status.questions,
         }
     }
 }
@@ -109,15 +116,15 @@ impl fmt::Display for StatusReport {
         writeln!(f, "{}", self.installation)?;
         writeln!(f)?;
         write!(f, "{}", gettext("Details:"))?;
-        if !self.data.questions.is_empty() {
+        if !self.questions.is_empty() {
             write!(f, "\n{}", gettext("Open questions:"))?;
-            for q in &self.data.questions {
+            for q in &self.questions {
                 write!(f, "\n  - {}", q.spec.text)?;
             }
         }
-        if !self.data.issues.is_empty() {
+        if !self.issues.is_empty() {
             write!(f, "\n{}", gettext("Blocking issues:"))?;
-            for i in &self.data.issues {
+            for i in &self.issues {
                 write!(f, "\n  - {}", i.issue.description)?;
             }
         }
@@ -134,6 +141,7 @@ mod tests {
         progress::Progress,
         question::{Question, QuestionSpec},
         scope::Scope,
+        status::Task,
     };
 
     fn default_status() -> InstallationStatus {
@@ -200,13 +208,29 @@ mod tests {
     }
 
     #[test]
-    fn test_from_status_proposing() {
+    fn test_from_status_proposing_with_progress() {
         let mut status = default_status();
         status.status.stage = Stage::Configuring;
         status
             .status
             .progresses
             .push(Progress::new(Scope::Manager, 1, "step".to_string()));
+        assert_eq!(
+            InstallationEnum::from_status(&status),
+            InstallationEnum::Proposing
+        );
+    }
+
+    #[test]
+    fn test_from_status_proposing_with_tasks() {
+        let mut status = default_status();
+        status.status.stage = Stage::Configuring;
+        status.status.tasks.push(Task {
+            id: 1,
+            name: "network_config".to_string(),
+            description: "Configuring network".to_string(),
+            scope: Scope::Network,
+        });
         assert_eq!(
             InstallationEnum::from_status(&status),
             InstallationEnum::Proposing
@@ -229,10 +253,12 @@ mod tests {
 
     #[test]
     fn test_status_report_new() {
-        let status = default_status();
-        let report = StatusReport::new(status.clone());
+        let full_status = default_status();
+        let report = StatusReport::new(full_status.clone());
         assert_eq!(report.installation, InstallationEnum::Ready);
-        assert_eq!(report.data, status);
+        assert_eq!(report.status, full_status.status);
+        assert_eq!(report.issues, full_status.issues);
+        assert_eq!(report.questions, full_status.questions);
     }
 
     #[test]
@@ -252,7 +278,7 @@ mod tests {
             .questions
             .push(Question::new(1, QuestionSpec::new("text", "class")));
 
-        // Precedence 1: Question over issues and proposing
+        // Precedence 1: Question over issues and proposin
         assert_eq!(
             InstallationEnum::from_status(&status),
             InstallationEnum::Question

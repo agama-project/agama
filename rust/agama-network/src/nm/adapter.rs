@@ -54,28 +54,40 @@ impl<'a> NetworkManagerAdapter<'a> {
         conn: &Connection,
         path: zbus::zvariant::OwnedObjectPath,
     ) -> Result<OwnedObjectPath, NmError> {
-        let devices = self.client.devices().await?;
-        if let Some(interface) = &conn.interface {
-            for device in devices {
-                if interface != &device.name {
-                    continue;
-                }
-
-                if let Some(device_conn) = device.connection {
-                    if device_conn != conn.id {
-                        tracing::info!(
-                            "Disconnecting {} because the connection is {}",
-                            &device_conn,
-                            &conn.id,
-                        );
-                        self.client.disconnect_device(device.name).await?;
-                    }
-                }
-            }
-        }
-
         tracing::info!("Activating connection {}", &conn.id);
         self.client.activate_connection(path).await
+    }
+
+    /// Ensures that devices are in a consistent state before activating a connection or
+    /// after updating it.
+    ///
+    /// It disconnects any device that is currently using the connection but is no longer
+    /// compatible with it. Also, it disconnects any device that should be used by the
+    /// connection (is a target) but is currently using a different one.
+    async fn cleanup_devices(&self, conn: &Connection) -> Result<(), NmError> {
+        if !conn.is_bound() {
+            return Ok(());
+        }
+
+        let devices = self.client.devices().await?;
+        for device in devices {
+            let is_using_this = device.connection.as_ref() == Some(&conn.id);
+            let is_target = conn.is_up() && conn.matches_device(&device.name, &device.mac_address);
+            let is_compatible = conn.is_compatible(&device.name, &device.mac_address);
+
+            if (is_using_this && !is_compatible)
+                || (is_target && !is_using_this && device.connection.is_some())
+            {
+                tracing::info!(
+                    "Disconnecting device {} (currently using {}) because connection {} matches it or is no longer compatible",
+                    &device.name,
+                    device.connection.as_deref().unwrap_or("nothing"),
+                    &conn.id
+                );
+                self.client.disconnect_device(device.name).await?;
+            }
+        }
+        Ok(())
     }
 }
 
@@ -211,6 +223,10 @@ impl Adapter for NetworkManagerAdapter<'_> {
                         return Err(NetworkAdapterError::Write(anyhow!(e)));
                     }
                 };
+
+                if let Err(e) = self.cleanup_devices(conn).await {
+                    tracing::error!("Failed to cleanup devices for {}: {}", &conn.id, e);
+                }
 
                 if conn.is_up() {
                     match self.activate_connection(conn, path).await {

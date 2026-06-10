@@ -69,7 +69,7 @@ function InstallationFinished() {
   const isGrub2WithTpm = useIsGrub2WithTpm();
 
   return (
-    <Page noDefaultStartSlot endSlot={<InstallerOptionsMenu hideLabel />}>
+    <Page noDefaultProgressMonitor noDefaultEndSlot endSlot={<InstallerOptionsMenu hideLabel />}>
       <Page.Content>
         <SplitInfoLayout
           icon="done_all"
@@ -85,8 +85,7 @@ function InstallationFinished() {
             <Stack hasGutter>
               <HelperText>
                 <HelperTextItem
-                  className={alignmentStyles.textAlignEnd}
-                  style={{ textWrap: "balance" }}
+                  className={[alignmentStyles.textAlignEnd, "text-balance"].join(" ")}
                 >
                   {_("You can reboot the machine to log in to the new system.")}
                 </HelperTextItem>

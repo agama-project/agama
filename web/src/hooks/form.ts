@@ -21,6 +21,7 @@
  */
 
 import { createFormHook } from "@tanstack/react-form";
+import { shake } from "radashi";
 import { fieldContext, formContext, useFieldContext, useFormContext } from "~/hooks/form-contexts";
 import ArrayField from "~/components/form/ArrayField";
 import CancelButton from "~/components/form/CancelButton";
@@ -31,6 +32,7 @@ import MaskedField from "~/components/form/MaskedField";
 import ReadOnlyField from "~/components/form/ReadOnlyField";
 import NumberField from "~/components/form/NumberField";
 import SubmitButton from "~/components/form/SubmitButton";
+import SuggestionsTextField from "~/components/form/SuggestionsTextField";
 import TextField from "~/components/form/TextField";
 
 /**
@@ -49,6 +51,7 @@ const { useAppForm, withForm } = createFormHook({
     MaskedField,
     ReadOnlyField,
     NumberField,
+    SuggestionsTextField,
     TextField,
   },
   formComponents: { CancelButton, SubmitButton },
@@ -150,6 +153,10 @@ function usePristineSafeForm<T extends PristineSafeFormOptions>(
  * Use this when some defaults depend on runtime data (e.g. values from a hook)
  * that cannot be known when the shared options are defined statically.
  *
+ * By default, undefined values are removed (shaken) before merging, preventing
+ * runtime undefined from overriding static defaults. Pass `{ preserveUndefined: true }`
+ * to disable this behavior.
+ *
  * @example
  * const myFormOpts = formOptions({ defaultValues: { name: "", device: "" } });
  *
@@ -160,12 +167,21 @@ function usePristineSafeForm<T extends PristineSafeFormOptions>(
  *     onSubmit: ...,
  *   });
  * }
+ *
+ * @example
+ * // With optional API data that may be undefined
+ * ...mergeFormDefaults(myFormOpts, {
+ *   url: product?.registrationUrl,  // undefined won't override default
+ *   code: product?.registrationCode,
+ * })
  */
 function mergeFormDefaults<T extends { defaultValues: Record<string, unknown> }>(
   opts: T,
   runtimeDefaults: Partial<T["defaultValues"]>,
+  options?: { preserveUndefined?: boolean },
 ): T {
-  return { ...opts, defaultValues: { ...opts.defaultValues, ...runtimeDefaults } };
+  const values = options?.preserveUndefined ? runtimeDefaults : shake(runtimeDefaults);
+  return { ...opts, defaultValues: { ...opts.defaultValues, ...values } };
 }
 
 /**

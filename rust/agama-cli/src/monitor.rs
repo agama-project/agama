@@ -20,49 +20,46 @@
 
 //! Terminal UI monitor using ratatui
 //!
-//! This module provides a full-screen terminal UI for monitoring Agama installation progress.
+//! This module provides an inline terminal UI for monitoring Agama installation progress.
 //! It uses ratatui for rendering and is driven by WebSocket updates from the backend.
 //! When no terminal is available, it falls back to a simple text-based monitor.
 
 mod app;
-mod theme;
 mod ui;
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::Monitor,
+    monitor::{Monitor, MonitorUpdate},
 };
 use anyhow::Result;
-use crossterm::{
-    event::{DisableMouseCapture, EnableMouseCapture},
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-};
-use ratatui::{backend::CrosstermBackend, Terminal};
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
+use ratatui::{backend::CrosstermBackend, Terminal, TerminalOptions, Viewport};
 use std::io::{self, IsTerminal};
-
-use theme::Theme;
 
 use crate::monitor::app::MonitorAppBuilder;
 
-/// Sets up the terminal for fullscreen TUI mode
+const MONITOR_HEIGHT: u16 = 20;
+
+/// Sets up the terminal for inline TUI mode
 fn setup_terminal() -> Result<Terminal<CrosstermBackend<io::Stdout>>> {
     enable_raw_mode()?;
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+    let stdout = io::stdout();
     let backend = CrosstermBackend::new(stdout);
-    Ok(Terminal::new(backend)?)
+    let mut terminal = Terminal::with_options(
+        backend,
+        TerminalOptions {
+            viewport: Viewport::Inline(MONITOR_HEIGHT),
+        },
+    )?;
+    terminal.hide_cursor()?;
+    Ok(terminal)
 }
 
 /// Restores the terminal to normal mode
 fn restore_terminal(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>) -> Result<()> {
-    disable_raw_mode()?;
-    execute!(
-        terminal.backend_mut(),
-        LeaveAlternateScreen,
-        DisableMouseCapture
-    )?;
     terminal.show_cursor()?;
+    terminal.clear()?;
+    disable_raw_mode()?;
     Ok(())
 }
 
@@ -86,24 +83,39 @@ async fn run_headless(
     println!("Agama monitor started (headless mode)");
     println!("Initial stage: {:?}", status.status.stage);
 
-    // Listen to updates until channel closes
-    while let Ok(status) = updates.recv().await {
-        println!(
-            "Stage: {:?}, Active tasks: {}, Issues: {}, Questions: {}",
-            status.status.stage,
-            status.status.progresses.len(),
-            status.issues.len(),
-            status.questions.len()
-        );
+    // Listen to updates
+    while let Some(update) = updates.recv().await {
+        match update {
+            MonitorUpdate::Status(status) => {
+                println!(
+                    "stage: {:?}, active tasks: {}, progresses: {}, issues: {}, questions: {}",
+                    status.status.stage,
+                    status.status.tasks.len(),
+                    status.status.progresses.len(),
+                    status.issues.len(),
+                    status.questions.len()
+                );
+            }
+            MonitorUpdate::Finished => {
+                break;
+            }
+            MonitorUpdate::Disconnected => {
+                eprintln!("Connection to the server was closed.");
+                break;
+            }
+            MonitorUpdate::Error(e) => {
+                eprintln!("{e}");
+                break;
+            }
+        }
     }
 
-    println!("Monitoring finished");
     Ok(())
 }
 
 /// Starts the monitor (TUI or headless mode based on terminal availability)
 ///
-/// When a terminal is available, uses the full-screen TUI.
+/// When a terminal is available, uses the inline TUI.
 /// Otherwise, falls back to simple text output.
 ///
 /// # Arguments
@@ -123,7 +135,6 @@ pub async fn run(
 
     // Create app state with selected theme
     let mut app = MonitorAppBuilder::new(http_client, websocket)
-        .with_theme(Theme::monochrome())
         .with_stop_on_idle(stop_on_idle)
         .build()
         .await?;
@@ -137,8 +148,14 @@ pub async fn run(
     // Cleanup
     restore_terminal(&mut terminal)?;
 
-    if let Err(error) = result {
-        eprintln!("Error running the monitor: {error}");
+    // Handle result
+    match result {
+        Ok(()) => {
+            // Normal finish (idle or user quit)
+        }
+        Err(e) => {
+            eprintln!("{e}");
+        }
     }
 
     // Forces crossterm loop to finish.

@@ -7,6 +7,19 @@ root = true
 [*.sh]
 indent_style = space
 indent_size = 2
+trim_trailing_whitespace = true
+
+# A special non-standard configuration for the `shfmt` tool which matches any
+# file with a shell hashbang on the first line, it does not need the *.sh
+# extension in the file name (needs shfmt >= 3.8.0).
+#
+# To reformat all files run `shfmt -w -l .` at the top-level directory.
+[[shell]]
+indent_style = space
+indent_size = 2
+switch_case_indent = true
+space_redirects    = true
+trim_trailing_whitespace = true
 
 [*.{c,h,cxx,hxx}]
 indent_style = space

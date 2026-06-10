@@ -24,8 +24,9 @@ use crate::storage_client::{self, message};
 use agama_utils::{
     actor::{self, Handler},
     api::{storage::Config, Issue},
+    message::GetResolvables,
     products::ProductSpec,
-    BoxFuture,
+    BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -61,6 +62,7 @@ pub trait StorageClient {
     async fn get_config_model(&self) -> Result<Option<Value>, Error>;
     async fn get_proposal(&self) -> Result<Option<Value>, Error>;
     async fn get_issues(&self) -> Result<Vec<Issue>, Error>;
+    async fn get_resolvables(&self) -> Result<Vec<Resolvable>, Error>;
     async fn set_config(
         &self,
         product: Arc<RwLock<ProductSpec>>,
@@ -139,6 +141,11 @@ impl StorageClient for Client {
 
     async fn get_issues(&self) -> Result<Vec<Issue>, Error> {
         let value = self.storage_client.call(message::GetIssues).await?;
+        Ok(value)
+    }
+
+    async fn get_resolvables(&self) -> Result<Vec<Resolvable>, Error> {
+        let value = self.storage_client.call(GetResolvables).await?;
         Ok(value)
     }
 

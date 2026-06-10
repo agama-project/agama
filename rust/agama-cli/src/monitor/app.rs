@@ -20,46 +20,79 @@
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{InstallationStatus, Monitor},
+    monitor::{InstallationStatus, Monitor, MonitorUpdate},
 };
 use anyhow::{anyhow, Result};
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
-use gettextrs::gettext;
+use crossterm::event::{Event, EventStream, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
+use futures_util::StreamExt;
 use ratatui::{backend::CrosstermBackend, buffer::Buffer, layout::Rect, widgets::Widget, Terminal};
 use serde::Deserialize;
-use std::{collections::HashMap, io, time::Duration};
-use tokio::sync::broadcast;
+use std::{collections::HashMap, io};
 use tokio::sync::mpsc;
 
-use super::{theme::Theme, ui};
+use super::ui;
 
-/// Application messages.
+/// Application messages (internal).
+#[derive(Clone, Debug)]
 enum Message {
     /// Status update from monitor
     StatusUpdate(InstallationStatus),
-    /// Monitor has finished (channel closed)
-    MonitorFinished,
+    /// Monitor finished (installation became idle)
+    Finished,
+    /// Monitor disconnected (connection lost)
+    Disconnected,
+    /// Monitor stopped with error
+    Error(String),
     /// Terminal event.
     Terminal(Event),
+}
+
+/// Errors that can occur while running the monitor.
+#[derive(Debug, thiserror::Error)]
+pub enum MonitorError {
+    /// Connection to the server was closed.
+    #[error("Connection to the server was closed")]
+    Disconnected,
+    /// An error occurred during monitoring.
+    #[error("{0}")]
+    MonitoringError(String),
+    /// I/O error.
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
+    /// Other error.
+    #[error(transparent)]
+    Other(#[from] anyhow::Error),
 }
 
 // FIXME: find a better place
 /// Minimal struct to deserialize product information from /system
 #[derive(Debug, Deserialize)]
 struct ProductInfo {
+    name: String,
+    modes: HashMap<String, String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MinimalProduct {
+    id: String,
+    name: String,
+    modes: Vec<MinimalProductMode>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MinimalProductMode {
     id: String,
     name: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct MinimalSystemInfo {
-    products: Vec<ProductInfo>,
+    products: Vec<MinimalProduct>,
 }
 
 pub struct MonitorAppBuilder {
     pub http_client: BaseHTTPClient,
     pub websocket_client: WebSocketClient,
-    pub theme: Theme,
     pub stop_on_idle: bool,
 }
 
@@ -68,14 +101,8 @@ impl MonitorAppBuilder {
         Self {
             http_client,
             websocket_client,
-            theme: Theme::default(),
             stop_on_idle: false,
         }
-    }
-    /// Creates a new MonitorApp with a specific theme.
-    pub fn with_theme(mut self, theme: Theme) -> Self {
-        self.theme = theme;
-        self
     }
 
     /// Sets the monitor to stop after going idle (no running progress).
@@ -85,42 +112,49 @@ impl MonitorAppBuilder {
     }
 
     pub async fn build(self) -> Result<MonitorApp> {
-        let product_names = self.get_product_names().await?;
+        let products = self.get_products().await?;
         let (updates, status) =
             Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
         Ok(MonitorApp {
-            updates,
+            updates: Some(updates),
             status,
-            theme: self.theme,
-            exit: false,
-            product_names,
+            products,
         })
     }
 
-    async fn get_product_names(&self) -> Result<HashMap<String, String>> {
+    async fn get_products(&self) -> Result<HashMap<String, ProductInfo>> {
         let info: MinimalSystemInfo = self.http_client.get("/system").await?;
-        let product_names = info
+        let products = info
             .products
-            .iter()
-            .map(|i| (i.id.clone(), i.name.clone()))
+            .into_iter()
+            .map(|p| {
+                let modes = p
+                    .modes
+                    .into_iter()
+                    .map(|m| (m.id.clone(), m.name.clone()))
+                    .collect();
+                (
+                    p.id.clone(),
+                    ProductInfo {
+                        name: p.name,
+                        modes,
+                    },
+                )
+            })
             .collect();
-        Ok(product_names)
+        Ok(products)
     }
 }
 
 /// Application state for the monitor TUI
 pub struct MonitorApp {
-    /// Status updates receiver
-    updates: broadcast::Receiver<InstallationStatus>,
+    /// Monitor updates receiver (taken when run() is called)
+    updates: Option<mpsc::Receiver<MonitorUpdate>>,
     /// Current installation status
     status: InstallationStatus,
-    /// Product names
-    product_names: HashMap<String, String>,
-    /// UI color theme
-    theme: Theme,
-    /// Exit in the next iteration
-    exit: bool,
+    /// Products information
+    products: HashMap<String, ProductInfo>,
 }
 
 impl MonitorApp {
@@ -137,35 +171,34 @@ impl MonitorApp {
     ///
     /// The main loop reacts to events from both sources.
     ///
+    /// Returns `Ok(())` when monitoring finishes normally (idle or user quit).
+    /// Returns `Err(MonitorError)` when an error occurs (disconnection or monitoring error).
+    ///
     /// * `terminal` - The terminal to draw on
     pub async fn run(
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
-    ) -> Result<()> {
+    ) -> Result<(), MonitorError> {
         let (tx, mut rx) = mpsc::channel(16);
 
-        // Resubscribe to get a new receiver for the task
-        let mut status_updates = self.updates.resubscribe();
+        // Take ownership of the monitor updates receiver
+        let mut status_updates = self
+            .updates
+            .take()
+            .ok_or(anyhow!("Monitor receiver already taken"))?;
 
-        // Spawn task to forward status updates
+        // Spawn task to forward monitor updates
         let tx_monitor = tx.clone();
         tokio::task::spawn(async move {
-            loop {
-                match status_updates.recv().await {
-                    Ok(status) => {
-                        if tx_monitor
-                            .send(Message::StatusUpdate(status))
-                            .await
-                            .is_err()
-                        {
-                            break;
-                        }
-                    }
-                    Err(_) => {
-                        // Channel closed - monitoring finished
-                        _ = tx_monitor.send(Message::MonitorFinished).await;
-                        break;
-                    }
+            while let Some(update) = status_updates.recv().await {
+                let message = match update {
+                    MonitorUpdate::Status(status) => Message::StatusUpdate(status),
+                    MonitorUpdate::Finished => Message::Finished,
+                    MonitorUpdate::Disconnected => Message::Disconnected,
+                    MonitorUpdate::Error(e) => Message::Error(e),
+                };
+                if tx_monitor.send(message).await.is_err() {
+                    break;
                 }
             }
         });
@@ -173,56 +206,91 @@ impl MonitorApp {
         // Spawn task to read terminal events
         let tx_terminal = tx.clone();
         let terminal_handle = tokio::task::spawn(async move {
-            loop {
-                match crossterm::event::poll(Duration::from_millis(100)) {
-                    Ok(true) => {
-                        if let Ok(event) = crossterm::event::read() {
-                            if tx_terminal.send(Message::Terminal(event)).await.is_err() {
-                                break;
-                            }
+            let mut event_stream = EventStream::new();
+            while let Some(event) = event_stream.next().await {
+                match event {
+                    Ok(event) => {
+                        if tx_terminal.send(Message::Terminal(event)).await.is_err() {
+                            break;
                         }
                     }
                     Err(_) => break,
-                    _ => {}
                 }
             }
         });
 
         // Main event loop
-        while !self.exit {
+        loop {
             terminal.draw(|f| f.render_widget(&mut *self, f.area()))?;
 
-            let message = rx
-                .recv()
-                .await
-                .ok_or(anyhow!(gettext("Lost the connection with the server.")))?;
+            let message = rx.recv().await.ok_or(MonitorError::Disconnected)?;
 
             match message {
                 Message::StatusUpdate(status) => self.update_status(status),
-                Message::MonitorFinished => self.exit = true,
+                Message::Finished => {
+                    terminal_handle.abort();
+                    return Ok(());
+                }
+                Message::Disconnected => {
+                    terminal_handle.abort();
+                    return Err(MonitorError::Disconnected);
+                }
+                Message::Error(e) => {
+                    terminal_handle.abort();
+                    return Err(MonitorError::MonitoringError(e));
+                }
                 Message::Terminal(event) => {
                     if let Event::Key(key_event) = event {
-                        self.handle_key_event(key_event);
+                        if self.handle_key_event(key_event) {
+                            terminal_handle.abort();
+                            return Ok(());
+                        }
                     }
                 }
             }
         }
-
-        terminal_handle.abort();
-        Ok(())
     }
 
     /// Handle terminal key events.
-    fn handle_key_event(&mut self, key_event: KeyEvent) {
+    /// Returns true if the application should exit.
+    fn handle_key_event(&mut self, key_event: KeyEvent) -> bool {
         if key_event.kind != KeyEventKind::Press {
-            return;
+            return false;
         }
 
-        match (key_event.code, key_event.modifiers) {
-            (KeyCode::Char('q'), _) | (KeyCode::Esc, _) => {
-                self.exit = true;
-            }
-            _ => {}
+        matches!(
+            (key_event.code, key_event.modifiers),
+            (KeyCode::Char('q'), _)
+                | (KeyCode::Esc, _)
+                | (KeyCode::Char('c'), KeyModifiers::CONTROL)
+        )
+    }
+
+    fn get_product_name(&self, id: &Option<String>, mode: &Option<String>) -> Option<String> {
+        let Some(product_id) = id else {
+            return None;
+        };
+
+        match self.get_product_and_mode(product_id, mode) {
+            (Some(name), Some(mode)) => Some(format!("{} ({})", name, mode)),
+            (Some(name), None) => Some(name),
+            _ => None,
+        }
+    }
+
+    fn get_product_and_mode(
+        &self,
+        id: &str,
+        mode: &Option<String>,
+    ) -> (Option<String>, Option<String>) {
+        let Some(product) = self.products.get(id) else {
+            return (None, None);
+        };
+
+        let product_name = Some(product.name.clone());
+        match mode {
+            Some(mode_id) => (product_name, product.modes.get(mode_id).cloned()),
+            None => (product_name, None),
         }
     }
 }
@@ -231,18 +299,15 @@ impl MonitorApp {
 /// This allows rendering using ratatui's widget system
 impl Widget for &mut MonitorApp {
     fn render(self, area: Rect, buf: &mut Buffer) {
-        let layout = ui::create_layout(area);
+        let product_name = self.get_product_name(
+            &self.status.system_info.product_id,
+            &self.status.system_info.product_mode,
+        );
 
-        // Render each section using widget structs
-        ui::StatusBar::new(&self.status, &self.theme).render(layout.status_bar, buf);
-        if let Some(product_id) = &self.status.system_info.product_id {
-            if let Some(name) = self.product_names.get(product_id) {
-                ui::Product::new(name).render(layout.product, buf);
-            }
-        }
-        ui::Separator.render(layout.separator, buf);
-        ui::Content::new(&self.status, &self.theme).render(layout.content, buf);
-        ui::Separator.render(layout.hints_separator, buf);
-        ui::Hints.render(layout.hints, buf);
+        let summary = ui::Summary::new(&self.status, product_name);
+        let layout = ui::create_layout(area, summary.indentation);
+
+        summary.render(layout.summary, buf);
+        ui::Content::new(&self.status).render(layout.content, buf);
     }
 }

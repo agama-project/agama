@@ -208,6 +208,31 @@ const BridgeDetails = ({ connection }: { connection: Connection }) => {
   );
 };
 
+const VlanDetails = ({ connection }: { connection: Connection }) => {
+  return (
+    <Page.Section title={_("VLAN")} pfCardProps={{ isPlain: false, isFullHeight: false }}>
+      <DescriptionList aria-label={_("VLAN details")} isHorizontal>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("VLAN ID")}</DescriptionListTerm>
+          <DescriptionListDescription>{connection.vlan?.id}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Parent device")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.vlan?.parent || _("None set")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>{_("Protocol")}</DescriptionListTerm>
+          <DescriptionListDescription>
+            {connection.vlan?.protocol || _("None set")}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    </Page.Section>
+  );
+};
+
 const DeviceDetails = ({ device }: { device: Device }) => {
   return (
     <DescriptionList
@@ -225,7 +250,7 @@ const DeviceDetails = ({ device }: { device: Device }) => {
         <DescriptionListDescription>{device.state}</DescriptionListDescription>
       </DescriptionListGroup>
       <DescriptionListGroup>
-        <DescriptionListTerm>{_("MAC")}</DescriptionListTerm>
+        <DescriptionListTerm>{_("MAC address")}</DescriptionListTerm>
         <DescriptionListDescription>{device.macAddress}</DescriptionListDescription>
       </DescriptionListGroup>
       <DescriptionListGroup>
@@ -434,6 +459,8 @@ export default function ConnectionDetails({ connection }: { connection: Connecti
             <BondDetails connection={connection} />
           ) : connection.bridge ? (
             <BridgeDetails connection={connection} />
+          ) : connection.vlan ? (
+            <VlanDetails connection={connection} />
           ) : (
             <BindingSettings connection={connection} />
           )}

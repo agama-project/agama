@@ -9,6 +9,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
+name = "agama-access"
+version = "0.1.0"
+dependencies = [
+ "agama-utils",
+ "async-trait",
+ "gettext-rs",
+ "openssl",
+ "tempfile",
+ "test-context",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "agama-autoinstall"
 version = "0.1.0"
 dependencies = [
@@ -17,6 +32,8 @@ dependencies = [
  "agama-transfer",
  "agama-utils",
  "anyhow",
+ "gettext-rs",
+ "i18n-format",
  "tempfile",
  "tokio",
  "tracing",
@@ -73,7 +90,6 @@ name = "agama-files"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
- "agama-software",
  "agama-utils",
  "async-trait",
  "gettext-rs",
@@ -107,7 +123,6 @@ dependencies = [
 name = "agama-iscsi"
 version = "0.1.0"
 dependencies = [
- "agama-storage",
  "agama-storage-client",
  "agama-utils",
  "async-trait",
@@ -193,6 +208,7 @@ dependencies = [
 name = "agama-manager"
 version = "0.1.0"
 dependencies = [
+ "agama-access",
  "agama-bootloader",
  "agama-files",
  "agama-hostname",
@@ -251,7 +267,6 @@ name = "agama-ntp"
 version = "0.1.0"
 dependencies = [
  "agama-l10n",
- "agama-software",
  "agama-utils",
  "async-trait",
  "merge",
@@ -281,7 +296,6 @@ dependencies = [
 name = "agama-s390"
 version = "0.1.0"
 dependencies = [
- "agama-storage",
  "agama-storage-client",
  "agama-utils",
  "async-trait",
@@ -432,6 +446,7 @@ dependencies = [
 name = "agama-users"
 version = "0.1.0"
 dependencies = [
+ "agama-access",
  "agama-utils",
  "async-trait",
  "gettext-rs",

@@ -25,9 +25,6 @@ pub use service::{Service, Starter};
 
 #[cfg(test)]
 mod tests {
-    use agama_l10n::test_utils::start_service as start_l10n_service;
-    use agama_software::{test_utils::start_service as start_software_service, Resolvable};
-
     use agama_utils::{
         actor::Handler,
         api::{
@@ -35,7 +32,7 @@ mod tests {
             ntp::{Config, Source, SourceType},
             Event,
         },
-        issue, progress, question,
+        Resolvable,
     };
     use async_trait::async_trait;
     use std::{
@@ -115,22 +112,8 @@ mod tests {
     impl AsyncTestContext for Context {
         async fn setup() -> Context {
             let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-            let issues = issue::Service::starter(events_tx.clone()).start();
-            let progress = progress::Service::starter(events_tx.clone()).start();
-            let questions = question::start(events_tx.clone()).await.unwrap();
-            let l10n = start_l10n_service(events_tx.clone(), issues.clone()).await;
-
-            let software = start_software_service(
-                events_tx.clone(),
-                issues,
-                l10n,
-                progress.clone(),
-                questions.clone(),
-            )
-            .await;
-
             let model = MockModel::new();
-            let handler = Service::starter(events_tx, software)
+            let handler = Service::starter(events_tx)
                 .with_model(Box::new(model.clone()))
                 .start()
                 .unwrap();
@@ -152,19 +135,6 @@ mod tests {
     impl AsyncTestContext for DracutContext {
         async fn setup() -> DracutContext {
             let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-            let issues = issue::Service::starter(events_tx.clone()).start();
-            let progress = progress::Service::starter(events_tx.clone()).start();
-            let questions = question::start(events_tx.clone()).await.unwrap();
-            let l10n = start_l10n_service(events_tx.clone(), issues.clone()).await;
-
-            let software = start_software_service(
-                events_tx.clone(),
-                issues,
-                l10n,
-                progress.clone(),
-                questions.clone(),
-            )
-            .await;
 
             // Set up tempdir with dracut sources
             let tempdir = tempfile::tempdir().unwrap();
@@ -177,7 +147,7 @@ server ntp.example.com offline
 
             // Create service with real chrony model
             let model = Box::new(model::chrony::Model::new().with_workdir(tempdir.path()));
-            let handler = Service::starter(events_tx, software)
+            let handler = Service::starter(events_tx)
                 .with_model(model)
                 .start()
                 .unwrap();
@@ -267,19 +237,6 @@ server ntp.example.com offline
     #[tokio::test]
     async fn test_set_config_override_and_reset_to_dracut() {
         let (events_tx, _events_rx) = broadcast::channel::<Event>(16);
-        let issues = issue::Service::starter(events_tx.clone()).start();
-        let progress = progress::Service::starter(events_tx.clone()).start();
-        let questions = question::start(events_tx.clone()).await.unwrap();
-        let l10n = start_l10n_service(events_tx.clone(), issues.clone()).await;
-
-        let software = start_software_service(
-            events_tx.clone(),
-            issues,
-            l10n,
-            progress.clone(),
-            questions.clone(),
-        )
-        .await;
 
         // Set up dracut sources file with original servers
         let tempdir = tempfile::tempdir().unwrap();
@@ -292,7 +249,7 @@ server time.example.com
 
         // Create service with real chrony model
         let model = Box::new(model::chrony::Model::new().with_workdir(tempdir.path()));
-        let handler = Service::starter(events_tx, software)
+        let handler = Service::starter(events_tx)
             .with_model(model)
             .start()
             .unwrap();

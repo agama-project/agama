@@ -48,6 +48,6 @@ describe("InstallationFailed", () => {
 
   it("shows a 'Download logs' button", () => {
     plainRender(<InstallationFailed />);
-    screen.getByRole("link", { name: /Download logs/i });
+    screen.getByRole("button", { name: /Download logs/i });
   });
 });

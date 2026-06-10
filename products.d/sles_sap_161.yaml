@@ -104,6 +104,7 @@ translations:
         ru: Стандартный
         sk: Štandardný
         sv: Standard
+        tr: Standart
         uk: Стандартна
       description:
         bg: Стандартна система
@@ -122,6 +123,7 @@ translations:
         ru: Стандартная система
         sk: Štandardný systém
         sv: Standard system
+        tr: Standart sistem
         uk: Стандартна система
     immutable:
       name:
@@ -141,6 +143,7 @@ translations:
         ru: Неизменяемый
         sk: Nemenný
         sv: Oföränderlig
+        tr: Değiştirilemez
         uk: Незмінний
       description:
         bg: Неизменима система със атомични обновления
@@ -159,6 +162,7 @@ translations:
         ru: Неизменяемая система с атомарными обновлениями
         sk: Nemenný systém s atomickými aktualizáciami
         sv: Oföränderligt system med atomiska uppdateringar
+        tr: Atomik güncellemelerle değiştirilemez sistem
         uk: Незмінна система з атомарними оновленнями
 desktop_selection: optional
 software:

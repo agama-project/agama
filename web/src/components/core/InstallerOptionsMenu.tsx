@@ -31,7 +31,8 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
-import { ROOT } from "~/routes/paths";
+import ConfigDialog from "~/components/core/ConfigDialog";
+import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
 import { _ } from "~/i18n";
 
 /**
@@ -60,40 +61,53 @@ export default function InstallerOptionsMenu({
   showChangeProductOption = false,
 }: InstallerOptionsMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+  const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
 
+  // DownloadLogsFeedback must wrap the entire Dropdown rather than just the
+  // DropdownItem. When the dropdown closes, PatternFly unmounts its children,
+  // which would reset the feedback alert state and dismiss the pending toast
+  // prematurely. Keeping it as the outermost element ensures it stays mounted
+  // regardless of the dropdown lifecycle.
   return (
-    <Dropdown
-      popperProps={{ position: "right", appendTo: () => document.body }}
-      isOpen={isOpen}
-      onOpenChange={toggle}
-      onSelect={toggle}
-      onActionClick={toggle}
-      toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-        <MenuToggle
-          ref={toggleRef}
-          onClick={toggle}
-          // TRANSLATORS: this is an ARIA (accesibility) description of an UI element
-          aria-label={_("More installer options")}
-          isExpanded={isOpen}
-          isFullHeight
-          variant="plain"
-        >
-          <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-            {!hideLabel && _("More")} <Icon name="expand_circle_down" />
-          </Flex>
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
-        <DropdownItem key="download-config" to={ROOT.config} download="agama-config.json">
-          {_("Download config")}
-        </DropdownItem>
-        <DropdownItem key="download-logs" to={ROOT.logs} download="agama-logs.tar.gz">
-          {_("Download logs")}
-        </DropdownItem>
-      </DropdownList>
-    </Dropdown>
+    <>
+      <DownloadLogsFeedback>
+        {({ download: downloadLogs }) => (
+          <Dropdown
+            popperProps={{ position: "right", appendTo: () => document.body }}
+            isOpen={isOpen}
+            onOpenChange={toggle}
+            onSelect={toggle}
+            onActionClick={toggle}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
+                onClick={toggle}
+                aria-label={_("More installer options")}
+                isExpanded={isOpen}
+                isFullHeight
+                variant="plain"
+              >
+                <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+                  {!hideLabel && _("More")} <Icon name="expand_circle_down" />
+                </Flex>
+              </MenuToggle>
+            )}
+          >
+            <DropdownList>
+              {showChangeProductOption && <ChangeProductOption component="dropdownitem" />}
+              <DropdownItem key="show-settings" onClick={toggleConfig}>
+                {_("Show installation settings")}
+              </DropdownItem>
+              <DropdownItem key="download-logs" onClick={downloadLogs}>
+                {_("Download logs")}
+              </DropdownItem>
+            </DropdownList>
+          </Dropdown>
+        )}
+      </DownloadLogsFeedback>
+      {isConfigOpen && <ConfigDialog onClose={toggleConfig} />}
+    </>
   );
 }

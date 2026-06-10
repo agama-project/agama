@@ -148,14 +148,7 @@ export default function Header({
                 hideDivider
                 isEditorial
                 path={ROOT.overview}
-                label={
-                  <Icon
-                    name="list_alt"
-                    width="1.4em"
-                    height="1.4em"
-                    style={{ verticalAlign: "middle" }}
-                  />
-                }
+                label={<Icon name="list_alt" width="1.4em" height="1.4em" verticalAlign="middle" />}
               />
             )}
             {breadcrumbs &&
@@ -176,7 +169,9 @@ export default function Header({
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
               {startSlot && <ToolbarItem>{startSlot}</ToolbarItem>}
               {centerSlot && <ToolbarItem>{centerSlot}</ToolbarItem>}
-              {endSlot && <ToolbarItem>{endSlot}</ToolbarItem>}
+              {endSlot && (
+                <ToolbarItem columnGap={{ default: "columnGapXs" }}>{endSlot}</ToolbarItem>
+              )}
             </ToolbarGroup>
           </ToolbarContent>
         </Toolbar>

@@ -54,6 +54,7 @@ import Info from "@icons/info.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
+import ListAltCheck from "@icons/list_alt_check.svg?component";
 import Lock from "@icons/lock.svg?component";
 import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
@@ -65,6 +66,7 @@ import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import NotificationsActive from "@icons/notifications_active.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
+import Routine from "@icons/routine.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import Translate from "@icons/translate.svg?component";
@@ -75,6 +77,10 @@ import Visibility from "@icons/visibility.svg?component";
 import VisibilityOff from "@icons/visibility_off.svg?component";
 import Wifi from "@icons/wifi.svg?component";
 import WifiOff from "@icons/wifi_off.svg?component";
+import MoreTime from "@icons/more_time.svg?component";
+import TaskAlt from "@icons/task_alt.svg?component";
+import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
+import Pending from "@icons/pending.svg?component";
 
 const icons = {
   add: Add,
@@ -105,6 +111,7 @@ const icons = {
   keyboard_arrow_down: KeyboardArrowDown,
   language: Language,
   list_alt: ListAlt,
+  list_alt_check: ListAltCheck,
   lock: Lock,
   manage_accounts: ManageAccounts,
   menu: Menu,
@@ -117,6 +124,7 @@ const icons = {
   notifications_ative: NotificationsActive,
   report: Report,
   restart_alt: RestartAlt,
+  routine: Routine,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
@@ -127,11 +135,26 @@ const icons = {
   warning: Warning,
   wifi: Wifi,
   wifi_off: WifiOff,
+  more_time: MoreTime,
+  task_alt: TaskAlt,
+  hourglass_disabled: HourglassDisabled,
+  pending: Pending,
 };
 
 export type IconProps = React.SVGAttributes<SVGElement> & {
   /** Name of the desired icon */
   name: keyof typeof icons;
+  /** Vertical alignment of the icon */
+  verticalAlign?: "baseline" | "middle" | "text-top" | "text-bottom" | "sub" | "super";
+  /**
+   * Shortcut for verticalAlign="text-top" to align icon with surrounding text.
+   *
+   * Use this when placing an icon inline with text in buttons, links, or labels.
+   * The `text-top` value aligns the icon's top edge with the tallest text in the
+   * line, which typically produces better visual alignment than `middle` when
+   * mixed with text content.
+   */
+  isMiddleAligned?: boolean;
 };
 
 /**
@@ -144,9 +167,21 @@ export type IconProps = React.SVGAttributes<SVGElement> & {
  * @example
  *   <Icon name="warning" />
  *
+ * @example
+ *   <Icon name="check_circle" isMiddleAligned />
+ *
+ * @example
+ *   <Icon name="check_circle" verticalAlign="text-top" />
+ *
  * @returns null if requested icon is not available or given a falsy value as name; JSX block otherwise.
  */
-export default function Icon({ name, ...otherProps }: IconProps): JSX.Element | null {
+export default function Icon({
+  name,
+  verticalAlign,
+  isMiddleAligned,
+  style,
+  ...otherProps
+}: IconProps): JSX.Element | null {
   // NOTE: Reaching this is unlikely, but let's be safe.
   if (!name || !icons[name]) {
     console.error(`Icon '${name}' not found.`);
@@ -155,5 +190,15 @@ export default function Icon({ name, ...otherProps }: IconProps): JSX.Element | 
 
   const IconComponent = icons[name];
 
-  return <IconComponent aria-hidden="true" data-icon-name={name} {...otherProps} />;
+  // isMiddleAligned shortcut takes precedence over verticalAlign
+  const align = isMiddleAligned ? "text-top" : verticalAlign;
+
+  const iconStyle = {
+    ...(align && { verticalAlign: align }),
+    ...style,
+  };
+
+  return (
+    <IconComponent aria-hidden="true" data-icon-name={name} {...otherProps} style={iconStyle} />
+  );
 }

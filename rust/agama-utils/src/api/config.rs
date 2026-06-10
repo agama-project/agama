@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 use crate::api::{
-    bootloader,
+    access, bootloader,
     files::{self, FileSourceError},
     hostname, iscsi, l10n, network, ntp, proxy, question, s390, security,
     software::{self, ProductConfig},
@@ -55,6 +55,7 @@ pub struct Config {
     pub network: Option<network::Config>,
     pub ntp: Option<ntp::Config>,
     pub questions: Option<question::Config>,
+    pub access: Option<access::Config>,
     #[serde(flatten)]
     pub storage: Option<storage::Config>,
     pub iscsi: Option<iscsi::Config>,

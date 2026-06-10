@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import { useProposal, useProposalChanges } from "~/hooks/model/proposal";
 import { useIssues, useIssuesChanges } from "~/hooks/model/issue";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useConfigModel } from "~/hooks/model/storage/config-model";
+import useProductAppearance from "~/hooks/use-product-appearance";
 import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
@@ -50,24 +51,28 @@ const Content = () => {
 
   const location = useLocation();
   const product = useProductInfo();
-  const { progresses, stage } = useStatus();
+  const status = useStatus();
+
+  // Load the product's optional appearance overrides (assets/appearance/<id>.css).
+  useProductAppearance(product?.id);
 
   console.log("App Content component", {
-    progresses,
-    stage,
+    stage: status?.stage,
+    tasks: status?.tasks,
+    progresses: status?.progresses,
     product,
     location: location.pathname,
   });
 
-  if (stage === "failed") {
+  if (status?.stage === "failed") {
     return <InstallationFailed />;
   }
 
-  if (stage === "installing") {
+  if (status?.stage === "installing") {
     return <InstallationProgress />;
   }
 
-  if (stage === "finished") {
+  if (status?.stage === "finished") {
     return <InstallationFinished />;
   }
 

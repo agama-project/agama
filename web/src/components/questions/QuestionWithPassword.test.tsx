@@ -77,7 +77,11 @@ jest.mock("~/hooks/model/system", () => ({
 
 jest.mock("~/hooks/model/status", () => ({
   ...jest.requireActual("~/hooks/model/status"),
-  useStatus: (): ReturnType<typeof useStatus> => ({ stage: "configuring", progresses: [] }),
+  useStatus: (): ReturnType<typeof useStatus> => ({
+    stage: "configuring",
+    tasks: [],
+    progresses: [],
+  }),
 }));
 
 jest.mock("~/hooks/model/config/product", () => ({

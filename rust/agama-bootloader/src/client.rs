@@ -21,7 +21,7 @@
 //! Implements a client to access Agama's D-Bus API related to Bootloader management.
 
 use crate::storage_client::{self, message};
-use agama_utils::{actor::Handler, api::bootloader::Config};
+use agama_utils::{actor::Handler, api::bootloader::Config, BoxFuture, Resolvable};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -47,8 +47,10 @@ pub trait BootloaderClient {
     async fn get_config(&self) -> ClientResult<Config>;
     /// Retrieves the bootloader system information.
     async fn get_system(&self) -> ClientResult<Option<serde_json::Value>>;
+    /// Retrieves the bootloader resolvables.
+    async fn get_resolvables(&self) -> ClientResult<Vec<Resolvable>>;
     /// Sets the bootloader configuration.
-    async fn set_config(&self, config: &Config) -> ClientResult<()>;
+    async fn set_config(&self, config: &Config) -> ClientResult<BoxFuture<Result<(), Error>>>;
     /// Sets the extra kernel args for given scope.
     ///
     /// * `id`: identifier of the kernel argument so it can be later changed.
@@ -100,7 +102,14 @@ impl BootloaderClient for Client {
             .await?)
     }
 
-    async fn set_config(&self, config: &Config) -> ClientResult<()> {
+    async fn get_resolvables(&self) -> ClientResult<Vec<Resolvable>> {
+        Ok(self
+            .storage_client
+            .call(message::bootloader::GetResolvables)
+            .await?)
+    }
+
+    async fn set_config(&self, config: &Config) -> ClientResult<BoxFuture<Result<(), Error>>> {
         let full_config = FullConfig {
             config: config.clone(),
             kernel_args: self.kernel_args.clone(),
@@ -109,10 +118,11 @@ impl BootloaderClient for Client {
         // ignore return value as currently it does not fail and who knows what future brings
         // but it should not be part of result and instead transformed to Issue
         let value = serde_json::to_value(&full_config)?;
-        self.storage_client
+        let rx = self
+            .storage_client
             .call(message::bootloader::SetConfig::new(value))
             .await?;
-        Ok(())
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 
     async fn set_kernel_arg(&mut self, id: String, value: String) {

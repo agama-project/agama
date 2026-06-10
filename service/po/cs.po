@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 09:45+0000\n"
+"POT-Creation-Date: 2026-06-05 13:42+0000\n"
 "PO-Revision-Date: 2026-03-12 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -52,39 +52,39 @@ msgid "Performing iSCSI discovery"
 msgstr "Provádím vyhledávání iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:187
+#: service/lib/agama/dbus/storage/manager.rb:196
 msgid "Preparing bootloader proposal"
 msgstr "Připravuji návrh boot zavaděče"
 
-#: service/lib/agama/dbus/storage/manager.rb:190
+#: service/lib/agama/dbus/storage/manager.rb:199
 msgid "Preparing the storage devices"
 msgstr "Připravuji úložná zařízení"
 
-#: service/lib/agama/dbus/storage/manager.rb:193
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr "Zapisuji konfiguraci boot zavaděče v sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:201
+#: service/lib/agama/dbus/storage/manager.rb:210
 msgid "Finishing installation"
 msgstr "Dokončuji instalaci"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:217
 msgid "Unmounting devices"
 msgstr "Odpojuji zařízení"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:237
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "Aktivuji úložná zařízení"
 
-#: service/lib/agama/dbus/storage/manager.rb:240
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr "Sonduji úložná zařízení"
 
-#: service/lib/agama/dbus/storage/manager.rb:243
+#: service/lib/agama/dbus/storage/manager.rb:262
 msgid "Applying storage configuration"
 msgstr "Aplikuji konfiguraci úložiště"
 
@@ -138,7 +138,7 @@ msgstr "Neexistuje žádné zaváděcí zařízení s aliasem '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:73
+#: service/lib/agama/storage/config_checkers/encryption.rb:79
 #, perl-brace-format
 msgid ""
 "No passphrase provided (required for using the method '%{crypt_method}')."
@@ -146,18 +146,26 @@ msgstr ""
 "Není uvedena žádná přístupová fráze (nutná pro použití metody '%"
 "{crypt_method}')."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:89
-#, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:95
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not available in this system."
 msgstr "Šifrovací metoda '%{crypt_method}' není v tomto systému k dispozici."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:117
-#, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:112
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for a device different to swap."
+msgstr "'%{crypt_method}' není vhodná metoda pro šifrování zařízení."
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
+#. "grub2").
+#: service/lib/agama/storage/config_checkers/encryption.rb:131
+#, fuzzy, perl-brace-format
+msgid "%{crypt_method} is not suitable for the bootloader %{bootloader}."
 msgstr "'%{crypt_method}' není vhodná metoda pro šifrování zařízení."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
@@ -174,13 +182,13 @@ msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "Souborový systém '%{filesystem}' není vhodný pro '%{path}'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/logical_volume.rb:93
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:100
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr "Neexistuje žádný svazek LVM thin pool s aliasem '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
-#: service/lib/agama/storage/config_checkers/md_raid.rb:97
+#: service/lib/agama/storage/config_checkers/md_raid.rb:102
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
 msgstr "Neexistuje žádné členské zařízení v MD RAIDu s aliasem '%s'"
@@ -188,23 +196,23 @@ msgstr "Neexistuje žádné členské zařízení v MD RAIDu s aliasem '%s'"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+#: service/lib/agama/storage/config_checkers/md_raid.rb:115
 msgid "There is a MD RAID without level"
 msgstr "Zařízení MD RAID bez úrovně"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:123
+#: service/lib/agama/storage/config_checkers/md_raid.rb:128
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "Nejméně %s zařízení je zapotřebí pro %s"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
-#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
-#, perl-brace-format
-msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
+#, fuzzy, perl-brace-format
+msgid "%{method} is not suitable to encrypt the physical volumes."
 msgstr "‘%{method}’ není vhodná metoda pro šifrování fyzických svazků."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
@@ -389,18 +397,18 @@ msgstr "zařízení"
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:80
+#: service/lib/agama/storage/config_checkers/volume_group.rb:85
 msgid "There is a volume group without name"
 msgstr "Skupina svazků není pojmenovaná"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:112
+#: service/lib/agama/storage/config_checkers/volume_group.rb:117
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
 msgstr "Neexistuje žádný fyzický svazek LVM s aliasem '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:139
+#: service/lib/agama/storage/config_checkers/volume_group.rb:144
 #, c-format
 msgid ""
 "The list of target devices for the volume group '%s' is mixing reused "
@@ -410,7 +418,7 @@ msgstr ""
 "zařízení a nová zařízení"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:159
+#: service/lib/agama/storage/config_checkers/volume_group.rb:164
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr "Neexistuje žádné cílové zařízení pro fyzický svazek LVM s aliasem '%s'"
@@ -471,14 +479,14 @@ msgstr "Konfigurovování snímků souborového systému"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:251
+#: service/lib/agama/storage/manager.rb:308
 msgid "There is no suitable device for installation"
 msgstr "Nebylo nalezeno žádné vhodné zařízení pro instalaci"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:305
+#: service/lib/agama/storage/proposal.rb:351
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
 "Pro současnou konfiguraci není možné vypočítat platné nastavení úložiště"
@@ -486,7 +494,7 @@ msgstr ""
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:315
+#: service/lib/agama/storage/proposal.rb:361
 #, fuzzy
 msgid "A problem occurred while calculating the storage setup"
 msgstr "Nastal problém při výpočtu nastavení úložiště"
@@ -849,3 +857,17 @@ msgstr "Neznámé zFCP LUN %s"
 
 #~ msgid "Restoring original repositories"
 #~ msgstr "Obnovují se původní repozitáře"
+
+#, perl-brace-format
+#~ msgid "Encryption method '%{crypt_method}' is not available in this system."
+#~ msgstr ""
+#~ "Šifrovací metoda '%{crypt_method}' není v tomto systému k dispozici."
+
+#, perl-brace-format
+#~ msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#~ msgstr "'%{crypt_method}' není vhodná metoda pro šifrování zařízení."
+
+#, perl-brace-format
+#~ msgid ""
+#~ "'%{method}' is not a suitable method to encrypt the physical volumes."
+#~ msgstr "‘%{method}’ není vhodná metoda pro šifrování fyzických svazků."

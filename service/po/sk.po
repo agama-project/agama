@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 09:45+0000\n"
-"PO-Revision-Date: 2026-05-10 20:04+0000\n"
+"POT-Creation-Date: 2026-06-05 13:42+0000\n"
+"PO-Revision-Date: 2026-05-24 13:12+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.5\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -52,39 +52,39 @@ msgid "Performing iSCSI discovery"
 msgstr "Vykonávanie zistenia iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:187
+#: service/lib/agama/dbus/storage/manager.rb:196
 msgid "Preparing bootloader proposal"
 msgstr "Príprava návrhu správcu štartu"
 
-#: service/lib/agama/dbus/storage/manager.rb:190
+#: service/lib/agama/dbus/storage/manager.rb:199
 msgid "Preparing the storage devices"
 msgstr "Príprava úložných zariadení"
 
-#: service/lib/agama/dbus/storage/manager.rb:193
+#: service/lib/agama/dbus/storage/manager.rb:202
 msgid "Writing bootloader sysconfig"
 msgstr "Zápis sysconfig správcu štartu"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:201
+#: service/lib/agama/dbus/storage/manager.rb:210
 msgid "Finishing installation"
 msgstr "Dokončenie inštalácie"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:217
 msgid "Unmounting devices"
 msgstr "Odpojenie zariadení"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:237
+#: service/lib/agama/dbus/storage/manager.rb:256
 msgid "Activating storage devices"
 msgstr "Aktivácia úložných zariadení"
 
-#: service/lib/agama/dbus/storage/manager.rb:240
+#: service/lib/agama/dbus/storage/manager.rb:259
 msgid "Probing storage devices"
 msgstr "Skúmanie úložných zariadení"
 
-#: service/lib/agama/dbus/storage/manager.rb:243
+#: service/lib/agama/dbus/storage/manager.rb:262
 msgid "Applying storage configuration"
 msgstr "Aplikovanie konfigurácie úložiska"
 
@@ -102,8 +102,8 @@ msgstr "Zariadenie s aliasom '%s' používa viac ako jedno zariadenie"
 #: service/lib/agama/storage/config_checkers/alias.rb:95
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be formatted because it is used by other dev"
-"ice"
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
 msgstr ""
 "Zariadenie s aliasom '%s' nie je možné formátovať, pretože ho používa iné "
 "zariadenie"
@@ -114,8 +114,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:118
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be partitioned because it is used by other d"
-"evice"
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
 msgstr ""
 "Zariadenie s aliasom '%s' nie je možné rozdeliť na oddiely, pretože ho "
 "používa iné zariadenie"
@@ -138,25 +138,34 @@ msgstr "Neexistuje žiadne zariadenie štartu systému s aliasom '%s'"
 
 #. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:73
+#: service/lib/agama/storage/config_checkers/encryption.rb:79
 #, perl-brace-format
-msgid "No passphrase provided (required for using the method '%{crypt_method}')."
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
 "Nebolo zadané žiadne heslo (vyžadované na použitie metódy '%{crypt_method}')."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:89
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:95
 #, perl-brace-format
-msgid "Encryption method '%{crypt_method}' is not available in this system."
-msgstr "Metóda šifrovania '%{crypt_method}' nie je v tomto systéme dostupná."
+msgid "%{crypt_method} is not available in this system."
+msgstr "'%{crypt_method}' nie je v tomto systéme dostupné."
 
-#. TRANSLATORS: 'crypt_method' is the identifier of the method to encrypt the device
-#. (e.g., 'luks1', 'random_swap').
-#: service/lib/agama/storage/config_checkers/encryption.rb:117
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap").
+#: service/lib/agama/storage/config_checkers/encryption.rb:112
 #, perl-brace-format
-msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
-msgstr "'%{crypt_method}' nie je vhodnou metódou na šifrovanie zariadenia."
+msgid "%{crypt_method} is not suitable for a device different to swap."
+msgstr "'%{crypt_method}' nie je vhodné pre iné zariadenie ako swap."
+
+#. TRANSLATORS: %{crypt_method} is the identifier of the method to encrypt the device
+#. (e.g., "luks1", "random swap") and %{bootloader} by a bootloader name (e.g.,
+#. "grub2").
+#: service/lib/agama/storage/config_checkers/encryption.rb:131
+#, perl-brace-format
+msgid "%{crypt_method} is not suitable for the bootloader %{bootloader}."
+msgstr "'%{crypt_method}' nie je vhodné pre správcu štartu %{bootloader}."
 
 #. TRANSLATORS: %s is replaced by a mount path (e.g., "/home").
 #: service/lib/agama/storage/config_checkers/filesystem.rb:75
@@ -172,13 +181,13 @@ msgid "The file system type '%{filesystem}' is not suitable for '%{path}'"
 msgstr "Typ súborového systému '%{filesystem}' nie je vhodný pre '%{path}'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/logical_volume.rb:93
+#: service/lib/agama/storage/config_checkers/logical_volume.rb:100
 #, c-format
 msgid "There is no LVM thin pool volume with alias '%s'"
 msgstr "Neexistuje žiadny tenký zväzok fondu LVM s aliasom '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "md1").
-#: service/lib/agama/storage/config_checkers/md_raid.rb:97
+#: service/lib/agama/storage/config_checkers/md_raid.rb:102
 #, c-format
 msgid "There is no MD RAID member device with alias '%s'"
 msgstr "Neexistuje žiadne členské zariadenie MD RAID s aliasom '%s'"
@@ -186,24 +195,24 @@ msgstr "Neexistuje žiadne členské zariadenie MD RAID s aliasom '%s'"
 #. Issue if the MD RAID level is missing and the device is not reused.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:110
+#: service/lib/agama/storage/config_checkers/md_raid.rb:115
 msgid "There is a MD RAID without level"
 msgstr "Existuje MD RAID bez úrovne"
 
 #. Issue if the MD RAID does not contain enough member devices.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/md_raid.rb:123
+#: service/lib/agama/storage/config_checkers/md_raid.rb:128
 #, c-format
 msgid "At least %s devices are required for %s"
 msgstr "Aspoň %s zariadení je potrebných pre %s"
 
 #. TRANSLATORS: 'method' is the identifier of the method to encrypt the device
 #. (e.g., 'luks1').
-#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:61
+#: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
 #, perl-brace-format
-msgid "'%{method}' is not a suitable method to encrypt the physical volumes."
-msgstr "'%{method}' nie je vhodnou metódou na šifrovanie fyzických zväzkov."
+msgid "%{method} is not suitable to encrypt the physical volumes."
+msgstr "'%{method}' nie je vhodné na šifrovanie fyzických zväzkov."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
 #: service/lib/agama/storage/config_checkers/search.rb:76
@@ -224,8 +233,8 @@ msgstr "Povinné %s nebolo nájdené"
 #: service/lib/agama/storage/config_checkers/search.rb:126
 #, perl-brace-format
 msgid ""
-"The device '%{parent_name}' cannot be formatted because it is part of the reus"
-"ed MD RAID '%{reused_name}'"
+"The device '%{parent_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Zariadenie '%{parent_name}' nie je možné formátovať, pretože je súčasťou "
 "opätovne použitého MD RAID '%{reused_name}'"
@@ -235,11 +244,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:136
 #, perl-brace-format
 msgid ""
-"The device '%{parent_name}' cannot be formatted because it is a physical volum"
-"e of the reused LVM volume group '%{reused_name}'"
+"The device '%{parent_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Zariadenie '%{parent_name}' nie je možné formátovať, pretože je fyzický "
-"zväzok opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
+"Zariadenie '%{parent_name}' nie je možné formátovať, pretože je fyzickým "
+"zväzkom opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
 
 #. Issue if the member device is deleted.
 #.
@@ -248,8 +257,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:166
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be deleted because it is part of the reused"
-" MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be deleted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Zariadenie '%{member_name}' nie je možné vymazať, pretože je súčasťou "
 "opätovne použitého MD RAID '%{reused_name}'"
@@ -259,11 +268,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:176
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be deleted because it is a physical volume "
-"of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be deleted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Zariadenie '%{member_name}' nie je možné vymazať, pretože je fyzický zväzok "
-"opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
+"Zariadenie '%{member_name}' nie je možné vymazať, pretože je fyzickým "
+"zväzkom opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
 
 #. Issue if the device member is resized.
 #.
@@ -272,8 +281,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:206
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be resized because it is part of the reused"
-" MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be resized because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Zariadeniu '%{member_name}' nie je možné zmeniť veľkosť, pretože je súčasťou "
 "opätovne použitého MD RAID '%{reused_name}'"
@@ -283,11 +292,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:216
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be resized because it is a physical volume "
-"of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be resized because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Zariadeniu '%{member_name}' nie je možné zmeniť veľkosť, pretože je fyzický "
-"zväzok opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
+"Zariadeniu '%{member_name}' nie je možné zmeniť veľkosť, pretože je fyzickým "
+"zväzkom opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
 
 #. Issue if the device member is formatted.
 #.
@@ -296,8 +305,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:246
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be formatted because it is part of the reus"
-"ed MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Zariadenie '%{member_name}' nie je možné formátovať, pretože je súčasťou "
 "opätovne použitého MD RAID '%{reused_name}'"
@@ -307,11 +316,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:256
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be formatted because it is a physical volum"
-"e of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Zariadenie '%{member_name}' nie je možné formátovať, pretože je fyzický "
-"zväzok opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
+"Zariadenie '%{member_name}' nie je možné formátovať, pretože je fyzickým "
+"zväzkom opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
 
 #. Issue if the device member is partitioned.
 #.
@@ -320,8 +329,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:286
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be partitioned because it is part of the re"
-"used MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be partitioned because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Zariadenie '%{member_name}' nie je možné rozdeliť na oddiely, pretože je "
 "súčasťou opätovne použitého MD RAID '%{reused_name}'"
@@ -331,11 +340,11 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:296
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be partitioned because it is a physical vol"
-"ume of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be partitioned because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Zariadenie '%{member_name}' nie je možné rozdeliť na oddiely, pretože je "
-"fyzický zväzok opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
+"fyzickým zväzkom opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
 
 #. Issue if the device member is used by other device (e.g., as target for physical volumes).
 #.
@@ -344,149 +353,163 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/search.rb:325
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be used because it is part of the reused MD"
-" RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be used because it is part of the reused "
+"MD RAID '%{reused_name}'"
 msgstr ""
+"Zariadenie '%{member_name}' nie je možné použiť, pretože je súčasťou "
+"opätovne použitého MD RAID '%{reused_name}'"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:335
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be used because it is a physical volume of "
-"the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be used because it is a physical volume "
+"of the reused LVM volume group '%{reused_name}'"
 msgstr ""
+"Zariadenie '%{member_name}' nie je možné použiť, pretože je fyzickým zväzkom "
+"opätovne použitej skupiny zväzkov LVM '%{reused_name}'"
 
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:383
 msgid "drive"
-msgstr ""
+msgstr "jednotka"
 
 #: service/lib/agama/storage/config_checkers/search.rb:385
 msgid "MD RAID"
-msgstr ""
+msgstr "MD RAID"
 
 #: service/lib/agama/storage/config_checkers/search.rb:387
 msgid "partition"
-msgstr ""
+msgstr "oddiel"
 
 #: service/lib/agama/storage/config_checkers/search.rb:389
 msgid "LVM logical volume"
-msgstr ""
+msgstr "Logický zväzok LVM"
 
 #: service/lib/agama/storage/config_checkers/search.rb:391
 msgid "LVM volume group"
-msgstr ""
+msgstr "Skupina zväzkov LVM"
 
 #: service/lib/agama/storage/config_checkers/search.rb:393
 msgid "device"
-msgstr ""
+msgstr "zariadenie"
 
 #. Issue if the volume group name is missing.
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/volume_group.rb:80
+#: service/lib/agama/storage/config_checkers/volume_group.rb:85
 msgid "There is a volume group without name"
-msgstr ""
+msgstr "Existuje skupina zväzkov bez názvu"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:112
+#: service/lib/agama/storage/config_checkers/volume_group.rb:117
 #, c-format
 msgid "There is no LVM physical volume with alias '%s'"
-msgstr ""
+msgstr "Neexistuje žiadny fyzický zväzok LVM s aliasom '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "pv1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:139
+#: service/lib/agama/storage/config_checkers/volume_group.rb:144
 #, c-format
 msgid ""
-"The list of target devices for the volume group '%s' is mixing reused devices "
-"and new devices"
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
 msgstr ""
+"Zoznam cieľových zariadení pre skupinu zväzkov '%s' zahŕňa znovu použité aj "
+"nové zariadenia"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
-#: service/lib/agama/storage/config_checkers/volume_group.rb:159
+#: service/lib/agama/storage/config_checkers/volume_group.rb:164
 #, c-format
 msgid "There is no target device for LVM physical volumes with alias '%s'"
 msgstr ""
+"Neexistuje žiadne cieľové zariadenie pre fyzické zväzky LVM s aliasom '%s'"
 
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
 #, c-format
-msgid "The device '%s' is used several times as target device for physical volumes"
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
 msgstr ""
+"Zariadenie '%s' je niekoľkokrát použité ako cieľové zariadenie pre fyzické "
+"zväzky"
 
 #. Text of the reason preventing to shrink because there is no content.
 #.
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In case"
-" the device does contain a file system or a storage system that is not support"
-"ed, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
 msgstr ""
+"Na zariadení nebol zistený súborový systém ani úložný systém. V prípade, že "
+"zariadenie obsahuje súborový systém alebo úložný systém, ktorý nie je "
+"podporovaný, zmena veľkosti pravdepodobne spôsobí stratu údajov."
 
 #. Text of the reason preventing to shrink because there is no valid minimum size.
 #.
 #. @return [String, nil] nil if there is a minimum size or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:162
 msgid "Shrinking is not supported by this device"
-msgstr ""
+msgstr "Toto zariadenie nepodporuje zmenšenie"
 
 #. Copy /etc/nvme/host* to keep NVMe working after installation, bsc#1238038
 #: service/lib/agama/storage/finisher.rb:126
 msgid "Copying important installation files to the target system"
-msgstr ""
+msgstr "Kopírovanie dôležitých inštalačných súborov na cieľový systém"
 
 #. Step to write the bootloader configuration
 #: service/lib/agama/storage/finisher.rb:161
 msgid "Installing bootloader"
-msgstr ""
+msgstr "Inštalácia správcu štartu"
 
 #. Step to finish the Y2Storage configuration
 #: service/lib/agama/storage/finisher.rb:178
 msgid "Adjusting storage configuration"
-msgstr ""
+msgstr "Úprava konfigurácie úložiska"
 
 #. Step to finish the iSCSI configuration
 #: service/lib/agama/storage/finisher.rb:189
 msgid "Adjusting iSCSI configuration"
-msgstr ""
+msgstr "Úprava konfigurácie iSCSI"
 
 #. Step to configure the file-system snapshots
 #: service/lib/agama/storage/finisher.rb:200
 msgid "Configuring file systems snapshots"
-msgstr ""
+msgstr "Konfigurácia snímok súborových systémov"
 
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:251
+#: service/lib/agama/storage/manager.rb:308
 msgid "There is no suitable device for installation"
-msgstr ""
+msgstr "Nie je k dispozícii žiadne vhodné zariadenie na inštaláciu"
 
 #. Issue representing the proposal is not valid.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:305
+#: service/lib/agama/storage/proposal.rb:351
 msgid "Cannot calculate a valid storage setup with the current configuration"
 msgstr ""
+"Nie je možné vypočítať platné nastavenie úložiska pri aktuálnej konfigurácii"
 
 #. Issue to communicate a generic Y2Storage error.
 #.
 #. @return [Issue]
-#: service/lib/agama/storage/proposal.rb:315
+#: service/lib/agama/storage/proposal.rb:361
 msgid "A problem occurred while calculating the storage setup"
-msgstr ""
+msgstr "Vyskytol sa problém pri výpočte nastavenia úložiska"
 
 #. Step to copy the installation logs
 #: service/lib/agama/storage/umounter.rb:112
 msgid "Copying logs"
-msgstr ""
+msgstr "Kopírovanie záznamov"
 
 #. Step to unmount the target file-systems
 #: service/lib/agama/storage/umounter.rb:153
 msgid "Unmounting storage devices"
-msgstr ""
+msgstr "Odpojenie úložných zariadení"
 
 #. Activates the controller if it is not active yet.
 #.
@@ -497,7 +520,7 @@ msgstr ""
 #: service/lib/agama/storage/zfcp/manager.rb:206
 #, c-format
 msgid "The zFCP controller %s cannot be activated"
-msgstr ""
+msgstr "Radič zFCP %s nie je možné aktivovať"
 
 #. Activates a device if it is not active yet.
 #.
@@ -506,7 +529,7 @@ msgstr ""
 #: service/lib/agama/storage/zfcp/manager.rb:239
 #, c-format
 msgid "The zFCP device %s cannot be activated"
-msgstr ""
+msgstr "Zariadenie zFCP %s nie je možné aktivovať"
 
 #. Deactivates a device if it is active.
 #.
@@ -517,7 +540,7 @@ msgstr ""
 #: service/lib/agama/storage/zfcp/manager.rb:277
 #, c-format
 msgid "The zFCP device %s cannot be deactivated"
-msgstr ""
+msgstr "Zariadenie zFCP %s nie je možné deaktivovať"
 
 #. Issue if the controller is missing.
 #.
@@ -526,7 +549,7 @@ msgstr ""
 #: service/lib/agama/storage/zfcp/manager.rb:307
 #, c-format
 msgid "Unknown zFCP controller %s"
-msgstr ""
+msgstr "Neznámy radič zFCP %s"
 
 #. Issue if the device is missing.
 #.
@@ -535,4 +558,18 @@ msgstr ""
 #: service/lib/agama/storage/zfcp/manager.rb:326
 #, c-format
 msgid "Unknown zFCP LUN %s"
-msgstr ""
+msgstr "Neznáme zFCP LUN %s"
+
+#, perl-brace-format
+#~ msgid "Encryption method '%{crypt_method}' is not available in this system."
+#~ msgstr ""
+#~ "Metóda šifrovania '%{crypt_method}' nie je v tomto systéme dostupná."
+
+#, perl-brace-format
+#~ msgid "'%{crypt_method}' is not a suitable method to encrypt the device."
+#~ msgstr "'%{crypt_method}' nie je vhodnou metódou na šifrovanie zariadenia."
+
+#, perl-brace-format
+#~ msgid ""
+#~ "'%{method}' is not a suitable method to encrypt the physical volumes."
+#~ msgstr "'%{method}' nie je vhodnou metódou na šifrovanie fyzických zväzkov."
