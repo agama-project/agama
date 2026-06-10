@@ -154,7 +154,7 @@ describe Agama::Registration do
           expect(SUSE::Connect::YaST).to receive(:activate_product).with(
             an_object_having_attributes(
               arch: "x86_64", identifier: "test", version: "5.0"
-            ), { token: "11112222" }, "test@test.com"
+            ), hash_including(token: "11112222"), "test@test.com"
           )
 
           subject.register("11112222", email: "test@test.com")
@@ -347,7 +347,7 @@ describe Agama::Registration do
 
       it "registers addon" do
         expect(SUSE::Connect::YaST).to receive(:activate_product).with(
-          addon, { token: code }, anything
+          addon, hash_including(token: code), anything
         )
 
         subject.register_addon(addon.identifier, addon.version, code)
@@ -355,7 +355,7 @@ describe Agama::Registration do
 
       it "registers addon only once" do
         expect(SUSE::Connect::YaST).to receive(:activate_product).with(
-          addon, { token: code }, anything
+          addon, hash_including(token: code), anything
         ).once
 
         subject.register_addon(addon.identifier, addon.version, code)
@@ -365,7 +365,7 @@ describe Agama::Registration do
       context "the requested addon version is not specified" do
         it "finds the version automatically" do
           expect(SUSE::Connect::YaST).to receive(:activate_product).with(
-            addon, { token: code }, anything
+            addon, hash_including(token: code), anything
           )
 
           expect(SUSE::Connect::YaST).to receive(:show_product).and_return(
