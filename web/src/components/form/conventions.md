@@ -84,6 +84,47 @@ changing the value does not disable the auto-generation.
 In edit mode the field is not rendered at all: the connection id cannot be
 changed after creation, so offering it would be misleading.
 
+**Auto-fill pattern using TanStack Form listeners:**
+
+```typescript
+// Sync function checks isDirty before auto-filling
+const syncFieldName = (formApi) => {
+  // Only auto-fill if user hasn't manually edited the field
+  if (formApi.getFieldMeta("targetField")?.isDirty) return;
+  
+  const sourceValue = formApi.getFieldValue("sourceField");
+  const computedValue = computeFromSource(sourceValue);
+  
+  formApi.setFieldValue("targetField", computedValue, {
+    dontUpdateMeta: true,      // Don't mark form dirty
+    dontRunListeners: true,    // Don't re-trigger listeners
+  });
+};
+
+// Wire in form and field listeners
+const form = useAppForm({
+  ...defaultOptions,
+  listeners: {
+    onMount: ({ formApi }) => syncFieldName(formApi), // Initial fill
+  },
+});
+
+// Update when source field changes
+<form.AppField
+  name="sourceField"
+  listeners={{
+    onChange: () => syncFieldName(form),
+  }}
+>
+```
+
+**Why `isDirty` instead of `isTouched`:** A user could focus and blur the field
+without changing it, which would set `isTouched` but not `isDirty`. Using
+`isDirty` ensures auto-fill continues until the user actually modifies the value.
+
+**Example:** Logical volume name auto-fills from mount point ("/home" → "home"),
+but stops once the user types a custom name.
+
 ### 2. Always shown, optional or context-dependent
 
 The field is always visible. Use this when omitting the field would hurt
