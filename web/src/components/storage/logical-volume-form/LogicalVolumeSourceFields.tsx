@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React from "react";
+import { sprintf } from "sprintf-js";
+import { withForm } from "~/hooks/form";
+import type { DropdownOption } from "~/components/form/DropdownField";
+import { defaultOptions } from "./fields";
+import { deviceLabel } from "~/components/storage/utils";
+import { _ } from "~/i18n";
+
+import type { Storage as System } from "~/model/system";
+
+/**
+ * The empty target value means "create a new logical volume". Kept local to
+ * mirror the `target` field convention from fields.ts.
+ */
+const NEW_LOGICAL_VOLUME = "";
+
+/**
+ * Logical volume source selector.
+ *
+ * Lets the user choose between creating a new logical volume and reusing an
+ * existing, unused one. The choice is stored in the `target` field: an empty
+ * string for a new logical volume, or the device name of the one to reuse.
+ *
+ * When the volume group does not yet exist in the system (it is being created
+ * as part of the same configuration), only new logical volumes are possible, so
+ * a read-only field is shown instead of the selector.
+ *
+ * Presentation only: it has no validation logic.
+ */
+const LogicalVolumeSourceFields = withForm({
+  ...defaultOptions,
+  props: {
+    /** Unused logical volumes available to reuse. */
+    availableLogicalVolumes: [] as System.Device[],
+  } as {
+    availableLogicalVolumes: System.Device[];
+    /**
+     * The volume group as it exists in the system, or `undefined` when the
+     * volume group is new (not yet created).
+     */
+    volumeGroup?: System.Device;
+  },
+  render: function Render({ form, availableLogicalVolumes, volumeGroup }) {
+    // The volume group does not exist yet: only a new logical volume is possible.
+    if (!volumeGroup) {
+      return (
+        <form.AppField name="target">
+          {(field) => (
+            <field.ReadOnlyField label={_("Logical volume")} text={_("New logical volume")} />
+          )}
+        </form.AppField>
+      );
+    }
+
+    const options: DropdownOption<string>[] = [
+      {
+        value: NEW_LOGICAL_VOLUME,
+        label: _("New logical volume"),
+        description: sprintf(
+          // TRANSLATORS: %s is a volume group name like "system"
+          _("Create a new logical volume on %s"),
+          deviceLabel(volumeGroup),
+        ),
+      },
+      { divider: true },
+      ...availableLogicalVolumes.map((lv) => ({
+        value: lv.name,
+        label: deviceLabel(lv),
+        description: lv.filesystem?.label,
+      })),
+    ];
+
+    return (
+      <form.AppField name="target">
+        {(field) => <field.DropdownField label={_("Logical volume")} options={options} />}
+      </form.AppField>
+    );
+  },
+});
+
+export default LogicalVolumeSourceFields;
