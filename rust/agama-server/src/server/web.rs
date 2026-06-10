@@ -23,7 +23,7 @@
 use crate::profile::profile_service;
 use crate::server::config_schema;
 use crate::web::error::ErrorResponse;
-use agama_lib::{error::ServiceError, logs};
+use agama_lib::logs;
 use agama_manager::service::Error as ManagerError;
 use agama_manager::users::PasswordCheckResult;
 use agama_manager::{self as manager, message, users};
@@ -108,14 +108,11 @@ impl ServerState {
 pub async fn server_service(
     events: event::Sender,
     dbus: zbus::Connection,
-) -> Result<ApiRouter, ServiceError> {
-    let questions = question::start(events.clone())
-        .await
-        .map_err(anyhow::Error::msg)?;
+) -> Result<ApiRouter, Error> {
+    let questions = question::start(events.clone()).await?;
     let manager = manager::Service::starter(questions.clone(), events, dbus)
         .start()
-        .await
-        .map_err(anyhow::Error::msg)?;
+        .await?;
     let profile = profile_service().await;
     let state = ServerState::new(manager, questions);
     server_with_state(state, profile)
@@ -127,7 +124,7 @@ pub async fn server_service(
 pub fn server_with_state(
     state: ServerState,
     profile_routes: ApiRouter,
-) -> Result<ApiRouter, ServiceError> {
+) -> Result<ApiRouter, Error> {
     Ok(ApiRouter::new()
         .api_route("/status", get_with(get_status, get_status_docs))
         .api_route("/system", get_with(get_system, get_system_docs))
