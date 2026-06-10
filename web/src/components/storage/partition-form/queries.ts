@@ -31,10 +31,7 @@
 import { useParams } from "react-router";
 import { createPartitionableLocation } from "~/components/storage/utils";
 import { useDevice } from "~/hooks/model/system/storage";
-import {
-  useMissingMountPaths,
-  usePartitionable,
-} from "~/hooks/model/storage/config-model";
+import { useMissingMountPaths, usePartitionable } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
 import { compact } from "~/utils";
 

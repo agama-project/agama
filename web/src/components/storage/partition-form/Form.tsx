@@ -26,7 +26,7 @@ import { ActionGroup, Alert, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import NestedContent from "~/components/core/NestedContent";
-import { deviceSize, createPartitionableLocation, parseToBytes } from "~/components/storage/utils";
+import { createPartitionableLocation } from "~/components/storage/utils";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
 import { useFormSubmit } from "~/hooks/use-form-submit";
@@ -39,221 +39,24 @@ import {
 import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
-import { isEmpty } from "radashi";
 
 import MountPointField from "~/components/storage/shared/MountPointField";
 import SizeFields from "~/components/storage/shared/SizeFields";
 import PartitionFields from "./PartitionFields";
 import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAdditionalFields";
 import FilesystemFields from "./FilesystemFields";
-import { useSolvedSizes } from "./use-solved-sizes";
 import {
   useDeviceModelFromParams,
   useInitialPartitionConfig,
   useUnusedMountPoints,
   useUnusedPartitions,
 } from "./queries";
-import {
-  defaultOptions,
-  validate,
-  isReusingPartition,
-  FILESYSTEM_TYPE,
-  FILESYSTEM_ACTION,
-  SIZE_MODE,
-  SizeMode,
-} from "./fields";
+import { buildPayload, toFormValues, useSolvedSizes } from "./transformations";
+import { defaultOptions, validate, isReusingPartition } from "./fields";
 
 import type { ConfigModel as ConfigModelType } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
-
-/**
- * Builds a {@link ConfigModelType.Partition} from the validated form values.
- *
- * Size fields are omitted when reusing an existing partition; filesystem and
- * size are each omitted when their respective form mode selects automatic or
- * default behaviour.
- */
-function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelType.Partition {
-  const isReuse = isReusingPartition(values.name);
-
-  const fsExtraSetting = (attr) => {
-    if (!values.showMoreFilesystemSettings) return;
-    if (isEmpty(values[attr])) return;
-
-    return values[attr];
-  };
-
-  // Filesystem configuration
-  const filesystem = (): ConfigModelType.Filesystem | undefined => {
-    // Reuse existing filesystem (filesystem field holds REUSE sentinel)
-    if (values.filesystem === FILESYSTEM_ACTION.REUSE) {
-      return {
-        reuse: true,
-        default: true,
-        mountOptions: fsExtraSetting("mountOptions") || undefined,
-      };
-    }
-
-    // Automatic filesystem selection
-    if (values.filesystem === FILESYSTEM_TYPE.AUTO) {
-      return {
-        default: true,
-        label: fsExtraSetting("filesystemLabel") || undefined,
-        mkfsOptions: fsExtraSetting("mkfsOptions") || undefined,
-        mountOptions: fsExtraSetting("mountOptions") || undefined,
-      };
-    }
-
-    // Explicit filesystem type
-    return {
-      default: false,
-      type: values.filesystem as ConfigModelType.FilesystemType,
-      label: fsExtraSetting("filesystemLabel") || undefined,
-      mkfsOptions: fsExtraSetting("mkfsOptions") || undefined,
-      mountOptions: fsExtraSetting("mountOptions") || undefined,
-    };
-  };
-
-  // Size configuration
-  const size = (): ConfigModelType.Size | undefined => {
-    if (values.sizeMode === SIZE_MODE.AUTO) return undefined;
-
-    if (values.sizeMode === SIZE_MODE.FIXED) {
-      return values.fixedSize
-        ? {
-            default: false,
-            min: parseToBytes(values.fixedSize),
-            max: parseToBytes(values.fixedSize),
-          }
-        : undefined;
-    }
-
-    if (values.sizeMode === SIZE_MODE.RANGE) {
-      return values.rangeMinSize
-        ? {
-            default: false,
-            min: parseToBytes(values.rangeMinSize),
-            max: values.rangeMaxSize ? parseToBytes(values.rangeMaxSize) : undefined,
-          }
-        : undefined;
-    }
-
-    if (values.sizeMode === SIZE_MODE.EXPAND) {
-      return values.expandMinSize
-        ? {
-            default: false,
-            min: parseToBytes(values.expandMinSize),
-          }
-        : undefined;
-    }
-
-    return undefined;
-  };
-
-  return {
-    mountPath: values.mountPoint,
-    name: isReuse ? values.name : undefined,
-    filesystem: filesystem(),
-    size: size(),
-  };
-}
-
-/**
- * Infers size form fields from a stored {@link ConfigModelType.Partition}.
- *
- * Uses early returns to avoid nesting: each guard exits with defaults when
- * the size cannot be determined, leaving the happy paths flat.
- */
-function inferSizeFields(partitionConfig: ConfigModelType.Partition): {
-  sizeMode: SizeMode;
-  fixedSize: string;
-  rangeMinSize: string;
-  rangeMaxSize: string;
-  expandMinSize: string;
-} {
-  const defaults = {
-    sizeMode: SIZE_MODE.AUTO,
-    fixedSize: "",
-    rangeMinSize: "",
-    rangeMaxSize: "",
-    expandMinSize: "",
-  } as const;
-
-  const isReuse = partitionConfig.name !== undefined;
-  if (isReuse) return defaults;
-
-  const sizeConfig = partitionConfig.size;
-  if (!sizeConfig || sizeConfig.default || sizeConfig.min === undefined) return defaults;
-
-  const minSizeValue = deviceSize(sizeConfig.min, { exact: true });
-
-  if (sizeConfig.max === undefined) {
-    return { ...defaults, sizeMode: SIZE_MODE.EXPAND, expandMinSize: minSizeValue };
-  }
-
-  const maxSizeValue = deviceSize(sizeConfig.max, { exact: true });
-
-  if (sizeConfig.min === sizeConfig.max) {
-    return { ...defaults, sizeMode: SIZE_MODE.FIXED, fixedSize: minSizeValue };
-  }
-
-  return {
-    ...defaults,
-    sizeMode: SIZE_MODE.RANGE,
-    rangeMinSize: minSizeValue,
-    rangeMaxSize: maxSizeValue,
-  };
-}
-
-function fsConfigValue(fsConfig) {
-  if (fsConfig?.default) {
-    return FILESYSTEM_TYPE.AUTO;
-  }
-
-  return fsConfig?.type || FILESYSTEM_TYPE.AUTO;
-}
-
-/**
- * Maps a stored {@link ConfigModelType.Partition} to initial form values for
- * editing, or returns an empty object when creating a new partition.
- *
- * Reconstructs the size mode (auto / fixed / range / expand) from the stored
- * min/max byte values, and infers the filesystem action from the `reuse` flag.
- */
-function toFormValues(
-  partitionConfig: ConfigModelType.Partition | null,
-): Partial<typeof defaultOptions.defaultValues> {
-  if (!partitionConfig) return {};
-
-  const fsConfig = partitionConfig.filesystem;
-  const isReusePartition = partitionConfig.name !== undefined;
-
-  // When editing an existing partition with a filesystem, default to keeping it (REUSE)
-  // unless the config explicitly says to format (reuse: false)
-  const shouldKeepFilesystem =
-    isReusePartition && fsConfig?.type !== undefined && fsConfig.reuse !== false;
-
-  const mountPoint = partitionConfig.mountPath || "";
-  const filesystemLabel = fsConfig?.label || "";
-  const mkfsOptions = fsConfig?.mkfsOptions || [];
-  const mountOptions = fsConfig?.mountOptions || [];
-  const showMoreFilesystemSettings =
-    filesystemLabel !== "" || !!mkfsOptions.length || !!mountOptions.length;
-  return {
-    mountPoint,
-    committedMountPoint: mountPoint,
-    name: partitionConfig.name || "",
-    // Default to REUSE when editing partition with filesystem; otherwise use actual type or AUTO
-    filesystem: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
-    filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
-    filesystemLabel,
-    mkfsOptions,
-    mountOptions,
-    showMoreFilesystemSettings,
-    ...inferSizeFields(partitionConfig),
-  };
-}
 
 /**
  * Query data frozen on mount to protect the form from mid-interaction
