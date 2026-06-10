@@ -142,6 +142,25 @@ describe("InstallerL10nOptions", () => {
       expect(toggle).not.toHaveTextContent("us");
     });
 
+    describe("the visual tooltip", () => {
+      it("does not add a second source for the accessible name", () => {
+        installerRender(<InstallerL10nOptions />);
+        const toggles = screen.getAllByRole("button", {
+          name: "Change display language and keyboard layout",
+        });
+        expect(toggles).toHaveLength(1);
+        expect(toggles[0]).not.toHaveAttribute("aria-describedby");
+      });
+
+      it("reveals its text on hover", async () => {
+        const { user } = installerRender(<InstallerL10nOptions />);
+        await user.hover(
+          screen.getByRole("button", { name: "Change display language and keyboard layout" }),
+        );
+        await screen.findByText("Change display language and keyboard layout");
+      });
+    });
+
     it("allows setting display language and keyboard layout", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });

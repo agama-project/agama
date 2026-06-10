@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { useId, useRef } from "react";
 import {
   Button,
   Content,
@@ -32,6 +32,7 @@ import {
   ToggleGroupItem,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import Text from "~/components/core/Text";
 import { useAppearance } from "~/context/appearance";
 import { _ } from "~/i18n";
@@ -52,6 +53,8 @@ export default function AppearanceSettings(): React.ReactNode {
   const { colorScheme, setColorScheme, contrast, setContrast } = useAppearance();
   const colorSchemeId = useId();
   const contrastId = useId();
+  // Shared by the popover (its external trigger) and the visual-only tooltip.
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // TRANSLATORS: accessible name for the button that opens the appearance settings
   const appearanceLabel = _("Appearance");
@@ -143,17 +146,21 @@ export default function AppearanceSettings(): React.ReactNode {
   );
 
   return (
-    <Popover
-      aria-label={appearanceLabel}
-      headerContent={appearanceLabel}
-      bodyContent={settings}
-      hasAutoWidth
-      position="bottom-end"
-      appendTo={() => document.body}
-    >
-      <Button variant="plain" aria-label={appearanceLabel}>
-        <Icon name="routine" isMiddleAligned />
-      </Button>
-    </Popover>
+    <>
+      <VisualTooltip content={appearanceLabel}>
+        <Button ref={triggerRef} variant="plain" aria-label={appearanceLabel}>
+          <Icon name="routine" isMiddleAligned />
+        </Button>
+      </VisualTooltip>
+      <Popover
+        triggerRef={triggerRef}
+        aria-label={appearanceLabel}
+        headerContent={appearanceLabel}
+        bodyContent={settings}
+        hasAutoWidth
+        position="bottom-end"
+        appendTo={() => document.body}
+      />
+    </>
   );
 }

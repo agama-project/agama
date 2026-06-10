@@ -48,6 +48,24 @@ describe("InstallerOptionsMenu", () => {
       const toggle = screen.getByRole("button", { name: /More installer options/i });
       expect(toggle).not.toHaveTextContent("More");
     });
+
+    it("keeps a single accessible name despite the visual tooltip", () => {
+      plainRender(<InstallerOptionsMenu hideLabel />);
+      // The visual-only tooltip (aria="none") must not add a second source for
+      // the accessible name, so there is exactly one matching control.
+      const toggles = screen.getAllByRole("button", { name: "More installer options" });
+      expect(toggles).toHaveLength(1);
+      expect(toggles[0]).not.toHaveAttribute("aria-describedby");
+    });
+
+    it("reveals the tooltip text on hover", async () => {
+      const { user } = plainRender(<InstallerOptionsMenu hideLabel />);
+      const toggle = screen.getByRole("button", { name: "More installer options" });
+      await user.hover(toggle);
+      // The tooltip renders its label as visible text (separate from the
+      // toggle's aria-label, which is not text content).
+      await screen.findByText("More installer options");
+    });
   });
 
   describe("dropdown open/close behavior", () => {

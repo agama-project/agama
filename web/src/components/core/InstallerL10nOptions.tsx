@@ -46,6 +46,7 @@ import {
   FormSelectProps,
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import { Icon } from "~/components/layout";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
@@ -474,43 +475,52 @@ const CenteredContent = ({
 );
 
 /** Toggle button for accessing only language settings. */
-const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => (
-  <Button onClick={onClick} aria-label={_("Change display language")} variant="plain">
-    <CenteredContent>
-      <LanguageIcon />
-      {showValues && language}
-    </CenteredContent>
-  </Button>
-);
+const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => {
+  const label = _("Change display language");
+  return (
+    <VisualTooltip content={label}>
+      <Button onClick={onClick} aria-label={label} variant="plain">
+        <CenteredContent>
+          <LanguageIcon />
+          {showValues && language}
+        </CenteredContent>
+      </Button>
+    </VisualTooltip>
+  );
+};
 
 /** Toggle button for accessing only keymap settings. */
-const KeyboardOnlyToggle = ({ onClick, keymap, showValues }: ToggleProps) => (
-  <Button onClick={onClick} aria-label={_("Change keyboard layout")} variant="plain">
-    <CenteredContent alignItems="alignItemsFlexEnd">
-      <KeyboardIcon />
-      {showValues && <code>{keymap}</code>}
-    </CenteredContent>
-  </Button>
-);
+const KeyboardOnlyToggle = ({ onClick, keymap, showValues }: ToggleProps) => {
+  const label = _("Change keyboard layout");
+  return (
+    <VisualTooltip content={label}>
+      <Button onClick={onClick} aria-label={label} variant="plain">
+        <CenteredContent alignItems="alignItemsFlexEnd">
+          <KeyboardIcon />
+          {showValues && <code>{keymap}</code>}
+        </CenteredContent>
+      </Button>
+    </VisualTooltip>
+  );
+};
 
 /** Toggle button for accessing both language and keyboard layout settings. */
 const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProps) => {
   if (!localConnection())
     return <LanguageOnlyToggle onClick={onClick} language={language} showValues={showValues} />;
 
+  const label = _("Change display language and keyboard layout");
   return (
-    <Button
-      onClick={onClick}
-      aria-label={_("Change display language and keyboard layout")}
-      variant="plain"
-    >
-      <CenteredContent>
-        <LanguageIcon />
-        {showValues && language}
-        <KeyboardIcon />
-        {showValues && <code>{keymap}</code>}
-      </CenteredContent>
-    </Button>
+    <VisualTooltip content={label}>
+      <Button onClick={onClick} aria-label={label} variant="plain">
+        <CenteredContent>
+          <LanguageIcon />
+          {showValues && language}
+          <KeyboardIcon />
+          {showValues && <code>{keymap}</code>}
+        </CenteredContent>
+      </Button>
+    </VisualTooltip>
   );
 };
 

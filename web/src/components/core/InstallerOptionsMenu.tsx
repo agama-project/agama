@@ -31,6 +31,7 @@ import {
   MenuToggleElement,
 } from "@patternfly/react-core";
 import Icon, { IconProps } from "~/components/layout/Icon";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
@@ -73,6 +74,7 @@ export default function InstallerOptionsMenu({
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
+  const toggleLabel = _("More installer options");
 
   // DownloadLogsFeedback must wrap the entire Dropdown rather than just the
   // DropdownItem. When the dropdown closes, PatternFly unmounts its children,
@@ -90,18 +92,20 @@ export default function InstallerOptionsMenu({
             onSelect={toggle}
             onActionClick={toggle}
             toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <MenuToggle
-                ref={toggleRef}
-                onClick={toggle}
-                aria-label={_("More installer options")}
-                isExpanded={isOpen}
-                isFullHeight
-                variant="plain"
-              >
-                <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-                  {!hideLabel && _("More")} <Icon name="expand_circle_down" isMiddleAligned />
-                </Flex>
-              </MenuToggle>
+              <VisualTooltip content={toggleLabel}>
+                <MenuToggle
+                  ref={toggleRef}
+                  onClick={toggle}
+                  aria-label={toggleLabel}
+                  isExpanded={isOpen}
+                  isFullHeight
+                  variant="plain"
+                >
+                  <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
+                    {!hideLabel && _("More")} <Icon name="expand_circle_down" isMiddleAligned />
+                  </Flex>
+                </MenuToggle>
+              </VisualTooltip>
             )}
           >
             <DropdownList>
