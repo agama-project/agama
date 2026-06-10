@@ -127,7 +127,7 @@ describe("InstallerL10nOptions", () => {
     it("renders a button with current language and keymap values when showValues is set", () => {
       installerRender(<InstallerL10nOptions showValues />);
       const toggle = screen.getByRole("button", {
-        name: "Change display language and keyboard layout",
+        name: "Language and Keyboard",
       });
       expect(toggle).toHaveTextContent("Deutsch");
       expect(toggle).toHaveTextContent("us");
@@ -136,7 +136,7 @@ describe("InstallerL10nOptions", () => {
     it("renders an icon-only button keeping its accessible name by default", () => {
       installerRender(<InstallerL10nOptions />);
       const toggle = screen.getByRole("button", {
-        name: "Change display language and keyboard layout",
+        name: "Language and Keyboard",
       });
       expect(toggle).not.toHaveTextContent("Deutsch");
       expect(toggle).not.toHaveTextContent("us");
@@ -146,7 +146,7 @@ describe("InstallerL10nOptions", () => {
       it("does not add a second source for the accessible name", () => {
         installerRender(<InstallerL10nOptions />);
         const toggles = screen.getAllByRole("button", {
-          name: "Change display language and keyboard layout",
+          name: "Language and Keyboard",
         });
         expect(toggles).toHaveLength(1);
         expect(toggles[0]).not.toHaveAttribute("aria-describedby");
@@ -154,10 +154,8 @@ describe("InstallerL10nOptions", () => {
 
       it("reveals its text on hover", async () => {
         const { user } = installerRender(<InstallerL10nOptions />);
-        await user.hover(
-          screen.getByRole("button", { name: "Change display language and keyboard layout" }),
-        );
-        await screen.findByText("Change display language and keyboard layout");
+        await user.hover(screen.getByRole("button", { name: "Language and Keyboard" }));
+        await screen.findByText("Language and Keyboard");
       });
     });
 
@@ -256,7 +254,7 @@ describe("InstallerL10nOptions", () => {
       it("does not render keymap value in the toggle button", () => {
         installerRender(<InstallerL10nOptions showValues />);
         const toggle = screen.getByRole("button", {
-          name: "Change display language",
+          name: "Language",
         });
         expect(toggle).toHaveTextContent("Deutsch");
         expect(toggle).not.toHaveTextContent("us");
@@ -281,7 +279,7 @@ describe("InstallerL10nOptions", () => {
     it("renders a button only with current language value", () => {
       installerRender(<InstallerL10nOptions variant="language" showValues />);
       const toggle = screen.getByRole("button", {
-        name: "Change display language",
+        name: "Language",
       });
       expect(toggle).toHaveTextContent("Deutsch");
       expect(toggle).not.toHaveTextContent("us");
@@ -369,7 +367,7 @@ describe("InstallerL10nOptions", () => {
     it("renders a button only with current keymap value", () => {
       installerRender(<InstallerL10nOptions variant="keyboard" showValues />);
       const toggle = screen.getByRole("button", {
-        name: "Change keyboard layout",
+        name: "Keyboard",
       });
       expect(toggle).not.toHaveTextContent("Deutsch");
       expect(toggle).toHaveTextContent("us");

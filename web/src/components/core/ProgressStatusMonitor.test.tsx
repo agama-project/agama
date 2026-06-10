@@ -83,15 +83,15 @@ describe("ProgressStatusMonitor", () => {
 
     it("does not add a second source for the accessible name", () => {
       installerRender(<ProgressStatusMonitor />);
-      const buttons = screen.getAllByRole("button", { name: "System status: Idle" });
+      const buttons = screen.getAllByRole("button", { name: "Status: Idle" });
       expect(buttons).toHaveLength(1);
       expect(buttons[0]).not.toHaveAttribute("aria-describedby");
     });
 
     it("reveals its text on hover", async () => {
       const { user } = installerRender(<ProgressStatusMonitor />);
-      await user.hover(screen.getByRole("button", { name: "System status: Idle" }));
-      await screen.findByText("System status: Idle");
+      await user.hover(screen.getByRole("button", { name: "Status: Idle" }));
+      await screen.findByText("Status: Idle");
     });
   });
 });

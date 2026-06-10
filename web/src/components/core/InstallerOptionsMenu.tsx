@@ -74,7 +74,9 @@ export default function InstallerOptionsMenu({
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   const toggleConfig = () => setIsConfigOpen(!isConfigOpen);
-  const toggleLabel = _("More installer options");
+  // TRANSLATORS: label for the button that opens the menu with additional
+  // actions (open a terminal, show settings, download logs, change product...)
+  const toggleLabel = _("More options");
 
   // DownloadLogsFeedback must wrap the entire Dropdown rather than just the
   // DropdownItem. When the dropdown closes, PatternFly unmounts its children,

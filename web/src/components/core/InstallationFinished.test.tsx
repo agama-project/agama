@@ -50,18 +50,18 @@ describe("InstallationFinished", () => {
 
   it("shows the installer options menu", async () => {
     installerRender(<InstallationFinished />);
-    screen.getByRole("button", { name: /More installer options/i });
+    screen.getByRole("button", { name: /More options/i });
   });
 
   it("includes an option for downloading the logs", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    await user.click(screen.getByRole("button", { name: /More installer options/i }));
+    await user.click(screen.getByRole("button", { name: /More options/i }));
     screen.getByRole("menuitem", { name: /Download logs/i });
   });
 
   it("includes an option for downloading the config", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    await user.click(screen.getByRole("button", { name: /More installer options/i }));
+    await user.click(screen.getByRole("button", { name: /More options/i }));
     screen.getByRole("menuitem", { name: /Show installation settings/i });
   });
 

@@ -109,16 +109,18 @@ export default function ProgressStatusMonitor() {
   if (!idle) {
     // Busy: show spinner
     icon = undefined;
-    // TRANSLATORS: aria-label for background tasks status button when tasks are active
+    // TRANSLATORS: label for the background tasks status button when tasks are
+    // active; %s is replaced by the number of active tasks
     ariaLabel = sprintf(
-      n_("System status: %s task active", "System status: %s tasks active", tasks.length),
+      n_("Status: %s task active", "Status: %s tasks active", tasks.length),
       tasks.length,
     );
   } else {
     // Idle: show list_alt_check
     icon = <Icon name="list_alt_check" isMiddleAligned />;
-    // TRANSLATORS: aria-label for system status button when idle
-    ariaLabel = _("System status: Idle");
+    // TRANSLATORS: label for the system status button when there are no
+    // background tasks running
+    ariaLabel = _("Status: Idle");
   }
 
   // Popover header and body depend on state

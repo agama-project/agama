@@ -476,7 +476,8 @@ const CenteredContent = ({
 
 /** Toggle button for accessing only language settings. */
 const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => {
-  const label = _("Change display language");
+  // TRANSLATORS: label for the button that opens the display language settings
+  const label = _("Language");
   return (
     <VisualTooltip content={label}>
       <Button onClick={onClick} aria-label={label} variant="plain">
@@ -491,7 +492,8 @@ const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => {
 
 /** Toggle button for accessing only keymap settings. */
 const KeyboardOnlyToggle = ({ onClick, keymap, showValues }: ToggleProps) => {
-  const label = _("Change keyboard layout");
+  // TRANSLATORS: label for the button that opens the keyboard layout settings
+  const label = _("Keyboard");
   return (
     <VisualTooltip content={label}>
       <Button onClick={onClick} aria-label={label} variant="plain">
@@ -509,7 +511,9 @@ const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProp
   if (!localConnection())
     return <LanguageOnlyToggle onClick={onClick} language={language} showValues={showValues} />;
 
-  const label = _("Change display language and keyboard layout");
+  // TRANSLATORS: label for the button that opens the display language and
+  // keyboard layout settings
+  const label = _("Language and Keyboard");
   return (
     <VisualTooltip content={label}>
       <Button onClick={onClick} aria-label={label} variant="plain">
