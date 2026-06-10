@@ -333,6 +333,7 @@ impl ZyppServer {
                 alias: repo.alias,
                 url: repo.url,
                 enabled: repo.enabled,
+                priority: None,
             })
             .collect();
 
@@ -413,10 +414,11 @@ impl ZyppServer {
             .filter(|r| !aliases.contains(&r.alias))
             .collect();
         for repo in &to_add {
-            let result = zypp.add_repository(&repo.alias, &repo.url, |percent, alias| {
-                tracing::info!("Adding repository {} ({}%)", alias, percent);
-                true
-            });
+            let result =
+                zypp.add_repository(&repo.alias, &repo.url, repo.priority, |percent, alias| {
+                    tracing::info!("Adding repository {} ({}%)", alias, percent);
+                    true
+                });
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
