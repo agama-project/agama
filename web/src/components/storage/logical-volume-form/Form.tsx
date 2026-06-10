@@ -23,7 +23,6 @@
 import React, { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
-import { isEmpty } from "radashi";
 import Page from "~/components/core/Page";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import NestedContent from "~/components/core/NestedContent";
@@ -36,7 +35,6 @@ import {
   useEditLogicalVolume,
 } from "~/hooks/model/storage/config-model";
 import configModel from "~/model/storage/config-model";
-import { deviceSize, parseToBytes } from "~/components/storage/utils";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -46,7 +44,6 @@ import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAd
 import LogicalVolumeSourceFields from "./LogicalVolumeSourceFields";
 import LogicalVolumeNameField from "./LogicalVolumeNameField";
 import FilesystemFields from "./FilesystemFields";
-import { useSolvedSizes } from "./use-solved-sizes";
 import {
   useVolumeGroupConfig,
   useVolumeGroup,
@@ -55,28 +52,16 @@ import {
   useUnusedMountPoints,
 } from "./queries";
 import {
-  defaultOptions,
-  validate,
-  isReusingLogicalVolume,
-  FILESYSTEM_TYPE,
-  FILESYSTEM_ACTION,
-  SIZE_MODE,
-  type SizeMode,
-} from "./fields";
+  buildPayload,
+  toFormValues,
+  useSolvedSizes,
+  lvNameFromMountPoint,
+} from "./transformations";
+import { defaultOptions, validate, isReusingLogicalVolume } from "./fields";
 
 import type { ConfigModel as ConfigModelType } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
-
-/**
- * Derives the logical volume name from a mount point: "/home" -> "home",
- * "/var/lib" -> "var_lib", "swap" -> "swap".
- */
-function lvNameFromMountPoint(mountPoint: string): string {
-  if (mountPoint === "") return "";
-  if (mountPoint === "swap") return "swap";
-  return mountPoint.replace(/^\//, "").replace(/\//g, "_");
-}
 
 /**
  * Auto-fills the logical volume name from the committed mount point until the
@@ -95,177 +80,6 @@ function syncLvName(formApi): void {
     dontUpdateMeta: true,
     dontRunListeners: true,
   });
-}
-
-/** Maps a stored filesystem config to the `filesystem` field value. */
-function fsConfigValue(fsConfig: ConfigModelType.Filesystem | undefined): string {
-  if (fsConfig?.default) return FILESYSTEM_TYPE.AUTO;
-  return fsConfig?.type || FILESYSTEM_TYPE.AUTO;
-}
-
-/**
- * Infers the size form fields from a stored logical volume config. Reusing an
- * existing logical volume keeps automatic sizing.
- */
-function inferSizeFields(logicalVolumeConfig: ConfigModelType.LogicalVolume): {
-  sizeMode: SizeMode;
-  fixedSize: string;
-  rangeMinSize: string;
-  rangeMaxSize: string;
-  expandMinSize: string;
-} {
-  const defaults = {
-    sizeMode: SIZE_MODE.AUTO,
-    fixedSize: "",
-    rangeMinSize: "",
-    rangeMaxSize: "",
-    expandMinSize: "",
-  } as const;
-
-  const isReuse = logicalVolumeConfig.name !== undefined;
-  if (isReuse) return defaults;
-
-  const sizeConfig = logicalVolumeConfig.size;
-  if (!sizeConfig || sizeConfig.default || sizeConfig.min === undefined) return defaults;
-
-  const minSizeValue = deviceSize(sizeConfig.min, { exact: true });
-
-  if (sizeConfig.max === undefined) {
-    return { ...defaults, sizeMode: SIZE_MODE.EXPAND, expandMinSize: minSizeValue };
-  }
-
-  const maxSizeValue = deviceSize(sizeConfig.max, { exact: true });
-
-  if (sizeConfig.min === sizeConfig.max) {
-    return { ...defaults, sizeMode: SIZE_MODE.FIXED, fixedSize: minSizeValue };
-  }
-
-  return {
-    ...defaults,
-    sizeMode: SIZE_MODE.RANGE,
-    rangeMinSize: minSizeValue,
-    rangeMaxSize: maxSizeValue,
-  };
-}
-
-/**
- * Maps a stored logical volume config to initial form values for editing, or
- * returns an empty object when creating a new logical volume.
- */
-function toFormValues(
-  logicalVolumeConfig: ConfigModelType.LogicalVolume | null,
-): Partial<typeof defaultOptions.defaultValues> {
-  if (!logicalVolumeConfig) return {};
-
-  const fsConfig = logicalVolumeConfig.filesystem;
-  const isReuse = logicalVolumeConfig.name !== undefined;
-
-  // When editing a reused logical volume that has a filesystem, default to
-  // keeping it unless the config explicitly says to format (reuse: false).
-  const shouldKeepFilesystem = isReuse && fsConfig?.type !== undefined && fsConfig.reuse !== false;
-
-  const mountPoint = logicalVolumeConfig.mountPath || "";
-  const filesystemLabel = fsConfig?.label || "";
-  const mkfsOptions = fsConfig?.mkfsOptions || [];
-  const mountOptions = fsConfig?.mountOptions || [];
-  const showMoreFilesystemSettings =
-    filesystemLabel !== "" || !!mkfsOptions.length || !!mountOptions.length;
-
-  return {
-    mountPoint,
-    committedMountPoint: mountPoint,
-    target: logicalVolumeConfig.name || "",
-    lvName: logicalVolumeConfig.lvName || "",
-    filesystem: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
-    filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
-    filesystemLabel,
-    mkfsOptions,
-    mountOptions,
-    showMoreFilesystemSettings,
-    ...inferSizeFields(logicalVolumeConfig),
-  };
-}
-
-/**
- * Builds a logical volume config from the validated form values. Size is
- * omitted when reusing; filesystem and size are omitted when their modes select
- * automatic behavior.
- */
-function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelType.LogicalVolume {
-  const isReuse = isReusingLogicalVolume(values.target);
-
-  const fsExtraSetting = (attr: "filesystemLabel" | "mkfsOptions" | "mountOptions") => {
-    if (!values.showMoreFilesystemSettings) return undefined;
-    if (isEmpty(values[attr])) return undefined;
-    return values[attr];
-  };
-
-  const filesystem = (): ConfigModelType.Filesystem | undefined => {
-    if (values.filesystem === FILESYSTEM_ACTION.REUSE) {
-      return {
-        reuse: true,
-        default: true,
-        mountOptions: (fsExtraSetting("mountOptions") as string[]) || undefined,
-      };
-    }
-
-    if (values.filesystem === FILESYSTEM_TYPE.AUTO) {
-      return {
-        default: true,
-        label: (fsExtraSetting("filesystemLabel") as string) || undefined,
-        mkfsOptions: (fsExtraSetting("mkfsOptions") as string[]) || undefined,
-        mountOptions: (fsExtraSetting("mountOptions") as string[]) || undefined,
-      };
-    }
-
-    return {
-      default: false,
-      type: values.filesystem as ConfigModelType.FilesystemType,
-      label: (fsExtraSetting("filesystemLabel") as string) || undefined,
-      mkfsOptions: (fsExtraSetting("mkfsOptions") as string[]) || undefined,
-      mountOptions: (fsExtraSetting("mountOptions") as string[]) || undefined,
-    };
-  };
-
-  const size = (): ConfigModelType.Size | undefined => {
-    if (values.sizeMode === SIZE_MODE.AUTO) return undefined;
-
-    if (values.sizeMode === SIZE_MODE.FIXED) {
-      return values.fixedSize
-        ? {
-            default: false,
-            min: parseToBytes(values.fixedSize),
-            max: parseToBytes(values.fixedSize),
-          }
-        : undefined;
-    }
-
-    if (values.sizeMode === SIZE_MODE.RANGE) {
-      return values.rangeMinSize
-        ? {
-            default: false,
-            min: parseToBytes(values.rangeMinSize),
-            max: values.rangeMaxSize ? parseToBytes(values.rangeMaxSize) : undefined,
-          }
-        : undefined;
-    }
-
-    if (values.sizeMode === SIZE_MODE.EXPAND) {
-      return values.expandMinSize
-        ? { default: false, min: parseToBytes(values.expandMinSize) }
-        : undefined;
-    }
-
-    return undefined;
-  };
-
-  return {
-    mountPath: values.mountPoint,
-    lvName: values.lvName,
-    name: isReuse ? values.target : undefined,
-    filesystem: filesystem(),
-    size: size(),
-  };
 }
 
 /**

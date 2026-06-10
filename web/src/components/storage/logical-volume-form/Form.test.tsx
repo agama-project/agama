@@ -68,7 +68,8 @@ jest.mock("./queries", () => ({
   useUnusedMountPoints: () => ["/home", "/var", "swap"],
 }));
 
-jest.mock("./use-solved-sizes", () => ({
+jest.mock("./transformations", () => ({
+  ...jest.requireActual("./transformations"),
   useSolvedSizes: () => null,
 }));
 
