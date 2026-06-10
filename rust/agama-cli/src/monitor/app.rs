@@ -19,6 +19,7 @@
 // find current contact information at www.suse.com.
 
 use agama_lib::{
+    questions::http_client::HTTPClient,
     http::{BaseHTTPClient, WebSocketClient},
     monitor::{InstallationStatus, Monitor, MonitorUpdate},
 };
@@ -30,7 +31,7 @@ use serde::Deserialize;
 use std::{collections::HashMap, io};
 use tokio::sync::mpsc;
 
-use super::ui;
+use super::ui::{self, QuestionUiState};
 
 /// Application messages (internal).
 #[derive(Clone, Debug)]
@@ -116,10 +117,14 @@ impl MonitorAppBuilder {
         let (updates, status) =
             Monitor::connect(self.websocket_client, &self.http_client, self.stop_on_idle).await?;
 
+        let http_client = HTTPClient::new(self.http_client);
+
         Ok(MonitorApp {
             updates: Some(updates),
             status,
             products,
+            http_client,
+            question_ui: QuestionUiState::default(),
         })
     }
 
@@ -155,6 +160,10 @@ pub struct MonitorApp {
     status: InstallationStatus,
     /// Products information
     products: HashMap<String, ProductInfo>,
+    /// Client for answering questions
+    http_client: HTTPClient,
+    /// UI state for question answering
+    question_ui: QuestionUiState,
 }
 
 impl MonitorApp {
@@ -240,10 +249,38 @@ impl MonitorApp {
                     return Err(MonitorError::MonitoringError(e));
                 }
                 Message::Terminal(event) => {
+                    // Always allow global exit keys (Ctrl-C)
                     if let Event::Key(key_event) = event {
-                        if self.handle_key_event(key_event) {
+                        if key_event.kind == KeyEventKind::Press 
+                            && key_event.code == KeyCode::Char('c') 
+                            && key_event.modifiers == KeyModifiers::CONTROL {
                             terminal_handle.abort();
                             return Ok(());
+                        }
+                    }
+
+                    let mut handled = false;
+                    let pending_question = self.status.questions.iter().find(|q| q.answer.is_none()).cloned();
+                    
+                    if let Some(q) = pending_question {
+                        // Ensure state matches the question
+                        if self.question_ui.question_id != Some(q.id) {
+                            self.question_ui.reset(&q);
+                        }
+
+                        if let Some(answer) = self.question_ui.handle_event(event.clone(), &q) {
+                            let _ = self.http_client.answer_question(q.id, answer).await;
+                            self.question_ui.question_id = None;
+                        }
+                        handled = true;
+                    }
+
+                    if !handled {
+                        if let Event::Key(key_event) = event {
+                            if self.handle_key_event(key_event) {
+                                terminal_handle.abort();
+                                return Ok(());
+                            }
                         }
                     }
                 }
@@ -308,6 +345,15 @@ impl Widget for &mut MonitorApp {
         let layout = ui::create_layout(area, summary.indentation);
 
         summary.render(layout.summary, buf);
-        ui::Content::new(&self.status).render(layout.content, buf);
+
+        let pending_question = self.status.questions.iter().find(|q| q.answer.is_none());
+        if let Some(question) = pending_question {
+            if self.question_ui.question_id != Some(question.id) {
+                self.question_ui.reset(question);
+            }
+            ui::QuestionWidget::new(&self.question_ui, question).render(layout.content, buf);
+        } else {
+            ui::Content::new(&self.status).render(layout.content, buf);
+        }
     }
 }

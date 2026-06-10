@@ -50,35 +50,6 @@ impl<'a> Content<'a> {
         Self { status }
     }
 
-    /// Renders questions
-    fn render_questions(&self, area: Rect, buf: &mut Buffer) {
-        let content_area = Rect {
-            x: area.x,
-            y: area.y,
-            width: area.width.saturating_sub(2),
-            height: area.height,
-        };
-
-        let mut lines = vec![Line::from(Span::styled(
-            gettext("There are pending questions:"),
-            Style::default().add_modifier(Modifier::BOLD),
-        ))];
-
-        for question in &self.status.questions {
-            lines.push(Line::from(format!("  - {}", question.spec.text)));
-        }
-
-        lines.push(Line::from(""));
-        lines.push(Line::from(Span::styled(
-            gettext("Please use the web interface (recommended) or the \"agama questions\" command to answer them."),
-            Style::default().add_modifier(Modifier::DIM),
-        )));
-
-        Paragraph::new(lines)
-            .wrap(Wrap { trim: false })
-            .render(content_area, buf);
-    }
-
     /// Renders final status (finished or failed)
     fn render_final_status(&self, area: Rect, buf: &mut Buffer) {
         let content_area = Rect {
@@ -259,16 +230,13 @@ impl Widget for Content<'_> {
     /// Renders the content depending on the installation status:
     ///
     /// 1. The final status if the installation finished.
-    /// 2. The list of questions if any.
-    /// 3. The progress (if any).
-    /// 4. A warning if no product is selected.
-    /// 5. The list of issues if any.
-    /// 6. A default message informing the user that Agama is ready.
+    /// 2. The progress (if any).
+    /// 3. A warning if no product is selected.
+    /// 4. The list of issues if any.
+    /// 5. A default message informing the user that Agama is ready.
     fn render(self, area: Rect, buf: &mut Buffer) {
         if self.status.has_finished() {
             self.render_final_status(area, buf);
-        } else if !self.status.questions.is_empty() {
-            self.render_questions(area, buf);
         } else if !self.status.status.progresses.is_empty() {
             self.render_progress(area, buf);
         } else if !self.status.has_product() {

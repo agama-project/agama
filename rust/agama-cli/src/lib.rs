@@ -64,8 +64,6 @@ mod events;
 mod logs;
 mod monitor;
 mod questions;
-mod questions_ui;
-mod questions_tui;
 mod status;
 
 use context::InstallationContext;
