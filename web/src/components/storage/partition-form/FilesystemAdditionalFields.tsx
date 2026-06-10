@@ -23,8 +23,16 @@
 import React from "react";
 import LabelText from "~/components/form/LabelText";
 import { withForm } from "~/hooks/form";
-import { defaultOptions } from "./fields";
+import { defaultOptions, FILESYSTEM_ACTION } from "./fields";
 import { _ } from "~/i18n";
+import Interpolate from "~/components/core/Interpolate";
+
+/**
+ * Whether options for a new filesystem should be displayed.
+ */
+const isNewFilesystem = (filesystem: string): boolean => {
+  return filesystem !== FILESYSTEM_ACTION.REUSE;
+};
 
 /**
  * Additional filesystem settings fields.
@@ -35,11 +43,49 @@ const FilesystemAdditionalFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
     return (
-      <form.AppField name="filesystemLabel">
-        {(field) => (
-          <field.TextField label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>} />
+      <form.Subscribe selector={(s) => ({ filesystem: s.values.filesystem })}>
+        {({ filesystem }) => (
+          <>
+            {isNewFilesystem(filesystem) && (
+              <form.AppField name="filesystemLabel">
+                {(field) => (
+                  <field.TextField
+                    label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>}
+                  />
+                )}
+              </form.AppField>
+            )}
+            <form.AppField name="mountOptions">
+              {(field) => (
+                <field.ArrayField
+                  label={<LabelText suffix={_("(optional)")}>{_("Mount options")}</LabelText>}
+                  helperText={_("E.g. rw, noatime, umask=0666")}
+                />
+              )}
+            </form.AppField>
+            {isNewFilesystem(filesystem) && (
+              <form.AppField name="mkfsOptions">
+                {(field) => (
+                  <field.ArrayField
+                    label={<LabelText suffix={_("(optional)")}>{_("Format options")}</LabelText>}
+                    splitPasteOn={/\r?\n/}
+                    helperText={
+                      <Interpolate
+                        sentence={
+                          // TRANSLATORS: %s is replaced by "mkfs" (command used to format devices)
+                          _("Additional arguments for the formatting command (%s).")
+                        }
+                      >
+                        {() => <code>{"mkfs"}</code>}
+                      </Interpolate>
+                    }
+                  />
+                )}
+              </form.AppField>
+            )}
+          </>
         )}
-      </form.AppField>
+      </form.Subscribe>
     );
   },
 });

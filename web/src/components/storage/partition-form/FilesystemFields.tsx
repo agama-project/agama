@@ -27,13 +27,7 @@ import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import FieldNestedContent from "~/components/form/FieldNestedContent";
 import { withForm } from "~/hooks/form";
-import {
-  defaultOptions,
-  isReusingPartition,
-  FILESYSTEM_TYPE,
-  FILESYSTEM_ACTION,
-  supportsAdditionalConfig,
-} from "./fields";
+import { defaultOptions, isReusingPartition, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
 import { deviceLabel, filesystemLabel, formattedPath } from "~/components/storage/utils";
 import { _ } from "~/i18n";
@@ -281,18 +275,16 @@ const FilesystemFieldsContent = withForm({
           isFallback={isFallbackVolume}
         />
 
-        {supportsAdditionalConfig(filesystem) && (
-          <form.AppField name="showMoreFilesystemSettings">
-            {(field) => (
-              <field.CheckboxField
-                label={
-                  // TRANSLATORS: checkbox label for additional filesystem configuration options
-                  _("Define more file system settings")
-                }
-              />
-            )}
-          </form.AppField>
-        )}
+        <form.AppField name="showMoreFilesystemSettings">
+          {(field) => (
+            <field.CheckboxField
+              label={
+                // TRANSLATORS: checkbox label for additional filesystem configuration options
+                _("Define more file system settings")
+              }
+            />
+          )}
+        </form.AppField>
       </>
     );
   },

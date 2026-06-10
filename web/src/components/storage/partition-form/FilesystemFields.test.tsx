@@ -219,14 +219,14 @@ describe("FilesystemFields", () => {
   });
 
   describe("additional filesystem settings", () => {
-    it("shows checkbox for additional settings when filesystem supports it", async () => {
+    it("shows checkbox for additional settings", async () => {
       installerRender(<TestForm defaultValues={{ filesystem: FILESYSTEM_TYPE.AUTO }} />);
       screen.getByLabelText(/Define more file system settings/);
     });
 
-    it("does not show checkbox when reusing partition", () => {
+    it("shows checkbox even when reusing partition", () => {
       installerRender(<TestForm defaultValues={{ name: "vdd1", filesystem: "reuse" }} />);
-      expect(screen.queryByLabelText(/Define more file system settings/)).not.toBeInTheDocument();
+      screen.getByLabelText(/Define more file system settings/);
     });
   });
 });

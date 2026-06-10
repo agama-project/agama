@@ -42,6 +42,7 @@ import configModel from "~/model/storage/config-model";
 import { STORAGE } from "~/routes/paths";
 import { compact } from "~/utils";
 import { _ } from "~/i18n";
+import { isEmpty } from "radashi";
 
 import PartitionFields from "./PartitionFields";
 import FilesystemFields from "./FilesystemFields";
@@ -51,7 +52,6 @@ import {
   defaultOptions,
   validate,
   isReusingPartition,
-  supportsAdditionalConfig,
   FILESYSTEM_TYPE,
   FILESYSTEM_ACTION,
   SIZE_MODE,
@@ -127,23 +127,41 @@ function useUnusedPartitions(): System.Device[] {
 function buildPayload(values: typeof defaultOptions.defaultValues): ConfigModelType.Partition {
   const isReuse = isReusingPartition(values.name);
 
+  const fsExtraSetting = (attr) => {
+    if (!values.showMoreFilesystemSettings) return;
+    if (isEmpty(values[attr])) return;
+
+    return values[attr];
+  };
+
   // Filesystem configuration
   const filesystem = (): ConfigModelType.Filesystem | undefined => {
     // Reuse existing filesystem (filesystem field holds REUSE sentinel)
     if (values.filesystem === FILESYSTEM_ACTION.REUSE) {
-      return { reuse: true, default: true };
+      return {
+        reuse: true,
+        default: true,
+        mountOptions: fsExtraSetting("mountOptions") || undefined,
+      };
     }
 
     // Automatic filesystem selection
     if (values.filesystem === FILESYSTEM_TYPE.AUTO) {
-      return undefined;
+      return {
+        default: true,
+        label: fsExtraSetting("filesystemLabel") || undefined,
+        mkfsOptions: fsExtraSetting("mkfsOptions") || undefined,
+        mountOptions: fsExtraSetting("mountOptions") || undefined,
+      };
     }
 
     // Explicit filesystem type
     return {
       default: false,
       type: values.filesystem as ConfigModelType.FilesystemType,
-      label: values.filesystemLabel || undefined,
+      label: fsExtraSetting("filesystemLabel") || undefined,
+      mkfsOptions: fsExtraSetting("mkfsOptions") || undefined,
+      mountOptions: fsExtraSetting("mountOptions") || undefined,
     };
   };
 
@@ -268,6 +286,10 @@ function toFormValues(
 
   const mountPoint = partitionConfig.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";
+  const mkfsOptions = fsConfig?.mkfsOptions || [];
+  const mountOptions = fsConfig?.mountOptions || [];
+  const showMoreFilesystemSettings =
+    filesystemLabel !== "" || !!mkfsOptions.length || !!mountOptions.length;
   return {
     mountPoint,
     committedMountPoint: mountPoint,
@@ -276,7 +298,9 @@ function toFormValues(
     filesystem: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
     filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
     filesystemLabel,
-    showMoreFilesystemSettings: filesystemLabel !== "",
+    mkfsOptions,
+    mountOptions,
+    showMoreFilesystemSettings,
     ...inferSizeFields(partitionConfig),
   };
 }
@@ -486,6 +510,11 @@ function PartitionFormContent({
           availablePartitions={availablePartitions}
         />
 
+        {/* Size (only for new partitions) */}
+        <form.Subscribe selector={(s) => s.values.name}>
+          {(name) => !isReusingPartition(name) && <SizeFields form={form} />}
+        </form.Subscribe>
+
         {/* Filesystem */}
         <FilesystemFields form={form} device={systemDevice} />
 
@@ -496,19 +525,13 @@ function PartitionFormContent({
             filesystem: s.values.filesystem,
           })}
         >
-          {({ showMore, filesystem }) =>
-            showMore &&
-            supportsAdditionalConfig(filesystem) && (
+          {({ showMore }) =>
+            showMore && (
               <NestedContent margin="mxLg">
                 <FilesystemAdditionalFields form={form} />
               </NestedContent>
             )
           }
-        </form.Subscribe>
-
-        {/* Size (only for new partitions) */}
-        <form.Subscribe selector={(s) => s.values.name}>
-          {(name) => !isReusingPartition(name) && <SizeFields form={form} />}
         </form.Subscribe>
 
         <ActionGroup>

@@ -22,7 +22,6 @@
 
 import {
   isReusingPartition,
-  supportsAdditionalConfig,
   validate,
   FILESYSTEM_ACTION,
   FILESYSTEM_TYPE,
@@ -43,19 +42,6 @@ describe("fields", () => {
     });
   });
 
-  describe("supportsAdditionalConfig", () => {
-    it("returns false for REUSE action", () => {
-      expect(supportsAdditionalConfig(FILESYSTEM_ACTION.REUSE)).toBe(false);
-    });
-
-    it("returns true for other filesystem types", () => {
-      expect(supportsAdditionalConfig("xfs")).toBe(true);
-      expect(supportsAdditionalConfig("btrfs")).toBe(true);
-      expect(supportsAdditionalConfig("ext4")).toBe(true);
-      expect(supportsAdditionalConfig(FILESYSTEM_TYPE.AUTO)).toBe(true);
-    });
-  });
-
   describe("validate", () => {
     const createBaseFields = (): PartitionFormData => ({
       mountPoint: "/home",
@@ -64,6 +50,8 @@ describe("fields", () => {
       filesystem: FILESYSTEM_TYPE.AUTO,
       filesystemAction: FILESYSTEM_ACTION.REUSE,
       filesystemLabel: "",
+      mkfsOptions: [],
+      mountOptions: [],
       showMoreFilesystemSettings: false,
       sizeMode: SIZE_MODE.AUTO,
       fixedSize: "",
