@@ -24,6 +24,7 @@ use crate::storage_client::{self, message};
 use agama_utils::actor::Handler;
 use agama_utils::api::iscsi::Config;
 use agama_utils::api::iscsi::DiscoverConfig;
+use agama_utils::BoxFuture;
 use async_trait::async_trait;
 use serde_json::Value;
 
@@ -47,7 +48,10 @@ pub trait ISCSIClient {
     async fn discover(&self, config: DiscoverConfig) -> Result<DiscoverResult, Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
     async fn get_config(&self) -> Result<Option<Config>, Error>;
-    async fn set_config(&self, config: Option<Config>) -> Result<(), Error>;
+    async fn set_config(
+        &self,
+        config: Option<Config>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error>;
 }
 
 #[derive(Clone)]
@@ -82,10 +86,14 @@ impl ISCSIClient for Client {
         Ok(self.storage_client.call(message::iscsi::GetConfig).await?)
     }
 
-    async fn set_config(&self, config: Option<Config>) -> Result<(), Error> {
-        self.storage_client
+    async fn set_config(
+        &self,
+        config: Option<Config>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self
+            .storage_client
             .call(message::iscsi::SetConfig::new(config))
             .await?;
-        Ok(())
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }

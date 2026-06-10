@@ -461,7 +461,13 @@ impl Zypp {
         }
     }
 
-    pub fn add_repository<F>(&self, alias: &str, url: &str, progress: F) -> ZyppResult<()>
+    pub fn add_repository<F>(
+        &self,
+        alias: &str,
+        url: &str,
+        priority: Option<u32>,
+        progress: F,
+    ) -> ZyppResult<()>
     where
         F: FnMut(i64, String) -> bool,
     {
@@ -476,6 +482,7 @@ impl Zypp {
                 self.ptr,
                 c_alias.as_ptr(),
                 c_url.as_ptr(),
+                priority.unwrap_or_default(),
                 status_ptr,
                 cb,
                 &mut closure as *mut _ as *mut c_void,

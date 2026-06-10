@@ -23,10 +23,10 @@
 use crate::storage_client::{self, message};
 use agama_utils::{
     actor::{self, Handler},
-    api::{software::Resolvable, storage::Config, Issue},
+    api::{storage::Config, Issue},
     message::GetResolvables,
     products::ProductSpec,
-    BoxFuture,
+    BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use serde_json::Value;

@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -19,7 +19,7 @@
 // find current contact information at www.suse.com.
 
 // Re-export types from agama-utils
-pub use agama_utils::api::software::ResolvableType;
+pub use agama_utils::ResolvableType;
 
 /// Extension trait to convert ResolvableType to zypp_agama::ResolvableKind
 pub trait ResolvableTypeExt {
