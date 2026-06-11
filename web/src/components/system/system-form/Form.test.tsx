@@ -23,7 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-import SystemPage from "./Form";
+import SystemForm from "./Form";
 
 let mockStaticHostname: string;
 const mockPatchConfig = jest.fn();
@@ -57,7 +57,7 @@ jest.mock("~/hooks/model/proposal", () => ({
   }),
 }));
 
-describe("SystemPage", () => {
+describe("SystemForm", () => {
   beforeEach(() => {
     mockSystem.mockReturnValue({});
     mockStaticHostname = "";
@@ -65,25 +65,25 @@ describe("SystemPage", () => {
   });
 
   it("renders hostname and NTP settings sections", () => {
-    installerRender(<SystemPage />);
+    installerRender(<SystemForm />);
     screen.getByRole("group", { name: "Hostname" });
     screen.getByRole("group", { name: "Time Synchronization Servers" });
   });
 
   describe("form submission", () => {
     it("does not send config when nothing changed", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
       expect(mockPatchConfig).not.toHaveBeenCalled();
-      screen.getByText("No changes detected. System settings are already up to date.");
+      screen.getByText("No changes to apply");
     });
 
     it("only sends hostname config when hostname changed", async () => {
       mockStaticHostname = "my-server";
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       const hostnameInput = screen.getByRole("textbox", { name: "Name" });
       await user.clear(hostnameInput);
@@ -98,7 +98,7 @@ describe("SystemPage", () => {
     });
 
     it("only sends NTP config when NTP settings changed", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       const modeButtons = screen.getAllByLabelText("Mode");
       const ntpModeButton = modeButtons[1];
@@ -128,7 +128,7 @@ describe("SystemPage", () => {
     });
 
     it("does not send config when switching back to initial state", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       // Switch to custom mode
       const modeButtons = screen.getAllByLabelText("Mode");
@@ -151,11 +151,11 @@ describe("SystemPage", () => {
 
       // No config should be sent because we're back to the initial state
       expect(mockPatchConfig).not.toHaveBeenCalled();
-      screen.getByText("No changes detected. System settings are already up to date.");
+      await screen.findByText("No changes to apply");
     });
 
     it("sends both hostname and NTP config when both changed", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       // Change hostname mode to static
       const modeButtons = screen.getAllByLabelText("Mode");
@@ -198,7 +198,7 @@ describe("SystemPage", () => {
     });
 
     it("shows success alert after successful update", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       // Make a change to trigger an update
       const modeButtons = screen.getAllByLabelText("Mode");
@@ -214,12 +214,12 @@ describe("SystemPage", () => {
       const acceptButton = screen.getByRole("button", { name: "Accept" });
       await user.click(acceptButton);
 
-      screen.getByText("System settings successfully updated");
+      await screen.findByText("Changes successfully applied");
     });
 
     it("shows error alert when update fails", async () => {
       mockPatchConfig.mockRejectedValue({ message: "Network error" });
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       // Change something to trigger API call
       const modeButtons = screen.getAllByLabelText("Mode");
@@ -242,7 +242,7 @@ describe("SystemPage", () => {
 
   describe("validation", () => {
     it("shows error when static hostname is empty", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       const modeButtons = screen.getAllByLabelText("Mode");
       const hostnameModeButton = modeButtons[0];
@@ -262,7 +262,7 @@ describe("SystemPage", () => {
     });
 
     it("shows error when custom NTP mode has no servers", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       const modeButtons = screen.getAllByLabelText("Mode");
       const ntpModeButton = modeButtons[1];
@@ -279,7 +279,7 @@ describe("SystemPage", () => {
     });
 
     it("shows error when NTP servers are invalid", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       const modeButtons = screen.getAllByLabelText("Mode");
       const ntpModeButton = modeButtons[1];
@@ -302,7 +302,7 @@ describe("SystemPage", () => {
     });
 
     it("accepts valid NTP server hostnames", async () => {
-      const { user } = installerRender(<SystemPage />);
+      const { user } = installerRender(<SystemForm />);
 
       const modeButtons = screen.getAllByLabelText("Mode");
       const ntpModeButton = modeButtons[1];

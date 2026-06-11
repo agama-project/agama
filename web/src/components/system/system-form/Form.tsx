@@ -20,13 +20,13 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef } from "react";
+import React from "react";
 import { isEmpty, isNullish, shake } from "radashi";
 import { ActionGroup, Alert, Form } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
 import { patchConfig } from "~/api";
 import { useConfig } from "~/hooks/model/config";
 import { useProposal } from "~/hooks/model/proposal";
+import { useFormSubmit } from "~/hooks/use-form-submit";
 import { anyFieldChanged, useAppForm } from "~/hooks/form";
 import { _ } from "~/i18n";
 
@@ -82,30 +82,37 @@ function buildNtpConfig(
 }
 
 /**
- * Page for configuring system settings.
+ * Form for configuring system settings.
  *
  * Allows the user to configure:
  * - Hostname: choose between a transient hostname (provided by the network) or
  *   a static one (set manually)
  * - NTP: choose between default NTP servers or custom ones
  */
-export default function SystemPage() {
-  /**
-   * Tracks whether the backend config was actually patched during the last submit.
-   *
-   * Used to distinguish between two successful submit scenarios:
-   * - true: form had changes, backend was updated via patchConfig()
-   * - false: form validated successfully but no changes needed persisting
-   *
-   * This determines the alert variant (success vs info) and message shown to the user.
-   */
-  const configWasPatched = useRef(false);
+export default function SystemForm() {
   const { ntp } = useConfig();
   const { hostname } = useProposal();
   const { hostname: transientHostname, static: staticHostname } = hostname;
 
   const ntpServers = ntp?.sources?.map((s) => s.address) || [];
   const usingTransientHostname = isEmpty(staticHostname) || isNullish(staticHostname);
+
+  // useFormSubmit is initialized before useAppForm so we can pass onSubmitAsync
+  // directly into the validators option — no mutation, no two-phase wiring.
+  const { onSubmitAsync, AlertSubscribe, formSubmitHandler } = useFormSubmit<SystemFormValues>({
+    onSubmit: async (formValues, fieldMeta) => {
+      const config = shake({
+        hostname: buildHostnameConfig(formValues, fieldMeta),
+        ntp: buildNtpConfig(formValues, fieldMeta),
+      });
+
+      if (isEmpty(config)) return { noChanges: true };
+
+      return patchConfig(config)
+        .then(() => ({ patched: true as const }))
+        .catch(({ message }) => ({ error: message }));
+    },
+  });
 
   const form = useAppForm({
     ...defaultOptions,
@@ -116,102 +123,50 @@ export default function SystemPage() {
       ntpServers,
     },
     validators: {
-      onSubmitAsync: async ({ value: formValues, formApi }) => {
-        configWasPatched.current = false;
-
-        // Form pristine, nothing has changed for sure, skip everything
-        if (!formApi.state.isDirty) return undefined;
-
-        const fieldErrors = validate(formValues);
+      onSubmitAsync: async (ctx) => {
+        // Field validation runs first. If it fails, TanStack Form surfaces
+        // errors per field and onSubmitAsync (business logic) is not called.
+        const fieldErrors = validate(ctx.value);
         if (fieldErrors) return fieldErrors;
 
-        const { fieldMeta } = formApi.state;
-
-        const config = shake({
-          hostname: buildHostnameConfig(formValues, fieldMeta),
-          ntp: buildNtpConfig(formValues, fieldMeta),
-        });
-
-        // Form dirty but no actual changes nor backend patches needed
-        if (isEmpty(config)) {
-          form.reset(formValues);
-          return undefined;
-        }
-
-        return await patchConfig(config)
-          .then(() => {
-            configWasPatched.current = true;
-            form.reset(formValues);
-            return undefined;
-          })
-          .catch(({ message: errorMessage }) => ({
-            form: errorMessage,
-          }));
+        // Business logic: patch building + API call.
+        return onSubmitAsync(ctx, form);
       },
     },
   });
 
   return (
-    <Page breadcrumbs={[{ label: _("System") }]}>
-      <Page.Content>
-        <form.AppForm>
-          <Form
-            id="systemForm"
-            onSubmit={(e) => {
-              e.preventDefault();
-              form.setErrorMap({ onSubmit: { fields: {} } });
-              form.handleSubmit();
-            }}
-          >
-            <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
-              {(serverError) =>
-                serverError && (
-                  <Alert
-                    isInline
-                    variant="danger"
-                    title={
-                      // TRANSLATORS: error message when system settings update request fails
-                      _("System settings could not be updated")
-                    }
-                  >
-                    {serverError}
-                  </Alert>
-                )
-              }
-            </form.Subscribe>
+    <form.AppForm>
+      <Form id="systemForm" onSubmit={formSubmitHandler(form)}>
+        {/* Server error alert */}
+        <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
+          {(serverError) =>
+            serverError && (
+              <Alert
+                isInline
+                variant="danger"
+                title={
+                  // TRANSLATORS: error message when system settings update request fails
+                  _("System settings could not be updated")
+                }
+              >
+                {serverError}
+              </Alert>
+            )
+          }
+        </form.Subscribe>
 
-            <form.Subscribe
-              selector={(s) =>
-                s.isSubmitted && !s.isSubmitting && !s.errorMap.onSubmit?.form && !s.isDirty
-              }
-            >
-              {(showResult) =>
-                showResult && (
-                  <Alert
-                    isInline
-                    variant={configWasPatched.current ? "success" : "info"}
-                    title={
-                      configWasPatched.current
-                        ? // TRANSLATORS: success message shown after system settings are updated
-                          _("System settings successfully updated")
-                        : // TRANSLATORS: info message shown when submitting the form with no changes
-                          _("No changes detected. System settings are already up to date.")
-                    }
-                  />
-                )
-              }
-            </form.Subscribe>
+        {/* Success / no-changes / validation error alerts — managed by useFormSubmit */}
+        <AlertSubscribe form={form} />
 
-            <HostnameFields form={form} />
-            <NtpFields form={form} />
+        <HostnameFields form={form} />
+        <NtpFields form={form} />
 
-            <ActionGroup>
-              {/* TRANSLATORS: button to save system settings changes */}
-              <form.SubmitButton label={_("Accept")} />
-            </ActionGroup>
-          </Form>
-        </form.AppForm>
-      </Page.Content>
-    </Page>
+        <ActionGroup>
+          {/* TRANSLATORS: button to save system settings changes */}
+          <form.SubmitButton label={_("Accept")} />
+        </ActionGroup>
+      </Form>
+    </form.AppForm>
   );
 }
