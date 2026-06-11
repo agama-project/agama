@@ -52,7 +52,8 @@ import {
   useUnusedPartitions,
 } from "./queries";
 import { buildPayload, toFormValues, useSolvedSizes } from "./transformations";
-import { defaultOptions, validate, isReusingPartition } from "./fields";
+import { validate } from "./validations";
+import { defaultOptions, isReusingPartition } from "./fields";
 
 import type { ConfigModel as ConfigModelType } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
