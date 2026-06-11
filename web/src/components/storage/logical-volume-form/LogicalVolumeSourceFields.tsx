@@ -44,8 +44,8 @@ const NEW_LOGICAL_VOLUME = "";
  * string for a new logical volume, or the device name of the one to reuse.
  *
  * When the volume group does not yet exist in the system (it is being created
- * as part of the same configuration), only new logical volumes are possible, so
- * a read-only field is shown instead of the selector.
+ * as part of the same configuration), there is nothing to choose: every
+ * logical volume is necessarily new, so the field is not rendered at all.
  *
  * When the volume group exists but has no logical volumes left to reuse, a
  * read-only field explains that a new logical volume will be created
@@ -67,16 +67,9 @@ const LogicalVolumeSourceFields = withForm({
     volumeGroup?: System.Device;
   },
   render: function Render({ form, availableLogicalVolumes, volumeGroup }) {
-    // The volume group does not exist yet: only a new logical volume is possible.
-    if (!volumeGroup) {
-      return (
-        <form.AppField name="target">
-          {(field) => (
-            <field.ReadOnlyField label={_("Logical volume")} text={_("New logical volume")} />
-          )}
-        </form.AppField>
-      );
-    }
+    // The volume group does not exist yet: every logical volume is necessarily
+    // new, so there is nothing to choose and the field is not rendered.
+    if (!volumeGroup) return null;
 
     // No logical volumes left to reuse: only a new logical volume is possible.
     if (availableLogicalVolumes.length === 0) {

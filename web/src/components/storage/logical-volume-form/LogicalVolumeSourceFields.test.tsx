@@ -66,10 +66,10 @@ function TestForm({
 
 describe("LogicalVolumeSourceFields", () => {
   describe("when the volume group is new", () => {
-    it("shows a read-only field instead of a selector", () => {
+    it("does not render the field at all", () => {
       installerRender(<TestForm volumeGroup={undefined} availableLogicalVolumes={[]} />);
-      screen.getByText("New logical volume");
-      expect(screen.queryByRole("button", { name: "Logical volume" })).not.toBeInTheDocument();
+      expect(screen.queryByText("Logical volume")).not.toBeInTheDocument();
+      expect(screen.queryByText(/New logical volume/)).not.toBeInTheDocument();
     });
   });
 

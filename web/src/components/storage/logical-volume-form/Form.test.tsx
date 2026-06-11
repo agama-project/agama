@@ -151,13 +151,13 @@ describe("LogicalVolumeForm", () => {
   });
 
   describe("when the volume group is new", () => {
-    it("shows a read-only source field instead of the selector", () => {
+    it("does not render the logical volume source field", () => {
       mockVolumeGroup = undefined;
       mockAvailableLogicalVolumes = [];
       installerRender(<LogicalVolumeForm />);
-      // The read-only field shows the fixed text instead of a combobox.
-      screen.getByText("New logical volume");
-      expect(screen.queryByRole("button", { name: "Logical volume" })).not.toBeInTheDocument();
+      // Every logical volume is necessarily new, so there is nothing to choose.
+      expect(screen.queryByText("Logical volume")).not.toBeInTheDocument();
+      expect(screen.queryByText(/New logical volume/)).not.toBeInTheDocument();
     });
   });
 
