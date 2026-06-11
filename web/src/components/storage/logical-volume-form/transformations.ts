@@ -68,10 +68,14 @@ import {
   buildSizeConfig,
   inferSizeFields,
   fsConfigValue,
-  FILESYSTEM_ACTION,
 } from "~/components/storage/shared/transformations";
 import { useVolumeGroupConfig, useInitialLogicalVolumeConfig } from "./queries";
-import { FILESYSTEM_TYPE, isReusingLogicalVolume, defaultOptions } from "./fields";
+import {
+  FILESYSTEM_TYPE,
+  FILESYSTEM_ACTION,
+  isReusingLogicalVolume,
+  defaultOptions,
+} from "./fields";
 import type { SolvedSizes } from "~/components/storage/shared/SizeFields";
 import type { ConfigModel } from "~/model/storage/config-model";
 

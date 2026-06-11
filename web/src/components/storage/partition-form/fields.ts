@@ -22,10 +22,6 @@
 
 import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
-import type {
-  ValidationResult,
-  FieldsValidationResult,
-} from "~/components/form/validation-helpers";
 import { requiredString } from "~/components/form/validation-helpers";
 import {
   requiredSize,
@@ -33,36 +29,30 @@ import {
   validateMountPoint as validateMountPointValue,
   optionalFilesystemLabel,
 } from "~/components/storage/shared/validation-helpers";
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "~/components/storage/shared/fields";
 import { _ } from "~/i18n";
-
-/** Constants and helpers */
-
-export const FILESYSTEM_ACTION = {
-  REUSE: "reuse",
-  FORMAT: "format",
-} as const;
+import type {
+  ValidationResult,
+  FieldsValidationResult,
+} from "~/components/form/validation-helpers";
+import type {
+  SizeMode,
+  MountPointFields,
+  FilesystemFields,
+  SizeFields,
+} from "~/components/storage/shared/fields";
 
 /**
- * Sentinel value for the `filesystem` field meaning "let the installer choose
- * automatically". This is distinct from an empty string (no selection yet) and
- * is always valid regardless of mount point.
+ * Re-exported so form-local code (components, transformations, tests) can get
+ * everything describing the form fields from this module, without needing to
+ * know which parts happen to be shared across storage forms.
  *
- * Used as:
- *  - The default value when no filesystem has been explicitly chosen.
- *  - The reset target when the user changes the mount point to one that no
- *    longer supports the previously selected filesystem type (see
- *    FilesystemFields.tsx for the auto-reset behavior).
+ * This also leaves room for divergence: if this form ever needs different
+ * values, this module can stop re-exporting and define its own version
+ * (possibly derived from the shared one) without touching any consumer.
  */
-export const FILESYSTEM_TYPE = {
-  AUTO: "auto",
-} as const;
-
-export const SIZE_MODE = {
-  AUTO: "auto",
-  FIXED: "fixed",
-  RANGE: "range",
-  EXPAND: "expand",
-} as const;
+export { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE };
+export type { SizeMode };
 
 /**
  * Determines if the form is configured to reuse an existing partition.
@@ -79,42 +69,6 @@ export function isReusingPartition(name: string): boolean {
 
 /** Form field types */
 
-export type SizeMode = (typeof SIZE_MODE)[keyof typeof SIZE_MODE];
-
-type MountPointFields = {
-  mountPoint: string;
-  /**
-   * Committed mount point value that updates on blur or suggestion selection,
-   * but NOT on every keystroke while typing.
-   *
-   * ## Why this exists
-   *
-   * The live `mountPoint` value is used for the text input field and validation.
-   * However, we don't want to react to incomplete values on every keystroke because:
-   *
-   * 1. **UX**: Showing filesystem hints for "/ho" before user finishes typing "/home"
-   *    would be confusing and disruptive. Same for size information based on partial input.
-   * 2. **Performance**: Avoids expensive recalculations (useVolumeTemplate, filesystem
-   *    options, size hints) on every keystroke.
-   *
-   * ## Update triggers
-   *
-   * This field updates in three scenarios:
-   * 1. **onMount**: When the form loads (for editing existing partitions)
-   * 2. **onSelect**: When user selects a suggestion from the dropdown (immediate)
-   * 3. **onBlur**: When user finishes typing a custom value (deferred)
-   *
-   * ## Usage
-   *
-   * - FilesystemFields and SizeFields use `committedMountPoint` for `useVolumeTemplate()`
-   * - This avoids showing misleading hints while typing "/ho..."
-   * - Once the user completes typing or selects "/home", information updates
-   *
-   * @see Form.tsx mountPoint field listeners for sync logic
-   */
-  committedMountPoint: string;
-};
-
 type PartitionFields = {
   /**
    * Partition name for reusing an existing partition, or empty string for
@@ -124,26 +78,6 @@ type PartitionFields = {
    * When partition name (e.g., "vdd2"): the named partition will be reused.
    */
   name: string;
-};
-
-type FilesystemFields = {
-  filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
-  filesystemAction: string; // "reuse" | "format"
-  filesystemLabel: string;
-  mkfsOptions: string[];
-  mountOptions: string[];
-  showMoreFilesystemSettings: boolean;
-};
-
-type SizeFields = {
-  sizeMode: SizeMode;
-  // FIXED mode
-  fixedSize: string;
-  // RANGE mode
-  rangeMinSize: string;
-  rangeMaxSize: string;
-  // EXPAND mode
-  expandMinSize: string;
 };
 
 export type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;

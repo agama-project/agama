@@ -54,70 +54,19 @@
 
 import { isEmpty } from "radashi";
 import { deviceSize, parseToBytes } from "~/components/storage/utils";
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "./fields";
 import type { ConfigModel } from "~/model/storage/config-model";
+import type { FilesystemFields, SizeFields } from "./fields";
 
 /**
- * Form field values for filesystem configuration.
+ * Fields read when building a filesystem configuration.
  *
- * These fields appear in both partition-form and logical-volume-form with
- * identical names and structures.
+ * The filesystemAction field is excluded: by the time these helpers run, a
+ * reuse decision is already encoded in the filesystem field itself, which can
+ * hold FILESYSTEM_ACTION.REUSE in addition to FILESYSTEM_TYPE.AUTO and
+ * concrete filesystem types.
  */
-export type FilesystemFields = {
-  filesystem: string;
-  filesystemLabel: string;
-  mkfsOptions: string[];
-  mountOptions: string[];
-  showMoreFilesystemSettings: boolean;
-};
-
-/**
- * Size mode type derived from SIZE_MODE constants.
- */
-export type SizeMode = (typeof SIZE_MODE)[keyof typeof SIZE_MODE];
-
-/**
- * Form field values for size configuration.
- *
- * These fields appear in both partition-form and logical-volume-form with
- * identical names and structures.
- */
-export type SizeFields = {
-  sizeMode: SizeMode;
-  fixedSize: string;
-  rangeMinSize: string;
-  rangeMaxSize: string;
-  expandMinSize: string;
-};
-
-/**
- * Size mode constants used across storage forms.
- *
- * Must match the SIZE_MODE constants defined in form-specific fields.ts files.
- */
-export const SIZE_MODE = {
-  AUTO: "auto",
-  FIXED: "fixed",
-  RANGE: "range",
-  EXPAND: "expand",
-} as const;
-
-/**
- * Filesystem type constant for automatic selection.
- */
-const FILESYSTEM_TYPE = {
-  AUTO: "auto",
-} as const;
-
-/**
- * Filesystem action constants used across storage forms.
- *
- * REUSE: Keep existing filesystem without reformatting
- * FORMAT: Create new filesystem
- */
-export const FILESYSTEM_ACTION = {
-  REUSE: "reuse",
-  FORMAT: "format",
-} as const;
+type FilesystemConfigFields = Omit<FilesystemFields, "filesystemAction">;
 
 /**
  * Builds a filesystem configuration from form values.
@@ -165,12 +114,12 @@ export const FILESYSTEM_ACTION = {
  * // → { default: false, type: "xfs", mkfsOptions: ["-m", "crc=1"] }
  */
 export function buildFilesystemConfig(
-  values: FilesystemFields,
+  values: FilesystemConfigFields,
 ): ConfigModel.Filesystem | undefined {
   // Helper: only include optional settings when checkbox is checked and value is non-empty
-  const extraSetting = <K extends keyof FilesystemFields>(
+  const extraSetting = <K extends keyof FilesystemConfigFields>(
     attr: K,
-  ): FilesystemFields[K] | undefined => {
+  ): FilesystemConfigFields[K] | undefined => {
     if (!values.showMoreFilesystemSettings) return undefined;
     if (isEmpty(values[attr])) return undefined;
     return values[attr];

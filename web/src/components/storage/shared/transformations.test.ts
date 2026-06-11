@@ -21,12 +21,12 @@
  */
 
 import { describe, it, expect } from "@jest/globals";
+import { SIZE_MODE } from "./fields";
 import {
   buildFilesystemConfig,
   buildSizeConfig,
   inferSizeFields,
   fsConfigValue,
-  SIZE_MODE,
 } from "./transformations";
 
 describe("buildFilesystemConfig", () => {

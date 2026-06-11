@@ -22,10 +22,6 @@
 
 import { formOptions } from "@tanstack/react-form";
 import { shake } from "radashi";
-import type {
-  ValidationResult,
-  FieldsValidationResult,
-} from "~/components/form/validation-helpers";
 import { requiredString } from "~/components/form/validation-helpers";
 import {
   requiredSize,
@@ -33,17 +29,28 @@ import {
   validateMountPoint as validateMountPointValue,
   optionalFilesystemLabel,
 } from "~/components/storage/shared/validation-helpers";
-import {
-  FILESYSTEM_TYPE,
-  FILESYSTEM_ACTION,
-  SIZE_MODE,
-  type SizeMode,
-  type MountPointFields,
-  type FilesystemFields,
-  type SizeFields,
-} from "~/components/storage/shared/fields";
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "~/components/storage/shared/fields";
 import { _ } from "~/i18n";
+import type {
+  ValidationResult,
+  FieldsValidationResult,
+} from "~/components/form/validation-helpers";
+import type {
+  SizeMode,
+  MountPointFields,
+  FilesystemFields,
+  SizeFields,
+} from "~/components/storage/shared/fields";
 
+/**
+ * Re-exported so form-local code (components, transformations, tests) can get
+ * everything describing the form fields from this module, without needing to
+ * know which parts happen to be shared across storage forms.
+ *
+ * This also leaves room for divergence: if this form ever needs different
+ * values, this module can stop re-exporting and define its own version
+ * (possibly derived from the shared one) without touching any consumer.
+ */
 export { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE };
 export type { SizeMode };
 
