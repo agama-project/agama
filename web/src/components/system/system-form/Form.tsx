@@ -165,6 +165,7 @@ export default function SystemForm() {
         <ActionGroup>
           {/* TRANSLATORS: button to save system settings changes */}
           <form.SubmitButton label={_("Accept")} />
+          <form.CancelButton />
         </ActionGroup>
       </Form>
     </form.AppForm>

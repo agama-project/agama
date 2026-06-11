@@ -274,6 +274,7 @@ function AuthenticationForm({ user, root }: AuthenticationFormProps) {
 
         <ActionGroup>
           <form.SubmitButton label={_("Accept")} />
+          <form.CancelButton />
         </ActionGroup>
       </Form>
     </form.AppForm>

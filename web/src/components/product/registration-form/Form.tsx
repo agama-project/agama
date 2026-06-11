@@ -222,6 +222,7 @@ export default function ProductRegistrationForm() {
               </HelperText>
             )}
           </Stack>
+          <form.CancelButton />
         </ActionGroup>
       </Form>
     </form.AppForm>
