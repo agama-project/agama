@@ -44,7 +44,10 @@ type FilesystemSelectorProps = {
   >;
   /** Filesystem types compatible with the current mount point. */
   usableFilesystems: ConfigModel.FilesystemType[];
-  /** Existing device being reused, when keeping its current filesystem is offered. */
+  /**
+   * Existing device being reused, when it holds a filesystem. Drives the
+   * keep-data hint and the data-loss notice.
+   */
   selectedDevice?: System.Device;
   /** Whether the default filesystem comes from the generic fallback volume. */
   isFallback: boolean;
@@ -53,6 +56,20 @@ type FilesystemSelectorProps = {
 function keepFsText(filesystem) {
   // TRANSLATORS: %s is a filesystem (eg. XFS)
   return sprintf(_("%s (keep data)"), filesystemLabel(filesystem));
+}
+
+function destroyDataNotice(device: System.Device) {
+  return (
+    <HelperText>
+      <HelperTextItem variant="warning">
+        {sprintf(
+          // TRANSLATORS: %s is a device name like "/dev/vdd2"
+          _("Existing data on %s will be destroyed when installation begins."),
+          deviceLabel(device),
+        )}
+      </HelperTextItem>
+    </HelperText>
+  );
 }
 
 function defaultFsText(filesystem, mountPoint, isFallback) {
@@ -83,8 +100,10 @@ function defaultFsText(filesystem, mountPoint, isFallback) {
  * applies to mount points like swap and /boot/efi that constrain the filesystem
  * to a single type.
  *
- * When reusing a device and the user selects a format option, shows a notice
- * that existing data will be destroyed.
+ * When reusing a device with a filesystem that will not be kept, shows a
+ * notice that existing data will be destroyed. This applies to both the
+ * dropdown and the read-only variants: a mount point that constrains the
+ * filesystem to a single type (e.g. swap) still formats the reused device.
  *
  * Presentation only: it has no validation logic and receives its options
  * already built by the caller.
@@ -103,9 +122,23 @@ export default function FilesystemSelector({
   if (isSingleType && defaultFilesystem) {
     return (
       <form.AppField name="filesystem">
-        {(field) => (
-          <field.ReadOnlyField label={_("File system")} text={filesystemLabel(defaultFilesystem)} />
-        )}
+        {(field) => {
+          const currentFsType = selectedDevice?.filesystem?.type;
+          const isKeeping = field.state.value === FILESYSTEM_ACTION.REUSE && !!currentFsType;
+          const showNotice = selectedDevice && !isKeeping;
+
+          return (
+            <>
+              <field.ReadOnlyField
+                label={_("File system")}
+                text={filesystemLabel(defaultFilesystem)}
+              />
+              {showNotice && (
+                <FieldNestedContent>{destroyDataNotice(selectedDevice)}</FieldNestedContent>
+              )}
+            </>
+          );
+        }}
       </form.AppField>
     );
   }
@@ -135,17 +168,7 @@ export default function FilesystemSelector({
                     {fsText}
                   </Text>
                 )}
-                {showNotice && (
-                  <HelperText>
-                    <HelperTextItem variant="warning">
-                      {sprintf(
-                        // TRANSLATORS: %s is a device name like "/dev/vdd2"
-                        _("Existing data on %s will be destroyed when installation begins."),
-                        deviceLabel(selectedDevice),
-                      )}
-                    </HelperTextItem>
-                  </HelperText>
-                )}
+                {showNotice && destroyDataNotice(selectedDevice)}
               </FieldNestedContent>
             );
           }}

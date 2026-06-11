@@ -62,6 +62,12 @@ const mockDevice = {
       description: "30.00 GiB",
       filesystem: undefined,
     },
+    {
+      sid: 40,
+      name: "vdd4",
+      description: "2.00 GiB",
+      filesystem: { sid: 400, type: "swap" as const, label: "" },
+    },
   ],
 };
 
@@ -215,6 +221,55 @@ describe("FilesystemFields", () => {
       );
       screen.getByText("Swap");
       expect(screen.queryByRole("button", { name: "File system" })).not.toBeInTheDocument();
+    });
+
+    it("shows data loss notice when the reused partition will be formatted", async () => {
+      installerRender(
+        <TestForm
+          defaultValues={{ name: "vdd1", committedMountPoint: "swap", filesystem: "reuse" }}
+        />,
+      );
+      // vdd1 holds an Ext4 filesystem that cannot be kept for swap, so it
+      // will be formatted.
+      await screen.findByText(/Existing data on vdd1 will be destroyed/);
+    });
+
+    it("does not show data loss notice when the current filesystem is kept", () => {
+      installerRender(
+        <TestForm
+          defaultValues={{ name: "vdd4", committedMountPoint: "swap", filesystem: "reuse" }}
+        />,
+      );
+      // vdd4 already holds a swap filesystem, which is kept.
+      expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
+    });
+
+    it("does not show data loss notice when creating a new partition", () => {
+      installerRender(
+        <TestForm defaultValues={{ committedMountPoint: "swap", filesystem: "swap" }} />,
+      );
+      expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("when reusing a partition with an incompatible filesystem", () => {
+    beforeEach(() => {
+      mockVolumeTemplate.outline.fsTypes = ["xfs", "btrfs"];
+    });
+
+    afterEach(() => {
+      mockVolumeTemplate.outline.fsTypes = ["xfs", "ext4", "btrfs"];
+    });
+
+    it("shows data loss notice since the partition will be formatted", async () => {
+      installerRender(
+        <TestForm
+          defaultValues={{ name: "vdd1", committedMountPoint: "/home", filesystem: "reuse" }}
+        />,
+      );
+      // vdd1 holds an Ext4 filesystem, not allowed for /home here, so it will
+      // be formatted.
+      await screen.findByText(/Existing data on vdd1 will be destroyed/);
     });
   });
 
