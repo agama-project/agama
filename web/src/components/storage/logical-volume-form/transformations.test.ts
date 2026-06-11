@@ -372,6 +372,26 @@ describe("toFormValues", () => {
       });
     });
 
+    it("keeps the filesystem when the config reuses it without a type", () => {
+      // The stored form of choosing "Current": reuse the filesystem as it is,
+      // so the config carries no type.
+      const config = {
+        mountPath: "/home",
+        name: "lv_home",
+        filesystem: {
+          reuse: true,
+          default: true,
+        },
+      };
+
+      const result = toFormValues(config as ConfigModel.LogicalVolume);
+
+      expect(result).toMatchObject({
+        filesystem: "reuse",
+        filesystemAction: "reuse",
+      });
+    });
+
     it("handles LV without name (new LV config)", () => {
       const config = {
         mountPath: "/home",

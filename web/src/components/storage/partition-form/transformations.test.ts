@@ -317,6 +317,26 @@ describe("toFormValues", () => {
         filesystemAction: "format",
       });
     });
+
+    it("keeps the filesystem when the config reuses it without a type", () => {
+      // The stored form of choosing "Current": reuse the filesystem as it is,
+      // so the config carries no type.
+      const config = {
+        mountPath: "/home",
+        name: "/dev/sda3",
+        filesystem: {
+          reuse: true,
+          default: true,
+        },
+      };
+
+      const result = toFormValues(config as ConfigModel.Partition);
+
+      expect(result).toMatchObject({
+        filesystem: "reuse",
+        filesystemAction: "reuse",
+      });
+    });
   });
 
   describe("size field inference", () => {

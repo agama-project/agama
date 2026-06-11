@@ -271,9 +271,13 @@ export function toFormValues(
   const fsConfig = logicalVolumeConfig.filesystem;
   const isReuse = logicalVolumeConfig.name !== undefined;
 
-  // When editing a reused logical volume with a filesystem, default to
-  // keeping it unless the config explicitly says to format (reuse: false)
-  const shouldKeepFilesystem = isReuse && fsConfig?.type !== undefined && fsConfig.reuse !== false;
+  // When editing a reused logical volume, default to keeping the filesystem
+  // when the config explicitly says so (reuse: true, the stored form of the
+  // "Current" choice, which carries no type) or when it has a type and does
+  // not explicitly ask for formatting (reuse: false)
+  const keepsByConfig = fsConfig?.reuse === true;
+  const keepsByType = fsConfig?.type !== undefined && fsConfig?.reuse !== false;
+  const shouldKeepFilesystem = isReuse && (keepsByConfig || keepsByType);
 
   const mountPoint = logicalVolumeConfig.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";
