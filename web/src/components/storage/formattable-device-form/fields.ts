@@ -21,25 +21,21 @@
  */
 
 import { formOptions } from "@tanstack/react-form";
-import { shake } from "radashi";
-import type {
-  ValidationResult,
-  FieldsValidationResult,
-} from "~/components/form/validation-helpers";
-import { requiredString } from "~/components/form/validation-helpers";
-import {
-  validateMountPoint as validateMountPointValue,
-  optionalFilesystemLabel,
-} from "~/components/storage/shared/validation-helpers";
-import {
-  FILESYSTEM_TYPE,
-  FILESYSTEM_ACTION,
-  type MountPointFields,
-  type FilesystemFields,
-} from "~/components/storage/shared/fields";
-import { _ } from "~/i18n";
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "~/components/storage/shared/fields";
+import type { MountPointFields, FilesystemFields } from "~/components/storage/shared/fields";
 
+/**
+ * Re-exported so form-local code (components, validations, transformations,
+ * tests) can get everything describing the form fields from this module,
+ * without needing to know which parts happen to be shared across storage
+ * forms.
+ *
+ * This also leaves room for divergence: if this form ever needs different
+ * values, this module can stop re-exporting and define its own version
+ * (possibly derived from the shared one) without touching any consumer.
+ */
 export { FILESYSTEM_TYPE, FILESYSTEM_ACTION };
+export type { MountPointFields, FilesystemFields };
 
 /** Form field types */
 
@@ -61,47 +57,3 @@ const defaultValues: FormFields = {
 };
 
 export const defaultOptions = formOptions({ defaultValues });
-
-/** Validation functions */
-
-function validateMountPoint(
-  fields: FormFields,
-  usedMountPoints: string[],
-): FieldsValidationResult<MountPointFields> {
-  return { mountPoint: validateMountPointValue(fields.mountPoint, usedMountPoints) };
-}
-
-function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
-  // AUTO and REUSE are always valid filesystem selections; only the optional
-  // label needs checking. A concrete type additionally requires a selection.
-  if (fields.filesystem === FILESYSTEM_TYPE.AUTO || fields.filesystem === FILESYSTEM_ACTION.REUSE) {
-    return { filesystemLabel: optionalFilesystemLabel(fields.filesystemLabel) };
-  }
-
-  return {
-    filesystem: requiredString(fields.filesystem, _("Select a filesystem type")),
-    filesystemLabel: optionalFilesystemLabel(fields.filesystemLabel),
-  };
-}
-
-/**
- * Top-level validation function.
- *
- * Validates all fields and returns field errors if any are found.
- *
- * @param fields - The form field values.
- * @param usedMountPoints - Mount points already in use (excluding the current
- *   one when editing).
- * @returns Validation result with field errors, or undefined if valid.
- */
-export function validate(
-  fields: FormFields,
-  usedMountPoints: string[] = [],
-): ValidationResult<FormFields> {
-  const fieldErrors = shake({
-    ...validateMountPoint(fields, usedMountPoints),
-    ...validateFilesystemFields(fields),
-  });
-
-  return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
-}

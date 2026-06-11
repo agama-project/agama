@@ -40,7 +40,8 @@ import FilesystemAdditionalFields from "~/components/storage/shared/FilesystemAd
 import FilesystemFields from "./FilesystemFields";
 import { useDeviceModelFromParams, useDeviceFromParams, useUnusedMountPoints } from "./queries";
 import { buildPayload, toFormValues } from "./transformations";
-import { defaultOptions, validate } from "./fields";
+import { validate } from "./validations";
+import { defaultOptions } from "./fields";
 
 import type { Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";

@@ -49,12 +49,8 @@
  * @see shared/transformations.ts
  */
 
-import {
-  buildFilesystemConfig,
-  fsConfigValue,
-  FILESYSTEM_ACTION,
-} from "~/components/storage/shared/transformations";
-import { defaultOptions } from "./fields";
+import { buildFilesystemConfig, fsConfigValue } from "~/components/storage/shared/transformations";
+import { defaultOptions, FILESYSTEM_ACTION } from "./fields";
 import type { Data, Partitionable } from "~/model/storage/config-model";
 
 /**
