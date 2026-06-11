@@ -233,7 +233,7 @@ describe("ProductSelectionPage", () => {
     it("renders the Cancel button", () => {
       mockProduct(microOs);
       installerRender(<ProductSelectionPage />);
-      screen.getByRole("link", { name: "Cancel" });
+      screen.getByRole("button", { name: "Cancel" });
     });
 
     it("triggers the product selection (reset) when user clicks the submission button", async () => {
@@ -253,7 +253,7 @@ describe("ProductSelectionPage", () => {
   it("does not render the Cancel button if product no selected yet", () => {
     mockProduct(undefined);
     installerRender(<ProductSelectionPage />);
-    expect(screen.queryByRole("link", { name: "Cancel" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Cancel" })).toBeNull();
   });
 
   it("triggers the product selection when user select a product and click submission button", async () => {
@@ -271,10 +271,10 @@ describe("ProductSelectionPage", () => {
     mockProduct(microOs);
     const { user } = installerRender(<ProductSelectionPage />);
     const productOption = screen.getByRole("radio", { name: tumbleweed.name });
-    const cancel = screen.getByRole("link", { name: "Cancel" });
-    expect(cancel).toHaveAttribute("href", ROOT.overview);
+    const cancel = screen.getByRole("button", { name: "Cancel" });
     await user.click(productOption);
     await user.click(cancel);
+    expect(mockNavigateFn).toHaveBeenCalledWith(-1);
     expect(mockPutConfigFn).not.toHaveBeenCalled();
   });
 
