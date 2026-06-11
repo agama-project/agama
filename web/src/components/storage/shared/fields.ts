@@ -92,6 +92,8 @@ export type MountPointFields = {
    * 1. **onMount**: when the form loads (for editing existing devices)
    * 2. **onSelect**: when the user selects a suggestion (immediate)
    * 3. **onBlur**: when the user finishes typing a custom value (deferred)
+   *
+   * This is a control field, not part of the payload.
    */
   committedMountPoint: string;
 };
@@ -104,15 +106,32 @@ export type FilesystemFields = {
    * automatic downgrade of "Current" to "Default" when a mount point change
    * makes the current filesystem incompatible, and allows restoring "Current"
    * when a later change makes it compatible again.
+   *
+   * This is a control field, not part of the payload.
    */
   filesystemAction: string;
   filesystemLabel: string;
   mkfsOptions: string[];
   mountOptions: string[];
+  /**
+   * Whether the optional filesystem settings (label, mkfs and mount options)
+   * are revealed.
+   *
+   * This is a control field: it never appears in the payload, but
+   * buildFilesystemConfig reads it to decide whether those settings are
+   * included.
+   */
   showMoreFilesystemSettings: boolean;
 };
 
 export type SizeFields = {
+  /**
+   * Which size strategy applies (automatic, fixed, range, expand).
+   *
+   * This is a control field: it never appears in the payload, but
+   * buildSizeConfig reads it to decide which size fields produce the size
+   * configuration.
+   */
   sizeMode: SizeMode;
   // FIXED mode
   fixedSize: string;

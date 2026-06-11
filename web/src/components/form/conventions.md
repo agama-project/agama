@@ -46,6 +46,7 @@ examples and refined patterns.
   - [File Naming](#file-naming)
   - [The fields.ts Module](#the-fieldsts-module)
   - [Sharing fields across forms](#sharing-fields-across-forms)
+  - [Control fields (not part of the payload)](#control-fields-not-part-of-the-payload)
   - [Validation Approach](#validation-approach)
   - [Form Component Integration](#form-component-integration)
   - [Naming Consistency](#naming-consistency)
@@ -1507,6 +1508,55 @@ module, without knowing which parts happen to be shared. It also leaves room
 for divergence: if a form ever needs different values, its `fields.ts` can
 stop re-exporting and define its own version (possibly derived from the shared
 one) without touching any consumer.
+
+### Control fields (not part of the payload)
+
+Not every form field maps to a value the user is entering. Some fields exist
+only to coordinate the form's own behavior: they act as flags or stable copies
+that other fields, effects, and derived UI react to. They are declared in
+`fields.ts` like any other field because TanStack Form state is the natural
+place for values that components subscribe to, but `buildPayload` never reads
+them directly.
+
+Current examples in the storage forms:
+
+- **`committedMountPoint`**: a deferred copy of `mountPoint` that only updates
+  on blur, suggestion selection, or mount. Derived UI (filesystem options,
+  size hints) reads this instead of the live value to avoid reacting to
+  incomplete input while the user types.
+- **`filesystemAction`**: the reuse-vs-format intent ("reuse" | "format")
+  behind the `filesystem` selection. Only the user's own selections update it,
+  so it survives automatic downgrades of the `filesystem` value and lets the
+  form restore "Current" when a mount point change makes keeping the current
+  filesystem possible again.
+
+Some fields sit in between: they never appear in the payload either, but
+`buildPayload` reads them to decide how to assemble it. `sizeMode` selects
+which size fields produce the size config, and `showMoreFilesystemSettings`
+gates whether the optional filesystem settings are included at all.
+
+Conventions for control fields:
+
+- **Document them as control fields** in `fields.ts` (or `shared/fields.ts`),
+  stating what updates them and who reads them. Their purpose is invisible
+  from the rendered form, so the comment is the only discoverable explanation.
+- **Keep them out of payload building.** Transformation helpers can make this
+  explicit in types, e.g. `Omit<FilesystemFields, "filesystemAction">` in
+  `shared/transformations.ts`.
+- **They are not validated**: validation messages point users at inputs, and
+  control fields have none.
+- **Update them via listeners or effects**, usually with `dontUpdateMeta`
+  (the user did not edit anything, so the form should not become dirty) and,
+  when the update must not trigger the field's own listeners,
+  `dontRunListeners` (e.g. an automatic downgrade of `filesystem` must not
+  overwrite the intent stored in `filesystemAction`).
+
+TODO: evaluate marking control fields in their names so they are identifiable
+at every use site, either with an underscore prefix (`_filesystemAction`) or a
+suffix. A nested `control.*` group was considered and discarded: TanStack
+supports dot-path field names, but partial value objects (`toFormValues`,
+`mergeFormDefaults`, test overrides) are merged shallowly, so any partial
+nested object would silently clobber sibling control fields.
 
 ### Validation Approach
 
