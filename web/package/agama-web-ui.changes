@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun 11 23:52:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Standardize form Cancel actions across the application, add a
+  link back to the installation summary in the form submission
+  alerts, and fix empty toast containers blocking the header
+  toolbar (gh#agama-project/agama#3613).
+
+-------------------------------------------------------------------
 Wed Jun 10 12:07:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Redesign the installer header: replace the "Review and Install"
