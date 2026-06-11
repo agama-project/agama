@@ -57,7 +57,8 @@ import {
   useSolvedSizes,
   lvNameFromMountPoint,
 } from "./transformations";
-import { defaultOptions, validate, isReusingLogicalVolume } from "./fields";
+import { validate } from "./validations";
+import { defaultOptions, isReusingLogicalVolume } from "./fields";
 
 import type { ConfigModel as ConfigModelType } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";

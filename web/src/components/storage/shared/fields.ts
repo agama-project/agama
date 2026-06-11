@@ -31,8 +31,8 @@ import { formOptions } from "@tanstack/react-form";
  * bound (via `withForm`) to the minimal subset below so they can be reused
  * across every form whose values include these fields.
  *
- * Validation never lives here: it stays in each form's own `fields.ts`, which
- * can reuse the helpers in `shared/validation-helpers.ts`.
+ * Validation never lives here: it stays in each form's own `validations.ts`,
+ * which can reuse the helpers in `shared/validation-helpers.ts`.
  */
 
 /**

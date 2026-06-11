@@ -21,20 +21,7 @@
  */
 
 import { formOptions } from "@tanstack/react-form";
-import { shake } from "radashi";
-import { requiredString } from "~/components/form/validation-helpers";
-import {
-  requiredSize,
-  sizeRange,
-  validateMountPoint as validateMountPointValue,
-  optionalFilesystemLabel,
-} from "~/components/storage/shared/validation-helpers";
 import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "~/components/storage/shared/fields";
-import { _ } from "~/i18n";
-import type {
-  ValidationResult,
-  FieldsValidationResult,
-} from "~/components/form/validation-helpers";
 import type {
   SizeMode,
   MountPointFields,
@@ -43,16 +30,17 @@ import type {
 } from "~/components/storage/shared/fields";
 
 /**
- * Re-exported so form-local code (components, transformations, tests) can get
- * everything describing the form fields from this module, without needing to
- * know which parts happen to be shared across storage forms.
+ * Re-exported so form-local code (components, validations, transformations,
+ * tests) can get everything describing the form fields from this module,
+ * without needing to know which parts happen to be shared across storage
+ * forms.
  *
  * This also leaves room for divergence: if this form ever needs different
  * values, this module can stop re-exporting and define its own version
  * (possibly derived from the shared one) without touching any consumer.
  */
 export { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE };
-export type { SizeMode };
+export type { SizeMode, MountPointFields, FilesystemFields, SizeFields };
 
 /**
  * Determines whether the form is configured to reuse an existing logical
@@ -82,7 +70,7 @@ type LogicalVolumeSourceFields = {
   target: string;
 };
 
-type LogicalVolumeNameFields = {
+export type LogicalVolumeNameFields = {
   /**
    * Name for the new logical volume (e.g., "home", "var"). Only used when
    * creating a new logical volume (target === ""). Auto-filled from the mount
@@ -120,115 +108,3 @@ const defaultValues: FormFields = {
 };
 
 export const defaultOptions = formOptions({ defaultValues });
-
-/** Validation functions */
-
-function validateMountPoint(
-  fields: FormFields,
-  usedMountPoints: string[],
-): FieldsValidationResult<MountPointFields> {
-  return { mountPoint: validateMountPointValue(fields.mountPoint, usedMountPoints) };
-}
-
-function validateLogicalVolumeName(
-  fields: FormFields,
-): FieldsValidationResult<LogicalVolumeNameFields> {
-  // The name is only required (and only rendered) when creating a new logical
-  // volume; reusing an existing one keeps its name.
-  if (isReusingLogicalVolume(fields.target)) return {};
-
-  return { lvName: requiredString(fields.lvName, _("Enter a name")) };
-}
-
-function validateFilesystemFields(fields: FormFields): FieldsValidationResult<FilesystemFields> {
-  // AUTO and REUSE are always valid filesystem selections; only the optional
-  // label needs checking. A concrete type additionally requires a selection.
-  if (fields.filesystem === FILESYSTEM_TYPE.AUTO || fields.filesystem === FILESYSTEM_ACTION.REUSE) {
-    return { filesystemLabel: optionalFilesystemLabel(fields.filesystemLabel) };
-  }
-
-  return {
-    filesystem: requiredString(fields.filesystem, _("Select a filesystem type")),
-    filesystemLabel: optionalFilesystemLabel(fields.filesystemLabel),
-  };
-}
-
-function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFields> {
-  // Size only applies when creating a new logical volume.
-  if (isReusingLogicalVolume(fields.target)) return {};
-
-  if (fields.sizeMode === SIZE_MODE.FIXED) {
-    return {
-      fixedSize: requiredSize(
-        fields.fixedSize,
-        _("Value is required"),
-        _("Invalid format (e.g. 20 GiB)"),
-      ),
-    };
-  }
-
-  if (fields.sizeMode === SIZE_MODE.RANGE) {
-    const minError = requiredSize(
-      fields.rangeMinSize,
-      _("Minimum is required"),
-      _("Invalid format (e.g. 20 GiB)"),
-    );
-
-    const maxError = requiredSize(
-      fields.rangeMaxSize,
-      _("Maximum is required"),
-      _("Invalid format (e.g. 20 GiB)"),
-    );
-
-    if (minError || maxError) {
-      return { rangeMinSize: minError, rangeMaxSize: maxError };
-    }
-
-    const hasRangeError = sizeRange(fields.rangeMinSize, fields.rangeMaxSize, "error");
-
-    if (hasRangeError) {
-      return {
-        rangeMinSize: _("Must be smaller than maximum size"),
-        rangeMaxSize: _("Must be larger than minimum size"),
-      };
-    }
-
-    return {};
-  }
-
-  if (fields.sizeMode === SIZE_MODE.EXPAND) {
-    return {
-      expandMinSize: requiredSize(
-        fields.expandMinSize,
-        _("Minimum is required"),
-        _("Invalid format (e.g. 20 GiB)"),
-      ),
-    };
-  }
-
-  return {};
-}
-
-/**
- * Top-level validation function.
- *
- * Validates all fields and returns field errors if any are found.
- *
- * @param fields - The form field values.
- * @param usedMountPoints - Mount points already in use (excluding the current
- *   one when editing).
- * @returns Validation result with field errors, or undefined if valid.
- */
-export function validate(
-  fields: FormFields,
-  usedMountPoints: string[] = [],
-): ValidationResult<FormFields> {
-  const fieldErrors = shake({
-    ...validateMountPoint(fields, usedMountPoints),
-    ...validateLogicalVolumeName(fields),
-    ...validateFilesystemFields(fields),
-    ...validateSizeFields(fields),
-  });
-
-  return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
-}
