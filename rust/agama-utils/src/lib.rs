@@ -54,6 +54,14 @@ pub fn gettext_noop(text: &str) -> &str {
     text
 }
 
+/// Build an argument for clap::Command::long_about
+///
+/// This is related to not repeating .about(short) as a prefix of .long_about(long),
+/// to not duplicate work of human translators.
+pub fn make_long(short: &str, long_tail: &str) -> String {
+    short.to_owned() + ".\n\n" + long_tail
+}
+
 pub mod helpers {
     use camino::Utf8Path;
     use fs_err as fs;

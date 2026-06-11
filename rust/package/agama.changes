@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 10 13:09:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Make `agama` command-line help translatable
+  (gh#agama-project/agama#3594).
+
+-------------------------------------------------------------------
 Wed Jun 10 06:18:24 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
 
 - Honor extraRepositories repository priorities when adding software

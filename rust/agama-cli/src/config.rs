@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::{io::Write, path::PathBuf, process::Command, time::Duration};
+use std::{io::Write, path::PathBuf, process, time::Duration};
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
@@ -26,10 +26,12 @@ use agama_lib::{
     utils::FileFormat,
 };
 use agama_utils::api;
+use agama_utils::make_long;
 use anyhow::{anyhow, Context};
-use clap::Subcommand;
+use clap::{Arg, ArgAction, ArgMatches, Command};
 use console::style;
 use fluent_uri::Uri;
+use gettextrs::gettext;
 use tempfile::Builder;
 use tokio::time::sleep;
 
@@ -40,76 +42,167 @@ use crate::{
 
 const DEFAULT_EDITOR: &str = "/usr/bin/vi";
 
-#[derive(Subcommand, Debug)]
-pub enum ConfigCommands {
-    /// Generate an installation profile with the current settings.
-    ///
-    /// It is possible that many configuration settings do not have a value. Those settings
-    /// are not included in the output.
-    ///
-    /// The output of command can be used as input for the "agama config load".
-    Show {
-        /// Save the output here (goes to stdout if not given)
-        #[arg(short, long, value_name = "FILE_PATH")]
-        output: Option<CliOutput>,
-    },
-
-    /// Read and load a profile
-    Load {
-        /// JSON file: URL or path or `-` for standard input
-        url_or_path: Option<CliInput>,
-    },
-
-    /// Validate a profile using JSON Schema
-    ///
-    /// Schema is available at /usr/share/agama/schema/profile.schema.json
-    /// Note: validation is always done as part of all other "agama config" commands.
-    Validate {
-        /// JSON file, URL or path or `-` for standard input
-        url_or_path: CliInput,
-
-        #[arg(long, default_value = "false")]
-        /// Run subcommands (if possible) in local mode - without trying to connect to remote agama server
-        local: bool,
-    },
-
-    /// Generate and print a native Agama JSON configuration from any kind and location.
-    ///
-    /// Kinds:
-    /// - JSON
-    /// - Jsonnet, injecting the hardware information
-    /// - AutoYaST profile, including ERB and rules/classes
-    ///
-    /// Locations:
-    /// - path
-    /// - URL (including AutoYaST specific schemes)
-    ///
-    /// For an example of Jsonnet-based profile, see
-    /// https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet
-    #[command(verbatim_doc_comment)]
-    Generate {
-        /// JSON file: URL or path or `-` for standard input
-        url_or_path: Option<CliInput>,
-    },
-
-    /// Edit and update installation option using an external editor.
-    ///
-    /// The changes are not applied if the editor exits with an error code.
-    ///
-    /// If an editor is not specified, it honors the EDITOR environment variable. It falls back to
-    /// `/usr/bin/vi` as a last resort.
-    Edit {
-        /// Editor command (including additional arguments if needed)
-        #[arg(short, long)]
-        editor: Option<String>,
-    },
+pub fn build_config_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama config
+    let about = gettext("Inspect or change the installation settings");
+    // TRANSLATORS: CLI help for: agama config (details)
+    let long_about = make_long(&about, &gettext("\
+        You can inspect and change installation settings from the command-line. The \"show\" \
+        subcommand generates a \"profile\" which is a JSON document describing the current \
+        configuration.\n\
+        \n\
+        If you want to change any configuration value, you can load a profile (complete or partial) \
+        using the \"load\" subcommand."));
+    Command::new("config")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .about(&about)
+        .long_about(long_about)
+        .subcommand(build_config_show_cmd())
+        .subcommand(
+            Command::new("load")
+                // TRANSLATORS: CLI help for: agama config load
+                .about(gettext("Read and load a profile"))
+                .arg(
+                    Arg::new("url_or_path")
+                        .value_name("URL_OR_PATH")
+                        .value_parser(clap::value_parser!(CliInput))
+                        // TRANSLATORS: CLI help for: agama config load <URL_OR_PATH>
+                        .help(gettext("JSON file: URL or path or `-` for standard input")),
+                ),
+        )
+        .subcommand(build_config_validate_cmd())
+        .subcommand(build_config_generate_cmd())
+        .subcommand(build_config_edit_cmd())
 }
 
-pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result<()> {
+fn build_config_show_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama config show
+    let about = gettext("Generate an installation profile with the current settings");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama config show (details)
+            "\
+        It is possible that many configuration settings do not have a value. Those settings \
+        are not included in the output.\n\
+        \n\
+        The output of command can be used as input for the \"agama config load\".",
+        ),
+    );
+    Command::new("show")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("output")
+                .short('o')
+                .long("output")
+                .value_name("FILE_PATH")
+                .value_parser(clap::value_parser!(CliOutput))
+                .help(gettext(
+                    // TRANSLATORS: CLI help for: agama config show --output <FILE_PATH>
+                    "Save the output here (goes to stdout if not given)",
+                )),
+        )
+}
+
+fn build_config_validate_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama config validate
+    let about = gettext("Validate a profile using JSON Schema");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama config validate (details)
+            "\
+        Schema is available at /usr/share/agama/schema/profile.schema.json \
+        Note: validation is always done as part of all other \"agama config\" commands.",
+        ),
+    );
+    Command::new("validate")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("url_or_path")
+                .value_name("URL_OR_PATH")
+                .required(true)
+                .value_parser(clap::value_parser!(CliInput))
+                // TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
+                .help(gettext("JSON file, URL or path or `-` for standard input"))
+        )
+        .arg(
+            Arg::new("local")
+                .long("local")
+                .action(ArgAction::SetTrue)
+                .default_value("false")
+                // TRANSLATORS: CLI help for: agama config validate --local
+                .help(gettext("Run subcommands (if possible) in local mode - without trying to connect to remote agama server"))
+        )
+}
+
+fn build_config_generate_cmd() -> Command {
+    let about =
+        // TRANSLATORS: CLI help for: agama config generate
+        gettext("Generate and print a native Agama JSON configuration from any kind and location");
+    // TRANSLATORS: CLI help for: agama config generate (details)
+    let long_about = make_long(&about, &gettext("\
+        Kinds:\n\
+        - JSON\n\
+        - Jsonnet, injecting the hardware information\n\
+        - AutoYaST profile, including ERB and rules/classes\n\
+        \n\
+        Locations:\n\
+        - path\n\
+        - URL (including AutoYaST specific schemes)\n\
+        \n\
+        For an example of Jsonnet-based profile, see\n\
+        https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/profile.jsonnet"));
+    Command::new("generate")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("url_or_path")
+                .value_name("URL_OR_PATH")
+                .value_parser(clap::value_parser!(CliInput))
+                // TRANSLATORS: CLI help for: agama config generate <URL_OR_PATH>
+                .help(gettext("JSON file: URL or path or `-` for standard input")),
+        )
+}
+
+fn build_config_edit_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama config edit
+    let about = gettext("Edit and update installation option using an external editor");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama config edit (details)
+            "\
+        The changes are not applied if the editor exits with an error code.\n\
+        \n\
+        If an editor is not specified, it honors the EDITOR environment variable. It falls back to \
+        `/usr/bin/vi` as a last resort.",
+        ),
+    );
+    Command::new("edit")
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("editor")
+                .value_name("EDITOR")
+                .short('e')
+                .long("editor")
+                .help(gettext(
+                    // TRANSLATORS: CLI help for: agama config edit --editor <EDITOR>
+                    "Editor command (including additional arguments if needed)",
+                )),
+        )
+}
+
+pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<()> {
     let api_url = api_url(opts.clone().host)?;
 
-    match subcommand {
-        ConfigCommands::Show { output } => {
+    match sub_matches.subcommand() {
+        Some(("show", matches)) => {
+            let output = matches.get_one::<CliOutput>("output").cloned();
             let http_client = build_http_client(api_url, opts.insecure, true).await?;
             let response: api::Config = http_client.get("/config").await?;
             let json = serde_json::to_string_pretty(&response)?;
@@ -120,7 +213,8 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             eprintln!();
             validate(&http_client, CliInput::Full(json.clone()), false).await?;
         }
-        ConfigCommands::Load { url_or_path } => {
+        Some(("load", matches)) => {
+            let url_or_path = matches.get_one::<CliInput>("url_or_path").cloned();
             let (http_client, ws) = build_clients(api_url, opts.insecure).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
@@ -135,7 +229,9 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
 
             monitor_progress(http_client, ws).await?;
         }
-        ConfigCommands::Validate { url_or_path, local } => {
+        Some(("validate", matches)) => {
+            let url_or_path = matches.get_one::<CliInput>("url_or_path").unwrap().clone();
+            let local = matches.get_flag("local");
             let validity = if !local {
                 let http_client = build_http_client(api_url, opts.insecure, true).await?;
                 validate(&http_client, url_or_path, false).await?
@@ -147,13 +243,15 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
                 return Err(anyhow!("The profile is not valid"));
             }
         }
-        ConfigCommands::Generate { url_or_path } => {
+        Some(("generate", matches)) => {
+            let url_or_path = matches.get_one::<CliInput>("url_or_path").cloned();
             let http_client = build_http_client(api_url, opts.insecure, true).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
 
             generate(&http_client, url_or_path, opts.insecure).await?;
         }
-        ConfigCommands::Edit { editor } => {
+        Some(("edit", matches)) => {
+            let editor = matches.get_one::<String>("editor").cloned();
             let (http_client, ws) = build_clients(api_url, opts.insecure).await?;
             let response: api::Config = http_client.get("/config").await?;
             let editor = editor
@@ -164,6 +262,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
 
             monitor_progress(http_client, ws).await?;
         }
+        _ => {}
     }
 
     Ok(())
@@ -383,11 +482,11 @@ async fn edit(
 /// Separate the program and the arguments and build a Command struct.
 ///
 /// * `command`: command to run as editor.
-fn editor_command(command: &str) -> Command {
+fn editor_command(command: &str) -> process::Command {
     let mut parts = command.split_whitespace();
     let program = parts.next().unwrap_or(DEFAULT_EDITOR);
 
-    let mut command = Command::new(program);
+    let mut command = process::Command::new(program);
     command.args(parts.collect::<Vec<&str>>());
     command
 }

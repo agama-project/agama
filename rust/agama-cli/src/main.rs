@@ -18,14 +18,15 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use agama_cli::{run_command, Cli, CliResult};
-use clap::Parser;
+use agama_cli::{build_cli, run_command, CliResult};
+use agama_l10n::helpers as l10n_helpers;
 
 #[tokio::main]
 async fn main() -> CliResult {
-    let cli = Cli::parse();
+    _ = l10n_helpers::init_locale();
+    let matches = build_cli().get_matches();
 
-    if let Err(error) = run_command(cli).await {
+    if let Err(error) = run_command(matches).await {
         eprintln!("{:?}", error);
         return CliResult::Error;
     }
