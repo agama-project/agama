@@ -77,16 +77,21 @@ impl IntoResponse for ProfileError {
             ProfileError::Autoyast(AutoyastError::Execute(..)) => {
                 ProblemDetails::internal_error(self.to_string())
             }
-            // Client errors (400)
-            ProfileError::UrlRetrieval { .. }
-            | ProfileError::InvalidUtf8 { .. }
-            | ProfileError::FileRead { .. }
-            | ProfileError::ValidationError(_)
-            | ProfileError::EvaluationError(_)
-            | ProfileError::UrlParse(_)
-            | ProfileError::Autoyast(_)
-            | ProfileError::BadRequest(_) => {
-                ProblemDetails::generic(gettext("Could not process the profile"), self.to_string())
+            // Client errors (400) - specific titles for better UX
+            ProfileError::ValidationError(msg) | ProfileError::EvaluationError(msg) => {
+                ProblemDetails::generic(gettext("Profile validation failed"), msg)
+            }
+            ProfileError::UrlRetrieval { .. } | ProfileError::FileRead { .. } => {
+                ProblemDetails::generic(gettext("Could not retrieve profile"), self.to_string())
+            }
+            ProfileError::InvalidUtf8 { .. } => {
+                ProblemDetails::generic(gettext("Invalid profile encoding"), self.to_string())
+            }
+            ProfileError::UrlParse(_) | ProfileError::BadRequest(_) => {
+                ProblemDetails::generic(gettext("Invalid profile request"), self.to_string())
+            }
+            ProfileError::Autoyast(_) => {
+                ProblemDetails::generic(gettext("AutoYaST conversion failed"), self.to_string())
             }
         };
         problem.into_response()
