@@ -30,6 +30,7 @@ use anyhow::{anyhow, Context};
 use clap::Subcommand;
 use console::style;
 use fluent_uri::Uri;
+use gettextrs::gettext;
 use tempfile::Builder;
 use tokio::time::sleep;
 
@@ -120,7 +121,9 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             let (http_client, ws) = build_clients(api_url, opts.insecure).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
-            let config = serde_json::from_str(&contents)?;
+            let Ok(config) = serde_json::from_str(&contents) else {
+                return Err(anyhow!(gettext("It is not a valid JSON file")));
+            };
             patch_config(&http_client, config).await?;
             monitor_progress(http_client, ws).await?;
         }
@@ -133,7 +136,7 @@ pub async fn run(subcommand: ConfigCommands, opts: GlobalOpts) -> anyhow::Result
             };
 
             if !matches!(validity, ValidationOutcome::Valid) {
-                return Err(anyhow!("The profile is not valid"));
+                return Err(anyhow!(gettext("The profile is not valid")));
             }
         }
         ConfigCommands::Generate { url_or_path } => {
