@@ -29,7 +29,10 @@ mod tasks {
     /// Generate Agama's CLI documentation in markdown format.
     pub fn generate_markdown() -> std::io::Result<()> {
         let cmd = build_cli();
-        let markdown = clap_markdown::help_markdown_command(&cmd);
+        let options = clap_markdown::MarkdownOptions::new()
+            .title("Command-line reference".to_string())
+            .show_footer(false);
+        let markdown = clap_markdown::help_markdown_command_custom(&cmd, &options);
 
         let path = output_dir()?.join("agama.md");
         let mut file = File::create(&path)?;
