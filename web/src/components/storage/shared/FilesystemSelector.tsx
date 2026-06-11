@@ -130,7 +130,9 @@ export default function FilesystemSelector({
           return (
             <field.ReadOnlyField label={_("File system")} text={filesystemLabel(defaultFilesystem)}>
               {showNotice && (
-                <FieldNestedContent>{destroyDataNotice(selectedDevice)}</FieldNestedContent>
+                <FieldNestedContent margin="mlMd">
+                  {destroyDataNotice(selectedDevice)}
+                </FieldNestedContent>
               )}
             </field.ReadOnlyField>
           );
