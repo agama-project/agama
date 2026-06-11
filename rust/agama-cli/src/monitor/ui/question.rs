@@ -10,6 +10,7 @@ use ratatui::{
 
 #[derive(PartialEq)]
 pub enum AppMode {
+    DataViewer,
     FieldInput,
     ActionSelection,
 }
@@ -20,7 +21,6 @@ pub struct QuestionUiState {
     pub field_selection_idx: usize,
     pub action_selection_idx: usize,
     pub scroll: u16,
-    pub error_expanded: bool,
     pub question_id: Option<u32>,
 }
 
@@ -32,7 +32,6 @@ impl Default for QuestionUiState {
             field_selection_idx: 0,
             action_selection_idx: 0,
             scroll: 0,
-            error_expanded: false,
             question_id: None,
         }
     }
@@ -42,21 +41,156 @@ impl QuestionUiState {
     pub fn reset(&mut self, question: &Question) {
         let is_load_retry = question.spec.class == "load.retry";
 
-        self.app_mode = AppMode::FieldInput;
         self.input_text.clear();
         self.field_selection_idx = 0;
         self.action_selection_idx = 0;
         self.scroll = 0;
-        self.error_expanded = false;
         self.question_id = Some(question.id);
+
+        let has_field = question.spec.field != QuestionField::None || is_load_retry;
+
+        self.app_mode = if has_field {
+            AppMode::FieldInput
+        } else {
+            AppMode::ActionSelection
+        };
 
         if is_load_retry {
             if let Some(orig) = question.spec.data.get("originalValue") {
                 self.input_text = orig.clone();
             }
+        }
+    }
+
+    fn set_first_idx(&mut self) {
+        self.field_selection_idx = 0;
+        self.action_selection_idx = 0;
+    }
+
+    fn set_last_idx(&mut self, question: &Question) {
+        let is_load_retry = question.spec.class == "load.retry";
+        self.action_selection_idx = question.spec.actions.len().saturating_sub(1);
+        if !is_load_retry {
+            if let QuestionField::Select { options } = &question.spec.field {
+                self.field_selection_idx = options.len().saturating_sub(1);
+            } else {
+                self.field_selection_idx = 0;
+            }
         } else {
-            if question.spec.field == QuestionField::None {
-                self.app_mode = AppMode::ActionSelection;
+            self.field_selection_idx = 0;
+        }
+    }
+
+    fn next_mode(&mut self, question: &Question) {
+        let is_load_retry = question.spec.class == "load.retry";
+        let has_data = !question.spec.data.is_empty();
+        let has_field = question.spec.field != QuestionField::None || is_load_retry;
+        let has_actions = !question.spec.actions.is_empty();
+
+        match self.app_mode {
+            AppMode::DataViewer => {
+                if has_field {
+                    self.app_mode = AppMode::FieldInput;
+                } else if has_actions {
+                    self.app_mode = AppMode::ActionSelection;
+                }
+            }
+            AppMode::FieldInput => {
+                if has_actions {
+                    self.app_mode = AppMode::ActionSelection;
+                } else if has_data {
+                    self.app_mode = AppMode::DataViewer;
+                }
+            }
+            AppMode::ActionSelection => {
+                if has_data {
+                    self.app_mode = AppMode::DataViewer;
+                } else if has_field {
+                    self.app_mode = AppMode::FieldInput;
+                }
+            }
+        }
+        self.set_first_idx();
+    }
+
+    fn prev_mode(&mut self, question: &Question) {
+        let is_load_retry = question.spec.class == "load.retry";
+        let has_data = !question.spec.data.is_empty();
+        let has_field = question.spec.field != QuestionField::None || is_load_retry;
+        let has_actions = !question.spec.actions.is_empty();
+
+        match self.app_mode {
+            AppMode::DataViewer => {
+                if has_actions {
+                    self.app_mode = AppMode::ActionSelection;
+                } else if has_field {
+                    self.app_mode = AppMode::FieldInput;
+                }
+            }
+            AppMode::FieldInput => {
+                if has_data {
+                    self.app_mode = AppMode::DataViewer;
+                } else if has_actions {
+                    self.app_mode = AppMode::ActionSelection;
+                }
+            }
+            AppMode::ActionSelection => {
+                if has_field {
+                    self.app_mode = AppMode::FieldInput;
+                } else if has_data {
+                    self.app_mode = AppMode::DataViewer;
+                }
+            }
+        }
+        self.set_last_idx(question);
+    }
+
+    fn focus_next(&mut self, question: &Question) {
+        let is_load_retry = question.spec.class == "load.retry";
+        match self.app_mode {
+            AppMode::DataViewer => self.next_mode(question),
+            AppMode::FieldInput => {
+                if !is_load_retry {
+                    if let QuestionField::Select { options } = &question.spec.field {
+                        if self.field_selection_idx + 1 < options.len() {
+                            self.field_selection_idx += 1;
+                            return;
+                        }
+                    }
+                }
+                self.next_mode(question);
+            }
+            AppMode::ActionSelection => {
+                if self.action_selection_idx + 1 < question.spec.actions.len() {
+                    self.action_selection_idx += 1;
+                } else {
+                    self.next_mode(question);
+                }
+            }
+        }
+    }
+
+    fn focus_prev(&mut self, question: &Question) {
+        let is_load_retry = question.spec.class == "load.retry";
+        match self.app_mode {
+            AppMode::DataViewer => self.prev_mode(question),
+            AppMode::FieldInput => {
+                if !is_load_retry {
+                    if let QuestionField::Select { .. } = &question.spec.field {
+                        if self.field_selection_idx > 0 {
+                            self.field_selection_idx -= 1;
+                            return;
+                        }
+                    }
+                }
+                self.prev_mode(question);
+            }
+            AppMode::ActionSelection => {
+                if self.action_selection_idx > 0 {
+                    self.action_selection_idx -= 1;
+                } else {
+                    self.prev_mode(question);
+                }
             }
         }
     }
@@ -66,20 +200,30 @@ impl QuestionUiState {
 
         if let Event::Key(key) = event {
             if key.kind == KeyEventKind::Press {
-                if key.code == KeyCode::PageUp {
-                    self.scroll = self.scroll.saturating_sub(1);
+                if key.code == KeyCode::Tab {
+                    self.focus_next(question);
                     return None;
-                } else if key.code == KeyCode::PageDown {
-                    self.scroll = self.scroll.saturating_add(1);
-                    return None;
-                } else if key.code == KeyCode::Char('e') {
-                    if question.spec.data.get("error").is_some() {
-                        self.error_expanded = !self.error_expanded;
-                    }
+                } else if key.code == KeyCode::BackTab {
+                    self.focus_prev(question);
                     return None;
                 }
 
                 match self.app_mode {
+                    AppMode::DataViewer => match key.code {
+                        KeyCode::PageUp => {
+                            self.scroll = self.scroll.saturating_sub(1);
+                        }
+                        KeyCode::PageDown => {
+                            self.scroll = self.scroll.saturating_add(1);
+                        }
+                        KeyCode::Down => {
+                            self.focus_next(question);
+                        }
+                        KeyCode::Up => {
+                            self.focus_prev(question);
+                        }
+                        _ => {}
+                    },
                     AppMode::FieldInput => {
                         if is_load_retry {
                             match key.code {
@@ -87,8 +231,11 @@ impl QuestionUiState {
                                 KeyCode::Backspace => {
                                     self.input_text.pop();
                                 }
-                                KeyCode::Enter | KeyCode::Tab | KeyCode::Down => {
-                                    self.app_mode = AppMode::ActionSelection;
+                                KeyCode::Enter | KeyCode::Down => {
+                                    self.focus_next(question);
+                                }
+                                KeyCode::Up => {
+                                    self.focus_prev(question);
                                 }
                                 _ => {}
                             }
@@ -99,24 +246,23 @@ impl QuestionUiState {
                                     KeyCode::Backspace => {
                                         self.input_text.pop();
                                     }
-                                    KeyCode::Enter | KeyCode::Tab | KeyCode::Down => {
-                                        self.app_mode = AppMode::ActionSelection;
+                                    KeyCode::Enter | KeyCode::Down => {
+                                        self.focus_next(question);
+                                    }
+                                    KeyCode::Up => {
+                                        self.focus_prev(question);
                                     }
                                     _ => {}
                                 },
-                                QuestionField::Select { options } => match key.code {
+                                QuestionField::Select { .. } => match key.code {
                                     KeyCode::Up => {
-                                        if self.field_selection_idx > 0 {
-                                            self.field_selection_idx -= 1;
-                                        }
+                                        self.focus_prev(question);
                                     }
                                     KeyCode::Down => {
-                                        if self.field_selection_idx + 1 < options.len() {
-                                            self.field_selection_idx += 1;
-                                        }
+                                        self.focus_next(question);
                                     }
-                                    KeyCode::Enter | KeyCode::Tab | KeyCode::Right => {
-                                        self.app_mode = AppMode::ActionSelection;
+                                    KeyCode::Enter | KeyCode::Right => {
+                                        self.next_mode(question);
                                     }
                                     _ => {}
                                 },
@@ -126,18 +272,10 @@ impl QuestionUiState {
                     }
                     AppMode::ActionSelection => match key.code {
                         KeyCode::Up => {
-                            if self.action_selection_idx > 0 {
-                                self.action_selection_idx -= 1;
-                            } else if is_load_retry
-                                || !matches!(question.spec.field, QuestionField::None)
-                            {
-                                self.app_mode = AppMode::FieldInput;
-                            }
+                            self.focus_prev(question);
                         }
                         KeyCode::Down => {
-                            if self.action_selection_idx + 1 < question.spec.actions.len() {
-                                self.action_selection_idx += 1;
-                            }
+                            self.focus_next(question);
                         }
                         KeyCode::Enter => {
                             if question.spec.actions.is_empty() {
@@ -155,6 +293,11 @@ impl QuestionUiState {
                                     QuestionField::String | QuestionField::Password => {
                                         if !self.input_text.is_empty() {
                                             answer = answer.with_value(&self.input_text);
+                                        }
+                                    }
+                                    QuestionField::Select { options } => {
+                                        if let Some(opt) = options.get(self.field_selection_idx) {
+                                            answer = answer.with_value(&opt.id);
                                         }
                                     }
                                     _ => {}
@@ -188,35 +331,84 @@ impl<'a> Widget for QuestionWidget<'a> {
         let is_load_retry = question.spec.class == "load.retry";
 
         let mut lines_top = vec![
-            Line::from(Span::styled(
-                &question.spec.text,
-                Style::default().add_modifier(Modifier::BOLD),
-            )),
+            Line::from(vec![
+                Span::raw("  "),
+                Span::styled(
+                    &question.spec.text,
+                    Style::default().add_modifier(Modifier::BOLD),
+                ),
+            ]),
             Line::from(""),
         ];
 
-        let mut lines_error = vec![];
-        if is_load_retry {
-            if let Some(err) = question.spec.data.get("error") {
-                let toggle_hint = if self.state.error_expanded {
-                    " (press 'e' to collapse, PageUp/PageDown to scroll)"
+        let mut text_data = vec![];
+        let mut data_entries: Vec<(String, String)> = question
+            .spec
+            .data
+            .iter()
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+        data_entries.sort_by(|a, b| a.0.cmp(&b.0));
+
+        for (k, v) in data_entries {
+            let padding = " ".repeat(k.len() + 2);
+            for (i, line) in v.lines().enumerate() {
+                let text = if i == 0 {
+                    format!("{}: {}", k, line)
                 } else {
-                    " (press 'e' to expand details)"
+                    format!("{}{}", padding, line)
                 };
+                text_data.push(text);
+            }
+        }
 
-                lines_top.push(Line::from(vec![
-                    Span::styled("Error: ", Style::default().add_modifier(Modifier::ITALIC)),
-                    Span::styled(toggle_hint, Style::default().add_modifier(Modifier::DIM)),
-                ]));
+        if !text_data.is_empty() {
+            let max_lines = 3;
+            let data_len = text_data.len();
+            let show_lines = max_lines.min(data_len);
 
-                if self.state.error_expanded {
-                    for err_line in err.lines() {
-                        lines_error.push(Line::from(Span::styled(
-                            format!("     {}", err_line),
-                            Style::default().add_modifier(Modifier::ITALIC),
-                        )));
-                    }
+            let max_scroll = data_len.saturating_sub(show_lines);
+            let start = (self.state.scroll as usize).min(max_scroll);
+
+            let header_text = if max_scroll > 0 {
+                format!("Additional data ({}/{}):", start + 1, max_scroll + 1)
+            } else {
+                "Additional data:".to_string()
+            };
+
+            let mut hint_text = String::new();
+            if self.state.app_mode == AppMode::DataViewer {
+                if max_scroll > 0 {
+                    hint_text = " (use PageUp/PageDown to scroll)".to_string();
                 }
+            }
+
+            let (header_style, prefix) = if self.state.app_mode == AppMode::DataViewer {
+                (Style::default().add_modifier(Modifier::BOLD), "> ")
+            } else {
+                (Style::default().add_modifier(Modifier::BOLD), "  ")
+            };
+
+            lines_top.push(Line::from(vec![
+                Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
+                Span::styled(header_text, header_style),
+                Span::styled(hint_text, Style::default()),
+            ]));
+
+            for (i, text) in text_data[start..start + show_lines].iter().enumerate() {
+                let suffix = if i == 0 && start > 0 {
+                    " ↑"
+                } else if i == show_lines - 1 && start < max_scroll {
+                    " ↓"
+                } else {
+                    ""
+                };
+                
+                lines_top.push(Line::from(vec![
+                    Span::raw("  "),
+                    Span::styled(text.clone(), Style::default().add_modifier(Modifier::ITALIC)),
+                    Span::styled(suffix, Style::default().add_modifier(Modifier::BOLD)),
+                ]));
             }
         }
 
@@ -224,14 +416,21 @@ impl<'a> Widget for QuestionWidget<'a> {
         let is_action_active = self.state.app_mode == AppMode::ActionSelection;
         let mut lines_bottom = vec![];
 
+        let cursor = if is_field_active {
+            Span::styled("_", Style::default().add_modifier(Modifier::SLOW_BLINK))
+        } else {
+            Span::raw("")
+        };
+
         if is_load_retry {
-            if question.spec.data.get("error").is_some() {
+            if !text_data.is_empty() {
                 lines_bottom.push(Line::from(""));
             }
             let prefix = if is_field_active { "> " } else { "  " };
             lines_bottom.push(Line::from(vec![
                 Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
                 Span::from(format!("Location: {}", self.state.input_text)),
+                cursor.clone(),
             ]));
             lines_bottom.push(Line::from(""));
         } else {
@@ -239,14 +438,16 @@ impl<'a> Widget for QuestionWidget<'a> {
                 QuestionField::None => {}
                 QuestionField::String | QuestionField::Password => {
                     let prefix = if is_field_active { "> " } else { "  " };
-                    let display_text = if matches!(question.spec.field, QuestionField::Password) {
-                        "*".repeat(self.state.input_text.len())
+                    let (field_label, display_text) = if matches!(question.spec.field, QuestionField::Password) {
+                        ("Password: ", "*".repeat(self.state.input_text.len()))
                     } else {
-                        self.state.input_text.clone()
+                        ("Input: ", self.state.input_text.clone())
                     };
                     lines_bottom.push(Line::from(vec![
                         Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
+                        Span::from(field_label),
                         Span::from(display_text),
+                        cursor.clone(),
                     ]));
                     lines_bottom.push(Line::from(""));
                 }
@@ -279,33 +480,18 @@ impl<'a> Widget for QuestionWidget<'a> {
             ]));
         }
 
-        let content_area = Rect {
-            x: area.x + 2, // Indent a bit matching other monitor content
+        let mut lines = lines_top;
+        lines.extend(lines_bottom);
+
+        let shifted_area = Rect {
+            x: area.x.saturating_sub(2),
             y: area.y,
-            width: area.width.saturating_sub(4),
+            width: area.width.saturating_add(2),
             height: area.height,
         };
 
-        // Determine how many lines of error we can show based on the available space
-        let total_top_lines = lines_top.len() as u16;
-        let total_bottom_lines = lines_bottom.len() as u16;
-        let used_lines = total_top_lines + total_bottom_lines;
-        let available_error_lines = content_area.height.saturating_sub(used_lines);
-
-        let mut lines = lines_top;
-        if self.state.error_expanded && available_error_lines > 0 {
-            let error_len = lines_error.len();
-            let start = self.state.scroll as usize;
-            let end = (start + available_error_lines as usize).min(error_len);
-
-            if start < error_len {
-                lines.extend(lines_error[start..end].iter().cloned());
-            }
-        }
-        lines.extend(lines_bottom);
-
         Paragraph::new(lines)
-            .wrap(ratatui::widgets::Wrap { trim: true })
-            .render(content_area, buf);
+            .wrap(ratatui::widgets::Wrap { trim: false })
+            .render(shifted_area, buf);
     }
 }
