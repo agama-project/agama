@@ -306,13 +306,13 @@ shared_examples "with filesystem" do
   context "if #encryption is configured" do
     let(:filesystem) do
       {
-        reuseIfPossible: true,
-        type:            "xfs",
-        label:           "test",
-        path:            "/test",
-        mountBy:         "device",
-        mkfsOptions:     ["version=2"],
-        mountOptions:    ["rw"]
+        reuseIfPossible:    true,
+        type:               "xfs",
+        label:              "test",
+        path:               "/test",
+        mountBy:            "device",
+        mkfsExtraArguments: "-l version=2",
+        mountOptions:       ["rw"]
       }
     end
 
@@ -322,13 +322,13 @@ shared_examples "with filesystem" do
 
       expect(filesystem_json).to eq(
         {
-          reuseIfPossible: true,
-          type:            "xfs",
-          label:           "test",
-          path:            "/test",
-          mountBy:         "device",
-          mkfsOptions:     ["version=2"],
-          mountOptions:    ["rw"]
+          reuseIfPossible:    true,
+          type:               "xfs",
+          label:              "test",
+          path:               "/test",
+          mountBy:            "device",
+          mkfsExtraArguments: "-l version=2",
+          mountOptions:       ["rw"]
         }
       )
     end
@@ -354,7 +354,6 @@ shared_examples "with filesystem" do
             type:            {
               btrfs: { snapshots: true }
             },
-            mkfsOptions:     [],
             mountOptions:    []
           }
         )
@@ -371,7 +370,6 @@ shared_examples "with filesystem" do
         expect(filesystem_json).to eq(
           {
             reuseIfPossible: false,
-            mkfsOptions:     [],
             mountOptions:    []
           }
         )
