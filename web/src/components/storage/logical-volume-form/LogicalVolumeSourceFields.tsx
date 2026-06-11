@@ -47,6 +47,10 @@ const NEW_LOGICAL_VOLUME = "";
  * as part of the same configuration), only new logical volumes are possible, so
  * a read-only field is shown instead of the selector.
  *
+ * When the volume group exists but has no logical volumes left to reuse, a
+ * read-only field explains that a new logical volume will be created
+ * (maintains consistent visual structure).
+ *
  * Presentation only: it has no validation logic.
  */
 const LogicalVolumeSourceFields = withForm({
@@ -69,6 +73,24 @@ const LogicalVolumeSourceFields = withForm({
         <form.AppField name="target">
           {(field) => (
             <field.ReadOnlyField label={_("Logical volume")} text={_("New logical volume")} />
+          )}
+        </form.AppField>
+      );
+    }
+
+    // No logical volumes left to reuse: only a new logical volume is possible.
+    if (availableLogicalVolumes.length === 0) {
+      return (
+        <form.AppField name="target">
+          {(field) => (
+            <field.ReadOnlyField
+              label={_("Logical volume")}
+              text={sprintf(
+                // TRANSLATORS: %s is a volume group name with its size (eg. "system (30 GiB)")
+                _("New logical volume. There are no available existing logical volumes on %s."),
+                deviceLabel(volumeGroup, true),
+              )}
+            />
           )}
         </form.AppField>
       );

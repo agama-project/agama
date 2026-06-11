@@ -73,6 +73,14 @@ describe("LogicalVolumeSourceFields", () => {
     });
   });
 
+  describe("when there are no logical volumes left to reuse", () => {
+    it("shows a read-only field explaining that a new logical volume will be created", () => {
+      installerRender(<TestForm volumeGroup={systemVolumeGroup} availableLogicalVolumes={[]} />);
+      screen.getByText(/New logical volume. There are no available existing logical volumes/);
+      expect(screen.queryByRole("button", { name: "Logical volume" })).not.toBeInTheDocument();
+    });
+  });
+
   describe("when the volume group already exists", () => {
     it("offers a 'New logical volume' option and the existing logical volumes", async () => {
       const { user } = installerRender(<TestForm volumeGroup={systemVolumeGroup} />);
