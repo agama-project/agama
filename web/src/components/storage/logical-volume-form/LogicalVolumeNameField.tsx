@@ -42,9 +42,9 @@ const LogicalVolumeNameField = withForm({
       <form.AppField name="lvName">
         {(field) => (
           <field.TextField
-            label={_("Logical volume name")}
-            // TRANSLATORS: example logical volume names shown as a hint
-            helperText={_("E.g., home, var, swap")}
+            label={_("Name")}
+            // TRANSLATORS: hint below the name input, with example logical volume names
+            helperText={_("Name for the logical volume. E.g., root, home, lv0")}
           />
         )}
       </form.AppField>

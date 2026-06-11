@@ -120,7 +120,7 @@ describe("LogicalVolumeForm", () => {
       installerRender(<LogicalVolumeForm />);
       screen.getByLabelText("Mount point");
       screen.getByLabelText("Logical volume");
-      screen.getByLabelText("Logical volume name");
+      screen.getByLabelText("Name");
       screen.getByLabelText("File system");
     });
   });
