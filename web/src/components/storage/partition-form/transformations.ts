@@ -199,10 +199,13 @@ export function toFormValues(
   const fsConfig = partitionConfig.filesystem;
   const isReusePartition = partitionConfig.name !== undefined;
 
-  // When editing an existing partition with a filesystem, default to keeping it (REUSE)
-  // unless the config explicitly says to format (reuse: false)
-  const shouldKeepFilesystem =
-    isReusePartition && fsConfig?.type !== undefined && fsConfig.reuse !== false;
+  // When editing a reused partition, default to keeping the filesystem when
+  // the config explicitly says so (reuse: true, the stored form of the
+  // "Current" choice, which carries no type) or when it has a type and does
+  // not explicitly ask for formatting (reuse: false)
+  const keepsByConfig = fsConfig?.reuse === true;
+  const keepsByType = fsConfig?.type !== undefined && fsConfig?.reuse !== false;
+  const shouldKeepFilesystem = isReusePartition && (keepsByConfig || keepsByType);
 
   const mountPoint = partitionConfig.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";

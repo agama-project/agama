@@ -85,18 +85,29 @@ import type { ConfigModel } from "~/model/storage/config-model";
  * Used for auto-filling the lvName field when the user selects a mount point.
  * The auto-fill stops once the user manually edits the lvName field.
  *
+ * Mimics the heuristic the backend applies when planning a logical volume
+ * (Y2Storage::Planned::LvmLv), so the suggested name matches what the
+ * installer would pick on its own.
+ *
  * ## Transformation Rules
  *
- * - Empty mount point → empty name
+ * - "/" → "root"
  * - "swap" → "swap"
  * - Path like "/home" → "home"
  * - Path like "/var/lib" → "var_lib" (slashes become underscores)
+ * - Anything else (including an empty mount point) → empty name
  *
  * This follows LVM naming conventions where logical volume names are plain
  * identifiers without path separators.
  *
+ * @see https://github.com/yast/yast-storage-ng/blob/a4f6631bc244aadfe40e47ca8959aad2870d74e8/src/lib/y2storage/planned/lvm_lv.rb#L96-L105
+ *
  * @param mountPoint - The mount point to derive a name from
  * @returns Suggested logical volume name
+ *
+ * @example
+ * lvNameFromMountPoint("/")
+ * // → "root"
  *
  * @example
  * lvNameFromMountPoint("/home")
@@ -115,8 +126,9 @@ import type { ConfigModel } from "~/model/storage/config-model";
  * // → ""
  */
 export function lvNameFromMountPoint(mountPoint: string): string {
-  if (mountPoint === "") return "";
+  if (mountPoint === "/") return "root";
   if (mountPoint === "swap") return "swap";
+  if (!mountPoint.startsWith("/")) return "";
   return mountPoint.replace(/^\//, "").replace(/\//g, "_");
 }
 
@@ -259,9 +271,13 @@ export function toFormValues(
   const fsConfig = logicalVolumeConfig.filesystem;
   const isReuse = logicalVolumeConfig.name !== undefined;
 
-  // When editing a reused logical volume with a filesystem, default to
-  // keeping it unless the config explicitly says to format (reuse: false)
-  const shouldKeepFilesystem = isReuse && fsConfig?.type !== undefined && fsConfig.reuse !== false;
+  // When editing a reused logical volume, default to keeping the filesystem
+  // when the config explicitly says so (reuse: true, the stored form of the
+  // "Current" choice, which carries no type) or when it has a type and does
+  // not explicitly ask for formatting (reuse: false)
+  const keepsByConfig = fsConfig?.reuse === true;
+  const keepsByType = fsConfig?.type !== undefined && fsConfig?.reuse !== false;
+  const shouldKeepFilesystem = isReuse && (keepsByConfig || keepsByType);
 
   const mountPoint = logicalVolumeConfig.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";

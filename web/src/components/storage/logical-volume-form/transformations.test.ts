@@ -31,6 +31,10 @@ describe("lvNameFromMountPoint", () => {
     expect(lvNameFromMountPoint("")).toBe("");
   });
 
+  it("returns root for the root mount point", () => {
+    expect(lvNameFromMountPoint("/")).toBe("root");
+  });
+
   it("returns swap for swap mount point", () => {
     expect(lvNameFromMountPoint("swap")).toBe("swap");
   });
@@ -47,8 +51,8 @@ describe("lvNameFromMountPoint", () => {
     expect(lvNameFromMountPoint("/var/lib/mysql")).toBe("var_lib_mysql");
   });
 
-  it("handles root mount point", () => {
-    expect(lvNameFromMountPoint("/")).toBe("");
+  it("returns empty string for non-absolute mount points", () => {
+    expect(lvNameFromMountPoint("foo")).toBe("");
   });
 });
 
@@ -365,6 +369,26 @@ describe("toFormValues", () => {
       expect(result).toMatchObject({
         filesystem: "xfs",
         filesystemAction: "format",
+      });
+    });
+
+    it("keeps the filesystem when the config reuses it without a type", () => {
+      // The stored form of choosing "Current": reuse the filesystem as it is,
+      // so the config carries no type.
+      const config = {
+        mountPath: "/home",
+        name: "lv_home",
+        filesystem: {
+          reuse: true,
+          default: true,
+        },
+      };
+
+      const result = toFormValues(config as ConfigModel.LogicalVolume);
+
+      expect(result).toMatchObject({
+        filesystem: "reuse",
+        filesystemAction: "reuse",
       });
     });
 

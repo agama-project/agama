@@ -80,18 +80,34 @@ jest.mock("~/hooks/model/storage/config-model", () => ({
 }));
 
 jest.mock("~/hooks/model/system/storage", () => ({
-  useVolumeTemplate: () => ({
-    minSize: 20 * 1024 * 1024 * 1024,
-    fsType: "xfs",
-    autoSize: false,
-    mountPath: "/home",
-    outline: {
-      fsTypes: ["xfs", "ext4", "btrfs"],
-      sizeRelevantVolumes: [],
-      snapshotsAffectSizes: false,
-      adjustByRam: false,
-    },
-  }),
+  useVolumeTemplate: (mountPath: string) => {
+    if (mountPath === "swap") {
+      return {
+        minSize: 2 * 1024 * 1024 * 1024,
+        fsType: "swap",
+        autoSize: false,
+        mountPath: "swap",
+        outline: {
+          fsTypes: ["swap"],
+          sizeRelevantVolumes: [],
+          snapshotsAffectSizes: false,
+          adjustByRam: false,
+        },
+      };
+    }
+    return {
+      minSize: 20 * 1024 * 1024 * 1024,
+      fsType: "xfs",
+      autoSize: false,
+      mountPath: "/home",
+      outline: {
+        fsTypes: ["xfs", "ext4", "btrfs"],
+        sizeRelevantVolumes: [],
+        snapshotsAffectSizes: false,
+        adjustByRam: false,
+      },
+    };
+  },
 }));
 
 // Import the tested component last.
@@ -120,19 +136,83 @@ describe("LogicalVolumeForm", () => {
       installerRender(<LogicalVolumeForm />);
       screen.getByLabelText("Mount point");
       screen.getByLabelText("Logical volume");
-      screen.getByLabelText("Logical volume name");
+      screen.getByLabelText("Name");
       screen.getByLabelText("File system");
     });
   });
 
+  describe("logical volume name auto-fill", () => {
+    it("suggests the name the installer would pick for the mount point", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/");
+      await user.tab();
+      expect(screen.getByLabelText("Name")).toHaveValue("root");
+    });
+
+    it("derives the name from non-root mount points", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/var/lib");
+      await user.tab();
+      expect(screen.getByLabelText("Name")).toHaveValue("var_lib");
+    });
+
+    it("stops suggesting once the user edits the name", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      const nameInput = screen.getByLabelText("Name");
+      await user.type(nameInput, "mydata");
+      await user.type(screen.getByLabelText("Mount point"), "/home");
+      await user.tab();
+      expect(nameInput).toHaveValue("mydata");
+    });
+  });
+
+  describe("logical volume selection", () => {
+    it("switches filesystem to Current when selecting a logical volume with data", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
+    });
+
+    it("switches filesystem back to Default when selecting 'New logical volume'", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /New logical volume/ }));
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Default/);
+    });
+
+    it("shows data loss notice when the logical volume data cannot be kept", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      // The reused logical volume holds an Ext4 filesystem, which cannot be
+      // kept for swap: the file system is fixed (no dropdown) and the logical
+      // volume will be formatted.
+      await user.type(screen.getByLabelText("Mount point"), "swap");
+      await user.tab();
+      await screen.findByText(/will be destroyed when installation begins/);
+    });
+
+    it("does not show data loss notice while the current filesystem is kept", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      await user.type(screen.getByLabelText("Mount point"), "/home");
+      await user.tab();
+      expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
+    });
+  });
+
   describe("when the volume group is new", () => {
-    it("shows a read-only source field instead of the selector", () => {
+    it("does not render the logical volume source field", () => {
       mockVolumeGroup = undefined;
       mockAvailableLogicalVolumes = [];
       installerRender(<LogicalVolumeForm />);
-      // The read-only field shows the fixed text instead of a combobox.
-      screen.getByText("New logical volume");
-      expect(screen.queryByRole("button", { name: "Logical volume" })).not.toBeInTheDocument();
+      // Every logical volume is necessarily new, so there is nothing to choose.
+      expect(screen.queryByText("Logical volume")).not.toBeInTheDocument();
+      expect(screen.queryByText(/New logical volume/)).not.toBeInTheDocument();
     });
   });
 
