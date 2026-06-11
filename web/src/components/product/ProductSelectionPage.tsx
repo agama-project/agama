@@ -51,7 +51,7 @@ import {
   Title,
 } from "@patternfly/react-core";
 import { Navigate, useNavigate, useSearchParams } from "react-router";
-import { Link, Page, SubtleContent } from "~/components/core";
+import { Page, SubtleContent } from "~/components/core";
 import ProductLogo from "~/components/product/ProductLogo";
 import LicenseDialog from "~/components/product/LicenseDialog";
 import Text from "~/components/core/Text";
@@ -544,11 +544,7 @@ const ProductForm = ({
                 selectedMode={selectedMode}
               />
             </Page.Submit>
-            {currentProduct && !isSubmitted && (
-              <Link to={ROOT.overview} size="lg" variant="link">
-                {_("Cancel")}
-              </Link>
-            )}
+            {currentProduct && !isSubmitted && <Page.Back size="lg">{_("Cancel")}</Page.Back>}
           </Split>
         </StackItem>
         <StackItem>
