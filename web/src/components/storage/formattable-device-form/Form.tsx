@@ -118,7 +118,7 @@ function FormattableDeviceFormContent({
 
       try {
         setFilesystem(location.collection, location.index, payload);
-        navigate(STORAGE.root);
+        navigate(-1);
         return { patched: true as const };
       } catch (error) {
         return { error: error instanceof Error ? error.message : String(error) };

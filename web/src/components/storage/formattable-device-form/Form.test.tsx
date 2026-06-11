@@ -126,7 +126,7 @@ describe("FormattableDeviceForm", () => {
       );
     });
 
-    it("submits the filesystem config and navigates back to the storage page", async () => {
+    it("submits the filesystem config and navigates back", async () => {
       const { user } = installerRender(<FormattableDeviceForm />);
       await user.type(screen.getByLabelText("Mount point"), "/home");
       await user.click(screen.getByRole("button", { name: "Accept" }));
@@ -137,7 +137,7 @@ describe("FormattableDeviceForm", () => {
           expect.objectContaining({ mountPath: "/home" }),
         ),
       );
-      expect(mockNavigateFn).toHaveBeenCalled();
+      expect(mockNavigateFn).toHaveBeenCalledWith(-1);
     });
 
     it("submits the selected filesystem type and label", async () => {
