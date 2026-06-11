@@ -288,6 +288,38 @@ describe("PartitionForm", () => {
       );
     });
 
+    it("restores Current when the mount point allows keeping the filesystem again", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.type(screen.getByLabelText("Mount point"), "swap");
+      await user.tab();
+      await user.click(screen.getByLabelText("Partition"));
+      await user.click(screen.getByRole("option", { name: /vdd1/ }));
+      // vdd1 holds an Ext4 filesystem that cannot be kept for swap.
+      await screen.findByText(/will be destroyed/);
+      await user.clear(screen.getByLabelText("Mount point"));
+      await user.type(screen.getByLabelText("Mount point"), "/home");
+      await user.tab();
+      // Ext4 is allowed for /home, so keeping the data becomes possible again.
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
+      expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
+    });
+
+    it("does not restore Current when the user deliberately chose to format", async () => {
+      const { user } = installerRender(<PartitionForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/home");
+      await user.tab();
+      await user.click(screen.getByLabelText("Partition"));
+      await user.click(screen.getByRole("option", { name: /vdd1/ }));
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
+      // The user explicitly chooses to format with the default filesystem.
+      await user.click(screen.getByLabelText("File system"));
+      await user.click(screen.getByRole("option", { name: "Default" }));
+      await user.clear(screen.getByLabelText("Mount point"));
+      await user.type(screen.getByLabelText("Mount point"), "/var");
+      await user.tab();
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Default/);
+    });
+
     it("does not allow to set the label when reusing partition", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.click(screen.getByLabelText("Partition"));

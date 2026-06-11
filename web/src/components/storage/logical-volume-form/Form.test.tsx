@@ -195,6 +195,22 @@ describe("LogicalVolumeForm", () => {
       await screen.findByText(/will be destroyed when installation begins/);
     });
 
+    it("restores Current when the mount point allows keeping the filesystem again", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      // The Ext4 filesystem cannot be kept for swap.
+      await user.type(screen.getByLabelText("Mount point"), "swap");
+      await user.tab();
+      await screen.findByText(/will be destroyed/);
+      await user.clear(screen.getByLabelText("Mount point"));
+      await user.type(screen.getByLabelText("Mount point"), "/home");
+      await user.tab();
+      // Ext4 is allowed for /home, so keeping the data becomes possible again.
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
+      expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
+    });
+
     it("does not show data loss notice while the current filesystem is kept", async () => {
       const { user } = installerRender(<LogicalVolumeForm />);
       await user.click(screen.getByLabelText("Logical volume"));

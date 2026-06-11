@@ -105,6 +105,11 @@ function defaultFsText(filesystem, mountPoint, isFallback) {
  * dropdown and the read-only variants: a mount point that constrains the
  * filesystem to a single type (e.g. swap) still formats the reused device.
  *
+ * Every change to the filesystem field records the reuse-vs-format intent in
+ * the filesystemAction field. The caller can rely on that intent to restore
+ * "Current" when a mount point change makes keeping the filesystem possible
+ * again (see the auto-reset logic in the forms' FilesystemFields).
+ *
  * Presentation only: it has no validation logic and receives its options
  * already built by the caller.
  */
@@ -119,9 +124,19 @@ export default function FilesystemSelector({
 }: FilesystemSelectorProps) {
   const isSingleType = usableFilesystems.length === 1;
 
+  // Records the reuse-vs-format intent behind the current filesystem value.
+  const filesystemListeners = {
+    onChange: ({ value }: { value: string }) => {
+      form.setFieldValue(
+        "filesystemAction",
+        value === FILESYSTEM_ACTION.REUSE ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
+      );
+    },
+  };
+
   if (isSingleType && defaultFilesystem) {
     return (
-      <form.AppField name="filesystem">
+      <form.AppField name="filesystem" listeners={filesystemListeners}>
         {(field) => {
           const currentFsType = selectedDevice?.filesystem?.type;
           const isKeeping = field.state.value === FILESYSTEM_ACTION.REUSE && !!currentFsType;
@@ -142,7 +157,7 @@ export default function FilesystemSelector({
   }
 
   return (
-    <form.AppField name="filesystem">
+    <form.AppField name="filesystem" listeners={filesystemListeners}>
       {(field) => (
         <field.DropdownField label={_("File system")} options={filesystemOptions}>
           {(value) => {

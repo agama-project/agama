@@ -97,8 +97,15 @@ export type MountPointFields = {
 };
 
 export type FilesystemFields = {
-  filesystem: string; // "auto" | concrete type like "xfs", "btrfs", "ext4"
-  filesystemAction: string; // "reuse" | "format"
+  filesystem: string; // "auto" | "reuse" | concrete type like "xfs", "btrfs", "ext4"
+  /**
+   * The reuse-vs-format intent ("reuse" | "format") behind the filesystem
+   * selection. Updated by the user's own selections only, so it survives the
+   * automatic downgrade of "Current" to "Default" when a mount point change
+   * makes the current filesystem incompatible, and allows restoring "Current"
+   * when a later change makes it compatible again.
+   */
+  filesystemAction: string;
   filesystemLabel: string;
   mkfsOptions: string[];
   mountOptions: string[];

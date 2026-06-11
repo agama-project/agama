@@ -44,6 +44,7 @@ type FilesystemFieldsProps = {
 type FilesystemFieldsContentProps = FilesystemFieldsProps & {
   committedMountPoint: string;
   filesystem: string;
+  filesystemAction: string;
 };
 
 /**
@@ -60,14 +61,28 @@ type FilesystemFieldsContentProps = FilesystemFieldsProps & {
  * When the mount point changes to one that no longer supports the selected
  * filesystem type, the selector resets to "Default" so a compatible filesystem
  * can be chosen automatically. This is a UX convenience, not validation.
+ *
+ * The reset is reversible for the "Current" option: the reuse-vs-format
+ * intent survives in the filesystemAction field, which only the user's own
+ * selections update (see FilesystemSelector). When a later mount point change
+ * makes keeping the current filesystem possible again, the selector restores
+ * "Current" instead of silently formatting; a deliberate format choice is
+ * never overridden.
  */
 const FilesystemFieldsContent = withForm({
   ...sharedDefaultOptions,
   props: {
     committedMountPoint: "",
     filesystem: "",
+    filesystemAction: "",
   } as FilesystemFieldsContentProps,
-  render: function Render({ form, reusedDevice, committedMountPoint, filesystem }) {
+  render: function Render({
+    form,
+    reusedDevice,
+    committedMountPoint,
+    filesystem,
+    filesystemAction,
+  }) {
     const volume = useVolumeTemplate(committedMountPoint);
     const defaultFilesystem = volume.fsType;
     const isFallbackVolume = isEmpty(volume.mountPath);
@@ -94,14 +109,27 @@ const FilesystemFieldsContent = withForm({
       [usableFilesystems, canKeepCurrentFilesystem, reusedDevice],
     );
 
-    // Auto-reset filesystem to Default when it becomes incompatible with the mount point.
+    // Keep the filesystem selection in sync with what the mount point allows.
     useEffect(() => {
+      // Restore "Current" when keeping the filesystem becomes possible again
+      // and the user did not deliberately choose to format.
+      if (
+        filesystem === FILESYSTEM_TYPE.AUTO &&
+        canKeepCurrentFilesystem &&
+        filesystemAction === FILESYSTEM_ACTION.REUSE
+      ) {
+        form.setFieldValue("filesystem", FILESYSTEM_ACTION.REUSE);
+        return;
+      }
+
       if (filesystem === FILESYSTEM_TYPE.AUTO) return;
       if (filesystem === FILESYSTEM_ACTION.REUSE && canKeepCurrentFilesystem) return;
       if (usableFilesystems.includes(filesystem as ConfigModel.FilesystemType)) return;
 
-      form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
-    }, [usableFilesystems, filesystem, form, canKeepCurrentFilesystem]);
+      // Reset to "Default" without running the field listeners, so the
+      // reuse-vs-format intent in filesystemAction survives the downgrade.
+      form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO, { dontRunListeners: true });
+    }, [usableFilesystems, filesystem, filesystemAction, form, canKeepCurrentFilesystem]);
 
     return (
       <>
@@ -159,14 +187,16 @@ const FilesystemFields = withForm({
         selector={(s) => ({
           committedMountPoint: s.values.committedMountPoint,
           filesystem: s.values.filesystem,
+          filesystemAction: s.values.filesystemAction,
         })}
       >
-        {({ committedMountPoint, filesystem }) => (
+        {({ committedMountPoint, filesystem, filesystemAction }) => (
           <FilesystemFieldsContent
             form={form}
             reusedDevice={reusedDevice}
             committedMountPoint={committedMountPoint}
             filesystem={filesystem}
+            filesystemAction={filesystemAction}
           />
         )}
       </form.Subscribe>
