@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jun 10 12:07:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Redesign the installer header: replace the "Review and Install"
+  button with breadcrumb navigation, show the product and the
+  installer tools (localization, configuration, appearance and
+  status) on every page, and add tooltips, clearer labels and a
+  customizable icon size scale (gh#agama-project/agama#3607).
+-------------------------------------------------------------------
 Tue Jun  9 21:51:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Improve retry popup when failed to load unattended profile. It

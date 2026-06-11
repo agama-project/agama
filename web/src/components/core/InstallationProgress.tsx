@@ -24,7 +24,6 @@ import React from "react";
 import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import ProgressReport from "~/components/core/ProgressReport";
-import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import ProductLogo from "~/components/product/ProductLogo";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useProductInfo } from "~/hooks/model/config/product";
@@ -34,7 +33,7 @@ export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page noDefaultProgressMonitor noDefaultEndSlot endSlot={<InstallerOptionsMenu hideLabel />}>
+    <Page noDefaultProgressMonitor>
       <Page.Content>
         <SplitInfoLayout
           icon="deployed_code_update"

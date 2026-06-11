@@ -106,4 +106,19 @@ describe("AppearanceSettings", () => {
 
     screen.getByText(/honors the browser and system preferences/);
   });
+
+  describe("the visual tooltip", () => {
+    it("does not add a second source for the accessible name", () => {
+      renderSelector();
+      const buttons = screen.getAllByRole("button", { name: "Appearance" });
+      expect(buttons).toHaveLength(1);
+      expect(buttons[0]).not.toHaveAttribute("aria-describedby");
+    });
+
+    it("reveals its text on hover", async () => {
+      const { user } = renderSelector();
+      await user.hover(screen.getByRole("button", { name: "Appearance" }));
+      await screen.findByText("Appearance");
+    });
+  });
 });

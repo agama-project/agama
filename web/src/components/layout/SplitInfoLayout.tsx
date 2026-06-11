@@ -12,9 +12,9 @@ export type SplitInfoLayoutProps = {
   icon?: IconProps["name"];
 
   /**
-   * Size of the icon (width and height)
+   * Named size of the icon.
    */
-  iconSize?: string;
+  iconSize?: IconProps["size"];
 
   /**
    * Primary content (rendered as h1 heading) - appears in left column on
@@ -51,7 +51,7 @@ export type SplitInfoLayoutProps = {
  * ```tsx
  * <SplitInfoLayout
  *   icon="error"
- *   iconSize="3rem"
+ *   iconSize="4xl"
  *   firstRowStart={<h1>Installation failed</h1>}
  *   firstRowEnd={<Button>Reboot</Button>}
  *   secondRowStart={<p>Review logs and try again</p>}
@@ -85,7 +85,7 @@ export type SplitInfoLayoutProps = {
  */
 export default function SplitInfoLayout({
   icon,
-  iconSize = "3rem",
+  iconSize = "4xl",
   firstRowStart,
   firstRowEnd,
   secondRowStart,
@@ -97,7 +97,7 @@ export default function SplitInfoLayout({
         {icon && (
           <>
             <GridItem span={12} md={6} order={{ md: "1" }}>
-              <Icon name={icon} width={iconSize} height={iconSize} />
+              <Icon name={icon} size={iconSize} />
             </GridItem>
             <GridItem span={12} md={6} order={{ md: "2" }} />
           </>

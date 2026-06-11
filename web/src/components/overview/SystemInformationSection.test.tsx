@@ -22,16 +22,8 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import { useSystem } from "~/hooks/model/system";
+import { installerRender, mockSystem } from "~/test-utils";
 import SystemInformationSection from "./SystemInformationSection";
-
-const mockUseSystem: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => mockUseSystem(),
-}));
 
 jest.mock("~/components/network/FormattedIpsList", () => ({
   __esModule: true,
@@ -41,7 +33,7 @@ jest.mock("~/components/network/FormattedIpsList", () => ({
 describe("SystemInformationSection", () => {
   describe("when hardware data is available", () => {
     beforeEach(() => {
-      mockUseSystem.mockReturnValue({
+      mockSystem({
         hardware: {
           model: "ThinkPad X1 Carbon",
           cpu: "Intel Core i7",
@@ -68,7 +60,7 @@ describe("SystemInformationSection", () => {
 
   describe("when hardware data is missing", () => {
     beforeEach(() => {
-      mockUseSystem.mockReturnValue({
+      mockSystem({
         hardware: {
           model: undefined,
           cpu: undefined,
@@ -85,7 +77,7 @@ describe("SystemInformationSection", () => {
 
   describe("when only some hardware data is missing", () => {
     beforeEach(() => {
-      mockUseSystem.mockReturnValue({
+      mockSystem({
         hardware: {
           model: "ThinkPad X1 Carbon",
           cpu: undefined,

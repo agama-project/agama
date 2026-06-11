@@ -22,6 +22,7 @@
 
 import React from "react";
 import {
+  Flex,
   Masthead,
   MastheadContent,
   MastheadMain,
@@ -31,11 +32,13 @@ import {
   ToolbarGroup,
   ToolbarItem,
 } from "@patternfly/react-core";
-import Icon from "~/components/layout/Icon";
 import Breadcrumbs from "~/components/core/Breadcrumbs";
+import Text from "~/components/core/Text";
+import ProductLogo from "~/components/product/ProductLogo";
 import { SkipTo } from "~/components/core";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { ROOT } from "~/routes/paths";
+import { _ } from "~/i18n";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
 
@@ -45,11 +48,11 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 /**
  * Props for the Header component.
  *
- * The layout follows a flexible horizontal structure where the primary content
- * (Title/Breadcrumbs) is on the left, and up to three slots are grouped at the
- * end of the toolbar:
+ * The layout follows a horizontal structure where the heading (title or
+ * breadcrumbs) sits on the leading edge and the additional content is grouped
+ * at the trailing edge of the toolbar:
  *
- * [Title | Breadcrumbs]...........[startSlot] [centerSlot] [endSlot]
+ * [Title | Breadcrumbs]..............................[additionalContent]
  *
  * openSUSE Tumbleweed..........................Option v | English/US
  */
@@ -67,72 +70,99 @@ export type HeaderProps = {
   breadcrumbs?: BreadcrumbProps[];
 
   /**
-   * The first slot in the trailing actions group.
+   * Whether to omit the leading "Installation" breadcrumb that links back to
+   * the main summary page.
    *
-   * While intended for status indicators like the progress monitor,
-   * it is a flexible container for any page-specific utility.
+   * Set it on the summary page itself, where linking back to it would be
+   * redundant and the breadcrumb only needs to name the current location.
    */
-  startSlot?: React.ReactNode;
+  hideSummaryLink?: boolean;
 
   /**
-   * The middle slot in the trailing actions group, positioned between
-   * the start and end slots.
+   * Content rendered at the trailing edge of the header, opposite the heading.
    *
-   * This area is typically used for contextual actions, such as secondary
-   * navigation or configuration menus. Like its sibling slots, it accepts any
-   * React node to provide enough flexibility to fulfill page requirements.
-   *
-   * @example
-   * ```tsx
-   * <Header
-   *   title="Storage"
-   *   centerSlot={
-   *     <Dropdown>
-   *       <DropdownItem>Advanced settings</DropdownItem>
-   *       <DropdownItem>Export configuration</DropdownItem>
-   *     </Dropdown>
-   *   }
-   * />
-   * ```
+   * A flexible container for any node (selectors, status indicators, menus,
+   * buttons...).
    */
-  centerSlot?: React.ReactNode;
-
-  /**
-   * The final slot at the very edge of the header.
-   *
-   * This is intended for content that requires maximum discoverability.
-   * Like the other slots, it accepts any React node to accommodate various
-   * interaction patterns, though it is often a button or a link.
-   *
-   * **Common Use Cases:**
-   * - Global navigation links (e.g., "Install").
-   * - Button triggers for high-priority settings (e.g., L10n settings).
-   * - Primary call-to-action buttons for the current workflow.
-   *
-   * @example
-   * <Header endSlot={<Link to="/overview">Review and Install</Link>} />
-   */
-  endSlot?: React.ReactNode;
+  additionalContent?: React.ReactNode;
 
   /** Whether to hide the "Skip to content" accessibility link. */
   hideSkipToContent?: boolean;
 };
 
 /**
- * Internal component for building the page header
+ * Main breadcrumb navigation for the page, shown together with the product
+ * logo and name.
+ *
+ * Used when the header has no explicit title; the last breadcrumb item is the
+ * current page and acts as the heading (h1). A leading "Installation" item
+ * linking back to the main page is prepended unless `hideSummaryLink` is set.
+ */
+function MainBreadcrumbs({
+  breadcrumbs,
+  hideSummaryLink,
+}: Pick<HeaderProps, "breadcrumbs" | "hideSummaryLink">) {
+  const product = useProductInfo();
+
+  // Assemble the breadcrumb items first, so rendering only needs to know that
+  // the first item never shows a leading divider.
+  const items: BreadcrumbProps[] = [];
+
+  // Prepend the link back to the main summary page, unless hideSummaryLink is
+  // set or there is no product and breadcrumbs to accompany it.
+  if (product && breadcrumbs && !hideSummaryLink) {
+    items.push({
+      isEditorial: true,
+      path: ROOT.overview,
+      // TRANSLATORS: First breadcrumb item, linking back to the main page
+      // where the whole installation can be reviewed.
+      label: _("Installation"),
+    });
+  }
+
+  breadcrumbs?.forEach((item, index) =>
+    items.push({
+      ...item,
+      isEditorial: index === 0,
+      isCurrent: index === breadcrumbs.length - 1,
+    }),
+  );
+
+  return (
+    <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+      <ProductLogo product={product} width="35px" />
+      <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
+        {product && (
+          <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>
+            {product.name}
+          </Text>
+        )}
+        <Breadcrumbs>
+          {items.map((item, index) => (
+            <Breadcrumbs.Item key={index} {...item} hideDivider={index === 0 || item.hideDivider} />
+          ))}
+        </Breadcrumbs>
+      </Flex>
+    </Flex>
+  );
+}
+
+/**
+ * Page header (masthead) with the heading on the leading edge and the
+ * additional content on the trailing edge.
+ *
+ * The heading is either the given `title` or, when omitted, the main
+ * breadcrumb navigation with the product logo and name.
  *
  * Built on top of {@link https://www.patternfly.org/components/masthead | PF/Masthead}
  */
 export default function Header({
   title,
   breadcrumbs,
-  startSlot,
-  centerSlot,
-  endSlot,
+  hideSummaryLink = false,
+  additionalContent,
   hideSkipToContent = false,
 }: HeaderProps): React.ReactNode {
-  const product = useProductInfo();
-
   return (
     <Masthead>
       <MastheadMain className={spacingStyles.pXs}>
@@ -142,35 +172,17 @@ export default function Header({
             {title}
           </Title>
         ) : (
-          <Breadcrumbs>
-            {product && breadcrumbs && (
-              <Breadcrumbs.Item
-                hideDivider
-                isEditorial
-                path={ROOT.overview}
-                label={<Icon name="list_alt" width="1.4em" height="1.4em" verticalAlign="middle" />}
-              />
-            )}
-            {breadcrumbs &&
-              breadcrumbs.map((props, i) => (
-                <Breadcrumbs.Item
-                  isEditorial={i === 0}
-                  key={i}
-                  isCurrent={i === breadcrumbs.length - 1}
-                  {...props}
-                />
-              ))}
-          </Breadcrumbs>
+          <MainBreadcrumbs breadcrumbs={breadcrumbs} hideSummaryLink={hideSummaryLink} />
         )}
       </MastheadMain>
       <MastheadContent>
         <Toolbar isFullHeight>
           <ToolbarContent>
             <ToolbarGroup align={{ default: "alignEnd" }} columnGap={{ default: "columnGapXs" }}>
-              {startSlot && <ToolbarItem>{startSlot}</ToolbarItem>}
-              {centerSlot && <ToolbarItem>{centerSlot}</ToolbarItem>}
-              {endSlot && (
-                <ToolbarItem columnGap={{ default: "columnGapXs" }}>{endSlot}</ToolbarItem>
+              {additionalContent && (
+                <ToolbarItem columnGap={{ default: "columnGapXs" }}>
+                  {additionalContent}
+                </ToolbarItem>
               )}
             </ToolbarGroup>
           </ToolbarContent>

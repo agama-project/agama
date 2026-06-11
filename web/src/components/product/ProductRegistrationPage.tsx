@@ -126,7 +126,7 @@ const HostnameAlert = () => {
           sentence={
             // TRANSLATORS: text in square brackets is the section name and will be
             // rendered as a link. Keep the brackets
-            _("To change it, visit the [hostname] section before registering.")
+            _("To change that name, visit [system] section settings before registering.")
           }
         >
           {(section) => (
