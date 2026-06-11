@@ -164,7 +164,7 @@ async fn patch_config(
     http_client: &BaseHTTPClient,
     model: serde_json::Value,
 ) -> Result<(), anyhow::Error> {
-    let patch = api::Patch::with_update(model)?;
+    let patch = api::Patch::with_update(model);
     http_client.patch_void("/config", &patch).await?;
     Ok(())
 }
