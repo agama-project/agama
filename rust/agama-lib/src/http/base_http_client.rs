@@ -368,8 +368,8 @@ impl BaseHTTPClient {
             Ok(problem) => problem,
             Err(_) => {
                 if let Ok(error_object) = serde_json::from_str::<serde_json::Value>(&text) {
-                    if let Some(error) = error_object.get::<&str>("error") {
-                        ProblemDetails::internal_error(error.to_string())
+                    if let Some(error) = error_object.get("error").and_then(|e| e.as_str()) {
+                        ProblemDetails::internal_error(error)
                     } else {
                         ProblemDetails::internal_error(text)
                     }
