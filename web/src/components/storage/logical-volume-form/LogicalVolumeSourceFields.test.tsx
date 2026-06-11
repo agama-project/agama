@@ -31,19 +31,25 @@ import type { Storage as System } from "~/model/system";
 
 const existingLogicalVolume = {
   name: "/dev/system/data",
-  description: "5.00 GiB",
+  description: "Ext4 logical volume",
   filesystem: { type: "ext4" as const, label: "Data" },
+} as System.Device;
+
+const emptyLogicalVolume = {
+  name: "/dev/system/scratch",
+  description: "Logical volume",
+  filesystem: undefined,
 } as System.Device;
 
 const systemVolumeGroup = {
   name: "/dev/system",
   description: "Volume group",
-  logicalVolumes: [existingLogicalVolume],
+  logicalVolumes: [existingLogicalVolume, emptyLogicalVolume],
 } as System.Device;
 
 function TestForm({
   volumeGroup,
-  availableLogicalVolumes = [existingLogicalVolume],
+  availableLogicalVolumes = [existingLogicalVolume, emptyLogicalVolume],
 }: {
   volumeGroup?: System.Device;
   availableLogicalVolumes?: System.Device[];
@@ -73,6 +79,35 @@ describe("LogicalVolumeSourceFields", () => {
       await user.click(screen.getByLabelText("Logical volume"));
       screen.getByRole("option", { name: /New logical volume/ });
       screen.getByRole("option", { name: /data/ });
+      screen.getByRole("option", { name: /scratch/ });
+    });
+
+    it("explains the 'New logical volume' option", async () => {
+      const { user } = installerRender(<TestForm volumeGroup={systemVolumeGroup} />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      screen.getByRole("option", { name: /Create a new logical volume on system/ });
+    });
+
+    it("describes the data each existing logical volume holds", async () => {
+      const { user } = installerRender(<TestForm volumeGroup={systemVolumeGroup} />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      screen.getByRole("option", { name: /Use current Ext4 logical volume/ });
+      screen.getByRole("option", { name: /scratch.*Use current Logical volume/ });
+    });
+
+    it("includes the filesystem label in the option label when available", async () => {
+      const { user } = installerRender(<TestForm volumeGroup={systemVolumeGroup} />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      screen.getByRole("option", { name: /data - Data/ });
+    });
+
+    it("pre-selects 'New logical volume' by default", async () => {
+      const { user } = installerRender(<TestForm volumeGroup={systemVolumeGroup} />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      expect(screen.getByRole("option", { name: /New logical volume/ })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
     });
   });
 });
