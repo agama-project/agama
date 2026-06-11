@@ -70,7 +70,7 @@ pub fn build_auth_cmd() -> Command {
         command. Upon successful authentication, the server returns a JSON Web Token (JWT) which is \
         stored to authenticate the following requests.\n\
         \n\
-        If you run this program as root, you can skip the authentication step because it \
+        If you run this program locally as root, you can skip the authentication step because it \
         automatically uses the master token at /run/agama/token. Only the root user must have access \
         to such a file.\n\
         \n\
