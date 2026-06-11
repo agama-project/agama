@@ -29,6 +29,7 @@ require "json"
 require "yast"
 require "yast2/execute"
 require "ui/dialog"
+require "agama/question_with_password"
 require "agama/http/clients/questions"
 
 # :nodoc:
@@ -94,10 +95,9 @@ module UI
     end
 
     def run
-      question = Agama::Question.new(
+      question = Agama::QuestionWithPassword.new(
         qclass:         "autoyast.password",
         text:           @label,
-        field:          :password,
         options:        [:ok, :cancel],
         default_option: :cancel,
         data:           {}
