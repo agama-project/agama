@@ -274,7 +274,7 @@ export function useFormSubmit<TValues>({
               <Interpolate
                 sentence={
                   /* TRANSLATORS: Link shown in the alert after submitting a form. Text in [brackets] becomes a link. Keep the brackets. */
-                  _("Go to [installation] summary")
+                  _("Go to [installation] summary.")
                 }
               >
                 {(linkText) => (
