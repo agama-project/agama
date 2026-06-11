@@ -23,6 +23,8 @@
 //! This module defines the wire format for API errors following RFC 9457.
 //! These types are shared between the server and client.
 
+use std::fmt::Display;
+
 use gettextrs::gettext;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -277,6 +279,61 @@ impl ProblemDetails {
             detail: detail.into(),
         }
     }
+}
+
+impl Display for ProblemDetails {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SchemaValidationFailed {
+                title,
+                detail,
+                errors,
+            } => {
+                let body = errors
+                    .iter()
+                    .map(|e| format!("  - {e}"))
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                write_problem(f, &title, detail.as_deref(), Some(&body))?
+            }
+
+            Self::Unauthorized { title, detail }
+            | Self::InternalError { title, detail }
+            | Self::NotFound { title, detail }
+            | Self::Generic { title, detail } => write_problem(f, title, Some(&detail), None)?,
+
+            Self::DBusError { title, detail, .. } => {
+                write_problem(f, title, detail.as_deref(), None)?
+            }
+
+            ProblemDetails::InvalidJson { title, detail }
+            | ProblemDetails::NetworkError { title, detail, .. }
+            | ProblemDetails::FileSystemError { title, detail, .. } => {
+                write_problem(f, title, detail.as_deref(), None)?
+            }
+        }
+
+        Ok(())
+    }
+}
+
+pub fn write_problem(
+    f: &mut std::fmt::Formatter<'_>,
+    title: &str,
+    detail: Option<&str>,
+    body: Option<&str>,
+) -> std::fmt::Result {
+    write!(f, "An error ocurred: {title}")?;
+    if let Some(detail) = detail {
+        let label = gettext("Details:");
+        write!(f, "\n\n{label}\n{detail}")?;
+    }
+
+    if let Some(body) = body {
+        write!(f, "\n\n{body}")?;
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
