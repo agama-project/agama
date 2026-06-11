@@ -128,15 +128,11 @@ export default function FilesystemSelector({
           const showNotice = selectedDevice && !isKeeping;
 
           return (
-            <>
-              <field.ReadOnlyField
-                label={_("File system")}
-                text={filesystemLabel(defaultFilesystem)}
-              />
+            <field.ReadOnlyField label={_("File system")} text={filesystemLabel(defaultFilesystem)}>
               {showNotice && (
                 <FieldNestedContent>{destroyDataNotice(selectedDevice)}</FieldNestedContent>
               )}
-            </>
+            </field.ReadOnlyField>
           );
         }}
       </form.AppField>
