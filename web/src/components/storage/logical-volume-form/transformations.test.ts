@@ -31,6 +31,10 @@ describe("lvNameFromMountPoint", () => {
     expect(lvNameFromMountPoint("")).toBe("");
   });
 
+  it("returns root for the root mount point", () => {
+    expect(lvNameFromMountPoint("/")).toBe("root");
+  });
+
   it("returns swap for swap mount point", () => {
     expect(lvNameFromMountPoint("swap")).toBe("swap");
   });
@@ -47,8 +51,8 @@ describe("lvNameFromMountPoint", () => {
     expect(lvNameFromMountPoint("/var/lib/mysql")).toBe("var_lib_mysql");
   });
 
-  it("handles root mount point", () => {
-    expect(lvNameFromMountPoint("/")).toBe("");
+  it("returns empty string for non-absolute mount points", () => {
+    expect(lvNameFromMountPoint("foo")).toBe("");
   });
 });
 

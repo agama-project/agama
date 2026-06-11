@@ -125,6 +125,31 @@ describe("LogicalVolumeForm", () => {
     });
   });
 
+  describe("logical volume name auto-fill", () => {
+    it("suggests the name the installer would pick for the mount point", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/");
+      await user.tab();
+      expect(screen.getByLabelText("Name")).toHaveValue("root");
+    });
+
+    it("derives the name from non-root mount points", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.type(screen.getByLabelText("Mount point"), "/var/lib");
+      await user.tab();
+      expect(screen.getByLabelText("Name")).toHaveValue("var_lib");
+    });
+
+    it("stops suggesting once the user edits the name", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      const nameInput = screen.getByLabelText("Name");
+      await user.type(nameInput, "mydata");
+      await user.type(screen.getByLabelText("Mount point"), "/home");
+      await user.tab();
+      expect(nameInput).toHaveValue("mydata");
+    });
+  });
+
   describe("when the volume group is new", () => {
     it("shows a read-only source field instead of the selector", () => {
       mockVolumeGroup = undefined;
