@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 11 08:52:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Migrate the formattable device form to TanStack Form, aligning its
+  behavior and features with the partition and logical volume forms
+  (gh#agama-project/agama#3610).
+
+-------------------------------------------------------------------
 Wed Jun 10 19:25:37 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Migrate logical volume form to TanStack Form and extract shared
