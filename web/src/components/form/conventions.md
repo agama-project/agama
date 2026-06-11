@@ -45,6 +45,7 @@ examples and refined patterns.
   - [Directory Structure](#directory-structure)
   - [File Naming](#file-naming)
   - [The fields.ts Module](#the-fieldsts-module)
+  - [Sharing fields across forms](#sharing-fields-across-forms)
   - [Validation Approach](#validation-approach)
   - [Form Component Integration](#form-component-integration)
   - [Naming Consistency](#naming-consistency)
@@ -91,10 +92,10 @@ changed after creation, so offering it would be misleading.
 const syncFieldName = (formApi) => {
   // Only auto-fill if user hasn't manually edited the field
   if (formApi.getFieldMeta("targetField")?.isDirty) return;
-  
+
   const sourceValue = formApi.getFieldValue("sourceField");
   const computedValue = computeFromSource(sourceValue);
-  
+
   formApi.setFieldValue("targetField", computedValue, {
     dontUpdateMeta: true,      // Don't mark form dirty
     dontRunListeners: true,    // Don't re-trigger listeners
@@ -1351,10 +1352,18 @@ Each form lives in its own subdirectory:
 components/
   <namespace>/<form-name>-form/
     Form.tsx              # Main form component
-    fields.ts             # Types, defaults, validation
+    fields.ts             # Field types, constants, defaults
+    validations.ts        # Submit validation
+    transformations.ts    # Mapping between form values and API payloads
+    queries.ts            # Data hooks backing the form
     *Fields.tsx           # Field group components (if needed)
     *.test.tsx            # Tests
 ```
+
+`Form.tsx` and `fields.ts` are always present. The other modules appear as the
+form needs them: `validations.ts` when the form validates on submit,
+`transformations.ts` when form values need non-trivial mapping to and from
+backend structures, and `queries.ts` when the form needs its own data hooks.
 
 Examples:
 
@@ -1374,8 +1383,25 @@ Examples:
 **Fields module**: `fields.ts`
 
 - Always named `fields.ts` (not `<formName>Fields.ts`)
-- Contains types, defaults, validation, and constants
-- Single source of truth for all form concerns
+- Contains field types, constants, and default values
+- Single source of truth for the form's field vocabulary
+
+**Validations module**: `validations.ts`
+
+- Exports the `validate` function wired into the form's submit validator
+- Composes per-group validators and the reusable helpers from
+  `validation-helpers.ts`
+- Imports types and constants from `fields.ts`, never the reverse
+
+**Transformations module**: `transformations.ts`
+
+- Converts between form values and backend structures: typically `buildPayload`
+  (form values to config) and `toFormValues` (config to initial form values)
+
+**Queries module**: `queries.ts`
+
+- TanStack Query hooks that provide the data the form needs
+- Named `queries.ts` (not `data.ts`)
 
 **Field groups**: `*Fields.tsx`
 
@@ -1384,19 +1410,14 @@ Examples:
 
 ### The fields.ts Module
 
-All form data concerns live in a single `fields.ts` file:
+The form's field vocabulary lives in `fields.ts`: types, constants, and
+defaults. It is the module every other form-local file builds on:
 
 ```typescript
 import { formOptions } from "@tanstack/react-form";
-import type {
-  FieldsValidationResult,
-  ValidationResult,
-} from "~/components/form/validation-helpers";
-import { requiredString, optionalIntRange } from "~/components/form/validation-helpers";
-import { _ } from "~/i18n";
 
 /** Types */
-type FormFields = {
+export type FormFields = {
   field1: string;
   field2: number;
   // ...
@@ -1415,39 +1436,82 @@ const defaultValues: FormFields = {
 };
 
 export const defaultOptions = formOptions({ defaultValues });
+```
 
-/** Validation */
+Validation lives in its own `validations.ts`, which imports the vocabulary
+from `fields.ts` and exports a single `validate` function:
+
+```typescript
+import { shake } from "radashi";
+import { requiredString, optionalIntRange } from "~/components/form/validation-helpers";
+import { _ } from "~/i18n";
+import type {
+  FieldsValidationResult,
+  ValidationResult,
+} from "~/components/form/validation-helpers";
+import type { FormFields } from "./fields";
+
 const validateGroup = (fields: FormFields): FieldsValidationResult<FormFields> => ({
   field1: requiredString(fields.field1, _("Field 1 is required")),
   field2: optionalIntRange(fields.field2, 0, 100, _("Must be 0-100")),
 });
 
 export function validate(fields: FormFields): ValidationResult<FormFields> {
-  const fieldErrors = {
+  const fieldErrors = shake({
     ...validateGroup(fields),
     // ...other validators
-  };
+  });
 
-  const errors: Record<string, string> = {};
-  for (const [key, error] of Object.entries(fieldErrors)) {
-    if (error !== undefined) errors[key] = error;
-  }
-
-  return Object.keys(errors).length > 0 ? { fields: errors } : undefined;
+  return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
 }
 ```
 
-**Why everything in one file?**
+**Why this split?**
 
-1. **Single source of truth**: All form structure in one place
-2. **Co-location**: Type, default, and validation visible together
-3. **Easier maintenance**: Add/modify fields with full context
-4. **Better discoverability**: Always check `fields.ts` first
-5. **Reduced cognitive load**: One consistent pattern to learn
+1. **Single source of truth**: the field vocabulary is defined once, in
+   `fields.ts`, and every other module builds on it
+2. **One reason to change per module**: adding a field touches `fields.ts`;
+   tightening a rule touches `validations.ts`
+3. **Clean dependency direction**: `validations.ts`, `transformations.ts`, and
+   components import from `fields.ts`, never the reverse
+4. **Better discoverability**: each concern has a predictable home across all
+   forms
+5. **Reduced cognitive load**: one consistent pattern to learn
+
+Note: forms migrated before this split may still keep `validate` inside
+`fields.ts`. Move it to `validations.ts` when touching them.
+
+### Sharing fields across forms
+
+When several sibling forms share part of their vocabulary (the storage forms
+share filesystem and size fields, for example), the shared constants, types,
+and defaults live once in a `shared/fields.ts` next to the form directories.
+
+Form-specific `fields.ts` modules then **import and re-export** what they use:
+
+```typescript
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "~/components/storage/shared/fields";
+import type { FilesystemFields, SizeFields } from "~/components/storage/shared/fields";
+
+export { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE };
+export type { FilesystemFields, SizeFields };
+```
+
+Do not re-declare shared constants locally, even with identical values: copies
+kept in sync "by convention" drift eventually, and a single concept ends up
+imported from different modules within the same file.
+
+The re-export (rather than having consumers import from `shared/fields.ts`
+directly) keeps form-local code importing its whole field vocabulary from one
+module, without knowing which parts happen to be shared. It also leaves room
+for divergence: if a form ever needs different values, its `fields.ts` can
+stop re-exporting and define its own version (possibly derived from the shared
+one) without touching any consumer.
 
 ### Validation Approach
 
-Forms use plain TypeScript validation functions rather than schema libraries.
+Forms use plain TypeScript validation functions, living in the form's
+`validations.ts`, rather than schema libraries.
 
 **Validation helpers** are available in `~/components/form/validation-helpers.ts`.
 
@@ -1596,10 +1660,11 @@ configuration), plain TypeScript functions are more maintainable.
 
 ### Form Component Integration
 
-Import from `fields.ts` in the form component:
+Import from the form-local modules in the form component:
 
 ```typescript
-import { defaultOptions, validate, SOME_MODE } from "./fields";
+import { validate } from "./validations";
+import { defaultOptions, SOME_MODE } from "./fields";
 
 function MyForm() {
   const form = useAppForm({
@@ -1678,7 +1743,7 @@ pattern immediately recognizable across all forms.
 The unified approach provides:
 
 - **Discoverability**: Consistent structure across all forms
-- **Maintainability**: Single file for all form concerns
+- **Maintainability**: Each form concern has a predictable home
 - **Simplicity**: Plain TypeScript, no library abstractions
 - **Type safety**: Full TypeScript support throughout
 - **Performance**: Zero runtime validation overhead
@@ -1693,6 +1758,7 @@ This section documents mistakes encountered during form migrations to help avoid
 ### Mistake 1: Using hooks inside `form.Subscribe` children
 
 **❌ WRONG:**
+
 ```typescript
 const MyFields = withForm({
   ...defaultOptions,
@@ -1708,6 +1774,7 @@ const MyFields = withForm({
 ```
 
 **✅ CORRECT:**
+
 ```typescript
 // Extract to separate withForm component
 const InnerContent = withForm({
@@ -1736,6 +1803,7 @@ const MyFields = withForm({
 ### Mistake 2: Wrapping field groups in Stack when Form expects direct FormGroup children
 
 **❌ WRONG:**
+
 ```typescript
 const MyFieldsContent = withForm({
   ...defaultOptions,
@@ -1756,6 +1824,7 @@ const MyFieldsContent = withForm({
 **Problem:** PatternFly Form adds spacing between FormGroup elements. When you return Subscribe → Stack → FormGroups, the Form component sees Subscribe (not FormGroup children), breaking the spacing hierarchy.
 
 **✅ CORRECT:**
+
 ```typescript
 const MyFieldsContent = withForm({
   ...defaultOptions,
@@ -1782,6 +1851,7 @@ const MyFieldsContent = withForm({
 **Understanding the structure:**
 
 RadioGroupField needs Stack to space radio buttons vertically:
+
 ```typescript
 <FormGroup>
   <Stack hasGutter> {/* ← Spaces Radio buttons within the field */}
@@ -1794,6 +1864,7 @@ RadioGroupField needs Stack to space radio buttons vertically:
 PatternFly Form spaces FormGroups (different fields), but doesn't space elements within a single field. The Stack provides that internal spacing.
 
 **❌ WRONG:**
+
 ```typescript
 <FormGroup>
   <Stack hasGutter>
@@ -1806,6 +1877,7 @@ PatternFly Form spaces FormGroups (different fields), but doesn't space elements
 **Problem:** Children rendered outside Stack are direct FormGroup children. FormGroup adds extra spacing between its direct children, so nested content appears too far below.
 
 **✅ CORRECT:**
+
 ```typescript
 <FormGroup>
   <Stack hasGutter>
@@ -1822,6 +1894,7 @@ PatternFly Form spaces FormGroups (different fields), but doesn't space elements
 ### Mistake 4: Cross-field validation returning errors for non-existent fields
 
 **❌ WRONG:**
+
 ```typescript
 function validateSizeRange(fields: FormFields): string | undefined {
   return sizeRange(fields.minSize, fields.maxSize, "Error message");
@@ -1833,7 +1906,7 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
     maxSize: validateMaxSize(fields),
     sizeRange: validateSizeRange(fields), // ❌ "sizeRange" not in FormFields
   });
-  
+
   if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
 }
 ```
@@ -1841,13 +1914,14 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
 **Problem:** Returns error for "sizeRange" field which doesn't exist.
 
 **✅ CORRECT:**
+
 ```typescript
 function validateMaxSize(fields: FormFields): string | undefined {
   if (fields.sizeMode !== SIZE_MODE.RANGE) return undefined;
-  
+
   const requiredError = requiredSize(fields.maxSize, "Required", "Invalid");
   if (requiredError) return requiredError;
-  
+
   // Cross-field validation incorporated
   return sizeRange(fields.minSize, fields.maxSize, "Min > Max error");
 }
@@ -1857,7 +1931,7 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
     minSize: validateMinSize(fields),
     maxSize: validateMaxSize(fields), // ✅ Shows error on maxSize
   });
-  
+
   if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
 }
 ```
@@ -1869,6 +1943,7 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
 ### Mistake 5: Not pre-selecting first option in dependent dropdowns
 
 **❌ WRONG:**
+
 ```typescript
 <form.AppField name="selectedItem">
   {(field) => (
@@ -1883,6 +1958,7 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
 **Problem:** Dropdown appears with no selection when items are available.
 
 **✅ CORRECT:**
+
 ```typescript
 <form.AppField
   name="selectedItem"
@@ -1912,6 +1988,7 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
 ### Mistake 6: Missing dropdown option descriptions
 
 **❌ WRONG:**
+
 ```typescript
 options={partitions.map(p => ({
   value: p.name,
@@ -1922,6 +1999,7 @@ options={partitions.map(p => ({
 **Problem:** Users see "vdd1", "vdd2", "vdd3" without context.
 
 **✅ CORRECT:**
+
 ```typescript
 options={partitions.map(p => {
   const fsLabel = p.filesystem?.label;
@@ -1941,6 +2019,7 @@ options={partitions.map(p => {
 ### Mistake 7: Using FormGroup + Text instead of ReadOnlyField
 
 **❌ WRONG:**
+
 ```typescript
 <FormGroup label="File system">
   <Text>
@@ -1952,6 +2031,7 @@ options={partitions.map(p => {
 **Problem:** Creates orphan `<label>` without associated form control - invalid HTML and accessibility issue.
 
 **✅ CORRECT:**
+
 ```typescript
 <form.AppField name="myField">
   {(field) => <field.ReadOnlyField label="Label" />}
