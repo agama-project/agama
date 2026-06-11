@@ -39,15 +39,13 @@ impl Default for QuestionUiState {
 
 impl QuestionUiState {
     pub fn reset(&mut self, question: &Question) {
-        let is_load_retry = question.spec.class == "load.retry";
-
         self.input_text.clear();
         self.field_selection_idx = 0;
         self.action_selection_idx = 0;
         self.scroll = 0;
         self.question_id = Some(question.id);
 
-        let has_field = question.spec.field != QuestionField::None || is_load_retry;
+        let has_field = question.spec.field != QuestionField::None;
 
         self.app_mode = if has_field {
             AppMode::FieldInput
@@ -55,10 +53,8 @@ impl QuestionUiState {
             AppMode::ActionSelection
         };
 
-        if is_load_retry {
-            if let Some(orig) = question.spec.data.get("originalValue") {
-                self.input_text = orig.clone();
-            }
+        if let Some(orig) = question.spec.data.get("originalValue") {
+            self.input_text = orig.clone();
         }
     }
 
@@ -68,23 +64,18 @@ impl QuestionUiState {
     }
 
     fn set_last_idx(&mut self, question: &Question) {
-        let is_load_retry = question.spec.class == "load.retry";
         self.action_selection_idx = question.spec.actions.len().saturating_sub(1);
-        if !is_load_retry {
-            if let QuestionField::Select { options } = &question.spec.field {
-                self.field_selection_idx = options.len().saturating_sub(1);
-            } else {
-                self.field_selection_idx = 0;
-            }
+
+        if let QuestionField::Select { options } = &question.spec.field {
+            self.field_selection_idx = options.len().saturating_sub(1);
         } else {
             self.field_selection_idx = 0;
         }
     }
 
     fn next_mode(&mut self, question: &Question) {
-        let is_load_retry = question.spec.class == "load.retry";
         let has_data = !question.spec.data.is_empty();
-        let has_field = question.spec.field != QuestionField::None || is_load_retry;
+        let has_field = question.spec.field != QuestionField::None;
         let has_actions = !question.spec.actions.is_empty();
 
         match self.app_mode {
@@ -114,9 +105,8 @@ impl QuestionUiState {
     }
 
     fn prev_mode(&mut self, question: &Question) {
-        let is_load_retry = question.spec.class == "load.retry";
         let has_data = !question.spec.data.is_empty();
-        let has_field = question.spec.field != QuestionField::None || is_load_retry;
+        let has_field = question.spec.field != QuestionField::None;
         let has_actions = !question.spec.actions.is_empty();
 
         match self.app_mode {
@@ -146,16 +136,13 @@ impl QuestionUiState {
     }
 
     fn focus_next(&mut self, question: &Question) {
-        let is_load_retry = question.spec.class == "load.retry";
         match self.app_mode {
             AppMode::DataViewer => self.next_mode(question),
             AppMode::FieldInput => {
-                if !is_load_retry {
-                    if let QuestionField::Select { options } = &question.spec.field {
-                        if self.field_selection_idx + 1 < options.len() {
-                            self.field_selection_idx += 1;
-                            return;
-                        }
+                if let QuestionField::Select { options } = &question.spec.field {
+                    if self.field_selection_idx + 1 < options.len() {
+                        self.field_selection_idx += 1;
+                        return;
                     }
                 }
                 self.next_mode(question);
@@ -171,16 +158,13 @@ impl QuestionUiState {
     }
 
     fn focus_prev(&mut self, question: &Question) {
-        let is_load_retry = question.spec.class == "load.retry";
         match self.app_mode {
             AppMode::DataViewer => self.prev_mode(question),
             AppMode::FieldInput => {
-                if !is_load_retry {
-                    if let QuestionField::Select { .. } = &question.spec.field {
-                        if self.field_selection_idx > 0 {
-                            self.field_selection_idx -= 1;
-                            return;
-                        }
+                if let QuestionField::Select { .. } = &question.spec.field {
+                    if self.field_selection_idx > 0 {
+                        self.field_selection_idx -= 1;
+                        return;
                     }
                 }
                 self.prev_mode(question);
@@ -196,8 +180,6 @@ impl QuestionUiState {
     }
 
     pub fn handle_event(&mut self, event: Event, question: &Question) -> Option<Answer> {
-        let is_load_retry = question.spec.class == "load.retry";
-
         if let Event::Key(key) = event {
             if key.kind == KeyEventKind::Press {
                 if key.code == KeyCode::Tab {
@@ -224,52 +206,34 @@ impl QuestionUiState {
                         }
                         _ => {}
                     },
-                    AppMode::FieldInput => {
-                        if is_load_retry {
-                            match key.code {
-                                KeyCode::Char(c) => self.input_text.push(c),
-                                KeyCode::Backspace => {
-                                    self.input_text.pop();
-                                }
-                                KeyCode::Enter | KeyCode::Down => {
-                                    self.focus_next(question);
-                                }
-                                KeyCode::Up => {
-                                    self.focus_prev(question);
-                                }
-                                _ => {}
+                    AppMode::FieldInput => match &question.spec.field {
+                        QuestionField::String | QuestionField::Password => match key.code {
+                            KeyCode::Char(c) => self.input_text.push(c),
+                            KeyCode::Backspace => {
+                                self.input_text.pop();
                             }
-                        } else {
-                            match &question.spec.field {
-                                QuestionField::String | QuestionField::Password => match key.code {
-                                    KeyCode::Char(c) => self.input_text.push(c),
-                                    KeyCode::Backspace => {
-                                        self.input_text.pop();
-                                    }
-                                    KeyCode::Enter | KeyCode::Down => {
-                                        self.focus_next(question);
-                                    }
-                                    KeyCode::Up => {
-                                        self.focus_prev(question);
-                                    }
-                                    _ => {}
-                                },
-                                QuestionField::Select { .. } => match key.code {
-                                    KeyCode::Up => {
-                                        self.focus_prev(question);
-                                    }
-                                    KeyCode::Down => {
-                                        self.focus_next(question);
-                                    }
-                                    KeyCode::Enter | KeyCode::Right => {
-                                        self.next_mode(question);
-                                    }
-                                    _ => {}
-                                },
-                                _ => {}
+                            KeyCode::Enter | KeyCode::Down => {
+                                self.focus_next(question);
                             }
-                        }
-                    }
+                            KeyCode::Up => {
+                                self.focus_prev(question);
+                            }
+                            _ => {}
+                        },
+                        QuestionField::Select { .. } => match key.code {
+                            KeyCode::Up => {
+                                self.focus_prev(question);
+                            }
+                            KeyCode::Down => {
+                                self.focus_next(question);
+                            }
+                            KeyCode::Enter | KeyCode::Right => {
+                                self.next_mode(question);
+                            }
+                            _ => {}
+                        },
+                        _ => {}
+                    },
                     AppMode::ActionSelection => match key.code {
                         KeyCode::Up => {
                             self.focus_prev(question);
@@ -284,25 +248,20 @@ impl QuestionUiState {
                             let selected_action = &question.spec.actions[self.action_selection_idx];
                             let mut answer = Answer::new(&selected_action.id);
 
-                            if is_load_retry {
-                                if !self.input_text.is_empty() {
-                                    answer = answer.with_value(&self.input_text);
-                                }
-                            } else {
-                                match &question.spec.field {
-                                    QuestionField::String | QuestionField::Password => {
-                                        if !self.input_text.is_empty() {
-                                            answer = answer.with_value(&self.input_text);
-                                        }
+                            match &question.spec.field {
+                                QuestionField::String | QuestionField::Password => {
+                                    if !self.input_text.is_empty() {
+                                        answer = answer.with_value(&self.input_text);
                                     }
-                                    QuestionField::Select { options } => {
-                                        if let Some(opt) = options.get(self.field_selection_idx) {
-                                            answer = answer.with_value(&opt.id);
-                                        }
-                                    }
-                                    _ => {}
                                 }
+                                QuestionField::Select { options } => {
+                                    if let Some(opt) = options.get(self.field_selection_idx) {
+                                        answer = answer.with_value(&opt.id);
+                                    }
+                                }
+                                _ => {}
                             }
+
                             return Some(answer);
                         }
                         _ => {}
@@ -328,7 +287,6 @@ impl<'a> QuestionWidget<'a> {
 impl<'a> Widget for QuestionWidget<'a> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let question = self.question;
-        let is_load_retry = question.spec.class == "load.retry";
 
         let mut lines_top = vec![
             Line::from(vec![
@@ -377,11 +335,10 @@ impl<'a> Widget for QuestionWidget<'a> {
             };
 
             let mut hint_text = String::new();
-            if self.state.app_mode == AppMode::DataViewer {
-                if max_scroll > 0 {
+            if self.state.app_mode == AppMode::DataViewer
+                && max_scroll > 0 {
                     hint_text = " (use PageUp/PageDown to scroll)".to_string();
                 }
-            }
 
             let (header_style, prefix) = if self.state.app_mode == AppMode::DataViewer {
                 (Style::default().add_modifier(Modifier::BOLD), "> ")
@@ -403,10 +360,13 @@ impl<'a> Widget for QuestionWidget<'a> {
                 } else {
                     ""
                 };
-                
+
                 lines_top.push(Line::from(vec![
                     Span::raw("  "),
-                    Span::styled(text.clone(), Style::default().add_modifier(Modifier::ITALIC)),
+                    Span::styled(
+                        text.clone(),
+                        Style::default().add_modifier(Modifier::ITALIC),
+                    ),
                     Span::styled(suffix, Style::default().add_modifier(Modifier::BOLD)),
                 ]));
             }
@@ -414,6 +374,7 @@ impl<'a> Widget for QuestionWidget<'a> {
 
         let is_field_active = self.state.app_mode == AppMode::FieldInput;
         let is_action_active = self.state.app_mode == AppMode::ActionSelection;
+        let is_load_retry = question.spec.class == "load.retry";
         let mut lines_bottom = vec![];
 
         let cursor = if is_field_active {
@@ -422,49 +383,39 @@ impl<'a> Widget for QuestionWidget<'a> {
             Span::raw("")
         };
 
-        if is_load_retry {
-            if !text_data.is_empty() {
-                lines_bottom.push(Line::from(""));
-            }
-            let prefix = if is_field_active { "> " } else { "  " };
-            lines_bottom.push(Line::from(vec![
-                Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
-                Span::from(format!("Location: {}", self.state.input_text)),
-                cursor.clone(),
-            ]));
-            lines_bottom.push(Line::from(""));
-        } else {
-            match &question.spec.field {
-                QuestionField::None => {}
-                QuestionField::String | QuestionField::Password => {
-                    let prefix = if is_field_active { "> " } else { "  " };
-                    let (field_label, display_text) = if matches!(question.spec.field, QuestionField::Password) {
+        match &question.spec.field {
+            QuestionField::None => {}
+            QuestionField::String | QuestionField::Password => {
+                let prefix = if is_field_active { "> " } else { "  " };
+                let (field_label, display_text) =
+                    if matches!(question.spec.field, QuestionField::Password) {
                         ("Password: ", "*".repeat(self.state.input_text.len()))
+                    } else if is_load_retry {
+                        ("Location: ", self.state.input_text.clone())
                     } else {
                         ("Input: ", self.state.input_text.clone())
                     };
+                lines_bottom.push(Line::from(vec![
+                    Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
+                    Span::from(field_label),
+                    Span::from(display_text),
+                    cursor.clone(),
+                ]));
+                lines_bottom.push(Line::from(""));
+            }
+            QuestionField::Select { options } => {
+                for (i, opt) in options.iter().enumerate() {
+                    let prefix = if i == self.state.field_selection_idx && is_field_active {
+                        "> "
+                    } else {
+                        "  "
+                    };
                     lines_bottom.push(Line::from(vec![
                         Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
-                        Span::from(field_label),
-                        Span::from(display_text),
-                        cursor.clone(),
+                        Span::from(opt.label.clone()),
                     ]));
-                    lines_bottom.push(Line::from(""));
                 }
-                QuestionField::Select { options } => {
-                    for (i, opt) in options.iter().enumerate() {
-                        let prefix = if i == self.state.field_selection_idx && is_field_active {
-                            "> "
-                        } else {
-                            "  "
-                        };
-                        lines_bottom.push(Line::from(vec![
-                            Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
-                            Span::from(opt.label.clone()),
-                        ]));
-                    }
-                    lines_bottom.push(Line::from(""));
-                }
+                lines_bottom.push(Line::from(""));
             }
         }
 
