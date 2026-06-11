@@ -22,6 +22,7 @@ use crate::web::error::ProblemDetailsExt;
 use agama_lib::profile::AutoyastError;
 use agama_transfer::Transfer;
 use agama_utils::api::ProblemDetails;
+use gettextrs::gettext;
 
 use agama_lib::profile::{
     AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome,
@@ -85,7 +86,7 @@ impl IntoResponse for ProfileError {
             | ProfileError::UrlParse(_)
             | ProfileError::Autoyast(_)
             | ProfileError::BadRequest(_) => {
-                ProblemDetails::generic("Profile Error", self.to_string())
+                ProblemDetails::generic(gettext("Could not process the profile"), self.to_string())
             }
         };
         problem.into_response()
