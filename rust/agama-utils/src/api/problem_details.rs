@@ -164,12 +164,12 @@ impl Display for ProblemDetails {
                     .map(|e| format!("  - {e}"))
                     .collect::<Vec<_>>()
                     .join("\n");
-                write_problem(f, &title, detail.as_deref(), Some(&body))?
+                write_problem(f, title, detail.as_deref(), Some(&body))?
             }
 
             Self::Unauthorized { title, detail }
             | Self::InternalError { title, detail }
-            | Self::Generic { title, detail } => write_problem(f, title, Some(&detail), None)?,
+            | Self::Generic { title, detail } => write_problem(f, title, Some(detail), None)?,
 
             ProblemDetails::InvalidJson { title, detail } => {
                 write_problem(f, title, detail.as_deref(), None)?
