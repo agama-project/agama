@@ -150,6 +150,24 @@ describe("LogicalVolumeForm", () => {
     });
   });
 
+  describe("logical volume selection", () => {
+    it("switches filesystem to Current when selecting a logical volume with data", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Current/);
+    });
+
+    it("switches filesystem back to Default when selecting 'New logical volume'", async () => {
+      const { user } = installerRender(<LogicalVolumeForm />);
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /data/ }));
+      await user.click(screen.getByLabelText("Logical volume"));
+      await user.click(screen.getByRole("option", { name: /New logical volume/ }));
+      expect(screen.getByLabelText("File system")).toHaveTextContent(/Default/);
+    });
+  });
+
   describe("when the volume group is new", () => {
     it("does not render the logical volume source field", () => {
       mockVolumeGroup = undefined;

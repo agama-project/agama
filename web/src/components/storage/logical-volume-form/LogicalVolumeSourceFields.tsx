@@ -24,7 +24,12 @@ import React from "react";
 import { sprintf } from "sprintf-js";
 import { withForm } from "~/hooks/form";
 import type { DropdownOption } from "~/components/form/DropdownField";
-import { defaultOptions } from "./fields";
+import {
+  defaultOptions,
+  isReusingLogicalVolume,
+  FILESYSTEM_TYPE,
+  FILESYSTEM_ACTION,
+} from "./fields";
 import { deviceLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 
@@ -114,7 +119,31 @@ const LogicalVolumeSourceFields = withForm({
     ];
 
     return (
-      <form.AppField name="target">
+      <form.AppField
+        name="target"
+        listeners={{
+          onChange: ({ value }) => {
+            const isReuse = isReusingLogicalVolume(value);
+            const selectedLogicalVolume = volumeGroup.logicalVolumes?.find(
+              (lv) => lv.name === value,
+            );
+            const currentFsType = selectedLogicalVolume?.filesystem?.type;
+            const hasFilesystem = !!currentFsType;
+
+            if (!isReuse) {
+              // Switched to new logical volume - reset to AUTO
+              form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
+            } else if (hasFilesystem) {
+              // Switched to existing logical volume with filesystem - default to REUSE
+              // (compatibility check happens in FilesystemFields useEffect)
+              form.setFieldValue("filesystem", FILESYSTEM_ACTION.REUSE);
+            } else {
+              // Switched to existing logical volume without filesystem - set to AUTO
+              form.setFieldValue("filesystem", FILESYSTEM_TYPE.AUTO);
+            }
+          },
+        }}
+      >
         {(field) => <field.DropdownField label={_("Logical volume")} options={options} />}
       </form.AppField>
     );
