@@ -23,6 +23,9 @@
 import React, { useRef } from "react";
 import { Alert } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
+import Interpolate from "~/components/core/Interpolate";
+import Link from "~/components/core/Link";
+import { ROOT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 // Minimal interface describing the form instance methods and state that
@@ -267,7 +270,20 @@ export function useFormSubmit<TValues>({
               isInline
               variant={wasPatched.current ? "success" : "info"}
               title={wasPatched.current ? successTitle : noChangesTitle}
-            />
+            >
+              <Interpolate
+                sentence={
+                  /* TRANSLATORS: Link shown in the alert after submitting a form. Text in [brackets] becomes a link. Keep the brackets. */
+                  _("Go to [installation] summary")
+                }
+              >
+                {(linkText) => (
+                  <Link isInline variant="link" to={ROOT.overview}>
+                    {linkText}
+                  </Link>
+                )}
+              </Interpolate>
+            </Alert>
           );
         }}
       </form.Subscribe>
