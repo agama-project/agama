@@ -24,12 +24,17 @@
 //! The core types and constructor methods are defined in `agama_utils::api::ProblemDetails`.
 
 use agama_utils::api::ProblemDetails;
-use aide::OperationIo;
+use aide::generate::GenContext;
+use aide::openapi::{
+    MediaType, Operation, Response as OpenApiResponse, SchemaObject, StatusCode as ApiStatusCode,
+};
+use aide::operation::OperationOutput;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
     Json,
 };
+use indexmap::IndexMap;
 use schemars::JsonSchema;
 use serde::Serialize;
 
@@ -59,8 +64,7 @@ impl ProblemDetailsExt for ProblemDetails {
 }
 
 /// Wrapper to make ProblemDetails work with aide's OpenAPI generation and axum responses
-#[derive(Debug, Clone, Serialize, JsonSchema, OperationIo)]
-#[aide(output)]
+#[derive(Debug, Clone, Serialize, JsonSchema)]
 #[serde(transparent)]
 #[schemars(transparent)]
 pub struct ProblemDetailsResponse(pub ProblemDetails);
@@ -87,6 +91,51 @@ impl IntoResponse for ProblemDetailsResponse {
             Json(self.0),
         )
             .into_response()
+    }
+}
+
+impl OperationOutput for ProblemDetailsResponse {
+    type Inner = Self;
+
+    fn operation_response(
+        ctx: &mut GenContext,
+        _operation: &mut Operation,
+    ) -> Option<OpenApiResponse> {
+        // Get schema for ProblemDetails - aide will automatically register it in components
+        // and return a $ref if needed
+        let json_schema = ctx.schema.subschema_for::<ProblemDetails>();
+        let resolved_schema = ctx.resolve_schema(&json_schema);
+
+        Some(OpenApiResponse {
+            description: resolved_schema
+                .get("description")
+                .and_then(|d| d.as_str())
+                .map(String::from)
+                .unwrap_or_default(),
+            content: IndexMap::from_iter([(
+                "application/problem+json".to_string(),
+                MediaType {
+                    schema: Some(SchemaObject {
+                        json_schema,
+                        example: None,
+                        external_docs: None,
+                    }),
+                    ..Default::default()
+                },
+            )]),
+            ..Default::default()
+        })
+    }
+
+    fn inferred_responses(
+        ctx: &mut GenContext,
+        operation: &mut Operation,
+    ) -> Vec<(Option<ApiStatusCode>, OpenApiResponse)> {
+        if let Some(response) = Self::operation_response(ctx, operation) {
+            vec![(None, response)]
+        } else {
+            vec![]
+        }
     }
 }
 
