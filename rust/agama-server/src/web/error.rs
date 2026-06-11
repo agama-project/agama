@@ -47,11 +47,7 @@ impl ProblemDetailsExt for ProblemDetails {
         match self {
             ProblemDetails::SchemaValidationFailed { .. } => StatusCode::BAD_REQUEST,
             ProblemDetails::InvalidJson { .. } => StatusCode::BAD_REQUEST,
-            ProblemDetails::NetworkError { .. } => StatusCode::BAD_GATEWAY,
-            ProblemDetails::FileSystemError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
-            ProblemDetails::DBusError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             ProblemDetails::InternalError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
-            ProblemDetails::NotFound { .. } => StatusCode::NOT_FOUND,
             ProblemDetails::Unauthorized { .. } => StatusCode::UNAUTHORIZED,
             ProblemDetails::Generic { .. } => StatusCode::INTERNAL_SERVER_ERROR,
         }
@@ -114,38 +110,6 @@ mod tests {
         assert_eq!(json["errors"][0], "/network/hostname: is required");
         // Ensure status field is NOT in JSON
         assert!(json.get("status").is_none());
-    }
-
-    #[test]
-    fn test_network_error() {
-        let problem = ProblemDetails::network_error_with_status(
-            "https://example.com",
-            503,
-            "Connection timeout",
-        );
-
-        assert_eq!(problem.status_code(), StatusCode::BAD_GATEWAY);
-
-        let json = serde_json::to_value(&problem).unwrap();
-        assert_eq!(json["url"], "https://example.com");
-        assert_eq!(json["httpStatus"], 503);
-    }
-
-    #[test]
-    fn test_dbus_error() {
-        let problem = ProblemDetails::dbus_error_full(
-            "org.freedesktop.NetworkManager",
-            Some("/org/freedesktop/NetworkManager".to_string()),
-            Some("GetDevices".to_string()),
-            "Method call failed",
-        );
-
-        assert_eq!(problem.status_code(), StatusCode::INTERNAL_SERVER_ERROR);
-
-        let json = serde_json::to_value(&problem).unwrap();
-        assert_eq!(json["service"], "org.freedesktop.NetworkManager");
-        assert_eq!(json["objectPath"], "/org/freedesktop/NetworkManager");
-        assert_eq!(json["method"], "GetDevices");
     }
 
     #[test]

@@ -36,14 +36,12 @@ pub enum Error {
 impl Error {
     /// Converts this error into RFC 9457 Problem Details
     pub fn into_problem_details(self) -> ProblemDetails {
-        match self {
-            Error::DBus(e) => {
-                // Try to extract service name from D-Bus error if possible
-                ProblemDetails::dbus_error("unknown", e.to_string())
-            }
-            Error::Anyhow(msg) => ProblemDetails::internal_error(msg),
-            Error::Service(e) => ProblemDetails::internal_error(e.to_string()),
-        }
+        let details = match self {
+            Error::DBus(e) => e.to_string(),
+            Error::Anyhow(msg) => msg,
+            Error::Service(e) => e.to_string(),
+        };
+        ProblemDetails::internal_error(details)
     }
 }
 

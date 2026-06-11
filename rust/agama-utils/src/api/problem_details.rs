@@ -87,69 +87,12 @@ pub enum ProblemDetails {
         detail: Option<String>,
     },
 
-    /// Network error - upstream service unreachable (HTTP 502)
-    #[serde(
-        rename = "tag:agama.opensuse.org,2026:problems/network-error",
-        rename_all = "camelCase"
-    )]
-    NetworkError {
-        title: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        detail: Option<String>,
-        /// URL that failed
-        url: String,
-        /// HTTP status from upstream (if available)
-        #[serde(skip_serializing_if = "Option::is_none")]
-        http_status: Option<u16>,
-    },
-
-    /// File system error (HTTP 500)
-    #[serde(
-        rename = "tag:agama.opensuse.org,2026:problems/file-system-error",
-        rename_all = "camelCase"
-    )]
-    FileSystemError {
-        title: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        detail: Option<String>,
-        /// File path
-        path: String,
-        /// Operation that failed (read, write, delete, etc.)
-        operation: String,
-    },
-
-    /// D-Bus service error (HTTP 500)
-    #[serde(
-        rename = "tag:agama.opensuse.org,2026:problems/dbus-error",
-        rename_all = "camelCase"
-    )]
-    DBusError {
-        title: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        detail: Option<String>,
-        /// D-Bus service name
-        service: String,
-        /// D-Bus object path
-        #[serde(skip_serializing_if = "Option::is_none")]
-        object_path: Option<String>,
-        /// D-Bus method name
-        #[serde(skip_serializing_if = "Option::is_none")]
-        method: Option<String>,
-    },
-
     /// Internal server error (HTTP 500)
     #[serde(
         rename = "tag:agama.opensuse.org,2026:problems/internal-error",
         rename_all = "camelCase"
     )]
     InternalError { title: String, detail: String },
-
-    /// Resource not found (HTTP 404)
-    #[serde(
-        rename = "tag:agama.opensuse.org,2026:problems/not-found",
-        rename_all = "camelCase"
-    )]
-    NotFound { title: String, detail: String },
 
     /// Unauthorized - authentication required (HTTP 401)
     #[serde(
@@ -183,84 +126,11 @@ impl ProblemDetails {
         }
     }
 
-    /// Creates a network error problem
-    pub fn network_error(url: impl Into<String>, detail: impl Into<String>) -> Self {
-        Self::NetworkError {
-            title: gettext("Network error"),
-            detail: Some(detail.into()),
-            url: url.into(),
-            http_status: None,
-        }
-    }
-
-    /// Creates a network error problem with HTTP status
-    pub fn network_error_with_status(
-        url: impl Into<String>,
-        http_status: u16,
-        detail: impl Into<String>,
-    ) -> Self {
-        Self::NetworkError {
-            title: gettext("Network error"),
-            detail: Some(detail.into()),
-            url: url.into(),
-            http_status: Some(http_status),
-        }
-    }
-
-    /// Creates a file system error problem
-    pub fn file_system_error(
-        path: impl Into<String>,
-        operation: impl Into<String>,
-        detail: impl Into<String>,
-    ) -> Self {
-        Self::FileSystemError {
-            title: gettext("File system error"),
-            detail: Some(detail.into()),
-            path: path.into(),
-            operation: operation.into(),
-        }
-    }
-
-    /// Creates a D-Bus error problem
-    pub fn dbus_error(service: impl Into<String>, detail: impl Into<String>) -> Self {
-        Self::DBusError {
-            title: gettext("D-Bus service error"),
-            detail: Some(detail.into()),
-            service: service.into(),
-            object_path: None,
-            method: None,
-        }
-    }
-
-    /// Creates a D-Bus error problem with full context
-    pub fn dbus_error_full(
-        service: impl Into<String>,
-        object_path: Option<String>,
-        method: Option<String>,
-        detail: impl Into<String>,
-    ) -> Self {
-        Self::DBusError {
-            title: gettext("D-Bus service error"),
-            detail: Some(detail.into()),
-            service: service.into(),
-            object_path,
-            method,
-        }
-    }
-
     /// Creates an internal error problem
     pub fn internal_error(detail: impl Into<String>) -> Self {
         Self::InternalError {
             title: gettext("Internal server error"),
             detail: detail.into(),
-        }
-    }
-
-    /// Creates a not found problem
-    pub fn not_found(resource: impl Into<String>) -> Self {
-        Self::NotFound {
-            title: gettext("Not Found"),
-            detail: format!("Resource not found: {}", resource.into()),
         }
     }
 
@@ -299,16 +169,9 @@ impl Display for ProblemDetails {
 
             Self::Unauthorized { title, detail }
             | Self::InternalError { title, detail }
-            | Self::NotFound { title, detail }
             | Self::Generic { title, detail } => write_problem(f, title, Some(&detail), None)?,
 
-            Self::DBusError { title, detail, .. } => {
-                write_problem(f, title, detail.as_deref(), None)?
-            }
-
-            ProblemDetails::InvalidJson { title, detail }
-            | ProblemDetails::NetworkError { title, detail, .. }
-            | ProblemDetails::FileSystemError { title, detail, .. } => {
+            ProblemDetails::InvalidJson { title, detail } => {
                 write_problem(f, title, detail.as_deref(), None)?
             }
         }
@@ -357,27 +220,6 @@ mod tests {
                 assert_eq!(errors[0], "/network/hostname: is required");
             }
             _ => panic!("Expected SchemaValidationFailed"),
-        }
-    }
-
-    #[test]
-    fn test_deserialize_network_error() {
-        let json = r#"{
-            "type": "tag:agama.opensuse.org,2026:problems/network-error",
-            "title": "Network Error",
-            "url": "https://example.com",
-            "httpStatus": 503
-        }"#;
-
-        let problem: ProblemDetails = serde_json::from_str(json).unwrap();
-        match problem {
-            ProblemDetails::NetworkError {
-                url, http_status, ..
-            } => {
-                assert_eq!(url, "https://example.com");
-                assert_eq!(http_status, Some(503));
-            }
-            _ => panic!("Expected NetworkError"),
         }
     }
 
