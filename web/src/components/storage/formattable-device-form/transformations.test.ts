@@ -165,7 +165,8 @@ describe("toFormValues", () => {
       mountPoint: "",
       committedMountPoint: "",
       filesystem: "auto",
-      filesystemAction: "format",
+      // No stored config means formatting is not a deliberate choice yet.
+      filesystemAction: "reuse",
       filesystemLabel: "",
       mkfsOptions: [],
       mountOptions: [],

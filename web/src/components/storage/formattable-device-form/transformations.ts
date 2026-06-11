@@ -111,10 +111,19 @@ export function buildPayload(values: typeof defaultOptions.defaultValues): Data.
  *
  * ## Filesystem Action Detection
  *
- * Defaults to REUSE (keep existing filesystem) only when the stored config
- * explicitly says so (reuse: true). Unlike the partition and logical volume
- * forms there is no "new device" case: the device always exists, so reuse is
- * driven by the stored filesystem config alone.
+ * The stored filesystem config decides the filesystemAction:
+ *
+ * - `{ reuse: true }`: the user chose "Current", so REUSE.
+ * - Any other config: the user chose to format, so FORMAT.
+ * - No config at all: the device is not configured yet, so the action stays
+ *   REUSE. This does NOT mean keeping the filesystem: it just records that
+ *   formatting is not a deliberate choice, so the filesystem fields can
+ *   preselect "Current" when the device has a filesystem compatible with the
+ *   mount point. For a device without a filesystem the action is irrelevant,
+ *   since "Current" is never offered.
+ *
+ * This mirrors the partition and logical volume forms, where picking an
+ * existing device with a filesystem preselects "Current".
  *
  * ## Extra Filesystem Settings
  *
@@ -144,16 +153,18 @@ export function buildPayload(values: typeof defaultOptions.defaultValues): Data.
  * @example
  * // Device not configured yet
  * toFormValues({ name: "/dev/sda", spacePolicy: "keep", partitions: [] })
- * // → { mountPoint: "", filesystem: "auto", ... }  (form defaults)
+ * // → { mountPoint: "", filesystem: "auto", filesystemAction: "reuse", ... }
  */
 export function toFormValues(
   deviceModel: Partitionable.Device,
 ): Partial<typeof defaultOptions.defaultValues> {
   const fsConfig = deviceModel.filesystem;
 
-  // Keeping the current filesystem unless the config explicitly says to format
-  // (reuse: false).
-  const shouldKeepFilesystem = fsConfig !== undefined && fsConfig.reuse === true;
+  // The stored shape of the "Current" choice.
+  const keepsFilesystem = fsConfig?.reuse === true;
+  // Any other stored config means a deliberate choice to format. See the
+  // "Filesystem Action Detection" section above for the no-config case.
+  const formatsFilesystem = fsConfig !== undefined && !keepsFilesystem;
 
   const mountPoint = deviceModel.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";
@@ -165,8 +176,8 @@ export function toFormValues(
   return {
     mountPoint,
     committedMountPoint: mountPoint,
-    filesystem: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
-    filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
+    filesystem: keepsFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
+    filesystemAction: formatsFilesystem ? FILESYSTEM_ACTION.FORMAT : FILESYSTEM_ACTION.REUSE,
     filesystemLabel,
     mkfsOptions,
     mountOptions,

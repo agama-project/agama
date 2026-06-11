@@ -222,6 +222,23 @@ describe("FormattableDeviceForm", () => {
       screen.getByRole("option", { name: /Current/ });
     });
 
+    it("preselects keeping the current filesystem when the device is not configured yet", async () => {
+      installerRender(<FormattableDeviceForm />);
+      await waitFor(() =>
+        expect(screen.getByLabelText("File system")).toHaveTextContent("Current"),
+      );
+    });
+
+    it("does not preselect keeping the current filesystem after a choice to format", async () => {
+      mockDeviceModel = {
+        ...mockDeviceModel,
+        mountPath: "/home",
+        filesystem: { default: false, type: "ext4" },
+      };
+      installerRender(<FormattableDeviceForm />);
+      expect(screen.getByLabelText("File system")).toHaveTextContent("Ext4");
+    });
+
     it("submits a filesystem reuse config when keeping the current filesystem", async () => {
       const { user } = installerRender(<FormattableDeviceForm />);
       await user.type(screen.getByLabelText("Mount point"), "/home");
