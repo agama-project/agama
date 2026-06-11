@@ -22,7 +22,7 @@
 
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
-import { flat, sift } from "radashi";
+import { flat, isEmpty, sift } from "radashi";
 
 type Device = System.Device | Proposal.Device;
 
@@ -57,4 +57,29 @@ function supportShrink(device: Device): boolean {
   return device.block?.shrinking?.supported || false;
 }
 
-export { isDrive, isVolumeGroup, isMd, isPartition, isLogicalVolume, deviceSystems, supportShrink };
+/**
+ * Whether the device currently holds data that formatting it would destroy.
+ *
+ * Relies on structural signals only: a filesystem of its own, logical volumes
+ * (when it is a volume group), a partition table with partitions, or detected
+ * installed systems. A device that holds content but reports none of these is
+ * treated as empty on purpose; that gap belongs to the backend, not here.
+ */
+function hasContent(device: Device): boolean {
+  if (device.filesystem) return true;
+  if (isVolumeGroup(device)) return !isEmpty(device.logicalVolumes);
+  if (device.partitionTable) return !isEmpty(device.partitions);
+
+  return deviceSystems(device).length > 0;
+}
+
+export {
+  isDrive,
+  isVolumeGroup,
+  isMd,
+  isPartition,
+  isLogicalVolume,
+  deviceSystems,
+  supportShrink,
+  hasContent,
+};
