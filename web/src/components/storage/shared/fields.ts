@@ -111,7 +111,7 @@ export type FilesystemFields = {
    */
   filesystemAction: string;
   filesystemLabel: string;
-  mkfsOptions: string[];
+  mkfsExtraArguments: string;
   mountOptions: string[];
   /**
    * Whether the optional filesystem settings (label, mkfs and mount options)
@@ -153,7 +153,7 @@ export const sharedDefaultValues: MountPointFields & FilesystemFields & SizeFiel
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
-  mkfsOptions: [],
+  mkfsExtraArguments: "",
   mountOptions: [],
   showMoreFilesystemSettings: false,
   sizeMode: SIZE_MODE.AUTO,

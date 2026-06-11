@@ -51,7 +51,7 @@ const defaultValues: FormFields = {
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
-  mkfsOptions: [],
+  mkfsExtraArguments: "",
   mountOptions: [],
   showMoreFilesystemSettings: false,
 };

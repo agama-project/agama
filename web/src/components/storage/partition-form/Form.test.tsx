@@ -361,14 +361,14 @@ describe("PartitionForm", () => {
     it("shows format options field when additional settings are enabled", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.click(screen.getByLabelText(/Define more file system settings/));
-      screen.getByLabelText(/Format options.*optional/i);
+      screen.getByLabelText(/Additional format.*optional/i);
     });
 
     it("submits mkfsOptions when provided", async () => {
       const { user } = installerRender(<PartitionForm />);
       await user.type(screen.getByLabelText("Mount point"), "/data");
       await user.click(screen.getByLabelText(/Define more file system settings/));
-      const mkfsOptionsInput = screen.getByLabelText(/Format options.*optional/i);
+      const mkfsOptionsInput = screen.getByLabelText(/Additional format.*optional/i);
       await user.type(mkfsOptionsInput, "-O ^64bit");
       await user.click(screen.getByRole("button", { name: "Accept" }));
       await waitFor(() =>
@@ -377,7 +377,7 @@ describe("PartitionForm", () => {
           0,
           expect.objectContaining({
             filesystem: expect.objectContaining({
-              mkfsOptions: ["-O ^64bit"],
+              mkfsExtraArguments: "-O ^64bit",
             }),
           }),
         ),
@@ -500,7 +500,7 @@ describe("PartitionForm", () => {
             filesystem: {
               type: "xfs",
               label: "HomeData",
-              mkfsOptions: [],
+              mkfsExtraArguments: "",
               mountOptions: [],
             },
             size: { min: 50 * 1024 * 1024 * 1024, max: 50 * 1024 * 1024 * 1024, default: false },

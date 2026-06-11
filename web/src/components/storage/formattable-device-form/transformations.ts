@@ -128,7 +128,7 @@ export function buildPayload(values: typeof defaultOptions.defaultValues): Data.
  * ## Extra Filesystem Settings
  *
  * The showMoreFilesystemSettings checkbox is pre-checked when any of label,
- * mkfsOptions, or mountOptions are non-empty in the stored config.
+ * mkfsExtraArguments, or mountOptions are non-empty in the stored config.
  *
  * @param deviceModel - Drive or MD RAID config from the backend
  * @returns Partial form values to merge with defaults
@@ -168,10 +168,10 @@ export function toFormValues(
 
   const mountPoint = deviceModel.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";
-  const mkfsOptions = fsConfig?.mkfsOptions || [];
+  const mkfsExtraArguments = fsConfig?.mkfsExtraArguments || "";
   const mountOptions = fsConfig?.mountOptions || [];
   const showMoreFilesystemSettings =
-    filesystemLabel !== "" || !!mkfsOptions.length || !!mountOptions.length;
+    filesystemLabel !== "" || mkfsExtraArguments !== "" || !!mountOptions.length;
 
   return {
     mountPoint,
@@ -179,7 +179,7 @@ export function toFormValues(
     filesystem: keepsFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
     filesystemAction: formatsFilesystem ? FILESYSTEM_ACTION.FORMAT : FILESYSTEM_ACTION.REUSE,
     filesystemLabel,
-    mkfsOptions,
+    mkfsExtraArguments,
     mountOptions,
     showMoreFilesystemSettings,
   };

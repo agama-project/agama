@@ -336,7 +336,7 @@ export interface Filesystem {
   /**
    * Options for creating the file system.
    */
-  mkfsOptions?: string[];
+  mkfsExtraArguments?: string[];
   /**
    * Options to add to the fourth field of fstab.
    */

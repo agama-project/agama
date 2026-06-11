@@ -57,16 +57,19 @@ const FilesystemAdditionalFields = withForm({
               )}
             </form.AppField>
             {isNewFilesystem(filesystem) && (
-              <form.AppField name="mkfsOptions">
+              <form.AppField name="mkfsExtraArguments">
                 {(field) => (
-                  <field.ArrayField
-                    label={<LabelText suffix={_("(optional)")}>{_("Format options")}</LabelText>}
-                    splitPasteOn={/\r?\n/}
+                  <field.TextField
+                    label={
+                      <LabelText suffix={_("(optional)")}>
+                        {_("Additional format arguments")}
+                      </LabelText>
+                    }
                     helperText={
                       <Interpolate
                         sentence={
                           // TRANSLATORS: %s is replaced by "mkfs" (command used to format devices)
-                          _("Additional arguments for the formatting command (%s).")
+                          _("This will be injected to the command to create the file system (%s).")
                         }
                       >
                         {() => <code>{"mkfs"}</code>}

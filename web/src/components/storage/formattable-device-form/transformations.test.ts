@@ -41,7 +41,7 @@ describe("buildPayload", () => {
       filesystem: {
         default: true,
         label: undefined,
-        mkfsOptions: undefined,
+        mkfsExtraArguments: undefined,
         mountOptions: undefined,
       },
     });
@@ -62,7 +62,7 @@ describe("buildPayload", () => {
         default: false,
         type: "xfs",
         label: undefined,
-        mkfsOptions: undefined,
+        mkfsExtraArguments: undefined,
         mountOptions: undefined,
       },
     });
@@ -74,7 +74,7 @@ describe("buildPayload", () => {
       mountPoint: "/data",
       filesystem: "ext4",
       filesystemLabel: "my-data",
-      mkfsOptions: ["-O", "dir_index"],
+      mkfsExtraArguments: "-O dir_index",
       mountOptions: ["noatime"],
       showMoreFilesystemSettings: true,
     };
@@ -85,7 +85,7 @@ describe("buildPayload", () => {
       default: false,
       type: "ext4",
       label: "my-data",
-      mkfsOptions: ["-O", "dir_index"],
+      mkfsExtraArguments: "-O dir_index",
       mountOptions: ["noatime"],
     });
   });
@@ -96,7 +96,7 @@ describe("buildPayload", () => {
       mountPoint: "/data",
       filesystem: "ext4",
       filesystemLabel: "my-data",
-      mkfsOptions: ["-O", "dir_index"],
+      mkfsExtraArguments: "-O dir_index",
       mountOptions: ["noatime"],
       showMoreFilesystemSettings: false,
     };
@@ -107,7 +107,7 @@ describe("buildPayload", () => {
       default: false,
       type: "ext4",
       label: undefined,
-      mkfsOptions: undefined,
+      mkfsExtraArguments: undefined,
       mountOptions: undefined,
     });
   });
@@ -168,7 +168,7 @@ describe("toFormValues", () => {
       // No stored config means formatting is not a deliberate choice yet.
       filesystemAction: "reuse",
       filesystemLabel: "",
-      mkfsOptions: [],
+      mkfsExtraArguments: "",
       mountOptions: [],
       showMoreFilesystemSettings: false,
     });
@@ -224,7 +224,7 @@ describe("toFormValues", () => {
         default: false,
         type: "xfs",
         mountOptions: ["noatime", "nodiratime"],
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
       },
       partitions: [],
     };
@@ -233,7 +233,7 @@ describe("toFormValues", () => {
 
     expect(result).toMatchObject({
       mountOptions: ["noatime", "nodiratime"],
-      mkfsOptions: ["-O", "dir_index"],
+      mkfsExtraArguments: "-O dir_index",
       showMoreFilesystemSettings: true,
     });
   });

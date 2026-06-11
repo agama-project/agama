@@ -231,7 +231,7 @@ export function buildPayload(
  * ## Extra Filesystem Settings
  *
  * The showMoreFilesystemSettings checkbox is pre-checked when any of label,
- * mkfsOptions, or mountOptions are non-empty in the stored config.
+ * mkfsExtraArguments, or mountOptions are non-empty in the stored config.
  *
  * @param logicalVolumeConfig - LV config from backend, or null for new LV
  * @returns Partial form values to merge with defaults
@@ -281,10 +281,10 @@ export function toFormValues(
 
   const mountPoint = logicalVolumeConfig.mountPath || "";
   const filesystemLabel = fsConfig?.label || "";
-  const mkfsOptions = fsConfig?.mkfsOptions || [];
+  const mkfsExtraArguments = fsConfig?.mkfsExtraArguments || "";
   const mountOptions = fsConfig?.mountOptions || [];
   const showMoreFilesystemSettings =
-    filesystemLabel !== "" || !!mkfsOptions.length || !!mountOptions.length;
+    filesystemLabel !== "" || mkfsExtraArguments !== "" || !!mountOptions.length;
 
   return {
     mountPoint,
@@ -294,7 +294,7 @@ export function toFormValues(
     filesystem: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : fsConfigValue(fsConfig),
     filesystemAction: shouldKeepFilesystem ? FILESYSTEM_ACTION.REUSE : FILESYSTEM_ACTION.FORMAT,
     filesystemLabel,
-    mkfsOptions,
+    mkfsExtraArguments,
     mountOptions,
     showMoreFilesystemSettings,
     ...inferSizeFields(logicalVolumeConfig),
