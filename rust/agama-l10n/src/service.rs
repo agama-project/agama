@@ -223,13 +223,25 @@ impl MessageHandler<message::GetSystem> for Service {
 impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
     async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
         let config = &message.config;
+
         if let Some(locale) = &config.locale {
-            self.model.set_locale(locale.parse()?)?;
+            let locale_id: LocaleId = locale.parse()?;
+            self.model.set_locale(locale_id.clone())?;
+            // Ensure the system value is updated (currently updated by a DBUS change property)
+            self.system.locale = locale_id;
         }
 
         if let Some(keymap) = &config.keymap {
-            self.model.set_keymap(keymap.parse()?)?;
+            let keymap_id: KeymapId = keymap.parse()?;
+            self.model.set_keymap(keymap_id.clone())?;
+            // Ensure the system value is updated (currently updated by a DBUS change property)
+            self.system.keymap = keymap_id;
         };
+
+        // FIXME: It is not notified because if the property is changed then it will be notified
+        // by the monitor, but if the env VAR is different to the system locale. And the value
+        // is set to the system locale using the UI. Then the propoerty will be the same already
+        // set that is why we ensure the system state is updated.
 
         Ok(())
     }
