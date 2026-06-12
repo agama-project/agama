@@ -186,11 +186,11 @@ pub fn write_problem(
     detail: Option<&str>,
     body: Option<&str>,
 ) -> std::fmt::Result {
-    let first_line = gettext("An error occurred: %s").replace("%s", title);
-    write!(f, "{}", first_line)?;
+    write!(f, "{}\n", gettext("Error:"))?;
+    write!(f, "{}\n", title)?;
     if let Some(detail) = detail {
         let label = gettext("Details:");
-        write!(f, "\n\n{label}\n{detail}")?;
+        write!(f, "\n{label}\n{detail}")?;
     }
 
     if let Some(body) = body {
