@@ -75,6 +75,13 @@
 
 .pf-v6-c-alert-group.pf-m-toast {
   padding: var(--pf-t--global--spacer--xl);
+  // Prevent empty toast container from blocking clicks on elements below
+  pointer-events: none;
+
+  // Re-enable pointer events for actual alert items
+  > * {
+    pointer-events: auto;
+  }
 }
 
 .pf-v6-c-alert__title {

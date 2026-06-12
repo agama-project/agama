@@ -170,6 +170,8 @@ describe("AuthenticationForm", () => {
 
       expect(mockPutConfig).not.toHaveBeenCalled();
       screen.getByText("No changes to apply");
+      const link = screen.getByRole("link", { name: "installation" });
+      expect(link).toHaveAttribute("href", "/overview");
     });
 
     it("creates first user when checkbox is checked", async () => {
@@ -383,6 +385,8 @@ describe("AuthenticationForm", () => {
       await user.click(screen.getByRole("button", { name: "Accept" }));
 
       await screen.findByText("Changes successfully applied");
+      const link = screen.getByRole("link", { name: "installation" });
+      expect(link).toHaveAttribute("href", "/overview");
     });
   });
 });
