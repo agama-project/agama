@@ -25,11 +25,10 @@ use agama_lib::{
     profile::{ProfileHTTPClient, ProfileValidator, ValidationOutcome},
     utils::FileFormat,
 };
-use agama_utils::api;
+use agama_utils::api::{self, ProblemDetails};
 use agama_utils::make_long;
 use anyhow::{anyhow, Context};
 use clap::{Arg, ArgAction, ArgMatches, Command};
-use console::style;
 use fluent_uri::Uri;
 use gettextrs::gettext;
 use tempfile::Builder;
@@ -223,16 +222,12 @@ pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<(
         Some(("validate", matches)) => {
             let url_or_path = matches.get_one::<CliInput>("url_or_path").unwrap().clone();
             let local = matches.get_flag("local");
-            let validity = if !local {
+            if !local {
                 let http_client = build_http_client(api_url, opts.insecure, true).await?;
-                validate(&http_client, url_or_path, false).await?
+                validate(&http_client, url_or_path).await?;
             } else {
-                validate_local(url_or_path, opts.insecure)?
+                validate_local(url_or_path, opts.insecure)?;
             };
-
-            if !matches!(validity, ValidationOutcome::Valid) {
-                return Err(anyhow!(gettext("The profile is not valid")));
-            }
         }
         Some(("generate", matches)) => {
             let url_or_path = matches.get_one::<CliInput>("url_or_path").cloned();
@@ -268,54 +263,25 @@ async fn patch_config(
 }
 
 /// Validates a JSON profile with locally available tools only
-fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<ValidationOutcome> {
+fn validate_local(url_or_path: CliInput, insecure: bool) -> anyhow::Result<()> {
     let profile_string = url_or_path.read_to_string(insecure)?;
     let validator = ProfileValidator::default_schema().context("Setting up profile validator")?;
-    let result = validator.validate_str(&profile_string);
+    let result = validator.validate_str(&profile_string)?;
 
     match result {
-        Ok(validity) => {
-            let _ = validation_msg(&validity);
-
-            Ok(validity)
+        ValidationOutcome::NotValid(messages) => {
+            let problems = ProblemDetails::schema_validation_failed(messages);
+            Err(anyhow!(problems))
         }
-        Err(err) => {
-            eprintln!("{} {}", style("\u{2717}").bold().red(), err);
-
-            Ok(ValidationOutcome::NotValid(
-                [String::from("Invalid profile")].to_vec(),
-            ))
-        }
+        ValidationOutcome::Valid => Ok(()),
     }
 }
 
-async fn validate(
-    client: &BaseHTTPClient,
-    url_or_path: CliInput,
-    silent: bool,
-) -> anyhow::Result<ValidationOutcome> {
+async fn validate(client: &BaseHTTPClient, url_or_path: CliInput) -> anyhow::Result<()> {
     let request = url_or_path.to_map();
-    let validity = ProfileHTTPClient::new(client.clone())
+    ProfileHTTPClient::new(client.clone())
         .validate(&request)
         .await?;
-
-    if !silent {
-        let _ = validation_msg(&validity);
-    }
-
-    Ok(validity)
-}
-
-fn validation_msg(validity: &ValidationOutcome) -> anyhow::Result<()> {
-    match validity {
-        ValidationOutcome::Valid => {
-            eprintln!("{} {}", style("\u{2713}").bold().green(), validity);
-        }
-        ValidationOutcome::NotValid(_) => {
-            eprintln!("{} {}", style("\u{2717}").bold().red(), validity);
-        }
-    }
-
     Ok(())
 }
 
@@ -375,26 +341,11 @@ async fn generate(
         from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
 
-    let validity = validate(client, CliInput::Full(profile_json.clone()), true).await?;
-
-    if matches!(validity, ValidationOutcome::NotValid(_)) {
-        println!("{}", &profile_json);
-        let _ = validation_msg(&validity);
-
-        return Err(anyhow!("The profile is not valid"));
-    }
-
     let config = api::Config::from_json(&profile_json, &context.source)?;
     let config_json = serde_json::to_string_pretty(&config)?;
 
+    validate(client, CliInput::Full(config_json.clone())).await?;
     println!("{}", &config_json);
-    let validity = validate(client, CliInput::Full(config_json.clone()), false).await?;
-
-    if matches!(validity, ValidationOutcome::NotValid(_)) {
-        return Err(anyhow!(
-            "Internal error: the profile became invalid during Config round trip"
-        ));
-    }
 
     Ok(())
 }
@@ -453,18 +404,13 @@ async fn edit(
     if status.success() {
         let updated =
             std::fs::read_to_string(&path).context(format!("Reading from file {:?}", path))?;
-        let validity = validate(http_client, CliInput::Full(updated.clone()), false).await?;
-
-        if !matches!(validity, ValidationOutcome::Valid) {
-            return Err(anyhow!("The profile is not valid"));
-        }
-
+        validate(http_client, CliInput::Full(updated.clone())).await?;
         return Ok(serde_json::from_str(&updated)?);
     }
 
-    Err(anyhow!(
-        "Ignoring the changes becase the editor was closed with an error code."
-    ))
+    Err(anyhow!(gettext(
+        "Ignoring the changes because the editor was closed with an error code."
+    )))
 }
 
 /// Return the Command to run the editor.
