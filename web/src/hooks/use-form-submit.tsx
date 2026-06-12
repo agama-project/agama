@@ -279,31 +279,23 @@ export function useFormSubmit<TValues>({
                   isInline
                   variant={wasPatched.current ? "success" : "info"}
                   title={wasPatched.current ? successTitle : noChangesTitle}
-                />
+                >
+                  <Interpolate
+                    sentence={
+                      /* TRANSLATORS: Link shown in the alert after submitting a form. Text in [brackets] becomes a link. Keep the brackets. */
+                      _("Go to [installation] summary.")
+                    }
+                  >
+                    {(linkText) => (
+                      <Link isInline variant="link" to={ROOT.overview}>
+                        {linkText}
+                      </Link>
+                    )}
+                  </Interpolate>
+                </Alert>
               );
             }
           }
-
-          return (
-            <Alert
-              isInline
-              variant={wasPatched.current ? "success" : "info"}
-              title={wasPatched.current ? successTitle : noChangesTitle}
-            >
-              <Interpolate
-                sentence={
-                  /* TRANSLATORS: Link shown in the alert after submitting a form. Text in [brackets] becomes a link. Keep the brackets. */
-                  _("Go to [installation] summary.")
-                }
-              >
-                {(linkText) => (
-                  <Link isInline variant="link" to={ROOT.overview}>
-                    {linkText}
-                  </Link>
-                )}
-              </Interpolate>
-            </Alert>
-          );
         }}
       </form.Subscribe>
     );
