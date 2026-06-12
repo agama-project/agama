@@ -54,6 +54,7 @@ futures-util = { version = "0.3.30", default-features = false, features = [
 gethostname = "1.0.0"
 tokio-util = "0.7.12"
 url = "2.5.2"
+gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 
 [[bin]]
 name = "agama-web-server"

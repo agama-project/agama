@@ -24,7 +24,7 @@
 //! * Emit relevant events via websocket.
 //! * Serve the code for the web user interface (not implemented yet).
 
-use crate::server::server_service;
+use crate::server::{server_service, web::Error};
 use agama_utils::api::event;
 use aide::axum::ApiRouter;
 
@@ -37,7 +37,6 @@ mod service;
 mod state;
 mod ws;
 
-use agama_lib::error::ServiceError;
 pub use config::ServiceConfig;
 pub use service::MainServiceBuilder;
 use std::path::Path;
@@ -53,7 +52,7 @@ pub async fn service<P>(
     events: event::Sender,
     dbus: zbus::Connection,
     web_ui_dir: P,
-) -> Result<ApiRouter, ServiceError>
+) -> Result<ApiRouter, Error>
 where
     P: AsRef<Path>,
 {
