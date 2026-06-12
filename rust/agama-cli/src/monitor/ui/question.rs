@@ -394,13 +394,22 @@ impl<'a> Widget for QuestionWidget<'a> {
                 let (field_label, display_text) =
                     if matches!(question.spec.field, QuestionField::Password) {
                         // TRANSLATORS: Input field in CLI for password
-                        (format!("{}: ", gettext("Password")), "*".repeat(self.state.input_text.len()))
+                        (
+                            format!("{}: ", gettext("Password")),
+                            "*".repeat(self.state.input_text.len()),
+                        )
                     } else if is_load_retry {
                         // TRANSLATORS: Input field in CLI for configuration location
-                        (format!("{}: ", gettext("Location")), self.state.input_text.clone())
+                        (
+                            format!("{}: ", gettext("Location")),
+                            self.state.input_text.clone(),
+                        )
                     } else {
                         // TRANSLATORS: Input field in CLI for generic value needed in answer. It is context dependent
-                        (format!("{}: ", gettext("Value")), self.state.input_text.clone())
+                        (
+                            format!("{}: ", gettext("Value")),
+                            self.state.input_text.clone(),
+                        )
                     };
                 lines_bottom.push(Line::from(vec![
                     Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
