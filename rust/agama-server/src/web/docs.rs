@@ -32,7 +32,7 @@ use schemars::schema_for;
 use tokio::sync::broadcast;
 
 use crate::test_utils;
-use crate::web::error::ErrorResponse;
+use crate::web::error::ProblemDetailsResponse;
 use crate::web::http::{AuthResponse, LoginRequest};
 
 /// Builds the unified OpenAPI specification for the Agama HTTP API using aide.
@@ -248,7 +248,7 @@ fn login_docs(op: TransformOperation) -> TransformOperation {
         .response_with::<200, Json<AuthResponse>, _>(|res| {
             res.description("Authentication successful, returns bearer token")
         })
-        .response_with::<401, Json<ErrorResponse>, _>(|res| {
+        .response_with::<401, ProblemDetailsResponse, _>(|res| {
             res.description("Authentication failed - invalid credentials")
         })
 }
@@ -264,7 +264,7 @@ fn session_docs(op: TransformOperation) -> TransformOperation {
         )
         .tag("Authentication")
         .response::<200, ()>()
-        .response_with::<401, Json<ErrorResponse>, _>(|res| {
+        .response_with::<401, ProblemDetailsResponse, _>(|res| {
             res.description("Unauthorized - invalid or missing token")
         })
 }
@@ -279,7 +279,7 @@ fn logout_docs(op: TransformOperation) -> TransformOperation {
         )
         .tag("Authentication")
         .response::<200, ()>()
-        .response_with::<401, Json<ErrorResponse>, _>(|res| {
+        .response_with::<401, ProblemDetailsResponse, _>(|res| {
             res.description("Unauthorized - invalid or missing token")
         })
 }

@@ -18,13 +18,10 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use crate::web::error::ProblemDetailsExt;
 use agama_lib::error::ServiceError;
-use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
-    Json,
-};
-use serde_json::json;
+use agama_utils::api::ProblemDetails;
+use axum::response::{IntoResponse, Response};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -34,6 +31,18 @@ pub enum Error {
     Anyhow(String),
     #[error("Agama service error: {0}")]
     Service(#[from] ServiceError),
+}
+
+impl Error {
+    /// Converts this error into RFC 9457 Problem Details
+    pub fn into_problem_details(self) -> ProblemDetails {
+        let details = match self {
+            Error::DBus(e) => e.to_string(),
+            Error::Anyhow(msg) => msg,
+            Error::Service(e) => e.to_string(),
+        };
+        ProblemDetails::internal_error(details)
+    }
 }
 
 // This would be nice, but using it for a return type
@@ -56,10 +65,6 @@ impl From<Error> for zbus::fdo::Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        tracing::warn!("Server return error {}", self);
-        let body = json!({
-            "error": self.to_string()
-        });
-        (StatusCode::BAD_REQUEST, Json(body)).into_response()
+        self.into_problem_details().into_response()
     }
 }

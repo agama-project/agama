@@ -76,3 +76,6 @@ pub mod security;
 pub mod software;
 pub mod storage;
 pub mod users;
+
+pub mod problem_details;
+pub use problem_details::ProblemDetails;

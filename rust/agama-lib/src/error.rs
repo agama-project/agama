@@ -31,40 +31,17 @@ pub enum ServiceError {
     DBus(#[from] zbus::Error),
     #[error("Could not connect to Agama bus at '{0}': {1}")]
     DBusConnectionError(String, #[source] zbus::Error),
-    #[error("D-Bus protocol error: {0}")]
-    DBusProtocol(#[from] zbus::fdo::Error),
     #[error("Unexpected type on D-Bus '{0}'")]
     ZVariant(#[from] zvariant::Error),
     #[error(transparent)]
     HTTPError(#[from] reqwest::Error),
-    // it's fine to say only "Error" because the original
-    // specific error will be printed too
-    // `#` is std::fmt "Alternate form", anyhow::Error interprets as "include causes"
-    #[error("Error: {0:#}")]
-    Anyhow(#[from] anyhow::Error),
-    #[error("Failed to find these patterns: {0:?}")]
-    UnknownPatterns(Vec<String>),
     #[error("Passed json data is not correct: {0}")]
     InvalidJson(#[from] serde_json::Error),
-    #[error("Could not perform action '{0}'")]
-    UnsuccessfulAction(String),
-    #[error("Unknown installation phase: {0}")]
-    UnknownInstallationPhase(u32),
-    #[error("Question with id {0} does not exist")]
-    QuestionNotExist(u32),
-    #[error("Backend call failed with status {0} and text '{1}'")]
-    BackendError(u16, String),
     #[error("You are not logged in. Please use: agama auth login")]
     NotAuthenticated,
     // FIXME reroute the error to a better place
     #[error("Profile error: {0}")]
     Profile(#[from] ProfileError),
-    #[error("Unsupported SSL Fingerprint algorithm '#{0}'.")]
-    UnsupportedSSLFingerprintAlgorithm(String),
-    #[error("DASD with channel '#{0}' not found.")]
-    DASDChannelNotFound(String),
-    #[error("zFCP controller with channel '#{0}' not found.")]
-    ZFCPControllerNotFound(String),
 }
 
 #[derive(Error, Debug)]

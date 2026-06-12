@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jun 12 10:17:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement the RFC9457 for error reporting (gh#agama-project/agama#3611).
+
+-------------------------------------------------------------------
 Wed Jun 10 13:09:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - Make `agama` command-line help translatable

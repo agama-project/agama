@@ -206,27 +206,18 @@ pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<(
             let http_client = build_http_client(api_url, opts.insecure, true).await?;
             let response: api::Config = http_client.get("/config").await?;
             let json = serde_json::to_string_pretty(&response)?;
-
             let destination = output.unwrap_or(CliOutput::Stdout);
             destination.write(&json)?;
-
-            eprintln!();
-            validate(&http_client, CliInput::Full(json.clone()), false).await?;
         }
         Some(("load", matches)) => {
             let url_or_path = matches.get_one::<CliInput>("url_or_path").cloned();
             let (http_client, ws) = build_clients(api_url, opts.insecure).await?;
             let url_or_path = url_or_path.unwrap_or(CliInput::Stdin);
             let contents = url_or_path.read_to_string(opts.insecure)?;
-            let valid = validate(&http_client, CliInput::Full(contents.clone()), false).await?;
-
-            if !matches!(valid, ValidationOutcome::Valid) {
-                return Err(anyhow!("The profile is not valid"));
-            }
-
-            let model: api::Config = serde_json::from_str(&contents)?;
-            patch_config(&http_client, &model).await?;
-
+            let Ok(config) = serde_json::from_str(&contents) else {
+                return Err(anyhow!(gettext("It is not a valid JSON file")));
+            };
+            patch_config(&http_client, config).await?;
             monitor_progress(http_client, ws).await?;
         }
         Some(("validate", matches)) => {
@@ -240,7 +231,7 @@ pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<(
             };
 
             if !matches!(validity, ValidationOutcome::Valid) {
-                return Err(anyhow!("The profile is not valid"));
+                return Err(anyhow!(gettext("The profile is not valid")));
             }
         }
         Some(("generate", matches)) => {
@@ -258,8 +249,7 @@ pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<(
                 .or_else(|| std::env::var("EDITOR").ok())
                 .unwrap_or(DEFAULT_EDITOR.to_string());
             let result = edit(&http_client, &response, &editor).await?;
-            patch_config(&http_client, &result).await?;
-
+            patch_config(&http_client, result).await?;
             monitor_progress(http_client, ws).await?;
         }
         _ => {}
@@ -270,9 +260,9 @@ pub async fn run(sub_matches: &ArgMatches, opts: GlobalOpts) -> anyhow::Result<(
 
 async fn patch_config(
     http_client: &BaseHTTPClient,
-    model: &api::Config,
+    model: serde_json::Value,
 ) -> Result<(), anyhow::Error> {
-    let patch = api::Patch::with_update(model)?;
+    let patch = api::Patch::with_update(model);
     http_client.patch_void("/config", &patch).await?;
     Ok(())
 }
@@ -424,7 +414,7 @@ async fn from_json_or_jsonnet(
 
     match FileFormat::from_string(&any_profile) {
         FileFormat::Jsonnet => {
-            let full_profile = CliInput::Full(any_profile);
+            let full_profile = CliInput::Full(any_profile.to_string());
             let request = full_profile.to_map();
             let json_string = ProfileHTTPClient::new(client.clone())
                 .from_jsonnet(&request)
@@ -450,7 +440,7 @@ async fn edit(
     http_client: &BaseHTTPClient,
     model: &api::Config,
     editor: &str,
-) -> anyhow::Result<api::Config> {
+) -> anyhow::Result<serde_json::Value> {
     let original = serde_json::to_string_pretty(model)?;
     let mut file = Builder::new().suffix(".json").tempfile()?;
     let path = PathBuf::from(file.path());
