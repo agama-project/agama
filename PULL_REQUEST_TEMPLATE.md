@@ -38,6 +38,6 @@
 - <https://agama-project.github.io/> ([source][gh.io])
 - Run: `git ls-files '*.md'`
 
-[cli.md]: https://github.com/agama-project/agama-project.github.io/blob/main/docs/user/cli.md
+[cli.md]: https://github.com/agama-project/agama-project.github.io/blob/main/docs/user/reference/cli.md
 [profile.schema.json]: https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json
 [gh.io]: https://github.com/agama-project/agama-project.github.io/
