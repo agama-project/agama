@@ -29,10 +29,12 @@ mod ui;
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    monitor::{Monitor, MonitorUpdate},
+    monitor::{InstallationStatus, Monitor, MonitorUpdate},
 };
+use agama_utils::api::status::Stage;
 use anyhow::Result;
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
+use gettextrs::gettext;
 use ratatui::{backend::CrosstermBackend, Terminal, TerminalOptions, Viewport};
 use std::io::{self, IsTerminal};
 
@@ -150,8 +152,8 @@ pub async fn run(
 
     // Handle result
     match result {
-        Ok(()) => {
-            // Normal finish (idle or user quit)
+        Ok(status) => {
+            print_status(status);
         }
         Err(e) => {
             eprintln!("{e}");
@@ -160,4 +162,24 @@ pub async fn run(
 
     // Forces crossterm loop to finish.
     std::process::exit(0);
+}
+
+fn print_status(status: InstallationStatus) {
+    let message = match &status.status.stage {
+        Stage::Configuring => {
+            if !status.questions.is_empty() {
+                gettext("There are pending questions you need to answer")
+            } else if status.issues.is_empty() {
+                gettext("There are invalid settings. You need to fix them before proceeding with the installation.")
+            } else if !status.status.progresses.is_empty() || !status.status.tasks.is_empty() {
+                gettext("The installer is reading the configuration.")
+            } else {
+                gettext("The system is ready for installation.")
+            }
+        }
+        Stage::Installing => gettext("The system is being installed."),
+        Stage::Finished => gettext("The installation has finished successfully."),
+        Stage::Failed => gettext("The installation has failed."),
+    };
+    println!("{message}");
 }
