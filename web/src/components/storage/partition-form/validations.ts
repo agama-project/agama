@@ -37,7 +37,7 @@ import {
   validateMountPoint as validateMountPointValue,
   optionalFilesystemLabel,
 } from "~/components/storage/shared/validation-helpers";
-import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "./fields";
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE, isReusingPartition } from "./fields";
 import { _ } from "~/i18n";
 import type {
   ValidationResult,
@@ -66,6 +66,9 @@ function validateFilesystemFields(fields: FormFields): FieldsValidationResult<Fi
 }
 
 function validateSizeFields(fields: FormFields): FieldsValidationResult<SizeFields> {
+  // Size only applies when creating a new partition.
+  if (isReusingPartition(fields.name)) return {};
+
   if (fields.sizeMode === SIZE_MODE.FIXED) {
     return {
       fixedSize: requiredSize(
