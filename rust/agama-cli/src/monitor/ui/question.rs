@@ -335,10 +335,9 @@ impl<'a> Widget for QuestionWidget<'a> {
             };
 
             let mut hint_text = String::new();
-            if self.state.app_mode == AppMode::DataViewer
-                && max_scroll > 0 {
-                    hint_text = " (use PageUp/PageDown to scroll)".to_string();
-                }
+            if self.state.app_mode == AppMode::DataViewer && max_scroll > 0 {
+                hint_text = " (use PageUp/PageDown to scroll)".to_string();
+            }
 
             let (header_style, prefix) = if self.state.app_mode == AppMode::DataViewer {
                 (Style::default().add_modifier(Modifier::BOLD), "> ")
@@ -353,23 +352,24 @@ impl<'a> Widget for QuestionWidget<'a> {
             ]));
 
             for (i, text) in text_data[start..start + show_lines].iter().enumerate() {
-                let suffix = if i == 0 && start > 0 {
-                    " ↑"
+                let prefix = if i == 0 && start > 0 {
+                    "↑ "
                 } else if i == show_lines - 1 && start < max_scroll {
-                    " ↓"
+                    "↓ "
                 } else {
-                    ""
+                    "  "
                 };
 
                 lines_top.push(Line::from(vec![
                     Span::raw("  "),
+                    Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
                     Span::styled(
                         text.clone(),
                         Style::default().add_modifier(Modifier::ITALIC),
                     ),
-                    Span::styled(suffix, Style::default().add_modifier(Modifier::BOLD)),
                 ]));
             }
+            lines_top.push(Line::from(""));
         }
 
         let is_field_active = self.state.app_mode == AppMode::FieldInput;
@@ -393,11 +393,11 @@ impl<'a> Widget for QuestionWidget<'a> {
                     } else if is_load_retry {
                         ("Location: ", self.state.input_text.clone())
                     } else {
-                        ("Input: ", self.state.input_text.clone())
+                        ("Value: ", self.state.input_text.clone())
                     };
                 lines_bottom.push(Line::from(vec![
                     Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
-                    Span::from(field_label),
+                    Span::styled(field_label, Style::default().add_modifier(Modifier::BOLD)),
                     Span::from(display_text),
                     cursor.clone(),
                 ]));
