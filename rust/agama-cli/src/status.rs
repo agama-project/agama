@@ -78,7 +78,7 @@ impl fmt::Display for InstallationEnum {
             Self::Ready => gettext("Installation is ready to start."),
             Self::Installing => gettext("Installation is in progress."),
             Self::Proposing => gettext("Installation is being proposed."),
-            Self::Question => gettext("There are unanswered questions. Use `agama monitor` command or web UI to answer them."),
+            Self::Question => gettext("There are unanswered questions. Use `agama monitor` command or the web user interface to answer them."),
             Self::Issues => gettext("There are issues in configuration that are blocking the installation."),
         };
         write!(f, "{}", text)
