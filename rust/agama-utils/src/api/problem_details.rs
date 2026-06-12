@@ -186,15 +186,15 @@ pub fn write_problem(
     detail: Option<&str>,
     body: Option<&str>,
 ) -> std::fmt::Result {
-    write!(f, "{}\n", gettext("Error:"))?;
-    write!(f, "{}\n", title)?;
+    writeln!(f, "{}", gettext("Error:"))?;
+    writeln!(f, "{}", title)?;
     if let Some(detail) = detail {
         let label = gettext("Details:");
-        write!(f, "\n{label}\n{detail}")?;
+        writeln!(f, "\n{label}\n{detail}")?;
     }
 
     if let Some(body) = body {
-        write!(f, "\n\n{body}")?;
+        writeln!(f, "\n{body}")?;
     }
 
     Ok(())
