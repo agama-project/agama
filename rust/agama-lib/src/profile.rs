@@ -93,26 +93,6 @@ pub enum ValidationOutcome {
     NotValid(Vec<String>),
 }
 
-impl std::fmt::Display for ValidationOutcome {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            ValidationOutcome::Valid => {
-                writeln!(f, "The profile is valid.")
-            }
-            ValidationOutcome::NotValid(errors) => {
-                writeln!(
-                    f,
-                    "The profile is not valid. Please, check the following errors:\n",
-                )?;
-                for error in errors {
-                    writeln!(f, "\t* {error}")?;
-                }
-                Ok(())
-            }
-        }
-    }
-}
-
 /// Checks whether an autoinstallation profile is valid
 ///
 /// ```
