@@ -28,7 +28,7 @@ import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage"
 import SpacePolicySelectionPage from "~/components/storage/SpacePolicySelectionPage";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
-import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
+import FormattableDeviceForm from "~/components/storage/formattable-device-form/Form";
 import PartitionForm from "~/components/storage/partition-form/Form";
 import LvmPage from "~/components/storage/LvmPage";
 import LogicalVolumeForm from "~/components/storage/logical-volume-form/Form";
@@ -67,7 +67,7 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.formatDevice,
-      element: <FormattableDevicePage />,
+      element: <FormattableDeviceForm />,
     },
     {
       path: PATHS.addPartition,
