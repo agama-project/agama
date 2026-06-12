@@ -127,25 +127,25 @@ pub async fn build() -> OpenApi {
     let schemas_to_import = vec![
         // (file path, schema name, schema parent)
         // Config schemas
-        ("share/dasd.schema.json", "dasd", "Config"),
-        ("share/iscsi.schema.json", "iscsi", "Config"),
-        ("share/storage.model.schema.json", "storage.model", "Config"),
-        ("share/storage.schema.json", "storage", "Config"),
-        ("share/zfcp.schema.json", "zfcp", "Config"),
+        ("share/dasd.schema.json", "Dasd", "Config"),
+        ("share/iscsi.schema.json", "Iscsi", "Config"),
+        ("share/storage.model.schema.json", "StorageModel", "Config"),
+        ("share/storage.schema.json", "Storage", "Config"),
+        ("share/zfcp.schema.json", "Zfcp", "Config"),
         // Proposal schemas
-        ("share/proposal.storage.schema.json", "storage", "Proposal"),
+        ("share/proposal.storage.schema.json", "Storage", "Proposal"),
         // System info schemas
         (
             "share/system.bootloader.schema.json",
-            "bootloader",
+            "Bootloader",
             "SystemInfo",
         ),
-        ("share/system.dasd.schema.json", "dasd", "SystemInfo"),
-        ("share/system.iscsi.schema.json", "iscsi", "SystemInfo"),
-        ("share/system.storage.schema.json", "storage", "SystemInfo"),
-        ("share/system.zfcp.schema.json", "zfcp", "SystemInfo"),
+        ("share/system.dasd.schema.json", "Dasd", "SystemInfo"),
+        ("share/system.iscsi.schema.json", "Iscsi", "SystemInfo"),
+        ("share/system.storage.schema.json", "Storage", "SystemInfo"),
+        ("share/system.zfcp.schema.json", "Zfcp", "SystemInfo"),
         // Other
-        ("share/device.storage.schema.json", "storage", "Device"),
+        ("share/device.storage.schema.json", "Storage", "Device"),
     ];
 
     if let Some(components) = &mut api.components {
@@ -259,7 +259,7 @@ fn extract_defs(
                     let mut def_val = val;
                     // Recursively clean internal structures inside definitions
                     extract_defs(&mut def_val, prefix, extracted_defs);
-                    extracted_defs.insert(format!("{}{}", prefix, key), def_val);
+                    extracted_defs.insert(format!("{}{}", prefix, capitalize(&key)), def_val);
                 }
             }
 
@@ -267,7 +267,7 @@ fn extract_defs(
             if let Some(Value::String(ref_str)) = map.get_mut("$ref") {
                 if ref_str.starts_with("#/$defs/") {
                     let def_name = ref_str.trim_start_matches("#/$defs/");
-                    *ref_str = format!("#/components/schemas/{}{}", prefix, def_name);
+                    *ref_str = format!("#/components/schemas/{}{}", prefix, capitalize(def_name));
                 }
             }
 
@@ -293,10 +293,10 @@ fn rewrite_storage_refs(value: &mut serde_json::Value) {
         serde_json::Value::Object(map) => {
             if let Some(serde_json::Value::String(ref_str)) = map.get_mut("$ref") {
                 if ref_str == "device.storage.schema.json" {
-                    *ref_str = "#/components/schemas/storageDevice".to_string();
+                    *ref_str = "#/components/schemas/StorageDevice".to_string();
                 } else if ref_str.starts_with("device.storage.schema.json#/$defs/") {
                     let def_name = ref_str.trim_start_matches("device.storage.schema.json#/$defs/");
-                    *ref_str = format!("#/components/schemas/storage{}", def_name);
+                    *ref_str = format!("#/components/schemas/Storage{}", capitalize(def_name));
                 }
             }
 
@@ -310,6 +310,17 @@ fn rewrite_storage_refs(value: &mut serde_json::Value) {
             }
         }
         _ => {}
+    }
+}
+
+/// Turn first letter of the string uppercase
+fn capitalize(str: &str) -> String {
+    let mut chars = str.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(first) => {
+            first.to_uppercase().collect::<String>() + chars.as_str()
+        }
     }
 }
 
@@ -342,7 +353,7 @@ fn import_schema(
     };
 
     // insert provided schema
-    schemas.insert(format!("{}{}", name, parent), source_schema_json);
+    schemas.insert(format!("{}{}", name, capitalize(parent)), source_schema_json);
 
     // put extracted defs into schemas
     for (def_name, def_value) in extracted_defs {
