@@ -160,7 +160,7 @@ describe("FilesystemFields", () => {
       const { user } = installerRender(<TestForm defaultValues={defaultValues} />);
       await user.click(screen.getByLabelText("File system"));
       await user.click(screen.getByRole("option", { name: "Default" }));
-      screen.getByText(/Existing data on vdd1 will be destroyed/);
+      screen.getByText(/Any existing data on vdd1 will be destroyed/);
     });
 
     it("does not show warning when Current option is selected", () => {
@@ -231,7 +231,7 @@ describe("FilesystemFields", () => {
       );
       // vdd1 holds an Ext4 filesystem that cannot be kept for swap, so it
       // will be formatted.
-      await screen.findByText(/Existing data on vdd1 will be destroyed/);
+      await screen.findByText(/Any existing data on vdd1 will be destroyed/);
     });
 
     it("does not show data loss notice when the current filesystem is kept", () => {
@@ -269,7 +269,7 @@ describe("FilesystemFields", () => {
       );
       // vdd1 holds an Ext4 filesystem, not allowed for /home here, so it will
       // be formatted.
-      await screen.findByText(/Existing data on vdd1 will be destroyed/);
+      await screen.findByText(/Any existing data on vdd1 will be destroyed/);
     });
   });
 

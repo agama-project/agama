@@ -139,7 +139,7 @@ const FilesystemFieldsContent = withForm({
           committedMountPoint={committedMountPoint}
           filesystemOptions={filesystemOptions}
           usableFilesystems={usableFilesystems}
-          selectedDevice={hasFilesystem ? reusedDevice : undefined}
+          selectedDevice={reusedDevice}
           isFallback={isFallbackVolume}
         />
 
