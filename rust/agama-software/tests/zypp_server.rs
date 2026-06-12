@@ -118,6 +118,7 @@ async fn test_start_zypp_server() {
         alias: "signed_repo".to_string(),
         url: root_dir.join("usr/share/signed_repo").to_string(),
         enabled: true,
+        priority: None,
     };
 
     let mut software_state = SoftwareState::new("test_product");

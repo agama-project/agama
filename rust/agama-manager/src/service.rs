@@ -19,9 +19,11 @@
 // find current contact information at www.suse.com.
 
 use crate::{
-    actions::FinishAction, bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n,
-    message, network, ntp, proxy, s390, security, software, storage, task_manager::TaskManager,
-    tasks, users,
+    actions::{FinishAction, InstallAction, SetConfigAction},
+    bootloader, checks, files, hardware, hostname, ipmi, iscsi, l10n, message, network, ntp, proxy,
+    s390, security, software, storage,
+    task_manager::TaskManager,
+    users,
 };
 use agama_users::PasswordCheckResult;
 use agama_utils::{
@@ -324,14 +326,9 @@ impl Starter {
         let iscsi = match self.iscsi {
             Some(iscsi) => iscsi,
             None => {
-                iscsi::Service::starter(
-                    storage.clone(),
-                    self.events.clone(),
-                    progress.clone(),
-                    self.dbus.clone(),
-                )
-                .start()
-                .await?
+                iscsi::Service::starter(self.events.clone(), progress.clone(), self.dbus.clone())
+                    .start()
+                    .await?
             }
         };
 
@@ -358,8 +355,7 @@ impl Starter {
             None => hardware::Registry::new_from_system(),
         };
 
-        let access =
-            agama_access::Service::starter(software.clone(), self.events.clone()).start()?;
+        let access = agama_access::Service::starter(self.events.clone()).start()?;
 
         let users = match self.users {
             Some(users) => users,
@@ -377,7 +373,6 @@ impl Starter {
                     None
                 } else {
                     let s390 = s390::Service::starter(
-                        storage.clone(),
                         self.events.clone(),
                         progress.clone(),
                         issues.clone(),
@@ -392,33 +387,12 @@ impl Starter {
 
         let task_manager = Arc::new(TaskManager::new(self.events.clone()));
 
-        let runner = tasks::TasksRunner {
-            bootloader: bootloader.clone(),
-            files: files.clone(),
-            hostname: hostname.clone(),
-            iscsi: iscsi.clone(),
-            issues: issues.clone(),
-            l10n: l10n.clone(),
-            network: network.clone(),
-            progress: progress.clone(),
-            proxy: proxy.clone(),
-            ntp: ntp.clone(),
-            questions: self.questions.clone(),
-            access: access.clone(),
-            security: security.clone(),
-            software: software.clone(),
-            storage: storage.clone(),
-            users: users.clone(),
-            s390: s390.clone(),
-            task_manager: task_manager.clone(),
-        };
-        let tasks = actor::spawn(runner);
-
         let mut service = Service {
             questions: self.questions,
             progress,
             issues,
             bootloader,
+            files,
             hostname,
             iscsi,
             l10n,
@@ -426,6 +400,7 @@ impl Starter {
             proxy,
             ntp,
             access,
+            security,
             software,
             storage,
             products: products::Registry::default(),
@@ -435,7 +410,6 @@ impl Starter {
             system: manager::SystemInfo::default(),
             product: None,
             users,
-            tasks,
             s390,
             task_manager: task_manager.clone(),
         };
@@ -448,6 +422,7 @@ impl Starter {
 pub struct Service {
     bootloader: Handler<bootloader::Service>,
     config: Config,
+    files: Handler<files::Service>,
     hardware: hardware::Registry,
     hostname: Handler<hostname::Service>,
     iscsi: Handler<iscsi::Service>,
@@ -463,10 +438,10 @@ pub struct Service {
     questions: Handler<question::Service>,
     access: Handler<agama_access::Service>,
     s390: Option<Handler<s390::Service>>,
+    security: Handler<security::Service>,
     software: Handler<software::Service>,
     storage: Handler<storage::Service>,
     system: manager::SystemInfo,
-    tasks: Handler<tasks::TasksRunner>,
     users: Handler<users::Service>,
     task_manager: Arc<TaskManager>,
 }
@@ -526,10 +501,35 @@ impl Service {
 
     async fn set_config(&mut self, config: Config) -> Result<(), Error> {
         self.set_product(&config)?;
+        let old_config = self.config.clone();
         self.config = config;
 
-        let set_config = tasks::message::SetConfig::new(self.product.clone(), self.config.clone());
-        self.tasks.cast(set_config)?;
+        let action = SetConfigAction {
+            bootloader: self.bootloader.clone(),
+            files: self.files.clone(),
+            hostname: self.hostname.clone(),
+            iscsi: self.iscsi.clone(),
+            l10n: self.l10n.clone(),
+            network: self.network.clone(),
+            progress: self.progress.clone(),
+            proxy: self.proxy.clone(),
+            ntp: self.ntp.clone(),
+            questions: self.questions.clone(),
+            access: self.access.clone(),
+            security: self.security.clone(),
+            software: self.software.clone(),
+            storage: self.storage.clone(),
+            users: self.users.clone(),
+            s390: self.s390.clone(),
+            task_manager: self.task_manager.clone(),
+        };
+
+        if let Err(error) = action
+            .run(self.product.clone(), self.config.clone(), old_config)
+            .await
+        {
+            tracing::error!("Failed to set the configuration: {error}");
+        }
 
         Ok(())
     }
@@ -619,8 +619,9 @@ impl Service {
             return Ok(false);
         }
 
-        let is_empty = !status.progresses.iter().any(|p| p.scope == Scope::Software);
-        Ok(is_empty)
+        let is_busy = status.progresses.iter().any(|p| p.scope == Scope::Software)
+            || status.tasks.iter().any(|p| p.scope == Scope::Software);
+        Ok(!is_busy)
     }
 
     /// Returns the product configuration.
@@ -868,13 +869,36 @@ impl MessageHandler<message::RunAction> for Service {
                     tracing::error!("IPMI failed: {}", e);
                 }
 
-                if let Err(error) = self.tasks.cast(tasks::message::Install) {
+                let action = InstallAction {
+                    issues: self.issues.clone(),
+                    hostname: self.hostname.clone(),
+                    l10n: self.l10n.clone(),
+                    network: self.network.clone(),
+                    proxy: self.proxy.clone(),
+                    ntp: self.ntp.clone(),
+                    access: self.access.clone(),
+                    software: self.software.clone(),
+                    storage: self.storage.clone(),
+                    files: self.files.clone(),
+                    progress: self.progress.clone(),
+                    users: self.users.clone(),
+                    task_manager: self.task_manager.clone(),
+                };
+
+                if let Err(error) = action.run().await {
                     if let Err(e) = ipmi.failed() {
                         tracing::error!("IPMI failed: {}", e);
                     }
-
+                    tracing::error!("Installation failed: {error}");
                     return Err(error);
                 }
+
+                tracing::info!("Installation tasks spawned");
+
+                let method =
+                    api::FinishMethod::from_kernel_cmdline().unwrap_or(api::FinishMethod::Stop);
+                let finish = FinishAction::new(method);
+                finish.run();
             }
             Action::Finish(method) => {
                 checks::check_stage(&self.progress, Stage::Finished).await?;

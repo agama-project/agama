@@ -3,10 +3,9 @@ use std::{env, path::PathBuf};
 mod tasks {
     use std::{fs::File, io::Write};
 
-    use agama_cli::Cli;
-    use clap::CommandFactory;
+    use agama_cli::build_cli;
+
     use clap_complete::aot;
-    use clap_markdown::MarkdownOptions;
 
     use crate::output_dir;
 
@@ -15,7 +14,7 @@ mod tasks {
         let out_dir = output_dir()?.join("shell");
         std::fs::create_dir_all(&out_dir)?;
 
-        let mut cmd = Cli::command();
+        let mut cmd = build_cli();
         clap_complete::generate_to(aot::Bash, &mut cmd, "agama", &out_dir)?;
         clap_complete::generate_to(aot::Fish, &mut cmd, "agama", &out_dir)?;
         clap_complete::generate_to(aot::Zsh, &mut cmd, "agama", &out_dir)?;
@@ -29,10 +28,11 @@ mod tasks {
 
     /// Generate Agama's CLI documentation in markdown format.
     pub fn generate_markdown() -> std::io::Result<()> {
-        let options = MarkdownOptions::new()
+        let cmd = build_cli();
+        let options = clap_markdown::MarkdownOptions::new()
             .title("Command-line reference".to_string())
             .show_footer(false);
-        let markdown = clap_markdown::help_markdown_custom::<Cli>(&options);
+        let markdown = clap_markdown::help_markdown_command_custom(&cmd, &options);
 
         let path = output_dir()?.join("agama.md");
         let mut file = File::create(&path)?;
@@ -48,7 +48,7 @@ mod tasks {
         let out_dir = output_dir()?.join("man");
         std::fs::create_dir_all(&out_dir)?;
 
-        let cmd = Cli::command();
+        let cmd = build_cli();
         clap_mangen::generate_to(cmd, &out_dir)?;
 
         println!("Generate manpages documentation at {}.", out_dir.display());
@@ -95,10 +95,21 @@ fn output_dir() -> std::io::Result<PathBuf> {
     Ok(out_dir)
 }
 
+fn print_help() {
+    println!("Usage: cargo xtask <task>");
+    println!("\nTasks:");
+    println!("  completions    Generate auto-completion snippets for common shells");
+    println!("  markdown       Generate Agama's CLI documentation in markdown format");
+    println!("  manpages       Generate Agama's CLI man pages");
+    println!("  openapi        Generate Agama's OpenAPI specification");
+    println!("  help           Print this help message");
+}
+
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     let Some(task) = env::args().nth(1) else {
         eprintln!("You must specify a xtask");
+        print_help();
         std::process::exit(1);
     };
 
@@ -107,8 +118,13 @@ async fn main() -> std::io::Result<()> {
         "markdown" => tasks::generate_markdown(),
         "manpages" => tasks::generate_manpages(),
         "openapi" => tasks::generate_openapi().await,
+        "help" | "-h" | "--help" => {
+            print_help();
+            Ok(())
+        }
         other => {
             eprintln!("Unknown task '{}'", other);
+            print_help();
             std::process::exit(1);
         }
     }

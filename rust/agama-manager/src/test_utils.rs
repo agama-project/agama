@@ -48,15 +48,8 @@ pub async fn start_service(events: event::Sender, dbus: zbus::Connection) -> Han
         dbus.clone(),
     )
     .await;
-    let iscsi = start_iscsi_service(
-        storage.clone(),
-        events.clone(),
-        progress.clone(),
-        dbus.clone(),
-    )
-    .await;
+    let iscsi = start_iscsi_service(events.clone(), progress.clone(), dbus.clone()).await;
     let s390 = start_s390_service(
-        storage.clone(),
         events.clone(),
         progress.clone(),
         issues.clone(),

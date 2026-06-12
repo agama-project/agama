@@ -6,7 +6,6 @@ edition.workspace = true
 
 [dependencies]
 agama-utils = { path = "../agama-utils" }
-agama-storage = { path = "../agama-storage" }
 agama-storage-client = { path = "../agama-storage-client" }
 thiserror = "2.0.16"
 async-trait = "0.1.89"

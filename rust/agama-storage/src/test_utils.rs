@@ -24,10 +24,10 @@ use std::sync::Arc;
 
 use agama_utils::{
     actor::Handler,
-    api::{event, software::Resolvable, storage::Config, Issue},
+    api::{event, storage::Config, Issue},
     issue,
     products::ProductSpec,
-    progress, BoxFuture,
+    progress, BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use serde_json::Value;

@@ -33,7 +33,7 @@ type ConfigDialogProps = {
 };
 
 /**
- * Dialog showing the current installation settings in JSON format, with
+ * Dialog showing the current installation configuration in JSON format, with
  * options to copy or download the content.
  */
 export default function ConfigDialog({ onClose }: ConfigDialogProps) {

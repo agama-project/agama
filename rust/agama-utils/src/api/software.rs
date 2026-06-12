@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -26,6 +26,3 @@ pub use system_info::*;
 
 mod proposal;
 pub use proposal::{Proposal, SelectedBy, SoftwareProposal};
-
-mod resolvable;
-pub use resolvable::{Resolvable, ResolvableType};

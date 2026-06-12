@@ -25,8 +25,9 @@ use crate::{
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{self, event, software::Resolvable},
+    api::{self, event},
     message::GetResolvables,
+    Resolvable,
 };
 use async_trait::async_trait;
 use merge::Merge;

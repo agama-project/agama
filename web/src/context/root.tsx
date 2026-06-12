@@ -22,6 +22,7 @@
 
 import React, { Suspense } from "react";
 import { AuthProvider } from "./auth";
+import { AppearanceProvider } from "./appearance";
 import { Loading } from "~/components/layout";
 
 /**
@@ -30,7 +31,9 @@ import { Loading } from "~/components/layout";
 function RootProviders({ children }: React.PropsWithChildren) {
   return (
     <Suspense fallback={<Loading />}>
-      <AuthProvider>{children}</AuthProvider>
+      <AppearanceProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </AppearanceProvider>
     </Suspense>
   );
 }

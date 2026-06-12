@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import Breadcrumbs from "./Breadcrumbs";
 
@@ -38,6 +38,19 @@ describe("Breadcrumbs", () => {
 
     const items = screen.getAllByRole("listitem");
     expect(items).toHaveLength(2);
+  });
+
+  it("exposes explicit list semantics", () => {
+    installerRender(
+      <Breadcrumbs>
+        <Breadcrumbs.Item label="Software" path="/software" />
+      </Breadcrumbs>,
+    );
+
+    // Roles set explicitly to survive the flex display in Safari/VoiceOver.
+    const list = screen.getByRole("list");
+    expect(list.tagName).toBe("OL");
+    within(list).getByRole("listitem");
   });
 });
 
@@ -59,16 +72,15 @@ describe("Breadcrumbs.Item", () => {
   it("renders as heading when isCurrent is true", () => {
     installerRender(<Breadcrumbs.Item label="Current Page" isCurrent />);
 
-    const heading = screen.getByRole("heading", { level: 1, name: "Current Page" });
-    expect(heading).toBeInTheDocument();
+    screen.getByRole("heading", { level: 1, name: "Current Page" });
     expect(screen.queryByRole("link")).toBeNull();
   });
 
-  it("sets aria-current='page' when isCurrent is true", () => {
+  it("sets aria-current='page' on the current heading when isCurrent is true", () => {
     installerRender(<Breadcrumbs.Item label="Current Page" isCurrent />);
 
-    const listItem = screen.getByRole("listitem");
-    expect(listItem).toHaveAttribute("aria-current", "page");
+    const heading = screen.getByRole("heading", { level: 1, name: "Current Page" });
+    expect(heading).toHaveAttribute("aria-current", "page");
   });
 
   it("does not set aria-current when isCurrent is false", () => {
@@ -76,6 +88,7 @@ describe("Breadcrumbs.Item", () => {
 
     const listItem = screen.getByRole("listitem");
     expect(listItem).not.toHaveAttribute("aria-current");
+    expect(screen.getByRole("link")).not.toHaveAttribute("aria-current");
   });
 
   it("renders divider if hideDivider is false", () => {

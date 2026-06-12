@@ -20,11 +20,11 @@
 
 //! This module defines a chrony-based module for the agama-ntp service.
 
-use agama_utils::api::{
-    ntp::{Config, Source, SourceType},
-    software::Resolvable,
-};
 use agama_utils::command::enable_service;
+use agama_utils::{
+    api::ntp::{Config, Source, SourceType},
+    Resolvable,
+};
 use async_trait::async_trait;
 use std::path::{Path, PathBuf};
 use std::process::Output;

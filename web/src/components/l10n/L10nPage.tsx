@@ -32,16 +32,16 @@ import { _ } from "~/i18n";
 const InstallerL10nSettingsInfo = () => {
   const info = localConnection()
     ? // TRANSLATORS: Text used for helping user to set the interface language
-      // and keymap from product localization options. Text in the square brackets [] is
-      // used for the link to open the settings panel, please keep the brackets.
+      // and keymap. Text in the square brackets [] is the link to the header
+      // option that opens those settings; please keep the brackets.
       _(
-        "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.",
+        "These are the settings for the product to install. The installer language and keyboard layout can be adjusted using the [language and keyboard] option at the top bar.",
       )
-    : // TRANSLATORS: Text used for helping user to set the interface language
-      // from product localization options. Text in the square brackets [] is used
-      // for the link to open the settings panel, please keep the brackets.
+    : // TRANSLATORS: Text used for helping user to set the interface language.
+      // Text in the square brackets [] is the link to the header option that
+      // opens those settings; please keep the brackets.
       _(
-        "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.",
+        "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.",
       );
 
   const [infoStart, infoLink, infoEnd] = info.split(/[[\]]/);

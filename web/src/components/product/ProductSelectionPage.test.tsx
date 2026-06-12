@@ -28,9 +28,9 @@ import {
   mockProduct,
   mockProductConfig,
   mockRoutes,
+  mockSystem,
   unmockRoutes,
 } from "~/test-utils";
-import { useSystem } from "~/hooks/model/system";
 import { useSystem as useSystemSoftware } from "~/hooks/model/system/software";
 import { ROOT } from "~/routes/paths";
 import ProductSelectionPage from "./ProductSelectionPage";
@@ -69,10 +69,10 @@ const productWithModes: Product = {
 
 const mockPutConfigFn = jest.fn();
 const mockPatchConfigFn = jest.fn();
-const mockUseSystemFn: jest.Mock<ReturnType<typeof useSystem>> = jest.fn();
 const mockUseSystemSoftwareFn: jest.Mock<ReturnType<typeof useSystemSoftware>> = jest.fn();
 
-// FIXME: add ad use a mockSystem from test-utils instead
+// Rendered in the header by Page; mocked to keep the product selection tests
+// focused on the page itself and free of the header's localization toggle.
 jest.mock("~/components/core/InstallerL10nOptions", () => () => (
   <div>InstallerL10nOptions Mock</div>
 ));
@@ -85,11 +85,6 @@ jest.mock("~/api", () => ({
   patchConfig: (payload) => mockPatchConfigFn(payload),
 }));
 
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => mockUseSystemFn(),
-}));
-
 jest.mock("~/hooks/model/system/software", () => ({
   ...jest.requireActual("~/hooks/model/system/software"),
   useSystem: () => mockUseSystemSoftwareFn(),
@@ -99,7 +94,7 @@ describe("ProductSelectionPage", () => {
   beforeEach(() => {
     mockRoutes("/products?byUser");
 
-    mockUseSystemFn.mockReturnValue({
+    mockSystem({
       products: [tumbleweed, microOs],
     });
 
@@ -111,7 +106,7 @@ describe("ProductSelectionPage", () => {
   });
 
   it("renders available products excluding the selected one unless it has modes", () => {
-    mockUseSystemFn.mockReturnValue({
+    mockSystem({
       products: [tumbleweed, microOs, productWithModes],
     });
 
@@ -153,7 +148,7 @@ describe("ProductSelectionPage", () => {
     await user.click(microOsOption);
     expect(microOsOption).toBeChecked();
     act(() => {
-      mockUseSystemFn.mockReturnValue({
+      mockSystem({
         // Same products, new objects
         products: [{ ...tumbleweed }, { ...microOs }],
       });
@@ -184,7 +179,7 @@ describe("ProductSelectionPage", () => {
     const productWithLicense2 = { ...microOs, id: "Product2", name: "Product 2" };
 
     mockProduct(undefined);
-    mockUseSystemFn.mockReturnValue({
+    mockSystem({
       products: [productWithLicense1, productWithLicense2],
     });
 
@@ -305,7 +300,7 @@ describe("ProductSelectionPage", () => {
   describe("when there are products with modes involved", () => {
     it("renders mode options when product has modes", async () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -318,7 +313,7 @@ describe("ProductSelectionPage", () => {
     it("excludes already selected mode", async () => {
       mockProduct(productWithModes);
       mockProductConfig({ id: productWithModes.id, mode: "standard" });
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -330,7 +325,7 @@ describe("ProductSelectionPage", () => {
 
     it("allows selecting a mode", async () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -350,7 +345,7 @@ describe("ProductSelectionPage", () => {
 
     it("submits product with selected mode", async () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -370,7 +365,7 @@ describe("ProductSelectionPage", () => {
 
     it("resets mode selection when switching to a product without modes", async () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes, tumbleweed] });
+      mockSystem({ products: [productWithModes, tumbleweed] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       // Select product with modes and choose a mode
@@ -390,7 +385,7 @@ describe("ProductSelectionPage", () => {
 
     it("disables submit button when product with modes has no mode selected", async () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -402,7 +397,7 @@ describe("ProductSelectionPage", () => {
 
     it("enables submit button when mode is selected", async () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -418,7 +413,7 @@ describe("ProductSelectionPage", () => {
     describe("ProductFormSubmitLabel", () => {
       it("includes mode name in submit button label", async () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         const { user } = installerRender(<ProductSelectionPage />);
         const productOption = screen.getByRole("radio", { name: productWithModes.name });
         await user.click(productOption);
@@ -431,7 +426,7 @@ describe("ProductSelectionPage", () => {
 
       it("shows only product name when no mode selected", async () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         const { user } = installerRender(<ProductSelectionPage />);
 
         const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -445,7 +440,7 @@ describe("ProductSelectionPage", () => {
     describe("ProductFormSubmitLabelHelp", () => {
       it("shows warning when product with modes is selected but no mode chosen", async () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         const { user } = installerRender(<ProductSelectionPage />);
 
         const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -456,7 +451,7 @@ describe("ProductSelectionPage", () => {
 
       it("hides warning when mode is selected", async () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         const { user } = installerRender(<ProductSelectionPage />);
 
         const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -486,7 +481,7 @@ describe("ProductSelectionPage", () => {
     describe("when single product is available", () => {
       it("renders 'Select a mode' when product has modes and no product selected", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByRole("heading", { name: "Select a mode" });
@@ -494,7 +489,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders 'Change mode' when product with modes is already selected", () => {
         mockProduct(productWithModes);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByRole("heading", { name: "Change mode" });
@@ -502,7 +497,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders 'Select a product' when single product has no modes", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+        mockSystem({ products: [tumbleweed] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByRole("heading", { name: "Select a product" });
@@ -512,7 +507,7 @@ describe("ProductSelectionPage", () => {
     describe("when multiple products are available", () => {
       it("renders 'Select a product' when no product selected", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        mockSystem({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByRole("heading", { name: "Select a product" });
@@ -520,7 +515,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders 'Change product' when switching from product without modes", () => {
         mockProduct(tumbleweed);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        mockSystem({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByRole("heading", { name: "Change product" });
@@ -528,7 +523,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders 'Change product or mode' when switching from product with modes", () => {
         mockProduct(productWithModes);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes, tumbleweed] });
+        mockSystem({ products: [productWithModes, tumbleweed] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByRole("heading", { name: "Change product or mode" });
@@ -540,7 +535,7 @@ describe("ProductSelectionPage", () => {
     describe("when single product is available", () => {
       it("renders mode selection intro when product has modes", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Select a mode and confirm your choice.");
@@ -548,7 +543,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders confirmation intro when product has no modes", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+        mockSystem({ products: [tumbleweed] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Confirm the product selection.");
@@ -558,7 +553,7 @@ describe("ProductSelectionPage", () => {
     describe("when multiple products are available", () => {
       it("renders singular form with two products available but one already selected", () => {
         mockProduct(tumbleweed);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        mockSystem({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Select a product and confirm your choice.");
@@ -566,7 +561,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders plural form when multiple products available for initial selection", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        mockSystem({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Select a product and confirm your choice at the end of the list.");
@@ -574,7 +569,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders plural form when more than two products available", () => {
         mockProduct(tumbleweed);
-        mockUseSystemFn.mockReturnValue({
+        mockSystem({
           products: [tumbleweed, microOs, productWithModes],
         });
         installerRender(<ProductSelectionPage />);
@@ -584,7 +579,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders plural form for initial selection with three products", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({
+        mockSystem({
           products: [tumbleweed, microOs, productWithModes],
         });
         installerRender(<ProductSelectionPage />);
@@ -598,7 +593,7 @@ describe("ProductSelectionPage", () => {
     describe("when single product is available", () => {
       it("renders 'Choose a mode' when product has modes and no product selected", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Choose a mode");
@@ -606,7 +601,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders 'Switch to a different mode' when product is already selected", () => {
         mockProduct(productWithModes);
-        mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+        mockSystem({ products: [productWithModes] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Switch to a different mode");
@@ -617,7 +612,7 @@ describe("ProductSelectionPage", () => {
       // should be auto-selected.
       it("renders 'Choose a product' when single product has no modes", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+        mockSystem({ products: [tumbleweed] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Choose a product");
@@ -627,7 +622,7 @@ describe("ProductSelectionPage", () => {
     describe("when no product is selected yet (initial selection)", () => {
       it("renders plural form when multiple products available", () => {
         mockProduct(undefined);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        mockSystem({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Choose from 2 available products");
@@ -637,7 +632,7 @@ describe("ProductSelectionPage", () => {
     describe("when switching from a product without modes", () => {
       it("renders singular form when only one other product available", () => {
         mockProduct(tumbleweed);
-        mockUseSystemFn.mockReturnValue({ products: [tumbleweed, microOs] });
+        mockSystem({ products: [tumbleweed, microOs] });
         installerRender(<ProductSelectionPage />);
 
         screen.getByText("Switch to another product");
@@ -645,7 +640,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders plural form when multiple other products available", () => {
         mockProduct(tumbleweed);
-        mockUseSystemFn.mockReturnValue({
+        mockSystem({
           products: [tumbleweed, microOs, productWithModes],
         });
         installerRender(<ProductSelectionPage />);
@@ -657,7 +652,7 @@ describe("ProductSelectionPage", () => {
     describe("when switching from a product with modes", () => {
       it("renders singular form when only one other product available", () => {
         mockProduct(productWithModes);
-        mockUseSystemFn.mockReturnValue({
+        mockSystem({
           products: [productWithModes, tumbleweed],
         });
         installerRender(<ProductSelectionPage />);
@@ -667,7 +662,7 @@ describe("ProductSelectionPage", () => {
 
       it("renders plural form when multiple other products available", () => {
         mockProduct(productWithModes);
-        mockUseSystemFn.mockReturnValue({
+        mockSystem({
           products: [productWithModes, tumbleweed, microOs],
         });
         installerRender(<ProductSelectionPage />);
@@ -744,7 +739,7 @@ describe("ProductSelectionPage", () => {
     it("renders a warning when changing mode for the same product", async () => {
       mockProduct(productWithModes);
       mockProductConfig({ id: productWithModes.id, mode: "standard" });
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -756,7 +751,7 @@ describe("ProductSelectionPage", () => {
 
     it("does not render the warning about product change when no product was previously selected", async () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { user } = installerRender(<ProductSelectionPage />);
 
       const productOption = screen.getByRole("radio", { name: productWithModes.name });
@@ -885,22 +880,22 @@ describe("ProductSelectionPage", () => {
   describe("ProductFormProductOption", () => {
     it("displays license requirement label for products with licenses", () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [microOs] });
+      mockSystem({ products: [microOs] });
       const { rerender } = installerRender(<ProductSelectionPage />);
       screen.getByText("License acceptance required");
 
-      mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+      mockSystem({ products: [tumbleweed] });
       rerender(<ProductSelectionPage />);
       expect(screen.queryByText("License acceptance required")).toBeNull();
     });
 
     it("displays modes label for products with modes (none selected yet)", () => {
       mockProduct(undefined);
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       const { rerender } = installerRender(<ProductSelectionPage />);
       screen.getByText("2 modes available");
 
-      mockUseSystemFn.mockReturnValue({ products: [tumbleweed] });
+      mockSystem({ products: [tumbleweed] });
       rerender(<ProductSelectionPage />);
       expect(screen.queryByText("2 modes avaiable")).toBeNull();
     });
@@ -908,7 +903,7 @@ describe("ProductSelectionPage", () => {
     it("displays modes label for products with modes (one selected)", () => {
       mockProduct(productWithModes);
       mockProductConfig({ id: productWithModes.id, mode: "standard" });
-      mockUseSystemFn.mockReturnValue({ products: [productWithModes] });
+      mockSystem({ products: [productWithModes] });
       installerRender(<ProductSelectionPage />);
 
       screen.getByText("1 other mode available");

@@ -1,0 +1,44 @@
+// Language-specific font overrides.
+//
+// Switches the font family for scripts not well covered by the default fonts.
+
+/*
+ * Use Noto font family for Cyrillic languages of countries with larger
+ * populations based on data from
+ * https://worldpopulationreview.com/country-rankings/countries-that-use-cyrillic
+ */
+:lang(ru), /* Russian */
+:lang(uk), /* Ukrainian */
+:lang(kk), /* Kazakh */
+:lang(tg), /* Tajik */
+:lang(be), /* Belarusian */
+:lang(bg), /* Bulgarian */
+:lang(sr-Cyrl) {
+  /* Serbian (Cyrillic) */
+  --pf-t--global--font--family--100: "Noto Sans", sans-serif;
+  --pf-t--global--font--family--200: "Noto Sans", sans-serif;
+}
+
+/* Georgian */
+:lang(ka) {
+  --pf-t--global--font--family--100: "Noto Sans Georgian", sans-serif;
+  --pf-t--global--font--family--200: "Noto Sans Georgian Display", sans-serif;
+}
+
+/* Chinese (Simplified) */
+:lang(zh) {
+  --pf-t--global--font--family--100: "Noto Sans SC";
+  --pf-t--global--font--family--200: "Noto Sans SC Display", "Noto Sans SC", serif;
+}
+
+/* Japanese */
+:lang(ja) {
+  --pf-t--global--font--family--100: "Noto Sans JP", serif;
+  --pf-t--global--font--family--200: "Noto Sans JP Display", "Noto Sans JP", serif;
+}
+
+/* Korean */
+:lang(ko) {
+  --pf-t--global--font--family--100: "Noto Sans KR", serif;
+  --pf-t--global--font--family--200: "Noto Sans KR Display", "Noto Sans KR", serif;
+}

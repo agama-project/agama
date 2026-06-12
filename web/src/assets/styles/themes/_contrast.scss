@@ -1,0 +1,55 @@
+// High-contrast axis.
+//
+// PatternFly's built-in high-contrast theme (activated by
+// .pf-v6-theme-high-contrast on <html>) governs high contrast by default, for
+// both light and dark, so accessibility is never compromised. Composes with the
+// dark axis via .pf-v6-theme-dark.pf-v6-theme-high-contrast. Independent of OS
+// forced-colors mode, which is handled separately.
+//
+// Opt-in branding: a product may set --agm-t--brand--color / --agm-t--link--color
+// in a :root:where(.pf-v6-theme-high-contrast) block of its appearance file to
+// brand the high-contrast accent. Leaving them unset keeps PF's accessible
+// high-contrast values (the mappings below fall back to them). Two blocks are
+// needed because PF uses different high-contrast values for light and dark.
+//
+// Loaded after _dark.scss. Only the brand/accent is exposed here; surfaces,
+// text and borders stay at PF's high-contrast values on purpose. A product that
+// overrides the accent is responsible for keeping the contrast accessible.
+
+:root:where(.pf-v6-theme-high-contrast:not(.pf-v6-theme-dark)) {
+  --pf-t--global--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--color--brand--300)
+  );
+  --pf-t--global--text--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--color--brand--400)
+  );
+  --pf-t--global--icon--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--color--brand--300)
+  );
+  --pf-t--global--text--color--link--default: var(
+    --agm-t--link--color,
+    var(--pf-t--global--text--color--link--200)
+  );
+}
+
+:root:where(.pf-v6-theme-dark.pf-v6-theme-high-contrast) {
+  --pf-t--global--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--dark--color--brand--100)
+  );
+  --pf-t--global--text--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--dark--color--brand--200)
+  );
+  --pf-t--global--icon--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--pf-t--global--dark--color--brand--200)
+  );
+  --pf-t--global--text--color--link--default: var(
+    --agm-t--link--color,
+    var(--pf-t--global--dark--text--color--link--100)
+  );
+}

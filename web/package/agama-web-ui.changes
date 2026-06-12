@@ -1,4 +1,30 @@
 -------------------------------------------------------------------
+Wed Jun 10 12:07:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Redesign the installer header: replace the "Review and Install"
+  button with breadcrumb navigation, show the product and the
+  installer tools (localization, configuration, appearance and
+  status) on every page, and add tooltips, clearer labels and a
+  customizable icon size scale (gh#agama-project/agama#3607).
+-------------------------------------------------------------------
+Tue Jun  9 21:51:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve retry popup when failed to load unattended profile. It
+  now allows to change URL and also improve its UX.
+  (gh#agama-project/agama#3589)
+
+-------------------------------------------------------------------
+Tue Jun  9 13:31:32 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix detection of task changes (related to bsc#1266276).
+
+-------------------------------------------------------------------
+Tue Jun  9 09:41:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add dark and high-contrast styles, enabling per-product branding
+  (gh#agama-project/agama#3604, jsc#PED-14955).
+
+-------------------------------------------------------------------
 Fri Jun  5 12:25:54 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fix race condition in download success alert.

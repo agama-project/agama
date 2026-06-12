@@ -138,8 +138,7 @@ const Summary = ({
                 <Text
                   component="small"
                   isBold={hasIssues}
-                  className={textStyles.textColorSubtle}
-                  style={{ textWrap: "balance" }}
+                  className={[textStyles.textColorSubtle, "text-balance"].join(" ")}
                 >
                   {description}
                 </Text>

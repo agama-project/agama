@@ -224,6 +224,12 @@ impl TaskManager {
             state.metadata.insert(task_id, metadata.clone());
         }
 
+        if let Err(e) = self.events.send(Event::TaskAdded {
+            task: metadata.clone().into(),
+        }) {
+            tracing::warn!("Failed to send TaskAdded event: {}", e);
+        }
+
         let state = Arc::clone(&self.state);
         let events = self.events.clone();
 
