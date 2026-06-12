@@ -1,5 +1,6 @@
 use agama_utils::api::question::{Answer, Question, QuestionField};
 use crossterm::event::{Event, KeyCode, KeyEventKind};
+use gettextrs::gettext;
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -328,15 +329,18 @@ impl<'a> Widget for QuestionWidget<'a> {
             let max_scroll = data_len.saturating_sub(show_lines);
             let start = (self.state.scroll as usize).min(max_scroll);
 
+            // TRANSLATORS: additional data that question passed to user beside main question message
+            let data_label = gettext("Additional data");
             let header_text = if max_scroll > 0 {
-                format!("Additional data ({}/{}):", start + 1, max_scroll + 1)
+                format!("{} ({}/{}):", data_label, start + 1, max_scroll + 1)
             } else {
-                "Additional data:".to_string()
+                format!("{}:", data_label)
             };
 
             let mut hint_text = String::new();
             if self.state.app_mode == AppMode::DataViewer && max_scroll > 0 {
-                hint_text = " (use PageUp/PageDown to scroll)".to_string();
+                // TRANSLATORS: CLI hint how to scroll through additional data
+                hint_text = format!(" ({})", gettext("use PageUp/PageDown to scroll"));
             }
 
             let (header_style, prefix) = if self.state.app_mode == AppMode::DataViewer {
@@ -389,11 +393,14 @@ impl<'a> Widget for QuestionWidget<'a> {
                 let prefix = if is_field_active { "> " } else { "  " };
                 let (field_label, display_text) =
                     if matches!(question.spec.field, QuestionField::Password) {
-                        ("Password: ", "*".repeat(self.state.input_text.len()))
+                        // TRANSLATORS: Input field in CLI for password
+                        (format!("{}: ", gettext("Password")), "*".repeat(self.state.input_text.len()))
                     } else if is_load_retry {
-                        ("Location: ", self.state.input_text.clone())
+                        // TRANSLATORS: Input field in CLI for configuration location
+                        (format!("{}: ", gettext("Location")), self.state.input_text.clone())
                     } else {
-                        ("Value: ", self.state.input_text.clone())
+                        // TRANSLATORS: Input field in CLI for generic value needed in answer. It is context dependent
+                        (format!("{}: ", gettext("Value")), self.state.input_text.clone())
                     };
                 lines_bottom.push(Line::from(vec![
                     Span::styled(prefix, Style::default().add_modifier(Modifier::BOLD)),
