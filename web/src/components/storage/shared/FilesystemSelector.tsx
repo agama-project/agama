@@ -76,7 +76,7 @@ function defaultFsText(filesystem, mountPoint, isFallback) {
   if (isFallback) {
     return sprintf(
       // TRANSLATORS: %s is a filesystem type (eg. XFS)
-      _("%s (default file system for generic partitions)"),
+      _("%s (default file system for generic mount points)"),
       filesystemLabel(filesystem),
     );
   }

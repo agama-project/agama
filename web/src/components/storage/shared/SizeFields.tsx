@@ -101,7 +101,7 @@ type SizeFieldsContentProps = {
 
 function autoSizeSource(volume) {
   if (isEmpty(volume.mountPath)) {
-    return "default size for generic partitions";
+    return "default size for generic mount points";
   }
 
   if (volume.autoSize) {
