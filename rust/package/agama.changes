@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 12 14:06:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the same format to display the result on "validate" and
+  "validate --local" (gh#agama-project/agama#3616).
+- Reduce the validation attempts on "agama config load".
+
+-------------------------------------------------------------------
 Fri Jun 12 12:37:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Print the status after running the "monitor", "config load",
