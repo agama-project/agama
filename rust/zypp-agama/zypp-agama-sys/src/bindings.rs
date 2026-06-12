@@ -687,11 +687,12 @@ unsafe extern "C" {
     #[doc = " repository array in list.\n when no longer needed, use \\ref free_repository_list to release memory\n @param zypp see \\ref init_target\n @param[out] status (will overwrite existing contents)"]
     pub fn list_repositories(zypp: *mut Zypp, status: *mut Status) -> RepositoryList;
     pub fn free_repository_list(repo_list: *mut RepositoryList);
-    #[doc = " Adds repository to repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique\n @param url can contain repo variables\n @param[out] status (will overwrite existing contents)\n @param callback pointer to function with callback or NULL\n @param user_data"]
+    #[doc = " Adds repository to repo manager\n @param zypp see \\ref init_target\n @param alias have to be unique\n @param url can contain repo variables\n @param priority repository priority, 0 uses libzypp's default\n @param[out] status (will overwrite existing contents)\n @param callback pointer to function with callback or NULL\n @param user_data"]
     pub fn add_repository(
         zypp: *mut Zypp,
         alias: *const ::std::os::raw::c_char,
         url: *const ::std::os::raw::c_char,
+        priority: ::std::os::raw::c_uint,
         status: *mut Status,
         callback: ZyppProgressCallback,
         user_data: *mut ::std::os::raw::c_void,

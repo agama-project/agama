@@ -20,23 +20,41 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { sprintf } from "sprintf-js";
+import { useAppearance } from "~/context/appearance";
 import { _ } from "~/i18n";
 
-export default function ProductLogo({ product, width = "80px" }) {
-  if (!product) return;
+/**
+ * Builds the dark-variant filename for a logo (e.g. "SUSE.svg" -> "SUSE-dark.svg").
+ */
+function darkVariant(icon: string): string {
+  const dot = icon.lastIndexOf(".");
+  return dot === -1 ? `${icon}-dark` : `${icon.slice(0, dot)}-dark${icon.slice(dot)}`;
+}
 
-  const logoSrc = `assets/logos/${product.icon}`;
+export default function ProductLogo({ product, width = "80px" }) {
+  const { isDark } = useAppearance();
+  // Prefer the dark variant on the dark theme, falling back to the light logo
+  // for products that do not ship one (handled by onError below).
+  const [useDark, setUseDark] = useState(isDark);
+
+  useEffect(() => setUseDark(isDark), [isDark]);
+
+  if (!product || !product.icon) return;
+
+  const lightSrc = `assets/logos/${product.icon}`;
+  const darkSrc = `assets/logos/${darkVariant(product.icon)}`;
   // TRANSLATORS: %s will be replaced by a product name. E.g., "openSUSE Tumbleweed"
   const logoAltText = sprintf(_("%s logo"), product.name);
 
   return (
     <img
       aria-hidden
-      src={logoSrc}
+      src={useDark ? darkSrc : lightSrc}
       alt={logoAltText}
       width={width}
+      onError={() => useDark && setUseDark(false)}
       style={{ verticalAlign: "middle", width }}
     />
   );

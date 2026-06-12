@@ -20,32 +20,59 @@
 
 use agama_lib::http::BaseHTTPClient;
 use agama_lib::manager::http_client::ManagerHTTPClient;
-use clap::Subcommand;
+use agama_utils::make_long;
+use clap::{Arg, ArgMatches, Command};
+use gettextrs::gettext;
 use std::io;
 use std::path::PathBuf;
 
-// definition of "agama logs" subcommands, see clap crate for details
-#[derive(Subcommand, Debug)]
-pub enum LogsCommands {
-    /// Collect and store the logs in a tar archive.
-    Store {
-        #[clap(long, short = 'd')]
-        /// Path to destination directory and, optionally, the archive file name. The extension will
-        /// be added automatically.
-        destination: Option<PathBuf>,
-    },
-    /// List the logs to collect
-    List,
+pub fn build_logs_cmd() -> Command {
+    // TRANSLATORS: CLI help for: agama logs
+    let about = gettext("Collect the installer logs");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama logs (details)
+            "\
+        The installer logs are stored in a compressed archive for further inspection. The file \
+        includes system and Agama-specific logs and configuration files. They are crucial to \
+        troubleshoot and debug problems.",
+        ),
+    );
+    Command::new("logs")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .about(&about)
+        .long_about(long_about)
+        .subcommand(
+            Command::new("store")
+                // TRANSLATORS: CLI help for: agama logs store
+                .about(gettext("Collect and store the logs in a tar archive"))
+                .arg(
+                    Arg::new("destination")
+                .value_name("DESTINATION")
+                        .short('d')
+                        .long("destination")
+                        .value_parser(clap::value_parser!(PathBuf))
+                        // TRANSLATORS: CLI help for: agama logs store --destination <DESTINATION>
+                        .help(gettext("Path to destination directory and, optionally, the archive file name. The extension will \
+                                       be added automatically"))
+                )
+        )
+        .subcommand(
+            Command::new("list")
+                // TRANSLATORS: CLI help for: agama logs list
+                .about(gettext("List the logs to collect"))
+        )
 }
 
 /// Main entry point called from agama CLI main loop
-pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Result<()> {
+pub async fn run(client: BaseHTTPClient, sub_matches: &ArgMatches) -> anyhow::Result<()> {
     let client = ManagerHTTPClient::new(client);
 
-    match subcommand {
-        LogsCommands::Store { destination } => {
-            // feed internal options structure by what was received from user
-            // for now we always use / add defaults if any
+    match sub_matches.subcommand() {
+        Some(("store", matches)) => {
+            let destination = matches.get_one::<PathBuf>("destination").cloned();
             let dst_file = parse_destination(destination)?;
             let result = client.store(dst_file.as_path()).await?;
 
@@ -53,7 +80,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
 
             Ok(())
         }
-        LogsCommands::List => {
+        Some(("list", _)) => {
             let logs_list = client
                 .list()
                 .await
@@ -71,6 +98,7 @@ pub async fn run(client: BaseHTTPClient, subcommand: LogsCommands) -> anyhow::Re
 
             Ok(())
         }
+        _ => Ok(()),
     }
 }
 

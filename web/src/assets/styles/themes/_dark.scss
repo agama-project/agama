@@ -1,0 +1,143 @@
+// Dark color axis.
+//
+// PatternFly's built-in dark theme (activated by .pf-v6-theme-dark on <html>)
+// provides the full, professionally designed dark token set. Here we map the
+// curated `--agm-t--*` roles (see _semantic.scss) onto PF tokens for dark, with
+// the Agama dark value as the fallback default and the role as the product
+// override hook.
+//
+// The lightened Jungle (#40ce8a, jungle--40) is the dark brand/accent; raw
+// Jungle and Pine both fail contrast on dark. Unlike light, PF wires
+// text/icon/border brand independently in dark, so each is mapped explicitly.
+//
+// High contrast is excluded (PF's high-contrast theme governs it). Scoped to
+// PF's dark selector and loaded after _semantic.scss, so it wins by source order
+// at equal specificity. "System" auto-dark is toggled by AppearanceSettings via
+// matchMedia, not a media query here.
+
+:root:where(.pf-v6-theme-dark:not(.pf-v6-theme-high-contrast)) {
+  --agm-t--brand--color--hover-default: color-mix(
+    in srgb,
+    var(--agm-t--color--jungle--40) 80%,
+    white
+  );
+
+  --pf-t--global--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--text--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--icon--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--icon--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--icon--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--hover: var(
+    --agm-t--brand--color--hover,
+    var(--agm-t--brand--color--hover-default)
+  );
+  --pf-t--global--border--color--brand--clicked: var(
+    --agm-t--brand--color--clicked,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--link--default: var(
+    --agm-t--link--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--text--color--on-brand--default: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+  --pf-t--global--text--color--on-brand--hover: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+  --pf-t--global--text--color--on-brand--clicked: var(
+    --agm-t--brand--text--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+  // Subtle brand surfaces (selected toggle-group buttons, selected items, ...).
+  --pf-t--global--color--brand--subtle--default: color-mix(
+    in srgb,
+    var(--agm-t--brand--color, var(--agm-t--color--jungle--40)) 22%,
+    transparent
+  );
+  --pf-t--global--text--color--on-brand--subtle--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--subtle--default: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+  --pf-t--global--border--color--brand--subtle--clicked: var(
+    --agm-t--brand--color,
+    var(--agm-t--color--jungle--40)
+  );
+
+  --agm-t--action--background--color--hover: color-mix(
+    in srgb,
+    var(--agm-t--color--jungle--40) 18%,
+    transparent
+  );
+
+  // Default dark surface palette (Pine), matching the Agama website. Pine is the
+  // deepest surface (page and cards); raised (masthead, form controls) and
+  // floating (modals) lift toward a lighter Pine; borders are a muted Pine.
+  // Floating equals raised so surfaces nested in a modal (table headers, tab
+  // bars) integrate with it instead of looking darker. PF's light dark-theme
+  // text stays for contrast. A product overrides these roles in its file.
+  --agm-t--surface--color: var(--agm-t--color--pine--50);
+  --agm-t--surface--color--raised: color-mix(in srgb, var(--agm-t--color--pine--50) 90%, white);
+  --agm-t--surface--color--floating: var(--agm-t--surface--color--raised);
+  --agm-t--border--color: color-mix(in srgb, var(--agm-t--color--pine--50) 62%, white);
+
+  --pf-t--global--background--color--primary--default: var(--agm-t--surface--color);
+  --pf-t--global--background--color--secondary--default: var(--agm-t--surface--color--raised);
+  --pf-t--global--background--color--floating--default: var(--agm-t--surface--color--floating);
+  --pf-t--global--background--color--control--default: var(--agm-t--surface--color--raised);
+  --pf-t--global--border--color--default: var(--agm-t--border--color);
+  --pf-t--global--border--color--subtle: var(--agm-t--border--color);
+  --pf-t--global--text--color--regular: var(
+    --agm-t--text--color,
+    var(--pf-t--global--dark--text--color--100)
+  );
+  --pf-t--global--text--color--subtle: var(
+    --agm-t--text--color--subtle,
+    var(--pf-t--global--dark--text--color--200)
+  );
+  --pf-t--global--icon--color--regular: var(
+    --agm-t--text--color,
+    var(--pf-t--global--dark--icon--color--100)
+  );
+}

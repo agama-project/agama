@@ -1,22 +1,43 @@
 -------------------------------------------------------------------
-Thu Jun 11 08:52:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Fri Jun 12 15:34:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
-- Migrate the formattable device form to TanStack Form, aligning its
-  behavior and features with the partition and logical volume forms
+- Redesing storage forms (format disk, partition and logical
+  volume) and migrate them to TanStack Form
   (gh#agama-project/agama#3610).
 
 -------------------------------------------------------------------
-Wed Jun 10 19:25:37 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Thu Jun 11 23:52:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
-- Migrate logical volume form to TanStack Form and extract shared
-  storage form components (mount point, filesystem, and size fields)
-  reused by the partition and logical volume forms.
+- Standardize form Cancel actions across the application, add a
+  link back to the installation summary in the form submission
+  alerts, and fix empty toast containers blocking the header
+  toolbar (gh#agama-project/agama#3613).
 
 -------------------------------------------------------------------
-Mon Jun 08 15:06:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Wed Jun 10 12:07:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
-- Migrate partition form to TanStack Form and redesign filesystem
-  selection UI with improved accessibility.
+- Redesign the installer header: replace the "Review and Install"
+  button with breadcrumb navigation, show the product and the
+  installer tools (localization, configuration, appearance and
+  status) on every page, and add tooltips, clearer labels and a
+  customizable icon size scale (gh#agama-project/agama#3607).
+-------------------------------------------------------------------
+Tue Jun  9 21:51:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Improve retry popup when failed to load unattended profile. It
+  now allows to change URL and also improve its UX.
+  (gh#agama-project/agama#3589)
+
+-------------------------------------------------------------------
+Tue Jun  9 13:31:32 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix detection of task changes (related to bsc#1266276).
+
+-------------------------------------------------------------------
+Tue Jun  9 09:41:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add dark and high-contrast styles, enabling per-product branding
+  (gh#agama-project/agama#3604, jsc#PED-14955).
 
 -------------------------------------------------------------------
 Fri Jun  5 12:25:54 UTC 2026 - David Diaz <dgonzalez@suse.com>

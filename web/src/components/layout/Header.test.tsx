@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { plainRender } from "~/test-utils";
+import { installerRender, plainRender } from "~/test-utils";
 import type { Product } from "~/model/system";
 import Header from "./Header";
 
@@ -45,6 +45,19 @@ describe("Header", () => {
     screen.getByRole("heading", { name: tumbleweed.name, level: 1 });
   });
 
+  it("renders the product name and the 'Installation' breadcrumb when no title is given", () => {
+    installerRender(<Header breadcrumbs={[{ label: "Authentication", path: "/auth" }]} />);
+    screen.getByText(tumbleweed.name);
+    screen.getByRole("link", { name: "Installation" });
+  });
+
+  it("omits the 'Installation' breadcrumb when hideSummaryLink is set", () => {
+    installerRender(<Header hideSummaryLink breadcrumbs={[{ label: "Installation summary" }]} />);
+    screen.getByText(tumbleweed.name);
+    expect(screen.queryByRole("link", { name: "Installation" })).toBeNull();
+    screen.getByRole("heading", { name: "Installation summary", level: 1 });
+  });
+
   it("renders skip to content link", async () => {
     plainRender(<Header />);
     screen.getByRole("link", { name: "Skip to content" });
@@ -57,18 +70,20 @@ describe("Header", () => {
     screen.queryByRole("link", { name: "Skip to content" });
   });
 
-  it("renders given content for slots", () => {
+  it("renders the given additional content", () => {
     plainRender(
       <Header
         title="Storage"
-        startSlot={<div role="progressbar" aria-label="Installation progress" />}
-        centerSlot={
-          <div role="menu" aria-label="Page actions">
-            <button role="menuitem">Export configuration</button>
-            <button role="menuitem">Advanced settings</button>
-          </div>
+        additionalContent={
+          <>
+            <div role="progressbar" aria-label="Installation progress" />
+            <div role="menu" aria-label="Page actions">
+              <button role="menuitem">Export configuration</button>
+              <button role="menuitem">Advanced settings</button>
+            </div>
+            <button>Install</button>
+          </>
         }
-        endSlot={<button>Install</button>}
       />,
     );
 

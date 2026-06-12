@@ -1,0 +1,244 @@
+// PatternFly overrides.
+//
+// Customizations layered on top of PatternFly component styles. These rely on
+// being loaded after PatternFly (see index.tsx import order) so they win by
+// source order at equal specificity.
+
+// Freeze scrolling when Agama overlay is visible
+.pf-v6-c-page__main:has(.agm-main-content-overlay) {
+  overflow: hidden;
+}
+
+// ProgressBackdrop overlay styles
+.pf-v6-c-page__main-container:has(.agm-main-content-overlay) {
+  position: relative;
+
+  .agm-main-content-overlay {
+    position: absolute;
+    backdrop-filter: blur(2px);
+    background-color: color-mix(
+      in srgb,
+      var(--pf-t--global--background--color--backdrop--default) 80%,
+      transparent
+    );
+  }
+}
+
+.pf-v6-c-masthead__main {
+  inline-size: 50dvw;
+}
+
+.pf-v6-c-masthead__toggle button {
+  --pf-v6-c-button--LineHeight: 0;
+
+  svg {
+    font-size: var(--pf-t--global--font--size--xl);
+  }
+}
+
+.pf-v6-c-masthead {
+  --pf-v6-c-masthead__logo--Width: fit-content;
+  --pf-v6-c-masthead--PaddingBlock: var(--pf-t--global--spacer--sm);
+
+  h1 {
+    font-size: clamp(1.1rem, 0rem + 1.6vw, 1.75rem);
+  }
+}
+
+.pf-v6-c-page__main-section {
+  --pf-v6-c-page__main-section--PaddingInlineStart: var(--pf-t--global--spacer--md);
+  --pf-v6-c-page__main-section--PaddingInlineEnd: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-page__main-section.pf-m-sticky-top {
+  --pf-v6-c-page__main-section--PaddingBlockStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-page__main-section--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+
+  // Sticky sections are transparent by default, exposing the area behind them
+  // as a mismatched strip; paint them with the page surface so they blend.
+  background-color: var(--pf-t--global--background--color--primary--default);
+}
+
+.pf-v6-c-page__main-group.pf-m-sticky-bottom {
+  --pf-v6-c-page--section--m-sticky-bottom--BoxShadow: var(--pf-t--global--box-shadow--md--top);
+}
+
+// .pf-v6-c-page__sidebar-body .pf-v6-c-nav:first-child {
+//   --pf-v6-c-nav--PaddingBlockStart: 0;
+// }
+
+:not(.pf-v6-c-alert-group__item) > .pf-v6-c-alert {
+  &:has(.pf-v6-c-alert__description) {
+    row-gap: var(--pf-t--global--spacer--xs);
+  }
+}
+
+.pf-v6-c-alert-group.pf-m-toast {
+  padding: var(--pf-t--global--spacer--xl);
+  // Prevent empty toast container from blocking clicks on elements below
+  pointer-events: none;
+
+  // Re-enable pointer events for actual alert items
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.pf-v6-c-alert__title {
+  font-size: var(--pf-t--global--font--size--md);
+}
+
+// Default (nonstatus) labels follow the brand-subtle surface instead of a fixed
+// gray, so they stay a distinct, highlighted chip while adapting to the active
+// theme and product overrides. Colored variants (blue, green, danger, ...) keep
+// their own colors via their higher-specificity modifier selectors.
+.pf-v6-c-label {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--global--color--brand--subtle--default);
+  --pf-v6-c-label--Color: var(--pf-t--global--text--color--on-brand--subtle--default);
+}
+
+.pf-v6-c-menu {
+  --pf-v6-c-menu--BoxShadow: var(--pf-t--global--box-shadow--lg);
+  // background: #eafaf8;
+}
+
+.pf-v6-c-menu__item.pf-m-selected {
+  --pf-v6-c-menu__item-select-icon--Color: var(--pf-t--global--icon--color--brand--default);
+}
+
+.pf-v6-c-nav__link {
+  --pf-v6-c-nav__link--AlignItems: center;
+  padding-inline-start: var(--pf-t--global--spacer--sm);
+  padding-inline-end: var(--pf-t--global--spacer--sm);
+
+  svg {
+    font-size: var(--pf-t--global--font--size--lg);
+  }
+}
+
+.pf-v6-c-nav__link.pf-m-current {
+  font-weight: 600;
+}
+
+.pf-v6-c-button {
+  --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
+
+  &:disabled {
+    fill: currentcolor;
+  }
+}
+
+.pf-v6-c-menu-toggle.pf-m-split-button > :first-child {
+  text-decoration: none;
+  color: inherit;
+}
+
+label.pf-m-disabled + .pf-v6-c-check__description {
+  color: var(--pf-v6-c-check__label--disabled--Color);
+}
+
+.pf-v6-c-menu__list-item.pf-m-danger.pf-m-disabled {
+  --pf-v6-c-menu__item--Color: var(--pf-v6-c-menu__item--m-disabled--Color);
+}
+
+// Do not change the default cursor for labels forms because it is confusing
+//
+// See:
+//  * https://github.com/openSUSE/Agama/issues/115#issuecomment-1090205696
+//  * https://github.com/patternfly/patternfly/issues/4777#issuecomment-1092090484
+.pf-v6-c-form__label {
+  --pf-v6-c-form__label--hover--Cursor: default;
+  --pf-v6-c-form__label--m-disabled--hover--Cursor: default;
+}
+
+.pf-v6-c-form {
+  --pf-v6-c-form__group--m-action--MarginBlockStart: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-list.pf-m-inline {
+  --pf-v6-c-list--m-inline--RowGap: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-form__group {
+  justify-self: flex-start;
+
+  // Prevent form inputs from stretching to match the width of long helper text
+  // or instructions. Inputs size themselves based on content and explicit
+  // width constraints, while text elements flow at their natural width.
+  .pf-v6-c-form-control,
+  .pf-v6-c-text-input-group {
+    max-width: fit-content;
+  }
+}
+
+// Fix select toggle icon visibility by creating more space at the end :/
+.pf-v6-c-form-control > select {
+  --pf-v6-c-form-control--PaddingInlineEnd: calc(
+    var(--pf-v6-c-form-control__select--PaddingInlineEnd) * 3
+  );
+}
+
+.pf-v6-c-check {
+  row-gap: var(--pf-t--global--spacer--xs);
+  align-content: baseline;
+
+  input[type="checkbox"] {
+    align-self: center;
+  }
+}
+
+.pf-v6-c-list.pf-m-inline {
+  --pf-v6-c-list--m-inline--RowGap: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
+}
+
+.pf-v6-c-data-list li.pf-m-clickable {
+  --pf-v6-c-data-list__item--hover--BackgroundColor: var(--agm-t--action--background--color--hover);
+}
+
+.pf-v6-c-modal-box {
+  --pf-v6-c-modal-box__header--Gap: var(--pf-t--global--spacer--xs);
+}
+
+// Nested content inside forms should respect parent grid gap
+.pf-v6-c-form [class*="pf-v6-u-mx"] {
+  display: grid;
+  gap: inherit;
+}
+
+.pf-v6-c-skip-to-content {
+  --pf-v6-c-skip-to-content--focus--InsetInlineStart: var(
+    --pf-t--global--spacer--inset--page-chrome
+  );
+
+  a.pf-m-primary {
+    background: var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+    font-size: var(--pf-t--global--font--size--md);
+  }
+}
+
+.pf-v6-c-table__sort-indicator {
+  --pf-v6-c-table__sort-indicator--MarginInlineStart: var(--pf-t--global--spacer--xs);
+}
+
+// Highlight table rows on interaction, covering three cases:
+// 1. Mouse hover.
+// 2. Keyboard navigation via :focus-within, which is intentionally broad and
+//    covers all focusable elements including checkboxes. This way, keyboard
+//    users always know which row they are on. The downside: if a mouse user
+//    clicks a checkbox and moves away, the row stays highlighted until focus
+//    moves elsewhere. This is an acceptable edge case since most users will
+//    naturally move on after checking a box and in any case the benefit for
+//    keyboard users outweighs the minor annoyance for mouse users.
+// 3. Action menu open via aria-expanded attribute.
+//
+// Note: PF's isClickable prop on Tr would provide the hover highlight out of
+// the box, but it also adds a pointer cursor and implies the row is clickable,
+// which is not the case for Agama tables. Hence this custom CSS to get the
+// visual feedback without the misleading affordance.
+.pf-v6-c-table tbody tr:hover,
+.pf-v6-c-table tbody tr:focus-within,
+.pf-v6-c-table tbody tr:has(.pf-v6-c-menu-toggle[aria-expanded="true"]) {
+  background-color: var(--agm-t--action--background--color--hover);
+}

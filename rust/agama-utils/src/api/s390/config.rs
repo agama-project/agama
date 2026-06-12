@@ -25,7 +25,7 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 
 #[skip_serializing_none]
-#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Merge, JsonSchema, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 #[merge(strategy = merge::option::recurse)]
 #[schemars(rename = "s390::Config")]

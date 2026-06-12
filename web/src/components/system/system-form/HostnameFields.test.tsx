@@ -22,17 +22,10 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { installerRender, mockSystem } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
 import HostnameFields from "./HostnameFields";
-
-const system = jest.fn();
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => system(),
-}));
 
 function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
   const form = useAppForm({
@@ -48,7 +41,7 @@ function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
 
 describe("HostnameFields", () => {
   beforeEach(() => {
-    system.mockReturnValue({});
+    mockSystem({});
   });
 
   it("renders the Hostname fieldset", () => {
@@ -152,13 +145,13 @@ describe("HostnameFields", () => {
 
   describe("registration alert", () => {
     it("does not render when product is not registered", () => {
-      system.mockReturnValue({});
+      mockSystem({});
       installerRender(<TestForm />);
       expect(screen.queryByText("Registered hostname will not change")).not.toBeInTheDocument();
     });
 
     it("renders when product is registered", () => {
-      system.mockReturnValue({
+      mockSystem({
         software: {
           registration: {
             code: "12345",

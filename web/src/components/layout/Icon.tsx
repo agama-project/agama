@@ -27,9 +27,11 @@ import React from "react";
 // value.
 import Add from "@icons/add.svg?component";
 import AddCircle from "@icons/add_circle.svg?component";
+import Amend from "@icons/amend.svg?component";
 import Apps from "@icons/apps.svg?component";
 import AppsOutage from "@icons/apps_outage.svg?component";
 import AppRegistration from "@icons/app_registration.svg?component";
+import Archive from "@icons/archive.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -46,6 +48,7 @@ import Emergency from "@icons/emergency.svg?component";
 import Error from "@icons/error.svg?component";
 import ErrorFill from "@icons/error-fill.svg?component";
 import ExpandCircleDown from "@icons/expand_circle_down.svg?component";
+import FileJson from "@icons/file_json.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
@@ -66,6 +69,7 @@ import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
 import NotificationsActive from "@icons/notifications_active.svg?component";
 import Report from "@icons/report.svg?component";
 import RestartAlt from "@icons/restart_alt.svg?component";
+import Routine from "@icons/routine.svg?component";
 import SearchOff from "@icons/search_off.svg?component";
 import SettingsEthernet from "@icons/settings_ethernet.svg?component";
 import Translate from "@icons/translate.svg?component";
@@ -84,9 +88,11 @@ import Pending from "@icons/pending.svg?component";
 const icons = {
   add: Add,
   add_circle: AddCircle,
+  amend: Amend,
   apps: Apps,
   apps_outage: AppsOutage,
   app_registration: AppRegistration,
+  archive: Archive,
   arrow_drop_down: ArrowDropDown,
   backspace: Backspace,
   check_circle: CheckCircle,
@@ -102,6 +108,7 @@ const icons = {
   error: Error,
   error_fill: ErrorFill,
   expand_circle_down: ExpandCircleDown,
+  file_json: FileJson,
   fingerprint: Fingerprint,
   globe: Globe,
   hard_drive: HardDrive,
@@ -123,6 +130,7 @@ const icons = {
   notifications_ative: NotificationsActive,
   report: Report,
   restart_alt: RestartAlt,
+  routine: Routine,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
   translate: Translate,
@@ -139,9 +147,27 @@ const icons = {
   pending: Pending,
 };
 
+/**
+ * Named icon sizes, mapped to CSS classes that set the size via a customizable
+ * `--agm-t--icon--size--*` token (see styles/components). A product can resize
+ * icons consistently without touching the call sites.
+ */
+const SIZE_CLASSES = {
+  xs: "agm-icon-xs",
+  sm: "agm-icon-sm",
+  md: "agm-icon-md",
+  lg: "agm-icon-lg",
+  xl: "agm-icon-xl",
+  "2xl": "agm-icon-2xl",
+  "3xl": "agm-icon-3xl",
+  "4xl": "agm-icon-4xl",
+} as const;
+
 export type IconProps = React.SVGAttributes<SVGElement> & {
   /** Name of the desired icon */
   name: keyof typeof icons;
+  /** Named size for the icon. */
+  size?: keyof typeof SIZE_CLASSES;
   /** Vertical alignment of the icon */
   verticalAlign?: "baseline" | "middle" | "text-top" | "text-bottom" | "sub" | "super";
   /**
@@ -175,8 +201,10 @@ export type IconProps = React.SVGAttributes<SVGElement> & {
  */
 export default function Icon({
   name,
+  size,
   verticalAlign,
   isMiddleAligned,
+  className,
   style,
   ...otherProps
 }: IconProps): JSX.Element | null {
@@ -190,13 +218,19 @@ export default function Icon({
 
   // isMiddleAligned shortcut takes precedence over verticalAlign
   const align = isMiddleAligned ? "text-top" : verticalAlign;
-
   const iconStyle = {
     ...(align && { verticalAlign: align }),
     ...style,
   };
+  const classes = [size && SIZE_CLASSES[size], className].filter(Boolean).join(" ") || undefined;
 
   return (
-    <IconComponent aria-hidden="true" data-icon-name={name} {...otherProps} style={iconStyle} />
+    <IconComponent
+      aria-hidden="true"
+      data-icon-name={name}
+      {...otherProps}
+      className={classes}
+      style={iconStyle}
+    />
   );
 }

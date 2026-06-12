@@ -1,0 +1,125 @@
+// Base reset and element styles.
+//
+// A small, modern normalization layer applied after PatternFly. Kept
+// deliberately conservative so it complements PF's own normalization rather
+// than fighting it: rules target bare elements, so PF's class-based component
+// styles always win by specificity.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+// Defer the base line-height to PF's token so typography stays consistent.
+// The installer is screen-constrained; long-form content can opt into a
+// roomier value via .agama-prose.
+html {
+  line-height: var(--pf-t--global--font--line-height--100);
+}
+
+// Fill any area not covered by the page layout (e.g. the sliver above the
+// masthead) with the page surface, so the canvas is seamless in every theme.
+body {
+  background-color: var(--pf-t--global--background--color--primary--default);
+}
+
+.agama-prose {
+  line-height: var(--pf-t--global--font--line-height--200);
+}
+
+// Make replaced media responsive. svg is intentionally excluded so inline
+// icons keep their explicit sizing.
+img,
+picture,
+video,
+canvas {
+  max-width: 100%;
+}
+
+// Inherit typography on form controls. Beyond consistency, this prevents
+// mobile Safari from zooming in when focusing inputs with a sub-16px font.
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+// Text-wrapping progressive enhancements (ignored where unsupported): guard
+// against long unbroken strings and let the browser balance short blocks.
+h1,
+h2,
+h3,
+h4 {
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+p,
+li,
+figcaption {
+  text-wrap: pretty;
+}
+
+// Remove the focus ring for non-keyboard focus; the keyboard style lives in
+// the :focus-visible rule below.
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+// Respect users who prefer reduced motion. This is the only place !important
+// is warranted: the override must win over any animation or transition
+// regardless of specificity.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+strong {
+  font-weight: var(--pf-t--global--font--weight--400);
+}
+
+div[aria-live]:empty {
+  display: none;
+}
+
+pre {
+  white-space: pre-line;
+}
+
+input[type="checkbox"] {
+  inline-size: var(--pf-t--global--font--size--md);
+  block-size: var(--pf-t--global--font--size--md);
+}
+
+// Custom style for :focus-visible appearance. The color is the --agm-t--focus--color
+// role (products can override it); it defaults to waterhole.
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: 2px;
+}
+
+fieldset {
+  border: 0;
+  border-top: 1px solid var(--pf-t--global--border--color--default);
+  padding: 0;
+  padding-block-start: var(--pf-t--global--spacer--md);
+  margin: 0;
+  display: grid;
+  gap: var(--pf-v6-c-form--GridGap);
+
+  legend {
+    font-size: var(--pf-t--global--font--size--md);
+    font-weight: var(--pf-t--global--font--weight--200);
+    margin-inline-start: var(--pf-t--global--spacer--sm);
+    padding: 0 var(--pf-t--global--spacer--sm);
+  }
+}

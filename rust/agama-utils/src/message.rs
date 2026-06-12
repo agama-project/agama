@@ -21,7 +21,7 @@
 //! Common actor messages shared across agama services.
 
 use crate::actor::Message;
-use crate::api::software::Resolvable;
+use crate::resolvable::Resolvable;
 
 /// Message to query resolvables from a service.
 ///

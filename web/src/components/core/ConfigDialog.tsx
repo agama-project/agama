@@ -24,6 +24,7 @@ import React, { useEffect, useState } from "react";
 import { Content, Flex, Spinner } from "@patternfly/react-core";
 import { CodeEditor, Language } from "@patternfly/react-code-editor";
 import Popup from "~/components/core/Popup";
+import { useAppearance } from "~/context/appearance";
 import { ROOT } from "~/routes/paths";
 import { isoTimestamp } from "~/utils";
 import { _ } from "~/i18n";
@@ -33,10 +34,11 @@ type ConfigDialogProps = {
 };
 
 /**
- * Dialog showing the current installation settings in JSON format, with
+ * Dialog showing the current installation configuration in JSON format, with
  * options to copy or download the content.
  */
 export default function ConfigDialog({ onClose }: ConfigDialogProps) {
+  const { isDark } = useAppearance();
   const [config, setConfig] = useState<string | undefined>(undefined);
   const [downloadFileName, setDownloadFileName] = useState("agama-config.json");
 
@@ -71,6 +73,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           )}
         </Content>
         <CodeEditor
+          isDarkTheme={isDark}
           isReadOnly
           isCopyEnabled
           isDownloadEnabled

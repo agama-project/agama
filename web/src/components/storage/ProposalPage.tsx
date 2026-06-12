@@ -321,7 +321,7 @@ export default function ProposalPage(): React.ReactNode {
   return (
     <Page
       breadcrumbs={[{ label: _("Storage") }]}
-      startSlot={<ConnectedDevicesMenu />}
+      additionalContent={<ConnectedDevicesMenu />}
       progress={{ scope: "storage", ensureRefetched: STORAGE_MODEL_KEY }}
     >
       <Page.Content>

@@ -26,7 +26,6 @@ pub mod message;
 pub mod test_utils;
 pub mod zfcp;
 
-use agama_storage as storage;
 use agama_storage_client as storage_client;
 
 #[cfg(test)]
@@ -35,7 +34,7 @@ mod tests {
     use crate::test_utils::{TestDASDClient, TestZFCPClient};
     use agama_utils::{
         actor::Handler,
-        api::{s390::Config, Event},
+        api::{s390::Config, Event, RawConfig},
         issue, progress, test,
     };
     use test_context::{test_context, AsyncTestContext};
@@ -53,16 +52,9 @@ mod tests {
             let connection = test::dbus::connection().await.unwrap();
             let progress = progress::Service::starter(events.clone()).start();
             let issues = issue::Service::starter(events.clone()).start();
-            let storage = storage::test_utils::start_service(
-                events.clone(),
-                issues.clone(),
-                progress.clone(),
-                connection.clone(),
-            )
-            .await;
             let dasd = TestDASDClient::new();
             let zfcp = TestZFCPClient::new();
-            let handler = Service::starter(storage, events, progress, issues, connection)
+            let handler = Service::starter(events, progress, issues, connection)
                 .with_dasd(dasd.clone())
                 .with_zfcp(zfcp.clone())
                 .start()
@@ -138,8 +130,27 @@ mod tests {
             "#,
         )
         .unwrap();
-        let message = message::SetConfig::new(Some(config));
-        ctx.handler.call(message).await?;
+
+        let dasd_raw = config
+            .dasd
+            .as_ref()
+            .map(|d| RawConfig(serde_json::to_value(d).unwrap()));
+        let zfcp_raw = config
+            .zfcp
+            .as_ref()
+            .map(|z| RawConfig(serde_json::to_value(z).unwrap()));
+
+        let dasd_future = ctx
+            .handler
+            .call(message::SetDASDConfig::new(dasd_raw))
+            .await?;
+        let _ = dasd_future.await;
+
+        let zfcp_future = ctx
+            .handler
+            .call(message::SetZFCPConfig::new(zfcp_raw))
+            .await?;
+        let _ = zfcp_future.await;
 
         let config = ctx.handler.call(message::GetConfig).await?;
         assert!(config.dasd.is_some());

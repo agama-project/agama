@@ -6,7 +6,6 @@ edition.workspace = true
 
 [dependencies]
 agama-utils = { path = "../agama-utils" }
-agama-software = { path = "../agama-software" }
 async-trait = "0.1.89"
 gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
 openssl = "0.10.75"

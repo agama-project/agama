@@ -1,4 +1,4 @@
-// Copyright (c) [2025] SUSE LLC
+// Copyright (c) [2025-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -37,6 +37,9 @@ pub mod progress;
 pub mod question;
 pub mod test;
 
+mod resolvable;
+pub use resolvable::{Resolvable, ResolvableType};
+
 use std::future::Future;
 use std::pin::Pin;
 
@@ -49,6 +52,14 @@ pub type BoxFuture<T> = Pin<Box<dyn Future<Output = T> + Send + 'static>>;
 /// and its translated label, for example.
 pub fn gettext_noop(text: &str) -> &str {
     text
+}
+
+/// Build an argument for clap::Command::long_about
+///
+/// This is related to not repeating .about(short) as a prefix of .long_about(long),
+/// to not duplicate work of human translators.
+pub fn make_long(short: &str, long_tail: &str) -> String {
+    short.to_owned() + ".\n\n" + long_tail
 }
 
 pub mod helpers {
