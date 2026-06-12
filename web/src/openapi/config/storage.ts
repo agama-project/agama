@@ -334,9 +334,9 @@ export interface Filesystem {
   path?: string;
   mountBy?: MountBy;
   /**
-   * Options for creating the file system.
+   * Additional arguments injected as-is to the mkfs command when creating the file system.
    */
-  mkfsExtraArguments?: string[];
+  mkfsExtraArguments?: string;
   /**
    * Options to add to the fourth field of fstab.
    */
