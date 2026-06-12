@@ -285,7 +285,7 @@ impl MonitorApp {
                         if let Event::Key(key_event) = event {
                             if self.handle_key_event(key_event) {
                                 terminal_handle.abort();
-                                return Ok(());
+                                return Ok(self.status.clone());
                             }
                         }
                     }
