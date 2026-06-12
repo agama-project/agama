@@ -20,18 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import { isReusingPartition } from "./fields";
+import { isReusingLogicalVolume } from "./fields";
 
 describe("fields", () => {
-  describe("isReusingPartition", () => {
-    it("returns true when name is a partition name", () => {
-      expect(isReusingPartition("vdd2")).toBe(true);
-      expect(isReusingPartition("sda1")).toBe(true);
-      expect(isReusingPartition("nvme0n1p1")).toBe(true);
+  describe("isReusingLogicalVolume", () => {
+    it("returns true when target is a logical volume name", () => {
+      expect(isReusingLogicalVolume("/dev/system/home")).toBe(true);
     });
 
-    it("returns false when name is empty", () => {
-      expect(isReusingPartition("")).toBe(false);
+    it("returns false when target is empty (new logical volume)", () => {
+      expect(isReusingLogicalVolume("")).toBe(false);
     });
   });
 });

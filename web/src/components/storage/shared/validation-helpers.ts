@@ -23,16 +23,77 @@
 /**
  * Validation helpers for storage forms.
  *
- * These helpers encapsulate storage-specific validation logic, particularly
- * around size values (e.g., "20 GiB", "100 MB"). They follow the same pattern
- * as the general form validation helpers but are specialized for storage domain
- * needs.
+ * These helpers encapsulate storage-specific validation logic: size values
+ * (e.g., "20 GiB", "100 MB"), mount points, and filesystem labels. They follow
+ * the same pattern as the general form validation helpers (return an error
+ * message string, or `undefined` when valid) but are specialized for the
+ * storage domain and shared across the partition, logical volume, and
+ * formattable device forms.
  *
  * All size comparisons use {@link parseToBytes} from storage utils to handle
  * unit conversion.
  */
 
-import { parseToBytes } from "./utils";
+import { parseToBytes } from "~/components/storage/utils";
+import { _ } from "~/i18n";
+
+/**
+ * Mount point validation regex.
+ *
+ * Matches:
+ * - "swap" (special case)
+ * - "/" (root)
+ * - Valid absolute paths like "/home", "/var/lib", etc.
+ *
+ * Does not match empty strings, relative paths, or paths with spaces or invalid
+ * characters.
+ */
+export const MOUNT_POINT_REGEXP = /^swap$|^\/$|^(\/[^/\s]+)+$/;
+
+/**
+ * Filesystem label validation regex.
+ *
+ * Allows word characters (letters, digits, underscores), hyphens, and dots.
+ * The empty string is allowed because the label is optional.
+ */
+export const FILESYSTEM_LABEL_REGEXP = /^[\w-_.]*$/;
+
+/**
+ * Mount point field validation.
+ *
+ * The value must be non-empty, match the mount point format, and not collide
+ * with a mount point already assigned to another device.
+ *
+ * @example
+ * validateMountPoint("", []) // "Mount point is required"
+ * validateMountPoint("relative", []) // "Select or enter a valid mount point"
+ * validateMountPoint("/home", ["/home"]) // already-assigned message
+ * validateMountPoint("/home", []) // undefined
+ */
+export function validateMountPoint(value: string, usedMountPoints: string[]): string | undefined {
+  if (value === "") return _("Mount point is required");
+  if (!MOUNT_POINT_REGEXP.test(value)) return _("Select or enter a valid mount point");
+  if (usedMountPoints.includes(value)) {
+    return _("Select or enter a mount point that is not already assigned to another device");
+  }
+  return undefined;
+}
+
+/**
+ * Optional filesystem label validation.
+ *
+ * The empty string passes (the label is optional). Any non-empty value must
+ * match {@link FILESYSTEM_LABEL_REGEXP}.
+ *
+ * @example
+ * optionalFilesystemLabel("") // undefined
+ * optionalFilesystemLabel("data") // undefined
+ * optionalFilesystemLabel("bad label") // "Invalid label format"
+ */
+export function optionalFilesystemLabel(value: string): string | undefined {
+  if (value === "") return undefined;
+  return FILESYSTEM_LABEL_REGEXP.test(value) ? undefined : _("Invalid label format");
+}
 
 /**
  * Size format regex.

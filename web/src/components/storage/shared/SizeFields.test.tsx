@@ -22,40 +22,11 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockParams } from "~/test-utils";
+import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
-import { defaultOptions, SIZE_MODE } from "./fields";
+import { sharedDefaultOptions, SIZE_MODE } from "./fields";
+import type { UseSolvedSizes } from "./SizeFields";
 import SizeFields from "./SizeFields";
-
-const mockConfigModel = {
-  drives: [
-    {
-      name: "/dev/vdd",
-      partitions: [],
-    },
-  ],
-  volumeGroups: [],
-};
-
-jest.mock("~/hooks/model/storage/config-model", () => ({
-  useConfigModel: () => mockConfigModel,
-  usePartitionable: () => mockConfigModel.drives[0],
-  useSolvedConfigModel: (config) => {
-    if (!config) return mockConfigModel;
-    const solvedConfig = JSON.parse(JSON.stringify(config));
-    solvedConfig.drives?.forEach((drive) => {
-      drive.partitions?.forEach((partition) => {
-        if (partition.mountPath && !partition.size) {
-          partition.size = {
-            min: 20 * 1024 * 1024 * 1024,
-            max: partition.mountPath === "/" ? 100 * 1024 * 1024 * 1024 : undefined,
-          };
-        }
-      });
-    });
-    return solvedConfig;
-  },
-}));
 
 jest.mock("~/hooks/model/system/storage", () => ({
   useVolumeTemplate: () => ({
@@ -72,23 +43,23 @@ jest.mock("~/hooks/model/system/storage", () => ({
   }),
 }));
 
+// The host form provides the size-solving hook; SizeFields itself is agnostic.
+const fakeUseSolvedSizes: UseSolvedSizes = (mountPoint) =>
+  mountPoint ? { min: "20 GiB", max: undefined } : null;
+
 function TestForm({ defaultValues = {} }: { defaultValues?: object }) {
   const form = useAppForm({
-    ...defaultOptions,
+    ...sharedDefaultOptions,
     defaultValues: {
-      ...defaultOptions.defaultValues,
+      ...sharedDefaultOptions.defaultValues,
       ...defaultValues,
     },
   });
 
-  return <SizeFields form={form} />;
+  return <SizeFields form={form} useSolvedSizes={fakeUseSolvedSizes} />;
 }
 
 describe("SizeFields", () => {
-  beforeEach(() => {
-    mockParams({ collection: "drives", index: "0" });
-  });
-
   it("renders the size mode selector", () => {
     installerRender(<TestForm />);
     screen.getByLabelText("Size");

@@ -29,6 +29,12 @@ import formStyles from "@patternfly/react-styles/css/components/Form/form";
 type ReadOnlyFieldProps = {
   label: React.ReactNode;
   text?: React.ReactNode;
+  /**
+   * Dependent content rendered inside the field group, below the text.
+   * Keeps related hints or notices visually attached to the field instead of
+   * being spaced as a separate form row.
+   */
+  children?: React.ReactNode;
 };
 
 /**
@@ -56,8 +62,18 @@ type ReadOnlyFieldProps = {
  *     />
  *   )}
  * </form.AppField>
+ *
+ * @example
+ * // With dependent content attached to the field
+ * <form.AppField name="filesystem">
+ *   {(field) => (
+ *     <field.ReadOnlyField label={_("File system")} text="Swap">
+ *       <FieldNestedContent>{notice}</FieldNestedContent>
+ *     </field.ReadOnlyField>
+ *   )}
+ * </form.AppField>
  */
-export default function ReadOnlyField({ label, text }: ReadOnlyFieldProps) {
+export default function ReadOnlyField({ label, text, children }: ReadOnlyFieldProps) {
   const field = useFieldContext<React.ReactNode>();
 
   return (
@@ -66,6 +82,7 @@ export default function ReadOnlyField({ label, text }: ReadOnlyFieldProps) {
         <span className={formStyles.formLabelText}>{label}</span>
       </div>
       <Text>{text ?? field.state.value}</Text>
+      {children}
     </div>
   );
 }

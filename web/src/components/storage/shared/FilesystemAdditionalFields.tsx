@@ -23,7 +23,8 @@
 import React from "react";
 import LabelText from "~/components/form/LabelText";
 import { withForm } from "~/hooks/form";
-import { defaultOptions, FILESYSTEM_ACTION } from "./fields";
+import FilesystemLabelField from "./FilesystemLabelField";
+import { sharedDefaultOptions, FILESYSTEM_ACTION } from "./fields";
 import { _ } from "~/i18n";
 import Interpolate from "~/components/core/Interpolate";
 
@@ -40,21 +41,13 @@ const isNewFilesystem = (filesystem: string): boolean => {
  * Displayed when user checks "Define more file system settings" checkbox.
  */
 const FilesystemAdditionalFields = withForm({
-  ...defaultOptions,
+  ...sharedDefaultOptions,
   render: function Render({ form }) {
     return (
       <form.Subscribe selector={(s) => ({ filesystem: s.values.filesystem })}>
         {({ filesystem }) => (
           <>
-            {isNewFilesystem(filesystem) && (
-              <form.AppField name="filesystemLabel">
-                {(field) => (
-                  <field.TextField
-                    label={<LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>}
-                  />
-                )}
-              </form.AppField>
-            )}
+            {isNewFilesystem(filesystem) && <FilesystemLabelField form={form} />}
             <form.AppField name="mountOptions">
               {(field) => (
                 <field.ArrayField

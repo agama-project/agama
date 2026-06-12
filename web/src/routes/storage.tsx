@@ -31,7 +31,7 @@ import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
 import PartitionForm from "~/components/storage/partition-form/Form";
 import LvmPage from "~/components/storage/LvmPage";
-import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
+import LogicalVolumeForm from "~/components/storage/logical-volume-form/Form";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPControllersPage from "~/components/storage/zfcp/ZFCPControllersPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
@@ -87,11 +87,11 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.volumeGroup.logicalVolume.add,
-      element: <LogicalVolumePage />,
+      element: <LogicalVolumeForm />,
     },
     {
       path: PATHS.volumeGroup.logicalVolume.edit,
-      element: <LogicalVolumePage />,
+      element: <LogicalVolumeForm />,
     },
     {
       path: PATHS.iscsi.root,

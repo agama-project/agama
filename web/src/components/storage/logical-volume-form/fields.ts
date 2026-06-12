@@ -43,41 +43,57 @@ export { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE };
 export type { SizeMode, MountPointFields, FilesystemFields, SizeFields };
 
 /**
- * Determines if the form is configured to reuse an existing partition.
+ * Determines whether the form is configured to reuse an existing logical
+ * volume.
  *
- * Returns `true` when the name field contains a partition name (e.g., "vdd2"),
- * `false` when creating a new partition (empty string).
+ * Returns `true` when the target holds a logical volume name (e.g.
+ * "/dev/system/home"), and `false` when creating a new logical volume (empty
+ * string).
  *
- * @param name - The partition name field value
- * @returns true if reusing an existing partition, false if creating new
+ * @param target - The logical volume source field value.
  */
-export function isReusingPartition(name: string): boolean {
-  return name !== "";
+export function isReusingLogicalVolume(target: string): boolean {
+  return target !== "";
 }
 
 /** Form field types */
 
-type PartitionFields = {
+type LogicalVolumeSourceFields = {
   /**
-   * Partition name for reusing an existing partition, or empty string for
-   * creating a new partition.
+   * Logical volume name for reusing an existing logical volume, or an empty
+   * string for creating a new one.
    *
-   * When empty: a new partition will be created.
-   * When partition name (e.g., "vdd2"): the named partition will be reused.
+   * When empty: a new logical volume will be created.
+   * When a logical volume name (e.g., "/dev/system/home"): that logical volume
+   * is reused.
    */
-  name: string;
+  target: string;
 };
 
-export type FormFields = MountPointFields & PartitionFields & FilesystemFields & SizeFields;
+export type LogicalVolumeNameFields = {
+  /**
+   * Name for the new logical volume (e.g., "home", "var"). Only used when
+   * creating a new logical volume (target === ""). Auto-filled from the mount
+   * point until the user edits it.
+   */
+  lvName: string;
+};
 
-export type PartitionFormData = FormFields;
+export type FormFields = MountPointFields &
+  LogicalVolumeSourceFields &
+  LogicalVolumeNameFields &
+  FilesystemFields &
+  SizeFields;
+
+export type LogicalVolumeFormData = FormFields;
 
 /** Default values */
 
 const defaultValues: FormFields = {
   mountPoint: "",
   committedMountPoint: "",
-  name: "",
+  target: "",
+  lvName: "",
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",

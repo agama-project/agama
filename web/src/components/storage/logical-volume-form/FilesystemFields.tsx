@@ -28,28 +28,32 @@ import { defaultOptions } from "./fields";
 import type { Storage as System } from "~/model/system";
 
 type FilesystemFieldsProps = {
-  device: System.Device;
+  /**
+   * The volume group as it exists in the system, or undefined when it is new
+   * (a new volume group has no logical volumes to reuse).
+   */
+  volumeGroup?: System.Device;
 };
 
 /**
- * Filesystem fields for the partition form.
+ * Filesystem fields for the logical volume form.
  *
  * Thin wrapper around the shared FilesystemFields: it only resolves which
- * existing partition is being reused, from the `name` field (empty string
- * means a new partition) and the device's partitions.
+ * existing logical volume is being reused, from the `target` field (empty
+ * string means a new logical volume) and the volume group's logical volumes.
  */
 const FilesystemFields = withForm({
   ...defaultOptions,
   props: {
-    device: {} as System.Device,
+    volumeGroup: undefined,
   } as FilesystemFieldsProps,
-  render: function Render({ form, device }) {
+  render: function Render({ form, volumeGroup }) {
     return (
-      <form.Subscribe selector={(s) => s.values.name}>
-        {(name) => (
+      <form.Subscribe selector={(s) => s.values.target}>
+        {(target) => (
           <SharedFilesystemFields
             form={form}
-            reusedDevice={device.partitions?.find((p) => p.name === name)}
+            reusedDevice={volumeGroup?.logicalVolumes?.find((lv) => lv.name === target)}
           />
         )}
       </form.Subscribe>

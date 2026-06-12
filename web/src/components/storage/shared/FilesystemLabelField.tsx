@@ -21,40 +21,39 @@
  */
 
 import React from "react";
+import LabelText from "~/components/form/LabelText";
 import { withForm } from "~/hooks/form";
-import SharedFilesystemFields from "~/components/storage/shared/FilesystemFields";
-import { defaultOptions } from "./fields";
-
-import type { Storage as System } from "~/model/system";
-
-type FilesystemFieldsProps = {
-  device: System.Device;
-};
+import { sharedDefaultOptions } from "./fields";
+import { _ } from "~/i18n";
 
 /**
- * Filesystem fields for the partition form.
+ * Filesystem label text input shared across the storage forms.
  *
- * Thin wrapper around the shared FilesystemFields: it only resolves which
- * existing partition is being reused, from the `name` field (empty string
- * means a new partition) and the device's partitions.
+ * Presentation only: it wraps a {@link TextField} bound to the
+ * `filesystemLabel` field and has no validation logic. Validation (the allowed
+ * label format) stays in each form's `fields.ts` and surfaces through the
+ * TanStack Form field context.
+ *
+ * @example
+ * <FilesystemLabelField form={form} />
  */
-const FilesystemFields = withForm({
-  ...defaultOptions,
-  props: {
-    device: {} as System.Device,
-  } as FilesystemFieldsProps,
-  render: function Render({ form, device }) {
+const FilesystemLabelField = withForm({
+  ...sharedDefaultOptions,
+  props: {} as {
+    /** Optional override for the field label. */
+    label?: React.ReactNode;
+  },
+  render: function Render({ form, label }) {
     return (
-      <form.Subscribe selector={(s) => s.values.name}>
-        {(name) => (
-          <SharedFilesystemFields
-            form={form}
-            reusedDevice={device.partitions?.find((p) => p.name === name)}
+      <form.AppField name="filesystemLabel">
+        {(field) => (
+          <field.TextField
+            label={label ?? <LabelText suffix={_("(optional)")}>{_("Label")}</LabelText>}
           />
         )}
-      </form.Subscribe>
+      </form.AppField>
     );
   },
 });
 
-export default FilesystemFields;
+export default FilesystemLabelField;

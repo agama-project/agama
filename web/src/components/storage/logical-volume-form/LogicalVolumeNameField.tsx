@@ -22,39 +22,34 @@
 
 import React from "react";
 import { withForm } from "~/hooks/form";
-import SharedFilesystemFields from "~/components/storage/shared/FilesystemFields";
 import { defaultOptions } from "./fields";
-
-import type { Storage as System } from "~/model/system";
-
-type FilesystemFieldsProps = {
-  device: System.Device;
-};
+import { _ } from "~/i18n";
 
 /**
- * Filesystem fields for the partition form.
+ * Name input for a new logical volume.
  *
- * Thin wrapper around the shared FilesystemFields: it only resolves which
- * existing partition is being reused, from the `name` field (empty string
- * means a new partition) and the device's partitions.
+ * Wraps a {@link TextField} bound to the `lvName` field. It is only meaningful
+ * when creating a new logical volume; the parent form renders it only in that
+ * case, and Form.tsx auto-fills the value from the mount point until the user
+ * edits it.
+ *
+ * Presentation only: the "name is required" rule lives in fields.ts.
  */
-const FilesystemFields = withForm({
+const LogicalVolumeNameField = withForm({
   ...defaultOptions,
-  props: {
-    device: {} as System.Device,
-  } as FilesystemFieldsProps,
-  render: function Render({ form, device }) {
+  render: function Render({ form }) {
     return (
-      <form.Subscribe selector={(s) => s.values.name}>
-        {(name) => (
-          <SharedFilesystemFields
-            form={form}
-            reusedDevice={device.partitions?.find((p) => p.name === name)}
+      <form.AppField name="lvName">
+        {(field) => (
+          <field.TextField
+            label={_("Name")}
+            // TRANSLATORS: hint below the name input, with example logical volume names
+            helperText={_("Name for the logical volume. E.g., root, home, lv0")}
           />
         )}
-      </form.Subscribe>
+      </form.AppField>
     );
   },
 });
 
-export default FilesystemFields;
+export default LogicalVolumeNameField;
