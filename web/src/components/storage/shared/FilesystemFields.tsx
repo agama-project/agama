@@ -27,7 +27,6 @@ import FilesystemSelector from "./FilesystemSelector";
 import { buildFilesystemOptions } from "./helpers";
 import { sharedDefaultOptions, FILESYSTEM_TYPE, FILESYSTEM_ACTION } from "./fields";
 import { useVolumeTemplate } from "~/hooks/model/system/storage";
-import { hasContent } from "~/model/storage/device";
 import { _ } from "~/i18n";
 
 import type { Storage as System } from "~/model/system";
@@ -91,12 +90,6 @@ const FilesystemFieldsContent = withForm({
     const currentFsType = reusedDevice?.filesystem?.type;
     const hasFilesystem = !!currentFsType;
 
-    // Any existing content (a VG over the disk, a partition table, detected
-    // systems...) is destroyed by formatting, even when the device has no
-    // filesystem of its own and thus cannot offer the "Current (keep data)"
-    // option. The data-loss notice keys off this, not off hasFilesystem.
-    const reusesContent = !!reusedDevice && hasContent(reusedDevice);
-
     // Memoized because it's used as a useEffect dependency below.
     const usableFilesystems = useMemo(() => {
       const volumeFilesystems = volume.outline.fsTypes || [];
@@ -146,7 +139,7 @@ const FilesystemFieldsContent = withForm({
           committedMountPoint={committedMountPoint}
           filesystemOptions={filesystemOptions}
           usableFilesystems={usableFilesystems}
-          selectedDevice={reusesContent ? reusedDevice : undefined}
+          selectedDevice={reusedDevice}
           isFallback={isFallbackVolume}
         />
 

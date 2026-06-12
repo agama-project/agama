@@ -202,7 +202,7 @@ export function buildPayload(
 
   return {
     mountPath: values.mountPoint,
-    lvName: values.lvName,
+    lvName: isReuse ? undefined : values.lvName,
     name: isReuse ? values.target : undefined,
     filesystem: buildFilesystemConfig(values),
     size: buildSizeConfig(values),

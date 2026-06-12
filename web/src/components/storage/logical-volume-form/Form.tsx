@@ -271,7 +271,7 @@ export default function LogicalVolumeForm() {
 
   if (volumeGroupConfig) {
     breadcrumbs.push(
-      { label: volumeGroupConfig.name },
+      { label: volumeGroupConfig.name ?? volumeGroupConfig.vgName },
       // TRANSLATORS: breadcrumb label for the logical volume create/edit form.
       { label: _("Configure logical volume") },
     );

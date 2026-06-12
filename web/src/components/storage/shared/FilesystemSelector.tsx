@@ -64,7 +64,7 @@ function destroyDataNotice(device: System.Device) {
       <HelperTextItem variant="warning">
         {sprintf(
           // TRANSLATORS: %s is a device name like "/dev/vdd2"
-          _("Existing data on %s will be destroyed when installation begins."),
+          _("Any existing data on %s will be destroyed when installation begins."),
           deviceLabel(device),
         )}
       </HelperTextItem>
@@ -76,7 +76,7 @@ function defaultFsText(filesystem, mountPoint, isFallback) {
   if (isFallback) {
     return sprintf(
       // TRANSLATORS: %s is a filesystem type (eg. XFS)
-      _("%s (default file system for generic partitions)"),
+      _("%s (default file system for generic mount points)"),
       filesystemLabel(filesystem),
     );
   }

@@ -212,7 +212,7 @@ describe("buildPayload", () => {
 
       expect(result).toEqual({
         mountPath: "/home",
-        lvName: "",
+        lvName: undefined,
         name: "lv_home",
         filesystem: {
           reuse: true,
@@ -243,7 +243,7 @@ describe("buildPayload", () => {
       });
     });
 
-    it("sets name field when reusing, not lvName", () => {
+    it("sets name field when reusing, omits lvName", () => {
       const values = {
         ...defaultOptions.defaultValues,
         mountPoint: "/data",
@@ -255,7 +255,7 @@ describe("buildPayload", () => {
       const result = buildPayload(values as FormFields);
 
       expect(result.name).toBe("lv_data");
-      expect(result.lvName).toBe("should_be_ignored"); // Passed through as-is
+      expect(result.lvName).toBeUndefined();
     });
   });
 });

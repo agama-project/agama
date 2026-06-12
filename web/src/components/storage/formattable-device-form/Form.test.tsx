@@ -276,36 +276,6 @@ describe("FormattableDeviceForm", () => {
     });
   });
 
-  describe("when the device holds content but no filesystem of its own", () => {
-    // e.g. a disk used as an LVM physical volume: it carries data (the volume
-    // group and its logical volumes) yet has no filesystem to keep, so it can
-    // only be formatted.
-    beforeEach(() => {
-      mockSystemDevice = {
-        ...mockSystemDevice,
-        block: { systems: ["openSUSE Tumbleweed"] },
-      } as System.Device;
-    });
-
-    it("warns that the existing data will be destroyed", async () => {
-      installerRender(<FormattableDeviceForm />);
-      await screen.findByText(/will be destroyed/);
-    });
-
-    it("does not offer keeping the current content", async () => {
-      const { user } = installerRender(<FormattableDeviceForm />);
-      await user.click(screen.getByLabelText("File system"));
-      expect(screen.queryByRole("option", { name: /Current/ })).not.toBeInTheDocument();
-    });
-  });
-
-  describe("when the device is empty", () => {
-    it("does not warn about destroying data", () => {
-      installerRender(<FormattableDeviceForm />);
-      expect(screen.queryByText(/will be destroyed/)).not.toBeInTheDocument();
-    });
-  });
-
   describe("when the device has already a filesystem config", () => {
     beforeEach(() => {
       mockDeviceModel = {
