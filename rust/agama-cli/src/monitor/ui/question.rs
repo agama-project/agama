@@ -218,10 +218,10 @@ impl QuestionUiState {
                 let mut answer = Answer::new(&selected_action.id);
 
                 match &question.spec.field {
-                    QuestionField::String | QuestionField::Password => {
-                        if !self.input_text.is_empty() {
-                            answer = answer.with_value(&self.input_text);
-                        }
+                    QuestionField::String | QuestionField::Password
+                        if !self.input_text.is_empty() =>
+                    {
+                        answer = answer.with_value(&self.input_text);
                     }
                     QuestionField::Select { options } => {
                         if let Some(opt) = options.get(self.field_selection_idx) {
