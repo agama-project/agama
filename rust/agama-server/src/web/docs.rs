@@ -318,9 +318,7 @@ fn capitalize(str: &str) -> String {
     let mut chars = str.chars();
     match chars.next() {
         None => String::new(),
-        Some(first) => {
-            first.to_uppercase().collect::<String>() + chars.as_str()
-        }
+        Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
     }
 }
 
@@ -353,7 +351,10 @@ fn import_schema(
     };
 
     // insert provided schema
-    schemas.insert(format!("{}{}", name, capitalize(parent)), source_schema_json);
+    schemas.insert(
+        format!("{}{}", name, capitalize(parent)),
+        source_schema_json,
+    );
 
     // put extracted defs into schemas
     for (def_name, def_value) in extracted_defs {
