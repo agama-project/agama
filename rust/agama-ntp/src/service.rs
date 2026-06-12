@@ -125,10 +125,8 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
             if let Err(e) = self.model.remove_config().await {
                 tracing::error!("Failed to remove the NTP configuration: {e}");
             }
-        } else {
-            if let Err(e) = self.model.write_config(&self.config).await {
-                tracing::error!("Failed to write NTP configuration: {e}");
-            }
+        } else if let Err(e) = self.model.write_config(&self.config).await {
+            tracing::error!("Failed to write NTP configuration: {e}");
         }
 
         if let Err(e) = self.model.sync().await {

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 12 12:19:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to `agama monitor` ability to answer questions
+  (gh#agama-project/agama#3606)
+
+-------------------------------------------------------------------
 Fri Jun 12 10:17:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Implement the RFC9457 for error reporting (gh#agama-project/agama#3611).

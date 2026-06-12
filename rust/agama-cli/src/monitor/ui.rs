@@ -24,12 +24,14 @@ mod content;
 mod issues;
 mod layout;
 mod progress;
+mod question;
 mod summary;
 
 use agama_utils::api::Scope;
 pub use content::Content;
 use gettextrs::gettext;
 pub use layout::create_layout;
+pub use question::{QuestionUiState, QuestionWidget};
 pub use summary::Summary;
 
 /// Converts a Scope to a human-readable string
