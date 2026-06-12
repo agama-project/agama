@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jun 12 10:17:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement the RFC9457 for error reporting (gh#agama-project/agama#3611).
+
+-------------------------------------------------------------------
 Wed Jun 10 06:18:24 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
 
 - Honor extraRepositories repository priorities when adding software
