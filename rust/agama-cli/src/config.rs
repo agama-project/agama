@@ -409,7 +409,7 @@ async fn edit(
     }
 
     Err(anyhow!(gettext(
-        "Ignoring the changes becase the editor was closed with an error code."
+        "Ignoring the changes because the editor was closed with an error code."
     )))
 }
 
