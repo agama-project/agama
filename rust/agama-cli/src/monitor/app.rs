@@ -187,7 +187,7 @@ impl MonitorApp {
     pub async fn run(
         &mut self,
         terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
-    ) -> Result<(), MonitorError> {
+    ) -> Result<InstallationStatus, MonitorError> {
         let (tx, mut rx) = mpsc::channel(16);
 
         // Take ownership of the monitor updates receiver
@@ -238,7 +238,7 @@ impl MonitorApp {
                 Message::StatusUpdate(status) => self.update_status(status),
                 Message::Finished => {
                     terminal_handle.abort();
-                    return Ok(());
+                    return Ok(self.status.clone());
                 }
                 Message::Disconnected => {
                     terminal_handle.abort();
@@ -256,7 +256,7 @@ impl MonitorApp {
                             && key_event.modifiers == KeyModifiers::CONTROL
                         {
                             terminal_handle.abort();
-                            return Ok(());
+                            return Ok(self.status.clone());
                         }
                     }
 
@@ -285,7 +285,7 @@ impl MonitorApp {
                         if let Event::Key(key_event) = event {
                             if self.handle_key_event(key_event) {
                                 terminal_handle.abort();
-                                return Ok(());
+                                return Ok(self.status.clone());
                             }
                         }
                     }

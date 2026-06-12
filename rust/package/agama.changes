@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 12 12:37:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Print the status after running the "monitor", "config load",
+  "config edit" and "install" commands (gh#agama-project/agama#3615).
+
+-------------------------------------------------------------------
 Fri Jun 12 12:19:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Add to `agama monitor` ability to answer questions

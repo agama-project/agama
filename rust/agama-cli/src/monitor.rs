@@ -36,7 +36,7 @@ use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use ratatui::{backend::CrosstermBackend, Terminal, TerminalOptions, Viewport};
 use std::io::{self, IsTerminal};
 
-use crate::monitor::app::MonitorAppBuilder;
+use crate::{monitor::app::MonitorAppBuilder, status::StatusReport};
 
 const MONITOR_HEIGHT: u16 = 20;
 
@@ -150,8 +150,9 @@ pub async fn run(
 
     // Handle result
     match result {
-        Ok(()) => {
-            // Normal finish (idle or user quit)
+        Ok(status) => {
+            let report = StatusReport::new(status);
+            println!("{}", report);
         }
         Err(e) => {
             eprintln!("{e}");
