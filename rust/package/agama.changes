@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 12 16:35:53 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt storate schemas to allow configuring filesystem options
+  (gh#agama-project/agama#3620).
+
+-------------------------------------------------------------------
 Fri Jun 12 14:06:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the same format to display the result on "validate" and
