@@ -164,7 +164,7 @@ describe("FormattableDeviceForm", () => {
       await user.type(screen.getByLabelText("Mount point"), "/home");
       await user.click(screen.getByLabelText(/Define more file system settings/));
       await user.type(screen.getByLabelText(/Mount options.*optional/i), "rw,noatime");
-      await user.type(screen.getByLabelText(/Format options.*optional/i), "-O ^64bit");
+      await user.type(screen.getByLabelText(/Additional format.*optional/i), "-O ^64bit");
       await user.click(screen.getByRole("button", { name: "Accept" }));
       await waitFor(() =>
         expect(mockSetFilesystem).toHaveBeenCalledWith(
@@ -173,7 +173,7 @@ describe("FormattableDeviceForm", () => {
           expect.objectContaining({
             filesystem: expect.objectContaining({
               mountOptions: ["rw,noatime"],
-              mkfsOptions: ["-O ^64bit"],
+              mkfsExtraArguments: "-O ^64bit",
             }),
           }),
         ),

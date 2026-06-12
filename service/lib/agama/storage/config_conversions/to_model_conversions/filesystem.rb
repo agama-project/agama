@@ -43,12 +43,12 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              reuse:        config.reuse?,
-              default:      convert_default,
-              type:         convert_type,
-              label:        config.label,
-              mkfsOptions:  convert_mkfs_options,
-              mountOptions: convert_mount_options
+              reuse:              config.reuse?,
+              default:            convert_default,
+              type:               convert_type,
+              label:              config.label,
+              mkfsExtraArguments: config.mkfs_args,
+              mountOptions:       convert_mount_options
             }
           end
 
@@ -69,13 +69,6 @@ module Agama
             end
 
             config.type.fs_type.to_s
-          end
-
-          # @return [Array<String>, nil]
-          def convert_mkfs_options
-            return if config.mkfs_options.empty?
-
-            config.mkfs_options
           end
 
           # @return [Array<String>, nil]

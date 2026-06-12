@@ -64,7 +64,7 @@ export interface Filesystem {
   default: boolean;
   type?: FilesystemType;
   label?: string;
-  mkfsOptions?: string[];
+  mkfsExtraArguments?: string;
   mountOptions?: string[];
 }
 export interface Partition {

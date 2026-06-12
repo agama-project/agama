@@ -97,7 +97,7 @@ const defaultValues: FormFields = {
   filesystem: FILESYSTEM_TYPE.AUTO,
   filesystemAction: FILESYSTEM_ACTION.REUSE,
   filesystemLabel: "",
-  mkfsOptions: [],
+  mkfsExtraArguments: "",
   mountOptions: [],
   showMoreFilesystemSettings: false,
   sizeMode: SIZE_MODE.AUTO,

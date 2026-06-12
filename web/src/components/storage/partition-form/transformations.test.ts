@@ -46,7 +46,7 @@ describe("buildPayload", () => {
         filesystem: {
           default: true,
           label: undefined,
-          mkfsOptions: undefined,
+          mkfsExtraArguments: undefined,
           mountOptions: undefined,
         },
         size: {
@@ -77,7 +77,7 @@ describe("buildPayload", () => {
           default: false,
           type: "xfs",
           label: undefined,
-          mkfsOptions: undefined,
+          mkfsExtraArguments: undefined,
           mountOptions: undefined,
         },
         size: {
@@ -95,7 +95,7 @@ describe("buildPayload", () => {
         name: "",
         filesystem: "ext4",
         filesystemLabel: "my-data",
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         mountOptions: ["noatime"],
         showMoreFilesystemSettings: true,
         sizeMode: "auto",
@@ -107,7 +107,7 @@ describe("buildPayload", () => {
         default: false,
         type: "ext4",
         label: "my-data",
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         mountOptions: ["noatime"],
       });
     });
@@ -119,7 +119,7 @@ describe("buildPayload", () => {
         name: "",
         filesystem: "ext4",
         filesystemLabel: "my-data",
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         mountOptions: ["noatime"],
         showMoreFilesystemSettings: false,
       };
@@ -130,7 +130,7 @@ describe("buildPayload", () => {
         default: false,
         type: "ext4",
         label: undefined,
-        mkfsOptions: undefined,
+        mkfsExtraArguments: undefined,
         mountOptions: undefined,
       });
     });
@@ -288,14 +288,14 @@ describe("toFormValues", () => {
         mountPath: "/",
         filesystem: {
           type: "ext4",
-          mkfsOptions: ["-O", "dir_index"],
+          mkfsExtraArguments: "-O dir_index",
         },
       };
 
       const result = toFormValues(config as ConfigModel.Partition);
 
       expect(result).toMatchObject({
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         showMoreFilesystemSettings: true,
       });
     });

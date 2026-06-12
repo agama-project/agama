@@ -107,13 +107,13 @@ shared_examples "with filesystem" do
   context "if #filesystem is configured" do
     let(:filesystem) do
       {
-        reuseIfPossible: true,
-        type:            "xfs",
-        label:           "test",
-        path:            "/test",
-        mountBy:         "device",
-        mkfsOptions:     ["version=2"],
-        mountOptions:    ["rw"]
+        reuseIfPossible:    true,
+        type:               "xfs",
+        label:              "test",
+        path:               "/test",
+        mountBy:            "device",
+        mkfsExtraArguments: "-l version=2",
+        mountOptions:       ["rw"]
       }
     end
 
@@ -122,12 +122,12 @@ shared_examples "with filesystem" do
       expect(model_json[:mountPath]).to eq("/test")
       expect(model_json[:filesystem]).to eq(
         {
-          reuse:        true,
-          default:      false,
-          type:         "xfs",
-          label:        "test",
-          mkfsOptions:  ["version=2"],
-          mountOptions: ["rw"]
+          reuse:              true,
+          default:            false,
+          type:               "xfs",
+          label:              "test",
+          mkfsExtraArguments: "-l version=2",
+          mountOptions:       ["rw"]
         }
       )
     end

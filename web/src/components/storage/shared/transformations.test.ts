@@ -35,7 +35,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "reuse",
         filesystemLabel: "",
-        mkfsOptions: [],
+        mkfsExtraArguments: "",
         mountOptions: [],
         showMoreFilesystemSettings: false,
       });
@@ -51,7 +51,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "reuse",
         filesystemLabel: "",
-        mkfsOptions: [],
+        mkfsExtraArguments: "",
         mountOptions: ["noatime", "rw"],
         showMoreFilesystemSettings: true,
       });
@@ -67,7 +67,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "reuse",
         filesystemLabel: "",
-        mkfsOptions: [],
+        mkfsExtraArguments: "",
         mountOptions: [],
         showMoreFilesystemSettings: true,
       });
@@ -85,7 +85,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "auto",
         filesystemLabel: "",
-        mkfsOptions: [],
+        mkfsExtraArguments: "",
         mountOptions: [],
         showMoreFilesystemSettings: false,
       });
@@ -93,7 +93,7 @@ describe("buildFilesystemConfig", () => {
       expect(result).toEqual({
         default: true,
         label: undefined,
-        mkfsOptions: undefined,
+        mkfsExtraArguments: undefined,
         mountOptions: undefined,
       });
     });
@@ -102,7 +102,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "auto",
         filesystemLabel: "my-data",
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         mountOptions: ["noatime"],
         showMoreFilesystemSettings: true,
       });
@@ -110,7 +110,7 @@ describe("buildFilesystemConfig", () => {
       expect(result).toEqual({
         default: true,
         label: "my-data",
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         mountOptions: ["noatime"],
       });
     });
@@ -119,7 +119,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "auto",
         filesystemLabel: "my-data",
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         mountOptions: ["noatime"],
         showMoreFilesystemSettings: false,
       });
@@ -127,7 +127,7 @@ describe("buildFilesystemConfig", () => {
       expect(result).toEqual({
         default: true,
         label: undefined,
-        mkfsOptions: undefined,
+        mkfsExtraArguments: undefined,
         mountOptions: undefined,
       });
     });
@@ -138,7 +138,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "xfs",
         filesystemLabel: "",
-        mkfsOptions: [],
+        mkfsExtraArguments: "",
         mountOptions: [],
         showMoreFilesystemSettings: false,
       });
@@ -147,7 +147,7 @@ describe("buildFilesystemConfig", () => {
         default: false,
         type: "xfs",
         label: undefined,
-        mkfsOptions: undefined,
+        mkfsExtraArguments: undefined,
         mountOptions: undefined,
       });
     });
@@ -156,7 +156,7 @@ describe("buildFilesystemConfig", () => {
       const result = buildFilesystemConfig({
         filesystem: "btrfs",
         filesystemLabel: "root-fs",
-        mkfsOptions: ["-m", "dup"],
+        mkfsExtraArguments: "-m dup",
         mountOptions: ["compress=zstd"],
         showMoreFilesystemSettings: true,
       });
@@ -165,7 +165,7 @@ describe("buildFilesystemConfig", () => {
         default: false,
         type: "btrfs",
         label: "root-fs",
-        mkfsOptions: ["-m", "dup"],
+        mkfsExtraArguments: "-m dup",
         mountOptions: ["compress=zstd"],
       });
     });

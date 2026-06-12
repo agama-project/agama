@@ -45,7 +45,7 @@ module Agama
               path:          model_json[:mountPath],
               type:          convert_type,
               label:         model_json.dig(:filesystem, :label),
-              mkfs_options:  model_json.dig(:filesystem, :mkfsOptions),
+              mkfs_args:     model_json.dig(:filesystem, :mkfsExtraArguments),
               mount_options: model_json.dig(:filesystem, :mountOptions)
             }
           end

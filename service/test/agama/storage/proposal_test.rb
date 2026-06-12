@@ -188,7 +188,6 @@ describe Agama::Storage::Proposal do
                         reuseIfPossible: false,
                         path:            "/",
                         type:            "btrfs",
-                        mkfsOptions:     [],
                         mountOptions:    []
                       },
                       size:       {

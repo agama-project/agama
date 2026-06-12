@@ -413,13 +413,13 @@ shared_examples "with filesystem" do
   context "if 'filesystem' is specified" do
     let(:filesystem) do
       {
-        reuseIfPossible: true,
-        type:            "xfs",
-        label:           "test",
-        path:            "/test",
-        mountBy:         "device",
-        mkfsOptions:     ["version=2"],
-        mountOptions:    ["rw"]
+        reuseIfPossible:    true,
+        type:               "xfs",
+        label:              "test",
+        path:               "/test",
+        mountBy:            "device",
+        mkfsExtraArguments: "-l version=2",
+        mountOptions:       ["rw"]
       }
     end
 
@@ -434,7 +434,7 @@ shared_examples "with filesystem" do
       expect(filesystem.label).to eq("test")
       expect(filesystem.path).to eq("/test")
       expect(filesystem.mount_by).to eq(Y2Storage::Filesystems::MountByType::DEVICE)
-      expect(filesystem.mkfs_options).to contain_exactly("version=2")
+      expect(filesystem.mkfs_args).to eq "-l version=2"
       expect(filesystem.mount_options).to contain_exactly("rw")
     end
 
@@ -460,7 +460,7 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to be_nil
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to eq([])
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to eq([])
       end
     end
@@ -477,9 +477,68 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to be_nil
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to eq([])
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to eq([])
       end
+    end
+  end
+
+  context "if 'filesystem' does not include mkfsExtraArguments or mkfsOptions" do
+    let(:filesystem) do
+      { path: "/test" }
+    end
+
+    it "sets #mkfs_args to nil" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to be_nil
+    end
+  end
+
+  context "if 'filesystem' includes both mkfsExtraArguments and mkfsOptions" do
+    let(:filesystem) do
+      {
+        path:               "/test",
+        mkfsExtraArguments: "-b 2k",
+        mkfsOptions:        ["noise", "to ignore"]
+      }
+    end
+
+    it "ignores mkfsOptions in favor of mkfsExtraArguments" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to eq "-b 2k"
+    end
+  end
+
+  context "if 'filesystem' includes empty mkfsExtraArguments and mkfsOptions" do
+    let(:filesystem) do
+      {
+        path:               "/test",
+        mkfsExtraArguments: "",
+        mkfsOptions:        []
+      }
+    end
+
+    it "sets #mkfs_args to nil" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to be_nil
+    end
+  end
+
+  context "if 'filesystem' includes a non-empty mkfsOptions but no mkfsExtraArguments" do
+    let(:filesystem) do
+      {
+        path:        "/test",
+        mkfsOptions: ["some", "-b content"]
+      }
+    end
+
+    it "sets #mkfs_args based on mkfsOptions" do
+      config = subject.convert
+      filesystem = config.filesystem
+      expect(filesystem.mkfs_args).to eq "some -b content"
     end
   end
 end

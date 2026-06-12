@@ -116,7 +116,6 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Config do
                 max:        1
               },
               filesystem: {
-                mkfsOptions:     [],
                 mountOptions:    [],
                 path:            "/",
                 reuseIfPossible: false

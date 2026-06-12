@@ -76,9 +76,9 @@ type FilesystemConfigFields = Omit<FilesystemFields, "filesystemAction">;
  * 2. **AUTO**: Let installer choose filesystem type, allow all options
  * 3. **Explicit type**: User-selected filesystem type, allow all options
  *
- * Optional filesystem settings (label, mkfsOptions, mountOptions) are only
- * included when the showMoreFilesystemSettings checkbox is checked AND the
- * field is non-empty.
+ * Optional filesystem settings (label, mkfsExtraArguments, mountOptions) are
+ * only included when the showMoreFilesystemSettings checkbox is checked AND
+ * the field is non-empty.
  *
  * @param values - Form field values containing filesystem configuration
  * @returns Filesystem config for ConfigModel, or undefined for "no filesystem"
@@ -107,11 +107,11 @@ type FilesystemConfigFields = Omit<FilesystemFields, "filesystemAction">;
  * // Explicit XFS with mkfs options
  * buildFilesystemConfig({
  *   filesystem: "xfs",
- *   mkfsOptions: ["-m", "crc=1"],
+ *   mkfsExtraArguments: "-m crc=1",
  *   showMoreFilesystemSettings: true,
  *   ...
  * })
- * // → { default: false, type: "xfs", mkfsOptions: ["-m", "crc=1"] }
+ * // → { default: false, type: "xfs", mkfsExtraArguments: "-m crc=1" }
  */
 export function buildFilesystemConfig(
   values: FilesystemConfigFields,
@@ -139,7 +139,7 @@ export function buildFilesystemConfig(
     return {
       default: true,
       label: (extraSetting("filesystemLabel") as string) || undefined,
-      mkfsOptions: (extraSetting("mkfsOptions") as string[]) || undefined,
+      mkfsExtraArguments: (extraSetting("mkfsExtraArguments") as string) || undefined,
       mountOptions: (extraSetting("mountOptions") as string[]) || undefined,
     };
   }
@@ -149,7 +149,7 @@ export function buildFilesystemConfig(
     default: false,
     type: values.filesystem as ConfigModel.FilesystemType,
     label: (extraSetting("filesystemLabel") as string) || undefined,
-    mkfsOptions: (extraSetting("mkfsOptions") as string[]) || undefined,
+    mkfsExtraArguments: (extraSetting("mkfsExtraArguments") as string) || undefined,
     mountOptions: (extraSetting("mountOptions") as string[]) || undefined,
   };
 }

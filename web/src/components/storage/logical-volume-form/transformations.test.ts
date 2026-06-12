@@ -78,7 +78,7 @@ describe("buildPayload", () => {
         filesystem: {
           default: true,
           label: undefined,
-          mkfsOptions: undefined,
+          mkfsExtraArguments: undefined,
           mountOptions: undefined,
         },
         size: {
@@ -111,7 +111,7 @@ describe("buildPayload", () => {
           default: false,
           type: "xfs",
           label: undefined,
-          mkfsOptions: undefined,
+          mkfsExtraArguments: undefined,
           mountOptions: undefined,
         },
         size: {
@@ -130,7 +130,7 @@ describe("buildPayload", () => {
         lvName: "data",
         filesystem: "btrfs",
         filesystemLabel: "data-vol",
-        mkfsOptions: ["-m", "dup"],
+        mkfsExtraArguments: "-m dup",
         mountOptions: ["compress=zstd"],
         showMoreFilesystemSettings: true,
         sizeMode: "auto",
@@ -142,7 +142,7 @@ describe("buildPayload", () => {
         default: false,
         type: "btrfs",
         label: "data-vol",
-        mkfsOptions: ["-m", "dup"],
+        mkfsExtraArguments: "-m dup",
         mountOptions: ["compress=zstd"],
       });
     });
@@ -341,14 +341,14 @@ describe("toFormValues", () => {
         lvName: "root",
         filesystem: {
           type: "ext4",
-          mkfsOptions: ["-O", "dir_index"],
+          mkfsExtraArguments: "-O dir_index",
         },
       };
 
       const result = toFormValues(config as ConfigModel.LogicalVolume);
 
       expect(result).toMatchObject({
-        mkfsOptions: ["-O", "dir_index"],
+        mkfsExtraArguments: "-O dir_index",
         showMoreFilesystemSettings: true,
       });
     });
