@@ -62,6 +62,7 @@ dependencies = [
 name = "agama-cli"
 version = "1.0.0"
 dependencies = [
+ "agama-l10n",
  "agama-lib",
  "agama-transfer",
  "agama-utils",
@@ -74,6 +75,7 @@ dependencies = [
  "futures-util",
  "gettext-rs",
  "home",
+ "i18n-format",
  "inquire",
  "ratatui",
  "regex",
