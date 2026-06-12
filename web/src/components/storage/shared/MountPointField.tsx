@@ -24,6 +24,18 @@ import React from "react";
 import { withForm } from "~/hooks/form";
 import { sharedDefaultOptions } from "./fields";
 import { _ } from "~/i18n";
+import { sprintf } from "sprintf-js";
+import { formattedPath } from "~/components/storage/utils";
+
+const DefaultHelperText = (): React.ReactNode => {
+  return sprintf(
+    // TRANSLATORS: each %s is replaced by a mount point (e.g., "/home").
+    _("E.g., %s, %s, %s"),
+    formattedPath("/home"),
+    formattedPath("/var/lib"),
+    formattedPath("swap"),
+  );
+};
 
 /**
  * Mount point field shared across the storage forms.
@@ -85,7 +97,7 @@ const MountPointField = withForm({
           <field.SuggestionsTextField
             label={label ?? _("Mount point")}
             suggestions={suggestions}
-            helperText={helperText ?? _("E.g., /home, /var/lib, swap")}
+            helperText={helperText ?? <DefaultHelperText />}
             onSelect={(value) => {
               // Update committedMountPoint immediately when the user selects a
               // suggestion (click or Enter): the value is complete and intentional.
