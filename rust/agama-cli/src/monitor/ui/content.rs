@@ -169,7 +169,7 @@ impl<'a> Content<'a> {
         });
 
         let lines = vec![Line::from(Span::styled(
-            gettext("Action needed:"),
+            gettext("Following issues needs to be addressed in configuration:"),
             Style::default().add_modifier(Modifier::BOLD),
         ))];
         Paragraph::new(lines).render(title_area, buf);
