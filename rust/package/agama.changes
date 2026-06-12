@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 12 16:28:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- The list of products only contains the products and modes 
+  descriptions for the current language
+  (gh#agama-project/agama#3619).
+
+-------------------------------------------------------------------
 Fri Jun 12 14:06:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the same format to display the result on "validate" and
