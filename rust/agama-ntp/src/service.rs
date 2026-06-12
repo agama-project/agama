@@ -25,8 +25,9 @@ use crate::{
 
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{self, event, software::Resolvable},
+    api::{self, event},
     message::GetResolvables,
+    Resolvable,
 };
 use async_trait::async_trait;
 use merge::Merge;
@@ -124,10 +125,8 @@ impl MessageHandler<message::SetConfig<api::ntp::Config>> for Service {
             if let Err(e) = self.model.remove_config().await {
                 tracing::error!("Failed to remove the NTP configuration: {e}");
             }
-        } else {
-            if let Err(e) = self.model.write_config(&self.config).await {
-                tracing::error!("Failed to write NTP configuration: {e}");
-            }
+        } else if let Err(e) = self.model.write_config(&self.config).await {
+            tracing::error!("Failed to write NTP configuration: {e}");
         }
 
         if let Err(e) = self.model.sync().await {

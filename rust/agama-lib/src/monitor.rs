@@ -437,13 +437,7 @@ impl Monitor {
                 status.status.progresses.retain(|p| p.scope != scope);
             }
             Event::TaskStarted { task } => {
-                if status
-                    .status
-                    .tasks
-                    .iter()
-                    .find(|t| t.id == task.id)
-                    .is_none()
-                {
+                if !status.status.tasks.iter().any(|t| t.id == task.id) {
                     status.status.tasks.push(task);
                 }
             }

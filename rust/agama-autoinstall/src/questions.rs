@@ -20,7 +20,6 @@
 
 //! This module offers a mechanism to ask questions to users.
 
-use agama_l10n::helpers::gettext_noop;
 use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient as QuestionsHTTPClient};
 use agama_utils::api::question::QuestionSpec;
 
@@ -36,14 +35,28 @@ impl UserQuestions {
     }
 
     /// Asks the user whether to retry loading the profile.
-    pub async fn should_retry(&self, text: &str, error: &str) -> anyhow::Result<bool> {
+    pub async fn should_retry(
+        &self,
+        text: &str,
+        error: &str,
+        url: &str,
+    ) -> anyhow::Result<Option<String>> {
+        let localized_retry = gettextrs::gettext("Reload configuration");
+        let localized_manual = gettextrs::gettext("Skip and configure manually");
         let question = QuestionSpec::new(text, "load.retry")
-            .with_action_ids(&[gettext_noop("Yes"), gettext_noop("No")])
-            .with_default_action("No")
-            .with_data(&[("error", error)]);
+            .with_actions(&[
+                ("Retry", localized_retry.as_str()),
+                ("Manual", localized_manual.as_str()),
+            ])
+            .with_default_action("Manual")
+            .with_data(&[("error", error), ("originalValue", url)]);
 
         let question = self.questions.create_question(&question).await?;
         let answer = self.questions.get_answer(question.id).await?;
-        Ok(answer.action == "Yes")
+        if answer.action == "Manual" {
+            Ok(None)
+        } else {
+            Ok(Some(answer.value.unwrap_or(url.to_string())))
+        }
     }
 }

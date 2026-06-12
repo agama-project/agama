@@ -22,12 +22,12 @@ use crate::{
     client::{self, Client, DiscoverResult},
     message,
     monitor::{self, Monitor},
-    storage, storage_client,
+    storage_client,
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{event, iscsi::Config},
-    progress,
+    progress, BoxFuture,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -45,7 +45,6 @@ pub enum Error {
 }
 
 pub struct Starter {
-    storage: Handler<storage::Service>,
     events: event::Sender,
     progress: Handler<progress::Service>,
     connection: zbus::Connection,
@@ -54,13 +53,11 @@ pub struct Starter {
 
 impl Starter {
     pub fn new(
-        storage: Handler<storage::Service>,
         events: event::Sender,
         progress: Handler<progress::Service>,
         connection: zbus::Connection,
     ) -> Self {
         Self {
-            storage,
             events,
             progress,
             connection,
@@ -86,7 +83,7 @@ impl Starter {
         let service = Service { client };
         let handler = actor::spawn(service);
 
-        let monitor = Monitor::new(self.storage, self.progress, self.events, self.connection);
+        let monitor = Monitor::new(self.progress, self.events, self.connection);
         monitor::spawn(monitor)?;
 
         Ok(handler)
@@ -99,12 +96,11 @@ pub struct Service {
 
 impl Service {
     pub fn starter(
-        storage: Handler<storage::Service>,
         events: event::Sender,
         progress: Handler<progress::Service>,
         connection: zbus::Connection,
     ) -> Starter {
-        Starter::new(storage, events, progress, connection)
+        Starter::new(events, progress, connection)
     }
 }
 
@@ -138,9 +134,12 @@ impl MessageHandler<message::GetConfig> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig> for Service {
-    async fn handle(&mut self, message: message::SetConfig) -> Result<(), Error> {
-        self.client.set_config(message.config).await?;
-        Ok(())
+    async fn handle(
+        &mut self,
+        message: message::SetConfig,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self.client.set_config(message.config).await?;
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }
 

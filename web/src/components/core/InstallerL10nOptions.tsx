@@ -46,6 +46,7 @@ import {
   FormSelectProps,
 } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import { Icon } from "~/components/layout";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
@@ -87,9 +88,7 @@ const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
  * Not available in remote installations.
  */
 const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
-  const {
-    l10n: { keymaps },
-  } = useSystem();
+  const keymaps = useSystem()?.l10n?.keymaps ?? [];
 
   if (!localConnection()) {
     return (
@@ -236,6 +235,12 @@ type InstallerL10nOptionsVariants = "all" | "language" | "keyboard";
 type ToggleProps = Pick<ButtonProps, "onClick"> & {
   language?: string;
   keymap?: string;
+  /**
+   * Whether to render the current values (language and keymap) next to the
+   * icons. When false, only the icons are shown and the accessible name comes
+   * from the button's aria-label.
+   */
+  showValues?: boolean;
 };
 
 /**
@@ -306,9 +311,9 @@ const TextWithLinkToL10n = ({ text, onClick }: TextWithLinkToL10nProps) => {
 const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
   const checkboxDescription = _(
     // TRANSLATORS: Explains where users can find more language and keymap
-    // options for the product to install. Keep the text in square brackets []
-    // as it will be replaced with a clickable link.
-    "More language and keyboard layout options for the selected product may be available in [Localization] page.",
+    // options for the product to install. The text in square brackets [] is a
+    // link to the localization page; keep the brackets.
+    "The [language and region] settings for the product may offer more options to choose from.",
   );
 
   return (
@@ -352,10 +357,10 @@ const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
 
 const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
   const checkboxDescription = _(
-    // TRANSLATORS: Explains where users can find more languages options for the
-    // product to install. Keep the text in square brackets [] as it will be
-    // replaced with a clickable link.
-    "More languages might be available for the selected product at [Localization] page",
+    // TRANSLATORS: Explains where users can find more language options for the
+    // product to install. The text in square brackets [] is a link to the
+    // localization page; keep the brackets.
+    "The [language and region] settings for the product may offer more options to choose from.",
   );
 
   return (
@@ -410,9 +415,9 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
 
   const checkboxDescription = _(
     // TRANSLATORS: Explains where users can find more keymap options for the
-    // product to install. Keep the text in square brackets [] as it will be
-    // replaced with a clickable link.
-    "More keymap layout might be available for the selected product at [Localization] page",
+    // product to install. The text in square brackets [] is a link to the
+    // localization page; keep the brackets.
+    "The [language and region] settings for the product may offer more options to choose from.",
   );
 
   return (
@@ -454,10 +459,10 @@ const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
 };
 
 /** Icon representing the language settings. Used in toggle buttons. */
-const LanguageIcon = () => <Icon name="translate" />;
+const LanguageIcon = () => <Icon isMiddleAligned name="translate" />;
 
 /** Icon representing the keyboard settings. Used in toggle buttons. */
-const KeyboardIcon = () => <Icon name="keyboard" />;
+const KeyboardIcon = () => <Icon isMiddleAligned name="keyboard" />;
 
 /** A layout helper that centers its children with spacing. Used in toggle buttons. */
 const CenteredContent = ({
@@ -470,37 +475,56 @@ const CenteredContent = ({
 );
 
 /** Toggle button for accessing only language settings. */
-const LanguageOnlyToggle = ({ onClick, language }: ToggleProps) => (
-  <Button onClick={onClick} aria-label={_("Change display language")} variant="plain">
-    <CenteredContent>
-      <LanguageIcon /> {language}
-    </CenteredContent>
-  </Button>
-);
+const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => {
+  // TRANSLATORS: label for the button that opens the display language settings
+  const label = _("Language");
+  return (
+    <VisualTooltip content={label}>
+      <Button onClick={onClick} aria-label={label} variant="plain">
+        <CenteredContent>
+          <LanguageIcon />
+          {showValues && language}
+        </CenteredContent>
+      </Button>
+    </VisualTooltip>
+  );
+};
 
 /** Toggle button for accessing only keymap settings. */
-const KeyboardOnlyToggle = ({ onClick, keymap }: ToggleProps) => (
-  <Button onClick={onClick} aria-label={_("Change keyboard layout")} variant="plain">
-    <CenteredContent alignItems="alignItemsFlexEnd">
-      <KeyboardIcon /> <code>{keymap}</code>
-    </CenteredContent>
-  </Button>
-);
+const KeyboardOnlyToggle = ({ onClick, keymap, showValues }: ToggleProps) => {
+  // TRANSLATORS: label for the button that opens the keyboard layout settings
+  const label = _("Keyboard");
+  return (
+    <VisualTooltip content={label}>
+      <Button onClick={onClick} aria-label={label} variant="plain">
+        <CenteredContent alignItems="alignItemsFlexEnd">
+          <KeyboardIcon />
+          {showValues && <code>{keymap}</code>}
+        </CenteredContent>
+      </Button>
+    </VisualTooltip>
+  );
+};
 
 /** Toggle button for accessing both language and keyboard layout settings. */
-const AllSettingsToggle = ({ onClick, language, keymap }: ToggleProps) => {
-  if (!localConnection()) return <LanguageOnlyToggle onClick={onClick} language={language} />;
+const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProps) => {
+  if (!localConnection())
+    return <LanguageOnlyToggle onClick={onClick} language={language} showValues={showValues} />;
 
+  // TRANSLATORS: label for the button that opens the display language and
+  // keyboard layout settings
+  const label = _("Language and Keyboard");
   return (
-    <Button
-      onClick={onClick}
-      aria-label={_("Change display language and keyboard layout")}
-      variant="plain"
-    >
-      <CenteredContent>
-        <LanguageIcon /> {language} <KeyboardIcon /> <code>{keymap}</code>
-      </CenteredContent>
-    </Button>
+    <VisualTooltip content={label}>
+      <Button onClick={onClick} aria-label={label} variant="plain">
+        <CenteredContent>
+          <LanguageIcon />
+          {showValues && language}
+          <KeyboardIcon />
+          {showValues && <code>{keymap}</code>}
+        </CenteredContent>
+      </Button>
+    </VisualTooltip>
   );
 };
 
@@ -534,6 +558,11 @@ export type InstallerL10nOptionsProps = {
    * the selected variant.
    */
   toggle?: (props: ToggleProps) => JSX.Element;
+  /**
+   * Whether the toggle should display the current values next to the icons.
+   * Defaults to false (icon-only) to save space in crowded headers.
+   */
+  showValues?: boolean;
   /** Optional callback when the dialog is closed. */
   onClose?: () => void;
 };
@@ -547,13 +576,12 @@ export type InstallerL10nOptionsProps = {
  */
 export default function InstallerL10nOptions({
   variant = "all",
+  showValues = false,
   toggle,
   onClose,
 }: InstallerL10nOptionsProps) {
   const location = useLocation();
-  const {
-    l10n: { locales },
-  } = useSystem();
+  const locales = useSystem()?.l10n?.locales ?? [];
   const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
   const { stage } = useStatus();
   const selectedProduct = useProductInfo();
@@ -644,6 +672,7 @@ export default function InstallerL10nOptions({
   return (
     <>
       <Toggle
+        showValues={showValues}
         language={supportedLanguages[language]}
         keymap={keymap}
         onClick={() => dispatchDialogAction({ type: "OPEN" })}

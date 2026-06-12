@@ -23,6 +23,7 @@
 use crate::storage_client::{self, message};
 use agama_utils::actor::Handler;
 use agama_utils::api::RawConfig;
+use agama_utils::BoxFuture;
 use async_trait::async_trait;
 use serde_json::Value;
 
@@ -41,7 +42,10 @@ pub trait ZFCPClient {
     async fn probe(&self) -> Result<(), Error>;
     async fn get_system(&self) -> Result<Option<Value>, Error>;
     async fn get_config(&self) -> Result<Option<RawConfig>, Error>;
-    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error>;
+    async fn set_config(
+        &self,
+        config: Option<RawConfig>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error>;
 }
 
 #[derive(Clone)]
@@ -69,10 +73,14 @@ impl ZFCPClient for Client {
         Ok(self.storage_client.call(message::zfcp::GetConfig).await?)
     }
 
-    async fn set_config(&self, config: Option<RawConfig>) -> Result<(), Error> {
-        self.storage_client
+    async fn set_config(
+        &self,
+        config: Option<RawConfig>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self
+            .storage_client
             .call(message::zfcp::SetConfig::new(config))
             .await?;
-        Ok(())
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }

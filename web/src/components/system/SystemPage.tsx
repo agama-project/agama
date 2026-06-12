@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2026] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,13 +21,19 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import ReviewAndInstallButton from "./ReviewAndInstallButton";
+import { Page } from "~/components/core";
+import SystemForm from "~/components/system/system-form/Form";
+import { _ } from "~/i18n";
 
-describe("ReviewAndInstallButton", () => {
-  it("renders the button with 'Review and install' label ", () => {
-    installerRender(<ReviewAndInstallButton />);
-    screen.getByRole("button", { name: "Review and install" });
-  });
-});
+/**
+ * Page for configuring system settings (hostname and NTP).
+ */
+export default function SystemPage() {
+  return (
+    <Page breadcrumbs={[{ label: _("System") }]}>
+      <Page.Content>
+        <SystemForm />
+      </Page.Content>
+    </Page>
+  );
+}

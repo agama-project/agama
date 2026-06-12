@@ -5,12 +5,14 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+agama-l10n = { path = "../agama-l10n" }
 agama-lib = { path = "../agama-lib" }
 agama-utils = { path = "../agama-utils" }
 agama-transfer = { path = "../agama-transfer" }
 anyhow = { version = "1.0.98" }
+gettext-rs = { version = "0.7.1", features = ["gettext-system"] }
+i18n-format = "0.4.0"
 tempfile = "3.20.0"
 tokio = "1.46.0"
 tracing = "0.1.44"
 url = "2.5.4"
-agama-l10n = { path = "../agama-l10n" }

@@ -65,10 +65,6 @@ let mockRegistrationInfo: RegistrationInfo | undefined;
 let mockConfig: Config;
 let mockIssues: Issue[] = [];
 
-jest.mock("~/hooks/model/system", () => ({
-  useSystem: () => ({ l10n: { locale: "en_US" } }),
-}));
-
 jest.mock("~/hooks/model/system/software", () => ({
   useSystem: () => ({ registration: mockRegistrationInfo }),
 }));
@@ -126,7 +122,7 @@ describe("ProductRegistrationPage", () => {
         screen.getByText("Hostname cannot be changed after registration");
         screen.getByText("Configured as", { exact: false });
         screen.getByText("testing-node");
-        screen.getByRole("link", { name: "hostname" });
+        screen.getByRole("link", { name: "system" });
       });
     });
 
@@ -141,7 +137,7 @@ describe("ProductRegistrationPage", () => {
         screen.getByText("Hostname cannot be changed after registration");
         screen.getByText("Configured as", { exact: false });
         screen.getByText("testing-server");
-        screen.getByRole("link", { name: "hostname" });
+        screen.getByRole("link", { name: "system" });
       });
     });
 
@@ -168,7 +164,7 @@ describe("ProductRegistrationPage", () => {
 
       expect(screen.queryByText("Custom alert:")).toBeNull();
       expect(screen.queryByText(/hostname/)).toBeNull();
-      expect(screen.queryByRole("link", { name: "hostname" })).toBeNull();
+      expect(screen.queryByRole("link", { name: "system" })).toBeNull();
     });
 
     describe("if registered with the default server", () => {

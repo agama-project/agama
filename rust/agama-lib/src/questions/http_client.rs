@@ -101,7 +101,7 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch::with_update(&config)?;
+        let patch = Patch::with_config(&config)?;
 
         self.client.patch_void("/config", &patch).await?;
         Ok(())
@@ -120,8 +120,18 @@ impl HTTPClient {
             ..Default::default()
         };
 
-        let patch = Patch::with_update(&config)?;
+        let patch = Patch::with_config(&config)?;
         self.client.patch_void("/config", &patch).await?;
+        Ok(())
+    }
+
+    pub async fn answer_question(
+        &self,
+        id: u32,
+        answer: Answer,
+    ) -> Result<(), QuestionsHTTPClientError> {
+        let update = UpdateQuestion::Answer { id, answer };
+        self.client.patch_void("/questions", &update).await?;
         Ok(())
     }
 

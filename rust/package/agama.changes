@@ -1,4 +1,47 @@
 -------------------------------------------------------------------
+Fri Jun 12 14:06:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the same format to display the result on "validate" and
+  "validate --local" (gh#agama-project/agama#3616).
+- Reduce the validation attempts on "agama config load".
+
+-------------------------------------------------------------------
+Fri Jun 12 12:37:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Print the status after running the "monitor", "config load",
+  "config edit" and "install" commands (gh#agama-project/agama#3615).
+
+-------------------------------------------------------------------
+Fri Jun 12 12:19:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to `agama monitor` ability to answer questions
+  (gh#agama-project/agama#3606)
+
+-------------------------------------------------------------------
+Fri Jun 12 10:17:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement the RFC9457 for error reporting (gh#agama-project/agama#3611).
+
+-------------------------------------------------------------------
+Wed Jun 10 13:09:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Make `agama` command-line help translatable
+  (gh#agama-project/agama#3594).
+
+-------------------------------------------------------------------
+Wed Jun 10 06:18:24 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
+
+- Honor extraRepositories repository priorities when adding software
+  repositories through libzypp (related to gh#agama-project/agama#3483).
+
+-------------------------------------------------------------------
+Tue Jun  9 13:27:17 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Improve tasks management: code refactoring, fix scope of zFCP and
+  DASD tasks, emit TaskAdded event, avoid iSCSI blocking, manage
+  storage reprobing (related to bsc#1266276).
+
+-------------------------------------------------------------------
 Fri Jun  5 09:10:56 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt manager to set the list of resolvables. It asks each module

@@ -24,8 +24,9 @@ use crate::{
 };
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
-    api::{bootloader::Config, software::Resolvable},
+    api::bootloader::Config,
     message::GetResolvables,
+    BoxFuture, Resolvable,
 };
 use async_trait::async_trait;
 use serde_json::Value;
@@ -116,11 +117,15 @@ impl MessageHandler<message::GetSystem> for Service {
 
 #[async_trait]
 impl MessageHandler<message::SetConfig<Config>> for Service {
-    async fn handle(&mut self, message: message::SetConfig<Config>) -> Result<(), Error> {
-        self.client
+    async fn handle(
+        &mut self,
+        message: message::SetConfig<Config>,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        let rx = self
+            .client
             .set_config(&message.config.unwrap_or_default())
             .await?;
-        Ok(())
+        Ok(Box::pin(async move { rx.await.map_err(Error::from) }))
     }
 }
 

@@ -30,10 +30,9 @@ mod tests {
         api::{
             event,
             ntp::{Config, Source, SourceType},
-            software::Resolvable,
             Event,
         },
-        issue,
+        Resolvable,
     };
     use async_trait::async_trait;
     use std::{

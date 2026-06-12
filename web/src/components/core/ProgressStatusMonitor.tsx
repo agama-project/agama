@@ -20,9 +20,10 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useRef } from "react";
 import { Button, Divider, Flex, Popover, Stack } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import VisualTooltip from "~/components/core/VisualTooltip";
 import Text from "~/components/core/Text";
 import { useStatus } from "~/hooks/model/status";
 import { sprintf } from "sprintf-js";
@@ -98,6 +99,8 @@ const DetailsBody = ({ tasks }: DetailProps) => {
 export default function ProgressStatusMonitor() {
   const { progresses: tasks } = useStatus();
   const idle = tasks.length === 0;
+  // Shared by the popover (its external trigger) and the visual-only tooltip.
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Determine icon and aria-label based on state
   let icon: React.ReactNode;
@@ -106,16 +109,18 @@ export default function ProgressStatusMonitor() {
   if (!idle) {
     // Busy: show spinner
     icon = undefined;
-    // TRANSLATORS: aria-label for background tasks status button when tasks are active
+    // TRANSLATORS: label for the background tasks status button when tasks are
+    // active; %s is replaced by the number of active tasks
     ariaLabel = sprintf(
-      n_("System status: %s task active", "System status: %s tasks active", tasks.length),
+      n_("Status: %s task active", "Status: %s tasks active", tasks.length),
       tasks.length,
     );
   } else {
     // Idle: show list_alt_check
     icon = <Icon name="list_alt_check" isMiddleAligned />;
-    // TRANSLATORS: aria-label for system status button when idle
-    ariaLabel = _("System status: Idle");
+    // TRANSLATORS: label for the system status button when there are no
+    // background tasks running
+    ariaLabel = _("Status: Idle");
   }
 
   // Popover header and body depend on state
@@ -139,19 +144,23 @@ export default function ProgressStatusMonitor() {
   }
 
   return (
-    <Popover
-      showClose={false}
-      minWidth="400px"
-      position="bottom-end"
-      headerContent={headerContent}
-      bodyContent={bodyContent}
-    >
-      <Button variant="plain" isLoading={!idle} aria-label={ariaLabel}>
-        {icon}
-        <Text srOnly aria-live="polite" aria-atomic="true">
-          {!idle && ariaLabel}
-        </Text>
-      </Button>
-    </Popover>
+    <>
+      <VisualTooltip content={ariaLabel}>
+        <Button ref={triggerRef} variant="plain" isLoading={!idle} aria-label={ariaLabel}>
+          {icon}
+          <Text srOnly aria-live="polite" aria-atomic="true">
+            {!idle && ariaLabel}
+          </Text>
+        </Button>
+      </VisualTooltip>
+      <Popover
+        triggerRef={triggerRef}
+        showClose={false}
+        minWidth="400px"
+        position="bottom-end"
+        headerContent={headerContent}
+        bodyContent={bodyContent}
+      />
+    </>
   );
 }

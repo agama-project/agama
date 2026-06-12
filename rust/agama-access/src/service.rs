@@ -23,7 +23,6 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use agama_software::Resolvable;
 use agama_utils::{
     actor::{self, Actor, Handler, MessageHandler},
     api::{
@@ -32,6 +31,8 @@ use agama_utils::{
         event, Event, Scope,
     },
     command::{open_firewall, try_enable_service},
+    message::GetResolvables,
+    Resolvable,
 };
 use async_trait::async_trait;
 use tokio::sync::broadcast::Sender;
@@ -56,8 +57,6 @@ pub enum Error {
 
 /// Builds and spawns the remote access service.
 pub struct Starter {
-    /// Handler to communicate with the software service.
-    software: Handler<agama_software::Service>,
     /// Directory where the system is being installed.
     install_dir: PathBuf,
     /// Channel to emit remote access events.
@@ -67,11 +66,9 @@ pub struct Starter {
 impl Starter {
     /// Creates a new starter.
     ///
-    /// * `software`: handler to the software service.
     /// * `events`: channel to emit events.
-    pub fn new(software: Handler<agama_software::Service>, events: event::Sender) -> Starter {
+    pub fn new(events: event::Sender) -> Starter {
         Self {
-            software,
             install_dir: PathBuf::from(DEFAULT_INSTALL_DIR),
             events,
         }
@@ -88,7 +85,7 @@ impl Starter {
     /// Starts the service and returns a handler to communicate with it.
     pub fn start(self) -> Result<Handler<Service>, Error> {
         let service = Service {
-            state: State::new(self.software.clone(), self.events),
+            state: State::new(self.events),
             install_dir: self.install_dir.clone(),
         };
         let handler = actor::spawn(service);
@@ -102,19 +99,16 @@ struct State {
     user_config: Config,
     /// Configurations requested by other Agama modules.
     agama_config: HashMap<String, Config>,
-    /// Optional handler to the software service for setting resolvables.
-    software: Option<Handler<agama_software::Service>>,
     /// Channel to emit events.
     events: Sender<Event>,
 }
 
 impl State {
     /// Creates a new state instance.
-    pub fn new(software: Handler<agama_software::Service>, events: Sender<Event>) -> Self {
+    pub fn new(events: Sender<Event>) -> Self {
         Self {
             user_config: Config::default(),
             agama_config: HashMap::new(),
-            software: Some(software),
             events,
         }
     }
@@ -203,50 +197,19 @@ impl State {
     /// Sets the user-provided configuration and updates software resolvables.
     pub fn set_user_config(&mut self, config: Config) {
         self.user_config = config;
-        self.update_resolvables();
         // ignoring error here is ok as it means just dismissed event
         let _ = self.events.send(Event::ProposalChanged {
             scope: Scope::Access,
         });
     }
 
-    /// Sets the configuration requested by a specific module and updates software resolvables.
+    /// Sets the configuration requested by a specific module.
     pub fn set_module_config(&mut self, id: String, config: Config) {
         self.agama_config.insert(id, config);
-        self.update_resolvables();
         // ignoring error here is ok as it means just dismissed event
         let _ = self.events.send(Event::ProposalChanged {
             scope: Scope::Access,
         });
-    }
-
-    /// Updates the software resolvables based on the current remote access state.
-    fn update_resolvables(&mut self) {
-        let mut resolvables = vec![];
-        if self.is_web_console_enabled() {
-            resolvables.push(Resolvable {
-                name: "cockpit".to_string(),
-                r#type: agama_software::ResolvableType::Pattern,
-            });
-        }
-        if self.is_ssh_enabled() {
-            resolvables.push(Resolvable {
-                name: "openssh-server".to_string(),
-                r#type: agama_software::ResolvableType::Package,
-            });
-        }
-        if let Some(software) = &self.software {
-            let res = software.cast(agama_software::message::SetResolvables {
-                id: "access".to_string(),
-                resolvables,
-            });
-            if let Err(error) = res {
-                tracing::error!(
-                    "Failed to call set resolvables for remote Access: {:?}",
-                    error
-                );
-            }
-        }
     }
 }
 
@@ -262,8 +225,8 @@ pub struct Service {
 
 impl Service {
     /// Returns a starter to build and spawn the service.
-    pub fn starter(software: Handler<agama_software::Service>, events: Sender<Event>) -> Starter {
-        Starter::new(software, events)
+    pub fn starter(events: Sender<Event>) -> Starter {
+        Starter::new(events)
     }
 }
 
@@ -313,6 +276,22 @@ impl MessageHandler<message::Finish> for Service {
     }
 }
 
+#[async_trait]
+impl MessageHandler<GetResolvables> for Service {
+    async fn handle(&mut self, _message: GetResolvables) -> Result<Vec<Resolvable>, Error> {
+        let mut resolvables = vec![];
+
+        if self.state.is_web_console_enabled() {
+            resolvables.push(Resolvable::pattern("cockpit"));
+        }
+        if self.state.is_ssh_enabled() {
+            resolvables.push(Resolvable::package("openssh-server"));
+        }
+
+        Ok(resolvables)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -324,7 +303,6 @@ mod tests {
         State {
             user_config: Config::default(),
             agama_config: HashMap::new(),
-            software: None,
             events: tx,
         }
     }

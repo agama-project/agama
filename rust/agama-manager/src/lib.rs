@@ -44,7 +44,6 @@ pub use agama_users as users;
 
 pub(crate) mod checks;
 pub(crate) mod task_manager;
-pub(crate) mod tasks;
 
 pub mod test_utils;
 

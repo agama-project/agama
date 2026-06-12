@@ -24,15 +24,29 @@ use agama_lib::{
     error::ProfileError,
     profile::{ProfileValidator, ValidationOutcome},
 };
+use agama_utils::api::ProblemDetails;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[error("The config does not match the schema: {0}")]
-    Schema(String),
+    #[error("The config does not match the schema")]
+    Schema(Vec<String>),
     #[error(transparent)]
     ProfileValidator(#[from] ProfileError),
     #[error(transparent)]
     Json(#[from] serde_json::Error),
+}
+
+impl Error {
+    /// Converts this error into RFC 9457 Problem Details
+    pub fn into_problem_details(self) -> ProblemDetails {
+        match self {
+            Error::Schema(validation_errors) => {
+                ProblemDetails::schema_validation_failed(validation_errors)
+            }
+            Error::ProfileValidator(e) => ProblemDetails::internal_error(e.to_string()),
+            Error::Json(e) => ProblemDetails::invalid_json(e.to_string()),
+        }
+    }
 }
 
 pub fn check(json: &serde_json::Value) -> Result<(), Error> {
@@ -40,6 +54,6 @@ pub fn check(json: &serde_json::Value) -> Result<(), Error> {
     let result = ProfileValidator::default_schema()?.validate_str(&raw_json)?;
     match result {
         ValidationOutcome::Valid => Ok(()),
-        ValidationOutcome::NotValid(reasons) => Err(Error::Schema(reasons.join(", "))),
+        ValidationOutcome::NotValid(reasons) => Err(Error::Schema(reasons)),
     }
 }

@@ -73,6 +73,10 @@ pub enum Event {
     },
     /// DASD format finished (contains exit status of the format operation).
     DASDFormatFinished,
+    // New task added (but not started yet).
+    TaskAdded {
+        task: Task,
+    },
     // New task started.
     TaskStarted {
         task: Task,
