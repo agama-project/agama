@@ -42,8 +42,8 @@ module Agama
         # @return [String, nil]
         attr_accessor :label
 
-        # @return [Array<String>]
-        attr_accessor :mkfs_options
+        # @return [String, nil]
+        attr_accessor :mkfs_args
 
         # @return [Array<String>]
         attr_accessor :mount_options
@@ -54,7 +54,6 @@ module Agama
         def initialize
           @reuse = false
           @mount_options = []
-          @mkfs_options = []
         end
 
         # Whether the given path is equivalent to {#path}

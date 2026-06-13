@@ -28,10 +28,10 @@ import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage"
 import SpacePolicySelectionPage from "~/components/storage/SpacePolicySelectionPage";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
-import FormattableDevicePage from "~/components/storage/FormattableDevicePage";
-import PartitionPage from "~/components/storage/PartitionPage";
+import FormattableDeviceForm from "~/components/storage/formattable-device-form/Form";
+import PartitionForm from "~/components/storage/partition-form/Form";
 import LvmPage from "~/components/storage/LvmPage";
-import LogicalVolumePage from "~/components/storage/LogicalVolumePage";
+import LogicalVolumeForm from "~/components/storage/logical-volume-form/Form";
 import ZFCPPage from "~/components/storage/zfcp/ZFCPPage";
 import ZFCPControllersPage from "~/components/storage/zfcp/ZFCPControllersPage";
 import DASDPage from "~/components/storage/dasd/DASDPage";
@@ -67,15 +67,15 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.formatDevice,
-      element: <FormattableDevicePage />,
+      element: <FormattableDeviceForm />,
     },
     {
       path: PATHS.addPartition,
-      element: <PartitionPage />,
+      element: <PartitionForm />,
     },
     {
       path: PATHS.editPartition,
-      element: <PartitionPage />,
+      element: <PartitionForm />,
     },
     {
       path: PATHS.volumeGroup.add,
@@ -87,11 +87,11 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.volumeGroup.logicalVolume.add,
-      element: <LogicalVolumePage />,
+      element: <LogicalVolumeForm />,
     },
     {
       path: PATHS.volumeGroup.logicalVolume.edit,
-      element: <LogicalVolumePage />,
+      element: <LogicalVolumeForm />,
     },
     {
       path: PATHS.iscsi.root,
