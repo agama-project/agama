@@ -24,17 +24,18 @@ import TerminalPane from "~/components/core/TerminalPane";
 import { useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
-// Below these sizes the panel shows an explanatory message instead of a
-// terminal. The minimums also guard the terminal from being measured at a size
-// too small to fit into.
-//
-// Narrower than this, the terminal output wraps into a mess; shorter than this,
-// too few lines are visible to be useful.
-const MIN_TERMINAL_WIDTH = 640;
-const MIN_TERMINAL_HEIGHT = 200;
-// Room kept for the application above the terminal, so it stays usable while
-// both share the screen.
+// Minimum screen size to host a usable terminal. Below it the panel shows an
+// explanatory message instead, which also guards the terminal from being
+// measured at a size too small to fit into. Set to a small laptop (1024x768):
+// any smaller and the terminal and the application cannot share the screen
+// comfortably.
+const MIN_WIDTH = 1024;
+const MIN_HEIGHT = 768;
+
+// How the height is shared once the terminal is shown: room kept for the
+// application above it, and the smallest the terminal itself shrinks to.
 const MIN_MAIN_HEIGHT = 320;
+const MIN_TERMINAL_HEIGHT = 200;
 // Height the terminal opens with the first time, before the user resizes it.
 const DEFAULT_TERMINAL_HEIGHT = 360;
 
@@ -89,9 +90,7 @@ export default function TerminalDock({ children }: React.PropsWithChildren) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useElementSize(containerRef);
 
-  const enoughSpace =
-    containerWidth >= MIN_TERMINAL_WIDTH &&
-    containerHeight >= MIN_MAIN_HEIGHT + MIN_TERMINAL_HEIGHT;
+  const enoughSpace = containerWidth >= MIN_WIDTH && containerHeight >= MIN_HEIGHT;
 
   // Minimizing only applies once the panel actually hosts a terminal; otherwise
   // it just shows its message and there is nothing to collapse.

@@ -86,9 +86,9 @@ describe("TerminalDock", () => {
     });
   });
 
-  describe("when the terminal is shown but there is not enough room", () => {
+  describe("when the terminal is shown but the screen is below 1024x768", () => {
     it("hides the application and explains that more space is needed", async () => {
-      mockResizeObserver(500, 400);
+      mockResizeObserver(1000, 700);
       const { user } = installerRender(<Subject />);
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
