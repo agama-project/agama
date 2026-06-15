@@ -62,7 +62,7 @@ const FUTURE = [
   N_("Use all available space"),
   // TRANSLATORS: Explanation of the size option 'As required by the LVs'
   N_(
-    "Physical volumes may be created in some of the chosen disks based on the logical volumes total size.",
+    "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.",
   ),
   // TRANSLATORS: Explanation of the size option 'Use all available space'
   N_("All the available space in the chosen disks will be used to create physical volumes."),
