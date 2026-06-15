@@ -87,7 +87,7 @@ export default function RetryLoadConfigQuestion({
             }
             toggleTextCollapsed={
               /* TRANSLATORS: Clickable text to show technical details at popup window */
-              _("Show technical details (English only)")
+              _("Show technical details")
             }
           >
             <NestedContent>
