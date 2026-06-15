@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 15 06:27:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the "agama status" format (gh#agama-project/agama#3621).
+
+-------------------------------------------------------------------
 Fri Jun 12 16:35:53 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt storate schemas to allow configuring filesystem options
