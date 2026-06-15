@@ -169,7 +169,7 @@ impl<'a> Content<'a> {
         });
 
         let lines = vec![Line::from(Span::styled(
-            gettext("Following issues needs to be addressed in the configuration:"),
+            gettext("Fix invalid settings before starting the installation:"),
             Style::default().add_modifier(Modifier::BOLD),
         ))];
         Paragraph::new(lines).render(title_area, buf);
@@ -190,8 +190,8 @@ impl<'a> Content<'a> {
         // This is called when there are no progresses, no issues, and no questions
         // So if we're in Configuring, we're ready to install
         let message = match self.status.status.stage {
-            Stage::Configuring => gettext("Ready for installation."),
-            Stage::Installing => gettext("Waiting to start installation..."),
+            Stage::Configuring => gettext("Ready to start the installation."),
+            Stage::Installing => gettext("Starting the installation."),
             _ => return,
         };
 

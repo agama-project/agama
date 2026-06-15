@@ -1,9 +1,21 @@
 -------------------------------------------------------------------
-Mon Jun 15 09:18:13 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Mon Jun 15 15:26:36 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fix the configuration dialog: keep the JSON preview read-only
   and avoid the duplicated ".json" extension in the downloaded
   file name (gh#agama-project/agama#3631).
+  
+-------------------------------------------------------------------
+Mon Jun 15 15:00:05 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Unify some texts with the command-line tools
+  (gh#agama-project/agama#3634).
+
+-------------------------------------------------------------------
+Mon Jun 15 13:57:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Minor text update in the dialog to retry loading the configuration
+  (gh#agama-project/agama#3621).
 
 -------------------------------------------------------------------
 Fri Jun 12 15:34:50 UTC 2026 - José Iván López González <jlopez@suse.com>
