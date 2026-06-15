@@ -74,7 +74,6 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
         </Content>
         <CodeEditor
           isDarkTheme={isDark}
-          isReadOnly
           isCopyEnabled
           isDownloadEnabled
           copyButtonAriaLabel={_("Copy to the clipboard")}
@@ -94,6 +93,9 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
               hideCursorInOverviewRuler: true,
               contextmenu: false,
               minimap: { enabled: false },
+              readOnly: true,
+              // TRANSLATORS: error message displayed in the JSON editor when trying to change the read-only text
+              readOnlyMessage: { value: _("The configuration is read-only.") },
             },
             // Disable command palette, based on https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-interacting-with-the-editor-listening-to-key-events
             onMount: (editor, monaco) => {
