@@ -32,6 +32,7 @@ import useProductAppearance from "~/hooks/use-product-appearance";
 import { useQueryClient } from "@tanstack/react-query";
 import { InstallationFinished, InstallationProgress } from "./components/core";
 import InstallationFailed from "./components/core/InstallationFailed";
+import ShellSplit from "./components/core/ShellSplit";
 
 /**
  * Content guard and flow control component.
@@ -76,7 +77,11 @@ const Content = () => {
     return <InstallationFinished />;
   }
 
-  return <Outlet />;
+  return (
+    <ShellSplit>
+      <Outlet />
+    </ShellSplit>
+  );
 };
 
 /**
