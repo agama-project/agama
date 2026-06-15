@@ -48,6 +48,7 @@ impl UserQuestions {
                 ("Retry", localized_retry.as_str()),
                 ("Manual", localized_manual.as_str()),
             ])
+            .as_string()
             .with_default_action("Manual")
             .with_data(&[("error", error), ("originalValue", url)]);
 
