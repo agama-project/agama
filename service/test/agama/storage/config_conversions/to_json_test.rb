@@ -134,7 +134,6 @@ describe Agama::Storage::ConfigConversions::ToJSON do
               logicalVolumes:  [
                 {
                   filesystem: {
-                    mkfsOptions:     [],
                     mountOptions:    [],
                     path:            "/",
                     reuseIfPossible: false

@@ -38,13 +38,13 @@ module Agama
           # @see Base#conversions
           def conversions
             {
-              reuseIfPossible: config.reuse?,
-              label:           config.label,
-              path:            config.path,
-              mountOptions:    config.mount_options,
-              mkfsOptions:     config.mkfs_options,
-              mountBy:         config.mount_by&.to_s,
-              type:            convert_type
+              reuseIfPossible:    config.reuse?,
+              label:              config.label,
+              path:               config.path,
+              mountOptions:       config.mount_options,
+              mkfsExtraArguments: config.mkfs_args,
+              mountBy:            config.mount_by&.to_s,
+              type:               convert_type
             }
           end
 
