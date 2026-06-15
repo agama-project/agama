@@ -26,7 +26,16 @@ import Page from "~/components/core/Page";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
 import { ROOT } from "~/routes/paths";
-import { _ } from "~/i18n";
+import { _, N_ } from "~/i18n";
+
+// Strings reserved for the translation freeze (unsaved-changes guard).
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const FUTURE_TRANSLATIONS = {
+  title: N_("Unsaved changes"),
+  message: N_("There are unsaved changes. If you leave now, your changes will be lost."),
+  keepEditing: N_("Keep editing"),
+  discardChanges: N_("Discard changes"),
+};
 
 // Minimal interface describing the form instance methods and state that
 // useFormSubmit actually uses.
