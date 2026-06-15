@@ -651,11 +651,13 @@ impl ZyppServer {
         Ok(())
     }
 
-    const ZYPP_DIRS: [&str; 4] = [
+    const ZYPP_DIRS: [&str; 5] = [
         "etc/zypp/services.d",
         "etc/zypp/repos.d",
         "etc/zypp/credentials.d",
         "var/cache/zypp",
+        // the credentials from URLs are stored in the ~/.zypp/credentials.cat file
+        "root/.zypp",
     ];
     fn copy_files(&self) -> ZyppServerResult<()> {
         for path in Self::ZYPP_DIRS {
