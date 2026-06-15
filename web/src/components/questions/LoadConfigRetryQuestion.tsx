@@ -76,7 +76,7 @@ export default function RetryLoadConfigQuestion({
         <Content>
           <Text isBold>
             {/* TRANSLATORS: help text in popup to clarify what user should do */}
-            {_("Verify that the location is correct and the configuration is valid.")}
+            {_("Make sure the location is correct and the configuration is valid.")}
           </Text>
         </Content>
         {error && (
