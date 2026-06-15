@@ -131,9 +131,8 @@ impl ScriptsRunner {
 
     async fn should_retry(&self, url: &str, error: &str) -> anyhow::Result<Option<String>> {
         let msg = i18n_format!(
-            r#"
-                It was not possible to load the script from {0}. Do you want to try again?
-                "#,
+            // TRANSLATORS: {0} is a URL
+            "It was not possible to load the script from {0}. Do you want to try again?",
             url
         );
         self.questions.should_retry(&msg, error, url).await
