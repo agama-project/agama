@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 15 15:00:05 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Unify some texts with the command-line tools
+  (gh#agama-project/agama#3634).
+
+-------------------------------------------------------------------
 Mon Jun 15 13:57:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Minor text update in the dialog to retry loading the configuration

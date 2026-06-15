@@ -206,9 +206,7 @@ const OverviewPageContent = ({ product }) => {
                     <FlexItem>
                       <HelperText>
                         <HelperTextItem variant="warning">
-                          {_(
-                            "You need to fix any invalid settings before proceeding with the installation.",
-                          )}
+                          {_("Fix invalid settings before starting the installation.")}
                         </HelperTextItem>
                       </HelperText>
                     </FlexItem>
