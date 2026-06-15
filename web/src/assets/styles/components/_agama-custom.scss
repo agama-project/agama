@@ -3,10 +3,6 @@
 // App-specific component and layout styles that are not direct PatternFly
 // overrides (see _patternfly-overrides.scss for those).
 
-// PatternFly's responsive breakpoint values, so our media queries stay in sync
-// with PF's own (e.g., the page layout) instead of hardcoding the numbers.
-@use "@patternfly/patternfly/dist/sass-utilities/scss-variables.scss" as pf;
-
 .installation-settings-summary {
   display: grid;
   gap: 0.5em;
@@ -236,20 +232,6 @@ nav.agm-breadcrumb h1 {
   // and floating shadow, rather than the Card's more visible default border.
   --pf-v6-c-card--BorderColor: var(--pf-t--global--border--color--main--default);
   box-shadow: var(--pf-t--global--box-shadow--glass--default, none);
-}
-
-// Below the page's small breakpoint, PatternFly drops the main content's inline
-// margin, border and radius so it spans edge to edge. The dock follows suit, so
-// the terminal isn't left framed in gray while the rest of the UI is flush.
-@media (width < #{pf.$pf-v6-global--breakpoint--md}) {
-  .agm-terminal-dock__panel {
-    padding-inline: 0;
-  }
-
-  .agm-terminal {
-    border-inline: 0;
-    border-radius: 0;
-  }
 }
 
 // Collapsed to a bar: trim the card header padding so the bar stays slim.
