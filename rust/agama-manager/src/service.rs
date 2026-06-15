@@ -668,7 +668,15 @@ impl MessageHandler<message::GetSystem> for Service {
         let hostname = self.hostname.call(hostname::message::GetSystem).await?;
         let proxy = self.proxy.call(proxy::message::GetSystem).await?;
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
-        let manager = self.system.clone();
+
+        let lang = &l10n.locale.language;
+        tracing::debug!("Filtering products for language: {}", lang);
+
+        // Build manager system info with language-filtered products. It filters the products
+        // to include only translations for the current language.
+        let mut manager = self.system.clone();
+        manager.products = self.products.products_for_lang(lang);
+
         let storage = self.storage.call(storage::message::GetSystem).await?;
         let iscsi = self.iscsi.call(iscsi::message::GetSystem).await?;
         let bootloader = self.bootloader.call(bootloader::message::GetSystem).await?;

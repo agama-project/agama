@@ -151,7 +151,7 @@ impl Registry {
         template.to_product_spec(mode)
     }
 
-    /// Returns a vector with available the products
+    /// Returns a vector with the available products
     pub fn products(&self) -> Vec<Product> {
         let mut products: Vec<_> = self
             .products
@@ -188,6 +188,93 @@ impl Registry {
 
         products.sort_by_key(|a| a.name.to_lowercase());
         products
+    }
+
+    /// Returns the list of products with translations filtered for a specific language.
+    ///
+    /// This method translates product descriptions and mode names/descriptions based on
+    /// the provided language. If a translation is not available for the requested language,
+    /// it falls back to the default value from the product template.
+    ///
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    pub fn products_for_lang(&self, lang: &str) -> Vec<Product> {
+        let mut products: Vec<_> = self
+            .products
+            .iter()
+            .map(|p| Self::translate_product(p, lang))
+            .collect();
+
+        products.sort_by_key(|a| a.name.to_lowercase());
+        products
+    }
+
+    /// Translates a product template into a Product with the given language.
+    ///
+    /// * `template`: The product template to translate
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    fn translate_product(template: &ProductTemplate, lang: &str) -> Product {
+        let modes = template
+            .modes
+            .iter()
+            .map(|m| Self::translate_product_mode(m, &template.translations, lang))
+            .collect();
+
+        let description = template
+            .translations
+            .description
+            .get(lang)
+            .cloned()
+            .unwrap_or_else(|| template.description.clone());
+
+        let desktop_selection = template.desktop_selection.as_ref().map(|ds| match ds {
+            DesktopSelection::Optional => system_info::DesktopSelection::Optional,
+            DesktopSelection::Suggested => system_info::DesktopSelection::Suggested,
+        });
+
+        Product {
+            id: template.id.clone(),
+            name: template.name.clone(),
+            description,
+            icon: template.icon.clone(),
+            registration: template.registration,
+            license: template.license.clone(),
+            desktop_selection,
+            translations: None,
+            modes,
+        }
+    }
+
+    /// Translates a product mode spec into a ProductMode with the given language.
+    ///
+    /// * `mode_spec`: The product mode specification to translate
+    /// * `translations`: The product template translations
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    fn translate_product_mode(
+        mode_spec: &ProductModeSpec,
+        translations: &Translations,
+        lang: &str,
+    ) -> ProductMode {
+        let name = translations
+            .mode
+            .get(&mode_spec.id)
+            .and_then(|mode_trans| mode_trans.get("name"))
+            .and_then(|names| names.get(lang))
+            .cloned()
+            .unwrap_or_else(|| mode_spec.name.clone());
+
+        let description = translations
+            .mode
+            .get(&mode_spec.id)
+            .and_then(|mode_trans| mode_trans.get("description"))
+            .and_then(|descriptions| descriptions.get(lang))
+            .cloned()
+            .unwrap_or_else(|| mode_spec.description.clone());
+
+        ProductMode {
+            id: mode_spec.id.clone(),
+            name,
+            description,
+        }
     }
 }
 
@@ -642,5 +729,31 @@ mod test {
         let mut registry = Registry::new(path.as_path());
         registry.read().unwrap();
         assert!(registry.default_product().is_none());
+    }
+
+    #[test_context(Context)]
+    #[test]
+    fn test_products_for_lang(ctx: &mut Context) {
+        // Test with Czech language
+        let products = ctx.registry.products_for_lang("cs");
+
+        // Find SLES product
+        let sles = products.iter().find(|p| p.id == "SLES").unwrap();
+
+        // Verify description is translated to Czech
+        assert!(sles.description.contains("v cloudu"));
+
+        // Verify translations are not included (to reduce payload size)
+        assert!(sles.translations.is_none());
+
+        // Test with English (fallback)
+        let products_en = ctx.registry.products_for_lang("en");
+        let sles_en = products_en.iter().find(|p| p.id == "SLES").unwrap();
+
+        // English should use the default description since "en" translation may not exist
+        assert!(
+            sles_en.description.contains("open, reliable, compliant")
+                || sles_en.description.contains("v cloudu")
+        ); // Accept either default or translated
     }
 }

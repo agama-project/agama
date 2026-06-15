@@ -223,13 +223,29 @@ impl MessageHandler<message::GetSystem> for Service {
 impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
     async fn handle(&mut self, message: message::SetSystem<SystemConfig>) -> Result<(), Error> {
         let config = &message.config;
+
         if let Some(locale) = &config.locale {
-            self.model.set_locale(locale.parse()?)?;
+            let locale_id: LocaleId = locale.parse()?;
+            self.model.set_locale(locale_id.clone())?;
+            // Ensure the system value is updated (currently updated by a DBUS change property)
+            self.system.locale = locale_id;
+            // After changing locale, the databases are re-read with the new language.
+            // We need to update system info to reflect the newly translated locale/timezone names.
+            self.system.locales = self.model.locales_db().entries().clone();
+            self.system.timezones = self.model.timezones_db().entries().clone();
         }
 
         if let Some(keymap) = &config.keymap {
-            self.model.set_keymap(keymap.parse()?)?;
+            let keymap_id: KeymapId = keymap.parse()?;
+            self.model.set_keymap(keymap_id.clone())?;
+            // Ensure the system value is updated (currently updated by a DBUS change property)
+            self.system.keymap = keymap_id;
         };
+
+        // FIXME: Normally, property changes are notified via the monitor. However, a edge case
+        // occurs when the env VAR differs from the system locale, and the UI sets the value back
+        // to the system locale. In this case, the property value remains unchanged, so notification
+        // isn't triggered automatically. We manually ensure the system state is updated here.
 
         Ok(())
     }
