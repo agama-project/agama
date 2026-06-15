@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 15 13:57:52 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Minor text update in the dialog to retry loading the configuration
+  (gh#agama-project/agama#3621).
+
+-------------------------------------------------------------------
 Fri Jun 12 15:34:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Redesing storage forms (format disk, partition and logical

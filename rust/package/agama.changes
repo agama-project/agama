@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Mon Jun 15 08:05:06 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Improve the "agama status" format (gh#agama-project/agama#3621).
+- Improve the "agama monitor" and "agama status" texts
+  (gh#agama-project/agama#3621).
 
 -------------------------------------------------------------------
 Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
