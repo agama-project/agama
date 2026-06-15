@@ -211,9 +211,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
   const toggleLabel = isMinimized ? restoreLabel : minimizeLabel;
 
   // TRANSLATORS: one-line summary of what the terminal is for
-  const summary = _(
-    "Linux command-line with administrative privileges on the installer system.",
-  );
+  const summary = _("Linux command-line with administrative privileges on the installer system.");
 
   const actions = (
     <Flex
