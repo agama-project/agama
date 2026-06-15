@@ -21,6 +21,7 @@
 use crate::api;
 use agama_lib::monitor::InstallationStatus;
 use agama_utils::api::status::Stage;
+use crossterm::style::Stylize;
 use gettextrs::gettext;
 use serde::Serialize;
 use std::fmt;
@@ -73,13 +74,21 @@ impl InstallationEnum {
 impl fmt::Display for InstallationEnum {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let text = match self {
-            Self::Failed => gettext("Installation failed."),
+            Self::Failed => gettext(
+                "Installation failed. Use the \"agama logs store\" command to get the logs to \
+                troubleshoot or share with support.",
+            ),
             Self::Succeeded => gettext("Installation finished successfully."),
             Self::Ready => gettext("Installation is ready to start."),
             Self::Installing => gettext("Installation is in progress."),
-            Self::Proposing => gettext("Installation is being proposed."),
-            Self::Question => gettext("There are unanswered questions. Use `agama monitor` command or the web user interface to answer them."),
-            Self::Issues => gettext("There are issues in configuration that are blocking the installation."),
+            Self::Proposing => gettext("The installer is preparing an installation proposal."),
+            Self::Question => gettext(
+                "There are unanswered questions. Use the \"agama monitor\" command or the \
+                web user interface to answer them.",
+            ),
+            Self::Issues => {
+                gettext("There are issues in configuration that are blocking the installation.")
+            }
         };
         write!(f, "{}", text)
     }
@@ -114,18 +123,18 @@ impl StatusReport {
 impl fmt::Display for StatusReport {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "{}", self.installation)?;
-        writeln!(f)?;
-        write!(f, "{}", gettext("Details:"))?;
+
         if !self.questions.is_empty() {
-            write!(f, "\n{}", gettext("Open questions:"))?;
+            writeln!(f, "\n{}", gettext("Open questions:").bold())?;
             for q in &self.questions {
-                write!(f, "\n  - {}", q.spec.text)?;
+                writeln!(f, "  - {}", q.spec.text)?;
             }
         }
+
         if !self.issues.is_empty() {
-            write!(f, "\n{}", gettext("Blocking issues:"))?;
+            writeln!(f, "\n{}", gettext("Blocking issues:").bold())?;
             for i in &self.issues {
-                write!(f, "\n  - {}", i.issue.description)?;
+                writeln!(f, "  - {}", i.issue.description)?;
             }
         }
         Ok(())
