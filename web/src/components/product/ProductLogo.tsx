@@ -41,7 +41,7 @@ export default function ProductLogo({ product, width = "80px" }) {
 
   useEffect(() => setUseDark(isDark), [isDark]);
 
-  if (!product) return;
+  if (!product || !product.icon) return;
 
   const lightSrc = `assets/logos/${product.icon}`;
   const darkSrc = `assets/logos/${darkVariant(product.icon)}`;

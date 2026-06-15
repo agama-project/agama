@@ -18,6 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
+use agama_utils::api::ProblemDetails;
 use reqwest::{header, IntoUrl, Response};
 use serde::{de::DeserializeOwned, Serialize};
 use url::Url;
@@ -34,23 +35,8 @@ pub enum BaseHTTPClientError {
     InvalidURL(#[from] url::ParseError),
     #[error(transparent)]
     InvalidJSON(#[from] serde_json::Error),
-    #[error("Backend responded with code {} and the following message:\n\n{}", .0, format_backend_error(.1))]
-    BackendError(u16, String),
-}
-
-fn format_backend_error(error: &String) -> String {
-    let message: Result<serde_json::Value, _> = serde_json::from_str(error);
-
-    match message {
-        Ok(message) => {
-            if let Some(error) = message.get("error") {
-                error.to_string().replace("\\n", "\n")
-            } else {
-                format!("{:?}", error)
-            }
-        }
-        Err(_) => format!("{:?}", error),
-    }
+    #[error("{1}")]
+    Problem(u16, ProblemDetails),
 }
 
 /// Base that all HTTP clients should use.
@@ -377,6 +363,21 @@ impl BaseHTTPClient {
             .text()
             .await
             .unwrap_or_else(|_| Self::NO_TEXT.to_string());
-        BaseHTTPClientError::BackendError(code, text)
+
+        let problem = match serde_json::from_str::<ProblemDetails>(&text) {
+            Ok(problem) => problem,
+            Err(_) => {
+                if let Ok(error_object) = serde_json::from_str::<serde_json::Value>(&text) {
+                    if let Some(error) = error_object.get("error").and_then(|e| e.as_str()) {
+                        ProblemDetails::internal_error(error)
+                    } else {
+                        ProblemDetails::internal_error(text)
+                    }
+                } else {
+                    ProblemDetails::internal_error(text)
+                }
+            }
+        };
+        BaseHTTPClientError::Problem(code, problem)
     }
 }

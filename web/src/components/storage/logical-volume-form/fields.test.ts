@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2026] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,14 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
-import ReviewAndInstallButton from "./ReviewAndInstallButton";
+import { isReusingLogicalVolume } from "./fields";
 
-describe("ReviewAndInstallButton", () => {
-  it("renders the button with 'Review and install' label ", () => {
-    installerRender(<ReviewAndInstallButton />);
-    screen.getByRole("button", { name: "Review and install" });
+describe("fields", () => {
+  describe("isReusingLogicalVolume", () => {
+    it("returns true when target is a logical volume name", () => {
+      expect(isReusingLogicalVolume("/dev/system/home")).toBe(true);
+    });
+
+    it("returns false when target is empty (new logical volume)", () => {
+      expect(isReusingLogicalVolume("")).toBe(false);
+    });
   });
 });

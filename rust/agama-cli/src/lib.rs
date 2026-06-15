@@ -35,21 +35,18 @@ use agama_lib::{
 };
 use agama_transfer::Transfer;
 use agama_utils::api::{self, status::Stage, FinishMethod, IssueWithScope};
+use agama_utils::make_long;
 use anyhow::Context;
-use clap::{Args, Parser};
+use clap::{Arg, ArgAction, ArgMatches, Command};
 use fluent_uri::UriRef;
+use gettextrs::gettext;
 use tokio::time::sleep;
 use url::Url;
 
 use crate::{
-    auth::run as run_auth_cmd,
-    auth_tokens_file::AuthTokensFile,
-    commands::{Commands, Format},
-    config::run as run_config_cmd,
-    error::CliError,
-    events::run as run_events_cmd,
-    logs::run as run_logs_cmd,
-    questions::run as run_questions_cmd,
+    auth::run as run_auth_cmd, auth_tokens_file::AuthTokensFile, commands::Format,
+    config::run as run_config_cmd, error::CliError, events::run as run_events_cmd,
+    logs::run as run_logs_cmd, questions::run as run_questions_cmd,
 };
 
 mod auth;
@@ -70,38 +67,84 @@ use context::InstallationContext;
 use status::StatusReport;
 
 /// Agama's CLI global options
-#[derive(Args, Clone)]
+#[derive(Clone, Debug)]
 pub struct GlobalOpts {
-    #[clap(long, default_value = "http://localhost")]
-    /// URI pointing to Agama's remote host.
-    ///
-    /// Examples: https://my-server.lan my-server.local localhost:10443
     pub host: String,
-
-    #[clap(long, default_value = "false")]
-    /// Whether to accept invalid (self-signed, ...) certificates or not
     pub insecure: bool,
-
-    #[clap(long, default_value = "false")]
-    /// Some commands could be able to work even without connection to
-    /// the agama server
     pub local: bool,
 }
 
-/// Agama's command-line interface
-///
-/// This program allows inspecting or changing Agama's configuration, handling installation
-/// profiles, starting the installation, monitoring the process, etc.
-///
-/// Please, use the "help" command to learn more.
-#[derive(Parser)]
-#[command(name = "agama", about, long_about, max_term_width = 100)]
-pub struct Cli {
-    #[clap(flatten)]
-    pub opts: GlobalOpts,
+impl GlobalOpts {
+    pub fn from_matches(matches: &ArgMatches) -> Self {
+        Self {
+            host: matches
+                .get_one::<String>("host")
+                .cloned()
+                .unwrap_or_else(|| "http://localhost".to_string()),
+            insecure: matches.get_flag("insecure"),
+            local: matches.get_flag("local"),
+        }
+    }
+}
 
-    #[command(subcommand)]
-    pub command: Commands,
+pub fn build_cli() -> Command {
+    // TRANSLATORS: CLI help for: agama
+    let about = gettext("Agama's command-line interface");
+    let long_about = make_long(
+        &about,
+        &gettext(
+            // TRANSLATORS: CLI help for: agama (details)
+            "\
+        This program allows inspecting or changing Agama's configuration, handling installation \
+        profiles, starting the installation, monitoring the process, etc.\n\
+        \n\
+        Please, use the \"help\" command to learn more.",
+        ),
+    );
+    Command::new("agama")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .about(&about)
+        .long_about(long_about)
+        .arg(
+            Arg::new("host")
+                .value_name("HOST")
+                .long("host")
+                .default_value("http://localhost")
+                // TRANSLATORS: CLI help for: agama --host <HOST>
+                .long_help(gettext("\
+                    URI pointing to Agama's remote host.\n\
+                    \n\
+                          Examples: https://my-server.lan my-server.local localhost:10443",
+                ))
+        )
+        .arg(
+            Arg::new("insecure")
+                .long("insecure")
+                .action(ArgAction::SetTrue)
+                .default_value("false")
+                // TRANSLATORS: CLI help for: agama --insecure
+                .help(gettext("Whether to accept invalid (self-signed, ...) certificates or not"))
+        )
+        .arg(
+            Arg::new("local")
+                .long("local")
+                .action(ArgAction::SetTrue)
+                .default_value("false")
+                // TRANSLATORS: CLI help for: agama --local
+                .help(gettext("Some commands could be able to work even without connection to the agama server"))
+        )
+        .subcommand(crate::commands::build_config_cmd())
+        .subcommand(crate::commands::build_probe_cmd())
+        .subcommand(crate::commands::build_install_cmd())
+        .subcommand(crate::commands::build_questions_cmd())
+        .subcommand(crate::commands::build_logs_cmd())
+        .subcommand(crate::commands::build_auth_cmd())
+        .subcommand(crate::commands::build_download_cmd())
+        .subcommand(crate::commands::build_finish_cmd())
+        .subcommand(crate::commands::build_monitor_cmd())
+        .subcommand(crate::commands::build_status_cmd())
+        .subcommand(crate::commands::build_events_cmd())
 }
 
 async fn probe(http: BaseHTTPClient, ws: WebSocketClient) -> anyhow::Result<()> {
@@ -320,59 +363,69 @@ pub async fn show_progress(
     Ok(())
 }
 
-pub async fn run_command(cli: Cli) -> anyhow::Result<()> {
-    let api_url = api_url(cli.opts.clone().host)?;
+pub async fn run_command(matches: ArgMatches) -> anyhow::Result<()> {
+    let opts = GlobalOpts::from_matches(&matches);
+    let api_url = api_url(opts.host.clone())?;
 
-    match cli.command {
-        Commands::Config(subcommand) => run_config_cmd(subcommand, cli.opts).await?,
-        Commands::Probe => {
-            let (http, mut ws) = build_clients(api_url, cli.opts.insecure).await?;
+    match matches.subcommand() {
+        Some(("config", sub_matches)) => run_config_cmd(sub_matches, opts).await?,
+        Some(("probe", _)) => {
+            let (http, mut ws) = build_clients(api_url, opts.insecure).await?;
             wait_until_idle(&http, &mut ws)
                 .await
                 .context("Failed to check if service is busy")?;
             probe(http, ws).await?
         }
-        Commands::Install => {
-            let (http, mut ws) = build_clients(api_url, cli.opts.insecure).await?;
+        Some(("install", _)) => {
+            let (http, mut ws) = build_clients(api_url, opts.insecure).await?;
             wait_until_idle(&http, &mut ws)
                 .await
                 .context("Failed to check if service is busy")?;
             install(http, ws).await?
         }
-        Commands::Finish { method } => {
-            let (http, mut ws) = build_clients(api_url, cli.opts.insecure).await?;
+        Some(("finish", sub_matches)) => {
+            let method = sub_matches.get_one::<FinishMethod>("method").copied();
+            let (http, mut ws) = build_clients(api_url, opts.insecure).await?;
             wait_until_idle(&http, &mut ws)
                 .await
                 .context("Failed to check if service is busy")?;
             finish(http, ws, method).await?;
         }
-        Commands::Questions(subcommand) => {
-            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
-            run_questions_cmd(client, subcommand).await?
+        Some(("questions", sub_matches)) => {
+            let client = build_http_client(api_url, opts.insecure, true).await?;
+            run_questions_cmd(client, sub_matches).await?
         }
-        Commands::Logs(subcommand) => {
-            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
-            run_logs_cmd(client, subcommand).await?
+        Some(("logs", sub_matches)) => {
+            let client = build_http_client(api_url, opts.insecure, true).await?;
+            run_logs_cmd(client, sub_matches).await?
         }
-        Commands::Download { url, destination } => {
-            download_file(&url, &destination, cli.opts.insecure)?
+        Some(("download", sub_matches)) => {
+            let url = sub_matches.get_one::<String>("url").unwrap().clone();
+            let destination = sub_matches
+                .get_one::<PathBuf>("destination")
+                .unwrap()
+                .clone();
+            download_file(&url, &destination, opts.insecure)?
         }
-        Commands::Auth(subcommand) => {
-            let client = build_http_client(api_url, cli.opts.insecure, false).await?;
-            run_auth_cmd(client, subcommand).await?;
+        Some(("auth", sub_matches)) => {
+            let client = build_http_client(api_url, opts.insecure, false).await?;
+            run_auth_cmd(client, sub_matches).await?;
         }
-        Commands::Monitor => {
-            let (http, ws) = build_clients(api_url, cli.opts.insecure).await?;
+        Some(("monitor", _)) => {
+            let (http, ws) = build_clients(api_url, opts.insecure).await?;
             monitor::run(http, ws, false).await?;
         }
-        Commands::Status { format } => {
-            let client = build_http_client(api_url, cli.opts.insecure, true).await?;
+        Some(("status", sub_matches)) => {
+            let format = sub_matches.get_one::<Format>("format").unwrap().clone();
+            let client = build_http_client(api_url, opts.insecure, true).await?;
             print_status(&client, format).await?;
         }
-        Commands::Events { pretty } => {
-            let ws_client = build_ws_client(api_url, cli.opts.insecure).await?;
+        Some(("events", sub_matches)) => {
+            let pretty = sub_matches.get_flag("pretty");
+            let ws_client = build_ws_client(api_url, opts.insecure).await?;
             run_events_cmd(ws_client, pretty).await?;
         }
+        _ => {}
     };
 
     Ok(())

@@ -22,7 +22,8 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockStage } from "~/test-utils";
+import { installerRender, mockRoutes, mockStage } from "~/test-utils";
+import { ROOT } from "~/routes/paths";
 import InstallationFinished from "~/components/core/InstallationFinished";
 
 const mockUseIsGrub2WithTpm = jest.fn();
@@ -34,6 +35,7 @@ describe("InstallationFinished", () => {
   beforeEach(() => {
     mockUseIsGrub2WithTpm.mockReturnValue(false);
     mockStage("finished");
+    mockRoutes(ROOT.installationFinished);
   });
 
   it("shows the finished installation screen", () => {
@@ -48,19 +50,19 @@ describe("InstallationFinished", () => {
 
   it("shows the installer options menu", async () => {
     installerRender(<InstallationFinished />);
-    screen.getByRole("button", { name: /More installer options/i });
+    screen.getByRole("button", { name: /More options/i });
   });
 
   it("includes an option for downloading the logs", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    await user.click(screen.getByRole("button", { name: /More installer options/i }));
+    await user.click(screen.getByRole("button", { name: /More options/i }));
     screen.getByRole("menuitem", { name: /Download logs/i });
   });
 
-  it("includes an option for downloading the config", async () => {
+  it("includes an option to show the configuration", async () => {
     const { user } = installerRender(<InstallationFinished />);
-    await user.click(screen.getByRole("button", { name: /More installer options/i }));
-    screen.getByRole("menuitem", { name: /Show installation settings/i });
+    await user.click(screen.getByRole("button", { name: /More options/i }));
+    screen.getByRole("menuitem", { name: /Show configuration/i });
   });
 
   describe("when using grub2 with TPM", () => {

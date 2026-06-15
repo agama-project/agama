@@ -75,7 +75,8 @@ impl Display for BusyState {
         let value = match self {
             BusyState::Busy => gettext("Busy"),
             BusyState::Failed => gettext("Failed"),
-            BusyState::Idle | BusyState::Waiting => gettext("Idle"),
+            BusyState::Idle => gettext("Idle"),
+            BusyState::Waiting => gettext("Waiting for user"),
         };
 
         write!(f, "{}", value)
@@ -91,7 +92,7 @@ impl Widget for Summary<'_> {
             BusyState::Idle
         } else if !self.status.status.progresses.is_empty() {
             BusyState::Busy
-        } else if !self.status.issues.is_empty() || !self.status.questions.is_empty() {
+        } else if !self.status.questions.is_empty() {
             BusyState::Waiting
         } else {
             BusyState::Idle

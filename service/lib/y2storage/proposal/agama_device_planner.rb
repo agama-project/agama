@@ -110,7 +110,7 @@ module Y2Storage
         planned.mount_point = config.path
         planned.mount_by = config.mount_by
         planned.fstab_options = config.mount_options
-        planned.mkfs_options = config.mkfs_options.join(",")
+        planned.mkfs_options = config.mkfs_args
         planned.label = config.label
         configure_filesystem_type(planned, config.type) if config.type
       end

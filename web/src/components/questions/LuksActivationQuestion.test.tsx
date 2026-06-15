@@ -100,7 +100,7 @@ describe("LuksActivationQuestion", () => {
 
   it("allows opening the installer keymap settings", async () => {
     const { user } = renderQuestion();
-    const changeKeymapButton = screen.getByRole("button", { name: "Change keyboard layout" });
+    const changeKeymapButton = screen.getByRole("button", { name: "Keyboard" });
     await user.click(changeKeymapButton);
     screen.getByRole("dialog", { name: "Change keyboard" });
   });

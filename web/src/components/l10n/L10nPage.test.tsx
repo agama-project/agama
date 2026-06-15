@@ -77,8 +77,12 @@ beforeEach(() => {
 it("renders an clarification about settings", () => {
   installerRender(<L10nPage />);
   screen.getByText(/These are the settings for the product to install/);
-  screen.getByText(/The installer language and keyboard layout can be adjusted via/);
-  screen.getByText("InstallerL10nOptions Mock");
+  const clarification = screen.getByText(
+    /The installer language and keyboard layout can be adjusted using/,
+  );
+  // The header also renders the localization options, so scope the assertion
+  // to the clarification text to target the inline control.
+  within(clarification).getByText("InstallerL10nOptions Mock");
 });
 
 it("renders a section for configuring the language", () => {

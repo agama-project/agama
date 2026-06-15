@@ -43,12 +43,8 @@ import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import NoDesktopAlert from "~/components/software/NoDesktopAlert";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
-import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
-import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
-import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
-import ProductLogo from "~/components/product/ProductLogo";
 import { startInstallation } from "~/api";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
@@ -153,20 +149,10 @@ const OverviewPageContent = ({ product }) => {
 
   return (
     <Page
-      title={
-        <>
-          <ProductLogo product={product} width="40px" /> {product.name}
-        </>
-      }
-      noDefaultEndSlot
-      noDefaultProgressMonitor
-      endSlot={
-        <>
-          <InstallerL10nOptions />
-          <ProgressStatusMonitor />
-          <InstallerOptionsMenu hideLabel showChangeProductOption />
-        </>
-      }
+      hideSummaryLink
+      // TRANSLATORS: Breadcrumb item for the main page, where the whole
+      // installation can be reviewed.
+      breadcrumbs={[{ label: _("Installation") }]}
     >
       <Page.Content>
         <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>

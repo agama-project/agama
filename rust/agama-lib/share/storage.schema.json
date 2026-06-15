@@ -994,8 +994,13 @@
           "description": "How to mount the device.",
           "enum": ["device", "id", "label", "path", "uuid"]
         },
+        "mkfsExtraArguments": {
+          "description": "Additional arguments injected as-is to the mkfs command when creating the file system.",
+          "type": "string"
+        },
         "mkfsOptions": {
-          "description": "Options for creating the file system.",
+          "deprecated": true,
+          "description": "Deprecated in favor of mkfsExtraArguments",
           "type": "array",
           "items": {
             "type": "string"

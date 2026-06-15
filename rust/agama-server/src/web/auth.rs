@@ -21,19 +21,20 @@
 //! Contains the code to handle access authorization.
 
 use super::state::ServiceState;
+use crate::web::error::ProblemDetailsExt;
 use agama_lib::auth::{AuthToken, AuthTokenError, TokenClaims};
+use agama_utils::api::ProblemDetails;
 use axum::{
     extract::FromRequestParts,
-    http::{request, StatusCode},
+    http::request,
     response::{IntoResponse, Response},
-    Json, RequestPartsExt,
+    RequestPartsExt,
 };
 use axum_extra::{
     headers::{self, authorization::Bearer},
     TypedHeader,
 };
 use pam::PamError;
-use serde_json::json;
 use thiserror::Error;
 
 /// Represents an authentication error.
@@ -52,10 +53,18 @@ pub enum AuthError {
 
 impl IntoResponse for AuthError {
     fn into_response(self) -> Response {
-        let body = json!({
-            "error": self.to_string()
-        });
-        (StatusCode::UNAUTHORIZED, Json(body)).into_response()
+        let problem = match self {
+            AuthError::MissingToken => {
+                ProblemDetails::unauthorized("Authentication token is missing")
+            }
+            AuthError::InvalidToken(e) => {
+                ProblemDetails::unauthorized(format!("Invalid authentication token: {}", e))
+            }
+            AuthError::Failed(e) => {
+                ProblemDetails::unauthorized(format!("Authentication failed: {}", e))
+            }
+        };
+        problem.into_response()
     }
 }
 

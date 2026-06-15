@@ -1,4 +1,27 @@
 -------------------------------------------------------------------
+Fri Jun 12 15:34:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Redesing storage forms (format disk, partition and logical
+  volume) and migrate them to TanStack Form
+  (gh#agama-project/agama#3610).
+
+-------------------------------------------------------------------
+Thu Jun 11 23:52:08 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Standardize form Cancel actions across the application, add a
+  link back to the installation summary in the form submission
+  alerts, and fix empty toast containers blocking the header
+  toolbar (gh#agama-project/agama#3613).
+
+-------------------------------------------------------------------
+Wed Jun 10 12:07:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Redesign the installer header: replace the "Review and Install"
+  button with breadcrumb navigation, show the product and the
+  installer tools (localization, configuration, appearance and
+  status) on every page, and add tooltips, clearer labels and a
+  customizable icon size scale (gh#agama-project/agama#3607).
+-------------------------------------------------------------------
 Tue Jun  9 21:51:55 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Improve retry popup when failed to load unattended profile. It

@@ -40,7 +40,7 @@ import { AppearanceProvider } from "~/context/appearance";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
 import { Question } from "~/model/question";
-import type { Product } from "~/model/system";
+import type { Product, System } from "~/model/system";
 import type { Config as ProductConfig } from "~/model/config/product";
 
 /**
@@ -222,6 +222,38 @@ const mockProductConfig = (product: ProductConfig | null) =>
 jest.mock("~/hooks/model/config/product", () => ({
   useProductInfo: () => mockUseProductInfo(),
   useProduct: () => mockUseProduct(),
+}));
+
+/**
+ * Internal mock for manipulating the system query (useSystem)
+ */
+const mockUseSystemFn: jest.Mock<System> = jest.fn().mockReturnValue({
+  products: [],
+  l10n: { locales: [], keymaps: [] },
+});
+
+/** Recursively optional version of a type, handy for partial test fixtures. */
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends Array<infer U> ? Array<DeepPartial<U>> : DeepPartial<T[K]>;
+};
+
+/**
+ * Allows mocking useSystem for testing purpose.
+ *
+ * It returns a minimal, empty system by default so components present on every
+ * page (e.g. the header localization selector) do not suspend in tests that do
+ * not provide system data. Override it when a test needs specific data, passing
+ * only the fields under test.
+ *
+ * @example
+ *   mockSystem({ products: [tumbleweed], l10n: { locales, keymaps } });
+ */
+const mockSystem = (system: DeepPartial<System>) =>
+  mockUseSystemFn.mockReturnValue(system as System);
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: () => mockUseSystemFn(),
 }));
 
 /**
@@ -477,6 +509,7 @@ export {
   mockTasks,
   mockProduct,
   mockProductConfig,
+  mockSystem,
   mockL10n,
   loadTranslations,
   mockQuestions,

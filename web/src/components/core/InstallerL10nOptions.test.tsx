@@ -22,13 +22,10 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
-import { installerRender, mockProduct, mockRoutes, mockL10n } from "~/test-utils";
-import { useSystem } from "~/hooks/model/system";
+import { installerRender, mockProduct, mockRoutes, mockL10n, mockSystem } from "~/test-utils";
 import { Product } from "~/model/system";
 import { Keymap, Locale } from "~/model/system/l10n";
 import { Progress, Stage } from "~/model/status";
-import { System } from "~/model/system/network";
-import { ConnectivityState } from "~/types/network";
 import * as utils from "~/utils";
 import { ROOT } from "~/routes/paths";
 import InstallerL10nOptions, { InstallerL10nOptionsProps } from "./InstallerL10nOptions";
@@ -53,18 +50,6 @@ const tumbleweed: Product = {
   registration: false,
 };
 
-const network: System = {
-  connections: [],
-  devices: [],
-  state: {
-    connectivity: ConnectivityState.FULL,
-    copyNetwork: true,
-    networkingEnabled: true,
-    wirelessEnabled: true,
-  },
-  accessPoints: [],
-};
-
 const mockChangeUIKeymap = jest.fn();
 const mockChangeUILanguage = jest.fn();
 const mockPatchConfigFn = jest.fn();
@@ -76,14 +61,6 @@ jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
   configureL10nAction: (payload) => mockConfigureL10nActionFn(payload),
   patchConfig: (payload) => mockPatchConfigFn(payload),
-}));
-
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: (): ReturnType<typeof useSystem> => ({
-    l10n: { locales, keymaps, locale: "us_US.UTF-8", keymap: "us" },
-    network,
-  }),
 }));
 
 jest.mock("~/hooks/model/status", () => ({
@@ -107,6 +84,7 @@ describe("InstallerL10nOptions", () => {
     jest.spyOn(utils, "localConnection").mockReturnValue(true);
     mockProgressesFn.mockReturnValue([]);
     mockStateFn.mockReturnValue("configuring");
+    mockSystem({ l10n: { locales, keymaps } });
     mockProduct(tumbleweed);
     mockL10n({
       language: "de-DE",
@@ -146,13 +124,39 @@ describe("InstallerL10nOptions", () => {
   });
 
   describe("when using variant=all", () => {
-    it("renders a button with current language and keymap values", () => {
-      installerRender(<InstallerL10nOptions />);
+    it("renders a button with current language and keymap values when showValues is set", () => {
+      installerRender(<InstallerL10nOptions showValues />);
       const toggle = screen.getByRole("button", {
-        name: "Change display language and keyboard layout",
+        name: "Language and Keyboard",
       });
       expect(toggle).toHaveTextContent("Deutsch");
       expect(toggle).toHaveTextContent("us");
+    });
+
+    it("renders an icon-only button keeping its accessible name by default", () => {
+      installerRender(<InstallerL10nOptions />);
+      const toggle = screen.getByRole("button", {
+        name: "Language and Keyboard",
+      });
+      expect(toggle).not.toHaveTextContent("Deutsch");
+      expect(toggle).not.toHaveTextContent("us");
+    });
+
+    describe("the visual tooltip", () => {
+      it("does not add a second source for the accessible name", () => {
+        installerRender(<InstallerL10nOptions />);
+        const toggles = screen.getAllByRole("button", {
+          name: "Language and Keyboard",
+        });
+        expect(toggles).toHaveLength(1);
+        expect(toggles[0]).not.toHaveAttribute("aria-describedby");
+      });
+
+      it("reveals its text on hover", async () => {
+        const { user } = installerRender(<InstallerL10nOptions />);
+        await user.hover(screen.getByRole("button", { name: "Language and Keyboard" }));
+        await screen.findByText("Language and Keyboard");
+      });
     });
 
     it("allows setting display language and keyboard layout", async () => {
@@ -221,7 +225,7 @@ describe("InstallerL10nOptions", () => {
 
     it("includes a link to localization page", async () => {
       await renderAndOpen();
-      screen.getByRole("link", { name: "Localization" });
+      screen.getByRole("link", { name: "language and region" });
     });
 
     describe("but a product is not selected yet", () => {
@@ -238,7 +242,7 @@ describe("InstallerL10nOptions", () => {
 
       it("does not include a link to localization page", async () => {
         await renderAndOpen();
-        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
+        expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
 
@@ -248,9 +252,9 @@ describe("InstallerL10nOptions", () => {
       });
 
       it("does not render keymap value in the toggle button", () => {
-        installerRender(<InstallerL10nOptions />);
+        installerRender(<InstallerL10nOptions showValues />);
         const toggle = screen.getByRole("button", {
-          name: "Change display language",
+          name: "Language",
         });
         expect(toggle).toHaveTextContent("Deutsch");
         expect(toggle).not.toHaveTextContent("us");
@@ -273,9 +277,9 @@ describe("InstallerL10nOptions", () => {
 
   describe("when using variant=language", () => {
     it("renders a button only with current language value", () => {
-      installerRender(<InstallerL10nOptions variant="language" />);
+      installerRender(<InstallerL10nOptions variant="language" showValues />);
       const toggle = screen.getByRole("button", {
-        name: "Change display language",
+        name: "Language",
       });
       expect(toggle).toHaveTextContent("Deutsch");
       expect(toggle).not.toHaveTextContent("us");
@@ -337,7 +341,7 @@ describe("InstallerL10nOptions", () => {
 
     it("includes a link to localization page", async () => {
       await renderAndOpen({ variant: "language" });
-      screen.getByRole("link", { name: "Localization" });
+      screen.getByRole("link", { name: "language and region" });
     });
 
     describe("but a product is not selected yet", () => {
@@ -354,16 +358,16 @@ describe("InstallerL10nOptions", () => {
 
       it("does not include a link to localization page", async () => {
         await renderAndOpen({ variant: "language" });
-        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
+        expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
   });
 
   describe("when using variant=keyboard", () => {
     it("renders a button only with current keymap value", () => {
-      installerRender(<InstallerL10nOptions variant="keyboard" />);
+      installerRender(<InstallerL10nOptions variant="keyboard" showValues />);
       const toggle = screen.getByRole("button", {
-        name: "Change keyboard layout",
+        name: "Keyboard",
       });
       expect(toggle).not.toHaveTextContent("Deutsch");
       expect(toggle).toHaveTextContent("us");
@@ -430,7 +434,7 @@ describe("InstallerL10nOptions", () => {
 
     it("includes a link to localization page", async () => {
       await renderAndOpen({ variant: "keyboard" });
-      screen.getByRole("link", { name: "Localization" });
+      screen.getByRole("link", { name: "language and region" });
     });
 
     describe("but in a remote connection", () => {
@@ -458,7 +462,7 @@ describe("InstallerL10nOptions", () => {
 
       it("does not include a link to localization page", async () => {
         await renderAndOpen({ variant: "keyboard" });
-        expect(screen.queryByRole("link", { name: "Localization" })).toBeNull();
+        expect(screen.queryByRole("link", { name: "language and region" })).toBeNull();
       });
     });
   });

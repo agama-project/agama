@@ -1,4 +1,53 @@
 -------------------------------------------------------------------
+Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Mark properly autoinst retry question as the one that should
+  return value for new url (gh#agama-project/agama#3623)
+
+-------------------------------------------------------------------
+Fri Jun 12 17:28:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- The list of products only contains the products and modes 
+  descriptions for the current language
+  (gh#agama-project/agama#3619).
+
+-------------------------------------------------------------------
+Fri Jun 12 16:35:53 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt storate schemas to allow configuring filesystem options
+  (gh#agama-project/agama#3620).
+
+-------------------------------------------------------------------
+Fri Jun 12 14:06:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use the same format to display the result on "validate" and
+  "validate --local" (gh#agama-project/agama#3616).
+- Reduce the validation attempts on "agama config load".
+
+-------------------------------------------------------------------
+Fri Jun 12 12:37:58 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Print the status after running the "monitor", "config load",
+  "config edit" and "install" commands (gh#agama-project/agama#3615).
+
+-------------------------------------------------------------------
+Fri Jun 12 12:19:51 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to `agama monitor` ability to answer questions
+  (gh#agama-project/agama#3606)
+
+-------------------------------------------------------------------
+Fri Jun 12 10:17:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Implement the RFC9457 for error reporting (gh#agama-project/agama#3611).
+
+-------------------------------------------------------------------
+Wed Jun 10 13:09:55 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Make `agama` command-line help translatable
+  (gh#agama-project/agama#3594).
+
+-------------------------------------------------------------------
 Wed Jun 10 06:18:24 UTC 2026 - Asish Kumar <officialasishkumar@gmail.com>
 
 - Honor extraRepositories repository priorities when adding software
