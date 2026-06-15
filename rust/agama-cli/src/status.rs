@@ -21,7 +21,6 @@
 use crate::api;
 use agama_lib::monitor::InstallationStatus;
 use agama_utils::api::status::Stage;
-use crossterm::style::Stylize;
 use gettextrs::gettext;
 use serde::Serialize;
 use std::fmt;
@@ -75,20 +74,18 @@ impl fmt::Display for InstallationEnum {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let text = match self {
             Self::Failed => gettext(
-                "Installation failed. Use the \"agama logs store\" command to get the logs to \
+                "The installation failed. Use the \"agama logs store\" command to get the logs to \
                 troubleshoot or share with support.",
             ),
-            Self::Succeeded => gettext("Installation finished successfully."),
-            Self::Ready => gettext("Installation is ready to start."),
-            Self::Installing => gettext("Installation is in progress."),
+            Self::Succeeded => gettext("The installation finished successfully."),
+            Self::Ready => gettext("Ready to start the installation."),
+            Self::Installing => gettext("The installation is in progress."),
             Self::Proposing => gettext("The installer is preparing an installation proposal."),
             Self::Question => gettext(
                 "There are unanswered questions. Use the \"agama monitor\" command or the \
-                web user interface to answer them.",
+                web user interface to answer them:",
             ),
-            Self::Issues => {
-                gettext("There are issues in configuration that are blocking the installation.")
-            }
+            Self::Issues => gettext("Fix invalid settings before starting the installation:"),
         };
         write!(f, "{}", text)
     }
@@ -122,21 +119,18 @@ impl StatusReport {
 
 impl fmt::Display for StatusReport {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{}", self.installation)?;
+        writeln!(f, "{}\n", self.installation)?;
 
         if !self.questions.is_empty() {
-            writeln!(f, "\n{}", gettext("Open questions:").bold())?;
             for q in &self.questions {
                 writeln!(f, "  - {}", q.spec.text)?;
             }
-        }
-
-        if !self.issues.is_empty() {
-            writeln!(f, "\n{}", gettext("Blocking issues:").bold())?;
+        } else if !self.issues.is_empty() {
             for i in &self.issues {
                 writeln!(f, "  - {}", i.issue.description)?;
             }
         }
+
         Ok(())
     }
 }
@@ -313,9 +307,7 @@ mod tests {
         let status = default_status();
         let report = StatusReport::new(status);
         let output = report.to_string();
-        assert!(output.contains("Installation is ready to start."));
-        assert!(!output.contains("Open questions:"));
-        assert!(!output.contains("Blocking issues:"));
+        assert!(output.contains("Ready to start the installation"));
     }
 
     #[test]
@@ -331,7 +323,6 @@ mod tests {
         ));
         let report = StatusReport::new(status);
         let output = report.to_string();
-        println!("{}", output);
         assert!(output.contains("There are unanswered questions."));
         assert!(output.contains("  - What is your name?"));
         assert!(output.contains("  - This is a blocking issue."));
