@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 15 09:18:13 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix the configuration dialog: keep the JSON preview read-only
+  and avoid the duplicated ".json" extension in the downloaded
+  file name (gh#agama-project/agama#3631).
+
+-------------------------------------------------------------------
 Fri Jun 12 15:34:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Redesing storage forms (format disk, partition and logical
