@@ -92,9 +92,11 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           // derives from props (like readOnly from isReadOnly) are preserved.
           // Based on https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-customizing-the-appearence-scrollbars
           options={{
+            contextmenu: false,
             scrollBeyondLastLine: false,
             hideCursorInOverviewRuler: true,
-            contextmenu: false,
+            // TRANSLATORS: error message displayed in the JSON editor when trying to change the read-only text
+            readOnlyMessage: { value: _("The configuration is read-only.") },
           }}
           // Runs in addition to PatternFly's own mount logic (e.g. Shift+Tab
           // focus handling). Disables the command palette, based on
