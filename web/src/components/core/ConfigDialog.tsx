@@ -40,7 +40,8 @@ type ConfigDialogProps = {
 export default function ConfigDialog({ onClose }: ConfigDialogProps) {
   const { isDark } = useAppearance();
   const [config, setConfig] = useState<string | undefined>(undefined);
-  const [downloadFileName, setDownloadFileName] = useState("agama-config.json");
+  // CodeEditor appends the extension based on the language, so it must be omitted here.
+  const [downloadFileName, setDownloadFileName] = useState("agama-config");
 
   useEffect(() => {
     const loadConfig = async () => {
@@ -48,7 +49,7 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
         const response = await fetch(ROOT.config);
         const text = await response.text();
         setConfig(JSON.stringify(JSON.parse(text), null, 2));
-        setDownloadFileName(`agama-config-${isoTimestamp()}.json`);
+        setDownloadFileName(`agama-config-${isoTimestamp()}`);
       } catch (error) {
         console.error("Failed to load config:", error);
         setConfig("");
