@@ -325,6 +325,18 @@ mod tests {
         let output = report.to_string();
         assert!(output.contains("There are unanswered questions."));
         assert!(output.contains("  - What is your name?"));
-        assert!(output.contains("  - This is a blocking issue."));
+        assert!(!output.contains("This is a blocking issue."));
+    }
+
+    #[test]
+    fn test_status_report_display_with_issues() {
+        let mut status = default_status();
+        status.issues.push(IssueWithScope {
+            scope: Scope::Manager,
+            issue: Issue::new("class1", "This is a blocking issue."),
+        });
+        let report = StatusReport::new(status);
+        let output = report.to_string();
+        assert!(output.contains("This is a blocking issue."));
     }
 }
