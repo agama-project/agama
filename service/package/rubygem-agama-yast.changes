@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 15 15:45:27 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
 Fri Jun 12 16:45:14 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Extend storage model to allow configuring filesystem options
