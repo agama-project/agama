@@ -23,7 +23,7 @@ command -v getargs >/dev/null || . /lib/dracut-lib.sh
 
 # Check if HCN is enabled via any of the three methods
 if ! getargbool 0 rd.hcn && ! getargs rd.hcn.ip >/dev/null && ! getargs rd.hcn.route >/dev/null; then
-  info "hcnmgr: HCN not enabled (no rd.hcn=1, rd.hcn.ip, or rd.hcn.route), skipping"
+  info "hcn: HCN not enabled (no rd.hcn=1, rd.hcn.ip, or rd.hcn.route), skipping"
   if (return 0 2>/dev/null); then
     return 0
   else
@@ -31,7 +31,7 @@ if ! getargbool 0 rd.hcn && ! getargs rd.hcn.ip >/dev/null && ! getargs rd.hcn.r
   fi
 fi
 
-info "hcnmgr: starting"
+info "hcn: starting"
 
 # Helper to read 4 bytes from device-tree and return hex string
 xdump4() {
@@ -62,17 +62,17 @@ get_dev_hcn() {
   # Wait for device to appear in sysfs. This might take time after migration.
   while [ $wait -gt 0 ]; do
     if devname=$(ofpathname -l "$ofpath" 2>/dev/null) && [ -e "/sys/class/net/$devname" ]; then
-      info "hcnmgr: device $devname ready for $ofpath"
+      info "hcn: device $devname ready for $ofpath"
       mac=$(get_mac "$dev")
       break
     fi
-    info "hcnmgr: waiting for device for $ofpath (retry $wait)"
+    info "hcn: waiting for device for $ofpath (retry $wait)"
     sleep 15
     wait=$((wait - 1))
   done
 
   if [ -z "$devname" ]; then
-    warn "hcnmgr: could not resolve device name for $dev"
+    warn "hcn: could not resolve device name for $dev"
     return 1
   fi
 
@@ -220,7 +220,7 @@ EOF
 
     # Guard: Ensure we have at least id and uuid
     if [ -z "$id" ] || [ -z "$uuid" ]; then
-      info "hcnmgr: skipping invalid connection file $con"
+      info "hcn: skipping invalid connection file $con"
       continue
     fi
 
@@ -266,7 +266,7 @@ EOF
 
     # Only modify connections that are HCN-related
     if [ -n "$found_master" ]; then
-      info "hcnmgr: fixing up connection $id (HCN-related)"
+      info "hcn: fixing up connection $id (HCN-related)"
 
       # Ensure controller/master and port-type/slave-type are correct
       if gkeyfile_has "$con" connection controller; then
@@ -286,7 +286,7 @@ EOF
       # Rename connection ID and file to match expectations
       new_id="$found_master-$found_ifname"
       if [ "$id" != "$new_id" ]; then
-        info "hcnmgr: renaming connection $id to $new_id"
+        info "hcn: renaming connection $id to $new_id"
         gkeyfile_set "$con" connection id "$new_id"
         mv "$con" "$conn_dir/$new_id.nmconnection"
       fi
@@ -301,7 +301,7 @@ if [ -d /proc/device-tree ]; then
   # Scan PCI devices (SR-IOV)
   for dev in /proc/device-tree/pci*/ethernet*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
-    info "hcnmgr: checking PCI device $dev"
+    info "hcn: checking PCI device $dev"
     if res=$(get_dev_hcn "$dev"); then
       MAPPINGS="$MAPPINGS $res"
     fi
@@ -310,7 +310,7 @@ if [ -d /proc/device-tree ]; then
   # Scan vdevices (VNIC and Virtual Ethernet)
   for dev in /proc/device-tree/vdevice/vnic* /proc/device-tree/vdevice/l-lan*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
-    info "hcnmgr: checking vdevice $dev"
+    info "hcn: checking vdevice $dev"
     if res=$(get_dev_hcn "$dev"); then
       MAPPINGS="$MAPPINGS $res"
     fi
@@ -318,9 +318,9 @@ if [ -d /proc/device-tree ]; then
 fi
 
 if [ -z "$MAPPINGS" ]; then
-  info "hcnmgr: no HCN devices found"
+  info "hcn: no HCN devices found"
 else
-  info "hcnmgr: discovered mappings: $MAPPINGS"
+  info "hcn: discovered mappings: $MAPPINGS"
 
   # Command line processing
   NM_CONF_DIR="/etc/NetworkManager"
@@ -349,7 +349,7 @@ else
       shift 4
     done
 
-    info "hcnmgr: configuring bond $BONDNAME with slaves:$SLAVE_NAMES"
+    info "hcn: configuring bond $BONDNAME with slaves:$SLAVE_NAMES"
 
     # Add bond definition to NEW_ARGS
     BOND_OPTS="mode=1,miimon=100,fail_over_mac=2${PRIMARY:+,primary=$PRIMARY}"
@@ -378,7 +378,7 @@ else
       if [ $matched -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
         case "$HCN_IP" in
         dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
-          info "hcnmgr: applying $HCN_IP to $BONDNAME"
+          info "hcn: applying $HCN_IP to $BONDNAME"
           NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
           ;;
         *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
@@ -394,7 +394,7 @@ else
           # Format: interface:method[:mtu]
           # We need at least 1 colon (interface:method), optionally 2 for MTU
           if [ "$colons" -ge 1 ]; then
-            info "hcnmgr: applying DHCP/auto config with optional MTU to $BONDNAME"
+            info "hcn: applying DHCP/auto config with optional MTU to $BONDNAME"
             NEW_ARGS="$NEW_ARGS ip=$BONDNAME:${HCN_IP#*:}"
           fi
           ;;
@@ -422,15 +422,15 @@ EOF
             # Note: f7 and beyond might be method:dns1:dns2 or just method
             if [ -n "$f9" ]; then
               # Has dns2 field
-              info "hcnmgr: applying static IP config with DNS1 and DNS2 to $BONDNAME"
+              info "hcn: applying static IP config with DNS1 and DNS2 to $BONDNAME"
               NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8:$f9"
             elif [ -n "$f8" ]; then
               # Has dns1 field
-              info "hcnmgr: applying static IP config with DNS1 to $BONDNAME"
+              info "hcn: applying static IP config with DNS1 to $BONDNAME"
               NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8"
             elif [ -n "$f7" ]; then
               # Standard format with method
-              info "hcnmgr: applying static IP config to $BONDNAME"
+              info "hcn: applying static IP config to $BONDNAME"
               NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7"
             else
               # Fallback - just interface name
@@ -446,7 +446,7 @@ EOF
             5) suffix=":::::" ;;
             *) suffix="" ;;
             esac
-            info "hcnmgr: applying static IP config to $BONDNAME (padded)"
+            info "hcn: applying static IP config to $BONDNAME (padded)"
             NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
           fi
           ;;
@@ -480,7 +480,7 @@ EOF
           temp_route=${temp_route#*:}
         done
         if [ "$colons" -le 1 ]; then
-          info "hcnmgr: applying route to $BONDNAME"
+          info "hcn: applying route to $BONDNAME"
           NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE$([ "$colons" -eq 0 ] && echo "::" || echo ":")$BONDNAME"
         fi
       fi
@@ -493,7 +493,7 @@ EOF
     mkdir -p "$HCN_RUNTIME_CONN_DIR"
 
     # Write new cmdline options
-    info "hcnmgr: new cmdline arguments: $NEW_ARGS"
+    info "hcn: new cmdline arguments: $NEW_ARGS"
     echo "$NEW_ARGS" > "$HCN_RUNTIME_DIR"/cmdline
 
     # Find and execute nm-initrd-generator
@@ -501,7 +501,7 @@ EOF
     for gen in /usr/lib/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
       [ -x "$gen" ] || continue
       generator_found=1
-      info "hcnmgr: calling $gen"
+      info "hcn: calling $gen"
       rm -f "$HCN_RUNTIME_CONN_DIR"/*
       # shellcheck disable=SC2086
       if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -- $NEW_ARGS; then
@@ -514,16 +514,16 @@ EOF
           : > "$NM_RUNTIME_DIR"/initrd/neednet
           echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh
         else
-          warn "hcnmgr: nm-initrd-generator did not generate any connections"
+          warn "hcn: nm-initrd-generator did not generate any connections"
         fi
       else
-        warn "hcnmgr: nm-initrd-generator failed"
+        warn "hcn: nm-initrd-generator failed"
       fi
       break
     done
 
     if [ $generator_found -eq 0 ]; then
-      warn "hcnmgr: nm-initrd-generator not found"
+      warn "hcn: nm-initrd-generator not found"
     fi
   fi
 fi

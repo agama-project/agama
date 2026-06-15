@@ -13,7 +13,7 @@ ConditionKernelCommandLine=|rd.hcn.route
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c "/usr/bin/parse-hcnmgr.sh"
+ExecStart=/usr/bin/parse-hcn
 SyslogIdentifier=hcn-init-initrd
 StandardOutput=journal+console
 StandardError=journal+console
