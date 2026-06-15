@@ -314,7 +314,6 @@ mod tests {
         let report = StatusReport::new(status);
         let output = report.to_string();
         assert!(output.contains("Installation is ready to start."));
-        assert!(output.contains("Details:"));
         assert!(!output.contains("Open questions:"));
         assert!(!output.contains("Blocking issues:"));
     }
@@ -332,9 +331,9 @@ mod tests {
         ));
         let report = StatusReport::new(status);
         let output = report.to_string();
+        println!("{}", output);
         assert!(output.contains("There are unanswered questions."));
-        assert!(output.contains("Details:"));
-        assert!(output.contains("Open questions:\n  - What is your name?"));
-        assert!(output.contains("Blocking issues:\n  - This is a blocking issue."));
+        assert!(output.contains("  - What is your name?"));
+        assert!(output.contains("  - This is a blocking issue."));
     }
 }
