@@ -87,18 +87,19 @@ export default function ConfigDialog({ onClose }: ConfigDialogProps) {
           emptyState={<Spinner />}
           language={Language.json}
           height="360px"
-          editorProps={{
-            // Based on https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-customizing-the-appearence-scrollbars and with the help of TypeScript suggestions.
-            options: {
-              scrollBeyondLastLine: false,
-              hideCursorInOverviewRuler: true,
-              contextmenu: false,
-              minimap: { enabled: false },
-            },
-            // Disable command palette, based on https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-interacting-with-the-editor-listening-to-key-events
-            onMount: (editor, monaco) => {
-              editor.addCommand(monaco.KeyCode.F1, () => null);
-            },
+          // PatternFly merges this into its own monaco options, so settings it
+          // derives from props (like readOnly from isReadOnly) are preserved.
+          // Based on https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-customizing-the-appearence-scrollbars
+          options={{
+            scrollBeyondLastLine: false,
+            hideCursorInOverviewRuler: true,
+            contextmenu: false,
+          }}
+          // Runs in addition to PatternFly's own mount logic (e.g. Shift+Tab
+          // focus handling). Disables the command palette, based on
+          // https://microsoft.github.io/monaco-editor/playground.html?source=v0.55.1#example-interacting-with-the-editor-listening-to-key-events
+          onEditorDidMount={(editor, monaco) => {
+            editor.addCommand(monaco.KeyCode.F1, () => null);
           }}
         />
       </Flex>
