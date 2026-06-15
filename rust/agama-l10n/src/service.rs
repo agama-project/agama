@@ -229,6 +229,10 @@ impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
             self.model.set_locale(locale_id.clone())?;
             // Ensure the system value is updated (currently updated by a DBUS change property)
             self.system.locale = locale_id;
+            // After changing locale, the databases are re-read with the new language.
+            // We need to update system info to reflect the newly translated locale/timezone names.
+            self.system.locales = self.model.locales_db().entries().clone();
+            self.system.timezones = self.model.timezones_db().entries().clone();
         }
 
         if let Some(keymap) = &config.keymap {
