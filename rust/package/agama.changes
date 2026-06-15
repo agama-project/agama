@@ -1,4 +1,25 @@
 -------------------------------------------------------------------
+Mon Jun 15 15:45:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
+Mon Jun 15 15:15:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Unify text with the UI (gh#agama-project/agama#3637).
+
+-------------------------------------------------------------------
+Mon Jun 15 14:58:50 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed copying URL credentials to the target system (bsc#1267881)
+
+-------------------------------------------------------------------
+Mon Jun 15 08:05:06 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the "agama monitor" and "agama status" texts
+  (gh#agama-project/agama#3621).
+
+-------------------------------------------------------------------
 Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Mark properly autoinst retry question as the one that should
@@ -7,7 +28,7 @@ Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 -------------------------------------------------------------------
 Fri Jun 12 17:28:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- The list of products only contains the products and modes 
+- The list of products only contains the products and modes
   descriptions for the current language
   (gh#agama-project/agama#3619).
 
