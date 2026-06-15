@@ -24,9 +24,18 @@ import Text from "~/components/core/Text";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import TerminalUnavailable from "~/components/core/TerminalUnavailable";
 import { useTerminal } from "~/context/terminal";
-import { _ } from "~/i18n";
+import { _, N_ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+
+// Terminal action strings reserved for the translation freeze.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const FUTURE_TRANSLATIONS = {
+  show: N_("Show terminal"),
+  hide: N_("Hide terminal"),
+  open: N_("Open terminal"),
+  close: N_("Close terminal"),
+};
 
 const DEFAULT_FONT_SIZE = 14;
 const MIN_FONT_SIZE = 8;
