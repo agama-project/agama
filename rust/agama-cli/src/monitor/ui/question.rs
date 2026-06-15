@@ -304,7 +304,7 @@ impl<'a> QuestionWidget<'a> {
         let start = (self.state.scroll as usize).min(max_scroll);
 
         // TRANSLATORS: additional data that question passed to user beside main question message
-        let data_label = gettext("Additional data");
+        let data_label = gettext("Technical details");
         let header_text = if max_scroll > 0 {
             format!("{} ({}/{}):", data_label, start + 1, max_scroll + 1)
         } else {
