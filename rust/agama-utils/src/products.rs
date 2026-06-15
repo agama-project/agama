@@ -201,65 +201,80 @@ impl Registry {
         let mut products: Vec<_> = self
             .products
             .iter()
-            .map(|p| {
-                let modes = p
-                    .modes
-                    .iter()
-                    .map(|m| {
-                        let name = p
-                            .translations
-                            .mode
-                            .get(&m.id)
-                            .and_then(|mode_trans| mode_trans.get("name"))
-                            .and_then(|names| names.get(lang))
-                            .cloned()
-                            .unwrap_or_else(|| m.name.clone());
-
-                        let description = p
-                            .translations
-                            .mode
-                            .get(&m.id)
-                            .and_then(|mode_trans| mode_trans.get("description"))
-                            .and_then(|descriptions| descriptions.get(lang))
-                            .cloned()
-                            .unwrap_or_else(|| m.description.clone());
-
-                        ProductMode {
-                            id: m.id.clone(),
-                            name,
-                            description,
-                        }
-                    })
-                    .collect();
-
-                let description = p
-                    .translations
-                    .description
-                    .get(lang)
-                    .cloned()
-                    .unwrap_or_else(|| p.description.clone());
-
-                let desktop_selection = p.desktop_selection.as_ref().map(|ds| match ds {
-                    DesktopSelection::Optional => system_info::DesktopSelection::Optional,
-                    DesktopSelection::Suggested => system_info::DesktopSelection::Suggested,
-                });
-
-                Product {
-                    id: p.id.clone(),
-                    name: p.name.clone(),
-                    description,
-                    icon: p.icon.clone(),
-                    registration: p.registration,
-                    license: p.license.clone(),
-                    desktop_selection,
-                    translations: None,
-                    modes,
-                }
-            })
+            .map(|p| Self::translate_product(p, lang))
             .collect();
 
         products.sort_by_key(|a| a.name.to_lowercase());
         products
+    }
+
+    /// Translates a product template into a Product with the given language.
+    ///
+    /// * `template`: The product template to translate
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    fn translate_product(template: &ProductTemplate, lang: &str) -> Product {
+        let modes = template
+            .modes
+            .iter()
+            .map(|m| Self::translate_product_mode(m, &template.translations, lang))
+            .collect();
+
+        let description = template
+            .translations
+            .description
+            .get(lang)
+            .cloned()
+            .unwrap_or_else(|| template.description.clone());
+
+        let desktop_selection = template.desktop_selection.as_ref().map(|ds| match ds {
+            DesktopSelection::Optional => system_info::DesktopSelection::Optional,
+            DesktopSelection::Suggested => system_info::DesktopSelection::Suggested,
+        });
+
+        Product {
+            id: template.id.clone(),
+            name: template.name.clone(),
+            description,
+            icon: template.icon.clone(),
+            registration: template.registration,
+            license: template.license.clone(),
+            desktop_selection,
+            translations: None,
+            modes,
+        }
+    }
+
+    /// Translates a product mode spec into a ProductMode with the given language.
+    ///
+    /// * `mode_spec`: The product mode specification to translate
+    /// * `translations`: The product template translations
+    /// * `lang`: language code (e.g., "en", "de", "es")
+    fn translate_product_mode(
+        mode_spec: &ProductModeSpec,
+        translations: &Translations,
+        lang: &str,
+    ) -> ProductMode {
+        let name = translations
+            .mode
+            .get(&mode_spec.id)
+            .and_then(|mode_trans| mode_trans.get("name"))
+            .and_then(|names| names.get(lang))
+            .cloned()
+            .unwrap_or_else(|| mode_spec.name.clone());
+
+        let description = translations
+            .mode
+            .get(&mode_spec.id)
+            .and_then(|mode_trans| mode_trans.get("description"))
+            .and_then(|descriptions| descriptions.get(lang))
+            .cloned()
+            .unwrap_or_else(|| mode_spec.description.clone());
+
+        ProductMode {
+            id: mode_spec.id.clone(),
+            name,
+            description,
+        }
     }
 }
 

@@ -672,8 +672,8 @@ impl MessageHandler<message::GetSystem> for Service {
         let lang = &l10n.locale.language;
         tracing::debug!("Filtering products for language: {}", lang);
 
-        // Build manager system info with language-filtered products. It filters
-        // the
+        // Build manager system info with language-filtered products. It filters the products
+        // to include only translations for the current language.
         let mut manager = self.system.clone();
         manager.products = self.products.products_for_lang(lang);
 

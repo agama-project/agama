@@ -238,10 +238,10 @@ impl MessageHandler<message::SetSystem<SystemConfig>> for Service {
             self.system.keymap = keymap_id;
         };
 
-        // FIXME: It is not notified because if the property is changed then it will be notified
-        // by the monitor, but if the env VAR is different to the system locale. And the value
-        // is set to the system locale using the UI. Then the propoerty will be the same already
-        // set that is why we ensure the system state is updated.
+        // FIXME: Normally, property changes are notified via the monitor. However, a edge case
+        // occurs when the env VAR differs from the system locale, and the UI sets the value back
+        // to the system locale. In this case, the property value remains unchanged, so notification
+        // isn't triggered automatically. We manually ensure the system state is updated here.
 
         Ok(())
     }
