@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 15 11:54:50 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Import statically defined schemas when generating OpenAPI schema
+- Schemas moved from agama-lib/share to share/
+
+-------------------------------------------------------------------
 Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Mark properly autoinst retry question as the one that should
