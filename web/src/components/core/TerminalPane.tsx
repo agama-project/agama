@@ -212,7 +212,7 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
 
   // TRANSLATORS: one-line summary of what the terminal is for
   const summary = _(
-    "Run commands on the installer system. Meant for inspecting hardware, advanced setup, or troubleshooting.",
+    "Linux command-line with administrative privileges on the installer system.",
   );
 
   const actions = (
