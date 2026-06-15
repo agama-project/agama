@@ -38,7 +38,9 @@ describe("TerminalPane", () => {
     it("shows the description and the full set of actions", () => {
       installerRender(<TerminalPane enoughSpace />);
 
-      screen.getByText(/Run commands on the installer system/);
+      screen.getByText(
+        "Linux command-line with administrative privileges on the installer system.",
+      );
       screen.getByRole("button", { name: "Decrease font size" });
       screen.getByRole("button", { name: "Increase font size" });
       screen.getByRole("button", { name: "Clear terminal" });
@@ -53,7 +55,11 @@ describe("TerminalPane", () => {
 
       screen.getByRole("button", { name: "Restore terminal" });
       expect(screen.queryByRole("button", { name: "Clear terminal" })).toBeNull();
-      expect(screen.queryByText(/Run commands on the installer system/)).toBeNull();
+      expect(
+        screen.queryByText(
+          "Linux command-line with administrative privileges on the installer system.",
+        ),
+      ).toBeNull();
     });
   });
 });
