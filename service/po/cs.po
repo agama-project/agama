@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-15 12:11+0000\n"
+"POT-Creation-Date: 2026-06-10 15:11+0000\n"
 "PO-Revision-Date: 2026-01-19 17:04+0000\n"
 "Last-Translator: Ladislav Slezák <lslezak@suse.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -64,7 +64,7 @@ msgstr "Načíst překlady paměti"
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
-#: service/lib/agama/registration.rb:424
+#: service/lib/agama/registration.rb:423
 msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
