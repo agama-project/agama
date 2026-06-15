@@ -35,7 +35,6 @@ import VisualTooltip from "~/components/core/VisualTooltip";
 import ChangeProductOption from "~/components/core/ChangeProductOption";
 import ConfigDialog from "~/components/core/ConfigDialog";
 import DownloadLogsFeedback from "~/components/core/DownloadLogsFeedback";
-import { useTerminal } from "~/context/terminal";
 import { _ } from "~/i18n";
 
 /**
@@ -71,7 +70,6 @@ export default function InstallerOptionsMenu({
   hideLabel = false,
   showChangeProductOption = false,
 }: InstallerOptionsMenuProps) {
-  const { isVisible: isTerminalVisible, toggle: toggleTerminal } = useTerminal();
   const [isOpen, setIsOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -123,15 +121,6 @@ export default function InstallerOptionsMenu({
               <DropdownItem key="download-logs" onClick={downloadLogs}>
                 {/* TRANSLATORS: menu entry to download the installer logs as an archive */}
                 <ItemContent icon="archive" text={_("Download logs")} />
-              </DropdownItem>
-              <DropdownItem key="toggle-terminal" onClick={toggleTerminal}>
-                {/* TRANSLATORS: menu entry that makes the terminal panel visible
-                    or not; it refers to the panel's visibility, not to opening
-                    or closing a connection. */}
-                <ItemContent
-                  icon="terminal"
-                  text={isTerminalVisible ? _("Hide terminal") : _("Show terminal")}
-                />
               </DropdownItem>
               {showChangeProductOption && (
                 <>

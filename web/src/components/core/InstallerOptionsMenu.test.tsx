@@ -111,20 +111,5 @@ describe("InstallerOptionsMenu", () => {
       await user.click(screen.getByRole("button", { name: /More options/i }));
       screen.getByRole("menuitem", { name: /Download logs/i });
     });
-
-    it("offers to show the terminal when it is hidden", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More options/i }));
-      screen.getByRole("menuitem", { name: /Show terminal/i });
-    });
-
-    it("offers to hide the terminal once it has been shown", async () => {
-      const { user } = plainRender(<InstallerOptionsMenu />);
-      await user.click(screen.getByRole("button", { name: /More options/i }));
-      await user.click(screen.getByRole("menuitem", { name: /Show terminal/i }));
-      // Reopen the menu: the entry now reflects the shown state.
-      await user.click(screen.getByRole("button", { name: /More options/i }));
-      screen.getByRole("menuitem", { name: /Hide terminal/i });
-    });
   });
 });
