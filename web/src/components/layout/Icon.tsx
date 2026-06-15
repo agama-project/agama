@@ -34,6 +34,12 @@ import AppRegistration from "@icons/app_registration.svg?component";
 import Archive from "@icons/archive.svg?component";
 import ArrowDropDown from "@icons/arrow_drop_down.svg?component";
 import Backspace from "@icons/backspace.svg?component";
+import ClearAll from "@icons/clear_all.svg?component";
+import Close from "@icons/close.svg?component";
+import DragIndicator from "@icons/drag_indicator.svg?component";
+import Terminal from "@icons/terminal.svg?component";
+import TextDecrease from "@icons/text_decrease.svg?component";
+import TextIncrease from "@icons/text_increase.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
 import ChevronLeft from "@icons/chevron_left.svg?component";
 import ChevronRight from "@icons/chevron_right.svg?component";
@@ -98,6 +104,12 @@ const icons = {
   check_circle: CheckCircle,
   chevron_left: ChevronLeft,
   chevron_right: ChevronRight,
+  clear_all: ClearAll,
+  close: Close,
+  drag_indicator: DragIndicator,
+  terminal: Terminal,
+  text_decrease: TextDecrease,
+  text_increase: TextIncrease,
   delete: Delete,
   done_all: DoneAll,
   deployed_code_update: DeployedCodeUpdate,
