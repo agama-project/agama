@@ -94,7 +94,7 @@ export default function ResizeHandle({ onDrag, onStep, label }: ResizeHandleProp
       aria-orientation="horizontal"
       aria-label={label}
       tabIndex={0}
-      className="agm-shell-split__handle"
+      className="agm-terminal-dock__handle"
       onPointerDown={startDragging}
       onKeyDown={handleKeyDown}
     >

@@ -171,7 +171,7 @@ nav.agm-breadcrumb h1 {
 // The container keeps a definite height so the application (a PatternFly Page,
 // which is 100vh tall but capped to its parent) shrinks to share the height with
 // the terminal instead of overflowing.
-.agm-shell-split {
+.agm-terminal-dock {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -179,16 +179,16 @@ nav.agm-breadcrumb h1 {
   overflow: hidden;
 }
 
-.agm-shell-split__main {
+.agm-terminal-dock__main {
   flex: 1 1 0;
   min-height: 0;
 }
 
-.agm-shell-split__main[hidden] {
+.agm-terminal-dock__main[hidden] {
   display: none;
 }
 
-.agm-shell-split__handle {
+.agm-terminal-dock__handle {
   flex: 0 0 auto;
   block-size: var(--pf-t--global--spacer--sm);
   cursor: row-resize;
@@ -202,7 +202,7 @@ nav.agm-breadcrumb h1 {
   touch-action: none;
 }
 
-.agm-shell-split__handle:hover {
+.agm-terminal-dock__handle:hover {
   background-color: var(--pf-t--global--background--color--action--plain--hover);
 }
 
@@ -210,7 +210,7 @@ nav.agm-breadcrumb h1 {
 // of padding, so the terminal reads as a card floating on it, matching the main
 // content pane. The card chrome (white surface, radius) comes from the
 // PatternFly Card itself.
-.agm-shell-split__terminal {
+.agm-terminal-dock__panel {
   flex: none;
   min-height: 0;
   display: flex;
@@ -220,7 +220,7 @@ nav.agm-breadcrumb h1 {
 }
 
 // Collapsed to a bar: trim the surround so it does not waste vertical space.
-.agm-shell-split__terminal--minimized {
+.agm-terminal-dock__panel--minimized {
   padding-block: var(--pf-t--global--spacer--sm);
 }
 

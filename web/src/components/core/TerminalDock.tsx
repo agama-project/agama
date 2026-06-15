@@ -62,7 +62,8 @@ function useElementSize(ref: React.RefObject<HTMLElement>): Size {
 
 /**
  * App-shell layout that optionally docks the terminal panel below the
- * application (rendered as `children`).
+ * application (rendered as `children`). Coupled to the terminal on purpose: it
+ * reads the terminal state and hosts {@link TerminalPane}.
  *
  * The terminal panel lives here, above the page-swapping route outlet, so its
  * session survives navigation between pages. When hidden, the application keeps
@@ -83,7 +84,7 @@ function useElementSize(ref: React.RefObject<HTMLElement>): Size {
  * On screens too small to host both stacked, the application yields the space
  * and the panel explains it needs more room (see {@link TerminalPane}).
  */
-export default function ShellSplit({ children }: React.PropsWithChildren) {
+export default function TerminalDock({ children }: React.PropsWithChildren) {
   const { isVisible, isMinimized, height, setHeight } = useTerminal();
   const containerRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useElementSize(containerRef);
@@ -126,8 +127,8 @@ export default function ShellSplit({ children }: React.PropsWithChildren) {
   );
 
   return (
-    <div ref={containerRef} className="agm-shell-split">
-      <div className="agm-shell-split__main" hidden={isVisible && !enoughSpace}>
+    <div ref={containerRef} className="agm-terminal-dock">
+      <div className="agm-terminal-dock__main" hidden={isVisible && !enoughSpace}>
         {children}
       </div>
       {isVisible && (
@@ -144,8 +145,8 @@ export default function ShellSplit({ children }: React.PropsWithChildren) {
           <div
             className={
               minimized
-                ? "agm-shell-split__terminal agm-shell-split__terminal--minimized"
-                : "agm-shell-split__terminal"
+                ? "agm-terminal-dock__panel agm-terminal-dock__panel--minimized"
+                : "agm-terminal-dock__panel"
             }
             style={terminalStyle}
           >

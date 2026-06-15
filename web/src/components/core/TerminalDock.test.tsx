@@ -21,7 +21,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useTerminal } from "~/context/terminal";
-import ShellSplit from "~/components/core/ShellSplit";
+import TerminalDock from "~/components/core/TerminalDock";
 
 const APP_CONTENT = "Application content";
 
@@ -47,15 +47,15 @@ const mockResizeObserver = (width: number, height: number) => {
   window.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
 };
 
-// Renders ShellSplit with a button that reveals the terminal panel on demand.
+// Renders TerminalDock with a button that reveals the terminal panel on demand.
 const Subject = () => {
   const { show } = useTerminal();
   return (
     <>
       <button onClick={show}>open terminal</button>
-      <ShellSplit>
+      <TerminalDock>
         <div>{APP_CONTENT}</div>
-      </ShellSplit>
+      </TerminalDock>
     </>
   );
 };
@@ -64,7 +64,7 @@ afterEach(() => {
   delete (window as { ResizeObserver?: unknown }).ResizeObserver;
 });
 
-describe("ShellSplit", () => {
+describe("TerminalDock", () => {
   it("shows only the application while the terminal is hidden", () => {
     mockResizeObserver(1600, 900);
     installerRender(<Subject />);
