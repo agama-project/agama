@@ -36,6 +36,7 @@ import { render, renderHook, within } from "@testing-library/react";
 import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
 import { StorageUiStateProvider } from "~/context/storage-ui-state";
+import { TerminalProvider } from "~/context/terminal";
 import { AppearanceProvider } from "~/context/appearance";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
@@ -364,7 +365,9 @@ const Providers = ({ children }) => {
 
   return (
     <AppearanceProvider>
-      <StorageUiStateProvider>{children}</StorageUiStateProvider>
+      <StorageUiStateProvider>
+        <TerminalProvider>{children}</TerminalProvider>
+      </StorageUiStateProvider>
     </AppearanceProvider>
   );
 };
@@ -423,7 +426,9 @@ const plainRender = (ui, options = {}) => {
 
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <AppearanceProvider>{children}</AppearanceProvider>
+      <AppearanceProvider>
+        <TerminalProvider>{children}</TerminalProvider>
+      </AppearanceProvider>
     </QueryClientProvider>
   );
   return {
