@@ -51,6 +51,12 @@ module Agama
       # Run the command fetching, checking, converting and writing the Agama configuration.
       def run
         profile = fetch_profile
+
+        if profile.nil?
+          logger.info("Cannot fetch profile from provided location: #{url}")
+          return false
+        end
+
         unsupported = check_profile(profile)
         return false unless report_unsupported(unsupported)
 
