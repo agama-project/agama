@@ -181,13 +181,13 @@ export default function TerminalPane({ enoughSpace }: TerminalPaneProps) {
     </VisualTooltip>
   );
 
-  // Not enough room for a usable terminal: just explain it, keeping the Hide
-  // action so the panel can still be dismissed.
+  // Not enough room for a usable terminal: just explain it. The message offers
+  // its own Hide action, so the header needs no actions here.
   if (!enoughSpace) {
     return (
-      <TerminalShell actions={hideButton}>
+      <TerminalShell>
         <CardBody isFilled className="agm-terminal__body">
-          <TerminalUnavailable />
+          <TerminalUnavailable onHide={hide} />
         </CardBody>
       </TerminalShell>
     );

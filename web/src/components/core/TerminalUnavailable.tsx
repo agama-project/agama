@@ -19,39 +19,43 @@
 
 import React from "react";
 import {
+  Button,
   EmptyState,
-  EmptyStateBody,
+  EmptyStateActions,
   EmptyStateFooter,
   EmptyStateVariant,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import { _ } from "~/i18n";
 
+type TerminalUnavailableProps = {
+  /** Hides the terminal panel. */
+  onHide: () => void;
+};
+
 /**
  * Message shown in place of the terminal when the available area is too small
  * to use it comfortably (for example, on phones or in a narrow window).
  *
- * It explains the situation and points to alternatives, never to a specific
- * device or gesture, so it stays accurate on any screen.
+ * It states the situation without pointing to a specific device or gesture, so
+ * it stays accurate on any screen, and offers to hide the panel.
  */
-export default function TerminalUnavailable() {
+export default function TerminalUnavailable({ onHide }: TerminalUnavailableProps) {
   return (
     <EmptyState
       variant={EmptyStateVariant.sm}
-      // TRANSLATORS: shown when there is not enough room on screen to use the
-      // terminal; it asks the user to make room or use the command line instead.
-      titleText={_("The terminal needs more space than this screen has.")}
+      // TRANSLATORS: shown when the screen is too small to use the terminal
+      titleText={_("The terminal requires a larger screen size")}
       headingLevel="h3"
       icon={() => <Icon name="terminal" />}
     >
-      <EmptyStateBody>
-        {/* TRANSLATORS: tells the user how to get enough room for the terminal */}
-        {_("Make the window larger to use it here.")}
-      </EmptyStateBody>
       <EmptyStateFooter>
-        {/* TRANSLATORS: points the user to the system command line as an
-            alternative when the terminal does not fit on the screen */}
-        {_("Or run commands directly from the command line.")}
+        <EmptyStateActions>
+          {/* TRANSLATORS: button that hides the terminal panel */}
+          <Button variant="primary" onClick={onHide}>
+            {_("Hide terminal")}
+          </Button>
+        </EmptyStateActions>
       </EmptyStateFooter>
     </EmptyState>
   );

@@ -93,9 +93,20 @@ describe("TerminalDock", () => {
 
       await user.click(screen.getByRole("button", { name: "open terminal" }));
 
-      screen.getByText("The terminal needs more space than this screen has.");
+      screen.getByText("The terminal requires a larger screen size");
       expect(screen.queryByRole("separator", { name: "Resize terminal" })).toBeNull();
       expect(screen.getByText(APP_CONTENT)).not.toBeVisible();
+    });
+
+    it("can be dismissed with its hide action", async () => {
+      mockResizeObserver(1000, 700);
+      const { user } = installerRender(<Subject />);
+
+      await user.click(screen.getByRole("button", { name: "open terminal" }));
+      await user.click(screen.getByRole("button", { name: "Hide terminal" }));
+
+      expect(screen.queryByRole("region", { name: "Terminal" })).toBeNull();
+      expect(screen.getByText(APP_CONTENT)).toBeVisible();
     });
   });
 });

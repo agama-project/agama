@@ -27,7 +27,7 @@ describe("TerminalPane", () => {
     it("shows the message and only the hide action", () => {
       installerRender(<TerminalPane enoughSpace={false} />);
 
-      screen.getByText("The terminal needs more space than this screen has.");
+      screen.getByText("The terminal requires a larger screen size");
       screen.getByRole("button", { name: "Hide terminal" });
       expect(screen.queryByRole("button", { name: "Minimize terminal" })).toBeNull();
       expect(screen.queryByRole("button", { name: "Clear terminal" })).toBeNull();
