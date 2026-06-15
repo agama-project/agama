@@ -23,15 +23,13 @@ command -v getargs >/dev/null || . /lib/dracut-lib.sh
 
 # Check if HCN is enabled via any of the three methods
 if ! getargbool 0 rd.hcn && ! getargs rd.hcn.ip >/dev/null && ! getargs rd.hcn.route >/dev/null; then
-  info "hcn: HCN not enabled (no rd.hcn=1, rd.hcn.ip, or rd.hcn.route), skipping"
+  info "parse-hcn: HCN not enabled (no rd.hcn=1, rd.hcn.ip, or rd.hcn.route), skipping"
   if (return 0 2>/dev/null); then
     return 0
   else
     exit 0
   fi
 fi
-
-info "hcn: starting"
 
 # Helper to read 4 bytes from device-tree and return hex string
 xdump4() {
@@ -62,17 +60,17 @@ get_dev_hcn() {
   # Wait for device to appear in sysfs. This might take time after migration.
   while [ $wait -gt 0 ]; do
     if devname=$(ofpathname -l "$ofpath" 2>/dev/null) && [ -e "/sys/class/net/$devname" ]; then
-      info "hcn: device $devname ready for $ofpath"
+      info "parse-hcn: device $devname ready for $ofpath"
       mac=$(get_mac "$dev")
       break
     fi
-    info "hcn: waiting for device for $ofpath (retry $wait)"
+    info "parse-hcn: waiting for device for $ofpath (retry $wait)"
     sleep 15
     wait=$((wait - 1))
   done
 
   if [ -z "$devname" ]; then
-    warn "hcn: could not resolve device name for $dev"
+    warn "parse-hcn: could not resolve device name for $dev"
     return 1
   fi
 
@@ -220,7 +218,7 @@ EOF
 
     # Guard: Ensure we have at least id and uuid
     if [ -z "$id" ] || [ -z "$uuid" ]; then
-      info "hcn: skipping invalid connection file $con"
+      info "parse-hcn: skipping invalid connection file $con"
       continue
     fi
 
@@ -266,7 +264,7 @@ EOF
 
     # Only modify connections that are HCN-related
     if [ -n "$found_master" ]; then
-      info "hcn: fixing up connection $id (HCN-related)"
+      info "parse-hcn: fixing up connection $id (HCN-related)"
 
       # Ensure controller/master and port-type/slave-type are correct
       if gkeyfile_has "$con" connection controller; then
@@ -286,7 +284,7 @@ EOF
       # Rename connection ID and file to match expectations
       new_id="$found_master-$found_ifname"
       if [ "$id" != "$new_id" ]; then
-        info "hcn: renaming connection $id to $new_id"
+        info "parse-hcn: renaming connection $id to $new_id"
         gkeyfile_set "$con" connection id "$new_id"
         mv "$con" "$conn_dir/$new_id.nmconnection"
       fi
@@ -296,12 +294,14 @@ EOF
 
 # --- Main Execution ---
 
+info "parse-hcn: starting"
+
 MAPPINGS=""
 if [ -d /proc/device-tree ]; then
   # Scan PCI devices (SR-IOV)
   for dev in /proc/device-tree/pci*/ethernet*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
-    info "hcn: checking PCI device $dev"
+    info "parse-hcn: checking PCI device $dev"
     if res=$(get_dev_hcn "$dev"); then
       MAPPINGS="$MAPPINGS $res"
     fi
@@ -310,7 +310,7 @@ if [ -d /proc/device-tree ]; then
   # Scan vdevices (VNIC and Virtual Ethernet)
   for dev in /proc/device-tree/vdevice/vnic* /proc/device-tree/vdevice/l-lan*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
-    info "hcn: checking vdevice $dev"
+    info "parse-hcn: checking vdevice $dev"
     if res=$(get_dev_hcn "$dev"); then
       MAPPINGS="$MAPPINGS $res"
     fi
@@ -318,212 +318,213 @@ if [ -d /proc/device-tree ]; then
 fi
 
 if [ -z "$MAPPINGS" ]; then
-  info "hcn: no HCN devices found"
-else
-  info "hcn: discovered mappings: $MAPPINGS"
+  info "parse-hcn: no HCN devices found"
+  return 0
+fi
 
-  # Command line processing
-  NM_CONF_DIR="/etc/NetworkManager"
-  NM_CONF_CONN_DIR="$NM_CONF_DIR/system-connections"
-  NM_RUNTIME_DIR="/run/NetworkManager"
-  NM_RUNTIME_CONN_DIR="$NM_RUNTIME_DIR/system-connections"
-  HCN_RUNTIME_DIR="/run/hcn"
-  HCN_RUNTIME_CONN_DIR="$HCN_RUNTIME_DIR/system-connections"
-  NEW_ARGS=""
+info "parse-hcn: discovered mappings: $MAPPINGS"
 
-  # Extract unique bond names from discovered mappings
-  BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
+# Command line processing
+NM_CONF_DIR="/etc/NetworkManager"
+NM_CONF_CONN_DIR="$NM_CONF_DIR/system-connections"
+NM_RUNTIME_DIR="/run/NetworkManager"
+NM_RUNTIME_CONN_DIR="$NM_RUNTIME_DIR/system-connections"
+HCN_RUNTIME_DIR="/run/hcn"
+HCN_RUNTIME_CONN_DIR="$HCN_RUNTIME_DIR/system-connections"
+NEW_ARGS=""
 
-  for BONDNAME in $BOND_NAMES; do
-    SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
+# Extract unique bond names from discovered mappings
+BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
 
-    # Extract slaves for this bond from MAPPINGS
-    set -- $MAPPINGS
-    while [ $# -ge 4 ]; do
-      if [ "$1" = "$BONDNAME" ]; then
-        SLAVE_NAMES="$SLAVE_NAMES $2"
-        [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
-        [ "$4" = "primary" ] && PRIMARY="$2"
-        SLAVES="${SLAVES:+$SLAVES,}$2"
-      fi
-      shift 4
-    done
+for BONDNAME in $BOND_NAMES; do
+  SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
 
-    info "hcn: configuring bond $BONDNAME with slaves:$SLAVE_NAMES"
-
-    # Add bond definition to NEW_ARGS
-    BOND_OPTS="mode=1,miimon=100,fail_over_mac=2${PRIMARY:+,primary=$PRIMARY}"
-    NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:$BOND_OPTS"
-
-    # Process rd.hcn.ip= - replace slave names/MACs with bond name
-    for HCN_IP in $(getargs rd.hcn.ip); do
-      matched=0
-      for slave in $SLAVE_NAMES $SLAVE_MACS; do
-        slave_dash=$(str_replace "$slave" ":" "-")
-        # Check if HCN_IP contains the slave (as a whole word/field)
-        if strstr ":$HCN_IP:" ":$slave:" || strstr ":$HCN_IP:" ":$slave_dash:"; then
-          matched=1
-          # Replace slave with bond name (handle boundaries)
-          current_hcn_ip=$(echo "$HCN_IP" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
-          NEW_ARGS="$NEW_ARGS ip=$current_hcn_ip"
-          break
-        fi
-      done
-
-      # No slave matched and no bond name present - apply to first bond
-      has_bond_ip=0
-      case "$HCN_IP" in
-      *:bond[0-9]*) has_bond_ip=1 ;;
-      esac
-      if [ $matched -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
-        case "$HCN_IP" in
-        dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
-          info "hcn: applying $HCN_IP to $BONDNAME"
-          NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
-          ;;
-        *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
-          # Format: rd.hcn.ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
-          # Extract optional MTU field (after the method, could be followed by more colons)
-          temp_ip=${HCN_IP}
-          # Count colons to determine if there are extra fields
-          colons=0
-          while [ "${temp_ip#*:}" != "$temp_ip" ]; do
-            colons=$((colons + 1))
-            temp_ip=${temp_ip#*:}
-          done
-          # Format: interface:method[:mtu]
-          # We need at least 1 colon (interface:method), optionally 2 for MTU
-          if [ "$colons" -ge 1 ]; then
-            info "hcn: applying DHCP/auto config with optional MTU to $BONDNAME"
-            NEW_ARGS="$NEW_ARGS ip=$BONDNAME:${HCN_IP#*:}"
-          fi
-          ;;
-        *)
-          # Static IP configuration - count colons to determine format
-          # Standard format: rd.hcn.ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
-          # Minimum fields: client-IP:gateway:netmask:hostname:interface:method (5 colons)
-          # Extended: adds :dns1 and/or :dns2 (up to 7 colons)
-          temp_ip=${HCN_IP}
-          colons=0
-          while [ "${temp_ip#*:}" != "$temp_ip" ]; do
-            colons=$((colons + 1))
-            temp_ip=${temp_ip#*:}
-          done
-
-          if [ "$colons" -ge 5 ]; then
-            # Already has interface field, just need to replace it with bond name
-            # Extract fields: we need to replace the 6th field (interface) with BONDNAME
-            # Preserve any DNS fields that may follow
-            # shellcheck disable=SC2034
-            IFS=':' read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 <<EOF
-$HCN_IP
-EOF
-            # Reconstruct with bond name as interface (f6 position)
-            # Note: f7 and beyond might be method:dns1:dns2 or just method
-            if [ -n "$f9" ]; then
-              # Has dns2 field
-              info "hcn: applying static IP config with DNS1 and DNS2 to $BONDNAME"
-              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8:$f9"
-            elif [ -n "$f8" ]; then
-              # Has dns1 field
-              info "hcn: applying static IP config with DNS1 to $BONDNAME"
-              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8"
-            elif [ -n "$f7" ]; then
-              # Standard format with method
-              info "hcn: applying static IP config to $BONDNAME"
-              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7"
-            else
-              # Fallback - just interface name
-              NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME"
-            fi
-          elif [ "$colons" -lt 5 ]; then
-            # Pad with colons to reach standard ip= format (legacy behavior)
-            case $((5 - colons)) in
-            1) suffix=":" ;;
-            2) suffix="::" ;;
-            3) suffix=":::" ;;
-            4) suffix="::::" ;;
-            5) suffix=":::::" ;;
-            *) suffix="" ;;
-            esac
-            info "hcn: applying static IP config to $BONDNAME (padded)"
-            NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
-          fi
-          ;;
-        esac
-      fi
-    done
-
-    # Process rd.hcn.route= - replace slave names/MACs with bond name
-    for HCN_ROUTE in $(getargs rd.hcn.route); do
-      matched=0
-      for slave in $SLAVE_NAMES $SLAVE_MACS; do
-        slave_dash=$(str_replace "$slave" ":" "-")
-        if strstr ":$HCN_ROUTE:" ":$slave:" || strstr ":$HCN_ROUTE:" ":$slave_dash:"; then
-          matched=1
-          current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
-          NEW_ARGS="$NEW_ARGS rd.route=$current_hcn_route"
-          break
-        fi
-      done
-
-      # No slave matched and no bond name present - apply to first bond
-      has_bond_route=0
-      case "$HCN_ROUTE" in
-      *:bond[0-9]*) has_bond_route=1 ;;
-      esac
-      if [ $matched -eq 0 ] && [ $has_bond_route -eq 0 ]; then
-        temp_route=${HCN_ROUTE}
-        colons=0
-        while [ "${temp_route#*:}" != "$temp_route" ]; do
-          colons=$((colons + 1))
-          temp_route=${temp_route#*:}
-        done
-        if [ "$colons" -le 1 ]; then
-          info "hcn: applying route to $BONDNAME"
-          NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE$([ "$colons" -eq 0 ] && echo "::" || echo ":")$BONDNAME"
-        fi
-      fi
-    done
+  # Extract slaves for this bond from MAPPINGS
+  set -- $MAPPINGS
+  while [ $# -ge 4 ]; do
+    if [ "$1" = "$BONDNAME" ]; then
+      SLAVE_NAMES="$SLAVE_NAMES $2"
+      [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
+      [ "$4" = "primary" ] && PRIMARY="$2"
+      SLAVES="${SLAVES:+$SLAVES,}$2"
+    fi
+    shift 4
   done
 
-  # Write new configuration and update NetworkManager
-  if [ -n "$NEW_ARGS" ]; then
-    # Create runtime directory to store HCN connections
-    mkdir -p "$HCN_RUNTIME_CONN_DIR"
+  info "parse-hcn: configuring bond $BONDNAME with slaves:$SLAVE_NAMES"
 
-    # Write new cmdline options
-    info "hcn: new cmdline arguments: $NEW_ARGS"
-    echo "$NEW_ARGS" > "$HCN_RUNTIME_DIR"/cmdline
+  # Add bond definition to NEW_ARGS
+  BOND_OPTS="mode=1,miimon=100,fail_over_mac=2${PRIMARY:+,primary=$PRIMARY}"
+  NEW_ARGS="$NEW_ARGS bond=$BONDNAME:$SLAVES:$BOND_OPTS"
 
-    # Find and execute nm-initrd-generator
-    generator_found=0
-    for gen in /usr/lib/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
-      [ -x "$gen" ] || continue
-      generator_found=1
-      info "hcn: calling $gen"
-      rm -f "$HCN_RUNTIME_CONN_DIR"/*
-      # shellcheck disable=SC2086
-      if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -- $NEW_ARGS; then
-        if [ "$(ls -A "$HCN_RUNTIME_CONN_DIR")" ]; then
-          fixup_nm_connections
-          # Persist these new HCN connections to /etc
-          mkdir -p "$NM_CONF_CONN_DIR"
-          cp -rf "$HCN_RUNTIME_CONN_DIR"/* "$NM_CONF_CONN_DIR"
-          mkdir -p "$NM_RUNTIME_DIR"/initrd
-          : > "$NM_RUNTIME_DIR"/initrd/neednet
-          echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh
-        else
-          warn "hcn: nm-initrd-generator did not generate any connections"
-        fi
-      else
-        warn "hcn: nm-initrd-generator failed"
+  # Process rd.hcn.ip= - replace slave names/MACs with bond name
+  for HCN_IP in $(getargs rd.hcn.ip); do
+    matched=0
+    for slave in $SLAVE_NAMES $SLAVE_MACS; do
+      slave_dash=$(str_replace "$slave" ":" "-")
+      # Check if HCN_IP contains the slave (as a whole word/field)
+      if strstr ":$HCN_IP:" ":$slave:" || strstr ":$HCN_IP:" ":$slave_dash:"; then
+        matched=1
+        # Replace slave with bond name (handle boundaries)
+        current_hcn_ip=$(echo "$HCN_IP" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
+        NEW_ARGS="$NEW_ARGS ip=$current_hcn_ip"
+        break
       fi
-      break
     done
 
-    if [ $generator_found -eq 0 ]; then
-      warn "hcn: nm-initrd-generator not found"
+    # No slave matched and no bond name present - apply to first bond
+    has_bond_ip=0
+    case "$HCN_IP" in
+    *:bond[0-9]*) has_bond_ip=1 ;;
+    esac
+    if [ $matched -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
+      case "$HCN_IP" in
+      dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
+        info "parse-hcn: applying $HCN_IP to $BONDNAME"
+        NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
+        ;;
+      *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
+        # Format: rd.hcn.ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
+        # Extract optional MTU field (after the method, could be followed by more colons)
+        temp_ip=${HCN_IP}
+        # Count colons to determine if there are extra fields
+        colons=0
+        while [ "${temp_ip#*:}" != "$temp_ip" ]; do
+          colons=$((colons + 1))
+          temp_ip=${temp_ip#*:}
+        done
+        # Format: interface:method[:mtu]
+        # We need at least 1 colon (interface:method), optionally 2 for MTU
+        if [ "$colons" -ge 1 ]; then
+          info "parse-hcn: applying DHCP/auto config with optional MTU to $BONDNAME"
+          NEW_ARGS="$NEW_ARGS ip=$BONDNAME:${HCN_IP#*:}"
+        fi
+        ;;
+      *)
+        # Static IP configuration - count colons to determine format
+        # Standard format: rd.hcn.ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
+        # Minimum fields: client-IP:gateway:netmask:hostname:interface:method (5 colons)
+        # Extended: adds :dns1 and/or :dns2 (up to 7 colons)
+        temp_ip=${HCN_IP}
+        colons=0
+        while [ "${temp_ip#*:}" != "$temp_ip" ]; do
+          colons=$((colons + 1))
+          temp_ip=${temp_ip#*:}
+        done
+
+        if [ "$colons" -ge 5 ]; then
+          # Already has interface field, just need to replace it with bond name
+          # Extract fields: we need to replace the 6th field (interface) with BONDNAME
+          # Preserve any DNS fields that may follow
+          # shellcheck disable=SC2034
+          IFS=':' read -r f1 f2 f3 f4 f5 f6 f7 f8 f9 <<EOF
+$HCN_IP
+EOF
+          # Reconstruct with bond name as interface (f6 position)
+          # Note: f7 and beyond might be method:dns1:dns2 or just method
+          if [ -n "$f9" ]; then
+            # Has dns2 field
+            info "parse-hcn: applying static IP config with DNS1 and DNS2 to $BONDNAME"
+            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8:$f9"
+          elif [ -n "$f8" ]; then
+            # Has dns1 field
+            info "parse-hcn: applying static IP config with DNS1 to $BONDNAME"
+            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7:$f8"
+          elif [ -n "$f7" ]; then
+            # Standard format with method
+            info "parse-hcn: applying static IP config to $BONDNAME"
+            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME:$f7"
+          else
+            # Fallback - just interface name
+            NEW_ARGS="$NEW_ARGS ip=$f1:$f2:$f3:$f4:$f5:$BONDNAME"
+          fi
+        elif [ "$colons" -lt 5 ]; then
+          # Pad with colons to reach standard ip= format (legacy behavior)
+          case $((5 - colons)) in
+          1) suffix=":" ;;
+          2) suffix="::" ;;
+          3) suffix=":::" ;;
+          4) suffix="::::" ;;
+          5) suffix=":::::" ;;
+          *) suffix="" ;;
+          esac
+          info "parse-hcn: applying static IP config to $BONDNAME (padded)"
+          NEW_ARGS="$NEW_ARGS ip=$HCN_IP${suffix}$BONDNAME:none"
+        fi
+        ;;
+      esac
     fi
+  done
+
+  # Process rd.hcn.route= - replace slave names/MACs with bond name
+  for HCN_ROUTE in $(getargs rd.hcn.route); do
+    matched=0
+    for slave in $SLAVE_NAMES $SLAVE_MACS; do
+      slave_dash=$(str_replace "$slave" ":" "-")
+      if strstr ":$HCN_ROUTE:" ":$slave:" || strstr ":$HCN_ROUTE:" ":$slave_dash:"; then
+        matched=1
+        current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
+        NEW_ARGS="$NEW_ARGS rd.route=$current_hcn_route"
+        break
+      fi
+    done
+
+    # No slave matched and no bond name present - apply to first bond
+    has_bond_route=0
+    case "$HCN_ROUTE" in
+    *:bond[0-9]*) has_bond_route=1 ;;
+    esac
+    if [ $matched -eq 0 ] && [ $has_bond_route -eq 0 ]; then
+      temp_route=${HCN_ROUTE}
+      colons=0
+      while [ "${temp_route#*:}" != "$temp_route" ]; do
+        colons=$((colons + 1))
+        temp_route=${temp_route#*:}
+      done
+      if [ "$colons" -le 1 ]; then
+        info "parse-hcn: applying route to $BONDNAME"
+        NEW_ARGS="$NEW_ARGS rd.route=$HCN_ROUTE$([ "$colons" -eq 0 ] && echo "::" || echo ":")$BONDNAME"
+      fi
+    fi
+  done
+done
+
+# Write new configuration and update NetworkManager
+if [ -n "$NEW_ARGS" ]; then
+  # Create runtime directory to store HCN connections
+  mkdir -p "$HCN_RUNTIME_CONN_DIR"
+
+  # Write new cmdline options
+  info "parse-hcn: new cmdline arguments: $NEW_ARGS"
+  echo "$NEW_ARGS" > "$HCN_RUNTIME_DIR"/cmdline
+
+  # Find and execute nm-initrd-generator
+  generator_found=0
+  for gen in /usr/lib/nm-initrd-generator /usr/libexec/nm-initrd-generator; do
+    [ -x "$gen" ] || continue
+    generator_found=1
+    info "parse-hcn: calling $gen"
+    rm -f "$HCN_RUNTIME_CONN_DIR"/*
+    # shellcheck disable=SC2086
+    if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -- $NEW_ARGS; then
+      if [ "$(ls -A "$HCN_RUNTIME_CONN_DIR")" ]; then
+        fixup_nm_connections
+        # Persist these new HCN connections to /etc
+        mkdir -p "$NM_CONF_CONN_DIR"
+        cp -rf "$HCN_RUNTIME_CONN_DIR"/* "$NM_CONF_CONN_DIR"
+        mkdir -p "$NM_RUNTIME_DIR"/initrd
+        : > "$NM_RUNTIME_DIR"/initrd/neednet
+        echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh
+      else
+        warn "parse-hcn: nm-initrd-generator did not generate any connections"
+      fi
+    else
+      warn "parse-hcn: nm-initrd-generator failed"
+    fi
+    break
+  done
+
+  if [ $generator_found -eq 0 ]; then
+    warn "parse-hcn: nm-initrd-generator not found"
   fi
 fi
