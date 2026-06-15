@@ -24,6 +24,9 @@ export default {
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
+  "%1$s (default file system for %2$s)": [
+    "%1$s (%2$s に対する既定のファイルシステム)"
+  ],
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
@@ -90,6 +93,12 @@ export default {
   "%d pattern found": [
     "%d 個のパターンが見つかりました"
   ],
+  "%s (default file system for generic mount points)": [
+    "%s (一般的なマウントポイントに対する既定のファイルシステム)"
+  ],
+  "%s (keep data)": [
+    "%s (データを保持する)"
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -119,6 +128,9 @@ export default {
   ],
   "%s has been registered with below information.": [
     "%s を下記の情報で登録しました。"
+  ],
+  "%s honors the browser and system preferences": [
+    "%s を指定すると、ブラウザとシステムの設定に従って設定します"
   ],
   "%s is invalid: %s": [
     "%s が正しくありません: %s"
@@ -282,6 +294,9 @@ export default {
   "Additional CHAP authentication performed by the initiator": [
     "イニシエータによる追加の CHAP 認証"
   ],
+  "Additional format arguments": [
+    "追加のフォーマットパラメータ"
+  ],
   "Additional patterns": [
     "追加のパターン"
   ],
@@ -333,6 +348,9 @@ export default {
   "An existing partition will be used for %s": [
     "%s に対して既存のパーティションを使用する"
   ],
+  "Any existing data on %s will be destroyed when installation begins.": [
+    "インストールを開始すると、 %s にある既存のデータは全て削除されます。"
+  ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "全ての論理ボリュームを削除し、ボリュームグループ内に存在するデータを全て消去します。"
   ],
@@ -342,11 +360,8 @@ export default {
   "Any partition needed to boot will be configured.": [
     "起動に必要なパーティションについても設定を行います。"
   ],
-  "As a new logical volume on %s": [
-    "%s に新しい論理ボリュームとして"
-  ],
-  "As a new partition on %s": [
-    "%s に新しいパーティションとして"
+  "Appearance": [
+    "外観"
   ],
   "At least one DNS search domain is required": [
     "1 つ以上の DNS 検索ドメインを設定する必要があります"
@@ -402,6 +417,12 @@ export default {
   "Automatic LUN scan is enabled": [
     "自動 LUN スキャンが有効化されています"
   ],
+  "Automatic color scheme": [
+    "自動色スキーム"
+  ],
+  "Automatic contrast": [
+    "自動コントラスト"
+  ],
   "Available devices: %s": [
     "利用可能なデバイス: %s"
   ],
@@ -416,6 +437,9 @@ export default {
   ],
   "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
     "システムのメモリサイズに応じて、 %2$s から %3$s までの範囲で %1$s を %4$s 向けに計画します"
+  ],
+  "Based on the mount point": [
+    "マウントポイントをもとに設定します"
   ],
   "Bcachefs": [
     "bcachefs"
@@ -480,11 +504,44 @@ export default {
   "CPU": [
     "CPU"
   ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %s.": [
+    "システムのメモリサイズと %s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %s.": [
+    "システムのメモリサイズと %s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "システムのメモリサイズと btrfs スナップショットの使用可否に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
+    "システムのメモリサイズと btrfs スナップショットの使用可否、そして %s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
+    "システムのメモリサイズと btrfs スナップショットの使用可否、そして %s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the presence of a separate file system for %s.": [
+    "%s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the presence of separate file systems for %s.": [
+    "%s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
+    "btrfs スナップショットの使用可否と %s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
+    "btrfs スナップショットの使用可否と %s 向けの個別ファイルシステムの存在に応じて、サイズを動的に調整することができます。"
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "btrfs スナップショットの使用可否に応じて、サイズを動的に調整することができます。"
+  ],
   "Cancel": [
     "キャンセル"
   ],
   "Cancel connection": [
     "接続のキャンセル"
+  ],
+  "Cannot apply configuration": [
+    "設定を適用できません"
   ],
   "Cannot be changed in remote installation": [
     "リモートインストールの場合は変更できません"
@@ -510,20 +567,11 @@ export default {
   "Change device menu": [
     "デバイスメニューの変更"
   ],
-  "Change display language": [
-    "表示言語の変更"
-  ],
-  "Change display language and keyboard layout": [
-    "表示言語とキーボードレイアウトの変更"
-  ],
   "Change filters and try again.": [
     "フィルタを変更してやり直してください。"
   ],
   "Change keyboard": [
     "キーボードの変更"
-  ],
-  "Change keyboard layout": [
-    "キーボードレイアウトの変更"
   ],
   "Change mode": [
     "モードの変更"
@@ -592,7 +640,7 @@ export default {
     "モードを選択"
   ],
   "Choose a product": [
-    "利用可能な %d 個の製品から選択してください"
+    "利用可能な %d 個の製品の中から選択してください"
   ],
   "Choose a volume group to define logical volumes": [
     "論理ボリュームを設定するボリュームグループを選択してください"
@@ -612,11 +660,11 @@ export default {
   "Clear input": [
     "入力を消去"
   ],
-  "Clear selected mount point": [
-    "マウントポイントの選択を解除"
-  ],
   "Close": [
     "閉じる"
+  ],
+  "Color scheme": [
+    "色スキーム"
   ],
   "Configuration added to clipboard": [
     "クリップボードに設定を追加しました"
@@ -627,9 +675,6 @@ export default {
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "iSCSI Boot Firmware Table (iBFT) から読み込んだ設定です。イニシエータの設定は変更できません。"
   ],
-  "Configuration unreachable or invalid": [
-    "設定に到達できないか、正しくありません"
-  ],
   "Configure": [
     "設定"
   ],
@@ -638,9 +683,6 @@ export default {
   ],
   "Configure Volume Group": [
     "ボリュームグループの設定"
-  ],
-  "Configure device %s": [
-    "デバイス %s の設定"
   ],
   "Configure device menu": [
     "デバイスメニューの設定"
@@ -651,14 +693,8 @@ export default {
   "Configure logical volume": [
     "論理ボリュームの設定"
   ],
-  "Configure logical volume at %s": [
-    "%s への論理ボリュームの設定"
-  ],
   "Configure partition": [
     "パーティションの設定"
-  ],
-  "Configure partition at %s": [
-    "%s でのパーティションの設定"
   ],
   "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
     "Network Time Protocol (NTP) サーバを設定することで、システムの日時を自動設定することができます。"
@@ -741,6 +777,9 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "このパッケージをインストールせずに続行してしまうと、システムは正しく動作しない可能性があるほか、場合によっては全く起動しなくなることもあり得ます。"
   ],
+  "Contrast": [
+    "コントラスト"
+  ],
   "Copy to the clipboard": [
     "クリップボードにコピー"
   ],
@@ -756,11 +795,20 @@ export default {
   "Create LVM volume group on %s": [
     "%s 内に LVM ボリュームグループを作成"
   ],
+  "Create a new logical volume on %s": [
+    "%s に新しい論理ボリュームを作成"
+  ],
+  "Create a new partition on %s": [
+    "%s に新しいパーティションを作成"
+  ],
   "Create another LVM volume group on %s": [
     "%s 内に他の LVM ボリュームグループを作成"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "一般的な用途のほか、システムの機能拡張のために厳選したパッケージセットです。"
+  ],
+  "Current": [
+    "現在"
   ],
   "Current %1$s at %2$s": [
     "%2$s にある現在の %1$s"
@@ -807,6 +855,12 @@ export default {
   "DNS servers": [
     "DNS サーバ"
   ],
+  "Dark": [
+    "暗"
+  ],
+  "Dark color scheme": [
+    "暗い色を使用するスキーム"
+  ],
   "Data collection may take a while. The download will start automatically once the file is ready.": [
     "データ収集にはしばらくの時間がかかります。ファイルの準備ができ次第、自動的にダウンロードが始まります。"
   ],
@@ -825,18 +879,6 @@ export default {
   "Default NTP": [
     "既定の NTP サーバ"
   ],
-  "Default file system for %s": [
-    "%s に対する既定のファイルシステム"
-  ],
-  "Default file system for generic logical volume": [
-    "汎用論理ボリュームに対する既定のファイルシステム"
-  ],
-  "Default file system for generic mount paths": [
-    "一般的なマウント先の場合に使用する既定のファイルシステム"
-  ],
-  "Default file system for generic partitions": [
-    "汎用パーティションに対する既定のファイルシステム"
-  ],
   "Default selection": [
     "既定の選択"
   ],
@@ -851,6 +893,9 @@ export default {
   ],
   "Define an administrator user": [
     "管理者ユーザを設定する"
+  ],
+  "Define more file system settings": [
+    "さらなるファイルシステム設定を指定する"
   ],
   "Delete": [
     "削除"
@@ -873,15 +918,6 @@ export default {
   "Desktops": [
     "デスクトップ"
   ],
-  "Destroy current data and format device as": [
-    "現在のデータを消去して下記の形式でデバイスをフォーマット:"
-  ],
-  "Destroy current data and format logical volume as": [
-    "現在のデータを消去して下記の形式で論理ボリュームをフォーマット:"
-  ],
-  "Destroy current data and format partition as": [
-    "現在のデータを消去して下記の形式でパーティションをフォーマット:"
-  ],
   "Details": [
     "詳細"
   ],
@@ -897,6 +933,9 @@ export default {
   "Device binding": [
     "デバイスバインディング"
   ],
+  "Device could not be configured": [
+    "デバイスを設定することができませんでした"
+  ],
   "Device details": [
     "デバイスの詳細"
   ],
@@ -905,6 +944,9 @@ export default {
   ],
   "Device name is required": [
     "デバイス名を指定する必要があります"
+  ],
+  "Device not found": [
+    "デバイスが見つかりません"
   ],
   "Disabled": [
     "無効"
@@ -948,7 +990,7 @@ export default {
   "Do not deactivate": [
     "無効化しない"
   ],
-  "Do not format %s and keep the data": [
+  "Do not format %s and keep data": [
     "%s をフォーマットせず既存のデータを維持"
   ],
   "Do not register": [
@@ -966,8 +1008,14 @@ export default {
   "Download logs to troubleshoot or share with support.": [
     "ログをダウンロードして原因を調査するか、サポートに共有してください。"
   ],
+  "E.g. rw, noatime, umask=0666": [
+    "例: rw, noatime, umask=0666"
+  ],
   "E.g., %s": [
     "例: %s"
+  ],
+  "E.g., %s, %s, %s": [
+    "例: %s, %s, %s"
   ],
   "E.g., 192.168.1.1": [
     "例: 192.168.1.1"
@@ -1086,6 +1134,9 @@ export default {
   "Excellent signal": [
     "優良な信号強度"
   ],
+  "Expand if possible": [
+    "可能であれば拡張する"
+  ],
   "Expiration date": [
     "有効期限"
   ],
@@ -1122,9 +1173,6 @@ export default {
   "File system": [
     "ファイルシステム"
   ],
-  "File system label": [
-    "ファイルシステムのラベル"
-  ],
   "Filesystems": [
     "ファイルシステム"
   ],
@@ -1152,6 +1200,9 @@ export default {
   "Fix the errors below and try again": [
     "エラーを修正してやり直してください"
   ],
+  "Fixed": [
+    "固定値"
+  ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "より高度な設定を行う必要がある場合は、フルページに切り替えてください。これにより、より詳細な表示や追加の列、フィルタや拡張機能などが利用できるようになります。"
   ],
@@ -1164,20 +1215,11 @@ export default {
   "Format device %s": [
     "デバイス %s のフォーマット"
   ],
-  "Format device as": [
-    "下記の形式でフォーマット:"
-  ],
   "Format disk %s": [
     "ディスク %s をフォーマットする"
   ],
-  "Format logical volume as": [
-    "下記の形式で論理ボリュームをフォーマット"
-  ],
   "Format now": [
     "今すぐフォーマットする"
-  ],
-  "Format partition as": [
-    "下記の形式でフォーマット:"
   ],
   "Format selected devices?": [
     "選択したデバイスをフォーマットしますか？"
@@ -1212,6 +1254,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to [installation] summary.": [
+    "[インストール] の概要に移動します。"
+  ],
   "Go to iSCSI": [
     "iSCSI に移動"
   ],
@@ -1244,6 +1289,15 @@ export default {
   ],
   "Hide %d subvolume action": [
     "%d 個のサブボリューム処理を隠す"
+  ],
+  "Hide technical details": [
+    "技術詳細を隠す"
+  ],
+  "High": [
+    "高"
+  ],
+  "High contrast": [
+    "高コントラスト"
   ],
   "Hostname": [
     "ホスト名"
@@ -1347,6 +1401,9 @@ export default {
   "Install now with potential data loss": [
     "データ削除を了承してインストールを開始する"
   ],
+  "Installation": [
+    "インストール"
+  ],
   "Installation complete": [
     "インストール完了"
   ],
@@ -1370,9 +1427,6 @@ export default {
   ],
   "Installation settings in JSON format": [
     "JSON 形式でのインストール設定"
-  ],
-  "Installation settings will automatically update to match the new product's defaults.": [
-    "インストール設定は新たに選択した製品の既定値にあわせて自動調整されます。"
   ],
   "Installation will take %s.": [
     "インストールするには %s が必要です。"
@@ -1413,8 +1467,20 @@ export default {
   "Invalid [zFCP] settings": [
     "正しくない [zFCP] 設定です"
   ],
+  "Invalid device location": [
+    "デバイスの場所が正しくありません"
+  ],
+  "Invalid format (e.g. 20 GiB)": [
+    "書式が正しくありません (例: 20 GiB)"
+  ],
   "Invalid hostname value.": [
     "ホスト名の設定が正しくありません。"
+  ],
+  "Invalid label format": [
+    "ラベルの形式が正しくありません"
+  ],
+  "Invalid partition location": [
+    "パーティションの場所が正しくありません"
   ],
   "Invalid settings": [
     "設定が正しくありません"
@@ -1491,6 +1557,9 @@ export default {
   "Language": [
     "言語"
   ],
+  "Language and Keyboard": [
+    "言語とキーボード"
+  ],
   "Language and keyboard": [
     "言語とキーボード"
   ],
@@ -1500,6 +1569,9 @@ export default {
   "Let the installer propose a sensible size": [
     "インストーラに適切なサイズを提案させる"
   ],
+  "Let the installer set the size": [
+    "インストーラに適切なサイズを設定させる"
+  ],
   "Level": [
     "レベル"
   ],
@@ -1508,6 +1580,12 @@ export default {
   ],
   "License acceptance required": [
     "ライセンスの受け入れが必要です"
+  ],
+  "Light": [
+    "明"
+  ],
+  "Light color scheme": [
+    "明るい色を使用するスキーム"
   ],
   "Listening and learning time (4-30 seconds).": [
     "待機／学習時間 (4-30 秒) 。"
@@ -1520,6 +1598,9 @@ export default {
   ],
   "Localization": [
     "ローカライゼーション"
+  ],
+  "Location": [
+    "場所"
   ],
   "Locked targets cannot be managed from here and do not offer any actions.": [
     "施錠 (ロック) されているターゲットはここでは管理できません。そのため、実行できる処理もありません。"
@@ -1536,8 +1617,11 @@ export default {
   "Log in using a trusted SSH public key": [
     "信頼済みの SSH 公開鍵を利用してログインします"
   ],
-  "Logical volume name": [
-    "論理ボリューム名"
+  "Logical volume": [
+    "論理ボリューム"
+  ],
+  "Logical volume could not be configured": [
+    "論理ボリュームを設定できませんでした"
   ],
   "Logical volumes": [
     "論理ボリューム"
@@ -1587,6 +1671,12 @@ export default {
   "Max message age must be between 6 and 40 seconds": [
     "メッセージ最大有効期間は 6 秒から 40 秒までの範囲でなければなりません"
   ],
+  "Maximum": [
+    "最大"
+  ],
+  "Maximum is required": [
+    "最大値を指定する必要があります"
+  ],
   "Members": [
     "メンバー"
   ],
@@ -1598,6 +1688,15 @@ export default {
   ],
   "Min channel": [
     "最小チャネル"
+  ],
+  "Minimum": [
+    "最小"
+  ],
+  "Minimum is required": [
+    "最小値を指定する必要があります"
+  ],
+  "Minimum: %1$s (%2$s)": [
+    "最小: %1$s (%2$s)"
   ],
   "Missing": [
     "見つかりません"
@@ -1620,17 +1719,8 @@ export default {
   "More devices": [
     "さらなるデバイス"
   ],
-  "More installer options": [
-    "さらなるインストーラのオプション"
-  ],
-  "More keymap layout might be available for the selected product at [Localization] page": [
-    "選択した製品に対するキーボードレイアウトの詳細な設定は、 [ローカライゼーション] のページにあります"
-  ],
-  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "選択した製品に対する言語やキーボードレイアウトの詳細な設定は、 [ローカライゼーション] のページにあります。"
-  ],
-  "More languages might be available for the selected product at [Localization] page": [
-    "選択した製品に対する言語の詳細な設定は、 [ローカライゼーション] のページにあります"
+  "More options": [
+    "さらなるオプション"
   ],
   "More storage options": [
     "さらなるストレージオプション"
@@ -1653,17 +1743,14 @@ export default {
   "Mount disk %s": [
     "ディスク %s をマウントする"
   ],
+  "Mount options": [
+    "マウントオプション"
+  ],
   "Mount point": [
     "マウントポイント"
   ],
-  "Mount point mode": [
-    "マウントポイントのモード"
-  ],
-  "Mount point options": [
-    "マウントポイントのオプション"
-  ],
-  "Mount point toggle": [
-    "マウントポイントの切り替え"
+  "Mount point is required": [
+    "マウントポイントを指定する必要があります"
   ],
   "Move mount points": [
     "マウントポイントの移動"
@@ -1673,6 +1760,12 @@ export default {
   ],
   "Multipath": [
     "マルチパス"
+  ],
+  "Must be larger than minimum size": [
+    "最小値よりも大きくしなければなりません"
+  ],
+  "Must be smaller than maximum size": [
+    "最大値よりも小さくしなければなりません"
   ],
   "NFS": [
     "NFS"
@@ -1688,6 +1781,9 @@ export default {
   ],
   "Name %s": [
     "名前: %s"
+  ],
+  "Name for the logical volume. E.g., root, home, lv0": [
+    "論理ボリュームの名前 (例: root, home, lv0)"
   ],
   "Name is required": [
     "名前を指定する必要があります"
@@ -1709,6 +1805,18 @@ export default {
   ],
   "New connection": [
     "新しい接続"
+  ],
+  "New logical volume": [
+    "新しい論理ボリューム"
+  ],
+  "New logical volume. There are no available existing logical volumes on %s.": [
+    "新しい論理ボリュームです。 %s には利用可能な既存の論理ボリュームはありません。"
+  ],
+  "New partition": [
+    "新しいパーティション"
+  ],
+  "New partition. There are no available existing partitions on %s.": [
+    "新しいパーティションです。 %s には利用可能な既存のパーティションはありません。"
   ],
   "No": [
     "いいえ"
@@ -1736,9 +1844,6 @@ export default {
   ],
   "No additional patterns available": [
     "利用可能な追加パターンはありません"
-  ],
-  "No changes detected. System settings are already up to date.": [
-    "何も変更されていません。システム設定は既に最新の状態です。"
   ],
   "No changes to apply": [
     "適用すべき変更はありません"
@@ -1911,11 +2016,17 @@ export default {
   "Parent device": [
     "親デバイス"
   ],
+  "Partition": [
+    "パーティション"
+  ],
   "Partition %s": [
     "パーティション %s"
   ],
   "Partition Info": [
     "パーティション情報"
+  ],
+  "Partition could not be configured": [
+    "パーティションを設定できませんでした"
   ],
   "Partitions": [
     "パーティション"
@@ -2067,6 +2178,12 @@ export default {
   "RAID": [
     "RAID"
   ],
+  "Range": [
+    "範囲"
+  ],
+  "Range: %1$s - %2$s (%3$s)": [
+    "範囲: %1$s - %2$s (%3$s)"
+  ],
   "Read less": [
     "表示を減らす"
   ],
@@ -2178,9 +2295,6 @@ export default {
   "Reused partitions will not be shrunk": [
     "再利用したパーティションは縮小しない"
   ],
-  "Review and install": [
-    "確認してインストール"
-  ],
   "Root account": [
     "root アカウント"
   ],
@@ -2256,6 +2370,9 @@ export default {
   "Select a disk": [
     "ディスクの選択"
   ],
+  "Select a filesystem type": [
+    "ファイルシステムの種類を選択"
+  ],
   "Select a mode": [
     "モードの選択"
   ],
@@ -2297,9 +2414,6 @@ export default {
   ],
   "Select one or more to extend the system.": [
     "システムの機能を拡張したい場合は、 1 つ以上のパターンを選択してください。"
-  ],
-  "Select or enter a mount point": [
-    "マウントポイントの選択または入力"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
     "他のデバイスには割り当てられていないマウントポイントを選択または入力してください"
@@ -2349,8 +2463,17 @@ export default {
   "Set NTP servers manually": [
     "NTP サーバを指定する"
   ],
+  "Set a specific size": [
+    "サイズを指定する"
+  ],
   "Set manually": [
     "手動設定"
+  ],
+  "Set minimum and maximum": [
+    "最小値と最大値を指定する"
+  ],
+  "Set minimum; use more space if available": [
+    "最小値を指定する (可能であればさらに多くの領域を使用する)"
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
     "主に使用するログインアカウントを設定してください。このユーザは [sudo] を利用して管理者権限でコマンドを実行することができますが、 root アカウントとは区別されます。"
@@ -2373,17 +2496,20 @@ export default {
   "Show %d subvolume action": [
     "%d 個のサブボリューム処理を表示"
   ],
+  "Show configuration": [
+    "設定の表示"
+  ],
   "Show information about %s": [
     "%s に関する情報を表示"
-  ],
-  "Show installation settings": [
-    "インストール設定の表示"
   ],
   "Show less": [
     "表示を減らす"
   ],
   "Show more": [
     "表示を増やす"
+  ],
+  "Show technical details (English only)": [
+    "技術詳細を表示する (英語のみ)"
   ],
   "Shrink existing logical volumes": [
     "既存の論理ボリュームを縮小する"
@@ -2396,12 +2522,6 @@ export default {
   ],
   "Size": [
     "サイズ"
-  ],
-  "Size limits must be numbers followed by a unit like GiB or GB": [
-    "サイズ制限は GiB や GB のような単位を付けた数値でなければなりません"
-  ],
-  "Size mode": [
-    "サイズのモード"
   ],
   "Size modes": [
     "サイズのモード"
@@ -2463,6 +2583,12 @@ export default {
   "Spanning Tree Protocol (STP)": [
     "スパニングツリープロトコル (STP)"
   ],
+  "Standard": [
+    "標準"
+  ],
+  "Standard contrast": [
+    "標準コントラスト"
+  ],
   "Start configuring a basic installation": [
     "基本的なインストールの設定を開始する"
   ],
@@ -2487,6 +2613,12 @@ export default {
   "Status filter toggle": [
     "状態フィルタの切り替え"
   ],
+  "Status: %s task active": [
+    "状態: %s 個の処理が動作中です"
+  ],
+  "Status: Idle": [
+    "状態: 待機中です"
+  ],
   "Step %1$d of %2$d": [
     "ステップ %1$d / %2$d"
   ],
@@ -2495,9 +2627,6 @@ export default {
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
     "使用するディスクのほか、 LVM ボリュームグループなどの追加デバイス設定を含む新しいシステムの構造です。"
-  ],
-  "Suggested mount points": [
-    "提案されたマウントポイント"
   ],
   "Swap": [
     "スワップ"
@@ -2519,15 +2648,6 @@ export default {
   ],
   "System settings could not be updated": [
     "システム設定を更新できませんでした"
-  ],
-  "System settings successfully updated": [
-    "システム設定を更新しました"
-  ],
-  "System status: %s task active": [
-    "システムの状態: %s 個の処理が動作中です"
-  ],
-  "System status: Idle": [
-    "システムの状態: 待機中です"
   ],
   "System will have no network connections": [
     "システムにはネットワーク接続は設定されません"
@@ -2556,6 +2676,9 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM グループ '%1$s' が %2$s に残されます"
   ],
+  "The [language and region] settings for the product may offer more options to choose from.": [
+    "製品に対する [言語と地域] の設定には、さらに多くの選択肢が提供されているかもしれません。"
+  ],
   "The configuration must be adapted to address the following issue:": [
     "下記の問題に対応するため、何らかの設定調整を行わなければなりません:"
   ],
@@ -2573,6 +2696,9 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "接続をインストール時にのみ使用するものとし、インストール後は削除します。"
+  ],
+  "The current configuration will be discarded to apply the default settings of the new product.": [
+    "新しい製品に対する既定値を適用するため、現在の設定が破棄されます。"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "現在の設定では %2$s の %1$s を作成する予定になります。"
@@ -2603,6 +2729,9 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "デバイスは縮小できません:"
+  ],
+  "The device does not exist or is no longer available.": [
+    "デバイスが存在していないか、利用できなくなっています。"
   ],
   "The device will be formatted": [
     "デバイスをフォーマットします"
@@ -2672,15 +2801,6 @@ export default {
   ],
   "The logical volume will also be deleted": [
     "論理ボリュームについても削除します"
-  ],
-  "The maximum must be a number followed by a unit like GiB or GB": [
-    "最大値は GiB や GB のような単位を付けた数値でなければなりません"
-  ],
-  "The minimum cannot be greater than the maximum": [
-    "最小サイズは最大サイズより小さくなければいけません"
-  ],
-  "The minimum must be a number followed by a unit like GiB or GB": [
-    "最小値は GiB や GB のような単位を付けた数値でなければなりません"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "このモーダル型の選択ページは、迅速で分かりやすく、かつユーザを混乱させることのないシンプルなインターフェイスを提供します。"
@@ -2763,12 +2883,6 @@ export default {
   "There are not disks available for the installation. You may need to configure some device.": [
     "インストールに利用できるディスクがありません。デバイスの設定を行う必要があるかもしれません。"
   ],
-  "There are not usable logical volumes": [
-    "利用可能な論理ボリュームがありません"
-  ],
-  "There are not usable partitions": [
-    "利用可能なパーティションがありません"
-  ],
   "There are not zFCP controllers pending of activation.": [
     "有効化待機中の zFCP コントローラはありません。"
   ],
@@ -2781,11 +2895,11 @@ export default {
   "There is a deactivated zFCP controller.": [
     "無効化された zFCP コントローラがあります。"
   ],
-  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "こちらはインストールする製品に対する設定です。インストーラの言語やキーボードレイアウトの設定は、上部バーの [設定パネル] から変更できます。"
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted using the [language and keyboard] option at the top bar.": [
+    "こちらはインストールする製品に対する設定です。インストーラの言語やキーボードレイアウトの設定は、上部バーの [言語とキーボード] オプションで変更できます。"
   ],
-  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "こちらはインストールする製品に対する設定です。インストーラの言語の設定は、上部バーの [設定パネル] から変更できます。"
+  "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.": [
+    "こちらはインストールする製品に対する設定です。インストーラの言語の設定は、上部バーの [言語] オプションで変更できます。"
   ],
   "This action will destroy any data stored on the device.": [
     "この処理により、デバイス内に書き込まれている全てのデータが消去されます。"
@@ -2832,6 +2946,9 @@ export default {
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "ここでの設定はインストーラ自身にのみ適用され、インストールする製品には適用されません。製品に対する設定を行いたい場合は、ローカライゼーション設定のページで行ってください。"
   ],
+  "This will be injected to the command to create the file system (%s).": [
+    "ここで設定した値は、ファイルシステムの作成コマンド (%s) にそのまま渡されます。"
+  ],
   "TiB": [
     "TiB"
   ],
@@ -2844,8 +2961,8 @@ export default {
   "Tmpfs": [
     "tmpfs"
   ],
-  "To change it, visit the [hostname] section before registering.": [
-    "ホスト名を変更する場合は、登録する前に [ホスト名] セクションに移動してください。"
+  "To change that name, visit [system] section settings before registering.": [
+    "ホスト名を変更する場合は、登録する前に [システム] セクションに移動してください。"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "システムを起動できるようにするため、インストーラは適切なディスク内にいくつかの追加パーティションを作成もしくは設定する必要があるかもしれません。"
@@ -2888,9 +3005,6 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "利用可能なディスクの更新と暗号化デバイスの有効化"
-  ],
-  "Use": [
-    "使用"
   ],
   "Use LVM volume group %s": [
     "LVM ボリュームグループ %s の使用"
@@ -2936,6 +3050,9 @@ export default {
   ],
   "Use available space": [
     "利用可能な領域を使用する"
+  ],
+  "Use current %s": [
+    "現在の %s を使用"
   ],
   "Use custom DNS search domains": [
     "独自の検索ドメインの使用"
@@ -3060,20 +3177,8 @@ export default {
   "Using an advanced storage configuration": [
     "高度なストレージ設定を使用します"
   ],
-  "Using an existing logical volume": [
-    "既存論理ボリュームの使用"
-  ],
-  "Using an existing partition": [
-    "既存パーティションの使用"
-  ],
   "Using code ending in %s": [
     "末尾 %s のコードを使用"
-  ],
-  "Using logical volume %s": [
-    "論理ボリューム %s を使用"
-  ],
-  "Using partition %s": [
-    "パーティション %s の使用"
   ],
   "Using transient name, which may change after reboot or network changes": [
     "システムの再起動やネットワーク側の変更により変わりうる一時的な名前を使用しています"
@@ -3092,6 +3197,18 @@ export default {
   ],
   "VLAN details": [
     "VLAN 詳細"
+  ],
+  "Value": [
+    "値"
+  ],
+  "Value is required": [
+    "値を指定する必要があります"
+  ],
+  "Value: %1$s (%2$s)": [
+    "値: %1$s (%2$s)"
+  ],
+  "Verify that the location is correct and the configuration is valid.": [
+    "場所が正しいこと、および設定内容が適切であることをご確認ください。"
   ],
   "View license": [
     "ライセンスの表示"
@@ -3125,9 +3242,6 @@ export default {
   ],
   "Wait until current operations are completed.": [
     "処理が完了するまでお待ちください。"
-  ],
-  "Waiting for a mount point": [
-    "マウントポイントを待機しています"
   ],
   "Waiting for information about storage configuration": [
     "ストレージ設定に関する情報を待機しています"
@@ -3195,6 +3309,9 @@ export default {
   "auto selected": [
     "自動選択済み"
   ],
+  "default size for %s": [
+    "%s に対する既定のサイズ"
+  ],
   "iBFT": [
     "iBFT"
   ],
@@ -3212,6 +3329,9 @@ export default {
   ],
   "reset to defaults": [
     "既定値に戻す"
+  ],
+  "size for %s with the current settings": [
+    "現在の設定で %s に設定されるサイズ"
   ],
   "zFCP": [
     "zFCP"
