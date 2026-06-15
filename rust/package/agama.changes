@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Mark properly autoinst retry question as the one that should
+  return value for new url (gh#agama-project/agama#3623)
+
+-------------------------------------------------------------------
 Fri Jun 12 16:35:53 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt storate schemas to allow configuring filesystem options
