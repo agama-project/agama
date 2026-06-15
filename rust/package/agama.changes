@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 15 14:58:50 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed copying URL credentials to the target system (bsc#1267881)
+
+-------------------------------------------------------------------
 Mon Jun 15 08:05:06 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the "agama monitor" and "agama status" texts
