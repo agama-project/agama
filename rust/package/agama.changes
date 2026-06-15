@@ -1,8 +1,16 @@
 -------------------------------------------------------------------
+
 Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Mark properly autoinst retry question as the one that should
   return value for new url (gh#agama-project/agama#3623)
+
+-------------------------------------------------------------------
+Fri Jun 12 17:28:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- The list of products only contains the products and modes 
+  descriptions for the current language
+  (gh#agama-project/agama#3619).
 
 -------------------------------------------------------------------
 Fri Jun 12 16:35:53 UTC 2026 - José Iván López González <jlopez@suse.com>
