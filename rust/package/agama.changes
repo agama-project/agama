@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 16 14:01:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Remove a TODO note that slipped into translatable CLI help
+  (gh#agama-project/agama#3639).
+
+-------------------------------------------------------------------
 Mon Jun 15 15:45:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 22
