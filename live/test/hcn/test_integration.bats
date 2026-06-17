@@ -1,12 +1,12 @@
 #!/usr/bin/env bats
-# Integration tests for parse-hcnmgr.sh
-# Tests complete end-to-end workflows
+# Integration tests for parse-hcn.sh
+# Tests complete end-to-end workflows (module renamed from 99hcnmgr to 99hcn)
 
 FIXTURE_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)"
-SCRIPT_PATH="${FIXTURE_DIR}/../../live-root/usr/lib/dracut/modules.d/99hcnmgr/parse-hcnmgr.sh"
+SCRIPT_PATH="${FIXTURE_DIR}/../../live-root/usr/lib/dracut/modules.d/99hcn/parse-hcn.sh"
 
 setup_file() {
-    export BATS_TMPDIR="${BATS_TEST_TMPDIR:-/tmp}/hcnmgr-integration"
+    export BATS_TMPDIR="${BATS_TEST_TMPDIR:-/tmp}/hcn-integration"
     mkdir -p "$BATS_TMPDIR"
 }
 
@@ -339,7 +339,7 @@ EOF
     # NetworkManager connection files should have 600 permissions
 
     mkdir -p "$TEST_WORK_DIR/connections"
-    cp "$FIXTURE_DIR/hcnmgr-connections/bond333e80f5.nmconnection" \
+    cp "$FIXTURE_DIR/hcn-connections/bond333e80f5.nmconnection" \
        "$TEST_WORK_DIR/connections/"
 
     # In real scenario, nm-initrd-generator creates with 600
@@ -355,7 +355,7 @@ EOF
 # ========================================
 
 @test "integration: validates expected vs actual connection transformation" {
-    # Compare nm-initrd-generator output with expected hcnmgr output
+    # Compare nm-initrd-generator output with expected hcn output
 
     source <(sed -n '/^parse_nm_connection()/,/^}/p' "$SCRIPT_PATH")
 
@@ -364,9 +364,9 @@ EOF
 $(parse_nm_connection "$FIXTURE_DIR/nm-initrd-generator-connections/enP32775p1s0.nmconnection")
 EOF
 
-    # Parse expected hcnmgr slave connection
+    # Parse expected hcn slave connection
     IFS='|' read -r hcn_id hcn_uuid hcn_ifname hcn_master hcn_controller hcn_mac <<EOF
-$(parse_nm_connection "$FIXTURE_DIR/hcnmgr-connections/bond333e80f5-enP32775p1s0.nmconnection")
+$(parse_nm_connection "$FIXTURE_DIR/hcn-connections/bond333e80f5-enP32775p1s0.nmconnection")
 EOF
 
     # Verify transformation expectations

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test runner for parse-hcnmgr unit tests
+# Test runner for parse-hcn unit tests (module renamed from 99hcnmgr to 99hcn)
 # Usage: ./run-tests.sh [OPTIONS]
 
 set -e
@@ -156,9 +156,9 @@ done
 check_bats
 
 # Validate script exists
-PARSE_SCRIPT="../../live-root/usr/lib/dracut/modules.d/99hcnmgr/parse-hcnmgr.sh"
+PARSE_SCRIPT="../../live-root/usr/lib/dracut/modules.d/99hcn/parse-hcn.sh"
 if [ ! -f "$PARSE_SCRIPT" ]; then
-    print_color "$RED" "ERROR: parse-hcnmgr.sh not found at $PARSE_SCRIPT"
+    print_color "$RED" "ERROR: parse-hcn.sh not found at $PARSE_SCRIPT"
     exit 1
 fi
 
@@ -167,9 +167,9 @@ TEST_FILES=()
 if [ $INTEGRATION_ONLY -eq 1 ]; then
     TEST_FILES=("test_integration.bats")
 elif [ $UNIT_ONLY -eq 1 ]; then
-    TEST_FILES=("test_parse-hcnmgr.bats")
+    TEST_FILES=("test_parse-hcn.bats")
 else
-    TEST_FILES=("test_parse-hcnmgr.bats" "test_integration.bats")
+    TEST_FILES=("test_parse-hcn.bats" "test_integration.bats")
 fi
 
 # List tests if requested
@@ -236,7 +236,7 @@ else
     echo "  - Run with --verbose to see full output"
     echo "  - Run with --trace to enable bash tracing"
     echo "  - Run with --filter to test specific functions"
-    echo "  - Check /tmp/hcnmgr-tests/ for test artifacts"
+    echo "  - Check /tmp/hcn-tests/ for test artifacts"
     echo ""
     exit $EXIT_CODE
 fi

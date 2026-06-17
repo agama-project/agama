@@ -1,21 +1,21 @@
 #!/usr/bin/env bats
-# Unit tests for parse-hcnmgr.sh
-# Tests the improved hcnmgr dracut module
+# Unit tests for parse-hcn.sh
+# Tests the improved HCN dracut module (renamed from 99hcnmgr to 99hcn)
 
 # Test fixture location
 FIXTURE_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")" && pwd)"
-SCRIPT_PATH="${FIXTURE_DIR}/../../live-root/usr/lib/dracut/modules.d/99hcnmgr/parse-hcnmgr.sh"
+SCRIPT_PATH="${FIXTURE_DIR}/../../live-root/usr/lib/dracut/modules.d/99hcn/parse-hcn.sh"
 
 # Mock directories
 MOCK_PROC="${FIXTURE_DIR}/proc"
 MOCK_SYS="${FIXTURE_DIR}/sys"
 MOCK_NM_INITRD_DIR="${FIXTURE_DIR}/nm-initrd-generator-connections"
-MOCK_HCNMGR_DIR="${FIXTURE_DIR}/hcnmgr-connections"
+MOCK_HCN_DIR="${FIXTURE_DIR}/hcn-connections"
 
 # Helper functions for testing
 setup_file() {
     # Create a temporary directory for test runs
-    export BATS_TMPDIR="${BATS_TEST_TMPDIR:-/tmp}/hcnmgr-tests"
+    export BATS_TMPDIR="${BATS_TEST_TMPDIR:-/tmp}/hcn-tests"
     mkdir -p "$BATS_TMPDIR"
 }
 
@@ -43,7 +43,7 @@ teardown() {
 
 # Source helper functions from the script
 load_script_functions() {
-    # Extract and source only the helper functions from parse-hcnmgr.sh
+    # Extract and source only the helper functions from parse-hcn.sh
     # This allows us to test individual functions
     source <(sed -n '/^gkeyfile_get()/,/^}/p' "$SCRIPT_PATH")
     source <(sed -n '/^gkeyfile_has()/,/^}/p' "$SCRIPT_PATH")
@@ -222,7 +222,7 @@ EOF
     load_script_functions
 
     IFS='|' read -r id uuid ifname master controller mac <<EOF
-$(parse_nm_connection "$MOCK_HCNMGR_DIR/bond333e80f5-enP32775p1s0.nmconnection")
+$(parse_nm_connection "$MOCK_HCN_DIR/bond333e80f5-enP32775p1s0.nmconnection")
 EOF
 
     [ "$id" = "bond333e80f5-enP32775p1s0" ]
@@ -649,11 +649,11 @@ EOF
         "$MOCK_NM_INITRD_DIR/env6.nmconnection"
 }
 
-@test "fixture validation: hcnmgr connections have bond name controllers" {
+@test "fixture validation: hcn connections have bond name controllers" {
     # After fixup, connections should reference bond by name
     grep -q "controller=bond333e80f5" \
-        "$MOCK_HCNMGR_DIR/bond333e80f5-enP32775p1s0.nmconnection"
+        "$MOCK_HCN_DIR/bond333e80f5-enP32775p1s0.nmconnection"
 
     grep -q "controller=bond333e80f5" \
-        "$MOCK_HCNMGR_DIR/bond333e80f5-env6.nmconnection"
+        "$MOCK_HCN_DIR/bond333e80f5-env6.nmconnection"
 }
