@@ -18,20 +18,20 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::web::error::ProblemDetailsExt;
+use crate::{
+    server::{config_schema, web::Error},
+    web::error::ProblemDetailsExt,
+};
 use agama_lib::profile::AutoyastError;
 use agama_transfer::Transfer;
 use agama_utils::api::ProblemDetails;
 use gettextrs::gettext;
 
-use agama_lib::profile::{
-    AutoyastProfileImporter, ProfileEvaluator, ProfileValidator, ValidationOutcome,
-};
+use agama_lib::profile::{AutoyastProfileImporter, ProfileEvaluator};
 use aide::axum::ApiRouter;
 use axum::{
     response::{IntoResponse, Response},
     routing::post,
-    Json,
 };
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -39,7 +39,7 @@ use thiserror::Error;
 use url::Url;
 
 #[derive(Error, Debug)]
-enum ProfileError {
+pub enum ProfileError {
     #[error("Failed to retrieve profile from URL {url}: {source}")]
     UrlRetrieval {
         url: String,
@@ -160,19 +160,19 @@ impl ProfileBody {
     }
 }
 
-async fn validate(body: String) -> Result<Json<ValidationOutcome>, ProfileError> {
+async fn validate(body: String) -> Result<(), Response> {
     let profile = ProfileBody::from_string(body);
-    let profile_string = match profile.retrieve_profile()? {
+    let profile_content = profile
+        .retrieve_profile()
+        .map_err(|e| Error::from(e).bad_request())?;
+    let profile_string = match profile_content {
         Some(retrieved) => retrieved,
         None => profile.json.expect("Missing profile"),
     };
-    let validator = ProfileValidator::default_schema()
-        .map_err(|e| ProfileError::ValidatorSetup(e.to_string()))?;
-    let result = validator
-        .validate_str(&profile_string)
-        .map_err(|e| ProfileError::ValidationError(e.to_string()))?;
-
-    Ok(Json(result))
+    let json: serde_json::Value =
+        serde_json::from_str(&profile_string).map_err(|e| Error::from(e).bad_request())?;
+    config_schema::check(&json).map_err(|e| Error::from(e).bad_request())?;
+    Ok(())
 }
 
 async fn evaluate(body: String) -> Result<String, ProfileError> {
