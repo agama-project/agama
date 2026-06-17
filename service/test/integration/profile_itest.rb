@@ -45,13 +45,14 @@ end
 
 # needs declarations:
 # command [Array<String>] like ["agama", "profile", "validate"]
-shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match|
+shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match, exitcode_match = 0|
   context "with #{filename} as path" do
     it "output matches" do
       cmd = [*command, fixture(filename)]
-      stdout, stderr = Cheetah.run(*cmd, **cheetah_kwargs)
+      stdout, stderr, exitcode = Cheetah.run(*cmd, **cheetah_kwargs)
       expect(stdout).to include(stdout_match)
       expect(stderr).to include(stderr_match)
+      expect(exitcode).to eq exitcode_match
     end
   end
 
@@ -101,7 +102,7 @@ describe "agama config" do
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples/profile_tw_minimal.json", \
         "", \
-        "is valid"
+        ""
     end
 
     context "valid profile with space in path" do
@@ -109,7 +110,7 @@ describe "agama config" do
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples space/profile_tw_minimal.json", \
         "", \
-        "is valid"
+        ""
     end
 
     # Rust Url library will see the percent
@@ -120,7 +121,7 @@ describe "agama config" do
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples%20percent/profile_tw_minimal.json", \
         "", \
-        "is valid"
+        ""
     end
 
     context "invalid profile" do
@@ -128,7 +129,8 @@ describe "agama config" do
         "accepts input in 3 ways", \
         "rust/agama-lib/share/examples/profile_tw_invalid.json", \
         "", \
-        "* Additional properties are not allowed ('ID' was unexpected). /product"
+        "* Additional properties are not allowed ('ID' was unexpected). /product", \
+        1
     end
   end
 
