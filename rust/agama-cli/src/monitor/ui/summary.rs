@@ -90,10 +90,10 @@ impl Widget for Summary<'_> {
             BusyState::Failed
         } else if self.status.status.stage == Stage::Finished {
             BusyState::Idle
-        } else if !self.status.status.progresses.is_empty() {
-            BusyState::Busy
         } else if !self.status.questions.is_empty() {
             BusyState::Waiting
+        } else if !self.status.status.progresses.is_empty() {
+            BusyState::Busy
         } else {
             BusyState::Idle
         };

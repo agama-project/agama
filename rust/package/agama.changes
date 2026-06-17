@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun 17 08:03:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- agama monitor: Properly report as waiting for user when
+  agama is busy and has some question to answer
+  (gh#agama-project/agama#3638)
+
+-------------------------------------------------------------------
 Tue Jun 16 14:01:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - Remove a TODO note that slipped into translatable CLI help
