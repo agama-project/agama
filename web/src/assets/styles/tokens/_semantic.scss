@@ -54,7 +54,12 @@
     "Noto Sans",
     verdana
   );
-  --pf-t--global--font--family--300: var(--agm-t--font--family--mono, "Roboto Mono", monospace);
+  --pf-t--global--font--family--300: var(
+    --agm-t--font--family--mono,
+    "SUSE Mono",
+    "Roboto Mono",
+    monospace
+  );
 
   // Convenience tokens to retune the font weight. Unset by default, so text
   // keeps the PatternFly weight. Redefine --agm-t--font--weight--body /
