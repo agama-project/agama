@@ -60,35 +60,35 @@ svg[data-icon-name] {
 // (icons are 1em) and reads a customizable role token, so a product can resize
 // them without touching markup.
 .agm-icon-xs {
-  font-size: var(--agm-t--icon--size--xs);
+  font-size: var(--agm-t--icon--size--100);
 }
 
 .agm-icon-sm {
-  font-size: var(--agm-t--icon--size--sm);
+  font-size: var(--agm-t--icon--size--200);
 }
 
 .agm-icon-md {
-  font-size: var(--agm-t--icon--size--md);
+  font-size: var(--agm-t--icon--size--300);
 }
 
 .agm-icon-lg {
-  font-size: var(--agm-t--icon--size--lg);
+  font-size: var(--agm-t--icon--size--400);
 }
 
 .agm-icon-xl {
-  font-size: var(--agm-t--icon--size--xl);
+  font-size: var(--agm-t--icon--size--500);
 }
 
 .agm-icon-2xl {
-  font-size: var(--agm-t--icon--size--2xl);
+  font-size: var(--agm-t--icon--size--600);
 }
 
 .agm-icon-3xl {
-  font-size: var(--agm-t--icon--size--3xl);
+  font-size: var(--agm-t--icon--size--700);
 }
 
 .agm-icon-4xl {
-  font-size: var(--agm-t--icon--size--4xl);
+  font-size: var(--agm-t--icon--size--800);
 }
 
 .agm-three-dots-icon {
