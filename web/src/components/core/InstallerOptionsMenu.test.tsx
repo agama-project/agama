@@ -29,6 +29,9 @@ jest.mock("~/components/core/ChangeProductOption", () => () => (
   <a role="menuitem">Change product</a>
 ));
 
+// Monaco editor used in <ConfigEditor> is too heavy to render in tests
+jest.mock("~/components/core/ConfigEditor", () => () => <div>ConfigEditor Mock</div>);
+
 describe("InstallerOptionsMenu", () => {
   describe("toggle button", () => {
     it("renders a toggle with 'More options' aria-label", () => {
