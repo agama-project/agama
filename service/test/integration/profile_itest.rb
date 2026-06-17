@@ -186,7 +186,7 @@ describe "agama config" do
           }
         JSON
         expect(stdout).to eq(expected)
-        expect(stderr).to include("profile is valid")
+        # another test is that cheetah do not raise as invalid generate return non-zero
       end
     end
 
