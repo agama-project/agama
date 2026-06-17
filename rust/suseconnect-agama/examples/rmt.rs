@@ -9,17 +9,10 @@ pub fn main() {
     tracing_subscriber::fmt::init();
     let args: Vec<String> = env::args().collect();
 
-    // Basic argument validation
-    if args.len() < 2 {
+    let Some(url) = args.get(1) else {
         eprintln!("Usage: rmt <url> [<cert_path>]");
         exit(1);
-    }
-
-    let Some(url) = args.get(1) else {
-        eprintln!("Provide url as first parameter");
-        return;
     };
-    let cert_path = args.get(2).cloned();
 
     let params = ConnectParams {
         language: Some("en_US".to_string()),
@@ -28,7 +21,7 @@ pub fn main() {
         email: None,
     };
 
-    if let Some(cert) = &cert_path {
+    if let Some(cert) = &args.get(2) {
         println!("Certificate path provided: {}. Processing...", cert);
 
         let dest_dir = Path::new("/etc/pki/trust/anchors");
