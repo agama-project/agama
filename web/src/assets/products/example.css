@@ -115,6 +115,13 @@
  * Agama. Leave them unset unless there is a strong reason (a brand typeface, a
  * specific accessibility need, or a browser that renders the default poorly).
  * They are theme-independent.
+ *
+ * When changing a font FAMILY, check that the chosen font is available (bundled
+ * by Agama or installed on the system); otherwise it falls back to the next
+ * family in the list. In particular, the official ISO ships a limited, curated
+ * font set (the SUSE-recommended fonts plus those needed for specific
+ * languages), and adding extra fonts to the ISO on demand is out of support.
+ * Weight and size overrides are not subject to this.
  */
 :root {
   /* Font families: body, heading and monospace. */
