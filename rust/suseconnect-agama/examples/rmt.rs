@@ -1,4 +1,8 @@
-use std::{env, fs, path::Path, process::{exit, Command}};
+use std::{
+    env, fs,
+    path::Path,
+    process::{exit, Command},
+};
 
 use suseconnect_agama::{
     activate_product, announce_system, create_credentials_file, ConnectParams, ProductSpecification,
@@ -46,7 +50,10 @@ pub fn main() {
         if output.status.success() {
             println!("CA certificates updated successfully.");
         } else {
-            eprintln!("update-ca-certificates failed with status: {}", output.status);
+            eprintln!(
+                "update-ca-certificates failed with status: {}",
+                output.status
+            );
             eprintln!("Stderr: {}", String::from_utf8_lossy(&output.stderr));
             exit(1);
         }
