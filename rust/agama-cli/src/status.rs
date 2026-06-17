@@ -73,13 +73,19 @@ impl InstallationEnum {
 impl fmt::Display for InstallationEnum {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let text = match self {
-            Self::Failed => gettext("Installation failed."),
-            Self::Succeeded => gettext("Installation finished successfully."),
-            Self::Ready => gettext("Installation is ready to start."),
-            Self::Installing => gettext("Installation is in progress."),
-            Self::Proposing => gettext("Installation is being proposed."),
-            Self::Question => gettext("There are unanswered questions. Use `agama monitor` command or the web user interface to answer them."),
-            Self::Issues => gettext("There are issues in configuration that are blocking the installation."),
+            Self::Failed => gettext(
+                "The installation failed. Use the \"agama logs store\" command to get the logs to \
+                troubleshoot or share with support.",
+            ),
+            Self::Succeeded => gettext("The installation finished successfully."),
+            Self::Ready => gettext("Ready to start the installation."),
+            Self::Installing => gettext("The installation is in progress."),
+            Self::Proposing => gettext("The installer is preparing an installation proposal."),
+            Self::Question => gettext(
+                "There are unanswered questions. Use the \"agama monitor\" command or the \
+                web user interface to answer them:",
+            ),
+            Self::Issues => gettext("Fix invalid settings before starting the installation:"),
         };
         write!(f, "{}", text)
     }
@@ -113,21 +119,18 @@ impl StatusReport {
 
 impl fmt::Display for StatusReport {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{}", self.installation)?;
-        writeln!(f)?;
-        write!(f, "{}", gettext("Details:"))?;
+        writeln!(f, "{}\n", self.installation)?;
+
         if !self.questions.is_empty() {
-            write!(f, "\n{}", gettext("Open questions:"))?;
             for q in &self.questions {
-                write!(f, "\n  - {}", q.spec.text)?;
+                writeln!(f, "  - {}", q.spec.text)?;
             }
-        }
-        if !self.issues.is_empty() {
-            write!(f, "\n{}", gettext("Blocking issues:"))?;
+        } else if !self.issues.is_empty() {
             for i in &self.issues {
-                write!(f, "\n  - {}", i.issue.description)?;
+                writeln!(f, "  - {}", i.issue.description)?;
             }
         }
+
         Ok(())
     }
 }
@@ -304,10 +307,7 @@ mod tests {
         let status = default_status();
         let report = StatusReport::new(status);
         let output = report.to_string();
-        assert!(output.contains("Installation is ready to start."));
-        assert!(output.contains("Details:"));
-        assert!(!output.contains("Open questions:"));
-        assert!(!output.contains("Blocking issues:"));
+        assert!(output.contains("Ready to start the installation"));
     }
 
     #[test]
@@ -324,8 +324,19 @@ mod tests {
         let report = StatusReport::new(status);
         let output = report.to_string();
         assert!(output.contains("There are unanswered questions."));
-        assert!(output.contains("Details:"));
-        assert!(output.contains("Open questions:\n  - What is your name?"));
-        assert!(output.contains("Blocking issues:\n  - This is a blocking issue."));
+        assert!(output.contains("  - What is your name?"));
+        assert!(!output.contains("This is a blocking issue."));
+    }
+
+    #[test]
+    fn test_status_report_display_with_issues() {
+        let mut status = default_status();
+        status.issues.push(IssueWithScope {
+            scope: Scope::Manager,
+            issue: Issue::new("class1", "This is a blocking issue."),
+        });
+        let report = StatusReport::new(status);
+        let output = report.to_string();
+        assert!(output.contains("This is a blocking issue."));
     }
 }

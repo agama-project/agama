@@ -1,8 +1,43 @@
 -------------------------------------------------------------------
-Mon Jun 15 11:54:50 UTC 2026 - Michal Filka <mfilka@suse.com>
+Wed Jun 17 13:40:22 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - Import statically defined schemas when generating OpenAPI schema
 - Schemas moved from agama-lib/share to share/
+
+-------------------------------------------------------------------
+Wed Jun 17 08:03:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- agama monitor: Properly report as waiting for user when
+  agama is busy and has some question to answer
+  (gh#agama-project/agama#3638)
+
+-------------------------------------------------------------------
+Tue Jun 16 14:01:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Remove a TODO note that slipped into translatable CLI help
+  (gh#agama-project/agama#3639).
+
+-------------------------------------------------------------------
+Mon Jun 15 15:45:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
+Mon Jun 15 15:15:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Unify text with the UI (gh#agama-project/agama#3637).
+
+-------------------------------------------------------------------
+Mon Jun 15 14:58:50 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed copying URL credentials to the target system (bsc#1267881)
+
+-------------------------------------------------------------------
+Mon Jun 15 08:05:06 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the "agama monitor" and "agama status" texts
+  (gh#agama-project/agama#3621).
+>>>>>>> master
 
 -------------------------------------------------------------------
 Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
@@ -13,7 +48,7 @@ Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 -------------------------------------------------------------------
 Fri Jun 12 17:28:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- The list of products only contains the products and modes 
+- The list of products only contains the products and modes
   descriptions for the current language
   (gh#agama-project/agama#3619).
 

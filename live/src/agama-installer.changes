@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jun 15 15:45:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
 Fri Jun  5 13:42:42 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Added "plymouth.ignore-serial-consoles" boot option on ppc64le
