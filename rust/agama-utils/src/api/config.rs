@@ -94,3 +94,25 @@ impl Config {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::api::Config;
+    #[test]
+    fn test_parse_invalid_files_section() {
+        let json = r##"
+{
+  "files": { "name": "bashrc" },
+  "scripts": {
+    "pre": [
+      { "name": "hello.sh", "content": "#!/usr/bin/env bash\necho hello" }
+    ]
+  }
+}
+"##;
+        let config: Config = serde_json::from_str(&json).expect("Failed to parse the example");
+        assert!(config.files.is_some());
+        let files = config.files.expect("Failed to get the configuration");
+        assert!(files.scripts.is_some());
+    }
+}
