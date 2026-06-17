@@ -38,7 +38,9 @@
 
 .pf-v6-c-masthead {
   --pf-v6-c-masthead__logo--Width: fit-content;
-  --pf-v6-c-masthead--PaddingBlock: var(--pf-t--global--spacer--sm);
+  // Reduce the top and bottom padding to a small 2px to save vertical space
+  // while keeping the content off the edges.
+  --pf-v6-c-masthead--PaddingBlock: 2px;
 
   h1 {
     font-size: clamp(1.1rem, 0rem + 1.6vw, 1.75rem);
