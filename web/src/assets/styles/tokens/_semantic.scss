@@ -88,6 +88,9 @@
   --pf-t--global--font--size--600: var(--agm-t--font--size--600, 1.75rem);
   --pf-t--global--font--size--700: var(--agm-t--font--size--700, 2rem);
   --pf-t--global--font--size--800: var(--agm-t--font--size--800, 2.25rem);
+  // Some known environments run Agama on 1024x768 install screens, which handle
+  // the "lg" layout fine; lower the lg breakpoint to 64rem (1024px) so they use
+  // it instead of dropping to the narrower layout.
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
