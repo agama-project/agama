@@ -341,10 +341,14 @@ async fn generate(
         from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
 
+    if let Err(e) = validate(client, CliInput::Full(profile_json.clone())).await {
+        println!("{profile_json}\n");
+        return Err(e);
+    }
+
     let config = api::Config::from_json(&profile_json, &context.source)?;
     let config_json = serde_json::to_string_pretty(&config)?;
 
-    validate(client, CliInput::Full(config_json.clone())).await?;
     println!("{}", &config_json);
 
     Ok(())

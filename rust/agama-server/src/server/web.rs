@@ -21,6 +21,7 @@
 //! This module implements Agama's HTTP API.
 
 use crate::profile::profile_service;
+use crate::profile::web::ProfileError;
 use crate::server::config_schema;
 use crate::web::error::{ProblemDetailsExt, ProblemDetailsResponse};
 use agama_lib::logs;
@@ -50,6 +51,7 @@ use axum::{
     routing::{get, post},
     Json,
 };
+use gettextrs::gettext;
 use hyper::{header, HeaderMap, StatusCode};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -68,6 +70,8 @@ pub enum Error {
     Json(#[from] serde_json::Error),
     #[error("Missing language tag")]
     MissingLanguageTag,
+    #[error(transparent)]
+    Profile(#[from] ProfileError),
 }
 
 impl Error {
@@ -78,24 +82,26 @@ impl Error {
             Error::Json(e) => ProblemDetails::invalid_json(e.to_string()),
             Error::Manager(e) => ProblemDetails::internal_error(e.to_string()),
             Error::Questions(e) => ProblemDetails::internal_error(e.to_string()),
-            Error::MissingLanguageTag => {
-                ProblemDetails::generic("Missing Language Tag", "The language tag is required")
-            }
+            Error::MissingLanguageTag => ProblemDetails::generic(
+                gettext("Missing Language Tag"),
+                "The language tag is required",
+            ),
+            Error::Profile(e) => ProblemDetails::generic(gettext("Profile error"), e.to_string()),
         }
     }
 
     /// Creates a BAD_REQUEST (400) response from this error.
-    fn bad_request(self) -> Response {
+    pub fn bad_request(self) -> Response {
         self.into_problem_details().into_response()
     }
 
     /// Creates an INTERNAL_SERVER_ERROR (500) response from this error.
-    fn internal_server_error(self) -> Response {
+    pub fn internal_server_error(self) -> Response {
         self.into_problem_details().into_response()
     }
 
     /// Creates an UNPROCESSABLE_ENTITY (422) response from this error.
-    fn unprocessable_entity(self) -> Response {
+    pub fn unprocessable_entity(self) -> Response {
         self.into_problem_details().into_response()
     }
 }
