@@ -23,7 +23,6 @@ require "agama/storage/bootloader_config"
 require "agama/storage/bootloader_config_solver"
 require "agama/storage/bootloader_prober"
 require "bootloader/bootloader_factory"
-require "bootloader/os_prober"
 require "yast"
 
 Yast.import "BootStorage"
@@ -64,8 +63,6 @@ module Agama
       #
       # @param product_config [Agama::Config]
       def configure(product_config)
-        # TODO: get value from product ( probably for TW and maybe Leap?)
-        ::Bootloader::OsProber.package_available = false
         # reset disk to always read the recent storage configuration
         ::Yast::BootStorage.reset_disks
         # reset bootloader factory cache as we want here to reapply config from scratch
