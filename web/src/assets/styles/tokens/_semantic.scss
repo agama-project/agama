@@ -10,6 +10,9 @@
 // PF token is mapped as `var(--agm-t--ROLE, <default>)`: <default> is the Agama
 // value (so an unset role keeps the stock look) and the role is the override hook.
 //
+// products/example-advanced.css is the reference: it documents every role with a
+// worked example. The list below is just the dev-facing index.
+//
 // The curated role tokens:
 //   --agm-t--brand--color (+ --hover/--clicked)  brand / accent
 //   --agm-t--brand--text--color                   text on a brand background (buttons)
