@@ -104,7 +104,9 @@ describe("ConfigDialog", () => {
     );
   });
 
-  it("uses a timestamped filename for the download", async () => {
+  // The extension is omitted here on purpose: CodeEditor appends it based on
+  // its language prop.
+  it("uses a timestamped filename without extension for the download", async () => {
     fetchSpy.mockResolvedValue({
       text: () => Promise.resolve(JSON.stringify(mockConfig)),
     } as Response);
@@ -113,7 +115,7 @@ describe("ConfigDialog", () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText("Download filename")).toHaveTextContent(
-        "agama-config-2026-06-03T10-30-00-000Z.json",
+        "agama-config-2026-06-03T10-30-00-000Z",
       );
     });
   });

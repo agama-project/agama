@@ -99,6 +99,9 @@ export default {
     "%d mönster hittades",
     "%d flera mönster hittades"
   ],
+  "%s (keep data)": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -128,6 +131,9 @@ export default {
   ],
   "%s has been registered with below information.": [
     "%s har registrerats med uppgifterna nedan."
+  ],
+  "%s honors the browser and system preferences": [
+    "%s respekterar webbläsar och systeminställningarna"
   ],
   "%s is invalid: %s": [
     "%s är ogiltig: %s"
@@ -360,11 +366,8 @@ export default {
   "Any partition needed to boot will be configured.": [
     "Alla partitioner som behövs för uppstart kommer att konfigureras."
   ],
-  "As a new logical volume on %s": [
-    "Som en ny logisk volym på %s"
-  ],
-  "As a new partition on %s": [
-    "Som en ny partition på %s"
+  "Appearance": [
+    "Utseende"
   ],
   "At least one DNS search domain is required": [
     "Åtminstone en DNS-sökdomän krävs"
@@ -419,6 +422,12 @@ export default {
   ],
   "Automatic LUN scan is enabled": [
     "Automatisk LUN-skanning är aktiverad"
+  ],
+  "Automatic color scheme": [
+    "Automatiskt färgschema"
+  ],
+  "Automatic contrast": [
+    "Automatisk kontrast"
   ],
   "Available devices: %s": [
     "Tillgängliga enheter: %s"
@@ -504,6 +513,9 @@ export default {
   "Cancel connection": [
     "Avbryt anslutning"
   ],
+  "Cannot apply configuration": [
+    "Kunde inte tillämpa konfiguration"
+  ],
   "Cannot be changed in remote installation": [
     "Kan inte ändras i fjärrinstallation"
   ],
@@ -529,19 +541,10 @@ export default {
   "Change device menu": [
     "Ändra enhetsmeny"
   ],
-  "Change display language": [
-    "Ändra visningsspråk"
-  ],
-  "Change display language and keyboard layout": [
-    "Ändra visningsspråk och tangentbordslayout"
-  ],
   "Change filters and try again.": [
     "Ändra filter och försök igen."
   ],
   "Change keyboard": [
-    "Ändra tangentbordslayout"
-  ],
-  "Change keyboard layout": [
     "Ändra tangentbordslayout"
   ],
   "Change mode": [
@@ -620,6 +623,9 @@ export default {
   "Choose whether to enable the root account.": [
     "Välj huruvida du vill aktivera root-kontot."
   ],
+  "Chosen by MAC address": [
+    "Vald efter MAC-adress"
+  ],
   "Chosen by name": [
     "Vald efter namn"
   ],
@@ -629,20 +635,20 @@ export default {
   "Clear input": [
     "Rensa inmatning"
   ],
-  "Clear selected mount point": [
-    "Rensa vald monteringspunkt"
-  ],
   "Close": [
     "Stäng"
+  ],
+  "Color scheme": [
+    "Färgschema"
+  ],
+  "Configuration added to clipboard": [
+    "Konfiguration tillagd till urklipp"
   ],
   "Configuration from the network plus static addresses and gateway": [
     "Konfiguration från nätverket plus statiska adresser och gateway"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Konfiguration läst från iSCSI Boot Firmware Table (iBFT). Initieraren kan inte ändras."
-  ],
-  "Configuration unreachable or invalid": [
-    "Konfigurationen är oåtkomlig eller ogiltig"
   ],
   "Configure": [
     "Konfigurera"
@@ -653,9 +659,6 @@ export default {
   "Configure Volume Group": [
     "Konfigurera volymgrupp"
   ],
-  "Configure device %s": [
-    "Konfigurera enhet %s"
-  ],
   "Configure device menu": [
     "Konfigurera enhetsmeny"
   ],
@@ -665,14 +668,8 @@ export default {
   "Configure logical volume": [
     "Konfigurera logisk volym"
   ],
-  "Configure logical volume at %s": [
-    "Konfigurera logisk volym på %s"
-  ],
   "Configure partition": [
     "Konfigurera partition"
-  ],
-  "Configure partition at %s": [
-    "Konfigurera partition på %s"
   ],
   "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
     "Konfigurera NTP-servrarna (Network Time Protocol) som används för att ställa in systemets datum och tid."
@@ -756,8 +753,11 @@ export default {
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
     "Att fortsätta utan att installera paketet kan resultera i ett trasigt system. I vissa fall kanske systemet inte ens startar."
   ],
+  "Contrast": [
+    "Kontrast"
+  ],
   "Copy to the clipboard": [
-    ""
+    "Kopiera till urklipp"
   ],
   "Could not authenticate against the server.": [
     "Kunde inte autentisera mot servern."
@@ -822,8 +822,14 @@ export default {
   "DNS servers": [
     "DNS-servrar"
   ],
+  "Dark": [
+    "Mörkt"
+  ],
+  "Dark color scheme": [
+    "Mörkt färgschema"
+  ],
   "Data collection may take a while. The download will start automatically once the file is ready.": [
-    ""
+    "Datainsamling kan ta en stund. Nedladdningen startar automatiskt när filen är redo."
   ],
   "Deactivate": [
     "Inaktivera"
@@ -839,18 +845,6 @@ export default {
   ],
   "Default NTP": [
     "Standard NTP"
-  ],
-  "Default file system for %s": [
-    "Standard filsystem för %s"
-  ],
-  "Default file system for generic logical volume": [
-    "Standardfilsystem för generisk logisk volym"
-  ],
-  "Default file system for generic mount paths": [
-    "Standardfilsystem för generiska monteringssökvägar"
-  ],
-  "Default file system for generic partitions": [
-    "Standardfilsystem för generiska partitioner"
   ],
   "Default selection": [
     "Standard val"
@@ -888,15 +882,6 @@ export default {
   "Desktops": [
     "Skrivbord"
   ],
-  "Destroy current data and format device as": [
-    "Förstör nuvarande data och formatera enheten som"
-  ],
-  "Destroy current data and format logical volume as": [
-    "Förstör aktuell data och formatera den logiska volymen som"
-  ],
-  "Destroy current data and format partition as": [
-    "Förstör nuvarande data och formatera partition som"
-  ],
   "Details": [
     "Detaljer"
   ],
@@ -905,6 +890,12 @@ export default {
   ],
   "Device %s menu": [
     "Enhets %s-meny"
+  ],
+  "Device MAC address": [
+    "Enhetens MAC-adress"
+  ],
+  "Device binding": [
+    "Enhetsbindning"
   ],
   "Device details": [
     "Enhetsdetaljer"
@@ -957,20 +948,23 @@ export default {
   "Do not deactivate": [
     "Inaktivera inte"
   ],
-  "Do not format %s and keep the data": [
-    "Formatera inte %s och behåll data"
-  ],
   "Do not register": [
     "Registrera inte"
   ],
   "Do not use": [
     "Använd inte"
   ],
+  "Download configuration": [
+    "Ladda ner konfiguration"
+  ],
   "Download logs": [
     "Ladda ner loggar"
   ],
   "Download logs to troubleshoot or share with support.": [
     "Ladda ner loggar för att felsöka eller dela med support."
+  ],
+  "E.g. rw, noatime, umask=0666": [
+    ""
   ],
   "E.g., %s": [
     "T.ex., %s"
@@ -1092,6 +1086,9 @@ export default {
   "Excellent signal": [
     "Utmärkt signal"
   ],
+  "Expand if possible": [
+    ""
+  ],
   "Expiration date": [
     "Utgångsdatum"
   ],
@@ -1130,9 +1127,6 @@ export default {
   "File system": [
     "Filsystem"
   ],
-  "File system label": [
-    "Filsystem etikett"
-  ],
   "Filesystems": [
     "Filsystem"
   ],
@@ -1160,6 +1154,9 @@ export default {
   "Fix the errors below and try again": [
     "Åtgärda felen nedan och försök igen"
   ],
+  "Fixed": [
+    "Fast"
+  ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "För mer avancerade behov kan användare växla till den här helsidesversionen med dedikerade sökvägar, som ger mer utrymme för detaljerade vyer, ytterligare kolumner, filter och utökad funktionalitet."
   ],
@@ -1172,20 +1169,11 @@ export default {
   "Format device %s": [
     "Formatera enhet %s"
   ],
-  "Format device as": [
-    "Formatera enhet som"
-  ],
   "Format disk %s": [
     "Formatera disk %s"
   ],
-  "Format logical volume as": [
-    "Formatera logisk volym som"
-  ],
   "Format now": [
     "Formatera nu"
-  ],
-  "Format partition as": [
-    "Formatera partition som"
   ],
   "Format selected devices?": [
     "Formatera valda enheter?"
@@ -1253,6 +1241,15 @@ export default {
   "Hide %d subvolume action": [
     "Dölj %d undervolym åtgärd",
     "Dölj %d undervolymer åtgärder"
+  ],
+  "Hide technical details": [
+    "Dölj tekniska detaljer"
+  ],
+  "High": [
+    "Hög"
+  ],
+  "High contrast": [
+    "Hög kontrast"
   ],
   "Hostname": [
     "Värdnamn"
@@ -1357,6 +1354,9 @@ export default {
   "Install now with potential data loss": [
     "Installera nu med potentiell dataförlust"
   ],
+  "Installation": [
+    "Installation"
+  ],
   "Installation complete": [
     "Installationen slutfördes"
   ],
@@ -1369,14 +1369,17 @@ export default {
   "Installation in progress": [
     "Installation pågår"
   ],
+  "Installation logs download": [
+    "Nedladdning av installationsloggar"
+  ],
   "Installation only": [
     "Installation endast"
   ],
   "Installation settings": [
     "Installationsinställningar"
   ],
-  "Installation settings will automatically update to match the new product's defaults.": [
-    "Installationsinställningarna uppdateras automatiskt för att matcha den nya produktens standardinställningar."
+  "Installation settings in JSON format": [
+    "Installationsinställningar i JSON format"
   ],
   "Installation will take %s.": [
     "Installationen kommer att ta %s."
@@ -1417,8 +1420,14 @@ export default {
   "Invalid [zFCP] settings": [
     "Ogiltiga [zFCP] inställningar"
   ],
+  "Invalid format (e.g. 20 GiB)": [
+    ""
+  ],
   "Invalid hostname value.": [
     "Ogiltigt värdnamn värde."
+  ],
+  "Invalid label format": [
+    ""
   ],
   "Invalid settings": [
     "Ogiltiga inställningar"
@@ -1495,6 +1504,9 @@ export default {
   "Language": [
     "Språk"
   ],
+  "Language and Keyboard": [
+    "Språk och tangentbord"
+  ],
   "Language and keyboard": [
     "Språk och tangentbordslayout"
   ],
@@ -1513,6 +1525,12 @@ export default {
   "License acceptance required": [
     "Licensgodkännande krävs"
   ],
+  "Light": [
+    "Ljust"
+  ],
+  "Light color scheme": [
+    "Ljust färgschema"
+  ],
   "Listening and learning time (4-30 seconds).": [
     "Lyssnings och inlärningstid (4–30 sekunder)."
   ],
@@ -1524,6 +1542,9 @@ export default {
   ],
   "Localization": [
     "Lokalisering"
+  ],
+  "Location": [
+    "Plats"
   ],
   "Locked targets cannot be managed from here and do not offer any actions.": [
     "Låsta mål kan inte hanteras härifrån och erbjuder inga åtgärder."
@@ -1539,9 +1560,6 @@ export default {
   ],
   "Log in using a trusted SSH public key": [
     "Logga in med en betrodd publik SSH-nyckel"
-  ],
-  "Logical volume name": [
-    "Logisk volym namn"
   ],
   "Logical volumes": [
     "Logiska volymer"
@@ -1591,6 +1609,9 @@ export default {
   "Max message age must be between 6 and 40 seconds": [
     "Maximal meddelandeålder måste vara mellan 6 och 40 sekunder"
   ],
+  "Maximum": [
+    "Maximal"
+  ],
   "Members": [
     "Medlemmar"
   ],
@@ -1602,6 +1623,9 @@ export default {
   ],
   "Min channel": [
     "Minimum kanal"
+  ],
+  "Minimum": [
+    "Minst"
   ],
   "Missing": [
     "Saknas"
@@ -1624,17 +1648,8 @@ export default {
   "More devices": [
     "Mer enheter"
   ],
-  "More installer options": [
-    "Mer installationsalternativ"
-  ],
-  "More keymap layout might be available for the selected product at [Localization] page": [
-    "Fler tangentbordslayouter kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
-  ],
-  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "Fler språk och tangentbordslayoutalternativ för den valda produkten kan finnas tillgängliga på sidan [Lokalisering]."
-  ],
-  "More languages might be available for the selected product at [Localization] page": [
-    "Fler språk kan vara tillgängliga för den valda produkten på [Lokalisering] sidan"
+  "More options": [
+    "Mer alternativ"
   ],
   "More storage options": [
     "Mer lagringsalternativ"
@@ -1662,15 +1677,6 @@ export default {
   "Mount point": [
     "Monteringspunkt"
   ],
-  "Mount point mode": [
-    "Monteringspunkt läge"
-  ],
-  "Mount point options": [
-    "Monteringspunktsalternativ"
-  ],
-  "Mount point toggle": [
-    "Monteringspunkt växel"
-  ],
   "Move mount points": [
     "Flytta monteringspunkter"
   ],
@@ -1695,6 +1701,9 @@ export default {
   "Name %s": [
     "Namn %s"
   ],
+  "Name for the logical volume. E.g., root, home, lv0": [
+    ""
+  ],
   "Name is required": [
     "Namn krävs"
   ],
@@ -1715,6 +1724,9 @@ export default {
   ],
   "New connection": [
     "Ny anslutning"
+  ],
+  "New partition. There are no available existing partitions on %s.": [
+    ""
   ],
   "No": [
     "Nej"
@@ -1742,9 +1754,6 @@ export default {
   ],
   "No additional patterns available": [
     "Inga ytterligare mönster tillgängliga"
-  ],
-  "No changes detected. System settings are already up to date.": [
-    "Inga ändringar upptäcktes. Systeminställningarna är redan uppdaterade."
   ],
   "No changes to apply": [
     "Inga ändringar att tillämpa"
@@ -2073,6 +2082,9 @@ export default {
   "RAID": [
     "RAID"
   ],
+  "Range": [
+    "Räckvidd"
+  ],
   "Read less": [
     "Läs mindre"
   ],
@@ -2183,9 +2195,6 @@ export default {
   ],
   "Reused partitions will not be shrunk": [
     "Återanvända partitioner kommer inte att krympas"
-  ],
-  "Review and install": [
-    "Granska och installera"
   ],
   "Root account": [
     "Root konto"
@@ -2305,9 +2314,6 @@ export default {
   "Select one or more to extend the system.": [
     "Välj en eller flera för att utöka systemet."
   ],
-  "Select or enter a mount point": [
-    "Välj eller ange en monteringspunkt"
-  ],
   "Select or enter a mount point that is not already assigned to another device": [
     "Välj eller ange en monteringspunkt som inte redan är tilldelad en annan enhet"
   ],
@@ -2356,8 +2362,17 @@ export default {
   "Set NTP servers manually": [
     "Ställ in NTP-servrar manuellt"
   ],
+  "Set a specific size": [
+    ""
+  ],
   "Set manually": [
     "Ställ in manuellt"
+  ],
+  "Set minimum and maximum": [
+    ""
+  ],
+  "Set minimum; use more space if available": [
+    ""
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
     "Konfigurerar ett huvudkonto för inloggning. Det kan köra administratörskommandon med [sudo] men är separat från root-kontot."
@@ -2381,6 +2396,9 @@ export default {
     "Visa %d undervolym åtgärd",
     "Visa %d undervolymer åtgärder"
   ],
+  "Show configuration": [
+    "Visa konfiguration"
+  ],
   "Show information about %s": [
     "Visa information om %s"
   ],
@@ -2389,6 +2407,9 @@ export default {
   ],
   "Show more": [
     "Visa mer"
+  ],
+  "Show technical details (English only)": [
+    "Visa tekniska detaljer (Engelska endast)"
   ],
   "Shrink existing logical volumes": [
     "Krymp existerande logiska volymer"
@@ -2401,12 +2422,6 @@ export default {
   ],
   "Size": [
     "Storlek"
-  ],
-  "Size limits must be numbers followed by a unit like GiB or GB": [
-    "Storleksgränser måste vara siffror följt av en enhet som GiB eller GB"
-  ],
-  "Size mode": [
-    "Storleksläge"
   ],
   "Size modes": [
     "Storlekslägen"
@@ -2468,6 +2483,12 @@ export default {
   "Spanning Tree Protocol (STP)": [
     "Spanning Tree-protokoll (STP)"
   ],
+  "Standard": [
+    "Standard"
+  ],
+  "Standard contrast": [
+    "Standard kontrast"
+  ],
   "Start configuring a basic installation": [
     "Börja konfigurera en grundläggande installation"
   ],
@@ -2492,6 +2513,13 @@ export default {
   "Status filter toggle": [
     "Statusfilterväxel"
   ],
+  "Status: %s task active": [
+    "Status: %s uppgift aktiv",
+    "Status: %s uppgifter aktiva"
+  ],
+  "Status: Idle": [
+    "Status: Overksam"
+  ],
   "Step %1$d of %2$d": [
     "Steg %1$d av %2$d"
   ],
@@ -2500,9 +2528,6 @@ export default {
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
     "Det nya systemets struktur, inklusive diskar att använda och ytterligare enheter som LVM-volymgrupper."
-  ],
-  "Suggested mount points": [
-    "Föreslagna monteringspunkter"
   ],
   "Swap": [
     "Swap"
@@ -2526,16 +2551,6 @@ export default {
   ],
   "System settings could not be updated": [
     "Systeminställningarna kunde inte uppdateras"
-  ],
-  "System settings successfully updated": [
-    "Systeminställningarna har uppdaterats framgångsrikt"
-  ],
-  "System status: %s task active": [
-    "System status. %s uppgift aktiv",
-    "System status: %s uppgifter aktiva"
-  ],
-  "System status: Idle": [
-    "System status: Overksam"
   ],
   "System will have no network connections": [
     "Systemet kommer inte att ha några nätverksanslutningar"
@@ -2564,6 +2579,9 @@ export default {
   "The LVM group '%1$s' will remain at %2$s": [
     "LVM-gruppen '%1$s' kommer att vara kvar på %2$s"
   ],
+  "The [language and region] settings for the product may offer more options to choose from.": [
+    "[språk och region] inställningar för produkten kan erbjuda fler alternativ att välja mellan."
+  ],
   "The configuration must be adapted to address the following issue:": [
     "Konfigurationen måste anpassas för att åtgärda följande problem:",
     "Konfigurationen måste anpassas för att åtgärda dessa följande problem:"
@@ -2582,6 +2600,9 @@ export default {
   ],
   "The connection will be used only during installation and not available in the installed system.": [
     "Anslutningen kommer endast att användas under installationen och är inte tillgänglig i det installerade systemet."
+  ],
+  "The current configuration will be discarded to apply the default settings of the new product.": [
+    "Den nuvarande konfigurationen kommer att kasseras för att tillämpa standardinställningarna för den nya produkten."
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
     "Den nuvarande konfigurationen kommer att resultera i ett försök att skapa en %1$s på %2$s."
@@ -2648,7 +2669,7 @@ export default {
     "Tillägget registrerades utan någon registreringskod."
   ],
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
-    ""
+    "filen %s innehåller en registrering av installationsprogrammets aktivitet hittills, användbar för att diagnostisera installationsproblem."
   ],
   "The final size can be bigger in order to fill the extra free space.": [
     "Den slutliga storleken kan bli större för att fylla det extra fria utrymmet."
@@ -2686,15 +2707,6 @@ export default {
   "The logical volume will also be deleted": [
     "Den logiska volymen kommer också att raderas",
     "Det logiska volymerna kommer också att raderas"
-  ],
-  "The maximum must be a number followed by a unit like GiB or GB": [
-    "Det maximala antalet måste vara ett tal följt av en enhet som GiB eller GB"
-  ],
-  "The minimum cannot be greater than the maximum": [
-    "Minimum kan inte vara större än maximum"
-  ],
-  "The minimum must be a number followed by a unit like GiB or GB": [
-    "Det minsta måste vara ett tal följt av en enhet som GiB eller GB"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Modalväljaren erbjuder ett förenklat gränssnitt utformat för snabb och enkel användning, utan att överväldiga användaren."
@@ -2777,12 +2789,6 @@ export default {
   "There are not disks available for the installation. You may need to configure some device.": [
     "Det finns inga diskar tillgängliga för installationen. Du kan behöva konfigurera någon enhet."
   ],
-  "There are not usable logical volumes": [
-    "Det finns inga användbara logiska volymer"
-  ],
-  "There are not usable partitions": [
-    "Det finns inte några användbara partitioner"
-  ],
   "There are not zFCP controllers pending of activation.": [
     "Det finns ingen zFCP-styrenhet som väntar på aktivering."
   ],
@@ -2797,11 +2803,11 @@ export default {
   "There is a deactivated zFCP controller.": [
     "Det finns en inaktiverad zFCP-styrenhet."
   ],
-  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Det här är inställningarna för produkten som ska installeras. Installationsprogrammets språk och tangentbordslayout kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted using the [language and keyboard] option at the top bar.": [
+    "Det här är inställningarna för produkten som ska installeras. Installationsprogrammets språk och tangentbordslayout kan justeras med hjälp av alternativet [språk och tangentbord] i det övre fältet."
   ],
-  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Det här är inställningarna för produkten som ska installeras. Installationsspråket kan justeras via [inställningspanelen] som är tillgänglig från det övre fältet."
+  "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.": [
+    "Det här är inställningarna för produkten som ska installeras. Installationsprogrammets språk kan justeras med hjälp av alternativet [språk] i det övre fältet."
   ],
   "This action will destroy any data stored on the device.": [
     "Denna åtgärd kommer att förstöra all data som lagras på enheten."
@@ -2848,6 +2854,9 @@ export default {
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Detta påverkar endast installationsgränssnittet, inte produkten som ska installeras. Du kan justera produktens lokalisering senare på sidan Lokaliseringsinställningar."
   ],
+  "This will be injected to the command to create the file system (%s).": [
+    ""
+  ],
   "TiB": [
     "TiB"
   ],
@@ -2860,8 +2869,8 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
-  "To change it, visit the [hostname] section before registering.": [
-    "För att ändra det, besök [värdnamn] avsnittet innan du registrerar dig."
+  "To change that name, visit [system] section settings before registering.": [
+    "För att ändra namnet, besök inställningarna i [system] innan du registrerar systemet."
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
     "För att säkerställa att det nya systemet kan starta kan installationsprogrammet behöva skapa eller konfigurera vissa partitioner på lämplig disk."
@@ -2904,9 +2913,6 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Uppdatera tillgängliga diskar och aktivera krypteringsenheter"
-  ],
-  "Use": [
-    "Använd"
   ],
   "Use LVM volume group %s": [
     "Använd LVM volymgrupp %s"
@@ -3035,7 +3041,7 @@ export default {
     "Använd samma inställningar för den valda produkten"
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
-    ""
+    "Använd detta för att reproducera installationen senare med hjälp av installationsprogrammets kommandoradsgränssnitt eller i obevakat läge."
   ],
   "User name": [
     "Användarnamn"
@@ -3077,20 +3083,8 @@ export default {
   "Using an advanced storage configuration": [
     "Använder en avancerad konfiguration"
   ],
-  "Using an existing logical volume": [
-    "Använd en befintlig logisk volym"
-  ],
-  "Using an existing partition": [
-    "Använd en befintlig partition"
-  ],
   "Using code ending in %s": [
     "Använder kod som slutar på %s"
-  ],
-  "Using logical volume %s": [
-    "Använder logisk volym %s"
-  ],
-  "Using partition %s": [
-    "Använder partition %s"
   ],
   "Using transient name, which may change after reboot or network changes": [
     "Använder tillfälligt namn, vilket kan ändras efter omstart eller nätverksändringar"
@@ -3109,6 +3103,12 @@ export default {
   ],
   "VLAN details": [
     "VLAN detaljer"
+  ],
+  "Value": [
+    "Värde"
+  ],
+  "Verify that the location is correct and the configuration is valid.": [
+    "Kontrollera att platsen är korrekt och att konfigurationen är giltig."
   ],
   "View license": [
     "Visa licens"
@@ -3142,9 +3142,6 @@ export default {
   ],
   "Wait until current operations are completed.": [
     "Vänta tills de aktuella operationerna är slutförda."
-  ],
-  "Waiting for a mount point": [
-    "Väntar på en monteringspunkt"
   ],
   "Waiting for information about storage configuration": [
     "Väntar på information om lagringskonfiguration"
