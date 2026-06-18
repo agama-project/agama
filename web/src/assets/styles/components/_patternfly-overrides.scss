@@ -145,6 +145,18 @@
   }
 }
 
+// Link-style buttons follow the link color rather than the brand fill, so a
+// product with a vivid brand still gets readable link / heading text. For the
+// default Agama brand, link and brand resolve to the same value, so nothing
+// changes.
+.pf-v6-c-button.pf-m-link {
+  --pf-v6-c-button--m-link--Color: var(--pf-t--global--text--color--link--default);
+  --pf-v6-c-button--m-link__icon--Color: var(--pf-t--global--text--color--link--default);
+  // The inline variant (used for headings) carries its own color tokens.
+  --pf-v6-c-button--m-link--m-inline--Color: var(--pf-t--global--text--color--link--default);
+  --pf-v6-c-button--m-link--m-inline__icon--Color: var(--pf-t--global--text--color--link--default);
+}
+
 .pf-v6-c-menu-toggle.pf-m-split-button > :first-child {
   text-decoration: none;
   color: inherit;
