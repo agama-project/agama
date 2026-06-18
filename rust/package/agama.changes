@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 18 11:51:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Limit the number of Tokio worker threads (gh#agama-project/agama#3646
+  related to bsc#1265451).
+
+-------------------------------------------------------------------
 Wed Jun 17 08:03:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - agama monitor: Properly report as waiting for user when
