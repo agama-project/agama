@@ -3,6 +3,7 @@
 // App-specific component and layout styles that are not direct PatternFly
 // overrides (see _patternfly-overrides.scss for those).
 
+// Overview settings grid: single column, widening to two columns on lg.
 .installation-settings-summary {
   display: grid;
   gap: 0.5em;
@@ -14,10 +15,12 @@
   }
 }
 
+// Product selection cards: cap logo size and align the radio inputs.
 #productSelectionForm img {
   max-inline-size: 100px;
 }
 
+// Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
   background: var(--pf-t--global--background--color--primary--default);
@@ -99,17 +102,20 @@ svg[data-icon-name] {
   font-size: var(--agm-t--icon--size--800);
 }
 
+// Inline kebab ("three dots") action icon, sized to sit with adjacent text.
 .agm-three-dots-icon {
   font-size: 1.1rem;
   vertical-align: text-top;
 }
 
+// Hide a button's default (leading) icon.
 .no-default-icon {
   .pf-v6-c-button__icon {
     display: none;
   }
 }
 
+// Wrap inline text in the locale's quotation marks.
 span.in-quotes {
   &::before {
     content: open-quote;
