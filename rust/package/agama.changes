@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jun 18 14:00:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Validate the profile before parsing it (bsc#1268432).
+
+-------------------------------------------------------------------
 Wed Jun 17 13:30:47 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the "agama config validate" command to work with the
