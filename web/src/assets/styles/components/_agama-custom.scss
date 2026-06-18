@@ -51,9 +51,17 @@
 
 // Material Symbol icons (rendered by the Icon component) ship without a fill,
 // so they default to black and turn nearly invisible on the dark theme. Make
-// them inherit the surrounding text color so they adapt to the active theme.
+// them inherit the surrounding text color (currentcolor) so they adapt to the
+// active theme.
 svg[data-icon-name] {
   fill: currentcolor;
+}
+
+// Outside high contrast, content icons follow the --agm-t--icon--color role when
+// a product sets it. High contrast is left to PatternFly (the role is ignored
+// there), per the appearance contract.
+:root:where(:not(.pf-v6-theme-high-contrast)) svg[data-icon-name] {
+  color: var(--agm-t--icon--color, currentcolor);
 }
 
 // Named icon sizes for the Icon `size` prop. The size is driven by font-size

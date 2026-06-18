@@ -137,7 +137,7 @@
     var(--pf-t--global--dark--text--color--200)
   );
   --pf-t--global--icon--color--regular: var(
-    --agm-t--text--color,
-    var(--pf-t--global--dark--icon--color--100)
+    --agm-t--icon--color,
+    var(--agm-t--text--color, var(--pf-t--global--dark--icon--color--100))
   );
 }

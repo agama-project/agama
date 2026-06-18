@@ -47,6 +47,26 @@
   }
 }
 
+// Tooltip background and text. PatternFly sets these tokens on the component
+// itself, so the roles are mapped here (not at :root) to take effect. Both
+// default to PF's theme-aware inverse colors; override the roles to retune.
+// High contrast is excluded, so PatternFly governs it, per the appearance
+// contract.
+:root:where(:not(.pf-v6-theme-high-contrast)) .pf-v6-c-tooltip {
+  --pf-v6-c-tooltip__content--BackgroundColor: var(
+    --agm-t--tooltip--background--color,
+    var(--pf-t--global--background--color--inverse--default)
+  );
+  --pf-v6-c-tooltip__arrow--BackgroundColor: var(
+    --agm-t--tooltip--background--color,
+    var(--pf-t--global--background--color--inverse--default)
+  );
+  --pf-v6-c-tooltip__content--Color: var(
+    --agm-t--tooltip--color,
+    var(--pf-t--global--text--color--inverse)
+  );
+}
+
 .pf-v6-c-page__main-section {
   --pf-v6-c-page__main-section--PaddingInlineStart: var(--pf-t--global--spacer--md);
   --pf-v6-c-page__main-section--PaddingInlineEnd: var(--pf-t--global--spacer--md);

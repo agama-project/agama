@@ -20,7 +20,10 @@
 //   --agm-t--surface--color--raised               masthead and secondary surfaces
 //   --agm-t--surface--color--floating             modal / menu / popover backgrounds
 //   --agm-t--text--color (+ --subtle)             body text and regular icons
+//   --agm-t--icon--color                          regular icon color (defaults to text)
 //   --agm-t--border--color                        borders
+//   --agm-t--disabled--background--color          disabled control background
+//   --agm-t--tooltip--background--color (+ --color) tooltip background and text
 //   --agm-t--focus--color                         keyboard focus ring (see base/_reset)
 //   --agm-t--status--{info,caution,danger,success,custom}--color
 //                                                 alert / status variants
@@ -202,10 +205,11 @@
     --agm-t--text--color--subtle,
     var(--pf-t--global--text--color--200)
   );
-  // Regular icons (nav, masthead toolbar, plain toggles) follow the text role.
+  // Regular icons (nav, masthead toolbar, plain toggles). Default to the icon
+  // role, which in turn defaults to the text role.
   --pf-t--global--icon--color--regular: var(
-    --agm-t--text--color,
-    var(--pf-t--global--icon--color--100)
+    --agm-t--icon--color,
+    var(--agm-t--text--color, var(--pf-t--global--icon--color--100))
   );
   --pf-t--global--border--color--default: var(
     --agm-t--border--color,
@@ -219,7 +223,11 @@
   --agm-t--install--button--background: var(--agm-t--color--pine--50);
   --agm-t--install--button--background--hover: var(--agm-t--color--pine--40);
   --agm-t--install--button--color: var(--pf-t--color--white);
-  --pf-t--global--background--color--disabled--default: #dcdbdc;
+  // Disabled control background. Override the role to retune it.
+  --pf-t--global--background--color--disabled--default: var(
+    --agm-t--disabled--background--color,
+    #dcdbdc
+  );
 
   // Status / alert variants. Each role drives the variant's text, icon and
   // border (so alerts, labels and status icons follow it). Defaults keep the

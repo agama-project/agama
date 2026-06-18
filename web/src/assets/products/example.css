@@ -46,7 +46,11 @@
   --agm-t--surface--color--floating: #00a; /* modals, menus, popovers */
   --agm-t--text--color: #fff; /* body text and regular icons */
   --agm-t--text--color--subtle: #cce;
+  --agm-t--icon--color: #5ff; /* icons (defaults to the text color if unset) */
   --agm-t--border--color: #55f;
+  --agm-t--disabled--background--color: #226; /* disabled control background */
+  --agm-t--tooltip--background--color: #008; /* tooltip background */
+  --agm-t--tooltip--color: #ff5; /* tooltip text */
 
   --agm-t--brand--color: #ff5; /* buttons, tabs, checkboxes, radios, ... */
   --agm-t--brand--color--hover: #ffa;
@@ -71,7 +75,11 @@
   --agm-t--surface--color--floating: #020;
   --agm-t--text--color: #3f3;
   --agm-t--text--color--subtle: #6c6;
+  --agm-t--icon--color: #6f6;
   --agm-t--border--color: #0a0;
+  --agm-t--disabled--background--color: #020;
+  --agm-t--tooltip--background--color: #010;
+  --agm-t--tooltip--color: #6f6;
 
   --agm-t--brand--color: #3f3;
   --agm-t--brand--color--hover: #6f6;
