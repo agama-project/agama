@@ -12,8 +12,6 @@
 }
 
 // Defer the base line-height to PF's token so typography stays consistent.
-// The installer is screen-constrained; long-form content can opt into a
-// roomier value via .agama-prose.
 html {
   line-height: var(--pf-t--global--font--line-height--100);
 }
@@ -22,10 +20,6 @@ html {
 // masthead) with the page surface, so the canvas is seamless in every theme.
 body {
   background-color: var(--pf-t--global--background--color--primary--default);
-}
-
-.agama-prose {
-  line-height: var(--pf-t--global--font--line-height--200);
 }
 
 // Make replaced media responsive. svg is intentionally excluded so inline
