@@ -5,6 +5,12 @@ Thu Jun 18 11:51:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   related to bsc#1265451).
 
 -------------------------------------------------------------------
+Wed Jun 17 13:40:22 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Import statically defined schemas when generating OpenAPI schema
+- Schemas moved from agama-lib/share to share/
+
+-------------------------------------------------------------------
 Wed Jun 17 08:03:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - agama monitor: Properly report as waiting for user when

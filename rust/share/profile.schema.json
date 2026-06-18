@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2019-09/schema",
-  "$id": "https://github.com/agama-project/agama/blob/master/rust/agama-lib/share/profile.schema.json",
+  "$id": "https://github.com/agama-project/agama/blob/master/rust/share/profile.schema.json",
   "title": "Profile",
   "description": "Profile definition for automated installation",
   "type": "object",
@@ -11,8 +11,8 @@
       "description": "The schema location is ignored by the installer, it always uses the built-in schema, but it can be useful for automatic validation and code completion in some editors",
       "type": "string",
       "examples": [
-        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/SLE-16/rust/agama-lib/share/profile.schema.json",
-        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/master/rust/agama-lib/share/profile.schema.json"
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/SLE-16/rust/share/profile.schema.json",
+        "https://raw.githubusercontent.com/agama-project/agama/refs/heads/master/rust/share/profile.schema.json"
       ]
     },
     "files": {
