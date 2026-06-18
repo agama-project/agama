@@ -1,19 +1,17 @@
 // Dark color axis.
 //
-// PatternFly's built-in dark theme (activated by .pf-v6-theme-dark on <html>)
-// provides the full, professionally designed dark token set. Here we map the
-// curated `--agm-t--*` roles (see _semantic.scss) onto PF tokens for dark, with
-// the Agama dark value as the fallback default and the role as the product
-// override hook.
+// PatternFly's built-in dark theme (.pf-v6-theme-dark on <html>) provides the
+// full dark token set. Here we map the curated `--agm-t--*` roles (see
+// _semantic.scss) onto PF tokens for dark, with the Agama dark value as the
+// default and the role as the override hook.
 //
 // The lightened Jungle (#40ce8a, jungle--40) is the dark brand/accent; raw
 // Jungle and Pine both fail contrast on dark. Unlike light, PF wires
 // text/icon/border brand independently in dark, so each is mapped explicitly.
 //
-// High contrast is excluded (PF's high-contrast theme governs it). Scoped to
-// PF's dark selector and loaded after _semantic.scss, so it wins by source order
-// at equal specificity. "System" auto-dark is toggled by AppearanceSettings via
-// matchMedia, not a media query here.
+// High contrast is excluded (PF governs it). Scoped to PF's dark selector and
+// loaded after _semantic.scss, so it wins by source order. "Automatic" auto-dark
+// is toggled by AppearanceSettings via matchMedia, not a media query here.
 
 :root:where(.pf-v6-theme-dark:not(.pf-v6-theme-high-contrast)) {
   --agm-t--brand--color--hover-default: color-mix(

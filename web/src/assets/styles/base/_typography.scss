@@ -1,9 +1,8 @@
 // Font face declarations.
 //
-// Note: font paths stay "./fonts/" even though this partial lives in base/.
-// Dart Sass does not rebase url(); it emits the path verbatim into the
-// compiled output, which css-loader resolves relative to the entrypoint
-// (index.scss in styles/), so "./fonts/" points at styles/fonts/.
+// Paths stay "./fonts/" even though this partial lives in base/: Dart Sass does
+// not rebase url(), so they are resolved relative to the entrypoint
+// (styles/index.scss), where "./fonts/" points at styles/fonts/.
 
 @font-face {
   font-family: "SUSE Text";

@@ -1,15 +1,14 @@
 // Semantic tokens.
 //
-// This is the layer products override (via assets/appearance/<id>.css). Instead
-// of touching dozens of cryptic PatternFly tokens, a product sets a small set of
-// understandable `--agm-t--*` role tokens; this file maps each onto all the
+// The layer products override (via assets/appearance/<id>.css). Instead of
+// setting dozens of PatternFly tokens directly, a product sets a small set of
+// understandable `--agm-t--*` role tokens, and this file maps each onto all the
 // relevant PF tokens, so coverage (page, cards, masthead, modals, menus,
-// borders, button text, ...) is guaranteed.
+// borders, button text, ...) is handled for you.
 //
 // Layering: raw palette (_palette.scss) -> these role tokens -> PF tokens. Each
-// PF token is mapped as `var(--agm-t--ROLE, <default>)`, where <default> is the
-// Agama value (so leaving a role unset keeps the stock look) and the role is the
-// product override hook.
+// PF token is mapped as `var(--agm-t--ROLE, <default>)`: <default> is the Agama
+// value (so an unset role keeps the stock look) and the role is the override hook.
 //
 // The curated role tokens:
 //   --agm-t--brand--color (+ --hover/--clicked)  brand / accent
