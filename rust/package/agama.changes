@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 18 11:51:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Limit the number of Tokio worker threads (gh#agama-project/agama#3646
+  related to bsc#1265451).
+
+-------------------------------------------------------------------
 Wed Jun 17 13:40:22 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - Import statically defined schemas when generating OpenAPI schema
@@ -37,7 +43,6 @@ Mon Jun 15 08:05:06 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Improve the "agama monitor" and "agama status" texts
   (gh#agama-project/agama#3621).
->>>>>>> master
 
 -------------------------------------------------------------------
 Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
