@@ -30,7 +30,7 @@ use agama_server::{
     cert::Certificate,
     web::{self},
 };
-use agama_utils::{api::event::Receiver, logging::init_logging};
+use agama_utils::{api::event::Receiver, logging::init_logging, runtime::run_async};
 use aide::axum::ApiRouter;
 use anyhow::Context;
 use axum::{
@@ -407,14 +407,15 @@ impl Termination for CliResult {
     }
 }
 
-#[tokio::main]
-async fn main() -> CliResult {
-    let cli = Cli::parse();
+fn main() -> CliResult {
+    run_async(async {
+        let cli = Cli::parse();
 
-    if let Err(error) = run_command(cli).await {
-        eprintln!("{:?}", error);
-        return CliResult::Error;
-    }
+        if let Err(error) = run_command(cli).await {
+            eprintln!("{:?}", error);
+            return CliResult::Error;
+        }
 
-    CliResult::Ok
+        CliResult::Ok
+    })
 }
