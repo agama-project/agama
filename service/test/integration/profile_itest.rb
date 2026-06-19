@@ -45,7 +45,8 @@ end
 
 # needs declarations:
 # command [Array<String>] like ["agama", "profile", "validate"]
-shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match, exitcode_match = 0|
+shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match,
+    exitcode_match = 0|
   context "with #{filename} as path" do
     it "output matches" do
       cmd = [*command, fixture(filename)]
