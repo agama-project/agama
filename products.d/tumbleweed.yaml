@@ -159,7 +159,7 @@ software:
     - NetworkManager
     - openSUSE-repos-Tumbleweed
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
-  optional_packages: []
+  optional_packages: [os-prober]
   base_product: openSUSE
 
 boot:
