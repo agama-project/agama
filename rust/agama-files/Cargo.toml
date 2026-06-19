@@ -9,10 +9,10 @@ agama-utils = { path = "../agama-utils" }
 async-trait = "0.1.89"
 gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
 strum = "0.27.2"
-tempfile = "3.23.0"
-thiserror = "2.0.17"
-tokio = { version = "1.48.0", features = ["sync"] }
-tracing = "0.1.41"
+tempfile = "3.27.0"
+thiserror = "2.0.18"
+tokio = { version = "1.52.1", features = ["sync"] }
+tracing = "0.1.44"
 
 [dev-dependencies]
 agama-l10n = { path = "../agama-l10n" }

@@ -8,13 +8,13 @@ edition.workspace = true
 agama-utils = { path = "../agama-utils" }
 agama-storage-client = { path = "../agama-storage-client" }
 async-trait = "0.1.89"
-gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
+gettext-rs = { version = "0.7.7", features = ["gettext-system"] }
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = { version = "1.0.128", features = ["raw_value"] }
-thiserror = "2.0.16"
-tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
-tracing = "0.1.41"
-zbus = "5.11.0"
+serde_json = { version = "1.0.145", features = ["raw_value"] }
+thiserror = "2.0.18"
+tokio = { version = "1.52.1", features = ["macros", "rt-multi-thread", "sync"] }
+tracing = "0.1.44"
+zbus = "5.12.0"
 
 [dev-dependencies]
 test-context = "0.4.1"

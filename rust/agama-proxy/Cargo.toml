@@ -19,5 +19,5 @@ path = "src/main.rs"
 
 
 [dev-dependencies]
-tempfile = "3.13.0"
-tokio = { version = "1.49.0", features = ["full"] }
+tempfile = "3.27.0"
+tokio = { version = "1.52.1", features = ["full"] }
