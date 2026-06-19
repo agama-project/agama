@@ -20,15 +20,17 @@
 
 use agama_cli::{build_cli, run_command, CliResult};
 use agama_l10n::helpers as l10n_helpers;
+use agama_utils::runtime::run_async;
 
-#[tokio::main]
-async fn main() -> CliResult {
-    _ = l10n_helpers::init_locale();
-    let matches = build_cli().get_matches();
+fn main() -> CliResult {
+    run_async(async {
+        _ = l10n_helpers::init_locale();
+        let matches = build_cli().get_matches();
 
-    if let Err(error) = run_command(matches).await {
-        eprintln!("{:?}", error);
-        return CliResult::Error;
-    }
-    CliResult::Ok
+        if let Err(error) = run_command(matches).await {
+            eprintln!("{:?}", error);
+            return CliResult::Error;
+        }
+        CliResult::Ok
+    })
 }
