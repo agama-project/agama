@@ -110,14 +110,15 @@
   );
 
   // Default dark surface palette matching the Agama website. Pine is the deepest
-  // surface (page and cards); raised and floating surfaces lift very subtly to
-  // maintain cohesion. Borders use a muted version of the same base. Floating
-  // equals raised so surfaces nested in a modal (table headers, tab bars)
-  // integrate with it. PF's light dark-theme text stays for contrast.
+  // surface (page and cards); raised and floating surfaces lift subtly to
+  // maintain cohesion while providing visual separation. Borders use a muted
+  // version of the same base. Floating equals raised so surfaces nested in a
+  // modal (table headers, tab bars) integrate with it. PF's light dark-theme
+  // text stays for contrast.
   --agm-t--surface--color: var(--agm-t--color--pine--50);
-  --agm-t--surface--color--raised: color-mix(in srgb, var(--agm-t--color--pine--50) 96%, white);
+  --agm-t--surface--color--raised: color-mix(in srgb, var(--agm-t--color--pine--50) 93%, white);
   --agm-t--surface--color--floating: var(--agm-t--surface--color--raised);
-  --agm-t--border--color: color-mix(in srgb, var(--agm-t--color--pine--50) 75%, white);
+  --agm-t--border--color: color-mix(in srgb, var(--agm-t--color--pine--50) 70%, white);
 
   --pf-t--global--background--color--primary--default: var(--agm-t--surface--color);
   --pf-t--global--background--color--secondary--default: var(--agm-t--surface--color--raised);
