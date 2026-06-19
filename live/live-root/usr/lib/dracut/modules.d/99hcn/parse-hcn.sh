@@ -185,7 +185,7 @@ fixup_nm_connections() {
   local conn_dir="${HCN_RUNTIME_CONN_DIR:-$NM_RUNTIME_CONN_DIR}"
   [ -d "$conn_dir" ] || return 0
 
-  local con id uuid ifname master controller mac uuid_map
+  local con id uuid ifname master controller mac uuid_map map
   local found_master found_ifname mapping_info new_id
 
   # First pass: build UUID to ID mapping for resolution
@@ -309,7 +309,7 @@ fi
 
 if [ -z "$MAPPINGS" ]; then
   info "parse-hcn: no HCN devices found"
-  return 0
+  exit 0
 fi
 
 info "parse-hcn: discovered mappings: $MAPPINGS"

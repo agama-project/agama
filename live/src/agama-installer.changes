@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Jun 19 09:09:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Add support for configuring HVN in the initramfs providing the 
+- Add support for configuring HNV in the initramfs providing the
   IP configuration through the kernel cmdline with the rd.hcn.ip
   and the rd.hcn.route options (jsc#PED-14533).
 
