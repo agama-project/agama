@@ -1334,7 +1334,12 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "if there are packages" do
-      let(:packages) { ["package1", "package2"] }
+      let(:packages) do
+        [
+          Y2Storage::Feature::Package.new("package1"),
+          Y2Storage::Feature::Package.new("package2")
+        ]
+      end
 
       it "returns the list of packages" do
         result = parse(subject.serialized_resolvables)
@@ -1342,12 +1347,14 @@ describe Agama::DBus::Storage::Manager do
         expect(result).to eq(
           [
             {
-              name: "package1",
-              type: "package"
+              name:     "package1",
+              type:     "package",
+              optional: false
             },
             {
-              name: "package2",
-              type: "package"
+              name:     "package2",
+              type:     "package",
+              optional: false
             }
           ]
         )
@@ -1369,7 +1376,12 @@ describe Agama::DBus::Storage::Manager do
     end
 
     context "if there are bootloader packages" do
-      let(:packages) { ["grub2", "shim"] }
+      let(:packages) do
+        [
+          Y2Storage::Feature::Package.new("grub2"),
+          Y2Storage::Feature::Package.new("shim")
+        ]
+      end
 
       it "returns the list of bootloader packages" do
         result = parse(subject.serialized_bootloader_resolvables)
@@ -1377,12 +1389,14 @@ describe Agama::DBus::Storage::Manager do
         expect(result).to eq(
           [
             {
-              name: "grub2",
-              type: "package"
+              name:     "grub2",
+              type:     "package",
+              optional: false
             },
             {
-              name: "shim",
-              type: "package"
+              name:     "shim",
+              type:     "package",
+              optional: false
             }
           ]
         )
