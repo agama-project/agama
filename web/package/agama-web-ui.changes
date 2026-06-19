@@ -9,6 +9,12 @@ Thu Jun 18 11:31:46 UTC 2026 - David Diaz <dgonzalez@suse.com>
   (gh#agama-project/agama#3647).
 
 -------------------------------------------------------------------
+Fri Jun 19 10:24:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- search properly also user visible summary to avoid confusion
+  (bsc#1268098)
+
+-------------------------------------------------------------------
 Mon Jun 15 15:45:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 22

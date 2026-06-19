@@ -146,6 +146,13 @@ describe("filterPatterns", () => {
     expect(result[0].name).toBe("office");
   });
 
+  it("filters patterns by summary (case-insensitive)", () => {
+    const result = filterPatterns(patterns, "office software");
+
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("office");
+  });
+
   it("filters patterns by description (case-insensitive)", () => {
     const result = filterPatterns(patterns, "multimedia");
 

@@ -19,7 +19,6 @@
 // find current contact information at www.suse.com.
 
 use crate::http::{BaseHTTPClient, BaseHTTPClientError};
-use crate::profile::ValidationOutcome;
 use fluent_uri::Uri;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -34,11 +33,11 @@ impl ProfileHTTPClient {
     }
 
     /// Validate a JSON profile, by doing a HTTP client request.
-    pub async fn validate(&self, request: &impl Serialize) -> anyhow::Result<ValidationOutcome> {
-        Ok(self
-            .client
-            .post("private/profile/validate", request)
-            .await?)
+    pub async fn validate(&self, request: &impl Serialize) -> anyhow::Result<()> {
+        self.client
+            .post_void("private/profile/validate", request)
+            .await?;
+        Ok(())
     }
 
     /// Evaluate a Jsonnet profile, by doing a HTTP client request.

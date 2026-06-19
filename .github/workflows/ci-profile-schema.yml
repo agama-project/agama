@@ -12,7 +12,7 @@ on:
       # this file as well
       - .github/workflows/ci-profile-schema.yml
       # any change in the schema definitions
-      - rust/agama-lib/share/*.schema.json
+      - rust/share/*.schema.json
 
   pull_request:
     paths:
@@ -22,7 +22,7 @@ on:
       # this file as well
       - .github/workflows/ci-profile-schema.yml
       # any change in the schema definitions
-      - rust/agama-lib/share/*.schema.json
+      - rust/share/*.schema.json
 
   # allow running manually
   workflow_dispatch:
@@ -38,19 +38,19 @@ jobs:
       with:
         # checkout only the directory with the schema
         sparse-checkout: |
-          rust/agama-lib/share
+          rust/share
 
     - name: Install Node
       uses: actions/setup-node@v6
       with:
         node-version: 22
         cache: npm
-        cache-dependency-path: rust/agama-lib/share
+        cache-dependency-path: rust/share
 
     - name: Install Node Packages
       run: npm ci
-      working-directory: rust/agama-lib/share
+      working-directory: rust/share
 
     - name: Validate the schema
       run: npm run validate
-      working-directory: rust/agama-lib/share
+      working-directory: rust/share
