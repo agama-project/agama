@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 19 22:09:14 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Update react router to fix CVE-2026-34077
+  (bsc#1267500)
+
+-------------------------------------------------------------------
 Fri Jun 19 12:52:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fine-tune and extend the Agama appearance system: improve font
