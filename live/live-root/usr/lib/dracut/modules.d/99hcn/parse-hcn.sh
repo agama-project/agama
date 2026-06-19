@@ -21,16 +21,6 @@
 
 command -v getargs >/dev/null || . /lib/dracut-lib.sh
 
-# Check if HCN is enabled via any of the three methods
-if ! getargbool 0 rd.hcn && ! getargs rd.hcn.ip >/dev/null && ! getargs rd.hcn.route >/dev/null; then
-  info "parse-hcn: HCN not enabled (no rd.hcn=1, rd.hcn.ip, or rd.hcn.route), skipping"
-  if (return 0 2>/dev/null); then
-    return 0
-  else
-    exit 0
-  fi
-fi
-
 # Helper to read 4 bytes from device-tree and return hex string
 xdump4() {
   hexdump -n 4 -ve '/1 "%02x"' "$1"
