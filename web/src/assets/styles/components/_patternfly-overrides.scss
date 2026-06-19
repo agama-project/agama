@@ -38,11 +38,33 @@
 
 .pf-v6-c-masthead {
   --pf-v6-c-masthead__logo--Width: fit-content;
-  --pf-v6-c-masthead--PaddingBlock: var(--pf-t--global--spacer--sm);
+  // Reduce the top and bottom padding to a small 2px to save vertical space
+  // while keeping the content off the edges.
+  --pf-v6-c-masthead--PaddingBlock: 2px;
 
   h1 {
     font-size: clamp(1.1rem, 0rem + 1.6vw, 1.75rem);
   }
+}
+
+// Tooltip background and text. PatternFly sets these tokens on the component
+// itself, so the roles are mapped here (not at :root) to take effect. Both
+// default to PF's theme-aware inverse colors; override the roles to retune.
+// High contrast is excluded, so PatternFly governs it, per the appearance
+// contract.
+:root:where(:not(.pf-v6-theme-high-contrast)) .pf-v6-c-tooltip {
+  --pf-v6-c-tooltip__content--BackgroundColor: var(
+    --agm-t--tooltip--background--color,
+    var(--pf-t--global--background--color--inverse--default)
+  );
+  --pf-v6-c-tooltip__arrow--BackgroundColor: var(
+    --agm-t--tooltip--background--color,
+    var(--pf-t--global--background--color--inverse--default)
+  );
+  --pf-v6-c-tooltip__content--Color: var(
+    --agm-t--tooltip--color,
+    var(--pf-t--global--text--color--inverse)
+  );
 }
 
 .pf-v6-c-page__main-section {
@@ -62,10 +84,6 @@
 .pf-v6-c-page__main-group.pf-m-sticky-bottom {
   --pf-v6-c-page--section--m-sticky-bottom--BoxShadow: var(--pf-t--global--box-shadow--md--top);
 }
-
-// .pf-v6-c-page__sidebar-body .pf-v6-c-nav:first-child {
-//   --pf-v6-c-nav--PaddingBlockStart: 0;
-// }
 
 :not(.pf-v6-c-alert-group__item) > .pf-v6-c-alert {
   &:has(.pf-v6-c-alert__description) {
@@ -99,7 +117,6 @@
 
 .pf-v6-c-menu {
   --pf-v6-c-menu--BoxShadow: var(--pf-t--global--box-shadow--lg);
-  // background: #eafaf8;
 }
 
 .pf-v6-c-menu__item.pf-m-selected {
@@ -126,6 +143,18 @@
   &:disabled {
     fill: currentcolor;
   }
+}
+
+// Link-style buttons follow the link color rather than the brand fill, so a
+// product with a vivid brand still gets readable link / heading text. For the
+// default Agama brand, link and brand resolve to the same value, so nothing
+// changes.
+.pf-v6-c-button.pf-m-link {
+  --pf-v6-c-button--m-link--Color: var(--pf-t--global--text--color--link--default);
+  --pf-v6-c-button--m-link__icon--Color: var(--pf-t--global--text--color--link--default);
+  // The inline variant (used for headings) carries its own color tokens.
+  --pf-v6-c-button--m-link--m-inline--Color: var(--pf-t--global--text--color--link--default);
+  --pf-v6-c-button--m-link--m-inline__icon--Color: var(--pf-t--global--text--color--link--default);
 }
 
 .pf-v6-c-menu-toggle.pf-m-split-button > :first-child {
@@ -186,11 +215,6 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   input[type="checkbox"] {
     align-self: center;
   }
-}
-
-.pf-v6-c-list.pf-m-inline {
-  --pf-v6-c-list--m-inline--RowGap: var(--pf-t--global--spacer--sm);
-  --pf-v6-c-list--m-inline--ColumnGap: var(--pf-t--global--spacer--md);
 }
 
 .pf-v6-c-data-list li.pf-m-clickable {

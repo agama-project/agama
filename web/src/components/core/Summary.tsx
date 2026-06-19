@@ -117,7 +117,7 @@ const Summary = ({
             className={[textStyles.fontSizeMd, textStyles.textColorStatusWarning].join(" ")}
           />
         ) : (
-          <Icon name={icon} />
+          <Icon name={icon} size="md" />
         )}
         <Title headingLevel="h3">{title}</Title>
       </Flex>

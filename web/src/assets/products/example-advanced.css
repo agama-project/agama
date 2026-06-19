@@ -1,0 +1,127 @@
+/*
+ * Per-product appearance overrides: ADVANCED example (full reference).
+ *
+ * Same setup as example.css (copy to `<product-id>.css`; loaded after the Agama
+ * styles so your `:root` overrides win). This file is the reference: it shows
+ * (and documents) EVERY tunable role, the basic colors plus typography
+ * (family / weight / size), icon sizes, icon color, disabled background and
+ * tooltip. Demo palette: the SUSE brand Persimmon accent
+ * (#fe7c3f, see brand.suse.com) on neutral grays, in both light and dark.
+ * (example.css shares the light palette but uses a violet dark.)
+ *
+ * You do NOT need the typography / size / icon sections to reskin a product:
+ * leave them out unless there is a strong reason (a brand typeface, a specific
+ * accessibility need, a browser that renders the default poorly).
+ *
+ * When changing a font FAMILY, make sure it is available (bundled by Agama or
+ * installed on the system); otherwise it falls back to the next family. The
+ * official ISO ships a limited, curated font set and adding fonts on demand is
+ * out of support. Weight and size overrides are not subject to this.
+ *
+ * High contrast is governed by PatternFly: the typography/size/icon roles do not
+ * apply there, and only the accent may be branded (HC blocks at the bottom).
+ */
+
+/* Typography and icon sizes (theme-independent). */
+:root {
+  /* Families: body, heading and monospace. */
+  --agm-t--font--family--body: "SUSE Mono", "Roboto Mono", monospace;
+  --agm-t--font--family--heading: "SUSE Mono", "Roboto Mono", monospace;
+  --agm-t--font--family--mono: "SUSE Mono", "Roboto Mono", monospace;
+
+  /* Weights. */
+  --agm-t--font--weight--body: 400;
+  --agm-t--font--weight--heading: 700;
+  --agm-t--font--weight--bold: 700; /* emphasis / bold text */
+
+  /* Font size scale: the single source every size derives from; --200 is body. */
+  --agm-t--font--size--100: 0.8125rem;
+  --agm-t--font--size--200: 0.9375rem;
+  --agm-t--font--size--300: 1rem;
+  --agm-t--font--size--400: 1.125rem;
+  --agm-t--font--size--500: 1.3125rem;
+  --agm-t--font--size--600: 1.5rem;
+  --agm-t--font--size--700: 1.75rem;
+  --agm-t--font--size--800: 2rem;
+
+  /* Icon size scale. Defaults to the font size scale (icons follow font-size
+     changes); set these only for icon-only sizing. */
+  --agm-t--icon--size--100: 0.875rem;
+  --agm-t--icon--size--200: 1rem;
+  --agm-t--icon--size--300: 1.125rem;
+  --agm-t--icon--size--400: 1.25rem;
+  --agm-t--icon--size--500: 1.5rem;
+  --agm-t--icon--size--600: 1.75rem;
+  --agm-t--icon--size--700: 2rem;
+  --agm-t--icon--size--800: 2.25rem;
+}
+
+/* Light theme. */
+:root:where(:not(.pf-v6-theme-dark)) {
+  --agm-t--surface--color: #fff; /* page and cards */
+  --agm-t--surface--color--raised: #efefef; /* masthead, secondary surfaces */
+  --agm-t--surface--color--floating: #fff; /* modals, menus, popovers */
+  --agm-t--text--color: #1d1d1d; /* body text */
+  --agm-t--text--color--subtle: #6f6f6f;
+  --agm-t--icon--color: #bd3314; /* icons in the accent (defaults to the text color) */
+  --agm-t--border--color: #dcdbdc;
+
+  --agm-t--brand--color: #fe7c3f; /* Persimmon */
+  --agm-t--brand--color--hover: #ff5a2b;
+  --agm-t--brand--color--clicked: #fe7c3f;
+  --agm-t--brand--text--color: #47190d;
+  --agm-t--link--color: #bd3314; /* also used by link-style buttons, e.g. headings */
+  --agm-t--action--background--color--hover: #ffefe9; /* hover / selection */
+  --agm-t--focus--color: #fe7c3f; /* keyboard focus ring */
+
+  --agm-t--disabled--background--color: #dcdbdc;
+  --agm-t--tooltip--background--color: #1d1d1d;
+  --agm-t--tooltip--color: #fff;
+
+  /* Alert / status variants (caution maps to PF "warning"). */
+  --agm-t--status--info--color: #2453ff;
+  --agm-t--status--caution--color: #d98a00;
+  --agm-t--status--danger--color: #d83b3b;
+  --agm-t--status--success--color: #30ba78;
+  --agm-t--status--custom--color: #fe7c3f;
+}
+
+/* Dark theme. */
+:root:where(.pf-v6-theme-dark) {
+  --agm-t--surface--color: #1d1d1d;
+  --agm-t--surface--color--raised: #2b2b2b;
+  --agm-t--surface--color--floating: #2b2b2b;
+  --agm-t--text--color: #efefef;
+  --agm-t--text--color--subtle: #999;
+  --agm-t--icon--color: #ffb184; /* icons in the accent */
+  --agm-t--border--color: #525252;
+
+  --agm-t--brand--color: #fe7c3f;
+  --agm-t--brand--color--hover: #ffb184;
+  --agm-t--brand--color--clicked: #fe7c3f;
+  --agm-t--brand--text--color: #47190d;
+  --agm-t--link--color: #ffb184;
+  --agm-t--action--background--color--hover: #3a2a1e;
+  --agm-t--focus--color: #fe7c3f;
+
+  --agm-t--disabled--background--color: #2b2b2b;
+  --agm-t--tooltip--background--color: #0f0f0f;
+  --agm-t--tooltip--color: #efefef;
+
+  --agm-t--status--info--color: #81aefc;
+  --agm-t--status--caution--color: #f0b429;
+  --agm-t--status--danger--color: #f57171;
+  --agm-t--status--success--color: #42d29f;
+  --agm-t--status--custom--color: #fe7c3f;
+}
+
+/* High contrast (optional): brand the accent only; PatternFly governs the rest. */
+:root:where(.pf-v6-theme-high-contrast:not(.pf-v6-theme-dark)) {
+  --agm-t--brand--color: #bd3314;
+  --agm-t--link--color: #bd3314;
+}
+
+:root:where(.pf-v6-theme-dark.pf-v6-theme-high-contrast) {
+  --agm-t--brand--color: #ffb184;
+  --agm-t--link--color: #ffb184;
+}

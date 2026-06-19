@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Jun 19 12:52:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fine-tune and extend the Agama appearance system: improve font
+  rendering (update the SUSE variable font to v2.001, adopt SUSE Mono,
+  fix the variable-font @font-face declarations and drop the custom
+  font-weight overrides) and let products fine-tune typography, icon
+  sizes, icon color, disabled and tooltip through --agm-t--* tokens
+  (gh#agama-project/agama#3647).
+
+-------------------------------------------------------------------
 Fri Jun 19 10:24:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - search properly also user visible summary to avoid confusion
