@@ -88,6 +88,35 @@ function TestForm({
   );
 }
 
+// Form whose field is required, to exercise the error display on submit.
+function RequiredForm() {
+  const form = useAppForm({
+    defaultValues: { language: "" },
+    validators: {
+      onSubmit: ({ value }) =>
+        value.language ? undefined : { fields: { language: "Value is required" } },
+    },
+  });
+
+  return (
+    <>
+      <form.AppField name="language">
+        {(field) => (
+          <field.SearchableSelectField
+            label="Language"
+            placeholder="Filter by language or territory"
+            noResultsText="No matches"
+            options={OPTIONS}
+          />
+        )}
+      </form.AppField>
+      <button type="button" onClick={() => form.handleSubmit()}>
+        Submit
+      </button>
+    </>
+  );
+}
+
 const combobox = () => screen.getByRole("combobox", { name: "Language" });
 
 beforeAll(() => {
@@ -183,6 +212,14 @@ describe("SearchableSelectField", () => {
     // Typing the description text matches nothing: it is not part of filterText.
     await user.keyboard("shown-not-searched");
     await screen.findByText("No matches");
+  });
+
+  it("shows the validation error and marks the field invalid on submit", async () => {
+    const { user } = installerRender(<RequiredForm />);
+    await user.click(screen.getByRole("button", { name: "Submit" }));
+
+    expect(await screen.findByText("Value is required")).toBeInTheDocument();
+    expect(combobox()).toHaveAttribute("aria-invalid", "true");
   });
 
   it("shows the no-results text when nothing matches", async () => {

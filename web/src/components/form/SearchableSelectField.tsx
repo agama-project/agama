@@ -23,6 +23,9 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   MenuToggle,
   MenuToggleElement,
   Select,
@@ -130,6 +133,7 @@ export default function SearchableSelectField({
   maxHeight = "300px",
 }: SearchableSelectFieldProps) {
   const field = useFieldContext<string>();
+  const error = field.state.meta.errors[0];
   const [isOpen, setIsOpen] = useState(false);
   // What the input shows, updated on every keystroke for responsive typing.
   const [filterValue, setFilterValue] = useState("");
@@ -420,6 +424,11 @@ export default function SearchableSelectField({
           aria-activedescendant={highlightedIndex !== null ? optionId(highlightedIndex) : undefined}
           placeholder={inputPlaceholder}
           autoComplete="off"
+          // PF spreads unknown props onto the wrapper, not the input; invalid
+          // state must reach the input itself, so it goes through inputProps.
+          inputProps={
+            error ? { "aria-invalid": true, "aria-describedby": `${idPrefix}-error` } : undefined
+          }
         />
       </TextInputGroup>
     </MenuToggle>
@@ -477,6 +486,15 @@ export default function SearchableSelectField({
           )}
         </SelectList>
       </Select>
+      {error && (
+        <FormHelperText>
+          <HelperText>
+            <HelperTextItem id={`${idPrefix}-error`} variant="error">
+              {error}
+            </HelperTextItem>
+          </HelperText>
+        </FormHelperText>
+      )}
     </FormGroup>
   );
 }
