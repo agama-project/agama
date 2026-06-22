@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 22 12:54:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not load the parts of the Monaco editor from an external 3rd
+  party CDN server (bsc#1268433)
+
+-------------------------------------------------------------------
 Fri Jun 19 12:52:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fine-tune and extend the Agama appearance system: improve font
