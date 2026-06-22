@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 22 14:22:52 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Unify cargo dependencies and move it to shared one in workspace
+  for easier future updates (gh#agama-project/agama#3652)
+
+-------------------------------------------------------------------
 Thu Jun 18 15:43:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Validate the profile before parsing it (bsc#1268432).
