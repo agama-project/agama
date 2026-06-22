@@ -7,42 +7,45 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 15:05+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"POT-Creation-Date: 2026-06-18 16:05+0000\n"
+"PO-Revision-Date: 2026-06-17 20:12+0000\n"
+"Last-Translator: Eugene Krater <lachend@gmail.com>\n"
+"Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
+"rust-master/uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
+"Конфігурацію неможливо застосувати, оскільки вона є помилковою або "
+"недоступною."
 
 #: agama-autoinstall/src/questions.rs:44
 msgid "Reload configuration"
-msgstr ""
+msgstr "Оновити конфігурацію"
 
 #: agama-autoinstall/src/questions.rs:45
 msgid "Skip and configure manually"
-msgstr ""
+msgstr "Пропустити та налаштувати вручну"
 
-#: agama-autoinstall/src/scripts.rs:134
-#, rust-format
+#. TRANSLATORS: {0} is a URL
+#: agama-autoinstall/src/scripts.rs:135
 msgid ""
-"It was not possible to load the script from {0}. Do you want to try again?\n"
-"                "
-msgstr ""
+"It was not possible to load the script from {0}. Do you want to try again?"
+msgstr "Не вдалося завантажити скрипт із {0}. Спробувати ще раз?"
 
 #. TRANSLATORS: CLI help for: agama auth
 #: agama-cli/src/auth.rs:65
 msgid "Authenticate with Agama's server"
-msgstr ""
+msgstr "Увійти через сервер Agama"
 
 #. TRANSLATORS: CLI help for: agama auth (details)
 #: agama-cli/src/auth.rs:67
@@ -60,21 +63,33 @@ msgid ""
 "You can logout at any time by using the \"auth logout\" command, although "
 "this command does not affect the root user."
 msgstr ""
+"Якщо ви не запускаєте цю програму з правами користувача root, для виконання "
+"більшості операцій вам потрібно пройти автентифікацію на сервері Agama. Ви "
+"можете увійти, вказавши пароль root за допомогою команди «auth login». Після "
+"успішної автентифікації сервер повертає JSON Web Token (JWT), який "
+"зберігається для автентифікації наступних запитів.\n"
+"\n"
+"Якщо ви запускаєте цю програму локально як root, ви можете пропустити крок "
+"аутентифікації, оскільки вона автоматично використовує головний токен у /run/"
+"agama/token. Доступ до такого файлу повинен мати лише користувач root.\n"
+"\n"
+"Ви можете вийти з системи в будь-який час за допомогою команди «auth "
+"logout», хоча ця команда не впливає на користувача root."
 
 #. TRANSLATORS: CLI help for: agama auth logout
 #: agama-cli/src/auth.rs:88
 msgid "Deauthenticate by removing the token"
-msgstr ""
+msgstr "Скасувати авторизацію шляхом видалення токена"
 
 #. TRANSLATORS: CLI help for: agama auth show
 #: agama-cli/src/auth.rs:93
 msgid "Print the used token to the standard output"
-msgstr ""
+msgstr "Вивести використаний токен у стандартний вивід"
 
 #. TRANSLATORS: CLI help for: agama auth login
 #: agama-cli/src/auth.rs:99
 msgid "Authenticate with Agama's server and store the token"
-msgstr ""
+msgstr "Пройти аутентифікацію на сервері Agama та зберегти токен"
 
 #. TRANSLATORS: CLI help for: agama auth login (details)
 #: agama-cli/src/auth.rs:101
@@ -84,21 +99,24 @@ msgid ""
 "token in .agama/agama-jwt. The token will be automatically sent to "
 "authenticate the following requests."
 msgstr ""
+"Ця команда намагається отримати пароль зі стандартного вводу. Якщо його там "
+"немає, вона запитує його у користувача в інтерактивному режимі. Після "
+"успішного входу система зберігає токен у каталозі .agama/agama-jwt. Цей "
+"токен автоматично надсилатиметься для автентифікації наступних запитів."
 
 #: agama-cli/src/auth.rs:141
 msgid "Please enter the root password:"
-msgstr ""
+msgstr "Введіть пароль користувача root:"
 
 #. TRANSLATORS: {0} is a host name
 #: agama-cli/src/auth.rs:179
-#, rust-format
 msgid "Not authenticated in {0}"
-msgstr ""
+msgstr "Не авторизовано в {0}"
 
 #. TRANSLATORS: CLI help for: agama probe
 #: agama-cli/src/commands.rs:42
 msgid "Analyze the system"
-msgstr ""
+msgstr "Аналізувати систему"
 
 #. TRANSLATORS: CLI help for: agama probe (details)
 #: agama-cli/src/commands.rs:44
@@ -106,16 +124,20 @@ msgid ""
 "In Agama's jargon, the term 'probing' refers to the process of 'analyzing' "
 "the system. This includes reading software repositories, analyzing storage "
 "devices, and more. The 'probe' command initiates this analysis process and "
-"returns immediately. TODO: do we really need a \"probe\" action?"
+"returns immediately."
 msgstr ""
+"У термінології Agama термін «probing» означає процес «аналізу» системи. Сюди "
+"входить зчитування репозиторіїв програмного забезпечення, аналіз пристроїв "
+"зберігання даних тощо. Команда «probe» запускає цей процес аналізу та "
+"негайно завершується."
 
 #. TRANSLATORS: CLI help for: agama install
-#: agama-cli/src/commands.rs:54
+#: agama-cli/src/commands.rs:53
 msgid "Start the system installation"
-msgstr ""
+msgstr "Почати встановлення системи"
 
 #. TRANSLATORS: CLI help for: agama install (details)
-#: agama-cli/src/commands.rs:56
+#: agama-cli/src/commands.rs:55
 msgid ""
 "This command starts the installation process.  Beware it is a destructive "
 "operation because it will set up the storage devices, install the packages, "
@@ -124,14 +146,20 @@ msgid ""
 "When the preconditions for the installation are not met, it informs the user "
 "and returns, making no changes to the system."
 msgstr ""
+"Ця команда запускає процес інсталяції. Зверніть увагу, що це операція, яка "
+"може призвести до втрати даних, оскільки вона передбачає налаштування "
+"пристроїв зберігання даних, інсталяцію пакетів тощо.\n"
+"\n"
+"Якщо попередні умови для інсталяції не виконані, програма повідомляє про це "
+"користувачу та завершує роботу, не вносячи жодних змін до системи."
 
 #. TRANSLATORS: CLI help for: agama download
-#: agama-cli/src/commands.rs:79
+#: agama-cli/src/commands.rs:78
 msgid "Download file from a given (AutoYaST) URL"
-msgstr ""
+msgstr "Завантажити файл за вказаною (AutoYaST) URL-адресою"
 
 #. TRANSLATORS: CLI help for: agama download (details)
-#: agama-cli/src/commands.rs:81
+#: agama-cli/src/commands.rs:80
 msgid ""
 "The purpose of this command is to download files using AutoYaST supported "
 "schemas (e.g. device://). It can be used to download additional scripts, "
@@ -139,26 +167,34 @@ msgid ""
 "autoinstallation profiles. If you want to convert an AutoYaST profile, use "
 "\"agama config generate\"."
 msgstr ""
+"Ця команда призначена для завантаження файлів за допомогою схем, що "
+"підтримуються AutoYaST (наприклад, device://). Її можна використовувати для "
+"завантаження додаткових скриптів, файлів конфігурації тощо. Ви можете "
+"використовувати її для завантаження профілів автоматичної інсталяції Agama. "
+"Якщо ви хочете перетворити профіль AutoYaST, скористайтеся командою «agama "
+"config generate»."
 
 #. TRANSLATORS: CLI help for: agama download <URL>
-#: agama-cli/src/commands.rs:95
+#: agama-cli/src/commands.rs:94
 msgid ""
 "URL reference pointing to file for download. If a relative URL is provided, "
 "it will be resolved against the current working directory"
 msgstr ""
+"Посилання на URL-адресу файлу для завантаження. Якщо вказано відносну URL-"
+"адресу, його буде розпізнано відносно поточного робочого каталогу"
 
 #. TRANSLATORS: CLI help for: agama download <DESTINATION>
-#: agama-cli/src/commands.rs:105
+#: agama-cli/src/commands.rs:104
 msgid "File name"
-msgstr ""
+msgstr "Назва файлу"
 
 #. TRANSLATORS: CLI help for: agama finish
-#: agama-cli/src/commands.rs:112
+#: agama-cli/src/commands.rs:111
 msgid "Finish the installation"
-msgstr ""
+msgstr "Завершити встановлення"
 
 #. TRANSLATORS: CLI help for: agama finish <METHOD>
-#: agama-cli/src/commands.rs:118
+#: agama-cli/src/commands.rs:117
 msgid ""
 "What to do after finishing the installation. Possible values:\n"
 "\n"
@@ -173,29 +209,29 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama monitor
-#: agama-cli/src/commands.rs:136
+#: agama-cli/src/commands.rs:135
 msgid "Continuously monitors the Agama service until it finishes"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status
-#: agama-cli/src/commands.rs:143
+#: agama-cli/src/commands.rs:142
 msgid ""
 "Prints the current state of the installation (e.g., waiting, blocked, "
 "running, or finished)"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status --format <FORMAT>
-#: agama-cli/src/commands.rs:151
+#: agama-cli/src/commands.rs:150
 msgid "Specify in which format status will be shown"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events
-#: agama-cli/src/commands.rs:158
+#: agama-cli/src/commands.rs:157
 msgid "Display Agama events"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events --pretty
-#: agama-cli/src/commands.rs:165
+#: agama-cli/src/commands.rs:164
 msgid "Display the events in a more human-readable way"
 msgstr ""
 
@@ -316,7 +352,7 @@ msgstr ""
 msgid "It is not a valid JSON file"
 msgstr ""
 
-#: agama-cli/src/config.rs:412
+#: agama-cli/src/config.rs:416
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr ""
 
@@ -398,7 +434,7 @@ msgstr ""
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:45
 msgid "Network"
-msgstr ""
+msgstr "Мережа"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:47
@@ -408,12 +444,12 @@ msgstr ""
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:49
 msgid "Hostname"
-msgstr ""
+msgstr "Ім'я хоста"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:51
 msgid "Localization"
-msgstr ""
+msgstr "Локалізація"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:53
@@ -428,12 +464,12 @@ msgstr ""
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:57
 msgid "Software"
-msgstr ""
+msgstr "Програми"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:59
 msgid "Storage"
-msgstr ""
+msgstr "Сховище"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:61
@@ -443,17 +479,17 @@ msgstr ""
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:63
 msgid "iSCSI"
-msgstr ""
+msgstr "iSCSI"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:65
 msgid "DASD"
-msgstr ""
+msgstr "DASD"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:67
 msgid "zFCP"
-msgstr ""
+msgstr "zFCP"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:69
@@ -473,7 +509,7 @@ msgstr ""
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:75
 msgid "Security"
-msgstr ""
+msgstr "Захист"
 
 #: agama-cli/src/monitor/ui/content.rs:64
 msgid "Installation complete."
@@ -481,9 +517,9 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:65
 msgid "You can reboot the machine to log in to the new system."
-msgstr ""
+msgstr "Ви можете перезавантажити пристрій, щоб увійти в нову систему."
 
-#: agama-cli/src/monitor/ui/content.rs:68 agama-cli/src/status.rs:76
+#: agama-cli/src/monitor/ui/content.rs:68
 msgid "Installation failed."
 msgstr ""
 
@@ -499,16 +535,16 @@ msgstr ""
 msgid "No product has been selected yet."
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:172
-msgid "Following issues needs to be addressed in the configuration:"
+#: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
+msgid "Fix invalid settings before starting the installation:"
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:193
-msgid "Ready for installation."
+#: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
+msgid "Ready to start the installation."
 msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:194
-msgid "Waiting to start installation..."
+msgid "Starting the installation."
 msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:210
@@ -519,13 +555,9 @@ msgstr ""
 msgid "of"
 msgstr ""
 
-#: agama-cli/src/monitor/ui/issues.rs:64
-msgid "Waiting for these to be resolved."
-msgstr ""
-
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
-msgid "Additional data"
+msgid "Technical details"
 msgstr ""
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
@@ -535,15 +567,15 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/question.rs:371
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: agama-cli/src/monitor/ui/question.rs:377
 msgid "Location"
-msgstr ""
+msgstr "Розташування"
 
 #: agama-cli/src/monitor/ui/question.rs:383
 msgid "Value"
-msgstr ""
+msgstr "Значення"
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
@@ -592,11 +624,11 @@ msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:104
 msgid "Finished"
-msgstr ""
+msgstr "Завершено"
 
 #: agama-cli/src/monitor/ui/summary.rs:118
 msgid "Not selected yet"
-msgstr ""
+msgstr "Ще не вибрано"
 
 #. TRANSLATORS: CLI help for: agama questions
 #: agama-cli/src/questions.rs:33
@@ -653,41 +685,27 @@ msgid "Path to a file containing the answers in JSON format"
 msgstr ""
 
 #: agama-cli/src/status.rs:77
-msgid "Installation finished successfully."
-msgstr ""
-
-#: agama-cli/src/status.rs:78
-msgid "Installation is ready to start."
-msgstr ""
-
-#: agama-cli/src/status.rs:79
-msgid "Installation is in progress."
+msgid ""
+"The installation failed. Use the \"agama logs store\" command to get the "
+"logs to troubleshoot or share with support."
 msgstr ""
 
 #: agama-cli/src/status.rs:80
-msgid "Installation is being proposed."
-msgstr ""
-
-#: agama-cli/src/status.rs:81
-msgid ""
-"There are unanswered questions. Use `agama monitor` command or the web user "
-"interface to answer them."
+msgid "The installation finished successfully."
 msgstr ""
 
 #: agama-cli/src/status.rs:82
-msgid "There are issues in configuration that are blocking the installation."
+msgid "The installation is in progress."
 msgstr ""
 
-#: agama-cli/src/status.rs:118 agama-utils/src/api/problem_details.rs:192
-msgid "Details:"
+#: agama-cli/src/status.rs:83
+msgid "The installer is preparing an installation proposal."
 msgstr ""
 
-#: agama-cli/src/status.rs:120
-msgid "Open questions:"
-msgstr ""
-
-#: agama-cli/src/status.rs:126
-msgid "Blocking issues:"
+#: agama-cli/src/status.rs:85
+msgid ""
+"There are unanswered questions. Use the \"agama monitor\" command or the web "
+"user interface to answer them:"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
@@ -706,11 +724,11 @@ msgstr ""
 
 #: agama-manager/src/actions.rs:78
 msgid "Install software"
-msgstr ""
+msgstr "Встановлення програмного забезпечення"
 
 #: agama-manager/src/actions.rs:79
 msgid "Configure the system"
-msgstr ""
+msgstr "Налаштування системи"
 
 #: agama-manager/src/actions.rs:93
 msgid "Preparing storage"
@@ -730,7 +748,7 @@ msgstr ""
 
 #: agama-manager/src/actions.rs:240
 msgid "Finishing installation"
-msgstr ""
+msgstr "Завершення встановлення"
 
 #: agama-manager/src/actions.rs:296
 msgid "Storing security settings"
@@ -819,7 +837,7 @@ msgstr ""
 #: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:111
 msgid "Trust"
-msgstr ""
+msgstr "Довіряти"
 
 #: agama-security/src/service.rs:227
 msgid ""
@@ -847,6 +865,14 @@ msgstr ""
 msgid "AutoYaST conversion failed"
 msgstr ""
 
+#: agama-server/src/server/web.rs:86
+msgid "Missing Language Tag"
+msgstr ""
+
+#: agama-server/src/server/web.rs:89
+msgid "Profile error"
+msgstr ""
+
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
@@ -860,15 +886,14 @@ msgstr ""
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
-msgstr ""
+msgstr "Виникла проблема із запуском скрипта пакунка."
 
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr ""
+msgstr "Продовжити"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
-#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -876,7 +901,7 @@ msgstr ""
 
 #: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
-msgstr ""
+msgstr "Пропустити"
 
 #: agama-software/src/service.rs:287
 msgid ""
@@ -901,7 +926,7 @@ msgstr ""
 
 #: agama-software/src/zypp_server.rs:363
 msgid "Calculating the software proposal"
-msgstr ""
+msgstr "Розрахунок пропозиції щодо програмного забезпечення"
 
 #: agama-software/src/zypp_server.rs:366
 msgid "Registering the system"
@@ -936,7 +961,7 @@ msgstr ""
 msgid "Could not select %s '%s' for installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr ""
 
@@ -944,6 +969,7 @@ msgstr ""
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
+"Необхідно вказати користувача, встановити пароль root або відкритий ключ SSH"
 
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
@@ -973,13 +999,17 @@ msgstr ""
 msgid "Error:"
 msgstr ""
 
-#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
-msgid "No"
+#: agama-utils/src/api/problem_details.rs:192
+msgid "Details:"
 msgstr ""
 
 #: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
+msgid "No"
+msgstr "Ні"
+
+#: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
 msgid "Yes"
-msgstr ""
+msgstr "Так"
 
 #: agama-utils/src/resolvable.rs:62
 msgid "package"
