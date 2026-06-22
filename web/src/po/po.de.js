@@ -24,6 +24,9 @@ export default {
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
+  "%1$s (default file system for %2$s)": [
+    "%1$s (Standard-Dateisystem für %2$s)"
+  ],
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
@@ -99,8 +102,11 @@ export default {
     "%d Muster gefunden",
     "%d Muster gefunden"
   ],
+  "%s (default file system for generic mount points)": [
+    "%s (Standard-Dateisystem für generische Einhängepunkte)"
+  ],
   "%s (keep data)": [
-    ""
+    "%s (Daten beibehalten)"
   ],
   "%s - %s": [
     "%s - %s"
@@ -334,6 +340,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alle über diese Schnittstelle verwalteten Netzwerkverbindungen sind derzeit so eingestellt, dass sie nur während der Installation verwendet und nicht auf das installierte System kopiert werden"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    ""
+  ],
   "All the available zFCP controllers are already activated.": [
     "Alle verfügbaren zFCP-Controller sind bereits aktiviert."
   ],
@@ -353,6 +362,9 @@ export default {
   "An existing partition will be used for %s": [
     "Eine vorhandene Partition wird für %s verwendet",
     "Vorhandene Partitionen werden für %s verwendet"
+  ],
+  "Any existing data on %s will be destroyed when installation begins.": [
+    "Alle auf %s vorhandenen Daten werden bei Beginn der Installation zerstört."
   ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Jedes vorhandene logische Volume wird entfernt und alle Daten in der Volume-Gruppe gehen verloren."
@@ -623,8 +635,14 @@ export default {
   "Clear input": [
     "Eingabe löschen"
   ],
+  "Clear terminal": [
+    "Terminal leeren"
+  ],
   "Close": [
     "Schließen"
+  ],
+  "Close terminal": [
+    "Terminal schließen"
   ],
   "Color scheme": [
     "Farbschema"
@@ -830,6 +848,9 @@ export default {
   ],
   "Deactivated": [
     "Deaktiviert"
+  ],
+  "Decrease font size": [
+    "Schriftgröße verringern"
   ],
   "Default": [
     "Standard"
@@ -1236,6 +1257,9 @@ export default {
   "Hide technical details": [
     "Technische Details ausblenden"
   ],
+  "Hide terminal": [
+    "Terminal ausblenden"
+  ],
   "High": [
     "Hoch"
   ],
@@ -1320,6 +1344,9 @@ export default {
   "Includes %1$d additional pattern. Requires %2$s": [
     "Enthält %1$d zusätzliches Muster. Erfordert %2$s",
     "Enthält %1$d zusätzliche Muster. Erfordert %2$s"
+  ],
+  "Increase font size": [
+    "Schriftgröße erhöhen"
   ],
   "Initiator": [
     "Initiator"
@@ -1417,6 +1444,9 @@ export default {
   "Invalid label format": [
     ""
   ],
+  "Invalid partition location": [
+    "Ungültiger Speicherort der Partition"
+  ],
   "Invalid settings": [
     "Ungültige Einstellungen"
   ],
@@ -1468,6 +1498,9 @@ export default {
   "Keep %s": [
     "%s behalten"
   ],
+  "Keep editing": [
+    ""
+  ],
   "Keyboard": [
     "Tastatur"
   ],
@@ -1518,6 +1551,9 @@ export default {
   ],
   "Light color scheme": [
     "Helles Farbschema"
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    "Linux-Befehlszeile mit Administratorrechten auf dem Installationssystem."
   ],
   "Listening and learning time (4-30 seconds).": [
     "Zeit zum Lauschen und Lernen (4-30 Sekunden)."
@@ -1603,6 +1639,9 @@ export default {
   "Maximum": [
     "Maximum"
   ],
+  "Maximum is required": [
+    "Maximum ist erforderlich"
+  ],
   "Members": [
     "Mitglieder"
   ],
@@ -1615,8 +1654,14 @@ export default {
   "Min channel": [
     "Minimaler Kanal"
   ],
+  "Minimize terminal": [
+    "Terminal minimieren"
+  ],
   "Minimum": [
     "Minimum"
+  ],
+  "Minimum is required": [
+    "Minimum ist erforderlich"
   ],
   "Minimum: %1$s (%2$s)": [
     "Mindestens: %1$s (%2$s)"
@@ -1674,6 +1719,9 @@ export default {
   "Mount point": [
     "Einhängepunkt"
   ],
+  "Mount point is required": [
+    "Einhängepunkt ist erforderlich"
+  ],
   "Move mount points": [
     "Einhängepunkte verschieben"
   ],
@@ -1682,6 +1730,12 @@ export default {
   ],
   "Multipath": [
     "Multipfad"
+  ],
+  "Must be larger than minimum size": [
+    "Muss größer als die Mindestgröße sein"
+  ],
+  "Must be smaller than maximum size": [
+    "Muss kleiner als die maximale Größe sein"
   ],
   "NFS": [
     "NFS"
@@ -1729,7 +1783,7 @@ export default {
     "Neue Partition"
   ],
   "New partition. There are no available existing partitions on %s.": [
-    ""
+    "Neue Partition. Auf %s sind keine verfügbaren Partitionen vorhanden."
   ],
   "No": [
     "Nein"
@@ -1920,6 +1974,9 @@ export default {
   "Only reused partitions will be used.": [
     "Es werden nur wiederverwendete Partitionen verwendet."
   ],
+  "Open terminal": [
+    "Terminal öffnen"
+  ],
   "Options for partition %s": [
     "Optionen für Partition %s"
   ],
@@ -1937,6 +1994,9 @@ export default {
   ],
   "Partition Info": [
     "Partitionierungsinformationen"
+  ],
+  "Partition could not be configured": [
+    "Partition konnte nicht konfiguriert werden"
   ],
   "Partitions": [
     "Partitionen"
@@ -2015,6 +2075,9 @@ export default {
   ],
   "Physical volumes": [
     "Physikalische Volumes"
+  ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    ""
   ],
   "PiB": [
     "PiB"
@@ -2184,8 +2247,14 @@ export default {
   "Reset to the default configuration": [
     "Auf die Standardkonfiguration zurücksetzen"
   ],
+  "Resize terminal": [
+    "Größe des Terminals ändern"
+  ],
   "Resource not found or lost": [
     "Ressource nicht gefunden oder verloren"
+  ],
+  "Restore terminal": [
+    "Terminal wiederherstellen"
   ],
   "Result": [
     "Ergebnis"
@@ -2414,8 +2483,8 @@ export default {
   "Show more": [
     "Mehr anzeigen"
   ],
-  "Show technical details (English only)": [
-    "Technische Details anzeigen (nur auf Englisch)"
+  "Show terminal": [
+    "Terminal anzeigen"
   ],
   "Shrink existing logical volumes": [
     "Vorhandene logische Volumes verkleinern"
@@ -2579,6 +2648,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "Temporärer Name, der sich nach einem Neustart oder Netzwerkänderungen ändern kann"
   ],
+  "Terminal": [
+    "Terminal"
+  ],
   "The 'primary' option is only valid for %s modes": [
     "Die Option ‚primary‘ ist nur für %s-Modi gültig"
   ],
@@ -2587,6 +2659,9 @@ export default {
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
     "Die Einstellungen für [Sprache und Region] des Produkts bieten möglicherweise weitere Auswahlmöglichkeiten."
+  ],
+  "The configuration is read-only.": [
+    "Die Konfiguration ist nur lesbar."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Die Konfiguration muss angepasst werden, um das folgende Problem zu beheben:",
@@ -2714,9 +2789,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Die modale Auswahl bietet eine vereinfachte Schnittstelle, die für eine schnelle und unkomplizierte Nutzung ausgelegt ist, ohne den Benutzer zu überfordern."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Die benötigten physikalischen LVM-Volumes werden als Partitionen auf den ausgewählten Festplatten hinzugefügt, basierend auf den Größen der logischen Volumes. Wenn Sie mehr als eine Festplatte auswählen, können die physikalischen Volumes auf mehrere Festplatten verteilt werden."
-  ],
   "The password is weak": [
     "Das Passwort ist schwach"
   ],
@@ -2777,6 +2849,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "Das System startet mit einer Befehlszeilenschnittstelle."
   ],
+  "The terminal requires a larger screen size": [
+    "Das Terminal benötigt einen größeren Bildschirm"
+  ],
   "The whole device will be used for %s": [
     "Das gesamte Gerät wird für %s verwendet"
   ],
@@ -2791,6 +2866,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "Es sind keine zFCP-Controller zur Aktivierung anstehend."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    ""
   ],
   "There is %d destructive action planned": [
     "Es ist %d zerstörerische Aktion geplant",
@@ -2886,6 +2964,9 @@ export default {
   ],
   "Unknown error": [
     "Unbekannter Fehler"
+  ],
+  "Unsaved changes": [
+    ""
   ],
   "Unselect or activate them and try it again.": [
     "Wählen Sie sie ab oder aktivieren Sie sie und versuchen Sie es erneut."
@@ -3101,9 +3182,6 @@ export default {
   "Value: %1$s (%2$s)": [
     "Wert: %1$s (%2$s)"
   ],
-  "Verify that the location is correct and the configuration is valid.": [
-    "Vergewissern Sie sich, dass der Speicherort korrekt und die Konfiguration gültig ist."
-  ],
   "View license": [
     "Lizenz ansehen"
   ],
@@ -3178,9 +3256,6 @@ export default {
   ],
   "You must fix these issues": [
     "Sie müssen diese Probleme beheben"
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Sie müssen alle ungültigen Einstellungen korrigieren, bevor Sie mit der Installation fortfahren können."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Sie stellen eine Verbindung zu einem öffentlichen Netzwerk ohne Verschlüsselung her. Ihre Daten sind möglicherweise nicht sicher."
