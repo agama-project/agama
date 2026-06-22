@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 22 12:54:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not load the parts of the Monaco editor from an external 3rd
+  party CDN server (bsc#1268433)
+
+-------------------------------------------------------------------
 Mon Jun 22 12:09:14 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Update react router to fix CVE-2026-34077
