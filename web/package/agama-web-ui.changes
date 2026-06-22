@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 22 11:08:29 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Apply UI language and keymap changes right away, without needing
+  a page reload (gh#agama-project/agama#3657).
+
+-------------------------------------------------------------------
 Fri Jun 19 12:52:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fine-tune and extend the Agama appearance system: improve font
