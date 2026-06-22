@@ -1,15 +1,17 @@
 // Semantic tokens.
 //
-// This is the layer products override (via assets/appearance/<id>.css). Instead
-// of touching dozens of cryptic PatternFly tokens, a product sets a small set of
-// understandable `--agm-t--*` role tokens; this file maps each onto all the
+// The layer products override (via assets/appearance/<id>.css). Instead of
+// setting dozens of PatternFly tokens directly, a product sets a small set of
+// understandable `--agm-t--*` role tokens, and this file maps each onto all the
 // relevant PF tokens, so coverage (page, cards, masthead, modals, menus,
-// borders, button text, ...) is guaranteed.
+// borders, button text, ...) is handled for you.
 //
 // Layering: raw palette (_palette.scss) -> these role tokens -> PF tokens. Each
-// PF token is mapped as `var(--agm-t--ROLE, <default>)`, where <default> is the
-// Agama value (so leaving a role unset keeps the stock look) and the role is the
-// product override hook.
+// PF token is mapped as `var(--agm-t--ROLE, <default>)`: <default> is the Agama
+// value (so an unset role keeps the stock look) and the role is the override hook.
+//
+// products/example-advanced.css is the reference: it documents every role with a
+// worked example. The list below is just the dev-facing index.
 //
 // The curated role tokens:
 //   --agm-t--brand--color (+ --hover/--clicked)  brand / accent
@@ -20,48 +22,101 @@
 //   --agm-t--surface--color--raised               masthead and secondary surfaces
 //   --agm-t--surface--color--floating             modal / menu / popover backgrounds
 //   --agm-t--text--color (+ --subtle)             body text and regular icons
+//   --agm-t--icon--color                          regular icon color (defaults to text)
 //   --agm-t--border--color                        borders
+//   --agm-t--disabled--background--color          disabled control background
+//   --agm-t--tooltip--background--color (+ --color) tooltip background and text
 //   --agm-t--focus--color                         keyboard focus ring (see base/_reset)
 //   --agm-t--status--{info,caution,danger,success,custom}--color
 //                                                 alert / status variants
 //                                                 (caution maps to PF "warning")
+//
+// Typography roles (convenience; not needed to reskin, override only with strong
+// reasons):
+//   --agm-t--font--family--{body,heading,mono}    font families
+//   --agm-t--font--weight--{body,heading,bold}    font weights
+//   --agm-t--font--size--100 .. --800             font size scale (--200 is body)
+//   --agm-t--icon--size--100 .. --800             icon size scale
 //
 // High contrast is intentionally excluded from every block here: it is an
 // accessibility mode, so PatternFly's high-contrast theme governs it fully and
 // neither Agama nor a product recolors it.
 
 :root {
-  --pf-t--global--font--family--100: "SUSE Text", "Noto Sans", verdana;
-  --pf-t--global--font--family--200: "SUSE Display", "Noto Sans", verdana;
-  --pf-t--global--font--family--300: "Roboto Mono", monospace;
+  // Font family override hooks. Unset by default, so each keeps the Agama
+  // default below. Redefine the --agm-t--font--family--* tokens (e.g. from a
+  // product override, see products/example.css) to retune the families without
+  // touching PatternFly tokens.
+  --pf-t--global--font--family--100: var(
+    --agm-t--font--family--body,
+    "SUSE Text",
+    "Noto Sans",
+    verdana
+  );
+  --pf-t--global--font--family--200: var(
+    --agm-t--font--family--heading,
+    "SUSE Display",
+    "Noto Sans",
+    verdana
+  );
+  --pf-t--global--font--family--300: var(
+    --agm-t--font--family--mono,
+    "SUSE Mono",
+    "Roboto Mono",
+    monospace
+  );
+
+  // Convenience tokens to retune the font weight. Unset by default, so text
+  // keeps the PatternFly weight. Redefine --agm-t--font--weight--body /
+  // --agm-t--font--weight--heading / --agm-t--font--weight--bold to override
+  // them, but only with strong reasons.
+  --pf-t--global--font--weight--body--default: var(
+    --agm-t--font--weight--body,
+    var(--pf-t--global--font--weight--100)
+  );
+  --pf-t--global--font--weight--body--bold: var(
+    --agm-t--font--weight--bold,
+    var(--pf-t--global--font--weight--200)
+  );
+  --pf-t--global--font--weight--heading--default: var(
+    --agm-t--font--weight--heading,
+    var(--pf-t--global--font--weight--300)
+  );
   --pf-t--global--font--line-height--100: 1.3;
   --pf-t--global--font--line-height--200: 1.5;
-  --pf-t--global--font--size--100: 0.875rem;
-  --pf-t--global--font--size--200: 1em;
-  --pf-t--global--font--size--300: 1.125rem;
-  --pf-t--global--font--size--400: 1.25rem;
-  --pf-t--global--font--size--500: 1.5rem;
-  --pf-t--global--font--size--600: 1.75rem;
-  --pf-t--global--font--size--700: 2rem;
-  --pf-t--global--font--size--800: 2.25rem;
-  --pf-t--global--font--weight--100: 100;
-  --pf-t--global--font--weight--200: 600;
-  --pf-t--global--font--weight--300: 700;
-  --pf-t--global--font--weight--400: 800;
+
+  // Font size scale override hooks. This numbered scale is the single source
+  // every size derives from (the t-shirt sizes and the body/heading sizes all
+  // map onto it), so overriding a step retunes everything that uses it. Unset by
+  // default, so each step keeps the Agama size below. Redefine the
+  // --agm-t--font--size--* tokens (e.g. from a product override) to rescale.
+  --pf-t--global--font--size--100: var(--agm-t--font--size--100, 0.875rem);
+  --pf-t--global--font--size--200: var(--agm-t--font--size--200, 1em);
+  --pf-t--global--font--size--300: var(--agm-t--font--size--300, 1.125rem);
+  --pf-t--global--font--size--400: var(--agm-t--font--size--400, 1.25rem);
+  --pf-t--global--font--size--500: var(--agm-t--font--size--500, 1.5rem);
+  --pf-t--global--font--size--600: var(--agm-t--font--size--600, 1.75rem);
+  --pf-t--global--font--size--700: var(--agm-t--font--size--700, 2rem);
+  --pf-t--global--font--size--800: var(--agm-t--font--size--800, 2.25rem);
+  // Some known environments run Agama on 1024x768 install screens, which handle
+  // the "lg" layout fine; lower the lg breakpoint to 64rem (1024px) so they use
+  // it instead of dropping to the narrower layout.
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
 
-  // Named icon sizes (theme-independent), consumed by the Icon `size` prop via
-  // its CSS classes. Products may override these roles to resize icons.
-  --agm-t--icon--size--xs: 0.75rem;
-  --agm-t--icon--size--sm: 0.875rem;
-  --agm-t--icon--size--md: 1rem;
-  --agm-t--icon--size--lg: 1.25rem;
-  --agm-t--icon--size--xl: 1.5rem;
-  --agm-t--icon--size--2xl: 2rem;
-  --agm-t--icon--size--3xl: 2.5rem;
-  --agm-t--icon--size--4xl: 3rem;
+  // Icon size scale (theme-independent), consumed by the Icon `size` prop via
+  // its CSS classes. Each step defaults to the matching font size, so icons stay
+  // in sync with font-size overrides from a product / color scheme; override the
+  // --agm-t--icon--size--* tokens for icon-only fine-tuning.
+  --agm-t--icon--size--100: var(--pf-t--global--font--size--100);
+  --agm-t--icon--size--200: var(--pf-t--global--font--size--200);
+  --agm-t--icon--size--300: var(--pf-t--global--font--size--300);
+  --agm-t--icon--size--400: var(--pf-t--global--font--size--400);
+  --agm-t--icon--size--500: var(--pf-t--global--font--size--500);
+  --agm-t--icon--size--600: var(--pf-t--global--font--size--600);
+  --agm-t--icon--size--700: var(--pf-t--global--font--size--700);
+  --agm-t--icon--size--800: var(--pf-t--global--font--size--800);
 
   // PF 6.5 switched link underlines to dashed; keep them solid and matching text.
   --pf-t--global--text-decoration--link--style--default: var(
@@ -152,10 +207,11 @@
     --agm-t--text--color--subtle,
     var(--pf-t--global--text--color--200)
   );
-  // Regular icons (nav, masthead toolbar, plain toggles) follow the text role.
+  // Regular icons (nav, masthead toolbar, plain toggles). Default to the icon
+  // role, which in turn defaults to the text role.
   --pf-t--global--icon--color--regular: var(
-    --agm-t--text--color,
-    var(--pf-t--global--icon--color--100)
+    --agm-t--icon--color,
+    var(--agm-t--text--color, var(--pf-t--global--icon--color--100))
   );
   --pf-t--global--border--color--default: var(
     --agm-t--border--color,
@@ -169,7 +225,11 @@
   --agm-t--install--button--background: var(--agm-t--color--pine--50);
   --agm-t--install--button--background--hover: var(--agm-t--color--pine--40);
   --agm-t--install--button--color: var(--pf-t--color--white);
-  --pf-t--global--background--color--disabled--default: #dcdbdc;
+  // Disabled control background. Override the role to retune it.
+  --pf-t--global--background--color--disabled--default: var(
+    --agm-t--disabled--background--color,
+    #dcdbdc
+  );
 
   // Status / alert variants. Each role drives the variant's text, icon and
   // border (so alerts, labels and status icons follow it). Defaults keep the
