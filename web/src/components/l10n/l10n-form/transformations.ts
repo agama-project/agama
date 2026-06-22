@@ -73,16 +73,21 @@ export function buildL10nConfig(
 }
 
 /**
- * Formats a UTC offset given in minutes as a label like "UTC+1" or "UTC+5:30".
- * Returns an empty string when the offset is unknown.
+ * Current UTC offset of a time zone as a label like "UTC+1" or "UTC-3:30",
+ * derived from the zone id. The backend does not send the offset, so it is read
+ * from the same Intl machinery used for the local time, which means it reflects
+ * DST. Returns an empty string for an unknown zone.
  */
-export function formatUtcOffset(offsetInMinutes?: number): string {
-  if (offsetInMinutes === undefined) return "";
-
-  const hours = Math.trunc(offsetInMinutes / 60);
-  const minutes = Math.abs(offsetInMinutes % 60);
-  const sign = offsetInMinutes < 0 ? "-" : "+";
-  const hoursLabel = `${sign}${Math.abs(hours)}`;
-
-  return minutes === 0 ? `UTC${hoursLabel}` : `UTC${hoursLabel}:${minutes}`;
+export function timezoneUtcOffset(timezone: string, date: Date = new Date()): string {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      timeZoneName: "shortOffset",
+    }).formatToParts(date);
+    const name = parts.find((part) => part.type === "timeZoneName")?.value ?? "";
+    // Intl yields a "GMT±H[:MM]" label (just "GMT" at zero); present it as "UTC".
+    return name.replace("GMT", "UTC");
+  } catch {
+    return "";
+  }
 }

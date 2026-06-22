@@ -41,7 +41,11 @@ const KeyboardField = withForm({
     const options = keymaps.map((keymap) => ({
       value: keymap.id,
       label: keymap.description,
-      description: <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{keymap.id}</Text>,
+      description: (
+        <Text textStyle={["fontSizeXs", "textColorSubtle", "fontFamilyMonospace"]}>
+          {keymap.id}
+        </Text>
+      ),
       filterText: `${keymap.description} ${keymap.id}`,
     }));
 

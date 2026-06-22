@@ -24,7 +24,8 @@ import React from "react";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
-import { formatUtcOffset } from "./transformations";
+import { timezoneUtcOffset } from "./transformations";
+import { timezoneTime } from "~/utils";
 import { _ } from "~/i18n";
 
 import type { Timezone } from "~/model/system/l10n";
@@ -33,27 +34,37 @@ type TimezoneFieldProps = { timezones: Timezone[] };
 
 /**
  * Time zone selector for the localization form. Each option shows the time zone
- * territory, with the country, time zone code and UTC offset below; all are
- * searchable.
+ * territory, with the country, the UTC offset and the current local time below.
+ * The territory, country, time zone code and offset are all searchable.
  */
 const TimezoneField = withForm({
   ...defaultOptions,
   props: { timezones: [] } as TimezoneFieldProps,
   render: function Render({ form, timezones }) {
+    const now = new Date();
     const options = timezones.map((timezone) => {
-      const offset = formatUtcOffset(timezone.utcOffset);
-      const code = offset ? `${timezone.id} ${offset}` : timezone.id;
+      const offset = timezoneUtcOffset(timezone.id, now);
+      // UTC offset followed by the current local time in the zone. The zone id is
+      // not shown (it already reads as the option title) but stays in filterText
+      // so it remains searchable.
+      const detail = [offset, timezoneTime(timezone.id, now)].filter(Boolean).join(" ");
+      // The displayed offset keeps the "UTC" prefix (e.g. "UTC+1") so it reads
+      // clearly, but the filter uses only the numeric part (e.g. "+1"). Otherwise
+      // every zone would carry "UTC" and typing "UTC" would match them all, hiding
+      // the actual UTC zone (still findable here via its id and parts). Filtering
+      // by offset, e.g. "+1", keeps working.
+      const offsetFilter = offset.replace("UTC", "");
 
       return {
         value: timezone.id,
         label: timezone.parts.join(" / "),
         description: (
           <>
-            <Text textStyle="textColorRegular">{timezone.country}</Text>{" "}
-            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{code}</Text>
+            {timezone.country}{" "}
+            <Text textStyle={["fontSizeXs", "fontFamilyMonospace"]}>{detail}</Text>
           </>
         ),
-        filterText: `${timezone.parts.join(" ")} ${timezone.country} ${code}`,
+        filterText: `${timezone.parts.join(" ")} ${timezone.country} ${timezone.id} ${offsetFilter}`,
       };
     });
 
