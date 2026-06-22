@@ -406,8 +406,15 @@ export default function SearchableSelectField({
           }}
           onKeyDown={onInputKeyDown}
           onClick={(e) => {
-            e.stopPropagation(); // prevent toggle's onClick from double-firing
-            if (!isOpen) openForBrowsing();
+            // While open, stop the click reaching the toggle, which would read
+            // it as a toggle press and close the list. While closed, open this
+            // list and let the click bubble so PF's outside-click handler closes
+            // any other field's open list (which it cannot do if stopped here).
+            if (isOpen) {
+              e.stopPropagation();
+            } else {
+              openForBrowsing();
+            }
           }}
           onFocus={() => setIsInputFocused(true)}
           onBlur={() => setIsInputFocused(false)}
