@@ -37,7 +37,15 @@ import { useFieldContext } from "~/hooks/form";
 type Option = {
   value: string;
   label: string;
-  description?: string;
+  // Extra content shown under the label in the open list. Purely visual: it is
+  // rendered but never searched, so it may be any node (styled, multi-part).
+  // Put anything that must be matched into `filterText` instead.
+  description?: React.ReactNode;
+  // The text the filter matches against for this option. Provide the complete
+  // string to search, including the label text plus any hidden terms (e.g. a
+  // code or territory not present in the label). When omitted, the visible
+  // `label` is used. The `description` node is never part of the match.
+  filterText?: string;
 };
 
 type SearchableSelectFieldProps = {
@@ -99,10 +107,12 @@ type SearchableSelectFieldProps = {
  *       placeholder={_("Filter by language, territory or locale code")}
  *       emptyPlaceholder={_("Choose an option")}
  *       noResultsText={_("None of the locales match the filter.")}
- *       selectedLabel={(o) => `${o.label} (${o.description})`}
+ *       selectedLabel={(o) => `${o.label} (${o.value})`}
  *       options={[
- *         { value: "en_US", label: "English", description: "United States" },
- *         { value: "es_ES", label: "Spanish", description: "Spain" }
+ *         // `description` is shown but not searched; `filterText` (label + code)
+ *         // is what the filter matches against.
+ *         { value: "en_US", label: "English", description: "United States", filterText: "English United States en_US" },
+ *         { value: "es_ES", label: "Spanish", description: "Spain", filterText: "Spanish Spain es_ES" }
  *       ]}
  *     />
  *   )}
@@ -171,17 +181,26 @@ export default function SearchableSelectField({
 
   /** Derived state */
 
+  // Precompute each option's lowercased match text once, keyed by value, so a
+  // burst of keystrokes filters against a ready string instead of rebuilding it
+  // per option per render. `filterText` is the full text to search (label
+  // included); the visible `label` is the fallback. `description` is never here.
+  const haystacks = useMemo(
+    () => new Map(options.map((o) => [o.value, (o.filterText ?? o.label).toLowerCase()])),
+    [options],
+  );
+
   const filteredOptions = useMemo(() => {
     const terms = appliedFilter.trim().toLowerCase().split(/\s+/).filter(Boolean);
     if (terms.length === 0) return options;
-    // Match each whitespace-separated term against the combined label and
-    // description, so a query spanning both (e.g. "Spanish Argentina") still
-    // matches regardless of word order.
+    // Match each whitespace-separated term against the option's haystack, so a
+    // query spanning several pieces (e.g. "Spanish Argentina") still matches
+    // regardless of word order.
     return options.filter((o) => {
-      const haystack = `${o.label} ${o.description ?? ""}`.toLowerCase();
+      const haystack = haystacks.get(o.value) ?? "";
       return terms.every((term) => haystack.includes(term));
     });
-  }, [options, appliedFilter]);
+  }, [options, appliedFilter, haystacks]);
 
   const selectedOption = options.find((o) => o.value === field.state.value);
 
