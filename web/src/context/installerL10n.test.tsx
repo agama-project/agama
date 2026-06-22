@@ -21,13 +21,13 @@
  */
 
 import React, { Suspense } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { _ } from "~/i18n";
 import agama from "~/agama";
 import { InstallerL10nProvider, useInstallerL10n } from "~/context/installerL10n";
 import { InstallerClientProvider } from "./installer";
+import { plainRender } from "~/test-utils";
 
 jest.unmock("~/context/installerL10n");
 
@@ -96,7 +96,7 @@ const renderProvider = () => {
     },
   });
 
-  return render(
+  return plainRender(
     <QueryClientProvider client={queryClient}>
       <Suspense fallback="Loading...">
         <InstallerClientProvider client={client}>
@@ -128,8 +128,7 @@ describe("InstallerL10nProvider", () => {
   });
 
   it("applies the new translations when the language changes", async () => {
-    const user = userEvent.setup();
-    renderProvider();
+    const { user } = renderProvider();
 
     await screen.findByRole("heading", { name: "Cancel" });
 
@@ -139,8 +138,7 @@ describe("InstallerL10nProvider", () => {
   });
 
   it("keeps the translations in sync with the language on every render", async () => {
-    const user = userEvent.setup();
-    renderProvider();
+    const { user } = renderProvider();
 
     await screen.findByRole("heading", { name: "Cancel" });
 
