@@ -282,6 +282,7 @@ const mockL10n = (l10n: {
   language?: string;
   changeKeymap?: jest.Mock;
   changeLanguage?: jest.Mock;
+  changeL10n?: jest.Mock;
 }) => {
   const current = mockUseInstallerL10n.getMockImplementation()?.() || mockUseInstallerL10n();
   mockUseInstallerL10n.mockReturnValue({ ...current, ...l10n });
