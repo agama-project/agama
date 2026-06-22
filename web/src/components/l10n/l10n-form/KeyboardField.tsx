@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
@@ -42,11 +41,7 @@ const KeyboardField = withForm({
     const options = keymaps.map((keymap) => ({
       value: keymap.id,
       label: keymap.description,
-      description: (
-        <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
-          <Text textStyle="textColorSubtle">{keymap.id}</Text>
-        </Flex>
-      ),
+      description: <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{keymap.id}</Text>,
       filterText: `${keymap.description} ${keymap.id}`,
     }));
 

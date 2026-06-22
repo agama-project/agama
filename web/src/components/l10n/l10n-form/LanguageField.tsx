@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
@@ -43,13 +42,10 @@ const LanguageField = withForm({
       value: locale.id,
       label: locale.language,
       description: (
-        <Flex
-          justifyContent={{ default: "justifyContentSpaceBetween" }}
-          columnGap={{ default: "columnGapSm" }}
-        >
-          <span>{locale.territory}</span>
-          <Text textStyle="textColorSubtle">{locale.id}</Text>
-        </Flex>
+        <>
+          <Text textStyle="textColorRegular">{locale.territory}</Text>{" "}
+          <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{locale.id}</Text>
+        </>
       ),
       filterText: `${locale.language} ${locale.territory} ${locale.id}`,
     }));

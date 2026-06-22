@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
@@ -49,13 +48,10 @@ const TimezoneField = withForm({
         value: timezone.id,
         label: timezone.parts.join(" / "),
         description: (
-          <Flex
-            justifyContent={{ default: "justifyContentSpaceBetween" }}
-            columnGap={{ default: "columnGapSm" }}
-          >
-            <span>{timezone.country}</span>
-            <Text textStyle="textColorSubtle">{code}</Text>
-          </Flex>
+          <>
+            <Text textStyle="textColorRegular">{timezone.country}</Text>{" "}
+            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{code}</Text>
+          </>
         ),
         filterText: `${timezone.parts.join(" ")} ${timezone.country} ${code}`,
       };
