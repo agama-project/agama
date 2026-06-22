@@ -21,12 +21,10 @@
  */
 
 import React from "react";
-import { Button, Content, Grid, GridItem } from "@patternfly/react-core";
-import { InstallerL10nOptions, Link, Page } from "~/components/core";
-import { L10N as PATHS } from "~/routes/paths";
+import { Button, Content } from "@patternfly/react-core";
+import { InstallerL10nOptions, Page } from "~/components/core";
+import L10nForm from "~/components/l10n/l10n-form/Form";
 import { localConnection } from "~/utils";
-import { useProposal } from "~/hooks/model/proposal/l10n";
-import { useSystem } from "~/hooks/model/system/l10n";
 import { _ } from "~/i18n";
 
 const InstallerL10nSettingsInfo = () => {
@@ -61,72 +59,17 @@ const InstallerL10nSettingsInfo = () => {
   );
 };
 
-// FIXME: re-evaluate the need of "Thing not selected yet"
-
 /**
  * Page for configuring localization.
  */
 export default function L10nPage() {
-  // FIXME: retrieve selection from config when ready
-  const l10nProposal = useProposal();
-  const l10nSystem = useSystem();
-  const locale =
-    l10nProposal.locale && l10nSystem.locales.find((l) => l.id === l10nProposal.locale);
-  const keymap =
-    l10nProposal.keymap && l10nSystem.keymaps.find((k) => k.id === l10nProposal.keymap);
-  const timezone =
-    l10nProposal.timezone && l10nSystem.timezones.find((t) => t.id === l10nProposal.timezone);
-
   return (
     <Page breadcrumbs={[{ label: "Language and region" }]}>
       <Page.Content>
-        <Grid hasGutter>
-          <GridItem md={4}>
-            <Page.Section
-              title={_("Language")}
-              actions={
-                <Link to={PATHS.localeSelection} isPrimary={!locale}>
-                  {locale ? _("Change") : _("Select")}
-                </Link>
-              }
-            >
-              <Content isEditorial>
-                {locale ? `${locale.language} - ${locale.territory}` : _("Wrong selection")}
-              </Content>
-            </Page.Section>
-          </GridItem>
-          <GridItem md={4}>
-            <Page.Section
-              title={_("Keyboard")}
-              actions={
-                <Link to={PATHS.keymapSelection} isPrimary={!keymap}>
-                  {keymap ? _("Change") : _("Select")}
-                </Link>
-              }
-            >
-              <Content isEditorial>{keymap ? keymap.description : _("Wrong selection")}</Content>
-            </Page.Section>
-          </GridItem>
-          <GridItem md={4}>
-            <Page.Section
-              title={_("Time zone")}
-              actions={
-                <Link to={PATHS.timezoneSelection} isPrimary={!timezone}>
-                  {timezone ? _("Change") : _("Select")}
-                </Link>
-              }
-            >
-              <Content isEditorial>
-                {timezone ? (timezone.parts || []).join(" - ") : _("Wrong selection")}
-              </Content>
-            </Page.Section>
-          </GridItem>
-          <GridItem>
-            <Content>
-              <InstallerL10nSettingsInfo />
-            </Content>
-          </GridItem>
-        </Grid>
+        <L10nForm />
+        <Content>
+          <InstallerL10nSettingsInfo />
+        </Content>
       </Page.Content>
     </Page>
   );
