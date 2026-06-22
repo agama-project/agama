@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { act, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import ConfigDialog from "./ConfigDialog";
 import { plainRender } from "~/test-utils";
 
@@ -48,21 +48,16 @@ describe("ConfigDialog", () => {
   });
 
   it("renders the dialog with the correct title", async () => {
-    await act(async () => {
-      renderConfigDialog();
-    });
-
+    renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
     screen.getByRole("dialog", { name: "Installation settings in JSON format" });
   });
 
   it("calls onClose when the close button is clicked", async () => {
-    const { user } = await act(async () => {
-      return renderConfigDialog();
-    });
-
+    const { user } = renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
     const closeButtons = screen.getAllByRole("button", { name: "Close" });
     await user.click(closeButtons[1]);
-
     expect(mockOnClose).toHaveBeenCalled();
   });
 });
