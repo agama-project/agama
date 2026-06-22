@@ -582,7 +582,7 @@ export default function InstallerL10nOptions({
 }: InstallerL10nOptionsProps) {
   const location = useLocation();
   const locales = useSystem()?.l10n?.locales ?? [];
-  const { language, keymap, changeLanguage, changeKeymap } = useInstallerL10n();
+  const { language, keymap, changeL10n } = useInstallerL10n();
   const { stage } = useStatus();
   const selectedProduct = useProductInfo();
   const initialFormState = {
@@ -630,21 +630,18 @@ export default function InstallerL10nOptions({
     e.preventDefault();
     dispatchDialogAction({ type: "SET_BUSY" });
 
-    // TODO: send unique request for all; await no longer works here
-    // keep logical order, reuse first, the trigger second, to avoid the latest
-    // "eating" the first request.
-    // const request = {};
-    // ...
-    // if(something) request.someelse  = whatever
-
     try {
-      if (variant !== "language" && localConnection()) {
-        await changeKeymap(formState.keymap);
-      }
+      const l10nOptions: { language?: string; keymap?: string } = {};
 
       if (variant !== "keyboard") {
-        await changeLanguage(formState.language);
+        l10nOptions.language = formState.language;
       }
+
+      if (variant !== "language" && localConnection()) {
+        l10nOptions.keymap = formState.keymap;
+      }
+
+      await changeL10n(l10nOptions);
 
       formState.allowReusingSettings && formState.reuseSettings && reuseSettings();
     } catch (e) {

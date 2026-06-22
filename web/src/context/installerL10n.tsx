@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
@@ -41,6 +41,7 @@ interface L10nContext {
   loadedLanguage: string;
   changeLanguage: (language: string) => Promise<void>;
   changeKeymap: (keymap: string) => Promise<void>;
+  changeL10n: (options: { language?: string; keymap?: string }) => Promise<void>;
 }
 
 function useInstallerL10n(): L10nContext {
@@ -110,22 +111,28 @@ function findSupportedLanguage(languages: Array<string>): string | undefined {
   }
 }
 
+// Translation catalog as exported by the po.<lang>.js files. A null catalog
+// means there are no translations and the original English texts must be used.
+type TranslationCatalog = object | null;
+
 /**
- * Load the web frontend translations from the server.
+ * Loads the web frontend translation catalog for the given locale.
+ *
+ * The catalog is returned as plain data so the caller decides when to apply it
+ * to the global translation singleton. A `null` result means the original
+ * (English) texts must be used.
  *
  * @param locale requested locale
- * @returns Promise with a dynamic import
+ * @returns Promise resolving to the translation catalog, or null when there are
+ *   no translations for the locale
  */
-async function loadTranslations(locale: string): Promise<string> {
+async function loadTranslations(locale: string): Promise<TranslationCatalog> {
   // load the translations dynamically, first try the language + territory
   return import(
     /* webpackChunkName: "[request]" */
     `../po/po.${locale}`
   )
-    .then((m) => {
-      agama.locale(m.default);
-      return agama.language.replace("-", "_");
-    })
+    .then((m) => m.default)
     .catch(async () => {
       // if it fails try the language only
       const po = locale.split("-")[0];
@@ -133,17 +140,13 @@ async function loadTranslations(locale: string): Promise<string> {
         /* webpackChunkName: "[request]" */
         `../po/po.${po}`
       )
-        .then((m) => {
-          agama.locale(m.default);
-          return agama.language.replace("-", "_");
-        })
+        .then((m) => m.default)
         .catch(() => {
           if (locale && locale !== "en-US") {
             console.error("Cannot load frontend translations for", locale);
           }
-          // reset the current translations (use the original English texts)
-          agama.locale(null);
-          return agama.language.replace("-", "_");
+          // no translations available, fall back to the original English texts
+          return null;
         });
     });
 }
@@ -178,30 +181,59 @@ function InstallerL10nProvider({
   const language = locale ? languageFromLocale(locale) : initialLanguage || "en-US";
   const keymap = l10n?.keymap;
 
-  const { data: loadedLanguage } = useSuspenseQuery({
+  // Load the translation catalog for the current language. Suspends until the
+  // catalog is ready, so the children below never render before it is available.
+  const { data: catalog } = useSuspenseQuery({
     queryKey: ["translations", language],
     queryFn: () => loadTranslations(language),
   });
 
-  const changeLanguage = useCallback(
-    async (lang: string) => {
-      const candidateLanguages = [
-        lang,
-        lang?.split("-")[0], // fallback to the language (e.g., "es" for "es-AR")
-        language,
-      ].filter((l) => l);
-      const newLanguage = findSupportedLanguage(candidateLanguages) || "en-US";
-      document.documentElement.lang = newLanguage.split("-")[0];
+  // Apply the catalog to the global translation singleton on every render,
+  // before the children read it. Doing it here (instead of as a side effect
+  // inside the query function) keeps the active translations in sync with the
+  // rendered language even when the query is served from cache, which makes
+  // switching languages reliable without reloading the page.
+  agama.locale(catalog);
+  const loadedLanguage = agama.language.replace("-", "_");
 
-      await configureL10nAction({ locale: languageToLocale(newLanguage) });
-      await queryClient.invalidateQueries({ queryKey: ["translations"] });
+  // Keep the <html lang> attribute in sync for assistive technologies, both on
+  // the initial load and after a language change.
+  useEffect(() => {
+    document.documentElement.lang = language.split("-")[0];
+  }, [language]);
+
+  // Resolves a requested language to the closest supported one, falling back to
+  // the current language and finally to English.
+  const resolveSupportedLanguage = useCallback(
+    (requested: string): string => {
+      const candidates = [requested, requested.split("-")[0], language].filter(Boolean);
+      return findSupportedLanguage(candidates) || "en-US";
     },
-    [language, queryClient],
+    [language],
   );
 
-  const changeKeymap = useCallback(async (id: string) => {
-    await configureL10nAction({ keymap: id });
-  }, []);
+  // Updates the language and/or the keymap in a single backend request.
+  // Refreshing the system query updates the locale, which makes the provider
+  // re-render with the new language and apply the matching translations.
+  const changeL10n = useCallback(
+    async ({ language: lang, keymap: km }: { language?: string; keymap?: string }) => {
+      const config: { locale?: string; keymap?: string } = {};
+
+      if (lang !== undefined) config.locale = languageToLocale(resolveSupportedLanguage(lang));
+      if (km !== undefined) config.keymap = km;
+
+      await configureL10nAction(config);
+      await queryClient.invalidateQueries({ queryKey: ["system"] });
+    },
+    [resolveSupportedLanguage, queryClient],
+  );
+
+  const changeLanguage = useCallback(
+    (lang: string) => changeL10n({ language: lang }),
+    [changeL10n],
+  );
+
+  const changeKeymap = useCallback((id: string) => changeL10n({ keymap: id }), [changeL10n]);
 
   const value = {
     loadedLanguage,
@@ -209,6 +241,7 @@ function InstallerL10nProvider({
     changeLanguage,
     keymap,
     changeKeymap,
+    changeL10n,
   };
 
   // Setting the key forces to reload the children when the language changes
