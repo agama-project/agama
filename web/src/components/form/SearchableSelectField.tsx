@@ -1,0 +1,463 @@
+/*
+ * Copyright (c) [2026] SUSE LLC
+ *
+ * All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, contact SUSE LLC.
+ *
+ * To contact SUSE LLC about this file by physical or electronic mail, you may
+ * find current contact information at www.suse.com.
+ */
+
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  FormGroup,
+  MenuToggle,
+  MenuToggleElement,
+  Select,
+  SelectList,
+  SelectOption,
+  TextInputGroup,
+  TextInputGroupMain,
+} from "@patternfly/react-core";
+import { debounce } from "radashi";
+import { useFieldContext } from "~/hooks/form";
+
+type Option = {
+  value: string;
+  label: string;
+  description?: string;
+};
+
+type SearchableSelectFieldProps = {
+  label: string;
+  options: Option[];
+  // Builds the text shown in the closed field for the committed option. Defaults
+  // to the option's label alone; provide this to show more (e.g. append the
+  // description to disambiguate look-alike labels).
+  selectedLabel?: (option: Option) => string;
+  // FIXME: required for now so callers reuse an already-translated string during
+  // the string freeze. Once new strings are allowed, give it a default (e.g.
+  // _("Select an option")) and make it optional again.
+  placeholder: string;
+  // FIXME: required for now so callers reuse an already-translated string during
+  // the string freeze. Once new strings are allowed, give it a default (e.g.
+  // _("No options found")) and make it optional again.
+  noResultsText: string;
+  // Prompt shown when the field is empty and at rest (no value and not focused),
+  // e.g. "Choose an option". While focused or open, `placeholder` is shown
+  // instead to hint at filtering. Defaults to `placeholder` when omitted.
+  emptyPlaceholder?: string;
+  // When true, emptying the input and leaving the field (Tab, Enter or clicking
+  // away) clears the selection. When false, leaving with an empty input keeps
+  // the previously selected value. Escape always reverts, never clears.
+  clearable?: boolean;
+  maxHeight?: string;
+};
+
+/**
+ * Searchable select field built on PatternFly's `<Select variant="typeahead">`
+ * and following the W3C "Editable Combobox With List Autocomplete" ARIA
+ * pattern: typing filters the list, but the input is not auto-completed inline.
+ *
+ * While focused or open, `placeholder` hints that typing filters the list; at
+ * rest with no selection, `emptyPlaceholder` prompts the user to choose. Once an
+ * option is committed the toggle shows a plain selection.
+ *
+ * DOM focus stays on the text input at all times. List navigation is
+ * communicated to assistive technologies via `aria-activedescendant`: the
+ * input never loses focus during keyboard navigation.
+ *
+ * Keyboard behaviour:
+ * - ArrowDown / ArrowUp (closed): open the list, highlighting the first / last option
+ * - ArrowDown / ArrowUp (open): move the highlight, wrapping at both ends
+ * - Enter / Tab: commit the highlighted option; with `clearable` and an emptied
+ *   query, clear the selection instead, otherwise keep the current value
+ *   (Tab then advances focus)
+ * - Escape: close the list and revert to the current selection
+ * - Typing: filter the list, opening it when closed
+ *
+ * @see https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-autocomplete-list/
+ *
+ * @example
+ * ```tsx
+ * <form.AppField name="language">
+ *   {(field) => (
+ *     <field.SearchableSelectField
+ *       label="Language"
+ *       placeholder={_("Filter by language, territory or locale code")}
+ *       emptyPlaceholder={_("Choose an option")}
+ *       noResultsText={_("None of the locales match the filter.")}
+ *       selectedLabel={(o) => `${o.label} (${o.description})`}
+ *       options={[
+ *         { value: "en_US", label: "English", description: "United States" },
+ *         { value: "es_ES", label: "Spanish", description: "Spain" }
+ *       ]}
+ *     />
+ *   )}
+ * </form.AppField>
+ * ```
+ */
+export default function SearchableSelectField({
+  label,
+  options,
+  selectedLabel,
+  placeholder,
+  noResultsText,
+  emptyPlaceholder,
+  clearable = false,
+  maxHeight = "300px",
+}: SearchableSelectFieldProps) {
+  const field = useFieldContext<string>();
+  const [isOpen, setIsOpen] = useState(false);
+  // What the input shows, updated on every keystroke for responsive typing.
+  const [filterValue, setFilterValue] = useState("");
+  // What actually filters the list, updated on a short debounce so a fast burst
+  // of keystrokes reflows the (potentially long) list once instead of per key.
+  const [appliedFilter, setAppliedFilter] = useState("");
+  // True once the user edits the text. Distinguishes an empty field the user
+  // just cleared (keep it empty) from one just opened (show the selection).
+  const [isFiltering, setIsFiltering] = useState(false);
+  // Index of the visually-highlighted option; navigation never moves real
+  // DOM focus out of the input, AT is notified via aria-activedescendant.
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  // While the user drives the list with the keyboard, the option list ignores
+  // the mouse. Otherwise the list reflowing under a stationary cursor flashes
+  // the hover highlight across the rows it slides past. The mouse is restored on
+  // the next real movement (see the mousemove effect below).
+  //
+  // pointer-events does not block keyboard focus, so this never traps the user.
+  // @see https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events
+  const [pointerInert, setPointerInert] = useState(false);
+  // Whether the text input currently holds focus, used to switch the empty-field
+  // placeholder between the resting prompt and the filter hint.
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Stable prefix for option element IDs referenced by aria-activedescendant.
+  const idPrefix = useId();
+  const optionId = (index: number) => `${idPrefix}-option-${index}`;
+
+  // Debounced writer for the applied filter, so a burst of keystrokes reflows
+  // the list once. Created per instance (memoized to stay stable across renders),
+  // not at module level, so two fields on a page never share one timer.
+  const debouncedApplyFilter = useMemo(() => debounce({ delay: 150 }, setAppliedFilter), []);
+
+  // Cancel a pending debounce on unmount.
+  useEffect(() => () => debouncedApplyFilter.cancel(), [debouncedApplyFilter]);
+
+  // Clearing applies at once (no point debouncing an empty query); any other
+  // value goes through the debounce.
+  const applyFilter = (value: string) => {
+    if (value === "") {
+      debouncedApplyFilter.cancel();
+      setAppliedFilter("");
+    } else {
+      debouncedApplyFilter(value);
+    }
+  };
+
+  /** Derived state */
+
+  const filteredOptions = useMemo(() => {
+    const terms = appliedFilter.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (terms.length === 0) return options;
+    // Match each whitespace-separated term against the combined label and
+    // description, so a query spanning both (e.g. "Spanish Argentina") still
+    // matches regardless of word order.
+    return options.filter((o) => {
+      const haystack = `${o.label} ${o.description ?? ""}`.toLowerCase();
+      return terms.every((term) => haystack.includes(term));
+    });
+  }, [options, appliedFilter]);
+
+  const selectedOption = options.find((o) => o.value === field.state.value);
+
+  // Text shown when not actively filtering: the committed selection, or empty.
+  const selectionDisplayValue = selectedOption
+    ? (selectedLabel?.(selectedOption) ?? selectedOption.label)
+    : "";
+  // While filtering, the input reflects exactly what the user typed (including
+  // an empty string they cleared); otherwise it shows the current selection, so
+  // opening the list keeps the previous choice visible instead of wiping it.
+  const inputDisplayValue = isFiltering ? filterValue : selectionDisplayValue;
+
+  // Empty-field placeholder: while the user is engaged (focused or open) it
+  // hints at filtering; at rest it shows the prompt to make a selection.
+  const isEngaged = isOpen || isInputFocused;
+  const inputPlaceholder = isEngaged ? placeholder : (emptyPlaceholder ?? placeholder);
+
+  // Option that Enter/Tab will commit: the one the user arrowed to, or, when a
+  // non-empty query is active, its first match (so typing then pressing Tab
+  // selects it). An empty query highlights nothing, so clearing the field and
+  // tabbing away selects nothing rather than the first option.
+  const hasQuery = appliedFilter.trim().length > 0;
+  const resolveHighlightedIndex = (): number | null => {
+    if (activeIndex !== null) return activeIndex;
+    if (hasQuery && filteredOptions.length > 0) return 0;
+    return null;
+  };
+  const highlightedIndex = resolveHighlightedIndex();
+
+  // Re-enable mouse interaction on the next real pointer movement, so hover and
+  // clicks work again as soon as the user reaches for the mouse.
+  useEffect(() => {
+    if (!pointerInert) return;
+    const restore = () => setPointerInert(false);
+    window.addEventListener("mousemove", restore, { once: true });
+    return () => window.removeEventListener("mousemove", restore);
+  }, [pointerInert]);
+
+  /** Helpers */
+
+  const closeList = () => {
+    setIsOpen(false);
+    setFilterValue("");
+    debouncedApplyFilter.cancel();
+    setAppliedFilter("");
+    setIsFiltering(false);
+    setActiveIndex(null);
+  };
+
+  /**
+   * Scroll an option into view once the list has rendered. The open list may
+   * live in a portal, so the option is located by id rather than through a
+   * container ref.
+   */
+  const scrollOptionIntoView = (index: number) => {
+    setTimeout(() => {
+      document.getElementById(optionId(index))?.scrollIntoView({ block: "nearest" });
+    }, 0);
+  };
+
+  const scrollToSelected = () => {
+    const idx = options.findIndex((o) => o.value === field.state.value);
+    if (idx !== -1) scrollOptionIntoView(idx);
+  };
+
+  const openList = () => {
+    setIsOpen(true);
+    scrollToSelected();
+  };
+
+  // Opens the list to browse: the current selection stays shown and the full
+  // list is visible until the user starts typing.
+  const openForBrowsing = () => {
+    setIsFiltering(false);
+    openList();
+    // Pre-select the shown text so the current value is kept but a single
+    // keystroke types over it. Only on browse: when the list opens as a side
+    // effect of typing, re-selecting would fight the edit the user just made.
+    setTimeout(() => inputRef.current?.select(), 0);
+  };
+
+  const commitOption = (index: number) => {
+    const option = filteredOptions[index];
+    if (!option) return;
+    field.handleChange(option.value);
+    closeList();
+  };
+
+  // Resolves the field value when leaving the open list: commit the highlighted
+  // option, or - when `clearable` and the user emptied the query - clear the
+  // selection; otherwise keep the current value. Escape bypasses this on purpose.
+  const leaveField = () => {
+    if (highlightedIndex !== null) {
+      commitOption(highlightedIndex);
+      return;
+    }
+    if (clearable && isFiltering && filterValue.trim() === "") {
+      field.handleChange("");
+    }
+    closeList();
+  };
+
+  const moveActive = (direction: "next" | "prev") => {
+    const count = filteredOptions.length;
+    if (count === 0) return;
+
+    // Move relative to whatever is currently highlighted (an arrowed option or
+    // the auto-highlighted first match), wrapping at both ends.
+    const current = highlightedIndex;
+    let next: number;
+    if (direction === "next") {
+      next = current === null ? 0 : (current + 1) % count;
+    } else {
+      next = current === null ? count - 1 : (current - 1 + count) % count;
+    }
+
+    setActiveIndex(next);
+    scrollOptionIntoView(next);
+    setPointerInert(true);
+  };
+
+  /** Keyboard handlers */
+
+  // Passed to <Select onToggleKeydown>; PF calls it for key events on the
+  // toggle when variant="typeahead", skipping its own arrow-key default.
+  const onToggleKeydown = (e: React.KeyboardEvent | KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!isOpen) openForBrowsing();
+      moveActive("next");
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!isOpen) openForBrowsing();
+      moveActive("prev");
+    } else if (e.key === "Enter" && isOpen) {
+      e.preventDefault();
+      leaveField();
+    }
+  };
+
+  const onInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Tab") {
+      // Resolve the pending state before focus moves away naturally.
+      // No preventDefault: Tab must still advance focus.
+      if (isOpen) leaveField();
+      else closeList();
+      return;
+    }
+
+    if (e.key === "Escape") {
+      // Stop propagation so PF's own Escape handler doesn't also fire.
+      e.stopPropagation();
+      if (isOpen) {
+        closeList();
+      } else if (filterValue) {
+        setFilterValue("");
+        applyFilter("");
+      }
+    }
+  };
+
+  /** Toggle */
+  // MenuToggle variant="typeahead" renders a <div> (not a <button>), passes
+  // children through verbatim, and injects the caret in its own
+  // <button tabIndex={-1}>, so the input is the only Tab stop in the toggle.
+
+  const toggle = (pfRef: React.Ref<MenuToggleElement>) => (
+    <MenuToggle
+      ref={pfRef as React.Ref<HTMLButtonElement>}
+      variant="typeahead"
+      isExpanded={isOpen}
+      isFullWidth
+      onClick={() => (isOpen ? closeList() : openForBrowsing())}
+      // Lands on PF's caret <button>, whose default name is the untranslated
+      // "Menu toggle"; reusing the field label avoids that English default.
+      // TODO (post-freeze): give the caret its own translated, purpose-specific
+      // label (e.g. "Show options") instead of duplicating the field label.
+      aria-label={label}
+    >
+      <TextInputGroup isPlain>
+        <TextInputGroupMain
+          // Permanent focus owner: it is never blurred during list navigation.
+          ref={inputRef}
+          // inputId (not id) puts this on the inner input; a plain id would land
+          // on the wrapper. Matches the FormGroup's fieldId so its visible label
+          // labels the combobox input and clicking the label focuses it.
+          inputId={`${idPrefix}-input`}
+          // PF defaults the input's aria-label to "Type to filter", which would
+          // override the visible label as the accessible name; keep them aligned.
+          aria-label={label}
+          value={inputDisplayValue}
+          onChange={(_e, value) => {
+            setFilterValue(value);
+            applyFilter(value);
+            setIsFiltering(true);
+            setActiveIndex(null);
+            setPointerInert(true);
+            if (!isOpen) openList();
+          }}
+          onKeyDown={onInputKeyDown}
+          onClick={(e) => {
+            e.stopPropagation(); // prevent toggle's onClick from double-firing
+            if (!isOpen) openForBrowsing();
+          }}
+          onFocus={() => setIsInputFocused(true)}
+          onBlur={() => setIsInputFocused(false)}
+          // ARIA combobox wiring (W3C APG list-autocomplete). PF applies none of
+          // these unless passed; together they make the input a combobox whose
+          // listbox is driven by aria-activedescendant, so focus never leaves it:
+          // - role + aria-autocomplete: a combobox that filters a list
+          // - aria-expanded + aria-controls: the listbox's open state and id
+          // - aria-activedescendant: the highlighted option (virtual focus)
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={isOpen}
+          aria-controls={`${idPrefix}-listbox`}
+          aria-activedescendant={highlightedIndex !== null ? optionId(highlightedIndex) : undefined}
+          placeholder={inputPlaceholder}
+          autoComplete="off"
+        />
+      </TextInputGroup>
+    </MenuToggle>
+  );
+
+  /** Render */
+
+  return (
+    <FormGroup label={label} fieldId={`${idPrefix}-input`}>
+      <Select
+        id={field.name}
+        variant="typeahead"
+        isOpen={isOpen}
+        selected={field.state.value}
+        onSelect={(_e, value) => {
+          if (typeof value !== "string") return;
+          const idx = filteredOptions.findIndex((o) => o.value === value);
+          if (idx !== -1) commitOption(idx);
+        }}
+        onOpenChange={(open) => {
+          // PF-initiated close (outside click): resolve the pending state the
+          // same way Tab/Enter do, so clicking away clears when appropriate.
+          if (!open) leaveField();
+        }}
+        // Hand all arrow/Enter handling to our onToggleKeydown so PF doesn't
+        // apply its default behaviour (moving real DOM focus into list items).
+        onToggleKeydown={onToggleKeydown}
+        toggle={toggle}
+      >
+        <SelectList
+          id={`${idPrefix}-listbox`}
+          style={{ maxHeight, overflowY: "auto", pointerEvents: pointerInert ? "none" : undefined }}
+        >
+          {filteredOptions.length === 0 ? (
+            <SelectOption isDisabled key="no-results">
+              {noResultsText}
+            </SelectOption>
+          ) : (
+            filteredOptions.map((option, index) => (
+              <SelectOption
+                key={option.value}
+                id={optionId(index)}
+                value={option.value}
+                description={option.description}
+                // isFocused applies PF's own highlight class, giving sighted
+                // users the same visual cue AT users get via aria-activedescendant.
+                // Hover does not drive this highlight: while filtering the list
+                // shifts under a stationary cursor, and letting mouse-enter move
+                // the highlight then fights the keyboard one and flickers.
+                isFocused={index === highlightedIndex}
+              >
+                {option.label}
+              </SelectOption>
+            ))
+          )}
+        </SelectList>
+      </Select>
+    </FormGroup>
+  );
+}
