@@ -60,7 +60,6 @@ describe("ConfigDialog", () => {
       return renderConfigDialog();
     });
 
-    // const { user } = renderConfigDialog();
     const closeButtons = screen.getAllByRole("button", { name: "Close" });
     await user.click(closeButtons[1]);
 
