@@ -894,9 +894,9 @@ impl MessageHandler<message::RunAction> for Service {
                 };
 
                 if let Err(error) = action.run().await {
+                    // FIXME: this won't work well as it catches only issues when installation tasks fail to spawn,
+                    // and not for real installation failures.
                     if let Err(e) = ipmi.failed() {
-                        // FIXME: this won't work well as it catch only issues when installation tasks failed to be spawn
-                        // not for real installation failure.
                         tracing::error!("IPMI failed: {}", e);
                     }
                     tracing::error!("Installation failed: {error}");

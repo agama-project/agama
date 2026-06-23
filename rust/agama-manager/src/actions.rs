@@ -249,11 +249,11 @@ impl InstallAction {
                     .call(progress::message::SetStage::new(Stage::Finished))
                     .await
                     .map_err(TaskError::from_error)?;
-                // Here we use default Stop, so only explicit kernel parameter do something
-                // Its main use case is interactive installation as auto-installation call explicitly
+                // Here we use the default Stop, so only an explicit kernel parameter does something.
+                // Its main use case is interactive installation, as auto-installation calls the explicit
                 // finish action with its own default.
-                let method =
-                    api::FinishMethod::from_kernel_cmdline().unwrap_or(api::FinishMethod::Stop);
+                let method = agama_utils::api::FinishMethod::from_kernel_cmdline()
+                    .unwrap_or(agama_utils::api::FinishMethod::Stop);
                 let finish = FinishAction::new(method);
                 finish.run();
                 Ok(())
