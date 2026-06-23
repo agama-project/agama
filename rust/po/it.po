@@ -8,16 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-18 16:05+0000\n"
-"PO-Revision-Date: 2026-02-26 19:04+0000\n"
-"Last-Translator: Topalski <fujinami_goops@slmail.me>\n"
-"Language-Team: Bulgarian <https://l10n.opensuse.org/projects/agama/agama-"
-"rust-master/bg/>\n"
-"Language: bg\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
@@ -35,6 +33,7 @@ msgstr ""
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
+#, rust-format
 msgid ""
 "It was not possible to load the script from {0}. Do you want to try again?"
 msgstr ""
@@ -91,14 +90,14 @@ msgstr ""
 
 #. TRANSLATORS: {0} is a host name
 #: agama-cli/src/auth.rs:179
+#, rust-format
 msgid "Not authenticated in {0}"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama probe
 #: agama-cli/src/commands.rs:42
-#, fuzzy
 msgid "Analyze the system"
-msgstr "Подготви системата"
+msgstr ""
 
 #. TRANSLATORS: CLI help for: agama probe (details)
 #: agama-cli/src/commands.rs:44
@@ -476,18 +475,16 @@ msgid "Security"
 msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:64
-#, fuzzy
 msgid "Installation complete."
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:65
 msgid "You can reboot the machine to log in to the new system."
 msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:68
-#, fuzzy
 msgid "Installation failed."
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:69
 msgid "Use the \"agama logs\" command to collect the logs."
@@ -581,9 +578,8 @@ msgid "Waiting for user"
 msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:102
-#, fuzzy
 msgid "Installing"
-msgstr "Конфигурирай системата"
+msgstr ""
 
 #: agama-cli/src/monitor/ui/summary.rs:103
 msgid "Configuring"
@@ -658,14 +654,12 @@ msgid ""
 msgstr ""
 
 #: agama-cli/src/status.rs:80
-#, fuzzy
 msgid "The installation finished successfully."
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-cli/src/status.rs:82
-#, fuzzy
 msgid "The installation is in progress."
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-cli/src/status.rs:83
 msgid "The installer is preparing an installation proposal."
@@ -689,15 +683,15 @@ msgstr ""
 
 #: agama-manager/src/actions.rs:77
 msgid "Prepare the system"
-msgstr "Подготви системата"
+msgstr ""
 
 #: agama-manager/src/actions.rs:78
 msgid "Install software"
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-manager/src/actions.rs:79
 msgid "Configure the system"
-msgstr "Конфигурирай системата"
+msgstr ""
 
 #: agama-manager/src/actions.rs:93
 msgid "Preparing storage"
@@ -708,14 +702,12 @@ msgid "Running post-partitioning scripts"
 msgstr ""
 
 #: agama-manager/src/actions.rs:136
-#, fuzzy
 msgid "Installing software"
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-manager/src/actions.rs:173
-#, fuzzy
 msgid "Configuring the system"
-msgstr "Конфигурирай системата"
+msgstr ""
 
 #: agama-manager/src/actions.rs:240
 msgid "Finishing installation"
@@ -723,12 +715,11 @@ msgstr ""
 
 #: agama-manager/src/actions.rs:296
 msgid "Storing security settings"
-msgstr "Запазване настройки за сигурност"
+msgstr ""
 
 #: agama-manager/src/actions.rs:306
-#, fuzzy
 msgid "Configuring remote access"
-msgstr "Конфигурирай системата"
+msgstr ""
 
 #: agama-manager/src/actions.rs:316
 msgid "Setting up the hostname"
@@ -767,9 +758,8 @@ msgid "Configuring iSCSI devices"
 msgstr ""
 
 #: agama-manager/src/actions.rs:526
-#, fuzzy
 msgid "Configuring zFCP devices"
-msgstr "Конфигурирай системата"
+msgstr ""
 
 #: agama-manager/src/actions.rs:550
 msgid "Configuring DASD devices"
@@ -819,9 +809,8 @@ msgid ""
 msgstr ""
 
 #: agama-server/src/profile/web.rs:82
-#, fuzzy
 msgid "Profile validation failed"
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-server/src/profile/web.rs:85
 msgid "Could not retrieve profile"
@@ -868,6 +857,7 @@ msgstr ""
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
+#, rust-format
 msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
@@ -949,9 +939,8 @@ msgid "First user information is incomplete"
 msgstr ""
 
 #: agama-utils/src/api/problem_details.rs:113
-#, fuzzy
 msgid "Schema validation failed"
-msgstr "Инсталирай софтуер"
+msgstr ""
 
 #: agama-utils/src/api/problem_details.rs:115
 msgid "The provided configuration does not match the required schema"
@@ -979,11 +968,11 @@ msgstr ""
 
 #: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
 msgid "No"
-msgstr "Не"
+msgstr ""
 
 #: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
 msgid "Yes"
-msgstr "Да"
+msgstr ""
 
 #: agama-utils/src/resolvable.rs:62
 msgid "package"
@@ -996,7 +985,3 @@ msgstr ""
 #: agama-utils/src/resolvable.rs:64
 msgid "product"
 msgstr ""
-
-#, fuzzy
-#~ msgid "Installation is being proposed."
-#~ msgstr "Инсталирай софтуер"
