@@ -223,6 +223,18 @@ describe("SearchableSelectField", () => {
     expect(screen.getByText("Inglés")).toBeInTheDocument();
   });
 
+  it("ignores bracket punctuation so a committed selection still matches", async () => {
+    // The selectedLabel reads "Spanish (Spain)" but the filterText has no
+    // parentheses; pasting or autocompleting the label back in must still match.
+    const { user } = installerRender(<TestForm />);
+    await user.click(combobox());
+    await user.keyboard("Spanish (Spain)");
+
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    expect(screen.getByText("Spain")).toBeInTheDocument();
+    expect(screen.queryByText("Argentina")).not.toBeInTheDocument();
+  });
+
   it("matches using the rewritten query when normalizeQuery is given", async () => {
     const options: TestOption[] = [
       {

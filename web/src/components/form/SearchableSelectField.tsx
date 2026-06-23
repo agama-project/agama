@@ -38,13 +38,20 @@ import { debounce } from "radashi";
 import { useFieldContext } from "~/hooks/form";
 
 // Lowercases and strips diacritics so a query without accents still matches
-// accented text (e.g. typing "ingles" matches "Inglés"). Both the query and the
-// option text are sanitized the same way before they are compared.
+// accented text (e.g. typing "ingles" matches "Inglés"). It also turns brackets
+// and list punctuation into spaces so wrapping characters do not glue onto a
+// term and stop it matching: this matters when the committed selection is fed
+// back as the query (e.g. browser autocomplete), where a selectedLabel like
+// "Spanish (Spain)" must still match a filterText of "Spanish Spain es_ES".
+// Symbols that carry meaning for filtering, such as the +/- of a UTC offset, are
+// left untouched. Both the query and the option text are sanitized the same way
+// before they are compared.
 const sanitizeForSearch = (text: string): string =>
   text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[()[\]{},]+/g, " ");
 
 type Option = {
   value: string;
