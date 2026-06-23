@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Jun 23 11:53:44 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow adding optional resolvables (gh#agama-project/agama#3649).
+
+-------------------------------------------------------------------
 Mon Jun 22 14:22:52 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Unify cargo dependencies and move it to shared one in workspace

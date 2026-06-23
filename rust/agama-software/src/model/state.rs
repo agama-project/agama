@@ -323,7 +323,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             state.resolvables.add_or_replace_resolvable(
                 &resolvable,
                 ResolvableSelection::AutoSelected {
-                    skip_if_missing: false,
+                    skip_if_missing: resolvable.optional,
                 },
             );
         }

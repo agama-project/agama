@@ -7,7 +7,7 @@ inherit_from:
 AllCops:
   Exclude:
     - vendor/**/*
-    - lib/agama/dbus/y2dir/**/*
+    - lib/agama/y2dir/**/*
     - agama-yast.gemspec
     - package/*.spec
 
@@ -29,10 +29,6 @@ Lint/UselessAssignment:
 Metrics/AbcSize:
   Max: 33
 
-Metrics/ParameterLists:
-  Max: 6
-  Exclude:
-    - lib/agama/software/repository.rb
-
 Metrics/ClassLength:
   Max: 300
+
