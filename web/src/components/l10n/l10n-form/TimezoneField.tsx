@@ -50,7 +50,7 @@ const TimezoneField = withForm({
       // UTC offset followed by the current local time in the zone. The zone id is
       // not shown (it already reads as the option title) but stays in filterText
       // so it remains searchable.
-      const detail = sift([offset, timezoneTime(timezone.id, now)]).join(" ");
+      const detail = sift([offset, timezoneTime(timezone.id, now)]).join("·");
       // The displayed offset keeps the "UTC" prefix and reads clearly (e.g.
       // "Europe/Berlin" shows "UTC+1"), but filterText stores only the bare signed
       // number, "+N" / "-N" (so its filterText reads "...berlin +1"). Without that,
@@ -65,7 +65,9 @@ const TimezoneField = withForm({
         description: (
           <>
             {timezone.country && <>{timezone.country} </>}
-            <Text textStyle={["fontSizeXs", "fontFamilyMonospace"]}>{detail}</Text>
+            <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>
+              {detail}
+            </Text>
           </>
         ),
         // Drop empty pieces: a zone may have no country (e.g. UTC) and the

@@ -42,7 +42,7 @@ const KeyboardField = withForm({
       value: keymap.id,
       label: keymap.description,
       description: (
-        <Text textStyle={["fontSizeXs", "textColorSubtle", "fontFamilyMonospace"]}>
+        <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>
           {keymap.id}
         </Text>
       ),

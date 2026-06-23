@@ -44,7 +44,9 @@ const LanguageField = withForm({
       description: (
         <>
           {locale.territory}{" "}
-          <Text textStyle={["fontSizeXs", "fontFamilyMonospace"]}>{locale.id}</Text>
+          <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>
+            {locale.id}
+          </Text>
         </>
       ),
       filterText: `${locale.language} ${locale.territory} ${locale.id}`,
