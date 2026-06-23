@@ -81,10 +81,10 @@
 
   /* Alert / status variants (caution maps to PF "warning"). */
   --agm-t--status--info--color: #2453ff;
-  --agm-t--status--caution--color: #d98a00;
+  --agm-t--status--caution--color: #9a6700;
   --agm-t--status--danger--color: #d83b3b;
-  --agm-t--status--success--color: #30ba78;
-  --agm-t--status--custom--color: #fe7c3f;
+  --agm-t--status--success--color: #008657;
+  --agm-t--status--custom--color: #c2410c;
 }
 
 /* Dark theme. */
@@ -94,7 +94,7 @@
   --agm-t--surface--color--floating: #2b2b2b;
   --agm-t--text--color: #efefef;
   --agm-t--text--color--subtle: #999;
-  --agm-t--text--color--disabled: #8a8a8a; /* de-emphasized text (must meet WCAG contrast) */
+  --agm-t--text--color--disabled: #949494; /* de-emphasized text (must meet WCAG contrast) */
   --agm-t--icon--color: #ffb184; /* icons in the accent */
   --agm-t--border--color: #525252;
 

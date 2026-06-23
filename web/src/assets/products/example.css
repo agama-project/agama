@@ -38,10 +38,10 @@
   --agm-t--focus--color: #fe7c3f;
 
   --agm-t--status--info--color: #2453ff;
-  --agm-t--status--caution--color: #d98a00;
+  --agm-t--status--caution--color: #9a6700;
   --agm-t--status--danger--color: #d83b3b;
-  --agm-t--status--success--color: #30ba78;
-  --agm-t--status--custom--color: #fe7c3f;
+  --agm-t--status--success--color: #008657;
+  --agm-t--status--custom--color: #c2410c;
 }
 
 /* Dark theme. */
