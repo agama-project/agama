@@ -134,6 +134,13 @@
     --agm-t--text--color--subtle,
     var(--pf-t--global--dark--text--color--200)
   );
+  // Disabled text color for dark mode. PatternFly's default disabled text
+  // (gray-50, #707070) on Agama's dark pine floating surfaces (pine--50 mixed
+  // 93% with white, ~#0c322c) has ~2.7:1 contrast, failing WCAG AA 4.5:1 for
+  // small text. This override (#8a8a8a) achieves ~4.5:1 contrast, meeting WCAG AA
+  // while keeping the de-emphasized appearance. Products can override via
+  // --agm-t--text--color--disabled.
+  --pf-t--global--text--color--disabled: var(--agm-t--text--color--disabled, #8a8a8a);
   --pf-t--global--icon--color--regular: var(
     --agm-t--icon--color,
     var(--agm-t--text--color, var(--pf-t--global--dark--icon--color--100))

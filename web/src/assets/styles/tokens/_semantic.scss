@@ -22,6 +22,7 @@
 //   --agm-t--surface--color--raised               masthead and secondary surfaces
 //   --agm-t--surface--color--floating             modal / menu / popover backgrounds
 //   --agm-t--text--color (+ --subtle)             body text and regular icons
+//   --agm-t--text--color--disabled                de-emphasized text (codes, labels)
 //   --agm-t--icon--color                          regular icon color (defaults to text)
 //   --agm-t--border--color                        borders
 //   --agm-t--disabled--background--color          disabled control background
@@ -207,6 +208,12 @@
     --agm-t--text--color--subtle,
     var(--pf-t--global--text--color--200)
   );
+  // Disabled text color for light mode. PatternFly's default disabled text
+  // (gray-40, #a3a3a3) on white (#ffffff) has ~2.85:1 contrast, failing WCAG AA
+  // 4.5:1 for small text. This override (#767676) achieves ~4.54:1 contrast,
+  // meeting WCAG AA while keeping the de-emphasized appearance. Products can
+  // override via --agm-t--text--color--disabled.
+  --pf-t--global--text--color--disabled: var(--agm-t--text--color--disabled, #767676);
   // Regular icons (nav, masthead toolbar, plain toggles). Default to the icon
   // role, which in turn defaults to the text role.
   --pf-t--global--icon--color--regular: var(

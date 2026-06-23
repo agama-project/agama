@@ -63,6 +63,7 @@
   --agm-t--surface--color--floating: #fff; /* modals, menus, popovers */
   --agm-t--text--color: #1d1d1d; /* body text */
   --agm-t--text--color--subtle: #6f6f6f;
+  --agm-t--text--color--disabled: #767676; /* de-emphasized text (codes, labels) */
   --agm-t--icon--color: #bd3314; /* icons in the accent (defaults to the text color) */
   --agm-t--border--color: #dcdbdc;
 
@@ -93,6 +94,7 @@
   --agm-t--surface--color--floating: #2b2b2b;
   --agm-t--text--color: #efefef;
   --agm-t--text--color--subtle: #999;
+  --agm-t--text--color--disabled: #8a8a8a; /* de-emphasized text (must meet WCAG contrast) */
   --agm-t--icon--color: #ffb184; /* icons in the accent */
   --agm-t--border--color: #525252;
 
