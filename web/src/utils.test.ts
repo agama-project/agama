@@ -28,6 +28,7 @@ import {
   mask,
   maskSecrets,
   timezoneTime,
+  clearDateTimeFormatCache,
   sortCollection,
   mergeSources,
   extendCollection,
@@ -124,6 +125,10 @@ describe("mask", () => {
 
 describe("timezoneTime", () => {
   const fixedDate = new Date("2023-01-01T12:34:56Z");
+
+  // The formatter cache is module-level; clear it so the mock-based cases below
+  // construct a fresh (mocked) formatter instead of reusing a cached one.
+  beforeEach(clearDateTimeFormatCache);
 
   it("returns time in 24h format for a valid timezone", () => {
     const time = timezoneTime("UTC", fixedDate);

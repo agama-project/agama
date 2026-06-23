@@ -28,6 +28,7 @@
 
 import { isEmpty, shake } from "radashi";
 import { anyFieldChanged } from "~/hooks/form";
+import { dateTimeFormat } from "~/utils";
 
 import type { Config } from "~/model/config/l10n";
 import type { FormFields } from "./fields";
@@ -80,10 +81,7 @@ export function buildL10nConfig(
  */
 export function timezoneUtcOffset(timezone: string, date: Date = new Date()): string {
   try {
-    const parts = new Intl.DateTimeFormat("en-US", {
-      timeZone: timezone,
-      timeZoneName: "shortOffset",
-    }).formatToParts(date);
+    const parts = dateTimeFormat(timezone, { timeZoneName: "shortOffset" }).formatToParts(date);
     const name = parts.find((part) => part.type === "timeZoneName")?.value ?? "";
     // Intl yields a "GMT±H[:MM]" label (just "GMT" at zero); present it as "UTC".
     return name.replace("GMT", "UTC");
