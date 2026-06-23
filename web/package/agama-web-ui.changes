@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jun 23 11:49:50 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Unify the localization settings into a single form: replace the
+  separate language, keyboard and time zone selection pages with one
+  form using a searchable typeahead for each
+  (gh#agama-project/agama#3661).
+
+-------------------------------------------------------------------
 Fri Jun 19 12:52:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fine-tune and extend the Agama appearance system: improve font
