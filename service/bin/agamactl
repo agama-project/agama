@@ -22,6 +22,10 @@
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
+# Mock some YaST modules like Package.
+agama_y2dir = File.expand_path("../lib/agama/y2dir", __dir__)
+ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), agama_y2dir].compact.join(":")
+
 # Set the PATH to a known value
 ENV["PATH"] = "/sbin:/usr/sbin:/usr/bin:/bin"
 
@@ -53,10 +57,6 @@ end
 # @param name [Symbol] Service name
 # @see ORDERED_SERVICES
 def start_service(name)
-  # Mock some YaST modules like Package.
-  agama_y2dir = File.expand_path("../lib/agama/y2dir", __dir__)
-  ENV["Y2DIR"] = [ENV.fetch("Y2DIR", nil), agama_y2dir].compact.join(":")
-
   logger = logger_for(name)
   service_runner = Agama::DBus::ServiceRunner.new(name, logger: logger)
   service_runner.run
