@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 23 12:41:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove the translations from the Product's SystemInfo
+  (gh#agama-project/agama#3660).
+
+-------------------------------------------------------------------
 Tue Jun 23 11:53:44 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Allow adding optional resolvables (gh#agama-project/agama#3649).

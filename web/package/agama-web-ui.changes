@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 23 12:42:46 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove the Product translations from system schema
+  (gh#agama-project/agama#3660).
+
+-------------------------------------------------------------------
 Tue Jun 23 09:14:41 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Explicitly require "monaco-editor" NPM package to fix a build
