@@ -56,6 +56,7 @@ type TestFormProps = {
   clearable?: boolean;
   labelWithDescription?: boolean;
   options?: TestOption[];
+  normalizeQuery?: (query: string) => string;
 };
 
 function TestForm({
@@ -63,6 +64,7 @@ function TestForm({
   clearable = false,
   labelWithDescription = true,
   options = OPTIONS,
+  normalizeQuery,
 }: TestFormProps) {
   const form = useAppForm({ defaultValues: { language: defaultValue } });
 
@@ -77,6 +79,7 @@ function TestForm({
             noResultsText="No matches"
             clearable={clearable}
             selectedLabel={labelWithDescription ? (o) => `${o.label} (${o.value})` : undefined}
+            normalizeQuery={normalizeQuery}
             options={options}
           />
         )}
@@ -192,6 +195,61 @@ describe("SearchableSelectField", () => {
 
     await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
     expect(screen.getByText("German")).toBeInTheDocument();
+  });
+
+  it("matches regardless of diacritics", async () => {
+    const options: TestOption[] = [
+      { value: "en", label: "Inglés", filterText: "Inglés English" },
+      { value: "de", label: "Alemán", filterText: "Alemán German" },
+    ];
+    const { user } = installerRender(<TestForm options={options} />);
+    await user.click(combobox());
+    // Typing without the accent still matches the accented option.
+    await user.keyboard("ingles");
+
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    expect(screen.getByText("Inglés")).toBeInTheDocument();
+  });
+
+  it("matches using the rewritten query when normalizeQuery is given", async () => {
+    const options: TestOption[] = [
+      {
+        value: "utc",
+        label: "Coordinated Universal Time",
+        filterText: "Coordinated Universal Time UTC",
+      },
+      { value: "berlin", label: "Berlin", filterText: "Berlin Europe +1" },
+    ];
+    const { user } = installerRender(
+      <TestForm options={options} normalizeQuery={(q) => q.replace(/\butc\s*([+-])/gi, "$1")} />,
+    );
+    await user.click(combobox());
+    // "UTC+1" is rewritten to "+1", which only the Berlin option stores.
+    await user.keyboard("UTC+1");
+
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    expect(screen.getByText("Berlin")).toBeInTheDocument();
+  });
+
+  it("matches a query that normalizeQuery leaves untouched", async () => {
+    const options: TestOption[] = [
+      {
+        value: "utc",
+        label: "Coordinated Universal Time",
+        filterText: "Coordinated Universal Time UTC",
+      },
+      { value: "berlin", label: "Berlin", filterText: "Berlin Europe +1" },
+    ];
+    const { user } = installerRender(
+      <TestForm options={options} normalizeQuery={(q) => q.replace(/\butc\s*([+-])/gi, "$1")} />,
+    );
+    await user.click(combobox());
+    // Bare "utc" has no offset sign, so it is matched as typed: only the
+    // Coordinated Universal Time option carries it.
+    await user.keyboard("utc");
+
+    await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+    expect(screen.getByText("Coordinated Universal Time")).toBeInTheDocument();
   });
 
   it("renders a ReactNode description but does not search it", async () => {

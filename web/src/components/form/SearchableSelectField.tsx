@@ -37,6 +37,15 @@ import {
 import { debounce } from "radashi";
 import { useFieldContext } from "~/hooks/form";
 
+// Lowercases and strips diacritics so a query without accents still matches
+// accented text (e.g. typing "ingles" matches "Inglés"). Both the query and the
+// option text are sanitized the same way before they are compared.
+const sanitizeForSearch = (text: string): string =>
+  text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+
 type Option = {
   value: string;
   label: string;
@@ -66,6 +75,16 @@ type SearchableSelectFieldProps = {
   // the string freeze. Once new strings are allowed, give it a default (e.g.
   // _("No options found")) and make it optional again.
   noResultsText: string;
+  // Last-resort callback to rewrite the filter query before it is used to filter
+  // the list. The "query" is the text the user typed into the field; this returns
+  // the text to filter with instead, while the input keeps showing what the user
+  // actually typed. Use it for the rare case where a natural way of typing should
+  // match an option it otherwise would not, e.g. mapping a typed "UTC+1" to the
+  // "+1" an option keeps for filtering.
+  //
+  // Keep it tightly scoped to the token it targets: a broader rewrite silently
+  // changes what matches. Defaults to identity (the query filters as typed).
+  normalizeQuery?: (query: string) => string;
   // Prompt shown when the field is empty and at rest (no value and not focused),
   // e.g. "Choose an option". While focused or open, `placeholder` is shown
   // instead to hint at filtering. Defaults to `placeholder` when omitted.
@@ -128,6 +147,7 @@ export default function SearchableSelectField({
   selectedLabel,
   placeholder,
   noResultsText,
+  normalizeQuery,
   emptyPlaceholder,
   clearable = false,
   maxHeight = "300px",
@@ -185,17 +205,18 @@ export default function SearchableSelectField({
 
   /** Derived state */
 
-  // Precompute each option's lowercased match text once, keyed by value, so a
+  // Precompute each option's sanitized match text once, keyed by value, so a
   // burst of keystrokes filters against a ready string instead of rebuilding it
   // per option per render. `filterText` is the full text to search (label
   // included); the visible `label` is the fallback. `description` is never here.
   const haystacks = useMemo(
-    () => new Map(options.map((o) => [o.value, (o.filterText ?? o.label).toLowerCase()])),
+    () => new Map(options.map((o) => [o.value, sanitizeForSearch(o.filterText ?? o.label)])),
     [options],
   );
 
   const filteredOptions = useMemo(() => {
-    const terms = appliedFilter.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const query = normalizeQuery ? normalizeQuery(appliedFilter) : appliedFilter;
+    const terms = sanitizeForSearch(query).trim().split(/\s+/).filter(Boolean);
     if (terms.length === 0) return options;
     // Match each whitespace-separated term against the option's haystack, so a
     // query spanning several pieces (e.g. "Spanish Argentina") still matches
@@ -204,7 +225,7 @@ export default function SearchableSelectField({
       const haystack = haystacks.get(o.value) ?? "";
       return terms.every((term) => haystack.includes(term));
     });
-  }, [options, appliedFilter, haystacks]);
+  }, [options, appliedFilter, haystacks, normalizeQuery]);
 
   const selectedOption = options.find((o) => o.value === field.state.value);
 
