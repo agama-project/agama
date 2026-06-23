@@ -98,7 +98,7 @@ function L10nForm({ locales, keymaps, timezones, locale, keymap, timezone }: L10
           }
         </form.Subscribe>
 
-        {/* Success / no-changes / validation error alerts — managed by useFormSubmit */}
+        {/* Success / no-changes / validation error alerts, managed by useFormSubmit */}
         <AlertSubscribe form={form} />
 
         <LanguageField form={form} locales={locales} />

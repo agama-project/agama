@@ -109,9 +109,9 @@ type SearchableSelectFieldProps = {
  * rest with no selection, `emptyPlaceholder` prompts the user to choose. Once an
  * option is committed the toggle shows a plain selection.
  *
- * DOM focus stays on the text input at all times. List navigation is
- * communicated to assistive technologies via `aria-activedescendant`: the
- * input never loses focus during keyboard navigation.
+ * DOM focus stays on the text input at all times, even while navigating the
+ * list with the keyboard; the highlighted option is communicated to assistive
+ * technologies via `aria-activedescendant` rather than by moving focus.
  *
  * Keyboard behaviour:
  * - ArrowDown / ArrowUp (closed): open the list, highlighting the first / last option
