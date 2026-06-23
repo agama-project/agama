@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import { sift } from "radashi";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
@@ -47,12 +48,13 @@ const TimezoneField = withForm({
       // UTC offset followed by the current local time in the zone. The zone id is
       // not shown (it already reads as the option title) but stays in filterText
       // so it remains searchable.
-      const detail = [offset, timezoneTime(timezone.id, now)].filter(Boolean).join(" ");
-      // The displayed offset keeps the "UTC" prefix (e.g. "UTC+1") so it reads
-      // clearly, but the filter uses only the numeric part (e.g. "+1"). Otherwise
+      const detail = sift([offset, timezoneTime(timezone.id, now)]).join(" ");
+      // The displayed offset keeps the "UTC" prefix and reads clearly (e.g.
+      // "Europe/Berlin" shows "UTC+1"), but filterText stores only the bare signed
+      // number, "+N" / "-N" (so its filterText reads "...berlin +1"). Without that,
       // every zone would carry "UTC" and typing "UTC" would match them all, hiding
-      // the actual UTC zone (still findable here via its id and parts). Filtering
-      // by offset, e.g. "+1", keeps working.
+      // the actual Coordinated Universal Time zone (still found here via its id and
+      // parts).
       const offsetFilter = offset.replace("UTC", "");
 
       return {
@@ -60,11 +62,18 @@ const TimezoneField = withForm({
         label: timezone.parts.join(" / "),
         description: (
           <>
-            {timezone.country}{" "}
+            {timezone.country && <>{timezone.country} </>}
             <Text textStyle={["fontSizeXs", "fontFamilyMonospace"]}>{detail}</Text>
           </>
         ),
-        filterText: `${timezone.parts.join(" ")} ${timezone.country} ${timezone.id} ${offsetFilter}`,
+        // Drop empty pieces: a zone may have no country (e.g. UTC) and the
+        // universal zone has no offset, so neither should leak into the haystack.
+        filterText: sift([
+          timezone.parts.join(" "),
+          timezone.country,
+          timezone.id,
+          offsetFilter,
+        ]).join(" "),
       };
     });
 
@@ -78,6 +87,14 @@ const TimezoneField = withForm({
             placeholder={_("Filter by territory, time zone code or UTC offset")}
             // TRANSLATORS: shown when no time zone matches the filter
             noResultsText={_("None of the time zones match the filter.")}
+            // UX nicety: filterText stores the offset as a bare "+N" / "-N" (see
+            // above), but users naturally type "UTC+1" too, so map that prefixed
+            // form back to the stored number (a stray space before the sign is
+            // tolerated) and offset filtering works either way. Typing just "UTC"
+            // is intentionally left untouched: it surfaces only the Coordinated
+            // Universal Time zone so it is not lost among all the others, until
+            // the user adds the offset (+/-N) to filter by it.
+            normalizeQuery={(query) => query.replace(/\butc\s*([+-])/gi, "$1")}
             clearable
             options={options}
           />
