@@ -187,6 +187,14 @@
     --agm-t--status--danger--color,
     var(--agm-t--color--persimmon--60)
   );
+  // PF's text-color status family (the pf-v6-u-text-color-status-* utilities,
+  // used by the overview section icons) follows the overridden --default for
+  // every variant except danger, which in dark points at a separate red step.
+  // Map it too so a danger icon matches the danger alert and border.
+  --pf-t--global--text--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
   --pf-t--global--color--status--success--default: var(
     --agm-t--status--success--color,
     var(--agm-t--color--jungle--30)
