@@ -120,6 +120,7 @@ translations:
         ka: სტანდარტული
         kab: Tizeɣt
         nb_NO: Standard
+        pt_BR: Padrão
         ru: Стандартный
         sk: Štandardný
         sv: Standard
@@ -139,6 +140,7 @@ translations:
         ja: 標準システム
         ka: სტანდარტული სისტემა
         kab: Anagraw n tizeɣt
+        pt_BR: Sistema padrão
         ru: Стандартная система
         sk: Štandardný systém
         sv: Standard system
@@ -159,6 +161,7 @@ translations:
         ja: 不変型
         ka: უცვლადი
         nb_NO: Immutable
+        pt_BR: Imutável
         ru: Неизменяемый
         sk: Nemenný
         sv: Oföränderlig
@@ -178,6 +181,7 @@ translations:
         ja: 不可分な更新機能を持つ不変型システム
         ka: უცვლელი სისტემა ატომური განახლებებით
         nb_NO: Et uforanderlig system med atomiske oppdateringer
+        pt_BR: Sistema imutável com atualizações atômicas
         ru: Неизменяемая система с атомарными обновлениями
         sk: Nemenný systém s atomickými aktualizáciami
         sv: Oföränderligt system med atomiska uppdateringar
