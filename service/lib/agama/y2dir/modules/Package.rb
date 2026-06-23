@@ -25,8 +25,10 @@ require "yast"
 module Yast
   # Replacement for the Yast::Package module.
   class PackageClass < Module
+    include Yast::Logger
+
     def main
-      puts "Loading mocked module #{__FILE__}"
+      log.info "Loading mocked module #{__FILE__}"
     end
 
     # Whether a package is available.
@@ -57,6 +59,8 @@ module Yast
     # @param name [String]
     # @return [Boolean]
     def Available(name)
+      log.info "Calling mocked module #{__FILE__}"
+
       # For os-prober, let's consider the package as available only if the product requires it.
       return require_os_prober? if name == OS_PROBER
 

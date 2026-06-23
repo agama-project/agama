@@ -25,27 +25,33 @@ require "yast"
 module Yast
   # Replacement for the Yast::PackagesProposal module
   class PackagesProposalClass < Module
+    include Yast::Logger
+
     def main
-      puts "Loading mocked module #{__FILE__}"
+      log.info "Loading mocked module #{__FILE__}"
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L118
     def AddResolvables(unique_id, type, resolvables, optional: false)
+      log.info "Calling mocked module #{__FILE__}"
       true
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L145
     def SetResolvables(unique_id, type, resolvables, optional: false)
+      log.info "Calling mocked module #{__FILE__}"
       true
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L285
     def GetResolvables(unique_id, type, optional: false)
+      log.info "Calling mocked module #{__FILE__}"
       []
     end
 
     # @see https://github.com/yast/yast-yast2/blob/b8cd178b7f341f6e3438782cb703f4a3ab0529ed/library/general/src/modules/PackagesProposal.rb#L177
     def RemoveResolvables(unique_id, type, resolvables, optional: false)
+      log.info "Calling mocked module #{__FILE__}"
       true
     end
   end
