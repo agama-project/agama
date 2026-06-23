@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-15 12:11+0000\n"
+"POT-Creation-Date: 2026-06-10 15:11+0000\n"
 "PO-Revision-Date: 2025-08-01 13:59+0000\n"
 "Last-Translator: Davide Aiello <davide.aiello@novilingulists.com>\n"
 "Language-Team: Italian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -64,7 +64,7 @@ msgstr "Carica le traduzione dello spazio di memorizzazione"
 
 #. @param certificate [Agama::SSL::Certificate]
 #. @return [Agama::Question]
-#: service/lib/agama/registration.rb:424
+#: service/lib/agama/registration.rb:423
 msgid ""
 "Trying to import a self signed certificate. Do you want to trust it and "
 "register the product?"
