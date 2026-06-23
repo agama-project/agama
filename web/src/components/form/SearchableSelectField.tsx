@@ -93,6 +93,10 @@ type SearchableSelectFieldProps = {
   // away) clears the selection. When false, leaving with an empty input keeps
   // the previously selected value. Escape always reverts, never clears.
   clearable?: boolean;
+  // Called each time the option list opens. Lets the consumer react to opening,
+  // e.g. to refresh content that should reflect the moment of opening rather than
+  // the first render.
+  onOpen?: () => void;
   maxHeight?: string;
 };
 
@@ -150,6 +154,7 @@ export default function SearchableSelectField({
   normalizeQuery,
   emptyPlaceholder,
   clearable = false,
+  onOpen,
   maxHeight = "300px",
 }: SearchableSelectFieldProps) {
   const field = useFieldContext<string>();
@@ -191,6 +196,15 @@ export default function SearchableSelectField({
 
   // Cancel a pending debounce on unmount.
   useEffect(() => () => debouncedApplyFilter.cancel(), [debouncedApplyFilter]);
+
+  // Notify the consumer when the list opens (rising edge of isOpen). A ref holds
+  // the latest callback so an inline one does not re-fire the effect on every
+  // parent render; only the open transition does.
+  const onOpenRef = useRef(onOpen);
+  onOpenRef.current = onOpen;
+  useEffect(() => {
+    if (isOpen) onOpenRef.current?.();
+  }, [isOpen]);
 
   // Clearing applies at once (no point debouncing an empty query); any other
   // value goes through the debounce.

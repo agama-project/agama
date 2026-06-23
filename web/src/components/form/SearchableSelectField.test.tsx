@@ -57,6 +57,7 @@ type TestFormProps = {
   labelWithDescription?: boolean;
   options?: TestOption[];
   normalizeQuery?: (query: string) => string;
+  onOpen?: () => void;
 };
 
 function TestForm({
@@ -65,6 +66,7 @@ function TestForm({
   labelWithDescription = true,
   options = OPTIONS,
   normalizeQuery,
+  onOpen,
 }: TestFormProps) {
   const form = useAppForm({ defaultValues: { language: defaultValue } });
 
@@ -80,6 +82,7 @@ function TestForm({
             clearable={clearable}
             selectedLabel={labelWithDescription ? (o) => `${o.label} (${o.value})` : undefined}
             normalizeQuery={normalizeQuery}
+            onOpen={onOpen}
             options={options}
           />
         )}
@@ -195,6 +198,15 @@ describe("SearchableSelectField", () => {
 
     await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
     expect(screen.getByText("German")).toBeInTheDocument();
+  });
+
+  it("calls onOpen when the list opens", async () => {
+    const onOpen = jest.fn();
+    const { user } = installerRender(<TestForm onOpen={onOpen} />);
+    await user.click(combobox());
+
+    await screen.findByRole("listbox");
+    expect(onOpen).toHaveBeenCalledTimes(1);
   });
 
   it("matches regardless of diacritics", async () => {

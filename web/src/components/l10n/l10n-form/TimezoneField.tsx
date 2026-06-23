@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { sift } from "radashi";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
@@ -42,7 +42,9 @@ const TimezoneField = withForm({
   ...defaultOptions,
   props: { timezones: [] } as TimezoneFieldProps,
   render: function Render({ form, timezones }) {
-    const now = new Date();
+    // Refreshed when the list opens (see onOpen) so the shown local times reflect
+    // when the user opens the selector, not when the page was first rendered.
+    const [now, setNow] = useState(() => new Date());
     const options = timezones.map((timezone) => {
       const offset = timezoneUtcOffset(timezone.id, now);
       // UTC offset followed by the current local time in the zone. The zone id is
@@ -95,6 +97,7 @@ const TimezoneField = withForm({
             // Universal Time zone so it is not lost among all the others, until
             // the user adds the offset (+/-N) to filter by it.
             normalizeQuery={(query) => query.replace(/\butc\s*([+-])/gi, "$1")}
+            onOpen={() => setNow(new Date())}
             clearable
             options={options}
           />
