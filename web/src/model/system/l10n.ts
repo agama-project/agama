@@ -56,9 +56,10 @@ type Timezone = {
    */
   parts: string[];
   /**
-   * Name of the country associated to the zone or empty string (e.g., "Spain").
+   * Name of the country associated to the zone, or null when it has none (e.g.
+   * "Spain"; null for "UTC").
    */
-  country: string;
+  country: string | null;
   /**
    * UTC offset.
    */
