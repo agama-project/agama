@@ -145,4 +145,70 @@
     --agm-t--icon--color,
     var(--agm-t--text--color, var(--pf-t--global--dark--icon--color--100))
   );
+
+  // Status / alert variants for dark. Same role hooks as light (see
+  // _semantic.scss), but the defaults use lighter brand shades so the variant's
+  // icon and border stay legible on the deep pine surfaces. Without this block
+  // dark would fall through to PF's stock dark statuses (a neon yellow caution
+  // and a purple info that clash with the Agama palette).
+  --pf-t--global--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--30)
+  );
+  --pf-t--global--icon--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--30)
+  );
+  --pf-t--global--border--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--30)
+  );
+  --pf-t--global--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--agm-t--color--persimmon--40)
+  );
+  --pf-t--global--icon--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--agm-t--color--persimmon--40)
+  );
+  --pf-t--global--border--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--agm-t--color--persimmon--40)
+  );
+  --pf-t--global--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
+  --pf-t--global--icon--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
+  --pf-t--global--border--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
+  --pf-t--global--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--agm-t--color--jungle--30)
+  );
+  --pf-t--global--icon--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--agm-t--color--jungle--30)
+  );
+  --pf-t--global--border--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--agm-t--color--jungle--30)
+  );
+  --pf-t--global--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--agm-t--color--mint--70)
+  );
+  --pf-t--global--icon--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--agm-t--color--mint--70)
+  );
+  --pf-t--global--border--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--agm-t--color--mint--70)
+  );
 }

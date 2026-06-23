@@ -239,9 +239,11 @@
   );
 
   // Status / alert variants. Each role drives the variant's text, icon and
-  // border (so alerts, labels and status icons follow it). Defaults keep the
-  // Agama / PatternFly values. The "caution" role maps to PF's "warning"
-  // variant (Agama avoids the word "warning").
+  // border (so alerts, labels and status icons follow it). Defaults are SUSE
+  // brand shades picked for legibility on the light surface (the stock PF
+  // warning yellow failed contrast on white). The "caution" role maps to PF's
+  // "warning" variant (Agama avoids the word "warning"): SUSE has no yellow, so
+  // caution and danger both come from the Persimmon family, set apart by shade.
   --pf-t--global--color--status--info--default: var(
     --agm-t--status--info--color,
     var(--agm-t--color--waterhole--50)
@@ -256,50 +258,50 @@
   );
   --pf-t--global--color--status--warning--default: var(
     --agm-t--status--caution--color,
-    var(--pf-t--global--color--status--warning--100)
+    var(--agm-t--color--persimmon--60)
   );
   --pf-t--global--icon--color--status--warning--default: var(
     --agm-t--status--caution--color,
-    var(--pf-t--global--color--status--warning--100)
+    var(--agm-t--color--persimmon--60)
   );
   --pf-t--global--border--color--status--warning--default: var(
     --agm-t--status--caution--color,
-    var(--pf-t--global--color--status--warning--100)
+    var(--agm-t--color--persimmon--60)
   );
   --pf-t--global--color--status--danger--default: var(
     --agm-t--status--danger--color,
-    var(--pf-t--global--color--status--danger--100)
+    var(--agm-t--color--persimmon--70)
   );
   --pf-t--global--icon--color--status--danger--default: var(
     --agm-t--status--danger--color,
-    var(--pf-t--global--color--status--danger--100)
+    var(--agm-t--color--persimmon--70)
   );
   --pf-t--global--border--color--status--danger--default: var(
     --agm-t--status--danger--color,
-    var(--pf-t--global--color--status--danger--100)
+    var(--agm-t--color--persimmon--70)
   );
   --pf-t--global--color--status--success--default: var(
     --agm-t--status--success--color,
-    var(--pf-t--global--color--status--success--100)
+    var(--agm-t--color--pine--30)
   );
   --pf-t--global--icon--color--status--success--default: var(
     --agm-t--status--success--color,
-    var(--pf-t--global--color--status--success--100)
+    var(--agm-t--color--pine--30)
   );
   --pf-t--global--border--color--status--success--default: var(
     --agm-t--status--success--color,
-    var(--pf-t--global--color--status--success--100)
+    var(--agm-t--color--pine--30)
   );
   --pf-t--global--color--status--custom--default: var(
     --agm-t--status--custom--color,
-    var(--pf-t--global--color--status--custom--100)
+    var(--agm-t--color--mint--80)
   );
   --pf-t--global--icon--color--status--custom--default: var(
     --agm-t--status--custom--color,
-    var(--pf-t--global--color--status--custom--100)
+    var(--agm-t--color--mint--80)
   );
   --pf-t--global--border--color--status--custom--default: var(
     --agm-t--status--custom--color,
-    var(--pf-t--global--color--status--custom--100)
+    var(--agm-t--color--mint--80)
   );
 }
