@@ -249,6 +249,13 @@ impl InstallAction {
                     .call(progress::message::SetStage::new(Stage::Finished))
                     .await
                     .map_err(TaskError::from_error)?;
+                // Here we use default Stop, so only explicit kernel parameter do something
+                // Its main use case is interactive installation as auto-installation call explicitly
+                // finish action with its own default.
+                let method =
+                    api::FinishMethod::from_kernel_cmdline().unwrap_or(api::FinishMethod::Stop);
+                let finish = FinishAction::new(method);
+                finish.run();
                 Ok(())
             })
             .await;
