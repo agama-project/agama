@@ -21,8 +21,11 @@
  */
 
 import React from "react";
-import { Button, Content } from "@patternfly/react-core";
-import { InstallerL10nOptions, Page } from "~/components/core";
+import { Button } from "@patternfly/react-core";
+import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
+import Interpolate from "~/components/core/Interpolate";
+import Page from "~/components/core/Page";
+import Text from "~/components/core/Text";
 import L10nForm from "~/components/l10n/l10n-form/Form";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
@@ -42,20 +45,20 @@ const InstallerL10nSettingsInfo = () => {
         "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.",
       );
 
-  const [infoStart, infoLink, infoEnd] = info.split(/[[\]]/);
-
   return (
-    <small>
-      {infoStart}{" "}
-      <InstallerL10nOptions
-        toggle={({ onClick }) => (
-          <Button variant="link" isInline onClick={onClick}>
-            {infoLink}
-          </Button>
+    <Text textStyle="textColorSubtle">
+      <Interpolate sentence={info}>
+        {(text) => (
+          <InstallerL10nOptions
+            toggle={({ onClick }) => (
+              <Button variant="link" isInline onClick={onClick}>
+                {text}
+              </Button>
+            )}
+          />
         )}
-      />
-      {infoEnd}
-    </small>
+      </Interpolate>
+    </Text>
   );
 };
 
@@ -66,10 +69,8 @@ export default function L10nPage() {
   return (
     <Page breadcrumbs={[{ label: "Language and region" }]}>
       <Page.Content>
+        <InstallerL10nSettingsInfo />
         <L10nForm />
-        <Content>
-          <InstallerL10nSettingsInfo />
-        </Content>
       </Page.Content>
     </Page>
   );
