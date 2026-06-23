@@ -104,6 +104,7 @@
     "axios": "^1.13.6",
     "fast-sort": "^3.4.1",
     "ipaddr.js": "^2.3.0",
+    "monaco-editor": "^0.55.1",
     "radashi": "^12.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
