@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Wed Jun 24 15:19:28 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
-- Break a systemd dependency cycle (systemd deletes some services
+- Break a initrd-nmtui systemd dependency cycle (systemd deletes some services
   to break the cycle, that services are then missing and it might
   trigger the emergency shell) (bsc#1268901)
 
