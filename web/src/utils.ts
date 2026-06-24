@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { isArray, isPlainObject, mapEntries } from "radashi";
+import { capitalize, isArray, isPlainObject, mapEntries } from "radashi";
 import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
 import { _ } from "~/i18n";
@@ -821,5 +821,6 @@ export {
   extendCollection,
   translateEntries,
   isoTimestamp,
+  capitalize,
   download,
 };

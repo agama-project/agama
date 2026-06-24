@@ -24,6 +24,7 @@ import React from "react";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
+import { capitalize } from "~/utils";
 import { _ } from "~/i18n";
 
 import type { Locale } from "~/model/system/l10n";
@@ -40,10 +41,10 @@ const LanguageField = withForm({
   render: function Render({ form, locales }) {
     const options = locales.map((locale) => ({
       value: locale.id,
-      label: locale.language,
+      label: capitalize(locale.language),
       description: (
         <>
-          {locale.territory}{" "}
+          {capitalize(locale.territory)}{" "}
           <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>
             {locale.id}
           </Text>
@@ -65,7 +66,9 @@ const LanguageField = withForm({
             clearable
             selectedLabel={(option) => {
               const locale = locales.find((l) => l.id === option.value);
-              return locale ? `${locale.language} (${locale.territory})` : option.label;
+              return locale
+                ? `${capitalize(locale.language)} (${capitalize(locale.territory)})`
+                : option.label;
             }}
             options={options}
           />

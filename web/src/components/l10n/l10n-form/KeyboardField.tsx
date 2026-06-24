@@ -24,6 +24,7 @@ import React from "react";
 import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
+import { capitalize } from "~/utils";
 import { _ } from "~/i18n";
 
 import type { Keymap } from "~/model/system/l10n";
@@ -40,7 +41,7 @@ const KeyboardField = withForm({
   render: function Render({ form, keymaps }) {
     const options = keymaps.map((keymap) => ({
       value: keymap.id,
-      label: keymap.description,
+      label: capitalize(keymap.description),
       description: (
         <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>
           {keymap.id}

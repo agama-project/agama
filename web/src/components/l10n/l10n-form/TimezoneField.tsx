@@ -26,7 +26,7 @@ import Text from "~/components/core/Text";
 import { withForm } from "~/hooks/form";
 import { defaultOptions } from "./fields";
 import { timezoneUtcOffset } from "./transformations";
-import { timezoneTime } from "~/utils";
+import { capitalize, timezoneTime } from "~/utils";
 import { _ } from "~/i18n";
 
 import type { Timezone } from "~/model/system/l10n";
@@ -61,10 +61,10 @@ const TimezoneField = withForm({
 
       return {
         value: timezone.id,
-        label: timezone.parts.join(" / "),
+        label: capitalize(timezone.parts.join(" / ")),
         description: (
           <>
-            {timezone.country && <>{timezone.country} </>}
+            {timezone.country && <>{capitalize(timezone.country)} </>}
             <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>
               {detail}
             </Text>
