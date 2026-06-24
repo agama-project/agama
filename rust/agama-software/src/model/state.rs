@@ -26,9 +26,12 @@ use std::collections::HashMap;
 use std::fmt;
 
 use agama_utils::{
-    api::{self, software::{
-        Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
-    }},
+    api::{
+        self,
+        software::{
+            Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
+        },
+    },
     kernel_cmdline::KernelCmdline,
     products::{ProductSpec, UserPatternSpec},
 };
@@ -150,7 +153,6 @@ impl<'a> SoftwareStateBuilder<'a> {
         self.predefined_repositories = predefined_repositories;
         self
     }
-
 
     /// Builds the [SoftwareState] combining all the sources.
     pub fn build(self) -> SoftwareState {
@@ -1006,22 +1008,11 @@ mod tests {
             predefined: true,
         };
 
-        let another_repo = Repository {
-            alias: "another".to_string(),
-            name: "another".to_string(),
-            url: "https://example.lan/SLES/".to_string(),
-            enabled: false,
-            predefined: false,
-        };
-
-        let system = SystemInfo {
-            repositories: vec![base_repo, another_repo],
-            ..Default::default()
-        };
+        let repos = vec![base_repo];
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .with_system(&system)
+            .with_predefined_repositories(repos)
             .build();
 
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();

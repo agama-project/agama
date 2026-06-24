@@ -22,7 +22,8 @@ use agama_security::test_utils::start_service as start_security_service;
 use agama_utils::{
     actor::Handler,
     api::{
-        self, event, software::{SoftwareProposal, SystemInfo}
+        self, event,
+        software::{SoftwareProposal, SystemInfo},
     },
     issue,
     products::ProductSpec,
