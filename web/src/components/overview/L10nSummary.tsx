@@ -27,6 +27,7 @@ import { useProposal } from "~/hooks/model/proposal/l10n";
 import { useSystem } from "~/hooks/model/system/l10n";
 import { L10N } from "~/routes/paths";
 import { sprintf } from "sprintf-js";
+import { capitalize } from "~/utils";
 import { _ } from "~/i18n";
 
 /**
@@ -64,7 +65,11 @@ export default function L10nSummary() {
         // TRANSLATORS: Additional details shown under the language selection.
         // %1$s is the keyboard layout name (e.g. "Spanish").
         // %2$s is the time zone identifier (e.g. "Atlantic/Canary").
-        sprintf(_("%1$s keyboard - %2$s timezone"), keymap.description, timezone.id)
+        sprintf(
+          _("%1$s keyboard - %2$s timezone"),
+          keymap.description,
+          timezone.parts.map(capitalize).join(" / "),
+        )
       }
     />
   );

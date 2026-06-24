@@ -61,7 +61,7 @@ const TimezoneField = withForm({
 
       return {
         value: timezone.id,
-        label: capitalize(timezone.parts.join(" / ")),
+        label: timezone.parts.map(capitalize).join(" / "),
         description: (
           <>
             {timezone.country && <>{capitalize(timezone.country)} </>}
