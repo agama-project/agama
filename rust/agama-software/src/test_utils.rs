@@ -22,8 +22,7 @@ use agama_security::test_utils::start_service as start_security_service;
 use agama_utils::{
     actor::Handler,
     api::{
-        event,
-        software::{SoftwareProposal, SystemInfo},
+        self, event, software::{SoftwareProposal, SystemInfo}
     },
     issue,
     products::ProductSpec,
@@ -45,6 +44,10 @@ pub struct TestModel;
 impl ModelAdapter for TestModel {
     async fn system_info(&self) -> Result<SystemInfo, service::Error> {
         Ok(SystemInfo::default())
+    }
+
+    fn predefined_repositories(&self) -> Vec<api::software::Repository> {
+        Default::default()
     }
 
     async fn proposal(&self) -> Result<SoftwareProposal, service::Error> {
