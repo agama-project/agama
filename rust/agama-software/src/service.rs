@@ -184,7 +184,7 @@ pub struct Service {
     kernel_cmdline: KernelCmdline,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 struct ServiceState {
     config: Config,
     system: SystemInfo,
@@ -235,6 +235,7 @@ impl Service {
 
         let new_state = {
             let state = self.state.read().await;
+            tracing::info!("computing state from {product:?} and {:?}", state);
             SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
         };
 
