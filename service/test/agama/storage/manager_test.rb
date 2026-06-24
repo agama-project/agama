@@ -324,7 +324,8 @@ describe Agama::Storage::Manager do
     let(:used_features) do
       instance_double(
         Y2Storage::StorageFeaturesList,
-        pkg_list: ["btrfsprogs", "snapper"],
+        packages: [Y2Storage::Feature::Package.new("btrfsprogs"),
+                   Y2Storage::Feature::Package.new("snapper")],
         any?:     false
       )
     end
@@ -332,7 +333,7 @@ describe Agama::Storage::Manager do
     let(:proposal_success) { true }
 
     it "returns packages for storage features" do
-      expect(storage.packages).to include("btrfsprogs", "snapper")
+      expect(storage.packages.map(&:name)).to include("btrfsprogs", "snapper")
     end
 
     context "if iSCSI was used" do
@@ -341,7 +342,7 @@ describe Agama::Storage::Manager do
       end
 
       it "includes the iSCSI packages" do
-        expect(storage.packages).to include("open-iscsi", "iscsiuio")
+        expect(storage.packages.map(&:name)).to include("open-iscsi", "iscsiuio")
       end
     end
 
@@ -364,7 +365,7 @@ describe Agama::Storage::Manager do
     end
 
     it "returns packages required by the bootloader" do
-      expect(storage.bootloader_packages).to eq(bootloader_packages)
+      expect(storage.bootloader_packages.map(&:name)).to eq(bootloader_packages)
     end
   end
 

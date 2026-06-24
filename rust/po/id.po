@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 15:05+0000\n"
-"PO-Revision-Date: 2026-06-13 02:12+0000\n"
+"POT-Creation-Date: 2026-06-18 16:05+0000\n"
+"PO-Revision-Date: 2026-06-16 18:12+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "rust-master/id/>\n"
@@ -33,10 +33,11 @@ msgstr "Muat ulang konfigurasi"
 msgid "Skip and configure manually"
 msgstr "Lewati dan konfigurasi secara manual"
 
-#: agama-autoinstall/src/scripts.rs:134
+#. TRANSLATORS: {0} is a URL
+#: agama-autoinstall/src/scripts.rs:135
+#, fuzzy
 msgid ""
-"It was not possible to load the script from {0}. Do you want to try again?\n"
-"                "
+"It was not possible to load the script from {0}. Do you want to try again?"
 msgstr ""
 "Tidak dapat memuat skrip dari {0}. Apakah Anda ingin mencoba lagi?\n"
 "                "
@@ -120,11 +121,12 @@ msgstr "Analisis sistem"
 
 #. TRANSLATORS: CLI help for: agama probe (details)
 #: agama-cli/src/commands.rs:44
+#, fuzzy
 msgid ""
 "In Agama's jargon, the term 'probing' refers to the process of 'analyzing' "
 "the system. This includes reading software repositories, analyzing storage "
 "devices, and more. The 'probe' command initiates this analysis process and "
-"returns immediately. TODO: do we really need a \"probe\" action?"
+"returns immediately."
 msgstr ""
 "Dalam istilah Agama, \"probing\" merujuk pada proses \"menganalisis\" "
 "sistem. Ini mencakup pembacaan repositori perangkat lunak, analisis "
@@ -133,12 +135,12 @@ msgstr ""
 "aksi \"probe\"?"
 
 #. TRANSLATORS: CLI help for: agama install
-#: agama-cli/src/commands.rs:54
+#: agama-cli/src/commands.rs:53
 msgid "Start the system installation"
 msgstr "Mulai instalasi sistem"
 
 #. TRANSLATORS: CLI help for: agama install (details)
-#: agama-cli/src/commands.rs:56
+#: agama-cli/src/commands.rs:55
 msgid ""
 "This command starts the installation process.  Beware it is a destructive "
 "operation because it will set up the storage devices, install the packages, "
@@ -155,12 +157,12 @@ msgstr ""
 "pengguna lalu kembali tanpa melakukan perubahan apa pun pada sistem."
 
 #. TRANSLATORS: CLI help for: agama download
-#: agama-cli/src/commands.rs:79
+#: agama-cli/src/commands.rs:78
 msgid "Download file from a given (AutoYaST) URL"
 msgstr "Unduh berkas dari URL (AutoYaST) yang diberikan"
 
 #. TRANSLATORS: CLI help for: agama download (details)
-#: agama-cli/src/commands.rs:81
+#: agama-cli/src/commands.rs:80
 msgid ""
 "The purpose of this command is to download files using AutoYaST supported "
 "schemas (e.g. device://). It can be used to download additional scripts, "
@@ -175,7 +177,7 @@ msgstr ""
 "mengonversi profil AutoYaST, gunakan \"agama config generate\"."
 
 #. TRANSLATORS: CLI help for: agama download <URL>
-#: agama-cli/src/commands.rs:95
+#: agama-cli/src/commands.rs:94
 msgid ""
 "URL reference pointing to file for download. If a relative URL is provided, "
 "it will be resolved against the current working directory"
@@ -184,17 +186,17 @@ msgstr ""
 "relatif, URL tersebut akan diselesaikan terhadap direktori kerja saat ini"
 
 #. TRANSLATORS: CLI help for: agama download <DESTINATION>
-#: agama-cli/src/commands.rs:105
+#: agama-cli/src/commands.rs:104
 msgid "File name"
 msgstr "Nama berkas"
 
 #. TRANSLATORS: CLI help for: agama finish
-#: agama-cli/src/commands.rs:112
+#: agama-cli/src/commands.rs:111
 msgid "Finish the installation"
 msgstr "Selesaikan instalasi"
 
 #. TRANSLATORS: CLI help for: agama finish <METHOD>
-#: agama-cli/src/commands.rs:118
+#: agama-cli/src/commands.rs:117
 msgid ""
 "What to do after finishing the installation. Possible values:\n"
 "\n"
@@ -220,12 +222,12 @@ msgstr ""
 "   poweroff - matikan mesin yang terpasang."
 
 #. TRANSLATORS: CLI help for: agama monitor
-#: agama-cli/src/commands.rs:136
+#: agama-cli/src/commands.rs:135
 msgid "Continuously monitors the Agama service until it finishes"
 msgstr "Terus memantau layanan Agama hingga selesai"
 
 #. TRANSLATORS: CLI help for: agama status
-#: agama-cli/src/commands.rs:143
+#: agama-cli/src/commands.rs:142
 msgid ""
 "Prints the current state of the installation (e.g., waiting, blocked, "
 "running, or finished)"
@@ -234,17 +236,17 @@ msgstr ""
 "running, atau finished)"
 
 #. TRANSLATORS: CLI help for: agama status --format <FORMAT>
-#: agama-cli/src/commands.rs:151
+#: agama-cli/src/commands.rs:150
 msgid "Specify in which format status will be shown"
 msgstr "Tentukan format tampilan status"
 
 #. TRANSLATORS: CLI help for: agama events
-#: agama-cli/src/commands.rs:158
+#: agama-cli/src/commands.rs:157
 msgid "Display Agama events"
 msgstr "Tampilkan peristiwa Agama"
 
 #. TRANSLATORS: CLI help for: agama events --pretty
-#: agama-cli/src/commands.rs:165
+#: agama-cli/src/commands.rs:164
 msgid "Display the events in a more human-readable way"
 msgstr "Tampilkan peristiwa dengan cara yang lebih mudah dibaca manusia"
 
@@ -400,7 +402,7 @@ msgstr "Perintah editor (termasuk argumen tambahan jika diperlukan)"
 msgid "It is not a valid JSON file"
 msgstr "Ini bukan berkas JSON yang valid"
 
-#: agama-cli/src/config.rs:412
+#: agama-cli/src/config.rs:416
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr "Mengabaikan perubahan karena editor ditutup dengan kode galat."
 
@@ -585,7 +587,7 @@ msgstr "Instalasi selesai."
 msgid "You can reboot the machine to log in to the new system."
 msgstr "Anda dapat me-reboot mesin untuk masuk ke sistem baru."
 
-#: agama-cli/src/monitor/ui/content.rs:68 agama-cli/src/status.rs:76
+#: agama-cli/src/monitor/ui/content.rs:68
 msgid "Installation failed."
 msgstr "Instalasi gagal."
 
@@ -601,17 +603,17 @@ msgstr "Perlu tindakan:"
 msgid "No product has been selected yet."
 msgstr "Belum ada produk yang dipilih."
 
-#: agama-cli/src/monitor/ui/content.rs:172
-msgid "Following issues needs to be addressed in the configuration:"
-msgstr "Masalah berikut perlu ditangani dalam konfigurasi:"
+#: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
+msgid "Fix invalid settings before starting the installation:"
+msgstr "Perbaiki pengaturan yang tidak valid sebelum memulai instalasi:"
 
-#: agama-cli/src/monitor/ui/content.rs:193
-msgid "Ready for installation."
-msgstr "Siap untuk instalasi."
+#: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
+msgid "Ready to start the installation."
+msgstr "Siap untuk memulai instalasi."
 
 #: agama-cli/src/monitor/ui/content.rs:194
-msgid "Waiting to start installation..."
-msgstr "Menunggu untuk memulai instalasi..."
+msgid "Starting the installation."
+msgstr "Memulai instalasi."
 
 #: agama-cli/src/monitor/ui/content.rs:210
 msgid "Step"
@@ -621,14 +623,10 @@ msgstr "Langkah"
 msgid "of"
 msgstr "dari"
 
-#: agama-cli/src/monitor/ui/issues.rs:64
-msgid "Waiting for these to be resolved."
-msgstr "Menunggu untuk diselesaikan."
-
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
-msgid "Additional data"
-msgstr "Data tambahan"
+msgid "Technical details"
+msgstr "Detail teknis"
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
 #: agama-cli/src/monitor/ui/question.rs:317
@@ -769,44 +767,32 @@ msgid "Path to a file containing the answers in JSON format"
 msgstr "Path ke berkas yang berisi jawaban dalam format JSON"
 
 #: agama-cli/src/status.rs:77
-msgid "Installation finished successfully."
-msgstr "Instalasi selesai dengan sukses."
-
-#: agama-cli/src/status.rs:78
-msgid "Installation is ready to start."
-msgstr "Instalasi siap dimulai."
-
-#: agama-cli/src/status.rs:79
-msgid "Installation is in progress."
-msgstr "Instalasi sedang berlangsung."
+msgid ""
+"The installation failed. Use the \"agama logs store\" command to get the "
+"logs to troubleshoot or share with support."
+msgstr ""
+"Instalasi gagal. Gunakan perintah \"agama logs store\" untuk mengambil log "
+"guna pemecahan masalah atau dibagikan ke tim dukungan."
 
 #: agama-cli/src/status.rs:80
-msgid "Installation is being proposed."
-msgstr "Instalasi sedang diusulkan."
-
-#: agama-cli/src/status.rs:81
-msgid ""
-"There are unanswered questions. Use `agama monitor` command or the web user "
-"interface to answer them."
-msgstr ""
-"Masih ada pertanyaan yang belum dijawab. Gunakan perintah `agama monitor` "
-"atau antarmuka pengguna web untuk menjawabnya."
+msgid "The installation finished successfully."
+msgstr "Instalasi selesai dengan sukses."
 
 #: agama-cli/src/status.rs:82
-msgid "There are issues in configuration that are blocking the installation."
-msgstr "Ada masalah dalam konfigurasi yang memblokir instalasi."
+msgid "The installation is in progress."
+msgstr "Instalasi sedang berlangsung."
 
-#: agama-cli/src/status.rs:118 agama-utils/src/api/problem_details.rs:192
-msgid "Details:"
-msgstr "Detail:"
+#: agama-cli/src/status.rs:83
+msgid "The installer is preparing an installation proposal."
+msgstr "Installer sedang menyiapkan usulan instalasi."
 
-#: agama-cli/src/status.rs:120
-msgid "Open questions:"
-msgstr "Pertanyaan terbuka:"
-
-#: agama-cli/src/status.rs:126
-msgid "Blocking issues:"
-msgstr "Masalah yang menghalangi:"
+#: agama-cli/src/status.rs:85
+msgid ""
+"There are unanswered questions. Use the \"agama monitor\" command or the web "
+"user interface to answer them:"
+msgstr ""
+"Ada pertanyaan yang belum dijawab. Gunakan perintah \"agama monitor\" atau "
+"antarmuka web untuk menjawabnya:"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:184
@@ -967,6 +953,14 @@ msgstr "Permintaan profil tidak valid"
 msgid "AutoYaST conversion failed"
 msgstr "Konversi AutoYaST gagal"
 
+#: agama-server/src/server/web.rs:86
+msgid "Missing Language Tag"
+msgstr ""
+
+#: agama-server/src/server/web.rs:89
+msgid "Profile error"
+msgstr ""
+
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
@@ -1060,7 +1054,7 @@ msgstr "Terdapat konflik dalam pemilihan perangkat lunak"
 msgid "Could not select %s '%s' for installation"
 msgstr "Tidak dapat memilih %s '%s' untuk instalasi"
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr "Gagal mendaftarkan sistem"
 
@@ -1099,6 +1093,10 @@ msgstr "Tidak diizinkan"
 msgid "Error:"
 msgstr "Galat:"
 
+#: agama-utils/src/api/problem_details.rs:192
+msgid "Details:"
+msgstr "Detail:"
+
 #: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
 msgid "No"
 msgstr "Tidak"
@@ -1118,6 +1116,31 @@ msgstr "pola"
 #: agama-utils/src/resolvable.rs:64
 msgid "product"
 msgstr "produk"
+
+#~ msgid "Additional data"
+#~ msgstr "Data tambahan"
+
+#~ msgid "Following issues needs to be addressed in the configuration:"
+#~ msgstr "Masalah berikut perlu ditangani dalam konfigurasi:"
+
+#~ msgid "Waiting for these to be resolved."
+#~ msgstr "Menunggu untuk diselesaikan."
+
+#~ msgid "Installation is ready to start."
+#~ msgstr "Instalasi siap dimulai."
+
+#~ msgid "Installation is being proposed."
+#~ msgstr "Instalasi sedang diusulkan."
+
+#~ msgid ""
+#~ "There are issues in configuration that are blocking the installation."
+#~ msgstr "Ada masalah dalam konfigurasi yang memblokir instalasi."
+
+#~ msgid "Open questions:"
+#~ msgstr "Pertanyaan terbuka:"
+
+#~ msgid "Blocking issues:"
+#~ msgstr "Masalah yang menghalangi:"
 
 #~ msgid "There are pending questions:"
 #~ msgstr "Ada beberapa pertanyaan yang masih tertunda:"
@@ -1149,9 +1172,6 @@ msgstr "produk"
 #~ "Ada pertanyaan yang belum dijawab. Harap gunakan perintah `agama "
 #~ "questions` atau antarmuka web untuk menjawabnya:"
 
-#~ msgid "Installer is failed to calculate the installation proposal."
-#~ msgstr "Penginstal gagal menghitung proposal instalasi."
-
 #~ msgid "Details"
 #~ msgstr "Detail"
 
@@ -1163,3 +1183,25 @@ msgstr "produk"
 
 #~ msgid "There are software conflict in software selection"
 #~ msgstr "Ada konflik perangkat lunak dalam pemilihan perangkat lunak"
+
+#~ msgid "Ready for installation."
+#~ msgstr "Siap untuk instalasi."
+
+#~ msgid "Waiting to start installation..."
+#~ msgstr "Menunggu untuk memulai instalasi..."
+
+#~ msgid "Installation finished successfully."
+#~ msgstr "Instalasi selesai dengan sukses."
+
+#~ msgid "Installation is in progress."
+#~ msgstr "Instalasi sedang berlangsung."
+
+#~ msgid ""
+#~ "There are unanswered questions. Use `agama monitor` command or the web "
+#~ "user interface to answer them."
+#~ msgstr ""
+#~ "Masih ada pertanyaan yang belum dijawab. Gunakan perintah `agama monitor` "
+#~ "atau antarmuka pengguna web untuk menjawabnya."
+
+#~ msgid "Installer is failed to calculate the installation proposal."
+#~ msgstr "Penginstal gagal menghitung proposal instalasi."

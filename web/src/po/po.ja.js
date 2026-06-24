@@ -130,7 +130,7 @@ export default {
     "%s を下記の情報で登録しました。"
   ],
   "%s honors the browser and system preferences": [
-    "%s を指定すると、ブラウザとシステムの設定に従って設定します"
+    "%s を指定すると、ブラウザとシステムの設定に従うようになります"
   ],
   "%s is invalid: %s": [
     "%s が正しくありません: %s"
@@ -330,6 +330,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "このインターフェイスを通じて管理されるすべてのネットワーク接続は現在、インストール時にのみ使用されるように設定されており、インストールされたシステムにはコピーされません"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    "物理ボリュームを作成するため、選択したディスク内で利用可能な領域を全て使用します。"
+  ],
   "All the available zFCP controllers are already activated.": [
     "利用可能な全ての zFCP コントローラが有効化済みです。"
   ],
@@ -362,6 +365,9 @@ export default {
   ],
   "Appearance": [
     "外観"
+  ],
+  "As required by the logical volumes": [
+    "論理ボリュームで必要となる分だけ"
   ],
   "At least one DNS search domain is required": [
     "1 つ以上の DNS 検索ドメインを設定する必要があります"
@@ -660,8 +666,14 @@ export default {
   "Clear input": [
     "入力を消去"
   ],
+  "Clear terminal": [
+    "端末を消去"
+  ],
   "Close": [
     "閉じる"
+  ],
+  "Close terminal": [
+    "端末を閉じる"
   ],
   "Color scheme": [
     "色スキーム"
@@ -873,6 +885,9 @@ export default {
   "Deactivating": [
     "無効化中"
   ],
+  "Decrease font size": [
+    "フォントサイズを小さくする"
+  ],
   "Default": [
     "既定値"
   ],
@@ -950,6 +965,9 @@ export default {
   ],
   "Disabled": [
     "無効"
+  ],
+  "Discard changes": [
+    "変更点を破棄する"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "最大サイズの設定を破棄してシンプルな設定にして続ける"
@@ -1197,6 +1215,9 @@ export default {
   "Find space in %s": [
     "%s 内での容量検出"
   ],
+  "Fix invalid settings before starting the installation.": [
+    "インストールを開始する前に、正しくない設定を修正してください。"
+  ],
   "Fix the errors below and try again": [
     "エラーを修正してやり直してください"
   ],
@@ -1293,6 +1314,9 @@ export default {
   "Hide technical details": [
     "技術詳細を隠す"
   ],
+  "Hide terminal": [
+    "端末を隠す"
+  ],
   "High": [
     "高"
   ],
@@ -1376,6 +1400,9 @@ export default {
   ],
   "Includes %1$d additional pattern. Requires %2$s": [
     "%1$d 個の追加パターンを含みます。 %2$s が必要です"
+  ],
+  "Increase font size": [
+    "フォントサイズを大きくする"
   ],
   "Initiator": [
     "イニシエータ"
@@ -1533,6 +1560,9 @@ export default {
   "Keep %s": [
     "%s を維持"
   ],
+  "Keep editing": [
+    "編集を続ける"
+  ],
   "Keyboard": [
     "キーボード"
   ],
@@ -1550,6 +1580,9 @@ export default {
   ],
   "LVM": [
     "LVM"
+  ],
+  "LVM physical volumes will be added as partitions on the chosen disks.": [
+    "LVM 物理ボリュームは、選択したディスク内のパーティションとして追加されます。"
   ],
   "Label": [
     "ラベル"
@@ -1586,6 +1619,9 @@ export default {
   ],
   "Light color scheme": [
     "明るい色を使用するスキーム"
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    "インストーラシステム内で動作し、管理者権限のある Linux コマンドラインです。"
   ],
   "Listening and learning time (4-30 seconds).": [
     "待機／学習時間 (4-30 秒) 。"
@@ -1653,6 +1689,9 @@ export default {
   "Make sure that the passsword is correct and try again.": [
     "パスワードが正しいことをご確認のうえ、やり直してください。"
   ],
+  "Make sure the location is correct and the configuration is valid.": [
+    "場所が正しいこと、および設定内容が適切であることをご確認ください。"
+  ],
   "Manage DASD devices": [
     "DASD デバイスの管理"
   ],
@@ -1688,6 +1727,9 @@ export default {
   ],
   "Min channel": [
     "最小チャネル"
+  ],
+  "Minimize terminal": [
+    "端末を最小化"
   ],
   "Minimum": [
     "最小"
@@ -2007,6 +2049,9 @@ export default {
   "Only reused partitions will be used.": [
     "再利用するよう設定したパーティションのみを使用します。"
   ],
+  "Open terminal": [
+    "端末を開く"
+  ],
   "Options for partition %s": [
     "パーティション %s のオプション"
   ],
@@ -2106,8 +2151,14 @@ export default {
   "Performs auto LUN scan": [
     "自動 LUN スキャンを実行"
   ],
+  "Physical extent size": [
+    "物理エクステントサイズ"
+  ],
   "Physical volumes": [
     "物理ボリューム"
+  ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    "設定した論理ボリュームの合計サイズに応じて、選択した複数のディスクに物理ボリュームを作成します。"
   ],
   "PiB": [
     "PiB"
@@ -2277,8 +2328,14 @@ export default {
   "Reset to the default configuration": [
     "既定の設定に戻す"
   ],
+  "Resize terminal": [
+    "端末のサイズを変更"
+  ],
   "Resource not found or lost": [
     "リソースが見つからないか失われています"
+  ],
+  "Restore terminal": [
+    "端末を復元"
   ],
   "Result": [
     "結果"
@@ -2508,8 +2565,11 @@ export default {
   "Show more": [
     "表示を増やす"
   ],
-  "Show technical details (English only)": [
-    "技術詳細を表示する (英語のみ)"
+  "Show technical details": [
+    "技術詳細を表示する"
+  ],
+  "Show terminal": [
+    "端末を表示"
   ],
   "Shrink existing logical volumes": [
     "既存の論理ボリュームを縮小する"
@@ -2670,6 +2730,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "システムの再起動やネットワーク側の変更により変わりうる一時的な名前です"
   ],
+  "Terminal": [
+    "端末"
+  ],
   "The 'primary' option is only valid for %s modes": [
     "'primary' オプションは %s モードの時にのみ有効です"
   ],
@@ -2678,6 +2741,9 @@ export default {
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
     "製品に対する [言語と地域] の設定には、さらに多くの選択肢が提供されているかもしれません。"
+  ],
+  "The configuration is read-only.": [
+    "設定は読み込み専用です。"
   ],
   "The configuration must be adapted to address the following issue:": [
     "下記の問題に対応するため、何らかの設定調整を行わなければなりません:"
@@ -2805,9 +2871,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "このモーダル型の選択ページは、迅速で分かりやすく、かつユーザを混乱させることのないシンプルなインターフェイスを提供します。"
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "必要な LVM 物理ボリュームは、論理ボリュームのサイズを元に、選択したディスク内のパーティションとして追加されます。複数のディスクを選択した場合、物理ボリュームはそれらのディスクに分散して配置されます。"
-  ],
   "The password is weak": [
     "パスワードが弱すぎます"
   ],
@@ -2871,6 +2934,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "インストール後のシステムではコマンドラインインターフェイスを使用することになります。"
   ],
+  "The terminal requires a larger screen size": [
+    "端末を使用するには、さらに大きな画面サイズにする必要があります"
+  ],
   "The whole device will be used for %s": [
     "デバイス全体を %s 向けに使用する"
   ],
@@ -2885,6 +2951,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "有効化待機中の zFCP コントローラはありません。"
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    "まだ保存していない設定があります。ここから抜けてしまうと、設定した内容が失われます。"
   ],
   "There is %d destructive action planned": [
     "%d 個の破壊的な処理が提案されています"
@@ -2991,6 +3060,9 @@ export default {
   "Unknown error": [
     "不明なエラー"
   ],
+  "Unsaved changes": [
+    "未保存の変更点"
+  ],
   "Unselect or activate them and try it again.": [
     "これらのデバイスを選択から外すか、もしくは有効化してからやり直してください。"
   ],
@@ -3047,6 +3119,9 @@ export default {
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "下記にあるアクションを押してデバイスを設定するか、もしくは %s を押して何もない状態から設定を行ってください。"
+  ],
+  "Use all available space": [
+    "利用可能な全ての領域を使用"
   ],
   "Use available space": [
     "利用可能な領域を使用する"
@@ -3207,9 +3282,6 @@ export default {
   "Value: %1$s (%2$s)": [
     "値: %1$s (%2$s)"
   ],
-  "Verify that the location is correct and the configuration is valid.": [
-    "場所が正しいこと、および設定内容が適切であることをご確認ください。"
-  ],
   "View license": [
     "ライセンスの表示"
   ],
@@ -3287,9 +3359,6 @@ export default {
   ],
   "You must fix these issues": [
     "これらの問題を解決しなければいけません"
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "インストールを続行する前に、設定を修正する必要があります。"
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "暗号化されていない公衆ネットワークに接続しようとしています。通信の安全性が保てないかもしれません。"

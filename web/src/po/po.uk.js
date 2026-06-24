@@ -353,6 +353,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Усі мережеві з'єднання, керовані через цей інтерфейс, наразі налаштовані на використання лише під час інсталяції і не будуть скопійовані до інстальованої системи"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    ""
+  ],
   "All the available zFCP controllers are already activated.": [
     "Усі наявні контролери zFCP вже активовано."
   ],
@@ -652,8 +655,14 @@ export default {
   "Clear input": [
     "Очистити ввід"
   ],
+  "Clear terminal": [
+    "Очистити термінал"
+  ],
   "Close": [
     "Закрити"
+  ],
+  "Close terminal": [
+    ""
   ],
   "Color scheme": [
     "Колірна гама"
@@ -857,6 +866,9 @@ export default {
   ],
   "Deactivating": [
     "Деактивуємо"
+  ],
+  "Decrease font size": [
+    ""
   ],
   "Default": [
     "Типово"
@@ -1266,6 +1278,9 @@ export default {
     "Приховати %d дії підтому",
     "Приховати %d дій підтому"
   ],
+  "Hide terminal": [
+    "Приховати термінал"
+  ],
   "High": [
     "Високий"
   ],
@@ -1352,6 +1367,9 @@ export default {
     "Містить %1$d додаткових шаблона. Потрібно %2$s",
     "Містить %1$d додаткових шаблонів. Потрібно %2$s"
   ],
+  "Increase font size": [
+    ""
+  ],
   "Initiator": [
     "Ініціатор"
   ],
@@ -1375,6 +1393,9 @@ export default {
   ],
   "Install now with potential data loss": [
     "Встановити зараз із можливою втратою даних"
+  ],
+  "Installation": [
+    "Встановлення"
   ],
   "Installation complete": [
     "Встановлення завершено"
@@ -1499,6 +1520,9 @@ export default {
   "Keep %s": [
     "Зберігати %s"
   ],
+  "Keep editing": [
+    ""
+  ],
   "Keyboard": [
     "Клавіатура"
   ],
@@ -1523,6 +1547,9 @@ export default {
   "Language": [
     "Мова"
   ],
+  "Language and Keyboard": [
+    "Мова і розкладка"
+  ],
   "Language and keyboard": [
     "Мова і клавіатура"
   ],
@@ -1546,6 +1573,9 @@ export default {
   ],
   "Light color scheme": [
     "Світла колірна гама"
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    ""
   ],
   "Listening and learning time (4-30 seconds).": [
     "Час для прослуховування та вивчення (4–30 секунд)."
@@ -1640,6 +1670,9 @@ export default {
   "Min channel": [
     "Мін. канал"
   ],
+  "Minimize terminal": [
+    "Згорнути термінал"
+  ],
   "Minimum": [
     "Мінімум"
   ],
@@ -1663,6 +1696,9 @@ export default {
   ],
   "More devices": [
     "Інші пристрої"
+  ],
+  "More options": [
+    "Більше налаштувань"
   ],
   "More storage options": [
     "Більше варіантів зберігання"
@@ -1932,6 +1968,9 @@ export default {
   "Only reused partitions will be used.": [
     "Буде використано лише повторно використовувані розділи."
   ],
+  "Open terminal": [
+    ""
+  ],
   "Options for partition %s": [
     "Параметри розділу %s"
   ],
@@ -2030,6 +2069,9 @@ export default {
   ],
   "Physical volumes": [
     "Фізичні томи"
+  ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    ""
   ],
   "PiB": [
     "ПіБ"
@@ -2196,8 +2238,14 @@ export default {
   "Reset to the default configuration": [
     "Скинути до типової конфігурації"
   ],
+  "Resize terminal": [
+    ""
+  ],
   "Resource not found or lost": [
     "Ресурс не знайдено або втрачено"
+  ],
+  "Restore terminal": [
+    ""
   ],
   "Result": [
     "Результат"
@@ -2416,6 +2464,9 @@ export default {
     "Показати %d дії підтому",
     "Показати %d дій підтому"
   ],
+  "Show configuration": [
+    "Показати конфігурацію"
+  ],
   "Show information about %s": [
     "Показати інформацію про %s"
   ],
@@ -2425,8 +2476,8 @@ export default {
   "Show more": [
     "Показати більше"
   ],
-  "Show technical details (English only)": [
-    "Показати технічні деталі (лише англійською мовою)"
+  "Show terminal": [
+    "Показати термінал"
   ],
   "Shrink existing logical volumes": [
     "Зменшення наявних логічних томів"
@@ -2530,6 +2581,14 @@ export default {
   "Status filter toggle": [
     "Вкл./вимк. фільтр статусу"
   ],
+  "Status: %s task active": [
+    "Стан: активне %s завдання",
+    "Стан: активні %s завдання",
+    "Стан: активні %s завдань"
+  ],
+  "Status: Idle": [
+    "Стан: У режимі очікування"
+  ],
   "Step %1$d of %2$d": [
     "Крок %1$d з %2$d"
   ],
@@ -2585,6 +2644,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "Тимчасове ім'я, яке може змінитися після перезавантаження або змін у мережі"
   ],
+  "Terminal": [
+    ""
+  ],
   "The 'primary' option is only valid for %s modes": [
     "Параметр «primary» діє лише для режимів %s"
   ],
@@ -2593,6 +2655,9 @@ export default {
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
     "У налаштуваннях [мови та регіону] для цього продукту може бути доступно більше варіантів на вибір."
+  ],
+  "The configuration is read-only.": [
+    "Ця конфігурація доступна лише для читання."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Конфігурація повинна бути адаптована для вирішення такої проблеми:",
@@ -2726,9 +2791,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Модальний селектор пропонує спрощений інтерфейс, розроблений для швидкого і прямого використання, не перевантажуючи користувача."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Необхідні фізичні томи LVM будуть додані як розділи на обраних дисках, виходячи з розмірів логічних томів. Якщо Ви виберете кілька дисків, фізичні томи можуть бути розподілені по кількох дисках."
-  ],
   "The password is weak": [
     "Слабкий пароль"
   ],
@@ -2792,6 +2854,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "Система завантажиться в режим командного рядка."
   ],
+  "The terminal requires a larger screen size": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Весь пристрій буде використано для %s"
   ],
@@ -2807,6 +2872,9 @@ export default {
   "There are not zFCP controllers pending of activation.": [
     "Наразі немає контролерів zFCP, які очікують на активацію."
   ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    ""
+  ],
   "There is %d destructive action planned": [
     "Запланована %d руйнівна дія",
     "Заплановано %d руйнівні дії",
@@ -2819,6 +2887,12 @@ export default {
   ],
   "There is a deactivated zFCP controller.": [
     "Є вимкнений контролер zFCP."
+  ],
+  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted using the [language and keyboard] option at the top bar.": [
+    "Це параметри, які потрібно налаштувати перед встановленням продукту. Мову інсталятора та розкладку клавіатури можна змінити за допомогою опції [мова та розкладка] у верхній панелі."
+  ],
+  "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.": [
+    "Це параметри, які потрібно встановити для цього продукту. Мову інсталятора можна змінити за допомогою опції [мова] у верхній панелі."
   ],
   "This action will destroy any data stored on the device.": [
     "Ця дія знищить усі дані, що зберігаються на цьому пристрої."
@@ -2906,6 +2980,9 @@ export default {
   ],
   "Unknown error": [
     "Невідома помилка"
+  ],
+  "Unsaved changes": [
+    ""
   ],
   "Unselect or activate them and try it again.": [
     "Скасуйте вибір або активуйте їх, а потім спробуйте знову."
@@ -3193,9 +3270,6 @@ export default {
   ],
   "You must fix these issues": [
     "Ви повинні усунути ці проблеми"
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Перед продовженням інсталяції необхідно виправити всі недійсні налаштування."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."

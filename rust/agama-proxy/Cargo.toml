@@ -5,13 +5,13 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-agama-utils = { version = "0.1.0", path = "../agama-utils" }
-anyhow = "1.0.100"
-async-trait = "0.1.89"
-gettext-rs = "0.7.7"
-strum = "0.27.2"
-thiserror = "2.0.18"
-tracing = "0.1.44"
+agama-utils = { workspace = true }
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+gettext-rs = { workspace = true }
+strum = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
 
 [[bin]]
 name = "agama-proxy-setup"
@@ -19,5 +19,5 @@ path = "src/main.rs"
 
 
 [dev-dependencies]
-tempfile = "3.13.0"
-tokio = { version = "1.49.0", features = ["full"] }
+tempfile = { workspace = true }
+tokio = { workspace = true }
