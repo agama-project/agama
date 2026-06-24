@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jun 24 13:18:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix unattended installation for full medium SLES iso
+  (bsc#1268635)
+- fix premature reboot or shutdown in unattended installation
+  when inst.finish kernel parameter is used (bsc##1268803)
+
+-------------------------------------------------------------------
 Thu Jun 18 14:00:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Validate the profile before parsing it (bsc#1268432).
