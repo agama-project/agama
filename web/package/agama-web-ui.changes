@@ -1,4 +1,52 @@
 -------------------------------------------------------------------
+Tue Jun 23 11:49:50 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Unify the localization settings into a single form: replace the
+  separate language, keyboard and time zone selection pages with
+  one form using a searchable typeahead for each
+  (gh#agama-project/agama#3661).
+
+-------------------------------------------------------------------
+Tue Jun 23 09:14:41 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Explicitly require "monaco-editor" NPM package to fix a build
+  failure in OBS (related to bsc#1268433)
+
+-------------------------------------------------------------------
+Mon Jun 22 12:54:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not load the parts of the Monaco editor from an external 3rd
+  party CDN server (bsc#1268433)
+
+-------------------------------------------------------------------
+Mon Jun 22 12:09:14 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Update react router to fix CVE-2026-34077
+  (bsc#1267500)
+
+-------------------------------------------------------------------
+Mon Jun 22 11:08:29 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Apply UI language and keymap changes right away, without needing
+  a page reload (gh#agama-project/agama#3657).
+
+-------------------------------------------------------------------
+Fri Jun 19 12:52:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fine-tune and extend the Agama appearance system: improve font
+  rendering (update the SUSE variable font to v2.001, adopt SUSE Mono,
+  fix the variable-font @font-face declarations and drop the custom
+  font-weight overrides) and let products fine-tune typography, icon
+  sizes, icon color, disabled and tooltip through --agm-t--* tokens
+  (gh#agama-project/agama#3647).
+
+-------------------------------------------------------------------
+Fri Jun 19 10:24:38 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- search properly also user visible summary to avoid confusion
+  (bsc#1268098)
+
+-------------------------------------------------------------------
 Mon Jun 15 15:45:29 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 22

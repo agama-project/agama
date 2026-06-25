@@ -327,6 +327,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Todas las conexiones de red gestionadas mediante esta interfaz están configuradas para usarse solo durante la instalación y no se copiarán al sistema instalado"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    ""
+  ],
   "All the available zFCP controllers are already activated.": [
     "Todos los controladores zFCP disponibles ya están activados."
   ],
@@ -782,6 +785,9 @@ export default {
   "Deactivated": [
     "Desactivado"
   ],
+  "Decrease font size": [
+    ""
+  ],
   "Default": [
     ""
   ],
@@ -1212,6 +1218,9 @@ export default {
     "Incluye %1$d patrón adicional. Requiere %2$s",
     "Incluye %1$d patrones adicionales. Requiere %2$s"
   ],
+  "Increase font size": [
+    ""
+  ],
   "Initiator": [
     "Iniciador"
   ],
@@ -1344,6 +1353,9 @@ export default {
   "Keep %s": [
     "Conservar %s"
   ],
+  "Keep editing": [
+    ""
+  ],
   "Keyboard": [
     "Teclado"
   ],
@@ -1390,6 +1402,9 @@ export default {
     ""
   ],
   "Light color scheme": [
+    ""
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
     ""
   ],
   "Listening and learning time (4-30 seconds).": [
@@ -1850,6 +1865,9 @@ export default {
   "Physical volumes": [
     "Volúmenes físicos"
   ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    ""
+  ],
   "PiB": [
     "PiB"
   ],
@@ -2215,9 +2233,6 @@ export default {
   "Show more": [
     "Mostrar más"
   ],
-  "Show technical details (English only)": [
-    ""
-  ],
   "Shrink existing logical volumes": [
     "Reducir los volúmenes lógicos existentes"
   ],
@@ -2490,9 +2505,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "El selector modal ofrece una interfaz simplificada y diseñada para un uso rápido y directo, sin agobiar al usuario."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Los volúmenes físicos de LVM necesarios se añadirán como particiones en los discos elegidos, basándose en los tamaños de los volúmenes lógicos. Si selecciona más de un disco, los volúmenes físicos pueden distribuirse a lo largo de varios discos."
-  ],
   "The password is weak": [
     "La contraseña es débil"
   ],
@@ -2553,6 +2565,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "El sistema se iniciará en una interfaz de línea de comandos."
   ],
+  "The terminal requires a larger screen size": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Todo el dispositivo se usará para %s"
   ],
@@ -2567,6 +2582,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "No hay controladores zFCP en espera de activación."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    ""
   ],
   "There is %d destructive action planned": [
     "Hay %d acción destructiva planeada",
@@ -2668,6 +2686,9 @@ export default {
   ],
   "Unknown error": [
     "Error desconocido"
+  ],
+  "Unsaved changes": [
+    ""
   ],
   "Unselect or activate them and try it again.": [
     "Deselecciónelos o actívelos y vuelva a intentarlo."
@@ -2924,9 +2945,6 @@ export default {
   ],
   "You must fix these issues": [
     ""
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Es necesario arreglar los ajustes inválidos antes de proceder con la instalación."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Se conectará a una red pública sin cifrado. Es posible que sus datos no estén seguros."

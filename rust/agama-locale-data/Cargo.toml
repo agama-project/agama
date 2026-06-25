@@ -6,10 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = { version = "1.0.210", features = ["derive"] }
-quick-xml = { version = "0.37.5", features = ["serialize"] }
-flate2 = "1.0.34"
 chrono-tz = "0.10.3"
-regex = "1"
-thiserror = "2.0.12"
-schemars = "1.2.1"
+flate2 = "1.0.34"
+quick-xml = { version = "0.37.5", features = ["serialize"] }
+regex = { workspace = true }
+schemars = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }

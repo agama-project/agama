@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-12 15:05+0000\n"
+"POT-Creation-Date: 2026-06-18 16:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -32,10 +32,10 @@ msgstr ""
 msgid "Skip and configure manually"
 msgstr ""
 
-#: agama-autoinstall/src/scripts.rs:134
+#. TRANSLATORS: {0} is a URL
+#: agama-autoinstall/src/scripts.rs:135
 msgid ""
-"It was not possible to load the script from {0}. Do you want to try again?\n"
-"                "
+"It was not possible to load the script from {0}. Do you want to try again?"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama auth
@@ -104,16 +104,16 @@ msgid ""
 "In Agama's jargon, the term 'probing' refers to the process of 'analyzing' "
 "the system. This includes reading software repositories, analyzing storage "
 "devices, and more. The 'probe' command initiates this analysis process and "
-"returns immediately. TODO: do we really need a \"probe\" action?"
+"returns immediately."
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama install
-#: agama-cli/src/commands.rs:54
+#: agama-cli/src/commands.rs:53
 msgid "Start the system installation"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama install (details)
-#: agama-cli/src/commands.rs:56
+#: agama-cli/src/commands.rs:55
 msgid ""
 "This command starts the installation process.  Beware it is a destructive "
 "operation because it will set up the storage devices, install the packages, "
@@ -124,12 +124,12 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download
-#: agama-cli/src/commands.rs:79
+#: agama-cli/src/commands.rs:78
 msgid "Download file from a given (AutoYaST) URL"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download (details)
-#: agama-cli/src/commands.rs:81
+#: agama-cli/src/commands.rs:80
 msgid ""
 "The purpose of this command is to download files using AutoYaST supported "
 "schemas (e.g. device://). It can be used to download additional scripts, "
@@ -139,24 +139,24 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download <URL>
-#: agama-cli/src/commands.rs:95
+#: agama-cli/src/commands.rs:94
 msgid ""
 "URL reference pointing to file for download. If a relative URL is provided, "
 "it will be resolved against the current working directory"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama download <DESTINATION>
-#: agama-cli/src/commands.rs:105
+#: agama-cli/src/commands.rs:104
 msgid "File name"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama finish
-#: agama-cli/src/commands.rs:112
+#: agama-cli/src/commands.rs:111
 msgid "Finish the installation"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama finish <METHOD>
-#: agama-cli/src/commands.rs:118
+#: agama-cli/src/commands.rs:117
 msgid ""
 "What to do after finishing the installation. Possible values:\n"
 "\n"
@@ -171,29 +171,29 @@ msgid ""
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama monitor
-#: agama-cli/src/commands.rs:136
+#: agama-cli/src/commands.rs:135
 msgid "Continuously monitors the Agama service until it finishes"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status
-#: agama-cli/src/commands.rs:143
+#: agama-cli/src/commands.rs:142
 msgid ""
 "Prints the current state of the installation (e.g., waiting, blocked, "
 "running, or finished)"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama status --format <FORMAT>
-#: agama-cli/src/commands.rs:151
+#: agama-cli/src/commands.rs:150
 msgid "Specify in which format status will be shown"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events
-#: agama-cli/src/commands.rs:158
+#: agama-cli/src/commands.rs:157
 msgid "Display Agama events"
 msgstr ""
 
 #. TRANSLATORS: CLI help for: agama events --pretty
-#: agama-cli/src/commands.rs:165
+#: agama-cli/src/commands.rs:164
 msgid "Display the events in a more human-readable way"
 msgstr ""
 
@@ -314,7 +314,7 @@ msgstr ""
 msgid "It is not a valid JSON file"
 msgstr ""
 
-#: agama-cli/src/config.rs:412
+#: agama-cli/src/config.rs:416
 msgid "Ignoring the changes because the editor was closed with an error code."
 msgstr ""
 
@@ -481,7 +481,7 @@ msgstr ""
 msgid "You can reboot the machine to log in to the new system."
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:68 agama-cli/src/status.rs:76
+#: agama-cli/src/monitor/ui/content.rs:68
 msgid "Installation failed."
 msgstr ""
 
@@ -497,16 +497,16 @@ msgstr ""
 msgid "No product has been selected yet."
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:172
-msgid "Following issues needs to be addressed in the configuration:"
+#: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
+msgid "Fix invalid settings before starting the installation:"
 msgstr ""
 
-#: agama-cli/src/monitor/ui/content.rs:193
-msgid "Ready for installation."
+#: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
+msgid "Ready to start the installation."
 msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:194
-msgid "Waiting to start installation..."
+msgid "Starting the installation."
 msgstr ""
 
 #: agama-cli/src/monitor/ui/content.rs:210
@@ -517,13 +517,9 @@ msgstr ""
 msgid "of"
 msgstr ""
 
-#: agama-cli/src/monitor/ui/issues.rs:64
-msgid "Waiting for these to be resolved."
-msgstr ""
-
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
-msgid "Additional data"
+msgid "Technical details"
 msgstr ""
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
@@ -651,41 +647,27 @@ msgid "Path to a file containing the answers in JSON format"
 msgstr ""
 
 #: agama-cli/src/status.rs:77
-msgid "Installation finished successfully."
-msgstr ""
-
-#: agama-cli/src/status.rs:78
-msgid "Installation is ready to start."
-msgstr ""
-
-#: agama-cli/src/status.rs:79
-msgid "Installation is in progress."
+msgid ""
+"The installation failed. Use the \"agama logs store\" command to get the "
+"logs to troubleshoot or share with support."
 msgstr ""
 
 #: agama-cli/src/status.rs:80
-msgid "Installation is being proposed."
-msgstr ""
-
-#: agama-cli/src/status.rs:81
-msgid ""
-"There are unanswered questions. Use `agama monitor` command or the web user "
-"interface to answer them."
+msgid "The installation finished successfully."
 msgstr ""
 
 #: agama-cli/src/status.rs:82
-msgid "There are issues in configuration that are blocking the installation."
+msgid "The installation is in progress."
 msgstr ""
 
-#: agama-cli/src/status.rs:118 agama-utils/src/api/problem_details.rs:192
-msgid "Details:"
+#: agama-cli/src/status.rs:83
+msgid "The installer is preparing an installation proposal."
 msgstr ""
 
-#: agama-cli/src/status.rs:120
-msgid "Open questions:"
-msgstr ""
-
-#: agama-cli/src/status.rs:126
-msgid "Blocking issues:"
+#: agama-cli/src/status.rs:85
+msgid ""
+"There are unanswered questions. Use the \"agama monitor\" command or the web "
+"user interface to answer them:"
 msgstr ""
 
 #. TRANSLATORS: %s is replaced by the script name.
@@ -845,6 +827,14 @@ msgstr ""
 msgid "AutoYaST conversion failed"
 msgstr ""
 
+#: agama-server/src/server/web.rs:86
+msgid "Missing Language Tag"
+msgstr ""
+
+#: agama-server/src/server/web.rs:89
+msgid "Profile error"
+msgstr ""
+
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
@@ -933,7 +923,7 @@ msgstr ""
 msgid "Could not select %s '%s' for installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:1010
+#: agama-software/src/zypp_server.rs:1012
 msgid "Failed to register the system"
 msgstr ""
 
@@ -968,6 +958,10 @@ msgstr ""
 
 #: agama-utils/src/api/problem_details.rs:189
 msgid "Error:"
+msgstr ""
+
+#: agama-utils/src/api/problem_details.rs:192
+msgid "Details:"
 msgstr ""
 
 #: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48

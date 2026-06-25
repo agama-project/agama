@@ -48,6 +48,9 @@ import Interpolate from "./Interpolate";
  * keyboard: the popover traps focus and Tab moves between the option buttons.
  * The selection is applied to the document root and persisted by
  * {@link useAppearance}.
+ *
+ * Inspired by PatternFly's documentation theme selector:
+ * https://github.com/patternfly/patternfly-org/blob/main/packages/documentation-framework/components/themeSelector/themeSelector.js
  */
 export default function AppearanceSettings(): React.ReactNode {
   const { colorScheme, setColorScheme, contrast, setContrast } = useAppearance();

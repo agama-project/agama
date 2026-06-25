@@ -1,19 +1,17 @@
 // Dark color axis.
 //
-// PatternFly's built-in dark theme (activated by .pf-v6-theme-dark on <html>)
-// provides the full, professionally designed dark token set. Here we map the
-// curated `--agm-t--*` roles (see _semantic.scss) onto PF tokens for dark, with
-// the Agama dark value as the fallback default and the role as the product
-// override hook.
+// PatternFly's built-in dark theme (.pf-v6-theme-dark on <html>) provides the
+// full dark token set. Here we map the curated `--agm-t--*` roles (see
+// _semantic.scss) onto PF tokens for dark, with the Agama dark value as the
+// default and the role as the override hook.
 //
 // The lightened Jungle (#40ce8a, jungle--40) is the dark brand/accent; raw
 // Jungle and Pine both fail contrast on dark. Unlike light, PF wires
 // text/icon/border brand independently in dark, so each is mapped explicitly.
 //
-// High contrast is excluded (PF's high-contrast theme governs it). Scoped to
-// PF's dark selector and loaded after _semantic.scss, so it wins by source order
-// at equal specificity. "System" auto-dark is toggled by AppearanceSettings via
-// matchMedia, not a media query here.
+// High contrast is excluded (PF governs it). Scoped to PF's dark selector and
+// loaded after _semantic.scss, so it wins by source order. "Automatic" auto-dark
+// is toggled by AppearanceSettings via matchMedia, not a media query here.
 
 :root:where(.pf-v6-theme-dark:not(.pf-v6-theme-high-contrast)) {
   --agm-t--brand--color--hover-default: color-mix(
@@ -111,16 +109,16 @@
     transparent
   );
 
-  // Default dark surface palette (Pine), matching the Agama website. Pine is the
-  // deepest surface (page and cards); raised (masthead, form controls) and
-  // floating (modals) lift toward a lighter Pine; borders are a muted Pine.
-  // Floating equals raised so surfaces nested in a modal (table headers, tab
-  // bars) integrate with it instead of looking darker. PF's light dark-theme
-  // text stays for contrast. A product overrides these roles in its file.
+  // Default dark surface palette matching the Agama website. Pine is the deepest
+  // surface (page and cards); raised and floating surfaces lift subtly to
+  // maintain cohesion while providing visual separation. Borders use a muted
+  // version of the same base. Floating equals raised so surfaces nested in a
+  // modal (table headers, tab bars) integrate with it. PF's light dark-theme
+  // text stays for contrast.
   --agm-t--surface--color: var(--agm-t--color--pine--50);
-  --agm-t--surface--color--raised: color-mix(in srgb, var(--agm-t--color--pine--50) 90%, white);
+  --agm-t--surface--color--raised: color-mix(in srgb, var(--agm-t--color--pine--50) 93%, white);
   --agm-t--surface--color--floating: var(--agm-t--surface--color--raised);
-  --agm-t--border--color: color-mix(in srgb, var(--agm-t--color--pine--50) 62%, white);
+  --agm-t--border--color: color-mix(in srgb, var(--agm-t--color--pine--50) 70%, white);
 
   --pf-t--global--background--color--primary--default: var(--agm-t--surface--color);
   --pf-t--global--background--color--secondary--default: var(--agm-t--surface--color--raised);
@@ -137,7 +135,7 @@
     var(--pf-t--global--dark--text--color--200)
   );
   --pf-t--global--icon--color--regular: var(
-    --agm-t--text--color,
-    var(--pf-t--global--dark--icon--color--100)
+    --agm-t--icon--color,
+    var(--agm-t--text--color, var(--pf-t--global--dark--icon--color--100))
   );
 }

@@ -346,6 +346,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Totes les connexions de xarxa gestionades a través d'aquesta interfície estan actualment configurades per usar-les només durant la instal·lació i no es copiaran al sistema instal·lat."
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    "Tot l'espai disponible als discs triats s'usarà per crear volums físics."
+  ],
   "All the available zFCP controllers are already activated.": [
     "Tots els controladors de zFCP disponibles ja estan activats."
   ],
@@ -380,6 +383,9 @@ export default {
   ],
   "Appearance": [
     "Aparença"
+  ],
+  "As required by the logical volumes": [
+    "Segons el que requereixen els volums lògics"
   ],
   "At least one DNS search domain is required": [
     "Cal com a mínim un domini de cerca de DNS"
@@ -680,8 +686,14 @@ export default {
   "Clear input": [
     "Esborra l'entrada"
   ],
+  "Clear terminal": [
+    "Neteja el terminal"
+  ],
   "Close": [
     "Tanca"
+  ],
+  "Close terminal": [
+    "Tanca el terminal"
   ],
   "Color scheme": [
     "Esquema de colors"
@@ -894,6 +906,9 @@ export default {
   "Deactivating": [
     "Es desactiva"
   ],
+  "Decrease font size": [
+    "Redueix la mida de la lletra"
+  ],
   "Default": [
     "Per defecte"
   ],
@@ -971,6 +986,9 @@ export default {
   ],
   "Disabled": [
     "Inhabilitat"
+  ],
+  "Discard changes": [
+    "Descarta'n els canvis"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "Descarta la mida màxima i continua la configuració simplificada"
@@ -1220,6 +1238,9 @@ export default {
   "Find space in %s": [
     "Cerca espai a %s"
   ],
+  "Fix invalid settings before starting the installation.": [
+    "Corregiu els paràmetres no vàlids abans de començar la instal·lació."
+  ],
   "Fix the errors below and try again": [
     "Corregiu els errors següents i torneu-ho a intentar"
   ],
@@ -1317,6 +1338,9 @@ export default {
   "Hide technical details": [
     "Amaga'n els detalls tècnics"
   ],
+  "Hide terminal": [
+    "Amaga el terminal"
+  ],
   "High": [
     "Alt"
   ],
@@ -1401,6 +1425,9 @@ export default {
   "Includes %1$d additional pattern. Requires %2$s": [
     "Inclou %1$d patró addicional. Requereix %2$s",
     "Inclou %1$d patrons addicionals. Requereix %2$s"
+  ],
+  "Increase font size": [
+    "Augmenta la mida de la lletra"
   ],
   "Initiator": [
     "Iniciador"
@@ -1558,6 +1585,9 @@ export default {
   "Keep %s": [
     "Mantén %s"
   ],
+  "Keep editing": [
+    "Continua'n l'edició"
+  ],
   "Keyboard": [
     "Teclat"
   ],
@@ -1575,6 +1605,9 @@ export default {
   ],
   "LVM": [
     "LVM"
+  ],
+  "LVM physical volumes will be added as partitions on the chosen disks.": [
+    "Els volums físics d'LVM s'afegiran com a particions als discs triats."
   ],
   "Label": [
     "Etiqueta"
@@ -1611,6 +1644,9 @@ export default {
   ],
   "Light color scheme": [
     "Esquema de colors clars"
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    "Línia d'ordres de Linux amb privilegis d'administrador al sistema d'instal·lació"
   ],
   "Listening and learning time (4-30 seconds).": [
     "Temps d'escolta i aprenentatge (4-30 segons)."
@@ -1678,6 +1714,9 @@ export default {
   "Make sure that the passsword is correct and try again.": [
     "Assegureu-vos que la contrasenya sigui correcta i torneu-ho a intentar."
   ],
+  "Make sure the location is correct and the configuration is valid.": [
+    "Assegureu-vos que la ubicació sigui correcta i que la configuració sigui vàlida."
+  ],
   "Manage DASD devices": [
     "Gestioneu els dispositius DASD"
   ],
@@ -1713,6 +1752,9 @@ export default {
   ],
   "Min channel": [
     "Canal mínim"
+  ],
+  "Minimize terminal": [
+    "Minimitza el terminal"
   ],
   "Minimum": [
     "Mínim"
@@ -2034,6 +2076,9 @@ export default {
   "Only reused partitions will be used.": [
     "Només s'usaran particions reutilitzades."
   ],
+  "Open terminal": [
+    "Obre el terminal"
+  ],
   "Options for partition %s": [
     "Opcions per a la partició %s"
   ],
@@ -2133,8 +2178,14 @@ export default {
   "Performs auto LUN scan": [
     "Fa una exploració automàtica de LUN"
   ],
+  "Physical extent size": [
+    "Mida de l'extensió física"
+  ],
   "Physical volumes": [
     "Volums físics"
+  ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    "Es poden crear volums físics en alguns dels discs triats segons la mida total dels volums lògics."
   ],
   "PiB": [
     "PiB"
@@ -2304,8 +2355,14 @@ export default {
   "Reset to the default configuration": [
     "Restableix la configuració predeterminada"
   ],
+  "Resize terminal": [
+    "Canvia la mida del terminal"
+  ],
   "Resource not found or lost": [
     "Recurs no trobat o perdut"
+  ],
+  "Restore terminal": [
+    "Restaura el terminal"
   ],
   "Result": [
     "Resultat"
@@ -2537,8 +2594,11 @@ export default {
   "Show more": [
     "Mostra'n més"
   ],
-  "Show technical details (English only)": [
-    "Mostra'n els detalls tècnics (només en anglès)"
+  "Show technical details": [
+    "Mostra'n els detalls tècnics"
+  ],
+  "Show terminal": [
+    "Mostra el terminal"
   ],
   "Shrink existing logical volumes": [
     "Encongeix els volums lògics existents"
@@ -2702,6 +2762,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "Nom temporal que pot canviar després d'un reinici o canvis de xarxa"
   ],
+  "Terminal": [
+    "Terminal"
+  ],
   "The 'primary' option is only valid for %s modes": [
     "L'opció primària només és vàlida per als modes %s"
   ],
@@ -2710,6 +2773,9 @@ export default {
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
     "La configuració de [llengua i regió] del producte pot oferir més opcions per triar."
+  ],
+  "The configuration is read-only.": [
+    "La configuració és de només lectura."
   ],
   "The configuration must be adapted to address the following issue:": [
     "La configuració s'ha d'adaptar per solucionar el problema següent:",
@@ -2843,9 +2909,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "El selector modal ofereix una interfície simplificada dissenyada per a un ús ràpid i senzill, sense sobrecarregar l'usuari."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Els volums físics d'LVM necessaris s'afegiran com a particions als discs triats, segons les mides dels volums lògics. Si seleccioneu més d'un disc, els volums físics poden estar distribuïts en diversos discs."
-  ],
   "The password is weak": [
     "La contrasenya és feble"
   ],
@@ -2909,6 +2972,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "El sistema arrencarà des d'una interfície de línia d'ordres."
   ],
+  "The terminal requires a larger screen size": [
+    "El terminal requereix una mida de pantalla més gran."
+  ],
   "The whole device will be used for %s": [
     "S'usarà el dispositiu sencer per a %s"
   ],
@@ -2923,6 +2989,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "No hi ha controladors de zFCP pendents d'activació."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    "Hi ha canvis no desats. Si en sortiu ara, els canvis es perdran."
   ],
   "There is %d destructive action planned": [
     "Hi ha %d acció destructiva planificada.",
@@ -3031,6 +3100,9 @@ export default {
   "Unknown error": [
     "Error desconegut"
   ],
+  "Unsaved changes": [
+    "Canvis no desats"
+  ],
   "Unselect or activate them and try it again.": [
     "Desmarqueu-los o activeu-los i torneu-ho a provar."
   ],
@@ -3087,6 +3159,9 @@ export default {
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Useu les accions següents per configurar els dispositius o cliqueu a %s per començar des de zero amb la configuració predeterminada."
+  ],
+  "Use all available space": [
+    "Usa tot l'espai disponible"
   ],
   "Use available space": [
     "Usa l'espai disponible"
@@ -3248,9 +3323,6 @@ export default {
   "Value: %1$s (%2$s)": [
     "Valor: %1$s (%2$s)"
   ],
-  "Verify that the location is correct and the configuration is valid.": [
-    "Verifiqueu que la ubicació sigui correcta i que la configuració sigui vàlida."
-  ],
   "View license": [
     "Mostra la llicència"
   ],
@@ -3328,9 +3400,6 @@ export default {
   ],
   "You must fix these issues": [
     "Heu de solucionar aquests problemes"
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Cal que corregiu qualsevol configuració no vàlida abans de continuar la instal·lació."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
