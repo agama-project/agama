@@ -143,7 +143,7 @@ fn build_config_generate_cmd() -> Command {
         // TRANSLATORS: CLI help for: agama config generate
         gettext("Generate and print a native Agama JSON configuration from any kind and location");
     // TRANSLATORS: CLI help for: agama config generate (details)
-    let long_about = make_long(&about, &gettext("\
+    let long_about = make_long(&about,&gettext("\
         Kinds:\n\
         - JSON\n\
         - Jsonnet, injecting the hardware information\n\
