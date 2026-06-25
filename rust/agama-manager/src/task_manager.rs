@@ -40,7 +40,7 @@ pub type TaskId = usize;
 
 /// Error type for task execution.
 ///
-/// This is a newtype wrapper around `Box<dyn Error + Send>` that provides a conversion
+/// A newtype wrapper around `Box<dyn Error + Send>` that provides a conversion
 /// method for any error type that implements `Error + Send + 'static`.
 ///
 /// Since Rust doesn't allow implementing `From<E>` for all error types (it conflicts with
@@ -124,8 +124,10 @@ impl From<TaskMetadata> for api::status::Task {
 
 /// Holds the TaskManager state.
 struct TaskManagerState {
-    /// Set of completed tasks.
-    completed: HashSet<TaskId>,
+    /// Set of tasks that completed successfully.
+    succeeded: HashSet<TaskId>,
+    /// Set of tasks that failed.
+    failed: HashSet<TaskId>,
     /// First free ID for a new task
     next_id: TaskId,
     /// Notification mechanism provided by Tokio.
@@ -168,7 +170,8 @@ impl TaskManager {
     /// Create a new task manager.
     pub fn new(events: event::Sender) -> Self {
         let state = TaskManagerState {
-            completed: HashSet::new(),
+            succeeded: HashSet::new(),
+            failed: HashSet::new(),
             next_id: 0,
             notify: Arc::new(Notify::new()),
             metadata: HashMap::new(),
@@ -211,9 +214,15 @@ impl TaskManager {
         id
     }
 
-    async fn spawn_task<F, Fut>(&self, metadata: TaskMetadata, dependencies: Vec<TaskId>, work: F)
-    where
-        F: FnOnce() -> Fut + Send + 'static,
+    /// Internal helper to spawn a task with common setup and teardown logic.
+    async fn spawn_task_internal<F, Fut>(
+        &self,
+        metadata: TaskMetadata,
+        dependencies: Vec<TaskId>,
+        run_always: bool,
+        work: F,
+    ) where
+        F: FnOnce(Option<Vec<TaskId>>) -> Fut + Send + 'static,
         Fut: Future<Output = TaskResult> + Send + 'static,
     {
         let task_id = metadata.id;
@@ -239,20 +248,47 @@ impl TaskManager {
                 Arc::clone(&state_guard.notify)
             };
 
-            // Wait for dependencies
-            loop {
-                let is_ready = {
-                    let state_guard = state.read().await;
-                    dependencies
-                        .iter()
-                        .all(|dep| state_guard.completed.contains(dep))
-                };
+            // Wait for all dependencies to complete (either succeeded or failed)
+            let failed_deps = loop {
+                let state_guard = state.read().await;
 
-                if is_ready {
-                    break;
+                let all_deps_done = dependencies.iter().all(|dep| {
+                    state_guard.succeeded.contains(dep) || state_guard.failed.contains(dep)
+                });
+
+                if all_deps_done {
+                    let failed: Vec<TaskId> = dependencies
+                        .iter()
+                        .filter(|dep| state_guard.failed.contains(dep))
+                        .copied()
+                        .collect();
+                    break failed;
                 }
 
+                drop(state_guard);
                 notify.notified().await;
+            };
+
+            // Decide whether to run or cancel based on run_always and failed dependencies
+            if !run_always && !failed_deps.is_empty() {
+                tracing::warn!(
+                    "Task '{}' cancelled due to failed dependency",
+                    metadata.name
+                );
+
+                // Mark this task as failed without running it
+                let mut state_guard = state.write().await;
+                state_guard.failed.insert(task_id);
+                state_guard.notify.notify_waiters();
+                state_guard.metadata.remove(&task_id);
+
+                if let Err(e) = events.send(Event::TaskFinished {
+                    task: metadata.clone().into(),
+                    remaining: state_guard.metadata.len(),
+                }) {
+                    tracing::warn!("Failed to send TaskFinished event: {}", e);
+                }
+                return;
             }
 
             if let Err(e) = events.send(Event::TaskStarted {
@@ -261,15 +297,22 @@ impl TaskManager {
                 tracing::warn!("Failed to send TaskStarted event: {}", e);
             }
 
-            if let Err(e) = work().await {
-                tracing::error!("Task '{}' failed: {}", metadata.name, e);
+            let result = work(Some(failed_deps)).await;
+
+            // Mark as succeeded or failed
+            let mut state_guard = state.write().await;
+
+            match result {
+                Ok(()) => {
+                    state_guard.succeeded.insert(task_id);
+                }
+                Err(e) => {
+                    tracing::error!("Task '{}' failed: {}", metadata.name, e);
+                    state_guard.failed.insert(task_id);
+                }
             }
 
-            // Mark as completed
-            let mut state_guard = state.write().await;
-            state_guard.completed.insert(task_id);
             state_guard.notify.notify_waiters();
-
             state_guard.metadata.remove(&task_id);
 
             if let Err(e) = events.send(Event::TaskFinished {
@@ -279,6 +322,30 @@ impl TaskManager {
                 tracing::warn!("Failed to send TaskFinished event: {}", e);
             }
         });
+    }
+
+    async fn spawn_task<F, Fut>(&self, metadata: TaskMetadata, dependencies: Vec<TaskId>, work: F)
+    where
+        F: FnOnce() -> Fut + Send + 'static,
+        Fut: Future<Output = TaskResult> + Send + 'static,
+    {
+        self.spawn_task_internal(metadata, dependencies, false, |_failed_deps| work())
+            .await;
+    }
+
+    async fn spawn_task_always<F, Fut>(
+        &self,
+        metadata: TaskMetadata,
+        dependencies: Vec<TaskId>,
+        work: F,
+    ) where
+        F: FnOnce(Vec<TaskId>) -> Fut + Send + 'static,
+        Fut: Future<Output = TaskResult> + Send + 'static,
+    {
+        self.spawn_task_internal(metadata, dependencies, true, |failed_deps| {
+            work(failed_deps.unwrap_or_default())
+        })
+        .await;
     }
 
     /// Get metadata for all tasks.
@@ -309,11 +376,14 @@ impl TaskBuilder {
         self
     }
 
-    /// Execute the task with the given work closure.
+    /// Execute the task only if all dependencies succeed.
+    ///
+    /// If any dependency fails, this task is cancelled and marked as failed without
+    /// executing its work closure. This is the default behavior.
     ///
     /// Returns the [`TaskId`] of the spawned task. The task begins executing
     /// immediately if it has no dependencies, or waits for all dependencies
-    /// to complete.
+    /// to succeed.
     ///
     /// # Type Parameters
     ///
@@ -328,6 +398,34 @@ impl TaskBuilder {
         let metadata = TaskMetadata::new(task_id, self.name, self.scope, self.description);
         self.manager
             .spawn_task(metadata, self.dependencies, work)
+            .await;
+        task_id
+    }
+
+    /// Execute the task regardless of whether dependencies succeed or fail.
+    ///
+    /// Unlike [`run`](Self::run), this method executes the task even if dependencies fail.
+    /// The work closure receives a vector of failed dependency task IDs. If the vector
+    /// is empty, all dependencies succeeded.
+    ///
+    /// This is useful for cleanup tasks or finalization logic that must run regardless
+    /// of whether the main workflow succeeded.
+    ///
+    /// Returns the [`TaskId`] of the spawned task.
+    ///
+    /// # Type Parameters
+    ///
+    /// * `F` - Closure that accepts a `Vec<TaskId>` of failed dependencies and returns a future
+    /// * `Fut` - Future that resolves to [`TaskResult`]
+    pub async fn run_always<F, Fut>(self, work: F) -> TaskId
+    where
+        F: FnOnce(Vec<TaskId>) -> Fut + Send + 'static,
+        Fut: Future<Output = TaskResult> + Send + 'static,
+    {
+        let task_id = self.manager.next_id().await;
+        let metadata = TaskMetadata::new(task_id, self.name, self.scope, self.description);
+        self.manager
+            .spawn_task_always(metadata, self.dependencies, work)
             .await;
         task_id
     }
@@ -412,5 +510,79 @@ mod tests {
         let builder_with_deps = builder.depends_on(&[]);
 
         assert!(builder_with_deps.dependencies.is_empty());
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_run_always_with_successful_deps(ctx: &mut Context) {
+        use std::sync::Arc;
+        use tokio::sync::Mutex;
+
+        // Create a successful task
+        let task1 = ctx
+            .manager
+            .task("task1", Scope::Manager, "First task")
+            .run(|| async { Ok(()) })
+            .await;
+
+        // Track what failed_tasks was passed to run_always
+        let received_failures = Arc::new(Mutex::new(None));
+        let received_failures_clone = Arc::clone(&received_failures);
+
+        ctx.manager
+            .task("cleanup", Scope::Manager, "Cleanup task")
+            .depends_on(&[task1])
+            .run_always(move |failed_tasks| {
+                let received = Arc::clone(&received_failures_clone);
+                async move {
+                    *received.lock().await = Some(failed_tasks);
+                    Ok(())
+                }
+            })
+            .await;
+
+        // Give tasks time to complete
+        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
+        // Verify cleanup task received empty failed_tasks
+        let failures = received_failures.lock().await;
+        assert_eq!(failures.as_ref().unwrap(), &Vec::<TaskId>::new());
+    }
+
+    #[test_context(Context)]
+    #[tokio::test]
+    async fn test_run_always_with_failed_deps(ctx: &mut Context) {
+        use std::sync::Arc;
+        use tokio::sync::Mutex;
+
+        // Create a failing task
+        let task1 = ctx
+            .manager
+            .task("task1", Scope::Manager, "First task")
+            .run(|| async { Err(TaskError::from_error(std::io::Error::other("test error"))) })
+            .await;
+
+        // Track what failed_tasks was passed to run_always
+        let received_failures = Arc::new(Mutex::new(None));
+        let received_failures_clone = Arc::clone(&received_failures);
+
+        ctx.manager
+            .task("cleanup", Scope::Manager, "Cleanup task")
+            .depends_on(&[task1])
+            .run_always(move |failed_tasks| {
+                let received = Arc::clone(&received_failures_clone);
+                async move {
+                    *received.lock().await = Some(failed_tasks);
+                    Ok(())
+                }
+            })
+            .await;
+
+        // Give tasks time to complete
+        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+
+        // Verify cleanup task received the failed task ID
+        let failures = received_failures.lock().await;
+        assert_eq!(failures.as_ref().unwrap(), &vec![task1]);
     }
 }
