@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2023] SUSE LLC
+ * Copyright (c) [2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -19,3 +19,29 @@
  * To contact SUSE LLC about this file by physical or electronic mail, you may
  * find current contact information at www.suse.com.
  */
+
+/**
+ * Localization form fields: types and defaults.
+ *
+ * A single form drives the three localization selectors (language, keyboard and
+ * time zone). Each field holds the id of the chosen option, or an empty string
+ * when nothing is selected.
+ */
+
+import { formOptions } from "@tanstack/react-form";
+
+type FormFields = {
+  language: string;
+  keymap: string;
+  timezone: string;
+};
+
+const defaultValues: FormFields = {
+  language: "",
+  keymap: "",
+  timezone: "",
+};
+
+export const defaultOptions = formOptions({ defaultValues });
+
+export type { FormFields };

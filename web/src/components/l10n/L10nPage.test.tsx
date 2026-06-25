@@ -74,7 +74,7 @@ beforeEach(() => {
   };
 });
 
-it("renders an clarification about settings", () => {
+it("renders a clarification about settings", () => {
   installerRender(<L10nPage />);
   screen.getByText(/These are the settings for the product to install/);
   const clarification = screen.getByText(
@@ -85,62 +85,9 @@ it("renders an clarification about settings", () => {
   within(clarification).getByText("InstallerL10nOptions Mock");
 });
 
-it("renders a section for configuring the language", () => {
+it("renders the language, keyboard and time zone selectors", () => {
   installerRender(<L10nPage />);
-  const region = screen.getByRole("region", { name: "Language" });
-  within(region).getByText("English - United States");
-  within(region).getByText("Change");
-});
-
-describe("if the language selected is wrong", () => {
-  beforeEach(() => {
-    mockProposedData.locale = "us_US.UTF-8";
-  });
-
-  it("renders a button for selecting a language", () => {
-    installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Language" });
-    within(region).getByText("Wrong selection");
-    within(region).getByText("Select");
-  });
-});
-
-it("renders a section for configuring the keyboard", () => {
-  installerRender(<L10nPage />);
-  const region = screen.getByRole("region", { name: "Keyboard" });
-  within(region).getByText("English");
-  within(region).getByText("Change");
-});
-
-describe("if the keyboard selected is wrong", () => {
-  beforeEach(() => {
-    mockProposedData.keymap = "ess";
-  });
-
-  it("renders a button for selecting a keyboard", () => {
-    installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Keyboard" });
-    within(region).getByText("Wrong selection");
-    within(region).getByText("Select");
-  });
-});
-
-it("renders a section for configuring the time zone", () => {
-  installerRender(<L10nPage />);
-  const region = screen.getByRole("region", { name: "Time zone" });
-  within(region).getByText("Europe - Berlin");
-  within(region).getByText("Change");
-});
-
-describe("if the time zone selected is wrong", () => {
-  beforeEach(() => {
-    mockProposedData.timezone = "Europee/Beeerlin";
-  });
-
-  it("renders a button for selecting a time zone", () => {
-    installerRender(<L10nPage />);
-    const region = screen.getByRole("region", { name: "Time zone" });
-    within(region).getByText("Wrong selection");
-    within(region).getByText("Select");
-  });
+  screen.getByRole("combobox", { name: "Language" });
+  screen.getByRole("combobox", { name: "Keyboard" });
+  screen.getByRole("combobox", { name: "Time zone" });
 });

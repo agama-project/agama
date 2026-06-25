@@ -1029,9 +1029,9 @@ responsibility:
 
 | Abstraction       | File                             | Responsibility                                             |
 | ----------------- | -------------------------------- | ---------------------------------------------------------- |
-| `withFrozenQuery` | `hooks/form/withFrozenQuery.tsx` | Freeze initial data; protect from refetch re-renders       |
-| `useFormSubmit`   | `hooks/form/useFormSubmit.tsx`   | Submit lifecycle: reset, success alert, error surfacing    |
-| `useUpdateConfig` | `hooks/form/useUpdateConfig.ts`  | Safe write: fetch fresh config at submit time, merge patch |
+| `withFrozenQuery` | `components/form/with-frozen-query.tsx` | Freeze initial data; protect from refetch re-renders       |
+| `useFormSubmit`   | `hooks/use-form-submit.tsx`             | Submit lifecycle: reset, success alert, error surfacing    |
+| `useUpdateConfig` | `hooks/model/config.ts`                 | Safe write: fetch fresh config at submit time, merge patch |
 
 ### withFrozenQuery
 
@@ -1368,10 +1368,10 @@ backend structures, and `queries.ts` when the form needs its own data hooks.
 
 Examples:
 
-- `network/connection-form/`
-- `system/system-form/`
-- `product/registration-form/`
-- `software/patterns-form/`
+- Base shape (`Form.tsx` + `fields.ts`, plus field-group components):
+  `network/connection-form/`, `system/system-form/`.
+- Full split (also `queries.ts`, `transformations.ts`, `validations.ts`):
+  `storage/partition-form/`, `storage/logical-volume-form/`.
 
 ### File Naming
 
