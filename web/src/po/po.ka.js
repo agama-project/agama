@@ -346,6 +346,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     ""
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    ""
+  ],
   "All the available zFCP controllers are already activated.": [
     "ყველა ხელმისაწვდომი zFCP კონტროლერი უკვე გააქტიურებულია."
   ],
@@ -380,6 +383,9 @@ export default {
   ],
   "Appearance": [
     "გარეგნობა"
+  ],
+  "As required by the logical volumes": [
+    "მოთხოვნილია ლოგიკური ტომების მიერ"
   ],
   "At least one DNS search domain is required": [
     "აუცილებელია, სულ ცოტა, ერთი DNS ძებნის დომენი"
@@ -680,8 +686,14 @@ export default {
   "Clear input": [
     "შეყვანის გასწორება"
   ],
+  "Clear terminal": [
+    "ტერმინალის გასუფთავება"
+  ],
   "Close": [
     "დახურვა"
+  ],
+  "Close terminal": [
+    "ტერმინალის დახურვა"
   ],
   "Color scheme": [
     "ფერთა სქემა"
@@ -894,6 +906,9 @@ export default {
   "Deactivating": [
     "მიმდინარეობს დეაქტივაცია"
   ],
+  "Decrease font size": [
+    "ფონტის ზომის შემცირება"
+  ],
   "Default": [
     "ნაგულისხმევი"
   ],
@@ -971,6 +986,9 @@ export default {
   ],
   "Disabled": [
     "გამორთულია"
+  ],
+  "Discard changes": [
+    "ცვლილებების მოცილება"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "მაქსიმალური ზომის მოცილება და გამარტივებული კონფიგურაციით გაგრძელება"
@@ -1220,6 +1238,9 @@ export default {
   "Find space in %s": [
     "ადგილის პოვნა %s-ში"
   ],
+  "Fix invalid settings before starting the installation.": [
+    "დაყენების დაწყებამდე ყველა არასწორი პარამეტრი უნდა გაასწოროთ."
+  ],
   "Fix the errors below and try again": [
     "გაასწორეთ ქვემორე შეცდომები და კიდევ სცადეთ"
   ],
@@ -1317,6 +1338,9 @@ export default {
   "Hide technical details": [
     "ტექნიკური დეტალების დამალვა"
   ],
+  "Hide terminal": [
+    "ტერმინალის დამალვა"
+  ],
   "High": [
     "მაღალი"
   ],
@@ -1401,6 +1425,9 @@ export default {
   "Includes %1$d additional pattern. Requires %2$s": [
     "შეიცავს %1$d დამატებით ნიმუშს. სჭირდება %2$s",
     "შეიცავს %1$d დამატებით ნიმუშს. სჭირდება %2$s"
+  ],
+  "Increase font size": [
+    "ფონტის ზომის გაზრდა"
   ],
   "Initiator": [
     "ინიციატორი"
@@ -1558,6 +1585,9 @@ export default {
   "Keep %s": [
     "%s-ის შენარჩუნება"
   ],
+  "Keep editing": [
+    "ჩასწორების გაგრძელება"
+  ],
   "Keyboard": [
     "კლავიატურა"
   ],
@@ -1575,6 +1605,9 @@ export default {
   ],
   "LVM": [
     "LVM"
+  ],
+  "LVM physical volumes will be added as partitions on the chosen disks.": [
+    ""
   ],
   "Label": [
     "ჭდე"
@@ -1611,6 +1644,9 @@ export default {
   ],
   "Light color scheme": [
     "ღია ფერთა სქემა"
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    ""
   ],
   "Listening and learning time (4-30 seconds).": [
     "მოსმენისა და სწავლის დრო (4-30 წმ)."
@@ -1678,6 +1714,9 @@ export default {
   "Make sure that the passsword is correct and try again.": [
     "დარწმუნდით, რომ პაროლი სწორია და თავიდან სცადეთ."
   ],
+  "Make sure the location is correct and the configuration is valid.": [
+    "დარწმუნდით, რომ მდებარეობა და კონფიგურაცია სწორია."
+  ],
   "Manage DASD devices": [
     "DASD მოწყობილობების მართვა"
   ],
@@ -1713,6 +1752,9 @@ export default {
   ],
   "Min channel": [
     "მინ. არხი"
+  ],
+  "Minimize terminal": [
+    "ტერმინალის ჩაკეცვა"
   ],
   "Minimum": [
     "მინიმუმი"
@@ -2034,6 +2076,9 @@ export default {
   "Only reused partitions will be used.": [
     "გამოყენებული იქნება, მხოლოდ, თავიდან გამოყენებული დანაყოფები."
   ],
+  "Open terminal": [
+    "ტერმინალის გახსნა"
+  ],
   "Options for partition %s": [
     "პარამეტრები დანაყოფისთვის %s"
   ],
@@ -2133,8 +2178,14 @@ export default {
   "Performs auto LUN scan": [
     "ასრულებს ავტომატურ LUN-ის სკანირებას"
   ],
+  "Physical extent size": [
+    "ფიზიკური განფენილობის ზომა"
+  ],
   "Physical volumes": [
     "ფიზიკური ტომები"
+  ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    ""
   ],
   "PiB": [
     "პიბ"
@@ -2304,8 +2355,14 @@ export default {
   "Reset to the default configuration": [
     "ჩამოყრა ნაგულისხმევ პარამეტრებზე"
   ],
+  "Resize terminal": [
+    "ტერმინალის ზომის შეცვლა"
+  ],
   "Resource not found or lost": [
     "რესურსი ვერ ვიპოვე, ან დაკარგულია"
+  ],
+  "Restore terminal": [
+    "ტერმინალის ამოკეცვა"
   ],
   "Result": [
     "შედეგი"
@@ -2537,8 +2594,11 @@ export default {
   "Show more": [
     "მეტის ჩვენება"
   ],
-  "Show technical details (English only)": [
-    "ტექნიკური დეტალების ჩვენება (მხოლოდ, ინგლისურად)"
+  "Show technical details": [
+    "ტექნიკური დეტალების ჩვენება"
+  ],
+  "Show terminal": [
+    "ტერმინალის ჩვენება"
   ],
   "Shrink existing logical volumes": [
     "არსებული ლოგიკური ტომების დაპატარავება"
@@ -2702,6 +2762,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "დროებითი სახელი, რომელიც შეიძლება, შეიცვალოს გადატვირთვის, ან ქსელის ცვლილების შემდეგ"
   ],
+  "Terminal": [
+    "ტერმინალი"
+  ],
   "The 'primary' option is only valid for %s modes": [
     "პარამეტრი 'primary', მხოლოდ, %s რეჟიმებისთვისაა"
   ],
@@ -2710,6 +2773,9 @@ export default {
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
     ""
+  ],
+  "The configuration is read-only.": [
+    "კონფიგურაცია მხოლოდ-წაკითხვადია."
   ],
   "The configuration must be adapted to address the following issue:": [
     "კონფიგურაცია უნდა შეცვალოთ ისე, რომ გადაწყვიტოთ შემდეგი პრობლემა:",
@@ -2843,9 +2909,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     ""
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    ""
-  ],
   "The password is weak": [
     "პაროლი სუსტია"
   ],
@@ -2909,6 +2972,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "სისტემა ბრძანების სტრიქონის ინტერფეისში ჩაიტვირთება."
   ],
+  "The terminal requires a larger screen size": [
+    "ტერმინალს უფრო დიდი ეკრანი სჭირდება"
+  ],
   "The whole device will be used for %s": [
     "%s-სთვის გამოყენებული იქნება მთლიანი მოწყობილობა"
   ],
@@ -2923,6 +2989,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "გააქტიურების რიგში მყოფი zFCP კონტროლერების გარეშე."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    ""
   ],
   "There is %d destructive action planned": [
     "დაგეგმილია %d გამანადგურებელი ქმედება",
@@ -3031,6 +3100,9 @@ export default {
   "Unknown error": [
     "უცნობი შეცდომა"
   ],
+  "Unsaved changes": [
+    "შეუნახავი ცვლილებები"
+  ],
   "Unselect or activate them and try it again.": [
     "მოხსენით მონიშვნა, ან გაააქტიურეთ ისინი და თავიდან სცადეთ."
   ],
@@ -3087,6 +3159,9 @@ export default {
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     ""
+  ],
+  "Use all available space": [
+    "ხელმისაწვდომი ადგილის სრულად გამოყენება"
   ],
   "Use available space": [
     "ხელმისაწვდომი ადგილის გამოყენება"
@@ -3248,9 +3323,6 @@ export default {
   "Value: %1$s (%2$s)": [
     "მნიშვნელობა: %1$s (%2$s)"
   ],
-  "Verify that the location is correct and the configuration is valid.": [
-    "დარწმუნდით, რომ მდებარეობა და კონფიგურაცია სწორია."
-  ],
   "View license": [
     "ლიცენზიის ნახვა"
   ],
@@ -3328,9 +3400,6 @@ export default {
   ],
   "You must fix these issues": [
     "უნდა გაასწოროთ ეს შეცდომები"
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "დაყენების დაწყებამდე ყველა არასწორი პარამეტრი უნდა გაასწოროთ."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     ""

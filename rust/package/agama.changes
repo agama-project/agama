@@ -1,8 +1,16 @@
 -------------------------------------------------------------------
-Tue Jun 23 12:41:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Thu Jun 25 08:41:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove the translations from the Product's SystemInfo
   (gh#agama-project/agama#3660).
+
+-------------------------------------------------------------------
+Wed Jun 24 13:18:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix unattended installation for full medium SLES iso
+  (bsc#1268635)
+- fix premature reboot or shutdown in unattended installation
+  when inst.finish kernel parameter is used (bsc##1268803)
 
 -------------------------------------------------------------------
 Tue Jun 23 11:53:44 UTC 2026 - José Iván López González <jlopez@suse.com>

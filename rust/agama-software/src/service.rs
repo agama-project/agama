@@ -184,7 +184,7 @@ pub struct Service {
     kernel_cmdline: KernelCmdline,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 struct ServiceState {
     config: Config,
     system: SystemInfo,
@@ -233,9 +233,26 @@ impl Service {
 
         let product = product.read().await.clone();
 
+        let predefined_repositories = {
+            let model = self.model.lock().await;
+            model.predefined_repositories()
+        };
+
         let new_state = {
             let state = self.state.read().await;
-            SoftwareState::build_from(&product, &state.config, &state.system, &self.selection)
+            tracing::info!(
+                "computing state from {:?} and {:?} with repos {:?}",
+                product.id,
+                state,
+                &predefined_repositories
+            );
+            SoftwareState::build_from(
+                &product,
+                &state.config,
+                &state.system,
+                &self.selection,
+                predefined_repositories,
+            )
         };
 
         tracing::info!("Wanted software state: {new_state:?}");

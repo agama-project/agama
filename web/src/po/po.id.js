@@ -321,6 +321,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Semua koneksi jaringan yang dikelola melalui antarmuka ini saat ini diatur untuk hanya digunakan selama pemasangan dan tidak akan disalin ke sistem yang dipasang"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    ""
+  ],
   "All the available zFCP controllers are already activated.": [
     "Semua pengontrol zFCP yang tersedia sudah diaktifkan."
   ],
@@ -819,6 +822,9 @@ export default {
   "Deactivating": [
     "Menonaktifkan"
   ],
+  "Decrease font size": [
+    ""
+  ],
   "Default": [
     "Bawaan"
   ],
@@ -1308,6 +1314,9 @@ export default {
   "Includes %1$d additional pattern. Requires %2$s": [
     "Menyertakan %1$d pola tambahan. Membutuhkan %2$s"
   ],
+  "Increase font size": [
+    ""
+  ],
   "Initiator": [
     "Inisiator"
   ],
@@ -1458,6 +1467,9 @@ export default {
   "Keep %s": [
     "Pertahankan %s"
   ],
+  "Keep editing": [
+    ""
+  ],
   "Keyboard": [
     "Papan ketik"
   ],
@@ -1508,6 +1520,9 @@ export default {
   ],
   "Light color scheme": [
     "Skema warna terang"
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    ""
   ],
   "Listening and learning time (4-30 seconds).": [
     "Waktu mendengarkan dan belajar (4-30 detik)."
@@ -1989,6 +2004,9 @@ export default {
   "Physical volumes": [
     "Volume fisik"
   ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    ""
+  ],
   "PiB": [
     "PiB"
   ],
@@ -2382,9 +2400,6 @@ export default {
   "Show more": [
     "Tampilkan lebih banyak"
   ],
-  "Show technical details (English only)": [
-    "Tampilkan detail teknis (hanya Inggris)"
-  ],
   "Shrink existing logical volumes": [
     "Perkecil volume logis yang sudah ada"
   ],
@@ -2676,9 +2691,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Pemilih mode menawarkan antarmuka yang disederhanakan yang dirancang untuk penggunaan cepat dan mudah, tanpa membingungkan pengguna."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Volume fisik LVM yang diperlukan akan ditambahkan sebagai partisi pada disk yang dipilih, berdasarkan ukuran volume logis. Jika Anda memilih lebih dari satu disk, volume fisik mungkin didistribusikan ke beberapa disk."
-  ],
   "The password is weak": [
     "Kata sandi ini lemah"
   ],
@@ -2742,6 +2754,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "Sistem akan boot ke antarmuka baris perintah."
   ],
+  "The terminal requires a larger screen size": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Seluruh perangkat akan digunakan untuk %s"
   ],
@@ -2756,6 +2771,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "Tidak ada pengontrol zFCP yang menunggu aktivasi."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    ""
   ],
   "There is %d destructive action planned": [
     "Ada %d tindakan destruktif yang direncanakan"
@@ -2861,6 +2879,9 @@ export default {
   ],
   "Unknown error": [
     "Kesalahan tidak diketahui"
+  ],
+  "Unsaved changes": [
+    ""
   ],
   "Unselect or activate them and try it again.": [
     "Batalkan pilihan atau aktifkan, lalu coba lagi."
@@ -3069,9 +3090,6 @@ export default {
   "Value": [
     ""
   ],
-  "Verify that the location is correct and the configuration is valid.": [
-    "Verifikasi bahwa lokasi sudah benar dan konfigurasi valid."
-  ],
   "View license": [
     "Lihat lisensi"
   ],
@@ -3149,9 +3167,6 @@ export default {
   ],
   "You must fix these issues": [
     "Anda harus memperbaiki masalah-masalah ini"
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Anda perlu memperbaiki pengaturan yang tidak valid sebelum melanjutkan instalasi."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Anda akan terhubung ke jaringan publik tanpa enkripsi. Data Anda mungkin tidak aman."

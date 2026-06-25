@@ -26,8 +26,11 @@ use std::collections::HashMap;
 use std::fmt;
 
 use agama_utils::{
-    api::software::{
-        Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
+    api::{
+        self,
+        software::{
+            Config, PatternsConfig, ProductConfig, RepositoryConfig, SoftwareConfig, SystemInfo,
+        },
     },
     kernel_cmdline::KernelCmdline,
     products::{ProductSpec, UserPatternSpec},
@@ -96,6 +99,8 @@ pub struct SoftwareStateBuilder<'a> {
     selection: Option<&'a SoftwareSelection>,
     /// Kernel command-line options.
     kernel_cmdline: KernelCmdline,
+    /// List of predefined repositories.
+    predefined_repositories: Vec<api::software::Repository>,
 }
 
 impl<'a> SoftwareStateBuilder<'a> {
@@ -107,6 +112,7 @@ impl<'a> SoftwareStateBuilder<'a> {
             system: None,
             selection: None,
             kernel_cmdline: KernelCmdline::default(),
+            predefined_repositories: vec![],
         }
     }
 
@@ -140,6 +146,14 @@ impl<'a> SoftwareStateBuilder<'a> {
         self
     }
 
+    pub fn with_predefined_repositories(
+        mut self,
+        predefined_repositories: Vec<api::software::Repository>,
+    ) -> Self {
+        self.predefined_repositories = predefined_repositories;
+        self
+    }
+
     /// Builds the [SoftwareState] combining all the sources.
     pub fn build(self) -> SoftwareState {
         let mut state = self.to_software_state();
@@ -161,16 +175,8 @@ impl<'a> SoftwareStateBuilder<'a> {
 
     /// Adds the elements from the underlying system.
     ///
-    /// It searches for repositories in the underlying system. The idea is to
-    /// use the repositories for off-line installation or Driver Update Disks.
-    fn add_system_config(&self, state: &mut SoftwareState, system: &SystemInfo) {
-        let repositories = system
-            .repositories
-            .iter()
-            .filter(|r| r.predefined)
-            .map(Repository::from);
-        state.repositories.extend(repositories);
-
+    /// Predefined repositories are handled separatly.
+    fn add_system_config(&self, state: &mut SoftwareState, _system: &SystemInfo) {
         // hardcode here kernel as it is not in basic dependencies due to
         // containers, but for agama usage, it does not make sense to skip kernel
         // If needs arise, we can always add more smarter kernel selection later.
@@ -332,7 +338,7 @@ impl<'a> SoftwareStateBuilder<'a> {
     fn to_software_state(&self) -> SoftwareState {
         let software = &self.product.software;
         let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
-        let repositories = if let Some(kernel_repos) = kernel_repos {
+        let mut repositories: Vec<_> = if let Some(kernel_repos) = kernel_repos {
             kernel_repos
                 .split(",")
                 .enumerate()
@@ -364,6 +370,11 @@ impl<'a> SoftwareStateBuilder<'a> {
                 })
                 .collect()
         };
+
+        // add all predefined repositories here
+        for repo in self.predefined_repositories.iter() {
+            repositories.push(Repository::from(repo));
+        }
 
         let mut resolvables = ResolvablesState::default();
         for pattern in &software.mandatory_patterns {
@@ -440,12 +451,14 @@ impl SoftwareState {
         config: &Config,
         system: &SystemInfo,
         selection: &SoftwareSelection,
+        predefined_repositories: Vec<api::software::Repository>,
     ) -> Self {
         SoftwareStateBuilder::for_product(product)
             .with_config(config)
             .with_system(system)
             .with_selection(selection)
             .with_kernel_cmdline(KernelCmdline::parse().unwrap_or_default())
+            .with_predefined_repositories(predefined_repositories)
             .build()
     }
 }
@@ -995,22 +1008,11 @@ mod tests {
             predefined: true,
         };
 
-        let another_repo = Repository {
-            alias: "another".to_string(),
-            name: "another".to_string(),
-            url: "https://example.lan/SLES/".to_string(),
-            enabled: false,
-            predefined: false,
-        };
-
-        let system = SystemInfo {
-            repositories: vec![base_repo, another_repo],
-            ..Default::default()
-        };
+        let repos = vec![base_repo];
 
         let state = SoftwareStateBuilder::for_product(&product)
             .with_config(&config)
-            .with_system(&system)
+            .with_predefined_repositories(repos)
             .build();
 
         let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
