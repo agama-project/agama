@@ -33,6 +33,7 @@ require "agama/storage/proposal"
 require "agama/with_locale"
 require "yast/i18n"
 require "y2storage/clients/inst_prepdisk"
+require "y2storage/feature"
 require "y2storage/luks"
 require "y2storage/storage_manager"
 
@@ -183,12 +184,12 @@ module Agama
 
       # Required packages for the used features.
       #
-      # @return [Array<String>]
+      # @return [Array<Y2Storage::Feature::Package>]
       def packages
         return [] unless proposal.success?
 
-        packages = devicegraph.used_features.pkg_list
-        packages += ISCSI::Manager::PACKAGES if need_iscsi?
+        packages = devicegraph.used_features.packages
+        packages += iscsi_packages if need_iscsi?
         packages
       end
 
@@ -255,9 +256,9 @@ module Agama
 
       # Required packages for bootloader.
       #
-      # @return [Array<String>]
+      # @return [Array<Y2Storage::Feature::Package>]
       def bootloader_packages
-        bootloader.packages
+        bootloader.packages.map { |n| Y2Storage::Feature::Package.new(n) }
       end
 
     private
@@ -267,6 +268,13 @@ module Agama
 
       # @return [Logger]
       attr_reader :logger
+
+      # Packages required by iSCSI.
+      #
+      # @return [Array<<2Storage::Feature::Package>]
+      def iscsi_packages
+        ISCSI::Manager::PACKAGES.map { |n| Y2Storage::Feature::Package.new(n) }
+      end
 
       # Whether iSCSI is needed in the target system.
       #

@@ -89,6 +89,8 @@ pub trait ModelAdapter: Send + Sync + 'static {
         l10n: Handler<agama_l10n::Service>,
         progress: Handler<progress::Service>,
     ) -> Result<WriteIssues, service::Error>;
+
+    fn predefined_repositories(&self) -> Vec<Repository>;
 }
 
 /// [ModelAdapter] implementation for libzypp systems.
@@ -128,6 +130,10 @@ impl Model {
 impl ModelAdapter for Model {
     fn set_product(&mut self, product_spec: ProductSpec) {
         self.selected_product = Some(product_spec);
+    }
+
+    fn predefined_repositories(&self) -> Vec<Repository> {
+        self.predefined_repositories.clone()
     }
 
     async fn write(
