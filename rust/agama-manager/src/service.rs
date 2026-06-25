@@ -894,6 +894,8 @@ impl MessageHandler<message::RunAction> for Service {
                 };
 
                 if let Err(error) = action.run().await {
+                    // FIXME: this won't work well as it catches only issues when installation tasks fail to spawn,
+                    // and not for real installation failures.
                     if let Err(e) = ipmi.failed() {
                         tracing::error!("IPMI failed: {}", e);
                     }
@@ -902,11 +904,6 @@ impl MessageHandler<message::RunAction> for Service {
                 }
 
                 tracing::info!("Installation tasks spawned");
-
-                let method =
-                    api::FinishMethod::from_kernel_cmdline().unwrap_or(api::FinishMethod::Stop);
-                let finish = FinishAction::new(method);
-                finish.run();
             }
             Action::Finish(method) => {
                 checks::check_stage(&self.progress, Stage::Finished).await?;
