@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun 25 13:56:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the network connection form: show an alert and scroll to
+  the top when saving fails, and keep the form stable against
+  background data refreshes while editing
+  (gh#agama-project/agama#3670).
+
+-------------------------------------------------------------------
 Tue Jun 23 11:49:50 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Unify the localization settings into a single form: replace the

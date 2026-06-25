@@ -21,11 +21,11 @@
  */
 
 /**
- * Field vocabulary for the connection form: types, constants, and defaults.
+ * Field definitions for the connection form: types, constants, and defaults.
  *
- * This is the single source of truth every other form-local module builds on.
- * Validation lives in validations.ts and value mapping in transformations.ts;
- * both import from here, never the reverse.
+ * validations.ts and transformations.ts build on these definitions, importing
+ * the types and constants they need. The imports go one way only: this module
+ * never imports from them, so every field stays defined in a single place.
  */
 
 import { formOptions } from "@tanstack/react-form";
