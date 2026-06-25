@@ -24,6 +24,9 @@ export default {
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
+  "%1$s (default file system for %2$s)": [
+    "%1$s (standard filsystem för %2$s)"
+  ],
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
@@ -99,8 +102,11 @@ export default {
     "%d mönster hittades",
     "%d flera mönster hittades"
   ],
+  "%s (default file system for generic mount points)": [
+    "%s (standardfilsystem för generiska monteringspunkter)"
+  ],
   "%s (keep data)": [
-    ""
+    "%s (behåll data)"
   ],
   "%s - %s": [
     "%s - %s"
@@ -304,6 +310,9 @@ export default {
   "Additional CHAP authentication performed by the initiator": [
     "Ytterligare CHAP-autentisering utförd av initiativtagaren"
   ],
+  "Additional format arguments": [
+    "Ytterligare formateringsargument"
+  ],
   "Additional patterns": [
     "Ytterligare mönster"
   ],
@@ -337,6 +346,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Alla nätverksanslutningar som hanteras via det här gränssnittet är för närvarande inställda på att endast användas under installationen och kommer inte att kopieras till det installerade systemet"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    "Allt tillgängligt utrymme på de valda diskarna kommer att användas för att skapa fysiska volymer."
+  ],
   "All the available zFCP controllers are already activated.": [
     "Alla tillgängliga zFCP-styrenheter är redan aktiverade."
   ],
@@ -357,6 +369,9 @@ export default {
     "En befintlig partition kommer att användas för %s",
     "Flera befintliga partitioner kommer att användas för %s"
   ],
+  "Any existing data on %s will be destroyed when installation begins.": [
+    "All befintlig data på %s kommer att förstöras när installationen påbörjas."
+  ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
     "Alla befintliga logiska volymer kommer att tas bort och all data i volymgruppen kommer att gå förlorad."
   ],
@@ -368,6 +383,9 @@ export default {
   ],
   "Appearance": [
     "Utseende"
+  ],
+  "As required by the logical volumes": [
+    "Som krävs av de logiska volymerna"
   ],
   "At least one DNS search domain is required": [
     "Åtminstone en DNS-sökdomän krävs"
@@ -444,6 +462,9 @@ export default {
   "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
     "Baserat på mängden RAM i systemet, kommer en %1$s med en storlek mellan %2$s och %3$s att planeras för %4$s"
   ],
+  "Based on the mount point": [
+    "Baserat på monteringspunkt"
+  ],
   "Bcachefs": [
     "Bcachefs"
   ],
@@ -506,6 +527,36 @@ export default {
   ],
   "CPU": [
     "Processor"
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %s.": [
+    "Kan justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av ett separat filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %s.": [
+    "Kan justeras dynamiskt baserat på mängden RAM i systemet och förekomsten av separata filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
+    "Kan justeras dynamiskt baserat på mängden RAM i systemet och användningen av Btrfs-ögonblicksavbilder."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
+    "Kan justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och förekomsten av ett separat filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
+    "Kan justeras dynamiskt baserat på mängden RAM i systemet, användningen av Btrfs-ögonblicksavbilder och förekomsten av separata filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the presence of a separate file system for %s.": [
+    "Kan justeras dynamiskt baserat på närvaron av ett separat filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the presence of separate file systems for %s.": [
+    "Kan justeras dynamiskt baserat på förekomsten av separata filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
+    "Kan justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och närvaron av ett separat filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
+    "Kan justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder och förekomsten av separata filsystem för %s."
+  ],
+  "Can be dynamically adjusted based on the usage of Btrfs snapshots.": [
+    "Kan justeras dynamiskt baserat på användningen av Btrfs-ögonblicksavbilder."
   ],
   "Cancel": [
     "Avbryt"
@@ -635,8 +686,14 @@ export default {
   "Clear input": [
     "Rensa inmatning"
   ],
+  "Clear terminal": [
+    "Rensa terminal"
+  ],
   "Close": [
     "Stäng"
+  ],
+  "Close terminal": [
+    "Stäng terminal"
   ],
   "Color scheme": [
     "Färgschema"
@@ -771,11 +828,20 @@ export default {
   "Create LVM volume group on %s": [
     "Skapa LVM volymgrupp på %s"
   ],
+  "Create a new logical volume on %s": [
+    "Skapa en ny logisk volym på %s"
+  ],
+  "Create a new partition on %s": [
+    "Skapa en ny partition på %s"
+  ],
   "Create another LVM volume group on %s": [
     "Skapa LVM volymgrupp på %s"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
     "Utvalda uppsättningar av paket för vanliga användningsområden och funktioner för att utöka systemet."
+  ],
+  "Current": [
+    "Nuvarande"
   ],
   "Current %1$s at %2$s": [
     "Nuvarande %1$s på %2$s"
@@ -840,6 +906,9 @@ export default {
   "Deactivating": [
     "Inaktiverar"
   ],
+  "Decrease font size": [
+    "Minska teckenstorleken"
+  ],
   "Default": [
     "Standard"
   ],
@@ -860,6 +929,9 @@ export default {
   ],
   "Define an administrator user": [
     "Definiera en administratörsanvändare"
+  ],
+  "Define more file system settings": [
+    "Definiera mer filsysteminställningar"
   ],
   "Delete": [
     "Ta bort"
@@ -897,6 +969,9 @@ export default {
   "Device binding": [
     "Enhetsbindning"
   ],
+  "Device could not be configured": [
+    "Enhet kunde inte konfigureras"
+  ],
   "Device details": [
     "Enhetsdetaljer"
   ],
@@ -906,8 +981,14 @@ export default {
   "Device name is required": [
     "Enhetsnamn krävs"
   ],
+  "Device not found": [
+    "Enhet hittades inte"
+  ],
   "Disabled": [
     "Inaktiverat"
+  ],
+  "Discard changes": [
+    "Förkasta ändringar"
   ],
   "Discard the maximum size and continue with simplified configuration": [
     "Kassera den maximala storleken och fortsätt med förenklad konfiguration"
@@ -948,6 +1029,9 @@ export default {
   "Do not deactivate": [
     "Inaktivera inte"
   ],
+  "Do not format %s and keep data": [
+    "Formatera inte %s och behåll data"
+  ],
   "Do not register": [
     "Registrera inte"
   ],
@@ -964,10 +1048,13 @@ export default {
     "Ladda ner loggar för att felsöka eller dela med support."
   ],
   "E.g. rw, noatime, umask=0666": [
-    ""
+    "t.e.x. rw, noatime, umask=0666"
   ],
   "E.g., %s": [
     "T.ex., %s"
+  ],
+  "E.g., %s, %s, %s": [
+    "T.ex., %s, %s, %s"
   ],
   "E.g., 192.168.1.1": [
     "T.ex. 192.168.1.1"
@@ -1087,7 +1174,7 @@ export default {
     "Utmärkt signal"
   ],
   "Expand if possible": [
-    ""
+    "Expandera om möjligt"
   ],
   "Expiration date": [
     "Utgångsdatum"
@@ -1151,6 +1238,9 @@ export default {
   "Find space in %s": [
     "Hitta utrymme på %s"
   ],
+  "Fix invalid settings before starting the installation.": [
+    "Åtgärda ogiltiga inställningar innan installationen påbörjas."
+  ],
   "Fix the errors below and try again": [
     "Åtgärda felen nedan och försök igen"
   ],
@@ -1208,6 +1298,9 @@ export default {
   "GiB": [
     "GiB"
   ],
+  "Go to [installation] summary.": [
+    "Gå till [Installation]sammanfattning."
+  ],
   "Go to iSCSI": [
     "Gå till iSCSI"
   ],
@@ -1244,6 +1337,9 @@ export default {
   ],
   "Hide technical details": [
     "Dölj tekniska detaljer"
+  ],
+  "Hide terminal": [
+    "Dölj terminal"
   ],
   "High": [
     "Hög"
@@ -1329,6 +1425,9 @@ export default {
   "Includes %1$d additional pattern. Requires %2$s": [
     "Inkluderar %1$d ytterligt mönster. Kräver %2$s",
     "Inkluderar %1$d ytterligare mönster. Kräver %2$s"
+  ],
+  "Increase font size": [
+    "Öka teckenstorleken"
   ],
   "Initiator": [
     "Initiativtagare"
@@ -1420,14 +1519,20 @@ export default {
   "Invalid [zFCP] settings": [
     "Ogiltiga [zFCP] inställningar"
   ],
+  "Invalid device location": [
+    "Ogiltig enhetsplats"
+  ],
   "Invalid format (e.g. 20 GiB)": [
-    ""
+    "Ogiltigt format (t.ex. 20 GiB)"
   ],
   "Invalid hostname value.": [
     "Ogiltigt värdnamn värde."
   ],
   "Invalid label format": [
-    ""
+    "Ogiltigt etikettformat"
+  ],
+  "Invalid partition location": [
+    "Ogiltig partitionsplats"
   ],
   "Invalid settings": [
     "Ogiltiga inställningar"
@@ -1480,6 +1585,9 @@ export default {
   "Keep %s": [
     "Behåll %s"
   ],
+  "Keep editing": [
+    "Fortsätt redigera"
+  ],
   "Keyboard": [
     "Tangentbord"
   ],
@@ -1497,6 +1605,9 @@ export default {
   ],
   "LVM": [
     "LVM"
+  ],
+  "LVM physical volumes will be added as partitions on the chosen disks.": [
+    "LVM fysiska volymer kommer att läggas till som partitioner på de valda diskarna."
   ],
   "Label": [
     "Etikett"
@@ -1516,6 +1627,9 @@ export default {
   "Let the installer propose a sensible size": [
     "Låt installationsprogrammet föreslå en vettig storlek"
   ],
+  "Let the installer set the size": [
+    "Låt installationsprogrammet ställa in storleken"
+  ],
   "Level": [
     "Nivå"
   ],
@@ -1530,6 +1644,9 @@ export default {
   ],
   "Light color scheme": [
     "Ljust färgschema"
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    "Linux-kommandorad med administratörsbehörigheter på installationssystemet."
   ],
   "Listening and learning time (4-30 seconds).": [
     "Lyssnings och inlärningstid (4–30 sekunder)."
@@ -1561,6 +1678,12 @@ export default {
   "Log in using a trusted SSH public key": [
     "Logga in med en betrodd publik SSH-nyckel"
   ],
+  "Logical volume": [
+    "Logisk volym"
+  ],
+  "Logical volume could not be configured": [
+    "Logisk volym kunde inte konfigureras"
+  ],
   "Logical volumes": [
     "Logiska volymer"
   ],
@@ -1591,6 +1714,9 @@ export default {
   "Make sure that the passsword is correct and try again.": [
     "Kontrollera att lösenordet är korrekt och försök igen."
   ],
+  "Make sure the location is correct and the configuration is valid.": [
+    "Se till att platsen är korrekt och att konfigurationen är giltig."
+  ],
   "Manage DASD devices": [
     "Hantera DASD-enheter"
   ],
@@ -1612,6 +1738,9 @@ export default {
   "Maximum": [
     "Maximal"
   ],
+  "Maximum is required": [
+    "Maximum krävs"
+  ],
   "Members": [
     "Medlemmar"
   ],
@@ -1624,8 +1753,17 @@ export default {
   "Min channel": [
     "Minimum kanal"
   ],
+  "Minimize terminal": [
+    "Minimera terminal"
+  ],
   "Minimum": [
     "Minst"
+  ],
+  "Minimum is required": [
+    "Minimum krävs"
+  ],
+  "Minimum: %1$s (%2$s)": [
+    "Minimum: %1$s (%2$s)"
   ],
   "Missing": [
     "Saknas"
@@ -1674,8 +1812,14 @@ export default {
   "Mount disk %s": [
     "Montera disk %s"
   ],
+  "Mount options": [
+    "Monteringsalternativ"
+  ],
   "Mount point": [
     "Monteringspunkt"
+  ],
+  "Mount point is required": [
+    "Monteringspunkt krävs"
   ],
   "Move mount points": [
     "Flytta monteringspunkter"
@@ -1685,6 +1829,12 @@ export default {
   ],
   "Multipath": [
     "Flervägs"
+  ],
+  "Must be larger than minimum size": [
+    "Måste vara större än minsta storlek"
+  ],
+  "Must be smaller than maximum size": [
+    "Måste vara mindre än maximal storlek"
   ],
   "NFS": [
     "NFS"
@@ -1702,7 +1852,7 @@ export default {
     "Namn %s"
   ],
   "Name for the logical volume. E.g., root, home, lv0": [
-    ""
+    "Namn för den logiska volymen. T.ex. root, home, lv0"
   ],
   "Name is required": [
     "Namn krävs"
@@ -1725,8 +1875,17 @@ export default {
   "New connection": [
     "Ny anslutning"
   ],
+  "New logical volume": [
+    "Ny logisk volym"
+  ],
+  "New logical volume. There are no available existing logical volumes on %s.": [
+    "Ny logisk volym. Det finns inga tillgängliga befintliga logiska volymer på %s."
+  ],
+  "New partition": [
+    "Ny partition"
+  ],
   "New partition. There are no available existing partitions on %s.": [
-    ""
+    "Ny partition. Det finns inga tillgängliga befintliga partitioner på %s."
   ],
   "No": [
     "Nej"
@@ -1917,6 +2076,9 @@ export default {
   "Only reused partitions will be used.": [
     "Endast återanvända partitioner kommer att användas."
   ],
+  "Open terminal": [
+    "Öppna terminal"
+  ],
   "Options for partition %s": [
     "Alternativ för partition %s"
   ],
@@ -1926,11 +2088,17 @@ export default {
   "Parent device": [
     "Överordnad enhet"
   ],
+  "Partition": [
+    "Partition"
+  ],
   "Partition %s": [
     "Partition %s"
   ],
   "Partition Info": [
     "Partitionsinformation"
+  ],
+  "Partition could not be configured": [
+    "Partition kunde inte konfigureras"
   ],
   "Partitions": [
     "Partitioner"
@@ -2010,8 +2178,14 @@ export default {
   "Performs auto LUN scan": [
     "Utför automatisk LUN-skanning"
   ],
+  "Physical extent size": [
+    "Fysisk utsträckningsstorlek"
+  ],
   "Physical volumes": [
     "Fysiska volymer"
+  ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    "Fysiska volymer kan skapas på några av de valda diskarna baserat på den totala storleken på de logiska volymerna."
   ],
   "PiB": [
     "PiB"
@@ -2084,6 +2258,9 @@ export default {
   ],
   "Range": [
     "Räckvidd"
+  ],
+  "Range: %1$s - %2$s (%3$s)": [
+    "Räckvidd: %1$s - %2$s (%3$s)"
   ],
   "Read less": [
     "Läs mindre"
@@ -2178,8 +2355,14 @@ export default {
   "Reset to the default configuration": [
     "Återställ till standardkonfiguration"
   ],
+  "Resize terminal": [
+    "Ändra storlek på terminal"
+  ],
   "Resource not found or lost": [
     "Resursen hittades inte eller förlorades"
+  ],
+  "Restore terminal": [
+    "Återställ terminal"
   ],
   "Result": [
     "Resultat"
@@ -2270,6 +2453,9 @@ export default {
   ],
   "Select a disk": [
     "Välj en disk"
+  ],
+  "Select a filesystem type": [
+    "Välj en filsystemtyp"
   ],
   "Select a mode": [
     "Välj ett läge"
@@ -2363,16 +2549,16 @@ export default {
     "Ställ in NTP-servrar manuellt"
   ],
   "Set a specific size": [
-    ""
+    "Ställ in en specifik storlek"
   ],
   "Set manually": [
     "Ställ in manuellt"
   ],
   "Set minimum and maximum": [
-    ""
+    "Ställ in minimum och maximum"
   ],
   "Set minimum; use more space if available": [
-    ""
+    "Ställ in minimum; använd mer utrymme om tillgängligt"
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
     "Konfigurerar ett huvudkonto för inloggning. Det kan köra administratörskommandon med [sudo] men är separat från root-kontot."
@@ -2408,8 +2594,11 @@ export default {
   "Show more": [
     "Visa mer"
   ],
-  "Show technical details (English only)": [
-    "Visa tekniska detaljer (Engelska endast)"
+  "Show technical details": [
+    "Visa tekniska detaljer"
+  ],
+  "Show terminal": [
+    "Visa terminal"
   ],
   "Shrink existing logical volumes": [
     "Krymp existerande logiska volymer"
@@ -2573,6 +2762,9 @@ export default {
   "Temporary name that may change after reboot or network changes": [
     "Temporärt namn som kan ändras efter omstart eller nätverksändringar"
   ],
+  "Terminal": [
+    "Terminal"
+  ],
   "The 'primary' option is only valid for %s modes": [
     "Det 'primära' alternativet är endast giltigt för %s lägen"
   ],
@@ -2581,6 +2773,9 @@ export default {
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
     "[språk och region] inställningar för produkten kan erbjuda fler alternativ att välja mellan."
+  ],
+  "The configuration is read-only.": [
+    "Konfigurationen är skrivskyddad."
   ],
   "The configuration must be adapted to address the following issue:": [
     "Konfigurationen måste anpassas för att åtgärda följande problem:",
@@ -2634,6 +2829,9 @@ export default {
   ],
   "The device cannot be shrunk:": [
     "Enheten kan inte krympas:"
+  ],
+  "The device does not exist or is no longer available.": [
+    "Enheten finns inte eller är inte längre tillgänglig."
   ],
   "The device will be formatted": [
     "Enheten kommer att formateras"
@@ -2711,9 +2909,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Modalväljaren erbjuder ett förenklat gränssnitt utformat för snabb och enkel användning, utan att överväldiga användaren."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "De fysiska LVM-volymerna som behövs kommer att läggas till som partitioner på de valda diskarna, baserat på storleken på de logiska volymerna. Om du väljer mer än en disk så kan, fysiska volymer vara fördelade på flera diskar."
-  ],
   "The password is weak": [
     "Lösenordet är svagt"
   ],
@@ -2777,6 +2972,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "Systemet kommer att starta till ett kommandoradsgränssnitt."
   ],
+  "The terminal requires a larger screen size": [
+    "Terminalen kräver en större skärmstorlek"
+  ],
   "The whole device will be used for %s": [
     "Hela enheten kommer att användas för %s"
   ],
@@ -2791,6 +2989,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "Det finns ingen zFCP-styrenhet som väntar på aktivering."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    "Det finns osparade ändringar. Om du lämnar nu kommer dina ändringar att gå förlorade."
   ],
   "There is %d destructive action planned": [
     "Det finns en %d destruktiv åtgärd planerad",
@@ -2855,7 +3056,7 @@ export default {
     "Detta påverkar endast installationsgränssnittet, inte produkten som ska installeras. Du kan justera produktens lokalisering senare på sidan Lokaliseringsinställningar."
   ],
   "This will be injected to the command to create the file system (%s).": [
-    ""
+    "Detta kommer att injiceras i kommandot för att skapa filsystem (%s)."
   ],
   "TiB": [
     "TiB"
@@ -2898,6 +3099,9 @@ export default {
   ],
   "Unknown error": [
     "Okänt fel"
+  ],
+  "Unsaved changes": [
+    "Osparade ändringar"
   ],
   "Unselect or activate them and try it again.": [
     "Avmarkera eller aktivera dem och försök igen."
@@ -2956,8 +3160,14 @@ export default {
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
     "Använd åtgärderna nedan för att ställa in dina enheter eller klicka på %s för att börja från början med standardkonfigurationen."
   ],
+  "Use all available space": [
+    "Använd allt tillgängligt utrymme"
+  ],
   "Use available space": [
     "Använd tillgängligt utrymme"
+  ],
+  "Use current %s": [
+    "Använd nuvarande %s"
   ],
   "Use custom DNS search domains": [
     "Använd anpassade DNS-sökdomäner"
@@ -3107,8 +3317,11 @@ export default {
   "Value": [
     "Värde"
   ],
-  "Verify that the location is correct and the configuration is valid.": [
-    "Kontrollera att platsen är korrekt och att konfigurationen är giltig."
+  "Value is required": [
+    "Värde krävs"
+  ],
+  "Value: %1$s (%2$s)": [
+    "Värde: %1$s (%2$s)"
   ],
   "View license": [
     "Visa licens"
@@ -3188,9 +3401,6 @@ export default {
   "You must fix these issues": [
     "Du måste åtgärda dessa problem"
   ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Du måste korrigera eventuella ogiltiga inställningar innan du fortsätter med installationen."
-  ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Du kommer att ansluta till ett offentligt nätverk utan kryptering. Dina data kanske inte är säkra."
   ],
@@ -3209,6 +3419,9 @@ export default {
   "auto selected": [
     "automatiskt vald"
   ],
+  "default size for %s": [
+    "Standard storlek för %s"
+  ],
   "iBFT": [
     "iBFT"
   ],
@@ -3226,6 +3439,9 @@ export default {
   ],
   "reset to defaults": [
     "återställ till standard"
+  ],
+  "size for %s with the current settings": [
+    "storlek för %s med de nuvarande inställningarna"
   ],
   "zFCP": [
     "zFCP"

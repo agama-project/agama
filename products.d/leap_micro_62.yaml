@@ -56,7 +56,7 @@ software:
     - opensuse-migration-tool
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
 
-  optional_packages: []
+  optional_packages: [os-prober]
   base_product: Leap-Micro
 
 storage:

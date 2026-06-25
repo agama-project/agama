@@ -97,9 +97,12 @@ pub enum ValidationOutcome {
 ///
 /// ```
 /// # use agama_lib::profile::{ProfileValidator, ValidationOutcome};
-/// # use std::path::Path;
-/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-///   .join("share/profile.schema.json");
+/// # use std::path::PathBuf;
+/// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+///
+/// path.pop();
+/// path.push("share/profile.schema.json");
+///
 /// let validator = ProfileValidator::new(&path)
 ///   .expect("the default validator");
 ///
@@ -111,8 +114,11 @@ pub enum ValidationOutcome {
 /// assert!(matches!(result, ValidationOutcome::NotValid(_)));
 ///
 /// // or a file
-/// let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-///   .join("share/examples/profile_tw.json");
+/// let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+///
+/// path.pop();
+/// path.push("share/examples/profile_tw.json");
+///
 /// let result = validator.validate_file(&path).unwrap();
 /// assert!(matches!(result, ValidationOutcome::Valid));
 /// ```
@@ -122,7 +128,8 @@ pub struct ProfileValidator {
 
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
-        let relative_path = PathBuf::from("agama-lib/share/profile.schema.json");
+        // profile.schema.json moved to from /rust/agama-lib/share to /rust/share/
+        let relative_path = PathBuf::from("../share/profile.schema.json");
         let path = if relative_path.exists() {
             relative_path
         } else {

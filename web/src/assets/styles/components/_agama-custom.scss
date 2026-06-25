@@ -3,6 +3,7 @@
 // App-specific component and layout styles that are not direct PatternFly
 // overrides (see _patternfly-overrides.scss for those).
 
+// Overview settings grid: single column, widening to two columns on lg.
 .installation-settings-summary {
   display: grid;
   gap: 0.5em;
@@ -14,10 +15,12 @@
   }
 }
 
+// Product selection cards: cap logo size and align the radio inputs.
 #productSelectionForm img {
   max-inline-size: 100px;
 }
 
+// Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
   background: var(--pf-t--global--background--color--primary--default);
@@ -51,57 +54,68 @@
 
 // Material Symbol icons (rendered by the Icon component) ship without a fill,
 // so they default to black and turn nearly invisible on the dark theme. Make
-// them inherit the surrounding text color so they adapt to the active theme.
+// them inherit the surrounding text color (currentcolor) so they adapt to the
+// active theme.
 svg[data-icon-name] {
   fill: currentcolor;
+}
+
+// Outside high contrast, content icons follow the --agm-t--icon--color role when
+// a product sets it. High contrast is left to PatternFly (the role is ignored
+// there), per the appearance contract.
+:root:where(:not(.pf-v6-theme-high-contrast)) svg[data-icon-name] {
+  color: var(--agm-t--icon--color, currentcolor);
 }
 
 // Named icon sizes for the Icon `size` prop. The size is driven by font-size
 // (icons are 1em) and reads a customizable role token, so a product can resize
 // them without touching markup.
 .agm-icon-xs {
-  font-size: var(--agm-t--icon--size--xs);
+  font-size: var(--agm-t--icon--size--100);
 }
 
 .agm-icon-sm {
-  font-size: var(--agm-t--icon--size--sm);
+  font-size: var(--agm-t--icon--size--200);
 }
 
 .agm-icon-md {
-  font-size: var(--agm-t--icon--size--md);
+  font-size: var(--agm-t--icon--size--300);
 }
 
 .agm-icon-lg {
-  font-size: var(--agm-t--icon--size--lg);
+  font-size: var(--agm-t--icon--size--400);
 }
 
 .agm-icon-xl {
-  font-size: var(--agm-t--icon--size--xl);
+  font-size: var(--agm-t--icon--size--500);
 }
 
 .agm-icon-2xl {
-  font-size: var(--agm-t--icon--size--2xl);
+  font-size: var(--agm-t--icon--size--600);
 }
 
 .agm-icon-3xl {
-  font-size: var(--agm-t--icon--size--3xl);
+  font-size: var(--agm-t--icon--size--700);
 }
 
 .agm-icon-4xl {
-  font-size: var(--agm-t--icon--size--4xl);
+  font-size: var(--agm-t--icon--size--800);
 }
 
+// Inline kebab ("three dots") action icon, sized to sit with adjacent text.
 .agm-three-dots-icon {
   font-size: 1.1rem;
   vertical-align: text-top;
 }
 
+// Hide a button's default (leading) icon.
 .no-default-icon {
   .pf-v6-c-button__icon {
     display: none;
   }
 }
 
+// Wrap inline text in the locale's quotation marks.
 span.in-quotes {
   &::before {
     content: open-quote;

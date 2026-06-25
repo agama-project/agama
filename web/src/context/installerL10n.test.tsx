@@ -21,14 +21,19 @@
  */
 
 import React, { Suspense } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { _ } from "~/i18n";
+import agama from "~/agama";
 import { InstallerL10nProvider, useInstallerL10n } from "~/context/installerL10n";
 import { InstallerClientProvider } from "./installer";
+import { plainRender } from "~/test-utils";
 
 jest.unmock("~/context/installerL10n");
 
-const mockUseSystemFn = jest.fn();
+// Locale reported by the (mocked) system query. Updated by configureL10nAction
+// to emulate the backend persisting the change.
+let currentLocale = "en_US.UTF-8";
 const mockConfigureL10nFn = jest.fn();
 
 jest.mock("~/context/installer", () => ({
@@ -38,12 +43,13 @@ jest.mock("~/context/installer", () => ({
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
+  getSystem: () => Promise.resolve({ l10n: { locale: currentLocale, locales: [], keymap: "us" } }),
   configureL10nAction: (config) => mockConfigureL10nFn(config),
 }));
 
-jest.mock("~/hooks/model/system", () => ({
-  ...jest.requireActual("~/hooks/model/system"),
-  useSystem: () => mockUseSystemFn(),
+jest.mock("~/languages.json", () => ({
+  "en-US": "English (US)",
+  "es-ES": "Español",
 }));
 
 const client = {
@@ -55,51 +61,95 @@ const client = {
   onEvent: jest.fn(),
 };
 
-jest.mock("~/languages.json", () => ({
-  "es-AR": "Español (Argentina)",
-  "cs-CZ": "čeština",
-  "en-US": "English (US)",
-  "es-ES": "Español",
-}));
+// "Cancel" is translated as "Cancelar" in the Spanish catalog, so its rendered
+// value reveals which catalog is currently applied to the global translations.
+const Heading = () => <h1>{_("Cancel")}</h1>;
 
-// Helper component that displays a translated message depending on the
-// agamaLang value.
-const TranslatedContent = () => {
-  const { language } = useInstallerL10n();
-  const text = {
-    "cs-CZ": "ahoj",
-    "en-US": "hello",
-    "es-ES": "hola",
-    "es-AR": "hola!",
+const Controls = () => {
+  const { changeL10n } = useInstallerL10n();
+  const queryClient = useQueryClient();
+
+  // Resets the global catalog to English without changing the selected language
+  // and then forces the provider to re-render (here, by refreshing the system
+  // query). This reproduces the conditions of the original bug, where some other
+  // code left the global catalog out of sync with the selected language.
+  const resetCatalogAndRefresh = () => {
+    agama.locale(null);
+    queryClient.invalidateQueries({ queryKey: ["system"] });
   };
 
-  return <>{text[language]}</>;
+  return (
+    <>
+      <button onClick={() => changeL10n({ language: "es-ES" })}>Switch to Spanish</button>
+      <button onClick={resetCatalogAndRefresh}>Reset catalog</button>
+    </>
+  );
+};
+
+const renderProvider = () => {
+  // Mirror the production client: cached queries are not refetched on mount and
+  // structural sharing is off (so a refetch returning identical data still
+  // triggers a re-render).
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false, refetchOnMount: false, structuralSharing: false },
+    },
+  });
+
+  return plainRender(
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback="Loading...">
+        <InstallerClientProvider client={client}>
+          <InstallerL10nProvider>
+            <Heading />
+            <Controls />
+          </InstallerL10nProvider>
+        </InstallerClientProvider>
+      </Suspense>
+    </QueryClientProvider>,
+  );
 };
 
 describe("InstallerL10nProvider", () => {
-  beforeAll(() => {
-    mockConfigureL10nFn.mockResolvedValue(true);
-    mockUseSystemFn.mockReturnValue({ l10n: { locale: "es_ES.UTF-8" } });
-    jest.spyOn(window.navigator, "languages", "get").mockReturnValue(["es-ES", "cs-CZ"]);
+  beforeEach(() => {
+    currentLocale = "en_US.UTF-8";
+    agama.locale(null);
+    mockConfigureL10nFn.mockImplementation((config) => {
+      if (config.locale) currentLocale = config.locale;
+      return Promise.resolve(true);
+    });
   });
 
-  it("sets the language from the backend", async () => {
-    const queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    });
+  it("applies the language reported by the backend", async () => {
+    currentLocale = "es_ES.UTF-8";
+    renderProvider();
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <Suspense fallback="Loading...">
-          <InstallerClientProvider client={client}>
-            <InstallerL10nProvider>
-              <TranslatedContent />
-            </InstallerL10nProvider>
-          </InstallerClientProvider>
-        </Suspense>
-      </QueryClientProvider>,
-    );
+    await screen.findByRole("heading", { name: "Cancelar" });
+  });
 
-    await waitFor(() => screen.getByText("hola"));
+  it("applies the new translations when the language changes", async () => {
+    const { user } = renderProvider();
+
+    await screen.findByRole("heading", { name: "Cancel" });
+
+    await user.click(screen.getByRole("button", { name: "Switch to Spanish" }));
+
+    await screen.findByRole("heading", { name: "Cancelar" });
+  });
+
+  it("keeps the translations in sync with the language on every render", async () => {
+    const { user } = renderProvider();
+
+    await screen.findByRole("heading", { name: "Cancel" });
+
+    await user.click(screen.getByRole("button", { name: "Switch to Spanish" }));
+    await screen.findByRole("heading", { name: "Cancelar" });
+
+    // The global catalog is reset while the selected language stays the same,
+    // and then the provider re-renders. The Spanish texts must be reapplied
+    // instead of falling back to English.
+    await user.click(screen.getByRole("button", { name: "Reset catalog" }));
+
+    await waitFor(() => expect(screen.getByRole("heading")).toHaveTextContent("Cancelar"));
   });
 });

@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Wed Jun 24 15:19:28 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Break a initrd-nmtui systemd dependency cycle (systemd deletes some services
+  to break the cycle, that services are then missing and it might
+  trigger the emergency shell) (bsc#1268901)
+
+-------------------------------------------------------------------
+Thu Jun 18 08:16:25 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for alts as update-alternatives replacement
+  (gh#agama-project/agama#3645).
+
+-------------------------------------------------------------------
 Mon Jun 15 15:45:32 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 22
@@ -104,14 +117,14 @@ Wed Apr 22 06:43:48 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1262229
   - Dropped mediacheck from the kiwi file as it caused build errors
-    after kiwi upgraded to new version 
+    after kiwi upgraded to new version
 
 -------------------------------------------------------------------
 Fri Apr 17 10:26:35 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1261932
   - Explicitly allow virtual terminal switching for the gnome kiosk
-    session 
+    session
 
 -------------------------------------------------------------------
 Tue Apr 14 17:36:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

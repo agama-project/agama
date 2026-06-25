@@ -475,7 +475,7 @@ module Agama
         #
         # @return [String]
         def serialize_storage_resolvables
-          serialize_resolvables(packages: manager.packages)
+          serialize_resolvables(manager.packages)
         end
 
         # Generates the serialized JSON of the bootloader system.
@@ -501,7 +501,7 @@ module Agama
         #
         # @return [String]
         def serialize_bootloader_resolvables
-          serialize_resolvables(packages: manager.bootloader_packages)
+          serialize_resolvables(manager.bootloader_packages)
         end
 
         # Representation of the null JSON.

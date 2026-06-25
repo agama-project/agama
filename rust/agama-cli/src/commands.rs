@@ -44,8 +44,7 @@ pub fn build_probe_cmd() -> Command {
     let long_about = make_long(&about, &gettext("\
         In Agama's jargon, the term 'probing' refers to the process of 'analyzing' the system. This \
         includes reading software repositories, analyzing storage devices, and more. The 'probe' \
-        command initiates this analysis process and returns immediately. \
-        TODO: do we really need a \"probe\" action?"));
+        command initiates this analysis process and returns immediately."));
     Command::new("probe").about(&about).long_about(long_about)
 }
 
