@@ -22,9 +22,6 @@
 
 const L10N = {
   root: "/l10n",
-  localeSelection: "/l10n/locale/select",
-  keymapSelection: "/l10n/keymap/select",
-  timezoneSelection: "/l10n/timezone/select",
 };
 
 const NETWORK = {

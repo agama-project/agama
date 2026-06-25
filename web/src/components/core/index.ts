@@ -29,7 +29,6 @@ export { default as InstallationProgress } from "./InstallationProgress";
 export { default as InstallationExit } from "./InstallationExit";
 export { default as InstallerL10nOptions } from "./InstallerL10nOptions";
 export { default as IssuesAlert } from "./IssuesAlert";
-export { default as ListSearch } from "./ListSearch";
 export { default as LoginPage } from "./LoginPage";
 export { default as RowActions } from "./RowActions";
 export { default as Page } from "./Page";
