@@ -279,32 +279,32 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
     }
 
-    fn to_software_state(&self) -> SoftwareState {
-        let software = &self.product.software;
-        let build_repo = |i, url: String| {
-            let alias = format!("agama-{}", i);
-            Repository {
-                name: alias.clone(),
-                alias,
-                url,
-                enabled: true,
-                priority: None,
-            }
-        };
+    fn build_repo(i: usize, url: String) -> Repository {
+        let alias = format!("agama-{}", i);
+        Repository {
+            name: alias.clone(),
+            alias,
+            url,
+            enabled: true,
+            priority: None,
+        }
+    }
 
+    fn build_repositories(&self) -> Vec<Repository> {
+        let software = &self.product.software;
         let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
         let mut repositories: Vec<_> = if let Some(kernel_repos) = kernel_repos {
             kernel_repos
                 .split(",")
                 .enumerate()
-                .map(|(i, url)| build_repo(i, url.to_string()))
+                .map(|(i, url)| Self::build_repo(i, url.to_string()))
                 .collect()
         } else {
             software
                 .repositories()
                 .into_iter()
                 .enumerate()
-                .map(|(i, r)| build_repo(i, r.url.clone()))
+                .map(|(i, r)| Self::build_repo(i, r.url.clone()))
                 .collect()
         };
 
@@ -313,7 +313,11 @@ impl<'a> SoftwareStateBuilder<'a> {
             repositories.push(Repository::from(repo));
         }
 
-        let mut resolvables = ResolvablesState::default();
+        repositories
+    }
+
+    fn add_patterns(&self, resolvables: &mut ResolvablesState) {
+        let software = &self.product.software;
         resolvables.extend_resolvables(
             &software.mandatory_patterns,
             ResolvableType::Pattern,
@@ -342,6 +346,21 @@ impl<'a> SoftwareStateBuilder<'a> {
             }
         }
 
+        // FIPS enabled, so add fips pattern
+        if self.kernel_cmdline.get_last("fips") == Some("1".to_string()) {
+            tracing::info!("fips detected, adding fips pattern");
+            resolvables.add_or_replace(
+                "fips",
+                ResolvableType::Pattern,
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false,
+                },
+            );
+        }
+    }
+
+    fn add_packages(&self, resolvables: &mut ResolvablesState) {
+        let software = &self.product.software;
         resolvables.extend_resolvables(
             &software.mandatory_packages,
             ResolvableType::Package,
@@ -368,26 +387,25 @@ impl<'a> SoftwareStateBuilder<'a> {
                 skip_if_missing: false,
             },
         );
+    }
 
-        // FIPS enabled, so add fips pattern
-        if self.kernel_cmdline.get_last("fips") == Some("1".to_string()) {
-            tracing::info!("fips detected, adding fips pattern");
-            resolvables.add_or_replace(
-                "fips",
-                ResolvableType::Pattern,
-                ResolvableSelection::AutoSelected {
-                    skip_if_missing: false,
-                },
-            );
-        }
+    fn build_resolvables(&self) -> ResolvablesState {
+        let mut resolvables = ResolvablesState::default();
+        self.add_patterns(&mut resolvables);
+        self.add_packages(&mut resolvables);
+        resolvables
+    }
 
+    fn to_software_state(&self) -> SoftwareState {
         SoftwareState {
-            product: software
+            product: self
+                .product
+                .software
                 .base_product
                 .clone()
                 .expect("Expected a base product to be defined"),
-            repositories,
-            resolvables,
+            repositories: self.build_repositories(),
+            resolvables: self.build_resolvables(),
             registration: None,
             options: Default::default(),
             allow_registration: self.product.registration,
