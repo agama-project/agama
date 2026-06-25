@@ -84,6 +84,16 @@ describe("SoftwarePatternsSelection", () => {
     expect(headings).toHaveLength(3);
   });
 
+  it("exposes each category as a group labelled by its heading", async () => {
+    installerRender(<SoftwarePatternsSelection />);
+    const groups = await screen.findAllByRole("group");
+    expect(groups).toHaveLength(3);
+    // Each category checkbox set is reachable as a group labelled by its name.
+    screen.getByRole("group", { name: /Graphical Environments/ });
+    screen.getByRole("group", { name: /Base Technologies/ });
+    screen.getByRole("group", { name: /Desktop Functions/ });
+  });
+
   it("renders each category containing its patterns in order", async () => {
     installerRender(<SoftwarePatternsSelection />);
 

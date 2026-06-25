@@ -404,12 +404,21 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
             >
               {({ values: formValues, fieldMeta }) => (
                 <Stack hasGutter>
-                  {sortGroupNames(allGroups).map((groupName) => {
+                  {sortGroupNames(allGroups).map((groupName, index) => {
                     const groupAll = allGroups[groupName];
                     const groupVisible = visibleByCategory[groupName] || [];
+                    // Ties the category heading to its group of checkboxes so a
+                    // screen reader announces the category when entering them.
+                    const headingId = `software-category-${index}`;
 
                     return (
-                      <Stack key={groupName} hasGutter>
+                      <Stack
+                        key={groupName}
+                        hasGutter
+                        component="section"
+                        role="group"
+                        aria-labelledby={headingId}
+                      >
                         <div
                           className="agm-sticky-category-header"
                           style={{ top: `${filterHeight}px` }}
@@ -418,7 +427,9 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                             spaceItems={{ default: "spaceItemsSm" }}
                             alignItems={{ default: "alignItemsBaseline" }}
                           >
-                            <Title headingLevel="h3">{groupName}</Title>
+                            <Title headingLevel="h3" id={headingId}>
+                              {groupName}
+                            </Title>
                             <CategoryCounter
                               patterns={groupAll}
                               matchCount={groupVisible.length}
