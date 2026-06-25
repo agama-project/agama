@@ -441,14 +441,20 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                         {groupVisible.length > 0 && (
                           <NestedContent>
                             <Stack hasGutter>
-                              {groupVisible.map((pattern) => {
+                              {groupVisible.map((pattern, patternIndex) => {
                                 const isAutoSelected = selection[pattern.name] === SelectedBy.AUTO;
                                 const isDirty = fieldMeta[pattern.name]?.isDirty ?? false;
+                                // The DOM id and React key must stay unique even if the
+                                // backend lists the same pattern name under more than one
+                                // category. The form field stays keyed by the pattern name
+                                // (the backend identity), so such duplicates reflect the
+                                // same selection instead of producing clashing ids.
+                                const checkboxId = `${headingId}-pattern-${patternIndex}`;
 
                                 return (
                                   <PatternCheckbox
-                                    key={pattern.name}
-                                    id={pattern.name}
+                                    key={checkboxId}
+                                    id={checkboxId}
                                     label={pattern.summary}
                                     description={pattern.description}
                                     isChecked={!!formValues[pattern.name]}
