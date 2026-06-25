@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 26 05:19:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Prevent the installation to end prematurely when using the
+  inst.finish kernel command-line parameter (bsc#1268803).
+
+-------------------------------------------------------------------
 Thu Jun 25 12:03:06 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Use correct path for the source profile schema
