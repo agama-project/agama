@@ -60,7 +60,7 @@ type Product = {
   id: string;
   /** Product name (e.g., "openSUSE Leap 15.4") */
   name: string;
-  /** Product description */
+  /** Product description (translated to current UI language) */
   description?: string;
   /** Product icon (e.g., "default.svg") */
   icon?: string;
@@ -70,14 +70,7 @@ type Product = {
   license?: string;
   /** Desktop selection mode; absent when the product does not declare it */
   desktopSelection?: DesktopSelection;
-  /** Translations */
-  translations?: {
-    /** The key is the locale (e.g., "en", "pt_BR") */
-    description: Record<string, string>;
-    /** Translation mapping: mode ID ("immutable") -> "name"/"description" ->
-     * locale -> translated text */
-    mode: Record<string, Record<string, Record<string, string>>>;
-  };
+  /** Available modes for this product (names and descriptions are translated to current UI language) */
   modes: Mode[];
 };
 
