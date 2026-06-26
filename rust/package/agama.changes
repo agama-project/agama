@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 26 10:10:30 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Do more cleaning after fix for full medium. Removes completely
+  dependency on software system info when computing target
+  software state (follow up of bsc#1268635)
+
+-------------------------------------------------------------------
 Thu Jun 25 12:03:06 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Use correct path for the source profile schema
