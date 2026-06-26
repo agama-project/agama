@@ -378,7 +378,10 @@ function SoftwarePage() {
   return (
     <Page
       breadcrumbs={[{ label: _("Software") }]}
-      progress={{ scope: "software", waitFor: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY] }}
+      progress={{
+        scope: "software",
+        awaitFreshQueries: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+      }}
     >
       <Page.Content>
         <IssuesAlert issues={issues} />

@@ -460,7 +460,7 @@ const StandardLayout = ({
  *   title="Software"
  *   progress={{
  *     scope: "software",
- *     waitFor: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY]
+ *     awaitFreshQueries: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY]
  *   }}
  * >
  *   <Page.Section>

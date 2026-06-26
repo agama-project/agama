@@ -227,7 +227,7 @@ describe("ProgressBackdrop", () => {
   });
 
   describe("query keys refetch tracking", () => {
-    it("uses empty array when no waitFor provided", () => {
+    it("uses empty array when no awaitFreshQueries provided", () => {
       mockProgresses([
         {
           scope: "software",
@@ -243,7 +243,7 @@ describe("ProgressBackdrop", () => {
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith([], expect.any(Function));
     });
 
-    it("tracks specified query keys when waitFor is provided", () => {
+    it("tracks specified query keys when awaitFreshQueries is provided", () => {
       mockProgresses([
         {
           scope: "storage",
@@ -254,7 +254,9 @@ describe("ProgressBackdrop", () => {
         },
       ]);
 
-      installerRender(<ProgressBackdrop scope="storage" waitFor={["proposal", "storageModel"]} />);
+      installerRender(
+        <ProgressBackdrop scope="storage" awaitFreshQueries={["proposal", "storageModel"]} />,
+      );
 
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
         ["proposal", "storageModel"],
@@ -274,7 +276,10 @@ describe("ProgressBackdrop", () => {
       ]);
 
       installerRender(
-        <ProgressBackdrop scope="network" waitFor={["system", "config", "connections"]} />,
+        <ProgressBackdrop
+          scope="network"
+          awaitFreshQueries={["system", "config", "connections"]}
+        />,
       );
 
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
@@ -296,14 +301,14 @@ describe("ProgressBackdrop", () => {
       ]);
 
       const { rerender } = installerRender(
-        <ProgressBackdrop scope="storage" waitFor={["storageModel"]} />,
+        <ProgressBackdrop scope="storage" awaitFreshQueries={["storageModel"]} />,
       );
 
       // Progress finishes
       mockProgresses([]);
 
-      rerender(<ProgressBackdrop scope="storage" waitFor={["storageModel"]} />);
-      rerender(<ProgressBackdrop scope="storage" waitFor={["storageModel"]} />);
+      rerender(<ProgressBackdrop scope="storage" awaitFreshQueries={["storageModel"]} />);
+      rerender(<ProgressBackdrop scope="storage" awaitFreshQueries={["storageModel"]} />);
 
       // Should have called startTracking
       await waitFor(() => {

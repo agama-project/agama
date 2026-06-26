@@ -74,7 +74,7 @@ export default function ConnectionPage() {
   return (
     <Page
       breadcrumbs={[{ label: _("Network"), path: NETWORK.root }, { label: connection?.id }]}
-      progress={{ scope: "network", waitFor: [SYSTEM_QUERY_KEY] }}
+      progress={{ scope: "network", awaitFreshQueries: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <NoPersistentConnectionsAlert />

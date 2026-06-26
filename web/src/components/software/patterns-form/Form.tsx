@@ -356,7 +356,10 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
           label: _(PAGE_TITLE[scope]),
         },
       ]}
-      progress={{ scope: "software", waitFor: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY] }}
+      progress={{
+        scope: "software",
+        awaitFreshQueries: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+      }}
     >
       <Page.Content>
         <form.AppForm>

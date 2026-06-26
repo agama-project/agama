@@ -325,7 +325,7 @@ export default function ProposalPage(): React.ReactNode {
       additionalContent={<ConnectedDevicesMenu />}
       progress={{
         scope: "storage",
-        waitFor: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY],
+        awaitFreshQueries: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY],
       }}
     >
       <Page.Content>

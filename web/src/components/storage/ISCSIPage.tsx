@@ -40,7 +40,7 @@ export default function ISCSIPage() {
         },
         { label: _("iSCSI") },
       ]}
-      progress={{ scope: "iscsi", waitFor: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY] }}
+      progress={{ scope: "iscsi", awaitFreshQueries: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY] }}
     >
       <Page.Content>
         <Grid hasGutter>
