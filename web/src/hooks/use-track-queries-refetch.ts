@@ -27,10 +27,10 @@ import { useQueryClient } from "@tanstack/react-query";
  * Custom hook that monitors multiple TanStack Query keys and triggers a
  * callback when all queries have been successfully refetched with fresh data.
  *
- * This hook subscribes to the specified queries and waits until each one
- * reports a `dataUpdatedAt` timestamp newer than when `startTracking()` was
- * called. Once all queries are updated, the `onSuccess` callback is
- * triggered and subscriptions are automatically cleaned up.
+ * This hook subscribes once to the query cache and waits until each tracked
+ * query reports a `dataUpdatedAt` timestamp newer than when `startTracking()`
+ * was called. Once all tracked queries are updated, the `onSuccess` callback is
+ * triggered and the subscription is automatically cleaned up.
  *
  * @param queryKeys - Array of query key strings to track for refetches
  * @param onSuccess - Callback executed when considered all queries have
@@ -66,7 +66,7 @@ import { useQueryClient } from "@tanstack/react-query";
  *   recalculates when the queryKeys reference changes. For optimal performance,
  *   memoize queryKeys in the parent component if it changes frequently.
  *
- * @see {@link https://tanstack.com/query/latest/docs/react/reference/QueryObserver}
+ * @see {@link https://tanstack.com/query/latest/docs/reference/QueryCache#querycachesubscribe}
  */
 function useTrackQueriesRefetch(
   queryKeys: readonly string[],
@@ -117,9 +117,10 @@ function useTrackQueriesRefetch(
   /**
    * Initiates tracking of query refetches.
    *
-   * Creates QueryObservers for each query key and monitors their status. When
-   * all queries are considered successfully refetched (their `dataUpdatedAt` is
-   * later than the startedAt value), the `onSuccess` callback is triggered.
+   * Subscribes once to the query cache and watches for updates to the tracked
+   * keys. When all of them are considered successfully refetched (their
+   * `dataUpdatedAt` is later than the startedAt value), the `onSuccess` callback
+   * is triggered.
    *
    * Calling this function multiple times will cancel previous tracking cycles.
    */

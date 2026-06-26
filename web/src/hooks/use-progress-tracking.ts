@@ -77,7 +77,7 @@ import type { Scope } from "~/model/status";
  *
  * @remarks
  *
- * In short, the hook works as follow
+ * In short, the hook works as follows
  *
  *   1. Backend operation starts or tasks are created → `loading` becomes `true`
  *   2. Backend operation finishes and tasks complete → hook waits for queries to refetch
@@ -85,8 +85,8 @@ import type { Scope } from "~/model/status";
  *      `loading` becomes `false`
  *
  *  The hook uses a ref to track when the operation finished, ensuring queries
- *  are only considered "fresh" if they refetched AFTER the operation completed
- *  to prevents showing stale data to users.
+ *  are only considered "fresh" if they refetched AFTER the operation completed,
+ *  to prevent showing stale data to users.
  *
  * @see {@link useProgress} - For monitoring backend progress status
  * @see {@link useStatus} - For monitoring backend task status
@@ -120,8 +120,10 @@ export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] 
       progressFinishedAtRef.current = Date.now();
       startTracking();
     }
-  }, [allFinished, startTracking, loading, progressFinishedAtRef]);
+  }, [allFinished, startTracking, loading]);
 
+  // Enter the loading state as soon as an operation is detected. Setting state
+  // during render (instead of in an effect) avoids a flash of non-loading UI.
   if (!allFinished && !loading) {
     setLoading(true);
     progressFinishedAtRef.current = null;

@@ -49,8 +49,7 @@ import shadowStyles from "@patternfly/react-styles/css/utilities/BoxShadow/box-s
 export type ProgressBackdropProps = {
   /**
    * Scope identifier to filter which progresses trigger the backdrop
-   * overlay. If undefined or no matching tasks exist, the backdrop won't be
-   * displayed.
+   * overlay. If no matching tasks exist, the backdrop won't be displayed.
    */
   scope: Scope;
   /**
@@ -77,7 +76,9 @@ export type ProgressBackdropProps = {
    * <ProgressBackdrop scope="iscsi" waitFor={[SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY]} />
    *
    * @example
-   * <ProgressBackdrop scope="custom" />
+   * // Omitting waitFor dismisses the backdrop as soon as progress ends,
+   * // without waiting for any query refetch.
+   * <ProgressBackdrop scope="zfcp" />
    */
   waitFor?: readonly string[];
   /**
