@@ -56,35 +56,27 @@ export type ProgressBackdropProps = {
   /**
    * Query keys to wait for after progress completes.
    *
-   * Explicitly specify all TanStack Query keys that the page depends on.
-   * The backdrop will not dismiss until all specified queries have refetched
-   * with fresh data after the operation completes.
+   * Specify the TanStack Query keys for data that the page displays. The
+   * backdrop will not dismiss until all specified queries have refetched with
+   * fresh data after the operation completes.
    *
    * If omitted or empty, the backdrop dismisses as soon as the backend
    * operation completes without waiting for query refetches.
    *
-   * Match this list to the data hooks used by your page:
-   * - Page uses useProposal() → include PROPOSAL_QUERY_KEY and EXTENDED_CONFIG_QUERY_KEY
-   * - Page uses useSystem() → include SYSTEM_QUERY_KEY
-   * - Page uses useConfig() → include CONFIG_QUERY_KEY
-   * - Page uses storage hooks → include STORAGE_MODEL_QUERY_KEY
+   * Include the `*_QUERY_KEY` constant exported by each data hook the page
+   * uses. For example, a page calling `useProposal()` might include
+   * `PROPOSAL_QUERY_KEY` and `EXTENDED_CONFIG_QUERY_KEY`.
    *
    * @example
-   * // Storage page waits for proposal and storage model queries
    * <ProgressBackdrop
    *   scope="storage"
    *   waitFor={[PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY]}
    * />
    *
    * @example
-   * // iSCSI page only waits for system and config queries
-   * <ProgressBackdrop
-   *   scope="iscsi"
-   *   waitFor={[SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY]}
-   * />
+   * <ProgressBackdrop scope="iscsi" waitFor={[SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY]} />
    *
    * @example
-   * // Page that only tracks progress without waiting for queries
    * <ProgressBackdrop scope="custom" />
    */
   waitFor?: readonly string[];

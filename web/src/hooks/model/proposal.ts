@@ -58,7 +58,14 @@ function useProposalChanges() {
   }, [client, queryClient]);
 }
 
-export { PROPOSAL_QUERY_KEY, COMMON_PROPOSAL_KEYS, proposalQuery, useProposal, useProposalChanges };
+export {
+  PROPOSAL_QUERY_KEY,
+  EXTENDED_CONFIG_QUERY_KEY,
+  COMMON_PROPOSAL_KEYS,
+  proposalQuery,
+  useProposal,
+  useProposalChanges,
+};
 export * as l10n from "~/hooks/model/proposal/l10n";
 export * as network from "~/hooks/model/proposal/network";
 export * as storage from "~/hooks/model/proposal/storage";

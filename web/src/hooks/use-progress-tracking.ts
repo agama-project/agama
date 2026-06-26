@@ -37,8 +37,8 @@ import type { Scope } from "~/model/status";
  *
  * @param scope - The progress/task scope to monitor (e.g., "software", "storage")
  * @param queryKeys - Array of TanStack Query keys to track for refetches after
- *   progress completes. Defaults to empty array (no query waiting). Explicitly
- *   specify all query keys the page depends on to wait for them to refetch.
+ *   progress completes. Defaults to empty array (no query waiting). Typically
+ *   contains the `*_QUERY_KEY` constant exported by each data hook the page uses.
  *
  * @returns Object containing:
  *   - `loading`: Boolean indicating whether an operation is in progress, tasks
@@ -92,10 +92,7 @@ import type { Scope } from "~/model/status";
  * @see {@link useStatus} - For monitoring backend task status
  * @see {@link useTrackQueriesRefetch} - For tracking query refetch completion
  */
-export function useProgressTracking(
-  scope?: Scope,
-  queryKeys: readonly string[] = [],
-) {
+export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] = []) {
   const progress = useProgress(scope);
   const status = useStatus();
   const [loading, setLoading] = useState(false);

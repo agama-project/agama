@@ -148,7 +148,10 @@ const Description = () => {
  * A software installation summary.
  */
 export default function SoftwareSummary() {
-  const { loading } = useProgressTracking("software", [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY]);
+  const { loading } = useProgressTracking("software", [
+    PROPOSAL_QUERY_KEY,
+    EXTENDED_CONFIG_QUERY_KEY,
+  ]);
   const issues = useIssues("software");
   const hasIssues = !isEmpty(issues);
 

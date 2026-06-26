@@ -240,10 +240,7 @@ describe("ProgressBackdrop", () => {
 
       installerRender(<ProgressBackdrop scope="software" />);
 
-      expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
-        [],
-        expect.any(Function),
-      );
+      expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith([], expect.any(Function));
     });
 
     it("tracks specified query keys when waitFor is provided", () => {
