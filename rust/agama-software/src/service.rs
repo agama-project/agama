@@ -249,7 +249,6 @@ impl Service {
             SoftwareState::build_from(
                 &product,
                 &state.config,
-                &state.system,
                 &self.selection,
                 predefined_repositories,
             )
