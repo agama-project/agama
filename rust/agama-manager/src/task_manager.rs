@@ -265,8 +265,11 @@ impl TaskManager {
                     break failed;
                 }
 
+                // lets collection notification here to avoid race condition if notification is send immediatelly after drop of guard 
+                // and wait for afterwards
+                let notifications = notify.notified();
                 drop(state_guard);
-                notify.notified().await;
+                notifications.await;
             };
 
             // Decide whether to run or cancel based on run_always and failed dependencies
