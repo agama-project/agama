@@ -37,10 +37,10 @@ import type {
   DeviceCollection,
 } from "~/model/storage/config-model";
 
-const STORAGE_MODEL_KEY = "storageModel" as const;
+const STORAGE_MODEL_QUERY_KEY = "storageModel" as const;
 
 const configModelQuery = {
-  queryKey: [STORAGE_MODEL_KEY],
+  queryKey: [STORAGE_MODEL_QUERY_KEY],
   queryFn: getStorageModel,
 };
 
@@ -372,7 +372,7 @@ function useIsTpmAvailable(): boolean {
 }
 
 export {
-  STORAGE_MODEL_KEY,
+  STORAGE_MODEL_QUERY_KEY,
   useConfigModel,
   useSolvedConfigModel,
   useMissingMountPaths,
