@@ -456,7 +456,13 @@ const StandardLayout = ({
  * @example
  * Page with progress tracking
  * ```tsx
- * <Page title="Software" progress={{ scope: "software" }}>
+ * <Page
+ *   title="Software"
+ *   progress={{
+ *     scope: "software",
+ *     waitFor: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY]
+ *   }}
+ * >
  *   <Page.Section>
  *     <PatternSelector />
  *   </Page.Section>
