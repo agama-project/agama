@@ -24,7 +24,6 @@ import { useEffect, useRef, useState } from "react";
 import { isEmpty } from "radashi";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { useProgress } from "~/hooks/model/progress";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import { useStatus } from "~/hooks/model/status";
 import type { Scope } from "~/model/status";
 
@@ -38,7 +37,8 @@ import type { Scope } from "~/model/status";
  *
  * @param scope - The progress/task scope to monitor (e.g., "software", "storage")
  * @param queryKeys - Array of TanStack Query keys to track for refetches after
- *   progress completes. Defaults to COMMON_PROPOSAL_KEYS if not provided.
+ *   progress completes. Defaults to empty array (no query waiting). Explicitly
+ *   specify all query keys the page depends on to wait for them to refetch.
  *
  * @returns Object containing:
  *   - `loading`: Boolean indicating whether an operation is in progress, tasks
@@ -48,26 +48,30 @@ import type { Scope } from "~/model/status";
  *
  * @example
  * ```tsx
- * // Basic usage with default query keys
- * function SoftwareSummary() {
- *   const { loading } = useProgressTracking("software");
+ * // Storage page uses proposal and storage model data
+ * function StorageSummary() {
+ *   const { loading } = useProgressTracking("storage", [
+ *     PROPOSAL_QUERY_KEY,
+ *     EXTENDED_CONFIG_QUERY_KEY,
+ *     STORAGE_MODEL_QUERY_KEY
+ *   ]);
  *
  *   if (loading) return <Skeleton />;
- *   return <SoftwareSummary />;
+ *   return <StorageSummary />;
  * }
  * ```
  *
  * @example
  * ```tsx
- * // With custom query keys to ensure specific data is refetched
- * function ProgressBackdrop({ scope, ensureRefetched }) {
- *   const { loading: isBlocked, progress } = useProgressTracking(
- *     scope,
- *     [...COMMON_PROPOSAL_KEYS, ...ensureRefetched]
- *   );
+ * // iSCSI page only uses system and config data
+ * function ISCSIPage() {
+ *   const { loading } = useProgressTracking("iscsi", [
+ *     SYSTEM_QUERY_KEY,
+ *     CONFIG_QUERY_KEY
+ *   ]);
  *
- *   if (!isBlocked) return null;
- *   return <Backdrop message={progress.message} />;
+ *   if (loading) return <Skeleton />;
+ *   return <ISCSIContent />;
  * }
  * ```
  *
@@ -90,7 +94,7 @@ import type { Scope } from "~/model/status";
  */
 export function useProgressTracking(
   scope?: Scope,
-  queryKeys: readonly string[] = COMMON_PROPOSAL_KEYS,
+  queryKeys: readonly string[] = [],
 ) {
   const progress = useProgress(scope);
   const status = useStatus();
