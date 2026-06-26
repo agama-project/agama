@@ -31,6 +31,7 @@ import {
 import { Link, Page } from "~/components/core";
 import { useConnections } from "~/hooks/model/proposal/network";
 import { _ } from "~/i18n";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 import { sprintf } from "sprintf-js";
 import ConnectionDetails from "~/components/network/ConnectionDetails";
 import { Icon } from "~/components/layout";
@@ -73,7 +74,7 @@ export default function ConnectionPage() {
   return (
     <Page
       breadcrumbs={[{ label: _("Network"), path: NETWORK.root }, { label: connection?.id }]}
-      progress={{ scope: "network", ensureRefetched: "system" }}
+      progress={{ scope: "network", waitFor: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <NoPersistentConnectionsAlert />

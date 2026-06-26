@@ -53,6 +53,7 @@ import { useAvailablePatterns } from "~/hooks/model/system/software";
 import { isPatternSelected } from "~/utils/software";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
+import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
 
 import type { Pattern } from "~/model/system/software";
 import type { PatternsSelection } from "~/model/proposal/software";
@@ -375,7 +376,10 @@ function SoftwarePage() {
   );
 
   return (
-    <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>
+    <Page
+      breadcrumbs={[{ label: _("Software") }]}
+      progress={{ scope: "software", waitFor: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY] }}
+    >
       <Page.Content>
         <IssuesAlert issues={issues} />
         <SoftwarePageContent />

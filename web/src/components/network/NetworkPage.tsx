@@ -30,6 +30,7 @@ import ConnectionsTable from "~/components/network/ConnectionsTable";
 import { useNetworkChanges, useSystem } from "~/hooks/model/system/network";
 import { NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
+import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 
 /**
  * Page component holding Network settings
@@ -41,7 +42,7 @@ export default function NetworkPage() {
   return (
     <Page
       breadcrumbs={[{ label: _("Network") }]}
-      progress={{ scope: "network", ensureRefetched: "system" }}
+      progress={{ scope: "network", waitFor: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <NoPersistentConnectionsAlert />
