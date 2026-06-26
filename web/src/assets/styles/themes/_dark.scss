@@ -134,8 +134,89 @@
     --agm-t--text--color--subtle,
     var(--pf-t--global--dark--text--color--200)
   );
+  // Disabled text color for dark mode. PatternFly's default disabled text
+  // (gray-50, #707070) on Agama's dark pine floating surfaces (pine--50 mixed
+  // 93% with white, ~#0c322c) has ~2.7:1 contrast, failing WCAG AA 4.5:1 for
+  // small text. This override (#8a8a8a) achieves ~4.5:1 contrast, meeting WCAG AA
+  // while keeping the de-emphasized appearance. Products can override via
+  // --agm-t--text--color--disabled.
+  --pf-t--global--text--color--disabled: var(--agm-t--text--color--disabled, #8a8a8a);
   --pf-t--global--icon--color--regular: var(
     --agm-t--icon--color,
     var(--agm-t--text--color, var(--pf-t--global--dark--icon--color--100))
+  );
+
+  // Status / alert variants for dark. Same role hooks as light (see
+  // _semantic.scss), but the defaults use lighter brand shades so the variant's
+  // icon and border stay legible on the deep pine surfaces. Without this block
+  // dark would fall through to PF's stock dark statuses (a neon yellow caution
+  // and a purple info that clash with the Agama palette).
+  --pf-t--global--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--30)
+  );
+  --pf-t--global--icon--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--30)
+  );
+  --pf-t--global--border--color--status--info--default: var(
+    --agm-t--status--info--color,
+    var(--agm-t--color--waterhole--30)
+  );
+  --pf-t--global--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--agm-t--color--persimmon--40)
+  );
+  --pf-t--global--icon--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--agm-t--color--persimmon--40)
+  );
+  --pf-t--global--border--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--agm-t--color--persimmon--40)
+  );
+  --pf-t--global--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
+  --pf-t--global--icon--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
+  --pf-t--global--border--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
+  // PF's text-color status family (the pf-v6-u-text-color-status-* utilities,
+  // used by the overview section icons) follows the overridden --default for
+  // every variant except danger, which in dark points at a separate red step.
+  // Map it too so a danger icon matches the danger alert and border.
+  --pf-t--global--text--color--status--danger--default: var(
+    --agm-t--status--danger--color,
+    var(--agm-t--color--persimmon--60)
+  );
+  --pf-t--global--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--agm-t--color--jungle--30)
+  );
+  --pf-t--global--icon--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--agm-t--color--jungle--30)
+  );
+  --pf-t--global--border--color--status--success--default: var(
+    --agm-t--status--success--color,
+    var(--agm-t--color--jungle--30)
+  );
+  --pf-t--global--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--agm-t--color--mint--70)
+  );
+  --pf-t--global--icon--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--agm-t--color--mint--70)
+  );
+  --pf-t--global--border--color--status--custom--default: var(
+    --agm-t--status--custom--color,
+    var(--agm-t--color--mint--70)
   );
 }

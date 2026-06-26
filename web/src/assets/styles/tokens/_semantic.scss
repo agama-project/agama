@@ -22,6 +22,7 @@
 //   --agm-t--surface--color--raised               masthead and secondary surfaces
 //   --agm-t--surface--color--floating             modal / menu / popover backgrounds
 //   --agm-t--text--color (+ --subtle)             body text and regular icons
+//   --agm-t--text--color--disabled                de-emphasized text (codes, labels)
 //   --agm-t--icon--color                          regular icon color (defaults to text)
 //   --agm-t--border--color                        borders
 //   --agm-t--disabled--background--color          disabled control background
@@ -207,6 +208,12 @@
     --agm-t--text--color--subtle,
     var(--pf-t--global--text--color--200)
   );
+  // Disabled text color for light mode. PatternFly's default disabled text
+  // (gray-40, #a3a3a3) on white (#ffffff) has ~2.85:1 contrast, failing WCAG AA
+  // 4.5:1 for small text. This override (#767676) achieves ~4.54:1 contrast,
+  // meeting WCAG AA while keeping the de-emphasized appearance. Products can
+  // override via --agm-t--text--color--disabled.
+  --pf-t--global--text--color--disabled: var(--agm-t--text--color--disabled, #767676);
   // Regular icons (nav, masthead toolbar, plain toggles). Default to the icon
   // role, which in turn defaults to the text role.
   --pf-t--global--icon--color--regular: var(
@@ -232,9 +239,11 @@
   );
 
   // Status / alert variants. Each role drives the variant's text, icon and
-  // border (so alerts, labels and status icons follow it). Defaults keep the
-  // Agama / PatternFly values. The "caution" role maps to PF's "warning"
-  // variant (Agama avoids the word "warning").
+  // border (so alerts, labels and status icons follow it). Defaults are SUSE
+  // brand shades picked for legibility on the light surface (the stock PF
+  // warning yellow failed contrast on white). The "caution" role maps to PF's
+  // "warning" variant (Agama avoids the word "warning"): SUSE has no yellow, so
+  // caution and danger both come from the Persimmon family, set apart by shade.
   --pf-t--global--color--status--info--default: var(
     --agm-t--status--info--color,
     var(--agm-t--color--waterhole--50)
@@ -249,50 +258,58 @@
   );
   --pf-t--global--color--status--warning--default: var(
     --agm-t--status--caution--color,
-    var(--pf-t--global--color--status--warning--100)
+    var(--agm-t--color--persimmon--60)
   );
   --pf-t--global--icon--color--status--warning--default: var(
     --agm-t--status--caution--color,
-    var(--pf-t--global--color--status--warning--100)
+    var(--agm-t--color--persimmon--60)
   );
   --pf-t--global--border--color--status--warning--default: var(
     --agm-t--status--caution--color,
-    var(--pf-t--global--color--status--warning--100)
+    var(--agm-t--color--persimmon--60)
+  );
+  // PF's text-color status family (the pf-v6-u-text-color-status-* utilities,
+  // used by the overview section icons) follows the overridden --default for
+  // every variant except warning, which in light points at a separate yellow
+  // step. Map it too so a warning icon matches the warning alert and border.
+  --pf-t--global--text--color--status--warning--default: var(
+    --agm-t--status--caution--color,
+    var(--agm-t--color--persimmon--60)
   );
   --pf-t--global--color--status--danger--default: var(
     --agm-t--status--danger--color,
-    var(--pf-t--global--color--status--danger--100)
+    var(--agm-t--color--persimmon--70)
   );
   --pf-t--global--icon--color--status--danger--default: var(
     --agm-t--status--danger--color,
-    var(--pf-t--global--color--status--danger--100)
+    var(--agm-t--color--persimmon--70)
   );
   --pf-t--global--border--color--status--danger--default: var(
     --agm-t--status--danger--color,
-    var(--pf-t--global--color--status--danger--100)
+    var(--agm-t--color--persimmon--70)
   );
   --pf-t--global--color--status--success--default: var(
     --agm-t--status--success--color,
-    var(--pf-t--global--color--status--success--100)
+    var(--agm-t--color--pine--30)
   );
   --pf-t--global--icon--color--status--success--default: var(
     --agm-t--status--success--color,
-    var(--pf-t--global--color--status--success--100)
+    var(--agm-t--color--pine--30)
   );
   --pf-t--global--border--color--status--success--default: var(
     --agm-t--status--success--color,
-    var(--pf-t--global--color--status--success--100)
+    var(--agm-t--color--pine--30)
   );
   --pf-t--global--color--status--custom--default: var(
     --agm-t--status--custom--color,
-    var(--pf-t--global--color--status--custom--100)
+    var(--agm-t--color--mint--80)
   );
   --pf-t--global--icon--color--status--custom--default: var(
     --agm-t--status--custom--color,
-    var(--pf-t--global--color--status--custom--100)
+    var(--agm-t--color--mint--80)
   );
   --pf-t--global--border--color--status--custom--default: var(
     --agm-t--status--custom--color,
-    var(--pf-t--global--color--status--custom--100)
+    var(--agm-t--color--mint--80)
   );
 }
