@@ -24,7 +24,6 @@ import React from "react";
 import { act, screen, waitFor, within } from "@testing-library/react";
 import { installerRender, mockProgresses } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import ProgressBackdrop from "./ProgressBackdrop";
 
 const mockStartTracking: jest.Mock = jest.fn();
@@ -228,7 +227,7 @@ describe("ProgressBackdrop", () => {
   });
 
   describe("query keys refetch tracking", () => {
-    it("tracks common proposal keys by default", () => {
+    it("uses empty array when no waitFor provided", () => {
       mockProgresses([
         {
           scope: "software",
@@ -241,14 +240,13 @@ describe("ProgressBackdrop", () => {
 
       installerRender(<ProgressBackdrop scope="software" />);
 
-      // Should be called with COMMON_PROPOSAL_KEYS and undefined additionalKeys
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
-        expect.arrayContaining(COMMON_PROPOSAL_KEYS),
+        [],
         expect.any(Function),
       );
     });
 
-    it("tracks additional query key along with common ones", () => {
+    it("tracks specified query keys when waitFor is provided", () => {
       mockProgresses([
         {
           scope: "storage",
@@ -259,16 +257,15 @@ describe("ProgressBackdrop", () => {
         },
       ]);
 
-      installerRender(<ProgressBackdrop scope="storage" ensureRefetched="storageModel" />);
+      installerRender(<ProgressBackdrop scope="storage" waitFor={["proposal", "storageModel"]} />);
 
-      // Should be called with COMMON_PROPOSAL_KEYS + storageModel
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
-        expect.arrayContaining([...COMMON_PROPOSAL_KEYS, "storageModel"]),
+        ["proposal", "storageModel"],
         expect.any(Function),
       );
     });
 
-    it("tracks multiple additional query keys along with common ones", () => {
+    it("tracks multiple query keys", () => {
       mockProgresses([
         {
           scope: "network",
@@ -280,12 +277,11 @@ describe("ProgressBackdrop", () => {
       ]);
 
       installerRender(
-        <ProgressBackdrop scope="network" ensureRefetched={["networkConfig", "connections"]} />,
+        <ProgressBackdrop scope="network" waitFor={["system", "config", "connections"]} />,
       );
 
-      // Should be called with COMMON_PROPOSAL_KEYS + networkConfig + connections
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
-        expect.arrayContaining([...COMMON_PROPOSAL_KEYS, "networkConfig", "connections"]),
+        ["system", "config", "connections"],
         expect.any(Function),
       );
     });
@@ -303,14 +299,14 @@ describe("ProgressBackdrop", () => {
       ]);
 
       const { rerender } = installerRender(
-        <ProgressBackdrop scope="storage" ensureRefetched="storageModel" />,
+        <ProgressBackdrop scope="storage" waitFor={["storageModel"]} />,
       );
 
       // Progress finishes
       mockProgresses([]);
 
-      rerender(<ProgressBackdrop scope="storage" ensureRefetched="storageModel" />);
-      rerender(<ProgressBackdrop scope="storage" ensureRefetched="storageModel" />);
+      rerender(<ProgressBackdrop scope="storage" waitFor={["storageModel"]} />);
+      rerender(<ProgressBackdrop scope="storage" waitFor={["storageModel"]} />);
 
       // Should have called startTracking
       await waitFor(() => {

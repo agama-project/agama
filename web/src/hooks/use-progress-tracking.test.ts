@@ -24,7 +24,6 @@ import { act } from "react";
 import { renderHook, waitFor } from "@testing-library/react";
 import { mockProgresses, mockTasks } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import type { Progress, Task } from "~/model/status";
 import { useProgressTracking } from "./use-progress-tracking";
 
@@ -87,10 +86,17 @@ describe("useProgressTracking", () => {
     jest.useRealTimers();
   });
 
-  it("uses COMMON_PROPOSAL_KEYS by default", () => {
+  it("uses empty array by default when no query keys specified", () => {
     renderHook(() => useProgressTracking("software"));
 
-    expect(useTrackQueriesRefetch).toHaveBeenCalledWith(COMMON_PROPOSAL_KEYS, expect.any(Function));
+    expect(useTrackQueriesRefetch).toHaveBeenCalledWith([], expect.any(Function));
+  });
+
+  it("uses provided query keys when specified", () => {
+    const queryKeys = ["proposal", "config"];
+    renderHook(() => useProgressTracking("software", queryKeys));
+
+    expect(useTrackQueriesRefetch).toHaveBeenCalledWith(queryKeys, expect.any(Function));
   });
 
   describe("with a specific scope", () => {
