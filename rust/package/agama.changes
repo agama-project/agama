@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Thu Jun 25 08:41:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Fri Jun 26 08:41:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove the translations from the Product's SystemInfo
   (gh#agama-project/agama#3660).
+
+-------------------------------------------------------------------
+Thu Jun 25 12:03:06 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct path for the source profile schema
+  (gh#agama-project/agama#3668).
 
 -------------------------------------------------------------------
 Wed Jun 24 13:18:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
