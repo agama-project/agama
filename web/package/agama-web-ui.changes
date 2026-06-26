@@ -1,8 +1,23 @@
 -------------------------------------------------------------------
-Thu Jun 25 10:03:36 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Thu Jun 25 16:03:36 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve disabled text and status color contrast to meet WCAG AA
   accessibility standards (gh#agama-project/agama#3662).
+
+-------------------------------------------------------------------
+Thu Jun 25 13:56:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the network connection form: show an alert and scroll to
+  the top when saving fails, and keep the form stable against
+  background data refreshes while editing
+  (gh#agama-project/agama#3670).
+
+-------------------------------------------------------------------
+Thu Jun 25 11:41:21 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Expose the software pattern categories as accessible groups,
+  so a pattern can be identified by its category
+  (gh#agama-project/agama#3667).
 
 -------------------------------------------------------------------
 Tue Jun 23 11:49:50 UTC 2026 - David Diaz <dgonzalez@suse.com>

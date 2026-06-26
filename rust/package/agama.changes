@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 25 12:03:06 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct path for the source profile schema
+  (gh#agama-project/agama#3668).
+
+-------------------------------------------------------------------
 Wed Jun 24 13:18:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - fix unattended installation for full medium SLES iso
