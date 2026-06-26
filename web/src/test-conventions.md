@@ -1,24 +1,20 @@
 # Testing conventions
 
-Conventions for writing reliable unit tests across the web UI. It starts with
-the topic that motivated it (timers and asynchronous UI) and should grow as more
-recurring patterns are identified.
-
-The examples are drawn from `DownloadFeedback` and its test
-(`components/core/DownloadFeedback.test.tsx`), a component that shows a success
-alert and auto-dismisses it after a timeout. Its tests failed intermittently on
-CI until they were made deterministic, and serve as the running example below.
-
-The golden rule: **a test must pass or fail for the same reason every time,
-regardless of how fast or busy the machine is.** A test whose result depends on
-wall-clock timing is not testing the code; it is testing the scheduler.
+Conventions for writing reliable unit tests across the web UI. This document
+should grow as more recurring patterns are identified.
 
 ---
 
 ## Table of Contents
 
-- [Why "random" failures happen](#why-random-failures-happen)
+- [Shared test utilities](#shared-test-utilities)
+  - [Rendering: plainRender vs installerRender](#rendering-plainrender-vs-installerrender)
+  - [Mocking model data: jest.fn + setter + jest.mock](#mocking-model-data-jestfn--setter--jestmock)
+  - [Override only what the test exercises](#override-only-what-the-test-exercises)
+  - [Prefer accessible queries](#prefer-accessible-queries)
+  - [Other helpers](#other-helpers)
 - [Deterministic timers](#deterministic-timers)
+  - [Why "random" failures happen](#why-random-failures-happen)
   - [The problem with real timers](#the-problem-with-real-timers)
   - [The pattern: fake timers](#the-pattern-fake-timers)
   - [Wiring userEvent to fake timers](#wiring-userevent-to-fake-timers)
@@ -29,7 +25,103 @@ wall-clock timing is not testing the code; it is testing the scheduler.
 
 ---
 
-## Why "random" failures happen
+## Shared test utilities
+
+`src/test-utils.tsx` centralizes rendering and the mocking of installer data, so
+individual tests stay short and only spell out what they actually exercise.
+
+### Rendering: plainRender vs installerRender
+
+Both wrap React Testing Library's `render`, set up a `userEvent` instance, and
+return `{ user, ...renderResult }`. They differ in how much of the app they
+stand up:
+
+- **`plainRender`**: minimal providers (query client, appearance, terminal). Use
+  it for components tested in isolation. Note: a `core/Page` renders
+  `core/Sidebar`, so testing a Page with `plainRender` requires mocking the
+  sidebar, or the render crashes for lack of providers.
+- **`installerRender`**: adds the installer client `Providers` and a
+  `MemoryRouter`. Use it for components that need routing, navigation, or the
+  installer client.
+
+Both accept `userEventOptions`, forwarded to `userEvent.setup` (see
+[Wiring userEvent to fake timers](#wiring-userevent-to-fake-timers)). For
+TanStack Query hooks, use `installerRenderHook`.
+
+### Mocking model data: jest.fn + setter + jest.mock
+
+The recurring pattern for installer data is a module-level mock function, an
+exported setter to drive it per test, and a `jest.mock` that points the real
+hook at the mock:
+
+```tsx
+// in test-utils.tsx
+const mockUseSystemFn = jest.fn().mockReturnValue({
+  products: [],
+  l10n: { locales: [], keymaps: [] }, // sensible empty default
+});
+
+export const mockSystem = (system: DeepPartial<System>) =>
+  mockUseSystemFn.mockReturnValue(system as System);
+
+jest.mock("~/hooks/model/system", () => ({
+  ...jest.requireActual("~/hooks/model/system"),
+  useSystem: () => mockUseSystemFn(),
+}));
+```
+
+```tsx
+// in a test
+import { mockSystem, installerRender } from "~/test-utils";
+
+mockSystem({ products: [tumbleweed], l10n: { locales, keymaps } });
+```
+
+The same shape backs `mockProduct`, `mockL10n`, `mockQuestions`, `mockProgresses`,
+`mockStage`, `mockTasks`, and the router mocks (`mockRoutes`, `mockParams`,
+`mockNavigateFn`).
+
+### Override only what the test exercises
+
+The default mock returns a minimal, valid value so components present on every
+page (the system query, l10n, product) do not suspend or crash in tests that
+don't care about them. A test then overrides just the slice it asserts on; some
+setters (e.g. `mockL10n`) merge, so you pass only the changed field. Keep
+fixtures focused: more data than the test needs makes it harder to see what is
+under test.
+
+### Prefer accessible queries
+
+Query by role, label, and text, the way a user (or assistive technology)
+perceives the UI, not by test IDs. When a structure needs a dedicated reader,
+add it to `test-utils.tsx` rather than reaching for `data-testid`. `getColumnValues`
+is an example: it reads a table column by its `data-label`, keeping assertions
+tied to accessible markup.
+
+```tsx
+const table = screen.getByRole("table");
+expect(getColumnValues(table, "Device")).toEqual(["/dev/sda", "/dev/sdb"]);
+```
+
+### Other helpers
+
+- **`createCallbackMock`**: capture callbacks handed to a mocked function so the
+  test can invoke them on demand (e.g. simulating a server event).
+- **`resetLocalStorage`**: clear `window.localStorage` and optionally seed it.
+- **`loadTranslations`**: load the real PO file for a locale in i18n tests.
+
+---
+
+## Deterministic timers
+
+The golden rule: **a test must pass or fail for the same reason every time,
+regardless of how fast or busy the machine is.** A test whose result depends on
+wall-clock timing is not testing the code; it is testing the scheduler. The
+examples below come from `DownloadFeedback` and its test
+(`components/core/DownloadFeedback.test.tsx`), which failed at random on CI until
+it was made deterministic.
+
+### Why "random" failures happen
 
 Some tests depend on how much real time passes between triggering an action and
 checking its result. When the machine is fast and idle that gap is tiny and the
@@ -47,10 +139,6 @@ So the failures show up as a different test breaking every so often on CI, with
 no commit to blame, and the tempting response is "just re-run it". The fix is
 rarely "wait longer": it is to remove the dependency on real elapsed time, so the
 outcome is decided by logic, not by timing.
-
----
-
-## Deterministic timers
 
 ### The problem with real timers
 
