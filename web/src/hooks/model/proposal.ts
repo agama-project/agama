@@ -29,7 +29,6 @@ import { CONFIG_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/confi
 import { STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";
 
 const PROPOSAL_QUERY_KEY = "proposal" as const;
-const COMMON_PROPOSAL_KEYS = [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY] as const;
 
 const proposalQuery = {
   queryKey: [PROPOSAL_QUERY_KEY],
@@ -50,7 +49,18 @@ function useProposalChanges() {
     // TODO: replace the scope instead of invalidating the query.
     return client.onEvent((event) => {
       if (event.type === "ProposalChanged") {
-        [...COMMON_PROPOSAL_KEYS, CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY].forEach((queryKey) => {
+        // Build this list inside the handler, not at module load. The keys
+        // imported from other modules (EXTENDED_CONFIG_QUERY_KEY,
+        // CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY) can still be undefined
+        // while this module loads, because their source modules finish loading
+        // after this one. Once an event arrives, all of them hold their real
+        // values.
+        [
+          PROPOSAL_QUERY_KEY,
+          EXTENDED_CONFIG_QUERY_KEY,
+          CONFIG_QUERY_KEY,
+          STORAGE_MODEL_QUERY_KEY,
+        ].forEach((queryKey) => {
           queryClient.invalidateQueries({ queryKey: [queryKey] });
         });
       }
@@ -61,7 +71,6 @@ function useProposalChanges() {
 export {
   PROPOSAL_QUERY_KEY,
   EXTENDED_CONFIG_QUERY_KEY,
-  COMMON_PROPOSAL_KEYS,
   proposalQuery,
   useProposal,
   useProposalChanges,
