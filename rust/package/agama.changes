@@ -1,4 +1,114 @@
 -------------------------------------------------------------------
+Fri Jun 26 10:21:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove the translations from the Product's SystemInfo
+  (gh#agama-project/agama#3660).
+
+-------------------------------------------------------------------
+Fri Jun 26 10:10:30 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Do more cleaning after fix for full medium. Removes completely
+  dependency on software system info when computing target
+  software state (follow up of bsc#1268635)
+
+-------------------------------------------------------------------
+Thu Jun 25 12:03:06 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct path for the source profile schema
+  (gh#agama-project/agama#3668).
+
+-------------------------------------------------------------------
+Wed Jun 24 13:18:37 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- fix unattended installation for full medium SLES iso
+  (bsc#1268635)
+- fix premature reboot or shutdown in unattended installation
+  when inst.finish kernel parameter is used (bsc##1268803)
+
+-------------------------------------------------------------------
+Tue Jun 23 11:53:44 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow adding optional resolvables (gh#agama-project/agama#3649).
+
+-------------------------------------------------------------------
+Mon Jun 22 14:22:52 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Unify cargo dependencies and move it to shared one in workspace
+  for easier future updates (gh#agama-project/agama#3652)
+
+-------------------------------------------------------------------
+Thu Jun 18 15:43:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Validate the profile before parsing it (bsc#1268432).
+- Fix the "agama config validate" command to work with the
+  server (gh#agama-project/agama#3641).
+
+-------------------------------------------------------------------
+Thu Jun 18 11:51:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Limit the number of Tokio worker threads (gh#agama-project/agama#3646
+  related to bsc#1265451).
+
+-------------------------------------------------------------------
+Wed Jun 17 13:40:22 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Import statically defined schemas when generating OpenAPI schema
+- Schemas moved from agama-lib/share to share/
+
+-------------------------------------------------------------------
+Wed Jun 17 08:03:10 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- agama monitor: Properly report as waiting for user when
+  agama is busy and has some question to answer
+  (gh#agama-project/agama#3638)
+
+-------------------------------------------------------------------
+Tue Jun 16 14:01:07 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- Remove a TODO note that slipped into translatable CLI help
+  (gh#agama-project/agama#3639).
+
+-------------------------------------------------------------------
+Mon Jun 15 15:45:28 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 22
+
+-------------------------------------------------------------------
+Mon Jun 15 15:15:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Unify text with the UI (gh#agama-project/agama#3637).
+
+-------------------------------------------------------------------
+Mon Jun 15 14:58:50 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Fixed copying URL credentials to the target system (bsc#1267881)
+
+-------------------------------------------------------------------
+Mon Jun 15 08:05:06 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Improve the "agama monitor" and "agama status" texts
+  (gh#agama-project/agama#3621).
+
+-------------------------------------------------------------------
+Mon Jun 15 07:33:59 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Mark properly autoinst retry question as the one that should
+  return value for new url (gh#agama-project/agama#3623)
+
+-------------------------------------------------------------------
+Fri Jun 12 17:28:32 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- The list of products only contains the products and modes
+  descriptions for the current language
+  (gh#agama-project/agama#3619).
+
+-------------------------------------------------------------------
+Fri Jun 12 16:35:53 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt storate schemas to allow configuring filesystem options
+  (gh#agama-project/agama#3620).
+
+-------------------------------------------------------------------
 Fri Jun 12 14:06:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use the same format to display the result on "validate" and

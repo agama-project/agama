@@ -24,13 +24,14 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import usePersistedState from "~/hooks/use-persisted-state";
 
 /**
- * Color scheme axis. "system" follows the OS preference.
+ * Color scheme axis. "system" follows the OS preference and is presented as
+ * "Automatic" in the UI.
  */
 export type ColorScheme = "system" | "light" | "dark";
 
 /**
  * Contrast axis. Composes on top of any color scheme. "system" follows the OS
- * preference.
+ * preference and is presented as "Automatic" in the UI.
  */
 export type Contrast = "system" | "standard" | "high";
 

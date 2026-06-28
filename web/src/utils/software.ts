@@ -72,7 +72,10 @@ function filterPatterns(patterns: Pattern[], searchValue = ""): Pattern[] {
   const searchData = searchValue.toUpperCase();
   return patterns.filter(
     (p) =>
-      p.name.toUpperCase().includes(searchData) || p.description.toUpperCase().includes(searchData),
+      // search over internal pattern id, its human readable summary that is visible on screen and also its description
+      p.name.toUpperCase().includes(searchData) ||
+      p.summary.toUpperCase().includes(searchData) ||
+      p.description.toUpperCase().includes(searchData),
   );
 }
 

@@ -5,17 +5,17 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-agama-utils = { path = "../agama-utils" }
-agama-storage-client = { path = "../agama-storage-client" }
-thiserror = "2.0.16"
-async-trait = "0.1.89"
-zbus = "5.7.1"
-tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread", "sync"] }
-tokio-stream = "0.1.16"
-serde = { version = "1.0.228" }
-serde_json = "1.0.140"
-tracing = "0.1.41"
+agama-storage-client = { workspace = true }
+agama-utils = { workspace = true }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tokio-stream = { workspace = true }
+tracing = { workspace = true }
+zbus = { workspace = true }
 
 [dev-dependencies]
-test-context = "0.4.1"
-tokio-test = "0.4.4"
+test-context = { workspace = true }
+tokio-test = { workspace = true }

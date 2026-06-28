@@ -18,31 +18,21 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use std::collections::HashMap;
-
-use agama_utils::api::{self, IssueWithScope, Scope};
-use gettextrs::gettext;
+use agama_utils::api::{self, IssueWithScope};
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
-    style::{Modifier, Style},
-    text::{Line, Span},
+    text::Line,
     widgets::{Paragraph, Widget, Wrap},
 };
 
-use crate::monitor::ui::scope_to_string;
-
 pub struct IssuesList<'a> {
-    groups: HashMap<Scope, Vec<&'a api::Issue>>,
+    issues: &'a Vec<api::IssueWithScope>,
 }
 
 impl<'a> IssuesList<'a> {
     pub fn new(issues: &'a Vec<IssueWithScope>) -> Self {
-        let mut groups: HashMap<Scope, Vec<&api::Issue>> = HashMap::new();
-        for issue in issues {
-            groups.entry(issue.scope).or_default().push(&issue.issue);
-        }
-        Self { groups }
+        Self { issues }
     }
 }
 
@@ -50,20 +40,9 @@ impl<'a> Widget for IssuesList<'a> {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let mut lines = vec![];
 
-        for (scope, issues) in self.groups {
-            lines.push(Line::from(format!("  {}", scope_to_string(&scope))));
-            lines.push(Line::default());
-
-            for issue in issues {
-                lines.push(Line::from(format!("    - {}", &issue.description)));
-            }
-            lines.push(Line::default());
+        for issue in self.issues {
+            lines.push(Line::from(format!("- {}", &issue.issue.description)));
         }
-
-        lines.push(Line::from(Span::styled(
-            gettext("Waiting for these to be resolved."),
-            Style::default().add_modifier(Modifier::DIM),
-        )));
 
         Paragraph::new(lines)
             .wrap(Wrap { trim: false })

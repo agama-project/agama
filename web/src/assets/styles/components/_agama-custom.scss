@@ -3,6 +3,7 @@
 // App-specific component and layout styles that are not direct PatternFly
 // overrides (see _patternfly-overrides.scss for those).
 
+// Overview settings grid: single column, widening to two columns on lg.
 .installation-settings-summary {
   display: grid;
   gap: 0.5em;
@@ -14,10 +15,12 @@
   }
 }
 
+// Product selection cards: cap logo size and align the radio inputs.
 #productSelectionForm img {
   max-inline-size: 100px;
 }
 
+// Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
   background: var(--pf-t--global--background--color--primary--default);
@@ -51,57 +54,68 @@
 
 // Material Symbol icons (rendered by the Icon component) ship without a fill,
 // so they default to black and turn nearly invisible on the dark theme. Make
-// them inherit the surrounding text color so they adapt to the active theme.
+// them inherit the surrounding text color (currentcolor) so they adapt to the
+// active theme.
 svg[data-icon-name] {
   fill: currentcolor;
+}
+
+// Outside high contrast, content icons follow the --agm-t--icon--color role when
+// a product sets it. High contrast is left to PatternFly (the role is ignored
+// there), per the appearance contract.
+:root:where(:not(.pf-v6-theme-high-contrast)) svg[data-icon-name] {
+  color: var(--agm-t--icon--color, currentcolor);
 }
 
 // Named icon sizes for the Icon `size` prop. The size is driven by font-size
 // (icons are 1em) and reads a customizable role token, so a product can resize
 // them without touching markup.
 .agm-icon-xs {
-  font-size: var(--agm-t--icon--size--xs);
+  font-size: var(--agm-t--icon--size--100);
 }
 
 .agm-icon-sm {
-  font-size: var(--agm-t--icon--size--sm);
+  font-size: var(--agm-t--icon--size--200);
 }
 
 .agm-icon-md {
-  font-size: var(--agm-t--icon--size--md);
+  font-size: var(--agm-t--icon--size--300);
 }
 
 .agm-icon-lg {
-  font-size: var(--agm-t--icon--size--lg);
+  font-size: var(--agm-t--icon--size--400);
 }
 
 .agm-icon-xl {
-  font-size: var(--agm-t--icon--size--xl);
+  font-size: var(--agm-t--icon--size--500);
 }
 
 .agm-icon-2xl {
-  font-size: var(--agm-t--icon--size--2xl);
+  font-size: var(--agm-t--icon--size--600);
 }
 
 .agm-icon-3xl {
-  font-size: var(--agm-t--icon--size--3xl);
+  font-size: var(--agm-t--icon--size--700);
 }
 
 .agm-icon-4xl {
-  font-size: var(--agm-t--icon--size--4xl);
+  font-size: var(--agm-t--icon--size--800);
 }
 
+// Inline kebab ("three dots") action icon, sized to sit with adjacent text.
 .agm-three-dots-icon {
   font-size: 1.1rem;
   vertical-align: text-top;
 }
 
+// Hide a button's default (leading) icon.
 .no-default-icon {
   .pf-v6-c-button__icon {
     display: none;
   }
 }
 
+// Wrap inline text in the locale's quotation marks.
 span.in-quotes {
   &::before {
     content: open-quote;
@@ -161,4 +175,107 @@ nav.agm-breadcrumb h1 {
     justify-self: start;
     text-align: start;
   }
+}
+
+// Terminal panel docked below the application as a resizable split. The panel
+// lives above the page outlet, so its session survives navigation; here it only
+// shares the screen height with the application and provides the resize
+// affordance.
+//
+// The container keeps a definite height so the application (a PatternFly Page,
+// which is 100vh tall but capped to its parent) shrinks to share the height with
+// the terminal instead of overflowing.
+.agm-terminal-dock {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.agm-terminal-dock__main {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.agm-terminal-dock__main[hidden] {
+  display: none;
+}
+
+.agm-terminal-dock__handle {
+  flex: 0 0 auto;
+  block-size: var(--pf-t--global--spacer--sm);
+  cursor: row-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--pf-t--global--background--color--secondary--default);
+  color: var(--pf-t--global--icon--color--subtle);
+  border-block: 1px solid var(--pf-t--global--border--color--default);
+  user-select: none;
+  touch-action: none;
+}
+
+.agm-terminal-dock__handle:hover {
+  background-color: var(--pf-t--global--background--color--action--plain--hover);
+}
+
+// The docked area uses the page surface (the gray behind the cards) and a bit
+// of padding, so the terminal reads as a card floating on it, matching the main
+// content pane. The card chrome (white surface, radius) comes from the
+// PatternFly Card itself.
+.agm-terminal-dock__panel {
+  flex: none;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  padding: var(--pf-t--global--spacer--md);
+  background-color: var(--pf-t--global--background--color--secondary--default);
+}
+
+// Collapsed to a bar: trim the surround so it does not waste vertical space.
+.agm-terminal-dock__panel--minimized {
+  padding-block: var(--pf-t--global--spacer--sm);
+}
+
+.agm-terminal {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  // Match the main content pane (PF page main container): the same faint border
+  // and floating shadow, rather than the Card's more visible default border.
+  --pf-v6-c-card--BorderColor: var(--pf-t--global--border--color--main--default);
+  box-shadow: var(--pf-t--global--box-shadow--glass--default, none);
+}
+
+// Collapsed to a bar: trim the card header padding so the bar stays slim.
+.agm-terminal--minimized {
+  --pf-v6-c-card--m-compact--first-child--PaddingBlockStart: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-card--m-compact__title--not--last-child--PaddingBlockEnd: var(
+    --pf-t--global--spacer--sm
+  );
+}
+
+.agm-terminal__body {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pf-t--global--spacer--sm);
+  overflow: hidden;
+}
+
+.agm-terminal__body[hidden] {
+  display: none;
+}
+
+.agm-terminal__screen {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: var(--pf-t--global--spacer--md);
+  border-radius: var(--pf-t--global--border--radius--small);
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  white-space: pre;
+  overflow: auto;
 }

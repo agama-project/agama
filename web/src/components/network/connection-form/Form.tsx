@@ -22,27 +22,19 @@
 
 import React from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
-import { unique } from "radashi";
 import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
-import { useConnectionMutation, useConfig } from "~/hooks/model/config/network";
+import { withFrozenQuery } from "~/components/form/with-frozen-query";
+import { useConnectionMutation } from "~/hooks/model/config/network";
 import { useAppForm, mergeFormDefaults } from "~/hooks/form";
-import { useSystem, useDevices } from "~/hooks/model/system/network";
-import { extendCollection } from "~/utils";
+import { useFormSubmit } from "~/hooks/use-form-submit";
 import { NETWORK } from "~/routes/paths";
 import {
-  buildAddress,
-  connectionBindingMode,
-  connectionType,
-  CONNECTION_TYPE,
   connectionTypeLabel,
-  ensureIPPrefix,
-  formatIp,
+  CONNECTION_TYPE,
   generateConnectionName,
-  isVirtual,
-  isValidIPv4Address,
   isValidNameserver,
   isValidDNSSearchDomain,
 } from "~/utils/network";
@@ -53,248 +45,50 @@ import BridgeFields from "./BridgeFields";
 import VlanFields from "./VlanFields";
 import DeviceSelector from "./DeviceSelector";
 import IpFields from "./IpFields";
-import {
-  ADDRESS_REQUIRED_MODES,
-  BridgeStpMode,
-  FormIpMode,
-  VlanProtocolMode,
-  defaultOptions,
-  validate,
-} from "./fields";
+import { useConnectionFormContentQuery, useInitialConnection } from "./queries";
+import { buildPayload, toFormValues } from "./transformations";
+import { validate } from "./validations";
+import { defaultOptions, SUPPORTED_CONNECTION_TYPES } from "./fields";
 import { _ } from "~/i18n";
 
 import type { BreadcrumbProps } from "~/components/core/Breadcrumbs";
-import type {
-  FormIpMode as FormIpModeType,
-  BridgeStpMode as BridgeStpModeType,
-  VlanProtocolMode as VlanProtocolModeType,
-} from "./fields";
-import {
-  BondMode,
-  Bridge,
-  Connection,
-  ConnectionMethod,
-  ConnectionType,
-  VlanProtocol,
-} from "~/types/network";
-
-/**
- * Maps form mode values to their corresponding {@link ConnectionMethod}.
- *
- * Both AUTO and ADVANCED_AUTO map to ConnectionMethod.AUTO; they differ
- * only in UI behavior (whether address/gateway fields are shown).
- */
-const MODE_TO_METHOD: Record<FormIpModeType, ConnectionMethod> = {
-  [FormIpMode.AUTO]: ConnectionMethod.AUTO,
-  [FormIpMode.ADVANCED_AUTO]: ConnectionMethod.AUTO,
-  [FormIpMode.MANUAL]: ConnectionMethod.MANUAL,
-};
+import type { ConnectionFormContentQuery } from "./queries";
+import { ConnectionType } from "~/types/network";
 
 type FormValues = typeof defaultOptions.defaultValues;
 
 /**
- * Connection types supported by this form.
- */
-const SUPPORTED_CONNECTION_TYPES = [
-  CONNECTION_TYPE.ETHERNET,
-  CONNECTION_TYPE.BOND,
-  CONNECTION_TYPE.BRIDGE,
-  CONNECTION_TYPE.VLAN,
-] as const;
-
-/**
- * Infers the form IPvX mode from a stored {@link ConnectionMethod} and addresses.
+ * Inner form for creating or editing a network connection.
  *
- * The presence of addresses affects the interpretation:
- * - `MANUAL` method → MANUAL
- * - `AUTO` method with addresses → ADVANCED_AUTO
- * - `AUTO` method without addresses → AUTO
- * - `undefined` method with addresses → ADVANCED_AUTO (from system)
- * - `undefined` method without addresses → AUTO
- */
-function inferIpMode(method: ConnectionMethod | undefined, addresses: string[]): FormIpModeType {
-  if (method === ConnectionMethod.MANUAL) return FormIpMode.MANUAL;
-
-  return addresses.length > 0 ? FormIpMode.ADVANCED_AUTO : FormIpMode.AUTO;
-}
-
-/**
- * Infers the bridge STP mode from the stored {@link Bridge} configuration.
+ * Receives frozen query data as props via withFrozenQuery. The mutation hook
+ * and navigation are called internally and are intentionally not frozen: they
+ * must always reflect the current state.
  *
- * If `stp` is explicitly defined, that value is used.
- * If `stp` is absent but other STP-related options are present, it's
- * inferred as ENABLED. Otherwise, it defaults to DEFAULT (system default).
- */
-function inferBridgeStp(bridge: Bridge | undefined): BridgeStpModeType {
-  if (!bridge) return BridgeStpMode.DEFAULT;
-
-  if (bridge.stp !== undefined) {
-    return bridge.stp ? BridgeStpMode.ENABLED : BridgeStpMode.DISABLED;
-  }
-
-  const hasStpOptions =
-    bridge.priority !== undefined ||
-    bridge.forwardDelay !== undefined ||
-    bridge.helloTime !== undefined ||
-    bridge.maxAge !== undefined;
-
-  return hasStpOptions ? BridgeStpMode.ENABLED : BridgeStpMode.DEFAULT;
-}
-
-/**
- * Maps an existing {@link Connection} to initial form values for editing.
- */
-function connectionToFormValues(connection: Connection): Partial<FormValues> {
-  // Deduplicate addresses (config + system merge can create duplicates)
-  const uniqueAddresses = unique(connection.addresses, (addr) => `${addr.address}/${addr.prefix}`);
-
-  // Partition and format addresses in a single pass using proper IP validation
-  const addresses4: string[] = [];
-  const addresses6: string[] = [];
-
-  for (const addr of uniqueAddresses) {
-    const formatted = ensureIPPrefix(formatIp(addr));
-    if (isValidIPv4Address(addr.address)) {
-      addresses4.push(formatted);
-    } else {
-      addresses6.push(formatted);
-    }
-  }
-
-  return {
-    name: connection.id,
-    type: connectionType(connection),
-    iface: connection.iface ?? "",
-    ifaceMac: connection.macAddress ?? "",
-    bindingMode: connectionBindingMode(connection),
-    ipv4Mode: inferIpMode(connection.method4, addresses4),
-    addresses4,
-    gateway4: connection.gateway4 ?? "",
-    ipv6Mode: inferIpMode(connection.method6, addresses6),
-    addresses6,
-    gateway6: connection.gateway6 ?? "",
-    nameservers: unique(connection.nameservers),
-    dnsSearchList: unique(connection.dnsSearchList),
-    customDns: connection.nameservers.length > 0,
-    customDnsSearch: connection.dnsSearchList.length > 0,
-    bondIface: connection.iface,
-    bondMode: connection.bond?.mode ?? BondMode.BALANCE_ROUND_ROBIN,
-    bondOptions: connection.bond?.options ? connection.bond.options.split(" ") : [],
-    bondPorts: connection.bond?.ports ?? [],
-    bridgeIface: connection.iface,
-    bridgeStp: inferBridgeStp(connection.bridge),
-    bridgePriority: connection.bridge?.priority,
-    bridgeForwardDelay: connection.bridge?.forwardDelay,
-    bridgeHelloTime: connection.bridge?.helloTime,
-    bridgeMaxAge: connection.bridge?.maxAge,
-    bridgePorts: connection.bridge?.ports ?? [],
-    vlanIface: connection.iface,
-    vlanId: connection.vlan?.id,
-    vlanParent: connection.vlan?.parent ?? "",
-    vlanProtocol: (connection.vlan?.protocol ?? VlanProtocolMode.DEFAULT) as VlanProtocolModeType,
-  };
-}
-
-/**
- * Builds a {@link Connection} from the validated form values.
+ * ## Patterns Used
  *
- * Addresses in formValues already have prefixes (added by ArrayField's
- * normalize or when loading from backend), so no prefix addition is needed.
- */
-function buildConnection(formValues: FormValues): Connection {
-  const ipv4Addresses = ADDRESS_REQUIRED_MODES.includes(formValues.ipv4Mode)
-    ? formValues.addresses4.map(buildAddress)
-    : [];
-  const ipv6Addresses = ADDRESS_REQUIRED_MODES.includes(formValues.ipv6Mode)
-    ? formValues.addresses6.map(buildAddress)
-    : [];
-
-  let iface = "";
-  if (isVirtual(formValues.type)) {
-    iface = formValues[`${formValues.type}Iface`];
-  } else if (formValues.bindingMode === "iface") {
-    iface = formValues.iface;
-  }
-  return new Connection(formValues.name, {
-    iface,
-    macAddress: formValues.bindingMode === "mac" ? formValues.ifaceMac : "",
-    method4: MODE_TO_METHOD[formValues.ipv4Mode],
-    gateway4: ipv4Addresses.length > 0 ? formValues.gateway4 : "",
-    method6: MODE_TO_METHOD[formValues.ipv6Mode],
-    gateway6: ipv6Addresses.length > 0 ? formValues.gateway6 : "",
-    addresses: [...ipv4Addresses, ...ipv6Addresses],
-    nameservers: formValues.customDns ? formValues.nameservers : [],
-    dnsSearchList: formValues.customDnsSearch ? formValues.dnsSearchList : [],
-    bond:
-      formValues.type === CONNECTION_TYPE.BOND
-        ? {
-            mode: formValues.bondMode,
-            options: formValues.bondOptions.join(" "),
-            ports: formValues.bondPorts,
-          }
-        : undefined,
-    bridge:
-      formValues.type === CONNECTION_TYPE.BRIDGE
-        ? {
-            stp: (() => {
-              if (formValues.bridgeStp === BridgeStpMode.DEFAULT) return undefined;
-              return formValues.bridgeStp === BridgeStpMode.ENABLED;
-            })(),
-            priority:
-              formValues.bridgeStp === BridgeStpMode.ENABLED
-                ? formValues.bridgePriority
-                : undefined,
-            forwardDelay:
-              formValues.bridgeStp === BridgeStpMode.ENABLED
-                ? formValues.bridgeForwardDelay
-                : undefined,
-            helloTime:
-              formValues.bridgeStp === BridgeStpMode.ENABLED
-                ? formValues.bridgeHelloTime
-                : undefined,
-            maxAge:
-              formValues.bridgeStp === BridgeStpMode.ENABLED ? formValues.bridgeMaxAge : undefined,
-            ports: formValues.bridgePorts,
-          }
-        : undefined,
-    vlan:
-      formValues.type === CONNECTION_TYPE.VLAN
-        ? {
-            id: formValues.vlanId!,
-            parent: formValues.vlanParent,
-            protocol:
-              formValues.vlanProtocol !== VlanProtocolMode.DEFAULT
-                ? (formValues.vlanProtocol as VlanProtocol)
-                : undefined,
-          }
-        : undefined,
-  });
-}
-
-/**
- * Form for creating a new network connection.
+ * ### withFrozenQuery (see with-frozen-query.tsx)
+ * Wraps this component so it receives frozen initial data as props. Query
+ * refetches never reach this component, preventing flickering and protecting
+ * user edits.
  *
- * @remarks
- * Server errors are surfaced via TanStack Form's `validators.onSubmitAsync`.
- * This is the recommended pattern for forms where the server acts as the
- * validator: the call lives in the async validator, which returns `{ form:
- * message }` on failure. TanStack then exposes the message via
- * `state.errorMap.onSubmit.form` without throwing, keeping the button
- * re-enabled for a retry.
+ * ### useFormSubmit (see use-form-submit.tsx)
+ * Encapsulates the submit lifecycle for forms that navigate away:
+ * - Validation error alerts via refs + Subscribe (no extra re-renders)
+ * - Server error handling
+ * - Clean error state management
  *
- * @see https://tanstack.com/form/latest/docs/framework/react/guides/validation
- * @see https://github.com/TanStack/form/discussions/623#discussioncomment-13026699
+ * ### Field validation
+ * Stays in useAppForm's validators.onSubmitAsync where TanStack Form expects
+ * it. useFormSubmit's onSubmit is only called after field validation passes.
  */
-type ConnectionFormContentProps = {
-  defaults?: Partial<FormValues>;
-  isEditing?: boolean;
-};
-
-function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormContentProps) {
+function ConnectionFormContent({
+  initialConnection,
+  devices,
+  systemConnections,
+}: ConnectionFormContentQuery) {
   const navigate = useNavigate();
-  const devices = useDevices();
-  const { connections: systemConns } = useSystem();
   const { mutateAsync: updateConnection } = useConnectionMutation();
+  const isEditing = initialConnection !== null;
 
   // Generates and writes the auto-computed name when the binding changes, as
   // long as the user has not manually edited it. `isDirty` is used instead of
@@ -308,58 +102,55 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
 
     if (formApi.getFieldMeta("name")?.isDirty) return;
 
-    const existingIds = new Set(systemConns?.map((c) => c.id));
+    const existingIds = new Set(systemConnections.map((c) => c.id));
     formApi.setFieldValue("name", generateConnectionName(type, existingIds), {
       dontUpdateMeta: true,
       dontRunListeners: true,
     });
   };
 
+  // useFormSubmit is initialized before useAppForm so we can pass onSubmitAsync
+  // directly into the validators option — no mutation, no two-phase wiring.
+  const { onSubmitAsync, AlertSubscribe, formSubmitHandler } = useFormSubmit<FormValues>({
+    scrollOnSuccess: false,
+    onSubmit: async (values) => {
+      try {
+        await updateConnection(buildPayload(values));
+        navigate(-1);
+        return { patched: true as const };
+      } catch (e) {
+        return { error: e.message };
+      }
+    },
+  });
+
   const form = useAppForm({
     ...mergeFormDefaults(defaultOptions, {
       iface: devices[0]?.name ?? "",
       ifaceMac: devices[0]?.macAddress ?? "",
-      ...defaults,
+      ...toFormValues(initialConnection),
     }),
     validators: {
-      onSubmitAsync: async ({ value: formValues }) => {
-        const fieldErrors = validate(formValues);
+      onSubmitAsync: async (ctx) => {
+        // Field validation runs first. If it fails, TanStack Form reports
+        // errors per field and onSubmitAsync (business logic) is not called.
+        const fieldErrors = validate(ctx.value);
         if (fieldErrors) return fieldErrors;
 
-        try {
-          await updateConnection(buildConnection(formValues));
-        } catch (e) {
-          return { form: e.message };
-        }
+        // Business logic: payload building + API call.
+        return onSubmitAsync(ctx, form);
       },
     },
-    onSubmit: () => navigate(-1),
     // On mount, auto-fill the name field (e.g., "Ethernet", "Bond 2") since
-    // defaultValues can't access systemConns for duplicates. Changing the type
-    // updates the name via the type field's onChange listener.
+    // defaultValues can't access systemConnections for duplicates. Changing the
+    // type updates the name via the type field's onChange listener.
     listeners: isEditing ? undefined : { onMount: ({ formApi }) => syncName(formApi) },
   });
 
   return (
     <form.AppForm>
-      <Form
-        onSubmit={(e) => {
-          e.preventDefault();
-          // Validation is intentionally deferred to submission so users are
-          // not interrupted while filling the form. All rules live in
-          // onSubmitAsync rather than per-field onSubmit validators because
-          // several checks are cross-field (e.g., gateway validity depends on
-          // the addresses list). TanStack Form only clears field errors set
-          // by onSubmitAsync when a per-field onSubmit validator runs for
-          // the same cause — which never happens here — so canSubmit stays
-          // false after a failed attempt. setErrorMap resets every field's
-          // errorMap.onSubmit before each new attempt, restoring canSubmit
-          // so onSubmitAsync is called again.
-          // @see https://tanstack.com/form/latest/docs/reference/formApi#seterrormap
-          form.setErrorMap({ onSubmit: { fields: {} } });
-          form.handleSubmit();
-        }}
-      >
+      <Form onSubmit={formSubmitHandler(form)}>
+        {/* Server error alert */}
         <form.Subscribe selector={(s) => s.errorMap.onSubmit?.form}>
           {(serverError) =>
             serverError && (
@@ -378,13 +169,16 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
           }
         </form.Subscribe>
 
+        {/* Validation error alert — managed by useFormSubmit */}
+        <AlertSubscribe form={form} />
+
         {!isEditing && (
           <>
             <form.AppField name="type" listeners={{ onChange: () => syncName(form) }}>
               {(field) => (
                 <field.DropdownField
                   label={
-                    // TRANSLATORS: checkbox label for custom DNS server configuration.
+                    // TRANSLATORS: label for the network connection type field.
                     _("Type")
                   }
                   options={SUPPORTED_CONNECTION_TYPES.map((type) => ({
@@ -548,9 +342,17 @@ function ConnectionFormContent({ defaults, isEditing = false }: ConnectionFormCo
   );
 }
 
-function NewConnectionForm() {
-  return <ConnectionFormContent />;
-}
+/**
+ * Memoized, refetch-protected wrapper around {@link ConnectionFormContent}.
+ *
+ * Freezes the result of {@link useConnectionFormContentQuery} on mount and
+ * passes it as props. Query refetches update the outer wrapper but never reach
+ * the form, preventing flickering and protecting user edits.
+ */
+const FrozenConnectionFormContent = withFrozenQuery(
+  useConnectionFormContentQuery,
+  ConnectionFormContent,
+);
 
 function ConnectionNotFound() {
   return (
@@ -567,45 +369,16 @@ function ConnectionNotFound() {
   );
 }
 
-function EditConnectionForm() {
-  const { id } = useParams();
-
-  let { connections: configConns = [] } = useConfig();
-  let { connections: systemConns = [] } = useSystem();
-  // Filter out removed connections before merging to avoid carrying over
-  // stale entries that may still exist in persisted config or system state.
-  configConns = configConns.filter((c) => c.status !== "removed");
-  systemConns = systemConns.filter((c) => c.status !== "removed");
-
-  // Merge config and system connections so the form reflects the user's
-  // explicit settings (config) while filling gaps from the live system state.
-  // Config wins for single values: e.g. configConn.method4 === undefined
-  // (the user chose "Automatic", meaning "do not put method in the config")
-  // must override systemConn.method4 === "auto" that Agama backend or
-  // NetworkManager might report.
-  //
-  // Arrays (addresses, nameservers, etc.) are concatenated so users can see
-  // existing system values even when config has empty arrays.
-  const { all: connections } = extendCollection(configConns, {
-    with: systemConns,
-    mergeArrays: true,
-  });
-  const connection = connections.find((c) => c.id === id);
-
-  if (!connection) return <ConnectionNotFound />;
-
-  return <ConnectionFormContent defaults={connectionToFormValues(connection)} isEditing />;
-}
-
 /**
- * Form for creating or editing a network connection.
+ * Page shell for the connection create/edit flow.
  *
- * @remarks
- * Renders {@link NewConnectionForm} when no route `id` param is present, or
- * {@link EditConnectionForm} when editing an existing connection. Both delegate
- * to {@link ConnectionFormContent} for the shared form rendering.
+ * Owns the breadcrumbs and the not-found guard. Delegates the actual form to
+ * {@link FrozenConnectionFormContent}, which is protected from refetches.
  *
- * Server errors are surfaced via TanStack Form's `validators.onSubmitAsync`.
+ * Renders the new-connection form when no route `id` param is present, or the
+ * edit form when editing an existing connection.
+ *
+ * Server errors are reported via TanStack Form's `validators.onSubmitAsync`.
  * This is the recommended pattern for forms where the server acts as the
  * validator: the call lives in the async validator, which returns `{ form:
  * message }` on failure. TanStack then exposes the message via
@@ -617,6 +390,8 @@ function EditConnectionForm() {
  */
 export default function ConnectionForm() {
   const { id } = useParams();
+  const connection = useInitialConnection();
+
   const breadcrumbs: BreadcrumbProps[] = [
     // TRANSLATORS: breadcrumb label for the network configuration section.
     { label: _("Network"), path: NETWORK.root },
@@ -638,7 +413,9 @@ export default function ConnectionForm() {
 
   return (
     <Page breadcrumbs={breadcrumbs}>
-      <Page.Content>{id ? <EditConnectionForm /> : <NewConnectionForm />}</Page.Content>
+      <Page.Content>
+        {id && !connection ? <ConnectionNotFound /> : <FrozenConnectionFormContent />}
+      </Page.Content>
     </Page>
   );
 }

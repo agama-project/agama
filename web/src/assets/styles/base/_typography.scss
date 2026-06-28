@@ -1,90 +1,122 @@
 // Font face declarations.
 //
-// Note: font paths stay "./fonts/" even though this partial lives in base/.
-// Dart Sass does not rebase url(); it emits the path verbatim into the
-// compiled output, which css-loader resolves relative to the entrypoint
-// (index.scss in styles/), so "./fonts/" points at styles/fonts/.
+// Paths stay "./fonts/" even though this partial lives in base/: Dart Sass does
+// not rebase url(), so they are resolved relative to the entrypoint
+// (styles/index.scss), where "./fonts/" points at styles/fonts/.
 
 @font-face {
   font-family: "SUSE Text";
-  font-weight: 400;
+  font-weight: 100 900;
   font-style: normal;
-  src: local(""), url("./fonts/SUSE-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/SUSE-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "SUSE Display";
-  font-weight: 600;
+  font-weight: 100 900;
   font-style: normal;
-  src: local(""), url("./fonts/SUSE-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/SUSE-VariableFont_wght.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "SUSE Mono";
+  font-weight: 100 800;
+  font-style: normal;
+  src:
+    local(""),
+    url("./fonts/SUSEMono-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans";
-  font-weight: 400;
+  font-weight: 100 900;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSans-VariableFont_wdth_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSans-VariableFont_wdth_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans SC";
-  font-weight: 400;
+  font-weight: 100 900;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansSC-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansSC-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans SC Display";
   font-weight: 600;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansSC-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansSC-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans JP";
-  font-weight: 400;
+  font-weight: 100 900;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansJP-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansJP-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans JP Display";
   font-weight: 600;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansJP-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansJP-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans KR";
-  font-weight: 400;
+  font-weight: 100 900;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansKR-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansKR-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans KR Display";
   font-weight: 600;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansKR-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansKR-VariableFont_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans Georgian";
-  font-weight: 400;
+  font-weight: 100 900;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Noto Sans Georgian Display";
   font-weight: 600;
   font-style: normal;
-  src: local(""), url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/NotoSansGeorgian-VariableFont_wdth_wght.ttf") format("truetype-variations");
 }
 
 @font-face {
   font-family: "Roboto Mono";
-  font-weight: 400;
+  font-weight: 100 700;
   font-style: normal;
-  src: local(""), url("./fonts/RobotoMono-VariableFont_wght.ttf");
+  src:
+    local(""),
+    url("./fonts/RobotoMono-VariableFont_wght.ttf") format("truetype-variations");
 }

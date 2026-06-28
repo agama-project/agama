@@ -22,6 +22,7 @@
 
 import React from "react";
 import {
+  Divider,
   FormGroup,
   MenuToggle,
   MenuToggleElement,
@@ -32,12 +33,9 @@ import {
 import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
 import { useFieldContext } from "~/hooks/form-contexts";
 
-export type DropdownOption<T> = {
-  value: T;
-  label: React.ReactNode;
-  description?: React.ReactNode;
-  isDisabled?: boolean;
-};
+export type DropdownOption<T> =
+  | { value: T; label: React.ReactNode; description?: React.ReactNode; isDisabled?: boolean }
+  | { divider: true };
 
 type DropdownFieldProps<T> = {
   /** The field label. */
@@ -103,7 +101,9 @@ export default function DropdownField<T extends string>({
   const field = useFieldContext<T>();
   const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
-  const selectedOption = options.find(({ value }) => value === field.state.value);
+  const selectedOption = options.find(
+    (opt) => !("divider" in opt) && opt.value === field.state.value,
+  );
 
   return (
     <FormGroup fieldId={field.name} label={label}>
@@ -126,21 +126,25 @@ export default function DropdownField<T extends string>({
             isExpanded={isOpen}
             isDisabled={isDisabled}
           >
-            {selectedOption?.label ?? field.state.value}
+            {selectedOption && "label" in selectedOption ? selectedOption.label : field.state.value}
           </MenuToggle>
         )}
       >
         <SelectList>
-          {options.map((opt) => (
-            <SelectOption
-              key={opt.value}
-              value={opt.value}
-              description={opt.description}
-              isDisabled={opt.isDisabled}
-            >
-              {opt.label}
-            </SelectOption>
-          ))}
+          {options.map((opt, i) =>
+            "divider" in opt ? (
+              <Divider key={`divider-${i}`} component="li" />
+            ) : (
+              <SelectOption
+                key={String(opt.value)}
+                value={opt.value}
+                description={opt.description}
+                isDisabled={opt.isDisabled}
+              >
+                {opt.label}
+              </SelectOption>
+            ),
+          )}
         </SelectList>
       </Select>
       {helperText}

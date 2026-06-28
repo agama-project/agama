@@ -83,6 +83,9 @@ export default {
     "%d autre mode disponible",
     "%d autres modes disponibles"
   ],
+  "%s (keep data)": [
+    ""
+  ],
   "%s - %s": [
     "%s - %s"
   ],
@@ -112,6 +115,9 @@ export default {
   ],
   "%s has been registered with below information.": [
     "%s a été enregistré avec les informations ci-dessous."
+  ],
+  "%s honors the browser and system preferences": [
+    ""
   ],
   "%s is invalid: %s": [
     "%s n’est pas valide : %s"
@@ -296,6 +302,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Toutes les connexions réseau gérées par cette interface sont actuellement définies pour être utilisées uniquement pendant l'installation et ne seront pas copiées sur le système installé"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    ""
+  ],
   "All the available zFCP controllers are already activated.": [
     "Tous les contrôleurs zFCP disponibles sont déjà activés."
   ],
@@ -321,11 +330,8 @@ export default {
   "Any partition needed to boot will be configured.": [
     "Toutes les éventuelles partitions nécessaires au démarrage seront configurées."
   ],
-  "As a new logical volume on %s": [
-    "En tant que nouveau volume logique sur %s"
-  ],
-  "As a new partition on %s": [
-    "En tant que nouvelle partition sur %s"
+  "Appearance": [
+    ""
   ],
   "At least one DNS search domain is required": [
     "Au moins un domaine de recherche DNS est requis"
@@ -456,20 +462,11 @@ export default {
   "Change device menu": [
     "Modifier le menu du périphérique"
   ],
-  "Change display language": [
-    "Modifier la langue d'affichage"
-  ],
-  "Change display language and keyboard layout": [
-    "Modifier la langue d'affichage et la disposition du clavier"
-  ],
   "Change filters and try again.": [
     "Changez filtres puis réessayez."
   ],
   "Change keyboard": [
     "Changer de clavier"
-  ],
-  "Change keyboard layout": [
-    "Modifier la disposition du clavier"
   ],
   "Change mode": [
     "Changer mode"
@@ -529,20 +526,17 @@ export default {
   "Clear input": [
     "Vider saisie"
   ],
-  "Clear selected mount point": [
-    "Retirer le point de montage sélectionné"
-  ],
   "Close": [
     "Fermer"
+  ],
+  "Color scheme": [
+    ""
   ],
   "Configuration from the network plus static addresses and gateway": [
     "Configuration à partir du réseau, plus adresse statique et passerelle aussi"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
     "Configuration lue à partir de la table iSCSI Boot Firmware (iBFT). L’initiateur ne peut pas être modifié."
-  ],
-  "Configuration unreachable or invalid": [
-    "Configuration inaccessible ou invalide"
   ],
   "Configure": [
     "Configurer"
@@ -553,9 +547,6 @@ export default {
   "Configure Volume Group": [
     "Configurer groupe volume"
   ],
-  "Configure device %s": [
-    "Configurer le périphérique %s"
-  ],
   "Configure device menu": [
     "Configurer le menu du périphérique"
   ],
@@ -565,14 +556,8 @@ export default {
   "Configure logical volume": [
     "Configurer volume logique"
   ],
-  "Configure logical volume at %s": [
-    "Configurer volume logique à %s"
-  ],
   "Configure partition": [
     "Configurer partition"
-  ],
-  "Configure partition at %s": [
-    "Configurer la partition sur %s"
   ],
   "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
     ""
@@ -713,6 +698,12 @@ export default {
   "DNS servers": [
     "Serveurs DNS"
   ],
+  "Dark": [
+    ""
+  ],
+  "Dark color scheme": [
+    ""
+  ],
   "Data collection may take a while. The download will start automatically once the file is ready.": [
     ""
   ],
@@ -722,23 +713,14 @@ export default {
   "Deactivated": [
     "Désactivé"
   ],
+  "Decrease font size": [
+    ""
+  ],
   "Default": [
     "Par défaut"
   ],
   "Default NTP": [
     ""
-  ],
-  "Default file system for %s": [
-    "Système de fichiers par défaut pour %s"
-  ],
-  "Default file system for generic logical volume": [
-    "Système de fichiers par défaut pour le volume logique générique"
-  ],
-  "Default file system for generic mount paths": [
-    "Système de fichiers par défaut pour les chemins de montage génériques"
-  ],
-  "Default file system for generic partitions": [
-    "Système de fichiers par défaut pour les partitions génériques"
   ],
   "Define a custom size": [
     "Définir une taille personnalisée"
@@ -766,15 +748,6 @@ export default {
   ],
   "Desktops": [
     "Bureaux"
-  ],
-  "Destroy current data and format device as": [
-    "Détruire les données actuelles et formater le périphérique en tant que"
-  ],
-  "Destroy current data and format logical volume as": [
-    "Détruire données actuelles et formater volume logique en tant que"
-  ],
-  "Destroy current data and format partition as": [
-    "Détruire les données actuelles et formater la partition en tant que"
   ],
   "Details": [
     "Détails"
@@ -827,9 +800,6 @@ export default {
   "Do not configure": [
     "Ne pas configurer"
   ],
-  "Do not format %s and keep the data": [
-    "Ne pas formater %s et conserver les données"
-  ],
   "Do not register": [
     "Ne pas s'enregistrer"
   ],
@@ -841,6 +811,9 @@ export default {
   ],
   "Download logs to troubleshoot or share with support.": [
     "Télécharger les journaux pour résolution ou partage avec le support."
+  ],
+  "E.g. rw, noatime, umask=0666": [
+    ""
   ],
   "E.g., 192.168.1.1": [
     "Ex. 192.168.1.1"
@@ -947,6 +920,9 @@ export default {
   "Excellent signal": [
     "Signal excellent"
   ],
+  "Expand if possible": [
+    ""
+  ],
   "Expiration date": [
     "Date d'expiration"
   ],
@@ -985,9 +961,6 @@ export default {
   "File system": [
     "Système de fichiers"
   ],
-  "File system label": [
-    "Étiquette du système de fichiers"
-  ],
   "Filesystems": [
     "Systèmes de fichiers"
   ],
@@ -1009,6 +982,9 @@ export default {
   "Find space in %s": [
     "Trouver de l'espace dans %s"
   ],
+  "Fixed": [
+    "Fixe"
+  ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
     "En cas de besoins plus avancés, les utilisateurs peuvent passer à cette version dédiée en pleine page qui offre plus d'espace pour des vues détaillées, des colonnes supplémentaires, des filtres et une fonctionnalité étendue."
   ],
@@ -1021,20 +997,11 @@ export default {
   "Format device %s": [
     "Formater appareil %s"
   ],
-  "Format device as": [
-    "Formater le périphérique en tant que"
-  ],
   "Format disk %s": [
     "Formater le disque %s"
   ],
-  "Format logical volume as": [
-    "Formater le volume logique en tant que"
-  ],
   "Format now": [
     "Formater maintenant"
-  ],
-  "Format partition as": [
-    "Formater la partition en tant que"
   ],
   "Format selected devices?": [
     "Voulez-vous formater les périphériques sélectionnés ?"
@@ -1093,6 +1060,12 @@ export default {
   "Hide %d subvolume action": [
     "Masquer l'action du sous-volume %d",
     "Masquer les actions du sous-volume %d"
+  ],
+  "High": [
+    ""
+  ],
+  "High contrast": [
+    ""
   ],
   "Hostname": [
     "Nom d'hôte"
@@ -1164,6 +1137,9 @@ export default {
     "",
     ""
   ],
+  "Increase font size": [
+    ""
+  ],
   "Initiator": [
     "Initiateur"
   ],
@@ -1206,9 +1182,6 @@ export default {
   "Installation settings": [
     "Paramètres d'installation"
   ],
-  "Installation settings will automatically update to match the new product's defaults.": [
-    "Les paramètres d’installation seront automatiquement mis à jour pour correspondre aux paramètres par défaut du nouveau produit."
-  ],
   "Installation will take %s.": [
     "L'installation utilisera %s."
   ],
@@ -1238,6 +1211,12 @@ export default {
   ],
   "Invalid IPv6 gateway": [
     "Passerelle IPv6 non valide"
+  ],
+  "Invalid format (e.g. 20 GiB)": [
+    ""
+  ],
+  "Invalid label format": [
+    ""
   ],
   "Invalid storage settings": [
     "Paramètres de stockage non valides"
@@ -1284,6 +1263,9 @@ export default {
   "Keep %s": [
     "Garder %s"
   ],
+  "Keep editing": [
+    ""
+  ],
   "Keyboard": [
     "Clavier"
   ],
@@ -1320,6 +1302,15 @@ export default {
   "License acceptance is required to continue.": [
     "L’acceptation de la licence est requise pour continuer."
   ],
+  "Light": [
+    ""
+  ],
+  "Light color scheme": [
+    ""
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
+    ""
+  ],
   "Listening and learning time (4-30 seconds).": [
     "Temps d’écoute et d’apprentissage (4-30 secondes)."
   ],
@@ -1332,6 +1323,9 @@ export default {
   "Localization": [
     "Localisation"
   ],
+  "Location": [
+    "Localisation"
+  ],
   "Locked targets cannot be managed from here and do not offer any actions.": [
     "Les cibles verrouillées ne peuvent pas être gérées à partir d’ici et n’offrent aucune action."
   ],
@@ -1340,9 +1334,6 @@ export default {
   ],
   "Log in as %s": [
     "Se connecter en tant que %s"
-  ],
-  "Logical volume name": [
-    "Nom du volume logique"
   ],
   "Logical volumes": [
     "Volumes logiques"
@@ -1389,6 +1380,9 @@ export default {
   "Max message age must be between 6 and 40 seconds": [
     "L’ancienneté max des messages doit être comprise entre 6 et 40 secondes"
   ],
+  "Maximum": [
+    "Maximum"
+  ],
   "Members": [
     "Membres"
   ],
@@ -1400,6 +1394,9 @@ export default {
   ],
   "Min channel": [
     "Canal min"
+  ],
+  "Minimum": [
+    "Minimum"
   ],
   "Missing": [
     "Manquant(e)"
@@ -1418,18 +1415,6 @@ export default {
   ],
   "More devices": [
     "Autres périphériques"
-  ],
-  "More installer options": [
-    "Autres options d’installation"
-  ],
-  "More keymap layout might be available for the selected product at [Localization] page": [
-    "D'autres plans de codage clavier peuvent être disponibles pour le produit sélectionné sur la page [Localization]"
-  ],
-  "More language and keyboard layout options for the selected product may be available in [Localization] page.": [
-    "D'autres options de langue et de disposition du clavier pour le produit sélectionné peuvent être disponibles sur la page [Localization]."
-  ],
-  "More languages might be available for the selected product at [Localization] page": [
-    "D'autres langues peuvent être disponibles pour le produit sélectionné sur la page [Localization]"
   ],
   "More storage options": [
     "Autres options de stockage"
@@ -1457,15 +1442,6 @@ export default {
   "Mount point": [
     "Point de montage"
   ],
-  "Mount point mode": [
-    "Mode du point de montage"
-  ],
-  "Mount point options": [
-    "Options de point de montage"
-  ],
-  "Mount point toggle": [
-    "Bouton à bascule du point de montage"
-  ],
   "Move mount points": [
     "Déplacer les points de montage"
   ],
@@ -1486,6 +1462,9 @@ export default {
   ],
   "Name": [
     "Nom"
+  ],
+  "Name for the logical volume. E.g., root, home, lv0": [
+    ""
   ],
   "Name is required": [
     "Nom requis"
@@ -1508,6 +1487,9 @@ export default {
   "New connection": [
     "Nouvelle connexion"
   ],
+  "New partition. There are no available existing partitions on %s.": [
+    ""
+  ],
   "No": [
     "Non"
   ],
@@ -1528,9 +1510,6 @@ export default {
   ],
   "No additional partitions will be created": [
     "Aucune partition supplémentaire ne sera créée"
-  ],
-  "No changes detected. System settings are already up to date.": [
-    ""
   ],
   "No changes to apply": [
     ""
@@ -1733,6 +1712,9 @@ export default {
   "Physical volumes": [
     "Volumes physiques"
   ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    ""
+  ],
   "PiB": [
     "PiB"
   ],
@@ -1795,6 +1777,9 @@ export default {
   ],
   "RAID": [
     "RAID"
+  ],
+  "Range": [
+    "Portée"
   ],
   "Read less about %s": [
     "En lire moins à propos de %s"
@@ -1888,9 +1873,6 @@ export default {
   ],
   "Reused partitions will not be shrunk": [
     "Les partitions réutilisées ne seront pas réduites"
-  ],
-  "Review and install": [
-    "Réviser et installer"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
     "Sélection du pont racine (0-61440). [Plus bas égale priorité élevée]."
@@ -1986,9 +1968,6 @@ export default {
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
     "Sélectionnez les entrées à modifier ou à supprimer. Ou [supprimer toutes les entrées non valides]."
   ],
-  "Select or enter a mount point": [
-    "Sélectionner ou saisir un point de montage"
-  ],
   "Select or enter a mount point that is not already assigned to another device": [
     "Sélectionner ou entrer un point de montage qui n'est pas déjà attribué à un autre périphérique"
   ],
@@ -2022,7 +2001,16 @@ export default {
   "Set NTP servers manually": [
     ""
   ],
+  "Set a specific size": [
+    ""
+  ],
   "Set manually": [
+    ""
+  ],
+  "Set minimum and maximum": [
+    ""
+  ],
+  "Set minimum; use more space if available": [
     ""
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
@@ -2061,12 +2049,6 @@ export default {
   ],
   "Size": [
     "Taille"
-  ],
-  "Size limits must be numbers followed by a unit like GiB or GB": [
-    "Les limites de taille doivent être des nombres suivis d'une unité comme Gio ou Go"
-  ],
-  "Size mode": [
-    "Mode de la taille"
   ],
   "Size modes": [
     "Modes de taille"
@@ -2119,6 +2101,12 @@ export default {
   "Spanning Tree Protocol (STP)": [
     ""
   ],
+  "Standard": [
+    ""
+  ],
+  "Standard contrast": [
+    ""
+  ],
   "Start configuring a basic installation": [
     "Commencer à configurer une installation de base"
   ],
@@ -2149,9 +2137,6 @@ export default {
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
     "Structure du nouveau système, y compris disques à utiliser et périphériques supplémentaires tels que les groupes de volumes LVM."
   ],
-  "Suggested mount points": [
-    "Points de montage suggérés"
-  ],
   "Swap": [
     "Swap"
   ],
@@ -2159,9 +2144,6 @@ export default {
     "Passer à un mode différent"
   ],
   "System": [
-    ""
-  ],
-  "System status: Idle": [
     ""
   ],
   "System will have no network connections": [
@@ -2190,6 +2172,9 @@ export default {
   ],
   "The LVM group '%1$s' will remain at %2$s": [
     "Le groupe LVM '%1$s' restera sur %2$s"
+  ],
+  "The [language and region] settings for the product may offer more options to choose from.": [
+    ""
   ],
   "The configuration must be adapted to address the following issue:": [
     "La configuration doit être adaptée pour résoudre le problème suivant :",
@@ -2311,20 +2296,8 @@ export default {
     "Le volume logique sera également supprimé",
     "Les volumes logiques seront également supprimés"
   ],
-  "The maximum must be a number followed by a unit like GiB or GB": [
-    "Le maximum doit être un nombre suivi d'une unité comme Gio ou Go"
-  ],
-  "The minimum cannot be greater than the maximum": [
-    "Le minimum ne peut être supérieur au maximum"
-  ],
-  "The minimum must be a number followed by a unit like GiB or GB": [
-    "Le minimum doit être un nombre suivi d'une unité comme Gio ou Go"
-  ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Le sélecteur modal offre une interface simplifiée conçue pour une utilisation rapide et facile, sans submerger l'utilisateur."
-  ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Les volumes physiques LVM nécessaires seront ajoutés en tant que partitions sur les disques choisis, en fonction de la taille des volumes logiques. Si vous sélectionnez plus d'un disque, les volumes physiques peuvent être répartis sur plusieurs disques."
   ],
   "The password is weak": [
     "Le mot de passe est faible"
@@ -2389,6 +2362,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "Le système démarrera sur une interface de ligne de commande."
   ],
+  "The terminal requires a larger screen size": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Tout le périphérique sera utilisé pour %s"
   ],
@@ -2401,14 +2377,11 @@ export default {
   "There are not disks available for the installation. You may need to configure some device.": [
     "Il n'y a pas de disques disponibles pour l'installation. Il se peut que vous deviez configurer un périphérique."
   ],
-  "There are not usable logical volumes": [
-    "Il n’y a pas de volumes logiques utilisables"
-  ],
-  "There are not usable partitions": [
-    "Il n'existe aucune partition utilisable"
-  ],
   "There are not zFCP controllers pending of activation.": [
     "Il n’y a pas de contrôleurs zFCP en attente d’activation."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    ""
   ],
   "There is %d destructive action planned": [
     "Il y a %d action destructrice prévue",
@@ -2417,12 +2390,6 @@ export default {
   "There is %d destructive action planned affecting %s": [
     "Il y a %d action destructrice prévue affectant %s",
     "Il y a %d actions destructrices prévues affectant %s"
-  ],
-  "These are the settings for the product to install. The installer language and keyboard layout can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Il s'agit des paramètres du produit à installer. La langue du programme d'installation et la disposition du clavier peuvent être modifiées via le [panneau des paramètres] accessible à partir de la barre supérieure."
-  ],
-  "These are the settings for the product to install. The installer language can be adjusted via the [settings panel] accessible from the top bar.": [
-    "Il s'agit des paramètres du produit à installer. La langue du programme d'installation peut être modifiée via le [panneau des paramètres] accessible depuis la barre supérieure."
   ],
   "This action will destroy any data stored on the device.": [
     "Cette action détruira toutes les données stockées sur l'appareil."
@@ -2460,6 +2427,9 @@ export default {
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Cela n'affectera que l'interface du programme d'installation, et non le produit à installer. Vous pouvez ajuster la localisation du produit ultérieurement dans la page Paramètres de localisation."
   ],
+  "This will be injected to the command to create the file system (%s).": [
+    ""
+  ],
   "TiB": [
     "TiB"
   ],
@@ -2472,7 +2442,7 @@ export default {
   "Tmpfs": [
     "Tmpfs"
   ],
-  "To change it, visit the [hostname] section before registering.": [
+  "To change that name, visit [system] section settings before registering.": [
     ""
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
@@ -2496,6 +2466,9 @@ export default {
   "Unknown error": [
     "Erreur inconnue"
   ],
+  "Unsaved changes": [
+    ""
+  ],
   "Unselect or activate them and try it again.": [
     "Désélectionnez ou activez-les puis réessayez."
   ],
@@ -2510,9 +2483,6 @@ export default {
   ],
   "Update available disks and activate crypt devices": [
     "Mettre à jour les disques disponibles et activer les périphériques de chiffrement"
-  ],
-  "Use": [
-    "Utiliser"
   ],
   "Use LVM volume group %s": [
     "Utiliser groupe de volumes LVM %s"
@@ -2655,25 +2625,16 @@ export default {
   "Using an advanced storage configuration": [
     "Utilisation d’une configuration de stockage avancée"
   ],
-  "Using an existing logical volume": [
-    "En utilisant un volume logique existant"
-  ],
-  "Using an existing partition": [
-    "En utilisant une partition existante"
-  ],
   "Using code ending in %s": [
     "Utilisation d’un code se terminant par %s"
-  ],
-  "Using logical volume %s": [
-    "Utilisation volume logique %s"
-  ],
-  "Using partition %s": [
-    "En utilisant la partition %s"
   ],
   "VLAN": [
     ""
   ],
   "VLAN ID": [
+    ""
+  ],
+  "Value": [
     ""
   ],
   "View license": [
@@ -2708,9 +2669,6 @@ export default {
   ],
   "Wait until current operations are completed.": [
     "Attendez que les opérations actuelles soient terminées."
-  ],
-  "Waiting for a mount point": [
-    "En attente d'un point de montage"
   ],
   "Waiting for information about storage configuration": [
     "En attente d'informations sur la configuration du stockage"
@@ -2756,9 +2714,6 @@ export default {
   ],
   "You must fix these issues": [
     ""
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Vous devez corriger tout paramètre non valide avant de procéder à l’installation."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Vous allez vous connecter à un réseau public non chiffré. Cela peut présenter un risque pour vos données."

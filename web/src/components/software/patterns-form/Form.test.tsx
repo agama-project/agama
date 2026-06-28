@@ -21,12 +21,26 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { patchConfig } from "~/api";
 import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePatternsSelection from "./Form";
+
+/**
+ * Accessible labels of the checkboxes inside a container, in DOM order.
+ *
+ * Reads each checkbox's associated `<label>` text, so it is agnostic to the
+ * checkbox id scheme (ids are not the pattern name).
+ */
+const checkboxLabelsIn = (container: HTMLElement): string[] =>
+  within(container)
+    .getAllByRole("checkbox")
+    .map(
+      (checkbox) =>
+        container.querySelector(`label[for="${checkbox.id}"]`)?.textContent?.trim() ?? "",
+    );
 
 const patternsWithPreselected = [
   ...testingPatterns,
@@ -84,38 +98,133 @@ describe("SoftwarePatternsSelection", () => {
     expect(headings).toHaveLength(3);
   });
 
+  it("exposes each category as a group labelled by its heading", async () => {
+    installerRender(<SoftwarePatternsSelection />);
+    const groups = await screen.findAllByRole("group");
+    expect(groups).toHaveLength(3);
+    // Each category checkbox set is reachable as a group labelled by its name.
+    screen.getByRole("group", { name: /Graphical Environments/ });
+    screen.getByRole("group", { name: /Base Technologies/ });
+    screen.getByRole("group", { name: /Desktop Functions/ });
+  });
+
+  it("lets the user pick the right pattern when two categories share a label", async () => {
+    // Two distinct patterns (different name) that look identical (same summary)
+    // but live in different categories. The category group is what tells them
+    // apart for a screen reader and for scoped queries.
+    const sharedSummary = "Shared Tooling";
+    const lookalikePatterns = [
+      {
+        name: "shared_in_base",
+        category: "Base Technologies",
+        icon: "./pattern-base",
+        description: "Shared tooling under base technologies",
+        summary: sharedSummary,
+        order: "1000",
+        preselected: false,
+        desktop: false,
+      },
+      {
+        name: "shared_in_desktop",
+        category: "Desktop Functions",
+        icon: "./pattern-desktop",
+        description: "Shared tooling under desktop functions",
+        summary: sharedSummary,
+        order: "1000",
+        preselected: false,
+        desktop: false,
+      },
+    ];
+    mockAvailablePatterns.mockReturnValue({
+      all: lookalikePatterns,
+      desktops: [],
+      other: lookalikePatterns,
+    });
+
+    const { user } = installerRender(<SoftwarePatternsSelection />);
+
+    const baseGroup = await screen.findByRole("group", { name: /Base Technologies/ });
+    const desktopGroup = screen.getByRole("group", { name: /Desktop Functions/ });
+
+    // Same accessible label in both groups, yet each is uniquely reachable.
+    const baseCheckbox = within(baseGroup).getByRole("checkbox", { name: sharedSummary });
+    const desktopCheckbox = within(desktopGroup).getByRole("checkbox", { name: sharedSummary });
+    expect(baseCheckbox).not.toBe(desktopCheckbox);
+
+    // Picking the one under Base Technologies leaves the other untouched.
+    await user.click(baseCheckbox);
+    expect(baseCheckbox).toBeChecked();
+    expect(desktopCheckbox).not.toBeChecked();
+  });
+
+  it("stays valid when the backend lists the same pattern under several categories", async () => {
+    // Defensive: listing the same pattern name under several categories is not an
+    // expected or supported scenario, but the UI must not break if it ever does.
+    //
+    // A single pattern (same name) reported under two categories. The backend
+    // selects patterns by name, so both entries represent the same selection;
+    // each must still render with a unique id and a correctly associated label
+    // (no clashing ids, no broken label targeting).
+    const duplicatedPattern = (category: string) => ({
+      name: "shared_pattern",
+      category,
+      icon: "./pattern-shared",
+      description: `Shared pattern listed under ${category}`,
+      summary: "Shared Pattern",
+      order: "1000",
+      preselected: false,
+      desktop: false,
+    });
+    const patterns = [
+      duplicatedPattern("Base Technologies"),
+      duplicatedPattern("Desktop Functions"),
+    ];
+    mockAvailablePatterns.mockReturnValue({ all: patterns, desktops: [], other: patterns });
+
+    const { user } = installerRender(<SoftwarePatternsSelection />);
+
+    const baseGroup = await screen.findByRole("group", { name: /Base Technologies/ });
+    const desktopGroup = screen.getByRole("group", { name: /Desktop Functions/ });
+    const baseCheckbox = within(baseGroup).getByRole("checkbox", { name: "Shared Pattern" });
+    const desktopCheckbox = within(desktopGroup).getByRole("checkbox", { name: "Shared Pattern" });
+
+    // Distinct DOM nodes with distinct ids despite the shared pattern name.
+    expect(baseCheckbox.id).not.toEqual(desktopCheckbox.id);
+
+    // They back the same pattern, so toggling one reflects in both.
+    await user.click(baseCheckbox);
+    expect(baseCheckbox).toBeChecked();
+    expect(desktopCheckbox).toBeChecked();
+  });
+
   it("renders each category containing its patterns in order", async () => {
     installerRender(<SoftwarePatternsSelection />);
 
-    await screen.findByRole("heading", { name: /Base Technologies/, level: 3 });
-    // Find the checkboxes that come after the Base Technologies heading
-    const allCheckboxes = screen.getAllByRole("checkbox");
-    const baseStartIndex = allCheckboxes.findIndex((c) => c.id === "yast2_basis");
-    const ids = allCheckboxes.slice(baseStartIndex, baseStartIndex + 4).map((c) => c.id);
+    const baseGroup = await screen.findByRole("group", { name: /Base Technologies/ });
     // Order is driven by the `order` field on each pattern.
-    expect(ids).toEqual(["yast2_basis", "yast2_desktop", "yast2_server", "preselected_pattern"]);
+    expect(checkboxLabelsIn(baseGroup)).toEqual([
+      "YaST Base Utilities",
+      "YaST Desktop Utilities",
+      "YaST Server Utilities",
+      "Preselected Pattern",
+    ]);
   });
 
   it("sorts patterns by their order field within each category", async () => {
     installerRender(<SoftwarePatternsSelection />);
 
-    await screen.findByRole("heading", { name: /Graphical Environments/, level: 3 });
-    const allCheckboxes = screen.getAllByRole("checkbox");
-
-    // Graphical Environments patterns should be ordered by their order field:
+    const graphicalGroup = await screen.findByRole("group", { name: /Graphical Environments/ });
     // gnome (1010), kde (1110), xfce (1310), basic_desktop (1802)
-    const graphicalStartIndex = allCheckboxes.findIndex((c) => c.id === "gnome");
-    const graphicalIds = allCheckboxes
-      .slice(graphicalStartIndex, graphicalStartIndex + 4)
-      .map((c) => c.id);
-    expect(graphicalIds).toEqual(["gnome", "kde", "xfce", "basic_desktop"]);
+    expect(checkboxLabelsIn(graphicalGroup)).toEqual([
+      "GNOME Desktop Environment (Wayland)",
+      "KDE Applications and Plasma 5 Desktop",
+      "XFCE Desktop Environment",
+      "A very basic desktop (previously part of x11 pattern)",
+    ]);
 
-    // Desktop Functions patterns should be ordered: multimedia (1580), office (1640)
-    const desktopFuncStartIndex = allCheckboxes.findIndex((c) => c.id === "multimedia");
-    const desktopFuncIds = allCheckboxes
-      .slice(desktopFuncStartIndex, desktopFuncStartIndex + 2)
-      .map((c) => c.id);
-    expect(desktopFuncIds).toEqual(["multimedia", "office"]);
+    const desktopGroup = screen.getByRole("group", { name: /Desktop Functions/ });
+    // multimedia (1580), office (1640)
+    expect(checkboxLabelsIn(desktopGroup)).toEqual(["Multimedia", "Office Software"]);
   });
 
   it("renders a search input with placeholder and accessible name", async () => {
@@ -236,9 +345,14 @@ describe("SoftwarePatternsSelection", () => {
 
       // Should match yast2_basis (1220), yast2_desktop (1222), yast2_server (1224)
       // in order by their order field
-      const visibleCheckboxes = screen.getAllByRole("checkbox");
-      const ids = visibleCheckboxes.map((c) => c.id);
-      expect(ids).toEqual(["yast2_basis", "yast2_desktop", "yast2_server"]);
+      const names = screen
+        .getAllByRole("checkbox")
+        .map((c) => document.querySelector(`label[for="${c.id}"]`)?.textContent?.trim() ?? "");
+      expect(names).toEqual([
+        "YaST Base Utilities",
+        "YaST Desktop Utilities",
+        "YaST Server Utilities",
+      ]);
     });
   });
 

@@ -110,6 +110,41 @@ const localConnection = (location: Location | URL = window.location) => {
   return hostname === "localhost" || hostname.startsWith("127.");
 };
 
+const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
+
+/**
+ * Cached `Intl.DateTimeFormat` for a time zone and options.
+ *
+ * Constructing a formatter is the costly part; formatting with it is cheap. Reuse
+ * instances across calls so building a long time-zone list (or rebuilding it when
+ * a selector opens) does not reconstruct hundreds of formatters.
+ *
+ * The locale is fixed to "en-US" so the output stays locale-neutral (24h time,
+ * "UTC+1"), which is why the cache key is just the time zone and options. If the
+ * locale is ever made dynamic, it must be added to the cache key too, otherwise a
+ * language change would reuse a stale-locale formatter.
+ *
+ * @param timezone - E.g., "Atlantic/Canary".
+ * @param options - Formatting options (e.g. `{ timeStyle: "short" }`).
+ */
+const dateTimeFormat = (
+  timezone: string,
+  options: Intl.DateTimeFormatOptions,
+): Intl.DateTimeFormat => {
+  const key = `${timezone}|${JSON.stringify(options)}`;
+  let formatter = dateTimeFormatters.get(key);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-US", { timeZone: timezone, ...options });
+    dateTimeFormatters.set(key, formatter);
+  }
+  return formatter;
+};
+
+/** Clears the cached formatters. Intended for tests that mock `Intl.DateTimeFormat`. */
+const clearDateTimeFormatCache = (): void => {
+  dateTimeFormatters.clear();
+};
+
 /**
  * Time for the given timezone.
  *
@@ -120,13 +155,7 @@ const localConnection = (location: Location | URL = window.location) => {
  */
 const timezoneTime = (timezone: string, date: Date = new Date()): string | undefined => {
   try {
-    const formatter = new Intl.DateTimeFormat("en-US", {
-      timeZone: timezone,
-      timeStyle: "short",
-      hour12: false,
-    });
-
-    return formatter.format(date);
+    return dateTimeFormat(timezone, { timeStyle: "short", hour12: false }).format(date);
   } catch (e) {
     if (e instanceof RangeError) return undefined;
 
@@ -781,6 +810,8 @@ export {
   locationReload,
   setLocationSearch,
   localConnection,
+  dateTimeFormat,
+  clearDateTimeFormatCache,
   timezoneTime,
   mask,
   generateEncodedPath,

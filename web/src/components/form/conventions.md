@@ -45,6 +45,8 @@ examples and refined patterns.
   - [Directory Structure](#directory-structure)
   - [File Naming](#file-naming)
   - [The fields.ts Module](#the-fieldsts-module)
+  - [Sharing fields across forms](#sharing-fields-across-forms)
+  - [Control fields (not part of the payload)](#control-fields-not-part-of-the-payload)
   - [Validation Approach](#validation-approach)
   - [Form Component Integration](#form-component-integration)
   - [Naming Consistency](#naming-consistency)
@@ -83,6 +85,47 @@ changing the value does not disable the auto-generation.
 
 In edit mode the field is not rendered at all: the connection id cannot be
 changed after creation, so offering it would be misleading.
+
+**Auto-fill pattern using TanStack Form listeners:**
+
+```typescript
+// Sync function checks isDirty before auto-filling
+const syncFieldName = (formApi) => {
+  // Only auto-fill if user hasn't manually edited the field
+  if (formApi.getFieldMeta("targetField")?.isDirty) return;
+
+  const sourceValue = formApi.getFieldValue("sourceField");
+  const computedValue = computeFromSource(sourceValue);
+
+  formApi.setFieldValue("targetField", computedValue, {
+    dontUpdateMeta: true,      // Don't mark form dirty
+    dontRunListeners: true,    // Don't re-trigger listeners
+  });
+};
+
+// Wire in form and field listeners
+const form = useAppForm({
+  ...defaultOptions,
+  listeners: {
+    onMount: ({ formApi }) => syncFieldName(formApi), // Initial fill
+  },
+});
+
+// Update when source field changes
+<form.AppField
+  name="sourceField"
+  listeners={{
+    onChange: () => syncFieldName(form),
+  }}
+>
+```
+
+**Why `isDirty` instead of `isTouched`:** A user could focus and blur the field
+without changing it, which would set `isTouched` but not `isDirty`. Using
+`isDirty` ensures auto-fill continues until the user actually modifies the value.
+
+**Example:** Logical volume name auto-fills from mount point ("/home" → "home"),
+but stops once the user types a custom name.
 
 ### 2. Always shown, optional or context-dependent
 
@@ -819,6 +862,128 @@ All reusable field components (`TextField`, `SuggestionsTextField`, `PasswordFie
 etc.) must wire `onBlur={() => field.handleBlur()}` to support forms that use blur
 listeners for field coordination.
 
+#### Mistake 7: Using `as any` for type mismatches
+
+```typescript
+// ❌ WRONG - Using 'as any' to bypass type safety
+form.setFieldValue("partitionSource", displayString as any);
+
+// ❌ WRONG - Using 'as any' with type assertions
+const label = filesystemLabel(filesystem as any);
+
+// ✅ CORRECT - Use proper type assertions with specific types
+import type { ConfigModel } from "~/model/storage/config-model";
+const label = filesystemLabel(filesystem as ConfigModel.FilesystemType);
+
+// ✅ CORRECT - Restructure to avoid type mismatch
+// Instead of forcing a display string into a typed field,
+// render informative text outside the field:
+if (!canReuse) {
+  return (
+    <FormGroup label={_("Partition source")}>
+      <div>{explanationText}</div>
+    </FormGroup>
+  );
+}
+```
+
+**Why this matters:** The project does not allow `as any`. If you encounter a type
+mismatch, it's usually a sign that the code structure needs adjustment. Use specific
+type assertions (e.g., `as ConfigModel.FilesystemType`) when you know the type is
+correct but TypeScript can't infer it, or restructure the code to avoid the type issue
+entirely.
+
+#### Mistake 8: Forgetting `margin="mxLg"` on `NestedContent`
+
+```typescript
+// ❌ WRONG - Missing margin creates cramped nested fields
+{value === "reuse" && (
+  <NestedContent>
+    <form.AppField name="partition">
+      {(field) => <field.DropdownField label={_("Partition")} options={options} />}
+    </form.AppField>
+  </NestedContent>
+)}
+
+// ✅ CORRECT - Always add margin="mxLg" for proper air gap
+{value === "reuse" && (
+  <NestedContent margin="mxLg">
+    <form.AppField name="partition">
+      {(field) => <field.DropdownField label={_("Partition")} options={options} />}
+    </form.AppField>
+  </NestedContent>
+)}
+```
+
+**Why this matters:** `NestedContent` provides visual indentation for revealed fields,
+but without `margin="mxLg"` the nested content appears cramped against the parent
+field. This pattern is used consistently in `connection-form` and other forms to
+maintain proper spacing ("air gap") between form elements.
+
+#### Mistake 9: Using `isDisabled` on form fields
+
+```typescript
+// ❌ WRONG - Disabling fields instead of conditional rendering
+<field.DropdownField
+  label={_("File system type")}
+  isDisabled={!mountPoint}
+  options={filesystemOptions}
+/>
+
+// ✅ CORRECT - Don't render fields that can't be edited
+{mountPoint && (
+  <form.AppField name="filesystem">
+    {(field) => (
+      <field.DropdownField
+        label={_("File system type")}
+        options={filesystemOptions}
+      />
+    )}
+  </form.AppField>
+)}
+
+// ✅ ALSO CORRECT - Or let validation handle it
+// If the field is always relevant but requires another field first,
+// remove isDisabled and let form validation ensure proper order
+<field.DropdownField
+  label={_("File system type")}
+  options={filesystemOptions}
+/>
+```
+
+**Why this matters:** Per conventions, if a field cannot be edited, don't render it at
+all (or render informative text instead). Disabled fields create poor UX and
+accessibility issues. Validation should handle dependencies between fields, not UI
+state. Exception: fields may be conditionally rendered but should not use `isDisabled`.
+
+#### Mistake 10: Adding component dependencies without verification
+
+```typescript
+// ❌ WRONG - Adding RadioEnhanced without checking if it's used elsewhere
+import RadioEnhanced from "~/components/core/RadioEnhanced";
+
+export default function RadioGroupField({ options }) {
+  return options.map((opt) => (
+    <RadioEnhanced label={opt.label} /> // Unused elsewhere, adds unnecessary dependency
+  ));
+}
+
+// ✅ CORRECT - Use standard PatternFly components
+import { Radio } from "@patternfly/react-core";
+
+export default function RadioGroupField({ options }) {
+  return options.map((opt) => (
+    <Radio label={opt.label} /> // Standard component
+  ));
+}
+```
+
+**Why this matters:** Before importing a component, especially from `~/components/core`,
+verify it's actually used elsewhere in the codebase. If it's unused or was created
+speculatively, prefer using standard PatternFly components directly. This keeps the
+codebase simpler and reduces maintenance burden. Check usage with:
+`git grep "import.*RadioEnhanced"` or similar.
+
 ### Summary Table
 
 | Pattern         | Hook/Wrapper      | Register Fields              | Update Values          | onBlur Support            | Use Case                | Example                        |
@@ -864,9 +1029,9 @@ responsibility:
 
 | Abstraction       | File                             | Responsibility                                             |
 | ----------------- | -------------------------------- | ---------------------------------------------------------- |
-| `withFrozenQuery` | `hooks/form/withFrozenQuery.tsx` | Freeze initial data; protect from refetch re-renders       |
-| `useFormSubmit`   | `hooks/form/useFormSubmit.tsx`   | Submit lifecycle: reset, success alert, error surfacing    |
-| `useUpdateConfig` | `hooks/form/useUpdateConfig.ts`  | Safe write: fetch fresh config at submit time, merge patch |
+| `withFrozenQuery` | `components/form/with-frozen-query.tsx` | Freeze initial data; protect from refetch re-renders       |
+| `useFormSubmit`   | `hooks/use-form-submit.tsx`             | Submit lifecycle: reset, success alert, error surfacing    |
+| `useUpdateConfig` | `hooks/model/config.ts`                 | Safe write: fetch fresh config at submit time, merge patch |
 
 ### withFrozenQuery
 
@@ -1188,17 +1353,25 @@ Each form lives in its own subdirectory:
 components/
   <namespace>/<form-name>-form/
     Form.tsx              # Main form component
-    fields.ts             # Types, defaults, validation
+    fields.ts             # Field types, constants, defaults
+    validations.ts        # Submit validation
+    transformations.ts    # Mapping between form values and API payloads
+    queries.ts            # Data hooks backing the form
     *Fields.tsx           # Field group components (if needed)
     *.test.tsx            # Tests
 ```
 
+`Form.tsx` and `fields.ts` are always present. The other modules appear as the
+form needs them: `validations.ts` when the form validates on submit,
+`transformations.ts` when form values need non-trivial mapping to and from
+backend structures, and `queries.ts` when the form needs its own data hooks.
+
 Examples:
 
-- `network/connection-form/`
-- `system/system-form/`
-- `product/registration-form/`
-- `software/patterns-form/`
+- Base shape (`Form.tsx` + `fields.ts`, plus field-group components):
+  `network/connection-form/`, `system/system-form/`.
+- Full split (also `queries.ts`, `transformations.ts`, `validations.ts`):
+  `storage/partition-form/`, `storage/logical-volume-form/`.
 
 ### File Naming
 
@@ -1211,8 +1384,25 @@ Examples:
 **Fields module**: `fields.ts`
 
 - Always named `fields.ts` (not `<formName>Fields.ts`)
-- Contains types, defaults, validation, and constants
-- Single source of truth for all form concerns
+- Contains field types, constants, and default values
+- Single source of truth for the form's field vocabulary
+
+**Validations module**: `validations.ts`
+
+- Exports the `validate` function wired into the form's submit validator
+- Composes per-group validators and the reusable helpers from
+  `validation-helpers.ts`
+- Imports types and constants from `fields.ts`, never the reverse
+
+**Transformations module**: `transformations.ts`
+
+- Converts between form values and backend structures: typically `buildPayload`
+  (form values to config) and `toFormValues` (config to initial form values)
+
+**Queries module**: `queries.ts`
+
+- TanStack Query hooks that provide the data the form needs
+- Named `queries.ts` (not `data.ts`)
 
 **Field groups**: `*Fields.tsx`
 
@@ -1221,19 +1411,14 @@ Examples:
 
 ### The fields.ts Module
 
-All form data concerns live in a single `fields.ts` file:
+The form's field vocabulary lives in `fields.ts`: types, constants, and
+defaults. It is the module every other form-local file builds on:
 
 ```typescript
 import { formOptions } from "@tanstack/react-form";
-import type {
-  FieldsValidationResult,
-  ValidationResult,
-} from "~/components/form/validation-helpers";
-import { requiredString, optionalIntRange } from "~/components/form/validation-helpers";
-import { _ } from "~/i18n";
 
 /** Types */
-type FormFields = {
+export type FormFields = {
   field1: string;
   field2: number;
   // ...
@@ -1252,39 +1437,131 @@ const defaultValues: FormFields = {
 };
 
 export const defaultOptions = formOptions({ defaultValues });
+```
 
-/** Validation */
+Validation lives in its own `validations.ts`, which imports the vocabulary
+from `fields.ts` and exports a single `validate` function:
+
+```typescript
+import { shake } from "radashi";
+import { requiredString, optionalIntRange } from "~/components/form/validation-helpers";
+import { _ } from "~/i18n";
+import type {
+  FieldsValidationResult,
+  ValidationResult,
+} from "~/components/form/validation-helpers";
+import type { FormFields } from "./fields";
+
 const validateGroup = (fields: FormFields): FieldsValidationResult<FormFields> => ({
   field1: requiredString(fields.field1, _("Field 1 is required")),
   field2: optionalIntRange(fields.field2, 0, 100, _("Must be 0-100")),
 });
 
 export function validate(fields: FormFields): ValidationResult<FormFields> {
-  const fieldErrors = {
+  const fieldErrors = shake({
     ...validateGroup(fields),
     // ...other validators
-  };
+  });
 
-  const errors: Record<string, string> = {};
-  for (const [key, error] of Object.entries(fieldErrors)) {
-    if (error !== undefined) errors[key] = error;
-  }
-
-  return Object.keys(errors).length > 0 ? { fields: errors } : undefined;
+  return Object.keys(fieldErrors).length > 0 ? { fields: fieldErrors } : undefined;
 }
 ```
 
-**Why everything in one file?**
+**Why this split?**
 
-1. **Single source of truth**: All form structure in one place
-2. **Co-location**: Type, default, and validation visible together
-3. **Easier maintenance**: Add/modify fields with full context
-4. **Better discoverability**: Always check `fields.ts` first
-5. **Reduced cognitive load**: One consistent pattern to learn
+1. **Single source of truth**: the field vocabulary is defined once, in
+   `fields.ts`, and every other module builds on it
+2. **One reason to change per module**: adding a field touches `fields.ts`;
+   tightening a rule touches `validations.ts`
+3. **Clean dependency direction**: `validations.ts`, `transformations.ts`, and
+   components import from `fields.ts`, never the reverse
+4. **Better discoverability**: each concern has a predictable home across all
+   forms
+5. **Reduced cognitive load**: one consistent pattern to learn
+
+Note: forms migrated before this split may still keep `validate` inside
+`fields.ts`. Move it to `validations.ts` when touching them.
+
+### Sharing fields across forms
+
+When several sibling forms share part of their vocabulary (the storage forms
+share filesystem and size fields, for example), the shared constants, types,
+and defaults live once in a `shared/fields.ts` next to the form directories.
+
+Form-specific `fields.ts` modules then **import and re-export** what they use:
+
+```typescript
+import { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE } from "~/components/storage/shared/fields";
+import type { FilesystemFields, SizeFields } from "~/components/storage/shared/fields";
+
+export { FILESYSTEM_TYPE, FILESYSTEM_ACTION, SIZE_MODE };
+export type { FilesystemFields, SizeFields };
+```
+
+Do not re-declare shared constants locally, even with identical values: copies
+kept in sync "by convention" drift eventually, and a single concept ends up
+imported from different modules within the same file.
+
+The re-export (rather than having consumers import from `shared/fields.ts`
+directly) keeps form-local code importing its whole field vocabulary from one
+module, without knowing which parts happen to be shared. It also leaves room
+for divergence: if a form ever needs different values, its `fields.ts` can
+stop re-exporting and define its own version (possibly derived from the shared
+one) without touching any consumer.
+
+### Control fields (not part of the payload)
+
+Not every form field maps to a value the user is entering. Some fields exist
+only to coordinate the form's own behavior: they act as flags or stable copies
+that other fields, effects, and derived UI react to. They are declared in
+`fields.ts` like any other field because TanStack Form state is the natural
+place for values that components subscribe to, but `buildPayload` never reads
+them directly.
+
+Current examples in the storage forms:
+
+- **`committedMountPoint`**: a deferred copy of `mountPoint` that only updates
+  on blur, suggestion selection, or mount. Derived UI (filesystem options,
+  size hints) reads this instead of the live value to avoid reacting to
+  incomplete input while the user types.
+- **`filesystemAction`**: the reuse-vs-format intent ("reuse" | "format")
+  behind the `filesystem` selection. Only the user's own selections update it,
+  so it survives automatic downgrades of the `filesystem` value and lets the
+  form restore "Current" when a mount point change makes keeping the current
+  filesystem possible again.
+
+Some fields sit in between: they never appear in the payload either, but
+`buildPayload` reads them to decide how to assemble it. `sizeMode` selects
+which size fields produce the size config, and `showMoreFilesystemSettings`
+gates whether the optional filesystem settings are included at all.
+
+Conventions for control fields:
+
+- **Document them as control fields** in `fields.ts` (or `shared/fields.ts`),
+  stating what updates them and who reads them. Their purpose is invisible
+  from the rendered form, so the comment is the only discoverable explanation.
+- **Keep them out of payload building.** Transformation helpers can make this
+  explicit in types, e.g. `Omit<FilesystemFields, "filesystemAction">` in
+  `shared/transformations.ts`.
+- **They are not validated**: validation messages point users at inputs, and
+  control fields have none.
+- **Update them via listeners or effects**, usually with `dontUpdateMeta`
+  (the user did not edit anything, so the form should not become dirty) and,
+  when the update must not trigger the field's own listeners,
+  `dontRunListeners` (e.g. an automatic downgrade of `filesystem` must not
+  overwrite the intent stored in `filesystemAction`).
+
+TODO: evaluate marking control fields in their names so they are identifiable
+at every use site, either with an underscore prefix (`_filesystemAction`) or a
+suffix. A nested `control.*` group was considered and discarded: TanStack
+supports dot-path field names, but partial value objects (`toFormValues`,
+`mergeFormDefaults`, test overrides) are merged shallowly, so any partial
+nested object would silently clobber sibling control fields.
 
 ### Validation Approach
 
-Forms use plain TypeScript validation functions rather than schema libraries.
+Forms use plain TypeScript validation functions, living in the form's
+`validations.ts`, rather than schema libraries.
 
 **Validation helpers** are available in `~/components/form/validation-helpers.ts`.
 
@@ -1433,10 +1710,11 @@ configuration), plain TypeScript functions are more maintainable.
 
 ### Form Component Integration
 
-Import from `fields.ts` in the form component:
+Import from the form-local modules in the form component:
 
 ```typescript
-import { defaultOptions, validate, SOME_MODE } from "./fields";
+import { validate } from "./validations";
+import { defaultOptions, SOME_MODE } from "./fields";
 
 function MyForm() {
   const form = useAppForm({
@@ -1515,8 +1793,316 @@ pattern immediately recognizable across all forms.
 The unified approach provides:
 
 - **Discoverability**: Consistent structure across all forms
-- **Maintainability**: Single file for all form concerns
+- **Maintainability**: Each form concern has a predictable home
 - **Simplicity**: Plain TypeScript, no library abstractions
 - **Type safety**: Full TypeScript support throughout
 - **Performance**: Zero runtime validation overhead
 - **Developer experience**: Clear pattern, easy to learn and apply
+
+---
+
+## Common Migration Mistakes
+
+This section documents mistakes encountered during form migrations to help avoid repeating them in future work.
+
+### Mistake 1: Using hooks inside `form.Subscribe` children
+
+**❌ WRONG:**
+
+```typescript
+const MyFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <form.Subscribe selector={(s) => ({ value: s.values.someField })}>
+      {({ value }) => {
+        const data = useHook(value); // ❌ Hook inside Subscribe children
+        return <div>{data}</div>;
+      }}
+    </form.Subscribe>
+  ),
+});
+```
+
+**✅ CORRECT:**
+
+```typescript
+// Extract to separate withForm component
+const InnerContent = withForm({
+  ...defaultOptions,
+  props: { value: "" },
+  render: ({ form, value }) => {
+    const data = useHook(value); // ✅ Hook at component top level
+    return <div>{data}</div>;
+  },
+});
+
+const MyFields = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <form.Subscribe selector={(s) => ({ value: s.values.someField })}>
+      {({ value }) => <InnerContent form={form} value={value} />}
+    </form.Subscribe>
+  ),
+});
+```
+
+**Why:** Hooks must be called at component top level, not inside render prop children. The Subscribe render prop is a function, not a component.
+
+**Reference:** Partition form - FilesystemFields initially had hooks inside Subscribe, fixed by extracting FilesystemFieldsContent as a proper withForm component.
+
+### Mistake 2: Wrapping field groups in Stack when Form expects direct FormGroup children
+
+**❌ WRONG:**
+
+```typescript
+const MyFieldsContent = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <Stack hasGutter>
+      {/* ❌ Stack wrapper prevents Form from seeing FormGroup children */}
+      <form.AppField name="field1">
+        {(field) => <field.TextField label="Field 1" />}
+      </form.AppField>
+      <form.AppField name="field2">
+        {(field) => <field.TextField label="Field 2" />}
+      </form.AppField>
+    </Stack>
+  ),
+});
+```
+
+**Problem:** PatternFly Form adds spacing between FormGroup elements. When you return Subscribe → Stack → FormGroups, the Form component sees Subscribe (not FormGroup children), breaking the spacing hierarchy.
+
+**✅ CORRECT:**
+
+```typescript
+const MyFieldsContent = withForm({
+  ...defaultOptions,
+  render: ({ form }) => (
+    <>
+      {/* ✅ Fragment lets Form see FormGroup children directly */}
+      <form.AppField name="field1">
+        {(field) => <field.TextField label="Field 1" />}
+      </form.AppField>
+      <form.AppField name="field2">
+        {(field) => <field.TextField label="Field 2" />}
+      </form.AppField>
+    </>
+  ),
+});
+```
+
+**Why:** PatternFly Form manages spacing between FormGroup elements. Return a fragment with form.AppField children (which render FormGroups), not wrapped in Stack. Only use Stack when you need explicit vertical spacing within a single field's content (like spacing between radio buttons).
+
+**Reference:** Partition form - FilesystemFieldsContent initially wrapped everything in Stack, causing layout overlap.
+
+### Mistake 3: Rendering nested content outside the parent Stack in RadioGroupField
+
+**Understanding the structure:**
+
+RadioGroupField needs Stack to space radio buttons vertically:
+
+```typescript
+<FormGroup>
+  <Stack hasGutter> {/* ← Spaces Radio buttons within the field */}
+    <Radio label="Option 1" />
+    <Radio label="Option 2" />
+  </Stack>
+</FormGroup>
+```
+
+PatternFly Form spaces FormGroups (different fields), but doesn't space elements within a single field. The Stack provides that internal spacing.
+
+**❌ WRONG:**
+
+```typescript
+<FormGroup>
+  <Stack hasGutter>
+    {options.map(opt => <Radio {...opt} />)}
+  </Stack>
+  {children?.(field.state.value)} {/* ❌ Outside Stack */}
+</FormGroup>
+```
+
+**Problem:** Children rendered outside Stack are direct FormGroup children. FormGroup adds extra spacing between its direct children, so nested content appears too far below.
+
+**✅ CORRECT:**
+
+```typescript
+<FormGroup>
+  <Stack hasGutter>
+    {options.map(opt => <Radio {...opt} />)}
+    {children?.(field.state.value)} {/* ✅ Inside Stack */}
+  </Stack>
+</FormGroup>
+```
+
+**Why:** Children are part of the radio group's vertical flow. Rendering them inside Stack keeps them in the natural flow with proper gutter spacing.
+
+**Reference:** Partition form - Fixed RadioGroupField to render children inside Stack.
+
+### Mistake 4: Cross-field validation returning errors for non-existent fields
+
+**❌ WRONG:**
+
+```typescript
+function validateSizeRange(fields: FormFields): string | undefined {
+  return sizeRange(fields.minSize, fields.maxSize, "Error message");
+}
+
+export function validate(fields: FormFields): ValidationResult<FormFields> {
+  const fieldErrors = shake({
+    minSize: validateMinSize(fields),
+    maxSize: validateMaxSize(fields),
+    sizeRange: validateSizeRange(fields), // ❌ "sizeRange" not in FormFields
+  });
+
+  if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
+}
+```
+
+**Problem:** Returns error for "sizeRange" field which doesn't exist.
+
+**✅ CORRECT:**
+
+```typescript
+function validateMaxSize(fields: FormFields): string | undefined {
+  if (fields.sizeMode !== SIZE_MODE.RANGE) return undefined;
+
+  const requiredError = requiredSize(fields.maxSize, "Required", "Invalid");
+  if (requiredError) return requiredError;
+
+  // Cross-field validation incorporated
+  return sizeRange(fields.minSize, fields.maxSize, "Min > Max error");
+}
+
+export function validate(fields: FormFields): ValidationResult<FormFields> {
+  const fieldErrors = shake({
+    minSize: validateMinSize(fields),
+    maxSize: validateMaxSize(fields), // ✅ Shows error on maxSize
+  });
+
+  if (Object.keys(fieldErrors).length > 0) return { fields: fieldErrors };
+}
+```
+
+**Why:** Cross-field errors must attach to actual fields. Pick which field should show the error (typically "max" or "end").
+
+**Reference:** Partition form - Incorporated validateSizeRange into validateMaxSize.
+
+### Mistake 5: Not pre-selecting first option in dependent dropdowns
+
+**❌ WRONG:**
+
+```typescript
+<form.AppField name="selectedItem">
+  {(field) => (
+    <field.DropdownField
+      label="Item"
+      options={items.map(i => ({ value: i.id, label: i.name }))}
+    />
+  )}
+</form.AppField>
+```
+
+**Problem:** Dropdown appears with no selection when items are available.
+
+**✅ CORRECT:**
+
+```typescript
+<form.AppField
+  name="selectedItem"
+  listeners={{
+    onMount: ({ value }) => {
+      if (!value && items.length > 0) {
+        form.setFieldValue("selectedItem", items[0].id, {
+          dontUpdateMeta: true,
+        });
+      }
+    },
+  }}
+>
+  {(field) => (
+    <field.DropdownField
+      label="Item"
+      options={items.map(i => ({ value: i.id, label: i.name }))}
+    />
+  )}
+</form.AppField>
+```
+
+**Why:** Conditional dropdowns should pre-select first option. `listeners.onMount` fires when field mounts. `dontUpdateMeta: true` prevents marking form dirty.
+
+**Reference:** Partition form - Added onMount to pre-select first partition. Pattern from DeviceSelector.
+
+### Mistake 6: Missing dropdown option descriptions
+
+**❌ WRONG:**
+
+```typescript
+options={partitions.map(p => ({
+  value: p.name,
+  label: deviceLabel(p, true),
+}))}
+```
+
+**Problem:** Users see "vdd1", "vdd2", "vdd3" without context.
+
+**✅ CORRECT:**
+
+```typescript
+options={partitions.map(p => {
+  const fsLabel = p.filesystem?.label;
+  const description = [p.description, fsLabel].filter(Boolean).join(" - ");
+  return {
+    value: p.name,
+    label: deviceLabel(p, true),
+    description: description || undefined,
+  };
+})}
+```
+
+**Why:** Descriptions provide essential context (size, type, label, etc.).
+
+**Reference:** Partition form - Added partition.description + filesystem label.
+
+### Mistake 7: Using FormGroup + Text instead of ReadOnlyField
+
+**❌ WRONG:**
+
+```typescript
+<FormGroup label="File system">
+  <Text>
+    Partition is not formatted. It will be formatted with selected type.
+  </Text>
+</FormGroup>
+```
+
+**Problem:** Creates orphan `<label>` without associated form control - invalid HTML and accessibility issue.
+
+**✅ CORRECT:**
+
+```typescript
+<form.AppField name="myField">
+  {(field) => <field.ReadOnlyField label="Label" />}
+</form.AppField>
+```
+
+**Why:** A `<label>` element requires an associated form control ([HTML spec](https://html.spec.whatwg.org/multipage/forms.html#the-label-element)). ReadOnlyField provides proper semantic structure without accessibility issues.
+
+**Note:** The field must be typed as `string` in FormFields to accept display text. Add a comment explaining it can contain display strings for ReadOnlyField (see `partitionSource` and `filesystemAction` fields in partition form).
+
+**Reference:** Partition form - Initially used FormGroup + Text, corrected to ReadOnlyField following PartitionSourceFields pattern.
+
+### Summary Checklist for Form Migrations
+
+- ✅ No hooks inside `form.Subscribe` children (extract to withForm components)
+- ✅ Field group components return fragments, not wrapped in Stack
+- ✅ RadioGroupField children rendered inside Stack
+- ✅ Cross-field validation errors attached to actual form fields
+- ✅ Conditional dropdowns pre-select first option via `listeners.onMount`
+- ✅ Dropdown options include descriptions with identifying information
+- ✅ Use ReadOnlyField (not FormGroup + Text) for non-editable informational text
+- ✅ All XFields components use `withForm` pattern
+- ✅ TRANSLATORS comments above all translatable strings
+- ✅ Follow mockup specifications exactly (ask before being creative)

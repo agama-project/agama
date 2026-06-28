@@ -4213,7 +4213,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -6058,6 +6058,7 @@ version = "0.1.0"
 dependencies = [
  "agama-cli",
  "agama-server",
+ "agama-utils",
  "clap",
  "clap-markdown",
  "clap_complete",

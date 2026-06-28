@@ -36,6 +36,7 @@ import { render, renderHook, within } from "@testing-library/react";
 import { isObject, noop } from "radashi";
 import { createClient } from "~/client/index";
 import { StorageUiStateProvider } from "~/context/storage-ui-state";
+import { TerminalProvider } from "~/context/terminal";
 import { AppearanceProvider } from "~/context/appearance";
 import { DummyWSClient } from "~/client/ws";
 import { Status } from "~/model/status";
@@ -281,6 +282,7 @@ const mockL10n = (l10n: {
   language?: string;
   changeKeymap?: jest.Mock;
   changeLanguage?: jest.Mock;
+  changeL10n?: jest.Mock;
 }) => {
   const current = mockUseInstallerL10n.getMockImplementation()?.() || mockUseInstallerL10n();
   mockUseInstallerL10n.mockReturnValue({ ...current, ...l10n });
@@ -364,7 +366,9 @@ const Providers = ({ children }) => {
 
   return (
     <AppearanceProvider>
-      <StorageUiStateProvider>{children}</StorageUiStateProvider>
+      <StorageUiStateProvider>
+        <TerminalProvider>{children}</TerminalProvider>
+      </StorageUiStateProvider>
     </AppearanceProvider>
   );
 };
@@ -377,6 +381,9 @@ const Providers = ({ children }) => {
  */
 const installerRender = (ui: React.ReactNode, options = {}) => {
   const queryClient = new QueryClient({});
+  const { userEventOptions } = options as {
+    userEventOptions?: Parameters<typeof userEvent.setup>[0];
+  };
 
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
@@ -387,7 +394,7 @@ const installerRender = (ui: React.ReactNode, options = {}) => {
   );
 
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup(userEventOptions),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
 };
@@ -420,14 +427,19 @@ const installerRenderHook: typeof renderHook = (hook, options) => {
  */
 const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});
+  const { userEventOptions } = options as {
+    userEventOptions?: Parameters<typeof userEvent.setup>[0];
+  };
 
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
-      <AppearanceProvider>{children}</AppearanceProvider>
+      <AppearanceProvider>
+        <TerminalProvider>{children}</TerminalProvider>
+      </AppearanceProvider>
     </QueryClientProvider>
   );
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup(userEventOptions),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
 };

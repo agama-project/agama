@@ -148,7 +148,7 @@ shared_examples "with mountPath" do
     expect(filesystem.label).to be_nil
     expect(filesystem.path).to eq("/test")
     expect(filesystem.mount_by).to be_nil
-    expect(filesystem.mkfs_options).to be_empty
+    expect(filesystem.mkfs_args).to be_nil
     expect(filesystem.mount_options).to be_empty
   end
 end
@@ -183,7 +183,7 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to be_empty
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to be_empty
       end
     end
@@ -238,7 +238,7 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to be_empty
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to be_empty
       end
     end
@@ -259,7 +259,7 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to be_empty
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to be_empty
       end
     end
@@ -314,7 +314,7 @@ shared_examples "with filesystem" do
         expect(filesystem.label).to eq("test")
         expect(filesystem.path).to be_nil
         expect(filesystem.mount_by).to be_nil
-        expect(filesystem.mkfs_options).to be_empty
+        expect(filesystem.mkfs_args).to be_nil
         expect(filesystem.mount_options).to be_empty
       end
     end
@@ -334,7 +334,7 @@ shared_examples "with filesystem" do
       expect(filesystem.label).to eq("test")
       expect(filesystem.path).to be_nil
       expect(filesystem.mount_by).to be_nil
-      expect(filesystem.mkfs_options).to be_empty
+      expect(filesystem.mkfs_args).to be_nil
       expect(filesystem.mount_options).to be_empty
     end
   end
@@ -353,7 +353,7 @@ shared_examples "with filesystem" do
       expect(filesystem.label).to eq("test")
       expect(filesystem.path).to be_nil
       expect(filesystem.mount_by).to be_nil
-      expect(filesystem.mkfs_options).to eq([])
+      expect(filesystem.mkfs_args).to be_nil
       expect(filesystem.mount_options).to eq([])
     end
   end
@@ -372,7 +372,7 @@ shared_examples "with filesystem" do
       expect(filesystem.label).to be_nil
       expect(filesystem.path).to be_nil
       expect(filesystem.mount_by).to be_nil
-      expect(filesystem.mkfs_options).to eq([])
+      expect(filesystem.mkfs_args).to be_nil
       expect(filesystem.mount_options).to eq([])
     end
   end
@@ -400,7 +400,7 @@ shared_examples "with mountPath and filesystem" do
     expect(filesystem.label).to eq("test")
     expect(filesystem.path).to eq("/test")
     expect(filesystem.mount_by).to be_nil
-    expect(filesystem.mkfs_options).to be_empty
+    expect(filesystem.mkfs_args).to be_nil
     expect(filesystem.mount_options).to be_empty
   end
 end
