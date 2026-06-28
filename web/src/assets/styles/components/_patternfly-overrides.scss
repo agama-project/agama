@@ -314,7 +314,11 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   );
 
   a.pf-m-primary {
-    background: var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+    // Use the brand blue directly (not the focus role, which goes lighter in
+    // dark theme for ring contrast) and pin a light text color, so the link
+    // keeps the same readable look on the blue background in every theme.
+    background: var(--agm-t--color--waterhole--50);
+    color: var(--agm-t--color--fog--50);
     font-size: var(--pf-t--global--font--size--md);
   }
 }
