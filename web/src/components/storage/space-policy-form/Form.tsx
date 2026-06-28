@@ -39,7 +39,7 @@ import { _ } from "~/i18n";
 import configModel from "~/model/storage/config-model";
 import { isVolumeGroup } from "~/model/storage/device";
 import { useAppForm } from "~/hooks/form";
-import { buildInitialValues, buildActionsPayload } from "./fields";
+import { toFormValues, buildPayload } from "./transformations";
 import type { DeviceCollection, ConfigModel } from "~/model/storage/config-model";
 
 function useDeviceParams(): [DeviceCollection, number] {
@@ -90,9 +90,9 @@ export default function SpacePolicyForm() {
 
   // Form state: one field per device (deviceName: action)
   const form = useAppForm({
-    defaultValues: buildInitialValues(children, deviceConfig),
+    defaultValues: toFormValues(children, deviceConfig),
     onSubmit: async ({ value }) => {
-      const actions = buildActionsPayload(value);
+      const actions = buildPayload(value);
       await setSpacePolicy(collection, index, {
         type: "custom",
         actions,

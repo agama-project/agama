@@ -21,10 +21,6 @@
  */
 
 import { formOptions } from "@tanstack/react-form";
-import { toDevice } from "~/components/storage/device-utils";
-import configModel from "~/model/storage/config-model";
-import type { Storage as System } from "~/model/system";
-import type { Device } from "~/model/storage/config-model/device";
 
 /**
  * Space policy action for a device.
@@ -48,67 +44,6 @@ export type Action = "keep" | "resizeIfNeeded" | "delete";
 export type FormFields = Record<string, Action>;
 
 export type SpacePolicyFormData = FormFields;
-
-/**
- * Build initial form values from device children and existing config.
- *
- * For each device child:
- * - Look up existing volume config
- * - If delete flag set: "delete"
- * - If resizeIfNeeded flag set: "resizeIfNeeded"
- * - Otherwise: "keep"
- */
-export function buildInitialValues(
-  children: (System.Device | System.UnusedSlot)[],
-  deviceConfig: Device,
-): FormFields {
-  const values: FormFields = {};
-
-  children.forEach((child) => {
-    const device = toDevice(child);
-    if (!device) return;
-
-    // Find existing volume config for this device
-    const volumeConfig = configModel.device
-      .volumes(deviceConfig)
-      .find((v) => v.name === device.name);
-
-    if (!volumeConfig) {
-      values[device.name] = "keep";
-      return;
-    }
-
-    // Map config flags to action
-    if (volumeConfig.delete) {
-      values[device.name] = "delete";
-    } else if (volumeConfig.resizeIfNeeded) {
-      values[device.name] = "resizeIfNeeded";
-    } else {
-      values[device.name] = "keep";
-    }
-  });
-
-  return values;
-}
-
-/**
- * Build space policy actions payload from form values.
- *
- * Filters out "keep" actions (no action needed) and transforms to the format
- * expected by the setSpacePolicy API:
- *
- * { deviceName: string, value: "delete" | "resizeIfNeeded" }[]
- */
-export function buildActionsPayload(
-  values: FormFields,
-): Array<{ deviceName: string; value: "delete" | "resizeIfNeeded" }> {
-  return Object.entries(values)
-    .filter(([, action]) => action !== "keep")
-    .map(([deviceName, action]) => ({
-      deviceName,
-      value: action as "delete" | "resizeIfNeeded",
-    }));
-}
 
 /**
  * Default form values (empty object - values built dynamically).
