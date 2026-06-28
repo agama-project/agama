@@ -248,6 +248,16 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   gap: inherit;
 }
 
+// A button that is busy is often disabled at the same time (to block a second
+// submit). By default the spinner keeps the button's icon color (light), which
+// is nearly invisible on the gray disabled background and out of step with the
+// muted disabled label. Match the spinner to the current text color so it reads
+// the same as the label in every theme. Plain buttons keep their own treatment.
+.pf-v6-c-button.pf-m-in-progress:disabled:not(.pf-m-plain),
+.pf-v6-c-button.pf-m-in-progress.pf-m-aria-disabled:not(.pf-m-plain) {
+  --pf-v6-c-button__progress--Color: currentcolor;
+}
+
 .pf-v6-c-skip-to-content {
   --pf-v6-c-skip-to-content--focus--InsetInlineStart: var(
     --pf-t--global--spacer--inset--page-chrome
