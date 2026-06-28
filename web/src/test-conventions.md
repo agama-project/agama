@@ -254,6 +254,28 @@ transitions through `waitFor` keeps tests free of explicit `act`. Reach for a
 bare `jest.advanceTimersByTime` only when no state update results (such as
 advancing an already-cancelled timer).
 
+The same idea extends beyond timers. Two cases come up when testing hooks with
+`renderHook`:
+
+- **The action triggers no state update.** A hook built only on refs,
+  subscriptions, or callbacks does not re-render, so emitting an event or writing
+  to the query cache fires its callbacks synchronously with nothing to wrap.
+  Check what the hook actually does rather than assuming; if no `setState` runs,
+  no `act` is needed.
+- **The test itself triggers a state update** by invoking a callback it captured
+  from a mock (e.g. the `onSuccess` passed to a mocked hook). Call it from inside
+  `waitFor` so the update runs within `act`; the body may run more than once, so
+  keep that call idempotent.
+
+```tsx
+// mockRefetchCallback is captured from a mocked hook and calls setState.
+// Invoking it inside waitFor runs that update within act.
+await waitFor(() => {
+  mockRefetchCallback(startedAt, completedAt);
+  expect(result.current.loading).toBe(false);
+});
+```
+
 ---
 
 ## Quick checklist

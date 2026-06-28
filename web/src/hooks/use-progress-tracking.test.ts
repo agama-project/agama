@@ -20,7 +20,6 @@
  * find current contact information at www.suse.com.
  */
 
-import { act } from "react";
 import { renderHook, waitFor } from "@testing-library/react";
 import { mockProgresses, mockTasks } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
@@ -144,11 +143,10 @@ describe("useProgressTracking", () => {
       // Queries refetch after progress finished
       jest.setSystemTime(2000);
 
-      act(() => {
+      await waitFor(() => {
         mockRefetchCallback(1000, 2000);
+        expect(result.current.loading).toBe(false);
       });
-
-      expect(result.current.loading).toBe(false);
     });
 
     it("ignores query refetches completed before progress finished", async () => {
@@ -168,9 +166,7 @@ describe("useProgressTracking", () => {
       });
 
       // Queries refetched before progress finished, must be ignored
-      act(() => {
-        mockRefetchCallback(500, 1000);
-      });
+      mockRefetchCallback(500, 1000);
 
       expect(result.current.loading).toBe(true);
     });
@@ -213,11 +209,10 @@ describe("useProgressTracking", () => {
       // Queries refetch after progress finished
       jest.setSystemTime(2000);
 
-      act(() => {
+      await waitFor(() => {
         mockRefetchCallback(1000, 2000);
+        expect(result.current.loading).toBe(false);
       });
-
-      expect(result.current.loading).toBe(false);
     });
 
     it("ignores query refetches completed before progress finished", async () => {
@@ -237,9 +232,7 @@ describe("useProgressTracking", () => {
       });
 
       // Queries refetched before progress finished, must be ignored
-      act(() => {
-        mockRefetchCallback(500, 1000);
-      });
+      mockRefetchCallback(500, 1000);
 
       expect(result.current.loading).toBe(true);
     });
@@ -298,11 +291,10 @@ describe("useProgressTracking", () => {
       // Queries refetch after tasks finished
       jest.setSystemTime(2000);
 
-      act(() => {
+      await waitFor(() => {
         mockRefetchCallback(1000, 2000);
+        expect(result.current.loading).toBe(false);
       });
-
-      expect(result.current.loading).toBe(false);
     });
 
     it("keeps loading true when both progress and tasks exist", () => {
@@ -346,11 +338,11 @@ describe("useProgressTracking", () => {
 
       // Queries refetch
       jest.setSystemTime(3000);
-      act(() => {
-        mockRefetchCallback(2000, 3000);
-      });
 
-      expect(result.current.loading).toBe(false);
+      await waitFor(() => {
+        mockRefetchCallback(2000, 3000);
+        expect(result.current.loading).toBe(false);
+      });
     });
   });
 });
