@@ -120,6 +120,10 @@
   --agm-t--surface--color--floating: var(--agm-t--surface--color--raised);
   --agm-t--border--color: color-mix(in srgb, var(--agm-t--color--pine--50) 70%, white);
 
+  // Lighter focus ring so it stays visible on the dark surfaces; the default
+  // (waterhole-50) is too dark against them, e.g. on a selected toggle.
+  --agm-t--focus--color: var(--agm-t--color--waterhole--30);
+
   --pf-t--global--background--color--primary--default: var(--agm-t--surface--color);
   --pf-t--global--background--color--secondary--default: var(--agm-t--surface--color--raised);
   --pf-t--global--background--color--floating--default: var(--agm-t--surface--color--floating);

@@ -98,10 +98,44 @@ input[type="radio"] {
 
 // Custom style for :focus-visible appearance. The color is the --agm-t--focus--color
 // role (products can override it); it defaults to waterhole.
+//
+// Links, checkboxes and radios use an outset outline. They rarely sit in tight
+// containers, and an outline keeps a single, consistent focus color (otherwise
+// they fall back to the browser/PatternFly default color).
+//
+// TODO: re-evaluate. The radio ring is square because a native radio ignores
+// border-radius; a round ring would need a custom (appearance: none) radio.
 a:focus-visible,
-button:focus-visible {
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
   outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
   outline-offset: 2px;
+}
+
+// Buttons draw the focus ring inside their box (inset box-shadow) instead of
+// outside it. An outset ring is easily clipped by tight containers (e.g. form
+// action rows), which left it showing only a couple of edges. An inset ring is
+// painted within the button, so it is always fully visible and follows the
+// button shape on any background. The transparent outline is the forced-colors
+// / high contrast fallback, where box-shadow is dropped.
+//
+// A thin separator inside the focus color keeps the ring visible on any button
+// fill: a single color washes out over a colored fill (e.g. the primary button),
+// but the separator (the surface color by default, so it reads as a gap) always
+// gives a contrasting edge. Both colors are themeable roles.
+//
+// A few PatternFly components built on <button> bring their own focus styling
+// (menu items, toggle segments, inline links); they opt out in
+// _patternfly-overrides.
+button:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow:
+    inset 0 0 0 3px var(--agm-t--focus--color, var(--agm-t--color--waterhole--50)),
+    inset 0 0 0 4px
+      var(
+        --agm-t--focus--separator--color,
+        var(--pf-t--global--background--color--primary--default)
+      );
 }
 
 fieldset {
