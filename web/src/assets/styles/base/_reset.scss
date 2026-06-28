@@ -88,9 +88,12 @@ pre {
   white-space: pre-line;
 }
 
-input[type="checkbox"] {
-  inline-size: var(--pf-t--global--font--size--md);
-  block-size: var(--pf-t--global--font--size--md);
+// Enlarge checkboxes and radios for a more comfortable tap target and a
+// consistent size across every form.
+input[type="checkbox"],
+input[type="radio"] {
+  inline-size: 1.2em;
+  block-size: 1.2em;
 }
 
 // Custom style for :focus-visible appearance. The color is the --agm-t--focus--color
