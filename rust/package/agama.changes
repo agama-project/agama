@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Jun 28 14:54:26 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Fixed issues when fetching AutoYast XML profile.
+  Agama cares about YAST_SKIP_PROFILE_FETCH_ERROR now.
+  agama-autoyast doesn't end with error when no profile found.
+
+-------------------------------------------------------------------
 Fri Jun 26 10:21:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove the translations from the Product's SystemInfo
