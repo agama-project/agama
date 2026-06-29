@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Jun 28 21:50:40 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Polish the keyboard focus ring and assorted UI rough edges (control
+  sizes, disabled-button spinner, dark skip link, form-alert scroll)
+  (gh#agama-project/agama#3675).
+
+-------------------------------------------------------------------
 Fri Jun 26 10:03:36 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve disabled text and status color contrast to meet WCAG AA

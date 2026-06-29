@@ -36,6 +36,7 @@
   --agm-t--link--color: #bd3314;
   --agm-t--action--background--color--hover: #ffefe9;
   --agm-t--focus--color: #fe7c3f;
+  --agm-t--focus--separator--color: #fff;
 
   --agm-t--status--info--color: #2453ff;
   --agm-t--status--caution--color: #9a6700;
@@ -60,6 +61,7 @@
   --agm-t--link--color: #a98bff;
   --agm-t--action--background--color--hover: #262640;
   --agm-t--focus--color: #a98bff;
+  --agm-t--focus--separator--color: #141420;
 
   --agm-t--status--info--color: #6aa6ff;
   --agm-t--status--caution--color: #f0b429;
