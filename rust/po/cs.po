@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 16:05+0000\n"
+"POT-Creation-Date: 2026-06-26 10:48+0000\n"
 "PO-Revision-Date: 2026-03-25 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -732,79 +732,79 @@ msgstr "Nakonfigurovat systém"
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:296
+#: agama-manager/src/actions.rs:303
 msgid "Storing security settings"
 msgstr "Ukládají se bezpečnostní nastavení"
 
-#: agama-manager/src/actions.rs:306
+#: agama-manager/src/actions.rs:313
 #, fuzzy
 msgid "Configuring remote access"
 msgstr "Konfigurují se zařízení DASD"
 
-#: agama-manager/src/actions.rs:316
+#: agama-manager/src/actions.rs:323
 msgid "Setting up the hostname"
 msgstr "Nastavuje se jméno hostitele"
 
-#: agama-manager/src/actions.rs:326
+#: agama-manager/src/actions.rs:333
 msgid "Setting up the network proxy"
 msgstr "Nastavuje se síťová proxy"
 
-#: agama-manager/src/actions.rs:337
+#: agama-manager/src/actions.rs:344
 #, fuzzy
 msgid "Setting up NTP"
 msgstr "Nastavuje konfigurace sítě"
 
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:355
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Importují se uživatelské soubory"
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:368
 msgid "Running user pre-installation scripts"
 msgstr "Spouští se uživatelské předinstalační skripty"
 
-#: agama-manager/src/actions.rs:376
+#: agama-manager/src/actions.rs:383
 msgid "Storing questions settings"
 msgstr "Ukládá se nastavení otázek"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:393
 msgid "Storing localization settings"
 msgstr "Ukládá se nastavení lokalizace"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:403
 msgid "Storing users settings"
 msgstr "Ukládají se uživatelská nastavení"
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:509
 msgid "Configuring iSCSI devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:533
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:557
 msgid "Configuring DASD devices"
 msgstr "Konfigurují se zařízení DASD"
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:581
 msgid "Setting up the network"
 msgstr "Nastavuje konfigurace sítě"
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:610
 msgid "Preparing the storage proposal"
 msgstr "Připravuje se návrh úložiště"
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:643
 msgid "Storing bootloader settings"
 msgstr "Ukládá se nastavení zavaděče"
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:676
 msgid "Preparing the software proposal"
 msgstr "Připravuje se návrh softwaru"
 
-#: agama-manager/src/actions.rs:702
+#: agama-manager/src/actions.rs:709
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Konfigurují se zařízení DASD"
@@ -895,7 +895,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Přeskočit"
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:303
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Kvůli vnitřní chybě nebylo možné vytvořit návrh softwaru."
@@ -1007,15 +1007,15 @@ msgstr "Ne"
 msgid "Yes"
 msgstr "Ano"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr "balíček"
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr "vzor"
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "produkt"
 
