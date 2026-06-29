@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-10 15:11+0000\n"
-"PO-Revision-Date: 2025-08-01 13:59+0000\n"
+"PO-Revision-Date: 2026-06-24 09:12+0000\n"
 "Last-Translator: Davide Aiello <davide.aiello@novilingulists.com>\n"
 "Language-Team: Italian <https://l10n.opensuse.org/projects/agama/agama-"
-"service-master/it/>\n"
+"service-sle-16/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -47,11 +47,11 @@ msgstr "Prepara dischi"
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Installa software"
+msgstr "Installare il software"
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
-msgstr "Configura il sistema"
+msgstr "Configurare il sistema"
 
 #. rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 #: service/lib/agama/manager.rb:161
@@ -159,7 +159,7 @@ msgstr ""
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
 msgstr ""
-"Si è verificato un problema durante l'esecuzione dello script del pacchetto."
+"Si è verificato un problema durante l'esecuzione di uno script del pacchetto."
 
 #. Callback to handle unsigned files
 #.
@@ -258,7 +258,7 @@ msgstr "Aggiornamento dei metadati dei repository"
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Calcolo della proposta di software"
+msgstr "Calcolo della proposta software"
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
@@ -806,8 +806,8 @@ msgstr[1] ""
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Definizione di un utente, impostazione della password root o chiave pubblica "
-"SSH obbligatoria"
+"La definizione di un utente, l'impostazione della password root o una chiave "
+"pubblica SSH sono obbligatori"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Selezione dei moduli di sicurezza Linux"
