@@ -126,6 +126,8 @@ translations:
         sv: Standard
         tr: Standart
         uk: Стандартний
+        zh_CN: 标准
+        zh_TW: 標準
       description:
         bg: Стандартна система
         ca: Sistema estàndard
@@ -146,6 +148,8 @@ translations:
         sv: Standard system
         tr: Standart sistem
         uk: Стандартна система
+        zh_CN: 标准系统
+        zh_TW: 標準系統
     immutable:
       name:
         bg: Неизменен
@@ -167,6 +171,8 @@ translations:
         sv: Oföränderlig
         tr: Değiştirilemez
         uk: Незмінний
+        zh_CN: 不可变
+        zh_TW: 不可變
       description:
         bg: Неизменима система със атомични обновления
         ca: Sistema immutable amb actualitzacions atòmiques
@@ -187,6 +193,8 @@ translations:
         sv: Oföränderligt system med atomiska uppdateringar
         tr: Atomik güncellemelerle değiştirilemez sistem
         uk: Незмінна система з атомарними оновленнями
+        zh_CN: 具备原子更新特性的不可变系统
+        zh_TW: 具有原子更新特性的不可變系統
 desktop_selection: optional
 software:
   installation_repositories: []
