@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-10 15:11+0000\n"
-"PO-Revision-Date: 2026-05-04 07:04+0000\n"
-"Last-Translator: David D <dadu042@mailo.com>\n"
+"PO-Revision-Date: 2026-06-25 09:12+0000\n"
+"Last-Translator: Sophie Leroy <sophie@stoquart.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-"
 "service-sle-16/fr/>\n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -47,7 +47,7 @@ msgstr "Préparer les disques"
 
 #: service/lib/agama/manager.rb:119
 msgid "Install software"
-msgstr "Installer les logiciels"
+msgstr "Installer le logiciel"
 
 #: service/lib/agama/manager.rb:120
 msgid "Configure the system"
@@ -160,7 +160,7 @@ msgstr ""
 #. @see https://github.com/yast/yast-yast2/blob/19180445ab935a25edd4ae0243aa7a3bcd09c9de/library/packages/src/modules/PackageCallbacks.rb#L620
 #: service/lib/agama/software/callbacks/script.rb:50
 msgid "There was a problem running a package script."
-msgstr "Un problème est survenu lors de l'exécution du script du paquet."
+msgstr "Un problème est survenu lors de l'exécution d'un script de paquet."
 
 #. Callback to handle unsigned files
 #.
@@ -261,7 +261,7 @@ msgstr "Actualisation des métadonnées des dépôts"
 
 #: service/lib/agama/software/manager.rb:179
 msgid "Calculating the software proposal"
-msgstr "Calcul de l'offre de logiciel"
+msgstr "Calcul de la proposition de logiciel"
 
 #: service/lib/agama/software/manager.rb:183
 msgid "Initializing sources"
@@ -821,8 +821,8 @@ msgstr[1] ""
 msgid ""
 "Defining a user, setting the root password or a SSH public key is required"
 msgstr ""
-"Vous devez définir un utilisateur, un mot de passe root ou une clé publique "
-"SSH"
+"Il est nécessaire de définir un utilisateur ou de configurer le mot de passe "
+"root ou une clé publique SSH"
 
 #~ msgid "Selecting Linux Security Modules"
 #~ msgstr "Sélection des modules de sécurité Linux"
