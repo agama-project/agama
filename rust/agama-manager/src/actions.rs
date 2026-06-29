@@ -266,6 +266,7 @@ impl InstallAction {
 
         // Finalization task that runs regardless of success or failure
         let ipmi = self.ipmi;
+        let progress = self.progress.clone();
         self.task_manager
             .task("finalize", Scope::Manager, gettext("Finalize installation"))
             .depends_on(&critical_tasks)
@@ -287,6 +288,16 @@ impl InstallAction {
                     if let Err(e) = ipmi.failed() {
                         tracing::error!("IPMI failed notification error: {e}");
                     }
+
+                    // and notify agama about failure
+                    progress
+                        .call(progress::message::Finish::new(Scope::Manager))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    progress
+                        .call(progress::message::SetStage::new(Stage::Failed))
+                        .await
+                        .map_err(TaskError::from_error)?;
                 }
                 Ok(())
             })

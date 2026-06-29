@@ -265,7 +265,7 @@ impl TaskManager {
                     break failed;
                 }
 
-                // lets collection notification here to avoid race condition if notification is send immediatelly after drop of guard 
+                // lets collection notification here to avoid race condition if notification is send immediatelly after drop of guard
                 // and wait for afterwards
                 let notifications = notify.notified();
                 drop(state_guard);
