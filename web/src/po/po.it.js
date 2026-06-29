@@ -47,7 +47,7 @@ export default {
     "%s è un sistema immutabile con aggiornamenti atomici. Utilizza un file system Btrfs di sola lettura aggiornato tramite snapshot."
   ],
   "%s logo": [
-    "Immagine del logo di %s"
+    "Logo di %s"
   ],
   "%s will be created as a logical volume": [
     "%s sarà creato come volume logico",
@@ -807,7 +807,7 @@ export default {
     "Finito"
   ],
   "Finished": [
-    "Terminato"
+    "Completato"
   ],
   "First user": [
     "Primo utente"
@@ -1224,7 +1224,7 @@ export default {
     "Nome"
   ],
   "Network": [
-    "Network"
+    "Rete"
   ],
   "Network details": [
     "Dettagli rete"
@@ -1335,7 +1335,7 @@ export default {
     "Rete non protetta"
   ],
   "Not selected yet": [
-    "Non selezionato al momento"
+    "Non ancora selezionato"
   ],
   "Not supported (%s)": [
     "Non supportato (%s)"
@@ -1461,7 +1461,7 @@ export default {
     "Il prodotto è già registrato"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Protezione per le informazoini memorizzate nei nuovi file system, tra cui dati, programmi e file di sistema."
+    "Protezione per le informazioni memorizzate nei nuovi file system, tra cui dati, programmi e file di sistema."
   ],
   "Provide email address": [
     "Fornire un indirizzo e-mail"
@@ -1786,7 +1786,7 @@ export default {
     "Stato"
   ],
   "Storage": [
-    "Archiviazione"
+    "Memorizzazione"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
     "Struttura del nuovo sistema, compresi i dischi da utilizzare e i dispositivi aggiuntivi come i gruppi di volumi LVM."

@@ -1314,7 +1314,7 @@ export default {
     "Aucun des fuseaux horaires ne correspond au filtre."
   ],
   "None set": [
-    "Aucun(e) réglé"
+    "Aucun(e) réglé(e)"
   ],
   "Not available": [
     "Non disponible"
@@ -1335,7 +1335,7 @@ export default {
     "Réseau non protégé"
   ],
   "Not selected yet": [
-    "Pas encore sélectionnée"
+    "Pas encore sélectionné"
   ],
   "Not supported (%s)": [
     "Non pris en charge (%s)"
