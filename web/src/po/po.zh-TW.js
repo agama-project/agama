@@ -1336,10 +1336,10 @@ export default {
     "僅當目標提供驗證機制時可用"
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
-    "將會僅使用重複使用的分割區及未指定給任何分割區的空間。"
+    "將會僅使用複用的分割區及未指定給任何分割區的空間。"
   ],
   "Only reused partitions will be used.": [
-    "將會僅使用重複使用的分割區。"
+    "將會僅使用複用的分割區。"
   ],
   "Options toggle": [
     "選項切換鈕"
@@ -1366,13 +1366,13 @@ export default {
     "開機所需的分割區將保留在 %s 中"
   ],
   "Partitions that are not reused will be removed and that data will be lost.": [
-    "將移除不重複使用的分割區，其中的資料將會遺失。"
+    "將移除不複用的分割區，其中的資料將會遺失。"
   ],
   "Partitions that are not reused will be resized as needed.": [
-    "將視需要調整不重複使用的分割區的大小。"
+    "將視需要調整不複用分割區的大小。"
   ],
   "Partitions that are not reused would be resized if needed.": [
-    "將視需要調整不重複使用的分割區的大小。"
+    "將視需要調整不複用分割區的大小。"
   ],
   "Partitions to boot will be allocated at the following device.": [
     "將會在以下裝置上配置開機分割區。"
@@ -1540,7 +1540,7 @@ export default {
     "結果"
   ],
   "Reused partitions will not be shrunk": [
-    "將不縮小重複使用的分割區"
+    "將不縮小複用的分割區"
   ],
   "Review and fix": [
     "檢查並修復"

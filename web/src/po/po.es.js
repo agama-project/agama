@@ -807,7 +807,7 @@ export default {
     "Finalizar"
   ],
   "Finished": [
-    "Finalizado"
+    "Terminado"
   ],
   "First user": [
     "Primer usuario"
@@ -886,7 +886,7 @@ export default {
     "Ocultar detalles"
   ],
   "Hostname": [
-    "Nombre del equipo"
+    "Nombre del host"
   ],
   "Hostname could not be updated": [
     "El nombre del equipo no se ha podido actualizar"
@@ -1096,7 +1096,7 @@ export default {
     "Selección de configuración regional"
   ],
   "Localization": [
-    "Ubicación"
+    "Localización"
   ],
   "Log in": [
     "Iniciar sesión"
