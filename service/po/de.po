@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-05 13:42+0000\n"
-"PO-Revision-Date: 2026-06-06 08:12+0000\n"
-"Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
+"POT-Creation-Date: 2026-06-23 12:12+0000\n"
+"PO-Revision-Date: 2026-06-23 21:12+0000\n"
+"Last-Translator: Gemineo <vistatec@gemineo.de>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/de/>\n"
 "Language: de\n"
@@ -28,13 +28,12 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Nicht unterstützte Elemente im AutoYaST-Profil gefunden: %{keys}."
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:68
+#: service/lib/agama/dbus/storage/dasd.rb:66
 msgid "Probing DASD devices"
 msgstr "DASD-Geräte werden untersucht"
 
-#. The configuration could take long time  (e.g., formatting devices). It is important to
-#. not block the service in order to make possible to attend other requests.
-#: service/lib/agama/dbus/storage/dasd.rb:94
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/dasd.rb:88
 msgid "Configuring DASD"
 msgstr "DASD wird konfiguriert"
 
@@ -52,39 +51,39 @@ msgid "Performing iSCSI discovery"
 msgstr "iSCSI-Erkennung wird durchgeführt"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:196
+#: service/lib/agama/dbus/storage/manager.rb:194
 msgid "Preparing bootloader proposal"
 msgstr "Bootloader-Vorschlag wird vorbereitet"
 
-#: service/lib/agama/dbus/storage/manager.rb:199
+#: service/lib/agama/dbus/storage/manager.rb:197
 msgid "Preparing the storage devices"
 msgstr "Speichergeräte werden vorbereitet"
 
-#: service/lib/agama/dbus/storage/manager.rb:202
+#: service/lib/agama/dbus/storage/manager.rb:200
 msgid "Writing bootloader sysconfig"
 msgstr "Bootloader-Systemkonfiguration wird geschrieben"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:210
+#: service/lib/agama/dbus/storage/manager.rb:208
 msgid "Finishing installation"
 msgstr "Installation abschließen"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:217
+#: service/lib/agama/dbus/storage/manager.rb:215
 msgid "Unmounting devices"
 msgstr "Geräte werden ausgehängt"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:256
+#: service/lib/agama/dbus/storage/manager.rb:254
 msgid "Activating storage devices"
 msgstr "Speichergeräte werden aktiviert"
 
-#: service/lib/agama/dbus/storage/manager.rb:259
+#: service/lib/agama/dbus/storage/manager.rb:257
 msgid "Probing storage devices"
 msgstr "Speichergeräte werden untersucht"
 
-#: service/lib/agama/dbus/storage/manager.rb:262
+#: service/lib/agama/dbus/storage/manager.rb:260
 msgid "Applying storage configuration"
 msgstr "Speicherkonfiguration anwenden"
 
@@ -213,7 +212,8 @@ msgstr "Mindestens %s Geräte sind für %s erforderlich"
 #: service/lib/agama/storage/config_checkers/physical_volumes_encryption.rb:62
 #, perl-brace-format
 msgid "%{method} is not suitable to encrypt the physical volumes."
-msgstr "%{method} eignet sich nicht zur Verschlüsselung der physischen Volumes."
+msgstr ""
+"%{method} eignet sich nicht zur Verschlüsselung der physischen Volumes."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
 #: service/lib/agama/storage/config_checkers/search.rb:76
@@ -243,13 +243,14 @@ msgstr ""
 #. TRANSLATORS: %{parent_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:136
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The device '%{parent_name}' cannot be formatted because it is a physical "
 "volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Das Gerät '%{member}' kann nicht formatiert werden, da es Teil des MD-RAID '%"
-"{md_raid}' ist"
+"Das Gerät ‚%{parent_name}‘ kann nicht formatiert werden, da es sich um ein "
+"physisches Volume der wiederverwendeten LVM-Volume-Gruppe ‚%{reused_name}‘ "
+"handelt"
 
 #. Issue if the member device is deleted.
 #.
@@ -267,13 +268,14 @@ msgstr ""
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:176
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be deleted because it is a physical "
 "volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Das Gerät '%{member}' kann nicht gelöscht werden, da es Teil des MD-RAID '%"
-"{md_raid}' ist"
+"Das Gerät '%{member_name}' kann nicht gelöscht werden, da es sich um ein "
+"physisches Volume der wiederverwendeten LVM-Volume-Gruppe '%{reused_name}' "
+"handelt"
 
 #. Issue if the device member is resized.
 #.
@@ -291,13 +293,14 @@ msgstr ""
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:216
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be resized because it is a physical "
 "volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Die Größe des Geräts '%{member}' kann nicht geändert werden, da es Teil des "
-"MD-RAID '%{md_raid}' ist"
+"Die Größe des Geräts '%{member_name}' kann nicht geändert werden, da es sich "
+"um ein physisches Volume der wiederverwendeten LVM-Volume-Gruppe '%"
+"{reused_name}' handelt"
 
 #. Issue if the device member is formatted.
 #.
@@ -315,13 +318,14 @@ msgstr ""
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:256
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be formatted because it is a physical "
 "volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Das Gerät '%{member}' kann nicht formatiert werden, da es Teil des MD-RAID '%"
-"{md_raid}' ist"
+"Das Gerät '%{member_name}' kann nicht formatiert werden, da es sich um ein "
+"physisches Volume der wiederverwendeten LVM-Volume-Gruppe '%{reused_name}' "
+"handelt"
 
 #. Issue if the device member is partitioned.
 #.
@@ -339,13 +343,14 @@ msgstr ""
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:296
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be partitioned because it is a physical "
 "volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Das Gerät '%{member}' kann nicht partitioniert werden, da es Teil des MD-"
-"RAID '%{md_raid}' ist"
+"Das Gerät '%{member_name}' kann nicht partitioniert werden, da es sich um "
+"ein physisches Volume der wiederverwendeten LVM-Volume-Gruppe '%{reused_name}"
+"' handelt"
 
 #. Issue if the device member is used by other device (e.g., as target for physical volumes).
 #.
@@ -363,13 +368,14 @@ msgstr ""
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
 #: service/lib/agama/storage/config_checkers/search.rb:335
-#, fuzzy, perl-brace-format
+#, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be used because it is a physical volume "
 "of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"Das Gerät '%{member}' kann nicht verwendet werden, da es Teil des MD-RAID '%"
-"{md_raid}' ist"
+"Das Gerät '%{member_name}' kann nicht verwendet werden, da es sich um ein "
+"physisches Volume der wiederverwendeten LVM-Volume-Gruppe '%{reused_name}' "
+"handelt"
 
 #. @return [String]
 #: service/lib/agama/storage/config_checkers/search.rb:383
@@ -390,7 +396,7 @@ msgstr "Logisches LVM-Volume"
 
 #: service/lib/agama/storage/config_checkers/search.rb:391
 msgid "LVM volume group"
-msgstr ""
+msgstr "LVM-Volume-Gruppe"
 
 #: service/lib/agama/storage/config_checkers/search.rb:393
 msgid "device"
@@ -483,7 +489,7 @@ msgstr "Dateisystem-Schnappschüsse werden konfiguriert"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:308
+#: service/lib/agama/storage/manager.rb:316
 msgid "There is no suitable device for installation"
 msgstr "Es gibt kein geeignetes Gerät für die Installation"
 
@@ -560,7 +566,7 @@ msgstr "Unbekannter zFCP-Controller %s"
 #: service/lib/agama/storage/zfcp/manager.rb:326
 #, c-format
 msgid "Unknown zFCP LUN %s"
-msgstr ""
+msgstr "Unbekannte zFCP LUN %s"
 
 #~ msgid "Certificate:"
 #~ msgstr "Zertifikat:"
