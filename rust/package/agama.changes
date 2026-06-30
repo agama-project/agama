@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 30 14:43:50 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt iSCSI, DASD and zFCP monitors to the changes in the D-Bus
+  API (needed for bsc#1269224).
+
+-------------------------------------------------------------------
 Fri Jun 26 10:21:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove the translations from the Product's SystemInfo
