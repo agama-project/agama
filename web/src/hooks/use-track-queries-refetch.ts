@@ -34,8 +34,7 @@ import { useQueryClient } from "@tanstack/react-query";
  *
  * @param queryKeys - Array of query key strings to track for refetches
  * @param onSuccess - Callback executed when considered all queries have
- *   refetched successfully. Receives the tracking start timestamp and completion
- *   timestamp.
+ *   refetched successfully.
  *
  * @returns Object containing the `startTracking` function to initiate tracking
  *
@@ -68,10 +67,7 @@ import { useQueryClient } from "@tanstack/react-query";
  *
  * @see {@link https://tanstack.com/query/latest/docs/reference/QueryCache#querycachesubscribe}
  */
-function useTrackQueriesRefetch(
-  queryKeys: readonly string[],
-  onSuccess: (startedAt: number, completedAt: number) => void,
-) {
+function useTrackQueriesRefetch(queryKeys: readonly string[], onSuccess: () => void) {
   const queryClient = useQueryClient();
 
   // Remove duplicates and create Set for faster lookups when matching query keys
@@ -110,7 +106,7 @@ function useTrackQueriesRefetch(
     if (completedRef.current || startedAtRef.current === null) return;
 
     completedRef.current = true;
-    onSuccess(startedAtRef.current, Date.now());
+    onSuccess();
     cleanup();
   }, [onSuccess, cleanup]);
 

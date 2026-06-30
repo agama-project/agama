@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { isEmpty } from "radashi";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { useProgress } from "~/hooks/model/progress";
@@ -96,13 +96,9 @@ export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] 
   const progress = useProgress(scope);
   const status = useStatus();
   const [loading, setLoading] = useState(false);
-  const progressFinishedAtRef = useRef<number | null>(null);
 
-  const { startTracking } = useTrackQueriesRefetch(queryKeys, (_, completedAt) => {
-    if (progressFinishedAtRef.current && completedAt > progressFinishedAtRef.current) {
-      setLoading(false);
-      progressFinishedAtRef.current = null;
-    }
+  const { startTracking } = useTrackQueriesRefetch(queryKeys, () => {
+    setLoading(false);
   });
 
   // Filter tasks by scope
@@ -116,8 +112,7 @@ export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] 
   const allFinished = progressesFinished && tasksFinished;
 
   useEffect(() => {
-    if (allFinished && loading && !progressFinishedAtRef.current) {
-      progressFinishedAtRef.current = Date.now();
+    if (allFinished && loading) {
       startTracking();
     }
   }, [allFinished, startTracking, loading]);
@@ -126,7 +121,6 @@ export function useProgressTracking(scope?: Scope, queryKeys: readonly string[] 
   // during render (instead of in an effect) avoids a flash of non-loading UI.
   if (!allFinished && !loading) {
     setLoading(true);
-    progressFinishedAtRef.current = null;
   }
 
   return { loading, progress };

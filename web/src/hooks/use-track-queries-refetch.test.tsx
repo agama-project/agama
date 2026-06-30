@@ -113,22 +113,21 @@ describe("useTrackQueriesRefetch", () => {
     expect(onSuccess).not.toHaveBeenCalled();
   });
 
-  it("passes the start and completion timestamps to onSuccess", async () => {
+  it("calls onSuccess when tracked query refetches", async () => {
     const onSuccess = jest.fn();
 
     const { result } = renderTestHook(["q1"], onSuccess);
 
     result.current.queryClient.setQueryData(["q1"], "initial");
 
-    // startTracking records Date.now() (currently 0) as the start timestamp.
     result.current.startTracking();
 
-    advanceTime(5); // now = 5
+    advanceTime();
 
     result.current.queryClient.setQueryData(["q1"], "updated");
 
     await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalledWith(0, 5);
+      expect(onSuccess).toHaveBeenCalledTimes(1);
     });
   });
 
