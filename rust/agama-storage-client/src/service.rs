@@ -344,7 +344,7 @@ impl MessageHandler<message::iscsi::GetSystem> for Service {
         &mut self,
         _message: message::iscsi::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
-        let raw_json = self.iscsi_proxy.iscsi_system().await?;
+        let raw_json = self.iscsi_proxy.system().await?;
         Ok(try_from_string(&raw_json)?)
     }
 }
