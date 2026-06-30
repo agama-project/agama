@@ -71,6 +71,9 @@ user_pref("devtools.toolbox.selectedTool", "console");
 // show time stamps in the console
 user_pref("devtools.webconsole.timestampMessages", true);
 
+// disable "Link Preview" feature
+user_pref("browser.ml.linkPreview.enabled", false);
+
 // start always in the custom homepage
 user_pref("browser.startup.page", 1);
 // custom homepage: the value is expected to be replaced with the login URL by the startup script
