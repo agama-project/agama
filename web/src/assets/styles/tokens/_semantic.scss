@@ -28,6 +28,9 @@
 //   --agm-t--disabled--background--color          disabled control background
 //   --agm-t--tooltip--background--color (+ --color) tooltip background and text
 //   --agm-t--focus--color                         keyboard focus ring (see base/_reset)
+//   --agm-t--focus--separator--color              hairline between the ring and a
+//                                                 button fill (keeps the ring
+//                                                 visible on colored fills)
 //   --agm-t--status--{info,caution,danger,success,custom}--color
 //                                                 alert / status variants
 //                                                 (caution maps to PF "warning")
