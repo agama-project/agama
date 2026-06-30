@@ -397,7 +397,7 @@ impl MessageHandler<message::dasd::GetSystem> for Service {
         _message: message::dasd::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
         if let Some(proxy) = &self.dasd_proxy {
-            let raw_json = proxy.dasd_system().await?;
+            let raw_json = proxy.system().await?;
             Ok(try_from_string(&raw_json)?)
         } else {
             Ok(None)
