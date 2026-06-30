@@ -125,7 +125,7 @@ export default function ProgressBackdrop({
   // after an operation has completed.
   waitingLabel = _("Refreshing data..."),
 }: ProgressBackdropProps): React.ReactNode {
-  const { loading: isBlocked, progress } = useProgressTracking(scope, awaitFreshQueries);
+  const { loading: isBlocked, progress } = useProgressTracking(scope, awaitFreshQueries ?? []);
 
   if (!isBlocked) return null;
 

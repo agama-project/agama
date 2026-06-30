@@ -28,7 +28,6 @@ import TargetsTable from "~/components/storage/iscsi/TargetsTable";
 import { STORAGE } from "~/routes/paths";
 import { _ } from "~/i18n";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
-import { CONFIG_QUERY_KEY } from "~/hooks/model/config";
 
 export default function ISCSIPage() {
   return (
@@ -40,7 +39,7 @@ export default function ISCSIPage() {
         },
         { label: _("iSCSI") },
       ]}
-      progress={{ scope: "iscsi", awaitFreshQueries: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY] }}
+      progress={{ scope: "iscsi", awaitFreshQueries: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <Grid hasGutter>
