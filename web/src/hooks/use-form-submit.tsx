@@ -20,9 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Alert } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
 import Interpolate from "~/components/core/Interpolate";
 import Link from "~/components/core/Link";
 import { ROOT } from "~/routes/paths";
@@ -86,10 +85,11 @@ type Options<TValues> = {
   errorTitle?: string;
 
   /**
-   * Whether to scroll to top on successful submit.
+   * Whether to show the success/info alert when the form stays mounted.
    *
-   * Defaults to true (always scroll). Set to false for forms that navigate away
-   * on success — scrolling is unnecessary since the user won't see the page.
+   * Defaults to true. Set to false for forms that navigate away on success,
+   * where a success alert (and its scroll) is unnecessary since the user won't
+   * see the page. Validation error alerts are shown regardless.
    */
   scrollOnSuccess?: boolean;
 };
@@ -175,6 +175,29 @@ type Options<TValues> = {
  * - TanStack Form issue #1681: form.reset during onSubmit ignores new values
  * - TanStack Form issue #1798: reset + useStore subscription bug
  */
+/**
+ * Scrolls its content into view once, when it first appears.
+ *
+ * Wraps the post-submit alert so the page moves to the alert itself instead of
+ * jumping to the very top. On pages with content above the form (e.g. an intro),
+ * scrolling to the top can leave the alert below the fold on small viewports.
+ */
+function ScrollIntoView({ children }: React.PropsWithChildren) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Defer to the next tick so the alert is laid out before scrolling. The
+    // scroll is a progressive enhancement, so scrollIntoView is optional-chained
+    // to stay a safe no-op where it is unavailable.
+    const id = window.setTimeout(() => {
+      ref.current?.scrollIntoView?.({ block: "start", behavior: "smooth" });
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  return <div ref={ref}>{children}</div>;
+}
+
 export function useFormSubmit<TValues>({
   onSubmit,
   successTitle = _("Changes successfully applied"),
@@ -248,7 +271,8 @@ export function useFormSubmit<TValues>({
    * Renders success, info, or validation error alerts after submit.
    *
    * Subscribes to isDirty, isSubmitting, and isValid. Uses refs (not state) to avoid
-   * extra re-renders and to work around TanStack Form's reset bugs.
+   * extra re-renders and to work around TanStack Form's reset bugs. The rendered
+   * alert scrolls itself into view when it appears (see ScrollIntoView).
    *
    * Success/info alert shown when form is clean (!isDirty), not submitting, and a
    * submit outcome ref is set.
@@ -274,7 +298,11 @@ export function useFormSubmit<TValues>({
 
           // Show validation error alert
           if (submitAttempted.current && !isValid) {
-            return <Alert isInline variant="danger" title={errorTitle} />;
+            return (
+              <ScrollIntoView>
+                <Alert isInline variant="danger" title={errorTitle} />
+              </ScrollIntoView>
+            );
           }
 
           // Show success/info alert (skip for forms that navigate away)
@@ -284,24 +312,26 @@ export function useFormSubmit<TValues>({
 
             if (showSuccessOrInfo) {
               return (
-                <Alert
-                  isInline
-                  variant={wasPatched.current ? "success" : "info"}
-                  title={wasPatched.current ? successTitle : noChangesTitle}
-                >
-                  <Interpolate
-                    sentence={
-                      /* TRANSLATORS: Link shown in the alert after submitting a form. Text in [brackets] becomes a link. Keep the brackets. */
-                      _("Go to [installation] summary.")
-                    }
+                <ScrollIntoView>
+                  <Alert
+                    isInline
+                    variant={wasPatched.current ? "success" : "info"}
+                    title={wasPatched.current ? successTitle : noChangesTitle}
                   >
-                    {(linkText) => (
-                      <Link isInline variant="link" to={ROOT.overview}>
-                        {linkText}
-                      </Link>
-                    )}
-                  </Interpolate>
-                </Alert>
+                    <Interpolate
+                      sentence={
+                        /* TRANSLATORS: Link shown in the alert after submitting a form. Text in [brackets] becomes a link. Keep the brackets. */
+                        _("Go to [installation] summary.")
+                      }
+                    >
+                      {(linkText) => (
+                        <Link isInline variant="link" to={ROOT.overview}>
+                          {linkText}
+                        </Link>
+                      )}
+                    </Interpolate>
+                  </Alert>
+                </ScrollIntoView>
               );
             }
           }
@@ -313,13 +343,11 @@ export function useFormSubmit<TValues>({
   /**
    * Returns an onSubmit handler for the <Form> element.
    *
-   * Clears previous server errors, sets validation error flag (checked by
-   * AlertSubscribe), triggers TanStack Form submission, and scrolls to top
-   * when errors occur.
+   * Clears previous server errors, sets the validation error flag (checked by
+   * AlertSubscribe), and triggers TanStack Form submission.
    *
-   * Scrolling behavior:
-   * - scrollOnSuccess=true (default): always scroll immediately
-   * - scrollOnSuccess=false: only scroll after submit if there are errors
+   * The resulting alert scrolls itself into view when it appears (see
+   * AlertSubscribe / ScrollIntoView), so no manual scrolling is needed here.
    *
    * Receives the form instance at call time since it's created after this hook.
    */
@@ -328,21 +356,7 @@ export function useFormSubmit<TValues>({
       e.preventDefault();
       form.setErrorMap({ onSubmit: { fields: {} } });
       submitAttempted.current = true;
-
-      if (scrollOnSuccess) {
-        // Scroll immediately for forms that stay mounted
-        Page.scrollToTop();
-        form.handleSubmit();
-      } else {
-        // Wait for submit to complete, then scroll only if errors occurred
-        await form.handleSubmit();
-        // Check if there were errors (no success/noChanges flags set)
-        setTimeout(() => {
-          if (!wasPatched.current && !hadNoChanges.current) {
-            Page.scrollToTop();
-          }
-        }, 0);
-      }
+      form.handleSubmit();
     };
   }
 
