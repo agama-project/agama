@@ -104,9 +104,11 @@ describe("SystemForm", () => {
     });
 
     it("only sends NTP config when NTP settings changed", async () => {
-      const { user} = installerRender(<SystemForm />);
+      const { user } = installerRender(<SystemForm />);
 
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -136,7 +138,9 @@ describe("SystemForm", () => {
       const { user } = installerRender(<SystemForm />);
 
       // Switch to custom mode
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -173,7 +177,9 @@ describe("SystemForm", () => {
       await user.type(hostnameInput, "test-server");
 
       // Change NTP to custom
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -204,7 +210,9 @@ describe("SystemForm", () => {
       const { user } = installerRender(<SystemForm />);
 
       // Make a change to trigger an update
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -224,7 +232,9 @@ describe("SystemForm", () => {
       const { user } = installerRender(<SystemForm />);
 
       // Change something to trigger API call
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -264,7 +274,9 @@ describe("SystemForm", () => {
     it("shows error when custom NTP mode has no servers", async () => {
       const { user } = installerRender(<SystemForm />);
 
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -280,7 +292,9 @@ describe("SystemForm", () => {
     it("shows error when NTP servers are invalid", async () => {
       const { user } = installerRender(<SystemForm />);
 
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -302,7 +316,9 @@ describe("SystemForm", () => {
     it("accepts valid NTP server hostnames", async () => {
       const { user } = installerRender(<SystemForm />);
 
-      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+      const ntpModeButton = screen.getByRole("button", {
+        name: "Time Synchronization Servers Mode",
+      });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
