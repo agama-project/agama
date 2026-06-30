@@ -30,6 +30,14 @@ export interface FieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSet
    */
   legend: string;
   /**
+   * Optional ID for the legend element.
+   *
+   * Useful for creating composite accessible names via aria-labelledby,
+   * allowing fields within the fieldset to reference the legend for context
+   * without changing visible labels.
+   */
+  legendId?: string;
+  /**
    * Optional descriptive text displayed below the legend
    */
   description?: React.ReactNode;
@@ -67,10 +75,10 @@ export interface FieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSet
  * </Fieldset>
  * ```
  */
-export function Fieldset({ legend, description, children, ...props }: FieldsetProps) {
+export function Fieldset({ legend, legendId, description, children, ...props }: FieldsetProps) {
   return (
     <fieldset {...props}>
-      <legend>{legend}</legend>
+      <legend id={legendId}>{legend}</legend>
       <NestedContent margin="mxLg">
         {description && <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{description}</Text>}
         {children}
