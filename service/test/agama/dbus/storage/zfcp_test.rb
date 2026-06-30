@@ -166,7 +166,7 @@ RSpec.describe Agama::DBus::Storage::ZFCP do
   describe "#probe" do
     it "probes the manager and emits signals" do
       expect(subject).to receive(:ProgressChanged).ordered
-      expect(manager).to receive(:probe)
+      expect(manager).to receive(:probe).ordered
       expect(subject).to receive(:ProgressChanged).ordered
       expect(subject).to receive(:ProgressFinished).ordered
       subject.probe
@@ -174,6 +174,14 @@ RSpec.describe Agama::DBus::Storage::ZFCP do
 
     it "configures with the current config" do
       expect(manager).to receive(:configure).with(config_json)
+      subject.probe
+    end
+
+    it "always emits property changes after configuration" do
+      allow(manager).to receive(:configure)
+      expect(subject).to receive(:serialized_system=).at_least(:once).and_call_original
+      expect(subject).to receive(:serialized_config=).at_least(:once).and_call_original
+      expect(subject).to receive(:serialized_issues=).at_least(:once).and_call_original
       subject.probe
     end
 
@@ -208,6 +216,14 @@ RSpec.describe Agama::DBus::Storage::ZFCP do
       expect(subject).to receive(:ProgressChanged).ordered
       expect(manager).to receive(:configure).with(config_json).ordered
       expect(subject).to receive(:ProgressFinished).ordered
+      subject.configure(JSON.generate(config_json))
+    end
+
+    it "always emits property changes after configuration" do
+      allow(manager).to receive(:configure)
+      expect(subject).to receive(:serialized_system=).and_call_original
+      expect(subject).to receive(:serialized_config=).and_call_original
+      expect(subject).to receive(:serialized_issues=).and_call_original
       subject.configure(JSON.generate(config_json))
     end
 
