@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 30 14:37:09 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Make pages to wait for an explicit set of queries (needed for
+  bsc#1269224).
+
+-------------------------------------------------------------------
 Sun Jun 28 21:50:40 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Polish the keyboard focus ring and assorted UI rough edges (control
