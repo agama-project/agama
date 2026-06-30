@@ -52,8 +52,13 @@ type DropdownFieldProps<T> = {
    * create a composite aria-labelledby value. Useful for referencing parent
    * elements like fieldset legends to disambiguate fields with identical labels.
    *
-   * Example: passing a legend ID "hostname-legend" when label is "Mode"
-   * creates accessible name "Hostname Mode".
+   * @example Creates accessible name "Hostname Mode"
+   * <legend id="hostname-legend">{_("Hostname")}</legend>
+   * <DropdownField
+   *   label={_("Mode")}
+   *   additionalLabelId="hostname-legend"
+   *   options={MODE_OPTIONS}
+   * />
    */
   additionalLabelId?: string;
   /**
