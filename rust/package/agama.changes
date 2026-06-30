@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jun 26 15:19:40 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix error reporting in installation phase and fix failure report
+  to IPMI (follow up of bsc#1268803).
+
+-------------------------------------------------------------------
 Fri Jun 26 10:21:40 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove the translations from the Product's SystemInfo
