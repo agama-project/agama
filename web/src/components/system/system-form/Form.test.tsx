@@ -70,6 +70,12 @@ describe("SystemForm", () => {
     screen.getByRole("group", { name: "Time Synchronization Servers" });
   });
 
+  it("renders Mode dropdowns with unique accessible names", () => {
+    installerRender(<SystemForm />);
+    screen.getByRole("button", { name: "Hostname Mode" });
+    screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
+  });
+
   describe("form submission", () => {
     it("does not send config when nothing changed", async () => {
       const { user } = installerRender(<SystemForm />);
@@ -98,10 +104,9 @@ describe("SystemForm", () => {
     });
 
     it("only sends NTP config when NTP settings changed", async () => {
-      const { user } = installerRender(<SystemForm />);
+      const { user} = installerRender(<SystemForm />);
 
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -131,8 +136,7 @@ describe("SystemForm", () => {
       const { user } = installerRender(<SystemForm />);
 
       // Switch to custom mode
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -158,8 +162,7 @@ describe("SystemForm", () => {
       const { user } = installerRender(<SystemForm />);
 
       // Change hostname mode to static
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const hostnameModeButton = modeButtons[0];
+      const hostnameModeButton = screen.getByRole("button", { name: "Hostname Mode" });
       await user.click(hostnameModeButton);
 
       const staticOption = screen.getByRole("option", { name: /Static/ });
@@ -170,7 +173,7 @@ describe("SystemForm", () => {
       await user.type(hostnameInput, "test-server");
 
       // Change NTP to custom
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -201,8 +204,7 @@ describe("SystemForm", () => {
       const { user } = installerRender(<SystemForm />);
 
       // Make a change to trigger an update
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -222,8 +224,7 @@ describe("SystemForm", () => {
       const { user } = installerRender(<SystemForm />);
 
       // Change something to trigger API call
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -244,8 +245,7 @@ describe("SystemForm", () => {
     it("shows error when static hostname is empty", async () => {
       const { user } = installerRender(<SystemForm />);
 
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const hostnameModeButton = modeButtons[0];
+      const hostnameModeButton = screen.getByRole("button", { name: "Hostname Mode" });
       await user.click(hostnameModeButton);
 
       const staticOption = screen.getByRole("option", { name: /Static/ });
@@ -264,8 +264,7 @@ describe("SystemForm", () => {
     it("shows error when custom NTP mode has no servers", async () => {
       const { user } = installerRender(<SystemForm />);
 
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -281,8 +280,7 @@ describe("SystemForm", () => {
     it("shows error when NTP servers are invalid", async () => {
       const { user } = installerRender(<SystemForm />);
 
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
@@ -304,8 +302,7 @@ describe("SystemForm", () => {
     it("accepts valid NTP server hostnames", async () => {
       const { user } = installerRender(<SystemForm />);
 
-      const modeButtons = screen.getAllByLabelText("Mode");
-      const ntpModeButton = modeButtons[1];
+      const ntpModeButton = screen.getByRole("button", { name: "Time Synchronization Servers Mode" });
       await user.click(ntpModeButton);
 
       const customOption = screen.getByRole("option", { name: /Custom/ });
