@@ -380,7 +380,7 @@ function SoftwarePage() {
       breadcrumbs={[{ label: _("Software") }]}
       progress={{
         scope: "software",
-        awaitFreshQueries: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
       }}
     >
       <Page.Content>

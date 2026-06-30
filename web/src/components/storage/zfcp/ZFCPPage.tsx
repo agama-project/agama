@@ -174,7 +174,7 @@ export default function ZFCPPage(): React.ReactNode {
   return (
     <Page
       breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("zFCP") }]}
-      progress={{ scope: "zfcp", awaitFreshQueries: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY] }}
+      progress={{ scope: "zfcp", awaitQueriesRefetch: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY] }}
     >
       <Page.Content>
         <IssuesAlert issues={issues} />

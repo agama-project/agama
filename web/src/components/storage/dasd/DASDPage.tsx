@@ -72,7 +72,7 @@ export default function DASDPage() {
       breadcrumbs={[{ label: _("Storage"), path: STORAGE.root }, { label: _("DASD") }]}
       progress={{
         scope: "dasd",
-        awaitFreshQueries: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY],
+        awaitQueriesRefetch: [SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY],
         extraContent: <DASDFormatProgress />,
       }}
     >

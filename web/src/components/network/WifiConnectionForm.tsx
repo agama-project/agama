@@ -199,7 +199,7 @@ export default function wifiConnectionForm() {
         { label: _("Network"), path: PATHS.root },
         { label: _("New Wi-Fi connection") },
       ]}
-      progress={{ scope: "network", awaitFreshQueries: [SYSTEM_QUERY_KEY] }}
+      progress={{ scope: "network", awaitQueriesRefetch: [SYSTEM_QUERY_KEY] }}
     >
       <Page.Content>
         <WifiConnectionFormContent />

@@ -69,18 +69,18 @@ export type ProgressBackdropProps = {
    * @example
    * <ProgressBackdrop
    *   scope="storage"
-   *   awaitFreshQueries={[PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY]}
+   *   awaitQueriesRefetch={[PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY]}
    * />
    *
    * @example
-   * <ProgressBackdrop scope="iscsi" awaitFreshQueries={[SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY]} />
+   * <ProgressBackdrop scope="iscsi" awaitQueriesRefetch={[SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY]} />
    *
    * @example
-   * // Omitting awaitFreshQueries dismisses the backdrop as soon as progress ends,
+   * // Omitting awaitQueriesRefetch dismisses the backdrop as soon as progress ends,
    * // without waiting for any query refetch.
    * <ProgressBackdrop scope="zfcp" />
    */
-  awaitFreshQueries?: readonly string[];
+  awaitQueriesRefetch?: readonly string[];
   /**
    * Additional content to render below the progress information.
    *
@@ -88,7 +88,7 @@ export type ProgressBackdropProps = {
    * per-device progress details for long-running operations.
    *
    * @example
-   * <ProgressBackdrop scope="dasd" awaitFreshQueries={[...]} extraContent={<DASDFormatProgress />} />
+   * <ProgressBackdrop scope="dasd" awaitQueriesRefetch={[...]} extraContent={<DASDFormatProgress />} />
    */
   extraContent?: React.ReactNode;
   /**
@@ -98,7 +98,7 @@ export type ProgressBackdropProps = {
    * Defaults to `"Refreshing data..."` if not provided.
    *
    * @example
-   * <ProgressBackdrop scope="storage" awaitFreshQueries={[...]} waitingLabel={_("Applying changes...")} />
+   * <ProgressBackdrop scope="storage" awaitQueriesRefetch={[...]} waitingLabel={_("Applying changes...")} />
    */
   waitingLabel?: string;
 };
@@ -111,7 +111,7 @@ export type ProgressBackdropProps = {
  * @remarks
  * Visibility is controlled through two mechanisms:
  * - Monitors active tasks from `useStatus()` that match the provided scope.
- * - Tracks refetches for all queries specified in `awaitFreshQueries`.
+ * - Tracks refetches for all queries specified in `awaitQueriesRefetch`.
  *
  * Once shown, the backdrop remains visible until all specified queries have been
  * refetched after the tracked progress has finished, ensuring the UI does not
@@ -119,13 +119,13 @@ export type ProgressBackdropProps = {
  */
 export default function ProgressBackdrop({
   scope,
-  awaitFreshQueries,
+  awaitQueriesRefetch,
   extraContent,
   // TRANSLATORS: Message shown next to a spinner while the UI is being updated
   // after an operation has completed.
   waitingLabel = _("Refreshing data..."),
 }: ProgressBackdropProps): React.ReactNode {
-  const { loading: isBlocked, progress } = useProgressTracking(scope, awaitFreshQueries ?? []);
+  const { loading: isBlocked, progress } = useProgressTracking(scope, awaitQueriesRefetch ?? []);
 
   if (!isBlocked) return null;
 

@@ -227,7 +227,7 @@ describe("ProgressBackdrop", () => {
   });
 
   describe("query keys refetch tracking", () => {
-    it("uses empty array when no awaitFreshQueries provided", () => {
+    it("uses empty array when no awaitRefreshQueries provided", () => {
       mockProgresses([
         {
           scope: "software",
@@ -243,7 +243,7 @@ describe("ProgressBackdrop", () => {
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith([], expect.any(Function));
     });
 
-    it("tracks specified query keys when awaitFreshQueries is provided", () => {
+    it("tracks specified query keys when awaitRefreshQueries is provided", () => {
       mockProgresses([
         {
           scope: "storage",
@@ -255,7 +255,7 @@ describe("ProgressBackdrop", () => {
       ]);
 
       installerRender(
-        <ProgressBackdrop scope="storage" awaitFreshQueries={["proposal", "storageModel"]} />,
+        <ProgressBackdrop scope="storage" awaitQueriesRefetch={["proposal", "storageModel"]} />,
       );
 
       expect(mockUseTrackQueriesRefetch).toHaveBeenCalledWith(
@@ -278,7 +278,7 @@ describe("ProgressBackdrop", () => {
       installerRender(
         <ProgressBackdrop
           scope="network"
-          awaitFreshQueries={["system", "config", "connections"]}
+          awaitQueriesRefetch={["system", "config", "connections"]}
         />,
       );
 
@@ -301,14 +301,14 @@ describe("ProgressBackdrop", () => {
       ]);
 
       const { rerender } = installerRender(
-        <ProgressBackdrop scope="storage" awaitFreshQueries={["storageModel"]} />,
+        <ProgressBackdrop scope="storage" awaitQueriesRefetch={["storageModel"]} />,
       );
 
       // Progress finishes
       mockProgresses([]);
 
-      rerender(<ProgressBackdrop scope="storage" awaitFreshQueries={["storageModel"]} />);
-      rerender(<ProgressBackdrop scope="storage" awaitFreshQueries={["storageModel"]} />);
+      rerender(<ProgressBackdrop scope="storage" awaitQueriesRefetch={["storageModel"]} />);
+      rerender(<ProgressBackdrop scope="storage" awaitQueriesRefetch={["storageModel"]} />);
 
       // Should have called startTracking
       await waitFor(() => {
