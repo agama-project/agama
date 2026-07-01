@@ -271,7 +271,7 @@ The same idea extends beyond timers. Two cases come up when testing hooks with
 // mockRefetchCallback is captured from a mocked hook and calls setState.
 // Invoking it inside waitFor runs that update within act.
 await waitFor(() => {
-  mockRefetchCallback(startedAt, completedAt);
+  mockRefetchCallback();
   expect(result.current.loading).toBe(false);
 });
 ```
