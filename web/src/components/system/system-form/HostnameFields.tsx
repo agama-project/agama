@@ -108,7 +108,7 @@ const HostnameFields = withForm({
               <field.DropdownField
                 // TRANSLATORS: label for hostname mode selector
                 label={_("Mode")}
-                additionalLabelId="hostname-legend"
+                labelPrefixedBy="hostname-legend"
                 options={[
                   {
                     value: HOSTNAME_MODE.TRANSIENT,

@@ -56,7 +56,7 @@ const NtpFields = withForm({
             <field.DropdownField
               // TRANSLATORS: label for NTP mode selector
               label={_("Mode")}
-              additionalLabelId="ntp-legend"
+              labelPrefixedBy="ntp-legend"
               options={[
                 {
                   value: NTP_MODE.DEFAULT,

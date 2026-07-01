@@ -31,13 +31,16 @@ import {
   SelectOption,
 } from "@patternfly/react-core";
 import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
+import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
+
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
 
 export type DropdownOption<T> =
   | { value: T; label: React.ReactNode; description?: React.ReactNode; isDisabled?: boolean }
   | { divider: true };
 
-type DropdownFieldProps<T> = {
+type DropdownFieldProps<T> = FieldLabelOptions & {
   /** The field label. */
   label: React.ReactNode;
   /** The available options. */
@@ -45,22 +48,6 @@ type DropdownFieldProps<T> = {
   /** Optional helper text shown below the select. */
   helperText?: React.ReactNode;
   isDisabled?: boolean;
-  /**
-   * Optional additional ID to include in the composite accessible name.
-   *
-   * When provided, this ID will be combined with the field's label ID to
-   * create a composite aria-labelledby value. Useful for referencing parent
-   * elements like fieldset legends to disambiguate fields with identical labels.
-   *
-   * @example Creates accessible name "Hostname Mode"
-   * <legend id="hostname-legend">{_("Hostname")}</legend>
-   * <DropdownField
-   *   label={_("Mode")}
-   *   additionalLabelId="hostname-legend"
-   *   options={MODE_OPTIONS}
-   * />
-   */
-  additionalLabelId?: string;
   /**
    * Render prop for content that depends on the current value, such as
    * nested fields that appear when a specific option is selected.
@@ -112,18 +99,22 @@ export default function DropdownField<T extends string>({
   options,
   helperText,
   isDisabled = false,
-  additionalLabelId,
   children,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
 }: DropdownFieldProps<T>) {
   const field = useFieldContext<T>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
   const selectedOption = options.find(
     (opt) => !("divider" in opt) && opt.value === field.state.value,
   );
-
-  const labelId = `${field.name}-label`;
-  const ariaLabelledBy = additionalLabelId ? `${additionalLabelId} ${labelId}` : undefined;
 
   return (
     <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
@@ -145,7 +136,7 @@ export default function DropdownField<T extends string>({
             onClick={() => setIsOpen(!isOpen)}
             isExpanded={isOpen}
             isDisabled={isDisabled}
-            aria-labelledby={ariaLabelledBy}
+            {...labelProps}
           >
             {selectedOption && "label" in selectedOption ? selectedOption.label : field.state.value}
           </MenuToggle>
