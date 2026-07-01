@@ -20,6 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
+import { _ } from "~/i18n";
 import { useFieldLabel } from "~/hooks/use-field-label";
 
 describe("useFieldLabel", () => {
@@ -66,7 +67,7 @@ describe("useFieldLabel", () => {
 
   describe("with aria-label", () => {
     it("passes the literal name through", () => {
-      const { labelProps } = useFieldLabel("search", { "aria-label": "Filter the list" });
+      const { labelProps } = useFieldLabel("search", { "aria-label": _("Filter the list") });
       expect(labelProps["aria-label"]).toBe("Filter the list");
     });
   });

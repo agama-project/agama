@@ -39,6 +39,7 @@ import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form";
 
 import type { FieldLabelOptions } from "~/hooks/use-field-label";
+import type { TranslatedString } from "~/i18n";
 
 // Lowercases and strips diacritics so a query without accents still matches
 // accented text (e.g. typing "ingles" matches "Inglés"). It also turns brackets
@@ -71,7 +72,7 @@ type Option = {
 };
 
 type SearchableSelectFieldProps = FieldLabelOptions & {
-  label: string;
+  label: TranslatedString;
   options: Option[];
   // Builds the text shown in the closed field for the committed option. Defaults
   // to the option's label alone; provide this to show more (e.g. append the

@@ -39,6 +39,7 @@ import Interpolate from "~/components/core/Interpolate";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { _ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 
 /**
  * Keys owned by the entry navigation handler when an entry is active.
@@ -319,7 +320,7 @@ type ArrayFieldProps = {
    * `labelPrefixedBy` and `aria-labelledby` take precedence for the input's
    * accessible name.
    */
-  inputAriaLabel?: string;
+  inputAriaLabel?: TranslatedString;
 
   /**
    * One or more element IDs whose text replaces the field's own label in the
@@ -518,12 +519,11 @@ export default function ArrayField({
   const value = field.state.value;
   const onChange = (next: string[]) => field.handleChange(next);
   const fieldErrors = sift(field.state.meta.errors);
-  const ariaLabel = inputAriaLabel ?? (typeof label === "string" ? label : undefined);
-  // Names the text input: `ariaLabel` by default, or a contextual name that
-  // prepends `labelPrefixedBy` (which then takes precedence over `ariaLabel`);
+  // Names the text input: `inputAriaLabel` by default, or a contextual name that
+  // prepends `labelPrefixedBy` (which then takes precedence over `inputAriaLabel`);
   // an explicit `aria-labelledby` replaces it entirely and wins over both.
   const { labelId, labelProps } = useFieldLabel(field.name, {
-    "aria-label": ariaLabel,
+    "aria-label": inputAriaLabel,
     "aria-labelledby": ariaLabelledBy,
     labelPrefixedBy,
   });
@@ -533,7 +533,7 @@ export default function ArrayField({
   const listboxNameId = `${field.name}-listbox-name`;
   // TRANSLATORS: accessible name for the entries list. %s is the field label
   // (e.g. "DNS servers").
-  const listboxName = ariaLabel ? sprintf(_("%s entries"), ariaLabel) : undefined;
+  const listboxName = inputAriaLabel ? sprintf(_("%s entries"), inputAriaLabel) : undefined;
   const hasListboxPrefix = Boolean(!ariaLabelledBy && labelPrefixedBy && listboxName);
   const listboxNameProps = resolveListboxNameProps(
     listboxNameId,

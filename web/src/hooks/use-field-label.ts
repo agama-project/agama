@@ -20,6 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
+import type { TranslatedString } from "~/i18n";
+
 /**
  * Ways a consumer can adjust the accessible name of a form field.
  *
@@ -43,7 +45,7 @@
  * any element with an id and readable text works.
  */
 export type FieldLabelOptions = {
-  "aria-label"?: string;
+  "aria-label"?: TranslatedString;
   "aria-labelledby"?: string;
   /**
    * One or more element IDs (space-separated) whose text prefixes the field's
