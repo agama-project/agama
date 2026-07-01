@@ -64,7 +64,7 @@ const fakeStorageTask: Task = {
 
 describe("useProgressTracking", () => {
   let mockStartTracking: jest.Mock;
-  let mockRefetchCallback: (startedAt: number, completedAt: number) => void;
+  let mockRefetchCallback: () => void;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -144,31 +144,9 @@ describe("useProgressTracking", () => {
       jest.setSystemTime(2000);
 
       await waitFor(() => {
-        mockRefetchCallback(1000, 2000);
+        mockRefetchCallback();
         expect(result.current.loading).toBe(false);
       });
-    });
-
-    it("ignores query refetches completed before progress finished", async () => {
-      const { result, rerender } = renderHook(() => useProgressTracking("software"));
-
-      // Start progress
-      mockProgresses([fakeSoftwareProgress]);
-      rerender();
-
-      // Complete progress
-      jest.setSystemTime(2000);
-      mockProgresses([]);
-      rerender();
-
-      await waitFor(() => {
-        expect(mockStartTracking).toHaveBeenCalled();
-      });
-
-      // Queries refetched before progress finished, must be ignored
-      mockRefetchCallback(500, 1000);
-
-      expect(result.current.loading).toBe(true);
     });
   });
   describe("without scope", () => {
@@ -210,31 +188,9 @@ describe("useProgressTracking", () => {
       jest.setSystemTime(2000);
 
       await waitFor(() => {
-        mockRefetchCallback(1000, 2000);
+        mockRefetchCallback();
         expect(result.current.loading).toBe(false);
       });
-    });
-
-    it("ignores query refetches completed before progress finished", async () => {
-      const { result, rerender } = renderHook(() => useProgressTracking());
-
-      // Start progress
-      mockProgresses([fakeSoftwareProgress]);
-      rerender();
-
-      // Complete progress
-      jest.setSystemTime(2000);
-      mockProgresses([]);
-      rerender();
-
-      await waitFor(() => {
-        expect(mockStartTracking).toHaveBeenCalled();
-      });
-
-      // Queries refetched before progress finished, must be ignored
-      mockRefetchCallback(500, 1000);
-
-      expect(result.current.loading).toBe(true);
     });
   });
 
@@ -292,7 +248,7 @@ describe("useProgressTracking", () => {
       jest.setSystemTime(2000);
 
       await waitFor(() => {
-        mockRefetchCallback(1000, 2000);
+        mockRefetchCallback();
         expect(result.current.loading).toBe(false);
       });
     });
@@ -340,7 +296,7 @@ describe("useProgressTracking", () => {
       jest.setSystemTime(3000);
 
       await waitFor(() => {
-        mockRefetchCallback(2000, 3000);
+        mockRefetchCallback();
         expect(result.current.loading).toBe(false);
       });
     });
