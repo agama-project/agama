@@ -29,9 +29,12 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
+import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 
-type SuggestionsTextFieldProps = {
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
+
+type SuggestionsTextFieldProps = FieldLabelOptions & {
   label: React.ReactNode;
   helperText?: React.ReactNode;
   suggestions?: string[];
@@ -69,20 +72,29 @@ type SuggestionsTextFieldProps = {
  * />
  *
  * @see useFieldContext for field component conventions.
+ * @see useFieldLabel for adjusting the accessible name (`labelPrefixedBy`, etc.).
  */
 export default function SuggestionsTextField({
   label,
   helperText,
   suggestions = [],
   onSelect,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
 }: SuggestionsTextFieldProps) {
   const field = useFieldContext<string>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const error = field.state.meta.errors[0];
   const datalistId = `${field.name}-datalist`;
   const prevValueRef = React.useRef(field.state.value);
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <TextInput
         id={field.name}
         name={field.name}
@@ -99,6 +111,7 @@ export default function SuggestionsTextField({
           prevValueRef.current = value;
         }}
         onBlur={() => field.handleBlur()}
+        {...labelProps}
       />
       <datalist id={datalistId}>
         {suggestions.map((suggestion, index) => (

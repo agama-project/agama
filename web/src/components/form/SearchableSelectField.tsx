@@ -35,7 +35,10 @@ import {
   TextInputGroupMain,
 } from "@patternfly/react-core";
 import { debounce } from "radashi";
+import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form";
+
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
 
 // Lowercases and strips diacritics so a query without accents still matches
 // accented text (e.g. typing "ingles" matches "Inglés"). It also turns brackets
@@ -67,7 +70,7 @@ type Option = {
   filterText?: string;
 };
 
-type SearchableSelectFieldProps = {
+type SearchableSelectFieldProps = FieldLabelOptions & {
   label: string;
   options: Option[];
   // Builds the text shown in the closed field for the committed option. Defaults
@@ -163,8 +166,20 @@ export default function SearchableSelectField({
   clearable = false,
   onOpen,
   maxHeight = "300px",
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
 }: SearchableSelectFieldProps) {
   const field = useFieldContext<string>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
+  // The combobox input is named by the visible label by default (PF would
+  // otherwise fall back to its own "Type to filter"); a consumer can refine or
+  // replace that name through the label options.
+  const nameProps = resolveAriaLabelProps(labelProps, { "aria-label": label });
   const error = field.state.meta.errors[0];
   const [isOpen, setIsOpen] = useState(false);
   // What the input shows, updated on every keystroke for responsive typing.
@@ -424,7 +439,7 @@ export default function SearchableSelectField({
       // "Menu toggle"; reusing the field label avoids that English default.
       // TODO (post-freeze): give the caret its own translated, purpose-specific
       // label (e.g. "Show options") instead of duplicating the field label.
-      aria-label={label}
+      {...nameProps}
     >
       <TextInputGroup isPlain>
         <TextInputGroupMain
@@ -436,7 +451,7 @@ export default function SearchableSelectField({
           inputId={`${idPrefix}-input`}
           // PF defaults the input's aria-label to "Type to filter", which would
           // override the visible label as the accessible name; keep them aligned.
-          aria-label={label}
+          {...nameProps}
           value={inputDisplayValue}
           onChange={(_e, value) => {
             setFilterValue(value);
@@ -486,7 +501,7 @@ export default function SearchableSelectField({
   /** Render */
 
   return (
-    <FormGroup label={label} fieldId={`${idPrefix}-input`}>
+    <FormGroup label={<span id={labelId}>{label}</span>} fieldId={`${idPrefix}-input`}>
       <Select
         id={field.name}
         variant="typeahead"

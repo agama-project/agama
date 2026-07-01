@@ -30,8 +30,11 @@ import {
   Stack,
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
+import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import type { TranslatedString } from "~/i18n";
+
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
 
 export type RadioOption<T> = {
   value: T;
@@ -40,7 +43,7 @@ export type RadioOption<T> = {
   isDisabled?: boolean;
 };
 
-type RadioGroupFieldProps<T> = {
+type RadioGroupFieldProps<T> = FieldLabelOptions & {
   /** The field label. */
   label: React.ReactNode;
   /** The available options. */
@@ -62,6 +65,7 @@ type RadioGroupFieldProps<T> = {
  * or change based on the selected value.
  *
  * @see useFieldContext for field component conventions.
+ * @see useFieldLabel for adjusting the accessible name (`labelPrefixedBy`, etc.).
  *
  * @example
  * <form.AppField name="partitionSource">
@@ -83,13 +87,26 @@ export default function RadioGroupField<T extends string>({
   options,
   helperText,
   children,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
 }: RadioGroupFieldProps<T>) {
   const field = useFieldContext<T>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const error = field.state.meta.errors[0];
 
+  // The radios form a named group. Unlike a single input, the group is not
+  // labelled by FormGroup on its own, so it is named by the field's own label by
+  // default and refined when a consumer asks for a different name.
+  const groupProps = resolveAriaLabelProps(labelProps, { "aria-labelledby": labelId });
+
   return (
-    <FormGroup fieldId={field.name} label={label}>
-      <Stack hasGutter>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
+      <Stack hasGutter role="group" {...groupProps}>
         {options.map((opt) => (
           <Radio
             key={opt.value}

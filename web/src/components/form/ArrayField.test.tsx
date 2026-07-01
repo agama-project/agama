@@ -36,6 +36,8 @@ type TestFormProps = {
   fieldError?: string;
   splitPasteOn?: RegExp | string;
   maxEntryWidth?: number;
+  /** Id of a context element whose text prefixes the accessible names. */
+  labelPrefixedBy?: string;
 };
 
 function TestForm({
@@ -47,6 +49,7 @@ function TestForm({
   fieldError,
   splitPasteOn,
   maxEntryWidth,
+  labelPrefixedBy,
 }: TestFormProps) {
   const form = useAppForm({
     defaultValues: { tags: defaultValues },
@@ -63,10 +66,12 @@ function TestForm({
           form.handleSubmit();
         }}
       >
+        {labelPrefixedBy && <span id={labelPrefixedBy}>Network</span>}
         <form.AppField name="tags">
           {(field) => (
             <field.ArrayField
               label="Tags"
+              labelPrefixedBy={labelPrefixedBy}
               validateOnChange={validateOnChange}
               validateOnSubmit={validateOnSubmit}
               skipDuplicates={skipDuplicates}
@@ -95,6 +100,20 @@ describe("ArrayField", () => {
     const instructions = screen.getByText(/Escape to exit/);
     const instructionsId = instructions.closest("[id]")?.id;
     expect(input.getAttribute("aria-describedby")).toContain(instructionsId);
+  });
+
+  describe("accessible names", () => {
+    it("names the input and the entries list from the label", () => {
+      installerRender(<TestForm defaultValues={["alpha"]} />);
+      screen.getByRole("textbox", { name: "Tags" });
+      screen.getByRole("listbox", { name: "Tags entries" });
+    });
+
+    it("prepends labelPrefixedBy context to both names", () => {
+      installerRender(<TestForm defaultValues={["alpha"]} labelPrefixedBy="ctx" />);
+      screen.getByRole("textbox", { name: "Network Tags" });
+      screen.getByRole("listbox", { name: "Network Tags entries" });
+    });
   });
 
   it("does not show sighted instructions on empty field", () => {

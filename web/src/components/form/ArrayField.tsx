@@ -36,6 +36,7 @@ import {
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
+import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { _ } from "~/i18n";
 
@@ -295,8 +296,22 @@ type ArrayFieldProps = {
    * Used as the accessible name of the text input and as the base for the
    * listbox accessible name. Inferred from `label` when it is a plain string;
    * required when `label` is a ReactNode.
+   *
+   * `labelPrefixedBy` takes precedence for the input's accessible name.
    */
   inputAriaLabel?: string;
+
+  /**
+   * One or more element IDs whose text prefixes the field's own label in the
+   * input's accessible name, e.g. a parent fieldset legend. Use to disambiguate
+   * fields that share a generic label without adding a new translatable string.
+   *
+   * Takes precedence over `inputAriaLabel` for the input's accessible name, and
+   * is prepended to the entries list name as well, so both read consistently.
+   *
+   * @see useFieldLabel
+   */
+  labelPrefixedBy?: string;
 
   /**
    * Per-entry validator that runs on every commit.
@@ -452,6 +467,7 @@ type ArrayFieldProps = {
 export default function ArrayField({
   label,
   inputAriaLabel,
+  labelPrefixedBy,
   helperText,
   isDisabled = false,
   validateOnChange,
@@ -468,6 +484,26 @@ export default function ArrayField({
   const onChange = (next: string[]) => field.handleChange(next);
   const fieldErrors = sift(field.state.meta.errors);
   const ariaLabel = inputAriaLabel ?? (typeof label === "string" ? label : undefined);
+  // Names the text input: `ariaLabel` by default, or a contextual name that
+  // prepends `labelPrefixedBy` (which then takes precedence over `ariaLabel`).
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    labelPrefixedBy,
+  });
+  const inputNameProps = resolveAriaLabelProps(labelProps);
+
+  // Names the entries list, symmetric with the input. Without a prefix it keeps
+  // its plain aria-label; with one it is named by reference so the same context
+  // can be prepended while the translated phrase stays intact (no new string,
+  // no per-locale word order).
+  const listboxNameId = `${field.name}-listbox-name`;
+  // TRANSLATORS: accessible name for the entries list. %s is the field label
+  // (e.g. "DNS servers").
+  const listboxName = ariaLabel ? sprintf(_("%s entries"), ariaLabel) : undefined;
+  const hasListboxPrefix = Boolean(labelPrefixedBy && listboxName);
+  const listboxNameProps = hasListboxPrefix
+    ? { "aria-labelledby": `${labelPrefixedBy} ${listboxNameId}` }
+    : { "aria-label": listboxName };
 
   /**
    * Returns the validation error for an entry, combining both validators.
@@ -664,7 +700,7 @@ export default function ArrayField({
   const hasAnyError = hasErrors || fieldErrors?.length > 0;
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <div onClick={() => inputRef.current?.focus()}>
         <TextInputGroup
           isDisabled={isDisabled}
@@ -684,18 +720,23 @@ export default function ArrayField({
             inputProps={{
               id: field.name,
               "aria-describedby": `${hintId} ${instructionsId}`,
-              ...(ariaLabel && { "aria-label": ariaLabel }),
+              ...inputNameProps,
               onKeyDown,
               onPaste,
             }}
             style={{ flexBasis: "8rem", flexGrow: 1, display: "block" }}
           >
+            {/* Holds the list name so the context prefix can precede the
+                translated phrase. Hidden: referenced only, never shown. */}
+            {hasListboxPrefix && value.length > 0 && (
+              <span id={listboxNameId} hidden>
+                {listboxName}
+              </span>
+            )}
             {value.length > 0 && (
               <div
                 role="listbox"
-                // TRANSLATORS: accessible label for the entries list. %s is the
-                // field label (e.g. "DNS servers").
-                aria-label={ariaLabel ? sprintf(_("%s entries"), ariaLabel) : undefined}
+                {...listboxNameProps}
                 style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", padding: "0.2rem 0" }}
               >
                 {value.map((item, index) => {

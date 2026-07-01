@@ -121,3 +121,25 @@ export function useFieldLabel(fieldName: string, options: FieldLabelOptions = {}
     },
   };
 }
+
+type AriaNameProps = Pick<FieldLabelOptions, "aria-label" | "aria-labelledby">;
+
+/**
+ * Picks a single aria-label/aria-labelledby pair to spread onto an element
+ * that needs its own accessible name, from the `labelProps` a {@link useFieldLabel}
+ * call produced.
+ *
+ * `aria-labelledby` wins when both are present, matching the accessible name
+ * computation order browsers already apply
+ * (https://www.w3.org/TR/accname-1.2/). `fallback` is used only when
+ * `labelProps` carries neither, e.g. to self-reference the field's own label
+ * when the element has no native label association to fall back on.
+ */
+export function resolveAriaLabelProps(
+  labelProps: AriaNameProps,
+  fallback?: AriaNameProps,
+): AriaNameProps {
+  if (labelProps["aria-labelledby"]) return { "aria-labelledby": labelProps["aria-labelledby"] };
+  if (labelProps["aria-label"]) return { "aria-label": labelProps["aria-label"] };
+  return fallback ?? {};
+}
