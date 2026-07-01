@@ -519,11 +519,13 @@ export default function ArrayField({
   const value = field.state.value;
   const onChange = (next: string[]) => field.handleChange(next);
   const fieldErrors = sift(field.state.meta.errors);
-  // Names the text input: `inputAriaLabel` by default, or a contextual name that
-  // prepends `labelPrefixedBy` (which then takes precedence over `inputAriaLabel`);
+  const ariaLabel =
+    inputAriaLabel ?? (typeof label === "string" ? (label as TranslatedString) : undefined);
+  // Names the text input: `ariaLabel` by default, or a contextual name that
+  // prepends `labelPrefixedBy` (which then takes precedence over `ariaLabel`);
   // an explicit `aria-labelledby` replaces it entirely and wins over both.
   const { labelId, labelProps } = useFieldLabel(field.name, {
-    "aria-label": inputAriaLabel,
+    "aria-label": ariaLabel,
     "aria-labelledby": ariaLabelledBy,
     labelPrefixedBy,
   });
@@ -533,7 +535,7 @@ export default function ArrayField({
   const listboxNameId = `${field.name}-listbox-name`;
   // TRANSLATORS: accessible name for the entries list. %s is the field label
   // (e.g. "DNS servers").
-  const listboxName = inputAriaLabel ? sprintf(_("%s entries"), inputAriaLabel) : undefined;
+  const listboxName = ariaLabel ? sprintf(_("%s entries"), ariaLabel) : undefined;
   const hasListboxPrefix = Boolean(!ariaLabelledBy && labelPrefixedBy && listboxName);
   const listboxNameProps = resolveListboxNameProps(
     listboxNameId,
