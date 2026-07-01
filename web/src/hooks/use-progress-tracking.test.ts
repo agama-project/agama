@@ -130,7 +130,7 @@ describe("useProgressTracking", () => {
       rerender();
 
       // Complete progress
-      jest.setSystemTime(1000);
+      jest.advanceTimersByTime(1000);
       mockProgresses([]);
       rerender();
 
@@ -141,7 +141,7 @@ describe("useProgressTracking", () => {
       expect(result.current.loading).toBe(true);
 
       // Queries refetch after progress finished
-      jest.setSystemTime(2000);
+      jest.advanceTimersByTime(1000);
 
       await waitFor(() => {
         mockRefetchCallback();
@@ -174,7 +174,7 @@ describe("useProgressTracking", () => {
       rerender();
 
       // Complete progress
-      jest.setSystemTime(1000);
+      jest.advanceTimersByTime(1000);
       mockProgresses([]);
       rerender();
 
@@ -185,7 +185,7 @@ describe("useProgressTracking", () => {
       expect(result.current.loading).toBe(true);
 
       // Queries refetch after progress finished
-      jest.setSystemTime(2000);
+      jest.advanceTimersByTime(1000);
 
       await waitFor(() => {
         mockRefetchCallback();
@@ -234,7 +234,7 @@ describe("useProgressTracking", () => {
       expect(result.current.loading).toBe(true);
 
       // Complete tasks
-      jest.setSystemTime(1000);
+      jest.advanceTimersByTime(1000);
       mockTasks([]);
       rerender();
 
@@ -245,7 +245,7 @@ describe("useProgressTracking", () => {
       expect(result.current.loading).toBe(true);
 
       // Queries refetch after tasks finished
-      jest.setSystemTime(2000);
+      jest.advanceTimersByTime(1000);
 
       await waitFor(() => {
         mockRefetchCallback();
@@ -273,7 +273,7 @@ describe("useProgressTracking", () => {
       expect(result.current.loading).toBe(true);
 
       // Progress completes but task still running
-      jest.setSystemTime(1000);
+      jest.advanceTimersByTime(1000);
       mockProgresses([]);
       mockTasks([fakeSoftwareTask]);
       rerender();
@@ -282,7 +282,7 @@ describe("useProgressTracking", () => {
       expect(mockStartTracking).not.toHaveBeenCalled();
 
       // Task also completes
-      jest.setSystemTime(2000);
+      jest.advanceTimersByTime(1000);
       mockTasks([]);
       rerender();
 
@@ -293,7 +293,7 @@ describe("useProgressTracking", () => {
       expect(result.current.loading).toBe(true);
 
       // Queries refetch
-      jest.setSystemTime(3000);
+      jest.advanceTimersByTime(1000);
 
       await waitFor(() => {
         mockRefetchCallback();
@@ -318,37 +318,36 @@ describe("useProgressTracking", () => {
       const { result, rerender } = renderHook(() => useProgressTracking("software"));
 
       // Start progress at T0
-      jest.setSystemTime(0);
       mockProgresses([fakeSoftwareProgress]);
       rerender();
 
       expect(result.current.loading).toBe(true);
 
-      // Query refetches during progress at T1000 (this would happen automatically
+      // Query refetches during progress at T+1000ms (this would happen automatically
       // in real app due to query invalidation or refetchInterval)
-      jest.setSystemTime(1000);
-      // In reality, TanStack Query would update the query's dataUpdatedAt to 1000
+      jest.advanceTimersByTime(1000);
+      // In reality, TanStack Query would update the query's dataUpdatedAt to T+1000
 
-      // Progress completes at T2000
-      jest.setSystemTime(2000);
+      // Progress completes at T+2000ms
+      jest.advanceTimersByTime(1000);
       mockProgresses([]);
       rerender();
 
-      // startTracking() is called now, capturing startedAt = 2000
+      // startTracking() is called now, capturing startedAt = T+2000
       await waitFor(() => {
         expect(mockStartTracking).toHaveBeenCalledTimes(1);
       });
 
-      // The query's dataUpdatedAt (1000) < startedAt (2000), so it won't be
+      // The query's dataUpdatedAt (T+1000) < startedAt (T+2000), so it won't be
       // detected as refetched by useTrackQueriesRefetch. The hook will wait
       // forever for a refetch that already happened.
       //
-      // Expected behavior: loading should become false when the refetch from T1000
+      // Expected behavior: loading should become false when the refetch from T+1000
       // is detected, but it stays true indefinitely
       expect(result.current.loading).toBe(true);
 
       // Even if time advances, loading stays true because no new refetch happens
-      jest.setSystemTime(5000);
+      jest.advanceTimersByTime(3000);
       rerender();
 
       expect(result.current.loading).toBe(true);
