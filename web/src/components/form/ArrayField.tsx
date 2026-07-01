@@ -300,28 +300,7 @@ function Entry({
   );
 }
 
-type ArrayFieldProps = {
-  /**
-   * Label rendered by PatternFly's FormGroup.
-   *
-   * Can be a plain string or a ReactNode (e.g. `LabelText` with a suffix).
-   * When a ReactNode is passed, also provide `inputAriaLabel` so assistive
-   * technologies receive a plain-text version of the label.
-   */
-  label: React.ReactNode;
-
-  /**
-   * Plain-text label for assistive technologies.
-   *
-   * Used as the accessible name of the text input and as the base for the
-   * listbox accessible name. Inferred from `label` when it is a plain string;
-   * required when `label` is a ReactNode.
-   *
-   * `labelPrefixedBy` and `aria-labelledby` take precedence for the input's
-   * accessible name.
-   */
-  inputAriaLabel?: TranslatedString;
-
+type ArrayFieldBaseProps = {
   /**
    * One or more element IDs whose text replaces the field's own label in the
    * input's accessible name entirely, e.g. other on-screen elements that
@@ -431,6 +410,43 @@ type ArrayFieldProps = {
 };
 
 /**
+ * ArrayFieldProps as a discriminated union to enforce inputAriaLabel when
+ * label is a ReactNode.
+ */
+type ArrayFieldProps =
+  | (ArrayFieldBaseProps & {
+      /**
+       * Label as a TranslatedString (wrapped with `_()`).
+       *
+       * When label is a plain translated string, it's automatically used as the
+       * accessible name for the input and listbox.
+       */
+      label: TranslatedString;
+      /**
+       * Optional override for the accessible name.
+       *
+       * When omitted, the label itself is used as the accessible name.
+       */
+      inputAriaLabel?: TranslatedString;
+    })
+  | (ArrayFieldBaseProps & {
+      /**
+       * Label as a complex ReactNode (e.g. `LabelText` with a suffix).
+       *
+       * When label is a ReactNode, you must provide inputAriaLabel so assistive
+       * technologies receive a plain-text version of the label.
+       */
+      label: Exclude<React.ReactNode, string>;
+      /**
+       * Required plain-text label for assistive technologies.
+       *
+       * Provides the accessible name for the input and the base for the listbox
+       * accessible name. `labelPrefixedBy` and `aria-labelledby` take precedence.
+       */
+      inputAriaLabel: TranslatedString;
+    });
+
+/**
  * A form field for entering and managing a list of string values.
  *
  * Users type in a text input and commit entries one at a time via Enter,
@@ -519,6 +535,8 @@ export default function ArrayField({
   const value = field.state.value;
   const onChange = (next: string[]) => field.handleChange(next);
   const fieldErrors = sift(field.state.meta.errors);
+  // When label is a string, it's guaranteed to be TranslatedString by the type system.
+  // TypeScript's typeof narrows to primitive string, so we assert the branded type.
   const ariaLabel =
     inputAriaLabel ?? (typeof label === "string" ? (label as TranslatedString) : undefined);
   // Names the text input: `ariaLabel` by default, or a contextual name that
