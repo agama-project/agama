@@ -101,7 +101,7 @@ describe "agama config" do
     context "valid profile" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples/profile_tw_minimal.json", \
+        "rust/share/examples/profile_tw_minimal.json", \
         "", \
         ""
     end
@@ -109,7 +109,7 @@ describe "agama config" do
     context "valid profile with space in path" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples space/profile_tw_minimal.json", \
+        "rust/share/examples space/profile_tw_minimal.json", \
         "", \
         ""
     end
@@ -120,7 +120,7 @@ describe "agama config" do
     xcontext "valid profile with percent in path" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples%20percent/profile_tw_minimal.json", \
+        "rust/share/examples%20percent/profile_tw_minimal.json", \
         "", \
         ""
     end
@@ -128,7 +128,7 @@ describe "agama config" do
     context "invalid profile" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples/profile_tw_invalid.json", \
+        "rust/share/examples/profile_tw_invalid.json", \
         "", \
         "* Additional properties are not allowed ('ID' was unexpected). /product", \
         1
@@ -162,13 +162,13 @@ describe "agama config" do
     end
 
     context "config via file contains relative URL references:" do
-      let(:filename) { "rust/agama-lib/share/examples/post-script-ref.jsonnet" }
+      let(:filename) { "rust/share/examples/post-script-ref.jsonnet" }
 
       it "they are resolved" do
         output = Cheetah.run("agama", "config", "generate", fixture(filename),
           stdout: :capture)
         expect(output).to include("file:///")
-        expect(output).to include("/rust/agama-lib/share/examples/enable-sshd.sh")
+        expect(output).to include("/rust/share/examples/enable-sshd.sh")
         expect(output).to_not include("..")
       end
     end
@@ -204,6 +204,7 @@ describe "agama config" do
                 "uh": "oh"
              }
           }
+
         JSON
         expect(stdout).to eq(expected)
         expect(stderr).to include("profile is not valid")
