@@ -21,7 +21,7 @@ configure_network() {
     echo "<5>Enabling network configuration"
     echo "rd.neednet=1" > "$FILE"
     # use DHCP if there is no network configuration provided by user
-    if ! getarg "ip="; then
+    if ! getarg "ip=" >/dev/null && ! getarg "rd.hcn.ip=" >/dev/null; then
       echo "Using default DHCP network configuration"
       echo "ip=dhcp" >> "$FILE"
     fi

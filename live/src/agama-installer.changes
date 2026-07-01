@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 25 16:04:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for configuring HNV in the initramfs providing the
+  IP configuration through the kernel cmdline with the rd.hcn.ip
+  and the rd.hcn.route options (jsc#PED-14533).
+
+-------------------------------------------------------------------
 Wed Jun 24 15:19:28 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Break a initrd-nmtui systemd dependency cycle (systemd deletes some services
