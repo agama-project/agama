@@ -163,6 +163,25 @@ describe("AuthenticationForm", () => {
     });
   });
 
+  describe("accessible names", () => {
+    it("prefixes fields shared by both sections so their names stay unique", async () => {
+      mockRootUser = {
+        password: "secret123",
+        hashedPassword: false,
+        sshPublicKeys: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5 user@host",
+      };
+      const { user } = installerRender(<AuthenticationForm />);
+      await enableFirstUser(user);
+
+      screen.getByLabelText("Administrator account Password");
+      screen.getByLabelText("Administrator account Password confirmation");
+      screen.getByLabelText("Administrator account SSH Public Keys (optional)");
+      screen.getByLabelText("Root account Password");
+      screen.getByLabelText("Root account Password confirmation");
+      screen.getByLabelText("Root account SSH Public Keys");
+    });
+  });
+
   describe("form submission", () => {
     it("shows no changes message when form is pristine", async () => {
       const { user } = installerRender(<AuthenticationForm />);
