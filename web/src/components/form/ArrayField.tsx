@@ -68,6 +68,25 @@ function normalizeValue(value: string, normalize?: (v: string) => string): strin
 }
 
 /**
+ * Names the entries list. An explicit `ariaLabelledBy` replaces the name
+ * entirely, same as for the input, and wins over `labelPrefixedBy`. Without
+ * one, `labelPrefixedBy` prepends its referenced context to `listboxName`
+ * instead, keeping the translated phrase intact. With neither, `listboxName`
+ * is used as a plain aria-label.
+ */
+function resolveListboxNameProps(
+  listboxNameId: string,
+  listboxName: string | undefined,
+  ariaLabelledBy: string | undefined,
+  labelPrefixedBy: string | undefined,
+): { "aria-label"?: string; "aria-labelledby"?: string } {
+  if (ariaLabelledBy) return { "aria-labelledby": ariaLabelledBy };
+  if (labelPrefixedBy && listboxName)
+    return { "aria-labelledby": `${labelPrefixedBy} ${listboxNameId}` };
+  return { "aria-label": listboxName };
+}
+
+/**
  * Trims, normalizes, and optionally validates a raw draft string.
  *
  * Returns `null` for empty or whitespace-only input so callers can skip
@@ -297,9 +316,24 @@ type ArrayFieldProps = {
    * listbox accessible name. Inferred from `label` when it is a plain string;
    * required when `label` is a ReactNode.
    *
-   * `labelPrefixedBy` takes precedence for the input's accessible name.
+   * `labelPrefixedBy` and `aria-labelledby` take precedence for the input's
+   * accessible name.
    */
   inputAriaLabel?: string;
+
+  /**
+   * One or more element IDs whose text replaces the field's own label in the
+   * input's accessible name entirely, e.g. other on-screen elements that
+   * already describe the field. Use only when those elements fully describe
+   * the field; otherwise prefer `labelPrefixedBy`.
+   *
+   * Takes precedence over both `labelPrefixedBy` and `inputAriaLabel` for the
+   * input's accessible name, and over `labelPrefixedBy` for the entries list
+   * name as well, so both read consistently.
+   *
+   * @see useFieldLabel
+   */
+  "aria-labelledby"?: string;
 
   /**
    * One or more element IDs whose text prefixes the field's own label in the
@@ -467,6 +501,7 @@ type ArrayFieldProps = {
 export default function ArrayField({
   label,
   inputAriaLabel,
+  "aria-labelledby": ariaLabelledBy,
   labelPrefixedBy,
   helperText,
   isDisabled = false,
@@ -485,25 +520,27 @@ export default function ArrayField({
   const fieldErrors = sift(field.state.meta.errors);
   const ariaLabel = inputAriaLabel ?? (typeof label === "string" ? label : undefined);
   // Names the text input: `ariaLabel` by default, or a contextual name that
-  // prepends `labelPrefixedBy` (which then takes precedence over `ariaLabel`).
+  // prepends `labelPrefixedBy` (which then takes precedence over `ariaLabel`);
+  // an explicit `aria-labelledby` replaces it entirely and wins over both.
   const { labelId, labelProps } = useFieldLabel(field.name, {
     "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
     labelPrefixedBy,
   });
   const inputNameProps = resolveAriaLabelProps(labelProps);
 
-  // Names the entries list, symmetric with the input. Without a prefix it keeps
-  // its plain aria-label; with one it is named by reference so the same context
-  // can be prepended while the translated phrase stays intact (no new string,
-  // no per-locale word order).
+  // Names the entries list, symmetric with the input: see resolveListboxNameProps.
   const listboxNameId = `${field.name}-listbox-name`;
   // TRANSLATORS: accessible name for the entries list. %s is the field label
   // (e.g. "DNS servers").
   const listboxName = ariaLabel ? sprintf(_("%s entries"), ariaLabel) : undefined;
-  const hasListboxPrefix = Boolean(labelPrefixedBy && listboxName);
-  const listboxNameProps = hasListboxPrefix
-    ? { "aria-labelledby": `${labelPrefixedBy} ${listboxNameId}` }
-    : { "aria-label": listboxName };
+  const hasListboxPrefix = Boolean(!ariaLabelledBy && labelPrefixedBy && listboxName);
+  const listboxNameProps = resolveListboxNameProps(
+    listboxNameId,
+    listboxName,
+    ariaLabelledBy,
+    labelPrefixedBy,
+  );
 
   /**
    * Returns the validation error for an entry, combining both validators.

@@ -38,6 +38,8 @@ type TestFormProps = {
   maxEntryWidth?: number;
   /** Id of a context element whose text prefixes the accessible names. */
   labelPrefixedBy?: string;
+  /** Id of an element whose text replaces the accessible names entirely. */
+  ariaLabelledBy?: string;
 };
 
 function TestForm({
@@ -50,6 +52,7 @@ function TestForm({
   splitPasteOn,
   maxEntryWidth,
   labelPrefixedBy,
+  ariaLabelledBy,
 }: TestFormProps) {
   const form = useAppForm({
     defaultValues: { tags: defaultValues },
@@ -67,11 +70,13 @@ function TestForm({
         }}
       >
         {labelPrefixedBy && <span id={labelPrefixedBy}>Network</span>}
+        {ariaLabelledBy && <span id={ariaLabelledBy}>Search results</span>}
         <form.AppField name="tags">
           {(field) => (
             <field.ArrayField
               label="Tags"
               labelPrefixedBy={labelPrefixedBy}
+              aria-labelledby={ariaLabelledBy}
               validateOnChange={validateOnChange}
               validateOnSubmit={validateOnSubmit}
               skipDuplicates={skipDuplicates}
@@ -113,6 +118,14 @@ describe("ArrayField", () => {
       installerRender(<TestForm defaultValues={["alpha"]} labelPrefixedBy="ctx" />);
       screen.getByRole("textbox", { name: "Network Tags" });
       screen.getByRole("listbox", { name: "Network Tags entries" });
+    });
+
+    it("replaces both names with aria-labelledby, taking precedence over labelPrefixedBy", () => {
+      installerRender(
+        <TestForm defaultValues={["alpha"]} labelPrefixedBy="ctx" ariaLabelledBy="override" />,
+      );
+      screen.getByRole("textbox", { name: "Search results" });
+      screen.getByRole("listbox", { name: "Search results" });
     });
   });
 
