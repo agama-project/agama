@@ -25,6 +25,7 @@ import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { parsePasteEntries } from "~/components/form/ArrayField";
+import { _ } from "~/i18n";
 
 type TestFormProps = {
   defaultValues?: string[];
@@ -74,7 +75,7 @@ function TestForm({
         <form.AppField name="tags">
           {(field) => (
             <field.ArrayField
-              label="Tags"
+              label={_("Tags")}
               labelPrefixedBy={labelPrefixedBy}
               aria-labelledby={ariaLabelledBy}
               validateOnChange={validateOnChange}

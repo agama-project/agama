@@ -156,9 +156,6 @@ const FirstUserFields = withForm({
                   {(field) => (
                     <field.ArrayField
                       label={<LabelText suffix={_("(optional)")}>{_("SSH Public Keys")}</LabelText>}
-                      // Plain-text base name for the input and entries list; the
-                      // ReactNode label cannot supply one on its own.
-                      inputAriaLabel={_("SSH Public Keys")}
                       labelPrefixedBy={legendId}
                       skipDuplicates
                       maxEntryWidth={60}

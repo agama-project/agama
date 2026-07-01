@@ -124,7 +124,6 @@ const IpFields = withForm({
                   {(field) => (
                     <field.ArrayField
                       label={addressesLabel}
-                      inputAriaLabel={addressesLabel}
                       skipDuplicates
                       normalize={ensureIPPrefix}
                       helperText={
