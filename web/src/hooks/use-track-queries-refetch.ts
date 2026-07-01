@@ -119,6 +119,22 @@ function useTrackQueriesRefetch(queryKeys: readonly string[], onSuccess: () => v
    * is triggered.
    *
    * Calling this function multiple times will cancel previous tracking cycles.
+   *
+   * KNOWN FLAW: If a query refetches BEFORE this function is called (but after
+   * the operation that triggered the need for tracking started), it will never
+   * be detected as refetched. This happens because `startedAt` is captured when
+   * this function is called, not when the original operation started. As a result,
+   * queries with `dataUpdatedAt < startedAt` are ignored, even if they refetched
+   * fresh data after the operation began. This can cause the hook to get stuck
+   * in a waiting state indefinitely.
+   *
+   * Example scenario:
+   * 1. Backend operation starts at T0
+   * 2. Query auto-refetches at T1 (due to invalidation or refetchInterval)
+   * 3. Backend operation completes at T2
+   * 4. startTracking() is called at T2, capturing startedAt = T2
+   * 5. Query's dataUpdatedAt (T1) < startedAt (T2), so it's never detected
+   * 6. Hook waits forever for a refetch that already happened
    */
   const startTracking = useCallback(() => {
     // Reset any previous tracking cycle

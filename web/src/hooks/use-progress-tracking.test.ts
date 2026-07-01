@@ -344,5 +344,58 @@ describe("useProgressTracking", () => {
         expect(result.current.loading).toBe(false);
       });
     });
+
+    // FLAW: This test demonstrates that if a query is refetched BEFORE startTracking()
+    // is called (but after progress started), it will never be considered as refetched.
+    // The hook gets stuck in loading state because useTrackQueriesRefetch only detects
+    // queries with dataUpdatedAt > startedAt, where startedAt is captured when
+    // startTracking() is called, not when the progress originally started.
+    //
+    // This can happen in real scenarios where:
+    // 1. Progress starts at T0
+    // 2. Query automatically refetches at T1 (due to invalidation or auto-refetch)
+    // 3. Progress completes at T2
+    // 4. startTracking() is called at T2, capturing startedAt = T2
+    // 5. The query's dataUpdatedAt (T1) < startedAt (T2), so it's never considered refetched
+    // 6. Hook waits forever for a refetch that already happened
+    it("FLAW: gets stuck in loading state when query refetches before startTracking is called", async () => {
+      const { result, rerender } = renderHook(() => useProgressTracking("software"));
+
+      // Start progress at T0
+      jest.setSystemTime(0);
+      mockProgresses([fakeSoftwareProgress]);
+      rerender();
+
+      expect(result.current.loading).toBe(true);
+
+      // Query refetches during progress at T1000 (this would happen automatically
+      // in real app due to query invalidation or refetchInterval)
+      jest.setSystemTime(1000);
+      // In reality, TanStack Query would update the query's dataUpdatedAt to 1000
+
+      // Progress completes at T2000
+      jest.setSystemTime(2000);
+      mockProgresses([]);
+      rerender();
+
+      // startTracking() is called now, capturing startedAt = 2000
+      await waitFor(() => {
+        expect(mockStartTracking).toHaveBeenCalledTimes(1);
+      });
+
+      // The query's dataUpdatedAt (1000) < startedAt (2000), so it won't be
+      // detected as refetched by useTrackQueriesRefetch. The hook will wait
+      // forever for a refetch that already happened.
+      //
+      // Expected behavior: loading should become false when the refetch from T1000
+      // is detected, but it stays true indefinitely
+      expect(result.current.loading).toBe(true);
+
+      // Even if time advances, loading stays true because no new refetch happens
+      jest.setSystemTime(5000);
+      rerender();
+
+      expect(result.current.loading).toBe(true);
+    });
   });
 });
