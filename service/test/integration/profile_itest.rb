@@ -130,7 +130,7 @@ describe "agama config" do
         "accepts input in 3 ways", \
         "rust/share/examples/profile_tw_invalid.json", \
         "", \
-        "* Additional properties are not allowed ('ID' was unexpected). /product", \
+        "Additional properties are not allowed ('ID' was unexpected). /product", \
         1
     end
   end
@@ -207,7 +207,7 @@ describe "agama config" do
 
         JSON
         expect(stdout).to eq(expected)
-        expect(stderr).to include("profile is not valid")
+        expect(stderr).to include("Schema validation failed")
         expect(stderr).to include("'uh' was unexpected")
         expect(stderr).to include("\"id\" is a required property")
       end
