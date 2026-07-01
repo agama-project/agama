@@ -180,7 +180,6 @@ impl Registry {
                     registration: p.registration,
                     license: p.license.clone(),
                     desktop_selection,
-                    translations: Some(p.translations.clone()),
                     modes,
                 }
             })
@@ -239,7 +238,6 @@ impl Registry {
             registration: template.registration,
             license: template.license.clone(),
             desktop_selection,
-            translations: None,
             modes,
         }
     }
@@ -742,9 +740,6 @@ mod test {
 
         // Verify description is translated to Czech
         assert!(sles.description.contains("v cloudu"));
-
-        // Verify translations are not included (to reduce payload size)
-        assert!(sles.translations.is_none());
 
         // Test with English (fallback)
         let products_en = ctx.registry.products_for_lang("en");

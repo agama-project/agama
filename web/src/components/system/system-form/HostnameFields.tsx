@@ -96,6 +96,7 @@ const HostnameFields = withForm({
 
     return (
       <Fieldset
+        legendId="hostname-legend"
         legend={
           // TRANSLATORS: fieldset legend for hostname configuration
           _("Hostname")
@@ -107,6 +108,7 @@ const HostnameFields = withForm({
               <field.DropdownField
                 // TRANSLATORS: label for hostname mode selector
                 label={_("Mode")}
+                additionalLabelId="hostname-legend"
                 options={[
                   {
                     value: HOSTNAME_MODE.TRANSIENT,

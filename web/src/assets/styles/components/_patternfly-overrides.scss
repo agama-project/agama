@@ -106,6 +106,23 @@
   font-size: var(--pf-t--global--font--size--md);
 }
 
+// PatternFly sizes the status icon to the body text and lets it sit at the top
+// of its grid cell, which it tunes for the default title size. Agama shows a
+// larger (md) title, so the stock icon looks undersized and rides high above
+// the title text. Scale the icon up via the Agama icon-size token and center it
+// within the title's first line (its line box), so it stays aligned to the
+// first line even when the title wraps.
+.pf-v6-c-alert__icon {
+  --pf-v6-c-alert__icon--FontSize: var(--agm-t--icon--size--300);
+
+  display: inline-flex;
+  align-items: center;
+  align-self: start;
+  min-block-size: calc(
+    var(--pf-t--global--font--size--md) * var(--pf-t--global--font--line-height--body)
+  );
+}
+
 // Default (nonstatus) labels follow the brand-subtle surface instead of a fixed
 // gray, so they stay a distinct, highlighted chip while adapting to the active
 // theme and product overrides. Colored variants (blue, green, danger, ...) keep
@@ -231,13 +248,77 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   gap: inherit;
 }
 
+// A button that is busy is often disabled at the same time (to block a second
+// submit). By default the spinner keeps the button's icon color (light), which
+// is nearly invisible on the gray disabled background and out of step with the
+// muted disabled label. Match the spinner to the current text color so it reads
+// the same as the label in every theme. Plain buttons keep their own treatment.
+.pf-v6-c-button.pf-m-in-progress:disabled:not(.pf-m-plain),
+.pf-v6-c-button.pf-m-in-progress.pf-m-aria-disabled:not(.pf-m-plain) {
+  --pf-v6-c-button__progress--Color: currentcolor;
+}
+
+// PatternFly draws each variant's border with a ::after pseudo-element, which
+// would otherwise sit outside the inset focus ring (see base/_reset) and make
+// bordered variants (e.g. secondary) look different. Hide it while focused so
+// the ring is identical on every button.
+.pf-v6-c-button:focus-visible::after {
+  border-color: transparent;
+}
+
+// Inline link buttons sit within a line of text, where the inset ring would
+// overlap the text. Give them an outset outline instead, like a plain link.
+.pf-v6-c-button.pf-m-inline:focus-visible {
+  box-shadow: none;
+  outline: 3px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+  outline-offset: 2px;
+}
+
+// Menu items are a mix of <button> and (when they have a `to`) <a>, so left to
+// the generic styles they focus inconsistently: a black default outline on the
+// buttons, the blue link outline on the anchors, the latter clipped oddly on the
+// rounded last item. Give them all the same inset ring, which follows each item's
+// uniform radius. The transparent outline is the forced-colors fallback.
+.pf-v6-c-menu__item:focus-visible {
+  outline: 2px solid transparent;
+  box-shadow: inset 0 0 0 3px var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+}
+
+// Text inputs and other form controls show focus through the control's outline,
+// which PatternFly positions but leaves the default (black) color. Paint it with
+// the focus color so it matches the rest.
+.pf-v6-c-form-control > :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+}
+
+// Toggle segments are connected, so an outline ring around one looks awkward
+// (a sliver when inset, an ugly box when outset). Opt out of the button ring and
+// indicate focus by drawing the segment's own border in the focus color and a
+// bit thicker, so it stays clear even on the selected segment, which already has
+// a colored border.
+.pf-v6-c-toggle-group__button:focus-visible {
+  box-shadow: none;
+  --pf-v6-c-toggle-group__button--before--BorderColor: var(
+    --agm-t--focus--color,
+    var(--agm-t--color--waterhole--50)
+  );
+  --pf-v6-c-toggle-group__button--before--BorderWidth: var(
+    --pf-t--global--border--width--box--clicked
+  );
+  z-index: 1;
+}
+
 .pf-v6-c-skip-to-content {
   --pf-v6-c-skip-to-content--focus--InsetInlineStart: var(
     --pf-t--global--spacer--inset--page-chrome
   );
 
   a.pf-m-primary {
-    background: var(--agm-t--focus--color, var(--agm-t--color--waterhole--50));
+    // Use the brand blue directly (not the focus role, which goes lighter in
+    // dark theme for ring contrast) and pin a light text color, so the link
+    // keeps the same readable look on the blue background in every theme.
+    background: var(--agm-t--color--waterhole--50);
+    color: var(--agm-t--color--fog--50);
     font-size: var(--pf-t--global--font--size--md);
   }
 }

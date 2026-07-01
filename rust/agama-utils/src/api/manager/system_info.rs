@@ -18,7 +18,7 @@
 // To contact SUSE LLC about this file by physical or electronic mail, you may
 // find current contact information at www.suse.com.
 
-use crate::api::{l10n::Translations, manager::License};
+use crate::api::manager::License;
 use schemars::JsonSchema;
 use serde::Serialize;
 
@@ -42,7 +42,7 @@ pub struct Product {
     pub id: String,
     /// Product name (e.g., "openSUSE Tumbleweed")
     pub name: String,
-    /// Product description
+    /// Product description (translated to the current UI language)
     pub description: String,
     /// Product icon (e.g., "default.svg")
     pub icon: String,
@@ -53,10 +53,7 @@ pub struct Product {
     /// Desktop selection mode
     #[serde(skip_serializing_if = "Option::is_none")]
     pub desktop_selection: Option<DesktopSelection>,
-    /// Translations
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub translations: Option<Translations>,
-    /// Product modes
+    /// Product modes (names and descriptions are translated to the current UI language)
     #[serde(default)]
     pub modes: Vec<ProductMode>,
 }

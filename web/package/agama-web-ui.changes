@@ -1,4 +1,76 @@
 -------------------------------------------------------------------
+Tue Jun 30 10:16:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix duplicate "Mode" labels in System page accessibility tree
+  (gh#agama-project/agama#3684).
+
+-------------------------------------------------------------------
+Sun Jun 28 21:50:40 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Polish the keyboard focus ring and assorted UI rough edges (control
+  sizes, disabled-button spinner, dark skip link, form-alert scroll)
+  (gh#agama-project/agama#3675).
+
+-------------------------------------------------------------------
+Fri Jun 26 10:03:36 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve disabled text and status color contrast to meet WCAG AA
+  accessibility standards (gh#agama-project/agama#3662).
+
+-------------------------------------------------------------------
+Fri Jun 26 08:42:46 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove the Product translations from system schema
+  (gh#agama-project/agama#3660).
+
+-------------------------------------------------------------------
+Thu Jun 25 13:56:41 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the network connection form: show an alert and scroll to
+  the top when saving fails, and keep the form stable against
+  background data refreshes while editing
+  (gh#agama-project/agama#3670).
+
+-------------------------------------------------------------------
+Thu Jun 25 11:41:21 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Expose the software pattern categories as accessible groups,
+  so a pattern can be identified by its category
+  (gh#agama-project/agama#3667).
+
+-------------------------------------------------------------------
+Tue Jun 23 11:49:50 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Unify the localization settings into a single form: replace the
+  separate language, keyboard and time zone selection pages with
+  one form using a searchable typeahead for each
+  (gh#agama-project/agama#3661).
+
+-------------------------------------------------------------------
+Tue Jun 23 09:14:41 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Explicitly require "monaco-editor" NPM package to fix a build
+  failure in OBS (related to bsc#1268433)
+
+-------------------------------------------------------------------
+Mon Jun 22 12:54:33 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not load the parts of the Monaco editor from an external 3rd
+  party CDN server (bsc#1268433)
+
+-------------------------------------------------------------------
+Mon Jun 22 12:09:14 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Update react router to fix CVE-2026-34077
+  (bsc#1267500)
+
+-------------------------------------------------------------------
+Mon Jun 22 11:08:29 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Apply UI language and keymap changes right away, without needing
+  a page reload (gh#agama-project/agama#3657).
+
+-------------------------------------------------------------------
 Fri Jun 19 12:52:28 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fine-tune and extend the Agama appearance system: improve font

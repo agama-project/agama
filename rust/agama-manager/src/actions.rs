@@ -55,11 +55,12 @@ pub struct InstallAction {
     pub progress: Handler<progress::Service>,
     pub users: Handler<users::Service>,
     pub task_manager: Arc<TaskManager>,
+    pub ipmi: Ipmi,
 }
 
 impl InstallAction {
     /// Runs the installation process by spawning tasks via TaskManager.
-    pub async fn run(self) -> Result<(), service::Error> {
+    pub async fn run(self, finish_method: FinishMethod) -> Result<(), service::Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
         checks::check_issues(&self.issues).await?;
         checks::check_progress(&self.progress).await?;
@@ -233,7 +234,8 @@ impl InstallAction {
 
         // Final progress and stage updates - depend on configuration
         let progress = self.progress.clone();
-        self.task_manager
+        let finish_progress_task = self
+            .task_manager
             .task(
                 "finish_progress",
                 Scope::Manager,
@@ -249,6 +251,54 @@ impl InstallAction {
                     .call(progress::message::SetStage::new(Stage::Finished))
                     .await
                     .map_err(TaskError::from_error)?;
+                Ok(())
+            })
+            .await;
+
+        // Collect all critical tasks to monitor
+        let critical_tasks = vec![
+            storage_task,
+            post_part_scripts_task,
+            software_task,
+            config_task,
+            finish_progress_task,
+        ];
+
+        // Finalization task that runs regardless of success or failure
+        let ipmi = self.ipmi;
+        let progress = self.progress.clone();
+        self.task_manager
+            .task("finalize", Scope::Manager, gettext("Finalize installation"))
+            .depends_on(&critical_tasks)
+            .run_always(move |failed_tasks| async move {
+                if failed_tasks.is_empty() {
+                    tracing::info!("Installation completed successfully");
+
+                    // Execute FinishAction on success
+                    let action = FinishAction::new(finish_method);
+                    action.run();
+                } else {
+                    tracing::error!(
+                        "Installation failed: {} task(s) failed: {:?}",
+                        failed_tasks.len(),
+                        failed_tasks
+                    );
+
+                    // Notify IPMI of failure
+                    if let Err(e) = ipmi.failed() {
+                        tracing::error!("IPMI failed notification error: {e}");
+                    }
+
+                    // and notify agama about failure
+                    progress
+                        .call(progress::message::Finish::new(Scope::Manager))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                    progress
+                        .call(progress::message::SetStage::new(Stage::Failed))
+                        .await
+                        .map_err(TaskError::from_error)?;
+                }
                 Ok(())
             })
             .await;

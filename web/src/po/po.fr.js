@@ -302,6 +302,9 @@ export default {
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
     "Toutes les connexions réseau gérées par cette interface sont actuellement définies pour être utilisées uniquement pendant l'installation et ne seront pas copiées sur le système installé"
   ],
+  "All the available space in the chosen disks will be used to create physical volumes.": [
+    ""
+  ],
   "All the available zFCP controllers are already activated.": [
     "Tous les contrôleurs zFCP disponibles sont déjà activés."
   ],
@@ -709,6 +712,9 @@ export default {
   ],
   "Deactivated": [
     "Désactivé"
+  ],
+  "Decrease font size": [
+    ""
   ],
   "Default": [
     "Par défaut"
@@ -1131,6 +1137,9 @@ export default {
     "",
     ""
   ],
+  "Increase font size": [
+    ""
+  ],
   "Initiator": [
     "Initiateur"
   ],
@@ -1254,6 +1263,9 @@ export default {
   "Keep %s": [
     "Garder %s"
   ],
+  "Keep editing": [
+    ""
+  ],
   "Keyboard": [
     "Clavier"
   ],
@@ -1294,6 +1306,9 @@ export default {
     ""
   ],
   "Light color scheme": [
+    ""
+  ],
+  "Linux command-line with administrative privileges on the installer system.": [
     ""
   ],
   "Listening and learning time (4-30 seconds).": [
@@ -1697,6 +1712,9 @@ export default {
   "Physical volumes": [
     "Volumes physiques"
   ],
+  "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
+    ""
+  ],
   "PiB": [
     "PiB"
   ],
@@ -2020,9 +2038,6 @@ export default {
   "Show information about %s": [
     "Afficher les informations sur %s"
   ],
-  "Show technical details (English only)": [
-    ""
-  ],
   "Shrink existing logical volumes": [
     "Réduire volumes logiques existants"
   ],
@@ -2284,9 +2299,6 @@ export default {
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
     "Le sélecteur modal offre une interface simplifiée conçue pour une utilisation rapide et facile, sans submerger l'utilisateur."
   ],
-  "The needed LVM physical volumes will be added as partitions on the chosen disks, based on the sizes of the logical volumes. If you select more than one disk, the physical volumes may be distributed along several disks.": [
-    "Les volumes physiques LVM nécessaires seront ajoutés en tant que partitions sur les disques choisis, en fonction de la taille des volumes logiques. Si vous sélectionnez plus d'un disque, les volumes physiques peuvent être répartis sur plusieurs disques."
-  ],
   "The password is weak": [
     "Le mot de passe est faible"
   ],
@@ -2350,6 +2362,9 @@ export default {
   "The system will boot to a command-line interface.": [
     "Le système démarrera sur une interface de ligne de commande."
   ],
+  "The terminal requires a larger screen size": [
+    ""
+  ],
   "The whole device will be used for %s": [
     "Tout le périphérique sera utilisé pour %s"
   ],
@@ -2364,6 +2379,9 @@ export default {
   ],
   "There are not zFCP controllers pending of activation.": [
     "Il n’y a pas de contrôleurs zFCP en attente d’activation."
+  ],
+  "There are unsaved changes. If you leave now, your changes will be lost.": [
+    ""
   ],
   "There is %d destructive action planned": [
     "Il y a %d action destructrice prévue",
@@ -2447,6 +2465,9 @@ export default {
   ],
   "Unknown error": [
     "Erreur inconnue"
+  ],
+  "Unsaved changes": [
+    ""
   ],
   "Unselect or activate them and try it again.": [
     "Désélectionnez ou activez-les puis réessayez."
@@ -2693,9 +2714,6 @@ export default {
   ],
   "You must fix these issues": [
     ""
-  ],
-  "You need to fix any invalid settings before proceeding with the installation.": [
-    "Vous devez corriger tout paramètre non valide avant de procéder à l’installation."
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Vous allez vous connecter à un réseau public non chiffré. Cela peut présenter un risque pour vos données."

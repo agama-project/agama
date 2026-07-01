@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun 23 11:48:47 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Do not take zypp lock (bsc#1268344).
+- Avoid calling to YaST software and configure products to include
+  os-prober as optional package.
+
+-------------------------------------------------------------------
 Mon Jun 15 15:45:27 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 22

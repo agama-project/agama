@@ -36,12 +36,13 @@
   --agm-t--link--color: #bd3314;
   --agm-t--action--background--color--hover: #ffefe9;
   --agm-t--focus--color: #fe7c3f;
+  --agm-t--focus--separator--color: #fff;
 
   --agm-t--status--info--color: #2453ff;
-  --agm-t--status--caution--color: #d98a00;
+  --agm-t--status--caution--color: #9a6700;
   --agm-t--status--danger--color: #d83b3b;
-  --agm-t--status--success--color: #30ba78;
-  --agm-t--status--custom--color: #fe7c3f;
+  --agm-t--status--success--color: #008657;
+  --agm-t--status--custom--color: #c2410c;
 }
 
 /* Dark theme. */
@@ -60,6 +61,7 @@
   --agm-t--link--color: #a98bff;
   --agm-t--action--background--color--hover: #262640;
   --agm-t--focus--color: #a98bff;
+  --agm-t--focus--separator--color: #141420;
 
   --agm-t--status--info--color: #6aa6ff;
   --agm-t--status--caution--color: #f0b429;

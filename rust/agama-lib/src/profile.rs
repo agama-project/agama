@@ -1,4 +1,4 @@
-// Copyright (c) [2024] SUSE LLC
+// Copyright (c) [2024-2026] SUSE LLC
 //
 // All Rights Reserved.
 //
@@ -129,7 +129,8 @@ pub struct ProfileValidator {
 impl ProfileValidator {
     pub fn default_schema() -> Result<Self, ProfileError> {
         // profile.schema.json moved to from /rust/agama-lib/share to /rust/share/
-        let relative_path = PathBuf::from("../share/profile.schema.json");
+        let source_file_dir = Path::new(file!()).parent().unwrap_or(Path::new(""));
+        let relative_path = source_file_dir.join("../../share/profile.schema.json");
         let path = if relative_path.exists() {
             relative_path
         } else {

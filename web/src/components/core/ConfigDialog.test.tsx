@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import ConfigDialog from "./ConfigDialog";
 import { plainRender } from "~/test-utils";
 
@@ -31,34 +31,11 @@ jest.mock("~/utils", () => ({
   isoTimestamp: () => mockIsoTimestamp(),
 }));
 
-// Monaco editor is too heavy to render in tests; replace with a lightweight stub
-// that exposes the props we care about.
-jest.mock("@patternfly/react-code-editor", () => ({
-  CodeEditor: ({
-    code,
-    downloadFileName,
-    emptyState,
-  }: {
-    code?: string;
-    downloadFileName: string;
-    emptyState?: React.ReactNode;
-  }) =>
-    code === undefined ? (
-      <>{emptyState}</>
-    ) : (
-      <div>
-        <pre aria-label="Configuration code">{code}</pre>
-        <div aria-label="Download filename">{downloadFileName}</div>
-      </div>
-    ),
-  Language: { json: "json" },
-}));
+// Monaco editor used in <ConfigEditor> is too heavy to render in tests
+jest.mock("~/components/core/ConfigEditor", () => () => <div>ConfigEditor Mock</div>);
 
-const mockConfig = { software: { product: "Agama" } };
 const mockOnClose = jest.fn();
-
 global.fetch = jest.fn();
-const fetchSpy = global.fetch as jest.Mock;
 
 const renderConfigDialog = () => {
   const { user } = plainRender(<ConfigDialog onClose={mockOnClose} />);
@@ -68,78 +45,19 @@ const renderConfigDialog = () => {
 describe("ConfigDialog", () => {
   beforeEach(() => {
     mockOnClose.mockReset();
-    mockIsoTimestamp.mockReturnValue("2026-06-03T10-30-00-000Z");
-    fetchSpy.mockReset();
   });
 
   it("renders the dialog with the correct title", async () => {
-    fetchSpy.mockResolvedValue({
-      text: () => Promise.resolve(JSON.stringify(mockConfig)),
-    } as Response);
-
     renderConfigDialog();
-
+    await screen.findByText("ConfigEditor Mock");
     screen.getByRole("dialog", { name: "Installation settings in JSON format" });
   });
 
-  it("shows a spinner while the config is loading", () => {
-    fetchSpy.mockReturnValue(new Promise(() => {}));
-    renderConfigDialog();
-
-    screen.getByRole("progressbar");
-  });
-
-  it("displays the config content once loaded", async () => {
-    fetchSpy.mockResolvedValue({
-      ok: true,
-      text: () => Promise.resolve(JSON.stringify(mockConfig)),
-    } as Response);
-
-    renderConfigDialog();
-
-    await waitFor(() => expect(screen.queryByRole("progressbar")).toBeNull());
-
-    expect(screen.getByLabelText("Configuration code").textContent).toBe(
-      JSON.stringify(mockConfig, null, 2),
-    );
-  });
-
-  // The extension is omitted here on purpose: CodeEditor appends it based on
-  // its language prop.
-  it("uses a timestamped filename without extension for the download", async () => {
-    fetchSpy.mockResolvedValue({
-      text: () => Promise.resolve(JSON.stringify(mockConfig)),
-    } as Response);
-
-    renderConfigDialog();
-
-    await waitFor(() => {
-      expect(screen.getByLabelText("Download filename")).toHaveTextContent(
-        "agama-config-2026-06-03T10-30-00-000Z",
-      );
-    });
-  });
-
-  it("falls back to an empty config on fetch error", async () => {
-    fetchSpy.mockRejectedValue(new Error("network error"));
-
-    renderConfigDialog();
-
-    await waitFor(() => {
-      expect(screen.queryByRole("progressbar")).toBeNull();
-      expect(screen.getByLabelText("Configuration code")).toHaveTextContent("");
-    });
-  });
-
   it("calls onClose when the close button is clicked", async () => {
-    fetchSpy.mockResolvedValue({
-      text: () => Promise.resolve(JSON.stringify(mockConfig)),
-    } as Response);
-
     const { user } = renderConfigDialog();
+    await screen.findByText("ConfigEditor Mock");
     const closeButtons = screen.getAllByRole("button", { name: "Close" });
     await user.click(closeButtons[1]);
-
     expect(mockOnClose).toHaveBeenCalled();
   });
 });

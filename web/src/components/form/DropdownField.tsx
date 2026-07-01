@@ -46,6 +46,22 @@ type DropdownFieldProps<T> = {
   helperText?: React.ReactNode;
   isDisabled?: boolean;
   /**
+   * Optional additional ID to include in the composite accessible name.
+   *
+   * When provided, this ID will be combined with the field's label ID to
+   * create a composite aria-labelledby value. Useful for referencing parent
+   * elements like fieldset legends to disambiguate fields with identical labels.
+   *
+   * @example Creates accessible name "Hostname Mode"
+   * <legend id="hostname-legend">{_("Hostname")}</legend>
+   * <DropdownField
+   *   label={_("Mode")}
+   *   additionalLabelId="hostname-legend"
+   *   options={MODE_OPTIONS}
+   * />
+   */
+  additionalLabelId?: string;
+  /**
    * Render prop for content that depends on the current value, such as
    * nested fields that appear when a specific option is selected.
    */
@@ -96,6 +112,7 @@ export default function DropdownField<T extends string>({
   options,
   helperText,
   isDisabled = false,
+  additionalLabelId,
   children,
 }: DropdownFieldProps<T>) {
   const field = useFieldContext<T>();
@@ -105,8 +122,11 @@ export default function DropdownField<T extends string>({
     (opt) => !("divider" in opt) && opt.value === field.state.value,
   );
 
+  const labelId = `${field.name}-label`;
+  const ariaLabelledBy = additionalLabelId ? `${additionalLabelId} ${labelId}` : undefined;
+
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <Select
         ref={menuRef}
         isOpen={isOpen}
@@ -125,6 +145,7 @@ export default function DropdownField<T extends string>({
             onClick={() => setIsOpen(!isOpen)}
             isExpanded={isOpen}
             isDisabled={isDisabled}
+            aria-labelledby={ariaLabelledBy}
           >
             {selectedOption && "label" in selectedOption ? selectedOption.label : field.state.value}
           </MenuToggle>

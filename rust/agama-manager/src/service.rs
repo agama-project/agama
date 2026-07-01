@@ -877,6 +877,9 @@ impl MessageHandler<message::RunAction> for Service {
                     tracing::error!("IPMI failed: {}", e);
                 }
 
+                let method =
+                    api::FinishMethod::from_kernel_cmdline().unwrap_or(api::FinishMethod::Stop);
+
                 let action = InstallAction {
                     issues: self.issues.clone(),
                     hostname: self.hostname.clone(),
@@ -891,22 +894,11 @@ impl MessageHandler<message::RunAction> for Service {
                     progress: self.progress.clone(),
                     users: self.users.clone(),
                     task_manager: self.task_manager.clone(),
+                    ipmi,
                 };
 
-                if let Err(error) = action.run().await {
-                    if let Err(e) = ipmi.failed() {
-                        tracing::error!("IPMI failed: {}", e);
-                    }
-                    tracing::error!("Installation failed: {error}");
-                    return Err(error);
-                }
-
+                action.run(method).await?;
                 tracing::info!("Installation tasks spawned");
-
-                let method =
-                    api::FinishMethod::from_kernel_cmdline().unwrap_or(api::FinishMethod::Stop);
-                let finish = FinishAction::new(method);
-                finish.run();
             }
             Action::Finish(method) => {
                 checks::check_stage(&self.progress, Stage::Finished).await?;

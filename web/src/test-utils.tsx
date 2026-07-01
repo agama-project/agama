@@ -282,6 +282,7 @@ const mockL10n = (l10n: {
   language?: string;
   changeKeymap?: jest.Mock;
   changeLanguage?: jest.Mock;
+  changeL10n?: jest.Mock;
 }) => {
   const current = mockUseInstallerL10n.getMockImplementation()?.() || mockUseInstallerL10n();
   mockUseInstallerL10n.mockReturnValue({ ...current, ...l10n });
@@ -380,6 +381,9 @@ const Providers = ({ children }) => {
  */
 const installerRender = (ui: React.ReactNode, options = {}) => {
   const queryClient = new QueryClient({});
+  const { userEventOptions } = options as {
+    userEventOptions?: Parameters<typeof userEvent.setup>[0];
+  };
 
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
@@ -390,7 +394,7 @@ const installerRender = (ui: React.ReactNode, options = {}) => {
   );
 
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup(userEventOptions),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
 };
@@ -423,6 +427,9 @@ const installerRenderHook: typeof renderHook = (hook, options) => {
  */
 const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});
+  const { userEventOptions } = options as {
+    userEventOptions?: Parameters<typeof userEvent.setup>[0];
+  };
 
   const Wrapper = ({ children }) => (
     <QueryClientProvider client={queryClient}>
@@ -432,7 +439,7 @@ const plainRender = (ui, options = {}) => {
     </QueryClientProvider>
   );
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup(userEventOptions),
     ...render(ui, { wrapper: Wrapper, ...options }),
   };
 };
