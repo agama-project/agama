@@ -36,8 +36,10 @@ import {
 } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
+import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { _ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 
 /**
  * Keys owned by the entry navigation handler when an entry is active.
@@ -64,6 +66,25 @@ const NAVIGATION_KEYS = new Set([
 /** Applies `normalize` to `value` if provided; otherwise returns `value` unchanged. */
 function normalizeValue(value: string, normalize?: (v: string) => string): string {
   return normalize ? normalize(value) : value;
+}
+
+/**
+ * Names the entries list. An explicit `ariaLabelledBy` replaces the name
+ * entirely, same as for the input, and wins over `labelPrefixedBy`. Without
+ * one, `labelPrefixedBy` prepends its referenced context to `listboxName`
+ * instead, keeping the translated phrase intact. With neither, `listboxName`
+ * is used as a plain aria-label.
+ */
+function resolveListboxNameProps(
+  listboxNameId: string,
+  listboxName: string | undefined,
+  ariaLabelledBy: string | undefined,
+  labelPrefixedBy: string | undefined,
+): { "aria-label"?: string; "aria-labelledby"?: string } {
+  if (ariaLabelledBy) return { "aria-labelledby": ariaLabelledBy };
+  if (labelPrefixedBy && listboxName)
+    return { "aria-labelledby": `${labelPrefixedBy} ${listboxNameId}` };
+  return { "aria-label": listboxName };
 }
 
 /**
@@ -279,24 +300,32 @@ function Entry({
   );
 }
 
-type ArrayFieldProps = {
+type ArrayFieldBaseProps = {
   /**
-   * Label rendered by PatternFly's FormGroup.
+   * One or more element IDs whose text replaces the field's own label in the
+   * input's accessible name entirely, e.g. other on-screen elements that
+   * already describe the field. Use only when those elements fully describe
+   * the field; otherwise prefer `labelPrefixedBy`.
    *
-   * Can be a plain string or a ReactNode (e.g. `LabelText` with a suffix).
-   * When a ReactNode is passed, also provide `inputAriaLabel` so assistive
-   * technologies receive a plain-text version of the label.
+   * Takes precedence over both `labelPrefixedBy` and `inputAriaLabel` for the
+   * input's accessible name, and over `labelPrefixedBy` for the entries list
+   * name as well, so both read consistently.
+   *
+   * @see useFieldLabel
    */
-  label: React.ReactNode;
+  "aria-labelledby"?: string;
 
   /**
-   * Plain-text label for assistive technologies.
+   * One or more element IDs whose text prefixes the field's own label in the
+   * input's accessible name, e.g. a parent fieldset legend. Use to disambiguate
+   * fields that share a generic label without adding a new translatable string.
    *
-   * Used as the accessible name of the text input and as the base for the
-   * listbox accessible name. Inferred from `label` when it is a plain string;
-   * required when `label` is a ReactNode.
+   * Takes precedence over `inputAriaLabel` for the input's accessible name, and
+   * is prepended to the entries list name as well, so both read consistently.
+   *
+   * @see useFieldLabel
    */
-  inputAriaLabel?: string;
+  labelPrefixedBy?: string;
 
   /**
    * Per-entry validator that runs on every commit.
@@ -381,6 +410,43 @@ type ArrayFieldProps = {
 };
 
 /**
+ * ArrayFieldProps as a discriminated union to enforce inputAriaLabel when
+ * label is a ReactNode.
+ */
+type ArrayFieldProps =
+  | (ArrayFieldBaseProps & {
+      /**
+       * Label as a TranslatedString (wrapped with `_()`).
+       *
+       * When label is a plain translated string, it's automatically used as the
+       * accessible name for the input and listbox.
+       */
+      label: TranslatedString;
+      /**
+       * Optional override for the accessible name.
+       *
+       * When omitted, the label itself is used as the accessible name.
+       */
+      inputAriaLabel?: TranslatedString;
+    })
+  | (ArrayFieldBaseProps & {
+      /**
+       * Label as a complex ReactNode (e.g. `LabelText` with a suffix).
+       *
+       * When label is a ReactNode, you must provide inputAriaLabel so assistive
+       * technologies receive a plain-text version of the label.
+       */
+      label: Exclude<React.ReactNode, string>;
+      /**
+       * Required plain-text label for assistive technologies.
+       *
+       * Provides the accessible name for the input and the base for the listbox
+       * accessible name. `labelPrefixedBy` and `aria-labelledby` take precedence.
+       */
+      inputAriaLabel: TranslatedString;
+    });
+
+/**
  * A form field for entering and managing a list of string values.
  *
  * Users type in a text input and commit entries one at a time via Enter,
@@ -452,6 +518,8 @@ type ArrayFieldProps = {
 export default function ArrayField({
   label,
   inputAriaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
   helperText,
   isDisabled = false,
   validateOnChange,
@@ -467,7 +535,32 @@ export default function ArrayField({
   const value = field.state.value;
   const onChange = (next: string[]) => field.handleChange(next);
   const fieldErrors = sift(field.state.meta.errors);
-  const ariaLabel = inputAriaLabel ?? (typeof label === "string" ? label : undefined);
+  // When label is a string, it's guaranteed to be TranslatedString by the type system.
+  // TypeScript's typeof narrows to primitive string, so we assert the branded type.
+  const ariaLabel =
+    inputAriaLabel ?? (typeof label === "string" ? (label as TranslatedString) : undefined);
+  // Names the text input: `ariaLabel` by default, or a contextual name that
+  // prepends `labelPrefixedBy` (which then takes precedence over `ariaLabel`);
+  // an explicit `aria-labelledby` replaces it entirely and wins over both.
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
+  const inputNameProps = resolveAriaLabelProps(labelProps);
+
+  // Names the entries list, symmetric with the input: see resolveListboxNameProps.
+  const listboxNameId = `${field.name}-listbox-name`;
+  // TRANSLATORS: accessible name for the entries list. %s is the field label
+  // (e.g. "DNS servers").
+  const listboxName = ariaLabel ? sprintf(_("%s entries"), ariaLabel) : undefined;
+  const hasListboxPrefix = Boolean(!ariaLabelledBy && labelPrefixedBy && listboxName);
+  const listboxNameProps = resolveListboxNameProps(
+    listboxNameId,
+    listboxName,
+    ariaLabelledBy,
+    labelPrefixedBy,
+  );
 
   /**
    * Returns the validation error for an entry, combining both validators.
@@ -664,7 +757,7 @@ export default function ArrayField({
   const hasAnyError = hasErrors || fieldErrors?.length > 0;
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <div onClick={() => inputRef.current?.focus()}>
         <TextInputGroup
           isDisabled={isDisabled}
@@ -684,18 +777,23 @@ export default function ArrayField({
             inputProps={{
               id: field.name,
               "aria-describedby": `${hintId} ${instructionsId}`,
-              ...(ariaLabel && { "aria-label": ariaLabel }),
+              ...inputNameProps,
               onKeyDown,
               onPaste,
             }}
             style={{ flexBasis: "8rem", flexGrow: 1, display: "block" }}
           >
+            {/* Holds the list name so the context prefix can precede the
+                translated phrase. Hidden: referenced only, never shown. */}
+            {hasListboxPrefix && value.length > 0 && (
+              <span id={listboxNameId} hidden>
+                {listboxName}
+              </span>
+            )}
             {value.length > 0 && (
               <div
                 role="listbox"
-                // TRANSLATORS: accessible label for the entries list. %s is the
-                // field label (e.g. "DNS servers").
-                aria-label={ariaLabel ? sprintf(_("%s entries"), ariaLabel) : undefined}
+                {...listboxNameProps}
                 style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem", padding: "0.2rem 0" }}
               >
                 {value.map((item, index) => {

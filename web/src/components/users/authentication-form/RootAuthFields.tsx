@@ -37,20 +37,26 @@ import { _ } from "~/i18n";
 
 /**
  * Password and confirmation fields for root authentication.
+ *
+ * `labelPrefixedBy` prefixes the field labels with disambiguating context, so
+ * their generic names ("Password", etc.) do not collide with identical labels
+ * elsewhere in the form.
  */
 const RootPasswordFields = withForm({
   ...defaultOptions,
-  render: function Render({ form }) {
+  props: { labelPrefixedBy: "" },
+  render: function Render({ form, labelPrefixedBy }) {
     return (
       <>
         <form.AppField name="rootPassword">
-          {(field) => <field.MaskedField label={_("Password")} />}
+          {(field) => <field.MaskedField label={_("Password")} labelPrefixedBy={labelPrefixedBy} />}
         </form.AppField>
 
         <form.AppField name="rootPasswordConfirmation">
           {(field) => (
             <field.MaskedField
               label={_("Password confirmation")}
+              labelPrefixedBy={labelPrefixedBy}
               hideReminders={["keymap", "capslock"]}
             />
           )}
@@ -105,8 +111,11 @@ const authModeOptions = () => [
 const RootAuthFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
+    const legendId = React.useId();
+
     return (
       <Fieldset
+        legendId={legendId}
         legend={
           // TRANSLATORS: fieldset legend for root authentication configuration
           _("Root account")
@@ -144,7 +153,7 @@ const RootAuthFields = withForm({
                       isPreserving={usingHashedPassword}
                       onEdit={() => form.setFieldValue("rootUsingHashedPassword", false)}
                     >
-                      <RootPasswordFields form={form} />
+                      <RootPasswordFields form={form} labelPrefixedBy={legendId} />
                       <form.Subscribe selector={(s) => s.values.rootPassword}>
                         {(password) => <PasswordCheck password={password} />}
                       </form.Subscribe>
@@ -159,6 +168,7 @@ const RootAuthFields = withForm({
                         <field.ArrayField
                           // TRANSLATORS: label for root SSH public keys input field
                           label={_("SSH Public Keys")}
+                          labelPrefixedBy={legendId}
                           skipDuplicates
                           maxEntryWidth={60}
                           splitPasteOn={/\r?\n/}

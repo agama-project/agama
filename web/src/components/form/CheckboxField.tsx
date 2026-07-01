@@ -27,15 +27,33 @@ import { useFieldContext } from "~/hooks/form-contexts";
 type CheckboxFieldProps = {
   label: string;
   description?: React.ReactNode;
+  /**
+   * Literal accessible name for the checkbox. Replaces the visible label as the
+   * accessible name; use only when the visible label is not descriptive enough.
+   */
+  "aria-label"?: string;
+  /**
+   * IDs of elements that name the checkbox. Replaces the visible label as the
+   * accessible name; use when other on-screen elements describe it.
+   */
+  "aria-labelledby"?: string;
 };
 
 /**
  * A checkbox tied to a TanStack Form field via `useFieldContext`.
  * Must be used inside a `form.AppField` render prop.
  *
+ * Its visible `label` is also its accessible name. Pass `aria-label` or
+ * `aria-labelledby` only to override that for assistive technologies.
+ *
  * @see useFieldContext for field component conventions.
  */
-export default function CheckboxField({ label, description }: CheckboxFieldProps) {
+export default function CheckboxField({
+  label,
+  description,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+}: CheckboxFieldProps) {
   const field = useFieldContext<boolean>();
 
   return (
@@ -45,6 +63,8 @@ export default function CheckboxField({ label, description }: CheckboxFieldProps
       description={description}
       isChecked={field.state.value}
       onChange={(_, checked) => field.handleChange(checked)}
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
     />
   );
 }

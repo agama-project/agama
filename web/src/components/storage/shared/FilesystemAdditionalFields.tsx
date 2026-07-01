@@ -52,6 +52,7 @@ const FilesystemAdditionalFields = withForm({
               {(field) => (
                 <field.ArrayField
                   label={<LabelText suffix={_("(optional)")}>{_("Mount options")}</LabelText>}
+                  inputAriaLabel={_("Mount options")}
                   helperText={_("E.g. rw, noatime, umask=0666")}
                 />
               )}

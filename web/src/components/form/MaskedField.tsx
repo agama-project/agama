@@ -35,11 +35,14 @@ import {
 import { Icon } from "~/components/layout";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
+import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { useKeyLock } from "~/hooks/use-key-lock";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
+
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
 
 /**
  * Types of keyboard reminders that can be shown for a masked field.
@@ -49,7 +52,7 @@ export type ReminderType = "keymap" | "capslock";
 /**
  * Props for the `MaskedField` component.
  */
-export type MaskedFieldProps = {
+export type MaskedFieldProps = FieldLabelOptions & {
   /** Label to display above the input */
   label: React.ReactNode;
   /** Optional helper text displayed below the input */
@@ -149,20 +152,29 @@ const Reminders = ({ hideReminders = [] }: { hideReminders?: ReminderType[] }) =
  * Use `hideReminders` to selectively hide them.
  *
  * @see useFieldContext for field component conventions.
+ * @see useFieldLabel for adjusting the accessible name (`labelPrefixedBy`, etc.).
  */
 export default function MaskedField({
   label,
   helperText,
   size,
   hideReminders = [],
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
 }: MaskedFieldProps) {
   const field = useFieldContext<string>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const error = field.state.meta.errors[0];
   const [showValue, setShowValue] = useState(false);
   const visibilityIconName = showValue ? "visibility_off" : "visibility";
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <InputGroup>
         <InputGroupItem isFill>
           <TextInput
@@ -173,6 +185,7 @@ export default function MaskedField({
             value={field.state.value}
             validated={error ? "error" : "default"}
             onChange={(_, value) => field.handleChange(value)}
+            {...labelProps}
           />
         </InputGroupItem>
         <InputGroupItem>
