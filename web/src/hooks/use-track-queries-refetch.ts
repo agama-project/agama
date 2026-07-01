@@ -42,8 +42,8 @@ import { useQueryClient } from "@tanstack/react-query";
  * ```tsx
  *   const { startTracking } = useTrackQueriesRefetch(
  *     ['users', 'posts', 'comments'],
- *     (startedAt, completedAt) => {
- *       console.log(`All queries refetched in ${completedAt - startedAt}ms`);
+ *     () => {
+ *       console.log("All queries refetched");
  *     })
  *   );
  *
