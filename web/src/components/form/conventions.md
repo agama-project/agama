@@ -1479,8 +1479,16 @@ export function validate(fields: FormFields): ValidationResult<FormFields> {
    forms
 5. **Reduced cognitive load**: one consistent pattern to learn
 
-Note: forms migrated before this split may still keep `validate` inside
-`fields.ts`. Move it to `validations.ts` when touching them.
+`fields.ts` holds vocabulary only: types, constants, and defaults. Value
+mapping (config to initial values and form values to payload) belongs in
+`transformations.ts` as `toFormValues` / `buildPayload`, not in `fields.ts`.
+Keeping those functions out of `fields.ts` preserves the clean dependency
+direction: `transformations.ts` imports the vocabulary from `fields.ts`, never
+the reverse.
+
+Note: forms migrated before this split may still keep `validate` or the value
+mapping helpers inside `fields.ts`. Move them to `validations.ts` /
+`transformations.ts` when touching them.
 
 ### Sharing fields across forms
 

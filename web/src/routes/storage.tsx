@@ -25,7 +25,7 @@ import { N_ } from "~/i18n";
 import { Route } from "~/types/routes";
 import BootSelectionPage from "~/components/storage/BootSelectionPage";
 import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage";
-import SpacePolicySelectionPage from "~/components/storage/SpacePolicySelectionPage";
+import SpacePolicyForm from "~/components/storage/space-policy-form/Form";
 import ProposalPage from "~/components/storage/ProposalPage";
 import ISCSIPage from "~/components/storage/ISCSIPage";
 import FormattableDeviceForm from "~/components/storage/formattable-device-form/Form";
@@ -63,7 +63,7 @@ const routes = (): Route => ({
     },
     {
       path: PATHS.editSpacePolicy,
-      element: <SpacePolicySelectionPage />,
+      element: <SpacePolicyForm />,
     },
     {
       path: PATHS.formatDevice,
