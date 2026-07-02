@@ -89,8 +89,6 @@ module Agama
           dbus_method(
             :SolveConfigModel, "in serialized_model:s, out result:s"
           ) { |m| solve_config_model(m) }
-          dbus_signal(:SystemChanged, "serialized_system:s")
-          dbus_signal(:ProposalChanged, "serialized_proposal:s")
           dbus_signal(:ProgressChanged, "serialized_progress:s")
           dbus_signal(:ProgressFinished)
         end
@@ -337,7 +335,6 @@ module Agama
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_system = serialized_system
-          self.SystemChanged(serialized_system)
         end
 
         # Updates the config info if needed.
@@ -362,7 +359,6 @@ module Agama
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_proposal = serialized_proposal
-          self.ProposalChanged(serialized_proposal)
         end
 
         # Updates the issues info if needed.
