@@ -42,6 +42,7 @@ import {
 import { useDevice } from "~/hooks/model/system/storage";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { SpacePolicy } from "~/components/storage/utils";
+import { _ } from "~/i18n";
 
 type PolicyItemProps = {
   policy: SpacePolicy;
@@ -86,7 +87,8 @@ const PolicyItem = ({ policy, collection, index }: PolicyItemProps) => {
       description={description()}
       onClick={changePolicy}
     >
-      <Text isBold={isSelected}>{policy.label}</Text>
+      {/* eslint-disable-next-line agama-i18n/string-literals */}
+      <Text isBold={isSelected}>{_(policy.label)}</Text>
     </MenuButton.Item>
   );
 };
