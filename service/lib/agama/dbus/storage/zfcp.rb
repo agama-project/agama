@@ -128,6 +128,22 @@ module Agama
         # @param config_json [Hash]
         def perform_configuration(config_json)
           manager.configure(config_json)
+
+          # The "return if unchanged" guard has been removed from the methods below to always
+          # emit the corresponding signal.
+          #
+          # Since signals do not carry payloads yet, the UI cannot update the query cache
+          # directly and must refetch after receiving the signal. Without emitting the signal,
+          # the related queries are never invalidated and never refetched, leaving the progress
+          # overlay blocked indefinitely.
+          #
+          # The overlay intentionally waits until fresh data arrives before unblocking, since
+          # data can take time to appear after progress completes. Dismissing it
+          # earlier would cause flickering and leave users able to interact with stale data.
+          #
+          # It can be reverted (and UI progress adapted accordingly) when signals carry payloads
+          # that allow the UI to update the cache directly, removing the need to wait for a
+          # refetch as part of progress completion.
           update_serialized_system
           update_serialized_config
           update_serialized_issues
@@ -143,7 +159,6 @@ module Agama
         # Updates the system info if needed.
         def update_serialized_system
           serialized_system = serialize_system
-          return if self.serialized_system == serialized_system
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_system = serialized_system
@@ -152,7 +167,6 @@ module Agama
         # Updates the config info if needed.
         def update_serialized_config
           serialized_config = serialize_config
-          return if self.serialized_config == serialized_config
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_config = serialized_config
@@ -161,7 +175,6 @@ module Agama
         # Updates the issues info if needed.
         def update_serialized_issues
           serialized_issues = serialize_issues
-          return if self.serialized_issues == serialized_issues
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_issues = serialized_issues

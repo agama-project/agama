@@ -48,6 +48,7 @@ import { filterPatterns, groupPatterns, isPatternSelected, sortGroupNames } from
 import { SOFTWARE } from "~/routes/paths";
 import { N_, _, n_ } from "~/i18n";
 import { defaultOptions } from "./fields";
+import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
 
 import type { Pattern } from "~/model/system/software";
 
@@ -355,7 +356,10 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
           label: _(PAGE_TITLE[scope]),
         },
       ]}
-      progress={{ scope: "software" }}
+      progress={{
+        scope: "software",
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+      }}
     >
       <Page.Content>
         <form.AppForm>

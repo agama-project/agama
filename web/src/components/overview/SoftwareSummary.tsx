@@ -28,6 +28,7 @@ import { sprintf } from "sprintf-js";
 import Summary from "~/components/core/Summary";
 import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
+import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useIsDesktopMissing, useSelectedPatterns } from "~/hooks/model/system/software";
@@ -147,7 +148,10 @@ const Description = () => {
  * A software installation summary.
  */
 export default function SoftwareSummary() {
-  const { loading } = useProgressTracking("software");
+  const { loading } = useProgressTracking("software", [
+    PROPOSAL_QUERY_KEY,
+    EXTENDED_CONFIG_QUERY_KEY,
+  ]);
   const issues = useIssues("software");
   const hasIssues = !isEmpty(issues);
 

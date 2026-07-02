@@ -32,14 +32,13 @@ pub trait DASD {
     /// Probe method
     fn probe(&self) -> zbus::Result<()>;
 
+    /// System property
+    #[zbus(property)]
+    fn system(&self) -> zbus::Result<String>;
+
     /// Config property
     #[zbus(property)]
     fn config(&self) -> zbus::Result<String>;
-
-    /// System property
-    /// Temporary rename to avoid clashing with the system_changed signal.
-    #[zbus(property, name = "System")]
-    fn dasd_system(&self) -> zbus::Result<String>;
 
     /// SetConfig method
     fn set_config(&self, serialized_config: &str) -> zbus::Result<()>;
@@ -51,10 +50,6 @@ pub trait DASD {
     /// FormatFinished signal
     #[zbus(signal)]
     fn format_finished(&self, status: &str) -> zbus::Result<()>;
-
-    /// SystemChanged signal
-    #[zbus(signal)]
-    fn system_changed(&self, system: &str) -> zbus::Result<()>;
 
     /// ProgressChanged signal
     #[zbus(signal)]

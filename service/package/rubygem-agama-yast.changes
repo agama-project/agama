@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun 30 14:40:25 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Always emit signals for iSCSI, DASD and zFCP (needed for
+  bsc#1269224).
+- Remove unnecessary custom SystemChanged signal.
+
+-------------------------------------------------------------------
 Tue Jun 23 11:48:47 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Do not take zypp lock (bsc#1268344).
