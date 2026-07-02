@@ -138,7 +138,6 @@ module Agama
         # Updates the system info if needed.
         def update_serialized_system
           serialized_system = serialize_system
-          # return if self.serialized_system == serialized_system
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_system = serialized_system
@@ -147,7 +146,6 @@ module Agama
         # Updates the config info if needed.
         def update_serialized_config
           serialized_config = serialize_config
-          # return if self.serialized_config == serialized_config
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_config = serialized_config

@@ -334,7 +334,6 @@ module Agama
         # Updates the system info if needed.
         def update_serialized_system
           serialized_system = serialize_system
-          # return if self.serialized_system == serialized_system
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_system = serialized_system
@@ -344,7 +343,6 @@ module Agama
         # Updates the config info if needed.
         def update_serialized_config
           serialized_config = serialize_config
-          # return if self.serialized_config == serialized_config
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_config = serialized_config
@@ -353,7 +351,6 @@ module Agama
         # Updates the config model info if needed.
         def update_serialized_config_model
           serialized_config_model = serialize_config_model
-          # return if self.serialized_config_model == serialized_config_model
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_config_model = serialized_config_model
@@ -362,7 +359,6 @@ module Agama
         # Updates the proposal info if needed.
         def update_serialized_proposal
           serialized_proposal = serialize_proposal
-          # return if self.serialized_proposal == serialized_proposal
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_proposal = serialized_proposal
@@ -372,7 +368,6 @@ module Agama
         # Updates the issues info if needed.
         def update_serialized_issues
           serialized_issues = serialize_issues
-          # return if self.serialized_issues == serialized_issues
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_issues = serialized_issues
@@ -381,7 +376,6 @@ module Agama
         # Updates the resolvables info if needed.
         def update_serialized_resolvables
           serialized_resolvables = serialize_storage_resolvables
-          # return if self.serialized_resolvables == serialized_resolvables
 
           # This assignment emits a D-Bus PropertiesChanged.
           self.serialized_resolvables = serialized_resolvables
