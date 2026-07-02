@@ -1,8 +1,15 @@
 -------------------------------------------------------------------
-Tue Jun 30 14:37:09 UTC 2026 - José Iván López González <jlopez@suse.com>
+Thu Jul  2 10:11:12 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Make pages to wait for an explicit set of queries (needed for
   bsc#1269224).
+
+-------------------------------------------------------------------
+Wed Jul  1 15:09:51 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Move binding information to Settings section and remove obsolete
+  dedicated "Binding" card and edit link in connection details
+  (gh#agama-project/agama#3686).
 
 -------------------------------------------------------------------
 Tue Jun 30 10:16:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
