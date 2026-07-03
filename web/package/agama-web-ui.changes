@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul  3 12:05:29 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add missing translations (bsc#1269514).
+
+-------------------------------------------------------------------
 Mon May 25 12:50:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update shell-quote dependency (CVE-2026-9277, bsc#1266256).
