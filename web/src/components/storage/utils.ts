@@ -28,7 +28,8 @@
  */
 
 import xbytes from "xbytes";
-import { _, N_ } from "~/i18n";
+import { _ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import configModel from "~/model/storage/config-model";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
@@ -43,11 +44,6 @@ export type SizeObject = {
   unit: string | undefined;
 };
 
-export type SpacePolicy = {
-  id: ConfigModel.SpacePolicy;
-  label: string;
-};
-
 export type SizeMethod = "auto" | "fixed" | "range";
 
 const SIZE_METHODS = Object.freeze({
@@ -56,75 +52,45 @@ const SIZE_METHODS = Object.freeze({
   RANGE: "range",
 });
 
-const SIZE_UNITS = Object.freeze({
-  K: N_("KiB"),
-  M: N_("MiB"),
-  G: N_("GiB"),
-  T: N_("TiB"),
-  P: N_("PiB"),
-});
-
-const FILESYSTEM_NAMES = Object.freeze({
-  bcachefs: N_("Bcachefs"),
-  bitlocke: N_("BitLocker"),
-  btrfs: N_("Btrfs"),
-  btrfsImmutable: N_("immutable Btrfs"),
-  btrfsSnapshots: N_("Btrfs with snapshots"),
-  exfat: N_("ExFAT"),
-  ext2: N_("Ext2"),
-  ext3: N_("Ext3"),
-  ext4: N_("Ext4"),
-  f2fs: N_("F2FS"),
-  jfs: N_("JFS"),
-  nfs: N_("NFS"),
-  nilfs2: N_("NILFS2"),
-  ntfs: N_("NTFS"),
-  reiserfs: N_("ReiserFS"),
-  swap: N_("Swap"),
-  tmpfs: N_("Tmpfs"),
-  vfat: N_("FAT"),
-  xfs: N_("XFS"),
-});
-
 const DEFAULT_SIZE_UNIT = "GiB";
 
-const PARTITIONABLE_SPACE_POLICIES: SpacePolicy[] = [
-  {
-    id: "delete",
-    label: N_("Delete current content"),
-  },
-  {
-    id: "resize",
-    label: N_("Shrink existing partitions"),
-  },
-  {
-    id: "keep",
-    label: N_("Use available space"),
-  },
-  {
-    id: "custom",
-    label: N_("Custom"),
-  },
-];
+/**
+ * Returns the translated label for a partitionable device space policy.
+ *
+ * @param policy - Space policy identifier
+ * @returns Translated policy label
+ */
+const partitionableSpacePolicyLabel = (policy: ConfigModel.SpacePolicy): TranslatedString => {
+  switch (policy) {
+    case "delete":
+      return _("Delete current content");
+    case "resize":
+      return _("Shrink existing partitions");
+    case "keep":
+      return _("Use available space");
+    case "custom":
+      return _("Custom");
+  }
+};
 
-const VOLUME_GROUP_SPACE_POLICIES: SpacePolicy[] = [
-  {
-    id: "delete",
-    label: N_("Delete current content"),
-  },
-  {
-    id: "resize",
-    label: N_("Shrink existing logical volumes"),
-  },
-  {
-    id: "keep",
-    label: N_("Use available space"),
-  },
-  {
-    id: "custom",
-    label: N_("Custom"),
-  },
-];
+/**
+ * Returns the translated label for a volume group space policy.
+ *
+ * @param policy - Space policy identifier
+ * @returns Translated policy label
+ */
+const volumeGroupSpacePolicyLabel = (policy: ConfigModel.SpacePolicy): TranslatedString => {
+  switch (policy) {
+    case "delete":
+      return _("Delete current content");
+    case "resize":
+      return _("Shrink existing logical volumes");
+    case "keep":
+      return _("Use available space");
+    case "custom":
+      return _("Custom");
+  }
+};
 
 /**
  * Returns the equivalent in bytes resulting from parsing given input
@@ -311,16 +277,56 @@ const volumeLabel = (volume: System.Volume): string =>
   volume.mountPath === "/" ? "root" : volume.mountPath;
 
 /**
+ * Generates a translated label for the given filesystem type.
+ *
+ * @param fstype - Filesystem type from ConfigModel
+ * @returns Translated filesystem label
  * @see filesystemType
  */
-const filesystemLabel = (fstype: string): string => {
-  const name = FILESYSTEM_NAMES[fstype];
-
-  // eslint-disable-next-line agama-i18n/string-literals
-  if (name) return _(name);
-
-  // Fallback for unknown filesystem types
-  return fstype.charAt(0).toUpperCase() + fstype.slice(1);
+const filesystemLabel = (fstype: ConfigModel.FilesystemType): TranslatedString => {
+  switch (fstype) {
+    case "bcachefs":
+      return _("Bcachefs");
+    case "btrfs":
+      return _("Btrfs");
+    case "btrfsImmutable":
+      return _("immutable Btrfs");
+    case "btrfsSnapshots":
+      return _("Btrfs with snapshots");
+    case "exfat":
+      return _("ExFAT");
+    case "ext2":
+      return _("Ext2");
+    case "ext3":
+      return _("Ext3");
+    case "ext4":
+      return _("Ext4");
+    case "f2fs":
+      return _("F2FS");
+    case "jfs":
+      return _("JFS");
+    case "nfs":
+      return _("NFS");
+    case "nilfs2":
+      return _("NILFS2");
+    case "ntfs":
+      return _("NTFS");
+    case "reiserfs":
+      return _("ReiserFS");
+    case "swap":
+      return _("Swap");
+    case "tmpfs":
+      return _("Tmpfs");
+    case "vfat":
+      return _("FAT");
+    case "xfs":
+      return _("XFS");
+    default: {
+      // Fallback for future filesystem types not yet handled
+      const fs = fstype as string;
+      return (fs.charAt(0).toUpperCase() + fs.slice(1)) as TranslatedString;
+    }
+  }
 };
 
 /**
@@ -392,9 +398,8 @@ function findPartitionableDevice(
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
-  SIZE_UNITS,
-  PARTITIONABLE_SPACE_POLICIES,
-  VOLUME_GROUP_SPACE_POLICIES,
+  partitionableSpacePolicyLabel,
+  volumeGroupSpacePolicyLabel,
   baseName,
   deviceBaseName,
   deviceLabel,
