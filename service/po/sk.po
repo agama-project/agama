@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-05 13:42+0000\n"
+"POT-Creation-Date: 2026-06-23 12:12+0000\n"
 "PO-Revision-Date: 2026-05-24 13:12+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-"
@@ -28,13 +28,12 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "V profile AutoYaST boli nájdené nepodporované prvky: %{keys}."
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:68
+#: service/lib/agama/dbus/storage/dasd.rb:66
 msgid "Probing DASD devices"
 msgstr "Skúmanie zariadení DASD"
 
-#. The configuration could take long time  (e.g., formatting devices). It is important to
-#. not block the service in order to make possible to attend other requests.
-#: service/lib/agama/dbus/storage/dasd.rb:94
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/dasd.rb:88
 msgid "Configuring DASD"
 msgstr "Konfigurácia DASD"
 
@@ -52,39 +51,39 @@ msgid "Performing iSCSI discovery"
 msgstr "Vykonávanie zistenia iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:196
+#: service/lib/agama/dbus/storage/manager.rb:194
 msgid "Preparing bootloader proposal"
 msgstr "Príprava návrhu správcu štartu"
 
-#: service/lib/agama/dbus/storage/manager.rb:199
+#: service/lib/agama/dbus/storage/manager.rb:197
 msgid "Preparing the storage devices"
 msgstr "Príprava úložných zariadení"
 
-#: service/lib/agama/dbus/storage/manager.rb:202
+#: service/lib/agama/dbus/storage/manager.rb:200
 msgid "Writing bootloader sysconfig"
 msgstr "Zápis sysconfig správcu štartu"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:210
+#: service/lib/agama/dbus/storage/manager.rb:208
 msgid "Finishing installation"
 msgstr "Dokončenie inštalácie"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:217
+#: service/lib/agama/dbus/storage/manager.rb:215
 msgid "Unmounting devices"
 msgstr "Odpojenie zariadení"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:256
+#: service/lib/agama/dbus/storage/manager.rb:254
 msgid "Activating storage devices"
 msgstr "Aktivácia úložných zariadení"
 
-#: service/lib/agama/dbus/storage/manager.rb:259
+#: service/lib/agama/dbus/storage/manager.rb:257
 msgid "Probing storage devices"
 msgstr "Skúmanie úložných zariadení"
 
-#: service/lib/agama/dbus/storage/manager.rb:262
+#: service/lib/agama/dbus/storage/manager.rb:260
 msgid "Applying storage configuration"
 msgstr "Aplikovanie konfigurácie úložiska"
 
@@ -482,7 +481,7 @@ msgstr "Konfigurácia snímok súborových systémov"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:308
+#: service/lib/agama/storage/manager.rb:316
 msgid "There is no suitable device for installation"
 msgstr "Nie je k dispozícii žiadne vhodné zariadenie na inštaláciu"
 
