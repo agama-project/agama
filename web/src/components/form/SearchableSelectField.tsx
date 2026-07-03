@@ -35,7 +35,11 @@ import {
   TextInputGroupMain,
 } from "@patternfly/react-core";
 import { debounce } from "radashi";
+import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form";
+
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
+import type { TranslatedString } from "~/i18n";
 
 // Lowercases and strips diacritics so a query without accents still matches
 // accented text (e.g. typing "ingles" matches "Inglés"). It also turns brackets
@@ -67,8 +71,8 @@ type Option = {
   filterText?: string;
 };
 
-type SearchableSelectFieldProps = {
-  label: string;
+type SearchableSelectFieldProps = FieldLabelOptions & {
+  label: TranslatedString;
   options: Option[];
   // Builds the text shown in the closed field for the committed option. Defaults
   // to the option's label alone; provide this to show more (e.g. append the
@@ -77,11 +81,11 @@ type SearchableSelectFieldProps = {
   // FIXME: required for now so callers reuse an already-translated string during
   // the string freeze. Once new strings are allowed, give it a default (e.g.
   // _("Select an option")) and make it optional again.
-  placeholder: string;
+  placeholder: TranslatedString;
   // FIXME: required for now so callers reuse an already-translated string during
   // the string freeze. Once new strings are allowed, give it a default (e.g.
   // _("No options found")) and make it optional again.
-  noResultsText: string;
+  noResultsText: TranslatedString;
   // Last-resort callback to rewrite the filter query before it is used to filter
   // the list. The "query" is the text the user typed into the field; this returns
   // the text to filter with instead, while the input keeps showing what the user
@@ -95,7 +99,7 @@ type SearchableSelectFieldProps = {
   // Prompt shown when the field is empty and at rest (no value and not focused),
   // e.g. "Choose an option". While focused or open, `placeholder` is shown
   // instead to hint at filtering. Defaults to `placeholder` when omitted.
-  emptyPlaceholder?: string;
+  emptyPlaceholder?: TranslatedString;
   // When true, emptying the input and leaving the field (Tab, Enter or clicking
   // away) clears the selection. When false, leaving with an empty input keeps
   // the previously selected value. Escape always reverts, never clears.
@@ -163,8 +167,20 @@ export default function SearchableSelectField({
   clearable = false,
   onOpen,
   maxHeight = "300px",
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
 }: SearchableSelectFieldProps) {
   const field = useFieldContext<string>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
+  // The combobox input is named by the visible label by default (PF would
+  // otherwise fall back to its own "Type to filter"); a consumer can refine or
+  // replace that name through the label options.
+  const nameProps = resolveAriaLabelProps(labelProps, { "aria-label": label });
   const error = field.state.meta.errors[0];
   const [isOpen, setIsOpen] = useState(false);
   // What the input shows, updated on every keystroke for responsive typing.
@@ -424,7 +440,7 @@ export default function SearchableSelectField({
       // "Menu toggle"; reusing the field label avoids that English default.
       // TODO (post-freeze): give the caret its own translated, purpose-specific
       // label (e.g. "Show options") instead of duplicating the field label.
-      aria-label={label}
+      {...nameProps}
     >
       <TextInputGroup isPlain>
         <TextInputGroupMain
@@ -436,7 +452,7 @@ export default function SearchableSelectField({
           inputId={`${idPrefix}-input`}
           // PF defaults the input's aria-label to "Type to filter", which would
           // override the visible label as the accessible name; keep them aligned.
-          aria-label={label}
+          {...nameProps}
           value={inputDisplayValue}
           onChange={(_e, value) => {
             setFilterValue(value);
@@ -486,7 +502,7 @@ export default function SearchableSelectField({
   /** Render */
 
   return (
-    <FormGroup label={label} fieldId={`${idPrefix}-input`}>
+    <FormGroup label={<span id={labelId}>{label}</span>} fieldId={`${idPrefix}-input`}>
       <Select
         id={field.name}
         variant="typeahead"

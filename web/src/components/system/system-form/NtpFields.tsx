@@ -37,9 +37,11 @@ import { _ } from "~/i18n";
 const NtpFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
+    const legendId = React.useId();
+
     return (
       <Fieldset
-        legendId="ntp-legend"
+        legendId={legendId}
         legend={
           // TRANSLATORS: fieldset legend for NTP configuration
           _("Time Synchronization Servers")
@@ -56,7 +58,7 @@ const NtpFields = withForm({
             <field.DropdownField
               // TRANSLATORS: label for NTP mode selector
               label={_("Mode")}
-              additionalLabelId="ntp-legend"
+              labelPrefixedBy={legendId}
               options={[
                 {
                   value: NTP_MODE.DEFAULT,
