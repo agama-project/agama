@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -42,7 +42,8 @@ const PolicyItem = ({ policy, modelDevice, isSelected, onClick }) => {
       description={driveUtils.contentActionsDescription(modelDevice, policy.id)}
       onClick={() => onClick(policy.id)}
     >
-      <Text isBold={isSelected}>{policy.label}</Text>
+      {/* eslint-disable-next-line agama-i18n/string-literals */}
+      <Text isBold={isSelected}>{_(policy.label)}</Text>
     </MenuButton.Item>
   );
 };
