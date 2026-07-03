@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -49,7 +49,7 @@ export default function EditNodeForm({ node, onSubmit: onSubmitProp, onCancel })
     // TRANSLATORS: %s is replaced by the iSCSI target node name
     <Popup isOpen title={sprintf(_("Edit %s"), node.target)}>
       <Form id={id} onSubmit={onSubmit}>
-        <FormGroup fieldId="startup" label="Startup">
+        <FormGroup fieldId="startup" label={_("Startup")}>
           <FormSelect
             id="startup"
             aria-label="startup"

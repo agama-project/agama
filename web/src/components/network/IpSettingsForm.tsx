@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -181,7 +181,7 @@ export default function IpSettingsForm() {
             </FormSelect>
             {renderError("method")}
           </FormGroup>
-          <FormGroup fieldId="gateway" label="Gateway">
+          <FormGroup fieldId="gateway" label={_("Gateway")}>
             <TextInput
               id="gateway"
               name="gateway"
