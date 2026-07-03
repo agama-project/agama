@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 16:05+0000\n"
+"POT-Creation-Date: 2026-06-26 10:48+0000\n"
 "PO-Revision-Date: 2026-06-03 23:12+0000\n"
 "Last-Translator: yakup <mtopac2027@gmail.com>\n"
 "Language-Team: Turkish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -739,77 +739,77 @@ msgstr "Sistemi yapılandır"
 msgid "Finishing installation"
 msgstr "Kurulumun başlamasını bekliyor..."
 
-#: agama-manager/src/actions.rs:296
+#: agama-manager/src/actions.rs:303
 msgid "Storing security settings"
 msgstr "Güvenlik ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:306
+#: agama-manager/src/actions.rs:313
 msgid "Configuring remote access"
 msgstr "Uzaktan erişimi yapılandır"
 
-#: agama-manager/src/actions.rs:316
+#: agama-manager/src/actions.rs:323
 msgid "Setting up the hostname"
 msgstr "Sunucu adını ayarla"
 
-#: agama-manager/src/actions.rs:326
+#: agama-manager/src/actions.rs:333
 msgid "Setting up the network proxy"
 msgstr "Ağ vekil sunucusu'nu kur"
 
-#: agama-manager/src/actions.rs:337
+#: agama-manager/src/actions.rs:344
 msgid "Setting up NTP"
 msgstr "NTP'yi ayarla"
 
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:355
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Kullanıcı dosyalarını içe aktar"
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:368
 msgid "Running user pre-installation scripts"
 msgstr "Kullanıcı ön kurulum komut dosyalarını çalıştır"
 
-#: agama-manager/src/actions.rs:376
+#: agama-manager/src/actions.rs:383
 msgid "Storing questions settings"
 msgstr "Soru ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:393
 msgid "Storing localization settings"
 msgstr "Yerelleştirme ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:403
 msgid "Storing users settings"
 msgstr "Kullanıcı ayarlarını sakla"
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:509
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:533
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI aygıtlarını yapılandır"
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:557
 msgid "Configuring DASD devices"
 msgstr "DASD cihazlarını yapılandır"
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:581
 msgid "Setting up the network"
 msgstr "Ağ kurulumu"
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:610
 msgid "Preparing the storage proposal"
 msgstr "Depolama teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:643
 msgid "Storing bootloader settings"
 msgstr "Önyükleyici ayarlarının saklanması"
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:676
 msgid "Preparing the software proposal"
 msgstr "Yazılım teklifinin hazırlanması"
 
-#: agama-manager/src/actions.rs:702
+#: agama-manager/src/actions.rs:709
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Yapılandırılıyor"
@@ -901,7 +901,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Atla"
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:303
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Dahili bir hata nedeniyle yazılım teklifi oluşturulamadı."
@@ -1011,15 +1011,15 @@ msgstr "Hayır"
 msgid "Yes"
 msgstr "Evet"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr "paket"
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr "desen"
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "ürün"
 
