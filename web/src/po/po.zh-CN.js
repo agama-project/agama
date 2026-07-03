@@ -88,7 +88,7 @@ export default {
     "可能会删除某个分区"
   ],
   "A partition may be shrunk": [
-    "可能会收缩某个分区"
+    "可能会缩小某个分区"
   ],
   "A partition will be deleted": [
     "将删除某个分区"
@@ -1390,7 +1390,7 @@ export default {
     "将会为 %s 使用和创建多个分区"
   ],
   "Password": [
-    "密码"
+    "口令"
   ],
   "Password Required": [
     "需要口令"
@@ -1450,7 +1450,7 @@ export default {
     "产品已注册"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "用于保护存储在新文件系统中的信息（包括数据、程序以及系统文件）的机制。"
+    "该机制用于保护存储在新文件系统中的信息，包括数据、程序以及系统文件。"
   ],
   "Provide email address": [
     "提供电子邮件地址"
@@ -1540,7 +1540,7 @@ export default {
     "结果"
   ],
   "Reused partitions will not be shrunk": [
-    "将不收缩重复使用的分区"
+    "将不缩小复用的分区"
   ],
   "Review and fix": [
     "检查并修复"
@@ -1741,7 +1741,7 @@ export default {
     "软件选择"
   ],
   "Some existing partitions may be shrunk": [
-    "可能会收缩部分现有分区"
+    "可能会缩小部分现有分区"
   ],
   "Some installation repositories could not be loaded. The system cannot be installed without them.": [
     "无法加载某些安装储存库。没有这些储存库，将无法安装系统。"
@@ -1753,7 +1753,7 @@ export default {
     "可能会删除某些分区"
   ],
   "Some partitions may be shrunk": [
-    "可能会收缩某些分区"
+    "可能会缩小某些分区"
   ],
   "Something went wrong": [
     "出了点问题"
@@ -1837,7 +1837,7 @@ export default {
     "数据将被保留。仅使用未分配给任何分区的空间。"
   ],
   "The device cannot be shrunk:": [
-    "无法收缩该设备："
+    "无法缩小该设备："
   ],
   "The device will be formatted": [
     "将格式化该设备"
@@ -2104,7 +2104,7 @@ export default {
     "未使用的空间"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "通过收缩设备最多可回收 %s 的空间。"
+    "通过缩小设备最多可回收 %s 的空间。"
   ],
   "Update available disks and activate crypt devices": [
     "更新可用磁盘并激活加密设备"
