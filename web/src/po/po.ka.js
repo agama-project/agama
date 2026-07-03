@@ -2427,9 +2427,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
-  "Search": [
-    "ძებნა"
-  ],
   "Secured network": [
     "დაცული ქსელი"
   ],
@@ -3373,9 +3370,6 @@ export default {
   ],
   "Will be supported in a future version.": [
     "მხარდაჭერილი იქნება მომავალ ვერსიაში."
-  ],
-  "Wrong selection": [
-    "არასწორი არჩევანი"
   ],
   "XFS": [
     "XFS"

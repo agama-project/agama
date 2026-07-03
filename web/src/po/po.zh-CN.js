@@ -1,178 +1,178 @@
 export default {
   "": {
     "plural-forms": (n) => 0,
-    "language": "id"
+    "language": "zh-CN"
   },
   "\"%s\"": [
     "\"%s\""
   ],
   "\"%s\" does not exist or is no longer available.": [
-    "\"%s\" tidak ditemukan atau tidak lagi tersedia."
+    "\"%s\" 不存在或不再可用。"
   ],
   "%1$d of %2$d connections match filters": [
-    "%1$d dari %2$d koneksi cocok dengan filter"
+    "%1$d 个（共 %2$d 个）连接匹配过滤条件"
   ],
   "%1$d of %2$d devices match filters": [
-    "%1$d dari %2$d perangkat cocok dengan filter"
+    "%1$d 个（共 %2$d 个）设备匹配过滤条件"
   ],
   "%1$d of %2$d patterns": [
-    "%1$d dari %2$d pola"
+    "%1$d 个（共 %2$d 个）软件集"
   ],
   "%1$d of %2$d selected": [
-    "%1$d dari %2$d dipilih"
+    "已选择 %1$d 项，共 %2$d 项"
   ],
   "%1$s (%2$s)": [
     "%1$s (%2$s)"
   ],
   "%1$s (default file system for %2$s)": [
-    "%1$s (filesystem default untuk %2$s)"
+    "%1$s（%2$s 的默认文件系统）"
   ],
   "%1$s - %2$s": [
     "%1$s - %2$s"
   ],
   "%1$s and %2$s": [
-    "%1$s dan %2$s"
+    "%1$s 和 %2$s"
   ],
   "%1$s and [%2$d more]": [
-    "%1$s dan [%2$d lainnya]"
+    "%1$s 和[其他 %2$d 个]"
   ],
   "%1$s at %2$s": [
-    "%1$s di %2$s"
+    "%1$s（%2$s 上）"
   ],
   "%1$s keyboard - %2$s timezone": [
-    "Keyboard %1$s - zona waktu %2$s"
+    "%1$s 键盘 - %2$s 时区"
   ],
   "%1$s will be created as a partition at %2$s": [
-    "%1$s akan dibuat sebagai partisi di %2$s"
+    "%1$s 将会创建为 %2$s 上的分区"
   ],
   "%1$s will still contain the LVM group '%2$s' and any partition needed to boot": [
-    "%1$s masih akan berisi grup LVM ‘%2$s’ dan partisi apa pun yang diperlukan untuk booting"
+    "%1$s 仍将包含 LVM 组 '%2$s' 和引导所需的任何分区"
   ],
   "%1$s, %2$s and [%3$d more]": [
-    "%1$s, %2$s dan [%3$d lainnya]"
+    "%1$s、%2$s 和[其他 %3$d 个]"
   ],
   "%d NTP server": [
-    "%d server NTP"
+    "%d 台 NTP 服务器"
   ],
   "%d connections available": [
-    "%d koneksi tersedia"
+    "共 %d 个可用连接"
   ],
   "%d desktop selected": [
-    "%d desktop dipilih"
+    "已选择 %d 个桌面"
   ],
   "%d devices available": [
-    "%d perangkat tersedia"
+    "共 %d 个可用设备"
   ],
   "%d duplicates skipped.": [
-    "%d duplikat dilewati."
+    "已跳过 %d 条重复项。"
   ],
   "%d entries added, %d duplicates skipped.": [
-    "%d entri ditambahkan, %d duplikat dilewati."
+    "已添加 %d 条条目，已跳过 %d 条重复项。"
   ],
   "%d entries added, %d invalid, %d duplicates skipped.": [
-    "%d entri ditambahkan, %d tidak valid, %d duplikat dilewati."
+    "已添加 %d 条条目，%d 条无效，%d 条重复项已跳过。"
   ],
   "%d entries added, %d invalid.": [
-    "%d entri ditambahkan, %d tidak valid."
+    "已添加 %d 条条目，%d 条无效。"
   ],
   "%d entries added.": [
-    "%d entri ditambahkan."
+    "已添加 %d 条条目。"
   ],
   "%d invalid entries removed.": [
-    "%d entri tidak valid dihapus."
+    "已去除 %d 条无效条目。"
   ],
   "%d matches the filter": [
-    "%d cocok dengan filter"
+    "共 %d 个软件集匹配过滤条件"
   ],
   "%d mode available": [
-    "%d mode tersedia"
+    "共 %d 种模式可用"
   ],
   "%d other mode available": [
-    "%d mode lain tersedia"
+    "另有其他 %d 种模式可用"
   ],
   "%d pattern found": [
-    "%d pola ditemukan"
+    "找到 %d 个软件集"
   ],
   "%s (default file system for generic mount points)": [
-    "%s (filesystem default untuk mount point umum)"
+    "%s（通用挂载点的默认文件系统）"
   ],
   "%s (keep data)": [
-    "%s (pertahankan data)"
+    "%s（保留数据）"
   ],
   "%s - %s": [
     "%s - %s"
   ],
   "%s added but is invalid: %s. Select to edit.": [
-    "%s ditambahkan tetapi tidak valid: %s. Pilih untuk mengedit."
+    "已添加 %s，但内容无效：%s。请选中以编辑。"
   ],
   "%s added.": [
-    "%s ditambahkan."
+    "已添加 %s。"
   ],
   "%s already exists, skipped.": [
-    "%s sudah ada, dilewati."
+    "%s 已存在，已跳过。"
   ],
   "%s and %d others": [
-    "%s dan %d lainnya"
+    "%s 和其他 %d 个"
   ],
   "%s and %s": [
-    "%s dan %s"
+    "%s 和 %s"
   ],
   "%s at portal %s does not exist or cannot be reached.": [
-    "%s pada portal %s tidak ada atau tidak dapat dijangkau."
+    "%s（门户 %s 上）不存在或无法访问。"
   ],
   "%s disk": [
-    "%s diska"
+    "%s 磁盘"
   ],
   "%s entries": [
-    "%s entri"
+    "%s 条目"
   ],
   "%s has been registered with below information.": [
-    "%s telah terdaftar dengan informasi di bawah ini."
+    "%s 已注册，信息如下。"
   ],
   "%s honors the browser and system preferences": [
-    "%s mengikuti preferensi browser dan sistem"
+    "%s 遵循浏览器和系统首选项"
   ],
   "%s is invalid: %s": [
-    "%s tidak valid: %s"
+    "%s 无效：%s"
   ],
   "%s logo": [
-    "logo %s"
+    "%s 徽标"
   ],
   "%s moved to input for editing.": [
-    "%s dipindahkan ke input untuk diedit."
+    "%s 已移入输入框供编辑。"
   ],
   "%s removed.": [
-    "%s dihapus."
+    "已去除 %s。"
   ],
   "%s task active": [
-    "%s tugas aktif"
+    "%s 个任务正在运行"
   ],
   "%s will be created as a logical volume": [
-    "%s akan dibuat sebagai volume logis"
+    "%s 将创建为逻辑卷"
   ],
   "%s will be created as a partition": [
-    "%s akan dibuat sebagai partisi"
+    "%s 将创建为分区"
   ],
   "%s will still contain the configured LVM groups and any partition needed to boot": [
-    "%s masih akan berisi grup LVM yang dikonfigurasi dan partisi apa pun yang diperlukan untuk booting"
+    "%s 仍将包含配置的 LVM 组和引导所需的任何分区"
   ],
   "%s with %d partitions": [
-    "%s dengan partisi %d"
+    "%s （包含 %d 个分区）"
   ],
   "(bound by MAC)": [
-    "(terikat berdasarkan MAC)"
+    "（按 MAC 绑定）"
   ],
   "(bound by name)": [
-    "(terikat berdasarkan nama)"
+    "（按名称绑定）"
   ],
   "(optional)": [
-    "(opsional)"
+    "（可选）"
   ],
   "(step %s of %s)": [
-    "(langkah %s dari %s)"
+    "（第 %s 步，共 %s 步）"
   ],
   "1 device selected. Use the actions toolbar to apply changes.": [
-    "%s perangkat dipilih. Gunakan bilah alat tindakan untuk menerapkan perubahan."
+    "已选择 %s 个设备。请使用操作工具栏应用更改。"
   ],
   "802.1Q": [
     "802.1Q"
@@ -181,667 +181,667 @@ export default {
     "802.1ad"
   ],
   "A %1$s of %2$s will be created for %3$s if possible": [
-    "%1$s dari %2$s akan dibuat untuk %3$s jika memungkinkan"
+    "将创建一个 %1$s (%2$s)，以用于 %3$s（如果可能）"
   ],
   "A %1$s of at least %2$s will be created for %3$s if possible": [
-    "%1$s dengan minimal %2$s akan dibuat untuk %3$s jika memungkinkan"
+    "将创建一个 %1$s（至少 %2$s），以用于 %3$s（如果可能）"
   ],
   "A %1$s with a size between %2$s and %3$s will be created for %4$s if possible": [
-    "%1$s dengan ukuran antara %2$s dan %3$s akan dibuat untuk %4$s jika memungkinkan"
+    "将创建一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s（如果可能）"
   ],
   "A file system will be used for the whole device": [
-    "Sistem berkas akan digunakan untuk seluruh perangkat"
+    "一个文件系统将用于整个设备"
   ],
   "A generic minimum size of %1$s will be used for the new %2$s": [
-    "Ukuran minimum standar %1$s akan digunakan untuk %2$s yang baru"
+    "至少 %1$s 的通用大小将用于新 %2$s"
   ],
   "A generic size of %1$s will be used for the new %2$s": [
-    "Ukuran standar %1$s akan digunakan untuk %2$s yang baru"
+    "%1$s 的通用大小将用于新 %2$s"
   ],
   "A generic size range between %1$s and %2$s will be used for the new %3$s": [
-    "Rentang ukuran umum antara %1$s dan %2$s akan digunakan untuk %3$s yang baru"
+    "介于 %1$s 至 %2$s 的通用大小将用于新 %3$s"
   ],
   "A logical volume may be deleted": [
-    "Sebuah volume logis mungkin akan dihapus"
+    "可能会删除一个逻辑卷"
   ],
   "A logical volume may be shrunk": [
-    "Sebuah volume logis mungkin akan diperkecil"
+    "可能会缩小一个逻辑卷"
   ],
   "A logical volume will be deleted": [
-    "Sebuah volume logis akan dihapus"
+    "将删除一个逻辑卷"
   ],
   "A new logical volume will be created for %s": [
-    "Volume logis baru akan dibuat untuk %s"
+    "将会为 %s 创建新逻辑卷"
   ],
   "A new partition will be created for %s": [
-    "Partisi baru akan dibuat untuk %s"
+    "将会为 %s 创建新分区"
   ],
   "A partition may be deleted": [
-    "Sebuah partisi dapat dihapus"
+    "可能会删除某个分区"
   ],
   "A partition may be shrunk": [
-    "Partisi dapat diperkecil"
+    "可能会缩小某个分区"
   ],
   "A partition will be deleted": [
-    "Partisi akan dihapus"
+    "将删除某个分区"
   ],
   "Accept": [
-    "Terima"
+    "接受"
   ],
   "Action": [
-    "Tindakan"
+    "操作"
   ],
   "Actions": [
-    "Tindakan"
+    "操作"
   ],
   "Actions for %s at portal %s": [
-    "Tindakan untuk %s pada portal %s"
+    "可对 %s（门户 %s 上）执行的操作"
   ],
   "Actions for the selected device:": [
-    "Tindakan untuk %s perangkat yang dipilih:"
+    "可对 %s 个所选设备执行的操作："
   ],
   "Activate": [
-    "Mengaktifkan"
+    "激活"
   ],
   "Activate and format DASD devices": [
-    "Aktifkan dan format perangkat DASD"
+    "激活并格式化 DASD 设备"
   ],
   "Activate controllers": [
-    "Aktifkan pengontrol"
+    "激活控制器"
   ],
   "Activate zFCP disks": [
-    "Aktifkan disk zFCP"
+    "激活 zFCP 磁盘"
   ],
   "Activated": [
-    "Diaktifkan"
+    "已激活"
   ],
   "Activating": [
-    "Mengaktifkan"
+    "激活中"
   ],
   "Activating a controller which is running in NPIV mode will automatically configures all its LUNs.": [
-    "Mengaktifkan pengontrol yang berjalan dalam mode NPIV akan secara otomatis mengonfigurasi semua LUN-nya."
+    "如果激活在 NPIV 模式下运行的控制器，将自动配置其所有 LUN。"
   ],
   "Active": [
-    "Aktif"
+    "已启用"
   ],
   "Add": [
-    "Tambahkan"
+    "添加"
   ],
   "Add %s": [
-    "Tambahkan %s"
+    "添加 %s"
   ],
   "Add LVM volume group": [
-    "Tambahkan grup volume LVM"
+    "添加 LVM 卷组"
   ],
   "Add a partition or mount an existing one": [
-    "Tambahkan partisi atau mount partisi yang sudah ada"
+    "添加一个分区或挂载一个现有分区"
   ],
   "Add connection": [
-    "Tambahkan koneksi"
+    "添加连接"
   ],
   "Add device menu": [
-    "Tambahkan menu perangkat"
+    "添加设备菜单"
   ],
   "Add logical volume": [
-    "Tambahkan volume logis"
+    "添加逻辑卷"
   ],
   "Add or use logical volume": [
-    "Tambahkan atau gunakan volume logis"
+    "添加或使用逻辑卷"
   ],
   "Add or use partition": [
-    "Tambahkan atau gunakan partisi"
+    "添加或使用分区"
   ],
   "Additional CHAP authentication performed by the initiator": [
-    "Autentikasi CHAP tambahan dilakukan oleh initiator"
+    "由发起端执行额外的 CHAP 身份验证"
   ],
   "Additional format arguments": [
-    "Argumen format tambahan"
+    "其他格式化参数"
   ],
   "Additional patterns": [
-    "Pola tambahan"
+    "附加软件集"
   ],
   "Address": [
-    "Alamat"
+    "地址"
   ],
   "Address and gateway assigned from the network": [
-    "Alamat dan gateway ditetapkan dari jaringan"
+    "地址和网关由网络自动分配"
   ],
   "Adjust the settings below to make the new system fit into the available space.": [
-    "Sesuaikan pengaturan di bawah ini agar sistem baru dapat disesuaikan dengan ruang yang tersedia."
+    "请调整下面的设置，使新系统适配可用空间。"
   ],
   "Administrator account": [
-    "Akun administrator"
+    "管理员帐户"
   ],
   "All": [
-    "Semua"
+    "全部"
   ],
   "All background tasks completed": [
-    "Semua tugas latar belakang selesai"
+    "所有后台任务已执行完毕"
   ],
   "All content not configured to be mounted will be deleted": [
-    "Semua konten yang tidak dikonfigurasi untuk di-mount akan dihapus"
+    "将删除未配置为待挂载的所有内容"
   ],
   "All content will be deleted": [
-    "Semua konten akan dihapus"
+    "所有内容都将被删除"
   ],
   "All fields are required.": [
-    "Semua bidang wajib diisi."
+    "需要填写所有字段。"
   ],
   "All network connections managed through this interface are currently set to be used only during installation and will not be copied to the installed system": [
-    "Semua koneksi jaringan yang dikelola melalui antarmuka ini saat ini diatur untuk hanya digunakan selama pemasangan dan tidak akan disalin ke sistem yang dipasang"
+    "通过此界面管理的所有网络连接当前都设置为仅在安装过程中使用，并且不会复制到安装好的系统中"
   ],
   "All the available space in the chosen disks will be used to create physical volumes.": [
-    "Seluruh ruang yang tersedia pada disk yang dipilih akan digunakan untuk membuat physical volume."
+    "所选磁盘中的可用空间将全部用于创建物理卷。"
   ],
   "All the available zFCP controllers are already activated.": [
-    "Semua pengontrol zFCP yang tersedia sudah diaktifkan."
+    "所有可用 zFCP 控制器均已激活。"
   ],
   "Allow growing": [
-    "Izinkan pertumbuhan"
+    "允许增长"
   ],
   "Already using all available devices": [
-    "Sudah menggunakan semua perangkat yang tersedia"
+    "已在使用所有可用设备"
   ],
   "Already using all available disks": [
-    "Sudah menggunakan semua disk yang tersedia"
+    "已使用所有可用磁盘"
   ],
   "An existing logical volume will be used for %s": [
-    "Volume logis yang sudah ada akan digunakan untuk %s"
+    "将会为 %s 使用现有逻辑卷"
   ],
   "An existing partition will be used for %s": [
-    "Partisi yang sudah ada akan digunakan untuk %s"
+    "将会为 %s 使用现有分区"
   ],
   "Any existing data on %s will be destroyed when installation begins.": [
-    "Semua data yang sudah ada pada %s akan dihapus saat instalasi dimulai."
+    "安装流程启动后，%s 上的所有现有数据都将被清除。"
   ],
   "Any existing logical volume will be removed and all data in the volume group will be lost.": [
-    "Semua volume logis yang ada akan dihapus dan semua data dalam grup volume akan hilang."
+    "将去除所有现有逻辑卷，卷组内的所有数据都将丢失。"
   ],
   "Any existing partition will be removed and all data in the disk will be lost.": [
-    "Semua partisi yang ada akan dihapus dan semua data di disk akan hilang."
+    "所有现有分区都将被去除，磁盘上的所有数据都将丢失。"
   ],
   "Any partition needed to boot will be configured.": [
-    "Partisi apa pun yang diperlukan untuk booting akan dikonfigurasi."
+    "将配置引导所需的所有分区。"
   ],
   "Appearance": [
-    "Tampilan"
+    "外观"
   ],
   "As required by the logical volumes": [
-    "Sesuai kebutuhan logical volume"
+    "根据逻辑卷的需求"
   ],
   "At least one DNS search domain is required": [
-    "Setidaknya satu domain pencarian DNS diperlukan"
+    "必须至少指定一个 DNS 搜索域"
   ],
   "At least one DNS server is required": [
-    "Setidaknya satu server DNS diperlukan"
+    "必须至少指定一台 DNS 服务器"
   ],
   "At least one IPv4 address is required": [
-    "Setidaknya satu alamat IPv4 diperlukan"
+    "必须至少指定一个 IPv4 地址"
   ],
   "At least one IPv6 address is required": [
-    "Setidaknya satu alamat IPv6 diperlukan"
+    "必须至少指定一个 IPv6 地址"
   ],
   "At least one NTP server is required": [
-    "Setidaknya satu server NTP diperlukan"
+    "必须至少指定一台 NTP 服务器"
   ],
   "At least one SSH public key is required": [
-    "Setidaknya satu kunci publik SSH diperlukan"
+    "必须至少提供一个 SSH 公钥"
   ],
   "At least one bond port is required": [
-    "Setidaknya satu port bond diperlukan"
+    "必须至少指定一个绑定端口"
   ],
   "At least one bridge port is required": [
-    "Setidaknya satu port bridge diperlukan"
+    "必须至少指定一个网桥端口"
   ],
   "At least one logical volume will be deleted": [
-    "Setidaknya satu volume logis akan dihapus"
+    "将至少删除一个逻辑卷"
   ],
   "At least one partition will be deleted": [
-    "Setidaknya satu partisi akan dihapus"
+    "至少将删除一个分区"
   ],
   "Authentication": [
-    "Autentikasi"
+    "身份验证"
   ],
   "Auto": [
-    "Otomatis"
+    "自动"
   ],
   "Auto Scanned": [
-    "Dipindai Otomatis"
+    "已自动扫描"
   ],
   "Auto and manual": [
-    "Otomatis dan manual"
+    "自动+手动模式"
   ],
   "Automatic": [
-    "Otomatis"
+    "自动"
   ],
   "Automatic + manual": [
-    "Otomatis + manual"
+    "自动+手动"
   ],
   "Automatic LUN scan is disabled": [
-    "Pemindaian LUN otomatis dinonaktifkan"
+    "自动 LUN 扫描功能已禁用"
   ],
   "Automatic LUN scan is enabled": [
-    "Pemindaian LUN otomatis diaktifkan"
+    "自动 LUN 扫描功能已启用"
   ],
   "Automatic color scheme": [
-    "Skema warna otomatis"
+    "自动配色方案"
   ],
   "Automatic contrast": [
-    "Kontras otomatis"
+    "自动对比度"
   ],
   "Available devices: %s": [
-    "Perangkat yang tersedia: %s"
+    "可用设备：%s"
   ],
   "Back": [
-    "Kembali"
+    "返回"
   ],
   "Based on the amount of RAM in the system, a %1$s of %2$s will be planned for %3$s": [
-    "Berdasarkan jumlah RAM yang tersedia di sistem, %1$s dari %2$s akan dialokasikan untuk %3$s"
+    "将根据系统中的 RAM 容量规划一个 %1$s (%2$s)，以用于 %3$s"
   ],
   "Based on the amount of RAM in the system, a %1$s of at least %2$s will be planned for %3$s": [
-    "Berdasarkan jumlah RAM yang tersedia di sistem, %1$s sebesar minimal %2$s akan dialokasikan untuk %3$s"
+    "将根据系统中的 RAM 容量规划一个 %1$s（至少 %2$s），以用于 %3$s"
   ],
   "Based on the amount of RAM in the system, a %1$s with a size between %2$s and %3$s will be planned for %4$s": [
-    "Berdasarkan jumlah RAM yang tersedia di sistem, sebuah %1$s dengan ukuran antara %2$s dan %3$s akan direncanakan untuk %4$s"
+    "将根据系统中的 RAM 容量规划一个 %1$s（大小介于 %2$s 至 %3$s 之间），以用于 %4$s"
   ],
   "Based on the mount point": [
-    "Berdasarkan mount point"
+    "根据挂载点"
   ],
   "Bcachefs": [
     "Bcachefs"
   ],
   "Before %s": [
-    "Sebelum %s"
+    "变更前为 %s"
   ],
   "Below %s devices are offline and cannot be formatted.": [
-    "Di bawah ini, %s perangkat dalam keadaan luring dan tidak dapat diformat."
+    "以下 %s 个设备已脱机，无法格式化。"
   ],
   "Beta": [
-    "Beta"
+    "Beta 版"
   ],
   "Binding": [
-    "Pengikatan"
+    "正在绑定"
   ],
   "BitLocker": [
     "BitLocker"
   ],
   "Bond": [
-    "Bond"
+    "绑定"
   ],
   "Bond details": [
-    "Detail bond"
+    "绑定详细信息"
   ],
   "Bond mode": [
-    "Mode bond"
+    "绑定模式"
   ],
   "Bond mode is required": [
-    "Mode bond wajib diisi"
+    "必须选择绑定模式"
   ],
   "Bond options": [
-    "Opsi bond"
+    "绑定选项"
   ],
   "Bond ports": [
-    "Port bond"
+    "绑定端口"
   ],
   "Boot options": [
-    "Opsi boot"
+    "引导选项"
   ],
   "Breadcrumbs": [
-    "Breadcrumb"
+    "面包屑导航"
   ],
   "Bridge": [
-    "Bridge"
+    "网桥"
   ],
   "Bridge details": [
-    "Detail bridge"
+    "网桥详细信息"
   ],
   "Bridge ports": [
-    "Port bridge"
+    "网桥端口"
   ],
   "Btrfs": [
     "Btrfs"
   ],
   "Btrfs with snapshots": [
-    "Btrfs dengan snapshot"
+    "带快照的 Btrfs"
   ],
   "CHAP authentication performed by the target": [
-    "Autentikasi CHAP dilakukan oleh target"
+    "由目标执行 CHAP 身份验证"
   ],
   "CPU": [
     "CPU"
   ],
   "Can be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan jumlah RAM pada sistem dan keberadaan filesystem terpisah untuk %s."
+    "可动态调整，考量因素包括系统中的 RAM 容量以及 %s 是否存在单独的文件系统。"
   ],
   "Can be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan jumlah RAM pada sistem dan keberadaan filesystem terpisah untuk %s."
+    "可动态调整，考量因素包括系统中的 RAM 容量以及 %s 是否存在单独的文件系统。"
   ],
   "Can be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Dapat disesuaikan secara dinamis berdasarkan jumlah RAM pada sistem dan penggunaan snapshot Btrfs."
+    "可动态调整，考量因素包括系统中的 RAM 容量以及 Btrfs 快照的使用情况。"
   ],
   "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan jumlah RAM pada sistem, penggunaan snapshot Btrfs, dan keberadaan filesystem terpisah untuk %s."
+    "可动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %s 是否存在单独的文件系统。"
   ],
   "Can be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan jumlah RAM pada sistem, penggunaan snapshot Btrfs, dan keberadaan filesystem terpisah untuk %s."
+    "可动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %s 是否存在单独的文件系统。"
   ],
   "Can be dynamically adjusted based on the presence of a separate file system for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan keberadaan filesystem terpisah untuk %s."
+    "可根据 %s 是否存在单独的文件系统动态调整。"
   ],
   "Can be dynamically adjusted based on the presence of separate file systems for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan keberadaan filesystem terpisah untuk %s."
+    "可根据 %s 是否存在单独的文件系统动态调整。"
   ],
   "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs dan keberadaan filesystem terpisah untuk %s."
+    "可动态调整，考量因素包括 Btrfs 快照的使用情况以及 %s 是否存在单独的文件系统。"
   ],
   "Can be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %s.": [
-    "Dapat disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs dan keberadaan filesystem terpisah untuk %s."
+    "可动态调整，考量因素包括 Btrfs 快照的使用情况以及 %s 是否存在单独的文件系统。"
   ],
   "Can be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Dapat disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs."
+    "可根据 Btrfs 快照的使用情况动态调整。"
   ],
   "Cancel": [
-    "Batal"
+    "取消"
   ],
   "Cancel connection": [
-    "Batalkan koneksi"
+    "取消连接"
   ],
   "Cannot apply configuration": [
-    "Tidak dapat menerapkan konfigurasi"
+    "无法应用配置"
   ],
   "Cannot be changed in remote installation": [
-    "Tidak dapat diubah dalam instalasi jarak jauh"
+    "无法在远程安装中更改"
   ],
   "Cannot connect": [
-    "Tidak dapat terhubung"
+    "无法连接"
   ],
   "Cannot format %s": [
-    "Tidak dapat memformat %s"
+    "无法格式化 %s"
   ],
   "Cannot format all the selected devices": [
-    "Tidak dapat memformat semua perangkat yang dipilih"
+    "无法格式化全部所选设备"
   ],
   "Change": [
-    "Ubah"
+    "更改"
   ],
   "Change Language": [
-    "Ubah Bahasa"
+    "更改语言"
   ],
   "Change desktop": [
-    "Ubah desktop"
+    "更改桌面"
   ],
   "Change device menu": [
-    "Ubah menu perangkat"
+    "更改设备菜单"
   ],
   "Change filters and try again.": [
-    "Ganti filter dan coba lagi."
+    "请更改过滤条件，然后重试。"
   ],
   "Change keyboard": [
-    "Ganti papan ketik"
+    "更改键盘"
   ],
   "Change mode": [
-    "Ubah mode"
+    "更改模式"
   ],
   "Change patterns": [
-    "Ubah pola"
+    "更改软件集"
   ],
   "Change product": [
-    "Ubah produk"
+    "更改产品"
   ],
   "Change product or mode": [
-    "Ubah produk atau mode"
+    "更改产品或模式"
   ],
   "Change the device to configure": [
-    "Ubah perangkat untuk dikonfigurasi"
+    "更改要配置的设备"
   ],
   "Change the device to create %s": [
-    "Ubah perangkat untuk membuat %s"
+    "更改用于创建 %s 的设备"
   ],
   "Change the device to format as %s": [
-    "Ubah perangkat untuk diformat sebagai %s"
+    "更改要格式化为 %s 的设备"
   ],
   "Change the device to install the system": [
-    "Ubah perangkat untuk menginstal sistem"
+    "更改用于安装系统的设备"
   ],
   "Change the file system or mount point": [
-    "Ubah sistem berkas atau titik mount"
+    "更改文件系统或挂载点"
   ],
   "Change to %s": [
-    "Ubah ke %s"
+    "更改为 %s"
   ],
   "Change volume group menu": [
-    "Menu grup volume ubah"
+    "更改卷组菜单"
   ],
   "Changes could not be applied": [
-    "Perubahan tidak dapat diterapkan"
+    "无法应用更改"
   ],
   "Changes in these settings will immediately update the 'Result' section below.": [
-    "Perubahan pada pengaturan ini akan segera memperbarui bagian 'Hasil' di bawah ini."
+    "如果更改这些设置，下方 '结果' 部分的内容将立即更新。"
   ],
   "Changes successfully applied": [
-    "Perubahan berhasil diterapkan"
+    "已成功应用更改"
   ],
   "Changing the product will reset your current settings.": [
-    "Mengubah produk akan mengatur ulang pengaturan Anda saat ini."
+    "更改产品将重置当前设置。"
   ],
   "Channel": [
-    "Saluran"
+    "通道"
   ],
   "Check the following before continuing": [
-    "Periksa hal-hal berikut sebelum melanjutkan"
+    "继续操作前请检查以下内容"
   ],
   "Check whether Agama server is running.": [
-    "Periksa apakah server Agama sedang berjalan."
+    "请检查 Agama 服务是否在正常运行。"
   ],
   "Choose a RAID device to define partitions or to mount": [
-    "Pilih perangkat RAID untuk mendefinisikan partisi atau untuk dipasang"
+    "选择要定义分区或挂载的 RAID 设备"
   ],
   "Choose a disk for placing the boot loader": [
-    "Pilih disk untuk menempatkan boot loader"
+    "选择一个放置引导加载器的磁盘"
   ],
   "Choose a disk to define partitions or to mount": [
-    "Pilih disk untuk mendefinisikan partisi atau untuk dipasang"
+    "选择要定义分区或挂载的磁盘"
   ],
   "Choose a mode": [
-    "Pilih mode"
+    "选择模式"
   ],
   "Choose a product": [
-    "Pilih dari %d produk yang tersedia"
+    "从 %d 个可用产品中选择"
   ],
   "Choose a volume group to define logical volumes": [
-    "Pilih grup volume untuk mendefinisikan volume logis"
+    "选择要定义逻辑卷的卷组"
   ],
   "Choose whether to enable the root account.": [
-    "Pilih apakah akan mengaktifkan akun root."
+    "选择是否启用 root 帐户。"
   ],
   "Chosen by MAC address": [
-    "Dipilih berdasarkan alamat MAC"
+    "按 MAC 地址选择"
   ],
   "Chosen by name": [
-    "Dipilih berdasarkan nama"
+    "按名称选择"
   ],
   "Clear all filters": [
-    "Hapus semua filter"
+    "清除所有过滤条件"
   ],
   "Clear input": [
-    "Bersihkan input"
+    "清除输入"
   ],
   "Clear terminal": [
-    "Bersihkan terminal"
+    "清空终端"
   ],
   "Close": [
-    "Tutup"
+    "关闭"
   ],
   "Close terminal": [
-    "Tutup terminal"
+    "关闭终端"
   ],
   "Color scheme": [
-    "Skema warna"
+    "配色方案"
   ],
   "Configuration added to clipboard": [
-    "Konfigurasi ditambahkan ke papan klip"
+    "配置已添加到剪贴板"
   ],
   "Configuration from the network plus static addresses and gateway": [
-    "Konfigurasi dari jaringan ditambah alamat statis dan gateway"
+    "从网络自动获取配置，外加静态地址和网关"
   ],
   "Configuration read from the iSCSI Boot Firmware Table (iBFT). Initiator cannot be changed.": [
-    "Konfigurasi dibaca dari iSCSI Boot Firmware Table (iBFT). Initiator tidak dapat diubah."
+    "已从 iSCSI 引导固件表 (iBFT) 读取配置。发起端不可更改。"
   ],
   "Configure": [
-    "Konfigurasi"
+    "配置"
   ],
   "Configure DASD": [
-    "Konfigurasikan DASD"
+    "配置 DASD"
   ],
   "Configure Volume Group": [
-    "Konfigurasi grup volume"
+    "配置卷组"
   ],
   "Configure device menu": [
-    "Konfigurasi menu perangkat"
+    "配置设备菜单"
   ],
   "Configure iSCSI": [
-    "Konfigurasi iSCSI"
+    "配置 iSCSI"
   ],
   "Configure logical volume": [
-    "Konfigurasi volume logis"
+    "配置逻辑卷"
   ],
   "Configure partition": [
-    "Konfigurasi partisi"
+    "配置分区"
   ],
   "Configure the Network Time Protocol (NTP) servers used to set the system date and time.": [
-    "Konfigurasikan server Protokol Waktu Jaringan (NTP) yang digunakan untuk mengatur tanggal dan waktu sistem."
+    "配置用于设置系统日期和时间的网络时间协议 (NTP) 服务器。"
   ],
   "Configure zFCP": [
-    "Konfigurasikan zFCP"
+    "配置 zFCP"
   ],
   "Configured as %s.": [
-    "Dikonfigurasi sebagai %s."
+    "已配置为 %s。"
   ],
   "Configured for installation only": [
-    "Dikonfigurasi hanya untuk pemasangan"
+    "仅为安装配置"
   ],
   "Configured with %d connection": [
-    "Dikonfigurasi dengan %d koneksi"
+    "已配置 %d 个连接"
   ],
   "Confirm": [
-    "Konfirmasi"
+    "确认"
   ],
   "Confirm and install": [
-    "Konfirmasi dan instal"
+    "确认并安装"
   ],
   "Confirm that you really want to continue.": [
-    "Pastikan Anda benar-benar ingin melanjutkan."
+    "请确认您确实要继续。"
   ],
   "Confirm the product selection.": [
-    "Konfirmasi pemilihan produk."
+    "确认产品选择。"
   ],
   "Confirming starts the installation immediately with the defined settings.": [
-    "Dengan mengonfirmasi, proses instalasi akan segera dimulai dengan pengaturan yang telah ditentukan."
+    "确认按照指定设置立即启动安装流程。"
   ],
   "Connect": [
-    "Sambungkan"
+    "连接"
   ],
   "Connect to Wi-Fi network": [
-    "Sambungkan ke jaringan Wi-Fi"
+    "连接到 Wi-Fi 网络"
   ],
   "Connect to iSCSI targets": [
-    "Menyambungkan ke target iSCSI"
+    "连接到 iSCSI 目标"
   ],
   "Connected": [
-    "Tersambung"
+    "已连接"
   ],
   "Connected by the system": [
-    "Terhubung oleh sistem"
+    "系统已建立连接"
   ],
   "Connected device": [
-    "Perangkat terhubung"
+    "已连接设备"
   ],
   "Connected devices": [
-    "Perangkat terhubung"
+    "已连接设备"
   ],
   "Connected devices tabs": [
-    "Tab Perangkat Terhubung"
+    "已连接设备选项卡"
   ],
   "Connecting to %s": [
-    "Menghubungkan ke %s"
+    "正在连接到 %s"
   ],
   "Connection failed": [
-    "Koneksi gagal"
+    "连接失败"
   ],
   "Connection is available to all devices.": [
-    "Koneksi tersedia untuk semua perangkat."
+    "连接可用于所有设备。"
   ],
   "Connection is bound to MAC address %s.": [
-    "Koneksi terikat pada alamat MAC %s."
+    "连接已绑定到 MAC 地址 %s。"
   ],
   "Connection is bound to device %s.": [
-    "Koneksi terhubung ke perangkat %s."
+    "连接已绑定到设备 %s。"
   ],
   "Connection not found": [
-    "Koneksi tidak ditemukan"
+    "未找到相应连接"
   ],
   "Connection not found or lost": [
-    "Koneksi tidak ditemukan atau terputus"
+    "未找到连接，或者连接中断"
   ],
   "Content": [
-    "Konten"
+    "内容"
   ],
   "Continuing without installing the package can result in a broken system. In some cases the system might not even boot.": [
-    "Melanjutkan tanpa memasang paket dapat mengakibatkan sistem rusak. Dalam beberapa kasus, sistem bahkan mungkin tidak dapat melakukan booting."
+    "如果继续但不安装该软件包，可能会使系统损坏。在某些情况下，系统甚至可能无法引导。"
   ],
   "Contrast": [
-    "Kontras"
+    "对比度"
   ],
   "Copy to the clipboard": [
-    "Salin ke papan klip"
+    "复制到剪贴板"
   ],
   "Could not authenticate against the server.": [
-    "Tidak dapat mengautentikasi terhadap server."
+    "无法向服务器完成身份验证。"
   ],
   "Could not log in": [
-    "Tidak dapat masuk"
+    "无法登录"
   ],
   "Create LVM volume group %s": [
-    "Buat grup volume LVM %s"
+    "创建 LVM 卷组 %s"
   ],
   "Create LVM volume group on %s": [
-    "Buat grup volume LVM di %s"
+    "在 %s 上创建 LVM 卷组"
   ],
   "Create a new logical volume on %s": [
-    "Buat logical volume baru pada %s"
+    "在 %s 上创建新逻辑卷"
   ],
   "Create a new partition on %s": [
-    "Buat partisi baru pada %s"
+    "在 %s 上创建新分区"
   ],
   "Create another LVM volume group on %s": [
-    "Buat grup volume LVM lain di %s"
+    "在 %s 上创建另一个 LVM 卷组"
   ],
   "Curated sets of packages for common use cases and features to extend the system.": [
-    "Kumpulan paket yang dikurasi untuk kasus penggunaan umum dan fitur untuk memperluas sistem."
+    "面向通用场景和功能的成套软件包，用于扩展系统功能。"
   ],
   "Current": [
-    "Saat ini"
+    "当前"
   ],
   "Current %1$s at %2$s": [
-    "Saat ini %1$s di %2$s"
+    "当前 %1$s（%2$s 上）"
   ],
   "Current %s": [
-    "Saat ini %s"
+    "当前 %s"
   ],
   "Current content": [
-    "Konten saat ini"
+    "当前内容"
   ],
   "Current logical volumes will be kept": [
-    "Volume logis saat ini akan dipertahankan"
+    "将保留当前逻辑卷"
   ],
   "Current partitions will be kept": [
-    "Partisi saat ini akan tetap dipertahankan"
+    "将保留当前分区"
   ],
   "Current selection": [
-    "Pilihan saat ini"
+    "当前选择"
   ],
   "Custom": [
-    "Khusus"
+    "自定义"
   ],
   "DASD": [
     "DASD"
@@ -850,10 +850,10 @@ export default {
     "DASD %s"
   ],
   "DHCP and %s": [
-    "DHCP dan %s"
+    "DHCP 和 %s"
   ],
   "DHCP, %s": [
-    "DHCP, %s"
+    "DHCP、%s"
   ],
   "DIAG": [
     "DIAG"
@@ -862,304 +862,304 @@ export default {
     "DNS"
   ],
   "DNS search domains": [
-    "Domain pencarian DNS"
+    "DNS 搜索域"
   ],
   "DNS servers": [
-    "Server DNS"
+    "DNS 服务器"
   ],
   "Dark": [
-    "Gelap"
+    "深色"
   ],
   "Dark color scheme": [
-    "Skema warna gelap"
+    "深色配色方案"
   ],
   "Data collection may take a while. The download will start automatically once the file is ready.": [
-    "Pengumpulan data mungkin memakan waktu beberapa saat. Unduhan akan dimulai secara otomatis setelah berkas siap."
+    "数据收集可能需要一段时间，文件就绪后将自动开始下载。"
   ],
   "Deactivate": [
-    "Nonaktifkan"
+    "停用"
   ],
   "Deactivated": [
-    "Dinonaktifkan"
+    "已停用"
   ],
   "Deactivating": [
-    "Menonaktifkan"
+    "停用中"
   ],
   "Decrease font size": [
-    "Perkecil ukuran font"
+    "缩小字体"
   ],
   "Default": [
-    "Bawaan"
+    "默认"
   ],
   "Default NTP": [
-    "NTP bawaan"
+    "默认 NTP"
   ],
   "Default selection": [
-    "Pilihan default"
+    "默认选择"
   ],
   "Define a custom size": [
-    "Tentukan ukuran kustom"
+    "指定自定义大小"
   ],
   "Define a new LVM on the disk": [
-    "Buat partisi LVM baru di disk"
+    "在该磁盘上定义新 LVM"
   ],
   "Define a new LVM on top of one or several disks": [
-    "Buat partisi LVM baru di atas satu atau beberapa disk"
+    "在一个或多个磁盘上定义新 LVM"
   ],
   "Define an administrator user": [
-    "Tentukan pengguna administrator"
+    "定义管理员用户"
   ],
   "Define more file system settings": [
-    "Tetapkan lebih banyak pengaturan filesystem"
+    "指定更多文件系统设置"
   ],
   "Delete": [
-    "Menghapus"
+    "删除"
   ],
   "Delete current content": [
-    "Hapus konten saat ini"
+    "删除当前内容"
   ],
   "Delete existing data and install %s?": [
-    "Hapus data yang ada dan instal %s?"
+    "要删除现有数据并安装 %s 吗？"
   ],
   "Delete volume group": [
-    "Hapus grup volume"
+    "删除卷组"
   ],
   "Description": [
-    "Deskripsi"
+    "描述"
   ],
   "Desktop selection": [
-    "Pemilihan desktop"
+    "桌面选择"
   ],
   "Desktops": [
-    "Desktop"
+    "桌面"
   ],
   "Details": [
-    "Detail"
+    "细节"
   ],
   "Device": [
-    "Perangkat"
+    "设备"
   ],
   "Device %s menu": [
-    "Menu Perangkat %s"
+    "设备 %s 菜单"
   ],
   "Device MAC address": [
-    "Alamat MAC perangkat"
+    "设备 MAC 地址"
   ],
   "Device binding": [
-    "Pengikatan perangkat"
+    "设备绑定"
   ],
   "Device could not be configured": [
-    "Perangkat tidak dapat dikonfigurasi"
+    "无法配置设备"
   ],
   "Device details": [
-    "Rincian perangkat"
+    "设备详细信息"
   ],
   "Device name": [
-    "Nama perangkat"
+    "设备名称"
   ],
   "Device name is required": [
-    "Nama perangkat wajib diisi"
+    "必须指定设备名称"
   ],
   "Device not found": [
-    "Perangkat tidak ditemukan"
+    "未找到设备"
   ],
   "Disabled": [
-    "Dinonaktifkan"
+    "已禁用"
   ],
   "Discard changes": [
-    "Buang perubahan"
+    "放弃更改"
   ],
   "Discard the maximum size and continue with simplified configuration": [
-    "Buang ukuran maksimum dan lanjutkan dengan konfigurasi sederhana"
+    "请忽略大小上限，继续使用简化配置"
   ],
   "Disconnect": [
-    "Putuskan sambungan"
+    "断开连接"
   ],
   "Disconnected": [
-    "Terputus"
+    "已断开连接"
   ],
   "Disconnected by the system": [
-    "Terputus oleh sistem"
+    "系统已断开连接"
   ],
   "Disconnection failed": [
-    "Pemutusan gagal"
+    "断开连接操作失败"
   ],
   "Discover and connect to iSCSI targets": [
-    "Temukan dan hubungkan ke target iSCSI"
+    "发现并连接到 iSCSI 目标"
   ],
   "Discover targets": [
-    "Temukan target"
+    "发现目标"
   ],
   "Disk": [
-    "Disk"
+    "磁盘"
   ],
   "Disks": [
-    "Disk"
+    "磁盘"
   ],
   "Dismiss and clear registration data": [
-    "Tutup dan hapus data registrasi"
+    "关闭弹窗并清除注册数据"
   ],
   "Do not activate": [
-    "Jangan aktifkan"
+    "不激活"
   ],
   "Do not configure": [
-    "Jangan konfigurasikan"
+    "不要配置"
   ],
   "Do not deactivate": [
-    "Jangan nonaktifkan"
+    "不停用"
   ],
   "Do not format %s and keep data": [
-    "Jangan format %s dan pertahankan data"
+    "不格式化 %s 并保留数据"
   ],
   "Do not register": [
-    "Jangan daftarkan"
+    "不注册"
   ],
   "Do not use": [
-    "Jangan gunakan"
+    "不使用"
   ],
   "Download configuration": [
-    "Unduh konfigurasi"
+    "下载配置"
   ],
   "Download logs": [
-    "Unduh log"
+    "下载日志"
   ],
   "Download logs to troubleshoot or share with support.": [
-    "Unduh log untuk memecahkan masalah atau berbagi dengan dukungan."
+    "请下载日志，以便进行查错或提交给支持人员。"
   ],
   "E.g. rw, noatime, umask=0666": [
-    "Misalnya rw, noatime, umask=0666"
+    "示例：rw、noatime、umask=0666"
   ],
   "E.g., %s": [
-    "Misalnya, %s"
+    "示例：%s"
   ],
   "E.g., %s, %s, %s": [
-    "Misalnya, %s, %s, %s"
+    "示例：%s、%s、%s"
   ],
   "E.g., 192.168.1.1": [
-    "Mis., 192.168.1.1"
+    "示例：192.168.1.1"
   ],
   "E.g., 192.168.1.1 or 192.168.1.1/24. Prefix auto-added if omitted.": [
-    "Mis., 192.168.1.1 atau 192.168.1.1/24. Prefiks ditambahkan otomatis jika dihilangkan."
+    "示例：192.168.1.1 或 192.168.1.1/24，省略前缀将自动补全。"
   ],
   "E.g., 2001:db8::1": [
-    "Mis., 2001:db8::1"
+    "示例：2001:db8::1"
   ],
   "E.g., 2001:db8::1 or 2001:db8::1/64. Prefix auto-added if omitted.": [
-    "Mis., 2001:db8::1 atau 2001:db8::1/64. Prefiks ditambahkan otomatis jika dihilangkan."
+    "示例：2001:db8::1 或 2001:db8::1/64，省略前缀将自动补全。"
   ],
   "E.g., 8.8.8.8 or 2001:4860:4860::8888": [
-    "Mis., 8.8.8.8 atau 2001:4860:4860::8888"
+    "示例：8.8.8.8 或 2001:4860:4860::8888"
   ],
   "E.g., bond0": [
-    "Mis., bond0"
+    "示例：bond0"
   ],
   "E.g., br0": [
-    "Misalnya, br0"
+    "示例：br0"
   ],
   "E.g., downdelay=0, primary=eth1, miimon=100, lacp_rate=fast": [
-    "Misal, downdelay=0, primary=eth1, miimon=100, lacp_rate=fast"
+    "示例：downdelay=0、primary=eth1、miimon=100、lacp_rate=fast"
   ],
   "E.g., eth0.100": [
-    "Misalnya, eth0.100"
+    "示例：eth0.100"
   ],
   "E.g., example.com": [
-    "Mis., example.com"
+    "示例：example.com"
   ],
   "Edit": [
-    "Edit"
+    "编辑"
   ],
   "Edit binding settings": [
-    "Edit pengaturan ikatan"
+    "编辑绑定设置"
   ],
   "Edit connection": [
-    "Edit koneksi"
+    "编辑连接"
   ],
   "Edit connection settings": [
-    "Edit pengaturan koneksi"
+    "编辑连接设置"
   ],
   "Edit volume group": [
-    "Edit grup volume"
+    "编辑卷组"
   ],
   "Email": [
-    "Email"
+    "电子邮件"
   ],
   "Empty LVM volume group %s": [
-    "Kosongkan volume grup LVM %s"
+    "清空 LVM 卷组 %s"
   ],
   "Enable mutual verification": [
-    "Aktifkan verifikasi mutual"
+    "启用双向验证"
   ],
   "Enabled": [
-    "Diaktifkan"
+    "已启用"
   ],
   "Enabled with the system default settings": [
-    "Diaktifkan dengan pengaturan bawaan sistem"
+    "采用系统默认设置启用"
   ],
   "Encapsulation protocol": [
-    "Protokol enkapsulasi"
+    "封装协议"
   ],
   "Encrypt the system": [
-    "Mengenkripsi sistem"
+    "加密系统"
   ],
   "Encrypted Device": [
-    "Perangkat Terenkripsi"
+    "已加密设备"
   ],
   "Encryption": [
-    "Enkripsi"
+    "加密"
   ],
   "Encryption Password": [
-    "Kata Sandi Enkripsi"
+    "加密密码"
   ],
   "Encryption is disabled": [
-    "Enkripsi dinonaktifkan"
+    "已禁用加密功能"
   ],
   "Encryption is enabled": [
-    "Enkripsi diaktifkan"
+    "已启用加密功能"
   ],
   "Encryption is enabled using TPM unlocking": [
-    "Enkripsi diaktifkan menggunakan pembukaan kunci TPM"
+    "已通过 TPM 解锁机制启用加密功能"
   ],
   "Encryption settings": [
-    "Pengaturan enkripsi"
+    "加密设置"
   ],
   "Enter a hostname value.": [
-    "Masukkan nilai nama host."
+    "请输入主机名。"
   ],
   "Enter a name": [
-    "Masukkan nama"
+    "输入名称"
   ],
   "Enter a name for the volume group.": [
-    "Masukkan nama untuk grup volume."
+    "输入卷组的名称。"
   ],
   "Enter a registration code": [
-    "Masukkan kode registrasi"
+    "输入注册代码"
   ],
   "Enter a server URL": [
-    "Masukkan URL server"
+    "输入服务器 URL"
   ],
   "Enter or Tab to add": [
-    "Masukkan atau tekan Tab untuk menambah"
+    "按 Enter 或 Tab 可添加条目"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate": [
-    "Masukkan atau tekan Tab untuk menambah, Backspace atau Delete untuk menghapus, tombol panah untuk menavigasi"
+    "按 Enter 或 Tab 键可添加条目，按 Backspace 或 Delete 键可去除条目，按方向键可切换条目"
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
-    "Masukkan atau tekan Tab untuk menambah, Backspace atau Delete untuk menghapus, tombol panah untuk menavigasi entri, Escape untuk keluar"
+    "按 Enter 或 Tab 键可添加条目，按 Backspace 或 Delete 键可去除条目，按方向键可切换条目，按 Escape 键可退出"
   ],
   "ExFAT": [
     "ExFAT"
   ],
   "Excellent signal": [
-    "Sinyal sangat baik"
+    "信号极佳"
   ],
   "Expand if possible": [
-    "Perluas jika memungkinkan"
+    "尽可能扩展"
   ],
   "Expiration date": [
-    "Tanggal kadaluwarsa"
+    "失效日期"
   ],
   "Explicitly enabled with manual settings": [
-    "Diaktifkan secara eksplisit dengan pengaturan manual"
+    "通过手动设置明确启用"
   ],
   "Ext2": [
     "Ext2"
@@ -1171,13 +1171,13 @@ export default {
     "Ext4"
   ],
   "Extend the installation beyond the currently selected device": [
-    "Perluas instalasi melampaui perangkat %d yang saat ini dipilih"
+    "将安装扩展至超过目前 %d 个设备的容量"
   ],
   "Extend the installation beyond the currently selected disk": [
-    "Perluas instalasi melampaui disk %d yang saat ini dipilih"
+    "将安装扩展至超过目前 %d 磁盘的容量"
   ],
   "Extensions": [
-    "Ekstensi"
+    "扩展"
   ],
   "F2FS": [
     "F2FS"
@@ -1186,166 +1186,166 @@ export default {
     "FAT"
   ],
   "Failed to calculate a storage layout": [
-    "Gagal menghitung tata letak penyimpanan"
+    "无法计算存储布局"
   ],
   "File system": [
-    "Sistem berkas"
+    "文件系统"
   ],
   "Filesystems": [
-    "Sistem berkas"
+    "文件系统"
   ],
   "Filter by description or keymap code": [
-    "Filter berdasarkan deskripsi atau kode peta kunci"
+    "按描述或键盘映射代码过滤"
   ],
   "Filter by language, territory or locale code": [
-    "Memfilter berdasarkan bahasa, wilayah, atau kode lokal"
+    "按语言、地区或区域设定代码过滤"
   ],
   "Filter by name and description": [
-    "Filter berdasarkan nama dan deskripsi"
+    "按名称和描述过滤"
   ],
   "Filter by territory, time zone code or UTC offset": [
-    "Memfilter berdasarkan wilayah, kode zona waktu, atau offset UTC"
+    "按地区、时区代码或 UTC 偏移量过滤"
   ],
   "Final layout": [
-    "Tata letak akhir"
+    "最终布局"
   ],
   "Final structure of the system after installation.": [
-    "Struktur akhir sistem setelah pemasangan."
+    "安装完成后系统的最终结构。"
   ],
   "Find space in %s": [
-    "Temukan ruang di %s"
+    "在 %s 中查找可用空间"
   ],
   "Fix invalid settings before starting the installation.": [
-    "Perbaiki pengaturan yang tidak valid sebelum memulai instalasi."
+    "启动安装流程前，请修正无效设置。"
   ],
   "Fix the errors below and try again": [
-    "Perbaiki kesalahan di bawah ini dan coba lagi"
+    "修正下方错误后重试"
   ],
   "Fixed": [
-    "Tetap"
+    "固定尺寸"
   ],
   "For more advanced needs, users can switch to this full-page, dedicated path version that provides more space for detailed views, additional columns, filters, and extended functionality.": [
-    "Untuk kebutuhan yang lebih canggih, pengguna dapat beralih ke versi jalur khusus halaman penuh ini yang menyediakan ruang lebih luas untuk tampilan detail, kolom tambahan, filter, dan fungsionalitas yang diperluas."
+    "如有更复杂的需求，用户可切换到此显示完整页面的专用路径版本，它提供了更多空间，可呈现详细视图、更多列、过滤器及扩展功能。"
   ],
   "Format": [
-    "Format"
+    "格式化"
   ],
   "Format RAID %s": [
-    "Format RAID %s"
+    "格式化 RAID %s"
   ],
   "Format device %s": [
-    "Format perangkat %s"
+    "格式化设备 %s"
   ],
   "Format disk %s": [
-    "Format disk %s"
+    "格式化磁盘 %s"
   ],
   "Format now": [
-    "Format sekarang"
+    "立即格式化"
   ],
   "Format selected devices?": [
-    "Memformat perangkat yang dipilih?"
+    "要格式化所选设备？"
   ],
   "Format the whole device or mount an existing file system": [
-    "Memformat seluruh perangkat atau mount sistem berkas yang ada"
+    "格式化整个设备或挂载现有文件系统"
   ],
   "Formatted": [
-    "Diformat"
+    "已格式化"
   ],
   "Formatting devices": [
-    "Memformat perangkat"
+    "正在格式化设备"
   ],
   "Forward delay": [
-    "Tunda penerusan"
+    "转发延迟"
   ],
   "Forward delay must be between 4 and 30 seconds": [
-    "Tunda penerusan harus berada di antara 4 dan 30 detik"
+    "转发延迟必须介于 4 到 30 秒之间"
   ],
   "Full Disk Encryption (FDE) allows to protect the information stored at the new file systems, including data, programs, and system files.": [
-    "Enkripsi Disk Penuh (FDE) memungkinkan untuk melindungi informasi yang disimpan di sistem berkas baru, termasuk data, program, dan berkas sistem."
+    "全盘加密 (FDE) 可用于保护存储在新文件系统中的信息，包括数据、程序以及系统文件。"
   ],
   "Full name": [
-    "Nama lengkap"
+    "全名"
   ],
   "Full name is required": [
-    "Nama lengkap diperlukan"
+    "必须指定全名"
   ],
   "Gateway": [
-    "Gateway"
+    "网关"
   ],
   "GiB": [
     "GiB"
   ],
   "Go to [installation] summary.": [
-    "Buka ringkasan [instalasi]."
+    "前往[安装]摘要页面。"
   ],
   "Go to iSCSI": [
-    "Buka iSCSI"
+    "前往 iSCSI 页面"
   ],
   "Go to network page": [
-    "Buka halaman jaringan"
+    "前往网络页面"
   ],
   "Go to network settings": [
-    "Pergi ke pengaturan jaringan"
+    "前往网络设置页面"
   ],
   "Go to registration": [
-    "Pergi ke pendaftaran"
+    "前往注册页面"
   ],
   "Go to storage page": [
-    "Buka halaman penyimpanan"
+    "前往存储页面"
   ],
   "Good signal": [
-    "Sinyal baik"
+    "信号良好"
   ],
   "Graphical desktop environments for the system.": [
-    "Lingkungan desktop grafis untuk sistem."
+    "系统的图形桌面环境。"
   ],
   "Hello time": [
-    "Waktu hello"
+    "Hello 报文间隔"
   ],
   "Hello time must be between 1 and 10 seconds": [
-    "Waktu hello harus berada di antara 1 dan 10 detik"
+    "Hello 报文间隔必须介于 1 到 10 秒之间"
   ],
   "Hide": [
-    "Sembunyikan"
+    "隐藏"
   ],
   "Hide %d subvolume action": [
-    "Menyembunyikan tindakan subvolume %d"
+    "隐藏 %d 个子卷操作"
   ],
   "Hide technical details": [
-    "Sembunyikan detail teknis"
+    "隐藏技术详细信息"
   ],
   "Hide terminal": [
-    "Sembunyikan terminal"
+    "隐藏终端"
   ],
   "High": [
-    "Tinggi"
+    "高"
   ],
   "High contrast": [
-    "Kontras tinggi"
+    "高对比度"
   ],
   "Hostname": [
-    "Nama Host"
+    "主机名"
   ],
   "Hostname [will remain unchanged] across reboots and network changes.": [
-    "Nama host [akan tetap tidak berubah] di seluruh reboot dan perubahan jaringan."
+    "系统重引导或网络变更后，主机名[将保持不变]。"
   ],
   "Hostname cannot be changed after registration": [
-    "Nama host tidak dapat diubah setelah registrasi"
+    "完成注册后，主机名将无法更改"
   ],
   "Hostname is dynamic and [may change after a reboot or network update].": [
-    "Nama host bersifat dinamis dan [dapat berubah setelah reboot atau pembaruan jaringan]."
+    "此主机名是动态的，[可能会在系统重引导或网络更新后发生变化]。"
   ],
   "Hostnames, IP addresses, or fully qualified domain names (FQDNs). E.g., pool.ntp.org": [
-    "Nama host, alamat IP, atau nama domain lengkap (FQDN). Misalnya, pool.ntp.org"
+    "主机名、IP 地址或完全限定域名 (FQDN)。示例：pool.ntp.org"
   ],
   "I have read and accept the [license] for %s": [
-    "Saya telah membaca dan menerima [lisensi] untuk %s"
+    "我已阅读并接受 %s 的[许可]"
   ],
   "IP Addresses": [
-    "Alamat IP"
+    "IP 地址"
   ],
   "IP addresses": [
-    "Alamat IP"
+    "IP 地址"
   ],
   "IPs": [
     "IP"
@@ -1354,220 +1354,220 @@ export default {
     "IPv4"
   ],
   "IPv4 Addresses": [
-    "Alamat IPv4"
+    "IPv4 地址"
   ],
   "IPv4 Gateway": [
-    "Gateway IPv4"
+    "IPv4 网关"
   ],
   "IPv4 Settings": [
-    "Pengaturan IPv4"
+    "IPv4 设置"
   ],
   "IPv4 gateway is required": [
-    "Gateway IPv4 wajib diisi"
+    "必须指定 IPv4 网关"
   ],
   "IPv6": [
     "IPv6"
   ],
   "IPv6 Addresses": [
-    "Alamat IPv6"
+    "IPv6 地址"
   ],
   "IPv6 Gateway": [
-    "Gateway IPv6"
+    "IPv6 网关"
   ],
   "IPv6 Settings": [
-    "Pengaturan IPv6"
+    "IPv6 设置"
   ],
   "IPv6 gateway is required": [
-    "Gateway IPv6 wajib diisi"
+    "必须指定 IPv6 网关"
   ],
   "Identify the connection device by its name in the system": [
-    "Identifikasi perangkat koneksi berdasarkan namanya di sistem"
+    "按系统中的名称识别连接设备"
   ],
   "Identify the connection device by its physical address": [
-    "Identifikasi perangkat koneksi berdasarkan alamat fisiknya"
+    "按物理地址识别连接设备"
   ],
   "If a local media was used to run this installer, remove it before the next boot.": [
-    "Jika media lokal digunakan untuk menjalankan penginstalasi ini, hapus media tersebut sebelum boot berikutnya."
+    "如果运行此次安装时使用了本地介质，请在下次启动前移除。"
   ],
   "If that is not intended, cancel and select a desktop in the [software] settings.": [
-    "Jika itu tidak dimaksudkan, batalkan dan pilih desktop di pengaturan [software]."
+    "如果这并非预期操作，请取消并前往[软件]设置页面选择桌面。"
   ],
   "If unsure, cancel and review [storage] settings.": [
-    "Jika tidak yakin, batalkan dan tinjau pengaturan [storage]."
+    "如果存在疑问，请取消并查看[存储]设置。"
   ],
   "If you want to disable this check, please specify \"inst.ay_check=0\" at kernels command-line": [
-    "Jika Anda ingin menonaktifkan pemeriksaan ini, harap tentukan \"inst.ay_check=0\" pada baris perintah kernel"
+    "如要禁用此项检查，请在内核命令行中指定 \"inst.ay_check=0\""
   ],
   "Includes %1$d additional pattern. Requires %2$s": [
-    "Menyertakan %1$d pola tambahan. Membutuhkan %2$s"
+    "包含 %1$d 个附加软件集，需要 %2$s"
   ],
   "Increase font size": [
-    "Perbesar ukuran font"
+    "放大字体"
   ],
   "Initiator": [
-    "Inisiator"
+    "发起者"
   ],
   "Initiator name": [
-    "Nama inisiator"
+    "发起者名称"
   ],
   "Initiator password": [
-    "Kata sandi initiator"
+    "发起端口令"
   ],
   "Initiator user name": [
-    "Nama pengguna initiator"
+    "发起端用户名"
   ],
   "Install": [
-    "Instal"
+    "安装"
   ],
   "Install %s?": [
-    "Instal %s?"
+    "要安装 %s 吗？"
   ],
   "Install now": [
-    "Instal sekarang"
+    "立即安装"
   ],
   "Install now with potential data loss": [
-    "Instal sekarang dengan potensi kehilangan data"
+    "立即安装，可能造成数据丢失"
   ],
   "Installation": [
-    "Instalasi"
+    "安装"
   ],
   "Installation complete": [
-    "Instalasi selesai"
+    "安装完成"
   ],
   "Installation devices": [
-    "Perangkat pemasangan"
+    "安装设备"
   ],
   "Installation failed": [
-    "Instalasi gagal"
+    "安装失败"
   ],
   "Installation in progress": [
-    "Instalasi sedang berlangsung"
+    "安装进行中"
   ],
   "Installation logs download": [
-    "Unduhan log instalasi"
+    "下载安装日志"
   ],
   "Installation only": [
-    "Hanya instalasi"
+    "仅安装阶段"
   ],
   "Installation settings": [
-    "Pengaturan instalasi"
+    "安装设置"
   ],
   "Installation settings in JSON format": [
-    "Pengaturan instalasi dalam format JSON"
+    "JSON 格式安装设置"
   ],
   "Installation will take %s.": [
-    "Penginstalan akan memakan waktu %s."
+    "安装将会占用 %s。"
   ],
   "Installed system may not have network connections": [
-    "Sistem yang dipasang mungkin tidak memiliki koneksi jaringan"
+    "安装好的系统可能没有网络连接"
   ],
   "Installing a broken package affects system stability and is a big security risk!": [
-    "Memasang paket yang rusak akan memengaruhi stabilitas sistem dan menimbulkan risiko keamanan yang besar!"
+    "安装已损坏的软件包会影响系统稳定性，并会产生严重的安全隐患！"
   ],
   "Interface": [
-    "Antarmuka"
+    "界面"
   ],
   "Invalid DNS search domain": [
-    "Domain pencarian DNS tidak valid"
+    "DNS 搜索域无效"
   ],
   "Invalid DNS server address": [
-    "Alamat server DNS tidak valid"
+    "DNS 服务器地址无效"
   ],
   "Invalid IPv4 address": [
-    "Alamat IPv4 tidak valid"
+    "IPv4 地址无效"
   ],
   "Invalid IPv4 gateway": [
-    "Gateway IPv4 tidak valid"
+    "IPv4 网关无效"
   ],
   "Invalid IPv6 address": [
-    "Alamat IPv6 tidak valid"
+    "IPv6 地址无效"
   ],
   "Invalid IPv6 gateway": [
-    "Gateway IPv6 tidak valid"
+    "IPv6 网关无效"
   ],
   "Invalid NTP server address": [
-    "Alamat server NTP tidak valid"
+    "NTP 服务器地址无效"
   ],
   "Invalid SSH Key": [
-    "Kunci SSH Tidak Valid"
+    "SSH 密钥无效"
   ],
   "Invalid [zFCP] settings": [
-    "Pengaturan [zFCP] tidak valid"
+    "[zFCP] 设置无效"
   ],
   "Invalid device location": [
-    "Lokasi perangkat tidak valid"
+    "设备位置无效"
   ],
   "Invalid format (e.g. 20 GiB)": [
-    "Format tidak valid (misalnya 20 GiB)"
+    "格式无效（示例：20 GiB）"
   ],
   "Invalid hostname value.": [
-    "Nilai nama host tidak valid."
+    "主机名无效。"
   ],
   "Invalid label format": [
-    "Format label tidak valid"
+    "标签格式无效"
   ],
   "Invalid partition location": [
-    "Lokasi partisi tidak valid"
+    "分区位置无效"
   ],
   "Invalid settings": [
-    "Pengaturan tidak valid"
+    "设置无效"
   ],
   "Invalid software selection": [
-    "Pilihan perangkat lunak tidak valid"
+    "软件选择无效"
   ],
   "Invalid storage settings": [
-    "Pengaturan penyimpanan tidak valid"
+    "存储设置无效"
   ],
   "Issue date": [
-    "Tanggal penerbitan"
+    "颁发日期"
   ],
   "Issuer": [
-    "Penerbit"
+    "颁发者"
   ],
   "It doesn't exist or can't be reached.": [
-    "Tidak ada atau tidak dapat dijangkau."
+    "该资源不存在或无法访问。"
   ],
   "It is chosen for booting": [
-    "Ini dipilih untuk booting"
+    "该设备选定用于引导"
   ],
   "It is chosen for booting and for some LVM groups": [
-    "Ini dipilih untuk booting dan untuk beberapa grup LVM"
+    "该设备选定用于引导及部分 LVM 组"
   ],
   "It is chosen for booting and for the LVM group '%s'": [
-    "Ini dipilih untuk booting dan untuk grup LVM '%s'"
+    "该设备选定用于引导及 LVM 组 '%s'"
   ],
   "It is chosen for some LVM groups": [
-    "Ini dipilih untuk beberapa grup LVM"
+    "该设备选定用于部分 LVM 组"
   ],
   "It is chosen for the LVM group '%s'": [
-    "Ini dipilih untuk grup LVM '%s'"
+    "该设备选定用于 LVM 组 '%s'"
   ],
   "It is not possible to allocate space for %s.": [
-    "Tidak mungkin mengalokasikan ruang untuk %s."
+    "无法为 %s 分配空间。"
   ],
   "It is not possible to allocate space for the boot partition and for %s.": [
-    "Tidak mungkin mengalokasikan ruang untuk partisi boot dan untuk %s."
+    "无法为引导分区和 %s 分配空间。"
   ],
   "It is not possible to install the system with the current configuration. Adjust the settings below.": [
-    "Tidak mungkin memasang sistem dengan konfigurasi saat ini. Sesuaikan pengaturan di bawah ini."
+    "无法采用当前配置安装系统，请调整下面的设置。"
   ],
   "It is offline and must be activated before formatting it.": [
-    "Perangkat ini dalam keadaan luring dan harus diaktifkan terlebih dahulu sebelum diformat."
+    "该设备已脱机，必须将其激活才能格式化。"
   ],
   "JFS": [
     "JFS"
   ],
   "Keep %s": [
-    "Pertahankan %s"
+    "保留 %s"
   ],
   "Keep editing": [
-    "Lanjutkan mengedit"
+    "继续编辑"
   ],
   "Keyboard": [
-    "Papan ketik"
+    "键盘"
   ],
   "Keyboard layout": [
-    "Tata letak keyboard"
+    "键盘布局"
   ],
   "KiB": [
     "KiB"
@@ -1576,238 +1576,238 @@ export default {
     "LUN"
   ],
   "LUNs have to be manually configured after activating a controller.": [
-    "LUN harus dikonfigurasi secara manual setelah mengaktifkan pengontrol."
+    "激活控制器后，必须手动配置 LUN。"
   ],
   "LVM": [
     "LVM"
   ],
   "LVM physical volumes will be added as partitions on the chosen disks.": [
-    "LVM physical volume akan ditambahkan sebagai partisi pada disk yang dipilih."
+    "LVM 物理卷将以分区形式添加到所选磁盘上。"
   ],
   "Label": [
-    "Label"
+    "标签"
   ],
   "Language": [
-    "Bahasa"
+    "语言"
   ],
   "Language and Keyboard": [
-    "Bahasa dan Keyboard"
+    "语言和键盘"
   ],
   "Language and keyboard": [
-    "Bahasa dan keyboard"
+    "语言和键盘"
   ],
   "Language and region": [
-    "Bahasa dan wilayah"
+    "语言和区域"
   ],
   "Let the installer propose a sensible size": [
-    "Biarkan penginstal mengusulkan ukuran yang masuk akal"
+    "让安装程序建议适当的大小"
   ],
   "Let the installer set the size": [
-    "Biarkan installer menetapkan ukurannya"
+    "由安装程序设置大小"
   ],
   "Level": [
-    "Level"
+    "级别"
   ],
   "License acceptance is required to continue.": [
-    "Penerimaan lisensi diperlukan untuk melanjutkan."
+    "必须接受许可协议才能继续。"
   ],
   "License acceptance required": [
-    "Diperlukan penerimaan lisensi"
+    "必须接受许可协议"
   ],
   "Light": [
-    "Terang"
+    "浅色"
   ],
   "Light color scheme": [
-    "Skema warna terang"
+    "浅色配色方案"
   ],
   "Linux command-line with administrative privileges on the installer system.": [
-    "Command-line Linux dengan hak administratif pada sistem installer."
+    "安装程序系统内具备管理员权限的 Linux 命令行。"
   ],
   "Listening and learning time (4-30 seconds).": [
-    "Waktu mendengarkan dan belajar (4-30 detik)."
+    "侦听和学习时长（4-30 秒）。"
   ],
   "Loading": [
-    "Memuat"
+    "正在加载"
   ],
   "Loading data...": [
-    "Memuat data..."
+    "正在读取数据……"
   ],
   "Localization": [
-    "Pelokalan"
+    "本地化"
   ],
   "Location": [
-    "Lokasi"
+    "位置"
   ],
   "Locked targets cannot be managed from here and do not offer any actions.": [
-    "Target yang terkunci tidak dapat dikelola dari sini dan tidak menawarkan tindakan apa pun."
+    "已锁定的目标无法在此处管理，因此没有可执行的操作。"
   ],
   "Log in": [
-    "Masuk"
+    "登录"
   ],
   "Log in as %s": [
-    "Masuk sebagai %s"
+    "登录为 %s"
   ],
   "Log in using a password": [
-    "Login menggunakan kata sandi"
+    "使用口令登录"
   ],
   "Log in using a trusted SSH public key": [
-    "Login menggunakan kunci publik SSH yang dipercaya"
+    "使用可信 SSH 公钥登录"
   ],
   "Logical volume": [
-    "Logical volume"
+    "逻辑卷"
   ],
   "Logical volume could not be configured": [
-    "Logical volume tidak dapat dikonfigurasi"
+    "无法配置逻辑卷"
   ],
   "Logical volumes": [
-    "Volume logis"
+    "逻辑卷"
   ],
   "Logical volumes for %s": [
-    "Volume logis untuk %s"
+    "%s 的逻辑卷"
   ],
   "Logical volumes that are not reused will be removed and that data will be lost.": [
-    "Volume logis yang tidak digunakan kembali akan dihapus dan datanya akan hilang."
+    "将去除不复用的逻辑卷，其中的数据将会丢失。"
   ],
   "Logical volumes that are not reused will be resized as needed.": [
-    "Volume logis yang tidak digunakan kembali akan diubah ukurannya sesuai kebutuhan."
+    "将按需调整不复用逻辑卷的大小。"
   ],
   "Logical volumes that are not reused would be resized if needed.": [
-    "Volume logis yang tidak digunakan kembali akan diubah ukurannya jika diperlukan."
+    "将根据需要调整不复用逻辑卷的大小。"
   ],
   "Logical volumes will be used and created for %s": [
-    "Volume logis akan digunakan dan dibuat untuk %s"
+    "将会为 %s 使用和创建多个逻辑卷"
   ],
   "Login": [
-    "Masuk"
+    "登录"
   ],
   "Login form": [
-    "Formulir masuk"
+    "登录表单"
   ],
   "MAC address": [
-    "Alamat MAC"
+    "MAC 地址"
   ],
   "Make sure that the passsword is correct and try again.": [
-    "Pastikan kata sandi benar dan coba lagi."
+    "请确认口令无误后重试。"
   ],
   "Make sure the location is correct and the configuration is valid.": [
-    "Pastikan lokasinya benar dan konfigurasinya valid."
+    "请确认位置正确且配置有效。"
   ],
   "Manage DASD devices": [
-    "Kelola perangkat DASD"
+    "管理 DASD 设备"
   ],
   "Manage available connections, connect to Wi-Fi, or add a new connection.": [
-    "Kelola koneksi yang tersedia, sambungkan ke Wi-Fi, atau tambahkan koneksi baru."
+    "管理可用连接、连接 Wi‑Fi 或添加新连接。"
   ],
   "Manual": [
-    "Manual"
+    "手动"
   ],
   "Max channel": [
-    "Saluran maks"
+    "最大通道"
   ],
   "Max message age": [
-    "Usia maksimum pesan"
+    "最大报文留存时长"
   ],
   "Max message age must be between 6 and 40 seconds": [
-    "Usia maksimum pesan harus berada di antara 6 dan 40 detik"
+    "最大报文留存时长必须介于 6 到 40 秒之间"
   ],
   "Maximum": [
-    "Maksimum"
+    "最大"
   ],
   "Maximum is required": [
-    "Nilai maksimum wajib diisi"
+    "必须指定最大值"
   ],
   "Members": [
-    "Anggota"
+    "成员"
   ],
   "Memory": [
-    "Memori"
+    "内存"
   ],
   "MiB": [
     "MiB"
   ],
   "Min channel": [
-    "Saluran min"
+    "最小通道"
   ],
   "Minimize terminal": [
-    "Minimalkan terminal"
+    "最小化终端"
   ],
   "Minimum": [
-    "Minimum"
+    "最小"
   ],
   "Minimum is required": [
-    "Nilai minimum wajib diisi"
+    "必须指定最小值"
   ],
   "Minimum: %1$s (%2$s)": [
-    "Minimum: %1$s (%2$s)"
+    "最小值：%1$s (%2$s)"
   ],
   "Missing": [
-    "Hilang"
+    "缺失"
   ],
   "Mode": [
-    "Mode"
+    "模式"
   ],
   "Model": [
-    "Model"
+    "型号"
   ],
   "Modify settings and physical volumes": [
-    "Ubah pengaturan dan volume fisik"
+    "修改设置和物理卷"
   ],
   "More": [
-    "Lainnya"
+    "更多"
   ],
   "More actions": [
-    "Tindakan lainnya"
+    "更多操作"
   ],
   "More devices": [
-    "Lebih banyak perangkat"
+    "更多设备"
   ],
   "More options": [
-    "Lebih banyak opsi"
+    "更多选项"
   ],
   "More storage options": [
-    "Lebih banyak opsi penyimpanan"
+    "更多存储选项"
   ],
   "Moreover, the following partition will be created.": [
-    "Selain itu, partisi berikut akan dibuat."
+    "此外还将创建以下分区。"
   ],
   "Moreover, the following partition will be mounted.": [
-    "Selain itu, partisi berikut akan di-mount."
+    "此外还将挂载以下分区。"
   ],
   "Moreover, the following partitions will be created or mounted": [
-    "Selain itu, partisi-partisi berikut akan dibuat atau di-mount"
+    "此外，将会创建或挂载以下分区"
   ],
   "Mount Point": [
-    "Mount Point"
+    "挂载点"
   ],
   "Mount RAID %s": [
-    "Mount RAID %s"
+    "挂载 RAID %s"
   ],
   "Mount disk %s": [
-    "Kait diska %s"
+    "挂载磁盘 %s"
   ],
   "Mount options": [
-    "Opsi mount"
+    "挂载选项"
   ],
   "Mount point": [
-    "Titik pemasangan"
+    "挂载点"
   ],
   "Mount point is required": [
-    "Mount point wajib diisi"
+    "必须指定挂载点"
   ],
   "Move mount points": [
-    "Pindahkan titik mount"
+    "移动挂载点"
   ],
   "Move the mount points currently configured at the selected disks to logical volumes of this volume group.": [
-    "Pindahkan titik mount yang saat ini dikonfigurasi pada disk yang dipilih ke volume logis dari grup volume ini."
+    "将所选磁盘上当前配置的挂载点移动到此卷组的逻辑卷。"
   ],
   "Multipath": [
-    "Multipath"
+    "多路径"
   ],
   "Must be larger than minimum size": [
-    "Harus lebih besar dari ukuran minimum"
+    "必须大于最小大小"
   ],
   "Must be smaller than maximum size": [
-    "Harus lebih kecil dari ukuran maksimum"
+    "必须小于最大大小"
   ],
   "NFS": [
     "NFS"
@@ -1819,577 +1819,577 @@ export default {
     "NTFS"
   ],
   "Name": [
-    "Nama"
+    "名称"
   ],
   "Name %s": [
-    "Nama %s"
+    "名称 %s"
   ],
   "Name for the logical volume. E.g., root, home, lv0": [
-    "Nama untuk logical volume. Misalnya, root, home, lv0"
+    "逻辑卷名称，示例：root、home、lv0"
   ],
   "Name is required": [
-    "Nama wajib diisi"
+    "必须指定名称"
   ],
   "Network": [
-    "Jaringan"
+    "网络"
   ],
   "Network details": [
-    "Rincian jaringan"
+    "网络详细信息"
   ],
   "Network not available": [
-    "Jaringan tidak tersedia"
+    "网络不可用"
   ],
   "New": [
-    "Baru"
+    "新建"
   ],
   "New Wi-Fi connection": [
-    "Koneksi Wi-Fi baru"
+    "新建 Wi‑Fi 连接"
   ],
   "New connection": [
-    "Koneksi baru"
+    "新建连接"
   ],
   "New logical volume": [
-    "Logical volume baru"
+    "新建逻辑卷"
   ],
   "New logical volume. There are no available existing logical volumes on %s.": [
-    "Logical volume baru. Tidak ada logical volume yang sudah ada dan tersedia pada %s."
+    "新建逻辑卷。%s 上没有可用的现有逻辑卷。"
   ],
   "New partition": [
-    "Partisi baru"
+    "新建分区"
   ],
   "New partition. There are no available existing partitions on %s.": [
-    "Partisi baru. Tidak ada partisi yang sudah ada dan tersedia pada %s."
+    "新建分区。%s 上没有可用的现有分区。"
   ],
   "No": [
-    "Tidak"
+    "否"
   ],
   "No DASD devices found in this machine.": [
-    "Tidak ada perangkat DASD yang ditemukan di mesin ini."
+    "在此计算机上未找到 DASD 设备。"
   ],
   "No LVM volume groups are available for selection.": [
-    "Tidak ada grup volume LVM yang tersedia untuk dipilih."
+    "没有可供选择的 LVM 卷组。"
   ],
   "No LVM volume groups found": [
-    "Tidak ada grup volume LVM ditemukan"
+    "未找到 LVM 卷组"
   ],
   "No RAID devices found": [
-    "Tidak ada perangkat RAID ditemukan"
+    "未找到 RAID 设备"
   ],
   "No Wi-Fi networks were found": [
-    "Tidak ditemukan jaringan Wi-Fi"
+    "未找到 WiFi 网络"
   ],
   "No additional logical volumes will be created": [
-    "Tidak ada volume logis tambahan yang akan dibuat"
+    "将不创建附加逻辑卷"
   ],
   "No additional partitions will be created": [
-    "Tidak akan dibuat partisi tambahan"
+    "将不创建附加分区"
   ],
   "No additional patterns available": [
-    "Tidak ada pola tambahan yang tersedia"
+    "无附加软件集可用"
   ],
   "No changes to apply": [
-    "Tidak ada perubahan yang diterapkan"
+    "没有要应用的更改"
   ],
   "No connections match filters": [
-    "Tidak ada koneksi yang cocok dengan filter"
+    "没有与过滤条件匹配的连接"
   ],
   "No content found": [
-    "Tidak ada konten yang ditemukan"
+    "未找到内容"
   ],
   "No controllers available": [
-    "Tidak ada pengontrol yang tersedia"
+    "无可用控制器"
   ],
   "No data loss is expected": [
-    "Tidak diharapkan ada kehilangan data"
+    "预期无数据丢失"
   ],
   "No desktop selected": [
-    "Tidak ada desktop yang dipilih"
+    "未选择桌面"
   ],
   "No desktops available": [
-    "Tidak ada desktop yang tersedia"
+    "无可用桌面"
   ],
   "No device is currently using this connection.": [
-    "Tidak ada perangkat yang saat ini menggunakan koneksi ini."
+    "目前没有设备在使用此连接。"
   ],
   "No device selected yet": [
-    "Belum ada perangkat yang dipilih"
+    "尚未选择设备"
   ],
   "No devices available": [
-    "Tidak ada perangkat yang tersedia"
+    "没有可用设备"
   ],
   "No devices configured yet": [
-    "Belum ada perangkat yang dikonfigurasi"
+    "尚未配置设备"
   ],
   "No devices found": [
-    "Tidak ditemukan perangkat"
+    "未找到设备"
   ],
   "No devices match filters": [
-    "Tidak ada perangkat yang cocok dengan filter"
+    "没有与过滤条件匹配的设备"
   ],
   "No devices selected. Select one or more devices to perform bulk actions.": [
-    "Tidak ada perangkat yang dipilih. Pilih satu atau lebih perangkat untuk melakukan tindakan massal."
+    "未选择任何设备。请选择一个或多个设备执行批量操作。"
   ],
   "No disks are available for selection.": [
-    "Tidak ada disk yang tersedia untuk dipilih."
+    "没有可供选择的磁盘。"
   ],
   "No disks found": [
-    "Tidak ada disk ditemukan"
+    "未找到磁盘"
   ],
   "No iSCSI Boot Firmware Table (iBFT) found. The initiator can be [configured manually.]": [
-    "Tidak ada iSCSI Boot Firmware Table (iBFT) yang ditemukan. Initiator dapat [dikonfigurasi secara manual.]"
+    "未找到 iSCSI 引导固件表 (iBFT)。可以[手动配置]发起端。"
   ],
   "No information available yet": [
-    "Belum ada informasi yang tersedia"
+    "暂无可用信息"
   ],
   "No partitions will be automatically configured for booting.": [
-    "Partisi tidak akan dikonfigurasi secara otomatis untuk booting."
+    "将不自动配置任何用于引导的分区。"
   ],
   "No partitions will be automatically configured for booting. Use with caution.": [
-    "Tidak ada partisi yang akan dikonfigurasi secara otomatis untuk booting. Gunakan dengan hati-hati."
+    "不会自动配置任何用于启动的分区。请谨慎使用。"
   ],
   "No patterns match": [
-    "Tidak ada pola yang cocok"
+    "没有匹配的软件集"
   ],
   "No patterns match the filter": [
-    "Tidak ada pola yang cocok dengan filter"
+    "没有与过滤条件匹配的软件集"
   ],
   "No pending tasks": [
-    "Tidak ada tugas yang tertunda"
+    "无待执行任务"
   ],
   "No public key provided, SSH login might be restricted": [
-    "Tidak ada kunci publik yang disediakan, login SSH mungkin dibatasi"
+    "未提供公钥，SSH 登录权限可能受限"
   ],
   "No software RAID devices are available for selection.": [
-    "Tidak ada perangkat RAID perangkat lunak yang tersedia untuk dipilih."
+    "没有可供选择的软件 RAID 设备。"
   ],
   "No support is planned.": [
-    "Tidak ada dukungan yang direncanakan."
+    "暂无支持计划。"
   ],
   "No targets available": [
-    "Tidak ada target yang tersedia"
+    "无可用目标"
   ],
   "No targets have been discovered or configured.": [
-    "Tidak ada target yang telah ditemukan atau dikonfigurasi."
+    "尚未发现或配置任何目标。"
   ],
   "No targets matches filters": [
-    "Tidak ada target yang cocok dengan filter"
+    "没有与过滤条件匹配的目标"
   ],
   "No valid address.": [
-    "Tidak ada alamat yang valid."
+    "地址无效。"
   ],
   "No valid port.": [
-    "Tidak ada port yang valid."
+    "端口无效。"
   ],
   "No zFCP controllers found in this machine.": [
-    "Tidak ada pengontrol zFCP yang ditemukan di mesin ini."
+    "在此计算机上未找到 zFCP 控制器。"
   ],
   "No zFCP devices found in this machine.": [
-    "Tidak ada perangkat zFCP yang ditemukan di mesin ini."
+    "在此计算机上未找到 zFCP 设备。"
   ],
   "None": [
-    "Tidak ada"
+    "无"
   ],
   "None of the keymaps match the filter.": [
-    "Tidak ada keymap yang cocok dengan filter."
+    "没有符合此过滤器的键位映射。"
   ],
   "None of the locales match the filter.": [
-    "Tidak ada lokasi yang cocok dengan filter."
+    "没有符合过滤器的区域设置。"
   ],
   "None of the time zones match the filter.": [
-    "Tidak ada zona waktu yang cocok dengan filter."
+    "没有符合过滤器的时区。"
   ],
   "None selected": [
-    "Tidak ada yang dipilih"
+    "未选择任何软件"
   ],
   "None set": [
-    "Tidak ditetapkan"
+    "未进行任何设置"
   ],
   "Not available": [
-    "Tidak tersedia"
+    "不可用"
   ],
   "Not configured": [
-    "Tidak dikonfigurasi"
+    "未配置"
   ],
   "Not configured yet": [
-    "Belum dikonfigurasi"
+    "尚未配置"
   ],
   "Not implemented yet (%s)": [
-    "Belum diimplementasikan (%s)"
+    "尚未实现 (%s)"
   ],
   "Not protected network": [
-    "Jaringan tidak dilindungi"
+    "不受保护的网络"
   ],
   "Not registered yet": [
-    "Belum terdaftar"
+    "尚未注册"
   ],
   "Not supported (%s)": [
-    "Tidak didukung (%s)"
+    "不受支持 (%s)"
   ],
   "Not used by this bridge": [
-    "Tidak digunakan oleh bridge ini"
+    "此网桥未使用"
   ],
   "Numeric identifier (0–4094)": [
-    "Identifikator numerik (0–4094)"
+    "数字标识符 (0–4094)"
   ],
   "Offline": [
-    "Luring"
+    "离线"
   ],
   "On boot": [
-    "Saat boot"
+    "开机时"
   ],
   "Only reused logical volumes and space not assigned to any logical volume will be used.": [
-    "Hanya volume logis yang digunakan kembali dan ruang yang tidak ditetapkan ke volume logis mana pun yang akan digunakan."
+    "将会仅使用复用的逻辑卷及未分配给任何逻辑卷的空间。"
   ],
   "Only reused logical volumes will be used.": [
-    "Hanya volume logis yang digunakan kembali yang akan digunakan."
+    "将会仅使用复用的逻辑卷。"
   ],
   "Only reused partitions and space not assigned to any partition will be used.": [
-    "Hanya partisi yang digunakan kembali dan ruang yang tidak dialokasikan ke partisi mana pun yang akan digunakan."
+    "将会仅使用重复使用的分区及未分配给任何分区的空间。"
   ],
   "Only reused partitions will be used.": [
-    "Hanya partisi yang telah digunakan kembali yang akan digunakan."
+    "将会仅使用重复使用的分区。"
   ],
   "Open terminal": [
-    "Buka terminal"
+    "打开终端"
   ],
   "Options for partition %s": [
-    "Opsi untuk partisi %s"
+    "分区 %s 的选项"
   ],
   "Package installation failed": [
-    "Pemasangan paket gagal"
+    "安装软件包失败"
   ],
   "Parent device": [
-    "Perangkat induk"
+    "父设备"
   ],
   "Partition": [
-    "Partisi"
+    "分区"
   ],
   "Partition %s": [
-    "Partisi %s"
+    "分区 %s"
   ],
   "Partition Info": [
-    "Info Partisi"
+    "分区信息"
   ],
   "Partition could not be configured": [
-    "Partisi tidak dapat dikonfigurasi"
+    "无法配置分区"
   ],
   "Partitions": [
-    "Partisi"
+    "分区"
   ],
   "Partitions needed for booting will also be adapted": [
-    "Partisi yang diperlukan untuk booting juga akan disesuaikan"
+    "引导所需的分区也会进行调整"
   ],
   "Partitions needed for booting will remain at %s": [
-    "Partisi yang diperlukan untuk booting akan tetap berada di %s"
+    "引导所需的分区将保留在 %s 中"
   ],
   "Partitions that are not reused will be removed and that data will be lost.": [
-    "Partisi yang tidak digunakan kembali akan dihapus dan data tersebut akan hilang."
+    "不重复使用的分区将被去除，其中的数据将会丢失。"
   ],
   "Partitions that are not reused will be resized as needed.": [
-    "Partisi yang tidak digunakan kembali akan diubah ukurannya sesuai kebutuhan."
+    "不重复使用的分区将按需调整大小。"
   ],
   "Partitions that are not reused would be resized if needed.": [
-    "Partisi yang tidak digunakan ulang akan diubah ukurannya jika diperlukan."
+    "不重复使用的分区将根据需要调整大小。"
   ],
   "Partitions to boot will be set up if needed at %s.": [
-    "Partisi untuk booting akan disiapkan jika diperlukan di %s."
+    "引导分区将在 %s 中按需设置。"
   ],
   "Partitions to boot will be set up if needed at the following device.": [
-    "Partisi untuk booting akan disiapkan jika diperlukan pada perangkat berikut."
+    "引导分区将在以下设备上按需设置。"
   ],
   "Partitions to boot will be set up if needed at the installation disk, based on the location of the %s file system.": [
-    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi, berdasarkan lokasi sistem berkas %s."
+    "引导分区将根据 %s 文件系统所在位置，在安装磁盘中按需设置。"
   ],
   "Partitions to boot will be set up if needed at the installation disk. Currently %1$s, based on the location of the %2$s file system.": [
-    "Partisi untuk booting akan dibuat jika diperlukan pada disk instalasi. Saat ini %1$s, berdasarkan lokasi sistem berkas %2$s."
+    "引导分区将根据 %2$s 文件系统所在位置，在安装磁盘（当前为 %1$s）中按需设置。"
   ],
   "Partitions to host \"system\" will be created if needed.": [
-    "Partisi untuk menampung “sistem” akan dibuat jika diperlukan."
+    "如需托管 \"system\"，将自动创建相应分区。"
   ],
   "Partitions will be used and created for %s": [
-    "Partisi akan digunakan dan dibuat untuk %s"
+    "将会为 %s 使用和创建多个分区"
   ],
   "Password": [
-    "Kata sandi"
+    "口令"
   ],
   "Password Required": [
-    "Diperlukan Kata Sandi"
+    "需要口令"
   ],
   "Password and SSH Public Key": [
-    "Kata sandi dan Kunci Publik SSH"
+    "口令和 SSH 公钥"
   ],
   "Password confirmation": [
-    "Konfirmasi kata sandi"
+    "确认密码"
   ],
   "Password confirmation is required": [
-    "Konfirmasi kata sandi diperlukan"
+    "必须指定确认口令"
   ],
   "Password input": [
-    "Masukan kata sandi"
+    "密码输入"
   ],
   "Password is empty.": [
-    "Kata sandi kosong."
+    "口令为空。"
   ],
   "Password is required": [
-    "Kata sandi diperlukan"
+    "必须指定口令"
   ],
   "Password visibility button": [
-    "Tombol visibilitas kata sandi"
+    "密码可见性按钮"
   ],
   "Passwords do not match": [
-    "Kata sandi tidak cocok"
+    "密码不匹配"
   ],
   "Paste or enter one or more public SSH keys (e.g. ssh-ed25519 AAAA...)": [
-    "Tempel atau masukkan satu atau lebih kunci publik SSH (misalnya ssh-ed25519 AAAA...)"
+    "粘贴或输入一个或多个 SSH 公钥（示例：ssh-ed25519 AAAA...）"
   ],
   "Patterns selection": [
-    "Pemilihan pola"
+    "软件集选择"
   ],
   "Perform a discovery to find available iSCSI targets.": [
-    "Lakukan penemuan untuk menemukan target iSCSI yang tersedia."
+    "请执行发现操作以查找可用的 iSCSI 目标。"
   ],
   "Performs auto LUN scan": [
-    "Melakukan pemindaian LUN otomatis"
+    "执行自动 LUN 扫描"
   ],
   "Physical extent size": [
-    "Ukuran physical extent"
+    "物理盘区大小"
   ],
   "Physical volumes": [
-    "Volume fisik"
+    "物理卷"
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
-    "Physical volume dapat dibuat pada beberapa disk yang dipilih berdasarkan total ukuran logical volume."
+    "程序可能会根据逻辑卷总大小，在部分所选磁盘上创建物理卷。"
   ],
   "PiB": [
     "PiB"
   ],
   "Port": [
-    "Port"
+    "端口"
   ],
   "Portal": [
-    "Portal"
+    "门户"
   ],
   "Potential data loss": [
-    "Potensi kehilangan data"
+    "存在数据丢失风险"
   ],
   "Potential data loss affecting at least %s": [
-    "Potensi kehilangan data yang memengaruhi setidaknya %s"
+    "至少 %s 存在数据丢失风险"
   ],
   "Priority": [
-    "Prioritas"
+    "优先级"
   ],
   "Priority must be between 0 and 61440": [
-    "Prioritas harus berada di antara 0 dan 61440"
+    "优先级必须介于 0 到 61440 之间"
   ],
   "Proceeding may result in data loss": [
-    "Melanjutkan dapat menyebabkan kehilangan data"
+    "继续操作可能造成数据丢失"
   ],
   "Proceeding will delete existing data, including %s": [
-    "Melanjutkan akan menghapus data yang ada, termasuk %s"
+    "继续操作将删除现有数据，包括 %s"
   ],
   "Product not found": [
-    "Produk tidak ditemukan"
+    "未找到相应产品"
   ],
   "Protection for the information stored at the new file systems, including data, programs, and system files.": [
-    "Perlindungan untuk informasi yang tersimpan pada sistem berkas baru, termasuk data, program, dan berkas sistem."
+    "该机制用于保护存储在新文件系统中的信息，包括数据、程序以及系统文件。"
   ],
   "Protocol": [
-    "Protokol"
+    "协议"
   ],
   "Protocol message interval (1-10 seconds).": [
-    "Interval pesan protokol (1-10 detik)."
+    "协议报文发送间隔（1-10 秒）。"
   ],
   "Protocol message retention time (6-40 seconds).": [
-    "Waktu retensi pesan protokol (6-40 detik)."
+    "协议报文保留时长（6-40 秒）。"
   ],
   "Provide authentication": [
-    "Berikan autentikasi"
+    "提供身份验证"
   ],
   "Provide its password to log in to the system.": [
-    "Berikan kata sandinya untuk masuk ke sistem."
+    "请提供相应口令以登录系统。"
   ],
   "Provided by the network": [
-    "Disediakan oleh jaringan"
+    "由网络分配"
   ],
   "Public key provided": [
-    "Kunci publik disediakan"
+    "已提供公钥"
   ],
   "Public key provided for %s": [
-    "Kunci publik disediakan untuk %s"
+    "已为 %s 提供公钥"
   ],
   "Public key provided for both": [
-    "Kunci publik disediakan untuk keduanya"
+    "已为两个帐户提供公钥"
   ],
   "Public network": [
-    "Jaringan publik"
+    "公共网络"
   ],
   "Question": [
-    "Pertanyaan"
+    "问题"
   ],
   "RAID": [
     "RAID"
   ],
   "Range": [
-    "Rentang"
+    "按范围计算"
   ],
   "Range: %1$s - %2$s (%3$s)": [
-    "Rentang: %1$s - %2$s (%3$s)"
+    "范围：%1$s - %2$s (%3$s)"
   ],
   "Read less": [
-    "Baca lebih sedikit"
+    "精简说明"
   ],
   "Read less about %s": [
-    "Baca lebih sedikit tentang %s"
+    "精简关于 %s 的说明"
   ],
   "Read more": [
-    "Baca selengkapnya"
+    "展开说明"
   ],
   "Read more about %s": [
-    "Baca selengkapnya tentang %s"
+    "展开关于 %s 的说明"
   ],
   "Read only": [
-    "Hanya baca"
+    "只读"
   ],
   "Reboot": [
-    "Mulai ulang"
+    "重启"
   ],
   "Reboot to try again.": [
-    "Nyalakan ulang untuk mencoba lagi."
+    "重引导以重试。"
   ],
   "Recommended": [
-    "Direkomendasikan"
+    "推荐"
   ],
   "Refreshing data...": [
-    "Menyegarkan data..."
+    "正在刷新数据..."
   ],
   "Register": [
-    "Mendaftar"
+    "注册"
   ],
   "Register using SUSE server": [
-    "Daftar menggunakan server SUSE"
+    "使用 SUSE 服务器注册"
   ],
   "Register using a custom registration server": [
-    "Daftar menggunakan server pendaftaran kustom"
+    "使用自定义注册服务器注册"
   ],
   "Registered": [
-    "Terdaftar"
+    "已注册"
   ],
   "Registered hostname will not change": [
-    "Nama host yang terdaftar tidak akan berubah"
+    "已注册的主机名将不会更改"
   ],
   "Registered without a code": [
-    "Terdaftar tanpa kode"
+    "已在无注册代码的情况下注册"
   ],
   "Registration": [
-    "Pendaftaran"
+    "注册"
   ],
   "Registration certificate": [
-    "Sertifikat pendaftaran"
+    "注册证书"
   ],
   "Registration code": [
-    "Kode pendaftaran"
+    "注册码"
   ],
   "Registration in progress": [
-    "Registrasi sedang berlangsung"
+    "注册进行中"
   ],
   "Registration server": [
-    "Server pendaftaran"
+    "注册服务器"
   ],
   "ReiserFS": [
     "ReiserFS"
   ],
   "Reload": [
-    "Muat ulang"
+    "重载"
   ],
   "Remove %s": [
-    "Hapus %s"
+    "去除 %s"
   ],
   "Remove the configuration for this disk": [
-    "Hapus konfigurasi untuk disk ini"
+    "去除此磁盘的配置"
   ],
   "Remove the configuration for this volume group": [
-    "Hapus konfigurasi untuk grup volume ini"
+    "去除该卷组的配置"
   ],
   "Required space with current selection: [%s]": [
-    "Ruang yang diperlukan dengan pilihan saat ini: [%s]"
+    "当前选中软件所需空间：[%s]"
   ],
   "Required space: [%s]": [
-    "Ruang yang diperlukan: [%s]"
+    "所需空间：[%s]"
   ],
   "Requires %s": [
-    "Membutuhkan %s"
+    "需要 %s"
   ],
   "Rescan devices": [
-    "Pindai ulang perangkat"
+    "重新扫描设备"
   ],
   "Reset to defaults": [
-    "Mengatur ulang ke default"
+    "重设为默认"
   ],
   "Reset to the default configuration": [
-    "Kembalikan ke konfigurasi default"
+    "重置为默认配置"
   ],
   "Resize terminal": [
-    "Ubah ukuran terminal"
+    "调整终端窗口大小"
   ],
   "Resource not found or lost": [
-    "Sumber daya tidak ditemukan atau hilang"
+    "未找到资源，或者资源丢失"
   ],
   "Restore terminal": [
-    "Pulihkan terminal"
+    "恢复终端窗口"
   ],
   "Result": [
-    "Hasil"
+    "结果"
   ],
   "Result of applying the configuration described at the 'Settings' section above.": [
-    "Hasil penerapan konfigurasi yang dijelaskan pada bagian 'Pengaturan' di atas."
+    "应用上方 '设置' 部分指定配置后的结果。"
   ],
   "Retrieving error details": [
-    "Mengambil detail kesalahan"
+    "正在检索错误详情"
   ],
   "Reused logical volumes will not be shrunk": [
-    "Volume logis yang digunakan kembali tidak akan diperkecil"
+    "将不缩小复用的逻辑卷"
   ],
   "Reused partitions will not be shrunk": [
-    "Partisi yang digunakan kembali tidak akan diperkecil"
+    "将不缩小复用的分区"
   ],
   "Root account": [
-    "Akun root"
+    "Root 帐户"
   ],
   "Root bridge selection (0-61440). [Lower is higher priority].": [
-    "Pemilihan bridge root (0-61440). [Semakin rendah, semakin tinggi prioritas]."
+    "根网桥选择 (0-61440)。[数值越小优先级越高]。"
   ],
   "Root login is off": [
-    "Login root mati"
+    "已关闭 root 登录"
   ],
   "Root login method": [
-    "Metode login root"
+    "Root 登录方式"
   ],
   "Routes": [
-    "Route"
+    "路由"
   ],
   "Row actions": [
-    "Tindakan baris"
+    "行操作"
   ],
   "Row expansion": [
-    "Perluasan baris"
+    "行展开"
   ],
   "Row selection": [
-    "Baris pemilihan"
+    "行选择"
   ],
   "SD Card": [
-    "Kartu SD"
+    "SD 卡"
   ],
   "SHA1 fingerprint": [
-    "Tanda tangan SHA1"
+    "SHA1 指纹"
   ],
   "SHA256 fingerprint": [
-    "Tanda tangan SHA256"
+    "SHA256 指纹"
   ],
   "SSH Public Key": [
-    "Kunci Publik SSH"
+    "SSH 公钥"
   ],
   "SSH Public Keys": [
-    "Kunci Publik SSH"
+    "SSH 公钥"
   ],
   "SSID": [
     "SSID"
@@ -2401,979 +2401,979 @@ export default {
     "SUSE Customer Center (SCC)"
   ],
   "Secured network": [
-    "Jaringan aman"
+    "加密网络"
   ],
   "Security": [
-    "Keamanan"
+    "安全性"
   ],
   "Select": [
-    "Pilih"
+    "选择"
   ],
   "Select %s": [
-    "Pilih %s"
+    "选择 %s"
   ],
   "Select a desktop": [
-    "Pilih desktop"
+    "选择桌面"
   ],
   "Select a desktop environment to get a graphical interface.": [
-    "Pilih lingkungan desktop untuk mendapatkan antarmuka grafis."
+    "请选择一个桌面环境以启用图形界面。"
   ],
   "Select a device": [
-    "Pilih perangkat"
+    "选择一个设备"
   ],
   "Select a disk": [
-    "Pilih disk"
+    "选择一个磁盘"
   ],
   "Select a filesystem type": [
-    "Pilih jenis filesystem"
+    "选择文件系统类型"
   ],
   "Select a mode": [
-    "Pilih mode"
+    "选择模式"
   ],
   "Select a mode and confirm your choice.": [
-    "Pilih mode dan konfirmasi pilihan Anda."
+    "选择模式并确认您的选择。"
   ],
   "Select a product": [
-    "Pilih produk"
+    "请选择产品"
   ],
   "Select a product and confirm your choice.": [
-    "Pilih produk dan konfirmasikan pilihan Anda di akhir daftar."
+    "选择产品并确认您的选择。"
   ],
   "Select a product mode to continue.": [
-    "Pilih mode produk untuk melanjutkan."
+    "请选择产品模式以继续操作。"
   ],
   "Select a product to continue.": [
-    "Pilih produk untuk melanjutkan."
+    "请选择产品以继续操作。"
   ],
   "Select an existing device": [
-    "Pilih perangkat yang sudah ada"
+    "选择现有设备"
   ],
   "Select another disk": [
-    "Pilih disk lain"
+    "选择其他磁盘"
   ],
   "Select another existing device": [
-    "Pilih perangkat lain yang sudah ada"
+    "选择其他现有设备"
   ],
   "Select at least one disk.": [
-    "Pilih setidaknya satu disk."
+    "请至少选择一个磁盘。"
   ],
   "Select device": [
-    "Pilih perangkat"
+    "选择设备"
   ],
   "Select devices to perform bulk actions": [
-    "Pilih perangkat untuk melakukan tindakan massal"
+    "选择多个设备执行批量操作"
   ],
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
-    "Pilih entri untuk mengedit atau menghapusnya. Atau [hapus semua entri tidak valid.]"
+    "选中条目即可编辑或将其去除，您也可[去除所有无效条目]。"
   ],
   "Select one or more to extend the system.": [
-    "Pilih satu atau lebih untuk memperluas sistem."
+    "请选择一个或多个软件集以扩展系统功能。"
   ],
   "Select or enter a mount point that is not already assigned to another device": [
-    "Pilih atau masukkan titik mount yang belum ditetapkan ke perangkat lain"
+    "请选择或输入尚未分配给其他设备的挂载点"
   ],
   "Select or enter a valid mount point": [
-    "Pilih atau masukkan titik mount yang valid"
+    "请选择或输入有效的挂载点"
   ],
   "Select patterns": [
-    "Pilih pola"
+    "选择软件集"
   ],
   "Select the controllers to activate": [
-    "Pilih pengontrol yang akan diaktifkan"
+    "选择要激活的控制器"
   ],
   "Select the zFCP controllers to activate:": [
-    "Pilih pengontrol zFCP yang akan diaktifkan:"
+    "选择要激活的 zFCP 控制器："
   ],
   "Select what to do with each logical volume in order to find space for allocating the new system.": [
-    "Pilih tindakan yang akan dilakukan pada setiap volume logis untuk menemukan ruang bagi alokasi sistem baru."
+    "选择如何处理每个逻辑卷，以便为新系统分配空间。"
   ],
   "Select what to do with each logical volume.": [
-    "Pilih tindakan yang akan dilakukan pada setiap volume logis."
+    "选择对每个逻辑卷执行的操作。"
   ],
   "Select what to do with each partition in order to find space for allocating the new system.": [
-    "Pilih tindakan yang akan dilakukan pada setiap partisi untuk menemukan ruang yang cukup untuk mengalokasikan sistem baru."
+    "选择如何处理每个分区，以便为新系统分配空间。"
   ],
   "Select what to do with each partition.": [
-    "Pilih apa yang akan dilakukan dengan setiap partisi."
+    "选择对每个分区执行的操作。"
   ],
   "Selected disk cannot be changed": [
-    "Disk yang dipilih tidak dapat diubah"
+    "无法更改所选磁盘"
   ],
   "Selected volume group cannot be changed": [
-    "Grup volume yang dipilih tidak dapat diubah"
+    "无法更改所选卷组"
   ],
   "Server URL": [
-    "URL Server"
+    "服务器 URL"
   ],
   "Server addresses": [
-    "Alamat server"
+    "服务器地址"
   ],
   "Set DIAG off": [
-    "Matikan DIAG"
+    "关闭 DIAG"
   ],
   "Set DIAG on": [
-    "Aktifkan DIAG"
+    "开启 DIAG"
   ],
   "Set NTP servers manually": [
-    "Atur server NTP secara manual"
+    "手动设置 NTP 服务器"
   ],
   "Set a specific size": [
-    "Tetapkan ukuran tertentu"
+    "设置固定大小"
   ],
   "Set manually": [
-    "Ditetapkan secara manual"
+    "手动设置"
   ],
   "Set minimum and maximum": [
-    "Tetapkan nilai minimum dan maksimum"
+    "设置最小值和最大值"
   ],
   "Set minimum; use more space if available": [
-    "Tetapkan minimum; gunakan lebih banyak ruang jika tersedia"
+    "设置最小值，有空间时自动扩展"
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
-    "Mengatur akun login utama. Akun ini dapat menjalankan perintah administrator menggunakan [sudo] tetapi terpisah dari akun root."
+    "设置主登录帐户。该帐户可通过 [sudo] 运行管理员命令，但与 root 帐户相互独立。"
   ],
   "Sets up both and use either to log in": [
-    "Mengatur keduanya dan gunakan salah satu untuk login"
+    "同时设置两种方式，任选其一登录"
   ],
   "Settings": [
-    "Pengaturan"
+    "设置"
   ],
   "Several logical volumes will be deleted": [
-    "Beberapa volume logis akan dihapus"
+    "将删除多个逻辑卷"
   ],
   "Several partitions will be deleted": [
-    "Beberapa partisi akan dihapus"
+    "将删除多个分区"
   ],
   "Show": [
-    "Tampilkan"
+    "显示"
   ],
   "Show %d subvolume action": [
-    "Tampilkan tindakan subvolume %d"
+    "显示 %d 个子卷操作"
   ],
   "Show configuration": [
-    "Tampilkan konfigurasi"
+    "显示配置"
   ],
   "Show information about %s": [
-    "Menampilkan informasi tentang %s"
+    "显示关于 %s 的信息"
   ],
   "Show less": [
-    "Tampilkan lebih sedikit"
+    "收起"
   ],
   "Show more": [
-    "Tampilkan lebih banyak"
+    "显示更多"
   ],
   "Show technical details": [
-    "Tampilkan detail teknis"
+    "显示技术详细信息"
   ],
   "Show terminal": [
-    "Tampilkan terminal"
+    "显示终端"
   ],
   "Shrink existing logical volumes": [
-    "Perkecil volume logis yang sudah ada"
+    "缩小现有逻辑卷"
   ],
   "Shrink existing partitions": [
-    "Perkecil partisi yang ada"
+    "缩小现有分区"
   ],
   "Signal strength": [
-    "Kekuatan sinyal"
+    "信号强度"
   ],
   "Size": [
-    "Ukuran"
+    "大小"
   ],
   "Size modes": [
-    "Mode ukuran"
+    "大小模式"
   ],
   "Skip to content": [
-    "Lewati ke konten"
+    "跳到内容"
   ],
   "Software": [
-    "Perangkat Lunak"
+    "软件"
   ],
   "Software %s": [
-    "Perangkat Lunak %s"
+    "软件 %s"
   ],
   "Software selection is not available": [
-    "Pemilihan perangkat lunak tidak tersedia"
+    "无法选择软件"
   ],
   "Some DNS search domains are invalid": [
-    "Beberapa domain pencarian DNS tidak valid"
+    "部分 DNS 搜索域无效"
   ],
   "Some DNS server addresses are invalid": [
-    "Beberapa alamat server DNS tidak valid"
+    "部分 DNS 服务器地址无效"
   ],
   "Some IPv4 addresses are invalid": [
-    "Beberapa alamat IPv4 tidak valid"
+    "部分 IPv4 地址无效"
   ],
   "Some IPv6 addresses are invalid": [
-    "Beberapa alamat IPv6 tidak valid"
+    "部分 IPv6 地址无效"
   ],
   "Some NTP server addresses are invalid": [
-    "Beberapa alamat server NTP tidak valid"
+    "部分 NTP 服务器地址无效"
   ],
   "Some SSH public keys are invalid": [
-    "Beberapa kunci publik SSH tidak valid"
+    "部分 SSH 公钥无效"
   ],
   "Some existing logical volumes may be shrunk": [
-    "Beberapa volume logis yang sudah ada mungkin akan diperkecil"
+    "可能会缩小部分现有逻辑卷"
   ],
   "Some existing partitions may be shrunk": [
-    "Beberapa partisi yang sudah ada mungkin akan diperkecil"
+    "可能会缩小部分现有分区"
   ],
   "Some logical volumes may be deleted": [
-    "Beberapa volume logis mungkin akan dihapus"
+    "可能会删除部分逻辑卷"
   ],
   "Some logical volumes may be shrunk": [
-    "Beberapa volume logis mungkin akan diperkecil"
+    "可能会缩小部分逻辑卷"
   ],
   "Some of the elements in your AutoYaST profile are not supported.": [
-    "Beberapa elemen dalam profil AutoYaST Anda tidak didukung."
+    "AutoYaST 配置文件中的某些元素不受支持。"
   ],
   "Some partitions may be deleted": [
-    "Beberapa partisi mungkin dihapus"
+    "可能会删除某些分区"
   ],
   "Some partitions may be shrunk": [
-    "Beberapa partisi mungkin dapat diperkecil"
+    "可能会缩小某些分区"
   ],
   "Something went wrong": [
-    "Ada yang tidak beres"
+    "出了点问题"
   ],
   "Spanning Tree Protocol (STP)": [
-    "Spanning Tree Protocol (STP)"
+    "生成树协议 (STP)"
   ],
   "Standard": [
-    "Standar"
+    "标准"
   ],
   "Standard contrast": [
-    "Kontras standar"
+    "标准对比度"
   ],
   "Start configuring a basic installation": [
-    "Mulai mengkonfigurasi instalasi dasar"
+    "开始配置基本安装"
   ],
   "Start from scratch with the default configuration": [
-    "Mulai dari awal dengan konfigurasi default"
+    "采用默认配置从头开始"
   ],
   "Startup": [
-    "Startup"
+    "启动"
   ],
   "State": [
-    "Status"
+    "状态"
   ],
   "Static": [
-    "Statis"
+    "静态"
   ],
   "Static addresses and gateway": [
-    "Alamat statis dan gateway"
+    "静态地址和网关"
   ],
   "Status": [
-    "Status"
+    "状态"
   ],
   "Status filter toggle": [
-    "Pengalih filter status"
+    "状态过滤开关"
   ],
   "Status: %s task active": [
-    "Status: %s tugas aktif"
+    "状态：%s 个任务正在运行"
   ],
   "Status: Idle": [
-    "Status: Idle"
+    "状态：空闲"
   ],
   "Step %1$d of %2$d": [
-    "Langkah %1$d dari %2$d"
+    "第 %1$d 步，共 %2$d 步"
   ],
   "Storage": [
-    "Penyimpanan"
+    "存储"
   ],
   "Structure of the new system, including disks to use and additional devices like LVM volume groups.": [
-    "Struktur sistem baru, termasuk disk yang akan digunakan dan perangkat tambahan seperti grup volume LVM."
+    "新系统的结构，包括要使用的磁盘和 LVM 卷组等附加设备。"
   ],
   "Swap": [
     "Swap"
   ],
   "Switch to a different mode": [
-    "Beralih ke mode yang berbeda"
+    "切换至其他模式"
   ],
   "Switch to a different mode or another product": [
-    "Beralih ke mode yang berbeda atau ke salah satu dari %d produk yang tersedia"
+    "切换至其他模式或 %d 个可用产品之一"
   ],
   "Switch to another product": [
-    "Beralih ke salah satu dari %d produk yang tersedia"
+    "切换至 %d 个可用产品之一"
   ],
   "System": [
-    "Sistem"
+    "系统"
   ],
   "System Information": [
-    "Informasi sistem"
+    "系统信息"
   ],
   "System settings could not be updated": [
-    "Pengaturan sistem tidak dapat diperbarui"
+    "无法更新系统设置"
   ],
   "System will have no network connections": [
-    "Sistem tidak akan memiliki koneksi jaringan"
+    "系统将不配置任何网络连接"
   ],
   "TPM sealing requires the new system to be booted directly on its first run.": [
-    "Penyegelan TPM mengharuskan sistem baru di-boot langsung pada saat pertama kali dijalankan."
+    "TPM 密封机制要求新系统在首次运行时必须直接引导。"
   ],
   "TPM sealing requires the new system to be booted directly.": [
-    "Penyegelan TPM mengharuskan sistem baru untuk di-boot secara langsung."
+    "TPM 密封过程要求新系统直接启动。"
   ],
   "Take a moment to review the installation settings below and adjust them as needed.": [
-    "Luangkan waktu untuk meninjau pengaturan instalasi di bawah ini dan sesuaikan bila diperlukan."
+    "请花点时间查看下方安装设置，并根据需要加以调整。"
   ],
   "Target": [
-    "Target"
+    "目标"
   ],
   "Target not found": [
-    "Target tidak ditemukan"
+    "未找到目标"
   ],
   "Temporary name that may change after reboot or network changes": [
-    "Nama sementara yang dapat berubah setelah mulai ulang atau perubahan jaringan"
+    "临时名称，系统重引导或网络变更后可能发生变化"
   ],
   "Terminal": [
-    "Terminal"
+    "终端"
   ],
   "The 'primary' option is only valid for %s modes": [
-    "Opsi 'primary' hanya berlaku untuk mode %s"
+    "'主设备' 选项仅适用于 %s 模式"
   ],
   "The LVM group '%1$s' will remain at %2$s": [
-    "Grup LVM ‘%1$s’ akan tetap berada di %2$s"
+    "LVM 组 '%1$s' 将保留在 %2$s 中"
   ],
   "The [language and region] settings for the product may offer more options to choose from.": [
-    "Pengaturan [bahasa dan wilayah] untuk produk mungkin menawarkan lebih banyak opsi untuk dipilih."
+    "产品的[语言和区域]设置可能会提供更多选项。"
   ],
   "The configuration is read-only.": [
-    "Konfigurasi ini bersifat hanya-baca."
+    "该配置为只读模式。"
   ],
   "The configuration must be adapted to address the following issue:": [
-    "Konfigurasi harus disesuaikan untuk mengatasi masalah berikut:"
+    "必须调整配置，以解决以下问题："
   ],
   "The configured LVM groups will remain at %s": [
-    "Grup LVM yang telah dikonfigurasi akan tetap berada di %s"
+    "配置的 LVM 组将保留在 %s 中"
   ],
   "The connection could not be saved": [
-    "Koneksi tidak dapat disimpan"
+    "无法保存连接"
   ],
   "The connection does not exist or is no longer available.": [
-    "Koneksi tidak ada atau sudah tidak tersedia."
+    "该连接不存在或已不可用。"
   ],
   "The connection is available for all devices": [
-    "Koneksi tersedia untuk semua perangkat"
+    "该连接适用于所有设备"
   ],
   "The connection will be used only during installation and not available in the installed system.": [
-    "Koneksi hanya akan digunakan selama pemasangan dan tidak tersedia dalam sistem yang telah dipasang."
+    "此连接仅在安装过程中使用，安装好的系统中不可用。"
   ],
   "The current configuration will be discarded to apply the default settings of the new product.": [
-    "Konfigurasi saat ini akan dibuang untuk menerapkan pengaturan default produk baru."
+    "将丢弃当前配置并应用新产品的默认设置。"
   ],
   "The current configuration will result in an attempt to create a %1$s of %2$s.": [
-    "Konfigurasi saat ini akan mengakibatkan upaya untuk membuat %1$s dari %2$s."
+    "当前配置将会导致尝试创建一个 %1$s (%2$s)。"
   ],
   "The current configuration will result in an attempt to create a %1$s of at least %2$s.": [
-    "Konfigurasi saat ini akan mengakibatkan upaya untuk membuat %1$s dengan jumlah minimal %2$s."
+    "当前配置将会导致尝试创建一个 %1$s（至少 %2$s）。"
   ],
   "The current configuration will result in an attempt to create a %1$s with a size between %2$s and %3$s.": [
-    "Konfigurasi saat ini akan mengakibatkan upaya untuk membuat %1$s dengan ukuran antara %2$s dan %3$s."
+    "当前配置将会导致尝试创建一个 %1$s（大小介于 %2$s 至 %3$s 之间）。"
   ],
   "The current file system will be mounted at %s": [
-    "Sistem berkas saat ini akan di-mount di %s"
+    "当前文件系统将挂载到 %s 上"
   ],
   "The current storage configuration has the following issue:": [
-    "Konfigurasi penyimpanan saat ini memiliki masalah sebagai berikut:"
+    "当前的存储配置存在以下问题："
   ],
   "The data is kept, but the current logical volumes will be resized as needed.": [
-    "Data dipertahankan, tetapi volume logis saat ini akan diubah ukurannya sesuai kebutuhan."
+    "将会保留数据，但会按需调整当前逻辑卷的大小。"
   ],
   "The data is kept, but the current partitions will be resized as needed.": [
-    "Data tetap dipertahankan, tetapi partisi saat ini akan diubah ukurannya sesuai kebutuhan."
+    "数据将被保留，但当前分区的大小将会按需调整。"
   ],
   "The data is kept. Only the space not assigned to any logical volume will be used.": [
-    "Data dipertahankan. Hanya ruang yang tidak ditetapkan ke volume logis mana pun yang akan digunakan."
+    "将会保留数据，并仅使用未分配给任何逻辑卷的空间。"
   ],
   "The data is kept. Only the space not assigned to any partition will be used.": [
-    "Data tetap dipertahankan. Hanya ruang yang tidak ditetapkan ke partisi mana pun yang akan digunakan."
+    "数据将被保留。仅使用未分配给任何分区的空间。"
   ],
   "The device cannot be shrunk:": [
-    "Perangkat tidak dapat dikecilkan:"
+    "无法缩小该设备："
   ],
   "The device does not exist or is no longer available.": [
-    "Perangkat tersebut tidak ada atau sudah tidak tersedia lagi."
+    "该设备不存在或已不可用。"
   ],
   "The device will be formatted": [
-    "Perangkat akan diformat"
+    "将格式化该设备"
   ],
   "The device will be formatted as %1$s and mounted at %2$s": [
-    "Perangkat akan diformat sebagai %1$s dan di-mount di %2$s"
+    "该设备将格式化为 %1$s 并挂载到 %2$s 上"
   ],
   "The device will be mounted": [
-    "Perangkat akan di-mount"
+    "将挂载该设备"
   ],
   "The device will be mounted at %s.": [
-    "Perangkat akan dipasang di %s."
+    "该设备将挂载到 %s 上。"
   ],
   "The device will be used by the new system.": [
-    "Perangkat tersebut akan digunakan oleh sistem baru."
+    "新系统将使用该设备。"
   ],
   "The disk is used for LVM": [
-    "Disk digunakan untuk LVM"
+    "此磁盘用于 LVM"
   ],
   "The disk is used for LVM and boot": [
-    "Disk digunakan untuk LVM dan boot"
+    "此磁盘用于 LVM 和引导"
   ],
   "The disk is used for booting": [
-    "Disk digunakan untuk booting"
+    "此磁盘用于引导"
   ],
   "The encryption password did not work": [
-    "Kata sandi enkripsi tidak berfungsi"
+    "加密口令无效"
   ],
   "The extension has been registered with key %s.": [
-    "Ekstensi telah terdaftar dengan kunci %s."
+    "已使用密钥 %s 注册该扩展。"
   ],
   "The extension was registered without any registration code.": [
-    "Ekstensi tersebut didaftarkan tanpa kode pendaftaran."
+    "该扩展已注册，但未使用任何注册代码。"
   ],
   "The file %s contains a record of the installer activity so far, useful to diagnose installation issues.": [
-    "Berkas %s berisi catatan aktivitas penginstal sejauh ini, berguna untuk mendiagnosis masalah instalasi."
+    "文件 %s 记录了安装程序截至当前的全部活动，可用于诊断安装问题。"
   ],
   "The final size can be bigger in order to fill the extra free space.": [
-    "Ukuran akhir dapat dibuat lebih besar untuk mengisi ruang kosong yang tersisa."
+    "最终大小可增大，以便使用额外的可用空间。"
   ],
   "The final step to configure the Trusted Platform Module (TPM) to automatically open encrypted devices will take place during the first boot of the new system. For that to work, the machine needs to boot directly to the new boot loader.": [
-    "Langkah terakhir untuk mengonfigurasi Trusted Platform Module (TPM) agar dapat membuka perangkat yang dienkripsi secara otomatis selama booting pertama dari sistem yang baru. Agar dapat berfungsi, mesin harus melakukan booting secara langsung ke boot loader yang baru."
+    "配置可信平台模块 (TPM) 以自动开启加密设备的最后一步将在新系统首次启动时进行。为此，本机需要直接启动到新的引导加载程序。"
   ],
   "The following actions will be performed in the system during installation.": [
-    "Tindakan berikut akan dilakukan dalam sistem selama proses instalasi."
+    "安装期间将在系统中执行以下操作。"
   ],
   "The following logical volume will be created": [
-    "Volume logis berikut akan dibuat"
+    "将会创建以下逻辑卷"
   ],
   "The following partition will be created.": [
-    "Partisi berikut akan dibuat."
+    "将会创建以下分区。"
   ],
   "The following partition will be mounted.": [
-    "Partisi berikut akan di-mount."
+    "将会挂载以下分区。"
   ],
   "The following partitions will be created or mounted": [
-    "Partisi-partisi berikut akan dibuat atau di-mount"
+    "将会创建或挂载以下分区"
   ],
   "The initiator name cannot be blank": [
-    "Nama inisiator tidak boleh kosong"
+    "发起端名称不能为空"
   ],
   "The installer interface is no longer available.": [
-    "Antarmuka penginstal tidak lagi tersedia."
+    "安装程序界面不再可用。"
   ],
   "The installer requires [root] user privileges.": [
-    "Penginstal memerlukan hak istimewa pengguna [root]."
+    "安装程序要求 [root] 用户权限。"
   ],
   "The logical volume will also be deleted": [
-    "Volume logis juga akan dihapus"
+    "同时也会删除逻辑卷"
   ],
   "The modal selector offers a simplified interface designed for quick and straightforward use, without overwhelming the user.": [
-    "Pemilih mode menawarkan antarmuka yang disederhanakan yang dirancang untuk penggunaan cepat dan mudah, tanpa membingungkan pengguna."
+    "该模态选择器提供精简的界面，使用方便快捷，对用户而言非常友好。"
   ],
   "The password is weak": [
-    "Kata sandi ini lemah"
+    "口令强度太弱"
   ],
   "The password will not be needed to boot and access the data if the TPM can verify the integrity of the system.": [
-    "Kata sandi tidak akan diperlukan untuk mem-boot dan mengakses data jika TPM dapat memverifikasi integritas sistem."
+    "如果 TPM 能验证系统的完整性，则无需输入口令即可引导系统并访问数据。"
   ],
   "The product is already registered. Hostname changes will not affect the hostname stored at the registration server.": [
-    "Produk sudah terdaftar. Perubahan nama host tidak akan memengaruhi nama host yang tersimpan di server pendaftaran."
+    "该产品已注册。更改主机名不会同步更新注册服务器中存储的主机名。"
   ],
   "The product was not found in the repositories so it is not possible to proceed with the installation.": [
-    "Produk tidak ditemukan di repositori sehingga tidak memungkinkan untuk melanjutkan instalasi."
+    "在储存库中未找到该产品，无法继续安装。"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of a separate file system for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system and the presence of separate file systems for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem dan keberadaan sistem berkas yang terpisah untuk %2$s."
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem, penggunaan snapshot Btrfs, dan keberadaan sistem berkas yang terpisah untuk %2$s."
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size for %1$s will be dynamically adjusted based on the amount of RAM in the system, the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan jumlah RAM dalam sistem, penggunaan snapshot Btrfs, dan keberadaan sistem berkas yang terpisah untuk %2$s."
+    "%1$s 的大小将会动态调整，考量因素包括系统中的 RAM 容量、Btrfs 快照的使用情况，以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size for %1$s will be dynamically adjusted based on the presence of a separate file system for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan keberadaan sistem berkas terpisah untuk %2$s."
+    "%1$s 的大小将会根据 %2$s 是否存在单独的文件系统动态调整。"
   ],
   "The size for %1$s will be dynamically adjusted based on the presence of separate file systems for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan keberadaan sistem berkas terpisah untuk %2$s."
+    "%1$s 的大小将会根据 %2$s 是否存在单独的文件系统动态调整。"
   ],
   "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of a separate file system for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs dan keberadaan sistem berkas yang terpisah untuk %2$s."
+    "%1$s 的大小将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size for %1$s will be dynamically adjusted based on the usage of Btrfs snapshots and the presence of separate file systems for %2$s.": [
-    "Ukuran untuk %1$s akan disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs dan keberadaan sistem berkas yang terpisah untuk %2$s."
+    "%1$s 的大小将会动态调整，考量因素包括 Btrfs 快照的使用情况以及 %2$s 是否存在单独的文件系统。"
   ],
   "The size for %s will be dynamically adjusted based on the amount of RAM in the system and the usage of Btrfs snapshots.": [
-    "Ukuran untuk %s akan disesuaikan secara dinamis berdasarkan jumlah RAM yang tersedia di sistem dan penggunaan snapshot Btrfs."
+    "%s 的大小将会动态调整，考量因素包括系统中的 RAM 容量以及 Btrfs 快照的使用情况。"
   ],
   "The size for %s will be dynamically adjusted based on the usage of Btrfs snapshots.": [
-    "Ukuran untuk %s akan disesuaikan secara dinamis berdasarkan penggunaan snapshot Btrfs."
+    "%s 的大小将会根据 Btrfs 快照的使用情况动态调整。"
   ],
   "The size is configured as a range between %s and %s, but this interface cannot handle ranges with a given max size.": [
-    "Ukuran dikonfigurasi sebagai rentang antara %s dan %s, tetapi antarmuka ini tidak dapat menangani rentang dengan ukuran maksimum yang ditentukan."
+    "为大小配置了介于 %s 到 %s 的范围，但此界面无法处理给定大小上限的范围。"
   ],
   "The size must be a number followed by a unit of the form GiB (power of 2) or GB (power of 10).": [
-    "Ukuran harus berupa angka diikuti dengan satuan dalam bentuk GiB (pangkat 2) atau GB (pangkat 10)."
+    "大小必须为数字，附带 GiB（2 的幂次）或 GB（10 的幂次）形式的单位。"
   ],
   "The software selection could not be loaded.": [
-    "Pemilihan perangkat lunak tidak dapat dimuat."
+    "无法加载软件选择配置。"
   ],
   "The storage configuration is valid (see result below) but uses elements not supported by this interface.": [
-    "Konfigurasi penyimpanan valid (lihat hasil di bawah) tetapi menggunakan elemen yang tidak didukung oleh antarmuka ini."
+    "该存储配置有效（请参见下面的结果），但使用了此界面不支持的元素。"
   ],
   "The storage configuration uses elements not supported by this interface.": [
-    "Konfigurasi penyimpanan menggunakan elemen yang tidak didukung oleh antarmuka ini."
+    "存储配置使用了此界面不支持的元素。"
   ],
   "The system is rebooting": [
-    "Sistem sedang dimulai ulang"
+    "系统正在重引导"
   ],
   "The system will boot to a command-line interface.": [
-    "Sistem akan boot ke antarmuka baris perintah."
+    "系统将引导进入命令行界面。"
   ],
   "The terminal requires a larger screen size": [
-    "Terminal memerlukan ukuran layar yang lebih besar"
+    "终端需要更大的屏幕大小"
   ],
   "The whole device will be used for %s": [
-    "Seluruh perangkat akan digunakan untuk %s"
+    "整个设备将用于 %s"
   ],
   "There are %s deactivated zFCP controllers.": [
-    "Terdapat %s pengontrol zFCP yang dinonaktifkan."
+    "存在 %s 个停用的 zFCP 控制器。"
   ],
   "There are no disks available for the installation": [
-    "Tidak ada disk yang tersedia untuk instalasi"
+    "没有可用于安装的磁盘"
   ],
   "There are not disks available for the installation. You may need to configure some device.": [
-    "Tidak ada disk yang tersedia untuk pemasangan. Anda mungkin perlu mengkonfigurasi beberapa perangkat."
+    "没有可用于安装的磁盘。您可能需要配置某些设备。"
   ],
   "There are not zFCP controllers pending of activation.": [
-    "Tidak ada pengontrol zFCP yang menunggu aktivasi."
+    "没有待激活 zFCP 控制器。"
   ],
   "There are unsaved changes. If you leave now, your changes will be lost.": [
-    "Ada perubahan yang belum disimpan. Jika Anda keluar sekarang, perubahan Anda akan hilang."
+    "存在未保存的更改。如果您现在离开页面，所有更改都将丢失。"
   ],
   "There is %d destructive action planned": [
-    "Ada %d tindakan destruktif yang direncanakan"
+    "已计划执行 %d 个具有破坏性的操作"
   ],
   "There is %d destructive action planned affecting %s": [
-    "Ada %d tindakan destruktif yang direncanakan yang akan mempengaruhi %s"
+    "已计划执行 %d 个会影响 %s 的破坏性操作"
   ],
   "There is a deactivated zFCP controller.": [
-    "Terdapat pengontrol zFCP yang dinonaktifkan."
+    "存在停用的 zFCP 控制器。"
   ],
   "These are the settings for the product to install. The installer language and keyboard layout can be adjusted using the [language and keyboard] option at the top bar.": [
-    "Ini adalah pengaturan untuk produk yang akan diinstal. Bahasa instalasi dan tata letak keyboard dapat disesuaikan menggunakan opsi [bahasa dan keyboard] di bilah atas."
+    "以下为待安装产品的相关设置。您可通过顶部栏的[语言和键盘]选项调整安装程序语言和键盘布局。"
   ],
   "These are the settings for the product to install. The installer language can be adjusted using the [language] option at the top bar.": [
-    "Ini adalah pengaturan untuk produk yang akan diinstal. Bahasa instalasi dapat disesuaikan menggunakan opsi [bahasa] di bilah atas."
+    "以下为待安装产品的相关设置。您可通过顶部栏的[语言]选项调整安装程序语言。"
   ],
   "This action will destroy any data stored on the device.": [
-    "Tindakan ini akan menghapus semua data yang tersimpan di perangkat."
+    "该操作将清除设备上存储的所有数据。"
   ],
   "This action will destroy any data stored on the devices listed below.": [
-    "Tindakan ini akan menghapus semua data yang tersimpan di perangkat yang tercantum di bawah."
+    "该操作将清除下列设备上存储的所有数据。"
   ],
   "This extension is not available on the server. Ask the server administrator to mirror the extension.": [
-    "Ekstensi ini tidak tersedia di server. Mintalah administrator server untuk menyalin ekstensi tersebut."
+    "无法在该服务器上使用此扩展。您可以请求服务器管理员镜像该扩展。"
   ],
   "This license is not available in %s.": [
-    "Lisensi ini tidak tersedia di %s."
+    "此许可证在 %s 中不可用。"
   ],
   "This might be due to network connectivity.": [
-    "Ini mungkin disebabkan oleh konektivitas jaringan."
+    "这可能是由网络连接问题导致。"
   ],
   "This pattern strikes a balance between clarity and efficiency: the modal keeps things lightweight for simple selections, while the full view supports deeper exploration and more complex actions, specially for users with tons of devices.": [
-    "Polanya ini menyeimbangkan antara kejelasan dan efisiensi: mode ini menjaga kesederhanaan untuk pemilihan yang sederhana, sementara tampilan penuh mendukung eksplorasi yang lebih mendalam dan tindakan yang lebih kompleks, terutama untuk pengguna yang memiliki banyak perangkat."
+    "此模式力求在清楚具体和快捷高效之间取得平衡：模态窗口提供简单、便捷的选择界面，而完整视图则支持更深入的探索和更复杂的操作，专为拥有大量设备的用户而设计。"
   ],
   "This product does not allow selecting software at installation time. Additional software can be added after the installation is complete.": [
-    "Produk ini tidak mengizinkan pemilihan perangkat lunak pada saat instalasi. Perangkat lunak tambahan dapat ditambahkan setelah instalasi selesai."
+    "该产品不支持在安装阶段选择软件，您可在安装完成后添加其他软件。"
   ],
   "This product does not provide additional patterns.": [
-    "Produk ini tidak menyediakan pola tambahan."
+    "该产品未提供附加软件集。"
   ],
   "This product does not provide desktop environments.": [
-    "Produk ini tidak menyediakan lingkungan desktop."
+    "该产品未提供桌面环境。"
   ],
   "This space includes the base system and the selected software patterns, if any.": [
-    "Ruang ini mencakup sistem dasar dan pola perangkat lunak yang dipilih, jika ada."
+    "此空间包含基础系统以及所选软件集（如有）。"
   ],
   "This uses existing logical volumes at the volume group": [
-    "Ini menggunakan volume logis yang sudah ada pada grup volume"
+    "此设置会使用卷组中的现有逻辑卷"
   ],
   "This uses existing partitions at the disk": [
-    "Ini menggunakan partisi yang sudah ada di disk"
+    "此设置会使用磁盘上的现有分区"
   ],
   "This uses the existing file system at the disk": [
-    "Ini menggunakan sistem berkas yang ada di disk"
+    "此设置会使用磁盘上的现有文件系统"
   ],
   "This volume group only occupies the space required by its logical volumes. To expand it to cover all available disk space, recreate the volume group.": [
-    "Grup volume ini hanya menempati ruang yang diperlukan oleh volume logisnya. Untuk memperluasnya agar mencakup semua ruang disk yang tersedia, buat ulang grup volume."
+    "该卷组仅占用逻辑卷所需空间。如需扩展至占用所有可用磁盘空间，请重新创建卷组。"
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
-    "Hal ini hanya akan memengaruhi antarmuka penginstal, bukan produk yang akan diinstal. Anda dapat menyesuaikan lokalisasi produk nanti di halaman Pengaturan Lokalisasi."
+    "此操作只会影响安装程序界面，不会影响要安装的产品。您稍后可以在 \"本地化设置\" 页面调整产品的本地化设置。"
   ],
   "This will be injected to the command to create the file system (%s).": [
-    "Ini akan disisipkan ke dalam perintah untuk membuat filesystem (%s)."
+    "该值将作为参数添加到创建文件系统的命令 (%s) 中。"
   ],
   "TiB": [
     "TiB"
   ],
   "Time Synchronization Servers": [
-    "Server Sinkronisasi Waktu"
+    "时间同步服务器"
   ],
   "Time zone": [
-    "Zona waktu"
+    "时区"
   ],
   "Tmpfs": [
     "Tmpfs"
   ],
   "To change that name, visit [system] section settings before registering.": [
-    "Untuk mengubah nama tersebut, buka pengaturan bagian [sistem] sebelum mendaftar."
+    "如需更改主机名，请在注册前访问[系统]部分的设置。"
   ],
   "To ensure the new system is able to boot, the installer may need to create or configure some partitions in the appropriate disk.": [
-    "Untuk memastikan sistem baru dapat melakukan booting, penginstal mungkin perlu membuat atau mengonfigurasi beberapa partisi di disk yang sesuai."
+    "为确保新系统能够启动，安装程序将需要在适当的磁盘中创建或配置一些分区。"
   ],
   "Transient": [
-    "Sementara"
+    "临时"
   ],
   "Try to activate again": [
-    "Coba aktifkan lagi"
+    "重新尝试激活"
   ],
   "Try to deactivate again": [
-    "Coba nonaktifkan lagi"
+    "重新尝试停用"
   ],
   "Type": [
-    "Jenis"
+    "类型"
   ],
   "Unable to modify the settings": [
-    "Tidak dapat mengubah pengaturan"
+    "无法修改设置"
   ],
   "Unexpected error": [
-    "Kesalahan tak terduga"
+    "异常错误"
   ],
   "Unknown": [
-    "Tidak diketahui"
+    "未知"
   ],
   "Unknown error": [
-    "Kesalahan tidak diketahui"
+    "未知错误"
   ],
   "Unsaved changes": [
-    "Perubahan belum disimpan"
+    "未保存的更改"
   ],
   "Unselect or activate them and try it again.": [
-    "Batalkan pilihan atau aktifkan, lalu coba lagi."
+    "请将其取消选择或激活，然后重试。"
   ],
   "Unsupported AutoYaST elements": [
-    "Elemen AutoYaST tidak didukung"
+    "不受支持的 AutoYaST 元素"
   ],
   "Unused space": [
-    "Ruang tidak terpakai"
+    "未使用的空间"
   ],
   "Up to %s can be recovered by shrinking the device.": [
-    "Hingga %s dapat dipulihkan dengan mengecilkan perangkat."
+    "通过缩小设备最多可回收 %s 的空间。"
   ],
   "Update available disks and activate crypt devices": [
-    "Perbarui disk yang tersedia dan aktifkan perangkat enkripsi"
+    "更新可用磁盘并激活加密设备"
   ],
   "Use LVM volume group %s": [
-    "Gunakan grup volume LVM %s"
+    "使用 LVM 卷组 %s"
   ],
   "Use RAID %s": [
-    "Gunakan RAID %s"
+    "使用 RAID %s"
   ],
   "Use RAID %s for LVM and additional partitions": [
-    "Gunakan RAID %s untuk LVM dan partisi tambahan"
+    "将 RAID %s 用于 LVM 及附加分区"
   ],
   "Use RAID %s for LVM, additional partitions and booting": [
-    "Gunakan RAID %s untuk menginstal dan mem-boot"
+    "将 RAID %s 用于 LVM、附加分区及引导"
   ],
   "Use RAID %s for additional partitions": [
-    "Gunakan RAID %s untuk partisi tambahan"
+    "将 RAID %s 用于附加分区"
   ],
   "Use RAID %s for additional partitions and booting": [
-    "Gunakan RAID %s untuk partisi tambahan dan booting"
+    "将 RAID %s 用于附加分区及引导"
   ],
   "Use RAID %s to configure boot partitions": [
-    "Gunakan RAID %s untuk mengonfigurasi partisi boot"
+    "使用 RAID %s 配置引导分区"
   ],
   "Use RAID %s to host LVM": [
-    "Gunakan RAID %s untuk meng-host LVM"
+    "使用 RAID %s 托管 LVM"
   ],
   "Use RAID %s to host LVM and boot": [
-    "Gunakan RAID %s untuk meng-host LVM dan boot"
+    "使用 RAID %s 托管 LVM 及引导"
   ],
   "Use RAID %s to install": [
-    "Gunakan RAID %s untuk memasang"
+    "使用 RAID %s 安装"
   ],
   "Use RAID %s to install and boot": [
-    "Gunakan RAID %s untuk menginstal dan mem-boot"
+    "使用 RAID %s 安装及引导"
   ],
   "Use RAID %s to install and host LVM": [
-    "Gunakan RAID %s untuk memasang dan meng-host LVM"
+    "使用 RAID %s 安装及托管 LVM"
   ],
   "Use RAID %s to install, host LVM and boot": [
-    "Gunakan RAID %s untuk memasang, meng-host LVM, dan mem-boot"
+    "使用 RAID %s 安装、托管 LVM 及引导"
   ],
   "Use actions below to set up your devices or click %s to start from scratch with the default configuration.": [
-    "Gunakan tindakan di bawah ini untuk mengatur perangkat Anda atau klik %s untuk memulai dari awal dengan konfigurasi default."
+    "使用下方操作设置您的设备，或单击 %s 采用默认配置从头开始。"
   ],
   "Use all available space": [
-    "Gunakan seluruh ruang yang tersedia"
+    "使用所有可用空间"
   ],
   "Use available space": [
-    "Gunakan ruang yang tersedia"
+    "使用可用空间"
   ],
   "Use current %s": [
-    "Gunakan %s saat ini"
+    "使用当前 %s"
   ],
   "Use custom DNS search domains": [
-    "Gunakan domain pencarian DNS kustom"
+    "使用自定义 DNS 搜索域"
   ],
   "Use custom DNS servers": [
-    "Gunakan server DNS kustom"
+    "使用自定义 DNS 服务器"
   ],
   "Use device %s": [
-    "Gunakan perangkat %s"
+    "使用设备 %s"
   ],
   "Use disk %s": [
-    "Gunakan disk %s"
+    "使用磁盘 %s"
   ],
   "Use disk %s for LVM and additional partitions": [
-    "Gunakan disk %s untuk LVM dan partisi tambahan"
+    "将磁盘 %s 用于 LVM 及附加分区"
   ],
   "Use disk %s for LVM, additional partitions and booting": [
-    "Gunakan disk %s untuk LVM, partisi tambahan, dan booting"
+    "将磁盘 %s 用于 LVM、附加分区及引导"
   ],
   "Use disk %s for additional partitions": [
-    "Gunakan disk %s untuk partisi tambahan"
+    "将磁盘 %s 用于附加分区"
   ],
   "Use disk %s for additional partitions and booting": [
-    "Gunakan disk %s untuk partisi tambahan dan booting"
+    "将磁盘 %s 用于附加分区及引导"
   ],
   "Use disk %s to configure boot partitions": [
-    "Gunakan disk %s untuk mengonfigurasi partisi boot"
+    "使用磁盘 %s 配置引导分区"
   ],
   "Use disk %s to host LVM": [
-    "Gunakan disk %s untuk meng-host LVM"
+    "使用磁盘 %s 托管 LVM"
   ],
   "Use disk %s to host LVM and boot": [
-    "Gunakan disk %s untuk meng-host LVM dan boot"
+    "使用磁盘 %s 托管 LVM 及引导"
   ],
   "Use disk %s to install": [
-    "Gunakan disk %s untuk memasang"
+    "使用磁盘 %s 安装"
   ],
   "Use disk %s to install and boot": [
-    "Gunakan disk %s untuk menginstal dan mem-boot"
+    "使用磁盘 %s 安装及引导"
   ],
   "Use disk %s to install and host LVM": [
-    "Gunakan disk %s untuk menginstal dan menghosting LVM"
+    "使用磁盘 %s 安装及托管 LVM"
   ],
   "Use disk %s to install, host LVM and boot": [
-    "Gunakan disk %s untuk memasang, meng-host LVM, dan mem-boot"
+    "使用磁盘 %s 安装、托管 LVM 及引导"
   ],
   "Use for installation only": [
-    "Hanya digunakan untuk pemasangan"
+    "仅用于安装"
   ],
   "Use for the selected product too": [
-    "Gunakan juga untuk produk yang dipilih"
+    "同时用于所选产品"
   ],
   "Use product's default NTP servers": [
-    "Gunakan server NTP bawaan produk"
+    "使用产品的默认 NTP 服务器"
   ],
   "Use several devices": [
-    "Gunakan beberapa perangkat"
+    "使用多个设备"
   ],
   "Use the 802.1Q protocol explicitly.": [
-    "Gunakan protokol 802.1Q secara eksplisit."
+    "强制使用 802.1Q 协议。"
   ],
   "Use the 802.1ad protocol explicitly.": [
-    "Gunakan protokol 802.1ad secara eksplisit."
+    "强制使用 802.1ad 协议。"
   ],
   "Use the RAID without partitions": [
-    "Gunakan RAID tanpa partisi"
+    "使用无分区的 RAID"
   ],
   "Use the Trusted Platform Module (TPM) to decrypt automatically on each boot": [
-    "Gunakan Modul Platform Tepercaya (TPM) untuk mendekripsi secara otomatis pada setiap boot"
+    "使用可信平台模块 (TPM) 在每次启动时自动解密"
   ],
   "Use the disk without partitions": [
-    "Gunakan disk tanpa partisi"
+    "使用无分区的磁盘"
   ],
   "Use the system default (802.1Q).": [
-    "Gunakan default sistem (802.1Q)."
+    "使用系统默认值 (802.1Q)。"
   ],
   "Use the tabs to browse disks, RAID devices and LVM volume groups.": [
-    "Gunakan tab untuk menelusuri disk, perangkat RAID, dan grup volume LVM."
+    "切换标签页可查看磁盘、RAID 设备和 LVM 卷组。"
   ],
   "Use these same settings for the selected product": [
-    "Gunakan pengaturan yang sama untuk produk yang dipilih"
+    "对所选产品使用同样的设置"
   ],
   "Use this to reproduce this installation later using the installer command-line interface or the unattended mode.": [
-    "Gunakan ini untuk mereproduksi instalasi ini nanti menggunakan antarmuka baris perintah penginstal atau mode tanpa pengawasan."
+    "您可使用安装程序命令行界面或无人值守模式，通过该配置复现此次安装流程。"
   ],
   "User name": [
-    "Nama pengguna"
+    "用户名"
   ],
   "Username": [
-    "Nama pengguna"
+    "用户名"
   ],
   "Username is required": [
-    "Nama pengguna diperlukan"
+    "必须指定用户名"
   ],
   "Using %d additional pattern": [
-    "Menggunakan %d pola tambahan"
+    "正在使用 %d 个附加软件集"
   ],
   "Using %d connections with %s": [
-    "Menggunakan %d koneksi dengan %s"
+    "正在使用 %d 个连接：%s"
   ],
   "Using %s NTP servers, including [%s]": [
-    "Menggunakan %s server NTP, termasuk [%s]"
+    "正在使用 %s 台 NTP 服务器，包括 [%s]"
   ],
   "Using %s account": [
-    "Menggunakan akun %s"
+    "正在使用 %s 帐户"
   ],
   "Using %s and %s accounts": [
-    "Menggunakan akun %s dan %s"
+    "正在使用 %s 和 %s 帐户"
   ],
   "Using %s as NTP server": [
-    "Menggunakan %s sebagai server NTP"
+    "正在使用 %s 作为 NTP 服务器"
   ],
   "Using %s keyboard layout": [
-    "Menggunakan tata letak keyboard %s"
+    "使用 %s 键盘布局"
   ],
   "Using [%s] keyboard layout": [
-    "Menggunakan tata letak keyboard [%s]"
+    "使用 [%s] 键盘布局"
   ],
   "Using a hashed password.": [
-    "Menggunakan kata sandi yang dienkripsi."
+    "正在使用经过哈希处理的口令。"
   ],
   "Using an advanced storage configuration": [
-    "Menggunakan konfigurasi penyimpanan tingkat lanjut"
+    "正在使用高级存储配置"
   ],
   "Using code ending in %s": [
-    "Menggunakan kode yang diakhiri dengan %s"
+    "正在使用末尾为 %s 的注册代码"
   ],
   "Using transient name, which may change after reboot or network changes": [
-    "Menggunakan nama sementara, yang dapat berubah setelah reboot atau perubahan jaringan"
+    "正在使用临时名称，系统重引导或网络变更后可能发生变化"
   ],
   "VLAN": [
     "VLAN"
   ],
   "VLAN ID": [
-    "ID VLAN"
+    "VLAN ID"
   ],
   "VLAN ID is required": [
-    "ID VLAN diperlukan"
+    "必须指定 VLAN ID"
   ],
   "VLAN ID must be between 0 and 4094": [
-    "ID VLAN harus berada antara 0 dan 4094"
+    "VLAN ID 必须介于 0 到 4094 之间"
   ],
   "VLAN details": [
-    "Detail VLAN"
+    "VLAN 详细信息"
   ],
   "Value": [
-    "Nilai"
+    "值"
   ],
   "Value is required": [
-    "Nilai wajib diisi"
+    "必须指定值"
   ],
   "Value: %1$s (%2$s)": [
-    "Nilai: %1$s (%2$s)"
+    "当前值：%1$s (%2$s)"
   ],
   "View license": [
-    "Lihat lisensi"
+    "查看许可协议"
   ],
   "Volume %s": [
-    "Volume %s"
+    "卷 %s"
   ],
   "Volume group %s": [
-    "Grup volume %s"
+    "卷组 %s"
   ],
   "Volume group %s menu": [
-    "Menu grup volume %s"
+    "卷组 %s 菜单"
   ],
   "Volume group '%s' already exists. Enter a different name.": [
-    "Grup volume ‘%s’ sudah ada. Masukkan nama yang berbeda."
+    "卷组 '%s' 已存在。请输入其他名称。"
   ],
   "Volume groups cannot be formatted": [
-    "Grup volume tidak dapat diformat"
+    "无法格式化卷组"
   ],
   "Volumes %s": [
-    "Volume %s"
+    "卷 %s"
   ],
   "WPA & WPA2 Personal": [
-    "WPA & WPA2 Pribadi"
+    "WPA 与 WPA2 个人版"
   ],
   "WPA Password": [
-    "Kata Sandi WPA"
+    "WPA 密码"
   ],
   "WWPN": [
     "WWPN"
   ],
   "Wait until current operations are completed.": [
-    "Tunggu hingga operasi saat ini selesai."
+    "请等待当前操作执行完毕。"
   ],
   "Waiting for information about storage configuration": [
-    "Menunggu informasi tentang konfigurasi penyimpanan"
+    "正在等待存储配置信息"
   ],
   "Waiting for proposal": [
-    "Menunggu proposal"
+    "正在等待提案"
   ],
   "Weak signal": [
-    "Sinyal lemah"
+    "信号微弱"
   ],
   "When ready, click on the [install] button at the end of the page.": [
-    "Saat siap, klik tombol [instal] di akhir halaman."
+    "准备就绪后，请单击页面底部的[安装]按钮。"
   ],
   "Wi-Fi connection form": [
-    "Formulir Koneksi Wi-Fi"
+    "Wi-Fi 连接表单"
   ],
   "Will be supported in a future version.": [
-    "Akan didukung pada versi mendatang."
+    "未来的版本中会提供支持。"
   ],
   "XFS": [
     "XFS"
   ],
   "Yes": [
-    "Ya"
+    "是"
   ],
   "You can proceed to install with the current settings or you may want to discard the configuration and start from scratch with a simple one.": [
-    "Anda dapat melanjutkan untuk memasang dengan pengaturan saat ini atau Anda mungkin ingin membatalkan konfigurasi dan memulai dari awal dengan yang sederhana."
+    "您可以采用当前设置继续安装，也可以舍弃该配置，并采用简单的配置从头开始。"
   ],
   "You can reboot the machine to log in to the new system.": [
-    "Anda dapat me-reboot mesin untuk masuk ke sistem baru."
+    "您可以重引导计算机，以登录新系统。"
   ],
   "You can safely close this window.": [
-    "Anda dapat menutup jendela ini dengan aman."
+    "您可安全关闭此窗口。"
   ],
   "You may want to discard the current settings and start from scratch with a simple configuration.": [
-    "Anda mungkin ingin menghapus pengaturan saat ini dan memulai dari awal dengan konfigurasi sederhana."
+    "您可能需要舍弃当前设置，并采用简单的配置从头开始。"
   ],
   "You may want to discard those settings and start from scratch with a simple configuration.": [
-    "Anda mungkin ingin menghapus pengaturan tersebut dan memulai dari awal dengan konfigurasi yang sederhana."
+    "您可能需要舍弃这些设置，并采用简单的配置从头开始。"
   ],
   "You must fix these issues": [
-    "Anda harus memperbaiki masalah-masalah ini"
+    "您必须修复以下问题"
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
-    "Anda akan terhubung ke jaringan publik tanpa enkripsi. Data Anda mungkin tidak aman."
+    "您将连接到未加密的公共网络。数据可能存在安全风险。"
   ],
   "ZFCP": [
     "ZFCP"
   ],
   "[CAPS LOCK] is on": [
-    "[CAPS LOCK] aktif"
+    "大写锁定已开启"
   ],
   "approx. %s": [
-    "sekitar %s"
+    "大约为 %s"
   ],
   "at least %s": [
-    "setidaknya %s"
+    "至少 %s"
   ],
   "auto selected": [
-    "otomatis dipilih"
+    "自动选择"
   ],
   "default size for %s": [
-    "ukuran default untuk %s"
+    "%s 的默认大小"
   ],
   "iBFT": [
     "iBFT"
@@ -3382,27 +3382,27 @@ export default {
     "iSCSI"
   ],
   "immutable Btrfs": [
-    "Btrfs immutable"
+    "不可变 Btrfs"
   ],
   "logical volume": [
-    "volume logis"
+    "逻辑卷"
   ],
   "partition": [
-    "partisi"
+    "分区"
   ],
   "reset to defaults": [
-    "kembalikan ke default"
+    "重置为默认值"
   ],
   "size for %s with the current settings": [
-    "ukuran untuk %s dengan pengaturan saat ini"
+    "当前设置下 %s 的大小"
   ],
   "zFCP": [
     "zFCP"
   ],
   "zFCP controllers": [
-    "Pengontrol zFCP"
+    "zFCP 控制器"
   ],
   "zFCP is not available": [
-    "zFCP tidak tersedia"
+    "无法使用 zFCP 功能"
   ]
 };

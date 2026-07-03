@@ -1390,7 +1390,7 @@ export default {
     "このインストーラの起動に際してローカルメディアを使用している場合は、次回の再起動までの間にメディアを取り出しておいてください。"
   ],
   "If that is not intended, cancel and select a desktop in the [software] settings.": [
-    "もしもこちらを希望していない場合は、いったんキャンセルしたあと [ソフトウエア] 設定でデスクトップ環境を選択してください。"
+    "もしもこちらをご希望でない場合は、いったんキャンセルして [ソフトウエア] 設定でデスクトップ環境を選択してください。"
   ],
   "If unsure, cancel and review [storage] settings.": [
     "不安な場合はいったんキャンセルして、 [ストレージ] 設定をご確認ください。"
@@ -2400,9 +2400,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
-  "Search": [
-    "検索"
-  ],
   "Secured network": [
     "保護されたネットワーク"
   ],
@@ -3332,9 +3329,6 @@ export default {
   ],
   "Will be supported in a future version.": [
     "将来のバージョンでサポートされる予定です。"
-  ],
-  "Wrong selection": [
-    "誤った選択"
   ],
   "XFS": [
     "XFS"
