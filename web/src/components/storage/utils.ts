@@ -29,9 +29,9 @@
 
 import xbytes from "xbytes";
 import { _ } from "~/i18n";
-import type { TranslatedString } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import configModel from "~/model/storage/config-model";
+import type { TranslatedString } from "~/i18n";
 import type { ConfigModel, Partitionable } from "~/model/storage/config-model";
 import type { Storage as System } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
