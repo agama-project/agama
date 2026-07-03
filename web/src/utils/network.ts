@@ -36,6 +36,7 @@ import {
   SecurityProtocols,
 } from "~/types/network";
 import { _, N_ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 
 /**
  * Connection type constants.
@@ -66,8 +67,9 @@ const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
 /**
  * Returns the translated label for a connection state.
  */
-// eslint-disable-next-line agama-i18n/string-literals
-const connectionStateLabel = (state: ConnectionState): string => _(CONNECTION_STATE_LABELS[state]);
+const connectionStateLabel = (state: ConnectionState): TranslatedString =>
+  // eslint-disable-next-line agama-i18n/string-literals
+  _(CONNECTION_STATE_LABELS[state]);
 
 /**
  * Returns true if the given connection type is virtual.
@@ -81,19 +83,21 @@ const isVirtual = (type: ConnectionType): boolean =>
  * Labels for connection types.
  */
 const CONNECTION_TYPE_LABELS: Record<ConnectionType, string> = {
-  [CONNECTION_TYPE.ETHERNET]: "Ethernet",
-  [CONNECTION_TYPE.WIFI]: "Wi-Fi",
-  [CONNECTION_TYPE.LOOPBACK]: "Loopback",
-  [CONNECTION_TYPE.BOND]: "Bond",
-  [CONNECTION_TYPE.BRIDGE]: "Bridge",
-  [CONNECTION_TYPE.VLAN]: "VLAN",
-  [CONNECTION_TYPE.UNKNOWN]: "Unknown",
+  [CONNECTION_TYPE.ETHERNET]: N_("Ethernet"),
+  [CONNECTION_TYPE.WIFI]: N_("Wi-Fi"),
+  [CONNECTION_TYPE.LOOPBACK]: N_("Loopback"),
+  [CONNECTION_TYPE.BOND]: N_("Bond"),
+  [CONNECTION_TYPE.BRIDGE]: N_("Bridge"),
+  [CONNECTION_TYPE.VLAN]: N_("VLAN"),
+  [CONNECTION_TYPE.UNKNOWN]: N_("Unknown"),
 };
 
 /**
  * Returns the label for a connection type.
  */
-const connectionTypeLabel = (type: ConnectionType): string => CONNECTION_TYPE_LABELS[type];
+const connectionTypeLabel = (type: ConnectionType): TranslatedString =>
+  // eslint-disable-next-line agama-i18n/string-literals
+  _(CONNECTION_TYPE_LABELS[type]);
 
 /**
  * Returns the type for the given connection.

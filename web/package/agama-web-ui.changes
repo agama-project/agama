@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul  3 11:13:28 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add missing translations (bsc#1269514).
+
+-------------------------------------------------------------------
 Thu Jul  2 12:01:52 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Allow form fields to build their accessible name from their own
