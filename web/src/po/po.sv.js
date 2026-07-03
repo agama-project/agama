@@ -2427,9 +2427,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE kundcenter (SCC)"
   ],
-  "Search": [
-    "Sök"
-  ],
   "Secured network": [
     "Säkert nätverk"
   ],
@@ -3373,9 +3370,6 @@ export default {
   ],
   "Will be supported in a future version.": [
     "Kommer att stödjas i en framtida version."
-  ],
-  "Wrong selection": [
-    "Fel val"
   ],
   "XFS": [
     "XFS"

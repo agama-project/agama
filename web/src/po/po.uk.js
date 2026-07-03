@@ -2310,9 +2310,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "Центр обслуговування клієнтів SUSE (SCC)"
   ],
-  "Search": [
-    "Пошук"
-  ],
   "Secured network": [
     "Захищена мережа"
   ],
@@ -3243,9 +3240,6 @@ export default {
   ],
   "Will be supported in a future version.": [
     "Буде підтримуватися у наступній версії."
-  ],
-  "Wrong selection": [
-    "Неправильний вибір"
   ],
   "XFS": [
     "XFS"

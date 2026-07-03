@@ -2427,9 +2427,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "Centre de clients de SUSE (SCC)"
   ],
-  "Search": [
-    "Cerca"
-  ],
   "Secured network": [
     "Xarxa amb seguretat"
   ],
@@ -3373,9 +3370,6 @@ export default {
   ],
   "Will be supported in a future version.": [
     "Serà compatible en una versió futura."
-  ],
-  "Wrong selection": [
-    "Selecció incorrecta"
   ],
   "XFS": [
     "XFS"

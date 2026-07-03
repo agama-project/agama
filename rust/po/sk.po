@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 16:05+0000\n"
-"PO-Revision-Date: 2026-06-21 16:12+0000\n"
+"POT-Creation-Date: 2026-06-26 10:48+0000\n"
+"PO-Revision-Date: 2026-06-27 17:12+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sk/>\n"
@@ -142,11 +142,17 @@ msgid ""
 "When the preconditions for the installation are not met, it informs the user "
 "and returns, making no changes to the system."
 msgstr ""
+"Tento príkaz spustí proces inštalácie.  Pozor, jedná sa o deštruktívnu "
+"operáciu, pretože dôjde k nastaveniu úložných zariadení, inštalácii balíkov "
+"atď.\n"
+"\n"
+"Ak nie sú splnené predpoklady pre inštaláciu, informuje používateľa a vráti "
+"sa späť bez toho, aby sa v systéme vykonali akékoľvek zmeny."
 
 #. TRANSLATORS: CLI help for: agama download
 #: agama-cli/src/commands.rs:78
 msgid "Download file from a given (AutoYaST) URL"
-msgstr ""
+msgstr "Stiahnuť súbor z uvedenej adresy URL (AutoYaST)"
 
 #. TRANSLATORS: CLI help for: agama download (details)
 #: agama-cli/src/commands.rs:80
@@ -734,75 +740,75 @@ msgstr "Konfigurácia systému"
 msgid "Finishing installation"
 msgstr "Dokončenie inštalácie"
 
-#: agama-manager/src/actions.rs:296
+#: agama-manager/src/actions.rs:303
 msgid "Storing security settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:306
+#: agama-manager/src/actions.rs:313
 msgid "Configuring remote access"
 msgstr "Konfigurácia vzdialeného prístupu"
 
-#: agama-manager/src/actions.rs:316
+#: agama-manager/src/actions.rs:323
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/actions.rs:326
+#: agama-manager/src/actions.rs:333
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/actions.rs:337
+#: agama-manager/src/actions.rs:344
 msgid "Setting up NTP"
 msgstr ""
 
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:355
 msgid "Importing user files and scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:368
 msgid "Running user pre-installation scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:376
+#: agama-manager/src/actions.rs:383
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:393
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:403
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:509
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:533
 msgid "Configuring zFCP devices"
 msgstr "Konfigurácia zariadení zFCP"
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:557
 msgid "Configuring DASD devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:581
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:610
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:643
 msgid "Storing bootloader settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:676
 msgid "Preparing the software proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:702
+#: agama-manager/src/actions.rs:709
 msgid "Configuring SELinux"
 msgstr ""
 
@@ -887,7 +893,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Preskočiť"
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:303
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -996,15 +1002,15 @@ msgstr "Nie"
 msgid "Yes"
 msgstr "Áno"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr ""
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr ""
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr ""
 
