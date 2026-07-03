@@ -25,14 +25,13 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getProposal } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import type { Proposal } from "~/model/proposal";
-import { CONFIG_KEY, EXTENDED_CONFIG_KEY } from "~/hooks/model/config";
-import { STORAGE_MODEL_KEY } from "~/hooks/model/storage/config-model";
+import { CONFIG_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/config";
+import { STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";
 
-const PROPOSAL_KEY = "proposal" as const;
-const COMMON_PROPOSAL_KEYS = [PROPOSAL_KEY, EXTENDED_CONFIG_KEY] as const;
+const PROPOSAL_QUERY_KEY = "proposal" as const;
 
 const proposalQuery = {
-  queryKey: [PROPOSAL_KEY],
+  queryKey: [PROPOSAL_QUERY_KEY],
   queryFn: getProposal,
 };
 
@@ -50,7 +49,18 @@ function useProposalChanges() {
     // TODO: replace the scope instead of invalidating the query.
     return client.onEvent((event) => {
       if (event.type === "ProposalChanged") {
-        [...COMMON_PROPOSAL_KEYS, CONFIG_KEY, STORAGE_MODEL_KEY].forEach((queryKey) => {
+        // Build this list inside the handler, not at module load. The keys
+        // imported from other modules (EXTENDED_CONFIG_QUERY_KEY,
+        // CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY) can still be undefined
+        // while this module loads, because their source modules finish loading
+        // after this one. Once an event arrives, all of them hold their real
+        // values.
+        [
+          PROPOSAL_QUERY_KEY,
+          EXTENDED_CONFIG_QUERY_KEY,
+          CONFIG_QUERY_KEY,
+          STORAGE_MODEL_QUERY_KEY,
+        ].forEach((queryKey) => {
           queryClient.invalidateQueries({ queryKey: [queryKey] });
         });
       }
@@ -58,7 +68,13 @@ function useProposalChanges() {
   }, [client, queryClient]);
 }
 
-export { COMMON_PROPOSAL_KEYS, proposalQuery, useProposal, useProposalChanges };
+export {
+  PROPOSAL_QUERY_KEY,
+  EXTENDED_CONFIG_QUERY_KEY,
+  proposalQuery,
+  useProposal,
+  useProposalChanges,
+};
 export * as l10n from "~/hooks/model/proposal/l10n";
 export * as network from "~/hooks/model/proposal/network";
 export * as storage from "~/hooks/model/proposal/storage";

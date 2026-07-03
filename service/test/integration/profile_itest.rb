@@ -45,13 +45,15 @@ end
 
 # needs declarations:
 # command [Array<String>] like ["agama", "profile", "validate"]
-shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match|
+shared_examples "accepts input in 3 ways" do |filename, stdout_match, stderr_match,
+    exitcode_match = 0|
   context "with #{filename} as path" do
     it "output matches" do
       cmd = [*command, fixture(filename)]
-      stdout, stderr = Cheetah.run(*cmd, **cheetah_kwargs)
+      stdout, stderr, exitcode = Cheetah.run(*cmd, **cheetah_kwargs)
       expect(stdout).to include(stdout_match)
       expect(stderr).to include(stderr_match)
+      expect(exitcode).to eq exitcode_match
     end
   end
 
@@ -99,17 +101,17 @@ describe "agama config" do
     context "valid profile" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples/profile_tw_minimal.json", \
+        "rust/share/examples/profile_tw_minimal.json", \
         "", \
-        "is valid"
+        ""
     end
 
     context "valid profile with space in path" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples space/profile_tw_minimal.json", \
+        "rust/share/examples space/profile_tw_minimal.json", \
         "", \
-        "is valid"
+        ""
     end
 
     # Rust Url library will see the percent
@@ -118,17 +120,18 @@ describe "agama config" do
     xcontext "valid profile with percent in path" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples%20percent/profile_tw_minimal.json", \
+        "rust/share/examples%20percent/profile_tw_minimal.json", \
         "", \
-        "is valid"
+        ""
     end
 
     context "invalid profile" do
       include_examples \
         "accepts input in 3 ways", \
-        "rust/agama-lib/share/examples/profile_tw_invalid.json", \
+        "rust/share/examples/profile_tw_invalid.json", \
         "", \
-        "* Additional properties are not allowed ('ID' was unexpected). /product"
+        "Additional properties are not allowed ('ID' was unexpected). /product", \
+        1
     end
   end
 
@@ -159,13 +162,13 @@ describe "agama config" do
     end
 
     context "config via file contains relative URL references:" do
-      let(:filename) { "rust/agama-lib/share/examples/post-script-ref.jsonnet" }
+      let(:filename) { "rust/share/examples/post-script-ref.jsonnet" }
 
       it "they are resolved" do
         output = Cheetah.run("agama", "config", "generate", fixture(filename),
           stdout: :capture)
         expect(output).to include("file:///")
-        expect(output).to include("/rust/agama-lib/share/examples/enable-sshd.sh")
+        expect(output).to include("/rust/share/examples/enable-sshd.sh")
         expect(output).to_not include("..")
       end
     end
@@ -184,7 +187,7 @@ describe "agama config" do
           }
         JSON
         expect(stdout).to eq(expected)
-        expect(stderr).to include("profile is valid")
+        # another test is that cheetah do not raise as invalid generate return non-zero
       end
     end
 
@@ -201,9 +204,10 @@ describe "agama config" do
                 "uh": "oh"
              }
           }
+
         JSON
         expect(stdout).to eq(expected)
-        expect(stderr).to include("profile is not valid")
+        expect(stderr).to include("Schema validation failed")
         expect(stderr).to include("'uh' was unexpected")
         expect(stderr).to include("\"id\" is a required property")
       end

@@ -1,10 +1,23 @@
 -------------------------------------------------------------------
-Wed Jul  1 00:54:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Thu Jul  2 12:01:52 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Allow form fields to build their accessible name from their own
   label prefixed with other elements, so fields that would otherwise
   share a label (e.g. "Password") stay distinct for screen readers
   (gh#agama-project/agama#3684, gh#agama-project/agama#3685).
+
+-------------------------------------------------------------------
+Thu Jul  2 10:11:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Make pages to wait for an explicit set of queries (needed for
+  bsc#1269224).
+
+-------------------------------------------------------------------
+Wed Jul  1 15:09:51 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Move binding information to Settings section and remove obsolete
+  dedicated "Binding" card and edit link in connection details
+  (gh#agama-project/agama#3686).
 
 -------------------------------------------------------------------
 Tue Jun 30 10:16:43 UTC 2026 - David Diaz <dgonzalez@suse.com>

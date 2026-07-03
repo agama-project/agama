@@ -479,8 +479,6 @@ describe Agama::DBus::Storage::Manager do
 
   describe "#configure" do
     before do
-      allow(subject).to receive(:ProposalChanged)
-      allow(subject).to receive(:SystemChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
 
@@ -505,34 +503,6 @@ describe Agama::DBus::Storage::Manager do
 
     let(:serialized_product) { config_data.to_json }
     let(:serialized_config) { config_json.to_json }
-
-    RSpec.shared_examples "emit SystemChanged" do
-      it "emits the signal SystemChanged" do
-        expect(subject).to receive(:SystemChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
-    RSpec.shared_examples "do not emit SystemChanged" do
-      it "does not emit the signal SystemChanged" do
-        expect(subject).to_not receive(:SystemChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
-    RSpec.shared_examples "emit ProposalChanged" do
-      it "emits the signal ProposalChanged" do
-        expect(subject).to receive(:ProposalChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
-
-    RSpec.shared_examples "do not emit ProposalChanged" do
-      it "does not emit the signal ProposalChanged" do
-        expect(subject).to_not receive(:ProposalChanged)
-        subject.configure(serialized_product, serialized_config)
-      end
-    end
 
     RSpec.shared_examples "emit ProgressChanged and ProgressFinished" do
       it "emits signals ProgressChanged and ProgressFinished" do
@@ -597,7 +567,6 @@ describe Agama::DBus::Storage::Manager do
       end
 
       include_examples "emit ProgressChanged and ProgressFinished"
-      include_examples "emit ProposalChanged"
     end
 
     RSpec.shared_examples "do not calculate proposal" do
@@ -607,7 +576,6 @@ describe Agama::DBus::Storage::Manager do
       end
 
       include_examples "do not emit ProgressChanged and ProgressFinished"
-      include_examples "do not emit ProposalChanged"
     end
 
     context "if no storage configuration is given" do
@@ -639,7 +607,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "do not activate or probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
 
@@ -650,7 +617,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -659,7 +625,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -670,7 +635,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -696,7 +660,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "activate and probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
 
@@ -707,7 +670,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "activate and probe"
             include_examples "update product configuration", ["/", "swap"]
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -716,7 +678,6 @@ describe Agama::DBus::Storage::Manager do
           context "and the storage configuration has not changed" do
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -727,7 +688,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "activate and probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate proposal"
           end
         end
@@ -778,7 +738,6 @@ describe Agama::DBus::Storage::Manager do
         end
 
         include_examples "emit ProgressChanged and ProgressFinished"
-        include_examples "emit ProposalChanged"
 
         context "if the serialized config contains legacy AutoYaST settings" do
           let(:config_hash) do
@@ -798,7 +757,6 @@ describe Agama::DBus::Storage::Manager do
           end
 
           include_examples "emit ProgressChanged and ProgressFinished"
-          include_examples "emit ProposalChanged"
         end
       end
 
@@ -823,7 +781,6 @@ describe Agama::DBus::Storage::Manager do
 
           include_examples "do not activate or probe"
           include_examples "update product configuration", ["/", "swap"]
-          include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
         end
 
@@ -835,7 +792,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -846,7 +802,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate new proposal"
           end
         end
@@ -871,7 +826,6 @@ describe Agama::DBus::Storage::Manager do
 
           include_examples "activate and probe"
           include_examples "update product configuration", ["/", "swap"]
-          include_examples "emit SystemChanged"
           include_examples "calculate new proposal"
         end
 
@@ -883,7 +837,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "do not activate or probe"
             include_examples "do not update product configuration"
-            include_examples "do not emit SystemChanged"
             include_examples "do not calculate proposal"
           end
 
@@ -894,7 +847,6 @@ describe Agama::DBus::Storage::Manager do
 
             include_examples "activate and probe"
             include_examples "do not update product configuration"
-            include_examples "emit SystemChanged"
             include_examples "calculate new proposal"
           end
         end
@@ -1144,8 +1096,6 @@ describe Agama::DBus::Storage::Manager do
 
   describe "#probe" do
     before do
-      allow(subject).to receive(:SystemChanged)
-      allow(subject).to receive(:ProposalChanged)
       allow(subject).to receive(:ProgressChanged)
       allow(subject).to receive(:ProgressFinished)
 
@@ -1190,14 +1140,7 @@ describe Agama::DBus::Storage::Manager do
         subject.probe
       end
 
-      it "emits signals for ProposalChanged, SystemChanged, ProgressChanged and ProgressFinished" do
-        expect(subject).to receive(:SystemChanged) do |system_str|
-          system = parse(system_str)
-          device = system[:devices].first
-          expect(device[:name]).to eq "/dev/sda"
-          expect(system[:availableDrives]).to eq [device[:sid]]
-        end
-        expect(subject).to receive(:ProposalChanged)
+      it "emits signals for ProgressChanged and ProgressFinished" do
         expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
         expect(subject).to receive(:ProgressFinished)
         subject.probe
@@ -1208,7 +1151,6 @@ describe Agama::DBus::Storage::Manager do
       before do
         allow(proposal).to receive(:storage_json).and_return config_json
         allow(backend).to receive(:config_json).and_return config_json
-        allow(subject).to receive(:ProposalChanged)
       end
 
       let(:config_json) do
@@ -1236,18 +1178,7 @@ describe Agama::DBus::Storage::Manager do
         subject.probe
       end
 
-      it "emits signals for ProposalChanged, SystemChanged, ProgressChanged and ProgressFinished" do
-        expect(subject).to receive(:SystemChanged) do |system_str|
-          system = parse(system_str)
-          device = system[:devices].first
-          expect(device[:name]).to eq "/dev/sda"
-          expect(system[:availableDrives]).to eq [device[:sid]]
-        end
-        expect(subject).to receive(:ProposalChanged) do |proposal_str|
-          proposal = parse(proposal_str)
-          expect(proposal[:devices]).to be_a Array
-          expect(proposal[:actions]).to be_a Array
-        end
+      it "emits signals for ProgressChanged and ProgressFinished" do
         expect(subject).to receive(:ProgressChanged).with(/storage configuration/i)
         expect(subject).to receive(:ProgressFinished)
 

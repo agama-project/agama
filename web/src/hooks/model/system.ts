@@ -26,8 +26,10 @@ import { getSystem } from "~/api";
 import { useInstallerClient } from "~/context/installer";
 import type { System } from "~/model/system";
 
+const SYSTEM_QUERY_KEY = "system" as const;
+
 const systemQuery = {
-  queryKey: ["system"],
+  queryKey: [SYSTEM_QUERY_KEY],
   queryFn: getSystem,
 };
 
@@ -45,7 +47,7 @@ function useSystemChanges() {
     // TODO: replace the scope instead of invalidating the query.
     return client.onEvent((event) => {
       if (event.type === "SystemChanged") {
-        queryClient.invalidateQueries({ queryKey: ["system"] });
+        queryClient.invalidateQueries({ queryKey: [SYSTEM_QUERY_KEY] });
         if (event.scope === "storage")
           queryClient.invalidateQueries({ queryKey: ["solvedStorageModel"] });
       }
@@ -53,7 +55,7 @@ function useSystemChanges() {
   }, [client, queryClient]);
 }
 
-export { systemQuery, useSystem, useSystemChanges };
+export { SYSTEM_QUERY_KEY, systemQuery, useSystem, useSystemChanges };
 export * as l10n from "~/hooks/model/system/l10n";
 export * as software from "~/hooks/model/system/software";
 export * as storage from "~/hooks/model/system/storage";
