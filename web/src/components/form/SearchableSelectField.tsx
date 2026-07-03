@@ -81,11 +81,11 @@ type SearchableSelectFieldProps = FieldLabelOptions & {
   // FIXME: required for now so callers reuse an already-translated string during
   // the string freeze. Once new strings are allowed, give it a default (e.g.
   // _("Select an option")) and make it optional again.
-  placeholder: string;
+  placeholder: TranslatedString;
   // FIXME: required for now so callers reuse an already-translated string during
   // the string freeze. Once new strings are allowed, give it a default (e.g.
   // _("No options found")) and make it optional again.
-  noResultsText: string;
+  noResultsText: TranslatedString;
   // Last-resort callback to rewrite the filter query before it is used to filter
   // the list. The "query" is the text the user typed into the field; this returns
   // the text to filter with instead, while the input keeps showing what the user
@@ -99,7 +99,7 @@ type SearchableSelectFieldProps = FieldLabelOptions & {
   // Prompt shown when the field is empty and at rest (no value and not focused),
   // e.g. "Choose an option". While focused or open, `placeholder` is shown
   // instead to hint at filtering. Defaults to `placeholder` when omitted.
-  emptyPlaceholder?: string;
+  emptyPlaceholder?: TranslatedString;
   // When true, emptying the input and leaving the field (Tab, Enter or clicking
   // away) clears the selection. When false, leaving with an empty input keeps
   // the previously selected value. Escape always reverts, never clears.

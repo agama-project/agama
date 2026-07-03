@@ -77,9 +77,9 @@ function TestForm({
         {(field) => (
           <field.SearchableSelectField
             label={_("Language")}
-            placeholder="Filter by language or territory"
-            emptyPlaceholder="Choose an option"
-            noResultsText="No matches"
+            placeholder={_("Filter by language or territory")}
+            emptyPlaceholder={_("Choose an option")}
+            noResultsText={_("No matches")}
             clearable={clearable}
             selectedLabel={labelWithDescription ? (o) => `${o.label} (${o.value})` : undefined}
             normalizeQuery={normalizeQuery}
@@ -111,8 +111,8 @@ function RequiredForm() {
         {(field) => (
           <field.SearchableSelectField
             label={_("Language")}
-            placeholder="Filter by language or territory"
-            noResultsText="No matches"
+            placeholder={_("Filter by language or territory")}
+            noResultsText={_("No matches")}
             options={OPTIONS}
           />
         )}
