@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -122,7 +122,7 @@ export default function DnsDataList({
         gap={{ default: "gapMd" }}
       >
         {/** FIXME: try to use an aria-labelledby instead when PatternFly permits it (or open a bug report) */}
-        <DataList isCompact aria-label="DNS data list">
+        <DataList isCompact aria-label={_("DNS data list")}>
           {servers.map((server) => renderDns(server))}
         </DataList>
         <Button size="sm" variant="secondary" onClick={addServer}>

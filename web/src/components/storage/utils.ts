@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2024] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -52,14 +52,6 @@ const SIZE_METHODS = Object.freeze({
   AUTO: "auto",
   MANUAL: "fixed",
   RANGE: "range",
-});
-
-const SIZE_UNITS = Object.freeze({
-  K: N_("KiB"),
-  M: N_("MiB"),
-  G: N_("GiB"),
-  T: N_("TiB"),
-  P: N_("PiB"),
 });
 
 const FILESYSTEM_NAMES = Object.freeze({
@@ -376,7 +368,6 @@ const sizeDescription = (size: apiModel.Size): string => {
 export {
   DEFAULT_SIZE_UNIT,
   SIZE_METHODS,
-  SIZE_UNITS,
   SPACE_POLICIES,
   baseName,
   deviceBaseName,

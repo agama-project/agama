@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -586,7 +586,7 @@ function FilesystemOptions({ mountPoint, target }: FilesystemOptionsProps): Reac
     : _("Format partition as");
 
   return (
-    <SelectList aria-label="Available file systems">
+    <SelectList aria-label={_("Available file systems")}>
       {mountPoint === NO_VALUE && (
         <SelectOption value={NO_VALUE}>
           <FilesystemOptionLabel value={NO_VALUE} target={target} />
