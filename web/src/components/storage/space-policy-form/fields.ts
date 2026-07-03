@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2024] SUSE LLC
+ * Copyright (c) [2024-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -20,5 +20,34 @@
  * find current contact information at www.suse.com.
  */
 
-export { default as ProposalResultSection } from "./ProposalResultSection";
-export { default as DevicesFormSelect } from "./DevicesFormSelect";
+import { formOptions } from "@tanstack/react-form";
+
+/**
+ * Space policy action for a device.
+ * - "keep": Do not modify
+ * - "resizeIfNeeded": Allow shrink
+ * - "delete": Delete
+ */
+export type Action = "keep" | "resizeIfNeeded" | "delete";
+
+/**
+ * Form fields: dynamic object with device names as keys.
+ * Each field value is the selected action for that device.
+ *
+ * Example:
+ * {
+ *   "/dev/vda1": "resizeIfNeeded",
+ *   "/dev/vda2": "keep",
+ *   "/dev/vda3": "delete"
+ * }
+ */
+export type FormFields = Record<string, Action>;
+
+export type SpacePolicyFormData = FormFields;
+
+/**
+ * Default form values (empty object - values built dynamically).
+ */
+const defaultValues: FormFields = {};
+
+export const defaultOptions = formOptions({ defaultValues });
