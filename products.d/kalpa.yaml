@@ -25,7 +25,7 @@ translations:
     de: Ein rollierend veröffentlichtes unveränderliches Desktop-Produkt, welches
       den Plasma-Desktop und Flatpak für die Anwendungsbereitstellung nutzt,
       eine Basis mit ausschließlich Lesezugriff besitzt und atomare
-      Aktualisierungen durchführt.
+      Aktualisierungen durchführt
     el: Ένα αμετάβλητο desktop προϊόν rolling release, που χρησιμοποιεί το Plasma
       Desktop, αξιοποιεί το Flatpak για τη διάθεση εφαρμογών, διαθέτει μια βάση
       μόνο για ανάγνωση, καθώς και αυτόματες και ατομικές ενημερώσεις του
@@ -106,7 +106,7 @@ software:
     - NetworkManager
     - openSUSE-repos-MicroOS
     - sudo-policy-wheel-auth-self # explicit wheel group policy to conform new auth model
-  optional_packages: [os-prober]
+  optional_packages: [ os-prober ]
   base_product: Kalpa
 
 storage:
