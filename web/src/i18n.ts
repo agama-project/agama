@@ -146,11 +146,16 @@ const Nn_ = (str1: string, strN: string, n: number): string => (n === 1 ? str1 :
  * Wrapper around Intl.ListFormat to get a language-specific representation of the given list of
  * strings.
  *
- * @param {string[]} list iterable list of strings to represent
- * @param {object} options passed to the Intl.ListFormat constructor
- * @return {string} concatenation of the original strings with the correct language-specific
+ * Preserves the input type: formatting a list of {@link TranslatedString}
+ * values produces a {@link TranslatedString}, while a list of plain strings
+ * (e.g. device names or mount paths) stays a plain string.
+ *
+ * @param list iterable list of strings to represent
+ * @param options passed to the Intl.ListFormat constructor
+ * @return concatenation of the original strings with the correct language-specific
  *  separators according to the currently selected language for the Agama UI
  */
-const formatList = (list, options = {}) => agama.formatList(list, options);
+const formatList = <T extends string | TranslatedString>(list: T[], options: object = {}): T =>
+  agama.formatList(list, options) as T;
 
 export { _, n_, N_, Nn_, formatList };
