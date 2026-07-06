@@ -43,6 +43,7 @@ import { sortCollection, translateEntries } from "~/utils";
 import { _, N_ } from "~/i18n";
 import { useCheckLunScan } from "~/hooks/model/system/zfcp";
 import { useAddDevices, useRemoveDevices, useConfig } from "~/hooks/model/config/zfcp";
+import type { TranslatedString } from "~/i18n";
 import type { ZFCP as System } from "~/model/system";
 import type { ZFCP as Config } from "~/model/config";
 import type { CheckLunScanFn } from "~/hooks/model/system/zfcp";
@@ -414,7 +415,9 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
         itemActions={(device: System.Device) =>
           buildActions(device, deviceConfig(device), addDevices, removeDevices, checkLunScan)
         }
-        itemActionsLabel={(d: System.Device) => `Actions for ${d.lun}`}
+        // FIXME: translate after the translation freeze and drop the casting
+        // (related to bsc#1269514)
+        itemActionsLabel={(d: System.Device) => `Actions for ${d.lun}` as TranslatedString}
         emptyState={
           <EmptyState
             headingLevel="h2"

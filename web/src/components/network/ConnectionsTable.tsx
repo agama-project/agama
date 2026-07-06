@@ -62,6 +62,8 @@ import {
 } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
 
+import type { TranslatedString } from "~/i18n";
+
 /**
  * Filter options for narrowing down network connections shown in the table.
  */
@@ -383,7 +385,9 @@ export default function ConnectionsTable() {
             },
           ].filter(Boolean);
         }}
-        itemActionsLabel={(c: Connection) => `Actions for ${c.id}`}
+        // FIXME: translate after the translation freeze and drop the casting
+        // (related to bsc#1269514)
+        itemActionsLabel={(c: Connection) => `Actions for ${c.id}` as TranslatedString}
         emptyState={
           <EmptyState
             headingLevel="h2"

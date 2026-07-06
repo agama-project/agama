@@ -47,6 +47,7 @@ import { useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
 import { hex, sortCollection, translateEntries } from "~/utils";
 import { _, n_, N_ } from "~/i18n";
 
+import type { TranslatedString } from "~/i18n";
 import type { Device } from "~/model/system/dasd";
 import type { Device as ConfigDevice } from "~/model/config/dasd";
 
@@ -677,7 +678,9 @@ export default function DASDTable({ devices }) {
             filterByDevice: true,
           })
         }
-        itemActionsLabel={(d: Device) => `Actions for ${d.channel}`}
+        // FIXME: translate after the translation freeze and drop the casting
+        // (related to bsc#1269514)
+        itemActionsLabel={(d: Device) => `Actions for ${d.channel}` as TranslatedString}
         itemActionsComponent={SimpleDropdown}
         emptyState={
           <EmptyState
