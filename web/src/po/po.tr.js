@@ -863,9 +863,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Ağ geçidi yalnızca 'Manuel' modda tanımlanabilir"
   ],
-  "GiB": [
-    "GB"
-  ],
   "Go to network page": [
     "Ağ sayfasına git"
   ],
@@ -1062,9 +1059,6 @@ export default {
   "Keyboard selection": [
     "Klavye seçimi"
   ],
-  "KiB": [
-    "KB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1139,9 +1133,6 @@ export default {
   ],
   "Max channel": [
     "Maksimum kanal"
-  ],
-  "MiB": [
-    "MB"
   ],
   "Min channel": [
     "Minimum kanal"
@@ -1423,9 +1414,6 @@ export default {
   ],
   "Pending": [
     "Bekliyor"
-  ],
-  "PiB": [
-    "PB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Emin değilseniz lütfen iptal edin ve ayarları kontrol edin."
@@ -2080,9 +2068,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Bu yalnızca yükleyici arayüzünü etkileyecektir, yüklenecek ürünü değil. Ürünün yerelleştirmesini daha sonra Yerelleştirme ayarları sayfasında ayarlayabilirsiniz."
-  ],
-  "TiB": [
-    "TB"
   ],
   "Time zone": [
     "Saat dilimi"

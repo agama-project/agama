@@ -855,9 +855,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "只能在 \"手動\" 模式下定義閘道"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "前往網路頁面"
   ],
@@ -1053,9 +1050,6 @@ export default {
   "Keyboard selection": [
     "鍵盤選擇"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1130,9 +1124,6 @@ export default {
   ],
   "Max channel": [
     "最大通道"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "最小通道"
@@ -1412,9 +1403,6 @@ export default {
   ],
   "Pending": [
     "待處理"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "如果不確定之前的設定，可以取消並進行檢查。"
@@ -2060,9 +2048,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "此操作只會影響安裝程式介面，不會影響要安裝的產品。您稍後可以在 \"本土化設定\" 頁面調整產品的本土化。"
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "時區"

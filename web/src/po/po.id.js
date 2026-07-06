@@ -855,9 +855,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Gateway hanya dapat ditentukan dalam mode 'Manual'"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "Buka halaman jaringan"
   ],
@@ -1053,9 +1050,6 @@ export default {
   "Keyboard selection": [
     "Pemilihan keyboard"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1130,9 +1124,6 @@ export default {
   ],
   "Max channel": [
     "Saluran maks"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Saluran min"
@@ -1412,9 +1403,6 @@ export default {
   ],
   "Pending": [
     "Tertunda"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Mohon batalkan dan periksa pengaturan jika Anda tidak yakin."
@@ -2060,9 +2048,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Hal ini hanya akan memengaruhi antarmuka penginstal, bukan produk yang akan diinstal. Anda dapat menyesuaikan lokalisasi produk nanti di halaman Pengaturan Lokalisasi."
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "Zona waktu"

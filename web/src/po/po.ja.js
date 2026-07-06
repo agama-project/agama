@@ -183,6 +183,9 @@ export default {
   "Allow growing": [
     "サイズ拡大を許可する"
   ],
+  "Allow shrinking": [
+    "サイズ縮小を許可する"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "最初のユーザの作成とは別に、 root ユーザに対する認証方式を設定することができます。"
   ],
@@ -248,6 +251,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "自動 LUN スキャンが [有効化] されています。 NPIV モードで動作しているコントローラを有効化した場合、その LUN は全て自動的に設定されます。"
+  ],
+  "Available file systems": [
+    "利用可能なファイルシステム"
   ],
   "Available products": [
     "利用可能な製品"
@@ -552,6 +558,9 @@ export default {
   "DNS": [
     "DNS"
   ],
+  "DNS data list": [
+    "DNS データの一覧"
+  ],
   "Deactivate": [
     "無効化"
   ],
@@ -659,6 +668,9 @@ export default {
   ],
   "Do not format %s and keep the data": [
     "%s をフォーマットせず既存のデータを維持"
+  ],
+  "Do not modify": [
+    "変更しない"
   ],
   "Do not use": [
     "使用しない"
@@ -855,9 +867,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "'手動' モードの場合にのみゲートウエイを設定できます"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "ネットワークページに移動"
   ],
@@ -997,7 +1006,7 @@ export default {
     "インターフェイス"
   ],
   "Invalid storage settings": [
-    "正しくないストレージ設定です"
+    "ストレージ設定が正しくありません"
   ],
   "Ip prefix or netmask": [
     "IP プレフィクスもしくはネットマスク"
@@ -1052,9 +1061,6 @@ export default {
   ],
   "Keyboard selection": [
     "キーボードの選択"
-  ],
-  "KiB": [
-    "KiB"
   ],
   "LUN": [
     "LUN"
@@ -1130,9 +1136,6 @@ export default {
   ],
   "Max channel": [
     "最大チャネル"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "最小チャネル"
@@ -1412,9 +1415,6 @@ export default {
   ],
   "Pending": [
     "保留中"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "何か不安な点があれば、キャンセルして設定を確認しておくことをお勧めします。"
@@ -2060,9 +2060,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "ここでの設定はインストーラ自身にのみ適用され、インストールする製品には適用されません。製品に対する設定を行いたい場合は、ローカライゼーション設定のページで行ってください。"
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "タイムゾーン"

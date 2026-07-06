@@ -863,9 +863,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Η πύλη μπορεί να οριστεί μόνο στη «Χειροκίνητη» λειτουργία"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "Μετάβαση στη σελίδα δικτύου"
   ],
@@ -1062,9 +1059,6 @@ export default {
   "Keyboard selection": [
     "Επιλογή πληκτρολογίου"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1139,9 +1133,6 @@ export default {
   ],
   "Max channel": [
     "Μέγιστο κανάλι"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Ελάχιστο κανάλι"
@@ -1423,9 +1414,6 @@ export default {
   ],
   "Pending": [
     "Εκκρεμεί"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Παρακαλούμε, ακυρώστε και ελέγξτε τις ρυθμίσεις εάν δεν είστε σίγουροι."
@@ -2080,9 +2068,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Αυτό θα επηρεάσει μόνο τη διεπαφή του εγκαταστάτη, όχι το προϊόν που θα εγκατασταθεί. Μπορείτε να προσαρμόσετε την τοπικοποίηση του προϊόντος αργότερα στη σελίδα ρυθμίσεων Τοπικοποίησης."
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "Ζώνη ώρας"

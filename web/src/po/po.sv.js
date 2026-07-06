@@ -187,6 +187,9 @@ export default {
   "Allow growing": [
     "Tillåt växande"
   ],
+  "Allow shrinking": [
+    "Tillåt krympning"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Förutom att definiera den första användaren kan autentiseringsmetoder för rootanvändaren konfigureras."
   ],
@@ -254,6 +257,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "Automatisk LUN-skanning är [aktiverad]. Aktiverar en styrenhet som är       körande i NPIV läge kommer att automatiskt konfigurera alla dess LUN."
+  ],
+  "Available file systems": [
+    "Tillgängliga filsystem"
   ],
   "Available products": [
     "Tillgängliga produkter"
@@ -558,6 +564,9 @@ export default {
   "DNS": [
     "DNS"
   ],
+  "DNS data list": [
+    "DNS data lista"
+  ],
   "Deactivate": [
     "Inaktivera"
   ],
@@ -665,6 +674,9 @@ export default {
   ],
   "Do not format %s and keep the data": [
     "Formatera inte %s och behåll data"
+  ],
+  "Do not modify": [
+    "Modifiera inte"
   ],
   "Do not use": [
     "Använd inte"
@@ -863,9 +875,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Gateway kan endast definieras i \"Manuellt\" läge"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "Gå till nätverkssidan"
   ],
@@ -1062,9 +1071,6 @@ export default {
   "Keyboard selection": [
     "Tangentbordsval"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1139,9 +1145,6 @@ export default {
   ],
   "Max channel": [
     "Maximal kanal"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Minimum kanal"
@@ -1423,9 +1426,6 @@ export default {
   ],
   "Pending": [
     "Väntar"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Vänligen, avbryt och kontrollera inställningarna om du är osäker."
@@ -2080,9 +2080,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Detta påverkar endast installationsgränssnittet, inte produkten som ska installeras. Du kan justera produktens lokalisering senare på sidan Lokaliseringsinställningar."
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "Tidszon"
