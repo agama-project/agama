@@ -34,6 +34,8 @@ import { Page, Popup } from "~/components/core";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
+
+import type { TranslatedString } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
 
 const UnsupportedElements = ({
@@ -42,8 +44,8 @@ const UnsupportedElements = ({
   description,
 }: {
   elements: string[];
-  title: string;
-  description: string;
+  title: TranslatedString;
+  description: TranslatedString;
 }) => {
   if (elements.length === 0) {
     return undefined;
