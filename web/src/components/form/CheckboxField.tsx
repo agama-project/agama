@@ -24,14 +24,16 @@ import React from "react";
 import { Checkbox } from "@patternfly/react-core";
 import { useFieldContext } from "~/hooks/form-contexts";
 
+import type { TranslatedString } from "~/i18n";
+
 type CheckboxFieldProps = {
-  label: string;
+  label: TranslatedString;
   description?: React.ReactNode;
   /**
    * Literal accessible name for the checkbox. Replaces the visible label as the
    * accessible name; use only when the visible label is not descriptive enough.
    */
-  "aria-label"?: string;
+  "aria-label"?: TranslatedString;
   /**
    * IDs of elements that name the checkbox. Replaces the visible label as the
    * accessible name; use when other on-screen elements describe it.
