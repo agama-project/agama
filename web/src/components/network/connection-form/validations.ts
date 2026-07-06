@@ -54,6 +54,8 @@ import {
 import { ADDRESS_REQUIRED_MODES, BridgeStpMode, FormIpMode } from "./fields";
 import { _, formatList } from "~/i18n";
 
+import type { TranslatedString } from "~/i18n";
+
 import type {
   ValidationResult,
   FieldsValidationResult,
@@ -87,8 +89,8 @@ const validateAddresses = (
   mode: FormIpModeType,
   addresses: string[],
   isValid: (s: string) => boolean,
-  emptyMessage: string,
-  invalidMessage: string,
+  emptyMessage: TranslatedString,
+  invalidMessage: TranslatedString,
 ) =>
   ADDRESS_REQUIRED_MODES.includes(mode)
     ? requiredValidList(addresses, isValid, emptyMessage, invalidMessage)
@@ -105,8 +107,8 @@ const validateGateway = (
   mode: FormIpModeType,
   gateway: string,
   isValid: (s: string) => boolean,
-  emptyMessage: string,
-  invalidMessage: string,
+  emptyMessage: TranslatedString,
+  invalidMessage: TranslatedString,
 ) => {
   if (mode === FormIpMode.MANUAL)
     return requiredValidString(gateway, isValid, emptyMessage, invalidMessage);
