@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul  6 14:27:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Require translated text in user-facing component props, ensuring
+  users get the interface in their language
+  (gh#agama-project/agama#3696).
+
+-------------------------------------------------------------------
 Mon Jul  6 08:28:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fix dropdown menus overflowing beyond viewport boundaries
