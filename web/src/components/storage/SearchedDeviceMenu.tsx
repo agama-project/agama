@@ -30,7 +30,7 @@ import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { useConfigModel, useConvertDevice } from "~/hooks/model/storage/config-model";
 import { deviceBaseName, formattedPath } from "~/components/storage/utils";
-import { _, n_, formatList } from "~/i18n";
+import { _, n_, formatList, TranslatedString } from "~/i18n";
 
 import type { MenuItemProps } from "@patternfly/react-core";
 import type { CustomToggleProps } from "~/components/core/MenuButton";
@@ -353,6 +353,10 @@ export default function SearchedDeviceMenu({
     convertDevice(selected.name, device.name);
   };
 
+  const vgEmptyStateTitle = (): TranslatedString | undefined => {
+    return modelDevice.filesystem ? _("Volume groups cannot be formatted") : undefined;
+  };
+
   return (
     <>
       <MenuButton
@@ -380,7 +384,7 @@ export default function SearchedDeviceMenu({
           mdRaids={mdRaids}
           volumeGroups={volumeGroups}
           sideEffects={{ volumeGroups: vgSelectionSideEffect }}
-          emptyStateTitles={{ volumeGroups: _("Volume groups cannot be formatted") }}
+          emptyStateTitles={{ volumeGroups: vgEmptyStateTitle() }}
           onConfirm={onDeviceChange}
           onCancel={() => setIsSelectorOpen(false)}
         />
