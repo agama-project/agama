@@ -24,11 +24,13 @@ import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 
+import type { TranslatedString } from "~/i18n";
+
 export interface FieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSetElement> {
   /**
    * Text displayed as the fieldset legend
    */
-  legend: string;
+  legend: TranslatedString;
   /**
    * Optional ID for the legend element.
    *

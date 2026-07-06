@@ -23,12 +23,13 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
+import { _ } from "~/i18n";
 import { Fieldset } from "./Fieldset";
 
 describe("Fieldset", () => {
   it("renders the legend", () => {
     installerRender(
-      <Fieldset legend="Network Settings">
+      <Fieldset legend={_("Network Settings")}>
         <input type="text" />
       </Fieldset>,
     );
@@ -37,7 +38,7 @@ describe("Fieldset", () => {
 
   it("renders children", () => {
     installerRender(
-      <Fieldset legend="Settings">
+      <Fieldset legend={_("Settings")}>
         <input aria-label="Test input" />
       </Fieldset>,
     );
@@ -46,7 +47,7 @@ describe("Fieldset", () => {
 
   it("renders description when provided", () => {
     installerRender(
-      <Fieldset legend="Advanced" description="Configure advanced options">
+      <Fieldset legend={_("Advanced")} description="Configure advanced options">
         <input type="text" />
       </Fieldset>,
     );
@@ -55,7 +56,7 @@ describe("Fieldset", () => {
 
   it("passes through native fieldset attributes", () => {
     installerRender(
-      <Fieldset legend="Disabled Fieldset" disabled data-testid="test-fieldset">
+      <Fieldset legend={_("Disabled Fieldset")} disabled data-testid="test-fieldset">
         <input aria-label="Disabled input" />
       </Fieldset>,
     );
@@ -65,7 +66,7 @@ describe("Fieldset", () => {
 
   it("supports className attribute", () => {
     installerRender(
-      <Fieldset legend="Styled" className="custom-class" data-testid="styled-fieldset">
+      <Fieldset legend={_("Styled")} className="custom-class" data-testid="styled-fieldset">
         <input type="text" />
       </Fieldset>,
     );
