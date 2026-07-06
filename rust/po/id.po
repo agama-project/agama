@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 10:48+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
 "PO-Revision-Date: 2026-06-16 18:12+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -804,107 +804,112 @@ msgstr "Gagal mengambil skrip %s. Apakah Anda ingin mencoba lagi?"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Gagal menulis file %s. Apakah Anda ingin mencoba lagi?"
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Siapkan sistem"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Instal perangkat lunak"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Konfigurasikan sistem"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "Menyiapkan penyimpanan"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr "Menjalankan skrip pascapartisi"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "Menginstal perangkat lunak"
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 msgid "Configuring the system"
 msgstr "Mengonfigurasi sistem"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr "Menyelesaikan instalasi"
 
-#: agama-manager/src/actions.rs:303
+#: agama-manager/src/actions.rs:271
+#, fuzzy
+msgid "Finalize installation"
+msgstr "Selesaikan instalasi"
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr "Menyimpan pengaturan keamanan"
 
-#: agama-manager/src/actions.rs:313
+#: agama-manager/src/actions.rs:356
 msgid "Configuring remote access"
 msgstr "Mengkonfigurasi akses jarak jauh"
 
-#: agama-manager/src/actions.rs:323
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr "Menyiapkan nama host"
 
-#: agama-manager/src/actions.rs:333
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr "Menyiapkan proksi jaringan"
 
-#: agama-manager/src/actions.rs:344
+#: agama-manager/src/actions.rs:387
 msgid "Setting up NTP"
 msgstr "Mengatur NTP"
 
-#: agama-manager/src/actions.rs:355
+#: agama-manager/src/actions.rs:398
 msgid "Importing user files and scripts"
 msgstr "Mengimpor berkas dan skrip pengguna"
 
-#: agama-manager/src/actions.rs:368
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr "Menjalankan skrip pra-instalasi pengguna"
 
-#: agama-manager/src/actions.rs:383
+#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "Menyimpan pengaturan pertanyaan"
 
-#: agama-manager/src/actions.rs:393
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr "Menyimpan pengaturan lokalisasi"
 
-#: agama-manager/src/actions.rs:403
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr "Menyimpan pengaturan pengguna"
 
-#: agama-manager/src/actions.rs:509
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr "Mengonfigurasi perangkat iSCSI"
 
-#: agama-manager/src/actions.rs:533
+#: agama-manager/src/actions.rs:576
 msgid "Configuring zFCP devices"
 msgstr "Mengonfigurasi perangkat zFCP"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr "Mengonfigurasi perangkat DASD"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr "Menyiapkan jaringan"
 
-#: agama-manager/src/actions.rs:610
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr "Menyiapkan usulan penyimpanan"
 
-#: agama-manager/src/actions.rs:643
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr "Menyimpan pengaturan bootloader"
 
-#: agama-manager/src/actions.rs:676
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr "Menyiapkan usulan perangkat lunak"
 
-#: agama-manager/src/actions.rs:709
+#: agama-manager/src/actions.rs:752
 msgid "Configuring SELinux"
 msgstr "Mengkonfigurasi SELinux"
 
