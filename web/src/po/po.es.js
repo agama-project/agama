@@ -480,9 +480,6 @@ export default {
   "Binding": [
     "Asociar"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "Vínculo"
   ],
@@ -1032,6 +1029,9 @@ export default {
   "Do not format %s and keep data": [
     "No formatear %s y conservar los datos"
   ],
+  "Do not modify": [
+    "No modificar"
+  ],
   "Do not register": [
     "No registrar"
   ],
@@ -1088,9 +1088,6 @@ export default {
   ],
   "Edit": [
     "Editar"
-  ],
-  "Edit binding settings": [
-    "Editar configuración de vinculación"
   ],
   "Edit connection": [
     "Editar conexión"
@@ -1166,6 +1163,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Intro o Tabulador para añadir, Atrás o Supr para eliminar, teclas de flecha para desplazarse por las entradas, Esc para salir"
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1294,9 +1294,6 @@ export default {
   ],
   "Gateway": [
     "Puerta de enlace"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Vaya al resumen de la [instalación]."
@@ -1594,9 +1591,6 @@ export default {
   "Keyboard layout": [
     "Distribución del teclado"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1708,6 +1702,9 @@ export default {
   "Login form": [
     "Formulario de inicio de sesión"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC address": [
     "Dirección MAC"
   ],
@@ -1746,9 +1743,6 @@ export default {
   ],
   "Memory": [
     "Memoria"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canal mínimo"
@@ -2186,9 +2180,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Podrían crearse volúmenes físicos en algunos de los discos elegidos según el tamaño total de los volúmenes lógicos."
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "Puerto"
@@ -3055,9 +3046,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Esto se inyectará en el comando para crear el sistema de archivos (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Servidores de sincronización de hora"
   ],
@@ -3364,6 +3352,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Cuando estés listo, haz clic en el botón [instalar] al final de la página."
+  ],
+  "Wi-Fi": [
+    "WiFi"
   ],
   "Wi-Fi connection form": [
     "Formulario de conexión Wi-Fi"

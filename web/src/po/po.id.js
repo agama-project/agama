@@ -462,9 +462,6 @@ export default {
   "Binding": [
     "Pengikatan"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "Bond"
   ],
@@ -1068,9 +1065,6 @@ export default {
   "Edit": [
     "Edit"
   ],
-  "Edit binding settings": [
-    "Edit pengaturan ikatan"
-  ],
   "Edit connection": [
     "Edit koneksi"
   ],
@@ -1145,6 +1139,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Masukkan atau tekan Tab untuk menambah, Backspace atau Delete untuk menghapus, tombol panah untuk menavigasi entri, Escape untuk keluar"
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1271,9 +1268,6 @@ export default {
   ],
   "Gateway": [
     "Gateway"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Buka ringkasan [instalasi]."
@@ -1569,9 +1563,6 @@ export default {
   "Keyboard layout": [
     "Tata letak keyboard"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1683,6 +1674,9 @@ export default {
   "Login form": [
     "Formulir masuk"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC address": [
     "Alamat MAC"
   ],
@@ -1721,9 +1715,6 @@ export default {
   ],
   "Memory": [
     "Memori"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Saluran min"
@@ -2159,9 +2150,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Physical volume dapat dibuat pada beberapa disk yang dipilih berdasarkan total ukuran logical volume."
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "Port"
@@ -3015,9 +3003,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Ini akan disisipkan ke dalam perintah untuk membuat filesystem (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Server Sinkronisasi Waktu"
   ],
@@ -3323,6 +3308,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Saat siap, klik tombol [instal] di akhir halaman."
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Formulir Koneksi Wi-Fi"

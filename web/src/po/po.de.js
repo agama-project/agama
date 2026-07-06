@@ -480,9 +480,6 @@ export default {
   "Binding": [
     "Bindung"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "Bündelung"
   ],
@@ -1032,6 +1029,9 @@ export default {
   "Do not format %s and keep data": [
     "%s nicht formatieren und die Daten behalten"
   ],
+  "Do not modify": [
+    "Nicht verändern"
+  ],
   "Do not register": [
     "Nicht registrieren"
   ],
@@ -1088,9 +1088,6 @@ export default {
   ],
   "Edit": [
     "Bearbeiten"
-  ],
-  "Edit binding settings": [
-    "Verknüpfungseinstellungen bearbeiten"
   ],
   "Edit connection": [
     "Verbindung bearbeiten"
@@ -1166,6 +1163,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Eingabe oder Tab zum Hinzufügen, Rücktaste oder Entf zum Löschen, Pfeiltasten zum Navigieren zwischen den Einträgen, Esc zum Beenden"
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1294,9 +1294,6 @@ export default {
   ],
   "Gateway": [
     "Gateway"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Wechseln Sie zur Zusammenfassung der [Installation]."
@@ -1594,9 +1591,6 @@ export default {
   "Keyboard layout": [
     "Tastaturbelegung"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1708,6 +1702,9 @@ export default {
   "Login form": [
     "Anmeldeformular"
   ],
+  "Loopback": [
+    ""
+  ],
   "MAC address": [
     "MAC-Adresse"
   ],
@@ -1746,9 +1743,6 @@ export default {
   ],
   "Memory": [
     "Speicher"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Minimaler Kanal"
@@ -2186,9 +2180,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Physische Volumes werden möglicherweise aufgrund der Gesamtgröße der logischen Voluments auf einigen der ausgewählten Festplatten erstellt."
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "Port"
@@ -3055,9 +3046,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Dies wird in den Befehl zum Erstellen des Dateisystems (%s) injiziert."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Zeitsynchronisationsserver"
   ],
@@ -3364,6 +3352,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Wenn Sie bereit sind, klicken Sie auf die Schaltfläche [Installieren] am Ende der Seite."
+  ],
+  "Wi-Fi": [
+    "WLAN"
   ],
   "Wi-Fi connection form": [
     "Formular für die WiFi-Verbindung"
