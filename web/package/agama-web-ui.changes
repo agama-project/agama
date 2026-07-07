@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  7 08:58:39 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Rename internal "overview" terminology to "installation" to align
+  with user-facing interface (gh#agama-project/agama#3697).
+
+-------------------------------------------------------------------
 Mon Jul  6 08:28:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fix dropdown menus overflowing beyond viewport boundaries
