@@ -167,10 +167,7 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
  * Supported dialog actions.
  */
 type DialogAction =
-  | { type: "OPEN" }
-  | { type: "CLOSE" }
-  | { type: "SET_BUSY" }
-  | { type: "SET_IDLE" };
+  { type: "OPEN" } | { type: "CLOSE" } | { type: "SET_BUSY" } | { type: "SET_IDLE" };
 
 /**
  * Represents the dialog state

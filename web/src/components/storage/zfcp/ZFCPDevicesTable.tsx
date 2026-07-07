@@ -334,7 +334,6 @@ const createColumns = (checkLunScan: CheckLunScanFn) => [
   {
     // TRANSLATORS: table header for a zFCP devices table.
     name: _("Status"),
-    // eslint-disable-next-line agama-i18n/string-literals
     value: (d: System.Device) => _(STATUS_OPTIONS[d.active ? "activated" : "deactivated"]),
     sortingKey: "active",
   },
