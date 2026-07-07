@@ -85,7 +85,7 @@ const DescriptionSkeletons = () => (
  * A presentational component for displaying a titled summary with an icon,
  * value, and optional description.
  *
- * Designed for the overview page where consistent visual presentation of
+ * Designed for the installation page where consistent visual presentation of
  * summary information is needed.
  *
  * Supports loading states with skeleton placeholders.

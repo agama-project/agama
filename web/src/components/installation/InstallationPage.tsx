@@ -43,8 +43,8 @@ import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import NoDesktopAlert from "~/components/software/NoDesktopAlert";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
-import InstallationSettings from "~/components/overview/InstallationSettings";
-import SystemInformationSection from "~/components/overview/SystemInformationSection";
+import InstallationSettings from "~/components/installation/InstallationSettings";
+import SystemInformationSection from "~/components/installation/SystemInformationSection";
 import { startInstallation } from "~/api";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
@@ -114,7 +114,7 @@ const NoProductFound = () => {
   );
 };
 
-const OverviewPageContent = ({ product }) => {
+const InstallationPageContent = ({ product }) => {
   const issues = useIssues();
   const { loading } = useProgressTracking();
   const isReady = useDeferredValue(!loading);
@@ -159,7 +159,7 @@ const OverviewPageContent = ({ product }) => {
           <div>
             <Content isEditorial>
               {
-                // TRANSLATORS: Introductory text shown on the overview page
+                // TRANSLATORS: Introductory text shown on the installation page
                 _(
                   "Take a moment to review the installation settings below and adjust them as needed.",
                 )
@@ -232,12 +232,12 @@ const OverviewPageContent = ({ product }) => {
   );
 };
 
-export default function OverviewPage() {
+export default function InstallationPage() {
   const product = useProductInfo();
 
   if (!product) {
     return <Navigate to={PRODUCT.root} />;
   }
 
-  return <OverviewPageContent product={product} />;
+  return <InstallationPageContent product={product} />;
 }

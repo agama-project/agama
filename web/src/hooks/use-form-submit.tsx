@@ -325,7 +325,7 @@ export function useFormSubmit<TValues>({
                       }
                     >
                       {(linkText) => (
-                        <Link isInline variant="link" to={ROOT.overview}>
+                        <Link isInline variant="link" to={ROOT.summary}>
                           {linkText}
                         </Link>
                       )}

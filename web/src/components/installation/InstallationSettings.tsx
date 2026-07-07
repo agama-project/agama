@@ -23,13 +23,13 @@
 import React from "react";
 import { Title } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
-import SystemSummary from "~/components/overview/SystemSummary";
-import L10nSummary from "~/components/overview/L10nSummary";
-import StorageSummary from "~/components/overview/StorageSummary";
-import NetworkSummary from "~/components/overview/NetworkSummary";
-import SoftwareSummary from "~/components/overview/SoftwareSummary";
-import RegistrationSummary from "~/components/overview/RegistrationSummary";
-import UsersSummary from "~/components/overview/UsersSummary";
+import SystemSummary from "~/components/installation/SystemSummary";
+import L10nSummary from "~/components/installation/L10nSummary";
+import StorageSummary from "~/components/installation/StorageSummary";
+import NetworkSummary from "~/components/installation/NetworkSummary";
+import SoftwareSummary from "~/components/installation/SoftwareSummary";
+import RegistrationSummary from "~/components/installation/RegistrationSummary";
+import UsersSummary from "~/components/installation/UsersSummary";
 import { _ } from "~/i18n";
 
 import a11yStyles from "@patternfly/react-styles/css/utilities/Accessibility/accessibility";

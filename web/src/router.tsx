@@ -29,7 +29,7 @@ import InstallationExit from "~/components/core/InstallationExit";
 import InstallationFinished from "~/components/core/InstallationFinished";
 import InstallationProgress from "~/components/core/InstallationProgress";
 import LoginPage from "~/components/core/LoginPage";
-import OverviewPage from "~/components/overview/OverviewPage";
+import InstallationPage from "~/components/installation/InstallationPage";
 import SystemPage from "~/components/system/SystemPage";
 import l10nRoutes from "~/routes/l10n";
 import networkRoutes from "~/routes/network";
@@ -38,7 +38,7 @@ import registrationRoutes from "~/routes/registration";
 import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
-import { SYSTEM, USER, ROOT as PATHS } from "./routes/paths";
+import { SYSTEM, USER, ROOT as PATHS, ROOT } from "./routes/paths";
 import { N_ } from "~/i18n";
 
 // Redirects for legacy routes that have been consolidated or renamed. These
@@ -67,12 +67,16 @@ const legacyRedirects = () => [
     path: "/users/root/edit",
     element: <Navigate to={USER.root} replace />,
   },
+  {
+    path: "/overview",
+    element: <Navigate to={ROOT.summary} replace />,
+  },
 ];
 
 const rootRoutes = () => [
   {
-    path: "/overview",
-    element: <OverviewPage />,
+    path: "/installation",
+    element: <InstallationPage />,
   },
   {
     path: SYSTEM.root,
@@ -97,7 +101,7 @@ const protectedRoutes = () => [
         children: [
           {
             index: true,
-            element: <OverviewPage />,
+            element: <InstallationPage />,
           },
           ...rootRoutes(),
         ],

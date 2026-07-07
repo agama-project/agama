@@ -402,7 +402,7 @@ const StandardLayout = ({
   // itself nor during/after the installation.
   const showChangeProductOption = ![
     PRODUCT.changeProduct,
-    ROOT.installation,
+    ROOT.summary,
     ROOT.installationProgress,
     ROOT.installationFinished,
     ROOT.installationExit,
