@@ -36,7 +36,7 @@ import {
   SecurityProtocols,
 } from "~/types/network";
 import { _, N_ } from "~/i18n";
-import type { TranslatedString } from "~/i18n";
+import type { MarkedString, TranslatedString } from "~/i18n";
 
 /**
  * Connection type constants.
@@ -56,7 +56,7 @@ export const CONNECTION_TYPE = {
 /**
  * Translatable labels for connection states.
  */
-const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
+const CONNECTION_STATE_LABELS: Record<ConnectionState, MarkedString> = {
   unknown: N_("Unknown"),
   activating: N_("Activating"),
   activated: N_("Activated"),
@@ -68,7 +68,6 @@ const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
  * Returns the translated label for a connection state.
  */
 const connectionStateLabel = (state: ConnectionState): TranslatedString =>
-  // eslint-disable-next-line agama-i18n/string-literals
   _(CONNECTION_STATE_LABELS[state]);
 
 /**
@@ -82,7 +81,7 @@ const isVirtual = (type: ConnectionType): boolean =>
 /**
  * Labels for connection types.
  */
-const CONNECTION_TYPE_LABELS: Record<ConnectionType, string> = {
+const CONNECTION_TYPE_LABELS: Record<ConnectionType, MarkedString> = {
   [CONNECTION_TYPE.ETHERNET]: N_("Ethernet"),
   [CONNECTION_TYPE.WIFI]: N_("Wi-Fi"),
   [CONNECTION_TYPE.LOOPBACK]: N_("Loopback"),
@@ -96,7 +95,6 @@ const CONNECTION_TYPE_LABELS: Record<ConnectionType, string> = {
  * Returns the label for a connection type.
  */
 const connectionTypeLabel = (type: ConnectionType): TranslatedString =>
-  // eslint-disable-next-line agama-i18n/string-literals
   _(CONNECTION_TYPE_LABELS[type]);
 
 /**

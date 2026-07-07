@@ -25,7 +25,7 @@ import { generatePath } from "react-router";
 import { ISortBy, sort } from "fast-sort";
 import { _ } from "~/i18n";
 
-import type { TranslatedString } from "~/i18n";
+import type { MarkedString, TranslatedString } from "~/i18n";
 
 /**
  * Generates a new array without null and undefined values.
@@ -753,13 +753,12 @@ type TranslateEntriesOptions = {
  *
  */
 const translateEntries = (
-  entries: Record<string, string>,
+  entries: Record<string, MarkedString>,
   { filter }: TranslateEntriesOptions = {},
 ): Record<string, TranslatedString> =>
   Object.fromEntries(
     Object.entries(entries)
       .filter(([key]) => filter?.(key) ?? true)
-      /* eslint-disable agama-i18n/string-literals */
       .map(([key, value]) => [key, _(value)]),
   );
 
