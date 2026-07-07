@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul  7 10:55:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Introduced the "MarkedString" type and activated a new linter
+  check to avoid using N_() without _() later which results in
+  untranslated texts in the UI (related to bsc#1269514)
+
+-------------------------------------------------------------------
 Mon Jul  6 08:28:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Fix dropdown menus overflowing beyond viewport boundaries

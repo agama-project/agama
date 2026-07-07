@@ -44,11 +44,7 @@ export type SearchMax = number;
  */
 export type SearchActions = "skip" | "error";
 export type Encryption =
-  | EncryptionLuks1
-  | EncryptionLuks2
-  | EncryptionPervasiveLuks2
-  | EncryptionTpmFde
-  | EncryptionSwap;
+  EncryptionLuks1 | EncryptionLuks2 | EncryptionPervasiveLuks2 | EncryptionTpmFde | EncryptionSwap;
 /**
  * Password to use when creating a new encryption device.
  */
@@ -66,12 +62,7 @@ export type EncryptionPbkdFunction = "pbkdf2" | "argon2i" | "argon2id";
  * Swap encryptions. The snake case names are deprecated.
  */
 export type EncryptionSwap =
-  | "protected_swap"
-  | "secure_swap"
-  | "random_swap"
-  | "protectedSwap"
-  | "secureSwap"
-  | "randomSwap";
+  "protected_swap" | "secure_swap" | "random_swap" | "protectedSwap" | "secureSwap" | "randomSwap";
 export type FilesystemType = FilesystemTypeAny | FilesystemTypeBtrfs;
 export type FilesystemTypeAny =
   | "bcachefs"
@@ -106,13 +97,10 @@ export type PartitionElement =
   | PartitionToDeleteIfNeeded;
 export type PartitionSearch = SearchAll | SearchName | PartitionAdvancedSearch;
 export type PartitionSearchCondition =
-  | SearchConditionName
-  | SearchConditionSize
-  | SearchConditionPartitionNumber;
+  SearchConditionName | SearchConditionSize | SearchConditionPartitionNumber;
 export type PartitionSearchSort = PartitionSearchSortCriterion | PartitionSearchSortCriterion[];
 export type PartitionSearchSortCriterion =
-  | PartitionSearchSortCriterionShort
-  | PartitionSearchSortCriterionFull;
+  PartitionSearchSortCriterionShort | PartitionSearchSortCriterionFull;
 export type PartitionSearchSortCriterionShort = "name" | "size" | "number";
 /**
  * How to handle the section if the device is not found.
@@ -140,16 +128,12 @@ export type BaseName = string;
 export type VolumeGroupSearch = SearchAll | SearchName | VolumeGroupAdvancedSearch;
 export type VolumeGroupSearchCondition = SearchConditionName | SearchConditionSize;
 export type VolumeGroupSearchSort =
-  | VolumeGroupSearchSortCriterion
-  | VolumeGroupSearchSortCriterion[];
+  VolumeGroupSearchSortCriterion | VolumeGroupSearchSortCriterion[];
 export type VolumeGroupSearchSortCriterion =
-  | VolumeGroupSearchSortCriterionShort
-  | VolumeGroupSearchSortCriterionFull;
+  VolumeGroupSearchSortCriterionShort | VolumeGroupSearchSortCriterionFull;
 export type VolumeGroupSearchSortCriterionShort = "name" | "size";
 export type PhysicalVolumeElement =
-  | Alias
-  | SimplePhysicalVolumesGenerator
-  | AdvancedPhysicalVolumesGenerator;
+  Alias | SimplePhysicalVolumesGenerator | AdvancedPhysicalVolumesGenerator;
 export type LogicalVolumeElement =
   | SimpleVolumesGenerator
   | AdvancedLogicalVolumesGenerator
@@ -165,11 +149,9 @@ export type LogicalVolumeStripes = number;
 export type LogicalVolumeSearch = SearchAll | SearchName | LogicalVolumeAdvancedSearch;
 export type LogicalVolumeSearchCondition = SearchConditionName | SearchConditionSize;
 export type LogicalVolumeSearchSort =
-  | LogicalVolumeSearchSortCriterion
-  | LogicalVolumeSearchSortCriterion[];
+  LogicalVolumeSearchSortCriterion | LogicalVolumeSearchSortCriterion[];
 export type LogicalVolumeSearchSortCriterion =
-  | LogicalVolumeSearchSortCriterionShort
-  | LogicalVolumeSearchSortCriterionFull;
+  LogicalVolumeSearchSortCriterionShort | LogicalVolumeSearchSortCriterionFull;
 export type LogicalVolumeSearchSortCriterionShort = "name" | "size" | "number";
 export type DeleteLogicalVolumeSearch = SearchAll | SearchName | DeleteLogicalVolumeAdvancedSearch;
 export type MdRaidElement = NonPartitionedMdRaid | PartitionedMdRaid;
@@ -177,8 +159,7 @@ export type MdRaidSearch = SearchAll | SearchName | MdRaidAdvancedSearch;
 export type MdRaidSearchCondition = SearchConditionName | SearchConditionSize;
 export type MdRaidSearchSort = MdRaidSearchSortCriterion | MdRaidSearchSortCriterion[];
 export type MdRaidSearchSortCriterion =
-  | MdRaidSearchSortCriterionShort
-  | MdRaidSearchSortCriterionFull;
+  MdRaidSearchSortCriterionShort | MdRaidSearchSortCriterionFull;
 export type MdRaidSearchSortCriterionShort = "name" | "size";
 export type MDLevel = "raid0" | "raid1" | "raid5" | "raid6" | "raid10";
 /**

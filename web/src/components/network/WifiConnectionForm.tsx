@@ -162,7 +162,6 @@ function WifiConnectionFormContent() {
               <FormSelectOption
                 key={security.value}
                 value={security.value}
-                /* eslint-disable agama-i18n/string-literals */
                 label={_(security.label)}
               />
             ))}
