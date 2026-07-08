@@ -60,7 +60,7 @@ home = { version = "0.5.11" }
 i18n-format = { version = "0.4.0" }
 macaddr = { version = "1.0.1", features = ["serde_std"] }
 merge = { version = "0.2.0", features = ["std"] }
-openssl = { version = "0.10.75" }
+openssl = { version = "0.10.81" }
 pin-project = { version = "1.1.10" }
 regex = { version = "1.12.2" }
 schemars = { version = "1.2.1", features = ["url2", "uuid1"] }
