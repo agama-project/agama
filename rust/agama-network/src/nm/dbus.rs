@@ -1444,6 +1444,7 @@ fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash<'_> {
         ("id", cfg.id.into()),
         ("parent", cfg.parent.clone().into()),
         ("protocol", cfg.protocol.to_string().into()),
+        ("flags", 1u32.into()), // VLAN_FLAG_REORDER_HDR - kernel default
     ]);
 
     NestedHash::from([("vlan", vlan)])
