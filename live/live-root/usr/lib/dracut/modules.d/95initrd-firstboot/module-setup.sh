@@ -4,11 +4,11 @@
 
 check() {
   # always include this dracut module in the initramfs
-	return 0
+  return 0
 }
 
 depends() {
-	echo bash systemd
+  echo bash systemd
 }
 
 install() {
@@ -19,6 +19,9 @@ install() {
   # The problem is that the first boot detection fails because of the
   # complicated Live ISO setup which uses the device mapper for creating
   # writable overlay over the squashfs read-only image.
-	$SYSTEMCTL -q --root "$initdir" disable firstboot-detect.service
-	$SYSTEMCTL -q --root "$initdir" enable firstboot.target
+  $SYSTEMCTL -q --root "$initdir" disable firstboot-detect.service
+
+  # do not enable ignition/combustion by default, they can be explicitly
+  # enabled with the "rd.systemd.wants=firstboot.target" boot option
+  $SYSTEMCTL -q --root "$initdir" disable firstboot.target
 }
