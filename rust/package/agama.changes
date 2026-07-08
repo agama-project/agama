@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jul  8 07:58:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update openssl dependency (bsc#1270992, bsc#1270891, bsc#1270850,
+  bsc#1270784, bsc#1270678, bsc#1270526, bsc#1270602, CVE-2026-45784,
+  CVE-2026-44662, CVE-2026-41898, CVE-2026-41681, CVE-2026-41678,
+  CVE-2026-42327, CVE-2026-41677).
+
+-------------------------------------------------------------------
 Tue Jun 30 14:43:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt iSCSI, DASD and zFCP monitors to the changes in the D-Bus
