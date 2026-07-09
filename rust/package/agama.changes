@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jul  9 10:38:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update openssl dependency (bsc#1270992, bsc#1270891, bsc#1270850,
+  bsc#1270784, bsc#1270678, bsc#1270526, bsc#1270602, CVE-2026-45784,
+  CVE-2026-44662, CVE-2026-41898, CVE-2026-41681, CVE-2026-41678,
+  CVE-2026-42327, CVE-2026-41677).
+
+-------------------------------------------------------------------
 Thu Jun  4 12:01:27 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Consider the old init scripts location for backward compatibility
