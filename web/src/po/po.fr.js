@@ -480,9 +480,6 @@ export default {
   "Binding": [
     "Liaison"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "Bond"
   ],
@@ -1032,6 +1029,9 @@ export default {
   "Do not format %s and keep data": [
     "Ne pas formater %s et conserver les données"
   ],
+  "Do not modify": [
+    "Ne pas modifier"
+  ],
   "Do not register": [
     "Ne pas s'enregistrer"
   ],
@@ -1088,9 +1088,6 @@ export default {
   ],
   "Edit": [
     "Modifier"
-  ],
-  "Edit binding settings": [
-    "Modifier les paramètres de liaison"
   ],
   "Edit connection": [
     "Modifier connexion"
@@ -1294,9 +1291,6 @@ export default {
   ],
   "Gateway": [
     "Passerelle"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Accédez au résumé [de l'installation]."
@@ -1594,9 +1588,6 @@ export default {
   "Keyboard layout": [
     "Disposition du clavier"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1708,6 +1699,9 @@ export default {
   "Login form": [
     "Formulaire de connexion"
   ],
+  "Loopback": [
+    ""
+  ],
   "MAC address": [
     "Adresse MAC"
   ],
@@ -1746,9 +1740,6 @@ export default {
   ],
   "Memory": [
     "Mémoire"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canal min"
@@ -2186,9 +2177,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Des volumes physiques peuvent être créés sur certains des disques sélectionnés en fonction de la taille totale des volumes logiques."
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "Port"
@@ -3055,9 +3043,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Cela sera injecté dans la commande pour créer le système de fichiers (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Serveurs de synchronisation horaire"
   ],
@@ -3364,6 +3349,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Lorsque vous êtes prêt(e), cliquez sur le bouton [installer] à la fin de la page."
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Formulaire de connexion Wi-Fi"

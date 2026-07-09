@@ -339,6 +339,9 @@ export default {
   "Allow growing": [
     "サイズ拡大を許可する"
   ],
+  "Allow shrinking": [
+    "サイズ縮小を許可する"
+  ],
   "Already using all available devices": [
     "既に利用可能な全てのデバイスを使用しています"
   ],
@@ -461,9 +464,6 @@ export default {
   ],
   "Binding": [
     "結びつけ方式"
-  ],
-  "BitLocker": [
-    "BitLocker"
   ],
   "Bond": [
     "ボンディング"
@@ -1011,6 +1011,9 @@ export default {
   "Do not format %s and keep data": [
     "%s をフォーマットせず既存のデータを維持"
   ],
+  "Do not modify": [
+    "変更しない"
+  ],
   "Do not register": [
     "登録しない"
   ],
@@ -1067,9 +1070,6 @@ export default {
   ],
   "Edit": [
     "編集"
-  ],
-  "Edit binding settings": [
-    "バインディング設定の編集"
   ],
   "Edit connection": [
     "接続の編集"
@@ -1146,6 +1146,9 @@ export default {
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter キーまたは Tab キーで追加、 Backspace キーまたは Delete キーで削除、矢印キーで項目間の移動、 Escape キーで終了します"
   ],
+  "Ethernet": [
+    "イーサネット"
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -1216,7 +1219,7 @@ export default {
     "%s 内での容量検出"
   ],
   "Fix invalid settings before starting the installation.": [
-    "インストールを開始する前に、正しくない設定を修正してください。"
+    "インストールを開始する前に、直すべき設定を修正してください。"
   ],
   "Fix the errors below and try again": [
     "エラーを修正してやり直してください"
@@ -1271,9 +1274,6 @@ export default {
   ],
   "Gateway": [
     "ゲートウエイ"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "[インストール] の概要に移動します。"
@@ -1492,7 +1492,7 @@ export default {
     "SSH 鍵が正しくありません"
   ],
   "Invalid [zFCP] settings": [
-    "正しくない [zFCP] 設定です"
+    "[zFCP] の設定が正しくありません"
   ],
   "Invalid device location": [
     "デバイスの場所が正しくありません"
@@ -1516,7 +1516,7 @@ export default {
     "ソフトウエア選択が正しくありません"
   ],
   "Invalid storage settings": [
-    "正しくないストレージ設定です"
+    "ストレージ設定が正しくありません"
   ],
   "Issue date": [
     "発行日"
@@ -1568,9 +1568,6 @@ export default {
   ],
   "Keyboard layout": [
     "キーボードレイアウト"
-  ],
-  "KiB": [
-    "KiB"
   ],
   "LUN": [
     "LUN"
@@ -1683,6 +1680,9 @@ export default {
   "Login form": [
     "ログインフォーム"
   ],
+  "Loopback": [
+    "ループバック"
+  ],
   "MAC address": [
     "MAC アドレス"
   ],
@@ -1721,9 +1721,6 @@ export default {
   ],
   "Memory": [
     "メモリ"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "最小チャネル"
@@ -2159,9 +2156,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "設定した論理ボリュームの合計サイズに応じて、選択した複数のディスクに物理ボリュームを作成します。"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "ポート"
@@ -3015,9 +3009,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "ここで設定した値は、ファイルシステムの作成コマンド (%s) にそのまま渡されます。"
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "時刻同期サーバ"
   ],
@@ -3323,6 +3314,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "準備ができたら、ページ末尾にある [インストール] ボタンを押してください。"
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "WiFi 接続フォーム"

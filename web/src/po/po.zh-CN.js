@@ -462,9 +462,6 @@ export default {
   "Binding": [
     "正在绑定"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "绑定"
   ],
@@ -1011,6 +1008,9 @@ export default {
   "Do not format %s and keep data": [
     "不格式化 %s 并保留数据"
   ],
+  "Do not modify": [
+    "不要修改"
+  ],
   "Do not register": [
     "不注册"
   ],
@@ -1067,9 +1067,6 @@ export default {
   ],
   "Edit": [
     "编辑"
-  ],
-  "Edit binding settings": [
-    "编辑绑定设置"
   ],
   "Edit connection": [
     "编辑连接"
@@ -1271,9 +1268,6 @@ export default {
   ],
   "Gateway": [
     "网关"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "前往[安装]摘要页面。"
@@ -1569,9 +1563,6 @@ export default {
   "Keyboard layout": [
     "键盘布局"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1683,6 +1674,9 @@ export default {
   "Login form": [
     "登录表单"
   ],
+  "Loopback": [
+    ""
+  ],
   "MAC address": [
     "MAC 地址"
   ],
@@ -1721,9 +1715,6 @@ export default {
   ],
   "Memory": [
     "内存"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "最小通道"
@@ -2159,9 +2150,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "程序可能会根据逻辑卷总大小，在部分所选磁盘上创建物理卷。"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "端口"
@@ -3015,9 +3003,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "该值将作为参数添加到创建文件系统的命令 (%s) 中。"
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "时间同步服务器"
   ],
@@ -3323,6 +3308,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "准备就绪后，请单击页面底部的[安装]按钮。"
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Wi-Fi 连接表单"

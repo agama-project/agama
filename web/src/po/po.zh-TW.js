@@ -462,9 +462,6 @@ export default {
   "Binding": [
     "正在結合"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "結合"
   ],
@@ -1068,9 +1065,6 @@ export default {
   "Edit": [
     "編輯"
   ],
-  "Edit binding settings": [
-    "編輯結合設定"
-  ],
   "Edit connection": [
     "編輯連接"
   ],
@@ -1145,6 +1139,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "按 Enter 或 Tab 鍵可新增項目，按 Backspace 或 Delete 鍵可移除項目，按方向鍵可導覽項目，按 Escape 鍵可結束"
+  ],
+  "Ethernet": [
+    ""
   ],
   "ExFAT": [
     "ExFAT"
@@ -1271,9 +1268,6 @@ export default {
   ],
   "Gateway": [
     "閘道"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "前往[安裝]摘要頁面。"
@@ -1569,9 +1563,6 @@ export default {
   "Keyboard layout": [
     "鍵盤配置"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1683,6 +1674,9 @@ export default {
   "Login form": [
     "登入表單"
   ],
+  "Loopback": [
+    ""
+  ],
   "MAC address": [
     "MAC 位址"
   ],
@@ -1721,9 +1715,6 @@ export default {
   ],
   "Memory": [
     "記憶體"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "最小通道"
@@ -2159,9 +2150,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "程式可能會依據邏輯磁碟區總大小，在部分所選磁碟上建立實體磁碟區。"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "連接埠"
@@ -3015,9 +3003,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "此值將做為參數新增至建立檔案系統的指令 (%s) 中。"
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "時間同步伺服器"
   ],
@@ -3323,6 +3308,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "準備就緒後，請按一下頁面底部的[安裝]按鈕。"
+  ],
+  "Wi-Fi": [
+    ""
   ],
   "Wi-Fi connection form": [
     "Wi-Fi 連接表單"

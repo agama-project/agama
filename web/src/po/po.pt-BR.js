@@ -480,9 +480,6 @@ export default {
   "Binding": [
     "Vinculando"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "Vinculação"
   ],
@@ -1032,6 +1029,9 @@ export default {
   "Do not format %s and keep data": [
     "Não formatar %s e manter os dados"
   ],
+  "Do not modify": [
+    "Não modificar"
+  ],
   "Do not register": [
     "Não registrar"
   ],
@@ -1088,9 +1088,6 @@ export default {
   ],
   "Edit": [
     "Editar"
-  ],
-  "Edit binding settings": [
-    "Editar configurações de vinculação"
   ],
   "Edit connection": [
     "Editar conexão"
@@ -1294,9 +1291,6 @@ export default {
   ],
   "Gateway": [
     "Gateway"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Ir para o resumo da [instalação]."
@@ -1594,9 +1588,6 @@ export default {
   "Keyboard layout": [
     "Layout do teclado"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1708,6 +1699,9 @@ export default {
   "Login form": [
     "Formulário de login"
   ],
+  "Loopback": [
+    ""
+  ],
   "MAC address": [
     "Endereço MAC"
   ],
@@ -1746,9 +1740,6 @@ export default {
   ],
   "Memory": [
     "Memória"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canal mínimo"
@@ -2186,9 +2177,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Os volumes físicos podem ser criados em alguns dos discos escolhidos com base no tamanho total dos volumes lógicos."
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "Porta"
@@ -3055,9 +3043,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Isso será injetado no comando para criar o sistema de arquivos (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Servidores de sincronização de horário"
   ],
@@ -3364,6 +3349,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Quando estiver pronto, clique no botão [instalar] no fim da página."
+  ],
+  "Wi-Fi": [
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Formulário de conexão Wi-Fi"
