@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Wed Jul  9 00:00:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Thu Jul  9 13:17:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Handle VLAN flags properly, using the kernel default value
   of VLAN_FLAG_REORDER_HDR when not specified
