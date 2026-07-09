@@ -670,7 +670,7 @@ export default {
     "Не налаштовувати"
   ],
   "Do not format %s and keep the data": [
-    "Не форматувати %s і зберегти дані"
+    "Не форматувати %s і зберегти ці дані"
   ],
   "Do not use": [
     "Не використовувати"
@@ -871,9 +871,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Шлюз можна вказати тільки в ручному режимі"
   ],
-  "GiB": [
-    "ГіБ"
-  ],
   "Go to network page": [
     "Перейти до розділу «Мережа»"
   ],
@@ -1071,9 +1068,6 @@ export default {
   "Keyboard selection": [
     "Вибір клавіатури"
   ],
-  "KiB": [
-    "КіБ"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1148,9 +1142,6 @@ export default {
   ],
   "Max channel": [
     "Макс. канал"
-  ],
-  "MiB": [
-    "МіБ"
   ],
   "Min channel": [
     "Мін. канал"
@@ -1434,9 +1425,6 @@ export default {
   ],
   "Pending": [
     "Очікуйте"
-  ],
-  "PiB": [
-    "ПіБ"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Будь ласка, скасуйте і перевірте налаштування, якщо Ви не впевнені."
@@ -2100,9 +2088,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Це вплине тільки на інтерфейс установника, не на продукт, що встановлюється. Змінити параметри локалізації продукту Ви зможете пізніше на сторінці налаштувань локалізації."
-  ],
-  "TiB": [
-    "ТіБ"
   ],
   "Time zone": [
     "Часовий пояс"

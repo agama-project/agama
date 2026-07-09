@@ -672,6 +672,9 @@ export default {
   "Do not format %s and keep the data": [
     "Не форматировать %s и сохранить данные"
   ],
+  "Do not modify": [
+    "Не изменять"
+  ],
   "Do not use": [
     "Не использовать"
   ],
@@ -871,9 +874,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Шлюз можно указать только в ручном режиме"
   ],
-  "GiB": [
-    "ГиБ"
-  ],
   "Go to network page": [
     "Перейти к разделу «Сеть»"
   ],
@@ -1071,9 +1071,6 @@ export default {
   "Keyboard selection": [
     "Выбор клавиатуры"
   ],
-  "KiB": [
-    "КиБ"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1148,9 +1145,6 @@ export default {
   ],
   "Max channel": [
     "Макс. канал"
-  ],
-  "MiB": [
-    "МиБ"
   ],
   "Min channel": [
     "Мин. канал"
@@ -1434,9 +1428,6 @@ export default {
   ],
   "Pending": [
     "Ожидается"
-  ],
-  "PiB": [
-    "ПиБ"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Если вы не уверены, нажмите «Отмена» и перепроверьте настройки."
@@ -2100,9 +2091,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Это повлияет только на интерфейс программы установки, не на устанавливаемый продукт. Настроить локализацию продукта Вы сможете позже в разделе «Локализация»."
-  ],
-  "TiB": [
-    "ТиБ"
   ],
   "Time zone": [
     "Часовой пояс"

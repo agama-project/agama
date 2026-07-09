@@ -863,9 +863,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Yhdyskäytävän voi määrittää vain tilassa ”Manuaalinen”"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "Mene verkko-sivulle"
   ],
@@ -1062,9 +1059,6 @@ export default {
   "Keyboard selection": [
     "Näppäimistön valinta"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1139,9 +1133,6 @@ export default {
   ],
   "Max channel": [
     "Maksimikanava"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Minimikanava"
@@ -1423,9 +1414,6 @@ export default {
   ],
   "Pending": [
     "Odottaa"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Jos et ole varma, peru ja tarkista asetukset."
@@ -2080,9 +2068,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Tämä vaikuttaa vain asennusohjelman käyttöliittymään, ei asennettavaan tuotteeseen. Voit muuttaa tuotteen kotoistamisesta myöhemmin asetussivulta."
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "Aikavyöhyke"

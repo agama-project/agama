@@ -660,6 +660,9 @@ export default {
   "Do not format %s and keep the data": [
     "不格式化 %s 并保留数据"
   ],
+  "Do not modify": [
+    "不要修改"
+  ],
   "Do not use": [
     "不使用"
   ],
@@ -854,9 +857,6 @@ export default {
   ],
   "Gateway can be defined only in 'Manual' mode": [
     "网关只能在“手动”模式下配置"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to network page": [
     "前往网络页面"
@@ -1053,9 +1053,6 @@ export default {
   "Keyboard selection": [
     "键盘选择"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1130,9 +1127,6 @@ export default {
   ],
   "Max channel": [
     "最大通道"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "最小通道"
@@ -1412,9 +1406,6 @@ export default {
   ],
   "Pending": [
     "等待中"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "如果不确定任何事项，请务必取消并检查已进行的设置。"
@@ -2060,9 +2051,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "此操作只会影响安装程序界面，不会影响要安装的产品。您稍后可以在 \"本地化设置\" 页面调整产品的本地化设置。"
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "时区"

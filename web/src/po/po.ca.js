@@ -666,6 +666,9 @@ export default {
   "Do not format %s and keep the data": [
     "No formatis %s i conserva'n les dades"
   ],
+  "Do not modify": [
+    "No la modifiquis"
+  ],
   "Do not use": [
     "No l'usis"
   ],
@@ -863,9 +866,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "La passarel·la només es pot definir en mode manual."
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "Ves a la pàgina de la xarxa"
   ],
@@ -1062,9 +1062,6 @@ export default {
   "Keyboard selection": [
     "Selecció del teclat"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1139,9 +1136,6 @@ export default {
   ],
   "Max channel": [
     "Canal màxim"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canal mínim"
@@ -1423,9 +1417,6 @@ export default {
   ],
   "Pending": [
     "Pendent"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Si us plau, cancel·leu i comproveu-ne la configuració si no n'esteu segur."
@@ -2080,9 +2071,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Això afectarà només la interfície de l'instal·lador, no el producte que s'ha d'instal·lar. Podeu ajustar la localització del producte més endavant a la pàgina de configuració de la localització."
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "Zona horària"

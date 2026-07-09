@@ -666,6 +666,9 @@ export default {
   "Do not format %s and keep the data": [
     "Não formatar %s e manter os dados"
   ],
+  "Do not modify": [
+    "Não modificar"
+  ],
   "Do not use": [
     "Não usar"
   ],
@@ -863,9 +866,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "O gateway só pode ser definido no modo 'Manual'"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "Ir para página da rede"
   ],
@@ -1062,9 +1062,6 @@ export default {
   "Keyboard selection": [
     "Seleção de teclado"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1139,9 +1136,6 @@ export default {
   ],
   "Max channel": [
     "Canal máximo"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canal mínimo"
@@ -1423,9 +1417,6 @@ export default {
   ],
   "Pending": [
     "Pendente"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Cancele e verifique se as configurações se não tiver certeza."
@@ -2080,9 +2071,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Isso afetará apenas a interface do instalador, não o produto que será instalado. Você poderá ajustar a localização do produto mais tarde na página de configurações de Localização."
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "Fuso horário"

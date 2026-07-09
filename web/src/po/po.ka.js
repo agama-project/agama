@@ -666,6 +666,9 @@ export default {
   "Do not format %s and keep the data": [
     "%s-ის არდაფორმატებადა მონაცემების შენარჩუნება"
   ],
+  "Do not modify": [
+    "არ შეცვალო"
+  ],
   "Do not use": [
     "არ გამოიყენო"
   ],
@@ -863,9 +866,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "ნაგულისხმევი რაუტერის მითითება, მხოლოდ, 'ხელით' რეჟიმში შეიძლება"
   ],
-  "GiB": [
-    "გიბ"
-  ],
   "Go to network page": [
     "ქსელის გვერდზე გადასვლა"
   ],
@@ -1062,9 +1062,6 @@ export default {
   "Keyboard selection": [
     "კლავიატურის არჩევანი"
   ],
-  "KiB": [
-    "კიბ"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1139,9 +1136,6 @@ export default {
   ],
   "Max channel": [
     "მაქს. არხი"
-  ],
-  "MiB": [
-    "მიბ"
   ],
   "Min channel": [
     "მინ. არხი"
@@ -1423,9 +1417,6 @@ export default {
   ],
   "Pending": [
     "დარჩენილია"
-  ],
-  "PiB": [
-    "პიბ"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "თუ დარწმუნებული არ ბრძანდებით, გააუქმეთ და პარამეტრები გადაამოწმეთ."
@@ -2080,9 +2071,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     ""
-  ],
-  "TiB": [
-    "ტიბ"
   ],
   "Time zone": [
     "დროის სარტყელი"

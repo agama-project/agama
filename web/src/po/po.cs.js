@@ -759,9 +759,6 @@ export default {
   "Gateway can be defined only in 'Manual' mode": [
     "Bránu lze definovat pouze v režimu 'Ruční'"
   ],
-  "GiB": [
-    "GiB"
-  ],
   "Go to network page": [
     "Přejít na stránku síť"
   ],
@@ -953,9 +950,6 @@ export default {
   "Keyboard selection": [
     "Výběr klávesnice"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1018,9 +1012,6 @@ export default {
   ],
   "Manual": [
     "Ruční"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Mode": [
     "Režim"
@@ -1256,9 +1247,6 @@ export default {
   ],
   "Pending": [
     "Čeká se na"
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Please, cancel and check the settings if you are unsure.": [
     "Nejste-li si jisti, zrušte akci a zkontrolujte nastavení."
@@ -1814,9 +1802,6 @@ export default {
   ],
   "This will affect only the installer interface, not the product to be installed. You can adjust the product’s localization later in the Localization settings page.": [
     "Toto ovlivní pouze rozhraní instalátoru, nikoliv produkt, který bude nainstalován. Lokalizaci produktu můžete upravit později na stránce nastavení lokalizace."
-  ],
-  "TiB": [
-    "TiB"
   ],
   "Time zone": [
     "Časové pásmo"
