@@ -1946,7 +1946,7 @@ mod test {
             panic!("Wrong connection type");
         }
 
-        // Scenario 2: DBus does not have flags
+        // Scenario 2: D-Bus does not have flags
         let vlan_section_no_flags = HashMap::from([
             hi("id", 100_u32)?,
             hi("parent", "eth0")?,
