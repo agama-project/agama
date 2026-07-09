@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 16:05+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -699,115 +699,120 @@ msgstr "Kon het script %s niet ophalen. Wilt u het opnieuw proberen?"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "Kon het bestand %s niet bewerken. Wilt u het opnieuw proberen?"
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Het systeem voorbereiden"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Software installeren"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Het systeem configureren"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 #, fuzzy
 msgid "Preparing storage"
 msgstr "Het opslagvoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Gebruikerspre-installatiescripts uitvoeren"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 #, fuzzy
 msgid "Installing software"
 msgstr "Software installeren"
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Het systeem configureren"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Klaar om de installatie te starten…"
 
-#: agama-manager/src/actions.rs:296
+#: agama-manager/src/actions.rs:271
+#, fuzzy
+msgid "Finalize installation"
+msgstr "Klaar om de installatie te starten…"
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr "Beveiligingsinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:306
+#: agama-manager/src/actions.rs:356
 msgid "Configuring remote access"
 msgstr "Toegang-op-afstand configureren"
 
-#: agama-manager/src/actions.rs:316
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr "De hostnaam instellen"
 
-#: agama-manager/src/actions.rs:326
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr "De netwerk-proxy instellen"
 
-#: agama-manager/src/actions.rs:337
+#: agama-manager/src/actions.rs:387
 msgid "Setting up NTP"
 msgstr "NTP instellen"
 
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:398
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Gebruikersbestanden importeren"
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr "Gebruikerspre-installatiescripts uitvoeren"
 
-#: agama-manager/src/actions.rs:376
+#: agama-manager/src/actions.rs:426
 #, fuzzy
 msgid "Storing questions settings"
 msgstr "De antwoorden op de gestelde vragen uitwerken"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr "Lokaliseringsinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr "Gebruikersinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:576
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr "DASD-apparaten configureren"
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr "Het netwerk instellen"
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr "Het opslagvoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr "Bootloader-instellingen opslaan"
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr "Het softwarevoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:702
+#: agama-manager/src/actions.rs:752
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Configureren…"
@@ -899,7 +904,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Overslaan"
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:303
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Kon geen softwarevoorstel doen door een interne fout."
@@ -1013,15 +1018,15 @@ msgstr "Nee"
 msgid "Yes"
 msgstr "Ja"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr "pakket"
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr "patroon"
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "product"
 

@@ -26,9 +26,10 @@ translations:
       dlouhodobou udržitelnost projektu SAP, nabízí nepřerušený chod podniku a
       minimalizuje provozní rizika a náklady.
     de: Das führende Betriebssytem für eine sichere und zuverlässige SAP-Platform.
-      Abgestimmt auf SAP-Bereitstellungen, ist SUSE Linux Enterprise Server for
-      SAP applications zukunftssicher, bietet unterbrechungsfreien
-      Geschäftsbetrieb und minimiert betriebliche Risiken und Kosten.
+      SUSE Linux Enterprise Server für SAP-Anwendungen ist auf
+      SAP-Bereitstellungen abgestimmt, macht SAP-Projekte zukunftssicher, bietet
+      einen unterbrechungsfreien Geschäftsbetrieb und minimiert betriebliche
+      Risiken und Kosten.
     el: Το κορυφαίο ΛΣ για μια ασφαλή και αξιόπιστη πλατφόρμα SAP. Εγκεκριμένο για
       υλοποιήσεις SAP, το SUSE Linux Enterprise Server για εφαρμογές SAP
       θωρακίζει μελλοντικά το έργο SAP, προσφέρει αδιάλειπτη επιχειρηματική
@@ -107,6 +108,8 @@ translations:
         sv: Standard
         tr: Standart
         uk: Стандартний
+        zh_CN: 标准
+        zh_TW: 標準
       description:
         bg: Стандартна система
         ca: Sistema estàndard
@@ -127,6 +130,8 @@ translations:
         sv: Standard system
         tr: Standart sistem
         uk: Стандартна система
+        zh_CN: 标准系统
+        zh_TW: 標準系統
     immutable:
       name:
         bg: Неизменен
@@ -148,6 +153,8 @@ translations:
         sv: Oföränderlig
         tr: Değiştirilemez
         uk: Незмінний
+        zh_CN: 不可变
+        zh_TW: 不可變
       description:
         bg: Неизменима система със атомични обновления
         ca: Sistema immutable amb actualitzacions atòmiques
@@ -168,6 +175,8 @@ translations:
         sv: Oföränderligt system med atomiska uppdateringar
         tr: Atomik güncellemelerle değiştirilemez sistem
         uk: Незмінна система з атомарними оновленнями
+        zh_CN: 具备原子更新特性的不可变系统
+        zh_TW: 具有原子更新特性的不可變系統
 desktop_selection: optional
 software:
   installation_repositories: []

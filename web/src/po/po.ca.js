@@ -480,9 +480,6 @@ export default {
   "Binding": [
     "Vinculació"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "Vincle"
   ],
@@ -1032,6 +1029,9 @@ export default {
   "Do not format %s and keep data": [
     "No formatis %s i conserva'n les dades"
   ],
+  "Do not modify": [
+    "No la modifiquis"
+  ],
   "Do not register": [
     "Omet el registre"
   ],
@@ -1088,9 +1088,6 @@ export default {
   ],
   "Edit": [
     "Edita"
-  ],
-  "Edit binding settings": [
-    "Edita la configuració de la vinculació"
   ],
   "Edit connection": [
     "Edita la connexió"
@@ -1166,6 +1163,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Retorn o Tabulador per afegir, Retrocés o Supr per suprimir, tecles de fletxa per navegar per les entrades, Esc per sortir-ne"
+  ],
+  "Ethernet": [
+    "Xarxa amb fil"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1294,9 +1294,6 @@ export default {
   ],
   "Gateway": [
     "Passarel·la"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Ves al resum de la [instal·lació]."
@@ -1594,9 +1591,6 @@ export default {
   "Keyboard layout": [
     "Disposició del teclat"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1708,6 +1702,9 @@ export default {
   "Login form": [
     "Forma d'entrada"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC address": [
     "Adreça MAC"
   ],
@@ -1746,9 +1743,6 @@ export default {
   ],
   "Memory": [
     "Memòria"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canal mínim"
@@ -2187,9 +2181,6 @@ export default {
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Es poden crear volums físics en alguns dels discs triats segons la mida total dels volums lògics."
   ],
-  "PiB": [
-    "PiB"
-  ],
   "Port": [
     "Port"
   ],
@@ -2426,9 +2417,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "Centre de clients de SUSE (SCC)"
-  ],
-  "Search": [
-    "Cerca"
   ],
   "Secured network": [
     "Xarxa amb seguretat"
@@ -3058,9 +3046,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Això s'injectarà a l'ordre per crear el sistema de fitxers (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Servidors de sincronització d'hora"
   ],
@@ -3368,14 +3353,14 @@ export default {
   "When ready, click on the [install] button at the end of the page.": [
     "Quan estigueu a punt, feu clic al botó [Instal·la] al final de la pàgina."
   ],
+  "Wi-Fi": [
+    "Sense fil"
+  ],
   "Wi-Fi connection form": [
     "Formulari de connexió sense fil"
   ],
   "Will be supported in a future version.": [
     "Serà compatible en una versió futura."
-  ],
-  "Wrong selection": [
-    "Selecció incorrecta"
   ],
   "XFS": [
     "XFS"

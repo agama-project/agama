@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { concat } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
   Alert,
@@ -34,7 +33,6 @@ import {
   Spinner,
 } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
-import { COMMON_PROPOSAL_KEYS } from "~/hooks/model/proposal";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { _ } from "~/i18n";
 
@@ -50,34 +48,39 @@ import shadowStyles from "@patternfly/react-styles/css/utilities/BoxShadow/box-s
  */
 export type ProgressBackdropProps = {
   /**
-   * Scope identifier to filter which progresses trigger the backgrop
-   * overlay. If undefined or no matching tasks exist, the backdrop won't be
-   * displayed.
+   * Scope identifier to filter which progresses trigger the backdrop
+   * overlay. If no matching tasks exist, the backdrop won't be displayed.
    */
   scope: Scope;
   /**
-   * Additional query keys to track during progress operations.
+   * Query keys to wait for after progress completes.
    *
-   * The progress backdrop automatically tracks common proposal-related queries.
-   * Use this prop to specify additional query keys that must complete
-   * refetching before the backdrop unblocks the UI.
+   * Specify the TanStack Query keys for data that the page displays. The
+   * backdrop will not dismiss until all specified queries have refetched with
+   * fresh data after the operation completes.
    *
-   * This is useful when a page needs to wait for additional queries beyond the
-   * common proposal-related ones, either because the page depends on them or
-   * because operations on the page invalidate them.
+   * If omitted or empty, the backdrop dismisses as soon as the backend
+   * operation completes without waiting for query refetches.
+   *
+   * Include the `*_QUERY_KEY` constant exported by each data hook the page
+   * uses. For example, a page calling `useProposal()` might include
+   * `PROPOSAL_QUERY_KEY` and `EXTENDED_CONFIG_QUERY_KEY`.
    *
    * @example
-   * // Track storage model updates in addition to common proposal queries
-   * <ProgressBackdrop track={{ scope: "storage", ensureRefecthed={STORAGE_MODEL_KEY}} />
-   *
-   * @example
-   * // Track multiple additional queries
    * <ProgressBackdrop
-   *   track="network"
-   *   ensureRefecthed={[NETWORK_CONFIG_KEY, CONNECTIONS_KEY]}
-   * >
+   *   scope="storage"
+   *   awaitQueriesRefetch={[PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY, STORAGE_MODEL_QUERY_KEY]}
+   * />
+   *
+   * @example
+   * <ProgressBackdrop scope="iscsi" awaitQueriesRefetch={[SYSTEM_QUERY_KEY, CONFIG_QUERY_KEY]} />
+   *
+   * @example
+   * // Omitting awaitQueriesRefetch dismisses the backdrop as soon as progress ends,
+   * // without waiting for any query refetch.
+   * <ProgressBackdrop scope="zfcp" />
    */
-  ensureRefetched?: string | string[];
+  awaitQueriesRefetch?: readonly string[];
   /**
    * Additional content to render below the progress information.
    *
@@ -85,7 +88,7 @@ export type ProgressBackdropProps = {
    * per-device progress details for long-running operations.
    *
    * @example
-   * <ProgressBackdrop scope="dasd" extraContent={<DASDFormatProgress />} />
+   * <ProgressBackdrop scope="dasd" awaitQueriesRefetch={[...]} extraContent={<DASDFormatProgress />} />
    */
   extraContent?: React.ReactNode;
   /**
@@ -95,7 +98,7 @@ export type ProgressBackdropProps = {
    * Defaults to `"Refreshing data..."` if not provided.
    *
    * @example
-   * <ProgressBackdrop scope="storage" waitingLabel={_("Applying changes...")} />
+   * <ProgressBackdrop scope="storage" awaitQueriesRefetch={[...]} waitingLabel={_("Applying changes...")} />
    */
   waitingLabel?: string;
 };
@@ -108,25 +111,21 @@ export type ProgressBackdropProps = {
  * @remarks
  * Visibility is controlled through two mechanisms:
  * - Monitors active tasks from `useStatus()` that match the provided scope.
- * - Tracks refetches for common proposal queries as well as any queries
- *   specified via `ensureRefetched`.
+ * - Tracks refetches for all queries specified in `awaitQueriesRefetch`.
  *
- * Once shown, the backdrop remains visible until all involved queries have been
+ * Once shown, the backdrop remains visible until all specified queries have been
  * refetched after the tracked progress has finished, ensuring the UI does not
- * unblock prematurely.
+ * unblock prematurely with stale data.
  */
 export default function ProgressBackdrop({
   scope,
-  ensureRefetched,
+  awaitQueriesRefetch,
   extraContent,
   // TRANSLATORS: Message shown next to a spinner while the UI is being updated
   // after an operation has completed.
   waitingLabel = _("Refreshing data..."),
 }: ProgressBackdropProps): React.ReactNode {
-  const { loading: isBlocked, progress } = useProgressTracking(
-    scope,
-    concat(COMMON_PROPOSAL_KEYS, ensureRefetched),
-  );
+  const { loading: isBlocked, progress } = useProgressTracking(scope, awaitQueriesRefetch ?? []);
 
   if (!isBlocked) return null;
 

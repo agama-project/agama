@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-05 13:42+0000\n"
+"POT-Creation-Date: 2026-07-02 08:45+0000\n"
 "PO-Revision-Date: 2025-07-02 06:59+0000\n"
 "Last-Translator: Natasha Ament <stacheldrahtje@gmail.com>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -28,19 +28,18 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Niet-ondersteunde elementen in het AutoYaST-profiel gevonden: %{keys}."
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:68
+#: service/lib/agama/dbus/storage/dasd.rb:65
 #, fuzzy
 msgid "Probing DASD devices"
 msgstr "Onderzoeken van opslag apparaten"
 
-#. The configuration could take long time  (e.g., formatting devices). It is important to
-#. not block the service in order to make possible to attend other requests.
-#: service/lib/agama/dbus/storage/dasd.rb:94
+#. Do not configure if there is nothing to change.
+#: service/lib/agama/dbus/storage/dasd.rb:87
 msgid "Configuring DASD"
 msgstr ""
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/iscsi.rb:80
+#: service/lib/agama/dbus/storage/iscsi.rb:79
 msgid "Configuring iSCSI"
 msgstr ""
 
@@ -48,46 +47,46 @@ msgstr ""
 #.
 #. @param serialized_options [String] Serialized dicovery options.
 #. @return [Number] 0 success; 1 failure.
-#: service/lib/agama/dbus/storage/iscsi.rb:105
+#: service/lib/agama/dbus/storage/iscsi.rb:120
 msgid "Performing iSCSI discovery"
 msgstr ""
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:196
+#: service/lib/agama/dbus/storage/manager.rb:192
 msgid "Preparing bootloader proposal"
 msgstr "Voorbereiden bootloader voorstel"
 
-#: service/lib/agama/dbus/storage/manager.rb:199
+#: service/lib/agama/dbus/storage/manager.rb:195
 msgid "Preparing the storage devices"
 msgstr "Voorbereiden van de opslag apparaten"
 
-#: service/lib/agama/dbus/storage/manager.rb:202
+#: service/lib/agama/dbus/storage/manager.rb:198
 msgid "Writing bootloader sysconfig"
 msgstr "Schrijven van de bootloader sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:210
+#: service/lib/agama/dbus/storage/manager.rb:206
 #, fuzzy
 msgid "Finishing installation"
 msgstr "Installatie annuleren"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:217
+#: service/lib/agama/dbus/storage/manager.rb:213
 #, fuzzy
 msgid "Unmounting devices"
 msgstr "Ontkoppelen van opslag apparaten"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:256
+#: service/lib/agama/dbus/storage/manager.rb:252
 msgid "Activating storage devices"
 msgstr "Activeren van opslag apparaten"
 
-#: service/lib/agama/dbus/storage/manager.rb:259
+#: service/lib/agama/dbus/storage/manager.rb:255
 msgid "Probing storage devices"
 msgstr "Onderzoeken van opslag apparaten"
 
-#: service/lib/agama/dbus/storage/manager.rb:262
+#: service/lib/agama/dbus/storage/manager.rb:258
 #, fuzzy
 msgid "Applying storage configuration"
 msgstr "Aanpassen van de opslag configuratie"
@@ -496,7 +495,7 @@ msgstr "Configureer snapshots van het bestandssysteem"
 #. Returns an issue if there is no candidate device for installation
 #.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/manager.rb:308
+#: service/lib/agama/storage/manager.rb:316
 #, fuzzy
 msgid "There is no suitable device for installation"
 msgstr "Geen apparaat geselecteerd voor installatie"

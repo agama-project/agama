@@ -29,7 +29,10 @@
 import agama from "~/agama";
 import type { Tagged } from "type-fest";
 
+// translated text (_() or n_())
 export type TranslatedString = Tagged<string, "Translated">;
+// text marked for translation but not translated yet (N_() or Nn_())
+export type MarkedString = Tagged<string, "Marked">;
 
 /**
  * Tests whether a special testing language is used.
@@ -127,7 +130,7 @@ const n_ = (str1: string, strN: string, n: number): TranslatedString => {
  * @param str the input string
  * @return the input string
  */
-const N_ = (str: string): string => str;
+const N_ = (str: string): MarkedString => str as MarkedString;
 
 /**
  * Similar to the N_() function, but for the singular and plural form.
@@ -140,7 +143,8 @@ const N_ = (str: string): string => str;
  * @return the original text, either "string1" or "stringN" depending
  *   on the value "num"
  */
-const Nn_ = (str1: string, strN: string, n: number): string => (n === 1 ? str1 : strN);
+const Nn_ = (str1: string, strN: string, n: number): MarkedString =>
+  (n === 1 ? str1 : strN) as MarkedString;
 
 /**
  * Wrapper around Intl.ListFormat to get a language-specific representation of the given list of

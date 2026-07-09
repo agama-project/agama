@@ -33,13 +33,7 @@ import {
  * Union type of all connection type string values.
  */
 export type ConnectionType =
-  | "ethernet"
-  | "wireless"
-  | "loopback"
-  | "bond"
-  | "bridge"
-  | "vlan"
-  | "unknown";
+  "ethernet" | "wireless" | "loopback" | "bond" | "bridge" | "vlan" | "unknown";
 
 /**
  * Enum for AccessPoint flags

@@ -27,15 +27,14 @@ import { useQueryClient } from "@tanstack/react-query";
  * Custom hook that monitors multiple TanStack Query keys and triggers a
  * callback when all queries have been successfully refetched with fresh data.
  *
- * This hook subscribes to the specified queries and waits until each one
- * reports a `dataUpdatedAt` timestamp newer than when `startTracking()` was
- * called. Once all queries are updated, the `onSuccess` callback is
- * triggered and subscriptions are automatically cleaned up.
+ * This hook subscribes once to the query cache and waits until each tracked
+ * query reports a `dataUpdatedAt` timestamp newer than when `startTracking()`
+ * was called. Once all tracked queries are updated, the `onSuccess` callback is
+ * triggered and the subscription is automatically cleaned up.
  *
  * @param queryKeys - Array of query key strings to track for refetches
  * @param onSuccess - Callback executed when considered all queries have
- *   refetched successfully. Receives the tracking start timestamp and completion
- *   timestamp.
+ *   refetched successfully.
  *
  * @returns Object containing the `startTracking` function to initiate tracking
  *
@@ -43,8 +42,8 @@ import { useQueryClient } from "@tanstack/react-query";
  * ```tsx
  *   const { startTracking } = useTrackQueriesRefetch(
  *     ['users', 'posts', 'comments'],
- *     (startedAt, completedAt) => {
- *       console.log(`All queries refetched in ${completedAt - startedAt}ms`);
+ *     () => {
+ *       console.log("All queries refetched");
  *     })
  *   );
  *
@@ -66,12 +65,9 @@ import { useQueryClient } from "@tanstack/react-query";
  *   recalculates when the queryKeys reference changes. For optimal performance,
  *   memoize queryKeys in the parent component if it changes frequently.
  *
- * @see {@link https://tanstack.com/query/latest/docs/react/reference/QueryObserver}
+ * @see {@link https://tanstack.com/query/latest/docs/reference/QueryCache#querycachesubscribe}
  */
-function useTrackQueriesRefetch(
-  queryKeys: readonly string[],
-  onSuccess: (startedAt: number, completedAt: number) => void,
-) {
+function useTrackQueriesRefetch(queryKeys: readonly string[], onSuccess: () => void) {
   const queryClient = useQueryClient();
 
   // Remove duplicates and create Set for faster lookups when matching query keys
@@ -110,18 +106,35 @@ function useTrackQueriesRefetch(
     if (completedRef.current || startedAtRef.current === null) return;
 
     completedRef.current = true;
-    onSuccess(startedAtRef.current, Date.now());
+    onSuccess();
     cleanup();
   }, [onSuccess, cleanup]);
 
   /**
    * Initiates tracking of query refetches.
    *
-   * Creates QueryObservers for each query key and monitors their status. When
-   * all queries are considered successfully refetched (their `dataUpdatedAt` is
-   * later than the startedAt value), the `onSuccess` callback is triggered.
+   * Subscribes once to the query cache and watches for updates to the tracked
+   * keys. When all of them are considered successfully refetched (their
+   * `dataUpdatedAt` is later than the startedAt value), the `onSuccess` callback
+   * is triggered.
    *
    * Calling this function multiple times will cancel previous tracking cycles.
+   *
+   * KNOWN FLAW: If a query refetches BEFORE this function is called (but after
+   * the operation that triggered the need for tracking started), it will never
+   * be detected as refetched. This happens because `startedAt` is captured when
+   * this function is called, not when the original operation started. As a result,
+   * queries with `dataUpdatedAt < startedAt` are ignored, even if they refetched
+   * fresh data after the operation began. This can cause the hook to get stuck
+   * in a waiting state indefinitely.
+   *
+   * Example scenario:
+   * 1. Backend operation starts at T0
+   * 2. Query auto-refetches at T1 (due to invalidation or refetchInterval)
+   * 3. Backend operation completes at T2
+   * 4. startTracking() is called at T2, capturing startedAt = T2
+   * 5. Query's dataUpdatedAt (T1) < startedAt (T2), so it's never detected
+   * 6. Hook waits forever for a refetch that already happened
    */
   const startTracking = useCallback(() => {
     // Reset any previous tracking cycle

@@ -31,13 +31,16 @@ import {
   SelectOption,
 } from "@patternfly/react-core";
 import { useComboboxKeyboard } from "~/hooks/use-combobox-keyboard";
+import { useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
+
+import type { FieldLabelOptions } from "~/hooks/use-field-label";
 
 export type DropdownOption<T> =
   | { value: T; label: React.ReactNode; description?: React.ReactNode; isDisabled?: boolean }
   | { divider: true };
 
-type DropdownFieldProps<T> = {
+type DropdownFieldProps<T> = FieldLabelOptions & {
   /** The field label. */
   label: React.ReactNode;
   /** The available options. */
@@ -97,8 +100,16 @@ export default function DropdownField<T extends string>({
   helperText,
   isDisabled = false,
   children,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
+  labelPrefixedBy,
 }: DropdownFieldProps<T>) {
   const field = useFieldContext<T>();
+  const { labelId, labelProps } = useFieldLabel(field.name, {
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    labelPrefixedBy,
+  });
   const { isOpen, setIsOpen, menuRef, getToggleRef, onToggleKeydown } = useComboboxKeyboard();
 
   const selectedOption = options.find(
@@ -106,7 +117,7 @@ export default function DropdownField<T extends string>({
   );
 
   return (
-    <FormGroup fieldId={field.name} label={label}>
+    <FormGroup fieldId={field.name} label={<span id={labelId}>{label}</span>}>
       <Select
         ref={menuRef}
         isOpen={isOpen}
@@ -125,6 +136,7 @@ export default function DropdownField<T extends string>({
             onClick={() => setIsOpen(!isOpen)}
             isExpanded={isOpen}
             isDisabled={isDisabled}
+            {...labelProps}
           >
             {selectedOption && "label" in selectedOption ? selectedOption.label : field.state.value}
           </MenuToggle>

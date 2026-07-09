@@ -27,8 +27,8 @@ import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import { useNavigate } from "react-router";
 import {
-  PARTITIONABLE_SPACE_POLICIES,
-  VOLUME_GROUP_SPACE_POLICIES,
+  partitionableSpacePolicyLabel,
+  volumeGroupSpacePolicyLabel,
 } from "~/components/storage/utils";
 import { STORAGE as PATHS } from "~/routes/paths";
 import * as driveUtils from "~/components/storage/utils/drive";
@@ -41,24 +41,23 @@ import {
 } from "~/hooks/model/storage/config-model";
 import { useDevice } from "~/hooks/model/system/storage";
 import type { ConfigModel } from "~/model/storage/config-model";
-import type { SpacePolicy } from "~/components/storage/utils";
 
 type PolicyItemProps = {
-  policy: SpacePolicy;
+  policyId: ConfigModel.SpacePolicy;
   collection: "drives" | "mdRaids" | "volumeGroups";
   index: number;
 };
 
-const PolicyItem = ({ policy, collection, index }: PolicyItemProps) => {
+const PolicyItem = ({ policyId, collection, index }: PolicyItemProps) => {
   const navigate = useNavigate();
   const setSpacePolicy = useSetSpacePolicy();
   const deviceConfig = useDeviceConfig(collection, index);
 
   const changePolicy = () => {
-    if (policy.id === "custom") {
+    if (policyId === "custom") {
       return navigate(generateEncodedPath(PATHS.editSpacePolicy, { collection, index }));
     } else {
-      setSpacePolicy(collection, index, { type: policy.id });
+      setSpacePolicy(collection, index, { type: policyId });
     }
   };
 
@@ -66,27 +65,37 @@ const PolicyItem = ({ policy, collection, index }: PolicyItemProps) => {
     switch (collection) {
       case "drives":
       case "mdRaids": {
-        return driveUtils.contentActionsDescription(deviceConfig as ConfigModel.Drive, policy.id);
+        return driveUtils.contentActionsDescription(deviceConfig as ConfigModel.Drive, policyId);
       }
       case "volumeGroups": {
         return volumeGroupUtils.contentActionsDescription(
           deviceConfig as ConfigModel.VolumeGroup,
-          policy.id,
+          policyId,
         );
       }
     }
   };
 
-  const isSelected = policy.id === deviceConfig.spacePolicy;
+  const label = (): string => {
+    switch (collection) {
+      case "drives":
+      case "mdRaids":
+        return partitionableSpacePolicyLabel(policyId);
+      case "volumeGroups":
+        return volumeGroupSpacePolicyLabel(policyId);
+    }
+  };
+
+  const isSelected = policyId === deviceConfig.spacePolicy;
 
   return (
     <MenuButton.Item
-      itemId={policy.id}
+      itemId={policyId}
       isSelected={isSelected}
       description={description()}
       onClick={changePolicy}
     >
-      <Text isBold={isSelected}>{policy.label}</Text>
+      <Text isBold={isSelected}>{label()}</Text>
     </MenuButton.Item>
   );
 };
@@ -147,16 +156,8 @@ export default function SpacePolicyMenu({ collection, index }: SpacePolicyMenuPr
 
   if (!hasVolumes) return;
 
-  const policies = (): SpacePolicy[] => {
-    switch (collection) {
-      case "drives":
-      case "mdRaids": {
-        return PARTITIONABLE_SPACE_POLICIES;
-      }
-      case "volumeGroups": {
-        return VOLUME_GROUP_SPACE_POLICIES;
-      }
-    }
+  const policies = (): ConfigModel.SpacePolicy[] => {
+    return ["delete", "resize", "keep", "custom"];
   };
 
   return (
@@ -164,8 +165,8 @@ export default function SpacePolicyMenu({ collection, index }: SpacePolicyMenuPr
       toggleProps={{
         variant: "plainText",
       }}
-      items={policies().map((policy) => (
-        <PolicyItem key={policy.id} policy={policy} collection={collection} index={index} />
+      items={policies().map((policyId) => (
+        <PolicyItem key={policyId} policyId={policyId} collection={collection} index={index} />
       ))}
       customToggle={<SpacePolicyMenuToggle collection={collection} index={index} />}
     />
