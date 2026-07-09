@@ -163,6 +163,8 @@ pub struct VlanSettings {
     pub id: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub protocol: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub flags: Option<u32>,
 }
 
 /// IEEE 802.1x (EAP) settings

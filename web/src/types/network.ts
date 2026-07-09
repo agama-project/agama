@@ -332,6 +332,7 @@ type Vlan = {
   id: number;
   parent: string;
   protocol?: VlanProtocol;
+  flags?: number;
 };
 
 type ConnectionOptions = {
