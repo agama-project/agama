@@ -402,7 +402,7 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
 
     if let Some(vlan) = conn.get_mut("vlan") {
         if !vlan.contains_key("flags") {
-            vlan.insert("flags", 1u32.into());
+            vlan.insert("flags", 1_u32.into());
         }
     }
 }
