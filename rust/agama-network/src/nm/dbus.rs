@@ -1648,14 +1648,14 @@ fn is_empty_value(value: &zvariant::Value) -> bool {
 #[cfg(test)]
 mod test {
     use super::{
-        connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
-        OwnedNestedHash,
+        connection_from_dbus, connection_to_dbus, merge_dbus_connections, vlan_config_to_dbus,
+        NestedHash, OwnedNestedHash,
     };
     use crate::{
         model::*,
         nm::{
             dbus::{
-                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY,
+                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, VLAN_KEY, WIRELESS_KEY,
                 WIRELESS_SECURITY_KEY,
             },
             error::NmError,
