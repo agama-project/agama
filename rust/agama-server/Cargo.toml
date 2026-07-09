@@ -42,7 +42,7 @@ axum-extra = { version = "0.9.4", features = ["cookie", "typed-header"] }
 pam = { git = "https://github.com/1wilkens/pam.git", rev = "daf26ae" }
 serde_with = "3.10.0"
 pin-project = "1.1.5"
-openssl = "0.10.66"
+openssl = "0.10.81"
 sd-notify = "0.4.2"
 hyper = "1.4.1"
 hyper-util = "0.1.9"
