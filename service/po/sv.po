@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 12:12+0000\n"
+"POT-Creation-Date: 2026-07-02 08:45+0000\n"
 "PO-Revision-Date: 2026-05-18 09:12+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -28,17 +28,17 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Hittade ostödda element i AutoYaST-profilen: %{keys}."
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:66
+#: service/lib/agama/dbus/storage/dasd.rb:65
 msgid "Probing DASD devices"
 msgstr "Undersöker DASD-enheter"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/dasd.rb:88
+#: service/lib/agama/dbus/storage/dasd.rb:87
 msgid "Configuring DASD"
 msgstr "Konfigurering av DASD"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/iscsi.rb:80
+#: service/lib/agama/dbus/storage/iscsi.rb:79
 msgid "Configuring iSCSI"
 msgstr "Konfigurering av iSCSI"
 
@@ -46,44 +46,44 @@ msgstr "Konfigurering av iSCSI"
 #.
 #. @param serialized_options [String] Serialized dicovery options.
 #. @return [Number] 0 success; 1 failure.
-#: service/lib/agama/dbus/storage/iscsi.rb:105
+#: service/lib/agama/dbus/storage/iscsi.rb:120
 msgid "Performing iSCSI discovery"
 msgstr "Utför iSCSI upptäckt"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:194
+#: service/lib/agama/dbus/storage/manager.rb:192
 msgid "Preparing bootloader proposal"
 msgstr "Förbereder starthanterare förslag"
 
-#: service/lib/agama/dbus/storage/manager.rb:197
+#: service/lib/agama/dbus/storage/manager.rb:195
 msgid "Preparing the storage devices"
 msgstr "Förbereder lagringsenheter"
 
-#: service/lib/agama/dbus/storage/manager.rb:200
+#: service/lib/agama/dbus/storage/manager.rb:198
 msgid "Writing bootloader sysconfig"
 msgstr "Skriver starthanterarens sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:206
 msgid "Finishing installation"
 msgstr "Slutför installationen"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:215
+#: service/lib/agama/dbus/storage/manager.rb:213
 msgid "Unmounting devices"
 msgstr "Avmonterar enheter"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:254
+#: service/lib/agama/dbus/storage/manager.rb:252
 msgid "Activating storage devices"
 msgstr "Aktiverar lagringsenheter"
 
-#: service/lib/agama/dbus/storage/manager.rb:257
+#: service/lib/agama/dbus/storage/manager.rb:255
 msgid "Probing storage devices"
 msgstr "Undersöker lagringsenheter"
 
-#: service/lib/agama/dbus/storage/manager.rb:260
+#: service/lib/agama/dbus/storage/manager.rb:258
 msgid "Applying storage configuration"
 msgstr "Verkställer lagringskonfiguration"
 

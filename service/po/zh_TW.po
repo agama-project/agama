@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 12:12+0000\n"
+"POT-Creation-Date: 2026-07-02 08:45+0000\n"
 "PO-Revision-Date: 2026-06-25 09:55+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (Taiwan) <https://l10n.opensuse.org/projects/agama/"
@@ -28,17 +28,17 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "在 AutoYaST 設定檔中發現不受支援的元素：%{keys}。"
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:66
+#: service/lib/agama/dbus/storage/dasd.rb:65
 msgid "Probing DASD devices"
 msgstr "查探 DASD 裝置"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/dasd.rb:88
+#: service/lib/agama/dbus/storage/dasd.rb:87
 msgid "Configuring DASD"
 msgstr "設定 DASD"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/iscsi.rb:80
+#: service/lib/agama/dbus/storage/iscsi.rb:79
 msgid "Configuring iSCSI"
 msgstr "設定 iSCSI"
 
@@ -46,44 +46,44 @@ msgstr "設定 iSCSI"
 #.
 #. @param serialized_options [String] Serialized dicovery options.
 #. @return [Number] 0 success; 1 failure.
-#: service/lib/agama/dbus/storage/iscsi.rb:105
+#: service/lib/agama/dbus/storage/iscsi.rb:120
 msgid "Performing iSCSI discovery"
 msgstr "執行 iSCSI 探查"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:194
+#: service/lib/agama/dbus/storage/manager.rb:192
 msgid "Preparing bootloader proposal"
 msgstr "準備開機載入程式建議"
 
-#: service/lib/agama/dbus/storage/manager.rb:197
+#: service/lib/agama/dbus/storage/manager.rb:195
 msgid "Preparing the storage devices"
 msgstr "準備儲存裝置"
 
-#: service/lib/agama/dbus/storage/manager.rb:200
+#: service/lib/agama/dbus/storage/manager.rb:198
 msgid "Writing bootloader sysconfig"
 msgstr "寫入開機載入程式 sysconfig"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:206
 msgid "Finishing installation"
 msgstr "完成安裝"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:215
+#: service/lib/agama/dbus/storage/manager.rb:213
 msgid "Unmounting devices"
 msgstr "卸載裝置"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:254
+#: service/lib/agama/dbus/storage/manager.rb:252
 msgid "Activating storage devices"
 msgstr "啟用儲存裝置"
 
-#: service/lib/agama/dbus/storage/manager.rb:257
+#: service/lib/agama/dbus/storage/manager.rb:255
 msgid "Probing storage devices"
 msgstr "查探儲存裝置"
 
-#: service/lib/agama/dbus/storage/manager.rb:260
+#: service/lib/agama/dbus/storage/manager.rb:258
 msgid "Applying storage configuration"
 msgstr "套用儲存組態"
 
@@ -241,8 +241,8 @@ msgid ""
 "The device '%{parent_name}' cannot be formatted because it is a physical "
 "volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"無法格式化裝置 '%{parent_name}'，因為它是複用 LVM 磁碟區群組 '%{reused_name}"
-"' 的實體磁碟區"
+"無法格式化裝置 '%{parent_name}'，因為它是複用 LVM 磁碟區群組 '%"
+"{reused_name}' 的實體磁碟區"
 
 #. Issue if the member device is deleted.
 #.
@@ -253,7 +253,8 @@ msgstr ""
 msgid ""
 "The device '%{member_name}' cannot be deleted because it is part of the "
 "reused MD RAID '%{reused_name}'"
-msgstr "無法刪除裝置 '%{member_name}'，因為它是複用 MD RAID '%{reused_name}' 的一部分"
+msgstr ""
+"無法刪除裝置 '%{member_name}'，因為它是複用 MD RAID '%{reused_name}' 的一部分"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
@@ -311,8 +312,8 @@ msgid ""
 "The device '%{member_name}' cannot be formatted because it is a physical "
 "volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
-"無法格式化裝置 '%{member_name}'，因為它是複用 LVM 磁碟區群組 '%{reused_name}"
-"' 的實體磁碟區"
+"無法格式化裝置 '%{member_name}'，因為它是複用 LVM 磁碟區群組 '%"
+"{reused_name}' 的實體磁碟區"
 
 #. Issue if the device member is partitioned.
 #.
@@ -347,7 +348,8 @@ msgstr ""
 msgid ""
 "The device '%{member_name}' cannot be used because it is part of the reused "
 "MD RAID '%{reused_name}'"
-msgstr "無法使用裝置 '%{member_name}'，因為它是複用 MD RAID '%{reused_name}' 的一部分"
+msgstr ""
+"無法使用裝置 '%{member_name}'，因為它是複用 MD RAID '%{reused_name}' 的一部分"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
