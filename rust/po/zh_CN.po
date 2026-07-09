@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 10:48+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
 "PO-Revision-Date: 2026-06-25 09:13+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (China) <https://l10n.opensuse.org/projects/agama/"
@@ -761,107 +761,112 @@ msgstr "检索脚本 %s 失败。是否要重试？"
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr "写入文件 %s 失败。是否要重试？"
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "准备系统"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "安装软件"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "配置系统"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "正在准备存储空间"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr "正在运行分区后脚本"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "正在安装软件"
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 msgid "Configuring the system"
 msgstr "正在配置系统"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr "完成安装"
 
-#: agama-manager/src/actions.rs:303
+#: agama-manager/src/actions.rs:271
+#, fuzzy
+msgid "Finalize installation"
+msgstr "完成安装"
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr "正在存储安全设置"
 
-#: agama-manager/src/actions.rs:313
+#: agama-manager/src/actions.rs:356
 msgid "Configuring remote access"
 msgstr "正在配置远程访问"
 
-#: agama-manager/src/actions.rs:323
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr "正在设置主机名"
 
-#: agama-manager/src/actions.rs:333
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr "正在设置网络代理"
 
-#: agama-manager/src/actions.rs:344
+#: agama-manager/src/actions.rs:387
 msgid "Setting up NTP"
 msgstr "正在设置 NTP"
 
-#: agama-manager/src/actions.rs:355
+#: agama-manager/src/actions.rs:398
 msgid "Importing user files and scripts"
 msgstr "正在导入用户文件和脚本"
 
-#: agama-manager/src/actions.rs:368
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr "正在运行用户预安装脚本"
 
-#: agama-manager/src/actions.rs:383
+#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "正在存储问询设置"
 
-#: agama-manager/src/actions.rs:393
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr "正在存储本地化设置"
 
-#: agama-manager/src/actions.rs:403
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr "正在存储用户设置"
 
-#: agama-manager/src/actions.rs:509
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr "正在配置 iSCSI 设备"
 
-#: agama-manager/src/actions.rs:533
+#: agama-manager/src/actions.rs:576
 msgid "Configuring zFCP devices"
 msgstr "正在配置 zFCP 设备"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr "正在配置 DASD 设备"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr "正在设置网络"
 
-#: agama-manager/src/actions.rs:610
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr "正在准备存储提案"
 
-#: agama-manager/src/actions.rs:643
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr "正在存储引导加载程序设置"
 
-#: agama-manager/src/actions.rs:676
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr "正在准备软件提案"
 
-#: agama-manager/src/actions.rs:709
+#: agama-manager/src/actions.rs:752
 msgid "Configuring SELinux"
 msgstr "正在配置 SELinux"
 

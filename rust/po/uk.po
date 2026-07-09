@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 10:48+0000\n"
-"PO-Revision-Date: 2026-06-27 20:12+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
+"PO-Revision-Date: 2026-07-01 21:12+0000\n"
 "Last-Translator: Eugene Krater <lachend@gmail.com>\n"
 "Language-Team: Ukrainian <https://l10n.opensuse.org/projects/agama/agama-"
 "rust-master/uk/>\n"
@@ -588,45 +588,45 @@ msgstr "Встановлення не вдалося."
 
 #: agama-cli/src/monitor/ui/content.rs:69
 msgid "Use the \"agama logs\" command to collect the logs."
-msgstr ""
+msgstr "Для збору журналів скористайтеся командою «agama logs»."
 
 #: agama-cli/src/monitor/ui/content.rs:100
 msgid "Action needed:"
-msgstr ""
+msgstr "Необхідні дії:"
 
 #: agama-cli/src/monitor/ui/content.rs:108
 msgid "No product has been selected yet."
-msgstr ""
+msgstr "Товар ще не обрано."
 
 #: agama-cli/src/monitor/ui/content.rs:172 agama-cli/src/status.rs:88
 msgid "Fix invalid settings before starting the installation:"
-msgstr ""
+msgstr "Виправте неправильні налаштування перед початком встановлення:"
 
 #: agama-cli/src/monitor/ui/content.rs:193 agama-cli/src/status.rs:81
 msgid "Ready to start the installation."
-msgstr ""
+msgstr "Готові почати установку."
 
 #: agama-cli/src/monitor/ui/content.rs:194
 msgid "Starting the installation."
-msgstr ""
+msgstr "Виконання установки."
 
 #: agama-cli/src/monitor/ui/content.rs:210
 msgid "Step"
-msgstr ""
+msgstr "Крок"
 
 #: agama-cli/src/monitor/ui/content.rs:212
 msgid "of"
-msgstr ""
+msgstr "із"
 
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
 msgid "Technical details"
-msgstr ""
+msgstr "Технічні деталі"
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
 #: agama-cli/src/monitor/ui/question.rs:317
 msgid "use PageUp/PageDown to scroll"
-msgstr ""
+msgstr "для прокрутки використовуйте клавіші PageUp/PageDown"
 
 #: agama-cli/src/monitor/ui/question.rs:371
 msgid "Password"
@@ -642,44 +642,44 @@ msgstr "Значення"
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
-msgstr ""
+msgstr "Хост: "
 
 #: agama-cli/src/monitor/ui/summary.rs:48
 msgid "Model: "
-msgstr ""
+msgstr "Модель: "
 
 #: agama-cli/src/monitor/ui/summary.rs:49
 msgid "Product: "
-msgstr ""
+msgstr "Продукт: "
 
 #: agama-cli/src/monitor/ui/summary.rs:50
 msgid "Stage: "
-msgstr ""
+msgstr "Етап: "
 
 #: agama-cli/src/monitor/ui/summary.rs:51
 msgid "Status: "
-msgstr ""
+msgstr "Статус: "
 
 #: agama-cli/src/monitor/ui/summary.rs:76
 msgid "Busy"
-msgstr ""
+msgstr "Зайнятий"
 
 #: agama-cli/src/monitor/ui/summary.rs:77
 #: agama-cli/src/monitor/ui/summary.rs:105
 msgid "Failed"
-msgstr ""
+msgstr "Невдача"
 
 #: agama-cli/src/monitor/ui/summary.rs:78
 msgid "Idle"
-msgstr ""
+msgstr "У режимі очікування"
 
 #: agama-cli/src/monitor/ui/summary.rs:79
 msgid "Waiting for user"
-msgstr ""
+msgstr "Очікування користувача"
 
 #: agama-cli/src/monitor/ui/summary.rs:102
 msgid "Installing"
-msgstr ""
+msgstr "Встановлення"
 
 #: agama-cli/src/monitor/ui/summary.rs:103
 msgid "Configuring"
@@ -781,107 +781,111 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr ""
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Встановлення програмного забезпечення"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Налаштування системи"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr ""
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr ""
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 msgid "Configuring the system"
 msgstr ""
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr "Завершення встановлення"
 
-#: agama-manager/src/actions.rs:303
+#: agama-manager/src/actions.rs:271
+msgid "Finalize installation"
+msgstr "Закінчити встановлення"
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:313
+#: agama-manager/src/actions.rs:356
 msgid "Configuring remote access"
 msgstr ""
 
-#: agama-manager/src/actions.rs:323
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/actions.rs:333
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/actions.rs:344
+#: agama-manager/src/actions.rs:387
 msgid "Setting up NTP"
 msgstr ""
 
-#: agama-manager/src/actions.rs:355
+#: agama-manager/src/actions.rs:398
 msgid "Importing user files and scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:368
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr ""
 
-#: agama-manager/src/actions.rs:383
+#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:393
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:403
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:509
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:533
+#: agama-manager/src/actions.rs:576
 msgid "Configuring zFCP devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:610
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:643
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:676
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:709
+#: agama-manager/src/actions.rs:752
 msgid "Configuring SELinux"
 msgstr ""
 
