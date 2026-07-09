@@ -35,6 +35,7 @@ if (!agamaServer.startsWith("http")) {
 // Non-JS files which are copied verbatim to dist/
 const copy_files = [
   "./src/index.html",
+  "./src/loading.html",
   // TODO: consider using something more complete like https://github.com/jantimon/favicons-webpack-plugin
   "./src/assets/favicon.svg",
   "./src/languages.json",
@@ -111,6 +112,7 @@ module.exports = {
   },
   entry: {
     index: ["./src/index.tsx"],
+    loading: ["./src/loading.tsx"],
   },
   devServer: {
     hot: true,

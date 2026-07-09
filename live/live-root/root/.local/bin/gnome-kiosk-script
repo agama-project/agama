@@ -10,7 +10,7 @@ PREFS=$HOME/.mozilla/firefox/profile/user.js
 LANG_FILE=/sys/firmware/efi/efivars/PlatformLang-8be4df61-93ca-11d2-aa0d-00e098032b8c
 
 # file exists and is not empty
-if [ -s  "$LANG_FILE" ]; then
+if [ -s "$LANG_FILE" ]; then
   # skip the first 4 bytes (the EFI attributes), keep only the characters allowed in a language code,
   # especially remove the trailing null byte
   EFI_LANG=$(cat "$LANG_FILE" | tail -c +5 | tr -cd "[_a-zA-Z-]")
@@ -22,10 +22,30 @@ if [ -s  "$LANG_FILE" ]; then
 fi
 
 # Waiting until Agama web server is listening.
+ATTEMPT=0
+# delay between the connection attempts
+DELAY=2
+LOADING_PID=""
+LOADING_PAGE="file:///usr/share/agama/web_ui/loading.html"
+# at which attempt to display the loading page
+LOADING_PAGE_ATTEMPT=3
 until [ "$(curl --silent --output /dev/null --write-out "%{http_code}" --head http://localhost/)" == "200" ]; do
   echo "Waiting for agama-web-server"
-  sleep 2
+  ATTEMPT=$((ATTEMPT + 1))
+  if [ "$ATTEMPT" -eq "$LOADING_PAGE_ATTEMPT" ]; then
+    # use the loading page as the temporary home page
+    sed -e "s@__HOMEPAGE__@$LOADING_PAGE@" $PREFS.template > $PREFS
+    firefox --profile $HOME/.mozilla/firefox/profile &
+    LOADING_PID=$!
+  fi
+  sleep "$DELAY"
 done
+
+# kill the loading page placeholder
+if [ -n "$LOADING_PID" ]; then
+  kill "$LOADING_PID" 2> /dev/null
+  wait "$LOADING_PID" 2> /dev/null
+fi
 
 TOKEN=$(cat $TOKEN_FILE)
 sed -e "s/__HOMEPAGE__/http:\/\/localhost\/login?token=$TOKEN$LANG_QUERY/" $PREFS.template > $PREFS

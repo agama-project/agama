@@ -74,6 +74,10 @@ user_pref("devtools.webconsole.timestampMessages", true);
 // disable "Link Preview" feature
 user_pref("browser.ml.linkPreview.enabled", false);
 
+// disable strict CORS policy for the file:// URLs, this allows displaying
+// a static "loading" HTML page before the Agama web server actually starts
+user_pref("security.fileuri.strict_origin_policy", false);
+
 // start always in the custom homepage
 user_pref("browser.startup.page", 1);
 // custom homepage: the value is expected to be replaced with the login URL by the startup script
