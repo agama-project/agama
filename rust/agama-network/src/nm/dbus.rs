@@ -402,6 +402,7 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
 
     if let Some(vlan) = conn.get_mut("vlan") {
         if !vlan.contains_key("flags") {
+            // Default to VLAN_FLAG_REORDER_HDR if flags are not specified (bsc#1271222)
             vlan.insert("flags", 1_u32.into());
         }
     }

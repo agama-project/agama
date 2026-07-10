@@ -3,7 +3,7 @@ Thu Jul  9 13:17:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Handle VLAN flags properly, using the kernel default value
   of VLAN_FLAG_REORDER_HDR when not specified
-  (gh#agama-project/agama#3701).
+  (gh#agama-project/agama#3701, bsc#1271222).
 
 -------------------------------------------------------------------
 Thu Jul  9 10:21:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
