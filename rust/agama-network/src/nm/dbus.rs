@@ -403,7 +403,10 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
     if let Some(vlan) = conn.get_mut("vlan") {
         if !vlan.contains_key("flags") {
             // Default to VLAN_FLAG_REORDER_HDR if flags are not specified (bsc#1271222)
-            vlan.insert("flags", 1_u32.into());
+            vlan.insert(
+                "flags",
+                VlanFlag::to_bitmask(&[VlanFlag::ReorderHeaders]).into(),
+            );
         }
     }
 }
@@ -1933,7 +1936,10 @@ mod test {
             hi("id", 100_u32)?,
             hi("parent", "eth0")?,
             hi("protocol", "802.1Q")?,
-            hi("flags", 5_u32)?,
+            hi(
+                "flags",
+                VlanFlag::to_bitmask(&[VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
+            )?,
         ]);
         let dbus_conn = HashMap::from([
             ("connection".to_string(), connection_section.clone()),
@@ -1986,7 +1992,13 @@ mod test {
         assert_eq!(vlan_section.get("id"), Some(&Value::from(100_u32)));
         assert_eq!(vlan_section.get("parent"), Some(&Value::from("eth0")));
         assert_eq!(vlan_section.get("protocol"), Some(&Value::from("802.1Q")));
-        assert_eq!(vlan_section.get("flags"), Some(&Value::from(5_u32)));
+        assert_eq!(
+            vlan_section.get("flags"),
+            Some(&Value::from(VlanFlag::to_bitmask(&[
+                VlanFlag::ReorderHeaders,
+                VlanFlag::LooseBinding
+            ])))
+        );
 
         // Scenario 2: VlanConfig with no flags (flags: None) -> vlan_config_to_dbus should omit flags
         let vlan_config_no_flags = VlanConfig {
@@ -2002,7 +2014,12 @@ mod test {
         // Scenario 3: cleanup_dbus_connection should default omitted flags to 1
         super::cleanup_dbus_connection(&mut nested_no_flags);
         let vlan_section_cleaned = nested_no_flags.get("vlan").unwrap();
-        assert_eq!(vlan_section_cleaned.get("flags"), Some(&Value::from(1_u32)));
+        assert_eq!(
+            vlan_section_cleaned.get("flags"),
+            Some(&Value::from(VlanFlag::to_bitmask(&[
+                VlanFlag::ReorderHeaders
+            ])))
+        );
 
         Ok(())
     }
