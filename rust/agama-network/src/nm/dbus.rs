@@ -1452,8 +1452,8 @@ fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash<'_> {
         ("protocol", cfg.protocol.to_string().into()),
     ]);
 
-    if let Some(flags) = cfg.flags {
-        vlan.insert("flags", flags.into());
+    if let Some(flags) = &cfg.flags {
+        vlan.insert("flags", VlanFlag::to_bitmask(flags).into());
     }
 
     NestedHash::from([("vlan", vlan)])
@@ -1469,7 +1469,7 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<VlanConfig>, N
         _ => Default::default(),
     };
 
-    let flags = get_property::<u32>(vlan, "flags").ok();
+    let flags = get_property::<u32>(vlan, "flags").ok().map(|f| VlanFlag::from_bitmask(f));
 
     Ok(Some(VlanConfig {
         id: get_property(vlan, "id")?,
@@ -1941,7 +1941,10 @@ mod test {
             assert_eq!(config.id, 100_u32);
             assert_eq!(config.parent, "eth0");
             assert_eq!(config.protocol, VlanProtocol::IEEE802_1Q);
-            assert_eq!(config.flags, Some(5));
+            assert_eq!(
+                config.flags,
+                Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding])
+            );
         } else {
             panic!("Wrong connection type");
         }
@@ -1973,7 +1976,7 @@ mod test {
             id: 100,
             parent: "eth0".to_string(),
             protocol: VlanProtocol::IEEE802_1Q,
-            flags: Some(5),
+            flags: Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
         };
         let nested = vlan_config_to_dbus(&vlan_config);
         let vlan_section = nested.get("vlan").unwrap();

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Translations</title>
+</head>
+<body>
+    <h1>Translation Test</h1>
+    <div id="output"></div>
+    
+    <script type="module">
+        // Import the agama module
+        import agama from './src/agama.ts';
+        
+        // Import a translation file
+        import poDE from './src/po/po.de.js';
+        
+        const output = document.getElementById('output');
+        
+        // Test 1: Before loading translations
+        output.innerHTML += '<h2>Before loading translations:</h2>';
+        output.innerHTML += `<p>agama.language: ${agama.language}</p>`;
+        output.innerHTML += `<p>agama.gettext("License acceptance required"): ${agama.gettext("License acceptance required")}</p>`;
+        
+        // Test 2: After loading translations
+        agama.locale(poDE.default);
+        output.innerHTML += '<h2>After loading German translations:</h2>';
+        output.innerHTML += `<p>agama.language: ${agama.language}</p>`;
+        output.innerHTML += `<p>agama.gettext("License acceptance required"): ${agama.gettext("License acceptance required")}</p>`;
+    </script>
+</body>
+</html>

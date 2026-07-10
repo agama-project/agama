@@ -157,6 +157,45 @@ pub struct BridgeSettings {
     pub ports: Vec<String>,
 }
 
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, JsonSchema, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum VlanFlag {
+    ReorderHeaders,
+    Gvrp,
+    LooseBinding,
+    Mvrp,
+}
+
+impl VlanFlag {
+    pub fn to_bitmask(flags: &[VlanFlag]) -> u32 {
+        flags.iter().fold(0, |acc, flag| {
+            acc | match flag {
+                VlanFlag::ReorderHeaders => 0x1,
+                VlanFlag::Gvrp => 0x2,
+                VlanFlag::LooseBinding => 0x4,
+                VlanFlag::Mvrp => 0x8,
+            }
+        })
+    }
+
+    pub fn from_bitmask(bitmask: u32) -> Vec<VlanFlag> {
+        let mut flags = Vec::new();
+        if bitmask & 0x1 != 0 {
+            flags.push(VlanFlag::ReorderHeaders);
+        }
+        if bitmask & 0x2 != 0 {
+            flags.push(VlanFlag::Gvrp);
+        }
+        if bitmask & 0x4 != 0 {
+            flags.push(VlanFlag::LooseBinding);
+        }
+        if bitmask & 0x8 != 0 {
+            flags.push(VlanFlag::Mvrp);
+        }
+        flags
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, JsonSchema, PartialEq)]
 pub struct VlanSettings {
     pub parent: String,
@@ -164,7 +203,7 @@ pub struct VlanSettings {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub protocol: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub flags: Option<u32>,
+    pub flags: Option<Vec<VlanFlag>>,
 }
 
 /// IEEE 802.1x (EAP) settings

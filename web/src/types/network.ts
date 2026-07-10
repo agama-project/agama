@@ -120,6 +120,13 @@ enum VlanProtocol {
   IEEE_802_1AD = "802.1ad",
 }
 
+enum VlanFlag {
+  REORDER_HEADERS = "reorder-headers",
+  GVRP = "gvrp",
+  LOOSE_BINDING = "loose-binding",
+  MVRP = "mvrp",
+}
+
 enum DeviceType {
   LOOPBACK = 0,
   ETHERNET = 1,
@@ -332,7 +339,7 @@ type Vlan = {
   id: number;
   parent: string;
   protocol?: VlanProtocol;
-  flags?: number;
+  flags?: VlanFlag[];
 };
 
 type ConnectionOptions = {
@@ -610,6 +617,7 @@ export {
   NetworkSystem,
   SecurityProtocols,
   VlanProtocol,
+  VlanFlag,
   WifiNetworkStatus,
   Wireless,
 };
