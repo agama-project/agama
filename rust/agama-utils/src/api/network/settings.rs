@@ -327,7 +327,7 @@ pub struct NetworkConnection {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub interface: Option<String>,
     /// Match settings for the network connection
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
     pub match_settings: Option<MatchSettings>,
     /// Identifier for the parent connection, if this connection is part of a bond
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -420,5 +420,74 @@ mod tests {
         }"#;
         let conn: NetworkConnection = serde_json::from_str(json).unwrap();
         assert_eq!(conn.dns_searchlist, vec!["example.org"]);
+    }
+
+    #[test]
+    fn test_network_connection_match_settings_with_match_key() {
+        // Test that "match" key is accepted (not just "matchSettings")
+        let json = r#"{
+            "id": "eth0",
+            "match": {
+                "interface": ["eth0"]
+            },
+            "status": "up",
+            "autoconnect": true,
+            "persistent": false
+        }"#;
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert!(conn.match_settings.is_some());
+        let match_settings = conn.match_settings.unwrap();
+        assert_eq!(match_settings.interface, vec!["eth0"]);
+    }
+
+    #[test]
+    fn test_network_connection_match_settings_serialization() {
+        // Test that match settings serialize back as "match" (not "matchSettings")
+        let mut conn = NetworkConnection {
+            id: "eth0".to_string(),
+            ..Default::default()
+        };
+        conn.match_settings = Some(MatchSettings {
+            interface: vec!["eth0".to_string()],
+            ..Default::default()
+        });
+
+        let serialized = serde_json::to_string(&conn).unwrap();
+        assert!(serialized.contains("\"match\""));
+        assert!(!serialized.contains("\"matchSettings\""));
+    }
+
+    #[test]
+    fn test_network_connection_match_settings_round_trip() {
+        // Test round-trip: deserialize and serialize
+        let json = r#"{
+            "id": "eth0",
+            "ignoreAutoDns": false,
+            "status": "up",
+            "match": {
+                "interface": ["eth0"],
+                "driver": ["e1000e"],
+                "path": ["pci-0000:00:1f.6"],
+                "kernel": ["eth*"]
+            },
+            "autoconnect": true,
+            "persistent": false
+        }"#;
+
+        let conn: NetworkConnection = serde_json::from_str(json).unwrap();
+        assert!(conn.match_settings.is_some());
+        let match_settings = conn.match_settings.as_ref().unwrap();
+        assert_eq!(match_settings.interface, vec!["eth0"]);
+        assert_eq!(match_settings.driver, vec!["e1000e"]);
+        assert_eq!(match_settings.path, vec!["pci-0000:00:1f.6"]);
+        assert_eq!(match_settings.kernel, vec!["eth*"]);
+
+        // Serialize back and verify it contains "match" key
+        let serialized = serde_json::to_string(&conn).unwrap();
+        assert!(serialized.contains("\"match\""));
+
+        // Deserialize again to ensure round-trip works
+        let conn2: NetworkConnection = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(conn.match_settings, conn2.match_settings);
     }
 }
