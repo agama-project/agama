@@ -72,11 +72,7 @@ pub struct LocaleId {
 
 impl Display for LocaleId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}_{}.{}",
-            self.language, self.territory, self.encoding
-        )
+        write!(f, "{}_{}.{}", self.language, self.territory, self.encoding)
     }
 }
 
