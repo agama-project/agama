@@ -1366,6 +1366,8 @@ pub struct VlanConfig {
     pub parent: String,
     pub id: u32,
     pub protocol: VlanProtocol,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub flags: Option<Vec<VlanFlag>>,
 }
 
 #[serde_as]
@@ -1418,6 +1420,7 @@ impl TryFrom<VlanSettings> for VlanConfig {
         let mut config = VlanConfig {
             id,
             parent,
+            flags: settings.flags,
             ..Default::default()
         };
 
@@ -1438,6 +1441,7 @@ impl TryFrom<VlanConfig> for VlanSettings {
             id: vlan.id,
             parent: vlan.parent,
             protocol: Some(vlan.protocol.to_string()),
+            flags: vlan.flags,
         })
     }
 }

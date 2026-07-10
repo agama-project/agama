@@ -74,7 +74,7 @@ impl BaseHTTPClient {
         // A trailing slash is significant. Let's make sure that it is there.
         // See https://docs.rs/url/2.5.4/url/struct.Url.html#method.join.
         if !url.path().ends_with('/') {
-            url.set_path(&format!("{}/", &url.path()));
+            url.set_path(&format!("{}/", url.path()));
         }
 
         Ok(Self {

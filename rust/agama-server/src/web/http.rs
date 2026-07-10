@@ -152,5 +152,5 @@ pub async fn session(_claims: TokenClaims) -> Result<(), AuthError> {
 ///
 /// * `token`: authentication token.
 fn auth_cookie_from_token(token: &AuthToken) -> String {
-    format!("agamaToken={}; HttpOnly", &token.to_string())
+    format!("agamaToken={}; HttpOnly", token)
 }
