@@ -28,21 +28,21 @@ import { isEmpty } from "radashi";
 import { baseName } from "~/components/storage/utils";
 
 const driveTypeDescription = (device: System.Device): string => {
-  if (device.drive.type === "multipath") {
+  if (device.drive?.type === "multipath") {
     // TRANSLATORS: multipath device type
     return _("Multipath");
   }
 
-  if (device.drive.type === "dasd") {
+  if (device.drive?.type === "dasd") {
     // TRANSLATORS: %s is replaced by the device bus ID
     return sprintf(_("DASD %s"), device.drive.busId);
   }
 
-  if (device.drive.info.sdCard) {
+  if (device.drive?.info?.sdCard) {
     return _("SD Card");
   }
 
-  const technology = device.drive.transport || device.drive.bus;
+  const technology = device.drive?.transport || device.drive?.bus;
   return technology
     ? // TRANSLATORS: %s is substituted by the type of disk like "iSCSI" or "SATA"
       sprintf(_("%s disk"), technology)
