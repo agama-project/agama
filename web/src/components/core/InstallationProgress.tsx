@@ -20,17 +20,33 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
-import { HelperText, HelperTextItem } from "@patternfly/react-core";
+import React, { useState } from "react";
+import { Button, HelperText, HelperTextItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
+import Popup from "~/components/core/Popup";
 import ProgressReport from "~/components/core/ProgressReport";
 import ProductLogo from "~/components/product/ProductLogo";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useProductInfo } from "~/hooks/model/config/product";
+import { cancelInstallation } from "~/api";
 import { _ } from "~/i18n";
 
 export default function InstallationProgress() {
   const product = useProductInfo();
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+
+  const handleCancelClick = () => {
+    setShowCancelDialog(true);
+  };
+
+  const handleCancelConfirm = async () => {
+    await cancelInstallation();
+    setShowCancelDialog(false);
+  };
+
+  const handleCancelDismiss = () => {
+    setShowCancelDialog(false);
+  };
 
   return (
     <Page noDefaultProgressMonitor>
@@ -48,8 +64,29 @@ export default function InstallationProgress() {
               <HelperTextItem>{_("Installation in progress")}</HelperTextItem>
             </HelperText>
           }
+          secondRowEnd={
+            <Button variant="danger" onClick={handleCancelClick}>
+              {_("Cancel installation")}
+            </Button>
+          }
         />
       </Page.Content>
+
+      {showCancelDialog && (
+        <Popup isOpen title={_("Cancel installation?")}>
+          <p>
+            {_(
+              "Are you sure you want to cancel the installation? This will stop all ongoing operations.",
+            )}
+          </p>
+          <Popup.Actions>
+            <Popup.DangerousAction onClick={handleCancelConfirm}>
+              {_("Cancel installation")}
+            </Popup.DangerousAction>
+            <Popup.Cancel onClick={handleCancelDismiss} autoFocus />
+          </Popup.Actions>
+        </Popup>
+      )}
     </Page>
   );
 }

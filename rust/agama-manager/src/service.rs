@@ -900,6 +900,23 @@ impl MessageHandler<message::RunAction> for Service {
                 action.run(method).await?;
                 tracing::info!("Installation tasks spawned");
             }
+            Action::CancelInstall => {
+                checks::check_stage(&self.progress, Stage::Installing).await?;
+
+                tracing::info!("Cancelling installation");
+
+                // Stop all ongoing operations by resetting to Configuring stage
+                self.progress
+                    .call(progress::message::SetStage::new(Stage::Configuring))
+                    .await?;
+
+                // Clear any active progress
+                self.progress
+                    .call(progress::message::Finish::new(Scope::Manager))
+                    .await?;
+
+                tracing::info!("Installation cancelled successfully");
+            }
             Action::Finish(method) => {
                 checks::check_stage(&self.progress, Stage::Finished).await?;
                 let action = FinishAction::new(method);
