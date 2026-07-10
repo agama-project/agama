@@ -138,6 +138,18 @@ impl MessageHandler<message::GetStage> for Service {
 }
 
 #[async_trait]
+impl MessageHandler<message::Reset> for Service {
+    async fn handle(&mut self, _message: message::Reset) -> Result<(), Error> {
+        let scopes: Vec<Scope> = self.status.progresses.iter().map(|p| p.scope).collect();
+        self.status.progresses.clear();
+        for scope in scopes {
+            self.events.send(Event::ProgressFinished { scope })?;
+        }
+        Ok(())
+    }
+}
+
+#[async_trait]
 impl MessageHandler<message::SetStage> for Service {
     async fn handle(&mut self, message: message::SetStage) -> Result<(), Error> {
         self.status.stage = message.stage;
