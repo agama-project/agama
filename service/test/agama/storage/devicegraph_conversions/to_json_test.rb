@@ -31,6 +31,7 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
   before do
     mock_storage(devicegraph: scenario)
     allow_any_instance_of(Y2Storage::Partition).to receive(:resize_info).and_return(resize_info)
+    allow_any_instance_of(Y2Storage::LvmLv).to receive(:resize_info).and_return(resize_info)
   end
 
   subject { described_class.new(devicegraph) }
@@ -171,6 +172,18 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
         json = subject.convert
         wires = json.first[:multipath][:wireNames]
         expect(wires).to contain_exactly("/dev/sda", "/dev/sdb")
+      end
+    end
+
+    describe "for a devicegraph with BIOS RAID (such as VROC)" do
+      let(:scenario) { "lvm-over-hardware-raid.xml" }
+
+      it "exports BIOS RAID volumes with drive class and drive section" do
+        json = subject.convert
+        vols = json.select { |d| ["/dev/md/a", "/dev/md/b"].include?(d[:name]) }
+        expect(vols).to_not be_empty
+        expect(vols.map { |v| v[:class] }).to all(eq "drive")
+        expect(vols.map { |v| v.key?(:drive) }).to all(be true)
       end
     end
   end
