@@ -24,8 +24,8 @@
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
 use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, MatchSettings, NetworkConnection, VlanSettings,
-    WirelessSettings,
+    BondSettings, BridgeSettings, IEEE8021XSettings, MatchSettings, NetworkConnection,
+    VlanSettings, WirelessSettings,
 };
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_utils::openapi::schemas;
