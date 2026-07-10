@@ -684,7 +684,7 @@ async fn download_logs() -> impl IntoResponse {
                 );
                 if let Some(file_name) = path.file_name() {
                     let disposition =
-                        format!("attachment; filename=\"{}\"", &file_name.to_string_lossy());
+                        format!("attachment; filename=\"{}\"", file_name.to_string_lossy());
                     headers.insert(
                         header::CONTENT_DISPOSITION,
                         HeaderValue::from_str(&disposition)

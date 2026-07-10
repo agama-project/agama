@@ -83,9 +83,9 @@ impl Default for LanguageTag {
 impl Display for LanguageTag {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(territory) = &self.territory {
-            write!(f, "{}-{}", &self.language, territory)
+            write!(f, "{}-{}", self.language, territory)
         } else {
-            write!(f, "{}", &self.language)
+            write!(f, "{}", self.language)
         }
     }
 }

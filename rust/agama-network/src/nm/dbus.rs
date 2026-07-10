@@ -1471,7 +1471,7 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<VlanConfig>, N
 
     let flags = get_property::<u32>(vlan, "flags")
         .ok()
-        .map(|f| VlanFlag::from_bitmask(f));
+        .map(VlanFlag::from_bitmask);
 
     Ok(Some(VlanConfig {
         id: get_property(vlan, "id")?,

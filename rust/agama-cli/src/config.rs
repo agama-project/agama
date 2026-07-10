@@ -349,7 +349,7 @@ async fn generate(
     let config = api::Config::from_json(&profile_json, &context.source)?;
     let config_json = serde_json::to_string_pretty(&config)?;
 
-    println!("{}", &config_json);
+    println!("{}", config_json);
 
     Ok(())
 }
