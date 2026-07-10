@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 10 12:02:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Rename the network device match settings attribute to "match"
+  (gh#agama-project/agama#3708, bsc#1271236).
+
+-------------------------------------------------------------------
 Thu Jul  9 13:17:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Handle VLAN flags properly, using the kernel default value
