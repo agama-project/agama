@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 10 13:12:36 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Rename the network device match settings attribute to "match"
+  (gh#agama-project/agama#3711, bsc#1271235).
+
+-------------------------------------------------------------------
 Thu Jul  9 10:38:18 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Update openssl dependency (bsc#1270992, bsc#1270891, bsc#1270850,

@@ -24,8 +24,8 @@
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
 use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, NetworkConnection, VlanSettings,
-    WirelessSettings,
+    BondSettings, BridgeSettings, IEEE8021XSettings, MatchSettings, NetworkConnection,
+    VlanSettings, WirelessSettings,
 };
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
 use agama_utils::openapi::schemas;
@@ -259,6 +259,32 @@ mod tests {
     use super::*;
     use crate::error::NetworkStateError;
     use uuid::Uuid;
+
+    #[test]
+    fn test_connection_match_settings_conversion() {
+        let match_settings = MatchSettings {
+            driver: vec!["e1000e".to_string()],
+            interface: vec!["eth0".to_string()],
+            path: vec!["pci-0000:00:1f.6".to_string()],
+            kernel: vec!["eth*".to_string()],
+        };
+        let net_conn = NetworkConnection {
+            id: "eth0".to_string(),
+            match_settings: Some(match_settings),
+            ..Default::default()
+        };
+
+        // NetworkConnection -> Connection
+        let conn = Connection::try_from(net_conn.clone()).unwrap();
+        assert_eq!(conn.match_config.driver, vec!["e1000e"]);
+        assert_eq!(conn.match_config.interface, vec!["eth0"]);
+        assert_eq!(conn.match_config.path, vec!["pci-0000:00:1f.6"]);
+        assert_eq!(conn.match_config.kernel, vec!["eth*"]);
+
+        // Connection -> NetworkConnection
+        let net_conn2 = NetworkConnection::try_from(conn).unwrap();
+        assert_eq!(net_conn.match_settings, net_conn2.match_settings);
+    }
 
     #[test]
     fn test_macaddress() {
@@ -687,6 +713,15 @@ impl TryFrom<NetworkConnection> for Connection {
         connection.interface = conn.interface;
         connection.mtu = conn.mtu;
 
+        if let Some(match_settings) = conn.match_settings {
+            connection.match_config = MatchConfig {
+                driver: match_settings.driver,
+                interface: match_settings.interface,
+                path: match_settings.path,
+                kernel: match_settings.kernel,
+            };
+        }
+
         Ok(connection)
     }
 }
@@ -716,6 +751,13 @@ impl TryFrom<Connection> for NetworkConnection {
         let autoconnect = Some(conn.autoconnect);
         let persistent = Some(conn.persistent);
 
+        let match_settings = (!conn.match_config.is_empty()).then(|| MatchSettings {
+            driver: conn.match_config.driver.clone(),
+            interface: conn.match_config.interface.clone(),
+            path: conn.match_config.path.clone(),
+            kernel: conn.match_config.kernel.clone(),
+        });
+
         let mut connection = NetworkConnection {
             id,
             status,
@@ -734,6 +776,7 @@ impl TryFrom<Connection> for NetworkConnection {
             ieee_8021x,
             autoconnect,
             persistent,
+            match_settings,
             ..Default::default()
         };
 
@@ -1085,6 +1128,15 @@ pub struct MatchConfig {
     pub path: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub kernel: Vec<String>,
+}
+
+impl MatchConfig {
+    pub fn is_empty(&self) -> bool {
+        self.driver.is_empty()
+            && self.interface.is_empty()
+            && self.path.is_empty()
+            && self.kernel.is_empty()
+    }
 }
 
 #[derive(Debug, Error)]
