@@ -191,6 +191,9 @@ export default {
   "Allow growing": [
     "Дозволити зростання"
   ],
+  "Allow shrinking": [
+    "Дозволити стиснення"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Крім зазначення першого користувача, можна налаштувати методи автентифікації для root-користувача."
   ],
@@ -260,6 +263,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "Автоматичне сканування LUN [увімкнено]. Активація контролера, що        працює в режимі NPIV, автоматично сконфігурує всі його LUNи."
+  ],
+  "Available file systems": [
+    "Доступні файлові системи"
   ],
   "Available products": [
     "Доступні продукти"
@@ -564,6 +570,9 @@ export default {
   "DNS": [
     "DNS"
   ],
+  "DNS data list": [
+    "Список даних DNS"
+  ],
   "Deactivate": [
     "Деактивувати"
   ],
@@ -671,6 +680,9 @@ export default {
   ],
   "Do not format %s and keep the data": [
     "Не форматувати %s і зберегти ці дані"
+  ],
+  "Do not modify": [
+    "Не змінювати"
   ],
   "Do not use": [
     "Не використовувати"
