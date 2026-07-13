@@ -5,7 +5,7 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
-agama-utils = { workspace = true }
+agama-utils = { path = "../agama-utils", default-features = false }
 anyhow = { workspace = true }
 async-trait = { workspace = true }
 cidr = { workspace = true }
