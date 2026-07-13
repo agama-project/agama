@@ -34,6 +34,7 @@ use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::sync::Arc;
 use tokio::sync::{Notify, RwLock};
+use tokio::task::JoinHandle;
 
 /// Unique identifier for a task.
 pub type TaskId = usize;
@@ -134,6 +135,9 @@ struct TaskManagerState {
     notify: Arc<Notify>,
     /// Tasks metadata, include task ID, name, description, etc.
     metadata: HashMap<TaskId, TaskMetadata>,
+    /// Join handles of the spawned Tokio tasks, kept so they can be aborted
+    /// (e.g. when the installation is cancelled).
+    handles: HashMap<TaskId, JoinHandle<()>>,
 }
 
 /// Manager for executing async tasks with dependencies.
@@ -175,6 +179,7 @@ impl TaskManager {
             next_id: 0,
             notify: Arc::new(Notify::new()),
             metadata: HashMap::new(),
+            handles: HashMap::new(),
         };
 
         Self {
@@ -227,26 +232,54 @@ impl TaskManager {
     {
         let task_id = metadata.id;
 
-        // Store metadata
-        {
-            let mut state = self.state.write().await;
-            state.metadata.insert(task_id, metadata.clone());
-        }
-
-        if let Err(e) = self.events.send(Event::TaskAdded {
-            task: metadata.clone().into(),
-        }) {
-            tracing::warn!("Failed to send TaskAdded event: {}", e);
-        }
-
         let state = Arc::clone(&self.state);
         let events = self.events.clone();
 
-        tokio::spawn(async move {
-            let notify = {
-                let state_guard = state.read().await;
-                Arc::clone(&state_guard.notify)
-            };
+        // Store metadata and spawn the task while holding the write lock, so the
+        // join handle is registered before the task body can acquire the lock.
+        // This guarantees `cancel_all` can always find and abort the task.
+        {
+            let mut state_guard = self.state.write().await;
+            state_guard.metadata.insert(task_id, metadata.clone());
+
+            let handle = tokio::spawn(Self::run_task(
+                state.clone(),
+                events.clone(),
+                metadata.clone(),
+                dependencies,
+                run_always,
+                work,
+            ));
+            state_guard.handles.insert(task_id, handle);
+        }
+
+        if let Err(e) = self.events.send(Event::TaskAdded {
+            task: metadata.into(),
+        }) {
+            tracing::warn!("Failed to send TaskAdded event: {}", e);
+        }
+    }
+
+    /// Body of a spawned task: waits for dependencies, runs the work closure and
+    /// records the outcome. Extracted into an associated function so it can be
+    /// spawned while the caller holds the state lock.
+    async fn run_task<F, Fut>(
+        state: Arc<RwLock<TaskManagerState>>,
+        events: event::Sender,
+        metadata: TaskMetadata,
+        dependencies: Vec<TaskId>,
+        run_always: bool,
+        work: F,
+    ) where
+        F: FnOnce(Option<Vec<TaskId>>) -> Fut + Send + 'static,
+        Fut: Future<Output = TaskResult> + Send + 'static,
+    {
+        let task_id = metadata.id;
+
+        let notify = {
+            let state_guard = state.read().await;
+            Arc::clone(&state_guard.notify)
+        };
 
             // Wait for all dependencies to complete (either succeeded or failed)
             let failed_deps = loop {
@@ -284,6 +317,7 @@ impl TaskManager {
                 state_guard.failed.insert(task_id);
                 state_guard.notify.notify_waiters();
                 state_guard.metadata.remove(&task_id);
+                state_guard.handles.remove(&task_id);
 
                 if let Err(e) = events.send(Event::TaskFinished {
                     task: metadata.clone().into(),
@@ -317,6 +351,7 @@ impl TaskManager {
 
             state_guard.notify.notify_waiters();
             state_guard.metadata.remove(&task_id);
+            state_guard.handles.remove(&task_id);
 
             if let Err(e) = events.send(Event::TaskFinished {
                 task: metadata.clone().into(),
@@ -324,7 +359,6 @@ impl TaskManager {
             }) {
                 tracing::warn!("Failed to send TaskFinished event: {}", e);
             }
-        });
     }
 
     async fn spawn_task<F, Fut>(&self, metadata: TaskMetadata, dependencies: Vec<TaskId>, work: F)
@@ -357,6 +391,46 @@ impl TaskManager {
     pub async fn get_all_metadata(&self) -> Vec<TaskMetadata> {
         let state = self.state.read().await;
         state.metadata.values().cloned().collect()
+    }
+
+    /// Aborts every running or pending task and clears the manager state.
+    ///
+    /// This is used to cancel an ongoing installation: all spawned Tokio tasks
+    /// are aborted (dropping their in-flight futures at the next await point) and
+    /// the bookkeeping (metadata, handles, succeeded/failed sets) is reset so the
+    /// manager is ready for a fresh run. A `TaskFinished` event is emitted for
+    /// each aborted task so subscribers can update their view.
+    ///
+    /// Note: aborting only stops the coordination futures owned by this manager.
+    /// Work already delegated to other services (e.g. an in-flight package
+    /// transaction) is not force-killed here; callers are expected to reset the
+    /// relevant state on top of this (e.g. progress and stage).
+    pub async fn cancel_all(&self) {
+        let aborted: Vec<TaskMetadata> = {
+            let mut state = self.state.write().await;
+
+            for (_id, handle) in state.handles.drain() {
+                handle.abort();
+            }
+
+            let aborted = state.metadata.drain().map(|(_, m)| m).collect();
+            state.succeeded.clear();
+            state.failed.clear();
+            // Wake up any task still waiting on dependencies so it does not hang
+            // in case it was not aborted in time.
+            state.notify.notify_waiters();
+            aborted
+        };
+
+        for metadata in aborted {
+            tracing::info!("Cancelled task '{}'", metadata.name);
+            if let Err(e) = self.events.send(Event::TaskFinished {
+                task: metadata.into(),
+                remaining: 0,
+            }) {
+                tracing::warn!("Failed to send TaskFinished event: {}", e);
+            }
+        }
     }
 }
 

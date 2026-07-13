@@ -906,9 +906,12 @@ impl MessageHandler<message::RunAction> for Service {
                 tracing::info!("Cancelling installation");
 
                 // Stop all ongoing operations by resetting to Configuring stage
-                self.progress
-                    .call(progress::message::SetStage::new(Stage::Configuring))
-                    .await?;
+                // Abort every running/pending installation task. This drops their
+                // in-flight futures so no further steps are executed.
+                self.task_manager.cancel_all().await;
+
+                // Clear any active progress left behind by the aborted tasks.
+                self.progress.call(progress::message::Reset).await?;
 
                 // Clear any active progress
                 self.progress
