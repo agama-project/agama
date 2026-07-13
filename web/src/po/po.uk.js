@@ -371,6 +371,9 @@ export default {
   "Allow growing": [
     "Дозволити зростання"
   ],
+  "Allow shrinking": [
+    "Дозволити стиснення"
+  ],
   "Already using all available devices": [
     "Вже використані всі наявні пристрої"
   ],
@@ -1049,6 +1052,9 @@ export default {
   ],
   "Do not format %s and keep data": [
     "Не форматувати %s і зберегти дані"
+  ],
+  "Do not modify": [
+    "Не змінювати"
   ],
   "Do not register": [
     "Не реєструвати"
