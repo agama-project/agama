@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 13 14:14:41 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed check for BIOS RAIDs (bsc#1271120).
+
+-------------------------------------------------------------------
 Tue Jul  7 10:55:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Introduced the "MarkedString" type and activated a new linter
