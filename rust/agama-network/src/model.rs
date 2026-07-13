@@ -24,7 +24,7 @@
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
 use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, MatchSettings, NetworkConnection,
+    BondSettings, BridgeSettings, IEEE8021XSettings, MatchSettings, NetworkConnection, VlanFlag,
     VlanSettings, WirelessSettings,
 };
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
@@ -1296,6 +1296,8 @@ pub struct VlanConfig {
     pub parent: String,
     pub id: u32,
     pub protocol: VlanProtocol,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub flags: Option<Vec<VlanFlag>>,
 }
 
 #[serde_as]
@@ -1347,6 +1349,7 @@ impl TryFrom<VlanSettings> for VlanConfig {
         let mut config = VlanConfig {
             id,
             parent,
+            flags: settings.flags,
             ..Default::default()
         };
 
@@ -1367,6 +1370,7 @@ impl TryFrom<VlanConfig> for VlanSettings {
             id: vlan.id,
             parent: vlan.parent,
             protocol: Some(vlan.protocol.to_string()),
+            flags: vlan.flags,
         })
     }
 }
