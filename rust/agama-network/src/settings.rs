@@ -361,6 +361,8 @@ impl NetworkConnection {
             DeviceType::Bond
         } else if self.bridge.is_some() {
             DeviceType::Bridge
+        } else if self.vlan.is_some() {
+            DeviceType::Vlan
         } else {
             DeviceType::Ethernet
         }

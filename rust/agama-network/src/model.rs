@@ -287,6 +287,39 @@ mod tests {
     }
 
     #[test]
+    fn test_vlan_connection_conversion() {
+        let vlan_settings = VlanSettings {
+            id: 100,
+            parent: "eth0".to_string(),
+            protocol: Some("802.1Q".to_string()),
+            flags: Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
+        };
+        let net_conn = NetworkConnection {
+            id: "eth0.100".to_string(),
+            vlan: Some(vlan_settings),
+            ..Default::default()
+        };
+
+        // NetworkConnection -> Connection
+        let conn = Connection::try_from(net_conn.clone()).unwrap();
+        if let ConnectionConfig::Vlan(config) = &conn.config {
+            assert_eq!(config.id, 100);
+            assert_eq!(config.parent, "eth0");
+            assert_eq!(config.protocol, VlanProtocol::IEEE802_1Q);
+            assert_eq!(
+                config.flags,
+                Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding])
+            );
+        } else {
+            panic!("Expected Vlan connection config");
+        }
+
+        // Connection -> NetworkConnection
+        let net_conn2 = NetworkConnection::try_from(conn).unwrap();
+        assert_eq!(net_conn.vlan, net_conn2.vlan);
+    }
+
+    #[test]
     fn test_macaddress() {
         let mut val: Option<String> = None;
         assert!(matches!(
