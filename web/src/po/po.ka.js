@@ -187,6 +187,9 @@ export default {
   "Allow growing": [
     "გაზრდის დაშვება"
   ],
+  "Allow shrinking": [
+    "დაპატარავების დაშვება"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     ""
   ],
@@ -254,6 +257,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     ""
+  ],
+  "Available file systems": [
+    "ხელმისაწვდომი ფაილური სისტემები"
   ],
   "Available products": [
     "ხელმისაწვდომი პროდუქტები"
@@ -557,6 +563,9 @@ export default {
   ],
   "DNS": [
     "DNS"
+  ],
+  "DNS data list": [
+    "DNS მონაცემების სია"
   ],
   "Deactivate": [
     "დეაქტივაცია"
