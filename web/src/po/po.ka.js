@@ -355,6 +355,9 @@ export default {
   "Allow growing": [
     "გაზრდის დაშვება"
   ],
+  "Allow shrinking": [
+    "დაპატარავების დაშვება"
+  ],
   "Already using all available devices": [
     "უკვე გამოიყენება ყველა ხელმისაწვდომი მოწყობილობა"
   ],
@@ -2546,7 +2549,7 @@ export default {
     "დააყენეთ მინიმუმი და მაქსიმუმი"
   ],
   "Set minimum; use more space if available": [
-    ""
+    "მინიმუმის დაყენება; მეტი ადგილის გამოყენება, თუ ხელმისაწვდომია"
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
     ""
