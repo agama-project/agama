@@ -38,7 +38,7 @@ module Agama
           # @param storage_device [Y2Storage::Device]
           # @return [Boolean]
           def self.apply?(storage_device)
-            storage_device.is?(:disk, :dm_raid, :multipath, :dasd) &&
+            storage_device.is?(:disk, :bios_raid, :multipath, :dasd) &&
               storage_device.is?(:disk_device)
           end
 
@@ -64,7 +64,7 @@ module Agama
           def drive_type
             if storage_device.is?(:disk)
               "disk"
-            elsif storage_device.is?(:dm_raid)
+            elsif storage_device.is?(:bios_raid)
               "raid"
             elsif storage_device.is?(:multipath)
               "multipath"
