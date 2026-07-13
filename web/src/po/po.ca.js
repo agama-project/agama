@@ -355,6 +355,9 @@ export default {
   "Allow growing": [
     "Permet-ne l'eixamplament"
   ],
+  "Allow shrinking": [
+    "Permet-ne l'encongiment"
+  ],
   "Already using all available devices": [
     "Ja s'usen tots els dispositius disponibles"
   ],
