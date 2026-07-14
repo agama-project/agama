@@ -113,7 +113,7 @@ function MainBreadcrumbs({
   if (product && breadcrumbs && !hideSummaryLink) {
     items.push({
       isEditorial: true,
-      path: ROOT.overview,
+      path: ROOT.root,
       // TRANSLATORS: First breadcrumb item, linking back to the main page
       // where the whole installation can be reviewed.
       label: _("Installation"),

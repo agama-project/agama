@@ -52,6 +52,10 @@ import { N_ } from "~/i18n";
 // bookmarked URLs and external links to naturally transition.
 const legacyRedirects = () => [
   {
+    path: "/overview",
+    element: <Navigate to={PATHS.root} replace />,
+  },
+  {
     path: "/hostname",
     element: <Navigate to={SYSTEM.root} replace />,
   },
@@ -70,10 +74,6 @@ const legacyRedirects = () => [
 ];
 
 const rootRoutes = () => [
-  {
-    path: "/overview",
-    element: <OverviewPage />,
-  },
   {
     path: SYSTEM.root,
     element: <SystemPage />,
