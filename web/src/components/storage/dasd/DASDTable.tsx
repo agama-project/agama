@@ -193,11 +193,13 @@ const buildActions = ({
       title: _("Activate"),
       onClick: () =>
         addOrUpdateDevices(
-          devices.map((d): ConfigDevice => ({
-            channel: d.channel,
-            state: "active",
-            diag: undefined,
-          })),
+          devices.map(
+            (d): ConfigDevice => ({
+              channel: d.channel,
+              state: "active",
+              diag: undefined,
+            }),
+          ),
         ),
     },
     {
@@ -205,11 +207,13 @@ const buildActions = ({
       title: _("Deactivate"),
       onClick: () =>
         addOrUpdateDevices(
-          devices.map((d): ConfigDevice => ({
-            channel: d.channel,
-            state: "offline",
-            diag: undefined,
-          })),
+          devices.map(
+            (d): ConfigDevice => ({
+              channel: d.channel,
+              state: "offline",
+              diag: undefined,
+            }),
+          ),
         ),
     },
     {
@@ -654,10 +658,12 @@ export default function DASDTable({ devices }) {
           devices={state.devicesToFormat}
           onFormat={() => {
             addOrUpdateDevices(
-              state.devicesToFormat.map((d): ConfigDevice => ({
-                channel: d.channel,
-                format: true,
-              })),
+              state.devicesToFormat.map(
+                (d): ConfigDevice => ({
+                  channel: d.channel,
+                  format: true,
+                }),
+              ),
             );
           }}
           onClose={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}
@@ -683,9 +689,12 @@ export default function DASDTable({ devices }) {
             filterByDevice: true,
           })
         }
-        // FIXME: translate after the translation freeze and drop the casting
-        // (related to bsc#1269514)
-        itemActionsLabel={(d: Device) => `Actions for ${d.channel}` as TranslatedString}
+        itemActionsLabel={(d: Device) =>
+          // TRANSLATORS: accessible label for the connection actions toggle
+          // button. %s is replaced by device channel identifier, e.g. "Actions
+          // for 0.0.0150"
+          sprintf(_("Actions for %s"), d.channel)
+        }
         itemActionsComponent={SimpleDropdown}
         emptyState={
           <EmptyState

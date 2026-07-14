@@ -385,9 +385,15 @@ export default function ConnectionsTable() {
             },
           ].filter(Boolean);
         }}
-        // FIXME: translate after the translation freeze and drop the casting
-        // (related to bsc#1269514)
-        itemActionsLabel={(c: Connection) => `Actions for ${c.id}` as TranslatedString}
+        itemActionsLabel={(c: Connection) =>
+          sprintf(
+            // TRANSLATORS: accessible label for the connection actions toggle
+            // button. %s is replaced by connection id, e.g. "Actions for
+            // Ethernet 2"
+            _("Actions for %s"),
+            c.id,
+          )
+        }
         emptyState={
           <EmptyState
             headingLevel="h2"

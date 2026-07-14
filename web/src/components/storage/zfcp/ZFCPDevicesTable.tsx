@@ -414,9 +414,12 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
         itemActions={(device: System.Device) =>
           buildActions(device, deviceConfig(device), addDevices, removeDevices, checkLunScan)
         }
-        // FIXME: translate after the translation freeze and drop the casting
-        // (related to bsc#1269514)
-        itemActionsLabel={(d: System.Device) => `Actions for ${d.lun}` as TranslatedString}
+        itemActionsLabel={(d: System.Device) =>
+          // TRANSLATORS: accessible label for the connection actions toggle
+          // button. %s is replaced with the zFCP LUN, e.g. "Actions for
+          // 0x4010403200000000"
+          sprintf(_("Actions for %s"), d.lun)
+        }
         emptyState={
           <EmptyState
             headingLevel="h2"
