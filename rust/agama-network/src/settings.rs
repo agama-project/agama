@@ -143,12 +143,76 @@ impl Default for BridgeSettings {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+/// VLAN flags controlling behavior
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, utoipa::ToSchema, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum VlanFlag {
+    /// Reorder Ethernet headers to make packets look less like VLAN packets
+    ReorderHeaders,
+    /// GARP VLAN Registration Protocol - dynamically register/deregister VLANs
+    Gvrp,
+    /// Allow changing master device while connection is active
+    LooseBinding,
+    /// Multiple VLAN Registration Protocol - next generation of GVRP
+    Mvrp,
+}
+
+impl VlanFlag {
+    /// Valid bitmask for all known VLAN flags
+    const VALID_MASK: u32 = 0xF; // 0x1 | 0x2 | 0x4 | 0x8
+
+    /// Convert a slice of VlanFlags to a bitmask value for NetworkManager
+    pub fn to_bitmask(flags: &[VlanFlag]) -> u32 {
+        flags.iter().fold(0, |acc, flag| {
+            acc | match flag {
+                VlanFlag::ReorderHeaders => 0x1,
+                VlanFlag::Gvrp => 0x2,
+                VlanFlag::LooseBinding => 0x4,
+                VlanFlag::Mvrp => 0x8,
+            }
+        })
+    }
+
+    /// Convert a bitmask value from NetworkManager to a Vec of VlanFlags
+    ///
+    /// Unknown flag bits are silently ignored to maintain forward compatibility
+    /// with future NetworkManager versions.
+    pub fn from_bitmask(bitmask: u32) -> Vec<VlanFlag> {
+        let mut flags = Vec::new();
+        if bitmask & 0x1 != 0 {
+            flags.push(VlanFlag::ReorderHeaders);
+        }
+        if bitmask & 0x2 != 0 {
+            flags.push(VlanFlag::Gvrp);
+        }
+        if bitmask & 0x4 != 0 {
+            flags.push(VlanFlag::LooseBinding);
+        }
+        if bitmask & 0x8 != 0 {
+            flags.push(VlanFlag::Mvrp);
+        }
+
+        // Log warning if unknown bits are set
+        if bitmask & !Self::VALID_MASK != 0 {
+            tracing::warn!(
+                "Unknown VLAN flags in bitmask: {:#x} (unknown bits: {:#x})",
+                bitmask,
+                bitmask & !Self::VALID_MASK
+            );
+        }
+
+        flags
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct VlanSettings {
     pub parent: String,
     pub id: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub protocol: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub flags: Option<Vec<VlanFlag>>,
 }
 
 /// IEEE 802.1x (EAP) settings
@@ -297,6 +361,8 @@ impl NetworkConnection {
             DeviceType::Bond
         } else if self.bridge.is_some() {
             DeviceType::Bridge
+        } else if self.vlan.is_some() {
+            DeviceType::Vlan
         } else {
             DeviceType::Ethernet
         }

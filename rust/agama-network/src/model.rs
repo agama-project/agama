@@ -24,7 +24,7 @@
 //!   agnostic from the real network service (e.g., NetworkManager).
 use crate::error::NetworkStateError;
 use crate::settings::{
-    BondSettings, BridgeSettings, IEEE8021XSettings, MatchSettings, NetworkConnection,
+    BondSettings, BridgeSettings, IEEE8021XSettings, MatchSettings, NetworkConnection, VlanFlag,
     VlanSettings, WirelessSettings,
 };
 use crate::types::{BondMode, ConnectionState, DeviceState, DeviceType, Status, SSID};
@@ -284,6 +284,39 @@ mod tests {
         // Connection -> NetworkConnection
         let net_conn2 = NetworkConnection::try_from(conn).unwrap();
         assert_eq!(net_conn.match_settings, net_conn2.match_settings);
+    }
+
+    #[test]
+    fn test_vlan_connection_conversion() {
+        let vlan_settings = VlanSettings {
+            id: 100,
+            parent: "eth0".to_string(),
+            protocol: Some("802.1Q".to_string()),
+            flags: Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
+        };
+        let net_conn = NetworkConnection {
+            id: "eth0.100".to_string(),
+            vlan: Some(vlan_settings),
+            ..Default::default()
+        };
+
+        // NetworkConnection -> Connection
+        let conn = Connection::try_from(net_conn.clone()).unwrap();
+        if let ConnectionConfig::Vlan(config) = &conn.config {
+            assert_eq!(config.id, 100);
+            assert_eq!(config.parent, "eth0");
+            assert_eq!(config.protocol, VlanProtocol::IEEE802_1Q);
+            assert_eq!(
+                config.flags,
+                Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding])
+            );
+        } else {
+            panic!("Expected Vlan connection config");
+        }
+
+        // Connection -> NetworkConnection
+        let net_conn2 = NetworkConnection::try_from(conn).unwrap();
+        assert_eq!(net_conn.vlan, net_conn2.vlan);
     }
 
     #[test]
@@ -1296,6 +1329,8 @@ pub struct VlanConfig {
     pub parent: String,
     pub id: u32,
     pub protocol: VlanProtocol,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub flags: Option<Vec<VlanFlag>>,
 }
 
 #[serde_as]
@@ -1347,6 +1382,7 @@ impl TryFrom<VlanSettings> for VlanConfig {
         let mut config = VlanConfig {
             id,
             parent,
+            flags: settings.flags,
             ..Default::default()
         };
 
@@ -1367,6 +1403,7 @@ impl TryFrom<VlanConfig> for VlanSettings {
             id: vlan.id,
             parent: vlan.parent,
             protocol: Some(vlan.protocol.to_string()),
+            flags: vlan.flags,
         })
     }
 }

@@ -24,6 +24,7 @@
 //! with nested hash maps (see [NestedHash] and [OwnedNestedHash]).
 use super::{error::NmError, model::*};
 use crate::model::*;
+use crate::settings::VlanFlag;
 use crate::types::{BondMode, SSID};
 use agama_utils::dbus::{
     get_optional_property, get_property, to_owned_hash, NestedHash, OwnedNestedHash,
@@ -397,6 +398,16 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
         ipv6.remove("dns");
         if ipv6.get("address-data").is_some_and(is_empty_value) {
             ipv6.remove("gateway");
+        }
+    }
+
+    if let Some(vlan) = conn.get_mut("vlan") {
+        if !vlan.contains_key("flags") {
+            // Default to VLAN_FLAG_REORDER_HDR if flags are not specified (bsc#1271079)
+            vlan.insert(
+                "flags",
+                VlanFlag::to_bitmask(&[VlanFlag::ReorderHeaders]).into(),
+            );
         }
     }
 }
@@ -1375,11 +1386,15 @@ fn bond_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<BondConfig>, N
 }
 
 fn vlan_config_to_dbus(cfg: &VlanConfig) -> NestedHash {
-    let vlan: HashMap<&str, zvariant::Value> = HashMap::from([
+    let mut vlan: HashMap<&str, zvariant::Value> = HashMap::from([
         ("id", cfg.id.into()),
         ("parent", cfg.parent.clone().into()),
         ("protocol", cfg.protocol.to_string().into()),
     ]);
+
+    if let Some(flags) = &cfg.flags {
+        vlan.insert("flags", VlanFlag::to_bitmask(flags).into());
+    }
 
     NestedHash::from([("vlan", vlan)])
 }
@@ -1394,10 +1409,15 @@ fn vlan_config_from_dbus(conn: &OwnedNestedHash) -> Result<Option<VlanConfig>, N
         _ => Default::default(),
     };
 
+    let flags = get_property::<u32>(vlan, "flags")
+        .ok()
+        .map(VlanFlag::from_bitmask);
+
     Ok(Some(VlanConfig {
         id: get_property(vlan, "id")?,
         parent: get_property(vlan, "parent")?,
         protocol,
+        flags,
     }))
 }
 
@@ -1570,15 +1590,15 @@ fn is_empty_value(value: &zvariant::Value) -> bool {
 #[cfg(test)]
 mod test {
     use super::{
-        connection_from_dbus, connection_to_dbus, merge_dbus_connections, NestedHash,
-        OwnedNestedHash,
+        connection_from_dbus, connection_to_dbus, merge_dbus_connections, vlan_config_to_dbus,
+        NestedHash, OwnedNestedHash, VlanFlag,
     };
     use crate::types::{BondMode, SSID};
     use crate::{
         model::*,
         nm::{
             dbus::{
-                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, WIRELESS_KEY,
+                BOND_KEY, BRIDGE_KEY, ETHERNET_KEY, INFINIBAND_KEY, VLAN_KEY, WIRELESS_KEY,
                 WIRELESS_SECURITY_KEY,
             },
             error::NmError,
@@ -1838,6 +1858,104 @@ mod test {
         if let ConnectionConfig::Bond(config) = connection.config {
             assert_eq!(config.mode, BondMode::ActiveBackup);
         }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_connection_from_dbus_vlan() -> anyhow::Result<()> {
+        let uuid = Uuid::new_v4().to_string();
+        let connection_section = HashMap::from([hi("id", "eth0.100")?, hi("uuid", uuid)?]);
+
+        // Scenario 1: DBus has flags
+        let vlan_section_with_flags = HashMap::from([
+            hi("id", 100_u32)?,
+            hi("parent", "eth0")?,
+            hi("protocol", "802.1Q")?,
+            hi(
+                "flags",
+                VlanFlag::to_bitmask(&[VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
+            )?,
+        ]);
+        let dbus_conn = HashMap::from([
+            ("connection".to_string(), connection_section.clone()),
+            (VLAN_KEY.to_string(), vlan_section_with_flags),
+        ]);
+        let connection = connection_from_dbus(dbus_conn).unwrap();
+        if let ConnectionConfig::Vlan(config) = connection.config {
+            assert_eq!(config.id, 100_u32);
+            assert_eq!(config.parent, "eth0");
+            assert_eq!(config.protocol, VlanProtocol::IEEE802_1Q);
+            assert_eq!(
+                config.flags,
+                Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding])
+            );
+        } else {
+            panic!("Wrong connection type");
+        }
+
+        // Scenario 2: D-Bus does not have flags
+        let vlan_section_no_flags = HashMap::from([
+            hi("id", 100_u32)?,
+            hi("parent", "eth0")?,
+            hi("protocol", "802.1Q")?,
+        ]);
+        let dbus_conn_no_flags = HashMap::from([
+            ("connection".to_string(), connection_section),
+            (VLAN_KEY.to_string(), vlan_section_no_flags),
+        ]);
+        let connection_no_flags = connection_from_dbus(dbus_conn_no_flags).unwrap();
+        if let ConnectionConfig::Vlan(config) = connection_no_flags.config {
+            assert_eq!(config.flags, None);
+        } else {
+            panic!("Wrong connection type");
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_dbus_from_vlan_connection() -> anyhow::Result<()> {
+        // Scenario 1: VlanConfig with flags specified -> should write flags to D-Bus
+        let vlan_config = VlanConfig {
+            id: 100,
+            parent: "eth0".to_string(),
+            protocol: VlanProtocol::IEEE802_1Q,
+            flags: Some(vec![VlanFlag::ReorderHeaders, VlanFlag::LooseBinding]),
+        };
+        let nested = vlan_config_to_dbus(&vlan_config);
+        let vlan_section = nested.get("vlan").unwrap();
+        assert_eq!(vlan_section.get("id"), Some(&Value::from(100_u32)));
+        assert_eq!(vlan_section.get("parent"), Some(&Value::from("eth0")));
+        assert_eq!(vlan_section.get("protocol"), Some(&Value::from("802.1Q")));
+        assert_eq!(
+            vlan_section.get("flags"),
+            Some(&Value::from(VlanFlag::to_bitmask(&[
+                VlanFlag::ReorderHeaders,
+                VlanFlag::LooseBinding
+            ])))
+        );
+
+        // Scenario 2: VlanConfig with no flags (flags: None) -> vlan_config_to_dbus should omit flags
+        let vlan_config_no_flags = VlanConfig {
+            id: 100,
+            parent: "eth0".to_string(),
+            protocol: VlanProtocol::IEEE802_1Q,
+            flags: None,
+        };
+        let mut nested_no_flags = vlan_config_to_dbus(&vlan_config_no_flags);
+        let vlan_section_no_flags = nested_no_flags.get("vlan").unwrap();
+        assert_eq!(vlan_section_no_flags.get("flags"), None);
+
+        // Scenario 3: cleanup_dbus_connection should default omitted flags to 1
+        super::cleanup_dbus_connection(&mut nested_no_flags);
+        let vlan_section_cleaned = nested_no_flags.get("vlan").unwrap();
+        assert_eq!(
+            vlan_section_cleaned.get("flags"),
+            Some(&Value::from(VlanFlag::to_bitmask(&[
+                VlanFlag::ReorderHeaders
+            ])))
+        );
 
         Ok(())
     }

@@ -58,6 +58,7 @@ impl ApiDocBuilder for NetworkApiDocBuilder {
             .schema_from::<agama_lib::network::settings::NetworkSettings>()
             .schema_from::<agama_lib::network::settings::NetworkSettings>()
             .schema_from::<agama_lib::network::settings::VlanSettings>()
+            .schema_from::<agama_lib::network::settings::VlanFlag>()
             .schema_from::<agama_lib::network::settings::WirelessSettings>()
             .schema_from::<agama_lib::network::types::BondMode>()
             .schema_from::<agama_lib::network::types::ConnectionState>()

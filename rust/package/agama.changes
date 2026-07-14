@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 13 12:40:10 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle VLAN flags properly, using the kernel default value
+  of VLAN_FLAG_REORDER_HDR when not specified
+  (gh#agama-project/agama#3718, bsc#1271079).
+
+-------------------------------------------------------------------
 Fri Jul 10 13:12:36 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Rename the network device match settings attribute to "match"
