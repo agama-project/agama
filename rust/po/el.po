@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 10:48+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
 "PO-Revision-Date: 2026-02-23 21:04+0000\n"
 "Last-Translator: Efstathios Iosifidis <eiosifidis@yandex.com>\n"
 "Language-Team: Greek <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -693,115 +693,120 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Προετοιμασία του συστήματος"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Εγκατάσταση λογισμικού"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Ρύθμιση του συστήματος"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 #, fuzzy
 msgid "Preparing storage"
 msgstr "Προετοιμασία της πρότασης αποθηκευτικού χώρου"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Εκτέλεση σεναρίων (scripts) προ-εγκατάστασης του χρήστη"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 #, fuzzy
 msgid "Installing software"
 msgstr "Εγκατάσταση λογισμικού"
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Ρύθμιση του συστήματος"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:303
+#: agama-manager/src/actions.rs:271
+#, fuzzy
+msgid "Finalize installation"
+msgstr "Υπολογισμός της πρότασης λογισμικού"
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr "Αποθήκευση ρυθμίσεων ασφαλείας"
 
-#: agama-manager/src/actions.rs:313
+#: agama-manager/src/actions.rs:356
 #, fuzzy
 msgid "Configuring remote access"
 msgstr "Ρύθμιση παραμέτρων συσκευών DASD"
 
-#: agama-manager/src/actions.rs:323
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr "Ρύθμιση του ονόματος συστήματος (hostname)"
 
-#: agama-manager/src/actions.rs:333
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr "Ρύθμιση του διαμεσολαβητή δικτύου (proxy)"
 
-#: agama-manager/src/actions.rs:344
+#: agama-manager/src/actions.rs:387
 #, fuzzy
 msgid "Setting up NTP"
 msgstr "Ρύθμιση του δικτύου"
 
-#: agama-manager/src/actions.rs:355
+#: agama-manager/src/actions.rs:398
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Εισαγωγή αρχείων χρήστη"
 
-#: agama-manager/src/actions.rs:368
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr "Εκτέλεση σεναρίων (scripts) προ-εγκατάστασης του χρήστη"
 
-#: agama-manager/src/actions.rs:383
+#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "Αποθήκευση ρυθμίσεων ερωτήσεων"
 
-#: agama-manager/src/actions.rs:393
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr "Αποθήκευση ρυθμίσεων τοπικοποίησης"
 
-#: agama-manager/src/actions.rs:403
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr "Αποθήκευση ρυθμίσεων χρηστών"
 
-#: agama-manager/src/actions.rs:509
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr "Ρύθμιση παραμέτρων συσκευών iSCSI"
 
-#: agama-manager/src/actions.rs:533
+#: agama-manager/src/actions.rs:576
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Ρύθμιση παραμέτρων συσκευών iSCSI"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr "Ρύθμιση παραμέτρων συσκευών DASD"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr "Ρύθμιση του δικτύου"
 
-#: agama-manager/src/actions.rs:610
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr "Προετοιμασία της πρότασης αποθηκευτικού χώρου"
 
-#: agama-manager/src/actions.rs:643
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr "Αποθήκευση ρυθμίσεων του διαχειριστή εκκίνησης (bootloader)"
 
-#: agama-manager/src/actions.rs:676
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr "Προετοιμασία της πρότασης λογισμικού"
 
-#: agama-manager/src/actions.rs:709
+#: agama-manager/src/actions.rs:752
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Ρύθμιση παραμέτρων συσκευών DASD"

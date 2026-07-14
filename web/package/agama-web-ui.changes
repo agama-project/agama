@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
-Tue Jul  7 13:35:34 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+Tue Jul 14 09:35:34 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Require translated text in user-facing component props, ensuring
   users get the interface in their language
   (gh#agama-project/agama#3696).
+
+-------------------------------------------------------------------
+
+Mon Jul 13 14:14:41 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed check for BIOS RAIDs (bsc#1271120).
 
 -------------------------------------------------------------------
 Tue Jul  7 10:55:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>

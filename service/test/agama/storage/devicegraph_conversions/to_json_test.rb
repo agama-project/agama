@@ -31,6 +31,7 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
   before do
     mock_storage(devicegraph: scenario)
     allow_any_instance_of(Y2Storage::Partition).to receive(:resize_info).and_return(resize_info)
+    allow_any_instance_of(Y2Storage::LvmLv).to receive(:resize_info).and_return(resize_info)
   end
 
   subject { described_class.new(devicegraph) }
@@ -171,6 +172,30 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
         json = subject.convert
         wires = json.first[:multipath][:wireNames]
         expect(wires).to contain_exactly("/dev/sda", "/dev/sdb")
+      end
+    end
+
+    describe "for a devicegraph with BIOS RAIDs" do
+      let(:scenario) { "lvm-over-hardware-raid.xml" }
+
+      it "generates an entry for each usable disk, RAID and volume group" do
+        json = subject.convert
+        expect(json).to contain_exactly(
+          a_hash_including(name: "/dev/sda", class: "drive"),
+          a_hash_including(name: "/dev/md/a", class: "drive"),
+          a_hash_including(name: "/dev/md/b", class: "drive"),
+          a_hash_including(name: "/dev/system", class: "volumeGroup")
+        )
+      end
+
+      it "exports the level and members of the MD RAIDs" do
+        json = subject.convert
+        mda = json.find { |d| d[:name] == "/dev/md/a" }
+        expect(mda[:drive][:type]).to eq "raid"
+        expect(mda[:md][:level]).to eq "raid0"
+        members = mda[:md][:devices]
+        expect(members).to be_a Array
+        expect(members.size).to eq 2
       end
     end
   end

@@ -705,6 +705,14 @@
                     "type": "string",
                     "default": "802.1Q",
                     "enum": ["802.1Q", "802.1ad"]
+                  },
+                  "flags": {
+                    "title": "VLAN flags",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": ["reorder-headers", "gvrp", "loose-binding", "mvrp"]
+                    }
                   }
                 }
               }

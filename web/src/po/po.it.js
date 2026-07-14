@@ -480,9 +480,6 @@ export default {
   "Binding": [
     "Associazione"
   ],
-  "BitLocker": [
-    "BitLocker"
-  ],
   "Bond": [
     "Bonding"
   ],
@@ -1089,9 +1086,6 @@ export default {
   "Edit": [
     "Modifica"
   ],
-  "Edit binding settings": [
-    "Modifica Impostazioni di binding"
-  ],
   "Edit connection": [
     "Modifica connessione"
   ],
@@ -1166,6 +1160,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Invio o Tab per aggiungere, Backspace o Canc per rimuovere, tasti di direzione per spostarsi tra le voci, Esc per uscire"
+  ],
+  "Ethernet": [
+    ""
   ],
   "ExFAT": [
     "ExFAT"
@@ -1294,9 +1291,6 @@ export default {
   ],
   "Gateway": [
     "Gateway"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Accedere al riepilogo dell'[installazione]."
@@ -1594,9 +1588,6 @@ export default {
   "Keyboard layout": [
     "Layout di tastiera"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1746,9 +1737,6 @@ export default {
   ],
   "Memory": [
     "Memoria"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canale minimo"
@@ -2186,9 +2174,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "I volumi fisici possono essere creati su alcuni dei dischi scelti in base alla dimensione totale dei volumi logici."
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "Porta"
@@ -3055,9 +3040,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Questo valore sarà inviato al comando per creare il file system (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Server di sincronizzazione oraria"
   ],
@@ -3364,6 +3346,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Quando tutto sarà pronto, fai clic sul pulsante [installa] alla fine della pagina."
+  ],
+  "Wi-Fi": [
+    "WiFi"
   ],
   "Wi-Fi connection form": [
     "Modulo di connessione Wi-Fi"

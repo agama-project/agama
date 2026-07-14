@@ -75,16 +75,16 @@ export default {
     "%d entradas añadidas, %d duplicados omitidos."
   ],
   "%d entries added, %d invalid, %d duplicates skipped.": [
-    "%d entradas añadidas, %d inválidas, %d duplicados omitidos."
+    "%d entradas añadidas, %d no válidas, %d duplicados omitidos."
   ],
   "%d entries added, %d invalid.": [
-    "%d entradas añadidas, %d inválidas."
+    "%d entradas añadidas, %d no válidas."
   ],
   "%d entries added.": [
     "%d entradas añadidas."
   ],
   "%d invalid entries removed.": [
-    "%d entradas inválidas eliminadas."
+    "%d entradas no válidas eliminadas."
   ],
   "%d matches the filter": [
     "%d coincidencia con el filtro",
@@ -112,7 +112,7 @@ export default {
     "%s - %s"
   ],
   "%s added but is invalid: %s. Select to edit.": [
-    "%s añadida pero es inválida: %s. Seleccione para editar."
+    "%s añadida pero no es válida: %s. Seleccione para editar."
   ],
   "%s added.": [
     "%s añadida."
@@ -142,7 +142,7 @@ export default {
     "%s mantiene las preferencias del navegador y el sistema"
   ],
   "%s is invalid: %s": [
-    "%s es inválida: %s"
+    "%s no es válida: %s"
   ],
   "%s logo": [
     "logo de %s"
@@ -479,9 +479,6 @@ export default {
   ],
   "Binding": [
     "Asociar"
-  ],
-  "BitLocker": [
-    "BitLocker"
   ],
   "Bond": [
     "Vínculo"
@@ -1032,6 +1029,9 @@ export default {
   "Do not format %s and keep data": [
     "No formatear %s y conservar los datos"
   ],
+  "Do not modify": [
+    "No modificar"
+  ],
   "Do not register": [
     "No registrar"
   ],
@@ -1088,9 +1088,6 @@ export default {
   ],
   "Edit": [
     "Editar"
-  ],
-  "Edit binding settings": [
-    "Editar configuración de vinculación"
   ],
   "Edit connection": [
     "Editar conexión"
@@ -1166,6 +1163,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Intro o Tabulador para añadir, Atrás o Supr para eliminar, teclas de flecha para desplazarse por las entradas, Esc para salir"
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1294,9 +1294,6 @@ export default {
   ],
   "Gateway": [
     "Puerta de enlace"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Vaya al resumen de la [instalación]."
@@ -1496,19 +1493,19 @@ export default {
     "Dominio de búsqueda DNS no válido"
   ],
   "Invalid DNS server address": [
-    "Dirección de servidor DNS inválida"
+    "Dirección de servidor DNS no válida"
   ],
   "Invalid IPv4 address": [
     "Dirección IPv4 inválida"
   ],
   "Invalid IPv4 gateway": [
-    "Puerta de enlace IPv4 inválida"
+    "Puerta de enlace IPv4 no válida"
   ],
   "Invalid IPv6 address": [
     "Dirección IPv6 inválida"
   ],
   "Invalid IPv6 gateway": [
-    "Puerta de enlace IPv6 inválida"
+    "Puerta de enlace IPv6 no válida"
   ],
   "Invalid NTP server address": [
     "Dirección del servidor NTP no válida"
@@ -1593,9 +1590,6 @@ export default {
   ],
   "Keyboard layout": [
     "Distribución del teclado"
-  ],
-  "KiB": [
-    "KiB"
   ],
   "LUN": [
     "LUN"
@@ -1708,6 +1702,9 @@ export default {
   "Login form": [
     "Formulario de inicio de sesión"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC address": [
     "Dirección MAC"
   ],
@@ -1746,9 +1743,6 @@ export default {
   ],
   "Memory": [
     "Memoria"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Canal mínimo"
@@ -1855,7 +1849,7 @@ export default {
     "Nombre del volumen lógico, por ejemplo, root, home, lv0"
   ],
   "Name is required": [
-    "Se requiere el Nombre"
+    "El nombre es obligatorio"
   ],
   "Network": [
     "Red"
@@ -1897,10 +1891,10 @@ export default {
     "No hay grupos de volúmenes LVM disponibles para ser seleccionados."
   ],
   "No LVM volume groups found": [
-    "No se encontraron grupos de volúmenes LVM"
+    "No se han encontrado grupos de volúmenes LVM"
   ],
   "No RAID devices found": [
-    "No se ha encontrado dispositivos RAID"
+    "No se han encontrado dispositivos RAID"
   ],
   "No Wi-Fi networks were found": [
     "No se han encontrado redes Wi-Fi"
@@ -2186,9 +2180,6 @@ export default {
   ],
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Podrían crearse volúmenes físicos en algunos de los discos elegidos según el tamaño total de los volúmenes lógicos."
-  ],
-  "PiB": [
-    "PiB"
   ],
   "Port": [
     "Puerto"
@@ -2492,7 +2483,7 @@ export default {
     "Seleccione dispositivos para realizar acciones en lote"
   ],
   "Select entries to edit or remove them. Or [remove all invalid entries.]": [
-    "Seleccione entradas para editarlas o eliminarlas. O [eliminar todas las entradas inválidas.]"
+    "Seleccione entradas para editarlas o eliminarlas. O [eliminar todas las entradas no válidas.]"
   ],
   "Select one or more to extend the system.": [
     "Seleccione uno o más para ampliar el sistema."
@@ -2625,16 +2616,16 @@ export default {
     "No está disponible la selección de software"
   ],
   "Some DNS search domains are invalid": [
-    "Algunos dominios de búsqueda DNS son inválidos"
+    "Algunos dominios de búsqueda DNS no son válidos"
   ],
   "Some DNS server addresses are invalid": [
-    "Algunas direcciones de servidores DNS son inválidas"
+    "Algunas direcciones de servidores DNS no son válidas"
   ],
   "Some IPv4 addresses are invalid": [
-    "Algunas direcciones IPv4 son inválidas"
+    "Algunas direcciones IPv4 no son válidas"
   ],
   "Some IPv6 addresses are invalid": [
-    "Algunas direcciones IPv6 son inválidas"
+    "Algunas direcciones IPv6 no son válidas"
   ],
   "Some NTP server addresses are invalid": [
     "Algunas direcciones de servidores NTP no son válidas"
@@ -3055,9 +3046,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Esto se inyectará en el comando para crear el sistema de archivos (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Servidores de sincronización de hora"
   ],
@@ -3170,7 +3158,7 @@ export default {
     "Utilizar dominios de búsqueda DNS personalizados"
   ],
   "Use custom DNS servers": [
-    "Usar servidores DNS personalizados"
+    "Usar servidores DNS específicos"
   ],
   "Use device %s": [
     "Utilizar el dispositivo %s"
@@ -3364,6 +3352,9 @@ export default {
   ],
   "When ready, click on the [install] button at the end of the page.": [
     "Cuando estés listo, haz clic en el botón [instalar] al final de la página."
+  ],
+  "Wi-Fi": [
+    "WiFi"
   ],
   "Wi-Fi connection form": [
     "Formulario de conexión Wi-Fi"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-23 12:12+0000\n"
+"POT-Creation-Date: 2026-07-02 08:45+0000\n"
 "PO-Revision-Date: 2026-02-23 22:04+0000\n"
 "Last-Translator: Efstathios Iosifidis <eiosifidis@yandex.com>\n"
 "Language-Team: Greek <https://l10n.opensuse.org/projects/agama/agama-service-"
@@ -28,17 +28,17 @@ msgid "Found unsupported elements in the AutoYaST profile: %{keys}."
 msgstr "Βρέθηκαν μη υποστηριζόμενα στοιχεία στο προφίλ AutoYaST: %{keys}."
 
 #. Implementation for the API method #Probe.
-#: service/lib/agama/dbus/storage/dasd.rb:66
+#: service/lib/agama/dbus/storage/dasd.rb:65
 msgid "Probing DASD devices"
 msgstr "Ανίχνευση συσκευών DASD"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/dasd.rb:88
+#: service/lib/agama/dbus/storage/dasd.rb:87
 msgid "Configuring DASD"
 msgstr "Ρύθμιση παραμέτρων DASD"
 
 #. Do not configure if there is nothing to change.
-#: service/lib/agama/dbus/storage/iscsi.rb:80
+#: service/lib/agama/dbus/storage/iscsi.rb:79
 msgid "Configuring iSCSI"
 msgstr "Ρύθμιση παραμέτρων iSCSI"
 
@@ -46,44 +46,44 @@ msgstr "Ρύθμιση παραμέτρων iSCSI"
 #.
 #. @param serialized_options [String] Serialized dicovery options.
 #. @return [Number] 0 success; 1 failure.
-#: service/lib/agama/dbus/storage/iscsi.rb:105
+#: service/lib/agama/dbus/storage/iscsi.rb:120
 msgid "Performing iSCSI discovery"
 msgstr "Εκτέλεση εντοπισμού iSCSI"
 
 #. Implementation for the API method #Install.
-#: service/lib/agama/dbus/storage/manager.rb:194
+#: service/lib/agama/dbus/storage/manager.rb:192
 msgid "Preparing bootloader proposal"
 msgstr "Προετοιμασία πρότασης διαχειριστή εκκίνησης"
 
-#: service/lib/agama/dbus/storage/manager.rb:197
+#: service/lib/agama/dbus/storage/manager.rb:195
 msgid "Preparing the storage devices"
 msgstr "Προετοιμασία των συσκευών αποθήκευσης"
 
-#: service/lib/agama/dbus/storage/manager.rb:200
+#: service/lib/agama/dbus/storage/manager.rb:198
 msgid "Writing bootloader sysconfig"
 msgstr "Εγγραφή sysconfig διαχειριστή εκκίνησης"
 
 #. Implementation for the API method #Finish.
-#: service/lib/agama/dbus/storage/manager.rb:208
+#: service/lib/agama/dbus/storage/manager.rb:206
 msgid "Finishing installation"
 msgstr "Ολοκλήρωση εγκατάστασης"
 
 #. Implementation for the API method #Umount.
-#: service/lib/agama/dbus/storage/manager.rb:215
+#: service/lib/agama/dbus/storage/manager.rb:213
 msgid "Unmounting devices"
 msgstr "Αποπροσάρτηση συσκευών"
 
 #. after loading config try to apply it, so proper packages can be requested
 #. TODO: generate also new issue from configuration
-#: service/lib/agama/dbus/storage/manager.rb:254
+#: service/lib/agama/dbus/storage/manager.rb:252
 msgid "Activating storage devices"
 msgstr "Ενεργοποίηση συσκευών αποθήκευσης"
 
-#: service/lib/agama/dbus/storage/manager.rb:257
+#: service/lib/agama/dbus/storage/manager.rb:255
 msgid "Probing storage devices"
 msgstr "Ανίχνευση συσκευών αποθήκευσης"
 
-#: service/lib/agama/dbus/storage/manager.rb:260
+#: service/lib/agama/dbus/storage/manager.rb:258
 msgid "Applying storage configuration"
 msgstr "Εφαρμογή ρυθμίσεων αποθήκευσης"
 

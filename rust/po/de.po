@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 10:48+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
 "PO-Revision-Date: 2026-06-23 20:12+0000\n"
 "Last-Translator: Gemineo <vistatec@gemineo.de>\n"
 "Language-Team: German <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -823,107 +823,112 @@ msgstr ""
 "Das Schreiben der Datei %s ist fehlgeschlagen. Möchten Sie es erneut "
 "versuchen?"
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "System vorbereiten"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Software installieren"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "System konfigurieren"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr "Speicherung wird vorbereitet"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
 msgstr "Skript nach der Partitionierung wird ausgeführt"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr "Software wird installiert"
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 msgid "Configuring the system"
 msgstr "System wird konfiguriert"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr "Installation abschließen"
 
-#: agama-manager/src/actions.rs:303
+#: agama-manager/src/actions.rs:271
+#, fuzzy
+msgid "Finalize installation"
+msgstr "Installation fertigstellen"
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr "Sicherheitseinstellungen speichern"
 
-#: agama-manager/src/actions.rs:313
+#: agama-manager/src/actions.rs:356
 msgid "Configuring remote access"
 msgstr "Fernzugriff konfigurieren"
 
-#: agama-manager/src/actions.rs:323
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr "Hostname einrichten"
 
-#: agama-manager/src/actions.rs:333
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr "Netzwerkproxy einrichten"
 
-#: agama-manager/src/actions.rs:344
+#: agama-manager/src/actions.rs:387
 msgid "Setting up NTP"
 msgstr "NTP einrichten"
 
-#: agama-manager/src/actions.rs:355
+#: agama-manager/src/actions.rs:398
 msgid "Importing user files and scripts"
 msgstr "Benutzerdateien und -skripte importieren"
 
-#: agama-manager/src/actions.rs:368
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr "Ausführen von Benutzer-Skripten vor der Installation"
 
-#: agama-manager/src/actions.rs:383
+#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "Frageeinstellungen speichern"
 
-#: agama-manager/src/actions.rs:393
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr "Lokalisierungseinstellungen speichern"
 
-#: agama-manager/src/actions.rs:403
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr "Benutzereinstellungen speichern"
 
-#: agama-manager/src/actions.rs:509
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI-Geräte konfigurieren"
 
-#: agama-manager/src/actions.rs:533
+#: agama-manager/src/actions.rs:576
 msgid "Configuring zFCP devices"
 msgstr "zFCP-Geräte konfigurieren"
 
-#: agama-manager/src/actions.rs:557
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr "DASD-Geräte konfigurieren"
 
-#: agama-manager/src/actions.rs:581
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr "Netzwerk einrichten"
 
-#: agama-manager/src/actions.rs:610
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr "Speicherungsvorschlag vorbereiten"
 
-#: agama-manager/src/actions.rs:643
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr "Bootloader-Einstellungen speichern"
 
-#: agama-manager/src/actions.rs:676
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr "Softwareangebot wird vorbereitet"
 
-#: agama-manager/src/actions.rs:709
+#: agama-manager/src/actions.rs:752
 msgid "Configuring SELinux"
 msgstr "SELinux konfigurieren"
 

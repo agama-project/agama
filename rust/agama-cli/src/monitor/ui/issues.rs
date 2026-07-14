@@ -41,7 +41,7 @@ impl<'a> Widget for IssuesList<'a> {
         let mut lines = vec![];
 
         for issue in self.issues {
-            lines.push(Line::from(format!("- {}", &issue.issue.description)));
+            lines.push(Line::from(format!("- {}", issue.issue.description)));
         }
 
         Paragraph::new(lines)

@@ -1,4 +1,37 @@
 -------------------------------------------------------------------
+Mon Jul 13 15:20:51 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Start the storage D-Bus service asynchronously (bsc#1265451,
+  bsc#1270014).
+
+-------------------------------------------------------------------
+Fri Jul 10 12:02:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Rename the network device match settings attribute to "match"
+  (gh#agama-project/agama#3708, bsc#1271236).
+
+-------------------------------------------------------------------
+Thu Jul  9 13:17:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Handle VLAN flags properly, using the kernel default value
+  of VLAN_FLAG_REORDER_HDR when not specified
+  (gh#agama-project/agama#3701, bsc#1271222).
+
+-------------------------------------------------------------------
+Thu Jul  9 10:21:27 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Set the service TimeoutStartSec to infinity in order to not
+  timeout when starting it (gh#agama-project/agama#3703).
+
+-------------------------------------------------------------------
+Wed Jul  8 07:58:08 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Update openssl dependency (bsc#1270992, bsc#1270891, bsc#1270850,
+  bsc#1270784, bsc#1270678, bsc#1270526, bsc#1270602, CVE-2026-45784,
+  CVE-2026-44662, CVE-2026-41898, CVE-2026-41681, CVE-2026-41678,
+  CVE-2026-42327, CVE-2026-41677).
+
+-------------------------------------------------------------------
 Tue Jun 30 14:43:50 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt iSCSI, DASD and zFCP monitors to the changes in the D-Bus
