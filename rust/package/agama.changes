@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 13 16:17:18 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Do not start config tasks until pre-scripts have finished
+  (bsc#1268891, bsc#1271085, bsc#1268778).
+
+-------------------------------------------------------------------
 Mon Jul 13 15:20:51 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Start the storage D-Bus service asynchronously (bsc#1265451,
