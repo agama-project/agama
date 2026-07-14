@@ -1591,7 +1591,7 @@ fn is_empty_value(value: &zvariant::Value) -> bool {
 mod test {
     use super::{
         connection_from_dbus, connection_to_dbus, merge_dbus_connections, vlan_config_to_dbus,
-        NestedHash, OwnedNestedHash,
+        NestedHash, OwnedNestedHash, VlanFlag,
     };
     use crate::types::{BondMode, SSID};
     use crate::{
