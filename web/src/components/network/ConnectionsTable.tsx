@@ -62,8 +62,6 @@ import {
 } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
 
-import type { TranslatedString } from "~/i18n";
-
 /**
  * Filter options for narrowing down network connections shown in the table.
  */

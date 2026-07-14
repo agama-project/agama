@@ -47,7 +47,6 @@ import { useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
 import { hex, sortCollection, translateEntries } from "~/utils";
 import { _, n_, N_ } from "~/i18n";
 
-import type { TranslatedString } from "~/i18n";
 import type { Device } from "~/model/system/dasd";
 import type { Device as ConfigDevice } from "~/model/config/dasd";
 
@@ -193,13 +192,11 @@ const buildActions = ({
       title: _("Activate"),
       onClick: () =>
         addOrUpdateDevices(
-          devices.map(
-            (d): ConfigDevice => ({
-              channel: d.channel,
-              state: "active",
-              diag: undefined,
-            }),
-          ),
+          devices.map((d): ConfigDevice => ({
+            channel: d.channel,
+            state: "active",
+            diag: undefined,
+          })),
         ),
     },
     {
@@ -207,13 +204,11 @@ const buildActions = ({
       title: _("Deactivate"),
       onClick: () =>
         addOrUpdateDevices(
-          devices.map(
-            (d): ConfigDevice => ({
-              channel: d.channel,
-              state: "offline",
-              diag: undefined,
-            }),
-          ),
+          devices.map((d): ConfigDevice => ({
+            channel: d.channel,
+            state: "offline",
+            diag: undefined,
+          })),
         ),
     },
     {
@@ -658,12 +653,10 @@ export default function DASDTable({ devices }) {
           devices={state.devicesToFormat}
           onFormat={() => {
             addOrUpdateDevices(
-              state.devicesToFormat.map(
-                (d): ConfigDevice => ({
-                  channel: d.channel,
-                  format: true,
-                }),
-              ),
+              state.devicesToFormat.map((d): ConfigDevice => ({
+                channel: d.channel,
+                format: true,
+              })),
             );
           }}
           onClose={() => dispatch({ type: "CANCEL_FORMAT_REQUEST" })}

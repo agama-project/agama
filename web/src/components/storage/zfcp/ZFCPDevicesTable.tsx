@@ -43,7 +43,6 @@ import { sortCollection, translateEntries } from "~/utils";
 import { _, N_ } from "~/i18n";
 import { useCheckLunScan } from "~/hooks/model/system/zfcp";
 import { useAddDevices, useRemoveDevices, useConfig } from "~/hooks/model/config/zfcp";
-import type { TranslatedString } from "~/i18n";
 import type { ZFCP as System } from "~/model/system";
 import type { ZFCP as Config } from "~/model/config";
 import type { CheckLunScanFn } from "~/hooks/model/system/zfcp";
