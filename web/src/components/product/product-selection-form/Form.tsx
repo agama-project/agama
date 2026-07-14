@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
@@ -33,10 +33,11 @@ import {
   Stack,
   StackItem,
 } from "@patternfly/react-core";
-import { Page } from "~/components/core";
 import ProductOption from "./ProductOption";
 import EulaCheckbox from "./EulaCheckbox";
 import Text from "~/components/core/Text";
+import { defaultOptions } from "./fields";
+import { useAppForm } from "~/hooks/form";
 import { Mode, Product } from "~/model/system";
 import { n_, _ } from "~/i18n";
 
@@ -206,8 +207,6 @@ export type ProductFormProps = {
  *
  * Manages product selection state, license acceptance, and form validation.
  * Excludes the current product from the list of options.
- *
- * TODO: use a reducer instead of bunch of isolated state pieces
  */
 export default function ProductForm({
   products,
@@ -216,103 +215,112 @@ export default function ProductForm({
   isSubmitted,
   onSubmit,
 }: ProductFormProps) {
-  const [selectedProduct, setSelectedProduct] = useState<Product>();
-  const [selectedMode, setSelectedMode] = useState<Mode>();
-  const [eulaAccepted, setEulaAccepted] = useState(false);
-  const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
-  const isSelectionDisabled =
-    !selectedProduct ||
-    isSubmitted ||
-    (mountEulaCheckbox && !eulaAccepted) ||
-    (!isEmpty(selectedProduct.modes) && !selectedMode);
+  const form = useAppForm({
+    ...defaultOptions,
+    onSubmit: ({ value }) => onSubmit(value.selectedProduct, value.selectedMode?.id),
+  });
 
-  const onProductSelectionChange = (product) => {
-    setEulaAccepted(false);
-    setSelectedMode(undefined);
-    setSelectedProduct(product);
-  };
-
-  const onFormSubmission = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    onSubmit(selectedProduct, selectedMode?.id);
+  // Selecting a product resets the pending mode and license acceptance, since
+  // both are meaningful only for the product they belong to.
+  const selectProduct = (product: Product) => {
+    form.setFieldValue("eulaAccepted", false);
+    form.setFieldValue("selectedMode", undefined);
+    form.setFieldValue("selectedProduct", product);
   };
 
   return (
-    <Form
-      id="productSelectionForm"
-      onSubmit={onFormSubmission}
-      // @ts-expect-error: https://www.codegenes.net/blog/error-when-using-inert-attribute-with-typescript/
-      inert={isSubmitted ? "" : undefined}
-    >
-      <FormGroup
-        role="radiogroup"
-        label={<ProductFormLabel products={products} currentProduct={currentProduct} />}
+    <form.AppForm>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+        // @ts-expect-error: https://www.codegenes.net/blog/error-when-using-inert-attribute-with-typescript/
+        inert={isSubmitted ? "" : undefined}
       >
-        <List isPlain>
-          {products.map((product, index) => {
-            if (product.id === currentProduct?.id && isEmpty(product.modes)) return undefined;
+        <form.Subscribe selector={(s) => s.values}>
+          {({ selectedProduct, selectedMode, eulaAccepted }) => {
+            const mountEulaCheckbox = selectedProduct && !isEmpty(selectedProduct.license);
+            const isSelectionDisabled =
+              !selectedProduct ||
+              isSubmitted ||
+              (mountEulaCheckbox && !eulaAccepted) ||
+              (!isEmpty(selectedProduct.modes) && !selectedMode);
 
             return (
-              <ProductOption
-                key={index}
-                product={product}
-                currentModeId={currentModeId}
-                isCurrent={currentProduct?.id === product.id}
-                isChecked={selectedProduct?.id === product.id}
-                selectedModeId={selectedMode?.id}
-                onChange={() => onProductSelectionChange(product)}
-                onModeChange={setSelectedMode}
-              />
+              <>
+                <FormGroup
+                  role="radiogroup"
+                  label={<ProductFormLabel products={products} currentProduct={currentProduct} />}
+                >
+                  <List isPlain>
+                    {products.map((product, index) => {
+                      if (product.id === currentProduct?.id && isEmpty(product.modes))
+                        return undefined;
+
+                      return (
+                        <ProductOption
+                          key={index}
+                          product={product}
+                          currentModeId={currentModeId}
+                          isCurrent={currentProduct?.id === product.id}
+                          isChecked={selectedProduct?.id === product.id}
+                          selectedModeId={selectedMode?.id}
+                          onChange={() => selectProduct(product)}
+                          onModeChange={(mode) => form.setFieldValue("selectedMode", mode)}
+                        />
+                      );
+                    })}
+                  </List>
+                </FormGroup>
+                <Stack hasGutter>
+                  {mountEulaCheckbox && (
+                    <StackItem>
+                      <EulaCheckbox
+                        product={selectedProduct}
+                        isChecked={eulaAccepted}
+                        onChange={(accepted) => form.setFieldValue("eulaAccepted", accepted)}
+                      />
+                    </StackItem>
+                  )}
+                  <StackItem>
+                    <Split hasGutter>
+                      <form.SubmitButton
+                        isDisabled={isSelectionDisabled}
+                        isLoading={isSubmitted}
+                        variant={isSubmitted ? "secondary" : "primary"}
+                        style={{
+                          maxInlineSize: "50dvw",
+                          overflow: "hidden",
+                          textWrap: "balance",
+                          textAlign: "center",
+                        }}
+                      >
+                        <ProductFormSubmitLabel
+                          currentProduct={currentProduct}
+                          selectedProduct={selectedProduct}
+                          selectedMode={selectedMode}
+                        />
+                      </form.SubmitButton>
+                      {currentProduct && !isSubmitted && <form.CancelButton />}
+                    </Split>
+                  </StackItem>
+                  <StackItem>
+                    <ProductFormSubmitLabelHelp
+                      currentProduct={currentProduct}
+                      currentModeId={currentModeId}
+                      selectedProduct={selectedProduct}
+                      selectedMode={selectedMode}
+                      hasEula={mountEulaCheckbox}
+                      isEulaAccepted={eulaAccepted}
+                    />
+                  </StackItem>
+                </Stack>
+              </>
             );
-          })}
-        </List>
-      </FormGroup>
-      <Stack hasGutter>
-        {mountEulaCheckbox && (
-          <StackItem>
-            <EulaCheckbox
-              product={selectedProduct}
-              isChecked={eulaAccepted}
-              onChange={setEulaAccepted}
-            />
-          </StackItem>
-        )}
-        <StackItem>
-          <Split hasGutter>
-            <Page.Submit
-              size="lg"
-              form="productSelectionForm"
-              isDisabled={isSelectionDisabled}
-              isLoading={isSubmitted}
-              variant={isSubmitted ? "secondary" : "primary"}
-              style={{
-                maxInlineSize: "50dvw",
-                overflow: "hidden",
-                textWrap: "balance",
-                textAlign: "start",
-              }}
-            >
-              <ProductFormSubmitLabel
-                currentProduct={currentProduct}
-                selectedProduct={selectedProduct}
-                selectedMode={selectedMode}
-              />
-            </Page.Submit>
-            {currentProduct && !isSubmitted && <Page.Back size="lg">{_("Cancel")}</Page.Back>}
-          </Split>
-        </StackItem>
-        <StackItem>
-          <ProductFormSubmitLabelHelp
-            currentProduct={currentProduct}
-            currentModeId={currentModeId}
-            selectedProduct={selectedProduct}
-            selectedMode={selectedMode}
-            hasEula={mountEulaCheckbox}
-            isEulaAccepted={eulaAccepted}
-          />
-        </StackItem>
-      </Stack>
-    </Form>
+          }}
+        </form.Subscribe>
+      </Form>
+    </form.AppForm>
   );
 }
