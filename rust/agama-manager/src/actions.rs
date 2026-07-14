@@ -22,7 +22,7 @@ use crate::{
     bootloader, checks, files, hostname,
     ipmi::Ipmi,
     iscsi, l10n, ntp, proxy, s390, security, service, software, storage,
-    task_manager::{self, TaskError, TaskManager},
+    task_manager::{TaskError, TaskId, TaskManager},
     users,
 };
 use agama_network::NetworkSystemClient;
@@ -340,56 +340,15 @@ impl SetConfigAction {
     ) -> Result<(), service::Error> {
         checks::check_stage(&self.progress, Stage::Configuring).await?;
 
-        // Security settings
+        // Questions settings
         self.spawn_config_task(
-            Scope::Security,
-            &gettext("Storing security settings"),
-            self.security.clone(),
-            security::message::SetConfig::new(config.security.clone()),
+            Scope::Questions,
+            &gettext("Storing questions settings"),
+            self.questions.clone(),
+            question::message::SetConfig::new(config.questions.clone()),
             &[],
         )
         .await;
-
-        // Remote access
-        self.spawn_config_task(
-            Scope::Access,
-            &gettext("Configuring remote access"),
-            self.access.clone(),
-            agama_access::message::SetConfig::new(config.access.clone()),
-            &[],
-        )
-        .await;
-
-        // Hostname
-        self.spawn_config_task(
-            Scope::Hostname,
-            &gettext("Setting up the hostname"),
-            self.hostname.clone(),
-            hostname::message::SetConfig::new(config.hostname.clone()),
-            &[],
-        )
-        .await;
-
-        // Proxy
-        self.spawn_config_task(
-            Scope::Proxy,
-            &gettext("Setting up the network proxy"),
-            self.proxy.clone(),
-            proxy::message::SetConfig::new(config.proxy.clone()),
-            &[],
-        )
-        .await;
-
-        // NTP
-        let ntp_task = self
-            .spawn_config_task(
-                Scope::Ntp,
-                &gettext("Setting up NTP"),
-                self.ntp.clone(),
-                ntp::message::SetConfig::new(config.ntp.clone()),
-                &[],
-            )
-            .await;
 
         // Files configuration
         let files_task = self
@@ -404,7 +363,8 @@ impl SetConfigAction {
 
         // Pre-installation scripts
         let files_handler = self.files.clone();
-        self.task_manager
+        let pre_scripts_task = self
+            .task_manager
             .task(
                 "pre_scripts",
                 Scope::Files,
@@ -420,15 +380,56 @@ impl SetConfigAction {
             })
             .await;
 
-        // Questions settings
+        // Security settings
         self.spawn_config_task(
-            Scope::Questions,
-            &gettext("Storing questions settings"),
-            self.questions.clone(),
-            question::message::SetConfig::new(config.questions.clone()),
-            &[],
+            Scope::Security,
+            &gettext("Storing security settings"),
+            self.security.clone(),
+            security::message::SetConfig::new(config.security.clone()),
+            &[pre_scripts_task],
         )
         .await;
+
+        // Remote access
+        self.spawn_config_task(
+            Scope::Access,
+            &gettext("Configuring remote access"),
+            self.access.clone(),
+            agama_access::message::SetConfig::new(config.access.clone()),
+            &[pre_scripts_task],
+        )
+        .await;
+
+        // Hostname
+        self.spawn_config_task(
+            Scope::Hostname,
+            &gettext("Setting up the hostname"),
+            self.hostname.clone(),
+            hostname::message::SetConfig::new(config.hostname.clone()),
+            &[pre_scripts_task],
+        )
+        .await;
+
+        // Proxy
+        self.spawn_config_task(
+            Scope::Proxy,
+            &gettext("Setting up the network proxy"),
+            self.proxy.clone(),
+            proxy::message::SetConfig::new(config.proxy.clone()),
+            &[pre_scripts_task],
+        )
+        .await;
+
+        // NTP
+        let ntp_task = self
+            .spawn_config_task(
+                Scope::Ntp,
+                &gettext("Setting up NTP"),
+                self.ntp.clone(),
+                ntp::message::SetConfig::new(config.ntp.clone()),
+                &[pre_scripts_task],
+            )
+            .await;
 
         // L10n settings
         self.spawn_config_task(
@@ -436,7 +437,7 @@ impl SetConfigAction {
             &gettext("Storing localization settings"),
             self.l10n.clone(),
             l10n::message::SetConfig::new(config.l10n.clone()),
-            &[],
+            &[pre_scripts_task],
         )
         .await;
 
@@ -446,28 +447,28 @@ impl SetConfigAction {
             &gettext("Storing users settings"),
             self.users.clone(),
             users::message::SetConfig::new(config.users.clone()),
-            &[],
+            &[pre_scripts_task],
         )
         .await;
 
-        let mut iscsi_deps = Vec::new();
+        let mut iscsi_deps = vec![pre_scripts_task];
 
         // Network configuration
-        if let Some(task_id) = self.set_network_config(&config).await {
+        if let Some(task_id) = self.set_network_config(&config, &[pre_scripts_task]).await {
             iscsi_deps.push(task_id);
         }
 
-        let mut storage_deps = Vec::new();
+        let mut storage_deps = vec![pre_scripts_task];
 
         // iSCSI configuration
         let iscsi_task = self.set_iscsi_config(&config, &iscsi_deps).await;
         storage_deps.push(iscsi_task);
 
         // S390 configuration (if available)
-        if let Some(zfcp_task) = self.set_zfcp_config(&config).await {
+        if let Some(zfcp_task) = self.set_zfcp_config(&config, &[pre_scripts_task]).await {
             storage_deps.push(zfcp_task);
         }
-        if let Some(dasd_task) = self.set_dasd_config(&config).await {
+        if let Some(dasd_task) = self.set_dasd_config(&config, &[pre_scripts_task]).await {
             storage_deps.push(dasd_task);
         }
 
@@ -491,14 +492,22 @@ impl SetConfigAction {
                 .await;
 
             // Bootloader configuration (after storage)
-            let bootloader_task = self.set_bootloader_config(&config, &[storage_task]).await;
+            let bootloader_task = self
+                .set_bootloader_config(&config, &[pre_scripts_task, storage_task])
+                .await;
 
             // Software configuration - depends on files, storage, and bootloader
             let software_task = self
                 .set_software_config(
                     Arc::clone(&product),
                     &config,
-                    &[files_task, storage_task, bootloader_task, ntp_task],
+                    &[
+                        files_task,
+                        pre_scripts_task,
+                        storage_task,
+                        bootloader_task,
+                        ntp_task,
+                    ],
                 )
                 .await;
 
@@ -518,8 +527,8 @@ impl SetConfigAction {
         description: &str,
         handler: Handler<S>,
         message: M,
-        dependencies: &[crate::task_manager::TaskId],
-    ) -> crate::task_manager::TaskId
+        dependencies: &[TaskId],
+    ) -> TaskId
     where
         S: agama_utils::actor::MessageHandler<M> + 'static,
         M: agama_utils::actor::Message<Reply = ()> + Send + 'static,
@@ -538,11 +547,7 @@ impl SetConfigAction {
     }
 
     /// Helper to spawn iSCSI configuration task
-    async fn set_iscsi_config(
-        &self,
-        config: &Config,
-        dependencies: &[crate::task_manager::TaskId],
-    ) -> task_manager::TaskId {
+    async fn set_iscsi_config(&self, config: &Config, dependencies: &[TaskId]) -> TaskId {
         let handler = self.iscsi.clone();
         let iscsi_config = config.iscsi.clone();
         self.task_manager
@@ -564,7 +569,7 @@ impl SetConfigAction {
     }
 
     /// Helper to spawn zFCP configuration task
-    async fn set_zfcp_config(&self, config: &Config) -> Option<task_manager::TaskId> {
+    async fn set_zfcp_config(&self, config: &Config, dependencies: &[TaskId]) -> Option<TaskId> {
         let handler = self.s390.clone()?;
         let zfcp_config = config.s390.clone().and_then(|c| c.zfcp);
 
@@ -575,6 +580,7 @@ impl SetConfigAction {
                     Scope::ZFCP,
                     gettext("Configuring zFCP devices"),
                 )
+                .depends_on(dependencies)
                 .run(|| async move {
                     let future = handler
                         .call(s390::message::SetZFCPConfig::new(zfcp_config))
@@ -588,7 +594,7 @@ impl SetConfigAction {
     }
 
     /// Helper to spawn DASD configuration task
-    async fn set_dasd_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+    async fn set_dasd_config(&self, config: &Config, dependencies: &[TaskId]) -> Option<TaskId> {
         let handler = self.s390.clone()?;
         let dasd_config = config.s390.clone().and_then(|c| c.dasd);
 
@@ -599,6 +605,7 @@ impl SetConfigAction {
                     Scope::DASD,
                     gettext("Configuring DASD devices"),
                 )
+                .depends_on(dependencies)
                 .run(|| async move {
                     let future = handler
                         .call(s390::message::SetDASDConfig::new(dasd_config))
@@ -612,7 +619,7 @@ impl SetConfigAction {
     }
 
     /// Helper to spawn network configuration task
-    async fn set_network_config(&self, config: &Config) -> Option<crate::task_manager::TaskId> {
+    async fn set_network_config(&self, config: &Config, dependencies: &[TaskId]) -> Option<TaskId> {
         let network_config = config.network.clone()?;
         let handler = self.network.clone();
 
@@ -623,6 +630,7 @@ impl SetConfigAction {
                     Scope::Network,
                     gettext("Setting up the network"),
                 )
+                .depends_on(dependencies)
                 .run(|| async move {
                     handler
                         .update_config(network_config)
@@ -640,9 +648,9 @@ impl SetConfigAction {
         &self,
         product: Arc<RwLock<ProductSpec>>,
         config: &Config,
-        dependencies: &[crate::task_manager::TaskId],
+        dependencies: &[TaskId],
         force_probe: bool,
-    ) -> crate::task_manager::TaskId {
+    ) -> TaskId {
         let handler = self.storage.clone();
         let storage_config = config.storage.clone();
 
@@ -672,11 +680,7 @@ impl SetConfigAction {
     }
 
     /// Helper to spawn bootloader configuration task
-    async fn set_bootloader_config(
-        &self,
-        config: &Config,
-        dependencies: &[crate::task_manager::TaskId],
-    ) -> task_manager::TaskId {
+    async fn set_bootloader_config(&self, config: &Config, dependencies: &[TaskId]) -> TaskId {
         let handler = self.bootloader.clone();
         let bootloader_config = config.bootloader.clone();
         self.task_manager
@@ -702,8 +706,8 @@ impl SetConfigAction {
         &self,
         product: Arc<RwLock<ProductSpec>>,
         config: &Config,
-        dependencies: &[crate::task_manager::TaskId],
-    ) -> crate::task_manager::TaskId {
+        dependencies: &[TaskId],
+    ) -> TaskId {
         let software_handler = self.software.clone();
         let software_config = config.software.clone();
         let access_handler = self.access.clone();
@@ -738,10 +742,7 @@ impl SetConfigAction {
     }
 
     /// Helper to spawn SELinux configuration task
-    async fn set_selinux_config(
-        &self,
-        depends_on: crate::task_manager::TaskId,
-    ) -> crate::task_manager::TaskId {
+    async fn set_selinux_config(&self, depends_on: TaskId) -> TaskId {
         let software_handler = self.software.clone();
         let bootloader_handler = self.bootloader.clone();
 
