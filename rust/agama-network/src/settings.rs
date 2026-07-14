@@ -205,7 +205,7 @@ impl VlanFlag {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, utoipa::ToSchema)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct VlanSettings {
     pub parent: String,
     pub id: u32,
