@@ -124,7 +124,7 @@ const EditVgOption = ({ index }: { index: number }) => {
       itemId="edit-volume-group"
       description={_("Modify settings and physical volumes")}
       role="menuitem"
-      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: index }))}
+      onClick={() => navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: String(index) }))}
     >
       {_("Edit volume group")}
     </MenuButton.Item>
@@ -286,7 +286,7 @@ const AddLvButton = ({ index }: { index: number }) => {
   const navigate = useNavigate();
   const volumeGroupConfig = useVolumeGroup(index);
 
-  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: index });
+  const newLvPath = generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: String(index) });
 
   return (
     <Button variant="plain" key="add-logical-volume" onClick={() => navigate(newLvPath)}>
