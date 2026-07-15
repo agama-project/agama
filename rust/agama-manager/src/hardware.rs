@@ -266,9 +266,12 @@ impl From<&HardwareNode> for HardwareInfo {
         let cpu = value
             .find_by_class("processor")
             .first()
-            .and_then(|c| c.product.clone());
+            .and_then(|c| c.product.clone().or(c.vendor.clone()));
 
-        let memory = value.find_by_id("memory").and_then(|m| m.size);
+        let memory = value
+            .find_by_id("memory")
+            .or_else(|| value.find_by_id("memory:0"))
+            .and_then(|m| m.size);
 
         let model = if let Some(system) = value.find_by_class("system").first() {
             let model_str = format!(
