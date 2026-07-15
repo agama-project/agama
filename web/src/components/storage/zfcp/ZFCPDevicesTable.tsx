@@ -413,7 +413,12 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
         itemActions={(device: System.Device) =>
           buildActions(device, deviceConfig(device), addDevices, removeDevices, checkLunScan)
         }
-        itemActionsLabel={(d: System.Device) => `Actions for ${d.lun}`}
+        itemActionsLabel={(d: System.Device) =>
+          // TRANSLATORS: accessible label for the connection actions toggle
+          // button. %s is replaced with the zFCP LUN, e.g. "Actions for
+          // 0x4010403200000000"
+          sprintf(_("Actions for %s"), d.lun)
+        }
         emptyState={
           <EmptyState
             headingLevel="h2"

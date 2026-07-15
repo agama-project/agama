@@ -39,9 +39,11 @@ import { _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
+import type { TranslatedString } from "~/i18n";
+
 type ItemProps = {
   /** The label/term for this field */
-  label: string;
+  label: TranslatedString;
   /** The value/description for this field */
   children: React.ReactNode;
 };
