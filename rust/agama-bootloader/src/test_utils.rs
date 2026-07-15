@@ -91,13 +91,19 @@ impl BootloaderClient for TestClient {
         Ok(vec![])
     }
 
-    async fn set_config(&self, config: &Config) -> Result<BoxFuture<Result<(), Error>>, Error> {
+    async fn set_config(&mut self, config: &Config) -> Result<BoxFuture<Result<(), Error>>, Error> {
         let mut state = self.state.lock().await;
         state.config = config.clone();
         Ok(Box::pin(async { Ok(()) }))
     }
 
-    async fn set_kernel_arg(&mut self, _id: String, _value: String) {}
+    async fn set_kernel_arg(
+        &mut self,
+        _id: String,
+        _value: String,
+    ) -> Result<BoxFuture<Result<(), Error>>, Error> {
+        Ok(Box::pin(async { Ok(()) }))
+    }
 }
 
 /// Starts a testing storage service.

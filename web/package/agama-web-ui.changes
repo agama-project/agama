@@ -1,9 +1,16 @@
 -------------------------------------------------------------------
-Tue Jul 14 12:38:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Tue Jul 14 16:59:31 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Require translated text in user-facing component props, ensuring
   users get the interface in their language
   (gh#agama-project/agama#3696, bsc#1271404).
+
+-------------------------------------------------------------------
+Tue Jul 14 12:38:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Align paths and navigation with the Installation breadcrumb
+  instead of the internal overview concept
+  (gh#agama-project/agama#3722).
 
 -------------------------------------------------------------------
 Mon Jul 13 14:14:41 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
