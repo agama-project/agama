@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul 15 09:16:44 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix setting security kernel parameter (bsc#1269581)
+
+-------------------------------------------------------------------
 Mon Jul 13 16:17:18 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Do not start config tasks until pre-scripts have finished
