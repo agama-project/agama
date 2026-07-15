@@ -29,10 +29,12 @@ module Agama
         class Filesystem < Base
           # @param config [Configs::Filesystem]
           # @param volumes [VolumeTemplatesBuilder]
-          def initialize(config, volumes)
+          # @param found_device [Y2Storage::BlkDevice, nil]
+          def initialize(config, volumes, found_device = nil)
             super()
             @config = config
             @volumes = volumes
+            @found_device = found_device
           end
 
         private
@@ -40,16 +42,37 @@ module Agama
           # @return [VolumeTemplatesBuilder]
           attr_reader :volumes
 
+          # @return [Y2Storage::BlkDevice, nil]
+          attr_reader :found_device
+
           # @see Base#conversions
           def conversions
             {
-              reuse:              config.reuse?,
+              reuse:              reuse?,
               default:            convert_default,
               type:               convert_type,
               label:              config.label,
               mkfsExtraArguments: config.mkfs_args,
               mountOptions:       convert_mount_options
             }
+          end
+
+          # Checks whether reusing is wanted and looks possible
+          #
+          # FIXME: For consistency with other properties, the config solver should decide whether
+          # an existing filesystem is indeed going to be reused and should reflect that in the
+          # Config object. Thus, this would only expose that information directly.
+          # Right now, this includes temporary logic to cover the case in which reuseIfPossible is
+          # set to true but no filesystem will actually be reused.
+          #
+          # @return [Boolean]
+          def reuse?
+            config.reuse? && can_reuse?
+          end
+
+          # @return [Boolean]
+          def can_reuse?
+            !!found_device&.formatted?
           end
 
           # @return [Boolean, nil]
@@ -59,8 +82,18 @@ module Agama
             config.type.default?
           end
 
+          # Converts the type, including some conversions needed for correct UI representation
+          #
+          # FIXME: For consistency with other properties, the config solver should decide whether
+          # the filesystem is indeed going to be reused and should adjust Configs::Filesystem#type
+          # to reflect the final value. Thus, this should be a direct transformation of that value.
+          # As a temporary solution, this code guesses whether reuseIfPossible is going to be
+          # honored and tries to display the final filesystem type.
+          #
           # @return [String, nil]
           def convert_type
+            return found_device.filesystem.type.to_s if reuse?
+
             return unless config.type&.fs_type
 
             if config.type.fs_type.is?(:btrfs)

@@ -32,7 +32,8 @@ module Agama
             filesystem = config.filesystem
             return unless filesystem
 
-            ToModelConversions::Filesystem.new(filesystem, volumes).convert
+            dev = config.respond_to?(:found_device) ? config.found_device : nil
+            ToModelConversions::Filesystem.new(filesystem, volumes, dev).convert
           end
         end
       end

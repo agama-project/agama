@@ -29,6 +29,12 @@ module Agama
         # @return [Pathname] Object that represents the root path.
         ROOT_PATH = Pathname.new("/").freeze
 
+        # Currently this is a direct representation of the reuseIfPossible flag
+        #
+        # FIXME: this should likely represent a more concrete information about whether an existing
+        # filesystem is actually going to be reused or not. Very likely to be calculated by the
+        # solver.
+        #
         # @return [Boolean]
         attr_accessor :reuse
         alias_method :reuse?, :reuse
@@ -36,6 +42,13 @@ module Agama
         # @return [String, nil]
         attr_accessor :path
 
+        # Currently this is a direct representation of the type to use in case the filesystem is
+        # finally created.
+        #
+        # FIXME: in case Agama ends up using a pre-existing filesystem, this class should provide
+        # information about the type of that filesystem, (in addition to/instead of) this. Very
+        # likely an information to be filled by the solver.
+        #
         # @return [Configs::FilesystemType, nil]
         attr_accessor :type
 

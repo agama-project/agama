@@ -107,7 +107,7 @@ shared_examples "with filesystem" do
   context "if #filesystem is configured" do
     let(:filesystem) do
       {
-        reuseIfPossible:    true,
+        reuseIfPossible:    false,
         type:               "xfs",
         label:              "test",
         path:               "/test",
@@ -122,7 +122,7 @@ shared_examples "with filesystem" do
       expect(model_json[:mountPath]).to eq("/test")
       expect(model_json[:filesystem]).to eq(
         {
-          reuse:              true,
+          reuse:              false,
           default:            false,
           type:               "xfs",
           label:              "test",
@@ -204,6 +204,69 @@ shared_examples "with filesystem" do
             label:   "test"
           }
         )
+      end
+    end
+  end
+
+  context "if #filesystem is configured to reuse" do
+    let(:filesystem) do
+      {
+        reuseIfPossible: true,
+        type:            "xfs",
+        label:           "test",
+        path:            "/test"
+      }
+    end
+
+    context "and there is a device matching the search" do
+      before do
+        config.search = Agama::Storage::Configs::Search.new
+        config.search.solve(device)
+      end
+
+      let(:device) do
+        instance_double(
+          Y2Storage::BlkDevice,
+          name:       "/dev/a",
+          formatted?: !!blk_filesystem,
+          filesystem: blk_filesystem
+        )
+      end
+
+      context "and that device actually contains a filesystem" do
+        let(:blk_filesystem) do
+          instance_double(
+            Y2Storage::Filesystems::BlkFilesystem,
+            type: Y2Storage::Filesystems::Type::EXT4
+          )
+        end
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:mountPath]).to eq("/test")
+          expect(model_json[:filesystem][:reuse]).to eq true
+          expect(model_json[:filesystem][:type]).to eq "ext4"
+        end
+      end
+
+      context "but the device is not formatted" do
+        let(:blk_filesystem) { nil }
+
+        it "generates the expected JSON" do
+          model_json = subject.convert
+          expect(model_json[:mountPath]).to eq("/test")
+          expect(model_json[:filesystem][:reuse]).to eq false
+          expect(model_json[:filesystem][:type]).to eq "xfs"
+        end
+      end
+    end
+
+    context "but there is no device to reuse" do
+      it "generates the expected JSON" do
+        model_json = subject.convert
+        expect(model_json[:mountPath]).to eq("/test")
+        expect(model_json[:filesystem][:reuse]).to eq false
+        expect(model_json[:filesystem][:type]).to eq "xfs"
       end
     end
   end
