@@ -23,17 +23,17 @@
 use std::future::Future;
 
 /// Maximum number of worker threads for the Tokio runtime.
-const MAX_WORKER_THREADS: usize = 32;
+const MAX_WORKER_THREADS: usize = 4;
 
 /// Creates a multi-threaded Tokio runtime with a capped number of worker threads.
 ///
-/// The runtime will use `min(available_cores, 32)` worker threads. If the number of
+/// The runtime will use `min(available_cores, 4)` worker threads. If the number of
 /// cores cannot be determined, it falls back to tokio's default behavior.
 ///
 /// # Example
 ///
 /// ```no_run
-/// use agama_utils::runtime::create_runtime;
+/// use agama_server::runtime::create_runtime;
 ///
 /// let runtime = create_runtime().expect("Failed to create Tokio runtime");
 /// runtime.block_on(async {
@@ -54,7 +54,7 @@ pub fn create_runtime() -> std::io::Result<tokio::runtime::Runtime> {
 /// Runs an async function on a custom Tokio runtime with capped worker threads.
 ///
 /// This is a convenience wrapper that creates a runtime with `create_runtime()` and
-/// executes the provided future on it. The runtime will use `min(available_cores, 32)`
+/// executes the provided future on it. The runtime will use `min(available_cores, 4)`
 /// worker threads.
 ///
 /// # Panics
@@ -64,7 +64,7 @@ pub fn create_runtime() -> std::io::Result<tokio::runtime::Runtime> {
 /// # Example
 ///
 /// ```no_run
-/// use agama_utils::runtime::run_async;
+/// use agama_server::runtime::run_async;
 ///
 /// fn main() -> std::io::Result<()> {
 ///     run_async(async {

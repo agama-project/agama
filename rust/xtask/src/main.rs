@@ -1,6 +1,6 @@
 use std::{env, path::PathBuf};
 
-use agama_utils::runtime::run_async;
+use agama_server::runtime::run_async;
 
 mod tasks {
     use std::{fs::File, io::Write};

@@ -26,7 +26,6 @@ use agama_utils::{
     api::{status::Stage, FinishMethod},
     kernel_cmdline::KernelCmdline,
     logging::init_logging,
-    runtime::run_async,
 };
 use anyhow::anyhow;
 use anyhow::Context;
@@ -114,6 +113,7 @@ async fn run() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn main() -> anyhow::Result<()> {
-    run_async(run())
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> anyhow::Result<()> {
+    run().await
 }

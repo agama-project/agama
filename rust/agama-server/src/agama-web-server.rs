@@ -28,9 +28,10 @@ use agama_l10n::helpers as l10n_helpers;
 use agama_lib::{auth::AuthToken, connection_to};
 use agama_server::{
     cert::Certificate,
+    runtime::run_async,
     web::{self},
 };
-use agama_utils::{api::event::Receiver, logging::init_logging, runtime::run_async};
+use agama_utils::{api::event::Receiver, logging::init_logging};
 use aide::axum::ApiRouter;
 use anyhow::Context;
 use axum::{
