@@ -6057,7 +6057,6 @@ version = "0.1.0"
 dependencies = [
  "agama-cli",
  "agama-server",
- "agama-utils",
  "clap",
  "clap-markdown",
  "clap_complete",

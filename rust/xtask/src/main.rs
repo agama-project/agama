@@ -1,7 +1,5 @@
 use std::{env, path::PathBuf};
 
-use agama_server::runtime::run_async;
-
 mod tasks {
     use std::{fs::File, io::Write};
 
@@ -107,28 +105,27 @@ fn print_help() {
     println!("  help           Print this help message");
 }
 
-fn main() -> std::io::Result<()> {
-    run_async(async {
-        let Some(task) = env::args().nth(1) else {
-            eprintln!("You must specify a xtask");
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> std::io::Result<()> {
+    let Some(task) = env::args().nth(1) else {
+        eprintln!("You must specify a xtask");
+        print_help();
+        std::process::exit(1);
+    };
+
+    match task.as_str() {
+        "completions" => tasks::generate_completions(),
+        "markdown" => tasks::generate_markdown(),
+        "manpages" => tasks::generate_manpages(),
+        "openapi" => tasks::generate_openapi().await,
+        "help" | "-h" | "--help" => {
+            print_help();
+            Ok(())
+        }
+        other => {
+            eprintln!("Unknown task '{}'", other);
             print_help();
             std::process::exit(1);
-        };
-
-        match task.as_str() {
-            "completions" => tasks::generate_completions(),
-            "markdown" => tasks::generate_markdown(),
-            "manpages" => tasks::generate_manpages(),
-            "openapi" => tasks::generate_openapi().await,
-            "help" | "-h" | "--help" => {
-                print_help();
-                Ok(())
-            }
-            other => {
-                eprintln!("Unknown task '{}'", other);
-                print_help();
-                std::process::exit(1);
-            }
         }
-    })
+    }
 }
