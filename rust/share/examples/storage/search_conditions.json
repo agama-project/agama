@@ -1,0 +1,117 @@
+{
+  "storage": {
+    "drives": [
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "size": { "greater": "10 GiB" } },
+              { "not": { "name": "/dev/vdb" } }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "or": [
+              { "name": "/dev/vda" },
+              { "name": "/dev/vdb" }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "not": { "size": { "less": "10 GiB" } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              {
+                "or": [
+                  { "name": "/dev/vda" },
+                  { "name": "/dev/vdb" }
+                ]
+              },
+              { "not": { "size": { "less": "1 GiB" } } }
+            ]
+          },
+          "ifNotFound": "skip",
+          "max": 1
+        },
+        "partitions": [
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "number": 1 },
+                  { "size": { "greater": "1 GiB" } }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "or": [
+                  { "number": 1 },
+                  { "number": 2 }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "not": { "name": "/dev/vda1" }
+              }
+            },
+            "delete": true
+          }
+        ]
+      }
+    ],
+    "mdRaids": [
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "name": "/dev/md0" },
+              { "not": { "size": { "less": "100 GiB" } } }
+            ]
+          }
+        }
+      }
+    ],
+    "volumeGroups": [
+      {
+        "name": "system",
+        "search": {
+          "condition": {
+            "or": [
+              { "name": "vg0" },
+              { "name": "vg1" }
+            ]
+          }
+        },
+        "logicalVolumes": [
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "not": { "name": "root" } },
+                  { "size": { "greater": "5 GiB" } }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
