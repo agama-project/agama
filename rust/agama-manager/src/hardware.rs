@@ -252,8 +252,9 @@ impl HardwareNode {
         }
 
         for children in &mut self.children {
-            if let Some(result) = children.find_first_by_class_mut(class) {
-                return Some(result);
+            let result = children.find_first_by_class_mut(class);
+            if result.is_some() {
+                return result;
             }
         }
 
@@ -263,6 +264,8 @@ impl HardwareNode {
 
 impl From<&HardwareNode> for HardwareInfo {
     fn from(value: &HardwareNode) -> Self {
+        // Find the first "processor" node to get the CPU. Use the "product" key. If not present,
+        // fallback to "vendor" (like in s390x).
         let cpu = value
             .find_by_class("processor")
             .first()
