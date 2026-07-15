@@ -682,7 +682,12 @@ export default function DASDTable({ devices }) {
             filterByDevice: true,
           })
         }
-        itemActionsLabel={(d: Device) => `Actions for ${d.channel}`}
+        itemActionsLabel={(d: Device) =>
+          // TRANSLATORS: accessible label for the connection actions toggle
+          // button. %s is replaced by device channel identifier, e.g. "Actions
+          // for 0.0.0150"
+          sprintf(_("Actions for %s"), d.channel)
+        }
         itemActionsComponent={SimpleDropdown}
         emptyState={
           <EmptyState

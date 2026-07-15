@@ -38,6 +38,8 @@
  *
  */
 
+import type { TranslatedString } from "~/i18n";
+
 /** Types */
 
 /**
@@ -111,7 +113,10 @@ export type FieldsValidationResult<T extends Record<string, unknown>> = Partial<
  * requiredString("  ", "Name is required") // "Name is required"
  * requiredString("foo", "Name is required") // undefined
  */
-export const requiredString = (value: string, message: string): string | undefined => {
+export const requiredString = (
+  value: string,
+  message: TranslatedString,
+): TranslatedString | undefined => {
   return value.trim().length === 0 ? message : undefined;
 };
 
@@ -129,8 +134,8 @@ export const intRange = (
   value: number | undefined,
   min: number,
   max: number,
-  message: string,
-): string | undefined => {
+  message: TranslatedString,
+): TranslatedString | undefined => {
   if (value === undefined) return undefined;
   return value >= min && value <= max ? undefined : message;
 };
@@ -147,9 +152,9 @@ export const requiredIntRange = (
   value: number | undefined,
   min: number,
   max: number,
-  emptyMessage: string,
-  invalidMessage: string,
-): string | undefined => {
+  emptyMessage: TranslatedString,
+  invalidMessage: TranslatedString,
+): TranslatedString | undefined => {
   if (value === undefined || value === null) return emptyMessage;
   return intRange(value, min, max, invalidMessage);
 };
@@ -166,8 +171,8 @@ export const optionalIntRange = (
   value: number | undefined,
   min: number,
   max: number,
-  message: string,
-): string | undefined => {
+  message: TranslatedString,
+): TranslatedString | undefined => {
   return intRange(value, min, max, message);
 };
 
@@ -185,9 +190,9 @@ export const optionalIntRange = (
 export const requiredValidList = (
   value: string[],
   predicate: (item: string) => boolean,
-  emptyMessage: string,
-  invalidMessage: string,
-): string | undefined => {
+  emptyMessage: TranslatedString,
+  invalidMessage: TranslatedString,
+): TranslatedString | undefined => {
   if (value.length === 0) return emptyMessage;
   return value.every(predicate) ? undefined : invalidMessage;
 };
@@ -203,8 +208,8 @@ export const requiredValidList = (
 export const optionalValidList = (
   value: string[],
   predicate: (item: string) => boolean,
-  invalidMessage: string,
-): string | undefined => {
+  invalidMessage: TranslatedString,
+): TranslatedString | undefined => {
   return value.every(predicate) ? undefined : invalidMessage;
 };
 
@@ -219,9 +224,9 @@ export const optionalValidList = (
 export const requiredValidString = (
   value: string,
   predicate: (s: string) => boolean,
-  emptyMessage: string,
-  invalidMessage: string,
-): string | undefined => {
+  emptyMessage: TranslatedString,
+  invalidMessage: TranslatedString,
+): TranslatedString | undefined => {
   if (value.length === 0) return emptyMessage;
   return predicate(value) ? undefined : invalidMessage;
 };
@@ -237,8 +242,8 @@ export const requiredValidString = (
 export const optionalValidString = (
   value: string,
   predicate: (s: string) => boolean,
-  invalidMessage: string,
-): string | undefined => {
+  invalidMessage: TranslatedString,
+): TranslatedString | undefined => {
   if (value === "") return undefined;
   return predicate(value) ? undefined : invalidMessage;
 };

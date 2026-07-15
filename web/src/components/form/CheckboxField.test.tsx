@@ -24,6 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
+import { _ } from "~/i18n";
 
 function CheckboxFieldForm({ initChecked = false }: { initChecked?: boolean }) {
   const form = useAppForm({ defaultValues: { licenseAccepted: initChecked } });
@@ -31,7 +32,7 @@ function CheckboxFieldForm({ initChecked = false }: { initChecked?: boolean }) {
   return (
     <form.AppForm>
       <form.AppField name="licenseAccepted">
-        {(field) => <field.CheckboxField label="Accept license" />}
+        {(field) => <field.CheckboxField label={_("Accept license")} />}
       </form.AppField>
     </form.AppForm>
   );
