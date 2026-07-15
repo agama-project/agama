@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { Suspense, useDeferredValue } from "react";
 import { sprintf } from "sprintf-js";
 import { Flex } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
@@ -269,6 +269,53 @@ const SizeInputHelp = ({ singular = false }: { singular?: boolean }) => (
 );
 
 /**
+ * Automatic size note: the only content that depends on the backend size solver.
+ *
+ * Isolated into its own component (rendered inside a Suspense boundary by
+ * {@link SizeFieldsContent}) so that solving never suspends the whole form. The
+ * solve is a suspense query keyed by mount point + filesystem, so a change
+ * produces a new key with no cached data and re-suspends. The page hosts a
+ * single Suspense boundary (Page.Content), which would otherwise swap the entire
+ * form for the loading spinner and back, causing a visible flicker.
+ *
+ * useDeferredValue renders first with the previous (cached) values so the urgent
+ * render never suspends, then re-solves in the background. While the new solve is
+ * pending, React keeps the already-committed note on screen instead of the
+ * fallback. Only the very first solve (initial mount) reaches the fallback.
+ */
+function AutomaticSizeNote({
+  committedMountPoint,
+  filesystem,
+  useSolvedSizes,
+}: {
+  committedMountPoint: string;
+  filesystem: string;
+  useSolvedSizes: UseSolvedSizes;
+}) {
+  const deferredMountPoint = useDeferredValue(committedMountPoint);
+  const deferredFilesystem = useDeferredValue(filesystem);
+
+  // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
+  // This prevents showing misleading size hints while user types "/ho..." and avoids
+  // expensive useVolumeTemplate recalculations on every keystroke.
+  const volume = useVolumeTemplate(deferredMountPoint);
+
+  // Calculate solved sizes - only recalculates when committedMountPoint or filesystem change.
+  // The host form provides the size-solving logic (partition vs logical volume).
+  const solvedSizes = useSolvedSizes(deferredMountPoint, deferredFilesystem);
+  const automaticSizeNote = useAutomaticSizeNote(volume, solvedSizes);
+
+  return (
+    <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
+      <Text isBold textStyle="textColorSubtle">
+        {automaticSizeNote.sizeLabel}
+      </Text>
+      <Text component="small">{automaticSizeNote.rationale}</Text>
+    </Flex>
+  );
+}
+
+/**
  * Inner component that renders size mode-specific inputs and info notes.
  */
 const SizeFieldsContent = withForm({
@@ -279,25 +326,21 @@ const SizeFieldsContent = withForm({
     sizeMode: SIZE_MODE.AUTO,
   } as SizeFieldsContentProps,
   render: function Render({ form, committedMountPoint, filesystem, sizeMode, useSolvedSizes }) {
-    // Use committedMountPoint (not live mountPoint) to avoid reacting to incomplete input.
-    // This prevents showing misleading size hints while user types "/ho..." and avoids
-    // expensive useVolumeTemplate recalculations on every keystroke.
-    const volume = useVolumeTemplate(committedMountPoint);
-
-    // Calculate solved sizes - only recalculates when committedMountPoint or filesystem change.
-    // The host form provides the size-solving logic (partition vs logical volume).
-    const solvedSizes = useSolvedSizes(committedMountPoint, filesystem);
-    const automaticSizeNote = useAutomaticSizeNote(volume, solvedSizes);
-
     switch (sizeMode) {
       case SIZE_MODE.AUTO:
+        // Only AUTO consults the backend solver. It renders inside a local
+        // Suspense boundary so the first solve stays contained here (see
+        // AutomaticSizeNote, which defers its inputs via useDeferredValue to keep
+        // the previous note visible on later changes). Fallback is null: only the
+        // first solve reaches it and the note has no fixed shape to placeholder.
         return (
-          <Flex direction={{ default: "column" }} gap={{ default: "gapXs" }}>
-            <Text isBold textStyle="textColorSubtle">
-              {automaticSizeNote.sizeLabel}
-            </Text>
-            <Text component="small">{automaticSizeNote.rationale}</Text>
-          </Flex>
+          <Suspense fallback={null}>
+            <AutomaticSizeNote
+              committedMountPoint={committedMountPoint}
+              filesystem={filesystem}
+              useSolvedSizes={useSolvedSizes}
+            />
+          </Suspense>
         );
 
       case SIZE_MODE.FIXED:
