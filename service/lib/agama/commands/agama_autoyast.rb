@@ -52,13 +52,15 @@ module Agama
       def run
         profile = fetch_profile
 
-        if profile.nil? && ENV["YAST_SKIP_PROFILE_FETCH_ERROR"] != "1"
-          logger.info("Cannot fetch profile from provided location: #{url}")
-          return false
-        elsif profile.nil? && ENV["YAST_SKIP_PROFILE_FETCH_ERROR"] == "1"
-          # Silently ignore profile fetch errors whenever underlying yast is asked to do so
-          # We need to create fake agama profile to avoid failures further in processing chain
-          profile = {}
+        if profile.nil?
+          if ENV["YAST_SKIP_PROFILE_FETCH_ERROR"] == "1"
+            # Silently ignore profile fetch errors whenever underlying yast is asked to do so
+            # We need to create fake agama profile to avoid failures further in processing chain
+            profile = {}
+          else
+            logger.info("Cannot fetch profile from provided location: #{url}")
+            return false
+          end
         end
 
         unsupported = check_profile(profile)
