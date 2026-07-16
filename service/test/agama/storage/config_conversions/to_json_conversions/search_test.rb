@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -133,6 +133,64 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
       end
 
       include_examples "with device"
+    end
+
+    context "if #condition is configured with an 'and' operator" do
+      let(:condition) do
+        { and: [{ name: "/dev/vda" }, { size: { less: "1 TiB" } }] }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          { and: [{ name: "/dev/vda" }, { size: { less: 1.TiB.to_i } }] }
+        )
+      end
+    end
+
+    context "if #condition is configured with an 'or' operator" do
+      let(:condition) do
+        { or: [{ number: 1 }, { number: 2 }] }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          { or: [{ number: 1 }, { number: 2 }] }
+        )
+      end
+    end
+
+    context "if #condition is configured with a 'not' operator" do
+      let(:condition) { { not: { name: "/dev/vda" } } }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq({ not: { name: "/dev/vda" } })
+      end
+    end
+
+    context "if #condition is configured with nested operators" do
+      let(:condition) do
+        {
+          and: [
+            { size: { less: "1 TiB" } },
+            { not: { name: "/dev/vda" } }
+          ]
+        }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          {
+            and: [
+              { size: { less: 1.TiB.to_i } },
+              { not: { name: "/dev/vda" } }
+            ]
+          }
+        )
+      end
     end
 
     context "if #if_not_found is configured" do

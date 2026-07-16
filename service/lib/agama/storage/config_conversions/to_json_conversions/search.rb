@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/to_json_conversions/base"
+require "agama/storage/configs/search_conditions"
 require "agama/storage/configs/sort_criteria"
 
 module Agama
@@ -46,37 +47,43 @@ module Agama
             }
           end
 
+          # Uses the found device's name when the search is solved with a device;
+          # otherwise serializes the condition tree.
+          #
           # @return [Hash, nil]
           def convert_condition
-            convert_condition_name ||
-              convert_condition_number ||
-              convert_condition_size
+            return { name: config.device.name } if config.device
+
+            convert_condition_node(config.condition)
           end
 
+          # Recursively serializes a condition node.
+          #
+          # @param node [Configs::SearchConditions::*, nil]
           # @return [Hash, nil]
-          def convert_condition_name
-            name = config.name || config.device&.name
-            return unless name
-
-            { name: name }
+          def convert_condition_node(node)
+            case node
+            when Configs::SearchConditions::Name
+              { name: node.name }
+            when Configs::SearchConditions::PartitionNumber
+              { number: node.number }
+            when Configs::SearchConditions::Size
+              { size: { node.operator => node.value.to_i } }
+            when Configs::SearchConditions::And
+              { and: convert_conditions(node.conditions) }
+            when Configs::SearchConditions::Or
+              { or: convert_conditions(node.conditions) }
+            when Configs::SearchConditions::Not
+              { not: convert_condition_node(node.condition) }
+            end
           end
 
-          # @return [Hash, nil]
-          def convert_condition_number
-            number = config.partition_number
-            return unless number
-
-            { number: number }
-          end
-
-          # @return [Hash, nil]
-          def convert_condition_size
-            size = config.size
-            return unless size&.value
-
-            {
-              size: { size.operator => size.value.to_i }
-            }
+          # Serializes a collection of condition nodes.
+          #
+          # @param conditions [Array<Configs::SearchConditions::*>]
+          # @return [Array<Hash>]
+          def convert_conditions(conditions)
+            conditions.map { |c| convert_condition_node(c) }
           end
 
           # @return [Hash, nil]
