@@ -35,20 +35,26 @@ import { _ } from "~/i18n";
 
 /**
  * Password and confirmation fields for the first user.
+ *
+ * `labelPrefixedBy` prefixes the field labels with disambiguating context, so
+ * their generic names ("Password", etc.) do not collide with identical labels
+ * elsewhere in the form.
  */
 const FirstUserPasswordFields = withForm({
   ...defaultOptions,
-  render: function Render({ form }) {
+  props: { labelPrefixedBy: "" },
+  render: function Render({ form, labelPrefixedBy }) {
     return (
       <>
         <form.AppField name="userPassword">
-          {(field) => <field.MaskedField label={_("Password")} />}
+          {(field) => <field.MaskedField label={_("Password")} labelPrefixedBy={labelPrefixedBy} />}
         </form.AppField>
 
         <form.AppField name="userPasswordConfirmation">
           {(field) => (
             <field.MaskedField
               label={_("Password confirmation")}
+              labelPrefixedBy={labelPrefixedBy}
               hideReminders={["keymap", "capslock"]}
             />
           )}
@@ -66,8 +72,11 @@ const FirstUserPasswordFields = withForm({
 const FirstUserFields = withForm({
   ...defaultOptions,
   render: function Render({ form }) {
+    const legendId = React.useId();
+
     return (
       <Fieldset
+        legendId={legendId}
         legend={
           // TRANSLATORS: fieldset legend for first user configuration
           _("Administrator account")
@@ -135,7 +144,7 @@ const FirstUserFields = withForm({
                       isPreserving={usingHashedPassword}
                       onEdit={() => form.setFieldValue("userUsingHashedPassword", false)}
                     >
-                      <FirstUserPasswordFields form={form} />
+                      <FirstUserPasswordFields form={form} labelPrefixedBy={legendId} />
                       <form.Subscribe selector={(s) => s.values.userPassword}>
                         {(password) => <PasswordCheck password={password} />}
                       </form.Subscribe>
@@ -147,6 +156,7 @@ const FirstUserFields = withForm({
                   {(field) => (
                     <field.ArrayField
                       label={<LabelText suffix={_("(optional)")}>{_("SSH Public Keys")}</LabelText>}
+                      labelPrefixedBy={legendId}
                       skipDuplicates
                       maxEntryWidth={60}
                       splitPasteOn={/\r?\n/}

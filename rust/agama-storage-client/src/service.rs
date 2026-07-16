@@ -63,17 +63,10 @@ impl Starter {
     /// from each proxy to cache the current values.
     pub async fn start(self) -> Result<Handler<Service>, Error> {
         let storage_proxy = proxies::Storage1Proxy::new(&self.dbus).await?;
-        storage_proxy.config().await?;
-
         let bootloader_proxy = proxies::BootloaderProxy::new(&self.dbus).await?;
-        bootloader_proxy.config().await?;
-
         let iscsi_proxy = proxies::ISCSIProxy::new(&self.dbus).await?;
-        iscsi_proxy.config().await?;
-
         let dasd_proxy = if Arch::is_s390() {
             let proxy = proxies::DASDProxy::new(&self.dbus).await?;
-            proxy.config().await?;
             Some(proxy)
         } else {
             None
@@ -81,7 +74,6 @@ impl Starter {
 
         let zfcp_proxy = if Arch::is_s390() {
             let proxy = proxies::ZFCPProxy::new(&self.dbus).await?;
-            proxy.config().await?;
             Some(proxy)
         } else {
             None
@@ -94,6 +86,7 @@ impl Starter {
             dasd_proxy,
             zfcp_proxy,
         };
+
         let handler = actor::spawn(service);
         Ok(handler)
     }
@@ -137,8 +130,32 @@ impl Service {
     }
 }
 
+#[async_trait]
 impl Actor for Service {
     type Error = Error;
+
+    // Calls the D-Bus proxies in order to initialize and cache their data.
+    async fn init(&mut self) {
+        if let Err(error) = self.storage_proxy.config().await {
+            tracing::error!("Failed to initialize storage D-Bus proxy: {error}");
+        }
+        if let Err(error) = self.bootloader_proxy.config().await {
+            tracing::error!("Failed to initialize bootloader D-Bus proxy: {error}");
+        }
+        if let Err(error) = self.iscsi_proxy.config().await {
+            tracing::error!("Failed to initialize iSCSI D-Bus proxy: {error}");
+        }
+        if let Some(zfcp_proxy) = &self.zfcp_proxy {
+            if let Err(error) = zfcp_proxy.config().await {
+                tracing::error!("Failed to initialize zFCP D-Bus proxy: {error}");
+            }
+        }
+        if let Some(dasd_proxy) = &self.dasd_proxy {
+            if let Err(error) = dasd_proxy.config().await {
+                tracing::error!("Failed to initialize DASD D-Bus proxy: {error}");
+            }
+        }
+    }
 }
 
 #[async_trait]
@@ -344,7 +361,7 @@ impl MessageHandler<message::iscsi::GetSystem> for Service {
         &mut self,
         _message: message::iscsi::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
-        let raw_json = self.iscsi_proxy.iscsi_system().await?;
+        let raw_json = self.iscsi_proxy.system().await?;
         Ok(try_from_string(&raw_json)?)
     }
 }
@@ -397,7 +414,7 @@ impl MessageHandler<message::dasd::GetSystem> for Service {
         _message: message::dasd::GetSystem,
     ) -> Result<Option<serde_json::Value>, Error> {
         if let Some(proxy) = &self.dasd_proxy {
-            let raw_json = proxy.dasd_system().await?;
+            let raw_json = proxy.system().await?;
             Ok(try_from_string(&raw_json)?)
         } else {
             Ok(None)

@@ -56,7 +56,7 @@ impl CliOutput {
                     .truncate(true)
                     .write(true)
                     .open(&path)
-                    .context(format!("Writing to {:?}", &path))?;
+                    .context(format!("Writing to {:?}", path))?;
                 file.write_all(contents.as_bytes())?
             }
         }

@@ -55,7 +55,7 @@ import {
   useSetSpacePolicy,
   useConvertPartitionableToVolumeGroup,
   useConvertDevice,
-  STORAGE_MODEL_KEY,
+  STORAGE_MODEL_QUERY_KEY,
 } from "./config-model";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { Storage, Bootloader } from "~/model/system";
@@ -118,7 +118,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useConfigModel(), { wrapper });
 
@@ -126,7 +126,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns null when no config is available", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useConfigModel(), { wrapper });
 
@@ -141,7 +141,7 @@ describe("config-model hooks", () => {
         encryption: { password: "secret", tpm: true },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
@@ -154,7 +154,7 @@ describe("config-model hooks", () => {
         encryption: { password: "secret", tpm: false },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
@@ -167,7 +167,7 @@ describe("config-model hooks", () => {
         encryption: { password: "secret", tpm: true },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
@@ -180,7 +180,7 @@ describe("config-model hooks", () => {
         encryption: { password: "secret", tpm: true },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
@@ -188,7 +188,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns false when config is null", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
@@ -200,7 +200,7 @@ describe("config-model hooks", () => {
         boot: { configure: true, bootloader: "grub2" },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
@@ -212,7 +212,7 @@ describe("config-model hooks", () => {
         encryption: { password: "secret", tpm: true },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsGrub2WithTpm(), { wrapper });
 
@@ -234,7 +234,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -254,7 +254,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -267,7 +267,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(null);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -280,7 +280,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(null);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -293,7 +293,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -310,7 +310,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -325,7 +325,7 @@ describe("config-model hooks", () => {
       const config: ConfigModel.Config = {};
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -345,7 +345,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -362,7 +362,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -382,7 +382,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseBootloaderSystem.mockReturnValue(bootloaderSystem);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useIsTpmAvailable(), { wrapper });
 
@@ -406,7 +406,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseSystem.mockReturnValue(system);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useMissingMountPaths(), { wrapper });
 
@@ -428,7 +428,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseSystem.mockReturnValue(system);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useMissingMountPaths(), { wrapper });
 
@@ -441,7 +441,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseSystem.mockReturnValue(system);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useMissingMountPaths(), { wrapper });
 
@@ -456,7 +456,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseSystem.mockReturnValue(system);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useMissingMountPaths(), { wrapper });
 
@@ -469,7 +469,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseSystem.mockReturnValue(null);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useMissingMountPaths(), { wrapper });
 
@@ -485,7 +485,7 @@ describe("config-model hooks", () => {
     };
 
     it("returns device from drives collection", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDevice("drives", 0), { wrapper });
 
@@ -493,7 +493,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns device from mdRaids collection", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDevice("mdRaids", 0), { wrapper });
 
@@ -501,7 +501,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns device from volumeGroups collection", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDevice("volumeGroups", 0), { wrapper });
 
@@ -509,7 +509,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns null when index is out of bounds", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDevice("drives", 10), { wrapper });
 
@@ -517,7 +517,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns null when config is null", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useDevice("drives", 0), { wrapper });
 
@@ -557,7 +557,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda", partitions: [] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => usePartitionable("drives", 0), { wrapper });
 
@@ -569,7 +569,7 @@ describe("config-model hooks", () => {
         mdRaids: [{ name: "/dev/md0", partitions: [] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => usePartitionable("mdRaids", 0), { wrapper });
 
@@ -577,7 +577,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns null when config is null", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => usePartitionable("drives", 0), { wrapper });
 
@@ -591,7 +591,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDrive(1), { wrapper });
 
@@ -599,7 +599,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns null when config is null", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useDrive(0), { wrapper });
 
@@ -613,7 +613,7 @@ describe("config-model hooks", () => {
         mdRaids: [{ name: "/dev/md0" }, { name: "/dev/md1" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useMdRaid(1), { wrapper });
 
@@ -621,7 +621,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns null when config is null", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useMdRaid(0), { wrapper });
 
@@ -638,7 +638,7 @@ describe("config-model hooks", () => {
         ],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useVolumeGroup(1), { wrapper });
 
@@ -646,7 +646,7 @@ describe("config-model hooks", () => {
     });
 
     it("returns null when config is null", () => {
-      queryClient.setQueryData([STORAGE_MODEL_KEY], null);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], null);
 
       const { result } = renderHook(() => useVolumeGroup(0), { wrapper });
 
@@ -661,7 +661,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useSetBootDevice(), { wrapper });
 
@@ -677,7 +677,7 @@ describe("config-model hooks", () => {
         boot: { configure: true },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useSetDefaultBootDevice(), { wrapper });
 
@@ -693,7 +693,7 @@ describe("config-model hooks", () => {
         boot: { configure: true },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDisableBoot(), { wrapper });
 
@@ -709,7 +709,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useSetEncryption(), { wrapper });
 
@@ -724,7 +724,7 @@ describe("config-model hooks", () => {
         encryption: { password: "secret", tpm: false },
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useSetEncryption(), { wrapper });
 
@@ -740,7 +740,7 @@ describe("config-model hooks", () => {
         drives: [],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useAddDrive(), { wrapper });
 
@@ -756,7 +756,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda" }, { name: "/dev/sdb" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDeleteDrive(), { wrapper });
 
@@ -772,7 +772,7 @@ describe("config-model hooks", () => {
         mdRaids: [],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useAddMdRaid(), { wrapper });
 
@@ -788,7 +788,7 @@ describe("config-model hooks", () => {
         mdRaids: [{ name: "/dev/md0" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDeleteMdRaid(), { wrapper });
 
@@ -804,7 +804,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useConvertPartitionableToVolumeGroup(), { wrapper });
 
@@ -820,7 +820,7 @@ describe("config-model hooks", () => {
         volumeGroups: [],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useAddVolumeGroup(), { wrapper });
 
@@ -836,7 +836,7 @@ describe("config-model hooks", () => {
         volumeGroups: [{ name: "vg0", vgName: "vg0", targetDevices: [] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useEditVolumeGroup(), { wrapper });
 
@@ -852,7 +852,7 @@ describe("config-model hooks", () => {
         volumeGroups: [{ name: "vg0", vgName: "vg0", targetDevices: [] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDeleteVolumeGroup(), { wrapper });
 
@@ -868,7 +868,7 @@ describe("config-model hooks", () => {
         volumeGroups: [{ name: "vg0", vgName: "vg0", targetDevices: [], logicalVolumes: [] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useAddLogicalVolume(), { wrapper });
 
@@ -891,7 +891,7 @@ describe("config-model hooks", () => {
         ],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useEditLogicalVolume(), { wrapper });
 
@@ -914,7 +914,7 @@ describe("config-model hooks", () => {
         ],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDeleteLogicalVolume(), { wrapper });
 
@@ -930,7 +930,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda", partitions: [] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useAddPartition(), { wrapper });
 
@@ -946,7 +946,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda", partitions: [{ mountPath: "/" }] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useEditPartition(), { wrapper });
 
@@ -962,7 +962,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda", partitions: [{ mountPath: "/" }] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useDeletePartition(), { wrapper });
 
@@ -978,7 +978,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda", partitions: [] }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useSetFilesystem(), { wrapper });
 
@@ -994,7 +994,7 @@ describe("config-model hooks", () => {
         drives: [{ name: "/dev/sda" }],
       };
 
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useSetSpacePolicy(), { wrapper });
 
@@ -1018,7 +1018,7 @@ describe("config-model hooks", () => {
       };
 
       mockUseSystem.mockReturnValue(system);
-      queryClient.setQueryData([STORAGE_MODEL_KEY], config);
+      queryClient.setQueryData([STORAGE_MODEL_QUERY_KEY], config);
 
       const { result } = renderHook(() => useConvertDevice(), { wrapper });
 

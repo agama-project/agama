@@ -178,7 +178,6 @@ function TargetLoginForm({ target }): React.ReactNode {
   const onChange = handleInputChange(dispatch);
 
   const startupFormOptions = Object.values(StartupOptions).map((option, i) => (
-    /* eslint-disable agama-i18n/string-literals */
     <FormSelectOption key={i} value={option.value} label={_(option.label)} />
   ));
 
@@ -261,7 +260,7 @@ function TargetLoginForm({ target }): React.ReactNode {
                   onChange={onChange}
                 />
               </FormGroup>
-              <FormGroup fieldId="reversePassword" label="Initiator password">
+              <FormGroup fieldId="reversePassword" label={_("Initiator password")}>
                 <PasswordInput
                   id="reversePassword"
                   name="reversePassword"

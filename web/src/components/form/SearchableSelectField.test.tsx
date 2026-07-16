@@ -24,6 +24,7 @@ import React from "react";
 import { screen, waitFor, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
+import { _ } from "~/i18n";
 
 type TestOption = {
   value: string;
@@ -75,10 +76,10 @@ function TestForm({
       <form.AppField name="language">
         {(field) => (
           <field.SearchableSelectField
-            label="Language"
-            placeholder="Filter by language or territory"
-            emptyPlaceholder="Choose an option"
-            noResultsText="No matches"
+            label={_("Language")}
+            placeholder={_("Filter by language or territory")}
+            emptyPlaceholder={_("Choose an option")}
+            noResultsText={_("No matches")}
             clearable={clearable}
             selectedLabel={labelWithDescription ? (o) => `${o.label} (${o.value})` : undefined}
             normalizeQuery={normalizeQuery}
@@ -109,9 +110,9 @@ function RequiredForm() {
       <form.AppField name="language">
         {(field) => (
           <field.SearchableSelectField
-            label="Language"
-            placeholder="Filter by language or territory"
-            noResultsText="No matches"
+            label={_("Language")}
+            placeholder={_("Filter by language or territory")}
+            noResultsText={_("No matches")}
             options={OPTIONS}
           />
         )}

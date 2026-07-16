@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Thu Jul  9 10:04:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for configuring HNV in the initramfs providing the
+  IP configuration through the kernel cmdline with the rd.hcn.ip
+  and the rd.hcn.route options (jsc#PED-14533).
+
+-------------------------------------------------------------------
+Wed Jul  8 13:19:39 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+Fixes related to bsc#1268779:
+- Removed "ignition" from the installer image
+- Do not start "combustion" by default, can be manually enabled
+  with the "rd.systemd.wants=firstboot.target" boot option
+
+-------------------------------------------------------------------
+Tue Jun 30 14:01:30 UTC 2026 - Santiago Zarate <santiago.zarate@suse.com>
+
+- Disable firefox's Link Preview feature gh#agama-project/agama#3687
+
+-------------------------------------------------------------------
 Wed Jun 24 15:19:28 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Break a initrd-nmtui systemd dependency cycle (systemd deletes some services

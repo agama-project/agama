@@ -26,11 +26,11 @@ import { getConfig, getExtendedConfig, putConfig } from "~/api";
 import type { Config } from "~/model/config";
 import type { AxiosResponse } from "axios";
 
-const CONFIG_KEY = "config";
-const EXTENDED_CONFIG_KEY = "extendedConfig";
+const CONFIG_QUERY_KEY = "config";
+const EXTENDED_CONFIG_QUERY_KEY = "extendedConfig";
 
 const configQuery = {
-  queryKey: [CONFIG_KEY],
+  queryKey: [CONFIG_QUERY_KEY],
   queryFn: getConfig,
 };
 
@@ -144,7 +144,7 @@ function useUpdateConfig(): UpdateConfigFn {
 }
 
 const extendedConfigQuery = {
-  queryKey: [EXTENDED_CONFIG_KEY],
+  queryKey: [EXTENDED_CONFIG_QUERY_KEY],
   queryFn: getExtendedConfig,
 };
 
@@ -153,8 +153,8 @@ function useExtendedConfig(): Config | null {
 }
 
 export {
-  CONFIG_KEY,
-  EXTENDED_CONFIG_KEY,
+  CONFIG_QUERY_KEY,
+  EXTENDED_CONFIG_QUERY_KEY,
   configQuery,
   extendedConfigQuery,
   useConfig,

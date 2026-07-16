@@ -355,6 +355,9 @@ export default {
   "Allow growing": [
     "Tillåt växande"
   ],
+  "Allow shrinking": [
+    "Tillåt krympning"
+  ],
   "Already using all available devices": [
     "Använder redan alla tillgängliga enheter"
   ],
@@ -479,9 +482,6 @@ export default {
   ],
   "Binding": [
     "Bindning"
-  ],
-  "BitLocker": [
-    "BitLocker"
   ],
   "Bond": [
     "Bond"
@@ -1032,6 +1032,9 @@ export default {
   "Do not format %s and keep data": [
     "Formatera inte %s och behåll data"
   ],
+  "Do not modify": [
+    "Modifiera inte"
+  ],
   "Do not register": [
     "Registrera inte"
   ],
@@ -1088,9 +1091,6 @@ export default {
   ],
   "Edit": [
     "Redigera"
-  ],
-  "Edit binding settings": [
-    "Redigera bindningsinställningar"
   ],
   "Edit connection": [
     "Redigera anslutning"
@@ -1166,6 +1166,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter eller Tabb för att lägga till, Backspace eller Delete för att ta bort, piltangenter för att navigera i poster, Escape för att avsluta"
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1294,9 +1297,6 @@ export default {
   ],
   "Gateway": [
     "Gateway"
-  ],
-  "GiB": [
-    "GiB"
   ],
   "Go to [installation] summary.": [
     "Gå till [Installation]sammanfattning."
@@ -1594,9 +1594,6 @@ export default {
   "Keyboard layout": [
     "Tangentbordslayout"
   ],
-  "KiB": [
-    "KiB"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1708,6 +1705,9 @@ export default {
   "Login form": [
     "Inloggningsformulär"
   ],
+  "Loopback": [
+    "Loopback"
+  ],
   "MAC address": [
     "MAC adress"
   ],
@@ -1746,9 +1746,6 @@ export default {
   ],
   "Memory": [
     "Minne"
-  ],
-  "MiB": [
-    "MiB"
   ],
   "Min channel": [
     "Minimum kanal"
@@ -2187,9 +2184,6 @@ export default {
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     "Fysiska volymer kan skapas på några av de valda diskarna baserat på den totala storleken på de logiska volymerna."
   ],
-  "PiB": [
-    "PiB"
-  ],
   "Port": [
     "Port"
   ],
@@ -2426,9 +2420,6 @@ export default {
   ],
   "SUSE Customer Center (SCC)": [
     "SUSE kundcenter (SCC)"
-  ],
-  "Search": [
-    "Sök"
   ],
   "Secured network": [
     "Säkert nätverk"
@@ -3058,9 +3049,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     "Detta kommer att injiceras i kommandot för att skapa filsystem (%s)."
   ],
-  "TiB": [
-    "TiB"
-  ],
   "Time Synchronization Servers": [
     "Tidssynkroniseringsservrar"
   ],
@@ -3368,14 +3356,14 @@ export default {
   "When ready, click on the [install] button at the end of the page.": [
     "När du är redo, klicka på [installera] knappen längst ner på sidan."
   ],
+  "Wi-Fi": [
+    "Wi-Fi"
+  ],
   "Wi-Fi connection form": [
     "WiFi anslutningsformulär"
   ],
   "Will be supported in a future version.": [
     "Kommer att stödjas i en framtida version."
-  ],
-  "Wrong selection": [
-    "Fel val"
   ],
   "XFS": [
     "XFS"

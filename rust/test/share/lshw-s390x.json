@@ -1,0 +1,40 @@
+{
+  "id": "s390x",
+  "class": "system",
+  "claimed": true,
+  "description": "System",
+  "children": [
+    {
+      "id": "memory",
+      "class": "memory",
+      "claimed": true,
+      "description": "System memory",
+      "physid": "0",
+      "size": 8589934592
+    },
+    {
+      "id": "cpu:0",
+      "class": "processor",
+      "claimed": true,
+      "product": "IBM/S390",
+      "physid": "1",
+      "businfo": "cpu@0",
+      "configuration": {
+        "cores": "2",
+        "enabledcores": "2"
+      }
+    },
+    {
+      "id": "cpu:1",
+      "class": "processor",
+      "claimed": true,
+      "product": "IBM/S390",
+      "physid": "2",
+      "businfo": "cpu@1",
+      "configuration": {
+        "cores": "2",
+        "enabledcores": "2"
+      }
+    }
+  ]
+}

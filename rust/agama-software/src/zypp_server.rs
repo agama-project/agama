@@ -1037,7 +1037,7 @@ impl ZyppServer {
             }
             if let Err(error) = registration.register_addon(zypp, security, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
-                let issue_id = format!("addon_registration_failed[{}]", &addon.id);
+                let issue_id = format!("addon_registration_failed[{}]", addon.id);
                 let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
                 issues.product.push(issue);
             }

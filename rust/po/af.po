@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 16:05+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
 "PO-Revision-Date: 2026-05-31 11:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Afrikaans <https://l10n.opensuse.org/projects/agama/agama-"
@@ -684,110 +684,114 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Stelsel word voorbereid"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr ""
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr ""
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
 msgstr ""
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Begin van gebruikersvoorinstallasieskripte"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 msgid "Installing software"
 msgstr ""
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Stelsel word voorbereid"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:296
+#: agama-manager/src/actions.rs:271
+msgid "Finalize installation"
+msgstr ""
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:306
+#: agama-manager/src/actions.rs:356
 msgid "Configuring remote access"
 msgstr ""
 
-#: agama-manager/src/actions.rs:316
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr ""
 
-#: agama-manager/src/actions.rs:326
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr ""
 
-#: agama-manager/src/actions.rs:337
+#: agama-manager/src/actions.rs:387
 msgid "Setting up NTP"
 msgstr ""
 
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:398
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Begin van gebruikersvoorinstallasieskripte"
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr "Begin van gebruikersvoorinstallasieskripte"
 
-#: agama-manager/src/actions.rs:376
+#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:576
 msgid "Configuring zFCP devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:702
+#: agama-manager/src/actions.rs:752
 msgid "Configuring SELinux"
 msgstr ""
 
@@ -872,7 +876,7 @@ msgstr ""
 msgid "Skip"
 msgstr ""
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:303
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -979,15 +983,15 @@ msgstr "Nee"
 msgid "Yes"
 msgstr "Ja"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr ""
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr ""
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr ""
 

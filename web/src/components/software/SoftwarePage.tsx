@@ -54,6 +54,9 @@ import { isPatternSelected } from "~/utils/software";
 import { SOFTWARE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 
+import type { TranslatedString } from "~/i18n";
+import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
+
 import type { Pattern } from "~/model/system/software";
 import type { PatternsSelection } from "~/model/proposal/software";
 import { SelectedBy } from "~/model/proposal/software";
@@ -67,8 +70,8 @@ const NothingSelected = ({
   buttonText,
 }: {
   to: string;
-  body: string;
-  buttonText: string;
+  body: TranslatedString;
+  buttonText: TranslatedString;
 }) => (
   // TRANSLATORS: empty state title for a software section with nothing selected
   <EmptyState headingLevel="h4" titleText={_("None selected")} variant="sm">
@@ -86,7 +89,7 @@ const NothingSelected = ({
 /**
  * Informational empty state shown when patterns are not available.
  */
-const NoAvailable = ({ title, body }: { title: string; body: string }) => (
+const NoAvailable = ({ title, body }: { title: TranslatedString; body: TranslatedString }) => (
   <EmptyState headingLevel="h4" titleText={title} variant="sm">
     <EmptyStateBody>{body}</EmptyStateBody>
   </EmptyState>
@@ -207,11 +210,11 @@ const SpaceRequirements = ({
 
 type SoftwareSectionProps = {
   /** Section heading. */
-  title: string;
+  title: TranslatedString;
   /** Optional explanatory text rendered below the heading. */
   description?: React.ReactNode;
   /** Label for the link that opens the pattern selection page. */
-  buttonText: string;
+  buttonText: TranslatedString;
   /** Total number of patterns in this group, selected or not. */
   totalCount: number;
   /** Patterns in this group that are currently selected. */
@@ -375,7 +378,13 @@ function SoftwarePage() {
   );
 
   return (
-    <Page breadcrumbs={[{ label: _("Software") }]} progress={{ scope: "software" }}>
+    <Page
+      breadcrumbs={[{ label: _("Software") }]}
+      progress={{
+        scope: "software",
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+      }}
+    >
       <Page.Content>
         <IssuesAlert issues={issues} />
         <SoftwarePageContent />

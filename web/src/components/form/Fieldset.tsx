@@ -24,11 +24,21 @@ import React from "react";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 
+import type { TranslatedString } from "~/i18n";
+
 export interface FieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSetElement> {
   /**
    * Text displayed as the fieldset legend
    */
-  legend: string;
+  legend: TranslatedString;
+  /**
+   * Optional ID for the legend element.
+   *
+   * Useful for creating composite accessible names via aria-labelledby,
+   * allowing fields within the fieldset to reference the legend for context
+   * without changing visible labels.
+   */
+  legendId?: string;
   /**
    * Optional descriptive text displayed below the legend
    */
@@ -67,10 +77,10 @@ export interface FieldsetProps extends React.FieldsetHTMLAttributes<HTMLFieldSet
  * </Fieldset>
  * ```
  */
-export function Fieldset({ legend, description, children, ...props }: FieldsetProps) {
+export function Fieldset({ legend, legendId, description, children, ...props }: FieldsetProps) {
   return (
     <fieldset {...props}>
-      <legend>{legend}</legend>
+      <legend id={legendId}>{legend}</legend>
       <NestedContent margin="mxLg">
         {description && <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{description}</Text>}
         {children}

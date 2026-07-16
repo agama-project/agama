@@ -1,4 +1,88 @@
 -------------------------------------------------------------------
+Thu Jul 16  07:06:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Prevent the partition and logical volume forms from flickering
+  when changing the mount point or file system
+  (gh#agama-project/agama#3728, bsc#1271524).
+
+-------------------------------------------------------------------
+Tue Jul 14 16:59:31 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Require translated text in user-facing component props, ensuring
+  users get the interface in their language
+  (gh#agama-project/agama#3696, bsc#1271404).
+
+-------------------------------------------------------------------
+Tue Jul 14 12:38:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Align paths and navigation with the Installation breadcrumb
+  instead of the internal overview concept
+  (gh#agama-project/agama#3722).
+
+-------------------------------------------------------------------
+Mon Jul 13 14:14:41 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed check for BIOS RAIDs (bsc#1271120).
+
+-------------------------------------------------------------------
+Tue Jul  7 10:55:04 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Introduced the "MarkedString" type and activated a new linter
+  check to avoid using N_() without _() later which results in
+  untranslated texts in the UI (related to bsc#1269514)
+
+-------------------------------------------------------------------
+Mon Jul  6 08:28:06 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix dropdown menus overflowing beyond viewport boundaries
+  (bsc#1262122).
+
+-------------------------------------------------------------------
+Mon Jul  6 05:10:24 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Use correct empty state text for LVM tab in the device selector
+  (gh#agama-project/agama#3690).
+
+-------------------------------------------------------------------
+Fri Jul  3 11:13:28 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Add missing translations (bsc#1269514).
+
+-------------------------------------------------------------------
+Thu Jul  2 12:01:52 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allow form fields to build their accessible name from their own
+  label prefixed with other elements, so fields that would otherwise
+  share a label (e.g. "Password") stay distinct for screen readers
+  (gh#agama-project/agama#3684, gh#agama-project/agama#3685).
+
+-------------------------------------------------------------------
+Thu Jul  2 10:11:12 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Make pages to wait for an explicit set of queries (needed for
+  bsc#1269224).
+
+-------------------------------------------------------------------
+Wed Jul  1 15:09:51 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Move binding information to Settings section and remove obsolete
+  dedicated "Binding" card and edit link in connection details
+  (gh#agama-project/agama#3686).
+
+-------------------------------------------------------------------
+Tue Jun 30 10:16:43 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix duplicate "Mode" labels in System page accessibility tree
+  (gh#agama-project/agama#3684).
+
+-------------------------------------------------------------------
+Sun Jun 28 21:50:40 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Polish the keyboard focus ring and assorted UI rough edges (control
+  sizes, disabled-button spinner, dark skip link, form-alert scroll)
+  (gh#agama-project/agama#3675).
+
+-------------------------------------------------------------------
 Fri Jun 26 10:03:36 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve disabled text and status color contrast to meet WCAG AA

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 16:05+0000\n"
+"POT-Creation-Date: 2026-06-30 20:24+0000\n"
 "PO-Revision-Date: 2026-03-11 07:04+0000\n"
 "Last-Translator: Timo Jyrinki <tjyrinki@suse.com>\n"
 "Language-Team: Finnish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -695,115 +695,120 @@ msgstr ""
 msgid "Failed to write the file %s. Do you want to try again?"
 msgstr ""
 
-#: agama-manager/src/actions.rs:77
+#: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
 msgstr "Valmistele järjestelmä"
 
-#: agama-manager/src/actions.rs:78
+#: agama-manager/src/actions.rs:79
 msgid "Install software"
 msgstr "Asenna ohjelmistoja"
 
-#: agama-manager/src/actions.rs:79
+#: agama-manager/src/actions.rs:80
 msgid "Configure the system"
 msgstr "Tee järjestelmän asetukset"
 
-#: agama-manager/src/actions.rs:93
+#: agama-manager/src/actions.rs:94
 #, fuzzy
 msgid "Preparing storage"
 msgstr "Valmistellaan tallennustilaehdotusta"
 
-#: agama-manager/src/actions.rs:111
+#: agama-manager/src/actions.rs:112
 #, fuzzy
 msgid "Running post-partitioning scripts"
 msgstr "Suoritetaan käyttäjään esiasennuskomentojonoja"
 
-#: agama-manager/src/actions.rs:136
+#: agama-manager/src/actions.rs:137
 #, fuzzy
 msgid "Installing software"
 msgstr "Asenna ohjelmistoja"
 
-#: agama-manager/src/actions.rs:173
+#: agama-manager/src/actions.rs:174
 #, fuzzy
 msgid "Configuring the system"
 msgstr "Tee järjestelmän asetukset"
 
-#: agama-manager/src/actions.rs:240
+#: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
 msgstr ""
 
-#: agama-manager/src/actions.rs:296
+#: agama-manager/src/actions.rs:271
+#, fuzzy
+msgid "Finalize installation"
+msgstr "Lasketaan ohjelmistoehdotusta"
+
+#: agama-manager/src/actions.rs:346
 msgid "Storing security settings"
 msgstr "Tallennetaan tietoturva-asetuksia"
 
-#: agama-manager/src/actions.rs:306
+#: agama-manager/src/actions.rs:356
 #, fuzzy
 msgid "Configuring remote access"
 msgstr "Tehdään DASD-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:316
+#: agama-manager/src/actions.rs:366
 msgid "Setting up the hostname"
 msgstr "Asetataan isäntänimi"
 
-#: agama-manager/src/actions.rs:326
+#: agama-manager/src/actions.rs:376
 msgid "Setting up the network proxy"
 msgstr "Asetetaan verkkovälipalvelinta"
 
-#: agama-manager/src/actions.rs:337
+#: agama-manager/src/actions.rs:387
 #, fuzzy
 msgid "Setting up NTP"
 msgstr "Tehdään verkkoasetuksia"
 
-#: agama-manager/src/actions.rs:348
+#: agama-manager/src/actions.rs:398
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Tuodaan käyttäjän tiedostoja"
 
-#: agama-manager/src/actions.rs:361
+#: agama-manager/src/actions.rs:411
 msgid "Running user pre-installation scripts"
 msgstr "Suoritetaan käyttäjään esiasennuskomentojonoja"
 
-#: agama-manager/src/actions.rs:376
+#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "Tallentaan kysymysasetuksia"
 
-#: agama-manager/src/actions.rs:386
+#: agama-manager/src/actions.rs:436
 msgid "Storing localization settings"
 msgstr "Tallennetaan kotoistusasetuksia"
 
-#: agama-manager/src/actions.rs:396
+#: agama-manager/src/actions.rs:446
 msgid "Storing users settings"
 msgstr "Tallennetaan käyttäjien asetuksia"
 
-#: agama-manager/src/actions.rs:502
+#: agama-manager/src/actions.rs:552
 msgid "Configuring iSCSI devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:526
+#: agama-manager/src/actions.rs:576
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Tehdään iSCSI-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:550
+#: agama-manager/src/actions.rs:600
 msgid "Configuring DASD devices"
 msgstr "Tehdään DASD-laitteiden asetuksia"
 
-#: agama-manager/src/actions.rs:574
+#: agama-manager/src/actions.rs:624
 msgid "Setting up the network"
 msgstr "Tehdään verkkoasetuksia"
 
-#: agama-manager/src/actions.rs:603
+#: agama-manager/src/actions.rs:653
 msgid "Preparing the storage proposal"
 msgstr "Valmistellaan tallennustilaehdotusta"
 
-#: agama-manager/src/actions.rs:636
+#: agama-manager/src/actions.rs:686
 msgid "Storing bootloader settings"
 msgstr "Tallennetaan käynnistyslataimen asetuksia"
 
-#: agama-manager/src/actions.rs:669
+#: agama-manager/src/actions.rs:719
 msgid "Preparing the software proposal"
 msgstr "Valmistellaan ohjelmistoehdotusta"
 
-#: agama-manager/src/actions.rs:702
+#: agama-manager/src/actions.rs:752
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Tehdään DASD-laitteiden asetuksia"
@@ -896,7 +901,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Ohita tämä kohta"
 
-#: agama-software/src/service.rs:287
+#: agama-software/src/service.rs:303
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "Ohjelmistoehdotusta ei voi luoda sisäisen virheen takia."
@@ -1007,15 +1012,15 @@ msgstr "Ei"
 msgid "Yes"
 msgstr "Kyllä"
 
-#: agama-utils/src/resolvable.rs:62
+#: agama-utils/src/resolvable.rs:65
 msgid "package"
 msgstr "paketti"
 
-#: agama-utils/src/resolvable.rs:63
+#: agama-utils/src/resolvable.rs:66
 msgid "pattern"
 msgstr "kuvio"
 
-#: agama-utils/src/resolvable.rs:64
+#: agama-utils/src/resolvable.rs:67
 msgid "product"
 msgstr "tuote"
 

@@ -36,6 +36,7 @@ import {
   SecurityProtocols,
 } from "~/types/network";
 import { _, N_ } from "~/i18n";
+import type { MarkedString, TranslatedString } from "~/i18n";
 
 /**
  * Connection type constants.
@@ -55,7 +56,7 @@ export const CONNECTION_TYPE = {
 /**
  * Translatable labels for connection states.
  */
-const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
+const CONNECTION_STATE_LABELS: Record<ConnectionState, MarkedString> = {
   unknown: N_("Unknown"),
   activating: N_("Activating"),
   activated: N_("Activated"),
@@ -66,8 +67,8 @@ const CONNECTION_STATE_LABELS: Record<ConnectionState, string> = {
 /**
  * Returns the translated label for a connection state.
  */
-// eslint-disable-next-line agama-i18n/string-literals
-const connectionStateLabel = (state: ConnectionState): string => _(CONNECTION_STATE_LABELS[state]);
+const connectionStateLabel = (state: ConnectionState): TranslatedString =>
+  _(CONNECTION_STATE_LABELS[state]);
 
 /**
  * Returns true if the given connection type is virtual.
@@ -80,20 +81,21 @@ const isVirtual = (type: ConnectionType): boolean =>
 /**
  * Labels for connection types.
  */
-const CONNECTION_TYPE_LABELS: Record<ConnectionType, string> = {
-  [CONNECTION_TYPE.ETHERNET]: "Ethernet",
-  [CONNECTION_TYPE.WIFI]: "Wi-Fi",
-  [CONNECTION_TYPE.LOOPBACK]: "Loopback",
-  [CONNECTION_TYPE.BOND]: "Bond",
-  [CONNECTION_TYPE.BRIDGE]: "Bridge",
-  [CONNECTION_TYPE.VLAN]: "VLAN",
-  [CONNECTION_TYPE.UNKNOWN]: "Unknown",
+const CONNECTION_TYPE_LABELS: Record<ConnectionType, MarkedString> = {
+  [CONNECTION_TYPE.ETHERNET]: N_("Ethernet"),
+  [CONNECTION_TYPE.WIFI]: N_("Wi-Fi"),
+  [CONNECTION_TYPE.LOOPBACK]: N_("Loopback"),
+  [CONNECTION_TYPE.BOND]: N_("Bond"),
+  [CONNECTION_TYPE.BRIDGE]: N_("Bridge"),
+  [CONNECTION_TYPE.VLAN]: N_("VLAN"),
+  [CONNECTION_TYPE.UNKNOWN]: N_("Unknown"),
 };
 
 /**
  * Returns the label for a connection type.
  */
-const connectionTypeLabel = (type: ConnectionType): string => CONNECTION_TYPE_LABELS[type];
+const connectionTypeLabel = (type: ConnectionType): TranslatedString =>
+  _(CONNECTION_TYPE_LABELS[type]);
 
 /**
  * Returns the type for the given connection.

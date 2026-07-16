@@ -170,10 +170,10 @@ async fn install(http_client: BaseHTTPClient, mut ws: WebSocketClient) -> anyhow
     let status = manager_client.status().await?;
     let issues: Vec<IssueWithScope> = manager_client.issues().await?;
     if status.stage != Stage::Configuring {
-        return Err(CliError::Installation)?;
+        Err(CliError::Installation)?;
     }
     if !issues.is_empty() {
-        return Err(CliError::Validation)?;
+        Err(CliError::Validation)?;
     }
 
     manager_client.install().await?;

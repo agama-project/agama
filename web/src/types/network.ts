@@ -33,13 +33,7 @@ import {
  * Union type of all connection type string values.
  */
 export type ConnectionType =
-  | "ethernet"
-  | "wireless"
-  | "loopback"
-  | "bond"
-  | "bridge"
-  | "vlan"
-  | "unknown";
+  "ethernet" | "wireless" | "loopback" | "bond" | "bridge" | "vlan" | "unknown";
 
 /**
  * Enum for AccessPoint flags
@@ -124,6 +118,13 @@ enum ConnectionMethod {
 enum VlanProtocol {
   IEEE_802_1Q = "802.1Q",
   IEEE_802_1AD = "802.1ad",
+}
+
+enum VlanFlag {
+  REORDER_HEADERS = "reorder-headers",
+  GVRP = "gvrp",
+  LOOSE_BINDING = "loose-binding",
+  MVRP = "mvrp",
 }
 
 enum DeviceType {
@@ -338,6 +339,7 @@ type Vlan = {
   id: number;
   parent: string;
   protocol?: VlanProtocol;
+  flags?: VlanFlag[];
 };
 
 type ConnectionOptions = {
@@ -615,6 +617,7 @@ export {
   NetworkSystem,
   SecurityProtocols,
   VlanProtocol,
+  VlanFlag,
   WifiNetworkStatus,
   Wireless,
 };

@@ -355,6 +355,9 @@ export default {
   "Allow growing": [
     "გაზრდის დაშვება"
   ],
+  "Allow shrinking": [
+    "დაპატარავების დაშვება"
+  ],
   "Already using all available devices": [
     "უკვე გამოიყენება ყველა ხელმისაწვდომი მოწყობილობა"
   ],
@@ -479,9 +482,6 @@ export default {
   ],
   "Binding": [
     "მიმაგრება"
-  ],
-  "BitLocker": [
-    "BitLocker"
   ],
   "Bond": [
     "დაწყვილება"
@@ -1032,6 +1032,9 @@ export default {
   "Do not format %s and keep data": [
     "%s-ის არდაფორმატებადა მონაცემების შენარჩუნება"
   ],
+  "Do not modify": [
+    "არ შეცვალო"
+  ],
   "Do not register": [
     "რეგისტრაციის გარეშე"
   ],
@@ -1088,9 +1091,6 @@ export default {
   ],
   "Edit": [
     "ჩასწორება"
-  ],
-  "Edit binding settings": [
-    "მიბმის პარამეტრების ჩასწორება"
   ],
   "Edit connection": [
     "კავშირის ჩასწორება"
@@ -1166,6 +1166,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     ""
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1294,9 +1297,6 @@ export default {
   ],
   "Gateway": [
     "ნაგულისხმევი რაუტერი"
-  ],
-  "GiB": [
-    "გიბ"
   ],
   "Go to [installation] summary.": [
     "გადასვლა [დაყენების] შეჯამებაზე."
@@ -1594,9 +1594,6 @@ export default {
   "Keyboard layout": [
     "კლავიატურის განლაგება"
   ],
-  "KiB": [
-    "კიბ"
-  ],
   "LUN": [
     "LUN"
   ],
@@ -1708,6 +1705,9 @@ export default {
   "Login form": [
     "შესვლის ფორმა"
   ],
+  "Loopback": [
+    "მარყუჟი"
+  ],
   "MAC address": [
     "MAC მისამართი"
   ],
@@ -1746,9 +1746,6 @@ export default {
   ],
   "Memory": [
     "მეხსიერება"
-  ],
-  "MiB": [
-    "მიბ"
   ],
   "Min channel": [
     "მინ. არხი"
@@ -2187,9 +2184,6 @@ export default {
   "Physical volumes may be created on some of the chosen disks based on the logical volumes total size.": [
     ""
   ],
-  "PiB": [
-    "პიბ"
-  ],
   "Port": [
     "პორტი"
   ],
@@ -2427,9 +2421,6 @@ export default {
   "SUSE Customer Center (SCC)": [
     "SUSE Customer Center (SCC)"
   ],
-  "Search": [
-    "ძებნა"
-  ],
   "Secured network": [
     "დაცული ქსელი"
   ],
@@ -2558,7 +2549,7 @@ export default {
     "დააყენეთ მინიმუმი და მაქსიმუმი"
   ],
   "Set minimum; use more space if available": [
-    ""
+    "მინიმუმის დაყენება; მეტი ადგილის გამოყენება, თუ ხელმისაწვდომია"
   ],
   "Sets up a main login account. It can run administrator commands using [sudo] but is separate from the root account.": [
     ""
@@ -3058,9 +3049,6 @@ export default {
   "This will be injected to the command to create the file system (%s).": [
     ""
   ],
-  "TiB": [
-    "ტიბ"
-  ],
   "Time Synchronization Servers": [
     "დროის სინქრონიზაციის სერვერები"
   ],
@@ -3368,14 +3356,14 @@ export default {
   "When ready, click on the [install] button at the end of the page.": [
     "როცა მზად იქნებით, გვერდის ბოლოში დააწკაპუნეთ ღილაკზე [დაყენება]."
   ],
+  "Wi-Fi": [
+    "Wi-Fi"
+  ],
   "Wi-Fi connection form": [
     "WiFi მიერთება წყაროდან"
   ],
   "Will be supported in a future version.": [
     "მხარდაჭერილი იქნება მომავალ ვერსიაში."
-  ],
-  "Wrong selection": [
-    "არასწორი არჩევანი"
   ],
   "XFS": [
     "XFS"

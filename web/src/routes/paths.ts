@@ -49,7 +49,6 @@ const REGISTRATION = {
 const ROOT = {
   root: "/",
   login: "/login",
-  overview: "/overview",
   installation: "/installation",
   installationProgress: "/installation/progress",
   installationFinished: "/installation/finished",

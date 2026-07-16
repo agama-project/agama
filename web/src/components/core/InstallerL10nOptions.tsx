@@ -51,6 +51,8 @@ import { Icon } from "~/components/layout";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
+
+import type { TranslatedString } from "~/i18n";
 import supportedLanguages from "~/languages.json";
 import { ROOT, L10N } from "~/routes/paths";
 import { useProductInfo } from "~/hooks/model/config/product";
@@ -165,10 +167,7 @@ const formReducer = (state: FormState, action: FormAction): FormState => {
  * Supported dialog actions.
  */
 type DialogAction =
-  | { type: "OPEN" }
-  | { type: "CLOSE" }
-  | { type: "SET_BUSY" }
-  | { type: "SET_IDLE" };
+  { type: "OPEN" } | { type: "CLOSE" } | { type: "SET_BUSY" } | { type: "SET_IDLE" };
 
 /**
  * Represents the dialog state
@@ -269,7 +268,7 @@ const ReusableSettings = ({ isReuseAllowed, children }) => {
 
 type TextWithLinkToL10nProps = {
   /** The text containing a bracketed substring for the link. */
-  text: string;
+  text: TranslatedString;
   /**
    * Optional handler triggered when the user activates the link. Useful for
    * performing side effects, such as closing the dialog. Navigation may not occur

@@ -20,6 +20,8 @@
 import React, { useCallback, useRef } from "react";
 import Icon from "~/components/layout/Icon";
 
+import type { TranslatedString } from "~/i18n";
+
 /** Pixels each arrow-key press adds to or removes from the panel height. */
 const KEYBOARD_STEP = 32;
 
@@ -35,7 +37,7 @@ type ResizeHandleProps = {
    */
   onStep: (delta: number) => void;
   /** Accessible label describing what the handle resizes. */
-  label: string;
+  label: TranslatedString;
 };
 
 /**

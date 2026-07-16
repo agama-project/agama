@@ -221,7 +221,12 @@ export default function MenuButton({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       toggleRef={pfToggleRef}
-      popperProps={{ direction: "down", enableFlip: false, ...menuProps.popperProps }}
+      popperProps={{
+        direction: "down",
+        enableFlip: true,
+        flipBehavior: ["bottom-start"],
+        ...menuProps.popperProps,
+      }}
       toggle={
         React.isValidElement(customToggle) ? (
           React.cloneElement(customToggle as React.ReactElement, baseToggleProps)

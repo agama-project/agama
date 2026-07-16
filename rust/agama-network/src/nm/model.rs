@@ -71,7 +71,7 @@ impl TryFrom<NmWirelessMode> for WirelessMode {
 
 impl fmt::Display for NmWirelessMode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", &self.0)
+        write!(f, "{}", self.0)
     }
 }
 
@@ -267,7 +267,7 @@ impl NmKeyManagement {
 
 impl fmt::Display for NmKeyManagement {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", &self.0)
+        write!(f, "{}", self.0)
     }
 }
 
@@ -310,6 +310,6 @@ impl TryFrom<NmMethod> for Ipv6Method {
 
 impl fmt::Display for NmMethod {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", &self.0)
+        write!(f, "{}", self.0)
     }
 }

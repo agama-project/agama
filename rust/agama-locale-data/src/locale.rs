@@ -72,11 +72,7 @@ pub struct LocaleId {
 
 impl Display for LocaleId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}_{}.{}",
-            &self.language, &self.territory, &self.encoding
-        )
+        write!(f, "{}_{}.{}", self.language, self.territory, self.encoding)
     }
 }
 
@@ -159,7 +155,7 @@ pub struct InvalidKeymapId(String);
 impl KeymapId {
     pub fn dashed(&self) -> String {
         if let Some(variant) = &self.variant {
-            format!("{}-{}", &self.layout, variant)
+            format!("{}-{}", self.layout, variant)
         } else {
             self.layout.to_owned()
         }
@@ -169,9 +165,9 @@ impl KeymapId {
 impl Display for KeymapId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(variant) = &self.variant {
-            write!(f, "{}({})", &self.layout, variant)
+            write!(f, "{}({})", self.layout, variant)
         } else {
-            write!(f, "{}", &self.layout)
+            write!(f, "{}", self.layout)
         }
     }
 }
