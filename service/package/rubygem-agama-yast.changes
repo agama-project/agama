@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 16 11:01:58 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- AutoYaST to Agama profile conversion doesn't crash when empty
+  profile is provided. 
+
+-------------------------------------------------------------------
 Tue Jun 30 14:40:25 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Always emit signals for iSCSI, DASD and zFCP (needed for

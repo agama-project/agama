@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 16 11:01:05 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Fixed issues when fetching AutoYast XML profile.
+  Agama cares about YAST_SKIP_PROFILE_FETCH_ERROR now.
+  agama-autoyast doesn't end with error when no profile found.
+
+-------------------------------------------------------------------
 Wed Jul 15 10:13:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when running "lshw" fails or the output cannot be
