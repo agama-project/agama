@@ -452,21 +452,20 @@ fn ip_config_to_ipv4_dbus<'a>(
         ip_config.link_local4
     };
 
+    let method4 = ip_config.method4.unwrap_or(Ipv4Method::Auto);
+
     let mut ipv4_dbus = HashMap::from([
         ("address-data", address_data),
         ("dns-data", dns_data),
-        ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        (
-            "method",
-            ip_config
-                .method4
-                .unwrap_or(Ipv4Method::Auto)
-                .to_string()
-                .into(),
-        ),
+        ("method", method4.to_string().into()),
         ("link-local", (link_local as i32).into()),
     ]);
+
+    // Only set dns-search if IPv4 is not disabled to avoid NetworkManager errors
+    if method4 != Ipv4Method::Disabled {
+        ipv4_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
+    }
 
     if !ip_config.routes4.is_empty() {
         ipv4_dbus.insert(
@@ -568,20 +567,19 @@ fn ip_config_to_ipv6_dbus<'a>(
         .collect::<Vec<_>>()
         .into();
 
+    let method6 = ip_config.method6.unwrap_or(Ipv6Method::Auto);
+
     let mut ipv6_dbus = HashMap::from([
         ("address-data", address_data),
         ("dns-data", dns_data),
-        ("dns-search", ip_config.dns_searchlist.clone().into()),
         ("ignore-auto-dns", ip_config.ignore_auto_dns.into()),
-        (
-            "method",
-            ip_config
-                .method6
-                .unwrap_or(Ipv6Method::Auto)
-                .to_string()
-                .into(),
-        ),
+        ("method", method6.to_string().into()),
     ]);
+
+    // Only set dns-search if IPv6 is not disabled to avoid NetworkManager errors
+    if method6 != Ipv6Method::Disabled {
+        ipv6_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
+    }
 
     if !ip_config.routes6.is_empty() {
         ipv6_dbus.insert(
@@ -2889,5 +2887,58 @@ mod test {
         assert_eq!(*ipv6_dbus.get("never-default").unwrap(), Value::new(true));
 
         Ok(())
+    }
+
+    #[test]
+    fn test_dbus_dns_search_omitted_when_protocol_disabled() {
+        let nm_version = semver::Version::new(1, 44, 0);
+
+        // Test with IPv4 disabled
+        let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn.ip_config.method4 = Some(Ipv4Method::Disabled);
+        conn.ip_config.method6 = Some(Ipv6Method::Auto);
+        conn.ip_config.dns_searchlist = vec!["example.com".to_string()];
+
+        let dbus = connection_to_dbus(&conn, None, nm_version.clone());
+
+        let ipv4_dbus = dbus.get("ipv4").unwrap();
+        // dns-search should NOT be present when IPv4 is disabled
+        assert!(!ipv4_dbus.contains_key("dns-search"));
+
+        let ipv6_dbus = dbus.get("ipv6").unwrap();
+        // dns-search should be present when IPv6 is not disabled
+        assert!(ipv6_dbus.contains_key("dns-search"));
+
+        // Test with IPv6 disabled
+        let mut conn2 = Connection::new("eth1".to_string(), DeviceType::Ethernet);
+        conn2.ip_config.method4 = Some(Ipv4Method::Auto);
+        conn2.ip_config.method6 = Some(Ipv6Method::Disabled);
+        conn2.ip_config.dns_searchlist = vec!["example.com".to_string()];
+
+        let dbus2 = connection_to_dbus(&conn2, None, nm_version.clone());
+
+        let ipv4_dbus2 = dbus2.get("ipv4").unwrap();
+        // dns-search should be present when IPv4 is not disabled
+        assert!(ipv4_dbus2.contains_key("dns-search"));
+
+        let ipv6_dbus2 = dbus2.get("ipv6").unwrap();
+        // dns-search should NOT be present when IPv6 is disabled
+        assert!(!ipv6_dbus2.contains_key("dns-search"));
+
+        // Test with both disabled
+        let mut conn3 = Connection::new("eth2".to_string(), DeviceType::Ethernet);
+        conn3.ip_config.method4 = Some(Ipv4Method::Disabled);
+        conn3.ip_config.method6 = Some(Ipv6Method::Disabled);
+        conn3.ip_config.dns_searchlist = vec!["example.com".to_string()];
+
+        let dbus3 = connection_to_dbus(&conn3, None, nm_version);
+
+        let ipv4_dbus3 = dbus3.get("ipv4").unwrap();
+        // dns-search should NOT be present when IPv4 is disabled
+        assert!(!ipv4_dbus3.contains_key("dns-search"));
+
+        let ipv6_dbus3 = dbus3.get("ipv6").unwrap();
+        // dns-search should NOT be present when IPv6 is disabled
+        assert!(!ipv6_dbus3.contains_key("dns-search"));
     }
 }
