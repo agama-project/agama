@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 16 10:05:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Limit the number of Tokio worker threads to 4
+  (gh#agama-project/agama#3729).
+
+-------------------------------------------------------------------
 Wed Jul 15 10:13:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when running "lshw" fails or the output cannot be
