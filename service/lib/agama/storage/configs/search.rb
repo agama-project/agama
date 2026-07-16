@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -32,20 +32,16 @@ module Agama
           new.tap { |c| c.if_not_found = :skip }
         end
 
-        # Search by name.
+        # Condition used to match devices.
         #
-        # @return [String, nil]
-        attr_accessor :name
-
-        # Search by size.
+        # It holds the root node of the condition tree, which can be a leaf condition
+        # (SearchConditions::Name, ::Size or ::PartitionNumber) or a logical operator
+        # (SearchConditions::And, ::Or or ::Not) nesting other conditions.
         #
-        # @return [SearchConditions::Size, nil]
-        attr_accessor :size
-
-        # Search by partition number (only applies if searching partitions).
-        #
-        # @return [Integer, nil] e.g., 2 for "/dev/vda2".
-        attr_accessor :partition_number
+        # @return [SearchConditions::Name, SearchConditions::Size,
+        #   SearchConditions::PartitionNumber, SearchConditions::And,
+        #   SearchConditions::Or, SearchConditions::Not, nil]
+        attr_accessor :condition
 
         # Found device, if any
         #
@@ -91,7 +87,6 @@ module Agama
         #
         # @return [Boolean]
         def condition?
-          condition = name || size || partition_number
           !condition.nil?
         end
 

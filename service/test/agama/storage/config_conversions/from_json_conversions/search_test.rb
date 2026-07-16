@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require_relative "../../../../test_helper"
 require "agama/storage/config_conversions/from_json_conversions/search"
 require "agama/storage/configs/search"
+require "agama/storage/configs/search_conditions"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
@@ -52,19 +53,11 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
     context "with a device name" do
       let(:config_json) { "/dev/vda1" }
 
-      it "sets #name to the expected value" do
+      it "sets #condition to the expected value" do
         config = subject.convert
-        expect(config.name).to eq("/dev/vda1")
-      end
-
-      it "sets #size to the expected value" do
-        config = subject.convert
-        expect(config.size).to be_nil
-      end
-
-      it "sets #partition_number to the expected value" do
-        config = subject.convert
-        expect(config.partition_number).to be_nil
+        expect(config.condition)
+          .to be_a(Agama::Storage::Configs::SearchConditions::Name)
+        expect(config.condition.name).to eq("/dev/vda1")
       end
 
       it "sets #max to the expected value" do
@@ -81,19 +74,9 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
     context "with an asterisk" do
       let(:config_json) { "*" }
 
-      it "sets #name to the expected value" do
+      it "sets #condition to the expected value" do
         config = subject.convert
-        expect(config.name).to be_nil
-      end
-
-      it "sets #size to the expected value" do
-        config = subject.convert
-        expect(config.size).to be_nil
-      end
-
-      it "sets #partition_number to the expected value" do
-        config = subject.convert
-        expect(config.partition_number).to be_nil
+        expect(config.condition).to be_nil
       end
 
       it "sets #max to the expected value" do
@@ -111,19 +94,9 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
       context "if 'condition' is not specefied" do
         let(:condition) { nil }
 
-        it "sets #name to the expected value" do
+        it "sets #condition to the expected value" do
           config = subject.convert
-          expect(config.name).to be_nil
-        end
-
-        it "sets #size to the expected value" do
-          config = subject.convert
-          expect(config.size).to be_nil
-        end
-
-        it "sets #partition_number to the expected value" do
-          config = subject.convert
-          expect(config.partition_number).to be_nil
+          expect(config.condition).to be_nil
         end
       end
 
@@ -149,9 +122,11 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
         context "and 'name' is specified" do
           let(:condition) { { name: "/dev/vda" } }
 
-          it "sets #name to the expected value" do
+          it "sets #condition to the expected value" do
             config = subject.convert
-            expect(config.name).to eq("/dev/vda")
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Name)
+            expect(config.condition.name).to eq("/dev/vda")
           end
         end
 
@@ -161,53 +136,144 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
           context "without operator" do
             let(:size) { "2 GiB" }
 
-            it "sets #size to the expected value" do
+            it "sets #condition to the expected value" do
               config = subject.convert
-              expect(config.size).to be_a(Agama::Storage::Configs::SearchConditions::Size)
-              expect(config.size.value).to eq(2.GiB)
-              expect(config.size.operator).to eq(:equal)
+              expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Size)
+              expect(config.condition.value).to eq(2.GiB)
+              expect(config.condition.operator).to eq(:equal)
             end
           end
 
           context "with 'equal' operator" do
             let(:size) { { equal: "2 GiB" } }
 
-            it "sets #size to the expected value" do
+            it "sets #condition to the expected value" do
               config = subject.convert
-              expect(config.size).to be_a(Agama::Storage::Configs::SearchConditions::Size)
-              expect(config.size.value).to eq(2.GiB)
-              expect(config.size.operator).to eq(:equal)
+              expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Size)
+              expect(config.condition.value).to eq(2.GiB)
+              expect(config.condition.operator).to eq(:equal)
             end
           end
 
           context "with 'greater' operator" do
             let(:size) { { greater: "2 GiB" } }
 
-            it "sets #size to the expected value" do
+            it "sets #condition to the expected value" do
               config = subject.convert
-              expect(config.size).to be_a(Agama::Storage::Configs::SearchConditions::Size)
-              expect(config.size.value).to eq(2.GiB)
-              expect(config.size.operator).to eq(:greater)
+              expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Size)
+              expect(config.condition.value).to eq(2.GiB)
+              expect(config.condition.operator).to eq(:greater)
             end
           end
 
           context "with 'less' operator" do
             let(:size) { { less: "2 GiB" } }
 
-            it "sets #size to the expected value" do
+            it "sets #condition to the expected value" do
               config = subject.convert
-              expect(config.size).to be_a(Agama::Storage::Configs::SearchConditions::Size)
-              expect(config.size.value).to eq(2.GiB)
-              expect(config.size.operator).to eq(:less)
+              expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Size)
+              expect(config.condition.value).to eq(2.GiB)
+              expect(config.condition.operator).to eq(:less)
             end
           end
         end
 
         context "and 'number' is specified" do
           let(:condition) { { number: 2 } }
-          it "sets #partition_number to the expected value" do
+
+          it "sets #condition to the expected value" do
             config = subject.convert
-            expect(config.partition_number).to eq(2)
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::PartitionNumber)
+            expect(config.condition.number).to eq(2)
+          end
+        end
+
+        context "and an 'and' operator is specified" do
+          let(:condition) do
+            { and: [{ name: "/dev/vda" }, { size: { less: "1 TiB" } }] }
+          end
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::And)
+
+            conditions = config.condition.conditions
+            expect(conditions.size).to eq(2)
+
+            expect(conditions[0])
+              .to be_a(Agama::Storage::Configs::SearchConditions::Name)
+            expect(conditions[0].name).to eq("/dev/vda")
+
+            expect(conditions[1])
+              .to be_a(Agama::Storage::Configs::SearchConditions::Size)
+            expect(conditions[1].value).to eq(1.TiB)
+            expect(conditions[1].operator).to eq(:less)
+          end
+        end
+
+        context "and an 'or' operator is specified" do
+          let(:condition) do
+            { or: [{ number: 1 }, { number: 2 }] }
+          end
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Or)
+
+            conditions = config.condition.conditions
+            expect(conditions.size).to eq(2)
+            expect(conditions).to all(
+              be_a(Agama::Storage::Configs::SearchConditions::PartitionNumber)
+            )
+            expect(conditions.map(&:number)).to contain_exactly(1, 2)
+          end
+        end
+
+        context "and a 'not' operator is specified" do
+          let(:condition) { { not: { name: "/dev/vda" } } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Not)
+
+            inner = config.condition.condition
+            expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Name)
+            expect(inner.name).to eq("/dev/vda")
+          end
+        end
+
+        context "and nested operators are specified" do
+          let(:condition) do
+            {
+              and: [
+                { size: { less: "1 TiB" } },
+                { not: { name: "/dev/vda" } }
+              ]
+            }
+          end
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::And)
+
+            conditions = config.condition.conditions
+            expect(conditions.size).to eq(2)
+
+            expect(conditions[0])
+              .to be_a(Agama::Storage::Configs::SearchConditions::Size)
+            expect(conditions[0].value).to eq(1.TiB)
+            expect(conditions[0].operator).to eq(:less)
+
+            expect(conditions[1])
+              .to be_a(Agama::Storage::Configs::SearchConditions::Not)
+            inner = conditions[1].condition
+            expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Name)
+            expect(inner.name).to eq("/dev/vda")
           end
         end
       end
