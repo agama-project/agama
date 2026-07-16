@@ -269,19 +269,20 @@ const SizeInputHelp = ({ singular = false }: { singular?: boolean }) => (
 );
 
 /**
- * Automatic size note: the only content that depends on the backend size solver.
+ * Automatic size note: the only content that depends on the backend size
+ * solver.
  *
  * Isolated into its own component (rendered inside a Suspense boundary by
- * {@link SizeFieldsContent}) so that solving never suspends the whole form. The
- * solve is a suspense query keyed by mount point + filesystem, so a change
- * produces a new key with no cached data and re-suspends. The page hosts a
- * single Suspense boundary (Page.Content), which would otherwise swap the entire
- * form for the loading spinner and back, causing a visible flicker.
+ * {@link SizeFieldsContent}) so that solving never suspends unrelated UI. The
+ * solve is a suspense query keyed by mount point + filesystem, so changing
+ * either creates a new query with no cached data and would normally trigger the
+ * nearest Suspense fallback.
  *
- * useDeferredValue renders first with the previous (cached) values so the urgent
- * render never suspends, then re-solves in the background. While the new solve is
- * pending, React keeps the already-committed note on screen instead of the
- * fallback. Only the very first solve (initial mount) reaches the fallback.
+ * useDeferredValue lets React render first with the previous (cached) values,
+ * so the urgent update does not suspend. The new solve then runs in the
+ * background while React keeps the previously committed note visible instead of
+ * showing the Suspense fallback. Only the initial solve (when no cached result
+ * exists) reaches the fallback.
  */
 function AutomaticSizeNote({
   committedMountPoint,
