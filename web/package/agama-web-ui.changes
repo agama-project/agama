@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 16 15:10:34 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Do not display the type when reusing filesystems (bsc#1271008).
+
+-------------------------------------------------------------------
 Thu Jul 16  07:06:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Prevent the partition and logical volume forms from flickering
