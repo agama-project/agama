@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 16  07:06:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Prevent the partition and logical volume forms from flickering
+  when changing the mount point or file system
+  (gh#agama-project/agama#3728).
+
+-------------------------------------------------------------------
 Tue Jul 14 16:59:31 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Require translated text in user-facing component props, ensuring
