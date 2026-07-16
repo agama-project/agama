@@ -23,7 +23,7 @@
 use std::future::Future;
 
 /// Maximum number of worker threads for the Tokio runtime.
-const MAX_WORKER_THREADS: usize = 32;
+const MAX_WORKER_THREADS: usize = 4;
 
 /// Creates a multi-threaded Tokio runtime with a capped number of worker threads.
 ///
