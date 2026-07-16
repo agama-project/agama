@@ -1,8 +1,10 @@
 -------------------------------------------------------------------
 Thu Jul 16 11:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Do not set the dns-search list for disabled IP protocols to avoid
-  errors in NetworkManager (gh#agama-project/agama#3731, bsc#127481).
+- Clear the IP configuration (dns-search, addresses, gateway, ...) for
+  disabled IP protocols, including values kept from the existing
+  connection, to avoid errors in NetworkManager
+  (gh#agama-project/agama#3731, bsc#127481).
 
 -------------------------------------------------------------------
 Wed Jul 15 10:13:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
