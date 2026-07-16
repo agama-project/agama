@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 16 11:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix AutoYaST dns-search conversion (gh#agama-project/agama#3731,
+  bsc#127481).
+
+-------------------------------------------------------------------
 Tue Jun 30 14:40:25 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Always emit signals for iSCSI, DASD and zFCP (needed for
