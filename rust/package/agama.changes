@@ -1,10 +1,23 @@
 -------------------------------------------------------------------
-Thu Jul 16 11:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Thu Jul 16 12:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Clear the IP configuration (dns-search, addresses, gateway, ...) for
-  disabled IP protocols, including values kept from the existing
-  connection, to avoid errors in NetworkManager
+- Clear the IP configuration (dns-search, addresses, gateway, ...) 
+  for disabled IP protocols, including values kept from the 
+  existing connection, to avoid errors in NetworkManager
   (gh#agama-project/agama#3731, bsc#127481).
+
+-------------------------------------------------------------------
+Thu Jul 16 11:26:26 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Limit the number of Tokio worker threads to 4
+  (gh#agama-project/agama#3729, related to bsc#1265451).
+
+-------------------------------------------------------------------  
+Thu Jul 16 11:01:05 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- Fixed issues when fetching AutoYast XML profile.
+  Agama cares about YAST_SKIP_PROFILE_FETCH_ERROR now.
+  agama-autoyast doesn't end with error when no profile found.
 
 -------------------------------------------------------------------
 Wed Jul 15 10:13:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
