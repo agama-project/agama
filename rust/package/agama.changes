@@ -2,7 +2,7 @@
 Thu Jul 16 10:05:13 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Limit the number of Tokio worker threads to 4
-  (gh#agama-project/agama#3729).
+  (gh#agama-project/agama#3729, related to bsc#1265451).
 
 -------------------------------------------------------------------
 Wed Jul 15 10:13:10 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
