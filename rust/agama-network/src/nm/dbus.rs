@@ -348,8 +348,11 @@ fn is_bridge_port(conn: &NestedHash) -> bool {
 /// It also removes empty files from the "connection" object like the "interface-name", "master",
 /// "slave-type", "port-type" keys.
 ///
-/// Finally, it removes removes the "addresses" and "dns" keys from the "ipv4" and "ipv6" objects,
-/// which are replaced with "address-data".
+/// It removes the "addresses" and "dns" keys from the "ipv4" and "ipv6" objects, which are replaced
+/// with "address-data".
+///
+/// Finally, it empties any "ipv4" or "ipv6" section whose method is "disabled", keeping only the
+/// "method" attribute (see [cleanup_disabled_ip_config]).
 ///
 /// * `conn`: connection represented as a NestedHash.
 pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
@@ -390,6 +393,7 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
         if ipv4.get("address-data").is_some_and(is_empty_value) {
             ipv4.remove("gateway");
         }
+        cleanup_disabled_ip_config(ipv4);
     }
 
     if let Some(ipv6) = conn.get_mut("ipv6") {
@@ -398,6 +402,7 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
         if ipv6.get("address-data").is_some_and(is_empty_value) {
             ipv6.remove("gateway");
         }
+        cleanup_disabled_ip_config(ipv6);
     }
 
     if let Some(vlan) = conn.get_mut("vlan") {
@@ -408,6 +413,26 @@ pub fn cleanup_dbus_connection(conn: &mut NestedHash) {
                 VlanFlag::to_bitmask(&[VlanFlag::ReorderHeaders]).into(),
             );
         }
+    }
+}
+
+/// Empties the IP configuration when its method is "disabled".
+///
+/// When the IPv4 or IPv6 method is disabled, any other attribute (e.g. "address-data",
+/// "dns-search", "gateway", ...) is meaningless and could even be contradictory. As this runs
+/// after merging the current configuration with the given one, it drops any such value that could
+/// have been kept from the original connection, leaving only the "method" attribute.
+///
+/// * `ip`: IPv4 or IPv6 section of a connection.
+fn cleanup_disabled_ip_config(ip: &mut HashMap<&str, zbus::zvariant::Value>) {
+    // Both Ipv4Method::Disabled and Ipv6Method::Disabled serialize to "disabled".
+    let is_disabled = ip
+        .get("method")
+        .and_then(|method| TryInto::<&str>::try_into(method).ok())
+        .is_some_and(|method| method == "disabled");
+
+    if is_disabled {
+        ip.retain(|key, _| *key == "method");
     }
 }
 
@@ -462,10 +487,7 @@ fn ip_config_to_ipv4_dbus<'a>(
         ("link-local", (link_local as i32).into()),
     ]);
 
-    // Only set dns-search if IPv4 is not disabled to avoid NetworkManager errors
-    if method4 != Ipv4Method::Disabled {
-        ipv4_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
-    }
+    ipv4_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
 
     if !ip_config.routes4.is_empty() {
         ipv4_dbus.insert(
@@ -576,10 +598,7 @@ fn ip_config_to_ipv6_dbus<'a>(
         ("method", method6.to_string().into()),
     ]);
 
-    // Only set dns-search if IPv6 is not disabled to avoid NetworkManager errors
-    if method6 != Ipv6Method::Disabled {
-        ipv6_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
-    }
+    ipv6_dbus.insert("dns-search", ip_config.dns_searchlist.clone().into());
 
     if !ip_config.routes6.is_empty() {
         ipv6_dbus.insert(
@@ -2890,55 +2909,74 @@ mod test {
     }
 
     #[test]
-    fn test_dbus_dns_search_omitted_when_protocol_disabled() {
-        let nm_version = semver::Version::new(1, 44, 0);
+    fn test_ip_config_emptied_when_disabled() -> anyhow::Result<()> {
+        // The original connection carries values that would be contradictory once the method is
+        // disabled (dns-search, address-data, gateway, ...).
+        let mut original = OwnedNestedHash::new();
+        let ipv4 = HashMap::from([
+            hi("method", "manual")?,
+            hi("gateway", "192.168.1.1")?,
+            hi("address-data", vec!["192.168.1.10"])?,
+            hi("dns-search", vec!["example.com"])?,
+        ]);
+        let ipv6 = HashMap::from([
+            hi("method", "manual")?,
+            hi("gateway", "::ffff:c0a8:101")?,
+            hi("address-data", vec!["::ffff:c0a8:102"])?,
+            hi("dns-search", vec!["example.com"])?,
+        ]);
+        original.insert("ipv4".to_string(), ipv4);
+        original.insert("ipv6".to_string(), ipv6);
 
-        // Test with IPv4 disabled
+        // The given connection disables both IPv4 and IPv6.
         let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
         conn.ip_config.method4 = Some(Ipv4Method::Disabled);
+        conn.ip_config.method6 = Some(Ipv6Method::Disabled);
+        conn.ip_config.dns_searchlist = vec!["example.com".to_string()];
+        let updated = connection_to_dbus(&conn, None, semver::Version::new(1, 44, 0));
+
+        let merged = merge_dbus_connections(&original, &updated)?;
+
+        // Once disabled, only the "method" attribute is kept.
+        let ipv4 = merged.get("ipv4").unwrap();
+        assert_eq!(
+            *ipv4.get("method").unwrap(),
+            Value::new("disabled".to_string())
+        );
+        assert_eq!(ipv4.len(), 1);
+
+        let ipv6 = merged.get("ipv6").unwrap();
+        assert_eq!(
+            *ipv6.get("method").unwrap(),
+            Value::new("disabled".to_string())
+        );
+        assert_eq!(ipv6.len(), 1);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_ip_config_kept_when_not_disabled() -> anyhow::Result<()> {
+        // A non-disabled method must keep its configuration, including dns-search.
+        let mut conn = Connection::new("eth0".to_string(), DeviceType::Ethernet);
+        conn.ip_config.method4 = Some(Ipv4Method::Auto);
         conn.ip_config.method6 = Some(Ipv6Method::Auto);
         conn.ip_config.dns_searchlist = vec!["example.com".to_string()];
+        let mut dbus = connection_to_dbus(&conn, None, semver::Version::new(1, 44, 0));
+        super::cleanup_dbus_connection(&mut dbus);
 
-        let dbus = connection_to_dbus(&conn, None, nm_version.clone());
+        for section in ["ipv4", "ipv6"] {
+            let ip = dbus.get(section).unwrap();
+            let dns_search: Array = ip
+                .get("dns-search")
+                .unwrap()
+                .downcast_ref::<Value>()
+                .unwrap()
+                .try_into()
+                .unwrap();
+            assert_eq!(dns_search.len(), 1);
+        }
 
-        let ipv4_dbus = dbus.get("ipv4").unwrap();
-        // dns-search should NOT be present when IPv4 is disabled
-        assert!(!ipv4_dbus.contains_key("dns-search"));
-
-        let ipv6_dbus = dbus.get("ipv6").unwrap();
-        // dns-search should be present when IPv6 is not disabled
-        assert!(ipv6_dbus.contains_key("dns-search"));
-
-        // Test with IPv6 disabled
-        let mut conn2 = Connection::new("eth1".to_string(), DeviceType::Ethernet);
-        conn2.ip_config.method4 = Some(Ipv4Method::Auto);
-        conn2.ip_config.method6 = Some(Ipv6Method::Disabled);
-        conn2.ip_config.dns_searchlist = vec!["example.com".to_string()];
-
-        let dbus2 = connection_to_dbus(&conn2, None, nm_version.clone());
-
-        let ipv4_dbus2 = dbus2.get("ipv4").unwrap();
-        // dns-search should be present when IPv4 is not disabled
-        assert!(ipv4_dbus2.contains_key("dns-search"));
-
-        let ipv6_dbus2 = dbus2.get("ipv6").unwrap();
-        // dns-search should NOT be present when IPv6 is disabled
-        assert!(!ipv6_dbus2.contains_key("dns-search"));
-
-        // Test with both disabled
-        let mut conn3 = Connection::new("eth2".to_string(), DeviceType::Ethernet);
-        conn3.ip_config.method4 = Some(Ipv4Method::Disabled);
-        conn3.ip_config.method6 = Some(Ipv6Method::Disabled);
-        conn3.ip_config.dns_searchlist = vec!["example.com".to_string()];
-
-        let dbus3 = connection_to_dbus(&conn3, None, nm_version);
-
-        let ipv4_dbus3 = dbus3.get("ipv4").unwrap();
-        // dns-search should NOT be present when IPv4 is disabled
-        assert!(!ipv4_dbus3.contains_key("dns-search"));
-
-        let ipv6_dbus3 = dbus3.get("ipv6").unwrap();
-        // dns-search should NOT be present when IPv6 is disabled
-        assert!(!ipv6_dbus3.contains_key("dns-search"));
+        Ok(())
     }
 }
