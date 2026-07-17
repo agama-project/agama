@@ -44,7 +44,6 @@ export { default as SelectWrapper } from "./SelectWrapper";
 export { default as NestedContent } from "./NestedContent";
 export { default as SubtleContent } from "./SubtleContent";
 export { default as MenuHeader } from "./MenuHeader";
-export { default as SplitButton } from "./SplitButton";
 export { default as SkipTo } from "./SkipTo";
 export { default as Annotation } from "./Annotation";
 export { default as SwitchEnhanced } from "./SwitchEnhanced";
