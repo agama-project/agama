@@ -32,6 +32,7 @@ import {
   ModalProps,
 } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
+import { AnnouncerTarget } from "~/context/announcer";
 import { fork } from "radashi";
 import { _, TranslatedString } from "~/i18n";
 
@@ -244,6 +245,7 @@ const Popup = ({
       aria-labelledby={titleId}
       aria-describedby={contentId}
     >
+      <AnnouncerTarget />
       {title && (
         <ModalHeader
           labelId={titleId}
