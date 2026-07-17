@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 17 08:24:39 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix AutoYaST dns-search conversion (gh#agama-project/agama#3735, 
+  bsc#1271644).
+
+-------------------------------------------------------------------
 Wed Jun 10 13:43:42 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - always send all params to product activation as new
