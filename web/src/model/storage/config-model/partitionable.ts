@@ -41,7 +41,10 @@ function all(config: ConfigModel.Config): Device[] {
   return [...drives, ...mdRaids];
 }
 
-function findByName(config: ConfigModel.Config, deviceName: string): Device | null {
+function findByName(
+  config: ConfigModel.Config,
+  deviceName: string,
+): Device | null {
   return all(config).find((d) => d.name === deviceName) || null;
 }
 
@@ -53,12 +56,19 @@ function find(
   return config[collection]?.at(index) || null;
 }
 
-function findIndex(config: ConfigModel.Config, collection: CollectionName, name: string): number {
+function findIndex(
+  config: ConfigModel.Config,
+  collection: CollectionName,
+  name: string,
+): number {
   const devices = config[collection] || [];
   return devices.findIndex((d) => d.name === name);
 }
 
-function findLocation(config: ConfigModel.Config, name: string): Location | null {
+function findLocation(
+  config: ConfigModel.Config,
+  name: string,
+): Location | null {
   const collections: CollectionName[] = ["drives", "mdRaids"];
 
   for (const collection of collections) {
@@ -71,23 +81,34 @@ function findLocation(config: ConfigModel.Config, name: string): Location | null
   return null;
 }
 
-function findPartition(device: Device, mountPath: string): ConfigModel.Partition | undefined {
+function findPartition(
+  device: Device,
+  mountPath: string,
+): ConfigModel.Partition | undefined {
   return device.partitions?.find((p) => p.mountPath === mountPath);
 }
 
-function filterVolumeGroups(config: ConfigModel.Config, device: Device): ConfigModel.VolumeGroup[] {
+function filterVolumeGroups(
+  config: ConfigModel.Config,
+  device: Device,
+): ConfigModel.VolumeGroup[] {
   const volumeGroups = config.volumeGroups || [];
   return volumeGroups.filter((v) =>
-    configModel.volumeGroup.filterTargetDevices(config, v).some((d) => d.name === device.name),
+    configModel.volumeGroup
+      .filterTargetDevices(config, v)
+      .some((d) => d.name === device.name),
   );
 }
 
-function filterConfiguredExistingPartitions(device: Device): ConfigModel.Partition[] {
+function filterConfiguredExistingPartitions(
+  device: Device,
+): ConfigModel.Partition[] {
   if (device.spacePolicy === "custom")
     return device.partitions.filter(
       (p) =>
         !configModel.volume.isNew(p) &&
-        (configModel.volume.isUsed(p) || configModel.volume.isUsedBySpacePolicy(p)),
+        (configModel.volume.isUsed(p) ||
+          configModel.volume.isUsedBySpacePolicy(p)),
     );
 
   return device.partitions.filter(configModel.volume.isReused);
@@ -109,7 +130,11 @@ function isUsed(config: ConfigModel.Config, deviceName: string): boolean {
 }
 
 function isAddingPartitions(device: Device): boolean {
-  return device.partitions?.some((p) => p.mountPath && configModel.volume.isNew(p)) || false;
+  return (
+    device.partitions?.some(
+      (p) => p.mountPath && configModel.volume.isNew(p),
+    ) !== false
+  );
 }
 
 function isReusingPartitions(device: Device): boolean {
@@ -126,7 +151,10 @@ function remove(
   return config;
 }
 
-function removeIfUnused(config: ConfigModel.Config, name: string): ConfigModel.Config {
+function removeIfUnused(
+  config: ConfigModel.Config,
+  name: string,
+): ConfigModel.Config {
   if (isUsed(config, name)) return config;
 
   const location = findLocation(config, name);
@@ -148,10 +176,20 @@ function convert(
   const location = configModel.partitionable.findLocation(config, oldName);
   if (!location) return config;
 
-  const device = configModel.partitionable.find(config, location.collection, location.index);
-  const targetIndex = configModel.partitionable.findIndex(config, collection, name);
+  const device = configModel.partitionable.find(
+    config,
+    location.collection,
+    location.index,
+  );
+  const targetIndex = configModel.partitionable.findIndex(
+    config,
+    collection,
+    name,
+  );
   const target =
-    targetIndex === -1 ? null : configModel.partitionable.find(config, collection, targetIndex);
+    targetIndex === -1
+      ? null
+      : configModel.partitionable.find(config, collection, targetIndex);
 
   if (device.filesystem) {
     if (target) {
@@ -171,10 +209,16 @@ function convert(
     return config;
   }
 
-  const [newPartitions, existingPartitions] = fork(device.partitions, configModel.volume.isNew);
-  const reusedPartitions = existingPartitions.filter(configModel.volume.isReused);
+  const [newPartitions, existingPartitions] = fork(
+    device.partitions,
+    configModel.volume.isNew,
+  );
+  const reusedPartitions = existingPartitions.filter(
+    configModel.volume.isReused,
+  );
   const keepEntry =
-    configModel.boot.hasExplicitDevice(config, device.name) || reusedPartitions.length;
+    configModel.boot.hasExplicitDevice(config, device.name) ||
+    reusedPartitions.length;
 
   if (keepEntry) {
     device.partitions = existingPartitions;
@@ -189,7 +233,8 @@ function convert(
     config[collection].push({
       name,
       partitions: newPartitions,
-      spacePolicy: device.spacePolicy === "custom" ? undefined : device.spacePolicy,
+      spacePolicy:
+        device.spacePolicy === "custom" ? undefined : device.spacePolicy,
     });
   }
 
@@ -274,7 +319,9 @@ function setFilesystem(
   if (!device) return config;
 
   device.mountPath = data.mountPath;
-  device.filesystem = data.filesystem ? createFilesystem(data.filesystem) : undefined;
+  device.filesystem = data.filesystem
+    ? createFilesystem(data.filesystem)
+    : undefined;
   return config;
 }
 
