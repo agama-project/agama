@@ -2,7 +2,7 @@
 Thu Jul 16 12:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix AutoYaST dns-search conversion (gh#agama-project/agama#3731,
-  bsc#127481).
+  bsc#1271481).
 
 -------------------------------------------------------------------
 Thu Jul 16 11:01:58 UTC 2026 - Michal Filka <mfilka@suse.com>
