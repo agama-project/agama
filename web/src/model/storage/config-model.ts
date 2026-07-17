@@ -55,8 +55,13 @@ function usedMountPaths(config: ConfigModel.Config): string[] {
   ];
 }
 
-function isTargetDevice(config: ConfigModel.Config, deviceName: string): boolean {
-  const targetDevices = (config.volumeGroups || []).flatMap((v) => v.targetDevices || []);
+function isTargetDevice(
+  config: ConfigModel.Config,
+  deviceName: string,
+): boolean {
+  const targetDevices = (config.volumeGroups || []).flatMap(
+    (v) => v.targetDevices || [],
+  );
   return targetDevices.includes(deviceName);
 }
 
@@ -81,7 +86,10 @@ function findDevice(
   return config[collection]?.[index] ?? null;
 }
 
-function findDeviceByName(config: ConfigModel.Config, deviceName: string): Device | null {
+function findDeviceByName(
+  config: ConfigModel.Config,
+  deviceName: string,
+): Device | null {
   return devices(config).find((d) => d.name === deviceName) ?? null;
 }
 
@@ -90,22 +98,30 @@ function findDeviceByName(config: ConfigModel.Config, deviceName: string): Devic
  * devices.
  */
 function hasAdditionalDevices(config: ConfigModel.Config): boolean {
-  const entries = sift([config.drives, config.mdRaids, config.volumeGroups]).flat();
+  const entries = sift([
+    config.drives,
+    config.mdRaids,
+    config.volumeGroups,
+  ]).flat();
 
   if (entries.length <= 1) return false;
-  if (entries.length > 2) return true;
+  return entries.length > 2;
 
   // If there are only two devices, the following logic avoids the corner case in which first
   // deleting one of them and then changing the boot settings can lead to zero disks. But it is
   // far from being fully reasonable or understandable for the user.
   const onlyToBoot = entries.find(
-    (e) => boot.hasExplicitDevice(config, e.name) && !partitionable.isUsed(config, e.name),
+    (e) =>
+      boot.hasExplicitDevice(config, e.name) &&
+      !partitionable.isUsed(config, e.name),
   );
 
   return !onlyToBoot;
 }
 
-function getBootloader(config: ConfigModel.Config): ConfigModel.BootloaderType | null {
+function getBootloader(
+  config: ConfigModel.Config,
+): ConfigModel.BootloaderType | null {
   return config.boot?.bootloader ?? null;
 }
 
@@ -139,4 +155,11 @@ export default {
   getBootloader,
   isGrub2WithTpm,
 };
-export type { ConfigModel, Data, Partitionable, DeviceCollection, Device, Volume };
+export type {
+  ConfigModel,
+  Data,
+  Partitionable,
+  DeviceCollection,
+  Device,
+  Volume,
+};
