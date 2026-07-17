@@ -164,7 +164,7 @@
           {
             "key": "searchlist",
             "support": "yes",
-            "agama": "network.connections[].dns_searchlist",
+            "agama": "network.connections[].dnsSearchList",
             "notes": "Copied to each connection."
           }
         ]

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jul 17 08:24:39 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Clear the IP configuration (dns-search, addresses, gateway, ...)
+  for disabled IP protocols, including values kept from the
+  existing connection, to avoid errors in NetworkManager
+  (gh#agama-project/agama#3735, bsc#1271644).
+
+-------------------------------------------------------------------
 Mon Jul 13 12:40:10 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Handle VLAN flags properly, using the kernel default value

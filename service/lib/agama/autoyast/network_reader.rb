@@ -71,7 +71,7 @@ module Agama
         dns = {}
         return dns if dns_section.nil?
 
-        dns["dns_searchlist"] = dns_section.searchlist unless dns_section.searchlist.empty?
+        dns["dnsSearchList"] = dns_section.searchlist unless dns_section.searchlist.empty?
         dns["nameservers"] = dns_section.nameservers unless dns_section.nameservers.empty?
         dns
       end

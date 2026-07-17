@@ -30,7 +30,7 @@ describe Agama::AutoYaST::ConnectionsReader do
     { "bootproto" => eth0_bootproto, "name" => "eth0" }
   end
   let(:ipv6?) { true }
-  let(:dns) { { "nameservers" => ["1.1.1.1"], "dns_searchlist" => ["example.lan"] } }
+  let(:dns) { { "nameservers" => ["1.1.1.1"], "dnsSearchList" => ["example.lan"] } }
   let(:eth0_bootproto) { "dhcp" }
 
   subject do
