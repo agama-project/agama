@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jul 17 08:42:50 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update runtime dependencies:
+  - react-router to 7.15.1, CVE-2026-53663 (bsc#1268993)
+- consequently, update call sites for stricter types of
+  generatePath, generateEncodedPath
+
+-------------------------------------------------------------------
 Thu Jul 16 15:10:34 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Do not display the type when reusing filesystems (bsc#1271008).
