@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jul 16 12:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Clear the IP configuration (dns-search, addresses, gateway, ...) 
+  for disabled IP protocols, including values kept from the 
+  existing connection, to avoid errors in NetworkManager
+  (gh#agama-project/agama#3731, bsc#127481).
+
+-------------------------------------------------------------------
 Thu Jul 16 11:26:26 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Limit the number of Tokio worker threads to 4
