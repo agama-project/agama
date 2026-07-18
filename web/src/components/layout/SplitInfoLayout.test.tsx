@@ -23,6 +23,7 @@
 import React from "react";
 import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
+import { _ } from "~/i18n";
 import { Button } from "@patternfly/react-core";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 
@@ -32,7 +33,7 @@ const precedes = (first: Element, second: Element) =>
 
 describe("SplitInfoLayout", () => {
   it("renders the primary content as a level 1 heading", () => {
-    plainRender(<SplitInfoLayout firstRowStart="Installation complete" />);
+    plainRender(<SplitInfoLayout title={_("Installation complete")} />);
 
     screen.getByRole("heading", { level: 1, name: "Installation complete" });
   });
@@ -40,10 +41,11 @@ describe("SplitInfoLayout", () => {
   it("keeps the reading order: title, description, then actionable content", () => {
     plainRender(
       <SplitInfoLayout
-        firstRowStart="Installation complete"
-        firstRowEnd={<Button>Reboot</Button>}
-        secondRowStart="You can reboot the machine."
-      />,
+        title={_("Installation complete")}
+        description={_("You can reboot the machine.")}
+      >
+        <Button>Reboot</Button>
+      </SplitInfoLayout>,
     );
 
     const title = screen.getByRole("heading", { level: 1 });
@@ -56,14 +58,14 @@ describe("SplitInfoLayout", () => {
 
   it("renders the icon as a decorative element", () => {
     const { container } = plainRender(
-      <SplitInfoLayout icon="done_all" firstRowStart="Installation complete" />,
+      <SplitInfoLayout icon="done_all" title={_("Installation complete")} />,
     );
 
     expect(container.querySelector("svg[aria-hidden='true']")).not.toBeNull();
   });
 
   it("renders no icon when none is given", () => {
-    const { container } = plainRender(<SplitInfoLayout firstRowStart="Installation complete" />);
+    const { container } = plainRender(<SplitInfoLayout title={_("Installation complete")} />);
 
     expect(container.querySelector("svg")).toBeNull();
   });

@@ -1,126 +1,75 @@
 import React from "react";
-import { isEmpty } from "radashi";
-import { Grid, GridItem, Title } from "@patternfly/react-core";
+import { Title } from "@patternfly/react-core";
 import Icon, { IconProps } from "./Icon";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
+import type { TranslatedString } from "~/i18n";
+
+/**
+ * Text shown to the user: a translated string, or a React element whose
+ * rendered content is already translated. Plain untranslated strings are
+ * rejected on purpose.
+ */
+type TextContent = TranslatedString | React.ReactElement;
 
 export type SplitInfoLayoutProps = {
-  /**
-   * Optional icon name to display at the top
-   */
+  /** Optional decorative icon rendered above the title. */
   icon?: IconProps["name"];
 
-  /**
-   * Named size of the icon.
-   */
-  iconSize?: IconProps["size"];
+  /** Screen title, rendered as the level 1 heading. */
+  title: TextContent;
 
-  /**
-   * Primary content (rendered as h1 heading) - appears in left column on
-   * viewports over "md" size
-   */
-  firstRowStart: React.ReactNode;
-
-  /**
-   * Content for right side of first row (typically primary action button)
-   */
-  firstRowEnd?: React.ReactNode;
-
-  /**
-   * Secondary content (typically description) - appears in left column on
-   * viewports over "md" size
-   */
-  secondRowStart?: React.ReactNode;
-
-  /**
-   * Content for right side of second row (typically secondary action button)
-   */
-  secondRowEnd?: React.ReactNode;
+  /** Supporting text rendered below the title. */
+  description?: TextContent;
 };
 
 /**
- * Responsive layout component
+ * Layout for standalone screens presenting a single focal composition: an
+ * icon, a title, a short description, and one free-form piece of content
+ * given as children (a button, a form, an alert).
  *
- * A responsive layout component that displays content in a two-column split
- * design on viewports over medium breakpoint, with a vertical divider line
- * between columns. On small viewports, content flows vertically in a single
- * column.
+ * The markup keeps the story in reading order (icon, title, description,
+ * content) at every viewport size. Small viewports render one centered
+ * column. From the medium breakpoint up, icon, title, and description sit in
+ * the start column and the content in the end column, with a vertical
+ * divider between them; columns and alignment follow the document's writing
+ * direction.
  *
  * @example
  * ```tsx
  * <SplitInfoLayout
  *   icon="error"
- *   iconSize="4xl"
- *   firstRowStart={<h1>Installation failed</h1>}
- *   firstRowEnd={<Button>Reboot</Button>}
- *   secondRowStart={<p>Review logs and try again</p>}
- *   secondRowEnd={<Button>Download logs</Button>}
- * />
+ *   title={_("Installation failed")}
+ *   description={_("Review logs and try again.")}
+ * >
+ *   <Button>Reboot</Button>
+ * </SplitInfoLayout>
  * ```
- *
- * Behavior:
- *
- * On small viewports (< 768px):
- * Despite the prop names suggesting "rows" and "start/end", content actually flows vertically:
- *   1. Icon (if provided, full width)
- *   2. firstRowStart (full width)
- *   3. firstRowEnd (full width)
- *   4. secondRowStart (full width)
- *   5. secondRowEnd (full width)
- *
- * On viewports over medium breakpoint (≥ 768px):
- *
- * Content is arranged in a 2-column grid with a vertical divider:
- *
- *   LEFT COLUMN (right-aligned):  |  RIGHT COLUMN (left-aligned):
- *    - Icon (order: 1)            |   - Empty space (order: 2)
- *    - firstRowStart (order: 3)   |   - firstRowEnd (order: 4)
- *    - secondRowStart (order: 5)  |   - secondRowEnd (order: 6)
- *
- *
- * NOTE: The prop names "Row" and "Start/End" refer to the viewport over "md"
- * breakpoint layout, not the small viewport layout. On small viewports, all
- * content stacks vertically regardless of the "start/end" naming.
  */
 export default function SplitInfoLayout({
   icon,
-  iconSize = "4xl",
-  firstRowStart,
-  firstRowEnd,
-  secondRowStart,
-  secondRowEnd,
-}: SplitInfoLayoutProps) {
+  title,
+  description,
+  children,
+}: React.PropsWithChildren<SplitInfoLayoutProps>) {
   return (
-    <Grid className="agm-split-info-layout-container">
-      <Grid hasGutter className="agm-split-info-layout">
-        {icon && (
-          <>
-            <GridItem span={12} md={6} order={{ md: "1" }}>
-              <Icon name={icon} size={iconSize} />
-            </GridItem>
-            <GridItem span={12} md={6} order={{ md: "2" }} />
-          </>
+    <div className="agm-split-info-layout">
+      {icon && (
+        <div className="agm-split-info-layout__icon">
+          <Icon name={icon} size="4xl" />
+        </div>
+      )}
+      <Title
+        headingLevel="h1"
+        className={["agm-split-info-layout__title", textStyles.fontSize_3xl, "text-balance"].join(
+          " ",
         )}
-
-        <GridItem md={6} order={{ md: "3" }}>
-          <Title headingLevel="h1" className={[textStyles.fontSize_3xl, "text-balance"].join(" ")}>
-            {firstRowStart}
-          </Title>
-        </GridItem>
-
-        <GridItem md={6} order={{ md: "5" }}>
-          {secondRowStart}
-        </GridItem>
-
-        <GridItem sm={6} order={{ md: "4" }} rowSpan={isEmpty(secondRowEnd) ? 4 : 1}>
-          {firstRowEnd}
-        </GridItem>
-
-        <GridItem sm={6} order={{ md: "6" }}>
-          {secondRowEnd}
-        </GridItem>
-      </Grid>
-    </Grid>
+      >
+        {title}
+      </Title>
+      {description && <div className="agm-split-info-layout__description">{description}</div>}
+      {children && <div className="agm-split-info-layout__content">{children}</div>}
+      <div className="agm-split-info-layout__divider" />
+    </div>
   );
 }

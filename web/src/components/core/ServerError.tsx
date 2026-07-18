@@ -33,18 +33,17 @@ function ServerError() {
       <Page.Content>
         <SplitInfoLayout
           icon="error"
-          firstRowStart={_("Cannot connect")}
-          firstRowEnd={
-            <Button variant="primary" style={{ minInlineSize: "25dvw" }} onClick={locationReload}>
-              {_("Reload")}
-            </Button>
-          }
-          secondRowStart={
+          title={_("Cannot connect")}
+          description={
             <HelperText>
               <HelperTextItem>{_("Check whether Agama server is running.")}</HelperTextItem>
             </HelperText>
           }
-        />
+        >
+          <Button variant="primary" onClick={locationReload}>
+            {_("Reload")}
+          </Button>
+        </SplitInfoLayout>
       </Page.Content>
     </Page>
   );

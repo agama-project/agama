@@ -42,26 +42,19 @@ export default function InstallationFailed() {
       <Page.Content>
         <SplitInfoLayout
           icon="report"
-          firstRowStart={_("Installation failed")}
-          secondRowStart={
+          title={_("Installation failed")}
+          description={
             <Stack hasGutter>
               <Text>{_("Download logs to troubleshoot or share with support.")}</Text>
               <Text component="small">{_("Reboot to try again.")}</Text>
             </Stack>
           }
-          firstRowEnd={
-            <Flex
-              gap={{ default: "gapSm" }}
-              direction={{ default: "row" }}
-              alignItems={{ default: "alignItemsCenter" }}
-              alignContent={{ sm: "alignContentCenter" }}
-              justifyContent={{ sm: "justifyContentCenter", md: "justifyContentFlexStart" }}
-            >
-              <RebootButton size="default" />
-              <DownloadLogsButton />
-            </Flex>
-          }
-        />
+        >
+          <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
+            <RebootButton size="default" />
+            <DownloadLogsButton />
+          </Flex>
+        </SplitInfoLayout>
       </Page.Content>
     </Page>
   );

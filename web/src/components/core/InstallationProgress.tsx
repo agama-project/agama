@@ -37,19 +37,20 @@ export default function InstallationProgress() {
       <Page.Content>
         <SplitInfoLayout
           icon="deployed_code_update"
-          firstRowStart={
+          title={
             <>
               <ProductLogo product={product} width="var(--agm-t--logo--size--inline, 1.25em)" />{" "}
               {product?.name}
             </>
           }
-          firstRowEnd={<ProgressReport />}
-          secondRowStart={
+          description={
             <HelperText>
               <HelperTextItem>{_("Installation in progress")}</HelperTextItem>
             </HelperText>
           }
-        />
+        >
+          <ProgressReport />
+        </SplitInfoLayout>
       </Page.Content>
     </Page>
   );

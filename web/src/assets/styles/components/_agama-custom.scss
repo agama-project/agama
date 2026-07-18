@@ -129,43 +129,79 @@ nav.agm-breadcrumb h1 {
   font-size: inherit;
 }
 
-.agm-split-info-layout-container {
-  height: 100%;
-  place-content: center;
+// FIXME: make it more generic, if possible, or even without CSS but not
+// rendering such a label if "storage instructions" are more than one
+.storage-structure:has(> li:nth-child(2)) span.action-text {
+  display: none;
 }
+
+// Standalone screens layout (see layout/SplitInfoLayout): the DOM stays in
+// reading order and grid-template-areas decides the visual arrangement per
+// breakpoint. Only logical properties and values, so columns and alignment
+// follow the document's writing direction.
 
 .agm-split-info-layout {
-  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
-  position: relative;
-}
-
-.agm-split-info-layout > .pf-v6-l-grid__item {
+  display: grid;
+  block-size: 100%;
+  align-content: center;
+  justify-items: center;
   text-align: center;
-  justify-self: center;
-}
+  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  grid-template-areas:
+    "icon"
+    "title"
+    "description"
+    "content";
 
-@media (width >= 768px) {
-  .agm-split-info-layout::before {
-    content: "";
-    position: absolute;
-    top: -1em;
-    bottom: -1.5em;
-    left: 50%;
-    width: 1px;
-    background: var(--pf-t--global--border--color--default);
+  &__icon {
+    grid-area: icon;
   }
 
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 1"],
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 3"],
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 5"] {
-    justify-self: end;
-    text-align: end;
+  &__title {
+    grid-area: title;
   }
 
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 4"],
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 6"] {
-    justify-self: start;
-    text-align: start;
+  &__description {
+    grid-area: description;
+  }
+
+  &__content {
+    grid-area: content;
+  }
+
+  &__divider {
+    display: none;
+  }
+
+  @media (width >= 768px) {
+    // The content area spans the title and description rows, pairing the
+    // title with the top of the content across the divider. The icon row
+    // keeps its end cell empty. The divider spans every row.
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "icon        divider ."
+      "title       divider content"
+      "description divider content";
+
+    &__icon,
+    &__title,
+    &__description {
+      justify-self: end;
+      text-align: end;
+    }
+
+    &__content {
+      justify-self: start;
+      text-align: start;
+      min-inline-size: 25dvw;
+    }
+
+    &__divider {
+      display: block;
+      grid-area: divider;
+      inline-size: 1px;
+      background: var(--pf-t--global--border--color--default);
+    }
   }
 }
 

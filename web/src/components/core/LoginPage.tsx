@@ -85,37 +85,8 @@ user privileges.",
       <Page.Content>
         <SplitInfoLayout
           icon="lock"
-          firstRowStart={title}
-          firstRowEnd={
-            <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-              <FormGroup fieldId="password" label={_("Password")}>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  value={password}
-                  aria-label={_("Password input")}
-                  onChange={(_, v) => setPassword(v)}
-                  reminders={["capslock"]}
-                />
-              </FormGroup>
-              {authError && (
-                <Alert isInline variant="danger" title={error.title}>
-                  {error.description}
-                </Alert>
-              )}
-              <Flex>
-                <Button
-                  type="submit"
-                  variant={loading ? "secondary" : "primary"}
-                  isLoading={loading}
-                  isDisabled={loading}
-                >
-                  {_("Log in")}
-                </Button>
-              </Flex>
-            </Form>
-          }
-          secondRowStart={
+          title={title}
+          description={
             <>
               <Content>
                 {rootExplanationStart} <Text isBold>{rootUser}</Text> {rootExplanationEnd}
@@ -123,7 +94,35 @@ user privileges.",
               <Content>{_("Provide its password to log in to the system.")}</Content>
             </>
           }
-        />
+        >
+          <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+            <FormGroup fieldId="password" label={_("Password")}>
+              <PasswordInput
+                id="password"
+                name="password"
+                value={password}
+                aria-label={_("Password input")}
+                onChange={(_, v) => setPassword(v)}
+                reminders={["capslock"]}
+              />
+            </FormGroup>
+            {authError && (
+              <Alert isInline variant="danger" title={error.title}>
+                {error.description}
+              </Alert>
+            )}
+            <Flex>
+              <Button
+                type="submit"
+                variant={loading ? "secondary" : "primary"}
+                isLoading={loading}
+                isDisabled={loading}
+              >
+                {_("Log in")}
+              </Button>
+            </Flex>
+          </Form>
+        </SplitInfoLayout>
       </Page.Content>
     </Page>
   );

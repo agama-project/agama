@@ -21,22 +21,13 @@
  */
 
 import React from "react";
-import {
-  Alert,
-  Content,
-  Divider,
-  Flex,
-  HelperText,
-  HelperTextItem,
-  Stack,
-} from "@patternfly/react-core";
+import { Alert, Content, Divider, HelperText, HelperTextItem, Stack } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 
 const TpmAlert = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
@@ -72,33 +63,24 @@ function InstallationFinished() {
       <Page.Content>
         <SplitInfoLayout
           icon="done_all"
-          firstRowStart={_("Installation complete")}
-          firstRowEnd={
-            isGrub2WithTpm ? (
-              <TpmAlert />
-            ) : (
-              <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
-            )
+          title={_("Installation complete")}
+          description={
+            <HelperText>
+              <HelperTextItem>
+                {_("You can reboot the machine to log in to the new system.")}
+              </HelperTextItem>
+            </HelperText>
           }
-          secondRowStart={
+        >
+          {isGrub2WithTpm ? (
             <Stack hasGutter>
-              <HelperText>
-                <HelperTextItem
-                  className={[alignmentStyles.textAlignEnd, "text-balance"].join(" ")}
-                >
-                  {_("You can reboot the machine to log in to the new system.")}
-                </HelperTextItem>
-              </HelperText>
-              {isGrub2WithTpm && (
-                <Flex
-                  justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexEnd" }}
-                >
-                  <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
-                </Flex>
-              )}
+              <TpmAlert />
+              <RebootButton size="default" />
             </Stack>
-          }
-        />
+          ) : (
+            <RebootButton size="default" />
+          )}
+        </SplitInfoLayout>
       </Page.Content>
     </Page>
   );

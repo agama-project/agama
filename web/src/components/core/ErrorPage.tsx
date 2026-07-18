@@ -30,6 +30,7 @@ import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 
 /**
  * Returns first-party frames from a stack, falling back to the full stack
@@ -102,15 +103,16 @@ function RouteError({ error }: { error: ErrorResponse }) {
   return (
     <SplitInfoLayout
       icon="deployed_code_alert"
-      firstRowStart={`${error.status} ${error.statusText}`}
-      firstRowEnd={
-        <NestedContent margin="mtSm">
-          <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
-            {isString(error.data) ? error.data : JSON.stringify(error.data)}
-          </Text>
-        </NestedContent>
-      }
-    />
+      // The title is the HTTP status line reported by the server, meaningful
+      // in any locale.
+      title={`${error.status} ${error.statusText}` as TranslatedString}
+    >
+      <NestedContent margin="mtSm">
+        <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
+          {isString(error.data) ? error.data : JSON.stringify(error.data)}
+        </Text>
+      </NestedContent>
+    </SplitInfoLayout>
   );
 }
 
@@ -135,22 +137,18 @@ function UnexpectedError({ error }: { error: unknown }) {
   const message = isAnError ? error.message : _("Unknown error");
 
   return (
-    <SplitInfoLayout
-      icon="deployed_code_alert"
-      firstRowStart={title}
-      firstRowEnd={
-        <NestedContent margin="mtSm">
-          <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
-            {message}
-          </Text>
-          <Content component="pre">
-            <NestedContent margin="mtSm">
-              <ErrorTrace error={error} />
-            </NestedContent>
-          </Content>
-        </NestedContent>
-      }
-    />
+    <SplitInfoLayout icon="deployed_code_alert" title={title}>
+      <NestedContent margin="mtSm">
+        <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
+          {message}
+        </Text>
+        <Content component="pre">
+          <NestedContent margin="mtSm">
+            <ErrorTrace error={error} />
+          </NestedContent>
+        </Content>
+      </NestedContent>
+    </SplitInfoLayout>
   );
 }
 

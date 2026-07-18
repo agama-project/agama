@@ -26,28 +26,23 @@ import Page from "~/components/core/Page";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";
 
-import spacingStyles from "@patternfly/react-styles/css/utilities/Spacing/spacing";
-
 export default function InstallationExit() {
   return (
     <Page variant="minimal">
       <Page.Content>
         <SplitInfoLayout
           icon="restart_alt"
-          firstRowStart={_("The system is rebooting")}
-          firstRowEnd={
-            <Content isEditorial className={spacingStyles.mtSm}>
-              {_("You can safely close this window.")}
-            </Content>
-          }
-          secondRowStart={
+          title={_("The system is rebooting")}
+          description={
             <HelperText>
               <HelperTextItem>
                 {_("The installer interface is no longer available.")}
               </HelperTextItem>
             </HelperText>
           }
-        />
+        >
+          <Content isEditorial>{_("You can safely close this window.")}</Content>
+        </SplitInfoLayout>
       </Page.Content>
     </Page>
   );
