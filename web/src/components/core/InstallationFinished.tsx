@@ -32,7 +32,7 @@ import {
 } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
-import StandaloneLayout from "~/components/layout/StandaloneLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -70,7 +70,7 @@ function InstallationFinished() {
   return (
     <Page noDefaultProgressMonitor>
       <Page.Content>
-        <StandaloneLayout
+        <SideBySideLayout
           icon="done_all"
           title={_("Installation complete")}
           description={
@@ -96,7 +96,7 @@ function InstallationFinished() {
               <RebootButton size="default" />
             </Flex>
           )}
-        </StandaloneLayout>
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );

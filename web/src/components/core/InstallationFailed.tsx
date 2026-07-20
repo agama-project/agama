@@ -25,7 +25,7 @@ import { Flex, Stack } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import RebootButton from "~/components/core/RebootButton";
-import StandaloneLayout from "../layout/StandaloneLayout";
+import SideBySideLayout from "../layout/SideBySideLayout";
 import { _ } from "~/i18n";
 import DownloadLogsButton from "./DownloadLogsButton";
 
@@ -40,7 +40,7 @@ export default function InstallationFailed() {
   return (
     <Page variant="minimal">
       <Page.Content>
-        <StandaloneLayout
+        <SideBySideLayout
           icon="report"
           title={_("Installation failed")}
           description={
@@ -54,7 +54,7 @@ export default function InstallationFailed() {
             <RebootButton size="default" />
             <DownloadLogsButton />
           </Flex>
-        </StandaloneLayout>
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );

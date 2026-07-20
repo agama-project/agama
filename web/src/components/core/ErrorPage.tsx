@@ -28,7 +28,7 @@ import { Content, Skeleton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
-import StandaloneLayout from "~/components/layout/StandaloneLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 
@@ -101,14 +101,14 @@ function ErrorTrace({ error }) {
  */
 function RouteError({ error }: { error: ErrorResponse }) {
   return (
-    <StandaloneLayout
+    <SideBySideLayout
       icon="deployed_code_alert"
       // The title is the HTTP status line reported by the server, meaningful
       // in any locale.
       title={`${error.status} ${error.statusText}` as TranslatedString}
     >
       <Text isBold>{isString(error.data) ? error.data : JSON.stringify(error.data)}</Text>
-    </StandaloneLayout>
+    </SideBySideLayout>
   );
 }
 
@@ -133,14 +133,14 @@ function UnexpectedError({ error }: { error: unknown }) {
   const message = isAnError ? error.message : _("Unknown error");
 
   return (
-    <StandaloneLayout icon="deployed_code_alert" title={title}>
+    <SideBySideLayout icon="deployed_code_alert" title={title}>
       <Text isBold>{message}</Text>
       <Content component="pre">
         <NestedContent margin="mtSm">
           <ErrorTrace error={error} />
         </NestedContent>
       </Content>
-    </StandaloneLayout>
+    </SideBySideLayout>
   );
 }
 

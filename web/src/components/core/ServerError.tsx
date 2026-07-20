@@ -23,7 +23,7 @@
 import React from "react";
 import { Button, HelperText, HelperTextItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import StandaloneLayout from "~/components/layout/StandaloneLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { locationReload } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -31,7 +31,7 @@ function ServerError() {
   return (
     <Page variant="minimal">
       <Page.Content>
-        <StandaloneLayout
+        <SideBySideLayout
           icon="error"
           title={_("Cannot connect")}
           description={
@@ -43,7 +43,7 @@ function ServerError() {
           <Button variant="primary" onClick={locationReload}>
             {_("Reload")}
           </Button>
-        </StandaloneLayout>
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );

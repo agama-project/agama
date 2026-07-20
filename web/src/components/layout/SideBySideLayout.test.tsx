@@ -25,27 +25,27 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { _ } from "~/i18n";
 import { Button } from "@patternfly/react-core";
-import StandaloneLayout from "~/components/layout/StandaloneLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 
 /** True when `first` appears before `second` in document order. */
 const precedes = (first: Element, second: Element) =>
   Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING);
 
-describe("StandaloneLayout", () => {
+describe("SideBySideLayout", () => {
   it("renders the primary content as a level 1 heading", () => {
-    plainRender(<StandaloneLayout title={_("Installation complete")} />);
+    plainRender(<SideBySideLayout title={_("Installation complete")} />);
 
     screen.getByRole("heading", { level: 1, name: "Installation complete" });
   });
 
   it("keeps the reading order: title, description, then actionable content", () => {
     plainRender(
-      <StandaloneLayout
+      <SideBySideLayout
         title={_("Installation complete")}
         description={_("You can reboot the machine.")}
       >
         <Button>Reboot</Button>
-      </StandaloneLayout>,
+      </SideBySideLayout>,
     );
 
     const title = screen.getByRole("heading", { level: 1 });
@@ -58,14 +58,14 @@ describe("StandaloneLayout", () => {
 
   it("renders the icon as a decorative element", () => {
     const { container } = plainRender(
-      <StandaloneLayout icon="done_all" title={_("Installation complete")} />,
+      <SideBySideLayout icon="done_all" title={_("Installation complete")} />,
     );
 
     expect(container.querySelector("svg[aria-hidden='true']")).not.toBeNull();
   });
 
   it("renders no icon when none is given", () => {
-    const { container } = plainRender(<StandaloneLayout title={_("Installation complete")} />);
+    const { container } = plainRender(<SideBySideLayout title={_("Installation complete")} />);
 
     expect(container.querySelector("svg")).toBeNull();
   });

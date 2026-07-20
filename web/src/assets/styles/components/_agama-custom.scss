@@ -135,11 +135,11 @@ nav.agm-breadcrumb h1 {
   display: none;
 }
 
-// Standalone screens layout (see layout/StandaloneLayout): the DOM stays in
+// Standalone screens layout (see layout/SideBySideLayout): the DOM stays in
 // reading order and grid-template-areas decides the visual arrangement per
 // breakpoint. Only logical properties and values, so columns and alignment
 // follow the document's writing direction.
-.agm-standalone-layout {
+.agm-side-by-side-layout {
   display: grid;
   block-size: 100%;
   align-content: center;

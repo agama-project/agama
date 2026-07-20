@@ -12,7 +12,7 @@ import type { TranslatedString } from "~/i18n";
  */
 type TextContent = TranslatedString | React.ReactElement;
 
-export type StandaloneLayoutProps = {
+export type SideBySideLayoutProps = {
   /** Optional decorative icon rendered above the title. */
   icon?: IconProps["name"];
 
@@ -24,9 +24,9 @@ export type StandaloneLayoutProps = {
 };
 
 /**
- * Layout for standalone screens presenting a single focal composition: an
- * icon, a title, a short description, and one free-form piece of content
- * given as children (a button, a form, an alert).
+ * Layout pairing an icon, a title, and a short description with one
+ * free-form piece of content given as children (a button, a form, an
+ * alert).
  *
  * The markup keeps the story in reading order (icon, title, description,
  * content) at every viewport size. Small viewports render one centered
@@ -41,41 +41,43 @@ export type StandaloneLayoutProps = {
  *
  * @example
  * ```tsx
- * <StandaloneLayout
+ * <SideBySideLayout
  *   icon="error"
  *   title={_("Installation failed")}
  *   description={_("Review logs and try again.")}
  * >
  *   <Button>Reboot</Button>
- * </StandaloneLayout>
+ * </SideBySideLayout>
  * ```
  */
-export default function StandaloneLayout({
+export default function SideBySideLayout({
   icon,
   title,
   description,
   children,
-}: React.PropsWithChildren<StandaloneLayoutProps>) {
+}: React.PropsWithChildren<SideBySideLayoutProps>) {
   return (
-    <div className="agm-standalone-layout">
+    <div className="agm-side-by-side-layout">
       {icon && (
-        <div className="agm-standalone-layout__icon">
+        <div className="agm-side-by-side-layout__icon">
           <Icon name={icon} size="4xl" />
         </div>
       )}
-      <div className="agm-standalone-layout__intro">
+      <div className="agm-side-by-side-layout__intro">
         <Title
           headingLevel="h1"
-          className={["agm-standalone-layout__title", textStyles.fontSize_3xl, "text-balance"].join(
-            " ",
-          )}
+          className={[
+            "agm-side-by-side-layout__title",
+            textStyles.fontSize_3xl,
+            "text-balance",
+          ].join(" ")}
         >
           {title}
         </Title>
-        {description && <div className="agm-standalone-layout__description">{description}</div>}
+        {description && <div className="agm-side-by-side-layout__description">{description}</div>}
       </div>
-      {children && <div className="agm-standalone-layout__body">{children}</div>}
-      <div className="agm-standalone-layout__divider" />
+      {children && <div className="agm-side-by-side-layout__body">{children}</div>}
+      <div className="agm-side-by-side-layout__divider" />
     </div>
   );
 }
