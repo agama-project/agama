@@ -819,9 +819,6 @@ export default {
   "Current": [
     "Saat ini"
   ],
-  "Current %1$s at %2$s": [
-    "Saat ini %1$s di %2$s"
-  ],
   "Current %s": [
     "Saat ini %s"
   ],
@@ -1745,9 +1742,6 @@ export default {
   ],
   "More": [
     "Lainnya"
-  ],
-  "More actions": [
-    "Tindakan lainnya"
   ],
   "More devices": [
     "Lebih banyak perangkat"

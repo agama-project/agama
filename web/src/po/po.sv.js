@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Åtgärder"
   ],
+  "Actions for %s": [
+    "Åtgärder för %s"
+  ],
   "Actions for %s at portal %s": [
     "Åtgärder för %s vid portal %s"
   ],
@@ -842,9 +845,6 @@ export default {
   ],
   "Current": [
     "Nuvarande"
-  ],
-  "Current %1$s at %2$s": [
-    "Nuvarande %1$s på %2$s"
   ],
   "Current %s": [
     "Nuvarande %s"
@@ -1776,9 +1776,6 @@ export default {
   ],
   "More": [
     "Mer"
-  ],
-  "More actions": [
-    "Mer åtgärder"
   ],
   "More devices": [
     "Mer enheter"
