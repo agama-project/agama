@@ -21,7 +21,15 @@
  */
 
 import React from "react";
-import { Alert, Content, Divider, HelperText, HelperTextItem, Stack } from "@patternfly/react-core";
+import {
+  Alert,
+  Content,
+  Divider,
+  Flex,
+  HelperText,
+  HelperTextItem,
+  Stack,
+} from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
 import StandaloneLayout from "~/components/layout/StandaloneLayout";
@@ -57,6 +65,7 @@ the machine needs to boot directly to the new boot loader.",
 
 function InstallationFinished() {
   const isGrub2WithTpm = useIsGrub2WithTpm();
+  const rebootHint = _("You can reboot the machine to log in to the new system.");
 
   return (
     <Page noDefaultProgressMonitor>
@@ -65,11 +74,11 @@ function InstallationFinished() {
           icon="done_all"
           title={_("Installation complete")}
           description={
-            <HelperText>
-              <HelperTextItem>
-                {_("You can reboot the machine to log in to the new system.")}
-              </HelperTextItem>
-            </HelperText>
+            isGrub2WithTpm && (
+              <HelperText>
+                <HelperTextItem>{rebootHint}</HelperTextItem>
+              </HelperText>
+            )
           }
         >
           {isGrub2WithTpm ? (
@@ -78,7 +87,14 @@ function InstallationFinished() {
               <RebootButton size="default" />
             </Stack>
           ) : (
-            <RebootButton size="default" />
+            <Flex
+              direction={{ default: "column" }}
+              alignItems={{ default: "alignItemsFlexStart" }}
+              gap={{ default: "gapMd" }}
+            >
+              <Content>{rebootHint}</Content>
+              <RebootButton size="default" />
+            </Flex>
           )}
         </StandaloneLayout>
       </Page.Content>
