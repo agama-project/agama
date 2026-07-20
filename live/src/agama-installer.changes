@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 20 11:12:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
 Thu Jul  9 10:04:12 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Add support for configuring HNV in the initramfs providing the
