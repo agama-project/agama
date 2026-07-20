@@ -107,11 +107,7 @@ function RouteError({ error }: { error: ErrorResponse }) {
       // in any locale.
       title={`${error.status} ${error.statusText}` as TranslatedString}
     >
-      <NestedContent margin="mtSm">
-        <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
-          {isString(error.data) ? error.data : JSON.stringify(error.data)}
-        </Text>
-      </NestedContent>
+      <Text isBold>{isString(error.data) ? error.data : JSON.stringify(error.data)}</Text>
     </StandaloneLayout>
   );
 }
@@ -138,16 +134,12 @@ function UnexpectedError({ error }: { error: unknown }) {
 
   return (
     <StandaloneLayout icon="deployed_code_alert" title={title}>
-      <NestedContent margin="mtSm">
-        <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
-          {message}
-        </Text>
-        <Content component="pre">
-          <NestedContent margin="mtSm">
-            <ErrorTrace error={error} />
-          </NestedContent>
-        </Content>
-      </NestedContent>
+      <Text isBold>{message}</Text>
+      <Content component="pre">
+        <NestedContent margin="mtSm">
+          <ErrorTrace error={error} />
+        </NestedContent>
+      </Content>
     </StandaloneLayout>
   );
 }
