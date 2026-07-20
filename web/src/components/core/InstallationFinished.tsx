@@ -24,7 +24,7 @@ import React from "react";
 import { Alert, Content, Divider, HelperText, HelperTextItem, Stack } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import StandaloneLayout from "~/components/layout/StandaloneLayout";
 import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -61,7 +61,7 @@ function InstallationFinished() {
   return (
     <Page noDefaultProgressMonitor>
       <Page.Content>
-        <SplitInfoLayout
+        <StandaloneLayout
           icon="done_all"
           title={_("Installation complete")}
           description={
@@ -80,7 +80,7 @@ function InstallationFinished() {
           ) : (
             <RebootButton size="default" />
           )}
-        </SplitInfoLayout>
+        </StandaloneLayout>
       </Page.Content>
     </Page>
   );

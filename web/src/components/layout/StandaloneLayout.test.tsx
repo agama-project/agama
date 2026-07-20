@@ -25,27 +25,27 @@ import { screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
 import { _ } from "~/i18n";
 import { Button } from "@patternfly/react-core";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import StandaloneLayout from "~/components/layout/StandaloneLayout";
 
 /** True when `first` appears before `second` in document order. */
 const precedes = (first: Element, second: Element) =>
   Boolean(first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING);
 
-describe("SplitInfoLayout", () => {
+describe("StandaloneLayout", () => {
   it("renders the primary content as a level 1 heading", () => {
-    plainRender(<SplitInfoLayout title={_("Installation complete")} />);
+    plainRender(<StandaloneLayout title={_("Installation complete")} />);
 
     screen.getByRole("heading", { level: 1, name: "Installation complete" });
   });
 
   it("keeps the reading order: title, description, then actionable content", () => {
     plainRender(
-      <SplitInfoLayout
+      <StandaloneLayout
         title={_("Installation complete")}
         description={_("You can reboot the machine.")}
       >
         <Button>Reboot</Button>
-      </SplitInfoLayout>,
+      </StandaloneLayout>,
     );
 
     const title = screen.getByRole("heading", { level: 1 });
@@ -58,14 +58,14 @@ describe("SplitInfoLayout", () => {
 
   it("renders the icon as a decorative element", () => {
     const { container } = plainRender(
-      <SplitInfoLayout icon="done_all" title={_("Installation complete")} />,
+      <StandaloneLayout icon="done_all" title={_("Installation complete")} />,
     );
 
     expect(container.querySelector("svg[aria-hidden='true']")).not.toBeNull();
   });
 
   it("renders no icon when none is given", () => {
-    const { container } = plainRender(<SplitInfoLayout title={_("Installation complete")} />);
+    const { container } = plainRender(<StandaloneLayout title={_("Installation complete")} />);
 
     expect(container.querySelector("svg")).toBeNull();
   });

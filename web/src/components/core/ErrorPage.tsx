@@ -28,7 +28,7 @@ import { Content, Skeleton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import StandaloneLayout from "~/components/layout/StandaloneLayout";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 
@@ -101,7 +101,7 @@ function ErrorTrace({ error }) {
  */
 function RouteError({ error }: { error: ErrorResponse }) {
   return (
-    <SplitInfoLayout
+    <StandaloneLayout
       icon="deployed_code_alert"
       // The title is the HTTP status line reported by the server, meaningful
       // in any locale.
@@ -112,7 +112,7 @@ function RouteError({ error }: { error: ErrorResponse }) {
           {isString(error.data) ? error.data : JSON.stringify(error.data)}
         </Text>
       </NestedContent>
-    </SplitInfoLayout>
+    </StandaloneLayout>
   );
 }
 
@@ -137,7 +137,7 @@ function UnexpectedError({ error }: { error: unknown }) {
   const message = isAnError ? error.message : _("Unknown error");
 
   return (
-    <SplitInfoLayout icon="deployed_code_alert" title={title}>
+    <StandaloneLayout icon="deployed_code_alert" title={title}>
       <NestedContent margin="mtSm">
         <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
           {message}
@@ -148,7 +148,7 @@ function UnexpectedError({ error }: { error: unknown }) {
           </NestedContent>
         </Content>
       </NestedContent>
-    </SplitInfoLayout>
+    </StandaloneLayout>
   );
 }
 

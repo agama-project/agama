@@ -12,7 +12,7 @@ import type { TranslatedString } from "~/i18n";
  */
 type TextContent = TranslatedString | React.ReactElement;
 
-export type SplitInfoLayoutProps = {
+export type StandaloneLayoutProps = {
   /** Optional decorative icon rendered above the title. */
   icon?: IconProps["name"];
 
@@ -37,39 +37,39 @@ export type SplitInfoLayoutProps = {
  *
  * @example
  * ```tsx
- * <SplitInfoLayout
+ * <StandaloneLayout
  *   icon="error"
  *   title={_("Installation failed")}
  *   description={_("Review logs and try again.")}
  * >
  *   <Button>Reboot</Button>
- * </SplitInfoLayout>
+ * </StandaloneLayout>
  * ```
  */
-export default function SplitInfoLayout({
+export default function StandaloneLayout({
   icon,
   title,
   description,
   children,
-}: React.PropsWithChildren<SplitInfoLayoutProps>) {
+}: React.PropsWithChildren<StandaloneLayoutProps>) {
   return (
-    <div className="agm-split-info-layout">
+    <div className="agm-standalone-layout">
       {icon && (
-        <div className="agm-split-info-layout__icon">
+        <div className="agm-standalone-layout__icon">
           <Icon name={icon} size="4xl" />
         </div>
       )}
       <Title
         headingLevel="h1"
-        className={["agm-split-info-layout__title", textStyles.fontSize_3xl, "text-balance"].join(
+        className={["agm-standalone-layout__title", textStyles.fontSize_3xl, "text-balance"].join(
           " ",
         )}
       >
         {title}
       </Title>
-      {description && <div className="agm-split-info-layout__description">{description}</div>}
-      {children && <div className="agm-split-info-layout__content">{children}</div>}
-      <div className="agm-split-info-layout__divider" />
+      {description && <div className="agm-standalone-layout__description">{description}</div>}
+      {children && <div className="agm-standalone-layout__content">{children}</div>}
+      <div className="agm-standalone-layout__divider" />
     </div>
   );
 }

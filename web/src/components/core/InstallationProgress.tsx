@@ -25,7 +25,7 @@ import { HelperText, HelperTextItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import ProgressReport from "~/components/core/ProgressReport";
 import ProductLogo from "~/components/product/ProductLogo";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import StandaloneLayout from "~/components/layout/StandaloneLayout";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { _ } from "~/i18n";
 
@@ -35,7 +35,7 @@ export default function InstallationProgress() {
   return (
     <Page noDefaultProgressMonitor>
       <Page.Content>
-        <SplitInfoLayout
+        <StandaloneLayout
           icon="deployed_code_update"
           title={
             <>
@@ -50,7 +50,7 @@ export default function InstallationProgress() {
           }
         >
           <ProgressReport />
-        </SplitInfoLayout>
+        </StandaloneLayout>
       </Page.Content>
     </Page>
   );

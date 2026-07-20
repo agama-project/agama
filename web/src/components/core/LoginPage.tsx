@@ -27,7 +27,7 @@ import { Alert, Button, Content, Flex, Form, FormGroup } from "@patternfly/react
 import { Page, PasswordInput } from "~/components/core";
 import Text from "~/components/core/Text";
 import { AuthErrors, useAuth } from "~/context/auth";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import StandaloneLayout from "~/components/layout/StandaloneLayout";
 import { _ } from "~/i18n";
 
 const getError = (authError) => {
@@ -83,7 +83,7 @@ user privileges.",
   return (
     <Page variant="minimal" showQuestions={false}>
       <Page.Content>
-        <SplitInfoLayout
+        <StandaloneLayout
           icon="lock"
           title={title}
           description={
@@ -122,7 +122,7 @@ user privileges.",
               </Button>
             </Flex>
           </Form>
-        </SplitInfoLayout>
+        </StandaloneLayout>
       </Page.Content>
     </Page>
   );

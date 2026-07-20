@@ -23,14 +23,14 @@
 import React from "react";
 import { Content, HelperText, HelperTextItem } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import StandaloneLayout from "~/components/layout/StandaloneLayout";
 import { _ } from "~/i18n";
 
 export default function InstallationExit() {
   return (
     <Page variant="minimal">
       <Page.Content>
-        <SplitInfoLayout
+        <StandaloneLayout
           icon="restart_alt"
           title={_("The system is rebooting")}
           description={
@@ -42,7 +42,7 @@ export default function InstallationExit() {
           }
         >
           <Content isEditorial>{_("You can safely close this window.")}</Content>
-        </SplitInfoLayout>
+        </StandaloneLayout>
       </Page.Content>
     </Page>
   );
