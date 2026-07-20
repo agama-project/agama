@@ -822,9 +822,6 @@ export default {
   "Current": [
     "現在"
   ],
-  "Current %1$s at %2$s": [
-    "%2$s にある現在の %1$s"
-  ],
   "Current %s": [
     "現在の %s"
   ],
@@ -1751,9 +1748,6 @@ export default {
   ],
   "More": [
     "詳細"
-  ],
-  "More actions": [
-    "さらなる処理"
   ],
   "More devices": [
     "さらなるデバイス"

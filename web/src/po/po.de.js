@@ -840,9 +840,6 @@ export default {
   "Current": [
     "Aktuell"
   ],
-  "Current %1$s at %2$s": [
-    "Aktuell %1$s bei %2$s"
-  ],
   "Current %s": [
     "Aktuell %s"
   ],
@@ -1773,9 +1770,6 @@ export default {
   ],
   "More": [
     "Mehr"
-  ],
-  "More actions": [
-    "Weitere Aktionen"
   ],
   "More devices": [
     "Weitere Geräte"

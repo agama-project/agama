@@ -819,9 +819,6 @@ export default {
   "Current": [
     "当前"
   ],
-  "Current %1$s at %2$s": [
-    "当前 %1$s（%2$s 上）"
-  ],
   "Current %s": [
     "当前 %s"
   ],
@@ -1745,9 +1742,6 @@ export default {
   ],
   "More": [
     "更多"
-  ],
-  "More actions": [
-    "更多操作"
   ],
   "More devices": [
     "更多设备"

@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Accions"
   ],
+  "Actions for %s": [
+    "Accions per a %s"
+  ],
   "Actions for %s at portal %s": [
     "Accions per a %s al portal %s"
   ],
@@ -842,9 +845,6 @@ export default {
   ],
   "Current": [
     "Actual"
-  ],
-  "Current %1$s at %2$s": [
-    "%1$s actual a %2$s"
   ],
   "Current %s": [
     "Actual: %s"
@@ -1776,9 +1776,6 @@ export default {
   ],
   "More": [
     "Més"
-  ],
-  "More actions": [
-    "Més accions"
   ],
   "More devices": [
     "Més dispositius"

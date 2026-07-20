@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "ქმედებები"
   ],
+  "Actions for %s": [
+    "ქმედებები %s-ისთვის"
+  ],
   "Actions for %s at portal %s": [
     "ქმედებები %s-ისთვის პორტალზე %s"
   ],
@@ -842,9 +845,6 @@ export default {
   ],
   "Current": [
     "მიმდინარე"
-  ],
-  "Current %1$s at %2$s": [
-    "მიმდინარე %1$s მოწყობილობაზე %2$s"
   ],
   "Current %s": [
     "მიმდინარეა %s"
@@ -1776,9 +1776,6 @@ export default {
   ],
   "More": [
     "მეტი"
-  ],
-  "More actions": [
-    "მეტი ქმედება"
   ],
   "More devices": [
     "მეტი მოწყობილობა"

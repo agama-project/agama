@@ -864,9 +864,6 @@ export default {
   "Current": [
     "Поточне"
   ],
-  "Current %1$s at %2$s": [
-    "Поточна %1$s на %2$s"
-  ],
   "Current %s": [
     "Поточна %s"
   ],
@@ -1801,9 +1798,6 @@ export default {
   ],
   "More": [
     "Ще"
-  ],
-  "More actions": [
-    "Більше дій"
   ],
   "More devices": [
     "Інші пристрої"
