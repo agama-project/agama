@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 20:24+0000\n"
-"PO-Revision-Date: 2026-07-12 17:12+0000\n"
+"POT-Creation-Date: 2026-07-14 08:45+0000\n"
+"PO-Revision-Date: 2026-07-19 15:12+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sk/>\n"
@@ -317,7 +317,7 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama config validate <URL_OR_PATH>
 #: agama-cli/src/config.rs:129
 msgid "JSON file, URL or path or `-` for standard input"
-msgstr ""
+msgstr "Súbor JSON, URL alebo cesta alebo `-` pre štandardný vstup"
 
 #. TRANSLATORS: CLI help for: agama config validate --local
 #: agama-cli/src/config.rs:137
@@ -325,6 +325,8 @@ msgid ""
 "Run subcommands (if possible) in local mode - without trying to connect to "
 "remote agama server"
 msgstr ""
+"Spustiť podpríkazy (ak je to možné) v lokálnom režime – bez pokusu o "
+"pripojenie k vzdialenému serveru agama"
 
 #. TRANSLATORS: CLI help for: agama config generate
 #: agama-cli/src/config.rs:144
@@ -332,6 +334,8 @@ msgid ""
 "Generate and print a native Agama JSON configuration from any kind and "
 "location"
 msgstr ""
+"Vytvoriť a vytlačiť natívnu konfiguráciu Agama vo formáte JSON z akejkoľvek "
+"formy a umiestnenia"
 
 #. TRANSLATORS: CLI help for: agama config generate (details)
 #: agama-cli/src/config.rs:146
@@ -349,11 +353,23 @@ msgid ""
 "https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/"
 "profile.jsonnet"
 msgstr ""
+"Formy:\n"
+"- JSON\n"
+"- Jsonnet, vkladanie hardvérových informácií\n"
+"- Profil AutoYaST, vrátane ERB a pravidiel/tried\n"
+"\n"
+"Umiestnenia:\n"
+"- cesta\n"
+"- URL (vrátane schém špecifických pre AutoYaST)\n"
+"\n"
+"Príklad na Jsonnet založený profil nájdete na\n"
+"https://github.com/openSUSE/agama/blob/master/rust/agama-lib/share/examples/"
+"profile.jsonnet"
 
 #. TRANSLATORS: CLI help for: agama config edit
 #: agama-cli/src/config.rs:172
 msgid "Edit and update installation option using an external editor"
-msgstr ""
+msgstr "Upraviť a aktualizovať možnosť inštalácie pomocou externého editora"
 
 #. TRANSLATORS: CLI help for: agama config edit (details)
 #: agama-cli/src/config.rs:177
@@ -363,24 +379,28 @@ msgid ""
 "If an editor is not specified, it honors the EDITOR environment variable. It "
 "falls back to `/usr/bin/vi` as a last resort."
 msgstr ""
+"Zmeny sa neuplatnia, ak sa editor ukončí s chybovým kódom.\n"
+"\n"
+"Ak nie je špecifikovaný editor, použije sa hodnota premennej prostredia "
+"EDITOR. Ako posledná možnosť sa použije `/usr/bin/vi`."
 
 #. TRANSLATORS: CLI help for: agama config edit --editor <EDITOR>
 #: agama-cli/src/config.rs:194
 msgid "Editor command (including additional arguments if needed)"
-msgstr ""
+msgstr "Príkaz editora (vrátane ďalších argumentov, ak treba)"
 
 #: agama-cli/src/config.rs:217
 msgid "It is not a valid JSON file"
-msgstr ""
+msgstr "Nie je to platný súbor JSON"
 
 #: agama-cli/src/config.rs:416
 msgid "Ignoring the changes because the editor was closed with an error code."
-msgstr ""
+msgstr "Ignorovanie zmien, pretože editor bol zatvorený s chybovým kódom."
 
 #. TRANSLATORS: CLI help for: agama
 #: agama-cli/src/lib.rs:92
 msgid "Agama's command-line interface"
-msgstr ""
+msgstr "Rozhranie príkazového riadku Agama"
 
 #. TRANSLATORS: CLI help for: agama (details)
 #: agama-cli/src/lib.rs:97
@@ -391,6 +411,10 @@ msgid ""
 "\n"
 "Please, use the \"help\" command to learn more."
 msgstr ""
+"Tento program umožňuje kontrolovať alebo meniť konfiguráciu Agama, spravovať "
+"inštalačné profily, spúšťať inštaláciu, sledovať priebeh inštalácie atď.\n"
+"\n"
+"Ak sa chcete dozvedieť viac, použite, prosím, príkaz \"help\"."
 
 #. TRANSLATORS: CLI help for: agama --host <HOST>
 #: agama-cli/src/lib.rs:115
@@ -399,23 +423,26 @@ msgid ""
 "\n"
 "Examples: https://my-server.lan my-server.local localhost:10443"
 msgstr ""
+"URI odkazujúce na vzdialeného hostiteľa Agama.\n"
+"\n"
+"Príklady: https://my-server.lan my-server.local localhost:10443"
 
 #. TRANSLATORS: CLI help for: agama --insecure
 #: agama-cli/src/lib.rs:127
 msgid "Whether to accept invalid (self-signed, ...) certificates or not"
-msgstr ""
+msgstr "Či prijať neplatné (podpísané samým sebou, ...) certifikáty, alebo nie"
 
 #. TRANSLATORS: CLI help for: agama --local
 #: agama-cli/src/lib.rs:135
 msgid ""
 "Some commands could be able to work even without connection to the agama "
 "server"
-msgstr ""
+msgstr "Niektoré príkazy by mohli fungovať aj bez pripojenia k serveru agama"
 
 #. TRANSLATORS: CLI help for: agama logs
 #: agama-cli/src/logs.rs:31
 msgid "Collect the installer logs"
-msgstr ""
+msgstr "Zhromaždiť záznamy inštalátora"
 
 #. TRANSLATORS: CLI help for: agama logs (details)
 #: agama-cli/src/logs.rs:36
@@ -424,11 +451,14 @@ msgid ""
 "inspection. The file includes system and Agama-specific logs and "
 "configuration files. They are crucial to troubleshoot and debug problems."
 msgstr ""
+"Záznamy inštalátora sa ukladajú do komprimovaného archívu pre ďalšiu "
+"kontrolu. Súbor obsahuje systémové a pre Agama špecifické záznamy a "
+"konfiguračné súbory. Sú kľúčové pre riešenie a ladenie problémov."
 
 #. TRANSLATORS: CLI help for: agama logs store
 #: agama-cli/src/logs.rs:50
 msgid "Collect and store the logs in a tar archive"
-msgstr ""
+msgstr "Zhromaždiť a uložiť záznamy v archíve tar"
 
 #. TRANSLATORS: CLI help for: agama logs store --destination <DESTINATION>
 #: agama-cli/src/logs.rs:58
@@ -436,11 +466,13 @@ msgid ""
 "Path to destination directory and, optionally, the archive file name. The "
 "extension will be added automatically"
 msgstr ""
+"Cesta k cieľovému adresáru a prípadne názov súboru archívu. Prípona sa pridá "
+"automaticky"
 
 #. TRANSLATORS: CLI help for: agama logs list
 #: agama-cli/src/logs.rs:65
 msgid "List the logs to collect"
-msgstr ""
+msgstr "Vypísať zoznam záznamov na zhromaždenie"
 
 #. TRANSLATORS: an installation "scope", used in the "agama monitor" command
 #: agama-cli/src/monitor/ui.rs:41
@@ -579,16 +611,16 @@ msgstr "z"
 #. TRANSLATORS: additional data that question passed to user beside main question message
 #: agama-cli/src/monitor/ui/question.rs:307
 msgid "Technical details"
-msgstr ""
+msgstr "Technické podrobnosti"
 
 #. TRANSLATORS: CLI hint how to scroll through additional data
 #: agama-cli/src/monitor/ui/question.rs:317
 msgid "use PageUp/PageDown to scroll"
-msgstr ""
+msgstr "na posúvanie použite PageUp/PageDown"
 
 #: agama-cli/src/monitor/ui/question.rs:371
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: agama-cli/src/monitor/ui/question.rs:377
 msgid "Location"
@@ -596,7 +628,7 @@ msgstr "Umiestnenie"
 
 #: agama-cli/src/monitor/ui/question.rs:383
 msgid "Value"
-msgstr ""
+msgstr "Hodnota"
 
 #: agama-cli/src/monitor/ui/summary.rs:47
 msgid "Host: "
@@ -654,7 +686,7 @@ msgstr "Zatiaľ nevybrané"
 #. TRANSLATORS: CLI help for: agama questions
 #: agama-cli/src/questions.rs:33
 msgid "Handle installer questions"
-msgstr ""
+msgstr "Riešenie otázok inštalátora"
 
 #. TRANSLATORS: CLI help for: agama questions (details)
 #: agama-cli/src/questions.rs:35
@@ -666,6 +698,12 @@ msgid ""
 "\n"
 "This command allows answering such questions directly from the command-line."
 msgstr ""
+"Agama môže kedykoľvek vyžadovať zásah používateľa. Medzi dôvody patrí "
+"poskytnutie chýbajúcich informácií (napr. heslo na dešifrovanie súborového "
+"systému) alebo rozhodnutie, ako postupovať v prípade chyby (napr. ak sa nedá "
+"pripojiť k repozitáru).\n"
+"\n"
+"Tento príkaz umožňuje odpovedať na takéto otázky priamo z príkazového riadku."
 
 #. TRANSLATORS: CLI help for: agama questions mode
 #: agama-cli/src/questions.rs:49
@@ -778,74 +816,74 @@ msgid "Finalize installation"
 msgstr "Dokončiť inštaláciu"
 
 #: agama-manager/src/actions.rs:346
-msgid "Storing security settings"
-msgstr ""
-
-#: agama-manager/src/actions.rs:356
-msgid "Configuring remote access"
-msgstr "Konfigurácia vzdialeného prístupu"
-
-#: agama-manager/src/actions.rs:366
-msgid "Setting up the hostname"
-msgstr ""
-
-#: agama-manager/src/actions.rs:376
-msgid "Setting up the network proxy"
-msgstr ""
-
-#: agama-manager/src/actions.rs:387
-msgid "Setting up NTP"
-msgstr ""
-
-#: agama-manager/src/actions.rs:398
-msgid "Importing user files and scripts"
-msgstr ""
-
-#: agama-manager/src/actions.rs:411
-msgid "Running user pre-installation scripts"
-msgstr ""
-
-#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:436
+#: agama-manager/src/actions.rs:357
+msgid "Importing user files and scripts"
+msgstr ""
+
+#: agama-manager/src/actions.rs:371
+msgid "Running user pre-installation scripts"
+msgstr ""
+
+#: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr ""
+
+#: agama-manager/src/actions.rs:396
+msgid "Configuring remote access"
+msgstr "Konfigurácia vzdialeného prístupu"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr ""
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr ""
+
+#: agama-manager/src/actions.rs:427
+msgid "Setting up NTP"
+msgstr ""
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:446
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:552
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:576
+#: agama-manager/src/actions.rs:581
 msgid "Configuring zFCP devices"
 msgstr "Konfigurácia zariadení zFCP"
 
-#: agama-manager/src/actions.rs:600
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr ""
 
-#: agama-manager/src/actions.rs:624
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr ""
 
-#: agama-manager/src/actions.rs:653
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:686
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr ""
 
-#: agama-manager/src/actions.rs:719
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr ""
 
-#: agama-manager/src/actions.rs:752
+#: agama-manager/src/actions.rs:753
 msgid "Configuring SELinux"
 msgstr ""
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 20:24+0000\n"
+"POT-Creation-Date: 2026-07-14 08:45+0000\n"
 "PO-Revision-Date: 2026-05-31 13:12+0000\n"
 "Last-Translator: Feike Donia <feikedonia@proton.me>\n"
 "Language-Team: Dutch <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -742,77 +742,77 @@ msgid "Finalize installation"
 msgstr "Klaar om de installatie te starten…"
 
 #: agama-manager/src/actions.rs:346
-msgid "Storing security settings"
-msgstr "Beveiligingsinstellingen opslaan"
-
-#: agama-manager/src/actions.rs:356
-msgid "Configuring remote access"
-msgstr "Toegang-op-afstand configureren"
-
-#: agama-manager/src/actions.rs:366
-msgid "Setting up the hostname"
-msgstr "De hostnaam instellen"
-
-#: agama-manager/src/actions.rs:376
-msgid "Setting up the network proxy"
-msgstr "De netwerk-proxy instellen"
-
-#: agama-manager/src/actions.rs:387
-msgid "Setting up NTP"
-msgstr "NTP instellen"
-
-#: agama-manager/src/actions.rs:398
-#, fuzzy
-msgid "Importing user files and scripts"
-msgstr "Gebruikersbestanden importeren"
-
-#: agama-manager/src/actions.rs:411
-msgid "Running user pre-installation scripts"
-msgstr "Gebruikerspre-installatiescripts uitvoeren"
-
-#: agama-manager/src/actions.rs:426
 #, fuzzy
 msgid "Storing questions settings"
 msgstr "De antwoorden op de gestelde vragen uitwerken"
 
-#: agama-manager/src/actions.rs:436
+#: agama-manager/src/actions.rs:357
+#, fuzzy
+msgid "Importing user files and scripts"
+msgstr "Gebruikersbestanden importeren"
+
+#: agama-manager/src/actions.rs:371
+msgid "Running user pre-installation scripts"
+msgstr "Gebruikerspre-installatiescripts uitvoeren"
+
+#: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr "Beveiligingsinstellingen opslaan"
+
+#: agama-manager/src/actions.rs:396
+msgid "Configuring remote access"
+msgstr "Toegang-op-afstand configureren"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr "De hostnaam instellen"
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr "De netwerk-proxy instellen"
+
+#: agama-manager/src/actions.rs:427
+msgid "Setting up NTP"
+msgstr "NTP instellen"
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr "Lokaliseringsinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:446
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr "Gebruikersinstellingen opslaan"
 
-#: agama-manager/src/actions.rs:552
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:576
+#: agama-manager/src/actions.rs:581
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "iSCSI-apparaten configureren"
 
-#: agama-manager/src/actions.rs:600
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr "DASD-apparaten configureren"
 
-#: agama-manager/src/actions.rs:624
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr "Het netwerk instellen"
 
-#: agama-manager/src/actions.rs:653
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr "Het opslagvoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:686
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr "Bootloader-instellingen opslaan"
 
-#: agama-manager/src/actions.rs:719
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr "Het softwarevoorstel voorbereiden"
 
-#: agama-manager/src/actions.rs:752
+#: agama-manager/src/actions.rs:753
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Configureren…"

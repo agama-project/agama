@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 20:24+0000\n"
+"POT-Creation-Date: 2026-07-14 08:45+0000\n"
 "PO-Revision-Date: 2026-07-01 07:12+0000\n"
 "Last-Translator: Luna  Jernberg <bittin@opensuse.org>\n"
 "Language-Team: Swedish <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -834,74 +834,74 @@ msgid "Finalize installation"
 msgstr "Slutför installation"
 
 #: agama-manager/src/actions.rs:346
-msgid "Storing security settings"
-msgstr "Lagrar säkerhetsinställningar"
-
-#: agama-manager/src/actions.rs:356
-msgid "Configuring remote access"
-msgstr "Konfigurerar fjärråtkomst"
-
-#: agama-manager/src/actions.rs:366
-msgid "Setting up the hostname"
-msgstr "Ställer in värdnamnet"
-
-#: agama-manager/src/actions.rs:376
-msgid "Setting up the network proxy"
-msgstr "Ställer in nätverksproxy"
-
-#: agama-manager/src/actions.rs:387
-msgid "Setting up NTP"
-msgstr "Ställer in NTP"
-
-#: agama-manager/src/actions.rs:398
-msgid "Importing user files and scripts"
-msgstr "Importerar användarfiler och skript"
-
-#: agama-manager/src/actions.rs:411
-msgid "Running user pre-installation scripts"
-msgstr "Kör användargenererade förinstallationsskript"
-
-#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "Lagrar frågeinställningar"
 
-#: agama-manager/src/actions.rs:436
+#: agama-manager/src/actions.rs:357
+msgid "Importing user files and scripts"
+msgstr "Importerar användarfiler och skript"
+
+#: agama-manager/src/actions.rs:371
+msgid "Running user pre-installation scripts"
+msgstr "Kör användargenererade förinstallationsskript"
+
+#: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr "Lagrar säkerhetsinställningar"
+
+#: agama-manager/src/actions.rs:396
+msgid "Configuring remote access"
+msgstr "Konfigurerar fjärråtkomst"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr "Ställer in värdnamnet"
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr "Ställer in nätverksproxy"
+
+#: agama-manager/src/actions.rs:427
+msgid "Setting up NTP"
+msgstr "Ställer in NTP"
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr "Lagrar lokaliseringsinställningar"
 
-#: agama-manager/src/actions.rs:446
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr "Lagrar användarinställningar"
 
-#: agama-manager/src/actions.rs:552
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr "Konfigurerar iSCSI-enheter"
 
-#: agama-manager/src/actions.rs:576
+#: agama-manager/src/actions.rs:581
 msgid "Configuring zFCP devices"
 msgstr "Konfigurerar zFCP-enheter"
 
-#: agama-manager/src/actions.rs:600
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr "Konfigurerar DASD-enheter"
 
-#: agama-manager/src/actions.rs:624
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr "Konfigurerar nätverket"
 
-#: agama-manager/src/actions.rs:653
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr "Förbereder lagringsförslag"
 
-#: agama-manager/src/actions.rs:686
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr "Lagrar starthanterare inställningar"
 
-#: agama-manager/src/actions.rs:719
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr "Förbereder programvaruförslag"
 
-#: agama-manager/src/actions.rs:752
+#: agama-manager/src/actions.rs:753
 msgid "Configuring SELinux"
 msgstr "Konfigurerar SELinux"
 
