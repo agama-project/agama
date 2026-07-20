@@ -33,7 +33,11 @@ export type StandaloneLayoutProps = {
  * column. From the medium breakpoint up, icon, title, and description sit in
  * the start column and the content in the end column, with a vertical
  * divider between them; columns and alignment follow the document's writing
- * direction.
+ * direction. Title and description share a single row with the body instead
+ * of each getting a row of their own, so their position stays predictable no
+ * matter how tall the body is. The body's top edge is nudged down so the
+ * title (a heading) and the body's opening line read as paired despite their
+ * different sizes.
  *
  * @example
  * ```tsx
@@ -59,16 +63,18 @@ export default function StandaloneLayout({
           <Icon name={icon} size="4xl" />
         </div>
       )}
-      <Title
-        headingLevel="h1"
-        className={["agm-standalone-layout__title", textStyles.fontSize_3xl, "text-balance"].join(
-          " ",
-        )}
-      >
-        {title}
-      </Title>
-      {description && <div className="agm-standalone-layout__description">{description}</div>}
-      {children && <div className="agm-standalone-layout__content">{children}</div>}
+      <div className="agm-standalone-layout__intro">
+        <Title
+          headingLevel="h1"
+          className={["agm-standalone-layout__title", textStyles.fontSize_3xl, "text-balance"].join(
+            " ",
+          )}
+        >
+          {title}
+        </Title>
+        {description && <div className="agm-standalone-layout__description">{description}</div>}
+      </div>
+      {children && <div className="agm-standalone-layout__body">{children}</div>}
       <div className="agm-standalone-layout__divider" />
     </div>
   );
