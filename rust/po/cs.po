@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 20:24+0000\n"
+"POT-Creation-Date: 2026-07-14 08:45+0000\n"
 "PO-Revision-Date: 2026-03-25 18:04+0000\n"
 "Last-Translator: Ondřej  Sedlák <sedlak.o@tutanota.com>\n"
 "Language-Team: Czech <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -738,78 +738,78 @@ msgid "Finalize installation"
 msgstr "Vyhodnocuje se návrh softwaru"
 
 #: agama-manager/src/actions.rs:346
-msgid "Storing security settings"
-msgstr "Ukládají se bezpečnostní nastavení"
+msgid "Storing questions settings"
+msgstr "Ukládá se nastavení otázek"
 
-#: agama-manager/src/actions.rs:356
-#, fuzzy
-msgid "Configuring remote access"
-msgstr "Konfigurují se zařízení DASD"
-
-#: agama-manager/src/actions.rs:366
-msgid "Setting up the hostname"
-msgstr "Nastavuje se jméno hostitele"
-
-#: agama-manager/src/actions.rs:376
-msgid "Setting up the network proxy"
-msgstr "Nastavuje se síťová proxy"
-
-#: agama-manager/src/actions.rs:387
-#, fuzzy
-msgid "Setting up NTP"
-msgstr "Nastavuje konfigurace sítě"
-
-#: agama-manager/src/actions.rs:398
+#: agama-manager/src/actions.rs:357
 #, fuzzy
 msgid "Importing user files and scripts"
 msgstr "Importují se uživatelské soubory"
 
-#: agama-manager/src/actions.rs:411
+#: agama-manager/src/actions.rs:371
 msgid "Running user pre-installation scripts"
 msgstr "Spouští se uživatelské předinstalační skripty"
 
-#: agama-manager/src/actions.rs:426
-msgid "Storing questions settings"
-msgstr "Ukládá se nastavení otázek"
+#: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr "Ukládají se bezpečnostní nastavení"
 
-#: agama-manager/src/actions.rs:436
+#: agama-manager/src/actions.rs:396
+#, fuzzy
+msgid "Configuring remote access"
+msgstr "Konfigurují se zařízení DASD"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr "Nastavuje se jméno hostitele"
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr "Nastavuje se síťová proxy"
+
+#: agama-manager/src/actions.rs:427
+#, fuzzy
+msgid "Setting up NTP"
+msgstr "Nastavuje konfigurace sítě"
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr "Ukládá se nastavení lokalizace"
 
-#: agama-manager/src/actions.rs:446
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr "Ukládají se uživatelská nastavení"
 
-#: agama-manager/src/actions.rs:552
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:576
+#: agama-manager/src/actions.rs:581
 #, fuzzy
 msgid "Configuring zFCP devices"
 msgstr "Konfigurují se zařízení iSCSI"
 
-#: agama-manager/src/actions.rs:600
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr "Konfigurují se zařízení DASD"
 
-#: agama-manager/src/actions.rs:624
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr "Nastavuje konfigurace sítě"
 
-#: agama-manager/src/actions.rs:653
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr "Připravuje se návrh úložiště"
 
-#: agama-manager/src/actions.rs:686
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr "Ukládá se nastavení zavaděče"
 
-#: agama-manager/src/actions.rs:719
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr "Připravuje se návrh softwaru"
 
-#: agama-manager/src/actions.rs:752
+#: agama-manager/src/actions.rs:753
 #, fuzzy
 msgid "Configuring SELinux"
 msgstr "Konfigurují se zařízení DASD"
