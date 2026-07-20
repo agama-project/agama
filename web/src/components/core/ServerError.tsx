@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Button, HelperText, HelperTextItem } from "@patternfly/react-core";
+import { Button, Content, Flex } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { locationReload } from "~/utils";
@@ -31,18 +31,17 @@ function ServerError() {
   return (
     <Page variant="minimal">
       <Page.Content>
-        <SideBySideLayout
-          icon="error"
-          title={_("Cannot connect")}
-          description={
-            <HelperText>
-              <HelperTextItem>{_("Check whether Agama server is running.")}</HelperTextItem>
-            </HelperText>
-          }
-        >
-          <Button variant="primary" onClick={locationReload}>
-            {_("Reload")}
-          </Button>
+        <SideBySideLayout icon="error" title={_("Cannot connect")}>
+          <Flex
+            direction={{ default: "column" }}
+            alignItems={{ default: "alignItemsFlexStart" }}
+            gap={{ default: "gapMd" }}
+          >
+            <Content>{_("Check whether Agama server is running.")}</Content>
+            <Button variant="primary" onClick={locationReload}>
+              {_("Reload")}
+            </Button>
+          </Flex>
         </SideBySideLayout>
       </Page.Content>
     </Page>
