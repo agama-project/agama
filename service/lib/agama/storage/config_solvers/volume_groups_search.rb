@@ -53,16 +53,6 @@ module Agama
 
         # @return [Storage::System]
         attr_reader :storage_system
-
-        # @see DevicesSearch#match_condition?
-        # @param volume_group_config [Configs::VolumeGroup]
-        # @param volume_group [Y2Storage::LvmVg]
-        #
-        # @return [Boolean]
-        def match_condition?(volume_group_config, volume_group)
-          match_name?(volume_group_config, volume_group) &&
-            match_size?(volume_group_config, volume_group)
-        end
       end
     end
   end

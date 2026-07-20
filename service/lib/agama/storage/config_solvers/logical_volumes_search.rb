@@ -43,15 +43,6 @@ module Agama
 
       private
 
-        # @see DevicesSearch#match_condition?
-        # @param lv_config [Configs::LogicalVolume]
-        # @param lvm_lv [Y2Storage::LvmLv]
-        #
-        # @return [Boolean]
-        def match_condition?(lv_config, lvm_lv)
-          match_name?(lv_config, lvm_lv) && match_size?(lv_config, lvm_lv)
-        end
-
         # @see DevicesSearch#solve_with_device
         def solve_with_device(device_config, device)
           result = super
