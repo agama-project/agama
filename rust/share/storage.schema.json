@@ -429,6 +429,7 @@
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/driveSearchConditionAnd" },
         { "$ref": "#/$defs/driveSearchConditionOr" },
         { "$ref": "#/$defs/driveSearchConditionNot" }
@@ -520,6 +521,7 @@
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/mdRaidSearchConditionAnd" },
         { "$ref": "#/$defs/mdRaidSearchConditionOr" },
         { "$ref": "#/$defs/mdRaidSearchConditionNot" }
@@ -720,6 +722,7 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
         { "$ref": "#/$defs/searchConditionPartitionNumber" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/partitionSearchConditionAnd" },
         { "$ref": "#/$defs/partitionSearchConditionOr" },
         { "$ref": "#/$defs/partitionSearchConditionNot" }
@@ -800,6 +803,7 @@
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/logicalVolumeSearchConditionAnd" },
         { "$ref": "#/$defs/logicalVolumeSearchConditionOr" },
         { "$ref": "#/$defs/logicalVolumeSearchConditionNot" }
@@ -898,6 +902,89 @@
           "description": "Partition number (e.g., 1 for vda1).",
           "type": "integer",
           "minimum": 1
+        }
+      }
+    },
+    "searchConditionFilesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filesystem"],
+      "properties": {
+        "filesystem": {
+          "anyOf": [
+            { "$ref": "#/$defs/searchFilesystemPresence" },
+            { "$ref": "#/$defs/filesystemCondition" }
+          ]
+        }
+      }
+    },
+    "searchFilesystemPresence": {
+      "description": "Shortcut to match by filesystem presence: \"any\" matches formatted devices, \"none\" matches unformatted ones.",
+      "enum": ["any", "none"]
+    },
+    "filesystemCondition": {
+      "description": "Matches formatted devices whose file system satisfies the condition.",
+      "anyOf": [
+        { "$ref": "#/$defs/filesystemConditionType" },
+        { "$ref": "#/$defs/filesystemConditionLabel" },
+        { "$ref": "#/$defs/filesystemConditionAnd" },
+        { "$ref": "#/$defs/filesystemConditionOr" },
+        { "$ref": "#/$defs/filesystemConditionNot" }
+      ]
+    },
+    "filesystemConditionType": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "$ref": "#/$defs/filesystemTypeAny" }
+      }
+    },
+    "filesystemConditionLabel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": {
+          "description": "File system label.",
+          "type": "string"
+        }
+      }
+    },
+    "filesystemConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/filesystemCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "filesystemConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/filesystemCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "filesystemConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/filesystemCondition"
         }
       }
     },
