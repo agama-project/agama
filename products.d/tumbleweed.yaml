@@ -150,6 +150,7 @@ software:
       desktop: true
     - name: hyprland
       desktop: true
+    - cockpit
     - multimedia
     - office
     - name: selinux

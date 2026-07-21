@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Jul 20 11:12:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
+Mon Jul 20 10:33:25 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
+
+- Allow selecting Cockpit pattern in Tumbleweed (bsc#1269939).
+
+-------------------------------------------------------------------
 Mon Jun 15 15:45:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 22

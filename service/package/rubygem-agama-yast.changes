@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 20 11:12:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
 Thu Jul 16 12:15:11 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix AutoYaST dns-search conversion (gh#agama-project/agama#3731,
