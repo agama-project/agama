@@ -444,6 +444,41 @@ shared_examples "device name" do |device_config_fn = nil|
           end
         end
       end
+
+      context "and the device is searched by an operator condition" do
+        let(:condition) { { not: { name: "/dev/test" } } }
+
+        context "if the device is not found" do
+          before { device_config.search.solve }
+
+          context "and the device does not have to be created" do
+            let(:if_not_found) { "error" }
+
+            it "generates the expected JSON" do
+              model_json = subject.convert
+              expect(model_json.keys).to_not include(:name)
+            end
+          end
+
+          context "and the device has to be created" do
+            let(:if_not_found) { "create" }
+
+            it "generates the expected JSON" do
+              model_json = subject.convert
+              expect(model_json.keys).to_not include(:name)
+            end
+          end
+        end
+
+        context "if the device is found" do
+          before { device_config.search.solve(device) }
+
+          it "generates the expected JSON" do
+            model_json = subject.convert
+            expect(model_json[:name]).to eq(device.name)
+          end
+        end
+      end
     end
   end
 end

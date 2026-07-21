@@ -42,6 +42,21 @@ module Agama
           search&.device
         end
 
+        # Name of the device.
+        #
+        # If the config is not solved, then it returns the searched name (if any).
+        # If the config is solved, then it returns either the name of the found device or the
+        # searched name. But the searched name is returned only if the device is not going to be
+        # created.
+        #
+        # @return [String, nil]
+        def device_name
+          device = found_device
+          return device.name if device
+
+          search&.condition_name unless search&.create_device?
+        end
+
         # Whether the device is going to be created.
         #
         # @return [Boolean]
