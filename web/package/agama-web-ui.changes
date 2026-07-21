@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 21 09:07:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Truncate long device names in the storage tables so they no
+  longer overflow the "Device" column
+  (gh#agama-project/agama#3745).
+
+-------------------------------------------------------------------
 Fri Jul 17 08:42:50 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - update runtime dependencies:
