@@ -23,7 +23,8 @@
 import React, { useState } from "react";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import DeviceContent from "~/components/storage/DeviceContent";
-import { deviceBaseName, deviceSize } from "~/components/storage/utils";
+import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
+import { deviceSize } from "~/components/storage/utils";
 import { typeDescription } from "~/components/storage/utils/device";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
@@ -69,7 +70,7 @@ export default function DrivesTable({
   const columns = [
     {
       name: _("Device"),
-      value: (device: Storage.Device) => deviceBaseName(device),
+      value: (device: Storage.Device) => <TruncatedDeviceName device={device} />,
       sortingKey: "name",
       pfTdProps: { style: { width: "15ch" } },
     },
