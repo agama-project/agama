@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 21 22:00:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid a flash from Agama colors to a product's own palette
+  (gh#agama-project/agama#3749).
+
+-------------------------------------------------------------------
 Mon Jul 20 11:12:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 23
