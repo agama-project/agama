@@ -193,6 +193,9 @@ const deviceSize = (size: number, options?: SizeOptions): string => {
  */
 const DEFAULT_DEVICE_NAME_MAX_LENGTH = 17;
 
+/** Marker inserted in place of the characters removed when truncating. */
+const DEFAULT_OMISSION = "…";
+
 /** Options controlling how a device base name is rendered. */
 type BaseNameOptions = {
   /** Whether to shorten names that exceed `maxLength`. Defaults to `false`. */
@@ -204,14 +207,29 @@ type BaseNameOptions = {
    * length matching their available width.
    */
   maxLength?: number;
+  /**
+   * Marker put in place of the removed middle characters. Ignored unless
+   * `truncate` is set. Defaults to {@link DEFAULT_OMISSION}.
+   */
+  omission?: string;
+  /**
+   * How many characters a name may exceed `maxLength` by and still be shown in
+   * full. This avoids truncating a name that is only slightly too long, since
+   * doing so would trade real characters for the omission marker while barely
+   * reducing the width. Ignored unless `truncate` is set; defaults to the
+   * omission length plus 2, so a longer marker (which saves less width) requires
+   * a longer name before truncation pays off.
+   */
+  tolerance?: number;
 };
 
 /**
  * Base name for a full path.
  *
- * By default the base name is returned untouched. With `truncate`, names longer
- * than `maxLength` are shortened by keeping their start and end and replacing the
- * middle with an ellipsis, so both ends stay readable.
+ * By default the base name is returned untouched. With `truncate`, names that
+ * exceed `maxLength` (beyond `tolerance`) are shortened by keeping their start
+ * and end and replacing the middle with the omission marker, so both ends stay
+ * readable. The result is at most `maxLength` characters long.
  */
 const baseName = (name: string, options?: BaseNameOptions): string => {
   const base = name.split("/").pop();
@@ -219,11 +237,14 @@ const baseName = (name: string, options?: BaseNameOptions): string => {
   if (!options?.truncate) return base;
 
   const maxLength = options.maxLength ?? DEFAULT_DEVICE_NAME_MAX_LENGTH;
-  if (base.length <= maxLength) return base;
+  const omission = options.omission ?? DEFAULT_OMISSION;
+  const tolerance = options.tolerance ?? omission.length + 2;
+  if (base.length <= maxLength + tolerance) return base;
 
-  const limit1 = Math.ceil((maxLength - 1) / 2.0);
-  const limit2 = base.length - Math.floor((maxLength - 1) / 2.0);
-  return base.slice(0, limit1) + "…" + base.slice(limit2);
+  const kept = maxLength - omission.length;
+  const limit1 = Math.ceil(kept / 2.0);
+  const limit2 = base.length - Math.floor(kept / 2.0);
+  return base.slice(0, limit1) + omission + base.slice(limit2);
 };
 
 type DeviceWithName = System.Device | ConfigModel.Drive | ConfigModel.MdRaid;

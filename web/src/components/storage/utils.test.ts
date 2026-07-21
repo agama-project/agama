@@ -105,6 +105,37 @@ describe("deviceBaseName", () => {
     expect(result).toEqual("verylo…ame123");
     expect(result).toHaveLength(13);
   });
+
+  it("leaves names within the default tolerance of maxLength untouched", () => {
+    // 16 chars, only 3 over maxLength (13): not worth truncating
+    expect(
+      deviceBaseName(device("/dev/abcdefghijklmnop"), { truncate: true, maxLength: 13 }),
+    ).toEqual("abcdefghijklmnop");
+    // 17 chars, past the tolerance: truncated
+    expect(
+      deviceBaseName(device("/dev/abcdefghijklmnopq"), { truncate: true, maxLength: 13 }),
+    ).toEqual("abcdef…lmnopq");
+  });
+
+  it("truncates as soon as maxLength is exceeded when tolerance is 0", () => {
+    const result = deviceBaseName(device("/dev/abcdefghijklmno"), {
+      truncate: true,
+      maxLength: 13,
+      tolerance: 0,
+    });
+    expect(result).toEqual("abcdef…jklmno");
+    expect(result).toHaveLength(13);
+  });
+
+  it("uses a custom omission marker while keeping the result within maxLength", () => {
+    const result = deviceBaseName(device("/dev/verylongdevicename123"), {
+      truncate: true,
+      maxLength: 13,
+      omission: "...",
+    });
+    expect(result).toEqual("veryl...me123");
+    expect(result).toHaveLength(13);
+  });
 });
 
 describe("deviceLabel", () => {
