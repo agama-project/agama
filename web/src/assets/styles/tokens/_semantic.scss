@@ -34,6 +34,17 @@
 //   --agm-t--status--{info,caution,danger,success,custom}--color
 //                                                 alert / status variants
 //                                                 (caution maps to PF "warning")
+//   --agm-t--border-radius                        base corner radius: every PF
+//                                                 component across all three PF
+//                                                 radius tiers (small: buttons,
+//                                                 controls, tables, tooltips,
+//                                                 menus; medium: cards, popovers,
+//                                                 expandable sections; large:
+//                                                 modal dialogs)
+//   --agm-t--control--border-radius               narrower override for just
+//                                                 buttons, text inputs/textareas
+//                                                 and selects/dropdowns, layered
+//                                                 on top of --agm-t--border-radius
 //
 // Typography roles (convenience; not needed to reskin, override only with strong
 // reasons):
@@ -107,7 +118,39 @@
   // it instead of dropping to the narrower layout.
   --pf-t--global--breakpoint--lg: 64rem;
   --pf-t--global--font--size--body--sm: var(--pf-t--global--font--size--sm);
+
+  // Base corner radius override hook. PatternFly splits radius into three
+  // independent tiers (small: buttons/controls/tables/tooltips/menus; medium:
+  // cards/popovers/expandable sections; large: modal dialogs), so this
+  // redefines all three from the one role. Unset by default, so every
+  // component keeps its stock look; redefine --agm-t--border-radius (e.g. to
+  // 0) from a product override to reskin all of them in one shot.
+  --pf-t--global--border--radius--small: var(
+    --agm-t--border-radius,
+    var(--pf-t--global--border--radius--200)
+  );
+  --pf-t--global--border--radius--medium: var(
+    --agm-t--border-radius,
+    var(--pf-t--global--border--radius--300)
+  );
+  --pf-t--global--border--radius--large: var(
+    --agm-t--border-radius,
+    var(--pf-t--global--border--radius--400)
+  );
+  // Pill-shaped controls (primary/secondary buttons, split-button children)
+  // follow the same small radius rather than PF's default fully-rounded pill.
   --pf-t--global--border--radius--pill: var(--pf-t--global--border--radius--small);
+  // Narrower override for just the interactive controls (buttons, text
+  // inputs/textareas, selects/dropdowns), layered on top of the base above so
+  // a product can give controls a different radius than containers.
+  --pf-t--global--border--radius--control--default: var(
+    --agm-t--control--border-radius,
+    var(--pf-t--global--border--radius--small)
+  );
+  --pf-t--global--border--radius--control--form-element: var(
+    --agm-t--control--border-radius,
+    var(--pf-t--global--border--radius--small)
+  );
 
   // Icon size scale (theme-independent), consumed by the Icon `size` prop via
   // its CSS classes. Each step defaults to the matching font size, so icons stay
