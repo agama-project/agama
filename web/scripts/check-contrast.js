@@ -26,7 +26,7 @@
  * picking --agm-t--* role values for a product override
  * (web/src/assets/products/<id>.css). Usage:
  *
- *   npm run check-contrast -- <hex1> <hex2> [<hex3> <hex4> ...] [--target=4.5]
+ *   check-contrast.js <hex1> <hex2> [<hex3> <hex4> ...] [--target=4.5]
  *
  * Each pair prints its ratio and whether it clears the common WCAG 2.x
  * thresholds: 3:1 (UI components / focus rings / large text, SC 1.4.11 and
@@ -170,7 +170,9 @@ const target = targetArg ? parseFloat(targetArg.slice("--target=".length)) : 4.5
 const args = rawArgs.filter((a) => !a.startsWith("--target="));
 
 if (args.length < 2 || args.length % 2 !== 0) {
-  console.error("Usage: npm run check-contrast -- <hex1> <hex2> [<hex3> <hex4> ...] [--target=4.5]");
+  console.error(
+    "Usage: check-contrast.js <hex1> <hex2> [<hex3> <hex4> ...] [--target=4.5]",
+  );
   process.exit(1);
 }
 for (let i = 0; i < args.length; i += 2) report(args[i], args[i + 1], target);

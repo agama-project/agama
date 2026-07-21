@@ -17,8 +17,7 @@
     "stylelint": "stylelint 'src/**/*.{css,scss}'",
     "stylelint:fix": "stylelint --fix 'src/**/*.{css,scss}'",
     "check-types": "tsc --skipLibCheck",
-    "test": "jest",
-    "check-contrast": "node scripts/check-contrast.js"
+    "test": "jest"
   },
   "engines": {
     "node": ">=18"

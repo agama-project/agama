@@ -1,15 +1,8 @@
 # Creating a product skin
 
-A distributor can restyle the Agama web UI for their product without touching
-application code: colors, logo, and a handful of other roles are set in a
-single per-product file, loaded at runtime after Agama's own styles.
-
-> **Important**: no matter whether an AI or a human wrote it, every line
-> (color values, contrast numbers, SVG content, any role-API change) must be
-> reviewed and manually tested in the running app, in both light and dark
-> mode, before asking for the color schema to be included in the project. A
-> report of "done" or "verified" is not a substitute for someone actually
-> looking at it.
+The Agama web UI can be restyled for a product without touching application
+code: colors, logo, and a handful of other roles are set in a single
+per-product file, loaded at runtime after Agama's own styles.
 
 ## What a skin can change
 
@@ -36,8 +29,8 @@ single per-product file, loaded at runtime after Agama's own styles.
    theme separately** (a value that passes in one theme can fail in the
    other, and dark-theme "elevated" surfaces like tooltips/popovers need to
    read *lighter* than the page, not darker): run
-   `npm run check-contrast -- <foreground> <background> [--target=4.5]`
-   (`web/scripts/check-contrast.js`). Use `--target=3` for UI elements and
+   `web/scripts/check-contrast.js <foreground> <background> [--target=4.5]`
+   (run from the repo root). Use `--target=3` for UI elements and
    focus rings, the default 4.5 for normal text. When a pair fails, the tool
    suggests a same-hue, same-saturation shade that passes.
 4. If you hand-edit an SVG, validate it with `xmllint --noout <file>.svg`
@@ -84,8 +77,8 @@ Fill in the placeholders and paste:
 > directly.
 >
 > For every color you set: compute WCAG contrast explicitly with
-> `npm run check-contrast -- <foreground> <background> [--target=4.5]`
-> (`--target=3` for UI elements/focus rings), in both light and dark theme
+> `web/scripts/check-contrast.js <foreground> <background> [--target=4.5]`
+> (run from the repo root; `--target=3` for UI elements/focus rings), in both light and dark theme
 > separately, rather than eyeballing. Where a brand color fails, use the
 > tool's suggested same-hue/saturation shade rather than an unrelated
 > substitute. Dark-theme elevated surfaces (tooltips, popovers) need to read
@@ -121,3 +114,11 @@ plans for it from the start instead of discovering it partway through:
 > corners on every control, not just buttons">`, which the current
 > `--agm-t--*` role set doesn't cover. Present a plan for the new role before
 > touching any file.
+
+> [!IMPORTANT]
+> No matter whether an AI or a human wrote it, every line (color values,
+> contrast numbers, SVG content, any role-API change) must be reviewed and
+> manually tested in the running app, in both light and dark mode, before
+> asking for the color schema to be included in the project. A report of
+> "done" or "verified" is not a substitute for someone actually looking at
+> it.
