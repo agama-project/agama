@@ -32,6 +32,30 @@
         }
       })();
     </script>
+    <!--
+      Apply the last known product's appearance stylesheet before first paint,
+      to avoid a flash from the stock Agama colors to the product's own
+      palette. Runs before React boots, so it reads localStorage directly;
+      kept in sync with src/hooks/use-product-appearance.ts (same key, same
+      link element id). A missing/404 stylesheet is harmless (see
+      doc/product_theming.md).
+    -->
+    <script>
+      (function () {
+        try {
+          var productId = localStorage.getItem("agm-product-id");
+          if (!productId) return;
+
+          var link = document.createElement("link");
+          link.id = "agm-product-appearance";
+          link.rel = "stylesheet";
+          link.href = "assets/appearance/" + productId + ".css";
+          document.head.appendChild(link);
+        } catch (e) {
+          /* ignore: fall back to the default Agama appearance */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
