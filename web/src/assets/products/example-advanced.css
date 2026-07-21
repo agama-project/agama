@@ -65,6 +65,15 @@
      unset keep PatternFly's stock radius. */
   --agm-t--border-radius: 6px;
   --agm-t--control--border-radius: 6px;
+
+  /* Product logo (see components/product/ProductLogo). Two size roles per
+     usage context (each unset keeps that usage's own current default), plus
+     a shared max inline size applied on top of whichever one resolves, and
+     vertical alignment (unset keeps the logo middle-aligned). */
+  --agm-t--logo--size--header: 35px;
+  --agm-t--logo--size--inline: 1.5em;
+  --agm-t--logo--max-size: 48px;
+  --agm-t--logo--align: middle;
 }
 
 /* Light theme. */

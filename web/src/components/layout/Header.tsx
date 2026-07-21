@@ -130,7 +130,7 @@ function MainBreadcrumbs({
 
   return (
     <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-      <ProductLogo product={product} width="35px" />
+      <ProductLogo product={product} width="var(--agm-t--logo--size--header, 35px)" />
       <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
         {product && (
           <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>

@@ -45,6 +45,15 @@
 //                                                 buttons, text inputs/textareas
 //                                                 and selects/dropdowns, layered
 //                                                 on top of --agm-t--border-radius
+//   --agm-t--logo--size--header                   product logo width in the masthead
+//                                                 (see layout/Header)
+//   --agm-t--logo--size--inline                   product logo width next to the
+//                                                 product name (see core/InstallationProgress,
+//                                                 product/ProductSelectionPage)
+//   --agm-t--logo--max-size                        product logo max inline size, applied
+//                                                 on top of either size role above (see
+//                                                 components/product/ProductLogo)
+//   --agm-t--logo--align                          product logo vertical alignment
 //
 // Typography roles (convenience; not needed to reskin, override only with strong
 // reasons):
