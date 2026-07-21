@@ -24,6 +24,7 @@ require "agama/storage/configs/drive"
 require "agama/storage/configs/logical_volume"
 require "agama/storage/configs/md_raid"
 require "agama/storage/configs/partition"
+require "agama/storage/configs/search_conditions"
 require "agama/storage/configs/volume_group"
 require "agama/storage/issue_classes"
 require "yast/i18n"
@@ -70,10 +71,11 @@ module Agama
           search = config.search
           return if search.device || search.create_device? || search.skip_device?
 
-          if search.name
+          name = searched_name(search)
+          if name
             error(
               # TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
-              format(_("Mandatory device %s not found"), search.name),
+              format(_("Mandatory device %s not found"), name),
               kind: IssueClasses::Config::SEARCH_NOT_FOUND
             )
           else
@@ -83,6 +85,20 @@ module Agama
               kind: IssueClasses::Config::SEARCH_NOT_FOUND
             )
           end
+        end
+
+        # Device name searched by the config, if the search targets a specific name.
+        #
+        # Only a top-level name condition yields a name; operators and other leaf
+        # conditions fall back to the generic "not found" message.
+        #
+        # @param search [Configs::Search]
+        # @return [String, nil]
+        def searched_name(search)
+          condition = search.condition
+          return unless condition.is_a?(Configs::SearchConditions::Name)
+
+          condition.name
         end
 
         # Issues from a reused device.
