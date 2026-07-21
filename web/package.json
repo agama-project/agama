@@ -107,6 +107,7 @@
     "xbytes": "^1.9.1"
   },
   "overrides": {
-    "jsdom": "^22.1.0"
+    "jsdom": "^22.1.0",
+    "brace-expansion": "^5.0.7"
   }
 }
