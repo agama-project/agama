@@ -76,12 +76,65 @@ describe("deviceSize", () => {
 });
 
 describe("deviceBaseName", () => {
-  it("returns the base name of the given device", () => {
-    const disk: Storage.Device = { sid: 1, name: "/dev/sda" };
-    expect(deviceBaseName(disk)).toEqual("sda");
+  const device = (name: string): Storage.Device => ({ sid: 1, name });
 
-    const raid: Storage.Device = { sid: 1, name: "/dev/mapper/dm332" };
-    expect(deviceBaseName(raid)).toEqual("dm332");
+  it("returns the base name of the given device", () => {
+    expect(deviceBaseName(device("/dev/sda"))).toEqual("sda");
+    expect(deviceBaseName(device("/dev/mapper/dm332"))).toEqual("dm332");
+  });
+
+  it("does not truncate by default, even for long names", () => {
+    expect(deviceBaseName(device("/dev/verylongdevicename123"))).toEqual("verylongdevicename123");
+  });
+
+  it("leaves names that fit untouched when truncating", () => {
+    expect(deviceBaseName(device("/dev/sda"), { truncate: true })).toEqual("sda");
+  });
+
+  it("truncates long names in the middle using the default length", () => {
+    const result = deviceBaseName(device("/dev/verylongdevicename123"), { truncate: true });
+    expect(result).toEqual("verylong…ename123");
+    expect(result).toHaveLength(17);
+  });
+
+  it("truncates to the given maxLength when provided", () => {
+    const result = deviceBaseName(device("/dev/verylongdevicename123"), {
+      truncate: true,
+      maxLength: 13,
+    });
+    expect(result).toEqual("verylo…ame123");
+    expect(result).toHaveLength(13);
+  });
+
+  it("leaves names within the default tolerance of maxLength untouched", () => {
+    // 16 chars, only 3 over maxLength (13): not worth truncating
+    expect(
+      deviceBaseName(device("/dev/abcdefghijklmnop"), { truncate: true, maxLength: 13 }),
+    ).toEqual("abcdefghijklmnop");
+    // 17 chars, past the tolerance: truncated
+    expect(
+      deviceBaseName(device("/dev/abcdefghijklmnopq"), { truncate: true, maxLength: 13 }),
+    ).toEqual("abcdef…lmnopq");
+  });
+
+  it("truncates as soon as maxLength is exceeded when tolerance is 0", () => {
+    const result = deviceBaseName(device("/dev/abcdefghijklmno"), {
+      truncate: true,
+      maxLength: 13,
+      tolerance: 0,
+    });
+    expect(result).toEqual("abcdef…jklmno");
+    expect(result).toHaveLength(13);
+  });
+
+  it("uses a custom omission marker while keeping the result within maxLength", () => {
+    const result = deviceBaseName(device("/dev/verylongdevicename123"), {
+      truncate: true,
+      maxLength: 13,
+      omission: "...",
+    });
+    expect(result).toEqual("veryl...me123");
+    expect(result).toHaveLength(13);
   });
 });
 
