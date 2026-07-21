@@ -81,7 +81,7 @@ const DeleteVgOption = ({ vg }: { vg: ConfigModel.VolumeGroup }) => {
 
   if (lvs.length) {
     if (convert) {
-      const diskName = baseName(targetDevices[0].name, true);
+      const diskName = baseName(targetDevices[0].name, { truncate: true });
       description = sprintf(
         n_(
           // TRANSLATORS: %1$s is a list of formatted mount points like '"/", "/var" and "swap"' (or a
@@ -205,7 +205,7 @@ const VgHeader = ({ deviceConfig, device }: VgHeaderProps) => {
   let title: string;
 
   if (device) {
-    title = sprintf(_("Use LVM volume group %s"), deviceLabel(device, true));
+    title = sprintf(_("Use LVM volume group %s"), deviceLabel(device, { truncate: true }));
   } else {
     title = deviceConfig.logicalVolumes.length
       ? _("Create LVM volume group %s")

@@ -76,12 +76,34 @@ describe("deviceSize", () => {
 });
 
 describe("deviceBaseName", () => {
-  it("returns the base name of the given device", () => {
-    const disk: Storage.Device = { sid: 1, name: "/dev/sda" };
-    expect(deviceBaseName(disk)).toEqual("sda");
+  const device = (name: string): Storage.Device => ({ sid: 1, name });
 
-    const raid: Storage.Device = { sid: 1, name: "/dev/mapper/dm332" };
-    expect(deviceBaseName(raid)).toEqual("dm332");
+  it("returns the base name of the given device", () => {
+    expect(deviceBaseName(device("/dev/sda"))).toEqual("sda");
+    expect(deviceBaseName(device("/dev/mapper/dm332"))).toEqual("dm332");
+  });
+
+  it("does not truncate by default, even for long names", () => {
+    expect(deviceBaseName(device("/dev/verylongdevicename123"))).toEqual("verylongdevicename123");
+  });
+
+  it("leaves names that fit untouched when truncating", () => {
+    expect(deviceBaseName(device("/dev/sda"), { truncate: true })).toEqual("sda");
+  });
+
+  it("truncates long names in the middle using the default length", () => {
+    const result = deviceBaseName(device("/dev/verylongdevicename123"), { truncate: true });
+    expect(result).toEqual("verylong…ename123");
+    expect(result).toHaveLength(17);
+  });
+
+  it("truncates to the given maxLength when provided", () => {
+    const result = deviceBaseName(device("/dev/verylongdevicename123"), {
+      truncate: true,
+      maxLength: 13,
+    });
+    expect(result).toEqual("verylo…ame123");
+    expect(result).toHaveLength(13);
   });
 });
 
