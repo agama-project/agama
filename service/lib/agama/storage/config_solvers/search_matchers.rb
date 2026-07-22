@@ -75,6 +75,25 @@ module Agama
           when Configs::SearchConditions::PartitionNumber
             match_partition_number?(node, device)
           else
+            match_filesystem_leaf?(node, device)
+          end
+        end
+
+        # Evaluates a filesystem leaf condition node against a device.
+        #
+        # @param node [Configs::SearchConditions::*]
+        # @param device [Y2Storage::Device]
+        #
+        # @return [Boolean]
+        def match_filesystem_leaf?(node, device)
+          case node
+          when Configs::SearchConditions::Filesystem
+            match_filesystem?(node, device)
+          when Configs::SearchConditions::FilesystemType
+            match_filesystem_type?(node, device)
+          when Configs::SearchConditions::FilesystemLabel
+            match_filesystem_label?(node, device)
+          else
             false
           end
         end
@@ -123,6 +142,70 @@ module Agama
           return false unless device.is?(:partition)
 
           device.number == node.number
+        end
+
+        # Whether the filesystem of the given device matches the condition node.
+        #
+        # The object (condition) form implies "formatted", so it requires a filesystem
+        # before evaluating the nested condition. The presence shortcut checks whether the
+        # device is formatted (:any) or unformatted (:none).
+        #
+        # @param node [Configs::SearchConditions::Filesystem]
+        # @param device [Y2Storage::Device]
+        #
+        # @return [Boolean]
+        def match_filesystem?(node, device)
+          filesystem = device_filesystem(device)
+          return !filesystem.nil? && match_node?(node.condition, device) if node.condition
+
+          case node.presence
+          when :any
+            !filesystem.nil?
+          when :none
+            filesystem.nil?
+          else
+            true
+          end
+        end
+
+        # Whether the filesystem type of the given device matches the condition node.
+        #
+        # @param node [Configs::SearchConditions::FilesystemType]
+        # @param device [Y2Storage::Device]
+        #
+        # @return [Boolean]
+        def match_filesystem_type?(node, device)
+          return true unless node.fs_type
+
+          filesystem = device_filesystem(device)
+          return false unless filesystem
+
+          filesystem.type == node.fs_type
+        end
+
+        # Whether the filesystem label of the given device matches the condition node.
+        #
+        # @param node [Configs::SearchConditions::FilesystemLabel]
+        # @param device [Y2Storage::Device]
+        #
+        # @return [Boolean]
+        def match_filesystem_label?(node, device)
+          return true unless node.label
+
+          filesystem = device_filesystem(device)
+          return false unless filesystem
+
+          filesystem.label == node.label
+        end
+
+        # Filesystem of the given device, if any.
+        #
+        # @param device [Y2Storage::Device]
+        # @return [Y2Storage::Filesystems::Base, nil]
+        def device_filesystem(device)
+          return unless device.respond_to?(:filesystem)
+
+          device.filesystem
         end
       end
     end
