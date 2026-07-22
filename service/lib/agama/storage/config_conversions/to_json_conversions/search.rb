@@ -62,6 +62,14 @@ module Agama
           # @param node [Configs::SearchConditions::*, nil]
           # @return [Hash, nil]
           def convert_condition_node(node)
+            convert_leaf_node(node) || convert_operator_node(node)
+          end
+
+          # Serializes a leaf condition node.
+          #
+          # @param node [Configs::SearchConditions::*, nil]
+          # @return [Hash, nil]
+          def convert_leaf_node(node)
             case node
             when Configs::SearchConditions::Name
               { name: node.name }
@@ -69,6 +77,21 @@ module Agama
               { number: node.number }
             when Configs::SearchConditions::Size
               { size: { node.operator => node.value.to_i } }
+            when Configs::SearchConditions::Filesystem
+              { filesystem: convert_filesystem_value(node) }
+            when Configs::SearchConditions::FilesystemType
+              { type: node.fs_type.to_s }
+            when Configs::SearchConditions::FilesystemLabel
+              { label: node.label }
+            end
+          end
+
+          # Serializes an operator condition node.
+          #
+          # @param node [Configs::SearchConditions::*, nil]
+          # @return [Hash, nil]
+          def convert_operator_node(node)
+            case node
             when Configs::SearchConditions::And
               { and: convert_conditions(node.conditions) }
             when Configs::SearchConditions::Or
@@ -76,6 +99,17 @@ module Agama
             when Configs::SearchConditions::Not
               { not: convert_condition_node(node.condition) }
             end
+          end
+
+          # Serializes the value of a Filesystem condition: the presence shortcut
+          # ("any"/"none") or the nested filesystem condition object.
+          #
+          # @param node [Configs::SearchConditions::Filesystem]
+          # @return [String, Hash, nil]
+          def convert_filesystem_value(node)
+            return convert_condition_node(node.condition) if node.condition
+
+            node.presence&.to_s
           end
 
           # Serializes a collection of condition nodes.

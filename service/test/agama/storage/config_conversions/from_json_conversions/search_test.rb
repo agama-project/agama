@@ -23,6 +23,7 @@ require_relative "../../../../test_helper"
 require "agama/storage/config_conversions/from_json_conversions/search"
 require "agama/storage/configs/search"
 require "agama/storage/configs/search_conditions"
+require "y2storage/filesystems/type"
 require "y2storage/refinements"
 
 using Y2Storage::Refinements::SizeCasts
@@ -186,6 +187,111 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
             expect(config.condition)
               .to be_a(Agama::Storage::Configs::SearchConditions::PartitionNumber)
             expect(config.condition.number).to eq(2)
+          end
+        end
+
+        context "and 'filesystem' is specified" do
+          context "with the 'any' presence shortcut" do
+            let(:condition) { { filesystem: "any" } }
+
+            it "sets #condition to the expected value" do
+              config = subject.convert
+              expect(config.condition)
+                .to be_a(Agama::Storage::Configs::SearchConditions::Filesystem)
+              expect(config.condition.presence).to eq(:any)
+              expect(config.condition.condition).to be_nil
+            end
+          end
+
+          context "with the 'none' presence shortcut" do
+            let(:condition) { { filesystem: "none" } }
+
+            it "sets #condition to the expected value" do
+              config = subject.convert
+              expect(config.condition)
+                .to be_a(Agama::Storage::Configs::SearchConditions::Filesystem)
+              expect(config.condition.presence).to eq(:none)
+              expect(config.condition.condition).to be_nil
+            end
+          end
+
+          context "with a filesystem type condition" do
+            let(:condition) { { filesystem: { type: "ext4" } } }
+
+            it "sets #condition to the expected value" do
+              config = subject.convert
+              expect(config.condition)
+                .to be_a(Agama::Storage::Configs::SearchConditions::Filesystem)
+              expect(config.condition.presence).to be_nil
+
+              inner = config.condition.condition
+              expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::FilesystemType)
+              expect(inner.fs_type).to eq(Y2Storage::Filesystems::Type::EXT4)
+            end
+          end
+
+          context "with a filesystem label condition" do
+            let(:condition) { { filesystem: { label: "data" } } }
+
+            it "sets #condition to the expected value" do
+              config = subject.convert
+              inner = config.condition.condition
+              expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::FilesystemLabel)
+              expect(inner.label).to eq("data")
+            end
+          end
+
+          context "with an 'and' operator over filesystem conditions" do
+            let(:condition) do
+              { filesystem: { and: [{ type: "btrfs" }, { label: "root" }] } }
+            end
+
+            it "sets #condition to the expected value" do
+              config = subject.convert
+              inner = config.condition.condition
+              expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::And)
+
+              conditions = inner.conditions
+              expect(conditions.size).to eq(2)
+
+              expect(conditions[0])
+                .to be_a(Agama::Storage::Configs::SearchConditions::FilesystemType)
+              expect(conditions[0].fs_type).to eq(Y2Storage::Filesystems::Type::BTRFS)
+
+              expect(conditions[1])
+                .to be_a(Agama::Storage::Configs::SearchConditions::FilesystemLabel)
+              expect(conditions[1].label).to eq("root")
+            end
+          end
+
+          context "with a 'not' operator over a filesystem condition" do
+            let(:condition) { { filesystem: { not: { type: "swap" } } } }
+
+            it "sets #condition to the expected value" do
+              config = subject.convert
+              inner = config.condition.condition
+              expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Not)
+
+              type_condition = inner.condition
+              expect(type_condition)
+                .to be_a(Agama::Storage::Configs::SearchConditions::FilesystemType)
+              expect(type_condition.fs_type).to eq(Y2Storage::Filesystems::Type::SWAP)
+            end
+          end
+
+          context "nested inside a device-level operator" do
+            let(:condition) do
+              { and: [{ name: "/dev/vda" }, { filesystem: "none" }] }
+            end
+
+            it "sets #condition to the expected value" do
+              config = subject.convert
+              conditions = config.condition.conditions
+
+              expect(conditions[1])
+                .to be_a(Agama::Storage::Configs::SearchConditions::Filesystem)
+              expect(conditions[1].presence).to eq(:none)
+            end
           end
         end
 

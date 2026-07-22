@@ -85,12 +85,13 @@ module Agama
           # @return [Hash{Symbol => Proc}]
           def condition_builders
             {
-              name:   ->(j) { Configs::SearchConditions::Name.new(j[:name]) },
-              size:   ->(j) { FromJSONConversions::SearchConditions::Size.new(j[:size]).convert },
-              number: ->(j) { Configs::SearchConditions::PartitionNumber.new(j[:number]) },
-              and:    ->(j) { Configs::SearchConditions::And.new(convert_conditions(j[:and])) },
-              or:     ->(j) { Configs::SearchConditions::Or.new(convert_conditions(j[:or])) },
-              not:    ->(j) { Configs::SearchConditions::Not.new(convert_condition(j[:not])) }
+              name:       ->(j) { Configs::SearchConditions::Name.new(j[:name]) },
+              size:       ->(j) { SearchConditions::Size.new(j[:size]).convert },
+              number:     ->(j) { Configs::SearchConditions::PartitionNumber.new(j[:number]) },
+              filesystem: ->(j) { SearchConditions::Filesystem.new(j[:filesystem]).convert },
+              and:        ->(j) { Configs::SearchConditions::And.new(convert_conditions(j[:and])) },
+              or:         ->(j) { Configs::SearchConditions::Or.new(convert_conditions(j[:or])) },
+              not:        ->(j) { Configs::SearchConditions::Not.new(convert_condition(j[:not])) }
             }
           end
 

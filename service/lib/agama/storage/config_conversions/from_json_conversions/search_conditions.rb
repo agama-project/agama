@@ -32,3 +32,4 @@ module Agama
 end
 
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/size"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/filesystem"
