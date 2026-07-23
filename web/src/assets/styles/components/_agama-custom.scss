@@ -129,12 +129,6 @@ nav.agm-breadcrumb h1 {
   font-size: inherit;
 }
 
-// FIXME: make it more generic, if possible, or even without CSS but not
-// rendering such a label if "storage instructions" are more than one
-.storage-structure:has(> li:nth-child(2)) span.action-text {
-  display: none;
-}
-
 // Standalone screens layout (see layout/SideBySideLayout): the DOM stays in
 // reading order and grid-template-areas decides the visual arrangement per
 // breakpoint. Only logical properties and values, so columns and alignment
