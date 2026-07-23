@@ -32,11 +32,10 @@ import {
 } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import RebootButton from "~/components/core/RebootButton";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import alignmentStyles from "@patternfly/react-styles/css/utilities/Alignment/alignment";
 
 const TpmAlert = () => {
   const title = _("TPM sealing requires the new system to be booted directly.");
@@ -66,39 +65,38 @@ the machine needs to boot directly to the new boot loader.",
 
 function InstallationFinished() {
   const isGrub2WithTpm = useIsGrub2WithTpm();
+  const rebootHint = _("You can reboot the machine to log in to the new system.");
 
   return (
     <Page noDefaultProgressMonitor>
       <Page.Content>
-        <SplitInfoLayout
+        <SideBySideLayout
           icon="done_all"
-          firstRowStart={_("Installation complete")}
-          firstRowEnd={
-            isGrub2WithTpm ? (
-              <TpmAlert />
-            ) : (
-              <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
+          title={_("Installation complete")}
+          description={
+            isGrub2WithTpm && (
+              <HelperText>
+                <HelperTextItem>{rebootHint}</HelperTextItem>
+              </HelperText>
             )
           }
-          secondRowStart={
+        >
+          {isGrub2WithTpm ? (
             <Stack hasGutter>
-              <HelperText>
-                <HelperTextItem
-                  className={[alignmentStyles.textAlignEnd, "text-balance"].join(" ")}
-                >
-                  {_("You can reboot the machine to log in to the new system.")}
-                </HelperTextItem>
-              </HelperText>
-              {isGrub2WithTpm && (
-                <Flex
-                  justifyContent={{ default: "justifyContentCenter", md: "justifyContentFlexEnd" }}
-                >
-                  <RebootButton size="default" style={{ minInlineSize: "25dvw" }} />
-                </Flex>
-              )}
+              <TpmAlert />
+              <RebootButton size="default" />
             </Stack>
-          }
-        />
+          ) : (
+            <Flex
+              direction={{ default: "column" }}
+              alignItems={{ default: "alignItemsFlexStart" }}
+              gap={{ default: "gapMd" }}
+            >
+              <Content>{rebootHint}</Content>
+              <RebootButton size="default" />
+            </Flex>
+          )}
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );

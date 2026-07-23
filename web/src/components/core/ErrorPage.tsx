@@ -28,8 +28,9 @@ import { Content, Skeleton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
+import type { TranslatedString } from "~/i18n";
 
 /**
  * Returns first-party frames from a stack, falling back to the full stack
@@ -100,17 +101,13 @@ function ErrorTrace({ error }) {
  */
 function RouteError({ error }: { error: ErrorResponse }) {
   return (
-    <SplitInfoLayout
+    <SideBySideLayout
       icon="deployed_code_alert"
-      firstRowStart={`${error.status} ${error.statusText}`}
-      firstRowEnd={
-        <NestedContent margin="mtSm">
-          <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
-            {isString(error.data) ? error.data : JSON.stringify(error.data)}
-          </Text>
-        </NestedContent>
-      }
-    />
+      // The title is the HTTP status line reported by the server
+      title={`${error.status} ${error.statusText}` as TranslatedString}
+    >
+      <Text isBold>{isString(error.data) ? error.data : JSON.stringify(error.data)}</Text>
+    </SideBySideLayout>
   );
 }
 
@@ -135,22 +132,14 @@ function UnexpectedError({ error }: { error: unknown }) {
   const message = isAnError ? error.message : _("Unknown error");
 
   return (
-    <SplitInfoLayout
-      icon="deployed_code_alert"
-      firstRowStart={title}
-      firstRowEnd={
+    <SideBySideLayout icon="deployed_code_alert" title={title}>
+      <Text isBold>{message}</Text>
+      <Content component="pre">
         <NestedContent margin="mtSm">
-          <Text isBold textStyle={["fontFamilyHeading", "fontSizeLg"]}>
-            {message}
-          </Text>
-          <Content component="pre">
-            <NestedContent margin="mtSm">
-              <ErrorTrace error={error} />
-            </NestedContent>
-          </Content>
+          <ErrorTrace error={error} />
         </NestedContent>
-      }
-    />
+      </Content>
+    </SideBySideLayout>
   );
 }
 

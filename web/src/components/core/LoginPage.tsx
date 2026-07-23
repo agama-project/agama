@@ -27,7 +27,7 @@ import { Alert, Button, Content, Flex, Form, FormGroup } from "@patternfly/react
 import { Page, PasswordInput } from "~/components/core";
 import Text from "~/components/core/Text";
 import { AuthErrors, useAuth } from "~/context/auth";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 
 const getError = (authError) => {
@@ -83,39 +83,10 @@ user privileges.",
   return (
     <Page variant="minimal" showQuestions={false}>
       <Page.Content>
-        <SplitInfoLayout
+        <SideBySideLayout
           icon="lock"
-          firstRowStart={title}
-          firstRowEnd={
-            <Form id="login" onSubmit={login} aria-label={_("Login form")}>
-              <FormGroup fieldId="password" label={_("Password")}>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  value={password}
-                  aria-label={_("Password input")}
-                  onChange={(_, v) => setPassword(v)}
-                  reminders={["capslock"]}
-                />
-              </FormGroup>
-              {authError && (
-                <Alert isInline variant="danger" title={error.title}>
-                  {error.description}
-                </Alert>
-              )}
-              <Flex>
-                <Button
-                  type="submit"
-                  variant={loading ? "secondary" : "primary"}
-                  isLoading={loading}
-                  isDisabled={loading}
-                >
-                  {_("Log in")}
-                </Button>
-              </Flex>
-            </Form>
-          }
-          secondRowStart={
+          title={title}
+          description={
             <>
               <Content>
                 {rootExplanationStart} <Text isBold>{rootUser}</Text> {rootExplanationEnd}
@@ -123,7 +94,35 @@ user privileges.",
               <Content>{_("Provide its password to log in to the system.")}</Content>
             </>
           }
-        />
+        >
+          <Form id="login" onSubmit={login} aria-label={_("Login form")}>
+            <FormGroup fieldId="password" label={_("Password")}>
+              <PasswordInput
+                id="password"
+                name="password"
+                value={password}
+                aria-label={_("Password input")}
+                onChange={(_, v) => setPassword(v)}
+                reminders={["capslock"]}
+              />
+            </FormGroup>
+            {authError && (
+              <Alert isInline variant="danger" title={error.title}>
+                {error.description}
+              </Alert>
+            )}
+            <Flex>
+              <Button
+                type="submit"
+                variant={loading ? "secondary" : "primary"}
+                isLoading={loading}
+                isDisabled={loading}
+              >
+                {_("Log in")}
+              </Button>
+            </Flex>
+          </Form>
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );
