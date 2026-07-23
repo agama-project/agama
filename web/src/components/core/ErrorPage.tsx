@@ -103,8 +103,7 @@ function RouteError({ error }: { error: ErrorResponse }) {
   return (
     <SideBySideLayout
       icon="deployed_code_alert"
-      // The title is the HTTP status line reported by the server, meaningful
-      // in any locale.
+      // The title is the HTTP status line reported by the server
       title={`${error.status} ${error.statusText}` as TranslatedString}
     >
       <Text isBold>{isString(error.data) ? error.data : JSON.stringify(error.data)}</Text>

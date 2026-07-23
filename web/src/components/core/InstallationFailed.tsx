@@ -25,7 +25,7 @@ import { Flex, Stack } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import RebootButton from "~/components/core/RebootButton";
-import SideBySideLayout from "../layout/SideBySideLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 import DownloadLogsButton from "./DownloadLogsButton";
 
