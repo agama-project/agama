@@ -144,7 +144,7 @@ describe Agama::Storage::ModelSupportChecker do
     end
 
     # The search only combines conditions with an operator, so it has no top-level name.
-    context "if there is a drive searched with an operator condition" do
+    context "if a drive searched with an operator condition is not found" do
       let(:scenario) { "empty-hd-50GiB.yaml" }
 
       let(:config_json) do
@@ -154,6 +154,27 @@ describe Agama::Storage::ModelSupportChecker do
             {
               search: {
                 condition:  { and: [{ name: "/dev/vdb" }, { size: { greater: "1 GiB" } }] },
+                ifNotFound: if_not_found
+              }
+            }
+          ]
+        }
+      end
+
+      include_examples "partitionable without name"
+    end
+
+    # The search matches by filesystem, so it has no top-level name.
+    context "if a drive searched with a filesystem condition is not found" do
+      let(:scenario) { "empty-hd-50GiB.yaml" }
+
+      let(:config_json) do
+        {
+          drives: [
+            {},
+            {
+              search: {
+                condition:  { filesystem: { type: "ext4" } },
                 ifNotFound: if_not_found
               }
             }

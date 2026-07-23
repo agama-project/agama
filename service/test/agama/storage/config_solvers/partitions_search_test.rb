@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -333,6 +333,41 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
         context "and the device is not found" do
           let(:number) { 20 }
           include_examples "do not find device"
+        end
+      end
+
+      context "if a partition config has a search with a filesystem" do
+        let(:partitions) do
+          [
+            {
+              search: {
+                condition: condition
+              }
+            }
+          ]
+        end
+
+        context "and a filesystem type is given" do
+          let(:condition) { { filesystem: { type: "btrfs" } } }
+          include_examples "find device", "/dev/vda2"
+        end
+
+        context "and a filesystem label is given" do
+          let(:condition) { { filesystem: { label: "previous_home" } } }
+          include_examples "find device", "/dev/vda3"
+        end
+
+        context "and the presence is 'none'" do
+          let(:condition) { { filesystem: "none" } }
+          include_examples "find device", "/dev/vda1"
+        end
+
+        context "and the filesystem condition combines operators" do
+          let(:condition) do
+            { filesystem: { and: [{ type: "xfs" }, { not: { label: "previous_root" } }] } }
+          end
+
+          include_examples "find device", "/dev/vda3"
         end
       end
 

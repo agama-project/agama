@@ -170,6 +170,57 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
       end
     end
 
+    context "if #condition is configured to search by filesystem presence" do
+      context "with the 'any' shortcut" do
+        let(:condition) { { filesystem: "any" } }
+
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ filesystem: "any" })
+        end
+      end
+
+      context "with the 'none' shortcut" do
+        let(:condition) { { filesystem: "none" } }
+
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ filesystem: "none" })
+        end
+      end
+    end
+
+    context "if #condition is configured to search by filesystem type" do
+      let(:condition) { { filesystem: { type: "ext4" } } }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq({ filesystem: { type: "ext4" } })
+      end
+    end
+
+    context "if #condition is configured to search by filesystem label" do
+      let(:condition) { { filesystem: { label: "data" } } }
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq({ filesystem: { label: "data" } })
+      end
+    end
+
+    context "if #condition is configured with a filesystem operator" do
+      let(:condition) do
+        { filesystem: { and: [{ type: "btrfs" }, { not: { label: "root" } }] } }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          { filesystem: { and: [{ type: "btrfs" }, { not: { label: "root" } }] } }
+        )
+      end
+    end
+
     context "if #condition is configured with nested operators" do
       let(:condition) do
         {

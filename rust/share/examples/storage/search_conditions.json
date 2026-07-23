@@ -72,8 +72,63 @@
               }
             },
             "delete": true
+          },
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "size": { "greater": "10 GiB" } },
+                  { "filesystem": { "type": "xfs" } }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "filesystem": { "label": "data" }
+              }
+            }
           }
         ]
+      },
+      {
+        "search": {
+          "condition": {
+            "filesystem": "none"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "filesystem": "any"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "filesystem": { "type": "ext4" }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "name": "/dev/vda" },
+              {
+                "filesystem": {
+                  "and": [
+                    { "type": "btrfs" },
+                    { "not": { "label": "root" } }
+                  ]
+                }
+              }
+            ]
+          }
+        }
       }
     ],
     "mdRaids": [
@@ -83,6 +138,16 @@
             "and": [
               { "name": "/dev/md0" },
               { "not": { "size": { "less": "100 GiB" } } }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "or": [
+              { "filesystem": "none" },
+              { "filesystem": { "type": "ext4" } }
             ]
           }
         }
@@ -106,6 +171,16 @@
                 "and": [
                   { "not": { "name": "root" } },
                   { "size": { "greater": "5 GiB" } }
+                ]
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "filesystem": { "label": "home" } },
+                  { "not": { "filesystem": { "type": "swap" } } }
                 ]
               }
             }

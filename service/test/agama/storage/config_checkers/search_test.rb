@@ -119,6 +119,23 @@ describe Agama::Storage::ConfigCheckers::Search do
       end
     end
 
+    context "if the search condition is a filesystem" do
+      let(:search) do
+        {
+          condition:  { filesystem: { type: "xfs" } },
+          ifNotFound: "error"
+        }
+      end
+
+      it "includes a generic not found issue without any device name" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::SEARCH_NOT_FOUND,
+          description: "Mandatory drive not found"
+        )
+      end
+    end
+
     context "if a MD RAID is reused" do
       let(:config_json) do
         {

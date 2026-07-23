@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,19 +22,26 @@
 module Agama
   module Storage
     module Configs
-      # Namespace for conditions used for searching devices.
       module SearchConditions
+        # Condition for searching by filesystem presence or properties.
+        #
+        # Either a presence shortcut (:any for formatted, :none for unformatted) or a
+        # nested condition over the filesystem properties (which implies "formatted").
+        class Filesystem
+          # @return [:any, :none, nil]
+          attr_accessor :presence
+
+          # @return [SearchConditions::*, nil]
+          attr_accessor :condition
+
+          # @param presence [:any, :none, nil]
+          # @param condition [SearchConditions::*, nil]
+          def initialize(presence: nil, condition: nil)
+            @presence = presence
+            @condition = condition
+          end
+        end
       end
     end
   end
 end
-
-require "agama/storage/configs/search_conditions/size"
-require "agama/storage/configs/search_conditions/name"
-require "agama/storage/configs/search_conditions/partition_number"
-require "agama/storage/configs/search_conditions/filesystem"
-require "agama/storage/configs/search_conditions/filesystem_type"
-require "agama/storage/configs/search_conditions/filesystem_label"
-require "agama/storage/configs/search_conditions/and"
-require "agama/storage/configs/search_conditions/or"
-require "agama/storage/configs/search_conditions/not"

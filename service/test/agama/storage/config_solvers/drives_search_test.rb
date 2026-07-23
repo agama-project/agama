@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -370,6 +370,76 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
           let(:value) { "100 GiB" }
           include_examples "do not find device"
         end
+      end
+    end
+
+    context "if a drive config has a search with a filesystem" do
+      let(:drives) do
+        [
+          {
+            search: {
+              condition: condition
+            }
+          }
+        ]
+      end
+
+      shared_examples "find device" do |device|
+        it "sets the device to the drive config" do
+          subject.solve(config)
+          expect(config.drives.size).to eq(1)
+
+          drive1 = config.drives.first
+          expect(drive1.search.solved?).to eq(true)
+          expect(drive1.search.device.name).to eq(device)
+        end
+      end
+
+      shared_examples "do not find device" do
+        it "does not set a device to the drive config" do
+          subject.solve(config)
+          expect(config.drives.size).to eq(1)
+
+          drive1 = config.drives.first
+          expect(drive1.search.solved?).to eq(true)
+          expect(drive1.search.device).to be_nil
+        end
+      end
+
+      context "and the presence is 'any'" do
+        let(:condition) { { filesystem: "any" } }
+        include_examples "find device", "/dev/vdc"
+      end
+
+      context "and the presence is 'none'" do
+        let(:condition) { { filesystem: "none" } }
+
+        it "sets a device to each unformatted disk config" do
+          subject.solve(config)
+          expect(config.drives.map(&:search).map(&:device).map(&:name)).to contain_exactly(
+            "/dev/vda", "/dev/vdb"
+          )
+        end
+      end
+
+      context "and a filesystem type is given" do
+        context "and there is a disk with that type" do
+          let(:condition) { { filesystem: { type: "ext4" } } }
+          include_examples "find device", "/dev/vdc"
+        end
+
+        context "and there is no disk with that type" do
+          let(:condition) { { filesystem: { type: "xfs" } } }
+          include_examples "do not find device"
+        end
+      end
+
+      context "and it is combined with a device condition" do
+        let(:condition) do
+          { and: [{ name: "/dev/vdc" }, { filesystem: { type: "ext4" } }] }
+        end
+
+        include_examples "find device", "/dev/vdc"
       end
     end
 

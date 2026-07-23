@@ -368,6 +368,63 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
       end
     end
 
+    context "if a MD RAID config has a search with a filesystem" do
+      let(:scenario) { "md_raids_formatted.yaml" }
+
+      let(:md_raids) do
+        [
+          {
+            search: {
+              condition: condition
+            }
+          }
+        ]
+      end
+
+      context "and a filesystem type is given" do
+        let(:condition) { { filesystem: { type: "ext4" } } }
+
+        it "sets the matching MD RAID to the config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+          expect(config.md_raids.first.search.device.name).to eq("/dev/md1")
+        end
+      end
+
+      context "and a filesystem label is given" do
+        let(:condition) { { filesystem: { label: "data" } } }
+
+        it "sets the matching MD RAID to the config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+          expect(config.md_raids.first.search.device.name).to eq("/dev/md2")
+        end
+      end
+
+      context "and the presence is 'none'" do
+        let(:condition) { { filesystem: "none" } }
+
+        it "sets the unformatted MD RAID to the config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+          expect(config.md_raids.first.search.device.name).to eq("/dev/md0")
+        end
+      end
+
+      context "and it is combined with an 'or' operator" do
+        let(:condition) do
+          { or: [{ filesystem: "none" }, { filesystem: { type: "xfs" } }] }
+        end
+
+        it "sets a device to each MD RAID config matching any nested condition" do
+          subject.solve(config)
+          expect(config.md_raids.map(&:search).map(&:device).map(&:name)).to contain_exactly(
+            "/dev/md0", "/dev/md2"
+          )
+        end
+      end
+    end
+
     context "if a MD RAID config has partitions with search" do
       let(:md_raids) do
         [

@@ -123,6 +123,49 @@ describe Agama::Storage::ConfigSolvers::LogicalVolumesSearch do
           end
         end
       end
+
+      context "if a logical volume config has a search with a filesystem" do
+        let(:logical_volumes) do
+          [
+            { search: { condition: condition } }
+          ]
+        end
+
+        context "and a filesystem type is given" do
+          let(:condition) { { filesystem: { type: "btrfs" } } }
+
+          it "sets the matching LV to the logical volume config" do
+            subject.solve(volume_group)
+            logical_volumes = volume_group.logical_volumes
+            expect(logical_volumes.size).to eq(1)
+            expect(logical_volumes.first.search.device.name).to eq("/dev/system/root")
+          end
+        end
+
+        context "and a 'not' filesystem operator is given" do
+          let(:condition) { { filesystem: { not: { type: "swap" } } } }
+
+          it "sets the non-swap LVs to the logical volume configs" do
+            subject.solve(volume_group)
+            logical_volumes = volume_group.logical_volumes
+            expect(logical_volumes.map { |l| l.search.device.name }).to contain_exactly(
+              "/dev/system/root"
+            )
+          end
+        end
+
+        context "and the presence is 'any'" do
+          let(:condition) { { filesystem: "any" } }
+
+          it "sets all the formatted LVs to the logical volume configs" do
+            subject.solve(volume_group)
+            logical_volumes = volume_group.logical_volumes
+            expect(logical_volumes.map { |l| l.search.device.name }).to contain_exactly(
+              "/dev/system/root", "/dev/system/swap"
+            )
+          end
+        end
+      end
     end
   end
 end
