@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,6 +19,8 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/search_conditions"
+
 module Agama
   module Storage
     module Configs
@@ -32,20 +34,16 @@ module Agama
           new.tap { |c| c.if_not_found = :skip }
         end
 
-        # Search by name.
+        # Condition used to match devices.
         #
-        # @return [String, nil]
-        attr_accessor :name
-
-        # Search by size.
+        # It holds the root node of the condition tree, which can be a leaf condition
+        # (SearchConditions::Name, ::Size or ::PartitionNumber) or a logical operator
+        # (SearchConditions::And, ::Or or ::Not) nesting other conditions.
         #
-        # @return [SearchConditions::Size, nil]
-        attr_accessor :size
-
-        # Search by partition number (only applies if searching partitions).
-        #
-        # @return [Integer, nil] e.g., 2 for "/dev/vda2".
-        attr_accessor :partition_number
+        # @return [SearchConditions::Name, SearchConditions::Size,
+        #   SearchConditions::PartitionNumber, SearchConditions::And,
+        #   SearchConditions::Or, SearchConditions::Not, nil]
+        attr_accessor :condition
 
         # Found device, if any
         #
@@ -91,8 +89,19 @@ module Agama
         #
         # @return [Boolean]
         def condition?
-          condition = name || size || partition_number
           !condition.nil?
+        end
+
+        # Name targeted by the search, if the top-level condition searches by name.
+        #
+        # Only a top-level SearchConditions::Name yields a name; operators (and/or/not) and
+        # other leaf conditions (size, partition number) return nil.
+        #
+        # @return [String, nil]
+        def condition_name
+          return unless condition.is_a?(SearchConditions::Name)
+
+          condition.name
         end
 
         # Whether the section containing the search should be skipped

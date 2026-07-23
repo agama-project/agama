@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -53,15 +53,6 @@ module Agama
 
         # @return [Storage::System]
         attr_reader :storage_system
-
-        # @see DevicesSearch#match_condition?
-        # @param md_raid_config [Configs::MdRaid]
-        # @param md_raid [Y2Storage::Md]
-        #
-        # @return [Boolean]
-        def match_condition?(md_raid_config, md_raid)
-          match_name?(md_raid_config, md_raid) && match_size?(md_raid_config, md_raid)
-        end
       end
     end
   end

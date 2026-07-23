@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,6 +22,7 @@
 require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions"
 require "agama/storage/configs/search"
+require "agama/storage/configs/search_conditions"
 require "agama/storage/configs/sort_criteria"
 
 module Agama
@@ -52,28 +53,53 @@ module Agama
             return convert_string if search_json.is_a?(String)
 
             {
-              name:             search_json.dig(:condition, :name),
-              size:             convert_size,
-              partition_number: search_json.dig(:condition, :number),
-              sort_criteria:    convert_sort,
-              max:              search_json[:max],
-              if_not_found:     search_json[:ifNotFound]&.to_sym
+              condition:     convert_condition(search_json[:condition]),
+              sort_criteria: convert_sort,
+              max:           search_json[:max],
+              if_not_found:  search_json[:ifNotFound]&.to_sym
             }
           end
 
-          # @return [String]
+          # @return [Hash]
           def convert_string
             return { if_not_found: :skip } if search_json == SEARCH_ANYTHING_STRING
 
-            { name: search_json }
+            { condition: Configs::SearchConditions::Name.new(search_json) }
           end
 
-          # @return [Configs::SearchConditions::Size, nil]
-          def convert_size
-            size_json = search_json.dig(:condition, :size)
-            return unless size_json
+          # Recursively converts a condition JSON into a condition config.
+          #
+          # @param json [Hash, nil]
+          # @return [Configs::SearchConditions::Name, Configs::SearchConditions::Size,
+          #   Configs::SearchConditions::PartitionNumber, Configs::SearchConditions::And,
+          #   Configs::SearchConditions::Or, Configs::SearchConditions::Not, nil]
+          def convert_condition(json)
+            return unless json
 
-            FromJSONConversions::SearchConditions::Size.new(size_json).convert
+            _key, builder = condition_builders.find { |k, _| json.key?(k) }
+            builder&.call(json)
+          end
+
+          # Builders for each type of condition, indexed by its JSON key.
+          #
+          # @return [Hash{Symbol => Proc}]
+          def condition_builders
+            {
+              name:   ->(j) { Configs::SearchConditions::Name.new(j[:name]) },
+              size:   ->(j) { FromJSONConversions::SearchConditions::Size.new(j[:size]).convert },
+              number: ->(j) { Configs::SearchConditions::PartitionNumber.new(j[:number]) },
+              and:    ->(j) { Configs::SearchConditions::And.new(convert_conditions(j[:and])) },
+              or:     ->(j) { Configs::SearchConditions::Or.new(convert_conditions(j[:or])) },
+              not:    ->(j) { Configs::SearchConditions::Not.new(convert_condition(j[:not])) }
+            }
+          end
+
+          # Converts a collection of condition JSONs into condition configs.
+          #
+          # @param json [Array<Hash>]
+          # @return [Array]
+          def convert_conditions(json)
+            json.map { |c| convert_condition(c) }
           end
 
           def convert_sort

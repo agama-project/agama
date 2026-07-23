@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -53,15 +53,6 @@ module Agama
 
         # @return [Storage::System]
         attr_reader :storage_system
-
-        # @see DevicesSearch#match_condition?
-        # @param drive_config [Configs::Drive]
-        # @param drive [Y2Storage::Disk, Y2Storage::StrayBlkDevice]
-        #
-        # @return [Boolean]
-        def match_condition?(drive_config, drive)
-          match_name?(drive_config, drive) && match_size?(drive_config, drive)
-        end
       end
     end
   end

@@ -80,6 +80,45 @@ describe Agama::Storage::ConfigCheckers::Search do
       end
     end
 
+    context "if the search condition is not a device name" do
+      let(:search) do
+        {
+          condition:  { size: { greater: "10 TiB" } },
+          ifNotFound: "error"
+        }
+      end
+
+      it "includes a generic not found issue" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::SEARCH_NOT_FOUND,
+          description: "Mandatory drive not found"
+        )
+      end
+    end
+
+    context "if the search condition is an operator" do
+      let(:search) do
+        {
+          condition:  {
+            and: [
+              { name: "/dev/unknown" },
+              { size: { greater: "1 GiB" } }
+            ]
+          },
+          ifNotFound: "error"
+        }
+      end
+
+      it "includes a generic not found issue without the nested name" do
+        issues = subject.issues
+        expect(issues).to include an_object_having_attributes(
+          kind:        Agama::Storage::IssueClasses::Config::SEARCH_NOT_FOUND,
+          description: "Mandatory drive not found"
+        )
+      end
+    end
+
     context "if a MD RAID is reused" do
       let(:config_json) do
         {

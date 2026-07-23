@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,16 +22,18 @@
 module Agama
   module Storage
     module Configs
-      # Namespace for conditions used for searching devices.
       module SearchConditions
+        # Condition for searching by partition number.
+        class PartitionNumber
+          # @return [Integer, nil] e.g., 2 for "/dev/vda2".
+          attr_accessor :number
+
+          # @param number [Integer, nil]
+          def initialize(number = nil)
+            @number = number
+          end
+        end
       end
     end
   end
 end
-
-require "agama/storage/configs/search_conditions/size"
-require "agama/storage/configs/search_conditions/name"
-require "agama/storage/configs/search_conditions/partition_number"
-require "agama/storage/configs/search_conditions/and"
-require "agama/storage/configs/search_conditions/or"
-require "agama/storage/configs/search_conditions/not"

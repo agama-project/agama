@@ -336,6 +336,66 @@ describe Agama::Storage::ConfigSolvers::PartitionsSearch do
         end
       end
 
+      context "if a partition config has a search with logical operators" do
+        let(:scenario) { "sizes.yaml" }
+
+        let(:partitions) do
+          [
+            {
+              search: {
+                condition: condition
+              }
+            }
+          ]
+        end
+
+        context "with an 'and' operator" do
+          context "and all the nested conditions match a partition" do
+            let(:condition) { { and: [{ number: 2 }, { size: { greater: "15 GiB" } }] } }
+            include_examples "find device", "/dev/vda2"
+          end
+
+          context "and any of the nested conditions does not match" do
+            let(:condition) { { and: [{ number: 2 }, { size: { less: "15 GiB" } }] } }
+            include_examples "do not find device"
+          end
+        end
+
+        context "with an 'or' operator" do
+          let(:condition) { { or: [{ number: 1 }, { number: 3 }] } }
+
+          it "sets a device to each partition config matching any nested condition" do
+            subject.solve(drive)
+            partitions = drive.partitions
+            expect(partitions.size).to eq(2)
+            expect(partitions.map { |p| p.search.device.name }).to contain_exactly(
+              "/dev/vda1", "/dev/vda3"
+            )
+          end
+        end
+
+        context "with a 'not' operator" do
+          let(:condition) { { not: { number: 2 } } }
+
+          it "sets a device to each partition config not matching the nested condition" do
+            subject.solve(drive)
+            partitions = drive.partitions
+            expect(partitions.size).to eq(2)
+            expect(partitions.map { |p| p.search.device.name }).to contain_exactly(
+              "/dev/vda1", "/dev/vda3"
+            )
+          end
+        end
+
+        context "with nested operators" do
+          let(:condition) do
+            { and: [{ or: [{ number: 1 }, { number: 3 }] }, { size: { greater: "15 GiB" } }] }
+          end
+
+          include_examples "find device", "/dev/vda3"
+        end
+      end
+
       context "if a partition config has a search with sorting" do
         let(:scenario) { "sizes.yaml" }
         let(:disk) { devicegraph.find_by_name("/dev/vdb") }

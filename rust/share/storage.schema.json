@@ -428,8 +428,48 @@
     "driveSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/driveSearchConditionAnd" },
+        { "$ref": "#/$defs/driveSearchConditionOr" },
+        { "$ref": "#/$defs/driveSearchConditionNot" }
       ]
+    },
+    "driveSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/driveSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "driveSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/driveSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "driveSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/driveSearchCondition"
+        }
+      }
     },
     "driveSearchSort": {
       "anyOf": [
@@ -479,8 +519,48 @@
     "mdRaidSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/mdRaidSearchConditionAnd" },
+        { "$ref": "#/$defs/mdRaidSearchConditionOr" },
+        { "$ref": "#/$defs/mdRaidSearchConditionNot" }
       ]
+    },
+    "mdRaidSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/mdRaidSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "mdRaidSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/mdRaidSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "mdRaidSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/mdRaidSearchCondition"
+        }
+      }
     },
     "mdRaidSearchSort": {
       "anyOf": [
@@ -530,8 +610,48 @@
     "volumeGroupSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/volumeGroupSearchConditionAnd" },
+        { "$ref": "#/$defs/volumeGroupSearchConditionOr" },
+        { "$ref": "#/$defs/volumeGroupSearchConditionNot" }
       ]
+    },
+    "volumeGroupSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/volumeGroupSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "volumeGroupSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/volumeGroupSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "volumeGroupSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/volumeGroupSearchCondition"
+        }
+      }
     },
     "volumeGroupSearchSort": {
       "anyOf": [
@@ -599,8 +719,48 @@
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
-        { "$ref": "#/$defs/searchConditionPartitionNumber" }
+        { "$ref": "#/$defs/searchConditionPartitionNumber" },
+        { "$ref": "#/$defs/partitionSearchConditionAnd" },
+        { "$ref": "#/$defs/partitionSearchConditionOr" },
+        { "$ref": "#/$defs/partitionSearchConditionNot" }
       ]
+    },
+    "partitionSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "partitionSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/partitionSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "partitionSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
     },
     "logicalVolumeSearch": {
       "anyOf": [
@@ -639,8 +799,48 @@
     "logicalVolumeSearchCondition": {
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
-        { "$ref": "#/$defs/searchConditionSize" }
+        { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/logicalVolumeSearchConditionAnd" },
+        { "$ref": "#/$defs/logicalVolumeSearchConditionOr" },
+        { "$ref": "#/$defs/logicalVolumeSearchConditionNot" }
       ]
+    },
+    "logicalVolumeSearchConditionAnd": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["and"],
+      "properties": {
+        "and": {
+          "description": "Matches when all the nested conditions match.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolumeSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "logicalVolumeSearchConditionOr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["or"],
+      "properties": {
+        "or": {
+          "description": "Matches when any of the nested conditions matches.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/logicalVolumeSearchCondition" },
+          "minItems": 2
+        }
+      }
+    },
+    "logicalVolumeSearchConditionNot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["not"],
+      "properties": {
+        "not": {
+          "description": "Matches when the nested condition does not match.",
+          "$ref": "#/$defs/logicalVolumeSearchCondition"
+        }
+      }
     },
     "searchConditionName": {
       "type": "object",
