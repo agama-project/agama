@@ -174,6 +174,7 @@ pub fn server_with_state(
         )
         .route("/private/solve_storage_model", get(solve_storage_model))
         .route("/private/download_logs", get(download_logs))
+        .route("/private/list_logs", get(list_logs))
         .route("/private/password_check", post(check_password))
         .nest_service("/private/profile", profile_routes)
         .with_state(state))
@@ -703,6 +704,10 @@ async fn download_logs() -> impl IntoResponse {
         }
         Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, err_response),
     }
+}
+
+async fn list_logs() -> impl IntoResponse {
+    Json(logs::list())
 }
 
 #[derive(Deserialize, JsonSchema)]
