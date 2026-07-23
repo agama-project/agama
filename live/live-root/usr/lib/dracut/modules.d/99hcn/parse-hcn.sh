@@ -282,6 +282,42 @@ EOF
   done
 }
 
+# Regenerate the standard NetworkManager runtime connections in /run.
+#
+# The standard NetworkManager-config-initrd.service runs nm-initrd-generator
+# *before* udev discovery, i.e. before this script has had a chance to create the
+# HCN bond profiles. If another dracut module sets rd.neednet=1 but no plain ip=
+# is given (HCN uses rd.hcn.*, which NM does not understand), that early run
+# fabricates a spurious default DHCP connection in
+# /run/NetworkManager/system-connections. See nmi_cmdline_reader_parse():
+#
+#     if (neednet) {
+#         if (!(etc_connections_dir && g_file_test(etc_connections_dir, IS_DIR))
+#             && g_hash_table_size(reader->hash) == 0)
+#             reader_get_default_connection(reader);
+#     }
+#
+# i.e. the default connection is created only when the /etc connections directory
+# is absent and the cmdline produced no connection. That default would bring the
+# HCN bond ports up independently via DHCP, breaking the bond.
+#
+# Now that our persistent HCN connections live in
+# /etc/NetworkManager/system-connections, regenerate the runtime connections: the
+# /etc directory exists, so no default connection is created and the stale one is
+# removed. This mirrors nm_generate_connections() from nm-lib.sh: restart the
+# config service on NM >= 1.54, otherwise regenerate directly.
+regen_standard_connections() {
+  if [ -e /usr/lib/systemd/system/NetworkManager-config-initrd.service ]; then
+    info "parse-hcn: regenerating runtime connections via NetworkManager-config-initrd.service"
+    systemctl restart NetworkManager-config-initrd.service
+  else
+    info "parse-hcn: regenerating runtime connections via nm-initrd-generator"
+    rm -f "$NM_RUNTIME_CONN_DIR"/*
+    # shellcheck disable=SC2046
+    "$gen" -- $(getcmdline)
+  fi
+}
+
 # --- Main Execution ---
 
 info "parse-hcn: starting"
@@ -558,6 +594,10 @@ if [ -n "$NEW_ARGS" ]; then
         # Persist these new HCN connections to /etc
         mkdir -p "$NM_CONF_CONN_DIR"
         cp -rf "$HCN_RUNTIME_CONN_DIR"/* "$NM_CONF_CONN_DIR"
+        # Now that /etc/NetworkManager/system-connections exists and holds the
+        # HCN profiles, drop any spurious default DHCP connection that the early
+        # standard generation left behind in /run (see regen_standard_connections).
+        regen_standard_connections
         mkdir -p "$NM_RUNTIME_DIR"/initrd
         : > "$NM_RUNTIME_DIR"/initrd/neednet
         echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh

@@ -2,7 +2,7 @@
 Description=Hybrid Cloud Network config for NetworkManager (initrd)
 DefaultDependencies=no
 Wants=systemd-udev-trigger.service
-After=systemd-udev-trigger.service
+After=systemd-udev-trigger.service NetworkManager-config-initrd.service
 Before=dracut-initqueue.service nm-initrd.service NetworkManager-initrd.service
 ConditionPathExists=/etc/initrd-release
 ConditionPathExists=/proc/device-tree
