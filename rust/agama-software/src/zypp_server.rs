@@ -55,13 +55,14 @@ use crate::{
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
-/// Alias prefix reserved for the installation repositories created by Agama
-/// (see `build_repo` in `model::state`). They are named `agama-0`, `agama-1`,
-/// etc. and must not be copied to the target system.
+/// Alias prefix reserved for the installation repositories created by Agama corresponding to the
+/// product definition (see `build_repo` in `model::state`). They are named `agama-0`, `agama-1`,
+/// etc. and must not be copied to the
+/// target system.
 const AGAMA_REPO_PREFIX: &str = "agama-";
 
-/// Alias of the repository holding the Driver Update Disk (DUD) packages. It is
-/// only relevant during the installation, so it must not reach the target.
+/// Alias of the repository holding the Driver Update Disk (DUD) packages. It is only relevant
+/// during the installation, so it must not reach the target.
 const DUD_REPO_ALIAS: &str = "AgamaDriverUpdate";
 
 /// Whether the repository with the given alias is an installer-only repository
@@ -632,7 +633,7 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
         tx: oneshot::Sender<ZyppServerResult<()>>,
     ) -> Result<(), ZyppDispatchError> {
-        if let Err(error) = self.remove_installation_repos(zypp) {
+        if let Err(error) = self.remove_installation_only_repos(zypp) {
             tracing::warn!("Failed to remove the installation repositories: {error}");
             tx.send(Err(error))
                 .map_err(|_| ZyppDispatchError::ResponseChannelClosed)?;
@@ -704,7 +705,7 @@ impl ZyppServer {
     /// This covers the installation repositories aliased `agama-0`, `agama-1`,
     /// etc. (see `build_repo` in `model::state`) as well as the Driver Update
     /// Disk repository.
-    fn remove_installation_repos(&self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<()> {
+    fn remove_installation_only_repos(&self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<()> {
         let repos = zypp.list_repositories()?;
         let installation_repos = repos.iter().filter(|r| is_installation_repo(&r.alias));
         for repo in installation_repos {
