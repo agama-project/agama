@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 23 13:44:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the "agama logs list" command (bsc#1261037).
+
+-------------------------------------------------------------------
 Thu Jul 23 12:08:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not copy the installatoin repositories (agama-0, agama-1, etc.)
