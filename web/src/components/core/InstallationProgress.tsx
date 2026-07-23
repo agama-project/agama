@@ -39,7 +39,8 @@ export default function InstallationProgress() {
           icon="deployed_code_update"
           firstRowStart={
             <>
-              <ProductLogo product={product} width="1.25em" /> {product?.name}
+              <ProductLogo product={product} width="var(--agm-t--logo--size--inline, 1.25em)" />{" "}
+              {product?.name}
             </>
           }
           firstRowEnd={<ProgressReport />}
