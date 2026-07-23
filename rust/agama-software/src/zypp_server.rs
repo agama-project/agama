@@ -57,8 +57,7 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 
 /// Alias prefix reserved for the installation repositories created by Agama corresponding to the
 /// product definition (see `build_repo` in `model::state`). They are named `agama-0`, `agama-1`,
-/// etc. and must not be copied to the
-/// target system.
+/// etc. and must not be copied to the target system.
 const AGAMA_REPO_PREFIX: &str = "agama-";
 
 /// Alias of the repository holding the Driver Update Disk (DUD) packages. It is only relevant
