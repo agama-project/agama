@@ -706,9 +706,7 @@ impl ZyppServer {
     /// Disk repository.
     fn remove_installation_repos(&self, zypp: &zypp_agama::Zypp) -> ZyppServerResult<()> {
         let repos = zypp.list_repositories()?;
-        let installation_repos = repos
-            .iter()
-            .filter(|r| is_installation_repo(&r.alias));
+        let installation_repos = repos.iter().filter(|r| is_installation_repo(&r.alias));
         for repo in installation_repos {
             tracing::info!("Removing the installation repository {}", repo.alias);
             // Log the error and keep going: failing to remove one repository
