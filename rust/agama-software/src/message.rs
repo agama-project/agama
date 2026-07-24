@@ -89,9 +89,9 @@ impl Message for Install {
     type Reply = ();
 }
 
-pub struct Refresh;
+pub struct Probe;
 
-impl Message for Refresh {
+impl Message for Probe {
     type Reply = ();
 }
 

@@ -44,6 +44,7 @@ use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
 use std::{collections::HashMap, sync::Arc};
+use strum::VariantArray;
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
@@ -578,6 +579,13 @@ impl Service {
         Ok(())
     }
 
+    async fn probe(&self, scopes: &[Scope]) -> Result<(), Error> {
+        if scopes.contains(&Scope::Software) {
+            self.software.call(software::message::Probe).await?;
+        }
+        Ok(())
+    }
+
     fn set_product(&mut self, config: &Config) -> Result<(), Error> {
         self.product = None;
         self.update_product(config)
@@ -867,6 +875,11 @@ impl MessageHandler<message::RunAction> for Service {
             Action::ProbeStorage => {
                 checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.probe_storage().await?;
+            }
+            Action::Probe { scopes } => {
+                checks::check_stage(&self.progress, Stage::Configuring).await?;
+                let scopes = scopes.unwrap_or_else(|| Scope::VARIANTS.to_vec());
+                self.probe(&scopes).await?;
             }
             Action::ProbeDASD => {
                 checks::check_stage(&self.progress, Stage::Configuring).await?;

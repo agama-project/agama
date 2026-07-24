@@ -45,16 +45,10 @@ impl ManagerHTTPClient {
 
     /// Starts a "probing".
     pub async fn probe(&self) -> Result<(), ManagerHTTPClientError> {
-        // BaseHTTPClient did not anticipate POST without request body
-        // so we pass () which is rendered as `null`
-        Ok(self.client.post_void("/manager/probe_sync", &()).await?)
-    }
-
-    /// Starts a "reprobing".
-    pub async fn reprobe(&self) -> Result<(), ManagerHTTPClientError> {
-        // BaseHTTPClient did not anticipate POST without request body
-        // so we pass () which is rendered as `null`
-        Ok(self.client.post_void("/manager/reprobe_sync", &()).await?)
+        self.client
+            .post_void("/action", &api::Action::Probe { scopes: None })
+            .await?;
+        Ok(())
     }
 
     /// Starts the installation.

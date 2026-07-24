@@ -208,11 +208,12 @@ impl Service {
         Ok(())
     }
 
-    async fn update_system(&mut self) -> Result<(), Error> {
-        // TODO: add system information (repositories, patterns, etc.).
-        self.events.send(Event::SystemChanged {
-            scope: Scope::Software,
-        })?;
+    async fn apply_config(&mut self) -> Result<(), Error> {
+        // calculate the wanted state
+        self.calculate_wanted_state().await?;
+
+        // and then update the proposal (in a separate task).
+        self.update_proposal().await?;
 
         Ok(())
     }
@@ -437,13 +438,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             scope: Scope::Software,
         })?;
 
-        // calculate the wanted state
-        self.calculate_wanted_state().await?;
-
-        // and then update the proposal (in a separate task).
-        self.update_proposal().await?;
-
-        Ok(())
+        self.apply_config().await
     }
 }
 
@@ -456,11 +451,9 @@ impl MessageHandler<message::GetProposal> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::Refresh> for Service {
-    async fn handle(&mut self, _message: message::Refresh) -> Result<(), Error> {
-        self.model.lock().await.refresh().await?;
-        self.update_system().await?;
-        Ok(())
+impl MessageHandler<message::Probe> for Service {
+    async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
+        self.apply_config().await
     }
 }
 
