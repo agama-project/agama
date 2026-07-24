@@ -21,7 +21,7 @@
 use std::str::FromStr;
 
 use crate::{
-    api::{iscsi, l10n},
+    api::{iscsi, l10n, Scope},
     kernel_cmdline::KernelCmdline,
 };
 use schemars::JsonSchema;
@@ -39,6 +39,8 @@ pub enum Action {
     /// Performs a DASD probing on demand.
     #[serde(rename = "probeDASD")]
     ProbeDASD,
+    #[serde(rename = "probe")]
+    Probe { scopes: Option<Vec<Scope>> },
     #[serde(rename = "configureL10n")]
     ConfigureL10n(l10n::SystemConfig),
     #[serde(rename = "install")]
