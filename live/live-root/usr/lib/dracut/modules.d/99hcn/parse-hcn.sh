@@ -282,6 +282,42 @@ EOF
   done
 }
 
+# Regenerate the standard NetworkManager runtime connections in /run.
+#
+# The standard NetworkManager-config-initrd.service runs nm-initrd-generator
+# *before* udev discovery, i.e. before this script has had a chance to create the
+# HCN bond profiles. If another dracut module sets rd.neednet=1 but no plain ip=
+# is given (HCN uses rd.hcn.*, which NM does not understand), that early run
+# fabricates a spurious default DHCP connection in
+# /run/NetworkManager/system-connections. See nmi_cmdline_reader_parse():
+#
+#     if (neednet) {
+#         if (!(etc_connections_dir && g_file_test(etc_connections_dir, IS_DIR))
+#             && g_hash_table_size(reader->hash) == 0)
+#             reader_get_default_connection(reader);
+#     }
+#
+# i.e. the default connection is created only when the /etc connections directory
+# is absent and the cmdline produced no connection. That default would bring the
+# HCN bond ports up independently via DHCP, breaking the bond.
+#
+# Now that our persistent HCN connections live in
+# /etc/NetworkManager/system-connections, regenerate the runtime connections: the
+# /etc directory exists, so no default connection is created and the stale one is
+# removed. This mirrors nm_generate_connections() from nm-lib.sh: restart the
+# config service on NM >= 1.54, otherwise regenerate directly.
+regen_standard_connections() {
+  if [ -e /usr/lib/systemd/system/NetworkManager-config-initrd.service ]; then
+    info "parse-hcn: regenerating runtime connections via NetworkManager-config-initrd.service"
+    systemctl restart NetworkManager-config-initrd.service
+  else
+    info "parse-hcn: regenerating runtime connections via nm-initrd-generator"
+    rm -f "$NM_RUNTIME_CONN_DIR"/*
+    # shellcheck disable=SC2046
+    "$gen" -- $(getcmdline)
+  fi
+}
+
 # --- Main Execution ---
 
 info "parse-hcn: starting"
@@ -326,10 +362,20 @@ NEW_ARGS=""
 # Extract unique bond names from discovered mappings
 BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
 
+# First discovered bond. Only unqualified *static* configs (a fixed address
+# with no interface field) fall back to this bond, because a fixed address can
+# belong to a single bond. Method-only configs (dhcp, auto6, ...) carry no
+# per-host address and instead fan out to every discovered bond (see below).
+# NOTE: BOND_NAMES is newline-separated, so it must be left unquoted here for
+# awk to see a single record and return just the first token.
+# shellcheck disable=SC2086
+FIRST_BOND=$(echo $BOND_NAMES | awk '{print $1}')
+
 for BONDNAME in $BOND_NAMES; do
   SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
+  OTHER_SLAVE_NAMES="" OTHER_SLAVE_MACS=""
 
-  # Extract slaves for this bond from MAPPINGS
+  # Extract slaves for this bond and other bonds from MAPPINGS
   set -- $MAPPINGS
   while [ $# -ge 4 ]; do
     if [ "$1" = "$BONDNAME" ]; then
@@ -337,6 +383,9 @@ for BONDNAME in $BOND_NAMES; do
       [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
       [ "$4" = "primary" ] && PRIMARY="$2"
       SLAVES="${SLAVES:+$SLAVES,}$2"
+    else
+      OTHER_SLAVE_NAMES="$OTHER_SLAVE_NAMES $2"
+      [ "$3" != "none" ] && OTHER_SLAVE_MACS="$OTHER_SLAVE_MACS $3"
     fi
     shift 4
   done
@@ -349,32 +398,56 @@ for BONDNAME in $BOND_NAMES; do
 
   # Process rd.hcn.ip= - replace slave names/MACs with bond name
   for HCN_IP in $(getargs rd.hcn.ip); do
+    # Lowercased copy for case-insensitive MAC matching: MACs in MAPPINGS are
+    # lowercase, but may be supplied in uppercase on the kernel command line.
+    HCN_IP_LC=$(echo "$HCN_IP" | tr 'A-Z' 'a-z')
     matched=0
     for slave in $SLAVE_NAMES $SLAVE_MACS; do
       slave_dash=$(str_replace "$slave" ":" "-")
+      # MACs (which contain ':') are compared case-insensitively; interface
+      # names are compared as-is to preserve their case.
+      hcn_cmp=$HCN_IP
+      case "$slave" in *:*) hcn_cmp=$HCN_IP_LC ;; esac
       # Check if HCN_IP contains the slave (as a whole word/field)
-      if strstr ":$HCN_IP:" ":$slave:" || strstr ":$HCN_IP:" ":$slave_dash:"; then
+      if strstr ":$hcn_cmp:" ":$slave:" || strstr ":$hcn_cmp:" ":$slave_dash:"; then
         matched=1
         # Replace slave with bond name (handle boundaries)
-        current_hcn_ip=$(echo "$HCN_IP" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
+        current_hcn_ip=$(echo "$hcn_cmp" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
         NEW_ARGS="$NEW_ARGS ip=$current_hcn_ip"
         break
       fi
     done
 
-    # No slave matched and no bond name present - apply to first bond
+    # Check if this IP is targeted at another bond's slave
+    matched_other=0
+    for slave in $OTHER_SLAVE_NAMES $OTHER_SLAVE_MACS; do
+      slave_dash=$(str_replace "$slave" ":" "-")
+      hcn_cmp=$HCN_IP
+      case "$slave" in *:*) hcn_cmp=$HCN_IP_LC ;; esac
+      if strstr ":$hcn_cmp:" ":$slave:" || strstr ":$hcn_cmp:" ":$slave_dash:"; then
+        matched_other=1
+        break
+      fi
+    done
+
+    # No slave matched and no bond name present - apply the unqualified config.
+    # Method-only configs (dhcp, auto6, ...) fan out to every bond; unqualified
+    # static addresses fall back to the first bond only (see the *) branch).
     has_bond_ip=0
     case "$HCN_IP" in
     *:bond[0-9]*) has_bond_ip=1 ;;
     esac
-    if [ $matched -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
+    if [ $matched -eq 0 ] && [ $matched_other -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
       case "$HCN_IP" in
       dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
+        # Method-only config (no fixed address): each bond obtains its own
+        # configuration independently, so apply it to every discovered bond.
         info "parse-hcn: applying $HCN_IP to $BONDNAME"
         NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP"
         ;;
       *:dhcp | *:on | *:any | *:dhcp6 | *:auto6 | *:link6)
         # Format: rd.hcn.ip=<interface>:{dhcp|on|any|dhcp6|auto6|link6}[:[<mtu>]]
+        # Method-only config with optional MTU: also applies to every bond.
         # Extract optional MTU field (after the method, could be followed by more colons)
         temp_ip=${HCN_IP}
         # Count colons to determine if there are extra fields
@@ -391,7 +464,10 @@ for BONDNAME in $BOND_NAMES; do
         fi
         ;;
       *)
-        # Static IP configuration - count colons to determine format
+        # Static IP configuration: a fixed address can belong to only one bond,
+        # so an unqualified static config falls back to the first bond only.
+        [ "$BONDNAME" = "$FIRST_BOND" ] || continue
+        # Count colons to determine format
         # Standard format: rd.hcn.ip=<client-IP>:[<peer>]:<gateway-IP>:<netmask>:<client_hostname>:<interface>:{none|off|dhcp|on|any|dhcp6|auto6|ibft}[:[<dns1>][:<dns2>]]
         # Minimum fields: client-IP:gateway:netmask:hostname:interface:method (5 colons)
         # Extended: adds :dns1 and/or :dns2 (up to 7 colons)
@@ -448,13 +524,29 @@ EOF
 
   # Process rd.hcn.route= - replace slave names/MACs with bond name
   for HCN_ROUTE in $(getargs rd.hcn.route); do
+    # Lowercased copy for case-insensitive MAC matching (see rd.hcn.ip above).
+    HCN_ROUTE_LC=$(echo "$HCN_ROUTE" | tr 'A-Z' 'a-z')
     matched=0
     for slave in $SLAVE_NAMES $SLAVE_MACS; do
       slave_dash=$(str_replace "$slave" ":" "-")
-      if strstr ":$HCN_ROUTE:" ":$slave:" || strstr ":$HCN_ROUTE:" ":$slave_dash:"; then
+      hcn_cmp=$HCN_ROUTE
+      case "$slave" in *:*) hcn_cmp=$HCN_ROUTE_LC ;; esac
+      if strstr ":$hcn_cmp:" ":$slave:" || strstr ":$hcn_cmp:" ":$slave_dash:"; then
         matched=1
-        current_hcn_route=$(echo "$HCN_ROUTE" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
+        current_hcn_route=$(echo "$hcn_cmp" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
         NEW_ARGS="$NEW_ARGS rd.route=$current_hcn_route"
+        break
+      fi
+    done
+
+    # Check if this route is targeted at another bond's slave
+    matched_other=0
+    for slave in $OTHER_SLAVE_NAMES $OTHER_SLAVE_MACS; do
+      slave_dash=$(str_replace "$slave" ":" "-")
+      hcn_cmp=$HCN_ROUTE
+      case "$slave" in *:*) hcn_cmp=$HCN_ROUTE_LC ;; esac
+      if strstr ":$hcn_cmp:" ":$slave:" || strstr ":$hcn_cmp:" ":$slave_dash:"; then
+        matched_other=1
         break
       fi
     done
@@ -464,7 +556,7 @@ EOF
     case "$HCN_ROUTE" in
     *:bond[0-9]*) has_bond_route=1 ;;
     esac
-    if [ $matched -eq 0 ] && [ $has_bond_route -eq 0 ]; then
+    if [ $matched -eq 0 ] && [ $matched_other -eq 0 ] && [ $has_bond_route -eq 0 ] && [ "$BONDNAME" = "$FIRST_BOND" ]; then
       temp_route=${HCN_ROUTE}
       colons=0
       while [ "${temp_route#*:}" != "$temp_route" ]; do
@@ -502,6 +594,10 @@ if [ -n "$NEW_ARGS" ]; then
         # Persist these new HCN connections to /etc
         mkdir -p "$NM_CONF_CONN_DIR"
         cp -rf "$HCN_RUNTIME_CONN_DIR"/* "$NM_CONF_CONN_DIR"
+        # Now that /etc/NetworkManager/system-connections exists and holds the
+        # HCN profiles, drop any spurious default DHCP connection that the early
+        # standard generation left behind in /run (see regen_standard_connections).
+        regen_standard_connections
         mkdir -p "$NM_RUNTIME_DIR"/initrd
         : > "$NM_RUNTIME_DIR"/initrd/neednet
         echo '[ -f /tmp/nm.done ]' > "$hookdir"/initqueue/finished/nm.sh

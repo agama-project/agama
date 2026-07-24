@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Jul 23 19:40:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix multiple IP/route assignments in multi-bond setups with
+  HCN/HVN inside the initrd (bsc#1272445, related to jsc#PED-14533).
+- Prevent a spurious default DHCP connection created by the
+  NetworkManager initrd service which could break HCN bonds
+  (bsc#1272445, related to jsc#PED-14533).
+
+-------------------------------------------------------------------
 Mon Jul 20 11:12:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 23

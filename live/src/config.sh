@@ -145,11 +145,11 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony"' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 if [ "${arch}" = "ppc64le" ]; then
   # Added support for configuring HCN in dracut (jsc#PED-14533) only in ppc64le.
-  echo 'add_dracutmodules+=" hcn"' >>/etc/dracut.conf.d/10-liveroot-file.conf
+  echo 'add_dracutmodules+=" hcn "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 fi
 
 
