@@ -146,8 +146,17 @@ function AnnouncerProvider({ children }: React.PropsWithChildren) {
     setSlots((current) => ({ ...current, [politeness]: nextSlot(current[politeness], message) }));
   }, []);
 
-  // Relocating the live regions clears any pending announcement. Messages
-  // moved together with a live region are stale and may not be announced.
+  // The regions move when a dialog opens or closes; see AnnouncerTarget
+  // below for why. Any message waiting to be read at that moment is thrown
+  // away instead of being shown again at the new location. That's a
+  // deliberate choice, not an oversight: a live
+  // region only gets announced reliably if it already existed, empty,
+  // before its text was set. A region that just moved is brand new from
+  // the browser's point of view, so writing the old message into it right
+  // away would hit the same problem this file works around everywhere
+  // else. Waiting a moment before writing it would avoid that, but adds an
+  // unreliable delay instead. Losing an announcement here is rare and
+  // preferable to that.
   //
   // Stable identity prevents AnnouncerTarget from repeatedly unregistering
   // and registering itself in an endless render loop.
@@ -190,6 +199,18 @@ function AnnouncerProvider({ children }: React.PropsWithChildren) {
  * dialog boundary, and {@link useAnnounce} keeps working while the dialog
  * is open.
  *
+ * ```
+ * No dialog open:                    Dialog open:
+ *
+ * document.body                      document.body
+ * +-- #app                           +-- #app  [aria-hidden]
+ * |   +-- ...page content...         |   +-- ...page content...
+ * +-- live regions                   +-- dialog  [aria-modal]
+ *     (portal target: body)              +-- live regions
+ *                                         (portal target: AnnouncerTarget,
+ *                                          moved here on mount)
+ * ```
+ *
  * It renders an empty element that registers itself as the portal target
  * for the regions. On unmount, the regions move back to the previous
  * location. When several targets are mounted at once, the most recent one
@@ -226,6 +247,10 @@ function AnnouncerTarget() {
  *
  * Callers inside a modal dialog need an {@link AnnouncerTarget}; `Popup`
  * already provides one.
+ *
+ * Avoid announcing right as a dialog is closing: the regions relocate back
+ * out of the dialog at that moment, and a message sent during that move is
+ * dropped rather than shown in either location.
  *
  * @example
  * const announce = useAnnounce();
