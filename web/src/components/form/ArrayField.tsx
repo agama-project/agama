@@ -38,6 +38,7 @@ import Text from "~/components/core/Text";
 import Interpolate from "~/components/core/Interpolate";
 import { resolveAriaLabelProps, useFieldLabel } from "~/hooks/use-field-label";
 import { useFieldContext } from "~/hooks/form-contexts";
+import { useAnnounce } from "~/context/announcer";
 import { _ } from "~/i18n";
 import type { TranslatedString } from "~/i18n";
 
@@ -108,7 +109,7 @@ function pasteAnnouncement(
   skipped: number,
   valid: string[],
   invalid: string[],
-): string {
+): TranslatedString {
   // TRANSLATORS: %d will be replaced with a number of duplicate entries skipped.
   if (added === 0) return sprintf(_("%d duplicates skipped."), skipped);
 
@@ -455,7 +456,8 @@ type ArrayFieldProps = {
  *
  * Both sighted and assistive-technology users receive equivalent feedback:
  * invalid entries carry an aria-label describing the error; add, edit, and
- * remove actions are announced via a live region.
+ * remove actions are announced via the application-wide live region (see
+ * {@link useAnnounce}).
  *
  * Must be used inside a TanStack Form `AppField` context that provides a
  * `string[]` field value.
@@ -490,8 +492,6 @@ type ArrayFieldProps = {
  * @todo Rework the layout so entries sit above the input row, with a visual
  *   separator and the usage hint inline next to the input.
  * @todo Add clipboard copy support; today only paste is intercepted.
- * @todo Replace the component-local live region with a shared global one to
- *   avoid multiple `role="status"` elements on the same page.
  *
  * @see useFieldContext for field component conventions.
  */
@@ -543,7 +543,7 @@ export default function ArrayField({
 
   const [draft, setDraft] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [announcement, setAnnouncement] = useState("");
+  const announce = useAnnounce();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -552,29 +552,6 @@ export default function ArrayField({
   const valueId = (index: number) => `${field.name}-${index}`;
   const hintId = `${field.name}-hint`;
   const instructionsId = `${field.name}-instructions`;
-
-  /**
-   * TODO: Refactor announcements to use a shared global live region component
-   * instead of this local hidden status element. This would allow multiple
-   * components to share a single live region, simplifying DOM structure and
-   * improving screen reader experience.
-   *
-   * - See Inclusive Components: https://inclusive-components.design/notifications/#live-regions
-   * - Illustrative example of bad live region usage: "The Many Lives of Notifications"
-   *   https://www.youtube.com/watch?v=W5YAaLLBKhQ&t=190s
-   * - https://www.sarasoueidan.com/blog/accessible-notifications-with-aria-live-regions-part-1/
-   * - https://www.sarasoueidan.com/blog/accessible-notifications-with-aria-live-regions-part-2/
-   *
-   * That future shared global live region should handle the edge case where the
-   * same message is announced twice in a row — e.g. adding the same value twice
-   * produces "alpha added." twice, or navigating away from an entry and back
-   * announces it twice. Some screen readers suppress the second announcement
-   * when the live region content has not changed between updates. The
-   * documented fix is the clear-then-set pattern, but it adds complexity not
-   * worth carrying in a temporary implementation.
-   * https://dev.to/dkoppenhagen/when-your-live-region-isnt-live-fixing-aria-live-in-angular-react-and-vue-1g0j
-   */
-  const announce = (msg: string) => setAnnouncement(msg);
 
   const clearActive = () => setActiveIndex(-1);
 
@@ -698,7 +675,9 @@ export default function ArrayField({
         if (draft === "" && value.length > 0) {
           e.preventDefault();
           setActiveIndex(value.length - 1);
-          announce(toLabel(value[value.length - 1]));
+          // The announced text is the entry value itself, the user input.
+          // Consider it "translated"
+          announce(toLabel(value[value.length - 1]) as TranslatedString);
         }
     }
   };
@@ -794,22 +773,6 @@ export default function ArrayField({
             )}
           </TextInputGroupMain>
         </TextInputGroup>
-      </div>
-
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        style={{
-          position: "absolute",
-          width: 1,
-          height: 1,
-          overflow: "hidden",
-          clip: "rect(0,0,0,0)",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {announcement}
       </div>
 
       <FormHelperText>
