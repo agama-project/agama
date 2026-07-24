@@ -58,4 +58,7 @@ rescue Agama::Commands::CouldNotWriteAgamaConfig => e
   warn "Could not write the Agama configuration:\n\n"
   warn e.full_message
   exit 4
+rescue Agama::Commands::ProfileNotFound => e
+  warn "Could not find the AutoYaST profile"
+  exit 5
 end
