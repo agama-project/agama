@@ -131,6 +131,16 @@ impl Message for Finish {
     type Reply = ();
 }
 
+/// Removes every active progress, emitting a `ProgressFinished` event per scope.
+///
+/// Useful to clean up the progress state, for example when an installation is
+/// cancelled and several scopes may still have an active progress.
+pub struct Reset;
+
+impl Message for Reset {
+    type Reply = ();
+}
+
 pub struct SetStage {
     pub stage: Stage,
 }

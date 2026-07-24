@@ -902,6 +902,26 @@ impl MessageHandler<message::RunAction> for Service {
                 action.run(method).await?;
                 tracing::info!("Installation tasks spawned");
             }
+            Action::CancelInstall => {
+                checks::check_stage(&self.progress, Stage::Installing).await?;
+
+                tracing::info!("Cancelling installation");
+
+                // Stop all ongoing operations by resetting to Configuring stage
+                // Abort every running/pending installation task. This drops their
+                // in-flight futures so no further steps are executed.
+                self.task_manager.cancel_all().await;
+
+                // Clear any active progress left behind by the aborted tasks.
+                self.progress.call(progress::message::Reset).await?;
+
+                // Clear any active progress
+                self.progress
+                    .call(progress::message::Finish::new(Scope::Manager))
+                    .await?;
+
+                tracing::info!("Installation cancelled successfully");
+            }
             Action::Finish(method) => {
                 checks::check_stage(&self.progress, Stage::Finished).await?;
                 let action = FinishAction::new(method);

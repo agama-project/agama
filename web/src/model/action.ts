@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-type Action = ConfigureL10n | ActivateStorage | ProbeStorage | DiscoverISCSI | Install | Finish;
+type Action = ConfigureL10n | ActivateStorage | ProbeStorage | DiscoverISCSI | Install | CancelInstall | Finish;
 
 type ConfigureL10n = {
   configureL10n: L10nSystemConfig;
@@ -54,6 +54,10 @@ type DiscoverISCSIConfig = {
 
 type Install = {
   install: null;
+};
+
+type CancelInstall = {
+  cancelInstall: null;
 };
 
 type Finish = {

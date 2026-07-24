@@ -85,6 +85,8 @@ const discoverISCSIAction = (config: DiscoverISCSIConfig) => postAction({ discov
 
 const startInstallation = () => postAction({ install: null });
 
+const cancelInstallation = () => postAction({ cancelInstall: null });
+
 const finishInstallation = () => postAction({ finish: "reboot" });
 
 type PasswordCheckResult = {
@@ -119,6 +121,7 @@ export {
   probeStorageAction,
   discoverISCSIAction,
   startInstallation,
+  cancelInstallation,
   finishInstallation,
   passwordCheck,
   postAction,
