@@ -23,6 +23,10 @@
 import { useEffect } from "react";
 
 const LINK_ID = "agm-product-appearance";
+// Kept in sync with the flash-prevention script in index.html, which reads
+// this key before React boots to inject last known appearance stylesheet
+// (by element id LINK_ID above) ahead of first paint.
+const PRODUCT_ID_KEY = "agm-product-id";
 
 /**
  * Loads the optional per-product appearance stylesheet into the document head.
@@ -34,11 +38,22 @@ const LINK_ID = "agm-product-appearance";
  * win by source order. A missing file is harmless: the browser ignores the
  * failed stylesheet and no overrides apply.
  *
+ * The product id is also mirrored to localStorage so the flash-prevention
+ * script in index.html can inject this same stylesheet before first paint on
+ * the next load, avoiding a flash from the stock Agama colors to the
+ * product's own palette.
+ *
  * @param productId - active product id; the stylesheet is named after it.
  */
 export default function useProductAppearance(productId?: string): void {
   useEffect(() => {
     if (!productId) return;
+
+    try {
+      window.localStorage.setItem(PRODUCT_ID_KEY, productId);
+    } catch {
+      // Ignore write errors; the stylesheet below still applies this session.
+    }
 
     const href = `assets/appearance/${productId}.css`;
     let link = document.getElementById(LINK_ID) as HTMLLinkElement | null;

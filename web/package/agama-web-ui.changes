@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 21 22:00:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid a flash from Agama colors to a product's own palette
+  (gh#agama-project/agama#3749).
+  
+-------------------------------------------------------------------
 Tue Jul 21 17:37:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add themeable roles for corner radius and product logo size and
