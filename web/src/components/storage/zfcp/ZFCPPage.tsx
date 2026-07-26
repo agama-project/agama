@@ -95,7 +95,7 @@ const ZFCPControllersContent = (): React.ReactNode => {
   return (
     <Page.Section
       isFullHeight
-      title={_("zFCP controllers")}
+      title={<Text textStyle="fontSizeMd">{_("zFCP controllers")}</Text>}
       description={controllers.map((c) => c.channel).join(", ")}
       actions={
         !isEmpty(deactivatedControllers) && (
