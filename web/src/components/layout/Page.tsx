@@ -127,6 +127,17 @@ type SubmitActionProps = {
  * - with an `aria-label` and no title: a region named after that label.
  * - with neither: no region, just a card.
  *
+ * Sections deliberately expose only part of what a PF/Card can do, through
+ * props of their own. When a page needs something outside that part, there
+ * are two ways out:
+ *
+ * 1. add a prop here, as long as it says what changes for a section rather
+ *    than for a card, and other pages could plausibly ask for the same. That
+ *    keeps the decision in one place, and every page gets it.
+ * 2. render a PF/Card on that page instead. This is not a replacement for a
+ *    card, it is an opinionated container for the shape pages usually need,
+ *    so a page that has to change much of it is better off with its own.
+ *
  * @example <caption>A plain grouping, no name needed</caption>
  *   <Page.Section>
  *     <EncryptionSummary />
