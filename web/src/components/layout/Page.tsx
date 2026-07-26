@@ -232,6 +232,10 @@ const Section = ({
  * It is a link because it goes to a known route, the parent one by default:
  * users can see where it leads, open it in a new tab, and bookmark it. Use
  * Page.Back instead to return wherever the user came from.
+ *
+ * On the way out: pages built on the form stack cancel through the button that
+ * comes with the form. This one serves the pages not migrated yet and goes with
+ * the last of them.
  */
 const Cancel = ({ navigateTo = "..", children, ...props }: CancelProps) => {
   return (
@@ -247,6 +251,10 @@ const Cancel = ({ navigateTo = "..", children, ...props }: CancelProps) => {
  * It is a button because the destination depends on how the user got here, so
  * there is no address to show or share. Use Page.Cancel to go to a known route
  * instead.
+ *
+ * On the way out as well, for a different reason: pages carry breadcrumbs, so
+ * the way back up is already there and named, and the browser covers going back
+ * one step. Do not add new uses while what replaces it gets decided.
  */
 const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
   const navigate = useNavigate();
@@ -262,6 +270,10 @@ const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
  * Button that submits the form given in the `form` prop.
  *
  * Handy for placing the submit button outside of the form it belongs to.
+ *
+ * On the way out: pages built on the form stack submit through the button that
+ * comes with the form, which also knows whether submitting is possible at all.
+ * This one serves the pages not migrated yet and goes with the last of them.
  */
 const Submit = ({ children, ...props }: SubmitActionProps) => {
   return (
@@ -449,8 +461,13 @@ const Page = (props: PageProps): React.ReactNode => {
 
 Page.displayName = "agama/layout/Page";
 Page.Content = Content;
+// A @deprecated tag only reaches the pages using one of these members when it
+// sits here, next to the member, and not on the component defined above.
+/** @deprecated go back through the breadcrumbs, or say where the link leads */
 Page.Back = Back;
+/** @deprecated cancel through the button that comes with the form stack */
 Page.Cancel = Cancel;
+/** @deprecated submit through the button that comes with the form stack */
 Page.Submit = Submit;
 Page.Section = Section;
 
