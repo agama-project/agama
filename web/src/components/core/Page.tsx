@@ -28,10 +28,8 @@ import {
   ButtonProps,
   Card,
   CardBody,
-  CardBodyProps,
   CardFooter,
   CardHeader,
-  CardHeaderProps,
   CardProps,
   Divider,
   Flex,
@@ -80,10 +78,6 @@ type SectionProps = {
   hasHeaderDivider?: boolean;
   /** Props to influence PF/Card component wrapping the section */
   pfCardProps?: CardProps;
-  /** Props to influence PF/CardHeader component wrapping the section title */
-  pfCardHeaderProps?: CardHeaderProps;
-  /** Props to influence PF/CardBody component wrapping the section content */
-  pfCardBodyProps?: CardBodyProps;
 };
 
 type CancelProps = Omit<LinkProps, "to"> & {
@@ -114,7 +108,6 @@ const defaultCardProps: CardProps = {
  *   <Page.Section
  *     title="Encryption"
  *     description="Whether device should be protected or not"
- *     pfCardBodyProps={{ isFilled: true }}
  *     actions={isEnabled ? <DisableAction /> : <EnableAction />}
  *   >
  *       <EncryptionSummary />
@@ -130,8 +123,6 @@ const Section = ({
   headingLevel = "h3",
   hasHeaderDivider = false,
   pfCardProps,
-  pfCardHeaderProps,
-  pfCardBodyProps,
   children,
 }: React.PropsWithChildren<SectionProps>) => {
   const titleId = useId();
@@ -152,7 +143,7 @@ const Section = ({
   return (
     <Card {...props} {...pfCardProps}>
       {hasHeader && (
-        <CardHeader {...pfCardHeaderProps}>
+        <CardHeader>
           {hasTitle && (
             <Flex>
               <Title id={titleId} headingLevel={headingLevel}>
@@ -170,7 +161,7 @@ const Section = ({
         </CardHeader>
       )}
       {hasHeaderDivider && <Divider />}
-      <CardBody {...pfCardBodyProps}>{children}</CardBody>
+      <CardBody>{children}</CardBody>
       {actions && (
         <CardFooter>
           <Split hasGutter>{actions}</Split>
