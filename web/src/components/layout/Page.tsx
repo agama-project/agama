@@ -151,6 +151,12 @@ type SubmitActionProps = {
  *   >
  *     <EncryptionSummary />
  *   </Page.Section>
+ *
+ * @example <caption>A title kept at text size, on a page where a heading
+ * would look too loud. The level still follows the page outline.</caption>
+ *   <Page.Section title={<Text textStyle="fontSizeMd">{_("Controllers")}</Text>}>
+ *     <ControllersSummary />
+ *   </Page.Section>
  */
 const Section = ({
   title,
