@@ -22,6 +22,7 @@
 
 import React from "react";
 import { screen, within } from "@testing-library/react";
+import { Button } from "@patternfly/react-core";
 import { installerRender, mockNavigateFn, plainRender } from "~/test-utils";
 import useTrackQueriesRefetch from "~/hooks/use-track-queries-refetch";
 import { _ } from "~/i18n";
@@ -111,37 +112,6 @@ describe("Page", () => {
     it("mounts ProgressBackdrop", () => {
       installerRender(<Page progress={{ scope: "software" }} />);
       screen.getByText("ProgressBackdropMock");
-    });
-  });
-
-  describe("Page.Actions", () => {
-    it("renders a footer sticky to bottom", () => {
-      installerRender(
-        <Page.Actions>
-          <Page.Action>Save</Page.Action>
-          <Page.Action>Discard</Page.Action>
-        </Page.Actions>,
-      );
-
-      const footer = screen.getByRole("contentinfo");
-      expect(footer.classList.contains("pf-m-sticky-bottom")).toBe(true);
-    });
-  });
-
-  describe("Page.Action", () => {
-    it("triggers given onClick handler when user clicks on it, if valid", async () => {
-      const onClick = jest.fn();
-      const { user } = installerRender(<Page.Action onClick={onClick}>Cancel</Page.Action>);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      await user.click(button);
-      expect(onClick).toHaveBeenCalled();
-    });
-
-    it("navigates to the path given through 'navigateTo' prop when user clicks on it", async () => {
-      const { user } = installerRender(<Page.Action navigateTo="/somewhere">Cancel</Page.Action>);
-      const button = screen.getByRole("button", { name: "Cancel" });
-      await user.click(button);
-      expect(mockNavigateFn).toHaveBeenCalledWith("/somewhere");
     });
   });
 
@@ -265,7 +235,7 @@ describe("Page", () => {
         <Page.Section
           title="A section"
           description="Testing section with title, description, content, and actions"
-          actions={<Page.Action>Disable</Page.Action>}
+          actions={<Button>Disable</Button>}
         >
           The Content
         </Page.Section>,

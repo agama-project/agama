@@ -58,7 +58,6 @@ import Questions from "~/components/questions/Questions";
 import { PRODUCT, ROOT } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 
-import flexStyles from "@patternfly/react-styles/css/utilities/Flex/flex";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
@@ -87,10 +86,10 @@ type SectionProps = {
   pfCardBodyProps?: CardBodyProps;
 };
 
-type ActionProps = {
+type CancelProps = Omit<LinkProps, "to"> & {
   /** Path to navigate to */
   navigateTo?: LinkProps["to"];
-} & ButtonProps;
+};
 
 type SubmitActionProps = {
   /** The id of a <form> the submit button is associated with */
@@ -101,18 +100,6 @@ const defaultCardProps: CardProps = {
   isCompact: true,
   isFullHeight: true,
   component: "section",
-};
-
-const STICK_TO_TOP = Object.freeze({ default: "top" });
-const STICK_TO_BOTTOM = Object.freeze({ default: "bottom" });
-
-// TODO: check if it should have the banner role
-const StickyHeaderContent = ({ children, ...props }) => {
-  return (
-    <PageSection component="div" stickyOnBreakpoint={STICK_TO_TOP} {...props}>
-      {children}
-    </PageSection>
-  );
 };
 
 /**
@@ -194,65 +181,13 @@ const Section = ({
 };
 
 /**
- * Wraps given children in an PF/PageGroup sticky at the bottom
- *
- * TODO: check if it contentinfo role really should have the banner role
- *
- * @see [PatternFly Page/PageGroup](https://www.patternfly.org/components/page#pagegroup)
- *
- * @example
- *   <Page.Actions>
- *     <Page.Action onClick={doSomething}>Let's go</Page.Action>
- *   </Page.Actions>
- *
- */
-const Actions = ({
-  children,
-  noDefaultWrapper = false,
-}: React.PropsWithChildren<{ noDefaultWrapper?: boolean }>) => {
-  const Wrapper = noDefaultWrapper ? React.Fragment : Split;
-  const wrapperProps = noDefaultWrapper ? {} : { hasGutter: true };
-
-  return (
-    <PageGroup
-      role="contentinfo"
-      hasShadowTop
-      stickyOnBreakpoint={STICK_TO_BOTTOM}
-      className={flexStyles.flexGrow_0}
-    >
-      <PageSection component="div">
-        <Wrapper {...wrapperProps}>{children}</Wrapper>
-      </PageSection>
-    </PageGroup>
-  );
-};
-
-/**
- * Handy component built on top of PF/Button for rendering a page action
- *
- * @see [PatternFly Button](https://www.patternfly.org/components/button).
- */
-const Action = ({ navigateTo, children, ...props }: ActionProps) => {
-  const navigate = useNavigate();
-
-  const onClickFn = props.onClick;
-
-  props.onClick = (e) => {
-    if (typeof onClickFn === "function") onClickFn(e);
-    if (navigateTo) navigate(navigateTo);
-  };
-
-  return <Button {...props}>{children}</Button>;
-};
-
-/**
  * Handy component for rendering a "Cancel" action
  *
  * NOTE: by default it navigates to the top path, which can be changed
  * `navigateTo` prop BUT not for navigating back into the history. Use Page.Back
  * for the latest, which behaves differently.
  */
-const Cancel = ({ navigateTo = "..", children, ...props }: ActionProps) => {
+const Cancel = ({ navigateTo = "..", children, ...props }: CancelProps) => {
   return (
     <Link to={navigateTo} variant="link" keepQuery {...props}>
       {children || _("Cancel")}
@@ -286,9 +221,9 @@ const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
  */
 const Submit = ({ children, ...props }: SubmitActionProps) => {
   return (
-    <Action type="submit" {...props}>
+    <Button type="submit" {...props}>
       {children || _("Accept")}
-    </Action>
+    </Button>
   );
 };
 
@@ -501,30 +436,11 @@ const Page = ({ variant = "standard", children, ...props }: PageProps): React.Re
   return <StandardLayout {...props}>{children}</StandardLayout>;
 };
 
-/**
- * Scrolls the page main container to the top.
- *
- * Useful for bringing alerts or validation errors into view after form
- * submission. Defers scroll to next tick to ensure content is rendered.
- */
-const scrollToTop = () => {
-  setTimeout(() => {
-    const pageMain = document.querySelector(".pf-v6-c-page__main");
-    if (pageMain) {
-      pageMain.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, 0);
-};
-
-Page.displayName = "agama/core/PageNext";
-Page.StickOnTop = StickyHeaderContent;
+Page.displayName = "agama/core/Page";
 Page.Content = Content;
-Page.Actions = Actions;
 Page.Back = Back;
 Page.Cancel = Cancel;
 Page.Submit = Submit;
-Page.Action = Action;
 Page.Section = Section;
-Page.scrollToTop = scrollToTop;
 
 export default Page;
