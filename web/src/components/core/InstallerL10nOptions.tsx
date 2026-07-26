@@ -33,21 +33,11 @@
 
 import React, { useReducer } from "react";
 import { useHref, useLocation } from "react-router";
-import {
-  Button,
-  ButtonProps,
-  Checkbox,
-  Flex,
-  FlexProps,
-  Form,
-  FormGroup,
-  FormSelect,
-  FormSelectOption,
-  FormSelectProps,
-} from "@patternfly/react-core";
+import { Button, ButtonProps, Flex, FlexProps, Form, FormGroup } from "@patternfly/react-core";
 import { Popup } from "~/components/core";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import { Icon } from "~/components/layout";
+import { useAppForm } from "~/hooks/form";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
 import { _ } from "~/i18n";
@@ -62,34 +52,67 @@ import { patchConfig } from "~/api";
 import type { Keymap, Locale } from "~/model/system/l10n";
 
 /**
- * Props for select inputs
+ * Settings the user can change in the dialog.
  */
-type SelectProps = {
-  value: string;
-  onChange: FormSelectProps["onChange"];
+type FormFields = {
+  /** The language code */
+  language: string;
+  /** The keymap code */
+  keymap: string;
+  /** Whether to use these settings for the product localization settings too */
+  reuseSettings: boolean;
+};
+
+/**
+ * Builds the form driving the dialog.
+ *
+ * Written as a factory so its return type names the form instance shared by
+ * every piece of the dialog. The `withForm` helper used by other forms does
+ * not fit here: it runs while the module loads, and this module sits in an
+ * import cycle that comes back to the form helpers before they are ready.
+ */
+const useL10nOptionsForm = (
+  defaultValues: FormFields,
+  onSubmit: (values: FormFields) => Promise<void>,
+) => useAppForm({ defaultValues, onSubmit: ({ value }) => onSubmit(value) });
+
+type L10nOptionsForm = ReturnType<typeof useL10nOptionsForm>;
+
+/** Props for every piece of the dialog that reads or writes the settings. */
+type FormProps = { form: L10nOptionsForm };
+
+/**
+ * Submits the settings instead of letting the browser handle the form.
+ */
+const submitHandler = (form: L10nOptionsForm) => (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  form.handleSubmit();
 };
 
 /**
  * Renders a dropdown for language selection.
  */
-const LangaugeFormInput = ({ value, onChange }: SelectProps) => (
-  <FormGroup fieldId="language" label={_("Language")}>
-    <FormSelect id="language" name="language" value={value} onChange={onChange}>
-      {Object.keys(supportedLanguages)
-        .sort()
-        .map((id, index) => (
-          <FormSelectOption key={index} value={id} label={supportedLanguages[id]} />
-        ))}
-    </FormSelect>
-  </FormGroup>
-);
+const LanguageField = ({ form }: FormProps) => {
+  const options = Object.keys(supportedLanguages)
+    .sort()
+    .map((id) => ({ value: id, label: supportedLanguages[id] }));
+
+  return (
+    <form.AppField name="language">
+      {(field) => (
+        // TRANSLATORS: label for the installer interface language selector
+        <field.DropdownField label={_("Language")} options={options} />
+      )}
+    </form.AppField>
+  );
+};
 
 /**
  * Renders a dropdown for keyboard layout selection.
  *
  * Not available in remote installations.
  */
-const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
+const KeyboardField = ({ form }: FormProps) => {
   const keymaps = useSystem()?.l10n?.keymaps ?? [];
 
   if (!localConnection()) {
@@ -100,85 +123,32 @@ const KeyboardFormInput = ({ value, onChange }: SelectProps) => {
     );
   }
 
+  const options = keymaps.map((keymap) => ({ value: keymap.id, label: keymap.description }));
+
   return (
-    <FormGroup fieldId="keymap" label={_("Keyboard layout")}>
-      <FormSelect
-        id="keymap"
-        name="keymap"
-        label={_("Keyboard layout")}
-        value={value}
-        onChange={onChange}
-      >
-        {keymaps.map((keymap, index) => (
-          <FormSelectOption key={index} value={keymap.id} label={keymap.description} />
-        ))}
-      </FormSelect>
-    </FormGroup>
+    <form.AppField name="keymap">
+      {(field) => (
+        // TRANSLATORS: label for the installer interface keyboard layout selector
+        <field.DropdownField label={_("Keyboard layout")} options={options} />
+      )}
+    </form.AppField>
   );
-};
-
-/**
- * Represents the form state.
- */
-type FormState = {
-  /** The language code */
-  language: string;
-  /** The keymap code */
-  keymap: string;
-  /** Whether reusing settings for the product feature is availabler or not */
-  allowReusingSettings: boolean;
-  /** Whether reuse these settings for the product localization settings too */
-  reuseSettings: boolean;
-};
-
-/**
- * Supported form actions.
- */
-type FormAction =
-  | { type: "SET_SELECTED_LANGUAGE"; language: string }
-  | { type: "SET_SELECTED_KEYMAP"; keymap: string }
-  | { type: "TOGGLE_REUSE_SETTINGS" }
-  | { type: "RESET"; state: FormState };
-
-/**
- * Reducer for form state updates.
- */
-const formReducer = (state: FormState, action: FormAction): FormState => {
-  switch (action.type) {
-    case "SET_SELECTED_LANGUAGE": {
-      return { ...state, language: action.language };
-    }
-
-    case "SET_SELECTED_KEYMAP": {
-      return { ...state, keymap: action.keymap };
-    }
-
-    case "TOGGLE_REUSE_SETTINGS": {
-      return { ...state, reuseSettings: !state.reuseSettings };
-    }
-
-    case "RESET": {
-      return { ...action.state };
-    }
-  }
 };
 
 /**
  * Supported dialog actions.
  */
-type DialogAction =
-  { type: "OPEN" } | { type: "CLOSE" } | { type: "SET_BUSY" } | { type: "SET_IDLE" };
+type DialogAction = { type: "OPEN" } | { type: "CLOSE" };
 
 /**
  * Represents the dialog state
  */
 type DialogState = {
   isOpen: boolean;
-  isBusy: boolean;
 };
 
 /**
- * Reducer for form state updates.
+ * Reducer for dialog state updates.
  */
 const dialogReducer = (state: DialogState, action: DialogAction): DialogState => {
   switch (action.type) {
@@ -187,37 +157,20 @@ const dialogReducer = (state: DialogState, action: DialogAction): DialogState =>
     }
 
     case "CLOSE": {
-      return { isOpen: false, isBusy: false };
-    }
-
-    case "SET_BUSY": {
-      return { ...state, isBusy: true };
-    }
-
-    case "SET_IDLE": {
-      return { ...state, isBusy: false };
+      return { ...state, isOpen: false };
     }
   }
 };
 
 /**
- * Available actions for handling dialog and form events.
- */
-type Actions = {
-  handleLanguageChange: (_, v: string) => void;
-  handleKeymapChange: (_, v: string) => void;
-  handleCopyToSystemToggle: (_, v: boolean) => void;
-  handleSubmission: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleCancellation: () => void;
-};
-
-/**
  * Props passed to each dialog variant.
  */
-type DialogProps = {
-  state: DialogState;
-  formState: FormState;
-  actions: Actions;
+type DialogProps = FormProps & {
+  isOpen: boolean;
+  /** Whether the settings can also be applied to the product to install. */
+  allowReusingSettings: boolean;
+  /** Called when the user dismisses the dialog. */
+  onCancel: () => void;
 };
 
 /**
@@ -307,152 +260,120 @@ const TextWithLinkToL10n = ({ text, onClick }: TextWithLinkToL10nProps) => {
   );
 };
 
-const AllSettingsDialog = ({ state, formState, actions }: DialogProps) => {
-  const checkboxDescription = _(
-    // TRANSLATORS: Explains where users can find more language and keymap
+/**
+ * Renders the checkbox for applying the chosen settings to the product to
+ * install too, with a link to the page where they can be fine tuned.
+ */
+const ReuseSettingsField = ({
+  form,
+  label,
+  onLinkClick,
+}: FormProps & { label: TranslatedString; onLinkClick?: ButtonProps["onClick"] }) => {
+  const description = _(
+    // TRANSLATORS: Explains where users can find more language and keyboard
     // options for the product to install. The text in square brackets [] is a
     // link to the localization page; keep the brackets.
     "The [language and region] settings for the product may offer more options to choose from.",
   );
 
   return (
-    <Popup isOpen={state.isOpen} variant="small" title={_("Language and keyboard")}>
-      <Form id="installer-l10n" onSubmit={actions.handleSubmission}>
-        <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
-        <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
-        <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
-          <FormGroup fieldId="reuse-settings">
-            <Checkbox
-              id="reuse-settings"
-              label={_("Use these same settings for the selected product")}
-              description={
-                <TextWithLinkToL10n
-                  text={checkboxDescription}
-                  onClick={actions.handleCancellation}
-                />
-              }
-              isChecked={formState.reuseSettings}
-              onChange={actions.handleCopyToSystemToggle}
-            />
-          </FormGroup>
-        </ReusableSettings>
-      </Form>
-
-      <Popup.Actions>
-        <Popup.Confirm
-          form="installer-l10n"
-          type="submit"
-          autoFocus
-          isDisabled={state.isBusy}
-          isLoading={state.isBusy}
-        >
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={actions.handleCancellation} isDisabled={state.isBusy} />
-      </Popup.Actions>
-    </Popup>
+    <form.AppField name="reuseSettings">
+      {(field) => (
+        <field.CheckboxField
+          label={label}
+          description={<TextWithLinkToL10n text={description} onClick={onLinkClick} />}
+        />
+      )}
+    </form.AppField>
   );
 };
 
-const LanguageOnlyDialog = ({ state, formState, actions }: DialogProps) => {
-  const checkboxDescription = _(
-    // TRANSLATORS: Explains where users can find more language options for the
-    // product to install. The text in square brackets [] is a link to the
-    // localization page; keep the brackets.
-    "The [language and region] settings for the product may offer more options to choose from.",
-  );
+/**
+ * Renders the dialog buttons, keeping them unavailable while the settings are
+ * being applied.
+ */
+const DialogActions = ({ form, onCancel }: FormProps & { onCancel: () => void }) => (
+  <Popup.Actions>
+    <form.Subscribe selector={(state) => state.isSubmitting}>
+      {(isSubmitting) => (
+        <>
+          <Popup.Confirm
+            form="installer-l10n"
+            type="submit"
+            autoFocus
+            isDisabled={isSubmitting}
+            isLoading={isSubmitting}
+          >
+            {_("Accept")}
+          </Popup.Confirm>
+          <Popup.Cancel onClick={onCancel} isDisabled={isSubmitting} />
+        </>
+      )}
+    </form.Subscribe>
+  </Popup.Actions>
+);
 
-  return (
-    <Popup isOpen={state.isOpen} variant="small" title={_("Change Language")}>
-      <Form id="installer-l10n" onSubmit={actions.handleSubmission}>
-        <LangaugeFormInput value={formState.language} onChange={actions.handleLanguageChange} />
-        <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
-          <FormGroup fieldId="reuse-settings">
-            <Checkbox
-              id="reuse-settings"
-              label={_("Use for the selected product too")}
-              description={
-                <TextWithLinkToL10n
-                  text={checkboxDescription}
-                  onClick={actions.handleCancellation}
-                />
-              }
-              isChecked={formState.reuseSettings}
-              onChange={actions.handleCopyToSystemToggle}
-            />
-          </FormGroup>
-        </ReusableSettings>
-      </Form>
+const AllSettingsDialog = ({ form, isOpen, allowReusingSettings, onCancel }: DialogProps) => (
+  <Popup isOpen={isOpen} variant="small" title={_("Language and keyboard")}>
+    <Form id="installer-l10n" onSubmit={submitHandler(form)}>
+      <LanguageField form={form} />
+      <KeyboardField form={form} />
+      <ReusableSettings isReuseAllowed={allowReusingSettings}>
+        <ReuseSettingsField
+          form={form}
+          label={_("Use these same settings for the selected product")}
+          onLinkClick={onCancel}
+        />
+      </ReusableSettings>
+    </Form>
 
-      <Popup.Actions>
-        <Popup.Confirm
-          form="installer-l10n"
-          type="submit"
-          autoFocus
-          isDisabled={state.isBusy}
-          isLoading={state.isBusy}
-        >
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={actions.handleCancellation} isDisabled={state.isBusy} />
-      </Popup.Actions>
-    </Popup>
-  );
-};
+    <DialogActions form={form} onCancel={onCancel} />
+  </Popup>
+);
 
-const KeyboardOnlyDialog = ({ state, formState, actions }: DialogProps) => {
+const LanguageOnlyDialog = ({ form, isOpen, allowReusingSettings, onCancel }: DialogProps) => (
+  <Popup isOpen={isOpen} variant="small" title={_("Change Language")}>
+    <Form id="installer-l10n" onSubmit={submitHandler(form)}>
+      <LanguageField form={form} />
+      <ReusableSettings isReuseAllowed={allowReusingSettings}>
+        <ReuseSettingsField
+          form={form}
+          label={_("Use for the selected product too")}
+          onLinkClick={onCancel}
+        />
+      </ReusableSettings>
+    </Form>
+
+    <DialogActions form={form} onCancel={onCancel} />
+  </Popup>
+);
+
+const KeyboardOnlyDialog = ({ form, isOpen, allowReusingSettings, onCancel }: DialogProps) => {
   if (!localConnection()) {
     return (
-      <Popup isOpen={state.isOpen} variant="small" title={_("Change keyboard")}>
+      <Popup isOpen={isOpen} variant="small" title={_("Change keyboard")}>
         {_("Cannot be changed in remote installation")}
         <Popup.Actions>
-          <Popup.Confirm onClick={actions.handleCancellation}>{_("Accept")}</Popup.Confirm>
+          <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
         </Popup.Actions>
       </Popup>
     );
   }
 
-  const checkboxDescription = _(
-    // TRANSLATORS: Explains where users can find more keymap options for the
-    // product to install. The text in square brackets [] is a link to the
-    // localization page; keep the brackets.
-    "The [language and region] settings for the product may offer more options to choose from.",
-  );
-
   return (
-    <Popup isOpen={state.isOpen} variant="small" title={_("Change keyboard")}>
-      <Form id="installer-l10n" onSubmit={actions.handleSubmission}>
-        <KeyboardFormInput value={formState.keymap} onChange={actions.handleKeymapChange} />
-        <ReusableSettings isReuseAllowed={formState.allowReusingSettings}>
-          <FormGroup fieldId="reuse-settings">
-            <Checkbox
-              id="reuse-settings"
-              label={_("Use for the selected product too")}
-              description={
-                <TextWithLinkToL10n
-                  text={checkboxDescription}
-                  onClick={actions.handleCancellation}
-                />
-              }
-              isChecked={formState.reuseSettings}
-              onChange={actions.handleCopyToSystemToggle}
-            />
-          </FormGroup>
+    <Popup isOpen={isOpen} variant="small" title={_("Change keyboard")}>
+      <Form id="installer-l10n" onSubmit={submitHandler(form)}>
+        <KeyboardField form={form} />
+        <ReusableSettings isReuseAllowed={allowReusingSettings}>
+          <ReuseSettingsField
+            form={form}
+            label={_("Use for the selected product too")}
+            onLinkClick={onCancel}
+          />
         </ReusableSettings>
       </Form>
 
-      <Popup.Actions>
-        <Popup.Confirm
-          form="installer-l10n"
-          type="submit"
-          autoFocus
-          isDisabled={state.isBusy}
-          isLoading={state.isBusy}
-        >
-          {_("Accept")}
-        </Popup.Confirm>
-        <Popup.Cancel onClick={actions.handleCancellation} isDisabled={state.isBusy} />
-      </Popup.Actions>
+      <DialogActions form={form} onCancel={onCancel} />
     </Popup>
   );
 };
@@ -530,7 +451,7 @@ const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProp
 /**
  * Maps each dialog variant to its corresponding React component.
  */
-const dialogs: { [key in InstallerL10nOptionsVariants]: React.FC<DialogProps> } = {
+const dialogs: { [key in InstallerL10nOptionsVariants]: typeof AllSettingsDialog } = {
   all: AllSettingsDialog,
   language: LanguageOnlyDialog,
   keyboard: KeyboardOnlyDialog,
@@ -584,17 +505,51 @@ export default function InstallerL10nOptions({
   const { language, keymap, changeL10n } = useInstallerL10n();
   const { stage } = useStatus();
   const selectedProduct = useProductInfo();
-  const initialFormState = {
-    language,
-    keymap,
-    allowReusingSettings: !!selectedProduct,
-    reuseSettings: true,
+  const allowReusingSettings = !!selectedProduct;
+  const [dialogState, dispatchDialogAction] = useReducer(dialogReducer, { isOpen: false });
+
+  /**
+   * Copies selected localization settings to the product to install settings,
+   **/
+  const reuseSettings = (values: FormFields) => {
+    // FIXME: export and use languageToLocale from context/installerL10n
+    const systemLocale = locales.find((l) => l.id.startsWith(values.language.replace("-", "_")));
+    const systemL10n: { locale?: Locale["id"]; keymap?: Keymap["id"] } = {};
+    // FIXME: use a fallback if no system locale was found ?
+    if (variant !== "keyboard") systemL10n.locale = systemLocale?.id;
+    if (variant !== "language" && localConnection()) systemL10n.keymap = values.keymap;
+
+    patchConfig({ l10n: systemL10n });
   };
-  const [formState, dispatch] = useReducer(formReducer, initialFormState);
-  const [dialogState, dispatchDialogAction] = useReducer(dialogReducer, {
-    isOpen: false,
-    isBusy: false,
-  });
+
+  const close = () => {
+    dispatchDialogAction({ type: "CLOSE" });
+    typeof onClose === "function" && onClose();
+  };
+
+  const applySettings = async (values: FormFields) => {
+    try {
+      const l10nOptions: { language?: string; keymap?: string } = {};
+
+      if (variant !== "keyboard") {
+        l10nOptions.language = values.language;
+      }
+
+      if (variant !== "language" && localConnection()) {
+        l10nOptions.keymap = values.keymap;
+      }
+
+      await changeL10n(l10nOptions);
+
+      allowReusingSettings && values.reuseSettings && reuseSettings(values);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      close();
+    }
+  };
+
+  const form = useL10nOptionsForm({ language, keymap, reuseSettings: true }, applySettings);
 
   // Skip rendering if any of the following conditions are met
   const skip =
@@ -606,62 +561,6 @@ export default function InstallerL10nOptions({
 
   if (skip) return;
 
-  /**
-   * Copies selected localization settings to the product to install settings,
-   **/
-  const reuseSettings = () => {
-    // FIXME: export and use languageToLocale from context/installerL10n
-    const systemLocale = locales.find((l) => l.id.startsWith(formState.language.replace("-", "_")));
-    const systemL10n: { locale?: Locale["id"]; keymap?: Keymap["id"] } = {};
-    // FIXME: use a fallback if no system locale was found ?
-    if (variant !== "keyboard") systemL10n.locale = systemLocale?.id;
-    if (variant !== "language" && localConnection()) systemL10n.keymap = formState.keymap;
-
-    patchConfig({ l10n: systemL10n });
-  };
-
-  const close = () => {
-    dispatchDialogAction({ type: "CLOSE" });
-    typeof onClose === "function" && onClose();
-  };
-
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    dispatchDialogAction({ type: "SET_BUSY" });
-
-    try {
-      const l10nOptions: { language?: string; keymap?: string } = {};
-
-      if (variant !== "keyboard") {
-        l10nOptions.language = formState.language;
-      }
-
-      if (variant !== "language" && localConnection()) {
-        l10nOptions.keymap = formState.keymap;
-      }
-
-      await changeL10n(l10nOptions);
-
-      formState.allowReusingSettings && formState.reuseSettings && reuseSettings();
-    } catch (e) {
-      console.error(e);
-      dispatchDialogAction({ type: "SET_IDLE" });
-    } finally {
-      close();
-    }
-  };
-
-  const actions: Actions = {
-    handleLanguageChange: (_, v) => dispatch({ type: "SET_SELECTED_LANGUAGE", language: v }),
-    handleKeymapChange: (_, v) => dispatch({ type: "SET_SELECTED_KEYMAP", keymap: v }),
-    handleCopyToSystemToggle: () => dispatch({ type: "TOGGLE_REUSE_SETTINGS" }),
-    handleSubmission: onSubmit,
-    handleCancellation: () => {
-      dispatch({ type: "RESET", state: initialFormState });
-      close();
-    },
-  };
-
   const Toggle = toggle ?? toggles[variant];
   const Dialog = dialogs[variant];
 
@@ -671,9 +570,19 @@ export default function InstallerL10nOptions({
         showValues={showValues}
         language={supportedLanguages[language]}
         keymap={keymap}
-        onClick={() => dispatchDialogAction({ type: "OPEN" })}
+        onClick={() => {
+          // Start from the settings currently in use, no matter what a previous
+          // visit to the dialog left behind.
+          form.reset({ language, keymap, reuseSettings: true });
+          dispatchDialogAction({ type: "OPEN" });
+        }}
       />
-      <Dialog state={dialogState} formState={formState} actions={actions} />
+      <Dialog
+        form={form}
+        isOpen={dialogState.isOpen}
+        allowReusingSettings={allowReusingSettings}
+        onCancel={close}
+      />
     </>
   );
 }
