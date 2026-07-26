@@ -26,7 +26,16 @@ import { useInstallerClient } from "~/hooks/use-installer-client";
 import Loading from "~/components/layout/Loading";
 import ServerError from "~/components/core/ServerError";
 
-function InstallerClientProvider({ children }: React.PropsWithChildren) {
+/**
+ * Renders its children only while the server is reachable.
+ *
+ * Until the connection is established it shows a loading indicator, and it
+ * reports the problem when the connection drops and cannot be recovered.
+ *
+ * Companion of {@link Protected}, which guards the same tree on being logged
+ * in.
+ */
+export default function Connected({ children }: React.PropsWithChildren) {
   const client = useInstallerClient();
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState(false);
@@ -72,5 +81,3 @@ function InstallerClientProvider({ children }: React.PropsWithChildren) {
 
   return children;
 }
-
-export { InstallerClientProvider };

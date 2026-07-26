@@ -38,7 +38,7 @@ jest.mock("~/client", () => ({
   onInstallerClientChange: () => () => undefined,
 }));
 
-import { InstallerClientProvider } from "./installer";
+import Connected from "./Connected";
 
 /**
  * Builds a client in the given connection state, recording the handlers
@@ -61,16 +61,16 @@ const buildClient = ({
 
 const Content = () => <>Content</>;
 
-const renderProvider = () =>
+const renderConnection = () =>
   plainRender(
-    <InstallerClientProvider>
+    <Connected>
       <Content />
-    </InstallerClientProvider>,
+    </Connected>,
   );
 
 const loseConnection = () => act(() => closeHandlers.forEach((handler) => handler()));
 
-describe("InstallerClientProvider", () => {
+describe("Connected", () => {
   beforeEach(() => {
     closeHandlers = [];
   });
@@ -81,7 +81,7 @@ describe("InstallerClientProvider", () => {
     });
 
     it("renders the children", async () => {
-      renderProvider();
+      renderConnection();
       await screen.findByText("Content");
     });
   });
@@ -92,7 +92,7 @@ describe("InstallerClientProvider", () => {
     });
 
     it("renders a loading indicator", async () => {
-      renderProvider();
+      renderConnection();
       await screen.findByText("Loading Mock");
     });
   });
@@ -103,7 +103,7 @@ describe("InstallerClientProvider", () => {
     });
 
     it("renders a loading indicator", async () => {
-      renderProvider();
+      renderConnection();
       await screen.findByText("Content");
 
       loseConnection();
@@ -118,7 +118,7 @@ describe("InstallerClientProvider", () => {
     });
 
     it("reports that the server cannot be reached", async () => {
-      renderProvider();
+      renderConnection();
       await screen.findByText("Content");
 
       loseConnection();
