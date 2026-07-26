@@ -53,7 +53,7 @@ const UnsupportedElements = ({
 
   return (
     <GridItem sm={12} lg={6}>
-      <Page.Section title={title} description={description} hasHeaderDivider>
+      <Page.Section title={title} description={description} hasHeaderDivider isFullHeight>
         <List variant={ListVariant.inline}>
           {elements.map((e: string, i: number) => (
             <ListItem key={i}>{e}</ListItem>

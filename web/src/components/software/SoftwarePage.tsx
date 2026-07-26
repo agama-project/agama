@@ -258,7 +258,6 @@ const SoftwareSection = ({
         </>
       }
       description={description}
-      pfCardProps={{ isFullHeight: false }}
       actions={!noneSelected && totalCount > 0 && <Link to={selectionPath}>{buttonText}</Link>}
     >
       <SelectedPatternsList patterns={patterns} selection={selection} emptyContent={emptyContent} />

@@ -94,8 +94,11 @@ type SectionProps = SectionNameProps & {
   headingLevel?: TitleProps["headingLevel"];
   /** Whether the section should have a divider between header and body */
   hasHeaderDivider?: boolean;
-  /** Props to influence PF/Card component wrapping the section */
-  pfCardProps?: CardProps;
+  /**
+   * Whether the section stretches to fill the height available to it, instead
+   * of taking only the height its content needs.
+   */
+  isFullHeight?: boolean;
 };
 
 type CancelProps = Omit<LinkProps, "to"> & {
@@ -107,11 +110,6 @@ type SubmitActionProps = {
   /** The id of a <form> the submit button is associated with */
   form?: string;
 } & ButtonProps;
-
-const defaultCardProps: CardProps = {
-  isCompact: true,
-  isFullHeight: true,
-};
 
 /**
  * Groups related page content in a card, built on top of PF/Card.
@@ -146,7 +144,7 @@ const Section = ({
   actions,
   headingLevel = "h3",
   hasHeaderDivider = false,
-  pfCardProps,
+  isFullHeight = false,
   children,
 }: React.PropsWithChildren<SectionProps>) => {
   const titleId = useId();
@@ -156,7 +154,8 @@ const Section = ({
   const hasAriaLabel = !isEmpty(ariaLabel);
 
   const props: CardProps = {
-    ...defaultCardProps,
+    isCompact: true,
+    isFullHeight,
     // Only a named section becomes a region, so an unnamed one must not render
     // a section element at all.
     component: hasTitle || hasAriaLabel ? "section" : "div",
@@ -165,7 +164,7 @@ const Section = ({
   };
 
   return (
-    <Card {...props} {...pfCardProps}>
+    <Card {...props}>
       {hasHeader && (
         <CardHeader>
           {hasTitle && (

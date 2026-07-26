@@ -202,6 +202,7 @@ function ModelSection(): React.ReactNode {
 
   return (
     <Page.Section
+      isFullHeight
       title={_("Settings")}
       titleActions={
         <Flex>

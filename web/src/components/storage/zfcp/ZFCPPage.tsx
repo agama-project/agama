@@ -103,6 +103,7 @@ const ZFCPControllersContent = (): React.ReactNode => {
 
   return (
     <Page.Section
+      isFullHeight
       aria-label={_("zFCP controllers")}
       actions={
         !isEmpty(deactivatedControllers) && (

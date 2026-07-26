@@ -129,6 +129,7 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
 
   return (
     <Page.Section
+      isFullHeight
       title={_("Result")}
       description={_(
         "Result of applying the configuration described at the 'Settings' section above.",

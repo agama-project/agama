@@ -57,6 +57,7 @@ export default function InitiatorSection() {
 
   return (
     <Page.Section
+      isFullHeight
       actions={
         <Split hasGutter>
           <Link to={STORAGE.iscsi.discover} variant="primary">
