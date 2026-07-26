@@ -212,7 +212,7 @@ type SoftwareSectionProps = {
   /** Section heading. */
   title: TranslatedString;
   /** Optional explanatory text rendered below the heading. */
-  description?: React.ReactNode;
+  description?: TranslatedString;
   /** Label for the link that opens the pattern selection page. */
   buttonText: TranslatedString;
   /** Total number of patterns in this group, selected or not. */

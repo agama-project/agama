@@ -186,13 +186,13 @@ describe("Page", () => {
     });
 
     it("renders a region named after the title", () => {
-      plainRender(<Page.Section title="A Page Section">The Content</Page.Section>);
+      plainRender(<Page.Section title={_("A Page Section")}>The Content</Page.Section>);
       const section = screen.getByRole("region", { name: "A Page Section" });
       within(section).getByText("The Content");
     });
 
     it("renders the title as a second level heading by default", () => {
-      plainRender(<Page.Section title="A Page Section">The Content</Page.Section>);
+      plainRender(<Page.Section title={_("A Page Section")}>The Content</Page.Section>);
       screen.getByRole("heading", { level: 2, name: "A Page Section" });
     });
 
@@ -205,8 +205,8 @@ describe("Page", () => {
     it("renders given content props (title, description, actions, and children (content)", () => {
       installerRender(
         <Page.Section
-          title="A section"
-          description="Testing section with title, description, content, and actions"
+          title={_("A section")}
+          description={_("Testing section with title, description, content, and actions")}
           actions={<Button>Disable</Button>}
         >
           The Content

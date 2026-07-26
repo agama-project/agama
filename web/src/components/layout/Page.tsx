@@ -65,8 +65,13 @@ import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
  */
 type SectionNameProps =
   | {
-      /** The section title, rendered as a heading and used as accessible name */
-      title: React.ReactNode;
+      /**
+       * The section title, rendered as a heading and used as accessible name.
+       *
+       * Takes a translated string, or an element when the title needs markup,
+       * like a quieter font size or a counter next to the name.
+       */
+      title: TranslatedString | React.ReactElement;
       "aria-label"?: never;
     }
   | {
@@ -87,8 +92,13 @@ type SectionProps = SectionNameProps & {
   titleActions?: React.ReactNode;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
-  /** A React node with a brief description of what the section is for */
-  description?: React.ReactNode;
+  /**
+   * A brief description of what the section is for.
+   *
+   * Takes a translated string, or an element for anything else: markup, or a
+   * value that is data rather than text to translate.
+   */
+  description?: TranslatedString | React.ReactElement;
   /**
    * The heading level used for the section title.
    *
@@ -145,8 +155,8 @@ type SubmitActionProps = {
  *
  * @example <caption>A region named "Encryption"</caption>
  *   <Page.Section
- *     title="Encryption"
- *     description="Whether device should be protected or not"
+ *     title={_("Encryption")}
+ *     description={_("Whether the device should be protected or not")}
  *     actions={isEnabled ? <DisableAction /> : <EnableAction />}
  *   >
  *     <EncryptionSummary />
