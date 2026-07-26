@@ -232,61 +232,50 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
 };
 
 /**
- * Common props shared by all page variants.
- */
-interface BasePageProps extends HeaderProps {
-  /** Optional progress tracking configuration */
-  progress?: ProgressBackdropProps;
-  /** Whether to show the Questions component at the bottom of the page */
-  showQuestions?: boolean;
-  /** Page content */
-  children?: React.ReactNode;
-}
-
-/**
  * Props for standard page variant.
  */
-interface StandardPageProps extends BasePageProps {
-  /** Layout variant to use */
-  variant?: "standard";
-}
+type StandardPageProps = React.PropsWithChildren<
+  HeaderProps & {
+    /** Layout variant to use */
+    variant?: "standard";
+    /** Optional progress tracking configuration */
+    progress?: ProgressBackdropProps;
+    /** Whether to show the Questions component at the bottom of the page */
+    showQuestions?: boolean;
+
+    /**
+     * If true, the ProgressStatusMonitor will not be automatically
+     * injected among the header default tools.
+     *
+     * Default: `false` (ProgressStatusMonitor is injected)
+     */
+    noDefaultProgressMonitor?: boolean;
+
+    /**
+     * Whether the localization selector in the header should display its current
+     * values (language and keyboard) next to the icons.
+     *
+     * Default: `false` (icon-only, to save space in the header)
+     */
+    showL10nValues?: boolean;
+  }
+>;
 
 /**
  * Props for minimal page variant.
+ *
+ * The minimal layout renders an empty masthead and nothing but the given
+ * content, so it takes no header, progress or questions props.
  */
-interface MinimalPageProps extends BasePageProps {
+type MinimalPageProps = React.PropsWithChildren<{
   /** Layout variant - minimal layout with empty masthead (e.g., for login pages) */
   variant: "minimal";
-  /** Title not available in minimal variant */
-  title?: never;
-  /** Installer options not available in minimal variant */
-  showInstallerOptions?: never;
-  /** Whether the progress monitor must not be mounted */
-  hideProgressMonitor?: never;
-}
+}>;
 
 /**
- * Props for the `Page` component.
- *
- * Combines the standard and minimal variants with additional content controls.
+ * Props for the `Page` component, one set per layout variant.
  */
-type PageProps = (StandardPageProps | MinimalPageProps) & {
-  /**
-   * If true, the ProgressStatusMonitor will not be automatically
-   * injected among the header default tools.
-   *
-   * Default: `false` (ProgressStatusMonitor is injected)
-   */
-  noDefaultProgressMonitor?: boolean;
-
-  /**
-   * Whether the localization selector in the header should display its current
-   * values (language and keyboard) next to the icons.
-   *
-   * Default: `false` (icon-only, to save space in the header)
-   */
-  showL10nValues?: boolean;
-};
+type PageProps = StandardPageProps | MinimalPageProps;
 
 /**
  * Minimal page layout with empty masthead.
@@ -318,10 +307,7 @@ const StandardLayout = ({
   noDefaultProgressMonitor = false,
   showL10nValues = false,
   ...headerProps
-}: Omit<StandardPageProps, "variant"> & {
-  noDefaultProgressMonitor?: boolean;
-  showL10nValues?: boolean;
-}) => {
+}: Omit<StandardPageProps, "variant">) => {
   const location = useLocation();
 
   // Changing the product or mode makes no sense on the product selection page
@@ -419,12 +405,13 @@ const StandardLayout = ({
  * </Page>
  * ```
  */
-const Page = ({ variant = "standard", children, ...props }: PageProps): React.ReactNode => {
-  if (variant === "minimal") {
-    return <MinimalLayout>{children}</MinimalLayout>;
+const Page = (props: PageProps): React.ReactNode => {
+  if (props.variant === "minimal") {
+    return <MinimalLayout>{props.children}</MinimalLayout>;
   }
 
-  return <StandardLayout {...props}>{children}</StandardLayout>;
+  const { variant, ...standardProps } = props;
+  return <StandardLayout {...standardProps} />;
 };
 
 Page.displayName = "agama/core/Page";

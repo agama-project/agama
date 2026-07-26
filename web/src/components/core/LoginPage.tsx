@@ -81,7 +81,7 @@ user privileges.",
   ).split(/[[\]]/);
 
   return (
-    <Page variant="minimal" showQuestions={false}>
+    <Page variant="minimal">
       <Page.Content>
         <SplitInfoLayout
           icon="lock"
