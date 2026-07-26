@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2023-2025] SUSE LLC
+ * Copyright (c) [2023-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,45 +21,109 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { createClient } from "~/client";
+import { act, screen } from "@testing-library/react";
 import { plainRender } from "~/test-utils";
-import { InstallerClientProvider } from "./installer";
-import { DummyWSClient } from "~/client/ws";
+
+import type { InstallerClient } from "~/client";
 
 jest.mock("~/components/layout/Loading", () => () => <div>Loading Mock</div>);
 
-// Helper component to check the client status.
-const Content = () => {
-  return <>Content</>;
-};
+let client: InstallerClient | null = null;
+let closeHandlers: (() => void)[] = [];
 
-describe("installer context", () => {
-  describe("when the WebSocket is connected", () => {
+jest.mock("~/client", () => ({
+  ...jest.requireActual("~/client"),
+  getInstallerClient: () => Promise.resolve(client),
+  installerClient: () => client,
+  onInstallerClientChange: () => () => undefined,
+}));
+
+import { InstallerClientProvider } from "./installer";
+
+/**
+ * Builds a client in the given connection state, recording the handlers
+ * registered for a connection loss so tests can trigger one.
+ */
+const buildClient = ({
+  isConnected = true,
+  isRecoverable = true,
+}: { isConnected?: boolean; isRecoverable?: boolean } = {}): InstallerClient => ({
+  isConnected: () => isConnected,
+  isRecoverable: () => isRecoverable,
+  onConnect: () => () => undefined,
+  onClose: (handler) => {
+    closeHandlers.push(handler);
+    return () => undefined;
+  },
+  onError: () => () => undefined,
+  onEvent: () => () => undefined,
+});
+
+const Content = () => <>Content</>;
+
+const renderProvider = () =>
+  plainRender(
+    <InstallerClientProvider>
+      <Content />
+    </InstallerClientProvider>,
+  );
+
+const loseConnection = () => act(() => closeHandlers.forEach((handler) => handler()));
+
+describe("InstallerClientProvider", () => {
+  beforeEach(() => {
+    closeHandlers = [];
+  });
+
+  describe("when the client is connected", () => {
+    beforeEach(() => {
+      client = buildClient();
+    });
+
     it("renders the children", async () => {
-      const ws = new DummyWSClient();
-      const client = createClient(new URL("https://localhost"), ws);
-
-      plainRender(
-        <InstallerClientProvider client={client}>
-          <Content />
-        </InstallerClientProvider>,
-      );
-
+      renderProvider();
       await screen.findByText("Content");
     });
   });
 
-  describe("when the WebSocket is not connected", () => {
-    it("renders the a loading indicator", async () => {
-      const client = createClient(new URL("https://localhost"));
+  describe("when the client is not connected yet", () => {
+    beforeEach(() => {
+      client = buildClient({ isConnected: false });
+    });
 
-      plainRender(
-        <InstallerClientProvider client={client}>
-          <Content />
-        </InstallerClientProvider>,
-      );
+    it("renders a loading indicator", async () => {
+      renderProvider();
       await screen.findByText("Loading Mock");
+    });
+  });
+
+  describe("when the connection is lost but can be recovered", () => {
+    beforeEach(() => {
+      client = buildClient({ isRecoverable: true });
+    });
+
+    it("renders a loading indicator", async () => {
+      renderProvider();
+      await screen.findByText("Content");
+
+      loseConnection();
+
+      await screen.findByText("Loading Mock");
+    });
+  });
+
+  describe("when the connection is lost for good", () => {
+    beforeEach(() => {
+      client = buildClient({ isRecoverable: false });
+    });
+
+    it("reports that the server cannot be reached", async () => {
+      renderProvider();
+      await screen.findByText("Content");
+
+      loseConnection();
+
+      await screen.findByText("Cannot connect");
     });
   });
 });

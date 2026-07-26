@@ -83,4 +83,70 @@ const createDefaultClient = async () => {
   return createClient(httpUrl);
 };
 
-export { createClient, createDefaultClient };
+/**
+ * There is one connection to the server for the whole application, kept here
+ * instead of in a component so that any module can reach it.
+ */
+let client: InstallerClient | null = null;
+let creation: Promise<InstallerClient> | null = null;
+const listeners = new Set<VoidFn>();
+
+const notify = () => listeners.forEach((listener) => listener());
+
+/**
+ * Returns the client, creating it the first time it is asked for.
+ *
+ * Concurrent calls made before the client exists share the same creation, so
+ * there is never more than one connection.
+ */
+const getInstallerClient = async (): Promise<InstallerClient> => {
+  if (client) return client;
+
+  creation ||= createDefaultClient().then((newClient) => {
+    newClient.onEvent((event) => {
+      if (event.type === "ClientConnected") newClient.id = event.clientId;
+    });
+    client = newClient;
+    notify();
+    return newClient;
+  });
+
+  return creation;
+};
+
+/**
+ * The client, or null while it is still being created.
+ */
+const installerClient = (): InstallerClient | null => client;
+
+/**
+ * Registers a handler to run when the client is replaced. It returns a
+ * function for deregistering the handler.
+ */
+const onInstallerClientChange = (handler: VoidFn): VoidFn => {
+  listeners.add(handler);
+  return () => {
+    listeners.delete(handler);
+  };
+};
+
+/**
+ * Forgets the current client, so the next request for it creates a new one.
+ *
+ * Needed by hot module replacement and by tests; the application itself keeps
+ * one client for its whole life.
+ */
+const resetInstallerClient = () => {
+  client = null;
+  creation = null;
+  notify();
+};
+
+export {
+  createClient,
+  createDefaultClient,
+  getInstallerClient,
+  installerClient,
+  onInstallerClientChange,
+  resetInstallerClient,
+};

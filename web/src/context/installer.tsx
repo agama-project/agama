@@ -21,89 +21,56 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { createDefaultClient, InstallerClient } from "~/client";
+import { getInstallerClient, resetInstallerClient } from "~/client";
+import { useInstallerClient } from "~/hooks/use-installer-client";
 import Loading from "~/components/layout/Loading";
 import ServerError from "~/components/core/ServerError";
 
-type InstallerClientProviderProps = React.PropsWithChildren<{
-  /** Client to connect to Agama service; if it is undefined, it instantiates a
-   * new one using the address registered in /run/agama/bus.address. */
-  client?: InstallerClient;
-}>;
-
-const InstallerClientContext = React.createContext(null);
-
-/**
- * Returns the installer client
- */
-function useInstallerClient(): InstallerClient {
-  const context = React.useContext(InstallerClientContext);
-  if (context === undefined) {
-    throw new Error("useInstallerClient must be used within a InstallerClientProvider");
-  }
-
-  return context;
-}
-
-function InstallerClientProvider({ children, client = null }: InstallerClientProviderProps) {
-  const [value, setValue] = useState(client);
-  const [connected, setConnected] = useState(!!client?.isConnected());
+function InstallerClientProvider({ children }: React.PropsWithChildren) {
+  const client = useInstallerClient();
+  const [connected, setConnected] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const connectClient = async () => {
-      const client = await createDefaultClient();
-
-      client.onEvent((event) => {
-        if (event.type === "ClientConnected") {
-          client.id = event.clientId;
-        }
-      });
-
-      setValue(client);
-    };
+    getInstallerClient();
 
     // allow hot replacement for the clients code
     if (module.hot) {
       // if anything coming from `import ... from "~/client"` is updated then this hook is called
-      module.hot.accept("~/client", async function () {
+      module.hot.accept("~/client", function () {
         console.log("[Agama HMR] A client module has been updated");
-
-        const updated_client = await createDefaultClient();
+        resetInstallerClient();
+        getInstallerClient();
         console.log("[Agama HMR] Using new clients");
-        setValue(updated_client);
       });
     }
-
-    if (!value) connectClient();
-  }, [setValue, value]);
+  }, []);
 
   useEffect(() => {
-    if (!value) return;
+    if (!client) return;
 
-    value.onConnect(() => {
+    setConnected(client.isConnected());
+
+    const forgetConnect = client.onConnect(() => {
       setConnected(true);
       setError(false);
     });
 
-    value.onClose(() => {
+    const forgetClose = client.onClose(() => {
       setConnected(false);
-      setError(!value.isRecoverable());
+      setError(!client.isRecoverable());
     });
-  }, [value]);
 
-  const Content = () => {
-    if (error) return <ServerError />;
-    if (!connected) return <Loading />;
+    return () => {
+      forgetConnect();
+      forgetClose();
+    };
+  }, [client]);
 
-    return children;
-  };
+  if (error) return <ServerError />;
+  if (!connected) return <Loading />;
 
-  return (
-    <InstallerClientContext.Provider value={value}>
-      <Content />
-    </InstallerClientContext.Provider>
-  );
+  return children;
 }
 
-export { InstallerClientProvider, useInstallerClient };
+export { InstallerClientProvider };
