@@ -68,7 +68,7 @@ function InstallationFinished() {
   const isGrub2WithTpm = useIsGrub2WithTpm();
 
   return (
-    <Page noDefaultProgressMonitor>
+    <Page showProgressMonitor={false}>
       <Page.Content>
         <SplitInfoLayout
           icon="done_all"

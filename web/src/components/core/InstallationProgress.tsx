@@ -33,7 +33,7 @@ export default function InstallationProgress() {
   const product = useProductInfo();
 
   return (
-    <Page noDefaultProgressMonitor>
+    <Page showProgressMonitor={false}>
       <Page.Content>
         <SplitInfoLayout
           icon="deployed_code_update"

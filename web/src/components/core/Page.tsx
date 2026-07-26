@@ -269,20 +269,18 @@ type StandardPageProps = React.PropsWithChildren<
     variant?: "standard";
     /** Optional progress tracking configuration */
     progress?: ProgressBackdropProps;
-    /** Whether to show the Questions component at the bottom of the page */
-    showQuestions?: boolean;
 
     /**
-     * If true, the ProgressStatusMonitor will not be automatically
-     * injected among the header default tools.
+     * Whether the header shows the installation progress status.
      *
-     * Default: `false` (ProgressStatusMonitor is injected)
+     * Default: `true`. Turn it off on the pages that report the progress
+     * themselves.
      */
-    noDefaultProgressMonitor?: boolean;
+    showProgressMonitor?: boolean;
 
     /**
-     * Whether the localization selector in the header should display its current
-     * values (language and keyboard) next to the icons.
+     * Whether the localization selector in the header shows its current values
+     * (language and keyboard) next to the icons.
      *
      * Default: `false` (icon-only, to save space in the header)
      */
@@ -320,8 +318,7 @@ const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
 };
 
 /**
- * Standard page layout with header, optional progress tracking, and optional
- * qestions rendering.
+ * Standard page layout with header, questions and optional progress tracking.
  *
  * It also composes the header's trailing content shared by every standard
  * page: any page-specific content first, followed by the default tools (the
@@ -331,9 +328,8 @@ const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
 const StandardLayout = ({
   progress,
   children,
-  showQuestions = true,
   additionalContent,
-  noDefaultProgressMonitor = false,
+  showProgressMonitor = true,
   showL10nValues = false,
   ...headerProps
 }: Omit<StandardPageProps, "variant">) => {
@@ -352,7 +348,7 @@ const StandardLayout = ({
   const headerContent = (
     <>
       {additionalContent}
-      {!noDefaultProgressMonitor && <ProgressStatusMonitor />}
+      {showProgressMonitor && <ProgressStatusMonitor />}
       <InstallerL10nOptions showValues={showL10nValues} />
       <AppearanceSettings />
       <InstallerOptionsMenu hideLabel showChangeProductOption={showChangeProductOption} />
@@ -370,7 +366,7 @@ const StandardLayout = ({
           {progress && <ProgressBackdrop {...progress} />}
         </PageGroup>
       </Suspense>
-      {showQuestions && <Questions />}
+      <Questions />
     </PFPage>
   );
 };
@@ -415,14 +411,6 @@ const StandardLayout = ({
  * ```tsx
  * <Page title="Overview" showInstallerOptions>
  *   <OverviewContent />
- * </Page>
- * ```
- *
- * @example
- * Page without Questions component (e.g., login or exit pages)
- * ```tsx
- * <Page title="Login" showQuestions={false}>
- *   <LoginForm />
  * </Page>
  * ```
  *
