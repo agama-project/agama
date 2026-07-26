@@ -43,10 +43,13 @@ describe("Page", () => {
   beforeAll(() => {
     consoleErrorSpy = jest.spyOn(console, "error");
     consoleErrorSpy.mockImplementation();
+    // .scrollIntoView is not yet implemented at jsdom, https://github.com/jsdom/jsdom/issues/1695
+    HTMLElement.prototype.scrollIntoView = jest.fn();
   });
 
   afterAll(() => {
     consoleErrorSpy.mockRestore();
+    HTMLElement.prototype.scrollIntoView = undefined;
   });
 
   beforeEach(() => {
@@ -69,6 +72,32 @@ describe("Page", () => {
       </Page>,
     );
     screen.getByRole("heading", { name: "The Page Component" });
+  });
+
+  it("renders a single banner and a single main landmark", () => {
+    installerRender(<Page title="Software">The Content</Page>);
+    expect(screen.getAllByRole("banner")).toHaveLength(1);
+    expect(screen.getAllByRole("main")).toHaveLength(1);
+    expect(screen.queryByRole("contentinfo")).toBeNull();
+  });
+
+  it("renders the given title as the top level heading", () => {
+    installerRender(<Page title="Software">The Content</Page>);
+    screen.getByRole("heading", { level: 1, name: "Software" });
+  });
+
+  it("moves the focus to the content when the user follows the skip link", async () => {
+    const { user } = installerRender(<Page title="Software">The Content</Page>);
+    await user.click(screen.getByRole("link", { name: "Skip to content" }));
+    expect(document.activeElement).toContainElement(screen.getByText("The Content"));
+  });
+
+  describe("minimal variant", () => {
+    it("renders the main landmark but no heading of its own", () => {
+      installerRender(<Page variant="minimal">The Content</Page>);
+      expect(screen.getAllByRole("main")).toHaveLength(1);
+      expect(screen.queryByRole("heading")).toBeNull();
+    });
   });
 
   describe("when no progress prop is provided", () => {
@@ -186,10 +215,21 @@ describe("Page", () => {
       expect(console.error).toHaveBeenCalledWith(expect.stringContaining("must have either"));
     });
 
-    it("renders a section node", () => {
+    it("renders a region named after the aria-label", () => {
       plainRender(<Page.Section aria-label={_("A Page Section")}>The Content</Page.Section>);
-      const section = screen.getByRole("region");
+      const section = screen.getByRole("region", { name: "A Page Section" });
       within(section).getByText("The Content");
+    });
+
+    it("renders a region named after the title", () => {
+      plainRender(<Page.Section title="A Page Section">The Content</Page.Section>);
+      const section = screen.getByRole("region", { name: "A Page Section" });
+      within(section).getByText("The Content");
+    });
+
+    it("renders the title as a third level heading by default", () => {
+      plainRender(<Page.Section title="A Page Section">The Content</Page.Section>);
+      screen.getByRole("heading", { level: 3, name: "A Page Section" });
     });
 
     it("adds the aria-labelledby attribute when title is given but aria-label is not", () => {
