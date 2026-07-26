@@ -30,7 +30,7 @@ import {
   HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import RebootButton from "~/components/core/RebootButton";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { useIsGrub2WithTpm } from "~/hooks/model/storage/config-model";

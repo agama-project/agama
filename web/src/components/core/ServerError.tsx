@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Button, HelperText, HelperTextItem } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { locationReload } from "~/utils";
 import { _ } from "~/i18n";

@@ -22,7 +22,8 @@
 
 import React from "react";
 import { Flex, Stack } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Link } from "~/components/core";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import NoPersistentConnectionsAlert from "~/components/network/NoPersistentConnectionsAlert";

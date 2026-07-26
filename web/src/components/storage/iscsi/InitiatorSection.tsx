@@ -23,7 +23,7 @@
 import React from "react";
 import { Content, Flex, Split } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import { useSystem } from "~/hooks/model/system/iscsi";

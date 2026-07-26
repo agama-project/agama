@@ -31,7 +31,6 @@ export { default as InstallerL10nOptions } from "./InstallerL10nOptions";
 export { default as IssuesAlert } from "./IssuesAlert";
 export { default as LoginPage } from "./LoginPage";
 export { default as RowActions } from "./RowActions";
-export { default as Page } from "./Page";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
 export { default as Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";

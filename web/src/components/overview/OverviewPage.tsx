@@ -38,7 +38,7 @@ import {
   HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import Popup from "~/components/core/Popup";
 import NoDesktopAlert from "~/components/software/NoDesktopAlert";

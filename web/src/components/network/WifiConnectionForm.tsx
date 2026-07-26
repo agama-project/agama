@@ -33,7 +33,8 @@ import {
   FormSelectOption,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
-import { Page, PasswordInput } from "~/components/core";
+import { PasswordInput } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { Connection, WifiNetwork, Wireless } from "~/types/network";
 import { useWifiNetworks } from "~/hooks/model/system/network";
 import { useConnectionMutation } from "~/hooks/model/config/network";

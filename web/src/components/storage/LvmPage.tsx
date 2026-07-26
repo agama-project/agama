@@ -34,7 +34,8 @@ import {
   Label,
   TextInput,
 } from "@patternfly/react-core";
-import { Page, SubtleContent } from "~/components/core";
+import { SubtleContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { Icon } from "~/components/layout";
 import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { deviceLabel } from "./utils";

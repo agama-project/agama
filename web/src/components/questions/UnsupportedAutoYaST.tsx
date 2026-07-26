@@ -30,7 +30,8 @@ import {
   ListVariant,
   Stack,
 } from "@patternfly/react-core";
-import { Page, Popup } from "~/components/core";
+import { Popup } from "~/components/core";
+import Page from "~/components/layout/Page";
 import QuestionActions from "~/components/questions/QuestionActions";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";

@@ -23,7 +23,8 @@
 import React from "react";
 import { Skeleton, Stack, Tab, Tabs, TabTitleText } from "@patternfly/react-core";
 import SmallWarning from "~/components/core/SmallWarning";
-import { Page, NestedContent } from "~/components/core";
+import { NestedContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import DevicesManager from "~/model/storage/devices-manager";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import ProposalActions from "~/components/storage/ProposalActions";

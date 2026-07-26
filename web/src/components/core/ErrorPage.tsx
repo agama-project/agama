@@ -26,7 +26,7 @@ import { isError, isString } from "radashi";
 import { isRouteErrorResponse, useRouteError, ErrorResponse } from "react-router";
 import { Content, Skeleton, Stack } from "@patternfly/react-core";
 import NestedContent from "~/components/core/NestedContent";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
 import { _ } from "~/i18n";

@@ -35,7 +35,8 @@ import {
   Divider,
   Title,
 } from "@patternfly/react-core";
-import { IssuesAlert, Link, NestedContent, Page } from "~/components/core";
+import { IssuesAlert, Link, NestedContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import RegistrationExtension from "~/components/product/RegistrationExtension";

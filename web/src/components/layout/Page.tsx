@@ -420,7 +420,7 @@ const Page = (props: PageProps): React.ReactNode => {
   return <StandardLayout {...standardProps} />;
 };
 
-Page.displayName = "agama/core/Page";
+Page.displayName = "agama/layout/Page";
 Page.Content = Content;
 Page.Back = Back;
 Page.Cancel = Cancel;

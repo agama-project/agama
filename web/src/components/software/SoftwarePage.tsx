@@ -40,7 +40,7 @@ import Interpolate from "~/components/core/Interpolate";
 import IssuesAlert from "~/components/core/IssuesAlert";
 import Link from "~/components/core/Link";
 import NestedContent from "~/components/core/NestedContent";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";

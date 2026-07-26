@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Flex, Stack } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import RebootButton from "~/components/core/RebootButton";
 import SplitInfoLayout from "../layout/SplitInfoLayout";

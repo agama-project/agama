@@ -38,7 +38,8 @@ import {
 } from "@patternfly/react-core";
 import { generatePath } from "react-router";
 import Text from "~/components/core/Text";
-import { Link, NestedContent, Page } from "~/components/core";
+import { Link, NestedContent } from "~/components/core";
+import Page from "~/components/layout/Page";
 import InstallationOnlySwitch from "~/components/network/InstallationOnlySwitch";
 import { Connection, Device } from "~/types/network";
 import { connectionBindingMode, formatIp } from "~/utils/network";

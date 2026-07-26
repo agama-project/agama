@@ -27,7 +27,7 @@ import { Divider, EmptyState, EmptyStateBody, Grid, GridItem, Split } from "@pat
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
 import { CONFIG_QUERY_KEY } from "~/hooks/model/config";
 import Link from "~/components/core/Link";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import Text from "~/components/core/Text";
 import SubtleContent from "~/components/core/SubtleContent";
 import ZFCPDevicesTable from "~/components/storage/zfcp/ZFCPDevicesTable";

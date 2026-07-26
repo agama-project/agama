@@ -38,7 +38,8 @@ import {
   TabTitleText,
 } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { Page, Link, NestedContent } from "~/components/core/";
+import { Link, NestedContent } from "~/components/core/";
+import Page from "~/components/layout/Page";
 import Icon from "~/components/layout/Icon";
 import MenuButton from "~/components/core/MenuButton";
 import ConfigEditor from "./ConfigEditor";
