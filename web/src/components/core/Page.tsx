@@ -43,7 +43,7 @@ import {
   Title,
   TitleProps,
 } from "@patternfly/react-core";
-import { isEmpty, isObject } from "radashi";
+import { isEmpty } from "radashi";
 import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header, { HeaderProps } from "~/components/layout/Header";
@@ -59,15 +59,33 @@ import { _, TranslatedString } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
+ * Ways of naming a section, which are mutually exclusive.
+ *
+ * A visible title is always preferable, so an invisible label is never
+ * accepted next to it.
+ */
+type SectionNameProps =
+  | {
+      /** The section title, rendered as a heading and used as accessible name */
+      title: React.ReactNode;
+      "aria-label"?: never;
+    }
+  | {
+      title?: never;
+      /**
+       * Accessible name for a section with no visible title.
+       *
+       * Last resort: prefer a title, which names the section for everybody.
+       */
+      "aria-label"?: TranslatedString;
+    };
+
+/**
  * Props accepted by Page.Section
  */
-type SectionProps = {
-  /** The section title */
-  title?: React.ReactNode;
+type SectionProps = SectionNameProps & {
   /** Actions to display next to the title */
   titleActions?: React.ReactNode;
-  /** The value used for accessible label */
-  "aria-label"?: TranslatedString;
   /** Elements to be rendered in the section footer */
   actions?: React.ReactNode;
   /** A React node with a brief description of what the section is for */
@@ -93,25 +111,31 @@ type SubmitActionProps = {
 const defaultCardProps: CardProps = {
   isCompact: true,
   isFullHeight: true,
-  component: "section",
 };
 
 /**
- * Creates a page region on top of PF/Card component
+ * Groups related page content in a card, built on top of PF/Card.
  *
- * @example <caption>Simple usage</caption>
+ * A named section is a region: it shows up in the landmark list, letting
+ * screen reader users jump straight to it. An unnamed one is a plain visual
+ * grouping, so how the section is named decides what it becomes:
+ *
+ * - with a `title`: a region named after the visible heading.
+ * - with an `aria-label` and no title: a region named after that label.
+ * - with neither: no region, just a card.
+ *
+ * @example <caption>A plain grouping, no name needed</caption>
  *   <Page.Section>
  *     <EncryptionSummary />
  *   </Page.Section>
  *
- * @example <caption>Complex usage</caption>
+ * @example <caption>A region named "Encryption"</caption>
  *   <Page.Section
  *     title="Encryption"
  *     description="Whether device should be protected or not"
  *     actions={isEnabled ? <DisableAction /> : <EnableAction />}
  *   >
- *       <EncryptionSummary />
- *     )}
+ *     <EncryptionSummary />
  *   </Page.Section>
  */
 const Section = ({
@@ -129,16 +153,16 @@ const Section = ({
   const hasTitle = !isEmpty(title);
   const hasDescription = !isEmpty(description);
   const hasHeader = hasTitle || hasDescription;
-  const hasAriaLabel =
-    !isEmpty(ariaLabel) || (isObject(pfCardProps) && "aria-label" in pfCardProps);
-  const props = { ...defaultCardProps, "aria-label": ariaLabel };
+  const hasAriaLabel = !isEmpty(ariaLabel);
 
-  // FIXME: review and improve or drop
-  // if (!hasTitle && !hasAriaLabel) {
-  //   console.error("Page.Section must have either, a title or aria-label");
-  // }
-
-  if (hasTitle && !hasAriaLabel) props["aria-labelledby"] = titleId;
+  const props: CardProps = {
+    ...defaultCardProps,
+    // Only a named section becomes a region, so an unnamed one must not render
+    // a section element at all.
+    component: hasTitle || hasAriaLabel ? "section" : "div",
+    ...(hasTitle && { "aria-labelledby": titleId }),
+    ...(hasAriaLabel && { "aria-label": ariaLabel }),
+  };
 
   return (
     <Card {...props} {...pfCardProps}>

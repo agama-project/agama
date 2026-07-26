@@ -51,7 +51,7 @@ export default function NetworkPage() {
             {_("Manage available connections, connect to Wi-Fi, or add a new connection.")}
           </Text>
           <Page.Section
-            pfCardProps={{ isCompact: true, component: "div", isFullHeight: false }}
+            pfCardProps={{ isCompact: true, isFullHeight: false }}
             actions={
               <>
                 <Link to={NETWORK.connection.new} variant="plain">

@@ -179,12 +179,6 @@ describe("Page", () => {
   });
 
   describe("Page.Section", () => {
-    it.todo("re-activate or drop below test accordingly to decision taken with these attributes");
-    it.skip("outputs to console.error if both are missing, title and aria-label", () => {
-      plainRender(<Page.Section>Content</Page.Section>);
-      expect(console.error).toHaveBeenCalledWith(expect.stringContaining("must have either"));
-    });
-
     it("renders a region named after the aria-label", () => {
       plainRender(<Page.Section aria-label={_("A Page Section")}>The Content</Page.Section>);
       const section = screen.getByRole("region", { name: "A Page Section" });
@@ -202,32 +196,10 @@ describe("Page", () => {
       screen.getByRole("heading", { level: 3, name: "A Page Section" });
     });
 
-    it("adds the aria-labelledby attribute when title is given but aria-label is not", () => {
-      const { rerender } = plainRender(
-        <Page.Section title="A Page Section">The Content</Page.Section>,
-      );
-      const section = screen.getByRole("region");
-      expect(section).toHaveAttribute("aria-labelledby");
-
-      // aria-label is given through Page.Section props
-      rerender(
-        <Page.Section title="A Page Section" aria-label={_("An aria label")}>
-          The Content
-        </Page.Section>,
-      );
-      expect(section).not.toHaveAttribute("aria-labelledby");
-
-      // aria-label is given through pfCardProps
-      rerender(
-        <Page.Section title="A Page Section" pfCardProps={{ "aria-label": "An aria label" }}>
-          The Content
-        </Page.Section>,
-      );
-      expect(section).not.toHaveAttribute("aria-labelledby");
-
-      // None was given, title nor aria-label
-      rerender(<Page.Section>The Content</Page.Section>);
-      expect(section).not.toHaveAttribute("aria-labelledby");
+    it("renders no region when it has neither a title nor a label", () => {
+      plainRender(<Page.Section>The Content</Page.Section>);
+      screen.getByText("The Content");
+      expect(screen.queryByRole("region")).toBeNull();
     });
 
     it("renders given content props (title, description, actions, and children (content)", () => {
