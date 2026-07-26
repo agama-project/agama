@@ -27,6 +27,7 @@ import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Header, { HeaderProps } from "~/components/layout/Header";
 import Loading from "~/components/layout/Loading";
+import { MAIN_CONTENT_ID } from "~/components/core/SkipTo";
 import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
 import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
@@ -88,9 +89,9 @@ export default function StandardLayout({
       masthead={<Header {...headerProps} additionalContent={headerContent} />}
     >
       <Suspense fallback={<Loading />}>
-        {/* Where the header's "Skip to content" link lands, hence the id it
-            points at and a focusable container that is not a tab stop. */}
-        <PageGroup tabIndex={-1} id="main-content">
+        {/* Focusable, so that the "Skip to content" link moves the focus here,
+            but not a tab stop of its own. */}
+        <PageGroup tabIndex={-1} id={MAIN_CONTENT_ID}>
           {/* Own content when used as a page, the active route when used as a
               layout. */}
           {children || <Outlet />}

@@ -22,6 +22,7 @@
 
 import React from "react";
 import { Masthead, Page as PFPage, PageGroup } from "@patternfly/react-core";
+import { MAIN_CONTENT_ID } from "~/components/core/SkipTo";
 
 export type MinimalLayoutProps = React.PropsWithChildren;
 
@@ -35,10 +36,7 @@ export type MinimalLayoutProps = React.PropsWithChildren;
 export default function MinimalLayout({ children }: MinimalLayoutProps) {
   return (
     <PFPage isContentFilled masthead={<Masthead />}>
-      {/* Same content container as the standard layout, focusable and named
-          alike, so anything moving the focus to the main content keeps working
-          on these pages too. */}
-      <PageGroup tabIndex={-1} id="main-content">
+      <PageGroup tabIndex={-1} id={MAIN_CONTENT_ID}>
         {children}
       </PageGroup>
     </PFPage>
