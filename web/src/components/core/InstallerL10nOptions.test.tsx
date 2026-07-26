@@ -144,6 +144,12 @@ describe("InstallerL10nOptions", () => {
       expect(toggle).not.toHaveTextContent("us");
     });
 
+    it("renders a button that tells it opens a dialog", () => {
+      installerRender(<InstallerL10nOptions />);
+      const toggle = screen.getByRole("button", { name: "Language and Keyboard" });
+      expect(toggle).toHaveAttribute("aria-haspopup", "dialog");
+    });
+
     describe("the visual tooltip", () => {
       it("does not add a second source for the accessible name", () => {
         installerRender(<InstallerL10nOptions />);
@@ -286,6 +292,12 @@ describe("InstallerL10nOptions", () => {
       expect(toggle).not.toHaveTextContent("us");
     });
 
+    it("renders a button that tells it opens a dialog", () => {
+      installerRender(<InstallerL10nOptions variant="language" />);
+      const toggle = screen.getByRole("button", { name: "Language" });
+      expect(toggle).toHaveAttribute("aria-haspopup", "dialog");
+    });
+
     it("allows setting only language", async () => {
       const { user } = await renderAndOpen({ variant: "language" });
       const dialog = screen.getByRole("dialog", { name: "Change Language" });
@@ -372,6 +384,12 @@ describe("InstallerL10nOptions", () => {
       });
       expect(toggle).not.toHaveTextContent("Deutsch");
       expect(toggle).toHaveTextContent("us");
+    });
+
+    it("renders a button that tells it opens a dialog", () => {
+      installerRender(<InstallerL10nOptions variant="keyboard" />);
+      const toggle = screen.getByRole("button", { name: "Keyboard" });
+      expect(toggle).toHaveAttribute("aria-haspopup", "dialog");
     });
 
     it("allows setting only keyboard layout", async () => {

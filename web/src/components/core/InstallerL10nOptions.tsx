@@ -479,7 +479,7 @@ const LanguageOnlyToggle = ({ onClick, language, showValues }: ToggleProps) => {
   const label = _("Language");
   return (
     <VisualTooltip content={label}>
-      <Button onClick={onClick} aria-label={label} variant="plain">
+      <Button onClick={onClick} aria-label={label} aria-haspopup="dialog" variant="plain">
         <CenteredContent>
           <LanguageIcon />
           {showValues && language}
@@ -495,7 +495,7 @@ const KeyboardOnlyToggle = ({ onClick, keymap, showValues }: ToggleProps) => {
   const label = _("Keyboard");
   return (
     <VisualTooltip content={label}>
-      <Button onClick={onClick} aria-label={label} variant="plain">
+      <Button onClick={onClick} aria-label={label} aria-haspopup="dialog" variant="plain">
         <CenteredContent alignItems="alignItemsFlexEnd">
           <KeyboardIcon />
           {showValues && <code>{keymap}</code>}
@@ -515,7 +515,7 @@ const AllSettingsToggle = ({ onClick, language, keymap, showValues }: ToggleProp
   const label = _("Language and Keyboard");
   return (
     <VisualTooltip content={label}>
-      <Button onClick={onClick} aria-label={label} variant="plain">
+      <Button onClick={onClick} aria-label={label} aria-haspopup="dialog" variant="plain">
         <CenteredContent>
           <LanguageIcon />
           {showValues && language}
