@@ -21,7 +21,7 @@
  */
 
 import React, { Suspense, useId } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
@@ -53,7 +53,6 @@ import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
 import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
 import AppearanceSettings from "~/components/core/AppearanceSettings";
 import Questions from "~/components/questions/Questions";
-import { PRODUCT, ROOT } from "~/routes/paths";
 import { _, TranslatedString } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -333,25 +332,13 @@ const StandardLayout = ({
   showL10nValues = false,
   ...headerProps
 }: Omit<StandardPageProps, "variant">) => {
-  const location = useLocation();
-
-  // Changing the product or mode makes no sense on the product selection page
-  // itself nor during/after the installation.
-  const showChangeProductOption = ![
-    PRODUCT.changeProduct,
-    ROOT.installation,
-    ROOT.installationProgress,
-    ROOT.installationFinished,
-    ROOT.installationExit,
-  ].includes(location.pathname);
-
   const headerContent = (
     <>
       {additionalContent}
       {showProgressMonitor && <ProgressStatusMonitor />}
       <InstallerL10nOptions showValues={showL10nValues} />
       <AppearanceSettings />
-      <InstallerOptionsMenu hideLabel showChangeProductOption={showChangeProductOption} />
+      <InstallerOptionsMenu hideLabel />
     </>
   );
 
