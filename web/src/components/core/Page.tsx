@@ -200,11 +200,11 @@ const Section = ({
 };
 
 /**
- * Handy component for rendering a "Cancel" action
+ * Link that leaves the current page without applying anything.
  *
- * NOTE: by default it navigates to the top path, which can be changed
- * `navigateTo` prop BUT not for navigating back into the history. Use Page.Back
- * for the latest, which behaves differently.
+ * It is a link because it goes to a known route, the parent one by default:
+ * users can see where it leads, open it in a new tab, and bookmark it. Use
+ * Page.Back instead to return wherever the user came from.
  */
 const Cancel = ({ navigateTo = "..", children, ...props }: CancelProps) => {
   return (
@@ -215,15 +215,11 @@ const Cancel = ({ navigateTo = "..", children, ...props }: CancelProps) => {
 };
 
 /**
- * Handy component for rendering a "Back" action
+ * Button that returns to the previous entry in the history.
  *
- * NOTE: It does not behave like Page.Cancel, since does not support changing
- * the path to navigate to, and always goes one path back in the history (-1)
- *
- * NOTE: Not using Page.Cancel for practical reasons about useNavigate
- * overloading, which kind of forces to write an ugly code for supporting both
- * types, "To" and "number", without a TypeScript complain. To know more, see
- * https://github.com/remix-run/react-router/issues/10505#issuecomment-2237126223
+ * It is a button because the destination depends on how the user got here, so
+ * there is no address to show or share. Use Page.Cancel to go to a known route
+ * instead.
  */
 const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
   const navigate = useNavigate();
@@ -236,7 +232,9 @@ const Back = ({ children, ...props }: Omit<ButtonProps, "onClick">) => {
 };
 
 /**
- * Handy component to submit a form matching the id given in the `form` prop
+ * Button that submits the form given in the `form` prop.
+ *
+ * Handy for placing the submit button outside of the form it belongs to.
  */
 const Submit = ({ children, ...props }: SubmitActionProps) => {
   return (
@@ -348,7 +346,11 @@ const StandardLayout = ({
       masthead={<Header {...headerProps} additionalContent={headerContent} />}
     >
       <Suspense fallback={<Loading />}>
+        {/* The container is the target of the "Skip to content" link, hence it
+            must be focusable. */}
         <PageGroup tabIndex={-1} id="main-content">
+          {/* Own content when used as a page, the active route when used as a
+              layout. */}
           {children || <Outlet />}
           {progress && <ProgressBackdrop {...progress} />}
         </PageGroup>
@@ -361,48 +363,48 @@ const StandardLayout = ({
 /**
  * Root container for Agama pages.
  *
- * Built on top of PatternFly's Page/PageGroup components, it provides a
- * consistent layout structure with optional header, breadcrumbs, and progress
- * tracking capabilities.
+ * It builds the shell every page shares: the header with its title or
+ * breadcrumbs and its tools, the main content area, the questions and the
+ * optional progress reporting.
+ *
+ * It serves two purposes, and works the same either way:
+ *
+ * - as the container of a single page, which renders its own content.
+ * - as the layout of a group of routes, which renders whatever route is
+ *   active when it gets no content of its own.
  *
  * @see {@link https://www.patternfly.org/components/page | PatternFly Page}
  *
- * @example
- * Standard page with header and breadcrumbs
+ * @example <caption>A page with a title and its own content</caption>
  * ```tsx
- * <Page title="Software" breadcrumbs={<Breadcrumbs />}>
- *   <Page.Section>
- *     <SoftwareContent />
- *   </Page.Section>
+ * <Page title="Software">
+ *   <Page.Content>
+ *     <Page.Section title="Patterns">
+ *       <PatternSelector />
+ *     </Page.Section>
+ *   </Page.Content>
  * </Page>
  * ```
  *
- * @example
- * Page with progress tracking
+ * @example <caption>A page reporting the progress of its own scope</caption>
  * ```tsx
  * <Page
- *   title="Software"
+ *   breadcrumbs={[{ label: "Software" }]}
  *   progress={{
  *     scope: "software",
  *     awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY]
  *   }}
  * >
- *   <Page.Section>
- *     <PatternSelector />
- *   </Page.Section>
+ *   <SoftwareContent />
  * </Page>
  * ```
  *
- * @example
- * Page with installer options in header
+ * @example <caption>The layout of a group of routes</caption>
  * ```tsx
- * <Page title="Overview" showInstallerOptions>
- *   <OverviewContent />
- * </Page>
+ * { element: <Page title="Storage" />, children: storageRoutes }
  * ```
  *
- * @example
- * Minimal layout without header (e.g., for login)
+ * @example <caption>A page with no header, for login and error pages</caption>
  * ```tsx
  * <Page variant="minimal">
  *   <LoginForm />
