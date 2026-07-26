@@ -34,9 +34,9 @@
 import React, { useReducer } from "react";
 import { useHref, useLocation } from "react-router";
 import { Button, ButtonProps, Flex, FlexProps, Form, FormGroup } from "@patternfly/react-core";
-import { Popup } from "~/components/core";
+import Popup from "~/components/core/Popup";
 import VisualTooltip from "~/components/core/VisualTooltip";
-import { Icon } from "~/components/layout";
+import Icon from "~/components/layout/Icon";
 import { useAppForm } from "~/hooks/form";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
