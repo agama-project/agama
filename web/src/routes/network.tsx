@@ -27,14 +27,9 @@ import WifiConnectionForm from "~/components/network/WifiConnectionForm";
 import ConnectionPage from "~/components/network/ConnectionPage";
 import { Route } from "~/types/routes";
 import { NETWORK as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
 
 const routes = (): Route => ({
   path: PATHS.root,
-  handle: {
-    name: N_("Network"),
-    icon: "settings_ethernet",
-  },
   children: [
     { index: true, element: <NetworkPage /> },
     {
