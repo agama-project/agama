@@ -33,8 +33,6 @@ import {
   EmptyStateFooter,
   List,
   ListItem,
-  Flex,
-  FlexItem,
   Tab,
   Tabs,
   TabTitleText,
@@ -208,31 +206,28 @@ function ModelSection(): React.ReactNode {
       isFullHeight
       title={_("Settings")}
       titleActions={
-        <Flex>
-          <FlexItem grow={{ default: "grow" }} />
-          <MenuButton
-            menuProps={{
-              popperProps: {
-                position: "end",
-              },
-            }}
-            toggleProps={{
-              variant: "plain",
-              className: spacingStyles.p_0,
-            }}
-            items={[
-              <MenuButton.Item
-                key="reset-link"
-                onClick={onReset}
-                description={_("Start from scratch with the default configuration")}
-              >
-                {_("Reset to defaults")}
-              </MenuButton.Item>,
-            ]}
-          >
-            <Icon name="more_horiz" className="agm-three-dots-icon" />
-          </MenuButton>
-        </Flex>
+        <MenuButton
+          menuProps={{
+            popperProps: {
+              position: "end",
+            },
+          }}
+          toggleProps={{
+            variant: "plain",
+            className: spacingStyles.p_0,
+          }}
+          items={[
+            <MenuButton.Item
+              key="reset-link"
+              onClick={onReset}
+              description={_("Start from scratch with the default configuration")}
+            >
+              {_("Reset to defaults")}
+            </MenuButton.Item>,
+          ]}
+        >
+          <Icon name="more_horiz" className="agm-three-dots-icon" />
+        </MenuButton>
       }
       description={_(
         "Changes in these settings will immediately update the 'Result' section below.",
