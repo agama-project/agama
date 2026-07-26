@@ -91,11 +91,14 @@ const submitHandler = (form: L10nOptionsForm) => (event: React.FormEvent<HTMLFor
 
 /**
  * Renders a dropdown for language selection.
+ *
+ * Each option states its own language, so it is read aloud with the right
+ * pronunciation instead of the one currently in use.
  */
 const LanguageField = ({ form }: FormProps) => {
   const options = Object.keys(supportedLanguages)
     .sort()
-    .map((id) => ({ value: id, label: supportedLanguages[id] }));
+    .map((id) => ({ value: id, label: <span lang={id}>{supportedLanguages[id]}</span> }));
 
   return (
     <form.AppField name="language">

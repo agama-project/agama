@@ -234,6 +234,16 @@ describe("InstallerL10nOptions", () => {
       screen.getByRole("link", { name: "language and region" });
     });
 
+    it("states the language of each option", async () => {
+      const { user } = await renderAndOpen();
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+
+      await user.click(within(dialog).getByRole("button", { name: "Language" }));
+
+      expect(await screen.findByText("日本語")).toHaveAttribute("lang", "ja-JP");
+      expect(screen.getByText("Català")).toHaveAttribute("lang", "ca-ES");
+    });
+
     it("starts from the settings in use when reopened after a dismissed change", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
