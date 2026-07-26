@@ -74,7 +74,7 @@ const NothingSelected = ({
   buttonText: TranslatedString;
 }) => (
   // TRANSLATORS: empty state title for a software section with nothing selected
-  <EmptyState headingLevel="h4" titleText={_("None selected")} variant="sm">
+  <EmptyState headingLevel="h3" titleText={_("None selected")} variant="sm">
     <EmptyStateBody>{body}</EmptyStateBody>
     <EmptyStateFooter>
       <EmptyStateActions>
@@ -90,7 +90,7 @@ const NothingSelected = ({
  * Informational empty state shown when patterns are not available.
  */
 const NoAvailable = ({ title, body }: { title: TranslatedString; body: TranslatedString }) => (
-  <EmptyState headingLevel="h4" titleText={title} variant="sm">
+  <EmptyState headingLevel="h3" titleText={title} variant="sm">
     <EmptyStateBody>{body}</EmptyStateBody>
   </EmptyState>
 );

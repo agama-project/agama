@@ -191,9 +191,9 @@ describe("Page", () => {
       within(section).getByText("The Content");
     });
 
-    it("renders the title as a third level heading by default", () => {
+    it("renders the title as a second level heading by default", () => {
       plainRender(<Page.Section title="A Page Section">The Content</Page.Section>);
-      screen.getByRole("heading", { level: 3, name: "A Page Section" });
+      screen.getByRole("heading", { level: 2, name: "A Page Section" });
     });
 
     it("renders no region when it has neither a title nor a label", () => {

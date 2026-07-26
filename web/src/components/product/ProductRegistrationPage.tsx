@@ -203,7 +203,7 @@ const Extensions = () => {
   return (
     <>
       <Divider />
-      <Title headingLevel="h3">{_("Extensions")}</Title>
+      <Title headingLevel="h2">{_("Extensions")}</Title>
       <NestedContent>
         <Flex gap={{ default: "gap2xl" }} direction={{ default: "column" }}>
           {extensionComponents}

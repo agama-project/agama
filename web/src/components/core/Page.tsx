@@ -90,7 +90,13 @@ type SectionProps = SectionNameProps & {
   actions?: React.ReactNode;
   /** A React node with a brief description of what the section is for */
   description?: React.ReactNode;
-  /** The heading level used for the section title */
+  /**
+   * The heading level used for the section title.
+   *
+   * Defaults to the level below the page title, which suits a section placed
+   * directly on a page. Pass a deeper level for a section nested under another
+   * heading, so the page outline skips no level.
+   */
   headingLevel?: TitleProps["headingLevel"];
   /** Whether the section should have a divider between header and body */
   hasHeaderDivider?: boolean;
@@ -142,7 +148,7 @@ const Section = ({
   "aria-label": ariaLabel,
   description,
   actions,
-  headingLevel = "h3",
+  headingLevel = "h2",
   hasHeaderDivider = false,
   isFullHeight = false,
   children,

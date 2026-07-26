@@ -76,6 +76,7 @@ function InvalidConfigEmptyState({ issues }: InvalidConfigEmptyStateProps): Reac
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("Invalid storage settings")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -113,6 +114,7 @@ function UnknownConfigEmptyState(): React.ReactNode {
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("Unable to modify the settings")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -146,6 +148,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("No devices found")}
       icon={() => <Icon name="error" />}
       status="warning"

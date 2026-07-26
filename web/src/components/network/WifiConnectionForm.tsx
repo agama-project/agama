@@ -133,6 +133,7 @@ function WifiConnectionFormContent() {
   if (networks.length === 0)
     return (
       <EmptyState
+        headingLevel="h2"
         titleText={_("No Wi-Fi networks were found")}
         icon={() => <Icon name="error" />}
       />

@@ -44,7 +44,7 @@ const ConnectionNotFound = ({ id }) => {
 
   return (
     <EmptyState
-      headingLevel="h3"
+      headingLevel="h2"
       titleText={_("Connection not found or lost")}
       icon={() => <Icon name="error" />}
     >

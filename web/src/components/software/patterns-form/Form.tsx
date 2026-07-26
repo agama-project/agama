@@ -431,7 +431,7 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                             spaceItems={{ default: "spaceItemsSm" }}
                             alignItems={{ default: "alignItemsBaseline" }}
                           >
-                            <Title headingLevel="h3" id={headingId}>
+                            <Title headingLevel="h2" id={headingId}>
                               {groupName}
                             </Title>
                             <CategoryCounter
