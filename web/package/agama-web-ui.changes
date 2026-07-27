@@ -2,7 +2,10 @@
 Mon Jul 27 12:41:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Show a proper empty state, pointing to the network settings,
-  when the product to install is not found
+  when the product to install is not found, and offer to read the
+  software information again once the connection is in place
+  (gh#agama-project/agama#3768).
+- Offer the same actions when the repositories cannot be read
   (gh#agama-project/agama#3768).
 
 -------------------------------------------------------------------
