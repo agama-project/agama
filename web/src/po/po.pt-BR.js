@@ -187,6 +187,9 @@ export default {
   "Allow growing": [
     "Permitir expansão"
   ],
+  "Allow shrinking": [
+    "Permitir redução"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "Junto com a definição do primeiro usuário, é possível configurar métodos de autenticação para o usuário root."
   ],
@@ -254,6 +257,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "A varredura automática de LUN está [habilitada]. A ativação de um controlador que está sendo executado no modo NPIV configurará automaticamente todos os seus LUNs."
+  ],
+  "Available file systems": [
+    "Sistemas de arquivos disponíveis"
   ],
   "Available products": [
     "Produtos disponíveis"
@@ -557,6 +563,9 @@ export default {
   ],
   "DNS": [
     "DNS"
+  ],
+  "DNS data list": [
+    "Lista de dados de DNS"
   ],
   "Deactivate": [
     "Desativar"

@@ -183,6 +183,9 @@ export default {
   "Allow growing": [
     "允許增長"
   ],
+  "Allow shrinking": [
+    "允許縮小"
+  ],
   "Alongside defining the first user, authentication methods for the root user can be configured.": [
     "除了定義首個使用者外，還可設定 root 使用者的驗證方法。"
   ],
@@ -248,6 +251,9 @@ export default {
   ],
   "Automatic LUN scan is [enabled]. Activating a controller which is       running in NPIV mode will automatically configures all its LUNs.": [
     "自動掃描 LUN 功能 [已啟用]。如果啟用在 NPIV 模式下       執行的控制器，將自動設定其所有 LUN。"
+  ],
+  "Available file systems": [
+    "可用檔案系統"
   ],
   "Available products": [
     "可用產品"
@@ -552,6 +558,9 @@ export default {
   "DNS": [
     "DNS"
   ],
+  "DNS data list": [
+    "DNS 資料清單"
+  ],
   "Deactivate": [
     "停用"
   ],
@@ -659,6 +668,9 @@ export default {
   ],
   "Do not format %s and keep the data": [
     "不格式化 %s 並保留資料"
+  ],
+  "Do not modify": [
+    "不修改"
   ],
   "Do not use": [
     "不使用"
