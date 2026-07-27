@@ -234,6 +234,9 @@ export default {
   "Actions": [
     "動作"
   ],
+  "Actions for %s": [
+    "可對 %s 執行的動作"
+  ],
   "Actions for %s at portal %s": [
     "可對 %s (入口 %s) 執行的動作"
   ],
@@ -338,6 +341,9 @@ export default {
   ],
   "Allow growing": [
     "允許增長"
+  ],
+  "Allow shrinking": [
+    "允許縮小"
   ],
   "Already using all available devices": [
     "已在使用所有可用裝置"
@@ -1005,6 +1011,9 @@ export default {
   "Do not format %s and keep data": [
     "不格式化 %s 並保留資料"
   ],
+  "Do not modify": [
+    "不修改"
+  ],
   "Do not register": [
     "不註冊"
   ],
@@ -1138,7 +1147,7 @@ export default {
     "按 Enter 或 Tab 鍵可新增項目，按 Backspace 或 Delete 鍵可移除項目，按方向鍵可導覽項目，按 Escape 鍵可結束"
   ],
   "Ethernet": [
-    ""
+    "乙太網路"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1672,7 +1681,7 @@ export default {
     "登入表單"
   ],
   "Loopback": [
-    ""
+    "迴路"
   ],
   "MAC address": [
     "MAC 位址"
@@ -3304,7 +3313,7 @@ export default {
     "準備就緒後，請按一下頁面底部的[安裝]按鈕。"
   ],
   "Wi-Fi": [
-    ""
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Wi-Fi 連接表單"

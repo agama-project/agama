@@ -264,6 +264,9 @@ export default {
   "Actions": [
     "Дії"
   ],
+  "Actions for %s": [
+    "Дії для %s"
+  ],
   "Actions for %s at portal %s": [
     "Дії для %s на порталі %s"
   ],

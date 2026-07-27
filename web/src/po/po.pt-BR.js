@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Ações"
   ],
+  "Actions for %s": [
+    "Ações para %s"
+  ],
   "Actions for %s at portal %s": [
     "Ações para %s no portal %s"
   ],
@@ -354,6 +357,9 @@ export default {
   ],
   "Allow growing": [
     "Permitir expansão"
+  ],
+  "Allow shrinking": [
+    "Permitir redução"
   ],
   "Already using all available devices": [
     "Todos os dispositivos disponíveis já estão em uso"
@@ -1161,6 +1167,9 @@ export default {
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter ou Tab para adicionar, Backspace ou Delete para remover, teclas de setas para navegar pelas entradas, Escape para sair"
   ],
+  "Ethernet": [
+    "Ethernet"
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -1697,7 +1706,7 @@ export default {
     "Formulário de login"
   ],
   "Loopback": [
-    ""
+    "Loopback"
   ],
   "MAC address": [
     "Endereço MAC"
