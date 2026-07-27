@@ -430,6 +430,7 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
         { "$ref": "#/$defs/searchConditionFilesystem" },
+        { "$ref": "#/$defs/searchConditionPartitions" },
         { "$ref": "#/$defs/driveSearchConditionAnd" },
         { "$ref": "#/$defs/driveSearchConditionOr" },
         { "$ref": "#/$defs/driveSearchConditionNot" }
@@ -522,6 +523,7 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
         { "$ref": "#/$defs/searchConditionFilesystem" },
+        { "$ref": "#/$defs/searchConditionPartitions" },
         { "$ref": "#/$defs/mdRaidSearchConditionAnd" },
         { "$ref": "#/$defs/mdRaidSearchConditionOr" },
         { "$ref": "#/$defs/mdRaidSearchConditionNot" }
@@ -985,6 +987,97 @@
         "not": {
           "description": "Matches when the nested condition does not match.",
           "$ref": "#/$defs/filesystemCondition"
+        }
+      }
+    },
+    "searchConditionPartitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["partitions"],
+      "properties": {
+        "partitions": {
+          "anyOf": [
+            { "$ref": "#/$defs/searchPartitionsPresence" },
+            { "$ref": "#/$defs/partitionsQuantifier" }
+          ]
+        }
+      }
+    },
+    "searchPartitionsPresence": {
+      "description": "Shortcut to match by partitions presence: \"any\" matches devices with at least one partition, \"none\" matches devices with no partitions.",
+      "enum": ["any", "none"]
+    },
+    "partitionsQuantifier": {
+      "description": "Matches devices whose partitions satisfy the quantifier.",
+      "anyOf": [
+        { "$ref": "#/$defs/partitionsQuantifierAny" },
+        { "$ref": "#/$defs/partitionsQuantifierNone" },
+        { "$ref": "#/$defs/partitionsQuantifierAll" },
+        { "$ref": "#/$defs/partitionsQuantifierCount" }
+      ]
+    },
+    "partitionsQuantifierAny": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["any"],
+      "properties": {
+        "any": {
+          "description": "Matches when at least one partition satisfies the condition.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
+    },
+    "partitionsQuantifierNone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["none"],
+      "properties": {
+        "none": {
+          "description": "Matches when no partition satisfies the condition.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
+    },
+    "partitionsQuantifierAll": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["all"],
+      "properties": {
+        "all": {
+          "description": "Matches when there is at least one partition and all partitions satisfy the condition.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        }
+      }
+    },
+    "partitionsQuantifierCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count"],
+      "properties": {
+        "count": { "$ref": "#/$defs/partitionsCount" }
+      }
+    },
+    "partitionsCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["min"] },
+        { "required": ["max"] }
+      ],
+      "properties": {
+        "condition": {
+          "description": "Optional condition; omit to count all partitions.",
+          "$ref": "#/$defs/partitionSearchCondition"
+        },
+        "min": {
+          "description": "Minimum number of matching partitions (must be >= 1).",
+          "type": "integer",
+          "minimum": 1
+        },
+        "max": {
+          "description": "Maximum number of matching partitions (must be >= 1).",
+          "type": "integer",
+          "minimum": 1
         }
       }
     },
