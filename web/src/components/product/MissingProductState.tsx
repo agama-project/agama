@@ -21,9 +21,8 @@
  */
 
 import React from "react";
-import Link from "~/components/core/Link";
 import UnavailableState from "~/components/core/UnavailableState";
-import { NETWORK } from "~/routes/paths";
+import SoftwareIssueActions from "~/components/software/SoftwareIssueActions";
 import { _ } from "~/i18n";
 
 export type MissingProductStateProps = {
@@ -37,7 +36,8 @@ export type MissingProductStateProps = {
  * Empty state shown when the product cannot be found in the repositories.
  *
  * Besides the given explanation, it points to the network settings since a
- * faulty connection is the most likely cause.
+ * faulty connection is the most likely cause, and offers a way to look for the
+ * product again once that connection works.
  *
  * @example
  * <MissingProductState
@@ -55,12 +55,7 @@ export default function MissingProductState({ title, description }: MissingProdu
         // TRANSLATORS: additional hint when the product is missing
         _("This might be due to network connectivity.")
       }
-      actions={
-        <Link to={NETWORK.root} variant="link" isInline>
-          {/* TRANSLATORS: link to go to network settings */}
-          {_("Go to network settings")}
-        </Link>
-      }
+      actions={<SoftwareIssueActions />}
     />
   );
 }
