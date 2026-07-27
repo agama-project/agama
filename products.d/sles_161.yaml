@@ -405,3 +405,17 @@ modes:
             required: false
             filesystems:
               - btrfs
+        - filesystem: xfs
+          size:
+            auto: false
+            min: 512 MiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+              - vfat
+              - swap
