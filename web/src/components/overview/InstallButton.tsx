@@ -109,7 +109,6 @@ export default function InstallButton({ product }: InstallButtonProps) {
   const isReady = useDeferredValue(!loading);
   const hasIssues = !isEmpty(issues);
   const hasDestructiveActions = actions.length > 0;
-  const missingProduct = issues.some((i) => i.class === "missing_product");
 
   const onConfirm = () => {
     startInstallation();
@@ -146,7 +145,7 @@ export default function InstallButton({ product }: InstallButtonProps) {
         </FlexItem>
       )}
 
-      {hasIssues && !missingProduct && isReady && (
+      {hasIssues && isReady && (
         <FlexItem>
           <HelperText>
             <HelperTextItem variant="warning">

@@ -22,19 +22,11 @@
 
 import React from "react";
 import { Navigate } from "react-router";
-import {
-  Content,
-  Divider,
-  EmptyState,
-  EmptyStateBody,
-  Flex,
-  Grid,
-  GridItem,
-  Stack,
-} from "@patternfly/react-core";
+import { Content, Divider, Flex, Grid, GridItem, Stack } from "@patternfly/react-core";
 import Interpolate from "~/components/core/Interpolate";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
+import MissingProductState from "~/components/product/MissingProductState";
 import InstallButton from "~/components/overview/InstallButton";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
@@ -48,20 +40,62 @@ import type { Product } from "~/model/system";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
 /**
- * Renders a PatternFly `EmptyState` block used when no product was found in the
- * repositories.
+ * Introduction to the page, telling what is expected from the user and where
+ * to find the button that starts the installation.
  */
-const NoProductFound = () => {
-  return (
-    <EmptyState headingLevel="h2" titleText={_("Product not found")} variant="sm">
-      <EmptyStateBody>
-        {_(
-          "The product was not found in the repositories so it is not possible to proceed with the installation.",
-        )}
-      </EmptyStateBody>
-    </EmptyState>
-  );
-};
+const PageIntro = () => (
+  <>
+    <div>
+      <Content isEditorial>
+        {
+          // TRANSLATORS: Introductory text shown on the overview page
+          _("Take a moment to review the installation settings below and adjust them as needed.")
+        }
+      </Content>
+      <Content className={textStyles.textColorSubtle}>
+        <Interpolate
+          sentence={_(
+            // TRANSLATORS: This hint helps users locate the install button. Text inside
+            // square brackets [] appears in bold. Keep brackets for proper formatting.
+            "When ready, click on the [install] button at the end of the page.",
+          )}
+        >
+          {(text) => <Text isBold>{text}</Text>}
+        </Interpolate>
+      </Content>
+    </div>
+    <Divider />
+  </>
+);
+
+/**
+ * Settings to review before installing, together with the button that starts
+ * the installation.
+ */
+const InstallationReview = ({ product }: { product: Product }) => (
+  <Stack hasGutter>
+    <div style={{ flex: 1 }}>
+      <InstallationSettings />
+    </div>
+    <InstallButton product={product} />
+  </Stack>
+);
+
+/**
+ * Empty state shown when the product to install was not found.
+ */
+const ProductNotFound = () => (
+  <MissingProductState
+    // TRANSLATORS: empty state title when the product to install was not found
+    title={_("Product not found")}
+    description={
+      // TRANSLATORS: shown when the product to install was not found
+      _(
+        "The product was not found in the repositories so it is not possible to proceed with the installation.",
+      )
+    }
+  />
+);
 
 const OverviewPageContent = ({ product }: { product: Product }) => {
   const issues = useIssues();
@@ -76,36 +110,11 @@ const OverviewPageContent = ({ product }: { product: Product }) => {
     >
       <Page.Content>
         <Flex gap={{ default: "gapMd" }} direction={{ default: "column" }}>
-          <div>
-            <Content isEditorial>
-              {
-                // TRANSLATORS: Introductory text shown on the overview page
-                _(
-                  "Take a moment to review the installation settings below and adjust them as needed.",
-                )
-              }
-            </Content>
-            <Content className={textStyles.textColorSubtle}>
-              <Interpolate
-                sentence={_(
-                  // TRANSLATORS: This hint helps users locate the install button. Text inside
-                  // square brackets [] appears in bold. Keep brackets for proper formatting.
-                  "When ready, click on the [install] button at the end of the page.",
-                )}
-              >
-                {(text) => <Text isBold>{text}</Text>}
-              </Interpolate>
-            </Content>
-          </div>
-          <Divider />
+          {/* Nothing to review nor to install, but the system is still worth showing. */}
+          {!missingProduct && <PageIntro />}
           <Grid hasGutter>
             <GridItem sm={12} md={8}>
-              <Stack hasGutter>
-                <div style={{ flex: 1 }}>
-                  {missingProduct ? <NoProductFound /> : <InstallationSettings />}
-                </div>
-                <InstallButton product={product} />
-              </Stack>
+              {missingProduct ? <ProductNotFound /> : <InstallationReview product={product} />}
             </GridItem>
             <GridItem sm={12} md={4}>
               <SystemInformationSection />
