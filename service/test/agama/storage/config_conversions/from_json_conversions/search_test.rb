@@ -295,6 +295,122 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
           end
         end
 
+        context "and a 'partitions' presence shortcut 'any' is specified" do
+          let(:condition) { { partitions: "any" } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Partitions)
+            expect(config.condition.presence).to eq(:any)
+            expect(config.condition.condition).to be_nil
+          end
+        end
+
+        context "and a 'partitions' presence shortcut 'none' is specified" do
+          let(:condition) { { partitions: "none" } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Partitions)
+            expect(config.condition.presence).to eq(:none)
+            expect(config.condition.condition).to be_nil
+          end
+        end
+
+        context "and a 'partitions' 'any' quantifier is specified" do
+          let(:condition) { { partitions: { any: { size: { greater: "10 GiB" } } } } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Partitions)
+            expect(config.condition.presence).to be_nil
+
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsAny)
+            expect(cond.condition).to be_a(Agama::Storage::Configs::SearchConditions::Size)
+            expect(cond.condition.value).to eq(10.GiB)
+            expect(cond.condition.operator).to eq(:greater)
+          end
+        end
+
+        context "and a 'partitions' 'none' quantifier is specified" do
+          let(:condition) { { partitions: { none: { filesystem: "any" } } } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsNone)
+
+            inner = cond.condition
+            expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Filesystem)
+            expect(inner.presence).to eq(:any)
+          end
+        end
+
+        context "and a 'partitions' 'all' quantifier is specified" do
+          let(:condition) { { partitions: { all: { name: "/dev/vda1" } } } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsAll)
+
+            inner = cond.condition
+            expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Name)
+            expect(inner.name).to eq("/dev/vda1")
+          end
+        end
+
+        context "and a 'partitions' 'count' with only min is specified" do
+          let(:condition) { { partitions: { count: { min: 2 } } } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsCount)
+            expect(cond.min).to eq(2)
+            expect(cond.max).to be_nil
+            expect(cond.condition).to be_nil
+          end
+        end
+
+        context "and a 'partitions' 'count' with only max is specified" do
+          let(:condition) { { partitions: { count: { max: 3 } } } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsCount)
+            expect(cond.max).to eq(3)
+            expect(cond.min).to be_nil
+            expect(cond.condition).to be_nil
+          end
+        end
+
+        context "and a 'partitions' 'count' with condition, min and max is specified" do
+          let(:condition) do
+            {
+              partitions: {
+                count: { condition: { size: { greater: "10 GiB" } }, min: 2, max: 5 }
+              }
+            }
+          end
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsCount)
+
+            expect(cond.condition).to be_a(Agama::Storage::Configs::SearchConditions::Size)
+            expect(cond.condition.value).to eq(10.GiB)
+            expect(cond.min).to eq(2)
+            expect(cond.max).to eq(5)
+          end
+        end
+
         context "and an 'and' operator is specified" do
           let(:condition) do
             { and: [{ name: "/dev/vda" }, { size: { less: "1 TiB" } }] }

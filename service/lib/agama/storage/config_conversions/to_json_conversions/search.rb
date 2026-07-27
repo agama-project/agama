@@ -70,6 +70,14 @@ module Agama
           # @param node [Configs::SearchConditions::*, nil]
           # @return [Hash, nil]
           def convert_leaf_node(node)
+            convert_basic_leaf(node) ||
+              convert_filesystem_leaf(node) ||
+              convert_partitions_leaf(node)
+          end
+
+          # @param node [Configs::SearchConditions::*, nil]
+          # @return [Hash, nil]
+          def convert_basic_leaf(node)
             case node
             when Configs::SearchConditions::Name
               { name: node.name }
@@ -77,6 +85,13 @@ module Agama
               { number: node.number }
             when Configs::SearchConditions::Size
               { size: { node.operator => node.value.to_i } }
+            end
+          end
+
+          # @param node [Configs::SearchConditions::*, nil]
+          # @return [Hash, nil]
+          def convert_filesystem_leaf(node)
+            case node
             when Configs::SearchConditions::Filesystem
               { filesystem: convert_filesystem_value(node) }
             when Configs::SearchConditions::FilesystemType
@@ -84,6 +99,14 @@ module Agama
             when Configs::SearchConditions::FilesystemLabel
               { label: node.label }
             end
+          end
+
+          # @param node [Configs::SearchConditions::*, nil]
+          # @return [Hash, nil]
+          def convert_partitions_leaf(node)
+            return unless node.is_a?(Configs::SearchConditions::Partitions)
+
+            { partitions: convert_partitions_value(node) }
           end
 
           # Serializes an operator condition node.
@@ -110,6 +133,46 @@ module Agama
             return convert_condition_node(node.condition) if node.condition
 
             node.presence&.to_s
+          end
+
+          # Serializes the value of a Partitions condition: the presence shortcut
+          # ("any"/"none") or the nested quantifier object.
+          #
+          # @param node [Configs::SearchConditions::Partitions]
+          # @return [String, Hash, nil]
+          def convert_partitions_value(node)
+            return node.presence.to_s if node.presence
+
+            convert_partitions_condition(node.condition) if node.condition
+          end
+
+          # Serializes a partitions quantifier node.
+          #
+          # @param cond [PartitionsAny, PartitionsNone, PartitionsAll, PartitionsCount]
+          # @return [Hash, nil]
+          def convert_partitions_condition(cond)
+            case cond
+            when Configs::SearchConditions::PartitionsAny
+              { any: convert_condition_node(cond.condition) }
+            when Configs::SearchConditions::PartitionsNone
+              { none: convert_condition_node(cond.condition) }
+            when Configs::SearchConditions::PartitionsAll
+              { all: convert_condition_node(cond.condition) }
+            when Configs::SearchConditions::PartitionsCount
+              { count: convert_partitions_count(cond) }
+            end
+          end
+
+          # Serializes a PartitionsCount node.
+          #
+          # @param count [Configs::SearchConditions::PartitionsCount]
+          # @return [Hash]
+          def convert_partitions_count(count)
+            {}.tap do |json|
+              json[:condition] = convert_condition_node(count.condition) if count.condition
+              json[:min]       = count.min if count.min
+              json[:max]       = count.max if count.max
+            end
           end
 
           # Serializes a collection of condition nodes.
