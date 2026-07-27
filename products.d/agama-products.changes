@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 24 07:03:30 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added generic storage volumes to the immutables modes, as
+  required by the web UI to work properly (bsc#1272461).
+
+-------------------------------------------------------------------
 Mon Jul 20 11:12:35 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 23

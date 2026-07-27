@@ -31,6 +31,7 @@ require "agama/http/clients"
 module Agama
   # :nodoc:
   module Commands
+    class ProfileNotFound < StandardError; end
     class CouldNotFetchProfile < StandardError; end
     class CouldNotWriteAgamaConfig < StandardError; end
 
@@ -51,18 +52,6 @@ module Agama
       # Run the command fetching, checking, converting and writing the Agama configuration.
       def run
         profile = fetch_profile
-
-        if profile.nil?
-          if ENV["YAST_SKIP_PROFILE_FETCH_ERROR"] == "1"
-            # Silently ignore profile fetch errors whenever underlying yast is asked to do so
-            # We need to create fake agama profile to avoid failures further in processing chain
-            profile = {}
-          else
-            logger.info("Cannot fetch profile from provided location: #{url}")
-            return false
-          end
-        end
-
         unsupported = check_profile(profile)
         return false unless report_unsupported(unsupported)
 
@@ -74,9 +63,16 @@ module Agama
       attr_reader :url, :directory, :logger
 
       # Fetch the AutoYaST profile from the given URL.
+      #
+      # @return [ProfileHash] an evaluated AutoYaST profile
+      # @raise CouldNotFetchProfile if there was an error processing the profile.
+      # @raise ProfileNotFound if the profile was not found
       def fetch_profile
-        Agama::AutoYaST::ProfileFetcher.new(url).fetch
-      rescue RuntimeError
+        profile = Agama::AutoYaST::ProfileFetcher.new(url).fetch
+        raise ProfileNotFound if profile.nil?
+
+        profile
+      rescue RuntimeError # Catch any underlying error when processing the profile
         raise CouldNotFetchProfile
       end
 
