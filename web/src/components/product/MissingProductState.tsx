@@ -47,6 +47,7 @@ export type MissingProductStateProps = {
 export default function MissingProductState({ title, description }: MissingProductStateProps) {
   return (
     <UnavailableState
+      icon="search_off"
       title={title}
       description={description}
       hint={

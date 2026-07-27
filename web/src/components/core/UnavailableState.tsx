@@ -28,10 +28,8 @@ import {
   EmptyStateBody,
   EmptyStateFooter,
 } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import Icon, { IconProps } from "~/components/layout/Icon";
 import Link from "~/components/core/Link";
-
-const EmptyStateIcon = () => <Icon name="apps_outage" />;
 
 export type UnavailableStateProps = {
   /** Short summary of what is not available. */
@@ -42,6 +40,8 @@ export type UnavailableStateProps = {
   hint?: React.ReactNode;
   /** Optional action link with destination path and label. */
   actionLink?: { to: string; label: string };
+  /** Icon illustrating the situation. Defaults to a generic "outage" icon. */
+  icon?: IconProps["name"];
 };
 
 /**
@@ -57,13 +57,23 @@ export type UnavailableStateProps = {
  *   description={_("The product must be registered first.")}
  *   actionLink={{ to: REGISTRATION.root, label: _("Go to registration") }}
  * />
+ *
+ * @example
+ * <UnavailableState
+ *   icon="search_off"
+ *   title={_("Product not found")}
+ *   description={_("The product is not in the repositories.")}
+ * />
  */
 export default function UnavailableState({
   title,
   description,
   hint,
   actionLink,
+  icon = "apps_outage",
 }: UnavailableStateProps) {
+  const EmptyStateIcon = () => <Icon name={icon} />;
+
   return (
     <EmptyState headingLevel="h2" titleText={title} variant="lg" icon={EmptyStateIcon}>
       <EmptyStateBody>
