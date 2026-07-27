@@ -25,7 +25,7 @@ module Agama
   module Storage
     module ConfigSolvers
       # Matchers for searching devices.
-      module SearchMatchers
+      module SearchMatchers # rubocop:disable Metrics/ModuleLength
         # Whether the given device matches the search condition of the config.
         #
         # @param config [#search]
@@ -67,6 +67,18 @@ module Agama
         #
         # @return [Boolean]
         def match_leaf?(node, device)
+          match_basic_leaf?(node, device) ||
+            match_filesystem_leaf?(node, device) ||
+            match_partitions_leaf?(node, device)
+        end
+
+        # Evaluates a basic leaf condition node against a device.
+        #
+        # @param node [Configs::SearchConditions::*]
+        # @param device [Y2Storage::Device]
+        #
+        # @return [Boolean]
+        def match_basic_leaf?(node, device)
           case node
           when Configs::SearchConditions::Name
             match_name?(node, device)
@@ -75,7 +87,7 @@ module Agama
           when Configs::SearchConditions::PartitionNumber
             match_partition_number?(node, device)
           else
-            match_filesystem_leaf?(node, device)
+            false
           end
         end
 
@@ -206,6 +218,105 @@ module Agama
           return unless device.respond_to?(:filesystem)
 
           device.filesystem
+        end
+
+        # Evaluates a partitions leaf condition node against a device.
+        #
+        # @param node [Configs::SearchConditions::*]
+        # @param device [Y2Storage::Device]
+        #
+        # @return [Boolean]
+        def match_partitions_leaf?(node, device)
+          return false unless node.is_a?(Configs::SearchConditions::Partitions)
+
+          match_partitions?(node, device)
+        end
+
+        # Whether the partitions of the given device match the condition node.
+        #
+        # Presence shortcuts: :any = at least one partition, :none = no partitions.
+        # Quantifier condition: delegates to match_partitions_quantifier?.
+        #
+        # @param node [Configs::SearchConditions::Partitions]
+        # @param device [Y2Storage::Device]
+        #
+        # @return [Boolean]
+        def match_partitions?(node, device)
+          partitions = device_partitions(device)
+          return match_partitions_quantifier?(node.condition, partitions) if node.condition
+
+          case node.presence
+          when :any
+            partitions.any?
+          when :none
+            partitions.empty?
+          else
+            true
+          end
+        end
+
+        # @param quantifier [PartitionsAny, PartitionsNone, PartitionsAll, PartitionsCount]
+        # @param partitions [Array<Y2Storage::Partition>]
+        # @return [Boolean]
+        def match_partitions_quantifier?(quantifier, partitions)
+          case quantifier
+          when Configs::SearchConditions::PartitionsAny
+            match_partitions_any?(quantifier, partitions)
+          when Configs::SearchConditions::PartitionsNone
+            match_partitions_none?(quantifier, partitions)
+          when Configs::SearchConditions::PartitionsAll
+            match_partitions_all?(quantifier, partitions)
+          when Configs::SearchConditions::PartitionsCount
+            match_partitions_count?(quantifier, partitions)
+          end
+        end
+
+        # @param quantifier [Configs::SearchConditions::PartitionsAny]
+        # @param partitions [Array<Y2Storage::Partition>]
+        # @return [Boolean]
+        def match_partitions_any?(quantifier, partitions)
+          cond = quantifier.condition
+          cond ? partitions.any? { |p| match_node?(cond, p) } : partitions.any?
+        end
+
+        # @param quantifier [Configs::SearchConditions::PartitionsNone]
+        # @param partitions [Array<Y2Storage::Partition>]
+        # @return [Boolean]
+        def match_partitions_none?(quantifier, partitions)
+          cond = quantifier.condition
+          cond ? partitions.none? { |p| match_node?(cond, p) } : partitions.empty?
+        end
+
+        # Requires at least one partition; all partitions must satisfy the condition.
+        #
+        # @param quantifier [Configs::SearchConditions::PartitionsAll]
+        # @param partitions [Array<Y2Storage::Partition>]
+        # @return [Boolean]
+        def match_partitions_all?(quantifier, partitions)
+          return false if partitions.empty?
+
+          cond = quantifier.condition
+          cond ? partitions.all? { |p| match_node?(cond, p) } : true
+        end
+
+        # @param quantifier [Configs::SearchConditions::PartitionsCount]
+        # @param partitions [Array<Y2Storage::Partition>]
+        # @return [Boolean]
+        def match_partitions_count?(quantifier, partitions)
+          cond = quantifier.condition
+          n = cond ? partitions.count { |p| match_node?(cond, p) } : partitions.count
+          (quantifier.min.nil? || n >= quantifier.min) &&
+            (quantifier.max.nil? || n <= quantifier.max)
+        end
+
+        # Partitions of the given device, if any.
+        #
+        # @param device [Y2Storage::Device]
+        # @return [Array<Y2Storage::Partition>]
+        def device_partitions(device)
+          return [] unless device.respond_to?(:partitions)
+
+          device.partitions
         end
       end
     end

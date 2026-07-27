@@ -425,6 +425,49 @@ describe Agama::Storage::ConfigSolvers::MdRaidsSearch do
       end
     end
 
+    context "if a MD RAID config has a search with partitions" do
+      let(:md_raids) do
+        [
+          {
+            search: {
+              condition: condition
+            }
+          }
+        ]
+      end
+
+      context "and the presence is 'any'" do
+        let(:condition) { { partitions: "any" } }
+
+        it "sets the partitioned MD RAID to the config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+          expect(config.md_raids.first.search.device.name).to eq("/dev/md0")
+        end
+      end
+
+      context "and the presence is 'none'" do
+        let(:condition) { { partitions: "none" } }
+
+        it "sets a device to each MD RAID without partitions" do
+          subject.solve(config)
+          expect(config.md_raids.map(&:search).map(&:device).map(&:name)).to contain_exactly(
+            "/dev/md1", "/dev/md2"
+          )
+        end
+      end
+
+      context "and a 'count' quantifier is given" do
+        let(:condition) { { partitions: { count: { min: 1 } } } }
+
+        it "sets the MD RAID with enough partitions to the config" do
+          subject.solve(config)
+          expect(config.md_raids.size).to eq(1)
+          expect(config.md_raids.first.search.device.name).to eq("/dev/md0")
+        end
+      end
+    end
+
     context "if a MD RAID config has partitions with search" do
       let(:md_raids) do
         [
