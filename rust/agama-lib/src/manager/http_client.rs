@@ -46,7 +46,7 @@ impl ManagerHTTPClient {
     /// Starts a "probing".
     pub async fn probe(&self) -> Result<(), ManagerHTTPClientError> {
         self.client
-            .post_void("/action", &api::Action::Probe { scopes: None })
+            .post_void("/action", &api::Action::Probe { only: None })
             .await?;
         Ok(())
     }
