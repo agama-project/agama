@@ -70,7 +70,7 @@ const PartitionFields = withForm({
               text={sprintf(
                 // TRANSLATORS: %s is a disk name with its size (eg. "sda, 10 GiB")
                 _("New partition. There are no available existing partitions on %s."),
-                deviceLabel(device, true),
+                deviceLabel(device, { truncate: true }),
               )}
             />
           )}
@@ -84,12 +84,15 @@ const PartitionFields = withForm({
         value: "",
         label: _("New partition"),
         // TRANSLATORS: %s is a disk name with its size (eg. "sda, 10 GiB")
-        description: sprintf(_("Create a new partition on %s"), deviceLabel(device, true)),
+        description: sprintf(
+          _("Create a new partition on %s"),
+          deviceLabel(device, { truncate: true }),
+        ),
       },
       { divider: true as const },
       ...availablePartitions.map((p) => {
         const fsLabel = p.filesystem?.label;
-        const label = [deviceLabel(p, true), fsLabel].filter(Boolean).join(" - ");
+        const label = [deviceLabel(p, { truncate: true }), fsLabel].filter(Boolean).join(" - ");
         // TRANSLATORS: %s is a description like "XFS partition")
         const description = sprintf(_("Use current %s"), p.description);
         return {

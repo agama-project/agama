@@ -31,10 +31,16 @@ import type { Storage } from "~/model/system";
 type TruncatedDeviceNameProps = {
   /** The device to render the name of. */
   device: Storage.Device;
+  /**
+   * Maximum characters to show before truncating. Set it to match the width of
+   * the container (e.g. a table column) so the name fits. Defaults to the shared
+   * device-name length when omitted.
+   */
+  maxLength?: number;
 };
 
 /**
- * Renders a device's base name, truncated to fit narrow table columns.
+ * Renders a device's base name, truncated to fit narrow containers.
  *
  * When the name is too long to fit, it is shortened with an ellipsis in the
  * middle and the full name becomes the element's accessible name (via a
@@ -53,9 +59,9 @@ type TruncatedDeviceNameProps = {
  *
  * Names that already fit render as plain text, with no tooltip.
  */
-export default function TruncatedDeviceName({ device }: TruncatedDeviceNameProps) {
+export default function TruncatedDeviceName({ device, maxLength }: TruncatedDeviceNameProps) {
   const name = deviceBaseName(device);
-  const truncatedName = deviceBaseName(device, true);
+  const truncatedName = deviceBaseName(device, { truncate: true, maxLength });
 
   if (truncatedName === name) return name;
 

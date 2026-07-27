@@ -70,7 +70,7 @@ export default function DrivesTable({
   const columns = [
     {
       name: _("Device"),
-      value: (device: Storage.Device) => <TruncatedDeviceName device={device} />,
+      value: (device: Storage.Device) => <TruncatedDeviceName device={device} maxLength={13} />,
       sortingKey: "name",
       pfTdProps: { style: { width: "15ch" } },
     },
