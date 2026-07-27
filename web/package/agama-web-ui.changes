@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Jul 27 11:39:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to use the "Probe" action of the API (gh#agama-project/agama#3341).
+
+-------------------------------------------------------------------
 Tue Jul 21 17:37:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add themeable roles for corner radius and product logo size and
