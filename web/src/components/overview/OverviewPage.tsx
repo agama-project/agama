@@ -32,7 +32,9 @@ import {
   GridItem,
   Stack,
 } from "@patternfly/react-core";
+import Interpolate from "~/components/core/Interpolate";
 import Page from "~/components/core/Page";
+import Text from "~/components/core/Text";
 import InstallButton from "~/components/overview/InstallButton";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
@@ -65,12 +67,6 @@ const OverviewPageContent = ({ product }: { product: Product }) => {
   const issues = useIssues();
   const missingProduct = issues.some((i) => i.class === "missing_product");
 
-  const [buttonLocationStart, buttonLocationLabel, buttonLocationEnd] = _(
-    // TRANSLATORS: This hint helps users locate the install button. Text inside
-    // square brackets [] appears in bold. Keep brackets for proper formatting.
-    "When ready, click on the [install] button at the end of the page.",
-  ).split(/[[\]]/);
-
   return (
     <Page
       hideSummaryLink
@@ -90,7 +86,15 @@ const OverviewPageContent = ({ product }: { product: Product }) => {
               }
             </Content>
             <Content className={textStyles.textColorSubtle}>
-              {buttonLocationStart} <strong>{buttonLocationLabel}</strong> {buttonLocationEnd}
+              <Interpolate
+                sentence={_(
+                  // TRANSLATORS: This hint helps users locate the install button. Text inside
+                  // square brackets [] appears in bold. Keep brackets for proper formatting.
+                  "When ready, click on the [install] button at the end of the page.",
+                )}
+              >
+                {(text) => <Text isBold>{text}</Text>}
+              </Interpolate>
             </Content>
           </div>
           <Divider />
