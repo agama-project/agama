@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 21 17:37:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add themeable roles for corner radius and product logo size and
+  alignment, plus a script for checking WCAG contrast when picking
+  role values (gh#agama-project/agama#3748).
+
+-------------------------------------------------------------------
 Mon Jul 20 11:12:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 23

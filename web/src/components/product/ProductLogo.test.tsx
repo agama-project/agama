@@ -58,7 +58,7 @@ describe("ProductLogo", () => {
     plainRender(<ProductLogo product={product} />);
 
     const img = screen.getByRole("img", { hidden: true });
-    expect(img).toHaveAttribute("width", "80px");
+    expect(img).not.toHaveAttribute("width");
     expect(img).toHaveStyle({ width: "80px" });
   });
 
@@ -66,14 +66,14 @@ describe("ProductLogo", () => {
     plainRender(<ProductLogo product={product} width="120px" />);
 
     const img = screen.getByRole("img", { hidden: true });
-    expect(img).toHaveAttribute("width", "120px");
     expect(img).toHaveStyle({ width: "120px" });
   });
 
-  it("applies vertical align middle style", () => {
+  it("applies the themeable vertical align and max size roles", () => {
     plainRender(<ProductLogo product={product} />);
 
     const img = screen.getByRole("img", { hidden: true });
-    expect(img).toHaveStyle({ verticalAlign: "middle" });
+    expect(img.style.verticalAlign).toBe("var(--agm-t--logo--align, middle)");
+    expect(img.style.maxInlineSize).toBe("var(--agm-t--logo--max-size, none)");
   });
 });

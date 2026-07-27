@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 08:45+0000\n"
+"POT-Creation-Date: 2026-07-23 13:42+0000\n"
 "PO-Revision-Date: 2026-06-25 09:13+0000\n"
 "Last-Translator: Sophie Leroy <sophie@stoquart.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -1018,42 +1018,42 @@ msgstr ""
 "En raison d'une erreur interne, il n'a pas été possible de créer une "
 "proposition de logiciel."
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:308
 msgid "Starting packages installation"
 msgstr "Début de l'installation des paquets"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:321
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
 "Le téléchargement et l'installation des paquets ont échoué. Voulez-vous "
 "réessayer ?"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:376
 msgid "Updating the list of repositories"
 msgstr "Mise à jour de la liste des dépôts"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:377
 msgid "Refreshing metadata from the repositories"
 msgstr "Rafraîchissement des métadonnées à partir des dépôts"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:378
 msgid "Calculating the software proposal"
 msgstr "Calcul de la proposition de logiciel"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:381
 msgid "Registering the system"
 msgstr "Enregistrement du système"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:454
 msgid "Could not remove the repository %s"
 msgstr "Impossible de supprimer le dépôt %s"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:475
 msgid "Could not read the repositories"
 msgstr "Impossible de lire les dépôts"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:512
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -1061,21 +1061,21 @@ msgstr ""
 "Impossible de trouver le produit dans les dépôts. Vous devez peut-être "
 "enregistrer le système."
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:515
 msgid "Failed to find the product in the repositories."
 msgstr "Impossible de trouver le produit dans les dépôts."
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:578
 msgid "There are conflicts in the software selection"
 msgstr "Il existe des conflits dans la sélection de logiciels"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:607
 msgid "Could not select %s '%s' for installation"
 msgstr "Impossible de sélectionner %s '%s' pour installation"
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1041
 msgid "Failed to register the system"
 msgstr "Impossible d'enregistrer le système"
 

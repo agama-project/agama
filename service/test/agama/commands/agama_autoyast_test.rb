@@ -93,5 +93,15 @@ describe Agama::Commands::AgamaAutoYaST do
         expect { subject.run }.to raise_exception(Agama::Commands::CouldNotFetchProfile)
       end
     end
+
+    context "when the profile is not found" do
+      before do
+        allow(fetcher).to receive(:fetch).and_return(nil)
+      end
+
+      it "raises a ProfileNotFound exception" do
+        expect { subject.run }.to raise_exception(Agama::Commands::ProfileNotFound)
+      end
+    end
   end
 end

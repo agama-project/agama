@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 08:45+0000\n"
-"PO-Revision-Date: 2026-06-25 09:12+0000\n"
+"POT-Creation-Date: 2026-07-23 13:42+0000\n"
+"PO-Revision-Date: 2026-07-27 04:12+0000\n"
 "Last-Translator: Grace Yu <grace.yu@excel-gits.com>\n"
 "Language-Team: Chinese (Taiwan) <https://l10n.opensuse.org/projects/agama/"
 "agama-rust-master/zh_TW/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.7.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
@@ -793,7 +793,6 @@ msgid "Finishing installation"
 msgstr "完成安裝"
 
 #: agama-manager/src/actions.rs:271
-#, fuzzy
 msgid "Finalize installation"
 msgstr "完成安裝"
 
@@ -955,60 +954,60 @@ msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "由於出現內部錯誤，無法建立軟體建議。"
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:308
 msgid "Starting packages installation"
 msgstr "正在啟動套件安裝程序"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:321
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "無法下載和安裝套件。是否要重試？"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:376
 msgid "Updating the list of repositories"
 msgstr "正在更新儲存庫清單"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:377
 msgid "Refreshing metadata from the repositories"
 msgstr "正在重新整理來自儲存庫的中繼資料"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:378
 msgid "Calculating the software proposal"
 msgstr "正在計算軟體建議"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:381
 msgid "Registering the system"
 msgstr "正在註冊系統"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:454
 msgid "Could not remove the repository %s"
 msgstr "無法移除儲存庫 %s"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:475
 msgid "Could not read the repositories"
 msgstr "無法讀取儲存庫"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:512
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr "在儲存庫中未找到該產品。您可能需要註冊系統。"
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:515
 msgid "Failed to find the product in the repositories."
 msgstr "在儲存庫中未找到該產品。"
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:578
 msgid "There are conflicts in the software selection"
 msgstr "軟體選擇存在衝突"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:607
 msgid "Could not select %s '%s' for installation"
 msgstr "無法選取 %s '%s' 進行安裝"
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1041
 msgid "Failed to register the system"
 msgstr "無法註冊系統"
 
