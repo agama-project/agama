@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import Link from "~/components/core/Link";
 import UnavailableState from "~/components/core/UnavailableState";
 import { NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -54,12 +55,12 @@ export default function MissingProductState({ title, description }: MissingProdu
         // TRANSLATORS: additional hint when the product is missing
         _("This might be due to network connectivity.")
       }
-      actionLink={{
-        to: NETWORK.root,
-        label:
-          // TRANSLATORS: link to go to network settings
-          _("Go to network settings"),
-      }}
+      actions={
+        <Link to={NETWORK.root} variant="link" isInline>
+          {/* TRANSLATORS: link to go to network settings */}
+          {_("Go to network settings")}
+        </Link>
+      }
     />
   );
 }

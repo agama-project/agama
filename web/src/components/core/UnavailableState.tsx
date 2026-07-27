@@ -29,7 +29,6 @@ import {
   EmptyStateFooter,
 } from "@patternfly/react-core";
 import Icon, { IconProps } from "~/components/layout/Icon";
-import Link from "~/components/core/Link";
 
 export type UnavailableStateProps = {
   /** Short summary of what is not available. */
@@ -38,8 +37,8 @@ export type UnavailableStateProps = {
   description: React.ReactNode;
   /** Optional additional hint text displayed below the description. */
   hint?: React.ReactNode;
-  /** Optional action link with destination path and label. */
-  actionLink?: { to: string; label: string };
+  /** Optional buttons or links offering a way out of the situation. */
+  actions?: React.ReactNode;
   /** Icon illustrating the situation. Defaults to a generic "outage" icon. */
   icon?: IconProps["name"];
 };
@@ -49,13 +48,13 @@ export type UnavailableStateProps = {
  * could not be loaded.
  *
  * Use it to explain the situation and, when possible, to offer a way out
- * through `actionLink`.
+ * through `actions`.
  *
  * @example
  * <UnavailableState
  *   title={_("Registration is not available")}
  *   description={_("The product must be registered first.")}
- *   actionLink={{ to: REGISTRATION.root, label: _("Go to registration") }}
+ *   actions={<Link to={REGISTRATION.root} variant="link" isInline>{_("Go to registration")}</Link>}
  * />
  *
  * @example
@@ -69,7 +68,7 @@ export default function UnavailableState({
   title,
   description,
   hint,
-  actionLink,
+  actions,
   icon = "apps_outage",
 }: UnavailableStateProps) {
   const EmptyStateIcon = () => <Icon name={icon} />;
@@ -82,13 +81,9 @@ export default function UnavailableState({
         </Content>
         {hint && <Content component="small">{hint}</Content>}
       </EmptyStateBody>
-      {actionLink && (
+      {actions && (
         <EmptyStateFooter>
-          <EmptyStateActions>
-            <Link to={actionLink.to} variant="link" isInline>
-              {actionLink.label}
-            </Link>
-          </EmptyStateActions>
+          <EmptyStateActions>{actions}</EmptyStateActions>
         </EmptyStateFooter>
       )}
     </EmptyState>

@@ -21,6 +21,7 @@
  */
 
 import React from "react";
+import Link from "~/components/core/Link";
 import UnavailableState from "~/components/core/UnavailableState";
 import MissingProductState from "~/components/product/MissingProductState";
 import { useIssues } from "~/hooks/model/issue";
@@ -62,12 +63,12 @@ export default function PatternSelectionUnavailable() {
       <UnavailableState
         title={title}
         description={missingRegistration.description}
-        actionLink={{
-          to: REGISTRATION.root,
-          label:
-            // TRANSLATORS: link to go to registration settings
-            _("Go to registration"),
-        }}
+        actions={
+          <Link to={REGISTRATION.root} variant="link" isInline>
+            {/* TRANSLATORS: link to go to registration settings */}
+            {_("Go to registration")}
+          </Link>
+        }
       />
     );
   }
