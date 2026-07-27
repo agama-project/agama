@@ -186,25 +186,65 @@ const deviceSize = (size: number, options?: SizeOptions): string => {
   return `${Number(result.size)} ${result.unit}`;
 };
 
-const TRUNCATE_MAX_LENGTH = 17;
+/**
+ * Default maximum length for truncated device names in sentence text (menu
+ * entries, headers, descriptions). Fixed-width contexts such as table columns
+ * should pass a length that matches their available width instead.
+ */
+const DEFAULT_DEVICE_NAME_MAX_LENGTH = 17;
+
+/** Marker inserted in place of the characters removed when truncating. */
+const DEFAULT_OMISSION = "…";
+
+/** Options controlling how a device base name is rendered. */
+type BaseNameOptions = {
+  /** Whether to shorten names that exceed `maxLength`. Defaults to `false`. */
+  truncate?: boolean;
+  /**
+   * Maximum number of characters to display when truncating. Ignored unless
+   * `truncate` is set. Defaults to {@link DEFAULT_DEVICE_NAME_MAX_LENGTH}, which
+   * fits sentence text; fixed-width contexts (e.g. table columns) should pass a
+   * length matching their available width.
+   */
+  maxLength?: number;
+  /**
+   * Marker put in place of the removed middle characters. Ignored unless
+   * `truncate` is set. Defaults to {@link DEFAULT_OMISSION}.
+   */
+  omission?: string;
+  /**
+   * How many characters a name may exceed `maxLength` by and still be shown in
+   * full. This avoids truncating a name that is only slightly too long, since
+   * doing so would trade real characters for the omission marker while barely
+   * reducing the width. Ignored unless `truncate` is set; defaults to the
+   * omission length plus 2, so a longer marker (which saves less width) requires
+   * a longer name before truncation pays off.
+   */
+  tolerance?: number;
+};
 
 /**
- * Base name for a full path
+ * Base name for a full path.
  *
- * FIXME: The truncate param allows to generate a shorter representation that fits into
- * the interface, but that's a temporary solution. The right way to make the strings fit
- * into the responsive interface would be Patternfly's Truncate component.
+ * By default the base name is returned untouched. With `truncate`, names that
+ * exceed `maxLength` (beyond `tolerance`) are shortened by keeping their start
+ * and end and replacing the middle with the omission marker, so both ends stay
+ * readable. The result is at most `maxLength` characters long.
  */
-const baseName = (name: string, truncate?: boolean): string => {
+const baseName = (name: string, options?: BaseNameOptions): string => {
   const base = name.split("/").pop();
 
-  if (!truncate || base.length <= TRUNCATE_MAX_LENGTH) return base;
+  if (!options?.truncate) return base;
 
-  // Simplistic approach as a first implementation. Anyways, we plan to replace this with
-  // the usage of Patternfly's Truncate in the mid-term.
-  const limit1 = Math.ceil((TRUNCATE_MAX_LENGTH - 1) / 2.0);
-  const limit2 = base.length - Math.floor((TRUNCATE_MAX_LENGTH - 1) / 2.0);
-  return base.slice(0, limit1) + "…" + base.slice(limit2);
+  const maxLength = options.maxLength ?? DEFAULT_DEVICE_NAME_MAX_LENGTH;
+  const omission = options.omission ?? DEFAULT_OMISSION;
+  const tolerance = options.tolerance ?? omission.length + 2;
+  if (base.length <= maxLength + tolerance) return base;
+
+  const kept = maxLength - omission.length;
+  const limit1 = Math.ceil(kept / 2.0);
+  const limit2 = base.length - Math.floor(kept / 2.0);
+  return base.slice(0, limit1) + omission + base.slice(limit2);
 };
 
 type DeviceWithName = System.Device | ConfigModel.Drive | ConfigModel.MdRaid;
@@ -212,19 +252,20 @@ type DeviceWithName = System.Device | ConfigModel.Drive | ConfigModel.MdRaid;
 /**
  * Base name of a device.
  *
- * FIXME: See note at baseName about the usage of truncate.
+ * See {@link baseName} for how `options` controls truncation.
  */
-const deviceBaseName = (device: DeviceWithName, truncate?: boolean): string => {
-  return baseName(device.name, truncate);
+const deviceBaseName = (device: DeviceWithName, options?: BaseNameOptions): string => {
+  return baseName(device.name, options);
 };
 
 /**
- * Generates the label for the given device
+ * Generates the label for the given device.
  *
- * FIXME: See note at baseName about the usage of truncate.
+ * See {@link baseName} for how `options` controls truncation of the name part
+ * (the size suffix is never truncated).
  */
-const deviceLabel = (device: System.Device, truncate?: boolean): string => {
-  const name = deviceBaseName(device, truncate);
+const deviceLabel = (device: System.Device, options?: BaseNameOptions): string => {
+  const name = deviceBaseName(device, options);
   const size = device.block?.size || device.volumeGroup?.size;
 
   return size ? `${name} (${deviceSize(size)})` : name;
