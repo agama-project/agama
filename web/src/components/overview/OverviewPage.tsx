@@ -20,83 +20,30 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useDeferredValue, useState } from "react";
-import { isEmpty } from "radashi";
-import { sprintf } from "sprintf-js";
+import React from "react";
 import { Navigate } from "react-router";
 import {
-  Button,
   Content,
   Divider,
   EmptyState,
   EmptyStateBody,
   Flex,
-  FlexItem,
   Grid,
   GridItem,
-  HelperText,
-  HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import Text from "~/components/core/Text";
-import Popup from "~/components/core/Popup";
-import NoDesktopAlert from "~/components/software/NoDesktopAlert";
-import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";
+import InstallButton from "~/components/overview/InstallButton";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
-import { startInstallation } from "~/api";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
-import { useIsDesktopMissing } from "~/hooks/model/system/software";
 import { PRODUCT } from "~/routes/paths";
-import { useDestructiveActions } from "~/hooks/use-destructive-actions";
-import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { _ } from "~/i18n";
 
 import type { Product } from "~/model/system";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-
-type ConfirmationPopupProps = {
-  product: Product;
-  isDangerous: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-};
-const ConfirmationPopup = ({
-  product,
-  isDangerous,
-  onCancel,
-  onConfirm,
-}: ConfirmationPopupProps) => {
-  const isDesktopMissing = useIsDesktopMissing();
-  const title = sprintf(
-    // TRANSLATORS: Confirmation dialog title. %s is replaced with the product name (e.g., "openSUSE Leap")
-    isDangerous ? _("Delete existing data and install %s?") : _("Install %s?"),
-    product.name,
-  );
-
-  const ConfirmButton = isDangerous ? Popup.DangerousAction : Popup.Confirm;
-
-  return (
-    <Popup isOpen title={title}>
-      <Stack hasGutter>
-        <Content isEditorial>
-          {/* TRANSLATORS: shown at the top of the install confirmation dialog. */}
-          {_("Confirming starts the installation immediately with the defined settings.")}
-        </Content>
-        {isDesktopMissing && <NoDesktopAlert />}
-        {isDangerous && <PotentialDataLossAlert />}
-      </Stack>
-      <Popup.Actions>
-        {/* TRANSLATORS: Button to confirm and start the installation */}
-        <ConfirmButton onClick={onConfirm}>{_("Confirm and install")}</ConfirmButton>
-        <Popup.Cancel onClick={onCancel} autoFocus />
-      </Popup.Actions>
-    </Popup>
-  );
-};
 
 /**
  * Renders a PatternFly `EmptyState` block used when no product was found in the
@@ -114,38 +61,15 @@ const NoProductFound = () => {
   );
 };
 
-const OverviewPageContent = ({ product }) => {
+const OverviewPageContent = ({ product }: { product: Product }) => {
   const issues = useIssues();
-  const { loading } = useProgressTracking();
-  const isReady = useDeferredValue(!loading);
-  const { actions } = useDestructiveActions();
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const hasIssues = !isEmpty(issues);
-  const hasDestructiveActions = actions.length > 0;
-  const missingProduct = issues.find((i) => i.class === "missing_product");
+  const missingProduct = issues.some((i) => i.class === "missing_product");
 
   const [buttonLocationStart, buttonLocationLabel, buttonLocationEnd] = _(
     // TRANSLATORS: This hint helps users locate the install button. Text inside
     // square brackets [] appears in bold. Keep brackets for proper formatting.
     "When ready, click on the [install] button at the end of the page.",
   ).split(/[[\]]/);
-
-  const onInstallClick = () => {
-    setShowConfirmation(true);
-  };
-
-  const onConfirm = () => {
-    startInstallation();
-    setShowConfirmation(false);
-  };
-
-  const onCancel = () => setShowConfirmation(false);
-
-  const getInstallButtonText = () => {
-    if (hasIssues || !isReady) return _("Install");
-    if (hasDestructiveActions) return _("Install now with potential data loss");
-    return _("Install now");
-  };
 
   return (
     <Page
@@ -176,42 +100,7 @@ const OverviewPageContent = ({ product }) => {
                 <div style={{ flex: 1 }}>
                   {missingProduct ? <NoProductFound /> : <InstallationSettings />}
                 </div>
-                <Flex
-                  direction={{ default: "column" }}
-                  alignItems={{ default: "alignItemsFlexStart" }}
-                >
-                  <FlexItem grow={{ default: "grow" }} />
-                  <FlexItem>
-                    <Button
-                      size="lg"
-                      variant={hasDestructiveActions ? "danger" : "primary"}
-                      onClick={onInstallClick}
-                      isDisabled={hasIssues || !isReady}
-                    >
-                      <Text isBold>{getInstallButtonText()}</Text>
-                    </Button>
-                  </FlexItem>
-
-                  {!isReady && (
-                    <FlexItem>
-                      <HelperText>
-                        <HelperTextItem variant="indeterminate">
-                          {_("Wait until current operations are completed.")}
-                        </HelperTextItem>
-                      </HelperText>
-                    </FlexItem>
-                  )}
-
-                  {hasIssues && !missingProduct && isReady && (
-                    <FlexItem>
-                      <HelperText>
-                        <HelperTextItem variant="warning">
-                          {_("Fix invalid settings before starting the installation.")}
-                        </HelperTextItem>
-                      </HelperText>
-                    </FlexItem>
-                  )}
-                </Flex>
+                <InstallButton product={product} />
               </Stack>
             </GridItem>
             <GridItem sm={12} md={4}>
@@ -220,14 +109,6 @@ const OverviewPageContent = ({ product }) => {
           </Grid>
         </Flex>
       </Page.Content>
-      {showConfirmation && (
-        <ConfirmationPopup
-          product={product}
-          isDangerous={hasDestructiveActions}
-          onConfirm={onConfirm}
-          onCancel={onCancel}
-        />
-      )}
     </Page>
   );
 };
