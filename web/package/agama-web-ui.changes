@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 21 19:07:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Truncate long device names in the storage tables so they no
+  longer overflow the "Device" column
+  (gh#agama-project/agama#3745).
+
+-------------------------------------------------------------------
 Tue Jul 21 17:37:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add themeable roles for corner radius and product logo size and

@@ -22,6 +22,7 @@
 
 import React, { useState } from "react";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
+import TruncatedDeviceName from "~/components/storage/TruncatedDeviceName";
 import { useFlattenDevices } from "~/hooks/model/system/storage";
 import { deviceBaseName, deviceSize } from "~/components/storage/utils";
 import { sortCollection } from "~/utils";
@@ -70,7 +71,7 @@ export default function VolumeGroupsTable({
   const columns = [
     {
       name: _("Device"),
-      value: (device: Storage.Device) => deviceBaseName(device),
+      value: (device: Storage.Device) => <TruncatedDeviceName device={device} />,
       sortingKey: "name",
       pfTdProps: { style: { width: "15ch" } },
     },
