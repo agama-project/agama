@@ -24,14 +24,9 @@ import React from "react";
 import L10nPage from "~/components/l10n/L10nPage";
 import { Route } from "~/types/routes";
 import { L10N as PATHS } from "~/routes/paths";
-import { N_ } from "~/i18n";
 
 const routes = (): Route => ({
   path: PATHS.root,
-  handle: {
-    name: N_("Localization"),
-    icon: "globe",
-  },
   children: [
     {
       index: true,

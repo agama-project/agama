@@ -133,7 +133,13 @@
 }
 
 .pf-v6-c-button {
-  --pf-v6-c-button--BorderRadius: var(--pf-t--global--border--radius--small);
+  // Buttons follow the same controls role as text inputs and selects (see
+  // tokens/_semantic.scss), so a product retunes --agm-t--control--border-radius
+  // once for all three instead of each separately.
+  --pf-v6-c-button--BorderRadius: var(
+    --agm-t--control--border-radius,
+    var(--pf-t--global--border--radius--small)
+  );
 
   &:disabled {
     fill: currentcolor;

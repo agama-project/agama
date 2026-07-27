@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Aktionen"
   ],
+  "Actions for %s": [
+    "Aktionen für %s"
+  ],
   "Actions for %s at portal %s": [
     "Aktionen für %s im Portal %s"
   ],
@@ -354,6 +357,9 @@ export default {
   ],
   "Allow growing": [
     "Wachstum erlauben"
+  ],
+  "Allow shrinking": [
+    "Verkleinern erlauben"
   ],
   "Already using all available devices": [
     "Alle verfügbaren Geräte werden bereits verwendet"
@@ -1700,7 +1706,7 @@ export default {
     "Anmeldeformular"
   ],
   "Loopback": [
-    ""
+    "Schleifenschaltung"
   ],
   "MAC address": [
     "MAC-Adresse"

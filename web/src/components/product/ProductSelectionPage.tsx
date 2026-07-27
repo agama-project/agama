@@ -124,7 +124,8 @@ const ProductFormProductOption = ({
                 aria-details={detailsId}
                 label={
                   <Text isBold className={pfTextStyles.fontSizeLg}>
-                    <ProductLogo product={product} width="2em" /> {product.name}
+                    <ProductLogo product={product} width="var(--agm-t--logo--size--inline, 2em)" />{" "}
+                    {product.name}
                   </Text>
                 }
                 body={
@@ -581,7 +582,8 @@ const CurrentProductInfo = ({ product, modeId }: CurrentProductInfoProps) => {
       <CardBody>
         <Stack hasGutter>
           <Title headingLevel="h3">
-            <ProductLogo product={product} width="2em" /> {product.name}
+            <ProductLogo product={product} width="var(--agm-t--logo--size--inline, 2em)" />{" "}
+            {product.name}
           </Title>
           <Divider />
           <SubtleContent>{product.description}</SubtleContent>
