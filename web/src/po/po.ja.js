@@ -234,6 +234,9 @@ export default {
   "Actions": [
     "処理"
   ],
+  "Actions for %s": [
+    "%s に対する処理"
+  ],
   "Actions for %s at portal %s": [
     "%s (ポータル %s 内) に対する処理"
   ],
