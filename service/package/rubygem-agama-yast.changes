@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 24 08:53:15 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Detect whether an AutoYaST profile is not found (bsc#1272439).
+
+-------------------------------------------------------------------
 Mon Jul 20 11:12:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 23

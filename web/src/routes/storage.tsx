@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { N_ } from "~/i18n";
 import { Route } from "~/types/routes";
 import BootSelectionPage from "~/components/storage/BootSelectionPage";
 import EncryptionSettingsPage from "~/components/storage/EncryptionSettingsPage";
@@ -43,7 +42,6 @@ import InitiatorFormPage from "~/components/storage/iscsi/InitiatorFormPage";
 
 const routes = (): Route => ({
   path: PATHS.root,
-  handle: { name: N_("Storage"), icon: "hard_drive" },
   children: [
     {
       index: true,
@@ -112,12 +110,10 @@ const routes = (): Route => ({
     {
       path: PATHS.dasd,
       element: <DASDPage />,
-      handle: { name: N_("DASD") },
     },
     {
       path: PATHS.zfcp.root,
       element: <ZFCPPage />,
-      handle: { name: N_("ZFCP") },
     },
     {
       path: PATHS.zfcp.controllers,
