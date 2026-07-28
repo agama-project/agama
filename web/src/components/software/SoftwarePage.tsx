@@ -399,7 +399,7 @@ function SoftwarePage() {
       }}
     >
       <Page.Content>
-        <IssuesAlert issues={unreadableSources} actions={<SoftwareIssueActions />} />
+        <IssuesAlert issues={unreadableSources} actions={<SoftwareIssueActions isCompact />} />
         <IssuesAlert issues={otherIssues} />
         <SoftwarePageContent />
       </Page.Content>

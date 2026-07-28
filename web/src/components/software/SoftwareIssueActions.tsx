@@ -29,6 +29,14 @@ import { probeAction } from "~/api";
 import { NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
 
+export type SoftwareIssueActionsProps = {
+  /**
+   * Whether to render a smaller button, to sit better next to text instead of
+   * standing on its own.
+   */
+  isCompact?: boolean;
+};
+
 /**
  * Actions offered when the software information could not be read.
  *
@@ -57,7 +65,7 @@ import { _ } from "~/i18n";
  * @example
  * <UnavailableState title={...} description={...} actions={<SoftwareIssueActions />} />
  */
-export default function SoftwareIssueActions() {
+export default function SoftwareIssueActions({ isCompact }: SoftwareIssueActionsProps) {
   const { loading } = useProgressTracking("software", [ISSUES_QUERY_KEY]);
 
   return (
@@ -71,6 +79,7 @@ export default function SoftwareIssueActions() {
     >
       <Button
         variant="secondary"
+        size={isCompact ? "sm" : "default"}
         onClick={() => probeAction(["software"])}
         isLoading={loading}
         isDisabled={loading}
