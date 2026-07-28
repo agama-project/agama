@@ -462,21 +462,19 @@ impl ZyppServer {
 
         // all repos are added or removed as needed
         progress.cast(progress::message::Next::new(Scope::Software))?;
-        if !to_add.is_empty() || !to_remove.is_empty() {
-            let result = zypp.load_source(
-                |percent, alias| {
-                    tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
-                    true
-                },
-                security,
-            );
+        let result = zypp.load_source(
+            |percent, alias| {
+                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                true
+            },
+            security,
+        );
 
-            if let Err(error) = result {
-                let message = gettext("Could not read the repositories");
-                issues.software.push(
-                    Issue::new("software.load_source", &message).with_details(&error.to_string()),
-                );
-            }
+        if let Err(error) = result {
+            let message = gettext("Could not read the repositories");
+            issues.software.push(
+                Issue::new("software.load_source", &message).with_details(&error.to_string()),
+            );
         }
 
         // repositories refresh finished
