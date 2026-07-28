@@ -49,6 +49,7 @@ use crate::{
         state::{self, SoftwareState},
         WriteIssues,
     },
+    service::DUD_REPO_ALIAS,
     state::{Addon, RegistrationState, RepoKey, ResolvableSelection, ResolvablesState},
     Registration, ResolvableType,
 };
@@ -59,10 +60,6 @@ const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
 /// product definition (see `build_repo` in `model::state`). They are named `agama-0`, `agama-1`,
 /// etc. and must not be copied to the target system.
 const AGAMA_REPO_PREFIX: &str = "agama-";
-
-/// Alias of the repository holding the Driver Update Disk (DUD) packages. It is only relevant
-/// during the installation, so it must not reach the target.
-const DUD_REPO_ALIAS: &str = "AgamaDriverUpdate";
 
 /// Whether the repository with the given alias is an installer-only repository
 /// that must not end up in the target system.

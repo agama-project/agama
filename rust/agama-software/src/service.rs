@@ -518,6 +518,9 @@ const DUD_REPO_DIR: &str = "var/lib/agama/dud/repo";
 /// Alias used for the predefined repository pointing to the local (off-line) installation media.
 pub(crate) const INSTALLATION_REPO_ALIAS: &str = "Installation";
 
+/// Alias of the repository holding the Driver Update Disk (DUD) packages.
+pub(crate) const DUD_REPO_ALIAS: &str = "AgamaDriverUpdate";
+
 /// Returns the local repositories that will be used during installation.
 ///
 /// By now it considers:
@@ -538,7 +541,7 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     }
 
     let dud_repo_dir = base.join(DUD_REPO_DIR);
-    if let Some(dud) = find_repository(&dud_repo_dir, "AgamaDriverUpdate") {
+    if let Some(dud) = find_repository(&dud_repo_dir, DUD_REPO_ALIAS) {
         repos.push(dud)
     }
 
