@@ -515,6 +515,9 @@ impl MessageHandler<message::IsPatternSelected> for Service {
 const LIVE_REPO_DIR: &str = "run/initramfs/live/install";
 const DUD_REPO_DIR: &str = "var/lib/agama/dud/repo";
 
+/// Alias used for the predefined repository pointing to the local (off-line) installation media.
+pub(crate) const INSTALLATION_REPO_ALIAS: &str = "Installation";
+
 /// Returns the local repositories that will be used during installation.
 ///
 /// By now it considers:
@@ -526,7 +529,7 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     let mut repos = vec![];
 
     let live_repo_dir = base.join(LIVE_REPO_DIR);
-    if let Some(mut install) = find_repository(&live_repo_dir, "Installation") {
+    if let Some(mut install) = find_repository(&live_repo_dir, INSTALLATION_REPO_ALIAS) {
         let mount_point = live_repo_dir.display().to_string();
         if let Some(normalized_url) = normalize_repository_url(&mount_point, "/install") {
             install.url = normalized_url;

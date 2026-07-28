@@ -290,6 +290,13 @@ impl<'a> SoftwareStateBuilder<'a> {
         }
     }
 
+    /// Whether a predefined repository for the local (off-line) installation media is present.
+    fn has_local_install_media(&self) -> bool {
+        self.predefined_repositories
+            .iter()
+            .any(|repo| repo.alias == crate::service::INSTALLATION_REPO_ALIAS)
+    }
+
     fn build_repositories(&self) -> Vec<Repository> {
         let software = &self.product.software;
         let kernel_repos = self.kernel_cmdline.get_last("inst.install_url");
@@ -299,6 +306,11 @@ impl<'a> SoftwareStateBuilder<'a> {
                 .enumerate()
                 .map(|(i, url)| Self::build_repo(i, url.to_string()))
                 .collect()
+        } else if self.has_local_install_media() {
+            tracing::info!(
+                "Local installation media found; skipping the product's remote repositories"
+            );
+            vec![]
         } else {
             software
                 .repositories()
@@ -1014,6 +1026,89 @@ mod tests {
             "user-repo-0".to_string(),
         ];
         assert_eq!(expected_aliases, aliases);
+    }
+
+    #[test]
+    fn test_skips_product_repositories_when_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![install_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![crate::service::INSTALLATION_REPO_ALIAS.to_string()]
+        );
+    }
+
+    #[test]
+    fn test_keeps_product_repositories_without_installation_media() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let dud_repo = Repository {
+            alias: "AgamaDriverUpdate".to_string(),
+            name: "AgamaDriverUpdate".to_string(),
+            url: "hd:/dud".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![dud_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                "agama-1".to_string(),
+                "agama-2".to_string(),
+                "AgamaDriverUpdate".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_keeps_kernel_cmdline_repositories_with_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let kernel_cmdline = KernelCmdline::parse_str("inst.install_url=http://example.com/repo1");
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_kernel_cmdline(kernel_cmdline)
+            .with_predefined_repositories(vec![install_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            ]
+        );
     }
 
     #[test]

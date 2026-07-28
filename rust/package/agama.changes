@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 28 12:00:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not use the product's remote repositories when a local
+  installation repository (off-line media) is already available.
+
+-------------------------------------------------------------------
 Mon Jul 27 11:23:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add an action to "probe" the software service (gh#agama-project/agama#3341).
