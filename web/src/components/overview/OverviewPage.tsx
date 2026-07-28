@@ -32,7 +32,7 @@ import InstallButton from "~/components/overview/InstallButton";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import { useProductInfo } from "~/hooks/model/config/product";
-import { ISSUES_QUERY_KEY, useIssues } from "~/hooks/model/issue";
+import { useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -108,7 +108,7 @@ const ProductNotFound = () => (
         )
       }
     />
-    <ProgressBackdrop scope="software" awaitQueriesRefetch={[ISSUES_QUERY_KEY]} />
+    <ProgressBackdrop scope="software" />
   </>
 );
 

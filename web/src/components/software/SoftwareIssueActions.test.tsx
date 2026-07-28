@@ -21,9 +21,11 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { screen, waitFor } from "@testing-library/react";
+import { installerRender, mockProgresses } from "~/test-utils";
 import SoftwareIssueActions from "./SoftwareIssueActions";
+
+import type { Progress } from "~/model/status";
 
 const mockProbeAction = jest.fn();
 jest.mock("~/api", () => ({
@@ -31,14 +33,17 @@ jest.mock("~/api", () => ({
   probeAction: (only) => mockProbeAction(only),
 }));
 
-const mockUseProgressTracking = jest.fn();
-jest.mock("~/hooks/use-progress-tracking", () => ({
-  useProgressTracking: (...args) => mockUseProgressTracking(...args),
-}));
+const readingRepositories: Progress = {
+  scope: "software",
+  step: "Refreshing metadata from the repositories",
+  steps: [],
+  index: 2,
+  size: 3,
+};
 
 beforeEach(() => {
   mockProbeAction.mockClear();
-  mockUseProgressTracking.mockReturnValue({ loading: false, progress: undefined });
+  mockProgresses([]);
 });
 
 it("offers a link to the network settings", () => {
@@ -55,7 +60,7 @@ it("reads the software information again when reloading", async () => {
 
 describe("while the software information is being read", () => {
   beforeEach(() => {
-    mockUseProgressTracking.mockReturnValue({ loading: true, progress: undefined });
+    mockProgresses([readingRepositories]);
   });
 
   it("does not allow reading it again", async () => {
@@ -67,8 +72,23 @@ describe("while the software information is being read", () => {
     expect(mockProbeAction).not.toHaveBeenCalled();
   });
 
-  it("still allows going to the network settings", () => {
+  it("keeps showing where to review the network settings", () => {
     installerRender(<SoftwareIssueActions />);
     screen.getByRole("link", { name: "Go to network settings" });
+  });
+});
+
+describe("when reading finishes without solving the problem", () => {
+  it("allows trying again", async () => {
+    mockProgresses([readingRepositories]);
+    const { rerender } = installerRender(<SoftwareIssueActions />);
+    expect(screen.getByRole("button", { name: /Try again/ })).toBeDisabled();
+
+    // Reading is over, but it found the same issues as before, so nothing else
+    // is fetched afterwards. The actions must not stay waiting for that.
+    mockProgresses([]);
+    rerender(<SoftwareIssueActions />);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: /Try again/ })).toBeEnabled());
   });
 });

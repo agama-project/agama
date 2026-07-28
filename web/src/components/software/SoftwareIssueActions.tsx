@@ -24,7 +24,6 @@ import React from "react";
 import { Button, Flex } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
-import { ISSUES_QUERY_KEY } from "~/hooks/model/issue";
 import { probeAction } from "~/api";
 import { NETWORK } from "~/routes/paths";
 import { _ } from "~/i18n";
@@ -66,7 +65,7 @@ export type SoftwareIssueActionsProps = {
  * <UnavailableState title={...} description={...} actions={<SoftwareIssueActions />} />
  */
 export default function SoftwareIssueActions({ isCompact }: SoftwareIssueActionsProps) {
-  const { loading } = useProgressTracking("software", [ISSUES_QUERY_KEY]);
+  const { loading } = useProgressTracking("software");
 
   return (
     // The containers rendering these actions lay them out differently and
