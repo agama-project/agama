@@ -151,6 +151,7 @@ rd.hcn.ip=10.2.2.69::10.2.0.1:255.255.255.0::2e-7a-3c-6a-1c-00:none \
 
 The HCN dracut module integrates with systemd and NetworkManager during the initramfs boot phase:
 
+0. **Claiming the network**: A `cmdline` hook (`hcn-cmdline.sh`) writes `ip=hcn` to `/etc/cmdline.d/hcn.conf` when HCN is requested and HCN devices are present. This marker tells NetworkManager and the other Agama dracut modules that HCN configures the network, so nobody else touches the bond ports (see [Interaction with other modules](#interaction-with-other-modules))
 1. **Device Discovery**: Scans `/proc/device-tree` for devices with matching `ibm,hcn-id` properties, building a mapping of port devices to bond controllers
 2. **Parameter Transformation**: Replaces port interface names or MAC addresses in `rd.hcn.*` parameters with discovered bond controller names
 3. **Bond Configuration**: Generates `bond=` parameters for active-backup bonds with the discovered primary (SR-IOV) and backup (vNIC) adapters
@@ -163,19 +164,40 @@ The HCN dracut module integrates with systemd and NetworkManager during the init
 
 - **Two-stage persistence**: Profiles are stored in `/etc/NetworkManager/system-connections/` during initramfs, then copied to the installed system by Agama's `save-agama-conf.sh`
 - **Isolated generation**: Uses a custom output directory (`/run/hcn/system-connections/`) to prevent conflicts with standard NetworkManager profiles
-- **No cmdline pollution**: Transformed parameters are passed directly to `nm-initrd-generator` as arguments, never written to `/etc/cmdline.d/`, preventing other modules from regenerating incompatible profiles
+- **No cmdline pollution**: The transformed parameters are passed directly to `nm-initrd-generator` as arguments and are never written to `/etc/cmdline.d/`. The only thing written there is the `ip=hcn` marker, which nothing but HCN acts upon
+
+## Interaction with other modules
+
+HCN cannot be configured from a `cmdline` hook: the bond ports only show up once udev has
+discovered the devices, which happens long after the command line is parsed. Everything
+else, though, is decided at that point, so the module reserves the network for itself as
+early as possible by writing `ip=hcn` to `/etc/cmdline.d/hcn.conf`:
+
+- **NetworkManager** skips the argument and, more importantly, does not fabricate its
+  default DHCP connection when `rd.neednet=1` was requested but the command line produced
+  no connection. That default would bring the bond ports up on their own, breaking the
+  bond.
+- **The other Agama modules** (`99agama-dud`, `99live-self-update`, `99initrd-nmtui`) only
+  add `ip=dhcp` when the user did not configure the network. An `ip=` of any kind is
+  enough for them to keep their hands off, hence the hook runs at priority 20, before
+  their priority 99 hooks.
+
+When HCN is requested but the device tree contains no HCN device, the marker is *not*
+written: `parse-hcn` would not configure anything either, so the other modules should
+keep providing their usual DHCP fallback.
 
 ## Requirements
 
 - IBM PowerVM system with HCN-capable adapters (devices with `ibm,hcn-id` properties in `/proc/device-tree`)
-- NetworkManager with `nm-initrd-generator` support
+- NetworkManager with `nm-initrd-generator` support, including `ip=hcn` (jsc#PED-14534). Older versions treat `hcn` as an unknown method and generate their own wired DHCP connection, which breaks the bond
 - Agama installer (for profile persistence to installed system)
 - Supported platforms: SLES 16.1+ (NetworkManager < 1.54), Tumbleweed (NetworkManager >= 1.54)
 
 ## Files
 
 - `module-setup.sh` - Dracut module installation and dependency declarations
-- `parse-hcn.sh` - Device discovery, bond configuration, and profile generation logic
+- `hcn-cmdline.sh` - Dracut `cmdline` hook writing the `ip=hcn` marker
+- `parse-hcn.sh` - Device discovery, bond configuration, and profile generation logic (despite the name, not a `cmdline` hook: it runs from the service below)
 - `hcn-init-initrd.service` - Systemd service orchestrating boot-time HCN setup
 
 ## Documentation
