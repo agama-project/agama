@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Button } from "@patternfly/react-core";
+import { Button, Flex } from "@patternfly/react-core";
 import Link from "~/components/core/Link";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { ISSUES_QUERY_KEY } from "~/hooks/model/issue";
@@ -61,7 +61,14 @@ export default function SoftwareIssueActions() {
   const { loading } = useProgressTracking("software", [ISSUES_QUERY_KEY]);
 
   return (
-    <>
+    // The containers rendering these actions lay them out differently and
+    // neither of them centers what it holds. Keep them aligned and spaced here
+    // so they look the same wherever they go.
+    <Flex
+      alignItems={{ default: "alignItemsCenter" }}
+      gap={{ default: "gapSm" }}
+      flexWrap={{ default: "wrap" }}
+    >
       <Button
         variant="secondary"
         onClick={() => probeAction(["software"])}
@@ -78,6 +85,6 @@ export default function SoftwareIssueActions() {
         {/* TRANSLATORS: link to go to network settings */}
         {_("Go to network settings")}
       </Link>
-    </>
+    </Flex>
   );
 }
