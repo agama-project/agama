@@ -37,11 +37,12 @@ module Agama
         # Condition used to match devices.
         #
         # It holds the root node of the condition tree, which can be a leaf condition
-        # (SearchConditions::Name, ::Size or ::PartitionNumber) or a logical operator
-        # (SearchConditions::And, ::Or or ::Not) nesting other conditions.
+        # (SearchConditions::Name, ::Size, ::PartitionNumber, ::Filesystem or ::Partitions) or a
+        # logical operator (SearchConditions::And, ::Or or ::Not) nesting other conditions.
         #
         # @return [SearchConditions::Name, SearchConditions::Size,
-        #   SearchConditions::PartitionNumber, SearchConditions::And,
+        #   SearchConditions::PartitionNumber, SearchConditions::Filesystem,
+        #   SearchConditions::Partitions, SearchConditions::And,
         #   SearchConditions::Or, SearchConditions::Not, nil]
         attr_accessor :condition
 
@@ -95,7 +96,7 @@ module Agama
         # Name targeted by the search, if the top-level condition searches by name.
         #
         # Only a top-level SearchConditions::Name yields a name; operators (and/or/not) and
-        # other leaf conditions (size, partition number) return nil.
+        # other leaf conditions (size, partition number, filesystem, partitions) return nil.
         #
         # @return [String, nil]
         def condition_name
