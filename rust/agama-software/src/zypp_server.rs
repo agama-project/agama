@@ -46,7 +46,7 @@ use crate::{
     model::{
         packages::ResolvableTypeExt,
         registration::RegistrationError,
-        state::{self, SoftwareState},
+        state::{self, SoftwareState, AGAMA_REPO_PREFIX},
         WriteIssues,
     },
     service::DUD_REPO_ALIAS,
@@ -55,11 +55,6 @@ use crate::{
 };
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
-
-/// Alias prefix reserved for the installation repositories created by Agama corresponding to the
-/// product definition (see `build_repo` in `model::state`). They are named `agama-0`, `agama-1`,
-/// etc. and must not be copied to the target system.
-const AGAMA_REPO_PREFIX: &str = "agama-";
 
 /// Whether the repository with the given alias is an installer-only repository
 /// that must not end up in the target system.

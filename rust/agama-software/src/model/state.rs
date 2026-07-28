@@ -78,6 +78,11 @@ impl SoftwareState {
     }
 }
 
+/// Alias prefix reserved for the installation repositories created by Agama corresponding to the
+/// product definition (see [`SoftwareStateBuilder::build_repo`]). They are named `agama-0`,
+/// `agama-1`, etc. and must not be copied to the target system.
+pub(crate) const AGAMA_REPO_PREFIX: &str = "agama-";
+
 /// Builder to create a [SoftwareState] struct from different sources.
 ///
 /// At this point it uses the following sources:
@@ -280,7 +285,7 @@ impl<'a> SoftwareStateBuilder<'a> {
     }
 
     fn build_repo(i: usize, url: String) -> Repository {
-        let alias = format!("agama-{}", i);
+        let alias = format!("{AGAMA_REPO_PREFIX}{i}");
         Repository {
             name: alias.clone(),
             alias,
