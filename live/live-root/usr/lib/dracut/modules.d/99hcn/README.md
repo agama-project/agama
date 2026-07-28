@@ -112,6 +112,12 @@ Explicitly enables or disables HCN configuration.
 
 **Note:** This parameter is **optional and redundant** when `rd.hcn.ip` or `rd.hcn.route` is present, as these parameters automatically trigger HCN activation. Use `rd.hcn=0` to explicitly disable HCN even when other HCN parameters are present.
 
+### `ip=hcn` (internal, do not use)
+
+**This is not a user-facing parameter.** The module writes it itself to `/etc/cmdline.d/hcn.conf` to announce that HCN takes care of the network, see [Interaction with other modules](#interaction-with-other-modules). Use `rd.hcn.ip` / `rd.hcn.route` to configure HCN.
+
+Passing `ip=hcn` on the kernel command line does **not** enable HCN, it only stops everybody else from configuring the network, so the system likely ends up with no network at all. Making it a proper user-facing option is part of the long-term transparent `ip=` work, where the port name or MAC would be given as usual (`ip=<port>:hcn`) and `rd.hcn.*` would be deprecated.
+
 ## Multiple HCN Bonds
 
 When your system has multiple HCN bonds (multiple pairs of devices with different `ibm,hcn-id` values), you **must** target specific bonds using either:
@@ -185,6 +191,11 @@ early as possible by writing `ip=hcn` to `/etc/cmdline.d/hcn.conf`:
 When HCN is requested but the device tree contains no HCN device, the marker is *not*
 written: `parse-hcn` would not configure anything either, so the other modules should
 keep providing their usual DHCP fallback.
+
+The marker is an implementation detail between the module and NetworkManager. It is not
+meant to be typed by users: `hcn-init-initrd.service` does not react to it, so an `ip=hcn`
+given on the kernel command line configures nothing while still keeping the other modules
+away from the network.
 
 ## Requirements
 

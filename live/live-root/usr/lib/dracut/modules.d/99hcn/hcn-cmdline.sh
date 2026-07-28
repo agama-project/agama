@@ -6,6 +6,9 @@
 # "ip=hcn" marker to /etc/cmdline.d. The configuration itself is done much
 # later by parse-hcn, which has to wait for udev to discover the devices.
 #
+# The marker is internal, users still request HCN with rd.hcn.ip/rd.hcn.route.
+# Writing it by hand does not enable HCN, it only keeps the others away.
+#
 # The marker keeps everybody else away from the HCN bond ports:
 #
 #   * nm-initrd-generator skips the argument and, more importantly, does not

@@ -44,7 +44,7 @@ The 99hcn dracut module provides automatic network configuration for IBM PowerVM
 
 4. **No Cmdline Pollution**: Transformed parameters are passed directly to `nm-initrd-generator` as command-line arguments, never written to `/etc/cmdline.d/`, preventing other dracut modules from reading them and regenerating incompatible profiles.
 
-5. **Early Claim of the Network**: The `hcn-cmdline.sh` hook writes a single `ip=hcn` marker to `/etc/cmdline.d/hcn.conf` while the command line is being parsed. It announces that HCN takes care of the network so that neither NetworkManager nor the other Agama modules configure the bond ports on their own. This requires NetworkManager with `ip=hcn` support (jsc#PED-14534).
+5. **Early Claim of the Network**: The `hcn-cmdline.sh` hook writes a single `ip=hcn` marker to `/etc/cmdline.d/hcn.conf` while the command line is being parsed. It announces that HCN takes care of the network so that neither NetworkManager nor the other Agama modules configure the bond ports on their own. This requires NetworkManager with `ip=hcn` support (jsc#PED-14534). The marker is **internal**: it is written by the module, never by the user, and it does not enable HCN by itself (`hcn-init-initrd.service` only reacts to `rd.hcn*`).
 
 6. **Timing-Aware Orchestration**: Two-phase execution (cmdline hook + systemd service) handles the fact that HCN devices may not be available when kernel command line parsing runs. The hook only reserves the network, the actual configuration happens in the service once udev has discovered the devices.
 
