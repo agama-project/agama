@@ -25,13 +25,14 @@ import { Navigate } from "react-router";
 import { Content, Divider, Flex, Grid, GridItem, Stack } from "@patternfly/react-core";
 import Interpolate from "~/components/core/Interpolate";
 import Page from "~/components/core/Page";
+import ProgressBackdrop from "~/components/core/ProgressBackdrop";
 import Text from "~/components/core/Text";
 import MissingProductState from "~/components/product/MissingProductState";
 import InstallButton from "~/components/overview/InstallButton";
 import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import { useProductInfo } from "~/hooks/model/config/product";
-import { useIssues } from "~/hooks/model/issue";
+import { ISSUES_QUERY_KEY, useIssues } from "~/hooks/model/issue";
 import { PRODUCT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
@@ -83,18 +84,32 @@ const InstallationReview = ({ product }: { product: Product }) => (
 
 /**
  * Empty state shown when the product to install was not found.
+ *
+ * While the product is being looked for, it reports what is being done the
+ * same way pages do. That is mounted here rather than on the page so it only
+ * ever happens in this situation: doing it at page level would cover the
+ * overview on every software operation, including those the user can carry on
+ * working through. Here there is nothing to work on until the product turns
+ * up.
+ *
+ * Screens already reporting this at page level, such as the software one, use
+ * `MissingProductState` directly, so that only one of them is ever waiting on
+ * the same operation.
  */
 const ProductNotFound = () => (
-  <MissingProductState
-    // TRANSLATORS: empty state title when the product to install was not found
-    title={_("Product not found")}
-    description={
-      // TRANSLATORS: shown when the product to install was not found
-      _(
-        "The product was not found in the repositories so it is not possible to proceed with the installation.",
-      )
-    }
-  />
+  <>
+    <MissingProductState
+      // TRANSLATORS: empty state title when the product to install was not found
+      title={_("Product not found")}
+      description={
+        // TRANSLATORS: shown when the product to install was not found
+        _(
+          "The product was not found in the repositories so it is not possible to proceed with the installation.",
+        )
+      }
+    />
+    <ProgressBackdrop scope="software" awaitQueriesRefetch={[ISSUES_QUERY_KEY]} />
+  </>
 );
 
 const OverviewPageContent = ({ product }: { product: Product }) => {
