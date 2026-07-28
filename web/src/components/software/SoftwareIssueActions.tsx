@@ -78,7 +78,7 @@ export default function SoftwareIssueActions({ isCompact }: SoftwareIssueActions
       flexWrap={{ default: "wrap" }}
     >
       <Button
-        variant="secondary"
+        variant="control"
         size={isCompact ? "sm" : "default"}
         onClick={() => probeAction(["software"])}
         isLoading={loading}
@@ -90,7 +90,17 @@ export default function SoftwareIssueActions({ isCompact }: SoftwareIssueActions
         {/* TRANSLATORS: button to read the software information again */}
         {_("Reload")}
       </Button>
-      <Link to={NETWORK.root} variant="link" isInline isDisabled={loading}>
+      {/*
+        Dressed as a button only because it sits beside a real one, so the pair
+        reads as a single set of actions. On its own it would stay a plain link.
+        Either way it remains an anchor pointing at its destination.
+      */}
+      <Link
+        to={NETWORK.root}
+        variant="control"
+        size={isCompact ? "sm" : "default"}
+        isDisabled={loading}
+      >
         {/* TRANSLATORS: link to go to network settings */}
         {_("Go to network settings")}
       </Link>
