@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,31 +19,32 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/devices_search"
-require "agama/storage/config_solvers/search_matchers/partition"
+require "agama/storage/config_solvers/search_matchers/partitions_condition"
+require "agama/storage/configs/search_conditions"
 
 module Agama
   module Storage
     module ConfigSolvers
-      # Solver for the search of the partition configs.
-      class PartitionsSearch < DevicesSearch
-        # Solves the search of the partition configs.
+      module SearchMatchers
+        # Mixin for matchers supporting the partitions condition.
         #
-        # @note The config object is modified.
-        #
-        # @param config [#partitions]
-        # @return [#partitions]
-        def solve(config)
-          candidate_partitions = config.found_device&.partitions || []
-          config.partitions = super(config.partitions, candidate_partitions)
-          config
-        end
+        # Only for matchers whose subject is a partitionable device.
+        module WithPartitions
+        private
 
-      private
+          # @see Base#match_leaf?
+          def match_leaf?(node, device)
+            if node.is_a?(Configs::SearchConditions::Partitions)
+              return partitions_condition_matcher.match?(node, device)
+            end
 
-        # @see DevicesSearch#matcher
-        def matcher
-          @matcher ||= SearchMatchers::Partition.new
+            super
+          end
+
+          # @return [PartitionsCondition]
+          def partitions_condition_matcher
+            @partitions_condition_matcher ||= SearchMatchers::PartitionsCondition.new
+          end
         end
       end
     end
