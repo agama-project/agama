@@ -54,7 +54,7 @@ it("offers a link to the network settings", () => {
 
 it("reads the software information again when reloading", async () => {
   const { user } = installerRender(<SoftwareIssueActions />);
-  await user.click(screen.getByRole("button", { name: /Reload/ }));
+  await user.click(screen.getByRole("button", { name: /Try again/ }));
   expect(mockProbeAction).toHaveBeenCalledWith(["software"]);
 });
 
@@ -65,7 +65,7 @@ describe("while the software information is being read", () => {
 
   it("does not allow reading it again", async () => {
     const { user } = installerRender(<SoftwareIssueActions />);
-    const button = screen.getByRole("button", { name: /Reload/ });
+    const button = screen.getByRole("button", { name: /Try again/ });
     expect(button).toBeDisabled();
 
     await user.click(button);

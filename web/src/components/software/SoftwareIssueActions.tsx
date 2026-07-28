@@ -51,9 +51,12 @@ export type SoftwareIssueActionsProps = {
  * relying on a page-wide overlay. That keeps the surrounding page usable and
  * prevents a second read from being started while one is running.
  *
- * FIXME: "Reload" is borrowed from another screen while translations are
- * frozen. Revisit the wording, here and in the surrounding texts, once the
- * catalog accepts new strings.
+ * The texts were written for retrying a failed repository read and went out
+ * of use at some point. Texts that stop being used keep their translations,
+ * and using one again picks them back up, so these arrive translated.
+ *
+ * FIXME: the texts around these actions are borrowed from elsewhere. Revisit
+ * them once new strings are accepted again.
  *
  * FIXME: a disabled button is all the feedback there is, so nothing says what
  * is happening or how far it got, and screen reader users are not told that it
@@ -84,10 +87,10 @@ export default function SoftwareIssueActions({ isCompact }: SoftwareIssueActions
         isDisabled={loading}
         // Without this the spinner contributes a hardcoded English "Loading..."
         // to the accessible name of the button.
-        spinnerAriaValueText={_("Loading")}
+        spinnerAriaValueText={_("Loading the installation repositories...")}
       >
         {/* TRANSLATORS: button to read the software information again */}
-        {_("Reload")}
+        {_("Try again")}
       </Button>
       {/*
         Dressed as a button only because it sits beside a real one, so the pair

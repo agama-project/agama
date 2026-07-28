@@ -293,7 +293,7 @@ describe("SoftwarePage", () => {
       ]);
 
       installerRender(<SoftwarePage />);
-      expect(screen.queryByRole("button", { name: /Reload/ })).toBeNull();
+      expect(screen.queryByRole("button", { name: /Try again/ })).toBeNull();
       expect(screen.queryByRole("link", { name: "Go to network settings" })).toBeNull();
     });
 
@@ -315,7 +315,7 @@ describe("SoftwarePage", () => {
 
       it("offers to read them again and to review the network settings", () => {
         installerRender(<SoftwarePage />);
-        screen.getByRole("button", { name: /Reload/ });
+        screen.getByRole("button", { name: /Try again/ });
         const link = screen.getByRole("link", { name: "Go to network settings" });
         expect(link).toHaveAttribute("href", "/network");
       });
