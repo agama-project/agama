@@ -44,6 +44,7 @@ use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
 use std::{collections::HashMap, sync::Arc};
+use strum::VariantArray;
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
@@ -566,14 +567,17 @@ impl Service {
         Ok(())
     }
 
-    async fn probe_storage(&self) -> Result<(), Error> {
-        self.storage.call(storage::message::Probe).await?;
-        Ok(())
-    }
-
-    async fn probe_dasd(&self) -> Result<(), Error> {
-        if let Some(s390) = &self.s390 {
-            s390.call(s390::message::ProbeDASD).await?;
+    async fn probe(&self, only: &[Scope]) -> Result<(), Error> {
+        if only.contains(&Scope::Storage) {
+            self.storage.call(storage::message::Probe).await?;
+        }
+        if only.contains(&Scope::DASD) {
+            if let Some(s390) = &self.s390 {
+                s390.call(s390::message::ProbeDASD).await?;
+            }
+        }
+        if only.contains(&Scope::Software) {
+            self.software.call(software::message::Probe).await?;
         }
         Ok(())
     }
@@ -864,13 +868,10 @@ impl MessageHandler<message::RunAction> for Service {
                 checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.activate_storage().await?;
             }
-            Action::ProbeStorage => {
+            Action::Probe { only } => {
                 checks::check_stage(&self.progress, Stage::Configuring).await?;
-                self.probe_storage().await?;
-            }
-            Action::ProbeDASD => {
-                checks::check_stage(&self.progress, Stage::Configuring).await?;
-                self.probe_dasd().await?;
+                let only = only.unwrap_or_else(|| Scope::VARIANTS.to_vec());
+                self.probe(&only).await?;
             }
             Action::Install => {
                 let ipmi = ipmi::Ipmi::default();

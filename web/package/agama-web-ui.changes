@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Mon Jul 27 12:41:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show a proper empty state, pointing to the network settings,
+  when the product to install is not found, and offer to read the
+  software information again once the connection is in place
+  (gh#agama-project/agama#3768).
+- Offer the same actions when the repositories cannot be read
+  (gh#agama-project/agama#3768).
+
+-------------------------------------------------------------------
+Mon Jul 27 11:39:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to use the "Probe" action of the API (gh#agama-project/agama#3341).
+
+-------------------------------------------------------------------
 Tue Jul 21 22:00:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Avoid a flash from Agama colors to a product's own palette

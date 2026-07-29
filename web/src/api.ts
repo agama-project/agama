@@ -30,6 +30,7 @@ import type { Question } from "~/model/question";
 import type { Status } from "~/model/status";
 import type { System, LicenseContent } from "~/model/system";
 import type { Action, L10nSystemConfig, DiscoverISCSIConfig } from "~/model/action";
+import type { Scope } from "~/model/status";
 import type { AxiosResponse } from "axios";
 
 type Response = Promise<AxiosResponse>;
@@ -79,7 +80,7 @@ const configureL10nAction = (config: L10nSystemConfig) => postAction({ configure
 
 const activateStorageAction = () => postAction({ activateStorage: null });
 
-const probeStorageAction = () => postAction({ probeStorage: null });
+const probeAction = (only?: Scope[]) => postAction({ probe: { only } });
 
 const discoverISCSIAction = (config: DiscoverISCSIConfig) => postAction({ discoverISCSI: config });
 
@@ -116,7 +117,7 @@ export {
   patchQuestion,
   configureL10nAction,
   activateStorageAction,
-  probeStorageAction,
+  probeAction,
   discoverISCSIAction,
   startInstallation,
   finishInstallation,
