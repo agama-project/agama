@@ -429,6 +429,8 @@
       "anyOf": [
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
+        { "$ref": "#/$defs/searchConditionDriver" },
+        { "$ref": "#/$defs/searchConditionTransport" },
         { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/searchConditionPartitions" },
         { "$ref": "#/$defs/driveSearchConditionAnd" },
@@ -724,6 +726,7 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
         { "$ref": "#/$defs/searchConditionPartitionNumber" },
+        { "$ref": "#/$defs/searchConditionPartitionId" },
         { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/partitionSearchConditionAnd" },
         { "$ref": "#/$defs/partitionSearchConditionOr" },
@@ -895,6 +898,44 @@
         "less": { "$ref": "#/$defs/sizeValue" }
       }
     },
+    "searchConditionDriver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["driver"],
+      "properties": {
+        "driver": {
+          "description": "Matches devices handled by the given kernel driver, as reported by hwinfo. A device can be handled by several drivers; the condition matches if any of them is the given one.",
+          "type": "string",
+          "examples": ["ahci", "sd"]
+        }
+      }
+    },
+    "searchConditionTransport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transport"],
+      "properties": {
+        "transport": { "$ref": "#/$defs/transportValue" }
+      }
+    },
+    "transportValue": {
+      "description": "Data transport layer of the device. Devices with an undetermined transport never match.",
+      "enum": [
+        "sbp",
+        "ata",
+        "fc",
+        "iscsi",
+        "sas",
+        "sata",
+        "spi",
+        "usb",
+        "fcoe",
+        "pcie",
+        "tcp",
+        "rdma",
+        "loop"
+      ]
+    },
     "searchConditionPartitionNumber": {
       "type": "object",
       "additionalProperties": false,
@@ -906,6 +947,61 @@
           "minimum": 1
         }
       }
+    },
+    "searchConditionPartitionId": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/partitionIdAny" }
+      }
+    },
+    "partitionIdAny": {
+      "title": "Partition id",
+      "description": "Any partition id managed by libstorage-ng. Some ids are only valid for a given partition table type.",
+      "enum": [
+        "dos12",
+        "dos16",
+        "ntfs",
+        "dos32",
+        "extended",
+        "diag",
+        "prep",
+        "swap",
+        "linux",
+        "irst",
+        "lvm",
+        "raid",
+        "xbootldr",
+        "esp",
+        "bios_boot",
+        "windows_basic_data",
+        "microsoft_reserved",
+        "linux_home",
+        "linux_server_data",
+        "linux_root_arm",
+        "linux_root_aarch64",
+        "linux_root_ppc32",
+        "linux_root_ppc64be",
+        "linux_root_ppc64le",
+        "linux_root_riscv32",
+        "linux_root_riscv64",
+        "linux_root_s390",
+        "linux_root_s390x",
+        "linux_root_x86",
+        "linux_root_x86_64",
+        "linux_usr_arm",
+        "linux_usr_aarch64",
+        "linux_usr_ppc32",
+        "linux_usr_ppc64be",
+        "linux_usr_ppc64le",
+        "linux_usr_riscv32",
+        "linux_usr_riscv64",
+        "linux_usr_s390",
+        "linux_usr_s390x",
+        "linux_usr_x86",
+        "linux_usr_x86_64"
+      ]
     },
     "searchConditionFilesystem": {
       "type": "object",

@@ -89,6 +89,23 @@
                 "filesystem": { "label": "data" }
               }
             }
+          },
+          {
+            "search": {
+              "condition": {
+                "id": "esp"
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "id": "linux" },
+                  { "not": { "filesystem": "none" } }
+                ]
+              }
+            }
           }
         ]
       },
@@ -177,6 +194,30 @@
                 "max": 5
               }
             }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "transport": "usb"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "driver": "ahci"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "not": { "transport": "usb" } },
+              { "size": { "greater": "100 GiB" } }
+            ]
           }
         }
       }
