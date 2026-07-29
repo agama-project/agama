@@ -304,8 +304,11 @@ const ReuseSettingsField = withForm({
 /**
  * Renders the dialog buttons, keeping them unavailable while the settings are
  * being applied.
+ *
+ * Meant to be placed inside a `Popup.Actions`, which is what puts the buttons
+ * in the dialog footer.
  */
-const DialogActions = withForm({
+const DialogButtons = withForm({
   ...defaultOptions,
   props: {} as {
     /** Called when the user dismisses the dialog. */
@@ -313,24 +316,22 @@ const DialogActions = withForm({
   },
   render: function Render({ form, onCancel }) {
     return (
-      <Popup.Actions>
-        <form.Subscribe selector={(state) => state.isSubmitting}>
-          {(isSubmitting) => (
-            <>
-              <Popup.Confirm
-                form="installer-l10n"
-                type="submit"
-                autoFocus
-                isDisabled={isSubmitting}
-                isLoading={isSubmitting}
-              >
-                {_("Accept")}
-              </Popup.Confirm>
-              <Popup.Cancel onClick={onCancel} isDisabled={isSubmitting} />
-            </>
-          )}
-        </form.Subscribe>
-      </Popup.Actions>
+      <form.Subscribe selector={(state) => state.isSubmitting}>
+        {(isSubmitting) => (
+          <>
+            <Popup.Confirm
+              form="installer-l10n"
+              type="submit"
+              autoFocus
+              isDisabled={isSubmitting}
+              isLoading={isSubmitting}
+            >
+              {_("Accept")}
+            </Popup.Confirm>
+            <Popup.Cancel onClick={onCancel} isDisabled={isSubmitting} />
+          </>
+        )}
+      </form.Subscribe>
     );
   },
 });
@@ -353,7 +354,9 @@ const AllSettingsDialog = withForm({
           </ReusableSettings>
         </Form>
 
-        <DialogActions form={form} onCancel={onCancel} />
+        <Popup.Actions>
+          <DialogButtons form={form} onCancel={onCancel} />
+        </Popup.Actions>
       </Popup>
     );
   },
@@ -376,7 +379,9 @@ const LanguageOnlyDialog = withForm({
           </ReusableSettings>
         </Form>
 
-        <DialogActions form={form} onCancel={onCancel} />
+        <Popup.Actions>
+          <DialogButtons form={form} onCancel={onCancel} />
+        </Popup.Actions>
       </Popup>
     );
   },
@@ -410,7 +415,9 @@ const KeyboardOnlyDialog = withForm({
           </ReusableSettings>
         </Form>
 
-        <DialogActions form={form} onCancel={onCancel} />
+        <Popup.Actions>
+          <DialogButtons form={form} onCancel={onCancel} />
+        </Popup.Actions>
       </Popup>
     );
   },
