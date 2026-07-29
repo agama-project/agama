@@ -644,8 +644,6 @@ export default function InstallerL10nOptions({
   const skip =
     (variant === "keyboard" && !localConnection()) ||
     stage === "installing" ||
-    // FIXME: below condition could be a problem for a question appearing while
-    // product progress
     [ROOT.login, ROOT.installationProgress, ROOT.installationFinished].includes(location.pathname);
 
   if (skip) return;
