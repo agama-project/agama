@@ -85,10 +85,15 @@ type User = ReturnType<typeof installerRender>["user"];
 /**
  * Picks a value from one of the dialog selectors, which take two steps: open
  * the list of options, then choose one.
+ *
+ * Each option is named after its label plus the code shown below it, so the
+ * option is matched by a substring of that name.
  */
 const chooseOption = async (user: User, dialog: HTMLElement, field: string, option: string) => {
-  await user.click(within(dialog).getByRole("button", { name: field }));
-  await user.click(await screen.findByRole("option", { name: option }));
+  await user.click(within(dialog).getByRole("combobox", { name: field }));
+  await user.click(
+    await screen.findByRole("option", { name: (name: string) => name.startsWith(option) }),
+  );
 };
 
 describe("InstallerL10nOptions", () => {
@@ -238,10 +243,14 @@ describe("InstallerL10nOptions", () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
 
-      await user.click(within(dialog).getByRole("button", { name: "Language" }));
+      await user.click(within(dialog).getByRole("combobox", { name: "Language" }));
 
-      expect(await screen.findByText("日本語")).toHaveAttribute("lang", "ja-JP");
-      expect(screen.getByText("Català")).toHaveAttribute("lang", "ca-ES");
+      // The language is stated on the list item wrapping the option, so it
+      // applies to the option text it contains.
+      const japanese = await screen.findByRole("option", { name: /日本語/ });
+      expect(japanese.closest("li")).toHaveAttribute("lang", "ja-JP");
+      const catalan = screen.getByRole("option", { name: /Català/ });
+      expect(catalan.closest("li")).toHaveAttribute("lang", "ca-ES");
     });
 
     it("starts from the settings in use when reopened after a dismissed change", async () => {
@@ -255,9 +264,7 @@ describe("InstallerL10nOptions", () => {
       await user.click(screen.getByRole("button", { name: "Language and Keyboard" }));
       const reopened = screen.getByRole("dialog", { name: "Language and keyboard" });
 
-      expect(within(reopened).getByRole("button", { name: "Language" })).toHaveTextContent(
-        "Deutsch",
-      );
+      expect(within(reopened).getByRole("combobox", { name: "Language" })).toHaveValue("Deutsch");
       expect(
         within(reopened).getByRole("checkbox", { name: /Use these same settings/ }),
       ).toBeChecked();
@@ -298,7 +305,7 @@ describe("InstallerL10nOptions", () => {
       it("does not allow setting the keyboard layout", async () => {
         const { user } = await renderAndOpen();
         const dialog = screen.getByRole("dialog");
-        const keymapSelector = within(dialog).queryByRole("button", { name: "Keyboard layout" });
+        const keymapSelector = within(dialog).queryByRole("combobox", { name: "Keyboard layout" });
         expect(keymapSelector).toBeNull();
         await within(dialog).findByText("Cannot be changed in remote installation");
         await chooseOption(user, dialog, "Language", "Español");
@@ -328,7 +335,7 @@ describe("InstallerL10nOptions", () => {
     it("allows setting only language", async () => {
       const { user } = await renderAndOpen({ variant: "language" });
       const dialog = screen.getByRole("dialog", { name: "Change Language" });
-      const keymapSelector = within(dialog).queryByRole("button", { name: "Keyboard layout" });
+      const keymapSelector = within(dialog).queryByRole("combobox", { name: "Keyboard layout" });
       expect(keymapSelector).toBeNull();
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 
@@ -417,7 +424,7 @@ describe("InstallerL10nOptions", () => {
     it("allows setting only keyboard layout", async () => {
       const { user } = await renderAndOpen({ variant: "keyboard" });
       const dialog = screen.getByRole("dialog", { name: "Change keyboard" });
-      const languageSelector = within(dialog).queryByRole("button", { name: "Language" });
+      const languageSelector = within(dialog).queryByRole("combobox", { name: "Language" });
       expect(languageSelector).toBeNull();
       const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
 

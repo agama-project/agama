@@ -36,6 +36,7 @@ import { useHref, useLocation } from "react-router";
 import { Button, ButtonProps, Flex, FlexProps, Form } from "@patternfly/react-core";
 import { formOptions } from "@tanstack/react-form";
 import Popup from "~/components/core/Popup";
+import Text from "~/components/core/Text";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import Icon from "~/components/layout/Icon";
 import { mergeFormDefaults, useAppForm, withForm } from "~/hooks/form";
@@ -83,7 +84,8 @@ const submitHandler =
   };
 
 /**
- * Renders a dropdown for language selection.
+ * Language selector for the installer interface. Each option shows the language
+ * name, with its code below; both are searchable.
  *
  * Each option states its own language, so it is read aloud with the right
  * pronunciation instead of the one currently in use.
@@ -93,13 +95,28 @@ const LanguageField = withForm({
   render: function Render({ form }) {
     const options = Object.keys(supportedLanguages)
       .sort()
-      .map((id) => ({ value: id, label: <span lang={id}>{supportedLanguages[id]}</span> }));
+      .map((id) => ({
+        value: id,
+        label: supportedLanguages[id],
+        description: (
+          <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>{id}</Text>
+        ),
+        filterText: `${supportedLanguages[id]} ${id}`,
+        lang: id,
+      }));
 
     return (
       <form.AppField name="language">
         {(field) => (
-          // TRANSLATORS: label for the installer interface language selector
-          <field.DropdownField label={_("Language")} options={options} />
+          <field.SearchableSelectField
+            // TRANSLATORS: label for the installer interface language selector
+            label={_("Language")}
+            // TRANSLATORS: hint for the language filter input
+            placeholder={_("Filter by language, territory or locale code")}
+            // TRANSLATORS: shown when no language matches the filter
+            noResultsText={_("None of the locales match the filter.")}
+            options={options}
+          />
         )}
       </form.AppField>
     );
@@ -107,7 +124,8 @@ const LanguageField = withForm({
 });
 
 /**
- * Renders a dropdown for keyboard layout selection.
+ * Keyboard layout selector for the installer interface. Each option shows the
+ * layout description, with the keymap code below; both are searchable.
  *
  * Not available in remote installations.
  */
@@ -130,13 +148,29 @@ const KeyboardField = withForm({
       );
     }
 
-    const options = keymaps.map((keymap) => ({ value: keymap.id, label: keymap.description }));
+    const options = keymaps.map((keymap) => ({
+      value: keymap.id,
+      label: keymap.description,
+      description: (
+        <Text textStyle={["fontSizeXs", "textColorDisabled", "fontFamilyMonospace"]}>
+          {keymap.id}
+        </Text>
+      ),
+      filterText: `${keymap.description} ${keymap.id}`,
+    }));
 
     return (
       <form.AppField name="keymap">
         {(field) => (
-          // TRANSLATORS: label for the installer interface keyboard layout selector
-          <field.DropdownField label={_("Keyboard layout")} options={options} />
+          <field.SearchableSelectField
+            // TRANSLATORS: label for the installer interface keyboard layout selector
+            label={_("Keyboard layout")}
+            // TRANSLATORS: hint for the keyboard filter input
+            placeholder={_("Filter by description or keymap code")}
+            // TRANSLATORS: shown when no keyboard layout matches the filter
+            noResultsText={_("None of the keymaps match the filter.")}
+            options={options}
+          />
         )}
       </form.AppField>
     );
