@@ -42,6 +42,7 @@ import Icon from "~/components/layout/Icon";
 import { mergeFormDefaults, useAppForm, withForm } from "~/hooks/form";
 import { useInstallerL10n } from "~/context/installerL10n";
 import { localConnection } from "~/utils";
+import { languageToLocale } from "~/utils/l10n";
 import { _ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
@@ -589,14 +590,20 @@ export default function InstallerL10nOptions({
 
   /**
    * Copies selected localization settings to the product to install settings,
+   * as far as the product supports them.
+   *
+   * The product offers its own list of locales, which does not have to include
+   * one for the chosen interface language. When it does not, its localization
+   * settings are left as they are.
    **/
   const reuseSettings = (values: FormFields) => {
-    // FIXME: export and use languageToLocale from context/installerL10n
-    const systemLocale = locales.find((l) => l.id.startsWith(values.language.replace("-", "_")));
+    const systemLocale = locales.find((l) => l.id === languageToLocale(values.language));
     const systemL10n: { locale?: Locale["id"]; keymap?: Keymap["id"] } = {};
-    // FIXME: use a fallback if no system locale was found ?
-    if (variant !== "keyboard") systemL10n.locale = systemLocale?.id;
+
+    if (variant !== "keyboard" && systemLocale) systemL10n.locale = systemLocale.id;
     if (variant !== "language" && localConnection()) systemL10n.keymap = values.keymap;
+
+    if (Object.keys(systemL10n).length === 0) return;
 
     patchConfig({ l10n: systemL10n });
   };

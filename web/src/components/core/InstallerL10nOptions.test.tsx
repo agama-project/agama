@@ -217,6 +217,20 @@ describe("InstallerL10nOptions", () => {
       });
     });
 
+    it("keeps the product locale when it offers none for the chosen language", async () => {
+      const { user } = await renderAndOpen();
+      const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      // Catalan is offered for the interface, but the product locales above do
+      // not include it.
+      await chooseOption(user, dialog, "Language", "Català");
+      await chooseOption(user, dialog, "Keyboard layout", "English (UK)");
+
+      await user.click(acceptButton);
+      expect(mockPatchConfigFn).toHaveBeenCalledWith({ l10n: { keymap: "gb" } });
+    });
+
     it("allows not reusing settings for the selected product", async () => {
       const { user } = await renderAndOpen();
       const dialog = screen.getByRole("dialog", { name: "Language and keyboard" });
@@ -363,6 +377,19 @@ describe("InstallerL10nOptions", () => {
           locale: "es_ES.UTF-8",
         },
       });
+    });
+
+    it("changes nothing when the product offers no locale for the chosen language", async () => {
+      const { user } = await renderAndOpen({ variant: "language" });
+      const dialog = screen.getByRole("dialog", { name: "Change Language" });
+      const acceptButton = within(dialog).getByRole("button", { name: "Accept" });
+
+      // Catalan is offered for the interface, but the product locales above do
+      // not include it.
+      await chooseOption(user, dialog, "Language", "Català");
+
+      await user.click(acceptButton);
+      expect(mockPatchConfigFn).not.toHaveBeenCalled();
     });
 
     it("allows not reusing settings for the selected product", async () => {
