@@ -481,13 +481,11 @@ impl Service {
     }
 
     async fn read_system_info(&mut self) -> Result<(), Error> {
-        self.licenses.read()?;
         self.products.read()?;
         if let Err(error) = self.hardware.read().await {
             tracing::warn!("Failed to read hardware information: {error}");
         }
 
-        self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
         self.system.hardware = self.hardware.to_hardware_info();
 

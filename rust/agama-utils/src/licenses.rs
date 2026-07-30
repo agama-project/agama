@@ -53,6 +53,8 @@ pub struct Registry {
     licenses: Vec<License>,
     /// Fallback languages per territory.
     fallback: HashMap<String, LanguageTag>,
+    /// flag if list of licenses are already read
+    read: bool,
 }
 
 impl Registry {
@@ -61,6 +63,7 @@ impl Registry {
             path: path.as_ref().to_owned(),
             licenses: vec![],
             fallback: HashMap::new(),
+            read: false,
         }
     }
 
@@ -97,6 +100,7 @@ impl Registry {
                 self.fallback.insert(territory.id, fallback);
             }
         }
+        self.read = true;
 
         Ok(())
     }
@@ -104,7 +108,13 @@ impl Registry {
     /// Finds a license with the given ID and language.
     ///
     /// If a translation is not found for the given language, it returns the default text.
-    pub fn find(&self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
+    pub fn find(&mut self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
+        if !self.read {
+            if let Err(err) = self.read() {
+                tracing::error!("Failed to read licenses: {err}");
+                return None;
+            }
+        }
         let license = self.licenses.iter().find(|l| l.id.as_str() == id)?;
         let license_language = self.find_language(license, language).unwrap_or_default();
         self.read_license_content(id, &license_language).ok()
@@ -233,7 +243,7 @@ mod test {
 
     #[test]
     fn test_find_license() {
-        let repo = build_registry();
+        let mut repo = build_registry();
         let es_language: LanguageTag = "es".try_into().unwrap();
         let license = repo.find("license.final", &es_language).unwrap();
         assert!(license.body.starts_with("Acuerdo de licencia"));
@@ -257,7 +267,7 @@ mod test {
 
     #[test]
     fn test_find_alternate_license() {
-        let repo = build_registry();
+        let mut repo = build_registry();
 
         // Tries to use the main language for the territory.
         let ca_language: LanguageTag = "ca-ES".try_into().unwrap();
