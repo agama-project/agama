@@ -35,9 +35,11 @@ module Agama
       # so they can resolve their own subject (the filesystem of the device and each partition of
       # the device, respectively) and evaluate the nested conditions against it.
       #
-      # Note {SearchMatchers::PartitionsCondition} supports the same conditions as
-      # {SearchMatchers::Partition} (the matcher used for searching partitions), so both classes
-      # must include the same leaf mixins.
+      # Note the leaf mixins of {SearchMatchers::PartitionsCondition} and the ones of
+      # {SearchMatchers::Partition} (the matcher used for searching partitions) are independent
+      # declarations, even if both lists coincide today. Each class can grow or drop leaves on its
+      # own, since the conditions nested into a quantifier and the conditions of a partition search
+      # are two different things.
       module SearchMatchers
       end
     end
@@ -47,7 +49,10 @@ end
 require "agama/storage/config_solvers/search_matchers/base"
 require "agama/storage/config_solvers/search_matchers/with_name"
 require "agama/storage/config_solvers/search_matchers/with_size"
+require "agama/storage/config_solvers/search_matchers/with_driver"
+require "agama/storage/config_solvers/search_matchers/with_transport"
 require "agama/storage/config_solvers/search_matchers/with_partition_number"
+require "agama/storage/config_solvers/search_matchers/with_partition_id"
 require "agama/storage/config_solvers/search_matchers/with_filesystem"
 require "agama/storage/config_solvers/search_matchers/with_partitions"
 require "agama/storage/config_solvers/search_matchers/filesystem_condition"

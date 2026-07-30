@@ -432,3 +432,39 @@ shared_examples "a matcher rejecting the partition number condition" do
     end
   end
 end
+
+# Expects the following definitions:
+#
+#   * subject: matcher to test.
+#   * device: device to match.
+shared_examples "a matcher rejecting the partition id condition" do
+  describe "with a partition id condition" do
+    it "does not match" do
+      expect(subject.match?(condition(id: "linux"), device)).to eq(false)
+    end
+  end
+end
+
+# Expects the following definitions:
+#
+#   * subject: matcher to test.
+#   * device: device to match.
+shared_examples "a matcher rejecting the driver condition" do
+  describe "with a driver condition" do
+    it "does not match" do
+      expect(subject.match?(condition(driver: "ahci"), device)).to eq(false)
+    end
+  end
+end
+
+# Expects the following definitions:
+#
+#   * subject: matcher to test.
+#   * device: device to match.
+shared_examples "a matcher rejecting the transport condition" do
+  describe "with a transport condition" do
+    it "does not match" do
+      expect(subject.match?(condition(transport: "usb"), device)).to eq(false)
+    end
+  end
+end

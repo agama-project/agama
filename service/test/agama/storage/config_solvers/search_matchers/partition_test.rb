@@ -52,6 +52,8 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::Partition do
     include_examples "a matcher supporting the filesystem condition"
     include_examples "a matcher supporting operators"
     include_examples "a matcher rejecting the partitions condition"
+    include_examples "a matcher rejecting the driver condition"
+    include_examples "a matcher rejecting the transport condition"
 
     describe "with a partition number condition" do
       it "matches if the partition has the given number" do
@@ -60,6 +62,16 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::Partition do
 
       it "does not match if the partition has another number" do
         expect(subject.match?(condition(number: 3), device)).to eq(false)
+      end
+    end
+
+    describe "with a partition id condition" do
+      it "matches if the partition has the given id" do
+        expect(subject.match?(condition(id: "linux"), device)).to eq(true)
+      end
+
+      it "does not match if the partition has another id" do
+        expect(subject.match?(condition(id: "esp"), device)).to eq(false)
       end
     end
   end

@@ -19,26 +19,36 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/search_matchers/base"
-require "agama/storage/config_solvers/search_matchers/with_driver"
-require "agama/storage/config_solvers/search_matchers/with_filesystem"
-require "agama/storage/config_solvers/search_matchers/with_name"
-require "agama/storage/config_solvers/search_matchers/with_partitions"
-require "agama/storage/config_solvers/search_matchers/with_size"
-require "agama/storage/config_solvers/search_matchers/with_transport"
+require "agama/storage/configs/search_conditions"
 
 module Agama
   module Storage
     module ConfigSolvers
       module SearchMatchers
-        # Matcher for the conditions of a drive search.
-        class Drive < Base
-          include WithName
-          include WithSize
-          include WithDriver
-          include WithTransport
-          include WithFilesystem
-          include WithPartitions
+        # Mixin for matchers supporting the driver condition.
+        #
+        # Only for matchers whose subject is a device with drivers (that is, a drive).
+        module WithDriver
+        private
+
+          # @see Base#match_leaf?
+          def match_leaf?(node, device)
+            return match_driver?(node, device) if node.is_a?(Configs::SearchConditions::Driver)
+
+            super
+          end
+
+          # Whether any of the drivers of the given device matches the condition node.
+          #
+          # @param node [Configs::SearchConditions::Driver]
+          # @param device [Y2Storage::BlkDevice]
+          #
+          # @return [Boolean]
+          def match_driver?(node, device)
+            return true unless node.driver
+
+            device.driver.include?(node.driver)
+          end
         end
       end
     end

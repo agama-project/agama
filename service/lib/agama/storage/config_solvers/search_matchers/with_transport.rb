@@ -25,31 +25,38 @@ module Agama
   module Storage
     module ConfigSolvers
       module SearchMatchers
-        # Mixin for matchers supporting the partition number condition.
+        # Mixin for matchers supporting the transport condition.
         #
-        # Only for matchers whose subject is a partition.
-        module WithPartitionNumber
+        # Only for matchers whose subject is a device with transport (that is, a drive).
+        module WithTransport
         private
 
           # @see Base#match_leaf?
-          def match_leaf?(node, partition)
-            if node.is_a?(Configs::SearchConditions::PartitionNumber)
-              return match_number?(node, partition)
+          def match_leaf?(node, device)
+            if node.is_a?(Configs::SearchConditions::Transport)
+              return match_transport?(node, device)
             end
 
             super
           end
 
-          # Whether the number of the given partition matches the condition node.
+          # Whether the data transport of the given device matches the condition node.
           #
-          # @param node [Configs::SearchConditions::PartitionNumber]
-          # @param partition [Y2Storage::Partition]
+          # Note not every kind of drive has a transport (e.g., a DASD has none). A device with an
+          # undetermined transport never matches, see {Configs::SearchConditions::Transport}.
+          #
+          # @param node [Configs::SearchConditions::Transport]
+          # @param device [Y2Storage::BlkDevice]
           #
           # @return [Boolean]
-          def match_number?(node, partition)
-            return true unless node.number
+          def match_transport?(node, device)
+            return true unless node.transport
+            return false unless device.respond_to?(:transport)
 
-            partition.number == node.number
+            transport = device.transport
+            return false if transport.nil? || transport.is?(:unknown)
+
+            transport == node.transport
           end
         end
       end

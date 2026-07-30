@@ -19,26 +19,36 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/search_matchers/base"
-require "agama/storage/config_solvers/search_matchers/with_driver"
-require "agama/storage/config_solvers/search_matchers/with_filesystem"
-require "agama/storage/config_solvers/search_matchers/with_name"
-require "agama/storage/config_solvers/search_matchers/with_partitions"
-require "agama/storage/config_solvers/search_matchers/with_size"
-require "agama/storage/config_solvers/search_matchers/with_transport"
+require "agama/storage/configs/search_conditions"
 
 module Agama
   module Storage
     module ConfigSolvers
       module SearchMatchers
-        # Matcher for the conditions of a drive search.
-        class Drive < Base
-          include WithName
-          include WithSize
-          include WithDriver
-          include WithTransport
-          include WithFilesystem
-          include WithPartitions
+        # Mixin for matchers supporting the partition id condition.
+        #
+        # Only for matchers whose subject is a partition.
+        module WithPartitionId
+        private
+
+          # @see Base#match_leaf?
+          def match_leaf?(node, partition)
+            return match_id?(node, partition) if node.is_a?(Configs::SearchConditions::PartitionId)
+
+            super
+          end
+
+          # Whether the id of the given partition matches the condition node.
+          #
+          # @param node [Configs::SearchConditions::PartitionId]
+          # @param partition [Y2Storage::Partition]
+          #
+          # @return [Boolean]
+          def match_id?(node, partition)
+            return true unless node.id
+
+            partition.id == node.id
+          end
         end
       end
     end

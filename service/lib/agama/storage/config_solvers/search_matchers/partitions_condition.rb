@@ -22,6 +22,7 @@
 require "agama/storage/config_solvers/search_matchers/base"
 require "agama/storage/config_solvers/search_matchers/with_filesystem"
 require "agama/storage/config_solvers/search_matchers/with_name"
+require "agama/storage/config_solvers/search_matchers/with_partition_id"
 require "agama/storage/config_solvers/search_matchers/with_partition_number"
 require "agama/storage/config_solvers/search_matchers/with_size"
 require "agama/storage/configs/search_conditions"
@@ -33,14 +34,15 @@ module Agama
         # Evaluator of a partitions condition (that is, a leaf of the condition tree of a device).
         #
         # Note the conditions nested into the quantifiers are matched against each partition of
-        # the device, and not against the device itself. Those conditions are the same ones
-        # supported by {SearchMatchers::Partition}, so both classes must include the same leaf
-        # mixins.
+        # the device, and not against the device itself. The leaf mixins included below are a
+        # declaration of their own, deliberately independent from the ones of
+        # {SearchMatchers::Partition} even if both lists coincide today.
         class PartitionsCondition < Base
           include WithName
           include WithSize
           include WithFilesystem
           include WithPartitionNumber
+          include WithPartitionId
 
           # Whether the partitions of the given device match the condition.
           #
