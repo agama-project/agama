@@ -88,7 +88,6 @@ impl Starter {
 
 #[derive(Default)]
 struct State {
-    system: Option<ProxyConfig>,
     config: Option<ProxyConfig>,
     config_path: PathBuf,
 }
@@ -100,25 +99,22 @@ impl State {
             ..Default::default()
         };
         let replace = ProxyConfig::from_cmdline().is_some();
-        object.load(replace);
+        if replace {
+            object.load();
+        }
         object
     }
 
-    pub fn load(&mut self, replace_config: bool) {
-        let mut config = None;
-        match ProxyConfig::read_from(&self.config_path) {
+    pub fn load(&mut self) {
+        self.config = match ProxyConfig::read_from(&self.config_path) {
             Ok(system) => {
-                if replace_config {
-                    config = Some(system.clone());
-                }
-                self.system = Some(system)
+                Some(system.clone())
             }
             Err(e) => {
                 tracing::error!("Failed to read proxy configuration: {}", e);
-                self.system = None
+                None
             }
         };
-        self.config = config;
     }
 
     pub fn to_config(&self, config: Option<ProxyConfig>) -> Option<api::proxy::Config> {
@@ -182,7 +178,7 @@ impl State {
         }
 
         proxy_config.write_to(path)?;
-        self.load(true);
+        self.load();
         Ok(())
     }
 }
@@ -231,16 +227,6 @@ impl MessageHandler<message::GetConfig> for Service {
         _message: message::GetConfig,
     ) -> Result<Option<api::proxy::Config>, Error> {
         Ok(self.state.to_config(self.state.config.clone()))
-    }
-}
-
-#[async_trait]
-impl MessageHandler<message::GetSystem> for Service {
-    async fn handle(
-        &mut self,
-        _message: message::GetSystem,
-    ) -> Result<Option<api::proxy::Config>, Error> {
-        Ok(self.state.to_config(self.state.system.clone()))
     }
 }
 

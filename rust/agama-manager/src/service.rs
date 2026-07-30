@@ -670,7 +670,6 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let hostname = self.hostname.call(hostname::message::GetSystem).await?;
-        let proxy = self.proxy.call(proxy::message::GetSystem).await?;
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
 
         let lang = &l10n.locale.language;
@@ -701,7 +700,6 @@ impl MessageHandler<message::GetSystem> for Service {
 
         Ok(SystemInfo {
             hostname,
-            proxy,
             l10n,
             manager,
             network,
