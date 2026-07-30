@@ -1222,7 +1222,7 @@
       ]
     },
     "logicalVolumeSearchSortCriterionShort": {
-      "enum": ["name", "size", "number"]
+      "enum": ["name", "size"]
     },
     "logicalVolumeSearchSortCriterionFull": {
       "type": "object",
