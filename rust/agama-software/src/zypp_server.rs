@@ -22,7 +22,7 @@ use agama_security as security;
 use agama_utils::{
     actor::Handler,
     api::{
-        self, l10n,
+        l10n,
         question::QuestionSpec,
         software::{Pattern, SelectedBy, SoftwareProposal, SystemInfo},
         Issue, Progress, Scope,
@@ -759,7 +759,6 @@ impl ZyppServer {
         zypp: &zypp_agama::Zypp,
     ) -> Result<(), ZyppDispatchError> {
         let patterns = self.patterns(&product, zypp)?;
-        let repositories = self.repositories(zypp)?;
         // let registration = self.registration.as_ref().map(|r| r.to_registration_info());
         let registration = match &self.registration {
             RegistrationStatus::Registered(registration) => {
@@ -770,7 +769,6 @@ impl ZyppServer {
 
         let system_info = SystemInfo {
             patterns,
-            repositories,
             registration,
         };
 
@@ -858,24 +856,6 @@ impl ZyppServer {
             })
             .collect();
         Ok(patterns)
-    }
-
-    fn repositories(&self, zypp: &zypp_agama::Zypp) -> ZyppResult<Vec<api::software::Repository>> {
-        let result = zypp
-            .list_repositories()?
-            .into_iter()
-            .map(|r| api::software::Repository {
-                alias: r.alias.clone(),
-                name: r.alias,
-                url: r.url,
-                enabled: r.enabled,
-                // At this point, there is no way to determine if the repository is
-                // predefined or not. It will be adjusted in the Model::repositories
-                // function.
-                predefined: false,
-            })
-            .collect();
-        Ok(result)
     }
 
     fn initialize_target_dir(&self) -> Result<zypp_agama::Zypp, ZyppDispatchError> {

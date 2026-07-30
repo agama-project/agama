@@ -23,7 +23,6 @@
 type System = {
   addons: AddonInfo[];
   patterns: Pattern[];
-  repositories: Repository[];
   registration?: RegistrationInfo;
 };
 
@@ -47,16 +46,6 @@ type Pattern = {
    * desktops from other patterns
    * */
   desktop: boolean;
-};
-
-type Repository = {
-  repo_id: number;
-  alias: string;
-  name: string;
-  raw_url: string;
-  product_dir: string;
-  enabled: boolean;
-  loaded: boolean;
 };
 
 type RegistrationInfo = {
@@ -88,4 +77,4 @@ type AddonUnregistered = {
   status: "notRegistered";
 };
 
-export type { System, Pattern, AddonInfo, RegistrationInfo, Repository };
+export type { System, Pattern, AddonInfo, RegistrationInfo };

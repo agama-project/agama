@@ -31,8 +31,6 @@ use serde_with::skip_serializing_none;
 pub struct SystemInfo {
     /// List of known patterns.
     pub patterns: Vec<Pattern>,
-    /// List of known repositories.
-    pub repositories: Vec<Repository>,
     /// Registration information
     pub registration: Option<RegistrationInfo>,
 }
