@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -21,16 +21,30 @@
 
 module Agama
   module Storage
-    module ConfigConversions
-      module FromJSONConversions
-        # Namespace for conversions of search conditions.
-        module SearchConditions
+    module Configs
+      module SearchConditions
+        # Partitions quantifier: matches when the count of (matching) partitions falls within
+        # the given bounds. At least one of min or max must be set.
+        class PartitionsCount
+          # @return [SearchConditions::*, nil]
+          attr_accessor :condition
+
+          # @return [Integer, nil]
+          attr_accessor :min
+
+          # @return [Integer, nil]
+          attr_accessor :max
+
+          # @param condition [SearchConditions::*, nil]
+          # @param min [Integer, nil]
+          # @param max [Integer, nil]
+          def initialize(condition: nil, min: nil, max: nil)
+            @condition = condition
+            @min       = min
+            @max       = max
+          end
         end
       end
     end
   end
 end
-
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/size"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/partitions"

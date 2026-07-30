@@ -221,6 +221,66 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
       end
     end
 
+    context "if #condition is configured with partitions presence 'any'" do
+      let(:condition) { { partitions: "any" } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: "any" })
+      end
+    end
+
+    context "if #condition is configured with partitions presence 'none'" do
+      let(:condition) { { partitions: "none" } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: "none" })
+      end
+    end
+
+    context "if #condition is configured with a partitions 'any' quantifier" do
+      let(:condition) { { partitions: { any: { size: { greater: "2 GiB" } } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq(
+          { partitions: { any: { size: { greater: 2.GiB.to_i } } } }
+        )
+      end
+    end
+
+    context "if #condition is configured with a partitions 'all' quantifier" do
+      let(:condition) { { partitions: { all: { filesystem: { type: "ext4" } } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq(
+          { partitions: { all: { filesystem: { type: "ext4" } } } }
+        )
+      end
+    end
+
+    context "if #condition is configured with a partitions 'count' (min only)" do
+      let(:condition) { { partitions: { count: { min: 2 } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: { count: { min: 2 } } })
+      end
+    end
+
+    context "if #condition is configured with a partitions 'count' (condition, min, max)" do
+      let(:condition) do
+        { partitions: { count: { condition: { size: { greater: "10 GiB" } }, min: 2, max: 5 } } }
+      end
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq(
+          {
+            partitions: {
+              count: { condition: { size: { greater: 10.GiB.to_i } }, min: 2, max: 5 }
+            }
+          }
+        )
+      end
+    end
+
     context "if #condition is configured with nested operators" do
       let(:condition) do
         {

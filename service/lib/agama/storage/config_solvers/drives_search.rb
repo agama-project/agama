@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers/devices_search"
-require "agama/storage/config_solvers/search_matchers"
+require "agama/storage/config_solvers/search_matchers/drive"
 require "agama/storage/config_solvers/with_partitions_search"
 
 module Agama
@@ -28,7 +28,6 @@ module Agama
     module ConfigSolvers
       # Solver for the search of the drive configs.
       class DrivesSearch < DevicesSearch
-        include SearchMatchers
         include WithPartitionsSearch
 
         # @param storage_system [Storage::System]
@@ -53,6 +52,11 @@ module Agama
 
         # @return [Storage::System]
         attr_reader :storage_system
+
+        # @see DevicesSearch#matcher
+        def matcher
+          @matcher ||= SearchMatchers::Drive.new
+        end
       end
     end
   end

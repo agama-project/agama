@@ -443,6 +443,68 @@ describe Agama::Storage::ConfigSolvers::DrivesSearch do
       end
     end
 
+    context "if a drive config has a search with partitions" do
+      let(:drives) do
+        [
+          {
+            search: {
+              condition: condition
+            }
+          }
+        ]
+      end
+
+      shared_examples "find drive" do |device|
+        it "sets the device to the drive config" do
+          subject.solve(config)
+          expect(config.drives.size).to eq(1)
+
+          drive1 = config.drives.first
+          expect(drive1.search.solved?).to eq(true)
+          expect(drive1.search.device.name).to eq(device)
+        end
+      end
+
+      context "and the presence is 'any'" do
+        let(:condition) { { partitions: "any" } }
+        include_examples "find drive", "/dev/vda"
+      end
+
+      context "and the presence is 'none'" do
+        let(:condition) { { partitions: "none" } }
+
+        it "sets a device to each disk without partitions" do
+          subject.solve(config)
+          expect(config.drives.map(&:search).map(&:device).map(&:name)).to contain_exactly(
+            "/dev/vdb", "/dev/vdc"
+          )
+        end
+      end
+
+      context "and a partitions 'any' quantifier is given" do
+        let(:condition) { { partitions: { any: { size: { greater: "15 GiB" } } } } }
+        include_examples "find drive", "/dev/vda"
+      end
+
+      context "and a partitions 'all' quantifier is given" do
+        let(:condition) { { partitions: { all: { size: { greater: "1 MiB" } } } } }
+        include_examples "find drive", "/dev/vda"
+      end
+
+      context "and a partitions 'count' with min is given" do
+        let(:condition) { { partitions: { count: { min: 2 } } } }
+        include_examples "find drive", "/dev/vda"
+      end
+
+      context "and a partitions 'count' with condition and min is given" do
+        let(:condition) do
+          { partitions: { count: { condition: { filesystem: "any" }, min: 2 } } }
+        end
+
+        include_examples "find drive", "/dev/vda"
+      end
+    end
+
     context "if a drive config has partitions with search" do
       let(:drives) do
         [

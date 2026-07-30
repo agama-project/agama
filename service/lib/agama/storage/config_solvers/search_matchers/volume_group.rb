@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,18 +19,23 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_solvers/search_matchers/base"
+require "agama/storage/config_solvers/search_matchers/with_name"
+require "agama/storage/config_solvers/search_matchers/with_size"
+
 module Agama
   module Storage
-    module ConfigConversions
-      module FromJSONConversions
-        # Namespace for conversions of search conditions.
-        module SearchConditions
+    module ConfigSolvers
+      module SearchMatchers
+        # Matcher for the conditions of a volume group search.
+        #
+        # Note a volume group is neither formatted nor partitioned, so it supports neither the
+        # filesystem condition nor the partitions condition.
+        class VolumeGroup < Base
+          include WithName
+          include WithSize
         end
       end
     end
   end
 end
-
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/size"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/partitions"

@@ -129,6 +129,56 @@
             ]
           }
         }
+      },
+      { "search": { "condition": { "partitions": "any" } } },
+      { "search": { "condition": { "partitions": "none" } } },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "any": { "size": { "greater": "10 GiB" } } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "none": { "filesystem": "any" } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "all": { "filesystem": { "type": "xfs" } } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "count": { "min": 2 } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "count": { "max": 3 } }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": {
+              "count": {
+                "condition": { "size": { "greater": "10 GiB" } },
+                "min": 2,
+                "max": 5
+              }
+            }
+          }
+        }
       }
     ],
     "mdRaids": [
@@ -149,6 +199,13 @@
               { "filesystem": "none" },
               { "filesystem": { "type": "ext4" } }
             ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "partitions": { "any": { "filesystem": { "type": "ext4" } } }
           }
         }
       }

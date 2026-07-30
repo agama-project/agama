@@ -89,6 +89,7 @@ module Agama
               size:       ->(j) { SearchConditions::Size.new(j[:size]).convert },
               number:     ->(j) { Configs::SearchConditions::PartitionNumber.new(j[:number]) },
               filesystem: ->(j) { SearchConditions::Filesystem.new(j[:filesystem]).convert },
+              partitions: ->(j) { SearchConditions::Partitions.new(j[:partitions]).convert },
               and:        ->(j) { Configs::SearchConditions::And.new(convert_conditions(j[:and])) },
               or:         ->(j) { Configs::SearchConditions::Or.new(convert_conditions(j[:or])) },
               not:        ->(j) { Configs::SearchConditions::Not.new(convert_condition(j[:not])) }
