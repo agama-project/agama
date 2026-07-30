@@ -24,6 +24,8 @@ require "agama/storage/config_conversions/from_json_conversions/search_condition
 require "agama/storage/configs/search"
 require "agama/storage/configs/search_conditions"
 require "agama/storage/configs/sort_criteria"
+require "y2storage/data_transport"
+require "y2storage/partition_id"
 
 module Agama
   module Storage
@@ -71,8 +73,11 @@ module Agama
           #
           # @param json [Hash, nil]
           # @return [Configs::SearchConditions::Name, Configs::SearchConditions::Size,
-          #   Configs::SearchConditions::PartitionNumber, Configs::SearchConditions::And,
-          #   Configs::SearchConditions::Or, Configs::SearchConditions::Not, nil]
+          #   Configs::SearchConditions::Driver, Configs::SearchConditions::Transport,
+          #   Configs::SearchConditions::PartitionNumber, Configs::SearchConditions::PartitionId,
+          #   Configs::SearchConditions::Filesystem, Configs::SearchConditions::Partitions,
+          #   Configs::SearchConditions::And, Configs::SearchConditions::Or,
+          #   Configs::SearchConditions::Not, nil]
           def convert_condition(json)
             return unless json
 
@@ -84,15 +89,33 @@ module Agama
           #
           # @return [Hash{Symbol => Proc}]
           def condition_builders
+            leaf_condition_builders.merge(operator_condition_builders)
+          end
+
+          # Builders for each type of leaf condition, indexed by its JSON key.
+          #
+          # @return [Hash{Symbol => Proc}]
+          def leaf_condition_builders
             {
               name:       ->(j) { Configs::SearchConditions::Name.new(j[:name]) },
               size:       ->(j) { SearchConditions::Size.new(j[:size]).convert },
+              driver:     ->(j) { Configs::SearchConditions::Driver.new(j[:driver]) },
+              transport:  ->(j) { transport_condition(j[:transport]) },
               number:     ->(j) { Configs::SearchConditions::PartitionNumber.new(j[:number]) },
+              id:         ->(j) { partition_id_condition(j[:id]) },
               filesystem: ->(j) { SearchConditions::Filesystem.new(j[:filesystem]).convert },
-              partitions: ->(j) { SearchConditions::Partitions.new(j[:partitions]).convert },
-              and:        ->(j) { Configs::SearchConditions::And.new(convert_conditions(j[:and])) },
-              or:         ->(j) { Configs::SearchConditions::Or.new(convert_conditions(j[:or])) },
-              not:        ->(j) { Configs::SearchConditions::Not.new(convert_condition(j[:not])) }
+              partitions: ->(j) { SearchConditions::Partitions.new(j[:partitions]).convert }
+            }
+          end
+
+          # Builders for each logical operator, indexed by its JSON key.
+          #
+          # @return [Hash{Symbol => Proc}]
+          def operator_condition_builders
+            {
+              and: ->(j) { Configs::SearchConditions::And.new(convert_conditions(j[:and])) },
+              or:  ->(j) { Configs::SearchConditions::Or.new(convert_conditions(j[:or])) },
+              not: ->(j) { Configs::SearchConditions::Not.new(convert_condition(j[:not])) }
             }
           end
 
@@ -102,6 +125,20 @@ module Agama
           # @return [Array]
           def convert_conditions(json)
             json.map { |c| convert_condition(c) }
+          end
+
+          # @param value [String]
+          # @return [Configs::SearchConditions::Transport]
+          def transport_condition(value)
+            transport = Y2Storage::DataTransport.find(value.to_sym)
+            Configs::SearchConditions::Transport.new(transport)
+          end
+
+          # @param value [String]
+          # @return [Configs::SearchConditions::PartitionId]
+          def partition_id_condition(value)
+            id = Y2Storage::PartitionId.find(value.to_sym)
+            Configs::SearchConditions::PartitionId.new(id)
           end
 
           def convert_sort

@@ -122,6 +122,32 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
       include_examples "with device"
     end
 
+    context "if #condition is configured to search by driver" do
+      let(:condition) { { driver: "ahci" } }
+
+      context "and there is no assigned device" do
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ driver: "ahci" })
+        end
+      end
+
+      include_examples "with device"
+    end
+
+    context "if #condition is configured to search by transport" do
+      let(:condition) { { transport: "usb" } }
+
+      context "and there is no assigned device" do
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ transport: "usb" })
+        end
+      end
+
+      include_examples "with device"
+    end
+
     context "if #condition is configured to search by partition number" do
       let(:condition) { { number: 2 } }
 
@@ -129,6 +155,19 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
         it "generates the expected JSON" do
           config_json = subject.convert
           expect(config_json[:condition]).to eq({ number: 2 })
+        end
+      end
+
+      include_examples "with device"
+    end
+
+    context "if #condition is configured to search by partition id" do
+      let(:condition) { { id: "esp" } }
+
+      context "and there is no assigned device" do
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ id: "esp" })
         end
       end
 
@@ -276,6 +315,37 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
             partitions: {
               count: { condition: { size: { greater: 10.GiB.to_i } }, min: 2, max: 5 }
             }
+          }
+        )
+      end
+    end
+
+    context "if #condition is configured with a partitions quantifier with an id condition" do
+      let(:condition) { { partitions: { any: { id: "esp" } } } }
+
+      it "generates the expected JSON" do
+        expect(subject.convert[:condition]).to eq({ partitions: { any: { id: "esp" } } })
+      end
+    end
+
+    context "if #condition is configured with operators over driver and transport" do
+      let(:condition) do
+        {
+          and: [
+            { not: { transport: "usb" } },
+            { driver: "sd" }
+          ]
+        }
+      end
+
+      it "generates the expected JSON" do
+        config_json = subject.convert
+        expect(config_json[:condition]).to eq(
+          {
+            and: [
+              { not: { transport: "usb" } },
+              { driver: "sd" }
+            ]
           }
         )
       end

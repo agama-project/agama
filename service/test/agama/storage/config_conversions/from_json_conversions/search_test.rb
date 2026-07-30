@@ -179,6 +179,28 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
           end
         end
 
+        context "and 'driver' is specified" do
+          let(:condition) { { driver: "ahci" } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Driver)
+            expect(config.condition.driver).to eq("ahci")
+          end
+        end
+
+        context "and 'transport' is specified" do
+          let(:condition) { { transport: "usb" } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::Transport)
+            expect(config.condition.transport).to eq(Y2Storage::DataTransport::USB)
+          end
+        end
+
         context "and 'number' is specified" do
           let(:condition) { { number: 2 } }
 
@@ -187,6 +209,28 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
             expect(config.condition)
               .to be_a(Agama::Storage::Configs::SearchConditions::PartitionNumber)
             expect(config.condition.number).to eq(2)
+          end
+        end
+
+        context "and 'id' is specified" do
+          let(:condition) { { id: "esp" } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::PartitionId)
+            expect(config.condition.id).to eq(Y2Storage::PartitionId::ESP)
+          end
+        end
+
+        context "and 'id' is specified with a GPT-only value" do
+          let(:condition) { { id: "linux_root_x86_64" } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::PartitionId)
+            expect(config.condition.id).to eq(Y2Storage::PartitionId::LINUX_ROOT_X86_64)
           end
         end
 
@@ -411,6 +455,37 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
           end
         end
 
+        context "and a 'partitions' quantifier with an 'id' condition is specified" do
+          let(:condition) { { partitions: { any: { id: "esp" } } } }
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsAny)
+
+            inner = cond.condition
+            expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::PartitionId)
+            expect(inner.id).to eq(Y2Storage::PartitionId::ESP)
+          end
+        end
+
+        context "and a 'partitions' 'count' with an 'id' condition is specified" do
+          let(:condition) do
+            { partitions: { count: { condition: { id: "swap" }, min: 1 } } }
+          end
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            cond = config.condition.condition
+            expect(cond).to be_a(Agama::Storage::Configs::SearchConditions::PartitionsCount)
+            expect(cond.min).to eq(1)
+
+            inner = cond.condition
+            expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::PartitionId)
+            expect(inner.id).to eq(Y2Storage::PartitionId::SWAP)
+          end
+        end
+
         context "and an 'and' operator is specified" do
           let(:condition) do
             { and: [{ name: "/dev/vda" }, { size: { less: "1 TiB" } }] }
@@ -496,6 +571,36 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::Search do
             inner = conditions[1].condition
             expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Name)
             expect(inner.name).to eq("/dev/vda")
+          end
+        end
+
+        context "and an operator over driver and transport conditions is specified" do
+          let(:condition) do
+            {
+              and: [
+                { not: { transport: "usb" } },
+                { driver: "sd" }
+              ]
+            }
+          end
+
+          it "sets #condition to the expected value" do
+            config = subject.convert
+            expect(config.condition)
+              .to be_a(Agama::Storage::Configs::SearchConditions::And)
+
+            conditions = config.condition.conditions
+            expect(conditions.size).to eq(2)
+
+            expect(conditions[0])
+              .to be_a(Agama::Storage::Configs::SearchConditions::Not)
+            inner = conditions[0].condition
+            expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Transport)
+            expect(inner.transport).to eq(Y2Storage::DataTransport::USB)
+
+            expect(conditions[1])
+              .to be_a(Agama::Storage::Configs::SearchConditions::Driver)
+            expect(conditions[1].driver).to eq("sd")
           end
         end
       end

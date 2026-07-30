@@ -21,6 +21,7 @@
 
 require "agama/storage/config_conversions/from_json_conversions/base"
 require "agama/storage/configs/search_conditions"
+require "y2storage/partition_id"
 
 module Agama
   module Storage
@@ -133,6 +134,13 @@ module Agama
               Configs::SearchConditions::Not.new(convert_partition_condition(json))
             end
 
+            # @param value [String]
+            # @return [Configs::SearchConditions::PartitionId]
+            def partition_id_condition(value)
+              id = Y2Storage::PartitionId.find(value.to_sym)
+              Configs::SearchConditions::PartitionId.new(id)
+            end
+
             # Builders for each type of partition condition, indexed by its JSON key.
             #
             # @return [Hash{Symbol => Proc}]
@@ -141,6 +149,7 @@ module Agama
                 name:       ->(j) { Configs::SearchConditions::Name.new(j[:name]) },
                 size:       ->(j) { SearchConditions::Size.new(j[:size]).convert },
                 number:     ->(j) { Configs::SearchConditions::PartitionNumber.new(j[:number]) },
+                id:         ->(j) { partition_id_condition(j[:id]) },
                 filesystem: ->(j) { SearchConditions::Filesystem.new(j[:filesystem]).convert },
                 and:        ->(j) { partition_and_condition(j[:and]) },
                 or:         ->(j) { partition_or_condition(j[:or]) },
