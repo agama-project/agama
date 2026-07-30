@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,28 +19,33 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/search_conditions"
+require "y2storage/data_transport"
+
 module Agama
   module Storage
     module ConfigConversions
       module FromJSONConversions
-        # Mixin for search conversion.
-        #
-        # Classes including this mixin must define the search converter to use (e.g.,
-        # {FromJSONConversions::DriveSearch}), see {#search_converter_class}.
-        module WithSearch
-          # @return [Configs::Search, nil]
-          def convert_search
-            search_json = config_json[:search]
-            return unless search_json
-
-            search_converter_class.new(search_json).convert
-          end
-
-          # Converter for the search of the device, according to its JSON schema.
+        module SearchConditions
+          # Mixin for converters supporting the transport condition.
           #
-          # @return [Class]
-          def search_converter_class
-            raise "Undefined search converter"
+          # Only for converters of a search of devices with transport (that is, drives).
+          module WithTransport
+          private
+
+            # @see Base#convert_leaf
+            def convert_leaf(json)
+              return transport_condition(json[:transport]) if json.key?(:transport)
+
+              super
+            end
+
+            # @param value [String]
+            # @return [Configs::SearchConditions::Transport]
+            def transport_condition(value)
+              transport = Y2Storage::DataTransport.find(value.to_sym)
+              Configs::SearchConditions::Transport.new(transport)
+            end
           end
         end
       end

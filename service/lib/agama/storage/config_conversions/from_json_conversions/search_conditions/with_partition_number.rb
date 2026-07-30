@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,28 +19,31 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/configs/search_conditions"
+
 module Agama
   module Storage
     module ConfigConversions
       module FromJSONConversions
-        # Mixin for search conversion.
-        #
-        # Classes including this mixin must define the search converter to use (e.g.,
-        # {FromJSONConversions::DriveSearch}), see {#search_converter_class}.
-        module WithSearch
-          # @return [Configs::Search, nil]
-          def convert_search
-            search_json = config_json[:search]
-            return unless search_json
-
-            search_converter_class.new(search_json).convert
-          end
-
-          # Converter for the search of the device, according to its JSON schema.
+        module SearchConditions
+          # Mixin for converters supporting the partition number condition.
           #
-          # @return [Class]
-          def search_converter_class
-            raise "Undefined search converter"
+          # Only for converters of a search of partitions.
+          module WithPartitionNumber
+          private
+
+            # @see Base#convert_leaf
+            def convert_leaf(json)
+              return number_condition(json[:number]) if json.key?(:number)
+
+              super
+            end
+
+            # @param value [Integer]
+            # @return [Configs::SearchConditions::PartitionNumber]
+            def number_condition(value)
+              Configs::SearchConditions::PartitionNumber.new(value)
+            end
           end
         end
       end

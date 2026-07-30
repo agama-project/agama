@@ -20,7 +20,8 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../../../test_helper"
-require "agama/storage/config_conversions/from_json_conversions/search"
+require "agama/storage/config_conversions/from_json_conversions/drive_search"
+require "agama/storage/config_conversions/from_json_conversions/partition_search"
 require "agama/storage/config_conversions/to_json_conversions/search"
 require "y2storage/blk_device"
 require "y2storage/refinements"
@@ -30,10 +31,17 @@ using Y2Storage::Refinements::SizeCasts
 describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
   subject { described_class.new(config) }
 
-  let(:config) do
-    Agama::Storage::ConfigConversions::FromJSONConversions::Search
-      .new(config_json)
-      .convert
+  let(:config) { from_json_converter_class.new(config_json).convert }
+
+  # The conversion to JSON is generic, but the conversion from JSON is not. A drive search accepts
+  # most of the conditions, so it is used by default. The partition one is used for the conditions
+  # that only a partition search accepts.
+  let(:from_json_converter_class) do
+    Agama::Storage::ConfigConversions::FromJSONConversions::DriveSearch
+  end
+
+  let(:partition_search_converter_class) do
+    Agama::Storage::ConfigConversions::FromJSONConversions::PartitionSearch
   end
 
   let(:config_json) do
@@ -149,6 +157,7 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
     end
 
     context "if #condition is configured to search by partition number" do
+      let(:from_json_converter_class) { partition_search_converter_class }
       let(:condition) { { number: 2 } }
 
       context "and there is no assigned device" do
@@ -162,6 +171,7 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
     end
 
     context "if #condition is configured to search by partition id" do
+      let(:from_json_converter_class) { partition_search_converter_class }
       let(:condition) { { id: "esp" } }
 
       context "and there is no assigned device" do
@@ -188,6 +198,8 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
     end
 
     context "if #condition is configured with an 'or' operator" do
+      let(:from_json_converter_class) { partition_search_converter_class }
+
       let(:condition) do
         { or: [{ number: 1 }, { number: 2 }] }
       end

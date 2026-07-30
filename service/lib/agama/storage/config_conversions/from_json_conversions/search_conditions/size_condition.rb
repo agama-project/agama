@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -29,10 +29,14 @@ module Agama
       module FromJSONConversions
         module SearchConditions
           # Size condition conversion from JSON according to schema.
-          class Size < Base
+          #
+          # It converts the value of a size leaf (e.g., { greater: "1 GiB" }), see {WithSize}.
+          #
+          # Note it is not a {SearchConditions::Base}, since a size leaf contains no condition tree.
+          class SizeCondition < FromJSONConversions::Base
           private
 
-            # @see Base
+            # @see FromJSONConversions::Base
             # @return [Configs::SearchConditions::Size]
             def default_config
               Configs::SearchConditions::Size.new
@@ -40,7 +44,7 @@ module Agama
 
             alias_method :size_json, :config_json
 
-            # @see Base#conversions
+            # @see FromJSONConversions::Base#conversions
             # @return [Hash]
             def conversions
               {

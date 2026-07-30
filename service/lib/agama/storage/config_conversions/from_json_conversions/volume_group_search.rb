@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2026] SUSE LLC
+# Copyright (c) [2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -19,28 +19,34 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "agama/storage/config_conversions/from_json_conversions/device_search"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions"
+require "agama/storage/configs/sort_criteria"
+
 module Agama
   module Storage
     module ConfigConversions
       module FromJSONConversions
-        # Mixin for search conversion.
-        #
-        # Classes including this mixin must define the search converter to use (e.g.,
-        # {FromJSONConversions::DriveSearch}), see {#search_converter_class}.
-        module WithSearch
-          # @return [Configs::Search, nil]
-          def convert_search
-            search_json = config_json[:search]
-            return unless search_json
+        # Volume group search conversion from JSON hash according to schema.
+        class VolumeGroupSearch < DeviceSearch
+        private
 
-            search_converter_class.new(search_json).convert
+          SORT_CRITERIA = {
+            name: Configs::SortCriteria::Name,
+            size: Configs::SortCriteria::Size
+          }.freeze
+          private_constant :SORT_CRITERIA
+
+          # @see DeviceSearch
+          # @return [SearchConditions::VolumeGroup]
+          def condition_converter
+            @condition_converter ||= SearchConditions::VolumeGroup.new
           end
 
-          # Converter for the search of the device, according to its JSON schema.
-          #
-          # @return [Class]
-          def search_converter_class
-            raise "Undefined search converter"
+          # @see DeviceSearch
+          # @return [Hash{Symbol => Class}]
+          def sort_criteria_classes
+            SORT_CRITERIA
           end
         end
       end
