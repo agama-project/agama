@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 31 08:19:29 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- dependency updated on Jul 7 already, listing its references
+  for tracking:
+  - shell-quote 1.9.0, CVE-2026-13311 (bsc#1269359)
+
+-------------------------------------------------------------------
 Mon Jul 27 12:41:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Show a proper empty state, pointing to the network settings,
