@@ -47,6 +47,7 @@ import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
 import PatternSelectionUnavailable, {
   PRODUCT_AVAILABILITY_ISSUES,
 } from "~/components/software/PatternSelectionUnavailable";
+import SoftwareIssueActions from "~/components/software/SoftwareIssueActions";
 import { useIssues } from "~/hooks/model/issue";
 import { useProposal } from "~/hooks/model/proposal/software";
 import { useAvailablePatterns } from "~/hooks/model/system/software";
@@ -60,6 +61,14 @@ import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/pro
 import type { Pattern } from "~/model/system/software";
 import type { PatternsSelection } from "~/model/proposal/software";
 import { SelectedBy } from "~/model/proposal/software";
+
+/**
+ * Software issue reported when the repositories could not be read.
+ *
+ * Reading them requires a working connection, so it shows up when the
+ * installation medium has no access to the network.
+ */
+const UNREADABLE_SOURCES_ISSUE = "software.load_source";
 
 /**
  * Empty state for a software section where nothing has been selected yet.
@@ -376,6 +385,10 @@ function SoftwarePage() {
   const issues = useIssues("software").filter(
     (i) => !PRODUCT_AVAILABILITY_ISSUES.includes(i.class),
   );
+  const [unreadableSources, otherIssues] = fork(
+    issues,
+    (i) => i.class === UNREADABLE_SOURCES_ISSUE,
+  );
 
   return (
     <Page
@@ -386,7 +399,8 @@ function SoftwarePage() {
       }}
     >
       <Page.Content>
-        <IssuesAlert issues={issues} />
+        <IssuesAlert issues={unreadableSources} actions={<SoftwareIssueActions isCompact />} />
+        <IssuesAlert issues={otherIssues} />
         <SoftwarePageContent />
       </Page.Content>
     </Page>

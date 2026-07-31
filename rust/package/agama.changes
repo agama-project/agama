@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jul 27 11:23:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add an action to "probe" the software service (gh#agama-project/agama#3341).
+- Unify storage, software and DASD probing.
+- Fix the "agama probe" command.
+- Do not use the product's remote repositories when a local
+  installation repository (off-line media) is already available.
+
+-------------------------------------------------------------------
 Thu Jul 23 13:44:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the "agama logs list" command (bsc#1261037).
@@ -6,7 +15,7 @@ Thu Jul 23 13:44:55 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 -------------------------------------------------------------------
 Thu Jul 23 12:08:50 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Do not copy the installatoin repositories (agama-0, agama-1, etc.)
+- Do not copy the installation repositories (agama-0, agama-1, etc.)
   to the installed system (bsc#1264277 gh#agama-project/agama#1458).
 
 -------------------------------------------------------------------
