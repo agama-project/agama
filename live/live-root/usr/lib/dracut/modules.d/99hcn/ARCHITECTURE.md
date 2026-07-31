@@ -44,7 +44,7 @@ The 99hcn dracut module provides automatic network configuration for IBM PowerVM
 
 4. **No Cmdline Pollution**: Transformed parameters are passed directly to `nm-initrd-generator` as command-line arguments, never written to `/etc/cmdline.d/`, preventing other dracut modules from reading them and regenerating incompatible profiles.
 
-5. **Early Claim of the Network**: The `hcn-cmdline.sh` hook writes a single `ip=hcn` marker to `/etc/cmdline.d/hcn.conf` while the command line is being parsed. It announces that HCN takes care of the network so that neither NetworkManager nor the other Agama modules configure the bond ports on their own. This requires NetworkManager with `ip=hcn` support (jsc#PED-14534). The marker is **internal**: it is written by the module, never by the user, and it does not enable HCN by itself (`hcn-init-initrd.service` only reacts to `rd.hcn*`).
+5. **Early Claim of the Network**: The `hcn-cmdline.sh` hook writes a single `ip=hcn` marker to `/etc/cmdline.d/20-hcn.conf` while the command line is being parsed. It announces that HCN takes care of the network so that neither NetworkManager nor the other Agama modules configure the bond ports on their own. This requires NetworkManager with `ip=hcn` support (jsc#PED-14534). The marker is **internal**: it is written by the module, never by the user, and it does not enable HCN by itself (`hcn-init-initrd.service` only reacts to `rd.hcn*`).
 
 6. **Timing-Aware Orchestration**: Two-phase execution (cmdline hook + systemd service) handles the fact that HCN devices may not be available when kernel command line parsing runs. The hook only reserves the network, the actual configuration happens in the service once udev has discovered the devices.
 
@@ -76,7 +76,7 @@ The following diagram details the control and configuration flow from the initia
 |  1. EARLY CMDLINE & LOGGING PHASE (`dracut-cmdline.service`)                                    |
 |     - Runs the HCN cmdline hook: `/lib/dracut/hooks/cmdline/20-hcn-cmdline.sh`                  |
 |       * If HCN is requested (rd.hcn=1, rd.hcn.ip or rd.hcn.route) AND the device tree           |
-|         contains `ibm,hcn-id` devices: writes `ip=hcn` to `/etc/cmdline.d/hcn.conf`.            |
+|         contains `ibm,hcn-id` devices: writes `ip=hcn` to `/etc/cmdline.d/20-hcn.conf`.            |
 |       * Otherwise: no-op, the boot continues as a standard one.                                 |
 |     - Runs the other Agama cmdline hooks (priority 99: agama-dud, live-self-update,             |
 |       initrd-nmtui). They add `ip=dhcp` only when no `ip=` is set, so the marker above          |
@@ -142,7 +142,7 @@ The following diagram details the control and configuration flow from the initia
 
 2. **Early Cmdline & Discovery Phase (`dracut-cmdline.service`)**:
    - `dracut-cmdline` processes all command line hooks in priority order.
-   - `20-hcn-cmdline.sh` (this module) writes `ip=hcn` to `/etc/cmdline.d/hcn.conf` when HCN is requested and HCN devices exist in `/proc/device-tree`. Nothing else is written: the transformation of `rd.hcn.*` still happens much later, in `hcn-init-initrd.service`.
+   - `20-hcn-cmdline.sh` (this module) writes `ip=hcn` to `/etc/cmdline.d/20-hcn.conf` when HCN is requested and HCN devices exist in `/proc/device-tree`. Nothing else is written: the transformation of `rd.hcn.*` still happens much later, in `hcn-init-initrd.service`.
    - The priority 99 hooks of the other Agama modules (`99agama-dud`, `99live-self-update`, `99initrd-nmtui`) run afterwards and skip their `ip=dhcp` fallback because an `ip=` is already present.
    - Standard NetworkManager connection generation proceeds normally:
      - **SLES 16.1 (NetworkManager < 1.54):** `99-nm-config.sh` calls `nm_generate_connections` to generate standard connection profiles.

@@ -114,7 +114,7 @@ Explicitly enables or disables HCN configuration.
 
 ### `ip=hcn` (internal, do not use)
 
-**This is not a user-facing parameter.** The module writes it itself to `/etc/cmdline.d/hcn.conf` to announce that HCN takes care of the network, see [Interaction with other modules](#interaction-with-other-modules). Use `rd.hcn.ip` / `rd.hcn.route` to configure HCN.
+**This is not a user-facing parameter.** The module writes it itself to `/etc/cmdline.d/20-hcn.conf` to announce that HCN takes care of the network, see [Interaction with other modules](#interaction-with-other-modules). Use `rd.hcn.ip` / `rd.hcn.route` to configure HCN.
 
 Passing `ip=hcn` on the kernel command line does **not** enable HCN, it only stops everybody else from configuring the network, so the system likely ends up with no network at all. Making it a proper user-facing option is part of the long-term transparent `ip=` work, where the port name or MAC would be given as usual (`ip=<port>:hcn`) and `rd.hcn.*` would be deprecated.
 
@@ -157,7 +157,7 @@ rd.hcn.ip=10.2.2.69::10.2.0.1:255.255.255.0::2e-7a-3c-6a-1c-00:none \
 
 The HCN dracut module integrates with systemd and NetworkManager during the initramfs boot phase:
 
-0. **Claiming the network**: A `cmdline` hook (`hcn-cmdline.sh`) writes `ip=hcn` to `/etc/cmdline.d/hcn.conf` when HCN is requested and HCN devices are present. This marker tells NetworkManager and the other Agama dracut modules that HCN configures the network, so nobody else touches the bond ports (see [Interaction with other modules](#interaction-with-other-modules))
+0. **Claiming the network**: A `cmdline` hook (`hcn-cmdline.sh`) writes `ip=hcn` to `/etc/cmdline.d/20-hcn.conf` when HCN is requested and HCN devices are present. This marker tells NetworkManager and the other Agama dracut modules that HCN configures the network, so nobody else touches the bond ports (see [Interaction with other modules](#interaction-with-other-modules))
 1. **Device Discovery**: Scans `/proc/device-tree` for devices with matching `ibm,hcn-id` properties, building a mapping of port devices to bond controllers
 2. **Parameter Transformation**: Replaces port interface names or MAC addresses in `rd.hcn.*` parameters with discovered bond controller names
 3. **Bond Configuration**: Generates `bond=` parameters for active-backup bonds with the discovered primary (SR-IOV) and backup (vNIC) adapters
@@ -177,7 +177,7 @@ The HCN dracut module integrates with systemd and NetworkManager during the init
 HCN cannot be configured from a `cmdline` hook: the bond ports only show up once udev has
 discovered the devices, which happens long after the command line is parsed. Everything
 else, though, is decided at that point, so the module reserves the network for itself as
-early as possible by writing `ip=hcn` to `/etc/cmdline.d/hcn.conf`:
+early as possible by writing `ip=hcn` to `/etc/cmdline.d/20-hcn.conf`:
 
 - **NetworkManager** skips the argument and, more importantly, does not fabricate its
   default DHCP connection when `rd.neednet=1` was requested but the command line produced

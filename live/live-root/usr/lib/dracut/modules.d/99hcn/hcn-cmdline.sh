@@ -35,7 +35,7 @@ command -v getargbool >/dev/null || . /lib/dracut-lib.sh
 # Device tree location and generated configuration file. Only overridden by the
 # test suite.
 HCN_DEVICE_TREE="${HCN_DEVICE_TREE:-/proc/device-tree}"
-HCN_CMDLINE_FILE="${HCN_CMDLINE_FILE:-/etc/cmdline.d/hcn.conf}"
+HCN_CMDLINE_FILE="${HCN_CMDLINE_FILE:-/etc/cmdline.d/20-hcn.conf}"
 
 # Whether the HCN configuration was requested through the kernel command line.
 # Mirrors the conditions of hcn-init-initrd.service.

@@ -17,7 +17,7 @@ setup() {
     export EMPTY_DEVICE_TREE="$TEST_WORK_DIR/device-tree"
     mkdir -p "$EMPTY_DEVICE_TREE/pci@0/ethernet@0" "$EMPTY_DEVICE_TREE/vdevice"
 
-    export HCN_CMDLINE_FILE="$TEST_WORK_DIR/hcn.conf"
+    export HCN_CMDLINE_FILE="$TEST_WORK_DIR/20-hcn.conf"
     export HCN_DEVICE_TREE="$HCN_DEVICE_TREE_FIXTURE"
     export MOCK_CMDLINE=""
 }
