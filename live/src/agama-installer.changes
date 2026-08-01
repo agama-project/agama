@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Jul 23 19:40:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix multiple IP/route assignments in multi-bond setups with
+  HCN/HVN inside the initrd (bsc#1272445, related to jsc#PED-14533).
+- Announce the HCN network configuration with an "ip=hcn" marker in
+  /etc/cmdline.d, preventing NetworkManager and the other Agama
+  dracut modules from configuring the bond ports on their own, which
+  could break HCN bonds. It requires NetworkManager with "ip=hcn"
+  support (bsc#1272445, related to jsc#PED-14533 and jsc#PED-14534).
+
+-------------------------------------------------------------------
 Mon Jul 20 11:12:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 23
