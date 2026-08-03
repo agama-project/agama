@@ -1654,6 +1654,9 @@ export default {
   "Loading data...": [
     "მონაცემების ჩატვირთვა..."
   ],
+  "Loading the installation repositories...": [
+    "დაყენების რეპოზიტორიების ჩატვირთვა..."
+  ],
   "Localization": [
     "ლოკალიზაცია"
   ],
@@ -1846,7 +1849,7 @@ export default {
     "სახელი %s"
   ],
   "Name for the logical volume. E.g., root, home, lv0": [
-    ""
+    "სახელი ლოგიკური ტომისთვის. მაგ: root, home, lv0"
   ],
   "Name is required": [
     "სახელი აუცილებელია"
@@ -3064,6 +3067,9 @@ export default {
   "Transient": [
     "გარდამავალი"
   ],
+  "Try again": [
+    "თავიდან სცადეთ"
+  ],
   "Try to activate again": [
     "გააქტიურების თავიდან ცდა"
   ],
@@ -3388,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     ""
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ჩართულია"

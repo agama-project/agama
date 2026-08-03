@@ -1629,6 +1629,9 @@ export default {
   "Loading data...": [
     "正在读取数据……"
   ],
+  "Loading the installation repositories...": [
+    "正在加载安装储存库..."
+  ],
   "Localization": [
     "本地化"
   ],
@@ -3024,6 +3027,9 @@ export default {
   "Transient": [
     "临时"
   ],
+  "Try again": [
+    "重试"
+  ],
   "Try to activate again": [
     "重新尝试激活"
   ],
@@ -3347,9 +3353,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "您将连接到未加密的公共网络。数据可能存在安全风险。"
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "大写锁定已开启"

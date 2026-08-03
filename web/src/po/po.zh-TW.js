@@ -1629,6 +1629,9 @@ export default {
   "Loading data...": [
     "正在載入資料..."
   ],
+  "Loading the installation repositories...": [
+    "正在載入安裝儲存庫..."
+  ],
   "Localization": [
     "本土化"
   ],
@@ -3024,6 +3027,9 @@ export default {
   "Transient": [
     "暫時"
   ],
+  "Try again": [
+    "再試一次"
+  ],
   "Try to activate again": [
     "重新嘗試啟用"
   ],
@@ -3347,9 +3353,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "您將連接至未加密的公用網路。資料可能存在安全風險。"
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "已開啟 [大寫鎖定]"

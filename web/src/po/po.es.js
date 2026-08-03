@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Acciones"
   ],
+  "Actions for %s": [
+    "Acciones para %s"
+  ],
   "Actions for %s at portal %s": [
     "Acciones para %s en el portal %s"
   ],
@@ -354,6 +357,9 @@ export default {
   ],
   "Allow growing": [
     "Permitir que crezca"
+  ],
+  "Allow shrinking": [
+    "Permitir que se reduzca"
   ],
   "Already using all available devices": [
     "Ya se están utilizando todos los dispositivos disponibles"
@@ -1647,6 +1653,9 @@ export default {
   ],
   "Loading data...": [
     "Cargando los datos..."
+  ],
+  "Loading the installation repositories...": [
+    "Cargando los repositorios de instalación..."
   ],
   "Localization": [
     "Localización"
@@ -3058,6 +3067,9 @@ export default {
   "Transient": [
     "Temporal"
   ],
+  "Try again": [
+    "Volver a intentar"
+  ],
   "Try to activate again": [
     "Intente activar de nuevo"
   ],
@@ -3382,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Se conectará a una red pública sin cifrado. Es posible que sus datos no estén seguros."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[BLOQ MAYÚS] está activado"
