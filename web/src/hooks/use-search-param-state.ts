@@ -39,8 +39,11 @@ const UPDATE_OPTS = { replace: true, preventScrollReset: true } as const;
  * such as the selected tab or the sorted column, so that reloading the page or
  * sharing its address brings the same view back.
  *
- * Setting `undefined` removes the param; a missing param reads as
- * `defaultValue`.
+ * Setting `undefined` removes the param, and so does setting `defaultValue`
+ * itself: a view has one address that way, instead of one for the page as it
+ * opens and another for the same page after a control travelled back to where
+ * it started. Reading never rewrites anything, so an address that spells the
+ * default out keeps it.
  *
  * @example
  * const [tab, setTab] = useSearchParamState("tab", "0");
@@ -53,7 +56,7 @@ function useSearchParamState(key: string, defaultValue?: string) {
 
   const setValue = (next: string | number | undefined) =>
     setParams((nextParams) => {
-      if (next === undefined) {
+      if (next === undefined || String(next) === defaultValue) {
         nextParams.delete(key);
       } else {
         nextParams.set(key, String(next));
