@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-23 13:42+0000\n"
-"PO-Revision-Date: 2026-06-16 18:12+0000\n"
+"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"PO-Revision-Date: 2026-08-02 14:12+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "rust-master/id/>\n"
@@ -17,13 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.7.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
+"Konfigurasi tidak dapat diterapkan karena tidak valid atau tidak dapat "
+"dijangkau."
 
 #: agama-autoinstall/src/questions.rs:44
 msgid "Reload configuration"
@@ -31,16 +33,15 @@ msgstr "Muat ulang konfigurasi"
 
 #: agama-autoinstall/src/questions.rs:45
 msgid "Skip and configure manually"
-msgstr "Lewati dan konfigurasi secara manual"
+msgstr "Lewati dan konfigurasikan secara manual"
 
 #. TRANSLATORS: {0} is a URL
 #: agama-autoinstall/src/scripts.rs:135
-#, fuzzy
 msgid ""
 "It was not possible to load the script from {0}. Do you want to try again?"
 msgstr ""
-"Tidak dapat memuat skrip dari {0}. Apakah Anda ingin mencoba lagi?\n"
-"                "
+"Tidak memungkinkan untuk memuat skrip dari {0}. Apakah Anda ingin mencoba "
+"lagi?"
 
 #. TRANSLATORS: CLI help for: agama auth
 #: agama-cli/src/auth.rs:65
@@ -121,18 +122,16 @@ msgstr "Analisis sistem"
 
 #. TRANSLATORS: CLI help for: agama probe (details)
 #: agama-cli/src/commands.rs:44
-#, fuzzy
 msgid ""
 "In Agama's jargon, the term 'probing' refers to the process of 'analyzing' "
 "the system. This includes reading software repositories, analyzing storage "
 "devices, and more. The 'probe' command initiates this analysis process and "
 "returns immediately."
 msgstr ""
-"Dalam istilah Agama, \"probing\" merujuk pada proses \"menganalisis\" "
-"sistem. Ini mencakup pembacaan repositori perangkat lunak, analisis "
-"perangkat penyimpanan, dan lainnya. Perintah \"probe\" memulai proses "
-"analisis ini dan segera kembali. TODO: apakah kita benar-benar memerlukan "
-"aksi \"probe\"?"
+"Dalam jargon Agama, istilah 'probing' merujuk pada proses 'menganalisis' "
+"sistem. Ini mencakup membaca repositori perangkat lunak, menganalisis "
+"perangkat penyimpanan, dan lainnya. Perintah 'probe' memulai proses analisis "
+"ini dan segera mengembalikan hasil."
 
 #. TRANSLATORS: CLI help for: agama install
 #: agama-cli/src/commands.rs:53
@@ -834,10 +833,9 @@ msgstr "Mengonfigurasi sistem"
 
 #: agama-manager/src/actions.rs:242
 msgid "Finishing installation"
-msgstr "Menyelesaikan instalasi"
+msgstr "Penyelesaian instalasi"
 
 #: agama-manager/src/actions.rs:271
-#, fuzzy
 msgid "Finalize installation"
 msgstr "Selesaikan instalasi"
 
@@ -960,11 +958,11 @@ msgstr "Konversi AutoYaST gagal"
 
 #: agama-server/src/server/web.rs:86
 msgid "Missing Language Tag"
-msgstr ""
+msgstr "Tag Bahasa Hilang"
 
 #: agama-server/src/server/web.rs:89
 msgid "Profile error"
-msgstr ""
+msgstr "Kesalahan Profil"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
@@ -998,68 +996,68 @@ msgstr ""
 msgid "Skip"
 msgstr "Lewati"
 
-#: agama-software/src/service.rs:303
+#: agama-software/src/service.rs:304
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 "Karena kesalahan internal, tidak memungkinkan untuk membuat proposal "
 "perangkat lunak."
 
-#: agama-software/src/zypp_server.rs:308
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr "Memulai instalasi paket"
 
-#: agama-software/src/zypp_server.rs:321
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "Unduhan dan instalasi paket gagal. Apakah Anda ingin mencoba lagi?"
 
-#: agama-software/src/zypp_server.rs:376
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
 msgstr "Memperbarui daftar repositori"
 
-#: agama-software/src/zypp_server.rs:377
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
 msgstr "Menyegarkan metadata dari repositori"
 
-#: agama-software/src/zypp_server.rs:378
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "Menghitung usulan perangkat lunak"
 
-#: agama-software/src/zypp_server.rs:381
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
 msgstr "Mendaftarkan sistem"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
 msgstr "Tidak dapat menghapus repositori %s"
 
-#: agama-software/src/zypp_server.rs:475
+#: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
 msgstr "Tidak dapat membaca repositori"
 
-#: agama-software/src/zypp_server.rs:512
+#: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 "Gagal menemukan produk di repositori. Anda mungkin perlu mendaftarkan sistem."
 
-#: agama-software/src/zypp_server.rs:515
+#: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
 msgstr "Gagal menemukan produk di repositori."
 
-#: agama-software/src/zypp_server.rs:578
+#: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
 msgstr "Terdapat konflik dalam pemilihan perangkat lunak"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:607
+#: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
 msgstr "Tidak dapat memilih %s '%s' untuk instalasi"
 
-#: agama-software/src/zypp_server.rs:1041
+#: agama-software/src/zypp_server.rs:1031
 msgid "Failed to register the system"
 msgstr "Gagal mendaftarkan sistem"
 
