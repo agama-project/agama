@@ -107,9 +107,7 @@ impl State {
 
     pub fn load(&mut self) {
         self.config = match ProxyConfig::read_from(&self.config_path) {
-            Ok(system) => {
-                Some(system.clone())
-            }
+            Ok(system) => Some(system.clone()),
             Err(e) => {
                 tracing::error!("Failed to read proxy configuration: {}", e);
                 None
