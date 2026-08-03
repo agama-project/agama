@@ -49,6 +49,9 @@ const RESULT_TAB = "rt";
 /** DASD page: sorted column and direction, as in `s=channel:desc`. */
 const DASD_SORT = "s";
 
+/** zFCP page: sorted column and direction. */
+const ZFCP_SORT = "s";
+
 /**
  * Token identifying an expandable section of a device.
  *
@@ -72,4 +75,12 @@ function volumeGroupToken(vgName: string): string {
   return `vg${vgName}`;
 }
 
-export { EXPANDED, SETTINGS_TAB, RESULT_TAB, DASD_SORT, expandedToken, volumeGroupToken };
+export {
+  EXPANDED,
+  SETTINGS_TAB,
+  RESULT_TAB,
+  DASD_SORT,
+  ZFCP_SORT,
+  expandedToken,
+  volumeGroupToken,
+};
