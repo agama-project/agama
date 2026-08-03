@@ -34,7 +34,7 @@ const CurrentSearch = () => <output>{useLocation().search}</output>;
 
 const search = () => screen.getByRole("status").textContent;
 
-const columns: SelectableDataTableColumn[] = [
+const buildColumns = (): SelectableDataTableColumn[] => [
   { name: _("Name"), value: () => null, sortingKey: "name" },
   { name: _("Status"), value: () => null, sortingKey: "status" },
   {
@@ -53,7 +53,7 @@ const defaultValue = { index: 0, direction: "asc" } as const;
  * Renders the sorting held in the given param, and lets a test change it.
  */
 const Subject = ({ param = "s" }: { param?: string }) => {
-  const [sortedBy, updateSorting] = useSortedByParam(columns, { param, defaultValue });
+  const [sortedBy, updateSorting] = useSortedByParam(buildColumns(), { param, defaultValue });
 
   return (
     <>
