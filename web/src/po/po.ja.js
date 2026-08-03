@@ -1629,6 +1629,9 @@ export default {
   "Loading data...": [
     "データを読み込んでいます..."
   ],
+  "Loading the installation repositories...": [
+    "インストール用リポジトリを読み込んでいます..."
+  ],
   "Localization": [
     "ローカライゼーション"
   ],
@@ -3024,6 +3027,9 @@ export default {
   "Transient": [
     "暫定"
   ],
+  "Try again": [
+    "再試行"
+  ],
   "Try to activate again": [
     "再有効化の試行"
   ],
@@ -3347,9 +3353,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "暗号化されていない公衆ネットワークに接続しようとしています。通信の安全性が保てないかもしれません。"
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] が有効化されています"

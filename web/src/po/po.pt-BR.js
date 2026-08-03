@@ -1654,6 +1654,9 @@ export default {
   "Loading data...": [
     "Carregando dados..."
   ],
+  "Loading the installation repositories...": [
+    "Carregando repositórios de instalação..."
+  ],
   "Localization": [
     "Localização"
   ],
@@ -3064,6 +3067,9 @@ export default {
   "Transient": [
     "Temporário"
   ],
+  "Try again": [
+    "Tentar novamente"
+  ],
   "Try to activate again": [
     "Tentar ativar novamente"
   ],
@@ -3388,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Você se conectará a uma rede pública sem criptografia. Seus dados talvez não fiquem seguros."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ativado"
