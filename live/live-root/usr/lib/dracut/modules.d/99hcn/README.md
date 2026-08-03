@@ -150,7 +150,10 @@ rd.hcn.ip=enP32775p1s0:dhcp \
 - `rd.net.dns`, `rd.net.dns-backend`, `rd.net.dns-resolve-mode`, `rd.net.timeout.carrier` —
   these produce a global configuration file instead of a connection. They do not depend on
   HCN having resolved the bonds and NetworkManager's own generator run already wrote them
-  to `/run/NetworkManager/conf.d`.
+  to `/run/NetworkManager/conf.d`. For the same reason the HCN run writes its own
+  configuration files to `/run/hcn/conf.d`: the generator always emits
+  `15-carrier-timeout.conf`, and with the default directory it would reset a
+  `rd.net.timeout.carrier` given by the user.
 
 #### Host name
 

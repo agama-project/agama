@@ -167,7 +167,7 @@ The following diagram details the control and configuration flow from the initia
        - For each device, it waits up to 3 minutes for the interface to appear after potential migration events.
        - It reads the HCN-specific kernel command line options `rd.hcn.ip` and `rd.hcn.route` and translates them to target the planned bond interface (e.g. `bond333e80f5`).
        - It carries over the remaining device independent network options of the real command line (`nameserver=`, `rd.peerdns=`, `rd.net.dhcp.*`), which the generator run of step 2.5 produced nothing for.
-       - It calls the standard `nm-initrd-generator` **directly** with transformed parameters as command-line arguments and custom output directory `-c /run/hcn/system-connections`.
+       - It calls the standard `nm-initrd-generator` **directly** with transformed parameters as command-line arguments and custom output directories `-c /run/hcn/system-connections` and `-r /run/hcn/conf.d`.
        - It adapts the generated NetworkManager profiles for compatibility with `hcnmgr` daemon (bond naming, controller references, UUIDs).
        - The adapted profiles are copied to `/etc/NetworkManager/system-connections/` for persistence across reboots.
 
@@ -297,7 +297,10 @@ Known gaps, all of them deliberate:
 - `rd.net.dns`, `rd.net.dns-backend`, `rd.net.dns-resolve-mode` and `rd.net.timeout.carrier`
   produce a global configuration file rather than a connection. They do not depend on the
   bonds having been resolved and NetworkManager's own run already wrote them to
-  `/run/NetworkManager/conf.d`.
+  `/run/NetworkManager/conf.d`. That is also why `--run-config-dir` points at
+  `/run/hcn/conf.d`: the generator unconditionally writes `15-carrier-timeout.conf`, so
+  with the default directory the HCN run would overwrite NetworkManager's copy of it and
+  reset a `rd.net.timeout.carrier` supplied by the user.
 
 The host name field of `rd.hcn.ip` needs no carry-over: the generator writes it to its
 `--initrd-data-dir` (`/run/NetworkManager/initrd`, which it creates itself) while parsing
@@ -308,7 +311,7 @@ because `hcn-init-initrd.service` runs `Before=dracut-initqueue.service`.
 **These transformed parameters are:**
 
 1. Passed **directly** to `nm-initrd-generator` as command-line arguments (NOT written to `/etc/cmdline.d/`)
-2. Output directed to isolated directory: `-c /run/hcn/system-connections`
+2. Output directed to isolated directories: `-c /run/hcn/system-connections` and `-r /run/hcn/conf.d`
 3. Used by `nm-initrd-generator` to create initial NetworkManager connection profiles
 4. Adapted by `fixup_nm_connections()` to ensure `hcnmgr` daemon compatibility
 5. Copied to `/etc/NetworkManager/system-connections/` for persistence across reboots

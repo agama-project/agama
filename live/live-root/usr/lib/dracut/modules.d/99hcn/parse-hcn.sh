@@ -254,7 +254,7 @@ EOF
     if [ -n "$mapping_info" ]; then
       found_master=${mapping_info% *}
       found_ifname=${mapping_info#* }
-    elif strstr " $BOND_NAMES " " ${master:-$controller} "; then
+    elif strstr " $BOND_LIST " " ${master:-$controller} "; then
       found_master=${master:-$controller}
       found_ifname=$ifname
     fi
@@ -361,19 +361,23 @@ NM_RUNTIME_DIR="/run/NetworkManager"
 NM_RUNTIME_CONN_DIR="$NM_RUNTIME_DIR/system-connections"
 HCN_RUNTIME_DIR="/run/hcn"
 HCN_RUNTIME_CONN_DIR="$HCN_RUNTIME_DIR/system-connections"
+HCN_RUNTIME_CONF_DIR="$HCN_RUNTIME_DIR/conf.d"
 NEW_ARGS=""
 
 # Extract unique bond names from discovered mappings
 BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
 
+# Space separated copy of BOND_NAMES. BOND_NAMES is newline separated, which
+# does not work for the " $list " substring checks done with strstr. The echo
+# is what collapses the newlines, so it is not the useless one it looks like.
+# shellcheck disable=SC2086,SC2116
+BOND_LIST=$(echo $BOND_NAMES)
+
 # First discovered bond. Only unqualified *static* configs (a fixed address
 # with no interface field) fall back to this bond, because a fixed address can
 # belong to a single bond. Method-only configs (dhcp, auto6, ...) carry no
 # per-host address and instead fan out to every discovered bond (see below).
-# NOTE: BOND_NAMES is newline-separated, so it must be left unquoted here for
-# awk to see a single record and return just the first token.
-# shellcheck disable=SC2086
-FIRST_BOND=$(echo $BOND_NAMES | awk '{print $1}')
+FIRST_BOND=${BOND_LIST%% *}
 
 for BONDNAME in $BOND_NAMES; do
   SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
@@ -579,8 +583,9 @@ NEW_ARGS="$NEW_ARGS$(carry_over_cmdline)"
 
 # Write new configuration and update NetworkManager
 if [ -n "$NEW_ARGS" ]; then
-  # Create runtime directory to store HCN connections
-  mkdir -p "$HCN_RUNTIME_CONN_DIR"
+  # Create runtime directories to store HCN connections and the generator
+  # configuration files
+  mkdir -p "$HCN_RUNTIME_CONN_DIR" "$HCN_RUNTIME_CONF_DIR"
 
   # Write new cmdline options
   info "parse-hcn: new cmdline arguments: $NEW_ARGS"
@@ -593,8 +598,12 @@ if [ -n "$NEW_ARGS" ]; then
     generator_found=1
     info "parse-hcn: calling $gen"
     rm -f "$HCN_RUNTIME_CONN_DIR"/*
+    # --run-config-dir points to a scratch directory on purpose. The generator
+    # always writes 15-carrier-timeout.conf, and with the default directory
+    # this run would overwrite the one NetworkManager generated from the real
+    # command line, resetting a user supplied rd.net.timeout.carrier.
     # shellcheck disable=SC2086
-    if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -- $NEW_ARGS; then
+    if "$gen" -c "$HCN_RUNTIME_CONN_DIR" -r "$HCN_RUNTIME_CONF_DIR" -- $NEW_ARGS; then
       if [ "$(ls -A "$HCN_RUNTIME_CONN_DIR")" ]; then
         fixup_nm_connections
         # Persist these new HCN connections to /etc
