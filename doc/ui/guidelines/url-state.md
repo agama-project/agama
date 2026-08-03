@@ -27,10 +27,16 @@ Ask what the value describes.
 | The value describes | Where it lives | Why |
 | --- | --- | --- |
 | How the page is being viewed: expanded sections, active tab, filters, sort order | **URL search params** | Shareable, survives reload, restores on back |
-| A transient interaction: an open menu, a hovered row, text being typed before it is applied | Component state | Nobody wants a link to a half-open dropdown, and every keystroke would be an update |
+| A transient interaction: an open menu, a hovered row, a half-typed search | Component state, **until it settles** | Nobody wants a link to a half-open dropdown, and every keystroke would be an update |
 | Something the server knows: the proposal, the list of devices, whether the user is logged in | TanStack Query | It has to be fetched, cached and invalidated |
 | One app-wide setting outside React: color scheme, terminal visibility | A module store | It belongs to no page, and applies before rendering |
 | Which entity a page is about: a device index, a mount path | **Path** params (`useParams`) | It identifies the page, not the view of it |
+
+The second row is about *when*, not *whether*. A search still being typed is an
+unfinished action, so it stays local while the keys keep coming, and describes
+the view as soon as it settles. `?name=eth` is a link worth having; `?name=e`
+rewritten three times a second is not. `useFilterParams` draws that line for
+filters, so a table gets both halves without deciding anything.
 
 The last row is the distinction worth being careful about. Both live in the URL,
 but `/storage/drives/0` says *which* page and `?expanded=d0` says *how it looks*.
