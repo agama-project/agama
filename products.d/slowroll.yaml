@@ -64,6 +64,10 @@ translations:
       ontworpen minder updates te hebben dan Tumbleweed maar vaker dan Leap
       zonder gebruikers te dwingen om te kiezen tussen "stabiele" en nieuwere
       pakketten.
+    pl: Eksperymentalna dystrybucja ciągła openSUSE o nieco wolniejszym cyklu
+      wydawniczym, aktualizowana rzadziej niż Tumbleweed, ale częściej niż Leap,
+      bez zmuszania użytkowników do wyboru między „stabilnymi” a nowszymi
+      pakietami.
     pt_BR: Uma versão experimental e um pouco mais lenta do openSUSE, projetada para
       atualizar com menos frequência que o Tumbleweed, mas com mais frequência
       que o Leap, sem forçar os usuários a escolher entre pacotes "estáveis" e
