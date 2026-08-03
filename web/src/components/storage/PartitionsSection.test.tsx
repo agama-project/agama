@@ -22,7 +22,7 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
-import { installerRender, mockNavigateFn } from "~/test-utils";
+import { installerRender, mockNavigateFn, mockRoutes } from "~/test-utils";
 import PartitionsSection from "~/components/storage/PartitionsSection";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -66,6 +66,28 @@ async function openMenu(path: string) {
 
   return { user };
 }
+
+describe("PartitionsSection", () => {
+  it("starts collapsed when the URL says nothing about it", () => {
+    installerRender(<PartitionsSection collection="drives" index={0} />);
+
+    expect(screen.queryByRole("button", { name: "Options for partition /" })).toBeNull();
+  });
+
+  it("starts expanded when its token is in the URL", () => {
+    mockRoutes("/storage?e=d0");
+    installerRender(<PartitionsSection collection="drives" index={0} />);
+
+    screen.getByRole("button", { name: "Options for partition /" });
+  });
+
+  it("ignores a token belonging to another section", () => {
+    mockRoutes("/storage?e=d1");
+    installerRender(<PartitionsSection collection="drives" index={0} />);
+
+    expect(screen.queryByRole("button", { name: "Options for partition /" })).toBeNull();
+  });
+});
 
 describe("PartitionMenuItem", () => {
   it("allows users to delete a partition", async () => {
