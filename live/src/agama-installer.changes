@@ -1,12 +1,13 @@
 -------------------------------------------------------------------
 Mon Aug  3 10:50:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
+Fixes related to bsc#1272445 ISO building and testing
+(gh#agama-project/agama#3782).
 - Fix ppc64le and s390x ISO build issues in fix_bootconfig by
   ensuring the xorriso wrapper acts as a transparent pass-through
-  for read-only reporting and probing commands (gh#agama-project/agama#3782).
+  for read-only reporting and probing commands.
 - Clean up redundant ppc64le bootloader options, relying on KIWI-NG's
-  native support for making OFW ISOs bootable (gh#agama-project/agama#3782).
-- Related to bsc#1272445.
+  native support for making OFW ISOs bootable.
 
 -------------------------------------------------------------------
 Thu Jul 23 19:40:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
