@@ -132,6 +132,35 @@ A value being typed has to stay local **until the address actually holds it**.
 Router updates apply asynchronously, so releasing it when the write is requested
 leaves a render showing neither the typed value nor the stored one.
 
+### Treat a param update as the navigation it is
+
+`setSearchParams` is `navigate("?" + params)` underneath, so writing a param goes
+through the router like any other navigation. Everything watching navigations
+sees it, whether or not the page changed.
+
+This matters most for navigation blockers. React Router consults the blocker on
+every navigation, with no exemption for an unchanged path or a search-only
+change, so a blocker written as "stop the user while this form is dirty" fires
+when they sort a table or expand a section, and cancels the update as well, which
+means the view silently fails to reach the address.
+
+A blocker guards *leaving*, and leaving means the path changes:
+
+```tsx
+// Wrong: fires while the user filters a table on the page they are already on.
+useBlocker(() => isDirty);
+
+// Right.
+useBlocker(
+  ({ currentLocation, nextLocation }) =>
+    isDirty && currentLocation.pathname !== nextLocation.pathname,
+);
+```
+
+Anything else reacting to navigations (analytics, scroll handling, guards of any
+kind) needs the same question asked of it: does it mean *the page changed*, or
+*something navigated*?
+
 ### Nothing sensitive, nothing large
 
 The address is visible on screen, and it might end up shared or attached to a bug

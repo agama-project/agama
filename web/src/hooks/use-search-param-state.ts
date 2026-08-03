@@ -29,6 +29,10 @@ import { toggle } from "radashi";
  * Replacing keeps back and forward stepping between pages instead of between
  * individual clicks on the same page, and the scroll position of the page is
  * left untouched.
+ *
+ * Note that every update here is a router navigation, so a navigation blocker
+ * sees it too: one that does not compare paths would fire while the user is
+ * merely changing how the current page looks, and would cancel the update.
  */
 const SEARCH_PARAM_UPDATE = { replace: true, preventScrollReset: true } as const;
 
