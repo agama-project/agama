@@ -10,9 +10,11 @@
 #    - Scans vdevices (VNIC and Virtual Ethernet)
 # 3. Build MAPPINGS: bond names -> slave devices with MACs and modes
 # 4. Process rd.hcn.ip= and rd.hcn.route= parameters and replace slave references with bonds
-# 5. Generate NetworkManager connections to a temporary directory via nm-initrd-generator
-# 6. Fix up generated connections to use correct bond masters and naming
-# 7. Copy connections to /etc/NetworkManager/system-connections for persistence
+# 5. Carry over the remaining network options of the real kernel command line
+#    (nameserver=, rd.peerdns=, rd.net.dhcp.*)
+# 6. Generate NetworkManager connections to a temporary directory via nm-initrd-generator
+# 7. Fix up generated connections to use correct bond masters and naming
+# 8. Copy connections to /etc/NetworkManager/system-connections for persistence
 #
 # This script runs from hcn-init-initrd.service, once udev has discovered the
 # devices. Much earlier, hcn-cmdline.sh has already told NetworkManager and the
@@ -287,6 +289,39 @@ EOF
   done
 }
 
+# Carry over the rest of the network command line
+#
+# nm-initrd-generator is called with a command line built from scratch, so any
+# network option the user really passed is invisible to it unless it is copied
+# over here. The generator run NetworkManager does on its own is no substitute:
+# the "ip=hcn" marker keeps that run from producing any connection, so
+# everything it would have parsed into one is lost.
+#
+# Options that end up in a global configuration file rather than in a
+# connection (rd.net.dns, rd.net.dns-backend, rd.net.dns-resolve-mode,
+# rd.net.timeout.carrier) are left out on purpose, the NetworkManager run
+# already wrote them to /run/NetworkManager/conf.d.
+#
+# Only the options that name no device are copied. The ones that do
+# (rd.net.dhcp.client-id=, bootdev=, rd.ethtool=, and the vlan=, bridge= and
+# team= stacked devices) would need the port reference rewritten to its bond,
+# and the generator creates a full connection for any device named in them,
+# which this module would then persist to /etc.
+#
+# Prints the arguments to append to the generated command line, each one
+# preceded by a space.
+carry_over_cmdline() {
+  local opt val
+
+  for opt in nameserver rd.peerdns rd.net.timeout.dhcp rd.net.dhcp.retry \
+    rd.net.dhcp.vendor-class rd.net.dhcp.dscp; do
+    for val in $(getargs "$opt"); do
+      info "parse-hcn: keeping $opt=$val"
+      printf ' %s=%s' "$opt" "$val"
+    done
+  done
+}
+
 # --- Main Execution ---
 
 info "parse-hcn: starting"
@@ -539,6 +574,8 @@ EOF
     fi
   done
 done
+
+NEW_ARGS="$NEW_ARGS$(carry_over_cmdline)"
 
 # Write new configuration and update NetworkManager
 if [ -n "$NEW_ARGS" ]; then

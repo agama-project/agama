@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Mon Aug  3 12:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: carry the device independent network options of the kernel
+  command line over to the nm-initrd-generator call, which so far
+  only received the bond=, ip= and rd.route= arguments built from
+  rd.hcn.*. nameserver=, rd.peerdns=, rd.net.timeout.dhcp=,
+  rd.net.dhcp.retry=, rd.net.dhcp.vendor-class= and
+  rd.net.dhcp.dscp= had no effect on an HCN boot so far, since the
+  ip=hcn marker keeps NetworkManager's own generator run from
+  producing any connection.
+- Related to bsc#1272445.
+
+-------------------------------------------------------------------
 Mon Aug  3 10:50:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 Fixes related to bsc#1272445 ISO building and testing

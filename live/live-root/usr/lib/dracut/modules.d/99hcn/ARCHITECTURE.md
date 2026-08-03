@@ -166,6 +166,7 @@ The following diagram details the control and configuration flow from the initia
        - `/usr/bin/parse-hcn` performs discovery in `/proc/device-tree` to pair adapters sharing an `ibm,hcn-id`.
        - For each device, it waits up to 3 minutes for the interface to appear after potential migration events.
        - It reads the HCN-specific kernel command line options `rd.hcn.ip` and `rd.hcn.route` and translates them to target the planned bond interface (e.g. `bond333e80f5`).
+       - It carries over the remaining device independent network options of the real command line (`nameserver=`, `rd.peerdns=`, `rd.net.dhcp.*`), which the generator run of step 2.5 produced nothing for.
        - It calls the standard `nm-initrd-generator` **directly** with transformed parameters as command-line arguments and custom output directory `-c /run/hcn/system-connections`.
        - It adapts the generated NetworkManager profiles for compatibility with `hcnmgr` daemon (bond naming, controller references, UUIDs).
        - The adapted profiles are copied to `/etc/NetworkManager/system-connections/` for persistence across reboots.
@@ -269,6 +270,40 @@ Where:
   - `fail_over_mac=2`: Follow the selection of the active port
   - `miimon=100`: Monitor link status every 100ms
   - `primary=enP32775p1s0`: Prefer the SR-IOV interface as primary
+
+### Carrying over the rest of the network command line
+
+The command line above is built from scratch, so it is also the only network command line
+`nm-initrd-generator` gets to see for HCN. The generator run NetworkManager performs on its
+own with the real command line is not a substitute: the `ip=hcn` marker keeps that run from
+producing any connection, so every per-connection setting it parses there is dropped.
+
+`carry_over_cmdline()` therefore appends the network options that name no device, copied
+verbatim:
+
+| Group | Options | Handling |
+|-------|---------|----------|
+| Device independent | `nameserver`, `rd.peerdns`, `rd.net.timeout.dhcp`, `rd.net.dhcp.retry`, `rd.net.dhcp.vendor-class`, `rd.net.dhcp.dscp` | Copied verbatim |
+
+Known gaps, all of them deliberate:
+
+- `rd.net.dhcp.client-id`, `bootdev`, `rd.ethtool`, and the `vlan=` / `bridge=` / `team=`
+  stacked devices name a device. The user names a bond port, so the reference would have to
+  be rewritten to its bond first. On top of that, `nm-initrd-generator` creates a full
+  connection for every device it sees named in any of these, and the copy step below would
+  then persist that stray connection to `/etc/NetworkManager/system-connections`. The
+  stacked devices additionally need a way to be addressed from `rd.hcn.ip`, which the
+  current syntax does not offer.
+- `rd.net.dns`, `rd.net.dns-backend`, `rd.net.dns-resolve-mode` and `rd.net.timeout.carrier`
+  produce a global configuration file rather than a connection. They do not depend on the
+  bonds having been resolved and NetworkManager's own run already wrote them to
+  `/run/NetworkManager/conf.d`.
+
+The host name field of `rd.hcn.ip` needs no carry-over: the generator writes it to its
+`--initrd-data-dir` (`/run/NetworkManager/initrd`, which it creates itself) while parsing
+the `ip=` argument built from `rd.hcn.ip`. `nm-run.sh`, the `initqueue/settled` hook of
+`35network-manager`, then applies it to `/proc/sys/kernel/hostname`. The ordering holds
+because `hcn-init-initrd.service` runs `Before=dracut-initqueue.service`.
 
 **These transformed parameters are:**
 
@@ -420,14 +455,18 @@ mac-address=<discovered-mac>
    - Requires validation against `hcnmgr` expectations
 
 3. **DNS Configuration:**
-   - Current `ip=` format supports nameserver (8th field)
+   - The `ip=` format supports nameservers (8th and 9th field)
    - Example: `rd.hcn.ip=192.168.1.10::192.168.1.1:255.255.255.0:::none:8.8.8.8`
+   - A plain `nameserver=` is carried over as well, see [Carrying over the rest of the network command line](#carrying-over-the-rest-of-the-network-command-line)
    - Needs testing and documentation
 
 4. **VLAN Support:**
    - HCN bonds may carry VLAN-tagged traffic
    - Requires additional parameter: `rd.hcn.vlan=<vlan-id>`
    - Profile generation for VLAN interfaces on top of bond
+   - Rewriting a plain `vlan=<name>:<port>` to the bond is the easy half. The hard half is
+     addressing the VLAN interface from `rd.hcn.ip`, which currently only understands
+     ports, MACs and bond names, so `vlan=`, `bridge=` and `team=` are not carried over
 
 5. **Configurable Timeout:**
    - Current 180-second timeout may be insufficient on slow hardware or during complex LPM

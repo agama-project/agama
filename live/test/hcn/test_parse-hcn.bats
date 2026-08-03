@@ -499,6 +499,57 @@ EOF
 }
 
 # ========================================
+# Test: carry_over_cmdline
+# ========================================
+
+load_carry_over_cmdline() {
+    source <(sed -n '/^carry_over_cmdline()/,/^}/p' "$SCRIPT_PATH")
+
+    # Reset every option the function looks at, getargs is mocked through
+    # MOCK_GETARGS_* variables
+    MOCK_GETARGS_nameserver=""
+    MOCK_GETARGS_rd_peerdns=""
+    MOCK_GETARGS_rd_net_timeout_dhcp=""
+    MOCK_GETARGS_rd_net_dhcp_retry=""
+    MOCK_GETARGS_rd_net_dhcp_vendor_class=""
+    MOCK_GETARGS_rd_net_dhcp_dscp=""
+}
+
+@test "carry_over_cmdline: copies device independent options verbatim" {
+    load_carry_over_cmdline
+
+    MOCK_GETARGS_nameserver="192.168.1.1 8.8.8.8"
+    MOCK_GETARGS_rd_peerdns="0"
+    MOCK_GETARGS_rd_net_timeout_dhcp="60"
+    MOCK_GETARGS_rd_net_dhcp_retry="3"
+    MOCK_GETARGS_rd_net_dhcp_vendor_class="agama"
+    MOCK_GETARGS_rd_net_dhcp_dscp="CS4"
+
+    result=$(carry_over_cmdline 2>/dev/null)
+
+    [ "$result" = " nameserver=192.168.1.1 nameserver=8.8.8.8 rd.peerdns=0 rd.net.timeout.dhcp=60 rd.net.dhcp.retry=3 rd.net.dhcp.vendor-class=agama rd.net.dhcp.dscp=CS4" ]
+}
+
+@test "carry_over_cmdline: copies only the options that were given" {
+    load_carry_over_cmdline
+
+    # The unset ones must not turn into empty "opt=" arguments
+    MOCK_GETARGS_nameserver="192.168.1.1"
+
+    result=$(carry_over_cmdline 2>/dev/null)
+
+    [ "$result" = " nameserver=192.168.1.1" ]
+}
+
+@test "carry_over_cmdline: returns nothing when no option is given" {
+    load_carry_over_cmdline
+
+    result=$(carry_over_cmdline 2>/dev/null)
+
+    [ -z "$result" ]
+}
+
+# ========================================
 # Test: Edge cases and error handling
 # ========================================
 
