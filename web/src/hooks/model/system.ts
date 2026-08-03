@@ -23,7 +23,7 @@
 import React from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getSystem } from "~/api";
-import { useInstallerClient } from "~/context/installer";
+import { useInstallerClient } from "~/hooks/use-installer-client";
 import type { System } from "~/model/system";
 
 const SYSTEM_QUERY_KEY = "system" as const;

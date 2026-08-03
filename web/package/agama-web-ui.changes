@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the installer language and keyboard layout dialog,
+  rebuilt with the new form stack (gh#agama-project/agama#3770).
+
+-------------------------------------------------------------------
 Fri Jul 31 08:19:29 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - dependency updated on Jul 7 already, listing its references
@@ -25,7 +31,7 @@ Tue Jul 21 22:00:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Avoid a flash from Agama colors to a product's own palette
   (gh#agama-project/agama#3749).
-  
+
 -------------------------------------------------------------------
 Tue Jul 21 19:07:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
 

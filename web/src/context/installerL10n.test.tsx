@@ -26,7 +26,6 @@ import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/reac
 import { _ } from "~/i18n";
 import agama from "~/agama";
 import { InstallerL10nProvider, useInstallerL10n } from "~/context/installerL10n";
-import { InstallerClientProvider } from "./installer";
 import { plainRender } from "~/test-utils";
 
 jest.unmock("~/context/installerL10n");
@@ -35,11 +34,6 @@ jest.unmock("~/context/installerL10n");
 // to emulate the backend persisting the change.
 let currentLocale = "en_US.UTF-8";
 const mockConfigureL10nFn = jest.fn();
-
-jest.mock("~/context/installer", () => ({
-  ...jest.requireActual("~/context/installer"),
-  useInstallerClientStatus: () => ({ connected: true, error: false }),
-}));
 
 jest.mock("~/api", () => ({
   ...jest.requireActual("~/api"),
@@ -51,15 +45,6 @@ jest.mock("~/languages.json", () => ({
   "en-US": "English (US)",
   "es-ES": "Español",
 }));
-
-const client = {
-  isConnected: jest.fn().mockResolvedValue(true),
-  isRecoverable: jest.fn(),
-  onConnect: jest.fn(),
-  onClose: jest.fn(),
-  onError: jest.fn(),
-  onEvent: jest.fn(),
-};
 
 // "Cancel" is translated as "Cancelar" in the Spanish catalog, so its rendered
 // value reveals which catalog is currently applied to the global translations.
@@ -99,12 +84,10 @@ const renderProvider = () => {
   return plainRender(
     <QueryClientProvider client={queryClient}>
       <Suspense fallback="Loading...">
-        <InstallerClientProvider client={client}>
-          <InstallerL10nProvider>
-            <Heading />
-            <Controls />
-          </InstallerL10nProvider>
-        </InstallerClientProvider>
+        <InstallerL10nProvider>
+          <Heading />
+          <Controls />
+        </InstallerL10nProvider>
       </Suspense>
     </QueryClientProvider>,
   );

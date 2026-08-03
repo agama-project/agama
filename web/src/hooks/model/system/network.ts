@@ -36,7 +36,7 @@ import {
   IPAddress,
   ConnectionMethod,
 } from "~/types/network";
-import { useInstallerClient } from "~/context/installer";
+import { useInstallerClient } from "~/hooks/use-installer-client";
 import React, { useCallback } from "react";
 import { formatIp } from "~/utils/network";
 import { isEmpty } from "radashi";
