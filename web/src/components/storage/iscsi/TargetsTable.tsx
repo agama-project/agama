@@ -374,10 +374,8 @@ const TargetsEmptyState = ({ mode, resetFilters }: TargetsEmptyStateProps) => {
 };
 
 /**
- * Encapsulates the state of the iSCSI targets table that is not in the URL.
- *
- * The filters are not here: they live in the address, so that reloading the
- * page or sharing its address brings the same targets back.
+ * State of the iSCSI targets table. The filters are not here: they live in the
+ * URL.
  */
 type TargetsTableState = {
   /** Currently selected targets in the UI */

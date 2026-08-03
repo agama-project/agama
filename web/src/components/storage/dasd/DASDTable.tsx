@@ -444,10 +444,8 @@ const BulkActionsToolbar = ({ devices, addOrUpdateDevices, dispatcher }: DASDAct
 };
 
 /**
- * Internal state shape for the DASD table component.
- *
- * The filters are not here: they live in the URL, so that reloading the page or
- * sharing its address brings the same devices back.
+ * Internal state shape for the DASD table component. The filters are not here:
+ * they live in the URL.
  */
 type DASDTableState = {
   /** Currently selected devices in the UI */
@@ -564,10 +562,9 @@ const createColumns = () => [
 /**
  * Displays a filterable, sortable, selectable table of DASD storage devices.
  *
- * Filters and sorting live in the URL, so reloading the page or sharing its
- * address brings the same view back. Selection and pending format requests are
- * held in a reducer, since they describe an action being prepared rather than
- * how the table is being looked at.
+ * The filters and the sorting live in the URL. The selection and a pending
+ * format request stay in a reducer, since they describe an action being
+ * prepared rather than how the table is being looked at.
  */
 export default function DASDTable({ devices }) {
   const [state, dispatch] = useReducer(reducer, initialState);

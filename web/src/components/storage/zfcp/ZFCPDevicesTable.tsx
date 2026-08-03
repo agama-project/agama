@@ -305,9 +305,6 @@ type ZFCPDevicesTableProps = {
 
 /**
  * Renders a table for configuring zFCP devices.
- *
- * Filters and sorting live in the URL, so reloading the page or sharing its
- * address brings the same view back.
  */
 export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): React.ReactNode {
   const addDevices = useAddDevices();
