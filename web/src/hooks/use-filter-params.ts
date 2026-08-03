@@ -22,7 +22,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { omit } from "radashi";
 import { SEARCH_PARAM_UPDATE } from "~/hooks/use-search-param-state";
 
 /** How long typing pauses before the address is updated, in milliseconds. */
@@ -38,6 +37,9 @@ type TextFilter = { kind: "text" };
 type ChoiceFilter<V extends string> = { kind: "choice"; values: readonly V[] };
 
 type Filter = TextFilter | ChoiceFilter<string>;
+
+/** Text waiting for typing to pause, and what the address held when it started. */
+type PendingText = { typed: string; base: string };
 
 /** How a table describes the filters it keeps in the address. */
 type FilterSpecs = Record<string, Filter>;
@@ -109,27 +111,15 @@ function choiceFilter<V extends string>(values: readonly V[]): ChoiceFilter<V> {
  */
 function useFilterParams<S extends FilterSpecs>(specs: S) {
   const [params, setParams] = useSearchParams();
-  // What text filters show while their update waits for typing to pause. A
-  // filter is here only while waiting, so anything else that changes the
-  // address is followed as soon as the update lands.
-  const [pendingText, setPendingText] = useState<Record<string, string>>({});
+  // What text filters show while their update waits for typing to pause,
+  // remembered along with what the address held when the typing started.
+  const [pendingText, setPendingText] = useState<Record<string, PendingText>>({});
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
     const pending = timers.current;
     return () => Object.values(pending).forEach(clearTimeout);
   }, []);
-
-  // A text filter stops being pending once the address holds what was typed,
-  // and not a moment earlier: the update reaches the router asynchronously, so
-  // dropping it any sooner would leave a render showing neither value.
-  useEffect(() => {
-    const settled = Object.keys(pendingText).filter(
-      (param) => (params.get(param) ?? "") === pendingText[param],
-    );
-
-    if (settled.length) setPendingText((pending) => omit(pending, settled));
-  }, [params, pendingText]);
 
   const write = (param: string, value: string | undefined) =>
     setParams((nextParams) => {
@@ -144,9 +134,16 @@ function useFilterParams<S extends FilterSpecs>(specs: S) {
   const read = (name: string, filter: Filter): string => {
     const value = params.get(name);
 
-    if (filter.kind === "text") return pendingText[name] ?? value ?? "";
+    if (filter.kind !== "text") return filter.values.find((option) => option === value) ?? ALL;
 
-    return filter.values.find((option) => option === value) ?? ALL;
+    // What was typed counts until the address moves, either because the pause
+    // arrived and the update landed, or because something else changed the
+    // filter. Deciding it here rather than storing the transition keeps a
+    // settled value from costing a render of its own.
+    const pending = pendingText[name];
+    if (pending && (value ?? "") === pending.base) return pending.typed;
+
+    return value ?? "";
   };
 
   const filters = Object.fromEntries(
@@ -167,7 +164,10 @@ function useFilterParams<S extends FilterSpecs>(specs: S) {
       return;
     }
 
-    setPendingText((pending) => ({ ...pending, [name]: value }));
+    setPendingText((pending) => ({
+      ...pending,
+      [name]: { typed: value, base: params.get(name) ?? "" },
+    }));
     clearTimeout(timers.current[name]);
     timers.current[name] = setTimeout(
       () => write(name, value === "" ? undefined : value),
@@ -178,7 +178,7 @@ function useFilterParams<S extends FilterSpecs>(specs: S) {
   const resetFilters = () => {
     Object.values(timers.current).forEach(clearTimeout);
     timers.current = {};
-    setPendingText({});
+    if (Object.keys(pendingText).length) setPendingText({});
     setParams((nextParams) => {
       Object.keys(specs).forEach((name) => nextParams.delete(name));
       return nextParams;
