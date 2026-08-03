@@ -27,13 +27,13 @@
  * `~/hooks/use-search-param-state` know nothing about network, and the
  * components know only which name to ask for.
  *
- * These names are kept short because they hold structured values a reader is
- * not meant to compose by hand. Table filters work the other way around: they
- * are named after themselves by `useFilterParams`, so an address spells out
- * what it filters by.
+ * Each name says what it holds, so an address can be read and edited by hand.
+ * The value carried here is composed, though, so it is meant to be read rather
+ * than written: a column and a direction. Table filters need nothing here, since
+ * `useFilterParams` names each param after the filter itself.
  */
 
-/** Connections table: sorted column and direction, as in `s=type:desc`. */
-const SORT = "s";
+/** Connections table: sorted column and direction, as in `sortBy=type:desc`. */
+const SORT = "sortBy";
 
 export { SORT };
