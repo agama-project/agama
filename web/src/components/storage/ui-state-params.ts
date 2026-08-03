@@ -31,14 +31,23 @@
  * compete for room with the path the user actually cares about.
  */
 
-/** Sections currently expanded, as a set of tokens. */
+/**
+ * Names repeat across pages on purpose: two storage pages never share an
+ * address, so each can spend the shortest name on what matters to it. The
+ * prefix tells them apart here, and does not reach the URL.
+ */
+
+/** Proposal page: sections currently expanded, as a set of tokens. */
 const EXPANDED = "e";
 
-/** Selected tab of the settings section. */
+/** Proposal page: selected tab of the settings section. */
 const SETTINGS_TAB = "st";
 
-/** Selected tab of the result section. */
+/** Proposal page: selected tab of the result section. */
 const RESULT_TAB = "rt";
+
+/** DASD page: sorted column and direction, as in `s=channel:desc`. */
+const DASD_SORT = "s";
 
 /**
  * Token identifying an expandable section of a device.
@@ -63,4 +72,4 @@ function volumeGroupToken(vgName: string): string {
   return `vg${vgName}`;
 }
 
-export { EXPANDED, SETTINGS_TAB, RESULT_TAB, expandedToken, volumeGroupToken };
+export { EXPANDED, SETTINGS_TAB, RESULT_TAB, DASD_SORT, expandedToken, volumeGroupToken };
