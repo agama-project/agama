@@ -21,12 +21,21 @@
  */
 
 import React from "react";
-import { screen, within } from "@testing-library/react";
-import { installerRender } from "~/test-utils";
+import { act, screen, within } from "@testing-library/react";
+import { useLocation } from "react-router";
+import { installerRender, mockRoutes } from "~/test-utils";
 import { patchConfig } from "~/api";
 import testingPatterns from "./patterns.test.json";
 import testingProposal from "./proposal.test.json";
 import SoftwarePatternsSelection from "./Form";
+
+/** How long the search waits for typing to stop before reaching the address. */
+const DEBOUNCE_DELAY = 300;
+
+/** Shows the search part of the current URL, so tests can assert what was written. */
+const CurrentSearch = () => <output>{useLocation().search}</output>;
+
+const currentSearch = () => screen.getByRole("status").textContent;
 
 /**
  * Accessible labels of the checkboxes inside a container, in DOM order.
@@ -353,6 +362,71 @@ describe("SoftwarePatternsSelection", () => {
         "YaST Desktop Utilities",
         "YaST Server Utilities",
       ]);
+    });
+  });
+
+  describe("the search in the address", () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    const renderAt = (url?: string) => {
+      if (url) mockRoutes(url);
+
+      return installerRender(
+        <>
+          <SoftwarePatternsSelection />
+          <CurrentSearch />
+        </>,
+        { userEventOptions: { advanceTimers: jest.advanceTimersByTime } },
+      );
+    };
+
+    const waitForTypingToStop = async () => {
+      await act(async () => {
+        jest.advanceTimersByTime(DEBOUNCE_DELAY);
+      });
+    };
+
+    it("opens filtered when the address names a search, without touching the input", async () => {
+      renderAt("/software/patterns?search=multimedia");
+
+      await screen.findByRole("checkbox", { name: /Multimedia/ });
+      expect(screen.queryByRole("checkbox", { name: /Office/ })).toBeNull();
+      expect(screen.getByRole("textbox", { name: /Filter/ })).toHaveValue("multimedia");
+    });
+
+    it("writes what was typed once typing stops", async () => {
+      const { user } = renderAt();
+
+      const searchFilter = await screen.findByRole("textbox", { name: /Filter/ });
+      await user.type(searchFilter, "multimedia");
+      await waitForTypingToStop();
+
+      expect(currentSearch()).toBe("?search=multimedia");
+    });
+
+    it("keeps the patterns already picked when the search reaches the address", async () => {
+      const { user } = renderAt();
+
+      const serverCheckbox = await screen.findByRole("checkbox", { name: /YaST Server/ });
+      await user.click(serverCheckbox);
+
+      const searchFilter = screen.getByRole("textbox", { name: /Filter/ });
+      await user.type(searchFilter, "yast");
+      await waitForTypingToStop();
+
+      expect(screen.getByRole("checkbox", { name: /YaST Server/ })).toBeChecked();
+    });
+
+    it("empties both the input and the address when the search is cleared", async () => {
+      const { user } = renderAt("/software/patterns?search=multimedia");
+
+      const searchFilter = await screen.findByRole("textbox", { name: /Filter/ });
+      await user.click(screen.getByRole("button", { name: /Reset/i }));
+
+      expect(searchFilter).toHaveValue("");
+      expect(currentSearch()).toBe("");
+      screen.getByRole("checkbox", { name: /Office/ });
     });
   });
 
