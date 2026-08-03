@@ -57,8 +57,6 @@ pub struct Pattern {
     pub name: String,
     /// Pattern category (e.g., "Production")
     pub category: String,
-    /// Pattern icon path locally on system
-    pub icon: String,
     /// Pattern description
     pub description: String,
     /// Pattern summary

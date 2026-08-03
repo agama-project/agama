@@ -847,7 +847,6 @@ impl ZyppServer {
                     name: p.name,
                     category: p.category,
                     description: p.description,
-                    icon: p.icon,
                     summary: p.summary,
                     order: p.order,
                     preselected,
