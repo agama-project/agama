@@ -45,6 +45,7 @@ import StatusFilter from "~/components/storage/iscsi/StatusFilter";
 import Text from "~/components/core/Text";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import useSortedByParam from "~/hooks/use-sorted-by-param";
+import useFilterParams, { textFilter, choiceFilter } from "~/hooks/use-filter-params";
 import { ISCSI_SORT } from "~/components/storage/ui-state-params";
 import { sortCollection, mergeSources } from "~/utils";
 import { STORAGE } from "~/routes/paths";
@@ -373,12 +374,12 @@ const TargetsEmptyState = ({ mode, resetFilters }: TargetsEmptyStateProps) => {
 };
 
 /**
- * Encapsulates all state used by the iSCSI targets table component, including
- * filters, sorting configuration, and current selection.
+ * Encapsulates the state of the iSCSI targets table that is not in the URL.
+ *
+ * The filters are not here: they live in the address, so that reloading the
+ * page or sharing its address brings the same targets back.
  */
 type TargetsTableState = {
-  /** Current active filters applied to the target list */
-  filters: ISCSITargetsFilters;
   /** Currently selected targets in the UI */
   selectedTargets: MergedTarget[];
 };
@@ -387,11 +388,6 @@ type TargetsTableState = {
  * Defines the initial state used by table reducer.
  */
 const initialState: TargetsTableState = {
-  filters: {
-    name: "",
-    portal: "",
-    status: "all",
-  },
   selectedTargets: [],
 };
 
@@ -399,8 +395,6 @@ const initialState: TargetsTableState = {
  * Action types for updating the iSCSI targets table state via the reducer.
  */
 type TargetsTableAction =
-  | { type: "UPDATE_FILTERS"; payload: TargetsTableState["filters"] }
-  | { type: "RESET_FILTERS" }
   | { type: "UPDATE_SELECTION"; payload: TargetsTableState["selectedTargets"] }
   | { type: "RESET_SELECTION" }
   | { type: "CANCEL_FORMAT_REQUEST" };
@@ -410,14 +404,6 @@ type TargetsTableAction =
  */
 const reducer = (state: TargetsTableState, action: TargetsTableAction): TargetsTableState => {
   switch (action.type) {
-    case "UPDATE_FILTERS": {
-      return { ...state, filters: { ...state.filters, ...action.payload } };
-    }
-
-    case "RESET_FILTERS": {
-      return { ...state, filters: initialState.filters };
-    }
-
     case "UPDATE_SELECTION": {
       return { ...state, selectedTargets: action.payload };
     }
@@ -523,8 +509,14 @@ export default function TargetsTable() {
     defaultValue: { index: 0, direction: "asc" },
   });
 
+  const { filters, setFilter, resetFilters, hasActiveFilters } = useFilterParams({
+    name: textFilter(),
+    portal: textFilter(),
+    status: choiceFilter(Object.keys(STATUS_LABELS) as StatusKey[]),
+  });
+
   const onFilterChange = (filter: keyof ISCSITargetsFilters, value: string) => {
-    dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
+    setFilter(filter, value);
     dispatch({ type: "RESET_SELECTION" });
   };
 
@@ -533,8 +525,7 @@ export default function TargetsTable() {
   };
 
   // Filtering
-  const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
-  const filteredTargets = filterTargets(targets, state.filters);
+  const filteredTargets = filterTargets(targets, filters);
 
   // Sorting
   const sortingKey = columns[sortedBy.index].sortingKey;
@@ -543,20 +534,14 @@ export default function TargetsTable() {
   // Determine the appropriate empty state mode, if needed
   let emptyStateMode: TargetsEmptyStateMode | undefined;
   if (isEmpty(filteredTargets)) {
-    // Check if filters are at their initial values
-    const filtersAreInitial =
-      state.filters.name === initialState.filters.name &&
-      state.filters.portal === initialState.filters.portal &&
-      state.filters.status === initialState.filters.status;
-
-    emptyStateMode = filtersAreInitial ? "noDevices" : "noFilterResults";
+    emptyStateMode = hasActiveFilters ? "noFilterResults" : "noDevices";
   }
 
   return (
     <Content>
       {!isEmpty(targets) && (
         <FiltersToolbar
-          filters={state.filters}
+          filters={filters}
           statusOptions={pick(STATUS_LABELS, targets.map(statusOf) as TargetStatus[])}
           onFilterChange={onFilterChange}
         />
