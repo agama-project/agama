@@ -1,5 +1,11 @@
 -------------------------------------------------------------------
-Mon Aug  3 15:19:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Mon Aug  3 15:14:17 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the table filters in the URL, so reloading or sharing the
+  link opens the same list (gh#agama-project/agama#3787).
+
+-------------------------------------------------------------------
+Mon Aug  3 15:09:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Keep the sorted column of the DASD, zFCP, iSCSI targets and
   network connections tables in the URL, so reloading or sharing
@@ -7,7 +13,7 @@ Mon Aug  3 15:19:57 UTC 2026 - David Diaz <dgonzalez@suse.com>
   (gh#agama-project/agama#3785).
 
 -------------------------------------------------------------------
-Mon Aug  3 15:09:27 UTC 2026 - David Diaz <dgonzalez@suse.com>
+Mon Aug  3 15:00:27 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Keep the expanded sections and the selected tabs of the storage
   page in the URL, so reloading or sharing the link opens the same
