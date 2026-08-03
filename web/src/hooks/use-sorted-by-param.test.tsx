@@ -24,7 +24,7 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import { useLocation } from "react-router";
 import { installerRender, mockRoutes } from "~/test-utils";
-import { TranslatedString } from "~/i18n";
+import { _ } from "~/i18n";
 import useSortedByParam from "~/hooks/use-sorted-by-param";
 
 import type { SelectableDataTableColumn } from "~/components/core/SelectableDataTable";
@@ -35,16 +35,16 @@ const CurrentSearch = () => <output>{useLocation().search}</output>;
 const search = () => screen.getByRole("status").textContent;
 
 const columns: SelectableDataTableColumn[] = [
-  { name: "Name" as TranslatedString, value: () => null, sortingKey: "name" },
-  { name: "Status" as TranslatedString, value: () => null, sortingKey: "status" },
+  { name: _("Name"), value: () => null, sortingKey: "name" },
+  { name: _("Status"), value: () => null, sortingKey: "status" },
   {
     // A computed key has no name of its own, hence the explicit identifier.
-    name: "Channel" as TranslatedString,
+    name: _("Channel"),
     value: () => null,
     sortingKey: () => 0,
     sortingId: "channel",
   },
-  { name: "Actions" as TranslatedString, value: () => null },
+  { name: _("Actions"), value: () => null },
 ];
 
 const defaultValue = { index: 0, direction: "asc" } as const;
