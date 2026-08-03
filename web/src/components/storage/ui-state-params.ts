@@ -27,8 +27,10 @@
  * `~/hooks/use-search-param-state` know nothing about storage, and the
  * components know only which name to ask for.
  *
- * The names are kept short because they end up in the address bar, where they
- * compete for room with the path the user actually cares about.
+ * These names are kept short because they hold structured values a reader is
+ * not meant to compose by hand. Table filters work the other way around: they
+ * are named after themselves by `useFilterParams`, so an address spells out
+ * what it filters by.
  */
 
 /**

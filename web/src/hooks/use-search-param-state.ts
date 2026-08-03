@@ -30,7 +30,7 @@ import { toggle } from "radashi";
  * individual clicks on the same page, and the scroll position of the page is
  * left untouched.
  */
-const UPDATE_OPTS = { replace: true, preventScrollReset: true } as const;
+const SEARCH_PARAM_UPDATE = { replace: true, preventScrollReset: true } as const;
 
 /**
  * A single piece of UI state stored in a URL search param.
@@ -62,7 +62,7 @@ function useSearchParamState(key: string, defaultValue?: string) {
         nextParams.set(key, String(next));
       }
       return nextParams;
-    }, UPDATE_OPTS);
+    }, SEARCH_PARAM_UPDATE);
 
   return [value, setValue] as const;
 }
@@ -104,7 +104,7 @@ function useSearchParamTokens(key: string) {
         nextParams.delete(key);
       }
       return nextParams;
-    }, UPDATE_OPTS);
+    }, SEARCH_PARAM_UPDATE);
 
   return { tokens, hasSearchParamToken, toggleSearchParamToken };
 }
@@ -129,7 +129,7 @@ function useClearSearchParams() {
     setParams((nextParams) => {
       keys.forEach((key) => nextParams.delete(key));
       return nextParams;
-    }, UPDATE_OPTS);
+    }, SEARCH_PARAM_UPDATE);
 }
 
-export { useSearchParamState, useSearchParamTokens, useClearSearchParams };
+export { SEARCH_PARAM_UPDATE, useSearchParamState, useSearchParamTokens, useClearSearchParams };
