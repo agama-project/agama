@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Aug  3 15:17:14 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Keep the software patterns search in the URL, so reloading or
+  sharing the link opens the same filtered list
+  (gh#agama-project/agama#3788).
+
+-------------------------------------------------------------------
 Mon Aug  3 15:14:17 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Keep the table filters in the URL, so reloading or sharing the
