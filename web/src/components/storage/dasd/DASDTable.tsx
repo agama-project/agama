@@ -39,11 +39,13 @@ import {
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
 import FormatActionHandler from "~/components/storage/dasd/FormatActionHandler";
-import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
 import SimpleDropdown from "~/components/core/SimpleDropdown";
 import { useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
+import useSortedByParam from "~/hooks/use-sorted-by-param";
+import { DASD_SORT } from "~/components/storage/ui-state-params";
 import { hex, sortCollection, translateEntries } from "~/utils";
 import { _, n_, N_ } from "~/i18n";
 
@@ -442,8 +444,6 @@ const BulkActionsToolbar = ({ devices, addOrUpdateDevices, dispatcher }: DASDAct
 
 /** Internal state shape for the DASD table component. */
 type DASDTableState = {
-  /** Current sorting state */
-  sortedBy: SortedBy;
   /** Current active filters applied to the device list */
   filters: DASDDevicesFilters;
   /** Currently selected devices in the UI */
@@ -461,7 +461,6 @@ type DASDTableState = {
  * `JSON.stringify`.
  */
 const initialState: DASDTableState = {
-  sortedBy: { index: 0, direction: "asc" },
   filters: {
     status: "all",
     formatted: "all",
@@ -476,7 +475,6 @@ const initialState: DASDTableState = {
  * Union of all actions that can be dispatched to update the DASD table state.
  **/
 type DASDTableAction =
-  | { type: "UPDATE_SORTING"; payload: DASDTableState["sortedBy"] }
   | { type: "UPDATE_FILTERS"; payload: DASDTableState["filters"] }
   | { type: "RESET_FILTERS" }
   | { type: "UPDATE_SELECTION"; payload: DASDTableState["selectedDevices"] }
@@ -492,10 +490,6 @@ type DASDTableAction =
  */
 const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState => {
   switch (action.type) {
-    case "UPDATE_SORTING": {
-      return { ...state, sortedBy: action.payload };
-    }
-
     case "UPDATE_FILTERS": {
       return { ...state, filters: { ...state.filters, ...action.payload } };
     }
@@ -534,6 +528,7 @@ const createColumns = () => [
     name: _("Channel"),
     value: (d: Device) => d.channel,
     sortingKey: (d: Device) => hex(d.channel),
+    sortingId: "channel",
   },
   {
     // TRANSLATORS: table header for a DASD devices table
@@ -596,10 +591,10 @@ export default function DASDTable({ devices }) {
   const addOrUpdateDevices = useAddOrUpdateDevices();
 
   const columns = createColumns();
-
-  const onSortingChange = (sortedBy: SortedBy) => {
-    dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
-  };
+  const [sortedBy, updateSorting] = useSortedByParam(columns, {
+    param: DASD_SORT,
+    defaultValue: { index: 0, direction: "asc" },
+  });
 
   const onFilterChange = (filter: keyof DASDDevicesFilters, value) => {
     dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
@@ -616,8 +611,8 @@ export default function DASDTable({ devices }) {
   const filteredDevices = filterDevices(devices, state.filters);
 
   // Sorting
-  const sortingKey = columns[state.sortedBy.index].sortingKey;
-  const sortedDevices = sortCollection(filteredDevices, state.sortedBy.direction, sortingKey);
+  const sortingKey = columns[sortedBy.index].sortingKey;
+  const sortedDevices = sortCollection(filteredDevices, sortedBy.direction, sortingKey);
 
   const availableStatuses = [
     ...new Set(devices.map((d: Device) => d.status)),
@@ -671,8 +666,8 @@ export default function DASDTable({ devices }) {
         itemsSelected={selectedDevices}
         variant="compact"
         onSelectionChange={onSelectionChange}
-        sortedBy={state.sortedBy}
-        updateSorting={onSortingChange}
+        sortedBy={sortedBy}
+        updateSorting={updateSorting}
         allowSelectAll
         itemActions={(d: Device) =>
           buildActions({

@@ -37,10 +37,12 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
-import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
 import SimpleSelector from "~/components/core/SimpleSelector";
 import { sortCollection, translateEntries } from "~/utils";
 import { _, N_ } from "~/i18n";
+import useSortedByParam from "~/hooks/use-sorted-by-param";
+import { ZFCP_SORT } from "~/components/storage/ui-state-params";
 import { useCheckLunScan } from "~/hooks/model/system/zfcp";
 import { useAddDevices, useRemoveDevices, useConfig } from "~/hooks/model/config/zfcp";
 import type { ZFCP as System } from "~/model/system";
@@ -254,8 +256,6 @@ const buildActions = (
 
 /** Internal state shape for the zFCP table component. */
 type ZFCPTableState = {
-  /** Current sorting state. */
-  sortedBy: SortedBy;
   /** Current active filters applied to the device list. */
   filters: ZFCPDevicesFilters;
 };
@@ -264,9 +264,7 @@ type ZFCPTableState = {
  * Union of all actions that can be dispatched to update the zFCP table state.
  **/
 type ZFCPTableAction =
-  | { type: "UPDATE_SORTING"; payload: ZFCPTableState["sortedBy"] }
-  | { type: "UPDATE_FILTERS"; payload: ZFCPTableState["filters"] }
-  | { type: "RESET_FILTERS" };
+  { type: "UPDATE_FILTERS"; payload: ZFCPTableState["filters"] } | { type: "RESET_FILTERS" };
 
 /**
  * Initial state for `reducer`.
@@ -276,7 +274,6 @@ type ZFCPTableAction =
  * comparing the current filters against this object via `JSON.stringify`.
  */
 const initialState: ZFCPTableState = {
-  sortedBy: { index: 0, direction: "asc" },
   filters: {
     status: "all",
     channel: "all",
@@ -291,10 +288,6 @@ const initialState: ZFCPTableState = {
  */
 const reducer = (state: ZFCPTableState, action: ZFCPTableAction): ZFCPTableState => {
   switch (action.type) {
-    case "UPDATE_SORTING": {
-      return { ...state, sortedBy: action.payload };
-    }
-
     case "UPDATE_FILTERS": {
       return { ...state, filters: { ...state.filters, ...action.payload } };
     }
@@ -366,10 +359,10 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
   const config = useConfig();
 
   const columns = createColumns(checkLunScan);
-
-  const onSortingChange = (sortedBy: SortedBy) => {
-    dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
-  };
+  const [sortedBy, updateSorting] = useSortedByParam(columns, {
+    param: ZFCP_SORT,
+    defaultValue: { index: 0, direction: "asc" },
+  });
 
   const onFilterChange = (filter: keyof ZFCPDevicesFilters, value) => {
     dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
@@ -381,8 +374,8 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
   const filteredDevices = filterDevices(devices, state.filters);
 
   // Sorting
-  const sortingKey = columns[state.sortedBy.index].sortingKey;
-  const sortedDevices = sortCollection(filteredDevices, state.sortedBy.direction, sortingKey);
+  const sortingKey = columns[sortedBy.index].sortingKey;
+  const sortedDevices = sortCollection(filteredDevices, sortedBy.direction, sortingKey);
 
   const deviceConfig = (device: System.Device): Config.Device | null => {
     return config?.devices?.find(
@@ -408,8 +401,8 @@ export default function ZFCPDevicesTable({ devices }: ZFCPDevicesTableProps): Re
         items={sortedDevices}
         selectionMode="none"
         variant="compact"
-        sortedBy={state.sortedBy}
-        updateSorting={onSortingChange}
+        sortedBy={sortedBy}
+        updateSorting={updateSorting}
         itemActions={(device: System.Device) =>
           buildActions(device, deviceConfig(device), addDevices, removeDevices, checkLunScan)
         }

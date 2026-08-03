@@ -39,7 +39,7 @@ import {
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
 import Text from "~/components/core/Text";
-import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
 import SimpleSelector from "~/components/core/SimpleSelector";
 import { useConnectionMutation } from "~/hooks/model/config/network";
@@ -61,6 +61,8 @@ import {
   Device,
 } from "~/types/network";
 import { NETWORK } from "~/routes/paths";
+import useSortedByParam from "~/hooks/use-sorted-by-param";
+import { SORT } from "~/components/network/ui-state-params";
 
 /**
  * Filter options for narrowing down network connections shown in the table.
@@ -74,14 +76,11 @@ type ConnectionsFilters = {
 
 /** Internal state shape for the connections table component. */
 type TableState = {
-  /** Current sorting state */
-  sortedBy: SortedBy;
   /** Current active filters applied to the connection list */
   filters: ConnectionsFilters;
 };
 
 const initialState: TableState = {
-  sortedBy: { index: 0, direction: "asc" },
   filters: {
     name: "",
     device: "",
@@ -91,15 +90,10 @@ const initialState: TableState = {
 };
 
 type TableAction =
-  | { type: "UPDATE_SORTING"; payload: TableState["sortedBy"] }
-  | { type: "UPDATE_FILTERS"; payload: TableState["filters"] }
-  | { type: "RESET_FILTERS" };
+  { type: "UPDATE_FILTERS"; payload: TableState["filters"] } | { type: "RESET_FILTERS" };
 
 const reducer = (state: TableState, action: TableAction): TableState => {
   switch (action.type) {
-    case "UPDATE_SORTING": {
-      return { ...state, sortedBy: action.payload };
-    }
     case "UPDATE_FILTERS": {
       return { ...state, filters: { ...state.filters, ...action.payload } };
     }
@@ -158,16 +152,19 @@ const createColumns = (devices: Device[]) => [
     name: _("Name"),
     value: (c: Connection) => c.id,
     sortingKey: (c: Connection) => c.id,
+    sortingId: "name",
   },
   {
     name: _("Type"),
     value: (c: Connection) => connectionTypeLabel(connectionType(c)),
     sortingKey: (c: Connection) => connectionType(c),
+    sortingId: "type",
   },
   {
     name: _("State"),
     value: (c: Connection) => connectionStateLabel(c.state),
     sortingKey: (c: Connection) => c.state,
+    sortingId: "state",
   },
   {
     name: _("Device"),
@@ -191,6 +188,7 @@ const createColumns = (devices: Device[]) => [
       const usingDevices = devices.filter((d) => d.connection === c.id);
       return usingDevices.map((d) => d.name).join(", ");
     },
+    sortingId: "device",
   },
   {
     name: _("IP Addresses"),
@@ -210,10 +208,10 @@ export default function ConnectionsTable() {
   const navigate = useNavigate();
 
   const columns = createColumns(devices);
-
-  const onSortingChange = (sortedBy: SortedBy) => {
-    dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
-  };
+  const [sortedBy, updateSorting] = useSortedByParam(columns, {
+    param: SORT,
+    defaultValue: { index: 0, direction: "asc" },
+  });
 
   const onFilterChange = (filter: keyof ConnectionsFilters, value) => {
     dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
@@ -248,8 +246,8 @@ export default function ConnectionsTable() {
   const filteredConnections = filterConnections(connections, state.filters);
   const sortedConnections = sortCollection(
     filteredConnections,
-    state.sortedBy.direction,
-    columns[state.sortedBy.index].sortingKey,
+    sortedBy.direction,
+    columns[sortedBy.index].sortingKey,
   );
 
   const hasActiveFilters = JSON.stringify(state.filters) !== JSON.stringify(initialState.filters);
@@ -339,8 +337,8 @@ export default function ConnectionsTable() {
         itemIdKey="id"
         selectionMode="none"
         variant="compact"
-        sortedBy={state.sortedBy}
-        updateSorting={onSortingChange}
+        sortedBy={sortedBy}
+        updateSorting={updateSorting}
         itemActions={(c: Connection) => {
           const isWifi = !!c.wireless;
           const isConnected = c.state === ConnectionState.ACTIVATED;
