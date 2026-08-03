@@ -80,6 +80,11 @@ translations:
       MicroOS biedt transactionele (atomische) updates op een alleen-lezen btrfs
       root bestandssysteem. Als een rollende release distributie is de software
       altijd up-to-date.
+    pl: Mała, szybka dystrybucja zaprojektowana do hostowania środowisk
+      kontenerowych z automatyczną administracją i łataniem. openSUSE MicroOS
+      oferuje transakcyjne (atomowe) aktualizacje na głównym systemie plików
+      btrfs w trybie tylko do odczytu. Jako dystrybucja ciągła oprogramowanie
+      jest zawsze aktualne.
     pt_BR: Uma distribuição pequena e rápida projetada para hospedar cargas de
       trabalho de contêiner com administração e aplicação de patches
       automatizadas. O openSUSE MicroOS fornece atualizações transacionais
