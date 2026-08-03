@@ -40,10 +40,12 @@ import {
   ToolbarItem,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
-import SelectableDataTable, { SortedBy } from "~/components/core/SelectableDataTable";
+import SelectableDataTable from "~/components/core/SelectableDataTable";
 import StatusFilter from "~/components/storage/iscsi/StatusFilter";
 import Text from "~/components/core/Text";
 import TextinputFilter from "~/components/storage/dasd/TextinputFilter";
+import useSortedByParam from "~/hooks/use-sorted-by-param";
+import { ISCSI_SORT } from "~/components/storage/ui-state-params";
 import { sortCollection, mergeSources } from "~/utils";
 import { STORAGE } from "~/routes/paths";
 import { useSystem } from "~/hooks/model/system/iscsi";
@@ -375,8 +377,6 @@ const TargetsEmptyState = ({ mode, resetFilters }: TargetsEmptyStateProps) => {
  * filters, sorting configuration, and current selection.
  */
 type TargetsTableState = {
-  /** Current sorting state */
-  sortedBy: SortedBy;
   /** Current active filters applied to the target list */
   filters: ISCSITargetsFilters;
   /** Currently selected targets in the UI */
@@ -387,7 +387,6 @@ type TargetsTableState = {
  * Defines the initial state used by table reducer.
  */
 const initialState: TargetsTableState = {
-  sortedBy: { index: 0, direction: "asc" },
   filters: {
     name: "",
     portal: "",
@@ -400,7 +399,6 @@ const initialState: TargetsTableState = {
  * Action types for updating the iSCSI targets table state via the reducer.
  */
 type TargetsTableAction =
-  | { type: "UPDATE_SORTING"; payload: TargetsTableState["sortedBy"] }
   | { type: "UPDATE_FILTERS"; payload: TargetsTableState["filters"] }
   | { type: "RESET_FILTERS" }
   | { type: "UPDATE_SELECTION"; payload: TargetsTableState["selectedTargets"] }
@@ -412,10 +410,6 @@ type TargetsTableAction =
  */
 const reducer = (state: TargetsTableState, action: TargetsTableAction): TargetsTableState => {
   switch (action.type) {
-    case "UPDATE_SORTING": {
-      return { ...state, sortedBy: action.payload };
-    }
-
     case "UPDATE_FILTERS": {
       return { ...state, filters: { ...state.filters, ...action.payload } };
     }
@@ -524,10 +518,10 @@ export default function TargetsTable() {
   const hasLockedTargets = targets.find((t: MergedTarget) => "locked" in t && t.locked);
 
   const columns = createColumns({ showIbft: initiator?.ibft });
-
-  const onSortingChange = (sortedBy: SortedBy) => {
-    dispatch({ type: "UPDATE_SORTING", payload: sortedBy });
-  };
+  const [sortedBy, updateSorting] = useSortedByParam(columns, {
+    param: ISCSI_SORT,
+    defaultValue: { index: 0, direction: "asc" },
+  });
 
   const onFilterChange = (filter: keyof ISCSITargetsFilters, value: string) => {
     dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
@@ -543,8 +537,8 @@ export default function TargetsTable() {
   const filteredTargets = filterTargets(targets, state.filters);
 
   // Sorting
-  const sortingKey = columns[state.sortedBy.index].sortingKey;
-  const sortedTargets = sortCollection(filteredTargets, state.sortedBy.direction, sortingKey);
+  const sortingKey = columns[sortedBy.index].sortingKey;
+  const sortedTargets = sortCollection(filteredTargets, sortedBy.direction, sortingKey);
 
   // Determine the appropriate empty state mode, if needed
   let emptyStateMode: TargetsEmptyStateMode | undefined;
@@ -575,8 +569,8 @@ export default function TargetsTable() {
         itemsSelected={state.selectedTargets}
         variant="compact"
         onSelectionChange={onSelectionChange}
-        sortedBy={state.sortedBy}
-        updateSorting={onSortingChange}
+        sortedBy={sortedBy}
+        updateSorting={updateSorting}
         itemActions={(target: MergedTarget) =>
           buildActions(target, {
             onConnect: () =>

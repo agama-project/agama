@@ -52,6 +52,9 @@ const DASD_SORT = "s";
 /** zFCP page: sorted column and direction. */
 const ZFCP_SORT = "s";
 
+/** iSCSI page: sorted column and direction. */
+const ISCSI_SORT = "s";
+
 /**
  * Token identifying an expandable section of a device.
  *
@@ -81,6 +84,7 @@ export {
   RESULT_TAB,
   DASD_SORT,
   ZFCP_SORT,
+  ISCSI_SORT,
   expandedToken,
   volumeGroupToken,
 };
