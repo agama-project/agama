@@ -22,6 +22,9 @@
 require_relative "../../../../test_helper"
 require_relative "search_examples"
 require "agama/storage/config_conversions/from_json_conversions/drive_search"
+require "y2storage/refinements"
+
+using Y2Storage::Refinements::SizeCasts
 
 describe Agama::Storage::ConfigConversions::FromJSONConversions::DriveSearch do
   subject { described_class.new(config_json) }
@@ -45,7 +48,6 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::DriveSearch do
     include_examples "a search converter supporting the name condition"
     include_examples "a search converter supporting the size condition"
     include_examples "a search converter supporting the driver condition"
-    include_examples "a search converter supporting the transport condition"
     include_examples "a search converter supporting the filesystem condition"
     include_examples "a search converter supporting the partitions condition"
     include_examples "a search converter supporting operators"
@@ -58,12 +60,12 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::DriveSearch do
       include_examples "a search converter rejecting conditions of other devices"
     end
 
-    context "if an operator over 'driver' and 'transport' is specified" do
+    context "if an operator over 'driver' and 'size' is specified" do
       let(:condition) do
         {
           and: [
-            { not: { transport: "usb" } },
-            { driver: "sd" }
+            { not: { driver: "sd" } },
+            { size: { greater: "100 GiB" } }
           ]
         }
       end
@@ -77,11 +79,12 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::DriveSearch do
 
         expect(conditions[0]).to be_a(Agama::Storage::Configs::SearchConditions::Not)
         inner = conditions[0].condition
-        expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Transport)
-        expect(inner.transport).to eq(Y2Storage::DataTransport::USB)
+        expect(inner).to be_a(Agama::Storage::Configs::SearchConditions::Driver)
+        expect(inner.driver).to eq("sd")
 
-        expect(conditions[1]).to be_a(Agama::Storage::Configs::SearchConditions::Driver)
-        expect(conditions[1].driver).to eq("sd")
+        expect(conditions[1]).to be_a(Agama::Storage::Configs::SearchConditions::Size)
+        expect(conditions[1].operator).to eq(:greater)
+        expect(conditions[1].value).to eq(100.GiB)
       end
     end
   end

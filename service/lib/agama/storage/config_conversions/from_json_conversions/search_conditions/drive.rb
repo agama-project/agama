@@ -25,7 +25,6 @@ require "agama/storage/config_conversions/from_json_conversions/search_condition
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_name"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_partitions"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_size"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_transport"
 
 module Agama
   module Storage
@@ -37,7 +36,6 @@ module Agama
             include WithName
             include WithSize
             include WithDriver
-            include WithTransport
             include WithFilesystem
             include WithPartitions
           end

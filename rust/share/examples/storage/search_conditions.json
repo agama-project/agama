@@ -200,13 +200,6 @@
       {
         "search": {
           "condition": {
-            "transport": "usb"
-          }
-        }
-      },
-      {
-        "search": {
-          "condition": {
             "driver": "ahci"
           }
         }
@@ -215,7 +208,7 @@
         "search": {
           "condition": {
             "and": [
-              { "not": { "transport": "usb" } },
+              { "not": { "driver": "sd" } },
               { "size": { "greater": "100 GiB" } }
             ]
           }

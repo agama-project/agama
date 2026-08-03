@@ -53,7 +53,6 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::Partition do
     include_examples "a matcher supporting operators"
     include_examples "a matcher rejecting the partitions condition"
     include_examples "a matcher rejecting the driver condition"
-    include_examples "a matcher rejecting the transport condition"
 
     describe "with a partition number condition" do
       it "matches if the partition has the given number" do

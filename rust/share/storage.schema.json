@@ -430,7 +430,6 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
         { "$ref": "#/$defs/searchConditionDriver" },
-        { "$ref": "#/$defs/searchConditionTransport" },
         { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/searchConditionPartitions" },
         { "$ref": "#/$defs/driveSearchConditionAnd" },
@@ -909,32 +908,6 @@
           "examples": ["ahci", "sd"]
         }
       }
-    },
-    "searchConditionTransport": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["transport"],
-      "properties": {
-        "transport": { "$ref": "#/$defs/transportValue" }
-      }
-    },
-    "transportValue": {
-      "description": "Data transport layer of the device. Devices with an undetermined transport never match.",
-      "enum": [
-        "sbp",
-        "ata",
-        "fc",
-        "iscsi",
-        "sas",
-        "sata",
-        "spi",
-        "usb",
-        "fcoe",
-        "pcie",
-        "tcp",
-        "rdma",
-        "loop"
-      ]
     },
     "searchConditionPartitionNumber": {
       "type": "object",

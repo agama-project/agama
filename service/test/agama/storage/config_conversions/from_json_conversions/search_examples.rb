@@ -23,7 +23,6 @@ require "agama/storage/config_conversions/from_json_conversions/search_errors"
 require "agama/storage/configs/search"
 require "agama/storage/configs/search_conditions"
 require "agama/storage/configs/sort_criteria"
-require "y2storage/data_transport"
 require "y2storage/filesystems/type"
 require "y2storage/partition_id"
 require "y2storage/refinements"
@@ -193,18 +192,6 @@ shared_examples "a search converter supporting the driver condition" do
       config = subject.convert
       expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Driver)
       expect(config.condition.driver).to eq("ahci")
-    end
-  end
-end
-
-shared_examples "a search converter supporting the transport condition" do
-  context "if 'transport' is specified" do
-    let(:condition) { { transport: "usb" } }
-
-    it "sets #condition to the expected value" do
-      config = subject.convert
-      expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Transport)
-      expect(config.condition.transport).to eq(Y2Storage::DataTransport::USB)
     end
   end
 end
@@ -534,7 +521,7 @@ shared_examples "a search converter supporting the partitions condition" do
     end
 
     context "with a quantifier containing a condition of another kind of device" do
-      let(:condition) { { partitions: { any: { transport: "usb" } } } }
+      let(:condition) { { partitions: { any: { driver: "ahci" } } } }
 
       it "raises an error" do
         expect { subject.convert }.to raise_error(

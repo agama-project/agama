@@ -25,7 +25,6 @@ require "agama/storage/config_solvers/search_matchers/with_filesystem"
 require "agama/storage/config_solvers/search_matchers/with_name"
 require "agama/storage/config_solvers/search_matchers/with_partitions"
 require "agama/storage/config_solvers/search_matchers/with_size"
-require "agama/storage/config_solvers/search_matchers/with_transport"
 
 module Agama
   module Storage
@@ -36,7 +35,6 @@ module Agama
           include WithName
           include WithSize
           include WithDriver
-          include WithTransport
           include WithFilesystem
           include WithPartitions
         end

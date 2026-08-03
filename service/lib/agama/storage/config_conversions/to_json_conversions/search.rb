@@ -95,12 +95,9 @@ module Agama
           # @param node [Configs::SearchConditions::*, nil]
           # @return [Hash, nil]
           def convert_drive_leaf(node)
-            case node
-            when Configs::SearchConditions::Driver
-              { driver: node.driver }
-            when Configs::SearchConditions::Transport
-              { transport: node.transport.to_s }
-            end
+            return unless node.is_a?(Configs::SearchConditions::Driver)
+
+            { driver: node.driver }
           end
 
           # Serializes a leaf condition only accepted by partitions.

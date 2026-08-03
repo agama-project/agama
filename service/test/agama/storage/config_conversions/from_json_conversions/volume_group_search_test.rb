@@ -52,7 +52,6 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::VolumeGroupSear
       let(:unsupported_conditions) do
         [
           { driver: "ahci" },
-          { transport: "usb" },
           { number: 1 },
           { id: "esp" },
           { filesystem: "any" },
