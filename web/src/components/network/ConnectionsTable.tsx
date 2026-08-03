@@ -69,7 +69,6 @@ import { SORT } from "~/components/network/ui-state-params";
  */
 type ConnectionsFilters = {
   name?: string;
-  device?: string;
   type?: "all" | ConnectionType;
   state?: "all" | ConnectionState;
 };
@@ -83,7 +82,6 @@ type TableState = {
 const initialState: TableState = {
   filters: {
     name: "",
-    device: "",
     type: "all",
     state: "all",
   },
@@ -107,17 +105,10 @@ const filterConnections = (
   connections: Connection[],
   filters: ConnectionsFilters,
 ): Connection[] => {
-  const { name, device, type, state } = filters;
+  const { name, type, state } = filters;
 
   return connections.filter((c) => {
     if (!isEmpty(name) && !c.id.toLowerCase().includes(name.toLowerCase())) {
-      return false;
-    }
-
-    if (
-      !isEmpty(device) &&
-      !(c.iface || c.macAddress || "").toLowerCase().includes(device.toLowerCase())
-    ) {
       return false;
     }
 
