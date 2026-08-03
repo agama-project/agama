@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Aug  3 10:50:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix ppc64le and s390x ISO build issues in fix_bootconfig by
+  ensuring the xorriso wrapper acts as a transparent pass-through
+  for read-only reporting and probing commands (gh#agama-project/agama#3782).
+- Clean up redundant ppc64le bootloader options, relying on KIWI-NG's
+  native support for making OFW ISOs bootable (gh#agama-project/agama#3782).
+- Related to bsc#1272445.
+
+-------------------------------------------------------------------
 Thu Jul 23 19:40:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix multiple IP/route assignments in multi-bond setups with
