@@ -54,6 +54,7 @@ describe("useSearchParamState", () => {
       <>
         <p>Tab: {tab}</p>
         <button onClick={() => setTab(2)}>select third</button>
+        <button onClick={() => setTab(0)}>select first</button>
         <button onClick={() => setTab(undefined)}>clear</button>
       </>
     );
@@ -85,6 +86,22 @@ describe("useSearchParamState", () => {
 
     screen.getByText("Tab: 0");
     expect(search()).toBe("?other=keep");
+  });
+
+  it("removes the param when the value written is the default", async () => {
+    const { user } = renderAt("/page?st=1", <Subject />);
+
+    await user.click(screen.getByRole("button", { name: "select first" }));
+
+    screen.getByText("Tab: 0");
+    expect(search()).toBe("");
+  });
+
+  it("keeps a default spelled out in the URL until something is written", () => {
+    renderAt("/page?st=0", <Subject />);
+
+    screen.getByText("Tab: 0");
+    expect(search()).toBe("?st=0");
   });
 });
 

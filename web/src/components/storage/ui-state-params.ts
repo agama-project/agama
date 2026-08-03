@@ -27,33 +27,36 @@
  * `~/hooks/use-search-param-state` know nothing about storage, and the
  * components know only which name to ask for.
  *
- * The names are kept short because they end up in the address bar, where they
- * compete for room with the path the user actually cares about.
+ * Each name says what it holds, so an address can be read and edited by hand.
+ * The values these carry are composed, though, so they are meant to be read
+ * rather than written: a column and a direction, or a set of tokens. Table
+ * filters need nothing here, since `useFilterParams` names each param after the
+ * filter itself.
  */
 
 /**
  * Names repeat across pages on purpose: two storage pages never share an
- * address, so each can spend the shortest name on what matters to it. The
- * prefix tells them apart here, and does not reach the URL.
+ * address, so each can spend the same name on what matters to it. The prefix
+ * tells them apart here, and does not reach the URL.
  */
 
 /** Proposal page: sections currently expanded, as a set of tokens. */
-const EXPANDED = "e";
+const EXPANDED = "expanded";
 
 /** Proposal page: selected tab of the settings section. */
-const SETTINGS_TAB = "st";
+const SETTINGS_TAB = "settingsTab";
 
 /** Proposal page: selected tab of the result section. */
-const RESULT_TAB = "rt";
+const RESULT_TAB = "resultTab";
 
-/** DASD page: sorted column and direction, as in `s=channel:desc`. */
-const DASD_SORT = "s";
+/** DASD page: sorted column and direction, as in `sortBy=channel:desc`. */
+const DASD_SORT = "sortBy";
 
 /** zFCP page: sorted column and direction. */
-const ZFCP_SORT = "s";
+const ZFCP_SORT = "sortBy";
 
 /** iSCSI page: sorted column and direction. */
-const ISCSI_SORT = "s";
+const ISCSI_SORT = "sortBy";
 
 /**
  * Token identifying an expandable section of a device.

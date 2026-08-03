@@ -27,11 +27,13 @@
  * `~/hooks/use-search-param-state` know nothing about network, and the
  * components know only which name to ask for.
  *
- * The names are kept short because they end up in the address bar, where they
- * compete for room with the path the user actually cares about.
+ * Each name says what it holds, so an address can be read and edited by hand.
+ * The value carried here is composed, though, so it is meant to be read rather
+ * than written: a column and a direction. Table filters need nothing here, since
+ * `useFilterParams` names each param after the filter itself.
  */
 
-/** Connections table: sorted column and direction, as in `s=type:desc`. */
-const SORT = "s";
+/** Connections table: sorted column and direction, as in `sortBy=type:desc`. */
+const SORT = "sortBy";
 
 export { SORT };

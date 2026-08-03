@@ -75,14 +75,14 @@ describe("PartitionsSection", () => {
   });
 
   it("starts expanded when its token is in the URL", () => {
-    mockRoutes("/storage?e=d0");
+    mockRoutes("/storage?expanded=d0");
     installerRender(<PartitionsSection collection="drives" index={0} />);
 
     screen.getByRole("button", { name: "Options for partition /" });
   });
 
   it("ignores a token belonging to another section", () => {
-    mockRoutes("/storage?e=d1");
+    mockRoutes("/storage?expanded=d1");
     installerRender(<PartitionsSection collection="drives" index={0} />);
 
     expect(screen.queryByRole("button", { name: "Options for partition /" })).toBeNull();

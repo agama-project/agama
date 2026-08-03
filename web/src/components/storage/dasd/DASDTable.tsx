@@ -45,6 +45,7 @@ import SimpleSelector from "~/components/core/SimpleSelector";
 import SimpleDropdown from "~/components/core/SimpleDropdown";
 import { useAddOrUpdateDevices } from "~/hooks/model/config/dasd";
 import useSortedByParam from "~/hooks/use-sorted-by-param";
+import useFilterParams, { textFilter, choiceFilter } from "~/hooks/use-filter-params";
 import { DASD_SORT } from "~/components/storage/ui-state-params";
 import { hex, sortCollection, translateEntries } from "~/utils";
 import { _, n_, N_ } from "~/i18n";
@@ -442,31 +443,19 @@ const BulkActionsToolbar = ({ devices, addOrUpdateDevices, dispatcher }: DASDAct
   );
 };
 
-/** Internal state shape for the DASD table component. */
+/**
+ * Internal state shape for the DASD table component. The filters are not here:
+ * they live in the URL.
+ */
 type DASDTableState = {
-  /** Current active filters applied to the device list */
-  filters: DASDDevicesFilters;
   /** Currently selected devices in the UI */
   selectedDevices: Device["channel"][];
   /** Devices selected for formatting */
   devicesToFormat: Device[];
 };
 
-/**
- * Initial state for `reducer`.
- *
- * @remarks
- * Also serves as the canonical "no filters active" reference: filter changes
- * are detected by comparing the current filters against this object via
- * `JSON.stringify`.
- */
+/** Initial state for `reducer`. */
 const initialState: DASDTableState = {
-  filters: {
-    status: "all",
-    formatted: "all",
-    minChannel: "",
-    maxChannel: "",
-  },
   selectedDevices: [],
   devicesToFormat: [],
 };
@@ -475,8 +464,6 @@ const initialState: DASDTableState = {
  * Union of all actions that can be dispatched to update the DASD table state.
  **/
 type DASDTableAction =
-  | { type: "UPDATE_FILTERS"; payload: DASDTableState["filters"] }
-  | { type: "RESET_FILTERS" }
   | { type: "UPDATE_SELECTION"; payload: DASDTableState["selectedDevices"] }
   | { type: "RESET_SELECTION" }
   | { type: "REQUEST_FORMAT"; payload: DASDTableState["devicesToFormat"] }
@@ -490,14 +477,6 @@ type DASDTableAction =
  */
 const reducer = (state: DASDTableState, action: DASDTableAction): DASDTableState => {
   switch (action.type) {
-    case "UPDATE_FILTERS": {
-      return { ...state, filters: { ...state.filters, ...action.payload } };
-    }
-
-    case "RESET_FILTERS": {
-      return { ...state, filters: initialState.filters };
-    }
-
     case "UPDATE_SELECTION": {
       return { ...state, selectedDevices: action.payload };
     }
@@ -583,8 +562,9 @@ const createColumns = () => [
 /**
  * Displays a filterable, sortable, selectable table of DASD storage devices.
  *
- * Manages its own UI state (filters, sorting, selection, pending format
- * requests) via a reducer.
+ * The filters and the sorting live in the URL. The selection and a pending
+ * format request stay in a reducer, since they describe an action being
+ * prepared rather than how the table is being looked at.
  */
 export default function DASDTable({ devices }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -596,8 +576,15 @@ export default function DASDTable({ devices }) {
     defaultValue: { index: 0, direction: "asc" },
   });
 
-  const onFilterChange = (filter: keyof DASDDevicesFilters, value) => {
-    dispatch({ type: "UPDATE_FILTERS", payload: { [filter]: value } });
+  const { filters, setFilter, resetFilters, hasActiveFilters } = useFilterParams({
+    status: choiceFilter(Object.keys(STATUS_OPTIONS) as Device["status"][]),
+    formatted: choiceFilter(["yes", "no"] as const),
+    minChannel: textFilter(),
+    maxChannel: textFilter(),
+  });
+
+  const onFilterChange = (filter: keyof DASDDevicesFilters, value: string) => {
+    setFilter(filter, value);
     dispatch({ type: "RESET_SELECTION" });
   };
 
@@ -605,10 +592,8 @@ export default function DASDTable({ devices }) {
     dispatch({ type: "UPDATE_SELECTION", payload: devices.map((d) => d.channel) });
   };
 
-  const resetFilters = () => dispatch({ type: "RESET_FILTERS" });
-
   // Filtering
-  const filteredDevices = filterDevices(devices, state.filters);
+  const filteredDevices = filterDevices(devices, filters);
 
   // Sorting
   const sortingKey = columns[sortedBy.index].sortingKey;
@@ -623,9 +608,9 @@ export default function DASDTable({ devices }) {
   return (
     <Content>
       <FiltersToolbar
-        filters={state.filters}
+        filters={filters}
         availableStatuses={availableStatuses}
-        hasActiveFilters={JSON.stringify(state.filters) !== JSON.stringify(initialState.filters)}
+        hasActiveFilters={hasActiveFilters}
         totalDevices={devices.length}
         matchingDevices={filteredDevices.length}
         onFilterChange={onFilterChange}

@@ -29,8 +29,12 @@ import { toggle } from "radashi";
  * Replacing keeps back and forward stepping between pages instead of between
  * individual clicks on the same page, and the scroll position of the page is
  * left untouched.
+ *
+ * Note that every update here is a router navigation, so a navigation blocker
+ * sees it too: one that does not compare paths would fire while the user is
+ * merely changing how the current page looks, and would cancel the update.
  */
-const UPDATE_OPTS = { replace: true, preventScrollReset: true } as const;
+const SEARCH_PARAM_UPDATE = { replace: true, preventScrollReset: true } as const;
 
 /**
  * A single piece of UI state stored in a URL search param.
@@ -39,8 +43,11 @@ const UPDATE_OPTS = { replace: true, preventScrollReset: true } as const;
  * such as the selected tab or the sorted column, so that reloading the page or
  * sharing its address brings the same view back.
  *
- * Setting `undefined` removes the param; a missing param reads as
- * `defaultValue`.
+ * Setting `undefined` removes the param, and so does setting `defaultValue`
+ * itself: a view has one address that way, instead of one for the page as it
+ * opens and another for the same page after a control travelled back to where
+ * it started. Reading never rewrites anything, so an address that spells the
+ * default out keeps it.
  *
  * @example
  * const [tab, setTab] = useSearchParamState("tab", "0");
@@ -53,13 +60,13 @@ function useSearchParamState(key: string, defaultValue?: string) {
 
   const setValue = (next: string | number | undefined) =>
     setParams((nextParams) => {
-      if (next === undefined) {
+      if (next === undefined || String(next) === defaultValue) {
         nextParams.delete(key);
       } else {
         nextParams.set(key, String(next));
       }
       return nextParams;
-    }, UPDATE_OPTS);
+    }, SEARCH_PARAM_UPDATE);
 
   return [value, setValue] as const;
 }
@@ -101,7 +108,7 @@ function useSearchParamTokens(key: string) {
         nextParams.delete(key);
       }
       return nextParams;
-    }, UPDATE_OPTS);
+    }, SEARCH_PARAM_UPDATE);
 
   return { tokens, hasSearchParamToken, toggleSearchParamToken };
 }
@@ -126,7 +133,7 @@ function useClearSearchParams() {
     setParams((nextParams) => {
       keys.forEach((key) => nextParams.delete(key));
       return nextParams;
-    }, UPDATE_OPTS);
+    }, SEARCH_PARAM_UPDATE);
 }
 
-export { useSearchParamState, useSearchParamTokens, useClearSearchParams };
+export { SEARCH_PARAM_UPDATE, useSearchParamState, useSearchParamTokens, useClearSearchParams };
