@@ -146,6 +146,15 @@
   }
 }
 
+// PatternFly underlines the text of large buttons while they are hovered,
+// focused or held down. An underline reads as a link, which is misleading on a
+// button that already looks like one, so leave the label undecorated and let
+// the color and background changes signal the state.
+.pf-v6-c-button.pf-m-display-lg {
+  --pf-v6-c-button--m-display-lg--hover--TextDecorationLine: none;
+  --pf-v6-c-button--m-display-lg--m-clicked--TextDecorationLine: none;
+}
+
 // Link-style buttons follow the link color rather than the brand fill, so a
 // product with a vivid brand still gets readable link / heading text. For the
 // default Agama brand, link and brand resolve to the same value, so nothing
