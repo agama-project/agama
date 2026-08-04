@@ -47,7 +47,7 @@ module Agama
           def match_driver?(node, device)
             return true unless node.driver
 
-            device.driver.include?(node.driver)
+            device.driver&.include?(node.driver)
           end
         end
       end
