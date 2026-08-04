@@ -99,7 +99,7 @@ export default function ProductOption({
                 }
                 body={
                   <Stack hasGutter id={detailsId}>
-                    {(product.license || product.modes) && (
+                    {(product.license || !isEmpty(availableModes)) && (
                       <Split hasGutter>
                         {product.license && (
                           <Label variant="outline" isCompact>
@@ -122,7 +122,7 @@ export default function ProductOption({
                     >
                       <SubtleContent>{product.description}</SubtleContent>
                     </ExpandableSection>
-                    {isChecked && availableModes && (
+                    {isChecked && !isEmpty(availableModes) && (
                       <Split hasGutter>
                         {availableModes.map((mode) => {
                           return (
