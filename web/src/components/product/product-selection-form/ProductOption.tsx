@@ -27,12 +27,11 @@ import {
   Card,
   CardBody,
   ExpandableSection,
-  Flex,
-  FlexItem,
   Label,
   ListItem,
   Radio,
   Split,
+  SplitItem,
   Stack,
 } from "@patternfly/react-core";
 import { SubtleContent } from "~/components/core";
@@ -83,69 +82,63 @@ export default function ProductOption({
     <ListItem aria-label={product.name}>
       <Card isPlain={!isChecked} isCompact variant={isChecked ? "secondary" : "default"}>
         <CardBody>
-          <Flex flexWrap={{ default: "nowrap" }} alignItems={{ default: "alignItemsFlexStart" }}>
-            <FlexItem>
-              <Radio
-                id={product.id}
-                name="product"
-                isChecked={isChecked}
-                onChange={onChange}
-                aria-details={detailsId}
-                label={
-                  <Text isBold className={pfTextStyles.fontSizeLg}>
-                    <ProductLogo product={product} width="var(--agm-t--logo--size--inline, 2em)" />{" "}
-                    {product.name}
-                  </Text>
-                }
-                body={
-                  <Stack hasGutter id={detailsId}>
-                    {(product.license || !isEmpty(availableModes)) && (
-                      <Split hasGutter>
-                        {product.license && (
-                          <Label variant="outline" isCompact>
-                            <Text component="small">{_("License acceptance required")}</Text>
-                          </Label>
-                        )}
-                        {!isEmpty(availableModes) && (
-                          <Label variant="outline" isCompact>
-                            <Text component="small">{modesLabel}</Text>
-                          </Label>
-                        )}
-                      </Split>
+          <Radio
+            id={product.id}
+            name="product"
+            isChecked={isChecked}
+            onChange={onChange}
+            aria-details={detailsId}
+            label={
+              <Text isBold className={pfTextStyles.fontSizeLg}>
+                <ProductLogo product={product} width="var(--agm-t--logo--size--inline, 2em)" />{" "}
+                {product.name}
+              </Text>
+            }
+            body={
+              <Stack hasGutter id={detailsId}>
+                {(product.license || !isEmpty(availableModes)) && (
+                  <Split hasGutter>
+                    {product.license && (
+                      <Label variant="outline" isCompact>
+                        {_("License acceptance required")}
+                      </Label>
                     )}
+                    {!isEmpty(availableModes) && (
+                      <Label variant="outline" isCompact>
+                        {modesLabel}
+                      </Label>
+                    )}
+                  </Split>
+                )}
 
-                    <ExpandableSection
-                      variant="truncate"
-                      truncateMaxLines={2}
-                      toggleTextCollapsed={_("Show more")}
-                      toggleTextExpanded={_("Show less")}
-                    >
-                      <SubtleContent>{product.description}</SubtleContent>
-                    </ExpandableSection>
-                    {isChecked && !isEmpty(availableModes) && (
-                      <Split hasGutter>
-                        {availableModes.map((mode) => {
-                          return (
-                            <FlexItem key={mode.id}>
-                              <Radio
-                                key={mode.id}
-                                id={mode.id}
-                                name="mode"
-                                isChecked={mode.id === selectedModeId}
-                                onChange={() => onModeChange(mode)}
-                                label={<Text isBold>{mode.name}</Text>}
-                                description={mode.description}
-                              />
-                            </FlexItem>
-                          );
-                        })}
-                      </Split>
-                    )}
-                  </Stack>
-                }
-              />
-            </FlexItem>
-          </Flex>
+                <ExpandableSection
+                  variant="truncate"
+                  truncateMaxLines={2}
+                  toggleTextCollapsed={_("Show more")}
+                  toggleTextExpanded={_("Show less")}
+                >
+                  <SubtleContent>{product.description}</SubtleContent>
+                </ExpandableSection>
+
+                {isChecked && !isEmpty(availableModes) && (
+                  <Split hasGutter>
+                    {availableModes.map((mode) => (
+                      <SplitItem key={mode.id}>
+                        <Radio
+                          id={mode.id}
+                          name="mode"
+                          isChecked={mode.id === selectedModeId}
+                          onChange={() => onModeChange(mode)}
+                          label={<Text isBold>{mode.name}</Text>}
+                          description={mode.description}
+                        />
+                      </SplitItem>
+                    ))}
+                  </Split>
+                )}
+              </Stack>
+            }
+          />
         </CardBody>
       </Card>
     </ListItem>
