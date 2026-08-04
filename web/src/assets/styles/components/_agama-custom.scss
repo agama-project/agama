@@ -32,6 +32,14 @@
   --pf-v6-l-stack--m-gutter--Gap: var(--pf-v6-c-radio--GridGap);
 }
 
+// The submit button names the product being selected, and product names get
+// long. Cap the label at a comfortable reading width and spread it evenly over
+// the lines it needs, rather than letting it stretch or shred the button.
+#productSelectionForm button[type="submit"] {
+  max-inline-size: 40ch;
+  text-wrap: balance;
+}
+
 // Material Symbol icons (rendered by the Icon component) ship without a fill,
 // so they default to black and turn nearly invisible on the dark theme. Make
 // them inherit the surrounding text color (currentcolor) so they adapt to the

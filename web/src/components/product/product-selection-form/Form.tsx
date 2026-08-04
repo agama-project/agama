@@ -24,12 +24,12 @@ import React from "react";
 import { isEmpty } from "radashi";
 import { sprintf } from "sprintf-js";
 import {
+  Flex,
   Form,
   FormGroup,
   HelperText,
   HelperTextItem,
   List,
-  Split,
   Stack,
   StackItem,
 } from "@patternfly/react-core";
@@ -285,17 +285,12 @@ export default function ProductForm({
                     </StackItem>
                   )}
                   <StackItem>
-                    <Split hasGutter>
+                    <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapMd" }}>
                       <form.SubmitButton
+                        size="lg"
                         isDisabled={isSelectionDisabled}
                         isLoading={isSubmitted}
                         variant={isSubmitted ? "secondary" : "primary"}
-                        style={{
-                          maxInlineSize: "50dvw",
-                          overflow: "hidden",
-                          textWrap: "balance",
-                          textAlign: "center",
-                        }}
                       >
                         <ProductFormSubmitLabel
                           currentProduct={currentProduct}
@@ -303,8 +298,8 @@ export default function ProductForm({
                           selectedMode={selectedMode}
                         />
                       </form.SubmitButton>
-                      {currentProduct && !isSubmitted && <form.CancelButton />}
-                    </Split>
+                      {currentProduct && !isSubmitted && <form.CancelButton size="lg" />}
+                    </Flex>
                   </StackItem>
                   <StackItem>
                     <ProductFormSubmitLabelHelp
