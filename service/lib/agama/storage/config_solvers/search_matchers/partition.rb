@@ -22,6 +22,7 @@
 require "agama/storage/config_solvers/search_matchers/base"
 require "agama/storage/config_solvers/search_matchers/with_filesystem"
 require "agama/storage/config_solvers/search_matchers/with_name"
+require "agama/storage/config_solvers/search_matchers/with_partition_id"
 require "agama/storage/config_solvers/search_matchers/with_partition_number"
 require "agama/storage/config_solvers/search_matchers/with_size"
 
@@ -35,6 +36,7 @@ module Agama
           include WithSize
           include WithFilesystem
           include WithPartitionNumber
+          include WithPartitionId
         end
       end
     end

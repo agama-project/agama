@@ -31,7 +31,10 @@ end
 
 require "agama/storage/configs/search_conditions/size"
 require "agama/storage/configs/search_conditions/name"
+require "agama/storage/configs/search_conditions/driver"
+require "agama/storage/configs/search_conditions/boss"
 require "agama/storage/configs/search_conditions/partition_number"
+require "agama/storage/configs/search_conditions/partition_id"
 require "agama/storage/configs/search_conditions/filesystem"
 require "agama/storage/configs/search_conditions/filesystem_type"
 require "agama/storage/configs/search_conditions/filesystem_label"

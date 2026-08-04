@@ -343,7 +343,9 @@ shared_examples "with delete_if_needed" do
   end
 end
 
-shared_examples "device name" do |device_config_fn = nil|
+# The second argument is the JSON of a condition, other than a top-level name, that the device
+# accepts according to the JSON schema. A filesystem condition is used by default.
+shared_examples "device name" do |device_config_fn = nil, complex_condition_json = nil|
   context "for the 'name' property" do
     let(:device_config) { device_config_fn ? device_config_fn.call(config) : config }
 
@@ -374,6 +376,8 @@ shared_examples "device name" do |device_config_fn = nil|
 
       let(:condition) { nil }
       let(:if_not_found) { nil }
+
+      let(:complex_condition) { complex_condition_json || { filesystem: { type: "ext4" } } }
 
       context "and the device is searched by name" do
         let(:condition) { { name: "/dev/test" } }
@@ -480,8 +484,8 @@ shared_examples "device name" do |device_config_fn = nil|
         end
       end
 
-      context "and the device is searched by a filesystem condition" do
-        let(:condition) { { filesystem: { type: "ext4" } } }
+      context "and the device is searched by a complex condition" do
+        let(:condition) { complex_condition }
 
         context "if the device is not found" do
           before { device_config.search.solve }
@@ -515,40 +519,6 @@ shared_examples "device name" do |device_config_fn = nil|
         end
       end
 
-      context "and the device is searched by a partitions condition" do
-        let(:condition) { { partitions: { any: { filesystem: { type: "ext4" } } } } }
-
-        context "if the device is not found" do
-          before { device_config.search.solve }
-
-          context "and the device does not have to be created" do
-            let(:if_not_found) { "error" }
-
-            it "generates the expected JSON" do
-              model_json = subject.convert
-              expect(model_json.keys).to_not include(:name)
-            end
-          end
-
-          context "and the device has to be created" do
-            let(:if_not_found) { "create" }
-
-            it "generates the expected JSON" do
-              model_json = subject.convert
-              expect(model_json.keys).to_not include(:name)
-            end
-          end
-        end
-
-        context "if the device is found" do
-          before { device_config.search.solve(device) }
-
-          it "generates the expected JSON" do
-            model_json = subject.convert
-            expect(model_json[:name]).to eq(device.name)
-          end
-        end
-      end
     end
   end
 end

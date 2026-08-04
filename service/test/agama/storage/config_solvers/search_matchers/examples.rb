@@ -19,7 +19,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_conversions/from_json_conversions/search"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions"
 require "agama/storage/configs/search_conditions"
 require "y2storage"
 require "y2storage/refinements"
@@ -30,15 +30,34 @@ module Agama
   module RSpec
     # RSpec extension to build search conditions in the matcher tests.
     module SearchMatcherHelpers
+      # Converter able to build any condition, no matter the device it belongs to.
+      #
+      # The matchers are also tested with conditions that they must reject (e.g., a partitions
+      # condition given to the volume group matcher). Such conditions cannot be built with the
+      # converter of the corresponding device, since it only accepts the conditions allowed by the
+      # JSON schema for that device.
+      class AnyConditionConverter <
+          Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::Base
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithName
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithSize
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithDriver
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithBoss
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::
+          WithPartitionNumber
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::
+          WithPartitionId
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::
+          WithFilesystem
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::
+          WithPartitions
+      end
+
       # Condition config from its JSON representation.
       #
       # @param json [Hash] Condition according to the JSON schema (e.g., { name: "/dev/vda" }).
       # @return [Agama::Storage::Configs::SearchConditions::*]
       def condition(json)
-        Agama::Storage::ConfigConversions::FromJSONConversions::Search
-          .new({ condition: json })
-          .convert
-          .condition
+        AnyConditionConverter.new.convert(json)
       end
 
       # Size condition config.
@@ -409,6 +428,39 @@ shared_examples "a matcher rejecting the partition number condition" do
   describe "with a partition number condition" do
     it "does not match" do
       expect(subject.match?(condition(number: 1), device)).to eq(false)
+    end
+  end
+end
+
+# Expects the following definitions:
+#
+#   * subject: matcher to test.
+#   * device: device to match.
+shared_examples "a matcher rejecting the partition id condition" do
+  describe "with a partition id condition" do
+    it "does not match" do
+      expect(subject.match?(condition(id: "linux"), device)).to eq(false)
+    end
+  end
+end
+
+# Expects the following definitions:
+#
+#   * subject: matcher to test.
+#   * device: device to match.
+shared_examples "a matcher rejecting the driver condition" do
+  describe "with a driver condition" do
+    it "does not match" do
+      expect(subject.match?(condition(driver: "ahci"), device)).to eq(false)
+    end
+  end
+end
+
+shared_examples "a matcher rejecting the boss condition" do
+  describe "with a boss condition" do
+    it "does not match" do
+      expect(subject.match?(condition(boss: true), device)).to eq(false)
+      expect(subject.match?(condition(boss: false), device)).to eq(false)
     end
   end
 end

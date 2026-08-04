@@ -89,6 +89,23 @@
                 "filesystem": { "label": "data" }
               }
             }
+          },
+          {
+            "search": {
+              "condition": {
+                "id": "esp"
+              }
+            }
+          },
+          {
+            "search": {
+              "condition": {
+                "and": [
+                  { "id": "linux" },
+                  { "not": { "filesystem": "none" } }
+                ]
+              }
+            }
           }
         ]
       },
@@ -177,6 +194,40 @@
                 "max": 5
               }
             }
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "driver": "ahci"
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "not": { "driver": "sd" } },
+              { "size": { "greater": "100 GiB" } }
+            ]
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "boss": true
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "boss": false },
+              { "driver": "nvme" }
+            ]
           }
         }
       }

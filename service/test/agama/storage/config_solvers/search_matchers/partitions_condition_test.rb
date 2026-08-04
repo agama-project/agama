@@ -80,6 +80,14 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::PartitionsCondition do
         expect(subject.match?(condition(json), partitioned_device)).to eq(false)
       end
 
+      it "supports the partition id condition" do
+        json = { partitions: { any: { id: "bios_boot" } } }
+        expect(subject.match?(condition(json), partitioned_device)).to eq(true)
+
+        json = { partitions: { any: { id: "esp" } } }
+        expect(subject.match?(condition(json), partitioned_device)).to eq(false)
+      end
+
       it "supports operators" do
         json = {
           partitions: {

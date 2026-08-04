@@ -54,5 +54,8 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::LogicalVolume do
     include_examples "a matcher supporting operators"
     include_examples "a matcher rejecting the partitions condition"
     include_examples "a matcher rejecting the partition number condition"
+    include_examples "a matcher rejecting the partition id condition"
+    include_examples "a matcher rejecting the driver condition"
+    include_examples "a matcher rejecting the boss condition"
   end
 end

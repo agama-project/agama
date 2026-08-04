@@ -47,6 +47,8 @@ module Agama
           #
           # @return [Boolean]
           def match_number?(node, partition)
+            return true unless node.number
+
             partition.number == node.number
           end
         end

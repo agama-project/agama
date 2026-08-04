@@ -23,7 +23,19 @@ module Agama
   module Storage
     module ConfigConversions
       module FromJSONConversions
-        # Namespace for conversions of search conditions.
+        # Namespace for conversions of search conditions from JSON.
+        #
+        # There is a converter for the conditions of each type of searchable device (e.g.,
+        # {SearchConditions::Drive}), used by the corresponding search converter (e.g.,
+        # {FromJSONConversions::DriveSearch}). Each converter supports the conditions that the
+        # JSON schema allows for its device, see {SearchConditions::Base}. This mirrors the design
+        # of the matchers used for solving a search, see {ConfigSolvers::SearchMatchers}.
+        #
+        # The composite conditions (size, filesystem and partitions) have their own converters:
+        # {SearchConditions::SizeCondition}, {SearchConditions::FilesystemCondition} and
+        # {SearchConditions::PartitionsCondition}. As their matcher counterparts,
+        # {SearchConditions::FilesystemCondition} and {SearchConditions::PartitionsCondition}
+        # convert their own nested conditions, so they include their own leaf mixins.
         module SearchConditions
         end
       end
@@ -31,6 +43,24 @@ module Agama
   end
 end
 
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/size"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/filesystem"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions/partitions"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/base"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_name"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_size"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_driver"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_boss"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/" \
+        "with_partition_number"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/" \
+        "with_partition_id"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_filesystem"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_partitions"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/size_condition"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/" \
+        "filesystem_condition"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/" \
+        "partitions_condition"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/drive"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/md_raid"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/volume_group"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/logical_volume"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/partition"

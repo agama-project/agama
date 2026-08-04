@@ -46,5 +46,8 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::VolumeGroup do
     include_examples "a matcher rejecting the filesystem condition"
     include_examples "a matcher rejecting the partitions condition"
     include_examples "a matcher rejecting the partition number condition"
+    include_examples "a matcher rejecting the partition id condition"
+    include_examples "a matcher rejecting the driver condition"
+    include_examples "a matcher rejecting the boss condition"
   end
 end

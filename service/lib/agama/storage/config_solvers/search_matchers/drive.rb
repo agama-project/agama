@@ -20,6 +20,8 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_solvers/search_matchers/base"
+require "agama/storage/config_solvers/search_matchers/with_boss"
+require "agama/storage/config_solvers/search_matchers/with_driver"
 require "agama/storage/config_solvers/search_matchers/with_filesystem"
 require "agama/storage/config_solvers/search_matchers/with_name"
 require "agama/storage/config_solvers/search_matchers/with_partitions"
@@ -33,6 +35,8 @@ module Agama
         class Drive < Base
           include WithName
           include WithSize
+          include WithDriver
+          include WithBoss
           include WithFilesystem
           include WithPartitions
         end

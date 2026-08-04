@@ -70,21 +70,49 @@ module Agama
           # @param node [Configs::SearchConditions::*, nil]
           # @return [Hash, nil]
           def convert_leaf_node(node)
-            convert_basic_leaf(node) ||
+            convert_common_leaf(node) ||
+              convert_drive_leaf(node) ||
+              convert_partition_leaf(node) ||
               convert_filesystem_leaf(node) ||
               convert_partitions_leaf(node)
           end
 
+          # Serializes a leaf condition accepted by any kind of device.
+          #
           # @param node [Configs::SearchConditions::*, nil]
           # @return [Hash, nil]
-          def convert_basic_leaf(node)
+          def convert_common_leaf(node)
             case node
             when Configs::SearchConditions::Name
               { name: node.name }
-            when Configs::SearchConditions::PartitionNumber
-              { number: node.number }
             when Configs::SearchConditions::Size
               { size: { node.operator => node.value.to_i } }
+            end
+          end
+
+          # Serializes a leaf condition only accepted by drives.
+          #
+          # @param node [Configs::SearchConditions::*, nil]
+          # @return [Hash, nil]
+          def convert_drive_leaf(node)
+            case node
+            when Configs::SearchConditions::Driver
+              { driver: node.driver }
+            when Configs::SearchConditions::Boss
+              { boss: node.boss }
+            end
+          end
+
+          # Serializes a leaf condition only accepted by partitions.
+          #
+          # @param node [Configs::SearchConditions::*, nil]
+          # @return [Hash, nil]
+          def convert_partition_leaf(node)
+            case node
+            when Configs::SearchConditions::PartitionNumber
+              { number: node.number }
+            when Configs::SearchConditions::PartitionId
+              { id: node.id.to_s }
             end
           end
 

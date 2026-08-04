@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
-require "agama/storage/config_conversions/from_json_conversions/search_conditions"
+require "agama/storage/config_conversions/from_json_conversions/search_errors"
 require "agama/storage/configs/search"
 require "agama/storage/configs/search_conditions"
 require "agama/storage/configs/sort_criteria"
@@ -29,8 +29,13 @@ module Agama
   module Storage
     module ConfigConversions
       module FromJSONConversions
-        # Search conversion from JSON hash according to schema.
-        class Search < Base
+        # Base class for the conversion of a search from JSON hash according to schema.
+        #
+        # This class implements the part of the conversion that is common to every kind of device
+        # (the search shortcuts, the max and the ifNotFound values). Each derived class provides
+        # the converter for its own conditions and the sort criteria it supports, so a search can
+        # only be converted according to the schema of its device (e.g., {DriveSearch}).
+        class DeviceSearch < Base
         private
 
           # @see Base
@@ -53,7 +58,7 @@ module Agama
             return convert_string if search_json.is_a?(String)
 
             {
-              condition:     convert_condition(search_json[:condition]),
+              condition:     condition_converter.convert(search_json[:condition]),
               sort_criteria: convert_sort,
               max:           search_json[:max],
               if_not_found:  search_json[:ifNotFound]&.to_sym
@@ -67,43 +72,22 @@ module Agama
             { condition: Configs::SearchConditions::Name.new(search_json) }
           end
 
-          # Recursively converts a condition JSON into a condition config.
+          # Converter for the conditions supported by the device (defined by derived classes).
           #
-          # @param json [Hash, nil]
-          # @return [Configs::SearchConditions::Name, Configs::SearchConditions::Size,
-          #   Configs::SearchConditions::PartitionNumber, Configs::SearchConditions::And,
-          #   Configs::SearchConditions::Or, Configs::SearchConditions::Not, nil]
-          def convert_condition(json)
-            return unless json
-
-            _key, builder = condition_builders.find { |k, _| json.key?(k) }
-            builder&.call(json)
+          # @return [SearchConditions::Base]
+          def condition_converter
+            raise "Undefined condition converter"
           end
 
-          # Builders for each type of condition, indexed by its JSON key.
+          # Sort criteria classes supported by the device, indexed by their JSON name (defined by
+          # derived classes).
           #
-          # @return [Hash{Symbol => Proc}]
-          def condition_builders
-            {
-              name:       ->(j) { Configs::SearchConditions::Name.new(j[:name]) },
-              size:       ->(j) { SearchConditions::Size.new(j[:size]).convert },
-              number:     ->(j) { Configs::SearchConditions::PartitionNumber.new(j[:number]) },
-              filesystem: ->(j) { SearchConditions::Filesystem.new(j[:filesystem]).convert },
-              partitions: ->(j) { SearchConditions::Partitions.new(j[:partitions]).convert },
-              and:        ->(j) { Configs::SearchConditions::And.new(convert_conditions(j[:and])) },
-              or:         ->(j) { Configs::SearchConditions::Or.new(convert_conditions(j[:or])) },
-              not:        ->(j) { Configs::SearchConditions::Not.new(convert_condition(j[:not])) }
-            }
+          # @return [Hash{Symbol => Class}]
+          def sort_criteria_classes
+            raise "Undefined sort criteria"
           end
 
-          # Converts a collection of condition JSONs into condition configs.
-          #
-          # @param json [Array<Hash>]
-          # @return [Array]
-          def convert_conditions(json)
-            json.map { |c| convert_condition(c) }
-          end
-
+          # @return [Array<Configs::SortCriteria::Base>]
           def convert_sort
             Array(search_json[:sort]).map do |entry|
               case entry
@@ -117,21 +101,23 @@ module Agama
             end
           end
 
+          # @param name [String, Symbol]
+          # @param order [String]
+          #
+          # @return [Configs::SortCriteria::Base]
           def sort_criterion(name, order = "asc")
             crit = sort_criterion_class(name).new
             crit.asc = (order.to_s != "desc")
             crit
           end
 
-          SORT_CRITERIA = {
-            name:   Configs::SortCriteria::Name,
-            size:   Configs::SortCriteria::Size,
-            number: Configs::SortCriteria::PartitionNumber
-          }.freeze
-          private_constant :SORT_CRITERIA
-
+          # @raise [UnsupportedSortCriterion] If the criterion is not supported by the device.
+          #
+          # @param name [String, Symbol]
+          # @return [Class]
           def sort_criterion_class(name)
-            SORT_CRITERIA[name.to_sym]
+            sort_criteria_classes[name.to_sym] ||
+              raise(UnsupportedSortCriterion.new(name, self.class))
           end
         end
       end
