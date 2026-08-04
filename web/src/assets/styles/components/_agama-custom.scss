@@ -15,11 +15,6 @@
   }
 }
 
-// Product selection cards: cap logo size and align the radio inputs.
-#productSelectionForm img {
-  max-inline-size: 100px;
-}
-
 // Sticky category header inside the scrollable patterns list.
 .agm-sticky-category-header {
   position: sticky;
@@ -30,24 +25,19 @@
   border-bottom: var(--pf-t--global--border--width--regular) solid rgb(0 0 0 / 10%);
 }
 
-#productSelectionForm {
-  input[type="radio"] {
-    align-self: center;
-  }
+// Every step inside a product option is the same size: from the product name
+// to its details, and between the details themselves. The radio grid gap sets
+// that step, and the details follow its lead.
+#productSelectionForm .pf-v6-c-radio .pf-v6-l-stack.pf-m-gutter {
+  --pf-v6-l-stack--m-gutter--Gap: var(--pf-v6-c-radio--GridGap);
+}
 
-  .pf-v6-c-card {
-    img {
-      max-inline-size: 80px;
-    }
-
-    label {
-      cursor: pointer;
-    }
-  }
-
-  .pf-v6-c-radio {
-    row-gap: 0;
-  }
+// The submit button names the product being selected, and product names get
+// long. Cap the label at a comfortable reading width and spread it evenly over
+// the lines it needs, rather than letting it stretch or shred the button.
+#productSelectionForm button[type="submit"] {
+  max-inline-size: 40ch;
+  text-wrap: balance;
 }
 
 // Material Symbol icons (rendered by the Icon component) ship without a fill,
