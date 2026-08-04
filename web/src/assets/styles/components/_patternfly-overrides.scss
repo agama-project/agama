@@ -215,8 +215,10 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   align-content: baseline;
 
   // The body already sits in its own grid row, so the grid gap is the only
-  // spacing it needs. Its own margin would stack on top of that.
-  --pf-v6-c-radio__body--MarginBlockStart: 0;
+  // spacing it needs by default. Its own margin would stack on top of that,
+  // and the --agm-t--radio--body--spacing role brings it back when a design
+  // wants the body set further apart from the label.
+  --pf-v6-c-radio__body--MarginBlockStart: var(--agm-t--radio--body--spacing, 0);
 
   // The control is vertically centered against the label instead of aligned to
   // the top of the first text line. PatternFly nudges it with a translation
