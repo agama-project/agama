@@ -904,7 +904,7 @@
       "required": ["driver"],
       "properties": {
         "driver": {
-          "description": "Matches devices handled by the given kernel driver, as reported by hwinfo. A device can be handled by several drivers; the condition matches if any of them is the given one.",
+          "description": "Matches devices handled by the given kernel driver, as reported by hwinfo. A device can be handled by several drivers; the condition matches if any of them is the given one. Do not confuse with driver_modules, which values usually use underscore (virtio-pci vs virtio_pci) and subfix (ahci vs ahci_mod).",
           "type": "string",
           "examples": ["ahci", "sd"]
         }
