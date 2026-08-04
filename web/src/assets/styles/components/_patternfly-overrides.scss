@@ -206,10 +206,26 @@ label.pf-m-disabled + .pf-v6-c-check__description {
 
 .pf-v6-c-check {
   row-gap: var(--pf-t--global--spacer--xs);
+}
+
+// Checkboxes and radios share the same layout: the control sits in the first
+// grid row next to the label, with the description and body below.
+.pf-v6-c-check,
+.pf-v6-c-radio {
   align-content: baseline;
 
-  input[type="checkbox"] {
+  // The body already sits in its own grid row, so the grid gap is the only
+  // spacing it needs. Its own margin would stack on top of that.
+  --pf-v6-c-radio__body--MarginBlockStart: 0;
+
+  // The control is vertically centered against the label instead of aligned to
+  // the top of the first text line. PatternFly nudges it with a translation
+  // computed from the default label font size, which drifts as soon as the
+  // label renders bigger (a larger font, an inline logo).
+  input[type="checkbox"],
+  input[type="radio"] {
     align-self: center;
+    transform: none;
   }
 }
 
