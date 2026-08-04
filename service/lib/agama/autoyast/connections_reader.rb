@@ -61,6 +61,7 @@ module Agama
       #
       # @param interface [Y2Network::AutoinstProfile::InterfaceSection] Interface section.
       # @return [Hash]
+      # rubocop:disable Metrics/AbcSize
       def read_connection(interface)
         conn = {}
         if !interface.device.to_s.empty?
@@ -74,6 +75,7 @@ module Agama
         conn["method4"] = method4
         conn["method6"] = method6
         conn["addresses"] = addresses
+        conn["macAddress"] = interface.lladdr unless interface.lladdr.to_s.empty?
         wireless = Agama::AutoYaST::WirelessReader.new(interface).read
         conn.merge!(wireless) unless wireless.empty?
         bond = Agama::AutoYaST::BondReader.new(interface).read
@@ -82,6 +84,7 @@ module Agama
 
         conn
       end
+      # rubocop:enable Metrics/AbcSize
 
       # Reads the addresses from an AutoYaST interface section.
       #
