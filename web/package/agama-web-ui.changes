@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug  4 08:00:00 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Rebuild the product selection form with the new form stack
+  (gh#agama-project/agama#3791).
+
+-------------------------------------------------------------------
 Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve the installer language and keyboard layout dialog,
