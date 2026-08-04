@@ -26,6 +26,7 @@ import { sprintf } from "sprintf-js";
 import {
   Card,
   CardBody,
+  Divider,
   ExpandableSection,
   Label,
   ListItem,
@@ -121,20 +122,23 @@ export default function ProductOption({
                 </ExpandableSection>
 
                 {isChecked && !isEmpty(availableModes) && (
-                  <Split hasGutter>
-                    {availableModes.map((mode) => (
-                      <SplitItem key={mode.id}>
-                        <Radio
-                          id={mode.id}
-                          name="mode"
-                          isChecked={mode.id === selectedModeId}
-                          onChange={() => onModeChange(mode)}
-                          label={<Text isBold>{mode.name}</Text>}
-                          description={mode.description}
-                        />
-                      </SplitItem>
-                    ))}
-                  </Split>
+                  <>
+                    <Divider />
+                    <Split hasGutter>
+                      {availableModes.map((mode) => (
+                        <SplitItem key={mode.id}>
+                          <Radio
+                            id={mode.id}
+                            name="mode"
+                            isChecked={mode.id === selectedModeId}
+                            onChange={() => onModeChange(mode)}
+                            label={<Text isBold>{mode.name}</Text>}
+                            description={mode.description}
+                          />
+                        </SplitItem>
+                      ))}
+                    </Split>
+                  </>
                 )}
               </Stack>
             }

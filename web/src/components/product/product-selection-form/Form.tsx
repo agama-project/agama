@@ -231,6 +231,7 @@ export default function ProductForm({
   return (
     <form.AppForm>
       <Form
+        id="productSelectionForm"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
