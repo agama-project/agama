@@ -53,22 +53,39 @@ pub struct Registry {
     licenses: Vec<License>,
     /// Fallback languages per territory.
     fallback: HashMap<String, LanguageTag>,
-    /// flag if list of licenses are already read
-    read: bool,
 }
 
 impl Registry {
-    pub fn new<P: AsRef<Path>>(path: P) -> Self {
-        Self {
+    /// Builds a registry, reading the licenses from the given path.
+    pub fn new<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
+        let mut registry = Self {
             path: path.as_ref().to_owned(),
             licenses: vec![],
             fallback: HashMap::new(),
-            read: false,
+        };
+        registry.read()?;
+        Ok(registry)
+    }
+
+    /// Builds a registry, reading the licenses from the default path.
+    pub fn from_default_path() -> Result<Self, Error> {
+        Self::new(Self::default_path())
+    }
+
+    /// Default location: a local test override, or `$AGAMA_SHARE_DIR/eula`.
+    pub fn default_path() -> PathBuf {
+        let relative_path = PathBuf::from("test/share/eula");
+        if relative_path.exists() {
+            relative_path
+        } else {
+            let share_dir =
+                std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
+            PathBuf::from(share_dir).join("eula")
         }
     }
 
     /// Reads the licenses from the repository.
-    pub fn read(&mut self) -> Result<(), Error> {
+    fn read(&mut self) -> Result<(), Error> {
         let entries = read_dir(self.path.as_path())?;
 
         for entry in entries {
@@ -100,7 +117,6 @@ impl Registry {
                 self.fallback.insert(territory.id, fallback);
             }
         }
-        self.read = true;
 
         Ok(())
     }
@@ -108,13 +124,7 @@ impl Registry {
     /// Finds a license with the given ID and language.
     ///
     /// If a translation is not found for the given language, it returns the default text.
-    pub fn find(&mut self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
-        if !self.read {
-            if let Err(err) = self.read() {
-                tracing::error!("Failed to read licenses: {err}");
-                return None;
-            }
-        }
+    pub fn find(&self, id: &str, language: &LanguageTag) -> Option<LicenseContent> {
         let license = self.licenses.iter().find(|l| l.id.as_str() == id)?;
         let license_language = self.find_language(license, language).unwrap_or_default();
         self.read_license_content(id, &license_language).ok()
@@ -209,29 +219,13 @@ impl Registry {
     }
 }
 
-impl Default for Registry {
-    fn default() -> Self {
-        let relative_path = PathBuf::from("test/share/eula");
-        let path = if relative_path.exists() {
-            relative_path
-        } else {
-            let share_dir =
-                std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
-            PathBuf::from(share_dir).join("eula")
-        };
-        Self::new(path)
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::{LanguageTag, Registry};
     use std::path::Path;
 
     fn build_registry() -> Registry {
-        let mut repo = Registry::new(Path::new("../test/share/eula"));
-        repo.read().unwrap();
-        repo
+        Registry::new(Path::new("../test/share/eula")).unwrap()
     }
 
     #[test]
@@ -243,7 +237,7 @@ mod test {
 
     #[test]
     fn test_find_license() {
-        let mut repo = build_registry();
+        let repo = build_registry();
         let es_language: LanguageTag = "es".try_into().unwrap();
         let license = repo.find("license.final", &es_language).unwrap();
         assert!(license.body.starts_with("Acuerdo de licencia"));
@@ -267,7 +261,7 @@ mod test {
 
     #[test]
     fn test_find_alternate_license() {
-        let mut repo = build_registry();
+        let repo = build_registry();
 
         // Tries to use the main language for the territory.
         let ca_language: LanguageTag = "ca-ES".try_into().unwrap();

@@ -405,7 +405,7 @@ impl Starter {
             software,
             storage,
             products: products::Registry::default(),
-            licenses: licenses::Registry::default(),
+            licenses: licenses::Registry::from_default_path()?,
             hardware,
             config: Config::default(),
             system: manager::SystemInfo::default(),
