@@ -430,6 +430,7 @@
         { "$ref": "#/$defs/searchConditionName" },
         { "$ref": "#/$defs/searchConditionSize" },
         { "$ref": "#/$defs/searchConditionDriver" },
+        { "$ref": "#/$defs/searchConditionBoss" },
         { "$ref": "#/$defs/searchConditionFilesystem" },
         { "$ref": "#/$defs/searchConditionPartitions" },
         { "$ref": "#/$defs/driveSearchConditionAnd" },
@@ -906,6 +907,17 @@
           "description": "Matches devices handled by the given kernel driver, as reported by hwinfo. A device can be handled by several drivers; the condition matches if any of them is the given one.",
           "type": "string",
           "examples": ["ahci", "sd"]
+        }
+      }
+    },
+    "searchConditionBoss": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["boss"],
+      "properties": {
+        "boss": {
+          "description": "Whether the device is a BOSS (Boot Optimized Storage Solution) device, a technology introduced by Dell. Use false to match any other device.",
+          "type": "boolean"
         }
       }
     },

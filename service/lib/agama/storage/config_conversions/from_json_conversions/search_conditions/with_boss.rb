@@ -19,26 +19,26 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/search_matchers/base"
-require "agama/storage/config_solvers/search_matchers/with_boss"
-require "agama/storage/config_solvers/search_matchers/with_driver"
-require "agama/storage/config_solvers/search_matchers/with_filesystem"
-require "agama/storage/config_solvers/search_matchers/with_name"
-require "agama/storage/config_solvers/search_matchers/with_partitions"
-require "agama/storage/config_solvers/search_matchers/with_size"
+require "agama/storage/configs/search_conditions"
 
 module Agama
   module Storage
-    module ConfigSolvers
-      module SearchMatchers
-        # Matcher for the conditions of a drive search.
-        class Drive < Base
-          include WithName
-          include WithSize
-          include WithDriver
-          include WithBoss
-          include WithFilesystem
-          include WithPartitions
+    module ConfigConversions
+      module FromJSONConversions
+        module SearchConditions
+          # Mixin for converters supporting the BOSS condition.
+          #
+          # Only for converters of a search of devices that can be a BOSS device (that is, drives).
+          module WithBoss
+          private
+
+            # @see Base#convert_leaf
+            def convert_leaf(json)
+              return Configs::SearchConditions::Boss.new(json[:boss]) if json.key?(:boss)
+
+              super
+            end
+          end
         end
       end
     end

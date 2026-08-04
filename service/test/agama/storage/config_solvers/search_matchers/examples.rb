@@ -41,6 +41,7 @@ module Agama
         include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithName
         include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithSize
         include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithDriver
+        include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::WithBoss
         include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::
           WithPartitionNumber
         include Agama::Storage::ConfigConversions::FromJSONConversions::SearchConditions::
@@ -451,6 +452,15 @@ shared_examples "a matcher rejecting the driver condition" do
   describe "with a driver condition" do
     it "does not match" do
       expect(subject.match?(condition(driver: "ahci"), device)).to eq(false)
+    end
+  end
+end
+
+shared_examples "a matcher rejecting the boss condition" do
+  describe "with a boss condition" do
+    it "does not match" do
+      expect(subject.match?(condition(boss: true), device)).to eq(false)
+      expect(subject.match?(condition(boss: false), device)).to eq(false)
     end
   end
 end

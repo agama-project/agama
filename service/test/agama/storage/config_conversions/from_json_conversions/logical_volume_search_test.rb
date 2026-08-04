@@ -53,6 +53,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::LogicalVolumeSe
       let(:unsupported_conditions) do
         [
           { driver: "ahci" },
+          { boss: true },
           { number: 1 },
           { id: "esp" },
           { partitions: "any" }

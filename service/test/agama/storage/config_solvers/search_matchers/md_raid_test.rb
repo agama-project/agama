@@ -59,5 +59,6 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::MdRaid do
     include_examples "a matcher rejecting the partition number condition"
     include_examples "a matcher rejecting the partition id condition"
     include_examples "a matcher rejecting the driver condition"
+    include_examples "a matcher rejecting the boss condition"
   end
 end

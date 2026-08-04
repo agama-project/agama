@@ -143,6 +143,28 @@ describe Agama::Storage::ConfigConversions::ToJSONConversions::Search do
       include_examples "with device"
     end
 
+    context "if #condition is configured to search by boss" do
+      let(:condition) { { boss: true } }
+
+      context "and there is no assigned device" do
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ boss: true })
+        end
+      end
+
+      context "and the value is false" do
+        let(:condition) { { boss: false } }
+
+        it "generates the expected JSON" do
+          config_json = subject.convert
+          expect(config_json[:condition]).to eq({ boss: false })
+        end
+      end
+
+      include_examples "with device"
+    end
+
     context "if #condition is configured to search by partition number" do
       let(:from_json_converter_class) { partition_search_converter_class }
       let(:condition) { { number: 2 } }

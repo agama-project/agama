@@ -53,7 +53,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::PartitionSearch
 
     context "with conditions of other kinds of devices" do
       let(:unsupported_conditions) do
-        [{ driver: "ahci" }, { partitions: "any" }]
+        [{ driver: "ahci" }, { boss: true }, { partitions: "any" }]
       end
 
       include_examples "a search converter rejecting conditions of other devices"

@@ -48,6 +48,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::DriveSearch do
     include_examples "a search converter supporting the name condition"
     include_examples "a search converter supporting the size condition"
     include_examples "a search converter supporting the driver condition"
+    include_examples "a search converter supporting the boss condition"
     include_examples "a search converter supporting the filesystem condition"
     include_examples "a search converter supporting the partitions condition"
     include_examples "a search converter supporting operators"

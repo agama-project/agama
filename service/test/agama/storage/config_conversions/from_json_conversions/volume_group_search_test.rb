@@ -52,6 +52,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::VolumeGroupSear
       let(:unsupported_conditions) do
         [
           { driver: "ahci" },
+          { boss: true },
           { number: 1 },
           { id: "esp" },
           { filesystem: "any" },

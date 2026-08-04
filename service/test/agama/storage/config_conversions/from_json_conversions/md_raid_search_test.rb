@@ -52,7 +52,7 @@ describe Agama::Storage::ConfigConversions::FromJSONConversions::MdRaidSearch do
 
     context "with conditions of other kinds of devices" do
       let(:unsupported_conditions) do
-        [{ driver: "ahci" }, { number: 1 }, { id: "esp" }]
+        [{ driver: "ahci" }, { boss: true }, { number: 1 }, { id: "esp" }]
       end
 
       include_examples "a search converter rejecting conditions of other devices"

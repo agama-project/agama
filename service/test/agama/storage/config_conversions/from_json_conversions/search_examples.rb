@@ -196,6 +196,28 @@ shared_examples "a search converter supporting the driver condition" do
   end
 end
 
+shared_examples "a search converter supporting the boss condition" do
+  context "if 'boss' is specified as true" do
+    let(:condition) { { boss: true } }
+
+    it "sets #condition to the expected value" do
+      config = subject.convert
+      expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Boss)
+      expect(config.condition.boss).to eq(true)
+    end
+  end
+
+  context "if 'boss' is specified as false" do
+    let(:condition) { { boss: false } }
+
+    it "sets #condition to the expected value" do
+      config = subject.convert
+      expect(config.condition).to be_a(Agama::Storage::Configs::SearchConditions::Boss)
+      expect(config.condition.boss).to eq(false)
+    end
+  end
+end
+
 shared_examples "a search converter supporting the partition number condition" do
   context "if 'number' is specified" do
     let(:condition) { { number: 2 } }

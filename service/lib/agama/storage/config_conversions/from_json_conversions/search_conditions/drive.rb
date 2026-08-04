@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/base"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_boss"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_driver"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_filesystem"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_name"
@@ -36,6 +37,7 @@ module Agama
             include WithName
             include WithSize
             include WithDriver
+            include WithBoss
             include WithFilesystem
             include WithPartitions
           end

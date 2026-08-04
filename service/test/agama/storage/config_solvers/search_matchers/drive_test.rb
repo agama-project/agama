@@ -78,5 +78,49 @@ describe Agama::Storage::ConfigSolvers::SearchMatchers::Drive do
         expect(subject.match?(condition(driver: "ahci"), device)).to eq(false)
       end
     end
+
+    describe "with a boss condition" do
+      context "if the device is a BOSS device" do
+        before do
+          mock_hwinfo(Y2Storage::HWInfoDisk.new(model: "Dell BOSS-N1 Modular"))
+        end
+
+        it "matches if the condition requests a BOSS device" do
+          expect(subject.match?(condition(boss: true), device)).to eq(true)
+        end
+
+        it "does not match if the condition requests any other device" do
+          expect(subject.match?(condition(boss: false), device)).to eq(false)
+        end
+      end
+
+      context "if the device is not a BOSS device" do
+        before do
+          mock_hwinfo(Y2Storage::HWInfoDisk.new(model: "SAMSUNG MZVL2512"))
+        end
+
+        it "does not match if the condition requests a BOSS device" do
+          expect(subject.match?(condition(boss: true), device)).to eq(false)
+        end
+
+        it "matches if the condition requests any other device" do
+          expect(subject.match?(condition(boss: false), device)).to eq(true)
+        end
+      end
+
+      context "if the model of the device is unknown" do
+        before do
+          mock_hwinfo(Y2Storage::HWInfoDisk.new)
+        end
+
+        it "does not match if the condition requests a BOSS device" do
+          expect(subject.match?(condition(boss: true), device)).to eq(false)
+        end
+
+        it "matches if the condition requests any other device" do
+          expect(subject.match?(condition(boss: false), device)).to eq(true)
+        end
+      end
+    end
   end
 end

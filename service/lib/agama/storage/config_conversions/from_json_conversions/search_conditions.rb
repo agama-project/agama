@@ -47,6 +47,7 @@ require "agama/storage/config_conversions/from_json_conversions/search_condition
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_name"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_size"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_driver"
+require "agama/storage/config_conversions/from_json_conversions/search_conditions/with_boss"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/" \
         "with_partition_number"
 require "agama/storage/config_conversions/from_json_conversions/search_conditions/" \

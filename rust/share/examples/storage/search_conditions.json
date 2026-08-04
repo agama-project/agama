@@ -213,6 +213,23 @@
             ]
           }
         }
+      },
+      {
+        "search": {
+          "condition": {
+            "boss": true
+          }
+        }
+      },
+      {
+        "search": {
+          "condition": {
+            "and": [
+              { "boss": false },
+              { "driver": "nvme" }
+            ]
+          }
+        }
       }
     ],
     "mdRaids": [

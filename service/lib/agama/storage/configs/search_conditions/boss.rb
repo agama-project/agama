@@ -19,26 +19,21 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "agama/storage/config_solvers/search_matchers/base"
-require "agama/storage/config_solvers/search_matchers/with_boss"
-require "agama/storage/config_solvers/search_matchers/with_driver"
-require "agama/storage/config_solvers/search_matchers/with_filesystem"
-require "agama/storage/config_solvers/search_matchers/with_name"
-require "agama/storage/config_solvers/search_matchers/with_partitions"
-require "agama/storage/config_solvers/search_matchers/with_size"
-
 module Agama
   module Storage
-    module ConfigSolvers
-      module SearchMatchers
-        # Matcher for the conditions of a drive search.
-        class Drive < Base
-          include WithName
-          include WithSize
-          include WithDriver
-          include WithBoss
-          include WithFilesystem
-          include WithPartitions
+    module Configs
+      module SearchConditions
+        # Condition for searching BOSS (Boot Optimized Storage Solution) devices.
+        #
+        # A device with an unknown model is never a BOSS device.
+        class Boss
+          # @return [Boolean, nil] whether the device must be a BOSS device.
+          attr_accessor :boss
+
+          # @param boss [Boolean, nil]
+          def initialize(boss = nil)
+            @boss = boss
+          end
         end
       end
     end
