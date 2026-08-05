@@ -415,41 +415,27 @@
   },
   {
     "key": "services-manager",
-    "notes": "Automatically converted into post-installation script",
+    "notes": "Agama does not implement support to enable/disable services on demand, so this section is converted to a post-installation script which enables/disables the services.",
     "children": [
       {
         "key": "default_target",
-        "support": "yes"
+        "support": "yes",
+        "notes": "Add a call to \"systemctl set-target\" in the post-installation script."
       },
       {
-        "key": "enable",
-        "children": [
-          {
-            "key": "service",
-            "support": "yes",
-            "notes": "The list of services is enabled using a post-installation script."
-          }
-        ]
+        "key": "enable[]",
+        "support": "yes",
+        "notes": "Services are enabled in the post-installation script."
       },
       {
-        "key": "disable",
-        "children": [
-          {
-            "key": "service",
-            "support": "yes",
-            "notes": "The list of services is disabled using a post-installation script."
-          }
-        ]
+        "key": "disable[]",
+        "support": "yes",
+        "notes": "Services are disabled in the post-installation script."
       },
       {
-        "key": "on_demand",
-        "children": [
-          {
-            "key": "service",
-            "support": "yes",
-            "notes": "The list of services is enabled on-demand using a post-installation script."
-          }
-        ]
+        "key": "on_demand[]",
+        "support": "yes",
+        "notes": "Services are enabled on-demand in the post-installation script."
       }
     ]
   },
@@ -640,7 +626,7 @@
       { "key": "packages[]", "support": "yes", "agama": "software.packages[]" },
       { "key": "post-packages[]", "support": "no" },
       { "key": "patterns[]", "support": "yes", "agama": "software.patterns[]" },
-      { "key": "products[]", "support": "yes", "agama": "software.id" },
+      { "key": "products[]", "support": "yes", "agama": "product.id" },
       { "key": "remove-packages[]", "support": "no" },
       { "key": "remove-patterns[]", "support": "no" },
       { "key": "remove-products[]", "support": "no" }
