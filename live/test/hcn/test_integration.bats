@@ -288,6 +288,270 @@ EOF
     echo "$NEW_ARGS" | grep -q "bond=bond5558a5a3:enP16386p1s0,env7"
 }
 
+@test "integration: multiple bonds with multiple IPs are mapped individually based on MAC" {
+    # This simulates the user's reported bug where multiple rd.hcn.ip= arguments with different MACs
+    # are passed to multiple bonds, ensuring they are only mapped to the bond containing that MAC.
+    MAPPINGS="bond22f58d45 enP32800p1s0 2e:7a:3c:6a:1c:00 primary bond156efe56 enP32802p1s0 2e:7a:3c:6a:1c:01 primary bond22f58d45 env5 2e:7a:3e:73:69:05 backup bond156efe56 env6 2e:7a:3e:73:69:06 backup"
+
+    # We extract unique bond names
+    BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
+
+    # Mock command-line arguments for rd.hcn.ip
+    MOCK_IPS="10.2.2.65::10.2.0.1:255.255.255.0::2e-7a-3c-6a-1c-00:off 10.2.2.66::10.2.0.1:255.255.255.0::2e-7a-3c-6a-1c-01:off"
+
+    # Helper function matching parse-hcn.sh
+    str_replace() {
+        echo "$1" | tr "$2" "$3"
+    }
+
+    NEW_ARGS=""
+    for BONDNAME in $BOND_NAMES; do
+        SLAVES="" SLAVE_NAMES="" SLAVE_MACS="" PRIMARY=""
+        OTHER_SLAVE_NAMES="" OTHER_SLAVE_MACS=""
+
+        # Extract slaves for this bond and other bonds from MAPPINGS
+        set -- $MAPPINGS
+        while [ $# -ge 4 ]; do
+            if [ "$1" = "$BONDNAME" ]; then
+                SLAVE_NAMES="$SLAVE_NAMES $2"
+                [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
+                [ "$4" = "primary" ] && PRIMARY="$2"
+                SLAVES="${SLAVES:+$SLAVES,}$2"
+            else
+                OTHER_SLAVE_NAMES="$OTHER_SLAVE_NAMES $2"
+                [ "$3" != "none" ] && OTHER_SLAVE_MACS="$OTHER_SLAVE_MACS $3"
+            fi
+            shift 4
+        done
+
+        # Process mocked rd.hcn.ip arguments
+        for HCN_IP in $MOCK_IPS; do
+            matched=0
+            for slave in $SLAVE_NAMES $SLAVE_MACS; do
+                slave_dash=$(str_replace "$slave" ":" "-")
+                if echo ":$HCN_IP:" | grep -q "[:]$slave[:]" || echo ":$HCN_IP:" | grep -q "[:]$slave_dash[:]"; then
+                    matched=1
+                    current_hcn_ip=$(echo "$HCN_IP" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
+                    NEW_ARGS="$NEW_ARGS ip=$current_hcn_ip"
+                    break
+                fi
+            done
+
+            # Check if this IP is targeted at another bond's slave
+            matched_other=0
+            for slave in $OTHER_SLAVE_NAMES $OTHER_SLAVE_MACS; do
+                slave_dash=$(str_replace "$slave" ":" "-")
+                if echo ":$HCN_IP:" | grep -q "[:]$slave[:]" || echo ":$HCN_IP:" | grep -q "[:]$slave_dash[:]"; then
+                    matched_other=1
+                    break
+                fi
+            done
+
+            has_bond_ip=0
+            case "$HCN_IP" in
+            *:bond[0-9]*) has_bond_ip=1 ;;
+            esac
+            # BOND_NAMES is newline-separated; leave unquoted so awk sees a
+            # single record and returns just the first token (matches the real
+            # parse-hcn.sh, which computes FIRST_BOND once, unquoted).
+            # shellcheck disable=SC2086
+            FIRST_BOND=$(echo $BOND_NAMES | awk '{print $1}')
+            if [ $matched -eq 0 ] && [ $matched_other -eq 0 ] && [ $has_bond_ip -eq 0 ] && [ "$BONDNAME" = "$FIRST_BOND" ]; then
+                NEW_ARGS="$NEW_ARGS ip=$BONDNAME:generic"
+            fi
+        done
+    done
+
+    # Verify that each IP is assigned to exactly one bond (and correct one)
+    # The first IP (ending with MAC 1c:00) should only be assigned to bond22f58d45
+    echo "$NEW_ARGS" | grep -q "ip=10.2.2.65::10.2.0.1:255.255.255.0::bond22f58d45:off"
+    # The second IP (ending with MAC 1c:01) should only be assigned to bond156efe56
+    echo "$NEW_ARGS" | grep -q "ip=10.2.2.66::10.2.0.1:255.255.255.0::bond156efe56:off"
+
+    # Crucially, check that there is NO cross-assignment of IPs!
+    # bond22f58d45 should NOT have 10.2.2.66
+    ! echo "$NEW_ARGS" | grep -q "ip=10.2.2.66::10.2.0.1:255.255.255.0::bond22f58d45:off"
+    # bond156efe56 should NOT have 10.2.2.65
+    ! echo "$NEW_ARGS" | grep -q "ip=10.2.2.65::10.2.0.1:255.255.255.0::bond156efe56:off"
+}
+
+@test "integration: unqualified dhcp fans out to every bond" {
+    # A bare rd.hcn.ip=dhcp carries no per-host address, so each discovered bond
+    # must obtain its own DHCP lease. This mirrors the method-only fallback in
+    # parse-hcn.sh (no FIRST_BOND restriction), unlike a static address which
+    # falls back to the first bond only.
+    MAPPINGS="bond22f58d45 enP32800p1s0 2e:7a:3c:6a:1c:00 primary bond156efe56 enP32802p1s0 2e:7a:3c:6a:1c:01 primary bond22f58d45 env5 2e:7a:3e:73:69:05 backup bond156efe56 env6 2e:7a:3e:73:69:06 backup"
+
+    BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
+    # shellcheck disable=SC2086
+    FIRST_BOND=$(echo $BOND_NAMES | awk '{print $1}')
+
+    str_replace() { echo "$1" | tr "$2" "$3"; }
+
+    MOCK_IPS="dhcp"
+
+    NEW_ARGS=""
+    for BONDNAME in $BOND_NAMES; do
+        SLAVE_NAMES="" SLAVE_MACS="" OTHER_SLAVE_NAMES="" OTHER_SLAVE_MACS=""
+        set -- $MAPPINGS
+        while [ $# -ge 4 ]; do
+            if [ "$1" = "$BONDNAME" ]; then
+                SLAVE_NAMES="$SLAVE_NAMES $2"
+                [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
+            else
+                OTHER_SLAVE_NAMES="$OTHER_SLAVE_NAMES $2"
+                [ "$3" != "none" ] && OTHER_SLAVE_MACS="$OTHER_SLAVE_MACS $3"
+            fi
+            shift 4
+        done
+
+        for HCN_IP in $MOCK_IPS; do
+            matched=0
+            for slave in $SLAVE_NAMES $SLAVE_MACS; do
+                slave_dash=$(str_replace "$slave" ":" "-")
+                if echo ":$HCN_IP:" | grep -q "[:]$slave[:]" || echo ":$HCN_IP:" | grep -q "[:]$slave_dash[:]"; then
+                    matched=1; break
+                fi
+            done
+            matched_other=0
+            for slave in $OTHER_SLAVE_NAMES $OTHER_SLAVE_MACS; do
+                slave_dash=$(str_replace "$slave" ":" "-")
+                if echo ":$HCN_IP:" | grep -q "[:]$slave[:]" || echo ":$HCN_IP:" | grep -q "[:]$slave_dash[:]"; then
+                    matched_other=1; break
+                fi
+            done
+            has_bond_ip=0
+            case "$HCN_IP" in *:bond[0-9]*) has_bond_ip=1 ;; esac
+            if [ $matched -eq 0 ] && [ $matched_other -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
+                case "$HCN_IP" in
+                dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
+                    # Method-only: apply to every bond
+                    NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP" ;;
+                *)
+                    # Static: first bond only
+                    [ "$BONDNAME" = "$FIRST_BOND" ] || continue
+                    NEW_ARGS="$NEW_ARGS ip=$BONDNAME:static-fallback" ;;
+                esac
+            fi
+        done
+    done
+
+    # dhcp must be applied to BOTH bonds, not just the first
+    echo "$NEW_ARGS" | grep -q "ip=bond22f58d45:dhcp"
+    echo "$NEW_ARGS" | grep -q "ip=bond156efe56:dhcp"
+}
+
+@test "integration: unqualified static config falls back to the first bond only" {
+    # A fixed address with no interface field can belong to only one bond, so it
+    # must be applied to the first discovered bond and to no other.
+    MAPPINGS="bond22f58d45 enP32800p1s0 2e:7a:3c:6a:1c:00 primary bond156efe56 enP32802p1s0 2e:7a:3c:6a:1c:01 primary bond22f58d45 env5 2e:7a:3e:73:69:05 backup bond156efe56 env6 2e:7a:3e:73:69:06 backup"
+
+    BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
+    # shellcheck disable=SC2086
+    FIRST_BOND=$(echo $BOND_NAMES | awk '{print $1}')
+
+    str_replace() { echo "$1" | tr "$2" "$3"; }
+
+    # Static address, no interface field (5 colons, interface slot empty)
+    MOCK_IPS="10.2.2.65::10.2.0.1:255.255.255.0::off"
+
+    NEW_ARGS=""
+    for BONDNAME in $BOND_NAMES; do
+        SLAVE_NAMES="" SLAVE_MACS="" OTHER_SLAVE_NAMES="" OTHER_SLAVE_MACS=""
+        set -- $MAPPINGS
+        while [ $# -ge 4 ]; do
+            if [ "$1" = "$BONDNAME" ]; then
+                SLAVE_NAMES="$SLAVE_NAMES $2"
+                [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
+            else
+                OTHER_SLAVE_NAMES="$OTHER_SLAVE_NAMES $2"
+                [ "$3" != "none" ] && OTHER_SLAVE_MACS="$OTHER_SLAVE_MACS $3"
+            fi
+            shift 4
+        done
+
+        for HCN_IP in $MOCK_IPS; do
+            matched=0
+            for slave in $SLAVE_NAMES $SLAVE_MACS; do
+                slave_dash=$(str_replace "$slave" ":" "-")
+                if echo ":$HCN_IP:" | grep -q "[:]$slave[:]" || echo ":$HCN_IP:" | grep -q "[:]$slave_dash[:]"; then
+                    matched=1; break
+                fi
+            done
+            matched_other=0
+            for slave in $OTHER_SLAVE_NAMES $OTHER_SLAVE_MACS; do
+                slave_dash=$(str_replace "$slave" ":" "-")
+                if echo ":$HCN_IP:" | grep -q "[:]$slave[:]" || echo ":$HCN_IP:" | grep -q "[:]$slave_dash[:]"; then
+                    matched_other=1; break
+                fi
+            done
+            has_bond_ip=0
+            case "$HCN_IP" in *:bond[0-9]*) has_bond_ip=1 ;; esac
+            if [ $matched -eq 0 ] && [ $matched_other -eq 0 ] && [ $has_bond_ip -eq 0 ]; then
+                case "$HCN_IP" in
+                dhcp | on | any | single-dhcp | dhcp6 | auto6 | ibft | either6 | link6)
+                    NEW_ARGS="$NEW_ARGS ip=$BONDNAME:$HCN_IP" ;;
+                *)
+                    [ "$BONDNAME" = "$FIRST_BOND" ] || continue
+                    NEW_ARGS="$NEW_ARGS ip=$HCN_IP:$BONDNAME:none" ;;
+                esac
+            fi
+        done
+    done
+
+    # Applied to the first bond only
+    echo "$NEW_ARGS" | grep -q "ip=10.2.2.65::10.2.0.1:255.255.255.0::off:bond22f58d45:none"
+    ! echo "$NEW_ARGS" | grep -q "bond156efe56:none"
+}
+
+@test "integration: uppercase MACs map to the correct bond (case-insensitive)" {
+    # MACs discovered from device-tree are lowercase, but may be supplied in
+    # uppercase on the kernel command line. Matching must be case-insensitive
+    # and must not cross-assign IPs between bonds.
+    MAPPINGS="bond22f58d45 enP32800p1s0 2e:7a:3c:6a:1c:00 primary bond156efe56 enP32802p1s0 2e:7a:3c:6a:1c:01 primary bond22f58d45 env5 2e:7a:3e:73:69:05 backup bond156efe56 env6 2e:7a:3e:73:69:06 backup"
+
+    BOND_NAMES=$(echo "$MAPPINGS" | awk '{for(i=1;i<=NF;i+=4) if (!seen[$i]++) print $i}')
+
+    str_replace() { echo "$1" | tr "$2" "$3"; }
+
+    # Uppercase, dash-separated MACs on the command line
+    MOCK_IPS="10.2.2.65::10.2.0.1:255.255.255.0::2E-7A-3C-6A-1C-00:off 10.2.2.66::10.2.0.1:255.255.255.0::2E-7A-3C-6A-1C-01:off"
+
+    NEW_ARGS=""
+    for BONDNAME in $BOND_NAMES; do
+        SLAVE_NAMES="" SLAVE_MACS=""
+        set -- $MAPPINGS
+        while [ $# -ge 4 ]; do
+            if [ "$1" = "$BONDNAME" ]; then
+                SLAVE_NAMES="$SLAVE_NAMES $2"
+                [ "$3" != "none" ] && SLAVE_MACS="$SLAVE_MACS $3"
+            fi
+            shift 4
+        done
+
+        for HCN_IP in $MOCK_IPS; do
+            HCN_IP_LC=$(echo "$HCN_IP" | tr 'A-Z' 'a-z')
+            for slave in $SLAVE_NAMES $SLAVE_MACS; do
+                slave_dash=$(str_replace "$slave" ":" "-")
+                hcn_cmp=$HCN_IP
+                case "$slave" in *:*) hcn_cmp=$HCN_IP_LC ;; esac
+                if echo ":$hcn_cmp:" | grep -q "[:]$slave[:]" || echo ":$hcn_cmp:" | grep -q "[:]$slave_dash[:]"; then
+                    current_hcn_ip=$(echo "$hcn_cmp" | sed -E "s#^($slave|$slave_dash)([: ]|$)#$BONDNAME\2#; s#([: ])($slave|$slave_dash)([: ]|$)#\1$BONDNAME\3#g")
+                    NEW_ARGS="$NEW_ARGS ip=$current_hcn_ip"
+                    break
+                fi
+            done
+        done
+    done
+
+    # Uppercase MACs must still resolve to the right bond
+    echo "$NEW_ARGS" | grep -q "ip=10.2.2.65::10.2.0.1:255.255.255.0::bond22f58d45:off"
+    echo "$NEW_ARGS" | grep -q "ip=10.2.2.66::10.2.0.1:255.255.255.0::bond156efe56:off"
+    # No cross-assignment
+    ! echo "$NEW_ARGS" | grep -q "ip=10.2.2.66::10.2.0.1:255.255.255.0::bond22f58d45:off"
+    ! echo "$NEW_ARGS" | grep -q "ip=10.2.2.65::10.2.0.1:255.255.255.0::bond156efe56:off"
+}
+
 # ========================================
 # Integration Test: Error Conditions
 # ========================================

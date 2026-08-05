@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-23 13:42+0000\n"
+"POT-Creation-Date: 2026-07-29 12:57+0000\n"
 "PO-Revision-Date: 2026-06-24 08:12+0000\n"
 "Last-Translator: Davide Aiello <davide.aiello@novilingulists.com>\n"
 "Language-Team: Italian <https://l10n.opensuse.org/projects/agama/agama-rust-"
@@ -1000,47 +1000,47 @@ msgstr ""
 msgid "Skip"
 msgstr "Salta"
 
-#: agama-software/src/service.rs:303
+#: agama-software/src/service.rs:304
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 "Non è stato possibile creare una proposta software a causa di un errore "
 "interno."
 
-#: agama-software/src/zypp_server.rs:308
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr "Avvio dell'installazione dei pacchetti"
 
-#: agama-software/src/zypp_server.rs:321
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "Download e installazione dei pacchetti non riusciti. Riprovare?"
 
-#: agama-software/src/zypp_server.rs:376
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
 msgstr "Aggiornamento dell'elenco di repository"
 
-#: agama-software/src/zypp_server.rs:377
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
 msgstr "Aggiornamento dei metadati dai repository"
 
-#: agama-software/src/zypp_server.rs:378
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "Calcolo della proposta software"
 
-#: agama-software/src/zypp_server.rs:381
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
 msgstr "Registrazione del sistema"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:454
+#: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
 msgstr "Impossibile rimuovere il repository %s"
 
-#: agama-software/src/zypp_server.rs:475
+#: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
 msgstr "Impossibile leggere i repository"
 
-#: agama-software/src/zypp_server.rs:512
+#: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -1048,21 +1048,21 @@ msgstr ""
 "Impossibile trovare il prodotto nei repository. Potrebbe essere necessario "
 "registrare il sistema."
 
-#: agama-software/src/zypp_server.rs:515
+#: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
 msgstr "Impossibile trovare il prodotto nei repository."
 
-#: agama-software/src/zypp_server.rs:578
+#: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
 msgstr "Sono presenti conflitti nella selezione del software"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:607
+#: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
 msgstr "Impossibile selezionare %s '%s' per l'installazione"
 
-#: agama-software/src/zypp_server.rs:1041
+#: agama-software/src/zypp_server.rs:1031
 msgid "Failed to register the system"
 msgstr "Registrazione del sistema non riuscita"
 

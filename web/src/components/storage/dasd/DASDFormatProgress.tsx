@@ -22,7 +22,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, CardTitle, Progress, Stack } from "@patternfly/react-core";
-import { useInstallerClient } from "~/context/installer";
+import { useInstallerClient } from "~/hooks/use-installer-client";
 import { sortCollection } from "~/utils";
 import { _ } from "~/i18n";
 
