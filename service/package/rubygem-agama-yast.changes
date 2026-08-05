@@ -1,11 +1,13 @@
 -------------------------------------------------------------------
 Tue Aug  4 22:10:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Convert the bridge and VLAN devices of an AutoYaST profile.
-- Fix the generated "bond" section, which was nested into itself
-  and therefore rejected by the Agama profile schema.
-- Do not crash when "bonding_module_opts" does not include a "mode"
-  option and accept the numeric bonding modes.
+- Improve the AutoYaST network conversion
+  (gh#agama-project/agama#3799):
+  - Convert the bridge and VLAN devices.
+  - Fix the generated "bond" section, which was nested into itself
+    and therefore rejected by the Agama profile schema.
+  - Do not crash when "bonding_module_opts" does not include a
+    "mode" option and accept the numeric bonding modes.
 
 -------------------------------------------------------------------
 Tue Aug  4 14:02:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
