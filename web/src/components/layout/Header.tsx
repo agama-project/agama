@@ -23,6 +23,7 @@
 import React from "react";
 import {
   Flex,
+  FlexItem,
   Masthead,
   MastheadContent,
   MastheadMain,
@@ -129,8 +130,19 @@ function MainBreadcrumbs({
   );
 
   return (
-    <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-      <ProductLogo product={product} width="var(--agm-t--logo--size--header, 35px)" />
+    // The logo keeps the leading edge whatever the trail does: the row never
+    // wraps, so a trail spilling onto a second line grows downwards next to the
+    // logo instead of pushing itself below it. The class carries the container
+    // the trail sizes itself against.
+    <Flex
+      alignItems={{ default: "alignItemsFlexStart" }}
+      gap={{ default: "gapSm" }}
+      flexWrap={{ default: "nowrap" }}
+      className="agm-header-heading"
+    >
+      <FlexItem flex={{ default: "flexNone" }} alignSelf={{ default: "alignSelfCenter" }}>
+        <ProductLogo product={product} width="var(--agm-t--logo--size--header, 35px)" />
+      </FlexItem>
       <Flex direction={{ default: "column" }} gap={{ default: "gapNone" }}>
         {product && (
           <Text textStyle="textColorSubtle" className={textStyles.fontSizeXs}>
