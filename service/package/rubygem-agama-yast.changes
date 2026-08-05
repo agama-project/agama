@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  5 08:57:51 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage search with logical operators and new search
+  conditions: filesystem, partitions, partition id, driver, boss
+  (related to bsc#1273493).
+
+-------------------------------------------------------------------
 Tue Aug  4 14:02:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix AutoYaST conversion (gh#agama-project/agama#3794):

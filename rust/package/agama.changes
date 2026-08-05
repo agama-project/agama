@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  5 10:30:34 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend schema of storage search with logical operators and new
+  search conditions: filesystem, partitions, partition id, driver,
+  boss (related to bsc#1273493).
+
+-------------------------------------------------------------------
 Mon Jul 27 11:23:53 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add an action to "probe" the software service (gh#agama-project/agama#3341).
