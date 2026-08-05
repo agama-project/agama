@@ -507,17 +507,17 @@
           {
             "key": "filename",
             "support": "yes",
-            "agama": "scripts.chroot[].name"
+            "agama": "scripts.post[].name"
           },
           {
             "key": "location",
             "support": "yes",
-            "agama": "scripts.chroot[].url"
+            "agama": "scripts.post[].url"
           },
           {
             "key": "source",
             "support": "yes",
-            "agama": "scripts.chroot[].content"
+            "agama": "scripts.post[].content"
           },
           {
             "key": "interpreter",
@@ -529,7 +529,12 @@
           { "key": "debug", "support": "no" },
           { "key": "notification", "support": "no" },
           { "key": "param-list", "support": "no" },
-          { "key": "rerun", "support": "no" }
+          { "key": "rerun", "support": "no" },
+          {
+            "key": "chrooted",
+            "support": "yes",
+            "agama": "scripts.post[].chroot"
+          }
         ]
       },
       {
