@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Tue Aug  4 22:10:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Wed Aug  5 13:10:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Improve the AutoYaST network conversion
   (gh#agama-project/agama#3799):
@@ -8,6 +8,13 @@ Tue Aug  4 22:10:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
     and therefore rejected by the Agama profile schema.
   - Do not crash when "bonding_module_opts" does not include a
     "mode" option and accept the numeric bonding modes.
+
+-------------------------------------------------------------------
+Wed Aug  5 08:57:51 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage search with logical operators and new search
+  conditions: filesystem, partitions, partition id, driver, boss
+  (related to bsc#1273493).
 
 -------------------------------------------------------------------
 Tue Aug  4 14:02:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
