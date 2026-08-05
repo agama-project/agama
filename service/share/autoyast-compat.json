@@ -626,7 +626,7 @@
       { "key": "packages[]", "support": "yes", "agama": "software.packages[]" },
       { "key": "post-packages[]", "support": "no" },
       { "key": "patterns[]", "support": "yes", "agama": "software.patterns[]" },
-      { "key": "products[]", "support": "yes", "agama": "software.id" },
+      { "key": "products[]", "support": "yes", "agama": "product.id" },
       { "key": "remove-packages[]", "support": "no" },
       { "key": "remove-patterns[]", "support": "no" },
       { "key": "remove-products[]", "support": "no" }
