@@ -13,18 +13,39 @@
  * leave them out unless there is a strong reason (a brand typeface, a specific
  * accessibility need, a browser that renders the default poorly).
  *
- * When changing a font FAMILY, make sure it is available (bundled by Agama or
- * installed on the system); otherwise it falls back to the next family. The
- * official ISO ships a limited, curated font set and adding fonts on demand is
- * out of support. Weight and size overrides are not subject to this.
+ * When changing a font FAMILY, make sure it is available: bundled by Agama,
+ * installed on the system running the browser, or shipped with the skin (see the
+ * @font-face example below). Otherwise it falls back to the next family in the
+ * list, so always leave fallbacks after your own. The official ISO ships a
+ * limited, curated font set, the one Agama's own defaults need, so do not count
+ * on anything else being installed there: a family of your own has to travel with
+ * the skin. Weight and size overrides are not subject to this.
  *
  * High contrast is governed by PatternFly: the typography/size/icon roles do not
  * apply there, and only the accent may be branded (HC blocks at the bottom).
  */
 
+/* A skin may bring its own typeface: this file is a plain stylesheet, so it can
+   carry its own @font-face. The font file is NOT part of Agama; the package
+   building the medium places it in the served directory, and the url below is
+   resolved relative to this stylesheet (served from assets/appearance/), so
+   "./fonts/<file>" means assets/appearance/fonts/<file>. Declare the weight range
+   the file really provides, and prefer woff2 subset to the scripts you need: the
+   font ships on the medium.
+
+@font-face {
+  font-family: "My Product Mono";
+  font-weight: 100 900;
+  font-style: normal;
+  src: url("./fonts/MyProductMono.woff2") format("woff2");
+}
+*/
+
 /* Typography and icon sizes (theme-independent). */
 :root {
-  /* Families: body, heading and monospace. */
+  /* Families: body, heading and monospace. Put your own family first and keep
+     fallbacks after it, so a font that fails to load lands on a bundled one
+     instead of on the browser default. */
   --agm-t--font--family--body: "SUSE Mono", "Roboto Mono", monospace;
   --agm-t--font--family--heading: "SUSE Mono", "Roboto Mono", monospace;
   --agm-t--font--family--mono: "SUSE Mono", "Roboto Mono", monospace;
