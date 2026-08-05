@@ -26,6 +26,8 @@ it: that contract is the whole reason a skin survives an Agama upgrade.
 - [Using a font of your own](#using-a-font-of-your-own)
 - [Manual checks](#manual-checks), the half that no number reports
 - [Extending the role API](#extending-the-role-api), when the roles fall short
+- [Prompting an AI to do this](#prompting-an-ai-to-do-this), and why
+  [the second round is the real one](#the-second-round-is-the-real-one)
 
 ## What a skin can change
 
@@ -279,3 +281,151 @@ Adding a role that's genuinely missing:
 
 This one does go through Agama: it changes the shared layer that every product
 depends on.
+
+## Prompting an AI to do this
+
+Fill in the placeholders and paste:
+
+> Create a product skin for `<PRODUCT_ID>` using this brand: `<paste colors,
+> and/or a link to the brand's site or guidelines>`. Take the id from the `id:`
+> field of the matching file in `products.d/`, not from a logo file name: the two
+> often differ. The skin is `<id>.css`, and a name that does not match loads
+> nothing and says nothing about why.
+>
+> First read `web/src/assets/products/example.css`, `example-advanced.css`,
+> and the role-index comment at the top of
+> `web/src/assets/styles/tokens/_semantic.scss`, so you know the current
+> `--agm-t--*` role set rather than assuming it. A product file only ever
+> sets these roles; never a raw PatternFly or component-level variable
+> directly.
+>
+> Set only the roles the brand actually needs. Every role left unset keeps
+> Agama's own value, so a skin that sets colors, a logo and a font family is a
+> finished skin. Reach for the size, radius and spacing roles only where the
+> brand genuinely differs, and say why when you do.
+>
+> Some things no skin controls, so do not spend effort there: the high contrast
+> theme belongs to PatternFly and a skin may brand its accent and nothing else,
+> line height has no role, and Cyrillic, Georgian, Chinese, Japanese and Korean
+> get their family assigned per language, so a skin's typeface does not reach
+> them.
+>
+> Read `doc/product_theming.md` and follow its contrast checklist and
+> accessibility rules. In particular: compute WCAG contrast explicitly with
+> `web/scripts/check-contrast.js <foreground> <background> [--target=4.5]`
+> (run from the repo root; `--target=3` for UI elements, borders and focus
+> rings), in both light and dark theme separately, rather than eyeballing.
+> Measure every row of the checklist, especially the ones easy to skip: statuses
+> against the raised and the floating surface as well as the page, borders
+> against all three, and the focus ring against the surface around it, with
+> `--agm-t--focus--separator--color` carrying the contrast against the fill
+> rather than the ring itself. Where a brand color fails, use the tool's suggested
+> same-hue/saturation shade rather than an unrelated substitute. Raised and
+> floating surfaces read lighter than the page in dark mode, not darker; the
+> tooltip roles are a separate call, see the elevation notes in the document.
+> Report the numbers you measured as a table.
+>
+> Keep the five status colors distinguishable from each other, not only from
+> their background, and do not collapse them into the brand color: they carry
+> meaning that color alone must not be responsible for. Simulate protanopia and
+> deuteranopia over the five and report the closest pair. Also check them against
+> the brand, link and focus colors: a status that matches the link color
+> disappears where the two meet, such as an issue icon beside a heading that is
+> a link. Where they collide, move the brand side, not the status.
+>
+> For surfaces, report the absolute relative luminance of page, raised and
+> floating, not only their ratios: near black the same ratio means far less
+> separation than near white, so a dark theme can clear "lighter than the page"
+> and still read as one flat field. Compare the separation you get in dark
+> against the one you get in light, and say whether elevation or the border is
+> carrying the edges.
+>
+> If the brand is natively a dark look, design the light theme as its own thing
+> rather than inverting the dark palette, and say what premise you gave each
+> theme.
+>
+> If you touch the typography roles: keep them in relative units, check the
+> result at 200% zoom and at 1024x768, and make sure the family covers the
+> languages the UI is translated into (a Latin-only face switches faces
+> mid-sentence). Name a family only when it is reachable (bundled by Agama,
+> installed on the system running the browser, or shipped with the skin), always
+> with fallbacks after it, and never add font files to Agama itself as part of a
+> skin.
+>
+> Do not raise the size scale to compensate for a font that looks small or large.
+> Use `size-adjust` on its `@font-face`, computed from the ratio of cap heights
+> against a normal text face, and report both the cap heights and the advance
+> widths you measured. Advance width is the constraint that bites: a body face
+> scaled up widens every line by the same factor, so check the longest sentence
+> in the UI and the narrowest column before settling on a value. A single-weight
+> face means synthesized bold; say so rather than discovering it later.
+>
+> An icon is not automatically the color of the text it labels. If you change the
+> icon color role, check it against both headings and status icons.
+>
+> For the logo: a light and a dark SVG with a transparent background, named after
+> the product's `icon:` field rather than its id, the dark one with `-dark` before
+> the extension. Read `ProductLogo` and its callers first to find the actual
+> rendered size/aspect ratio each usage needs, match the square-ish shape of
+> existing logos in that folder, and center the drawing inside the viewBox, since
+> the UI aligns the image box and not the ink. Validate any hand-edited SVG with
+> `xmllint --noout` and a rendered preview at the real consuming size, in
+> both themes, before calling it done.
+>
+> **If something can't be done with the current `--agm-t--*` role set, don't
+> get creative.** Do not set a raw PatternFly token or component-variable
+> override from the product CSS file, and do not work around the "products
+> only set `--agm-t--*` roles" contract. Stop and present a plan for
+> extending the shared token API instead: the new role's name, where it gets
+> documented (a role-index comment in `_semantic.scss`) and resolved (a PF
+> global token in `_semantic.scss`, or a component-level override in
+> `_patternfly-overrides.scss`, with the current Agama value as the fallback
+> default so leaving it unset changes nothing), a worked example added to
+> `example-advanced.css`, and whether PatternFly actually splits the
+> underlying concern into several independent tokens under the hood (check
+> before assuming one override reaches everywhere it should). Get that plan
+> approved before writing any code.
+>
+> Finally, list what you could not verify yourself, so it can be checked in the
+> running installer. Be specific: "a tooltip over a busy screen", "the overview
+> at 1024x768", not "please review".
+
+### The second round is the real one
+
+The prompt above gets a draft that measures well. What it cannot do is look at
+the result, and every skin written this way has needed a human to come back with
+things no number reported: a tooltip that passed its own text contrast and was
+invisible on the page behind it, a trail rendered in two typefaces, an icon
+stranded on its own line, text that fit the checklist and not the column.
+
+So plan for a second pass, and make it concrete. Drive the screens in the manual
+checks list, in light, dark and high contrast, and send back what you saw rather
+than what you think it means: "the tooltip is unreadable in dark", "the caution
+icon disappears next to the heading". A good follow-up prompt is short:
+
+> Here is what the skin looks like in the running installer: `<describe what you
+> saw, or attach screenshots>`. Diagnose each one before changing anything: say
+> whether it is the skin, the role set, or Agama's own markup, since the fix
+> differs. Measure again after every color change, and do not raise the size
+> scale to fix a font.
+
+That last sentence is there because the reflex is strong and wrong.
+
+### If you already know the API needs extending
+
+When the brand needs something you already know isn't covered (not just an
+unexpected gap found mid-task), say so upfront in the same prompt so the AI
+plans for it from the start instead of discovering it partway through:
+
+> This brand also needs `<describe the missing capability, e.g. "square
+> corners on every control, not just buttons">`, which the current
+> `--agm-t--*` role set doesn't cover. Present a plan for the new role before
+> touching any file.
+
+> [!IMPORTANT]
+> No matter whether an AI or a human wrote it, every line (color values,
+> contrast numbers, SVG content, any role-API change) must be reviewed and
+> manually tested in the running app, in both light and dark mode, before
+> asking for the color schema to be included in the project. A report of
+> "done" or "verified" is not a substitute for someone actually looking at
+> it.
