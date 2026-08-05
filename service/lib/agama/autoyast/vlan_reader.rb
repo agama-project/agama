@@ -28,7 +28,7 @@ module Agama
       private_constant :MAX_ID
 
       # Matches the "parent.id" notation used to name VLAN devices (e.g., "eth0.10").
-      DEVICE_NAME_REGEXP = /\A(?<parent>.+)\.(?<id>\d+)\z/
+      DEVICE_NAME_REGEXP = /\A(?<parent>.+)\.(?<id>\d+)\z/.freeze
       private_constant :DEVICE_NAME_REGEXP
 
       # @param section [Y2Network::AutoinstProfile::InterfaceSection] Interface section
