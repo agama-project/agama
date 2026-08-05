@@ -200,7 +200,7 @@
           {
             "key": "nameservers",
             "support": "yes",
-            "agama": "network.connections[].nameservers",
+            "agama": "network.connections[].nameservers[]",
             "notes": "Copied to each connection."
           },
           {
@@ -210,7 +210,7 @@
           {
             "key": "searchlist",
             "support": "yes",
-            "agama": "network.connections[].dnsSearchList",
+            "agama": "network.connections[].dnsSearchList[]",
             "notes": "Copied to each connection."
           }
         ]
@@ -394,7 +394,7 @@
           {
             "key": "bridge_ports",
             "support": "yes",
-            "agama": "network.connections[].bridge.ports"
+            "agama": "network.connections[].bridge.ports[]"
           },
           {
             "key": "bridge_stp",
