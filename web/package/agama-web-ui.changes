@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Aug  5 15:07:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix typography and layout details that a product skin makes
+  visible: the breadcrumb trail, plain headings, the summary icon
+  and the header logo (gh#agama-project/agama#3797).
+- Document how to design, verify and ship a product skin
+  (gh#agama-project/agama#3797).
+
+-------------------------------------------------------------------
 Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve the installer language and keyboard layout dialog,
