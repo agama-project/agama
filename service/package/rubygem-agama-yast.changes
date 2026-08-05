@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  5 15:05:24 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt the exported information of the storage system and proposal
+  (gh#agama-project/agama#3800).
+
+-------------------------------------------------------------------
 Wed Aug  5 13:10:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Improve the AutoYaST network conversion
