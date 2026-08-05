@@ -56,8 +56,14 @@ type UnusedMenuProps = {
 
 export default function UnusedMenu({ collection, index }: UnusedMenuProps): React.ReactNode {
   const navigate = useNavigate();
-  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
-  const formatDevicePath = generateEncodedPath(PATHS.formatDevice, { collection, index });
+  const newPartitionPath = generateEncodedPath(PATHS.addPartition, {
+    collection,
+    index: String(index),
+  });
+  const formatDevicePath = generateEncodedPath(PATHS.formatDevice, {
+    collection,
+    index: String(index),
+  });
   const filesystemLabel =
     collection === "drives"
       ? _("Use the disk without partitions")

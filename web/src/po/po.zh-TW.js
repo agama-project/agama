@@ -234,6 +234,9 @@ export default {
   "Actions": [
     "動作"
   ],
+  "Actions for %s": [
+    "可對 %s 執行的動作"
+  ],
   "Actions for %s at portal %s": [
     "可對 %s (入口 %s) 執行的動作"
   ],
@@ -338,6 +341,9 @@ export default {
   ],
   "Allow growing": [
     "允許增長"
+  ],
+  "Allow shrinking": [
+    "允許縮小"
   ],
   "Already using all available devices": [
     "已在使用所有可用裝置"
@@ -819,9 +825,6 @@ export default {
   "Current": [
     "目前"
   ],
-  "Current %1$s at %2$s": [
-    "目前 %1$s (%2$s 上)"
-  ],
   "Current %s": [
     "目前 %s"
   ],
@@ -1008,6 +1011,9 @@ export default {
   "Do not format %s and keep data": [
     "不格式化 %s 並保留資料"
   ],
+  "Do not modify": [
+    "不修改"
+  ],
   "Do not register": [
     "不註冊"
   ],
@@ -1141,7 +1147,7 @@ export default {
     "按 Enter 或 Tab 鍵可新增項目，按 Backspace 或 Delete 鍵可移除項目，按方向鍵可導覽項目，按 Escape 鍵可結束"
   ],
   "Ethernet": [
-    ""
+    "乙太網路"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1623,6 +1629,9 @@ export default {
   "Loading data...": [
     "正在載入資料..."
   ],
+  "Loading the installation repositories...": [
+    "正在載入安裝儲存庫..."
+  ],
   "Localization": [
     "本土化"
   ],
@@ -1675,7 +1684,7 @@ export default {
     "登入表單"
   ],
   "Loopback": [
-    ""
+    "迴路"
   ],
   "MAC address": [
     "MAC 位址"
@@ -1745,9 +1754,6 @@ export default {
   ],
   "More": [
     "更多"
-  ],
-  "More actions": [
-    "更多動作"
   ],
   "More devices": [
     "更多裝置"
@@ -3021,6 +3027,9 @@ export default {
   "Transient": [
     "暫時"
   ],
+  "Try again": [
+    "再試一次"
+  ],
   "Try to activate again": [
     "重新嘗試啟用"
   ],
@@ -3310,7 +3319,7 @@ export default {
     "準備就緒後，請按一下頁面底部的[安裝]按鈕。"
   ],
   "Wi-Fi": [
-    ""
+    "Wi-Fi"
   ],
   "Wi-Fi connection form": [
     "Wi-Fi 連接表單"
@@ -3344,9 +3353,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "您將連接至未加密的公用網路。資料可能存在安全風險。"
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "已開啟 [大寫鎖定]"

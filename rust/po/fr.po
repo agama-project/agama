@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 20:24+0000\n"
-"PO-Revision-Date: 2026-06-25 09:13+0000\n"
+"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"PO-Revision-Date: 2026-07-27 08:12+0000\n"
 "Last-Translator: Sophie Leroy <sophie@stoquart.com>\n"
 "Language-Team: French <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/fr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.7.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
@@ -850,79 +850,78 @@ msgid "Finishing installation"
 msgstr "Finalisation de l'installation"
 
 #: agama-manager/src/actions.rs:271
-#, fuzzy
 msgid "Finalize installation"
-msgstr "Terminer l'installation"
+msgstr "Finaliser l'installation"
 
 #: agama-manager/src/actions.rs:346
-msgid "Storing security settings"
-msgstr "Stockage des paramètres de sécurité"
-
-#: agama-manager/src/actions.rs:356
-msgid "Configuring remote access"
-msgstr "Configuration de l'accès à distance"
-
-#: agama-manager/src/actions.rs:366
-msgid "Setting up the hostname"
-msgstr "Configuration du nom d'hôte"
-
-#: agama-manager/src/actions.rs:376
-msgid "Setting up the network proxy"
-msgstr "Configuration du proxy réseau"
-
-#: agama-manager/src/actions.rs:387
-msgid "Setting up NTP"
-msgstr "Configuration de NTP"
-
-#: agama-manager/src/actions.rs:398
-msgid "Importing user files and scripts"
-msgstr "Importation des fichiers et scripts utilisateur"
-
-#: agama-manager/src/actions.rs:411
-msgid "Running user pre-installation scripts"
-msgstr "Exécution des scripts de pré-installation utilisateur"
-
-#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "Stockage des paramètres des questions"
 
-#: agama-manager/src/actions.rs:436
+#: agama-manager/src/actions.rs:357
+msgid "Importing user files and scripts"
+msgstr "Importation des fichiers et scripts utilisateur"
+
+#: agama-manager/src/actions.rs:371
+msgid "Running user pre-installation scripts"
+msgstr "Exécution des scripts de pré-installation utilisateur"
+
+#: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr "Stockage des paramètres de sécurité"
+
+#: agama-manager/src/actions.rs:396
+msgid "Configuring remote access"
+msgstr "Configuration de l'accès à distance"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr "Configuration du nom d'hôte"
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr "Configuration du proxy réseau"
+
+#: agama-manager/src/actions.rs:427
+msgid "Setting up NTP"
+msgstr "Configuration de NTP"
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr "Stockage des paramètres de localisation"
 
-#: agama-manager/src/actions.rs:446
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr "Stockage des paramètres des utilisateurs"
 
-#: agama-manager/src/actions.rs:552
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr "Configuration des périphériques iSCSI"
 
-#: agama-manager/src/actions.rs:576
+#: agama-manager/src/actions.rs:581
 msgid "Configuring zFCP devices"
 msgstr "Configuration des périphériques zFCP"
 
-#: agama-manager/src/actions.rs:600
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr "Configuration des périphériques DASD"
 
-#: agama-manager/src/actions.rs:624
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr "Configuration du réseau"
 
-#: agama-manager/src/actions.rs:653
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr "Préparation de la proposition de stockage"
 
-#: agama-manager/src/actions.rs:686
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr "Stockage des paramètres du chargeur d'amorçage"
 
-#: agama-manager/src/actions.rs:719
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr "Préparation de la proposition de logiciel"
 
-#: agama-manager/src/actions.rs:752
+#: agama-manager/src/actions.rs:753
 msgid "Configuring SELinux"
 msgstr "Configuration de SELinux"
 
@@ -1011,49 +1010,49 @@ msgstr ""
 msgid "Skip"
 msgstr "Ignorer"
 
-#: agama-software/src/service.rs:303
+#: agama-software/src/service.rs:304
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 "En raison d'une erreur interne, il n'a pas été possible de créer une "
 "proposition de logiciel."
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr "Début de l'installation des paquets"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
 "Le téléchargement et l'installation des paquets ont échoué. Voulez-vous "
 "réessayer ?"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
 msgstr "Mise à jour de la liste des dépôts"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
 msgstr "Rafraîchissement des métadonnées à partir des dépôts"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "Calcul de la proposition de logiciel"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
 msgstr "Enregistrement du système"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
 msgstr "Impossible de supprimer le dépôt %s"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
 msgstr "Impossible de lire les dépôts"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -1061,21 +1060,21 @@ msgstr ""
 "Impossible de trouver le produit dans les dépôts. Vous devez peut-être "
 "enregistrer le système."
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
 msgstr "Impossible de trouver le produit dans les dépôts."
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
 msgstr "Il existe des conflits dans la sélection de logiciels"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
 msgstr "Impossible de sélectionner %s '%s' pour installation"
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1031
 msgid "Failed to register the system"
 msgstr "Impossible d'enregistrer le système"
 

@@ -40,6 +40,11 @@ import type { Scope } from "~/model/status";
  *   progress completes. Defaults to empty array (no query waiting). Typically
  *   contains the `*_QUERY_KEY` constant exported by each data hook the page uses.
  *
+ *   Be careful about what you list here. Some data is only fetched again when
+ *   it actually changes. If an operation ends up changing nothing, that fetch
+ *   never happens, and the caller keeps loading forever. When in doubt, list
+ *   nothing: loading then ends as soon as the operation does.
+ *
  * @returns Object containing:
  *   - `loading`: Boolean indicating whether an operation is in progress, tasks
  *     are pending, or waiting for queries to refetch

@@ -23,7 +23,7 @@
 import React from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getProposal } from "~/api";
-import { useInstallerClient } from "~/context/installer";
+import { useInstallerClient } from "~/hooks/use-installer-client";
 import type { Proposal } from "~/model/proposal";
 import { CONFIG_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/config";
 import { STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";

@@ -51,8 +51,14 @@ const typeDescription = (partition: ConfigModel.Partition | ConfigModel.LogicalV
   const fsType = partition.filesystem ? filesystemType(partition.filesystem) : undefined;
   if (partition.name) {
     if (partition.filesystem?.reuse) {
+      // FIXME: the following "if (fsType)" line is commented out as a hotfix for bsc#1271008.
+      // Turns out fsType is not the current filesystem type, but the one that would be used if
+      // reusing the current one would not be possible. Commenting out the line is a cheap
+      // mitigation that avoids displaying wrong information while we design a better mechanism.
+
       // TRANSLATORS: %1$s is a filesystem type (eg. Btrfs), %2$s is a device name (eg. /dev/sda3).
-      if (fsType) return sprintf(_("Current %1$s at %2$s"), fsType, partition.name);
+      //if (fsType) return sprintf(_("Current %1$s at %2$s"), fsType, partition.name);
+
       // TRANSLATORS: %s is a device name (eg. /dev/sda3).
       return sprintf(_("Current %s"), partition.name);
     }

@@ -41,6 +41,10 @@ examples and refined patterns.
   - [Why shake Lives in useUpdateConfig, Not the Caller](#why-shake-lives-in-useupdateconfig-not-the-caller)
   - [Putting It Together](#putting-it-together)
   - [Trade-offs and When Not to Use This Pattern](#trade-offs-and-when-not-to-use-this-pattern)
+- [Derived Suspense Data Without Flicker](#derived-suspense-data-without-flicker)
+  - [The Problem](#the-problem-1)
+  - [The Solution: useDeferredValue + a Local Suspense Boundary](#the-solution-usedeferredvalue--a-local-suspense-boundary)
+  - [When to Use This Pattern](#when-to-use-this-pattern)
 - [Code Organization](#code-organization)
   - [Directory Structure](#directory-structure)
   - [File Naming](#file-naming)
@@ -1336,6 +1340,107 @@ initialization, and background updates do not interrupt editing.
 - TanStack Form issue [#1681](https://github.com/TanStack/form/issues/1681): `form.reset` during `onSubmit` ignores new values
 - TanStack Form issue [#1798](https://github.com/TanStack/form/issues/1798): reset + `useStore` subscription bug
 - TanStack Query discussion [#3754](https://github.com/TanStack/query/discussions/3754): `fetchQuery` in event handlers
+
+---
+
+## Derived Suspense Data Without Flicker
+
+`withFrozenQuery` protects a form from refetches of its **initial** data. A
+different problem appears when a field derives read-only data from a
+`useSuspenseQuery` that is **re-keyed by what the user types**: size hints
+solved by the backend, availability checks, previews, etc.
+
+The running example is the size hint in `shared/SizeFields.tsx`, which solves
+min/max sizes for the chosen mount point and filesystem.
+
+### The Problem
+
+The derived query key depends on a field value:
+
+```tsx
+// key changes every time the mount point or filesystem changes
+useSuspenseQuery({ queryKey: ["solvedStorageModel", JSON.stringify(config)], ... });
+```
+
+When the value changes, the key changes, and there is no cached data for the
+new key. `useSuspenseQuery` suspends. If the nearest `<Suspense>` boundary is
+the page shell (`Page.Content`), React swaps the **entire form** for the
+loading fallback and back on every change: the form visibly blinks.
+
+> Note: `placeholderData: keepPreviousData` (TanStack Query v5's replacement
+> for the removed `keepPreviousData: true` option, see the
+> [v5 migration guide](https://tanstack.com/query/latest/docs/framework/react/guides/migrating-to-v5#removed-keeppreviousdata-in-favor-of-placeholderdata-identity-function))
+> does not solve this: `useSuspenseQuery` ignores the `placeholderData` option
+> (verified against v5.101.2, which hard-codes it to `undefined`) and suspends on every key change anyway. Honoring
+> it would mean switching to plain `useQuery` with manual loading handling; the
+> pattern below keeps suspense instead.
+
+### The Solution: useDeferredValue + a Local Suspense Boundary
+
+Two pieces, each solving one half of the problem:
+
+1. **`useDeferredValue`** on the inputs that drive the query. The urgent render
+   uses the previous (cached) value, so it never suspends. React then re-renders
+   in the background with the new value; if that suspends, React keeps the
+   already-committed content on screen instead of the fallback. This makes every
+   change **after the first** show stale data until the fresh data is ready: no
+   fallback, no blink.
+
+2. **A local `<Suspense>` boundary** wrapping only the suspending content. The
+   first time the content mounts there is nothing to defer to, so it does
+   suspend once. The local boundary contains that first suspension to the small
+   derived area instead of letting it reach the page shell.
+
+Isolate the suspending work into its own component so the boundary sits directly
+above it (a boundary cannot catch a component suspending in its own body), and
+so that sibling fields that do not need the derived data never suspend:
+
+```tsx
+// Only this component consults the solver, and it defers its inputs.
+function AutomaticSizeNote({ committedMountPoint, filesystem, useSolvedSizes }) {
+  const deferredMountPoint = useDeferredValue(committedMountPoint);
+  const deferredFilesystem = useDeferredValue(filesystem);
+  const volume = useVolumeTemplate(deferredMountPoint);
+  const solvedSizes = useSolvedSizes(deferredMountPoint, deferredFilesystem);
+  // ...render the note from volume + solvedSizes
+}
+
+// The boundary lives right above the suspending component. Fallback is null:
+// only the first solve reaches it, and the derived content has no fixed shape
+// to placeholder without misrepresenting it.
+case SIZE_MODE.AUTO:
+  return (
+    <Suspense fallback={null}>
+      <AutomaticSizeNote
+        committedMountPoint={committedMountPoint}
+        filesystem={filesystem}
+        useSolvedSizes={useSolvedSizes}
+      />
+    </Suspense>
+  );
+```
+
+Choose the fallback deliberately. Because `useDeferredValue` keeps previous
+content on screen for every change after the first, the fallback is only ever
+seen once (initial mount). Prefer `null` when the derived content has no fixed
+shape; use a skeleton only when the final content has a single, stable layout.
+
+### When to Use This Pattern
+
+- Read-only data derived from a `useSuspenseQuery` whose key changes as the user
+  edits a field, **and** the nearest Suspense boundary wraps enough UI that
+  re-suspending is visually disruptive.
+
+Do not reach for it when:
+
+- The derived query key is stable (it will not re-suspend after the first load).
+- The data is editable form state, not read-only derived data (use TanStack Form
+  listeners and field synchronization instead).
+
+**References:**
+
+- React: [`useDeferredValue` — showing stale content while fresh content loads](https://react.dev/reference/react/useDeferredValue#showing-stale-content-while-fresh-content-is-loading)
+- React: [`<Suspense>`](https://react.dev/reference/react/Suspense)
 
 ---
 

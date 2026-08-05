@@ -99,5 +99,5 @@ const Text = (raid: ConfigModel.MdRaid): string => {
 };
 
 export default function MdRaidHeader({ raid, device }: MdRaidHeaderProps) {
-  return sprintf(Text(raid), deviceLabel(device, true));
+  return sprintf(Text(raid), deviceLabel(device, { truncate: true }));
 }

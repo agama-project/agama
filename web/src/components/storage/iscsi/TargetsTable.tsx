@@ -584,7 +584,7 @@ export default function TargetsTable() {
                 generatePath(STORAGE.iscsi.login, {
                   name: target.name,
                   address: target.address,
-                  port: target.port,
+                  port: String(target.port),
                 }),
               ),
             onDisconnect: () => removeTarget(target.name, target.address, target.port),

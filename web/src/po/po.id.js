@@ -819,9 +819,6 @@ export default {
   "Current": [
     "Saat ini"
   ],
-  "Current %1$s at %2$s": [
-    "Saat ini %1$s di %2$s"
-  ],
   "Current %s": [
     "Saat ini %s"
   ],
@@ -1623,6 +1620,9 @@ export default {
   "Loading data...": [
     "Memuat data..."
   ],
+  "Loading the installation repositories...": [
+    "Memuat repositori instalasi..."
+  ],
   "Localization": [
     "Pelokalan"
   ],
@@ -1745,9 +1745,6 @@ export default {
   ],
   "More": [
     "Lainnya"
-  ],
-  "More actions": [
-    "Tindakan lainnya"
   ],
   "More devices": [
     "Lebih banyak perangkat"
@@ -3021,6 +3018,9 @@ export default {
   "Transient": [
     "Sementara"
   ],
+  "Try again": [
+    "Coba lagi"
+  ],
   "Try to activate again": [
     "Coba aktifkan lagi"
   ],
@@ -3344,9 +3344,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Anda akan terhubung ke jaringan publik tanpa enkripsi. Data Anda mungkin tidak aman."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] aktif"

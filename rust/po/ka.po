@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-30 20:24+0000\n"
-"PO-Revision-Date: 2026-07-09 05:12+0000\n"
+"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"PO-Revision-Date: 2026-08-01 10:12+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/ka/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7\n"
+"X-Generator: Weblate 2026.7.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
@@ -373,7 +373,7 @@ msgstr ""
 #. TRANSLATORS: CLI help for: agama logs store
 #: agama-cli/src/logs.rs:50
 msgid "Collect and store the logs in a tar archive"
-msgstr ""
+msgstr "ჟურნალის მოგროვება და დამახსოვრება tar არქივში"
 
 #. TRANSLATORS: CLI help for: agama logs store --destination <DESTINATION>
 #: agama-cli/src/logs.rs:58
@@ -723,74 +723,74 @@ msgid "Finalize installation"
 msgstr "დაყენების დასრულება"
 
 #: agama-manager/src/actions.rs:346
-msgid "Storing security settings"
-msgstr "უსაფრთხოების პარამეტრების დამახსოვრება"
-
-#: agama-manager/src/actions.rs:356
-msgid "Configuring remote access"
-msgstr "დაშორებული წვდომის მორგება"
-
-#: agama-manager/src/actions.rs:366
-msgid "Setting up the hostname"
-msgstr "ჰოსტის სახელის დაყენება"
-
-#: agama-manager/src/actions.rs:376
-msgid "Setting up the network proxy"
-msgstr "ქსელური პროქსის მორგება"
-
-#: agama-manager/src/actions.rs:387
-msgid "Setting up NTP"
-msgstr "NTP-ის მორგება"
-
-#: agama-manager/src/actions.rs:398
-msgid "Importing user files and scripts"
-msgstr "მომხმარებლის ფაილებისა და სკრიპტების შემოტანა"
-
-#: agama-manager/src/actions.rs:411
-msgid "Running user pre-installation scripts"
-msgstr "მომხმარებლის დაყენებისწინა სკრიპტების გაშვება"
-
-#: agama-manager/src/actions.rs:426
 msgid "Storing questions settings"
 msgstr "კითხვის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:436
+#: agama-manager/src/actions.rs:357
+msgid "Importing user files and scripts"
+msgstr "მომხმარებლის ფაილებისა და სკრიპტების შემოტანა"
+
+#: agama-manager/src/actions.rs:371
+msgid "Running user pre-installation scripts"
+msgstr "მომხმარებლის დაყენებისწინა სკრიპტების გაშვება"
+
+#: agama-manager/src/actions.rs:386
+msgid "Storing security settings"
+msgstr "უსაფრთხოების პარამეტრების დამახსოვრება"
+
+#: agama-manager/src/actions.rs:396
+msgid "Configuring remote access"
+msgstr "დაშორებული წვდომის მორგება"
+
+#: agama-manager/src/actions.rs:406
+msgid "Setting up the hostname"
+msgstr "ჰოსტის სახელის დაყენება"
+
+#: agama-manager/src/actions.rs:416
+msgid "Setting up the network proxy"
+msgstr "ქსელური პროქსის მორგება"
+
+#: agama-manager/src/actions.rs:427
+msgid "Setting up NTP"
+msgstr "NTP-ის მორგება"
+
+#: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
 msgstr "ლოკალიზაიის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:446
+#: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
 msgstr "მომხმარებლის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:552
+#: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
 msgstr "iSCSI მოწყობილობების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:576
+#: agama-manager/src/actions.rs:581
 msgid "Configuring zFCP devices"
 msgstr "iSCSI მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:600
+#: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
 msgstr "DASD მოწყობილობების მორგება"
 
-#: agama-manager/src/actions.rs:624
+#: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
 msgstr "ქსელის მორგება"
 
-#: agama-manager/src/actions.rs:653
+#: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
 msgstr "საცავის შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:686
+#: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
 msgstr "ჩამტვირთავის პარამეტრების დამახსოვრება"
 
-#: agama-manager/src/actions.rs:719
+#: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
 msgstr "პროგრამების შეთავაზების მომზადება"
 
-#: agama-manager/src/actions.rs:752
+#: agama-manager/src/actions.rs:753
 msgid "Configuring SELinux"
 msgstr "SELinux-ის მორგება"
 
@@ -877,45 +877,45 @@ msgstr "გასაღები {0} ({1}) ანაბეჭდით {2} უ�
 msgid "Skip"
 msgstr "გამოტოვება"
 
-#: agama-software/src/service.rs:303
+#: agama-software/src/service.rs:304
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr "შიდა შეცდომის გამო პროგრამების შეთავაზების შექმნა შეუძლებელია."
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr "პაკეტების დაყენების დაწყება"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "პაკეტების გადმოწერა და დაყენება ჩავარდა. გნებავთ, თავიდან ვცადო?"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
 msgstr "რეპოზიტორიების სიის განახლება"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
 msgstr "რეპოზიტორიების მეტამონაცემთა განახლება"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "პროგრამების შეთავაზების გამოთვლა"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
 msgstr "სისტემის რეგიტრაცია"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
 msgstr "რეპოზიტორიის %s წაშლა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
 msgstr "რეპოზიტორიების წაკითხვა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -923,21 +923,21 @@ msgstr ""
 "რეპოზიტორიებში პროდუქტის პოვნა შეუძლებელია. შეიძლება, სისტემის რეგისტრაციაა "
 "საჭირო."
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
 msgstr "რეპოზიტორიებში პროდუქტის მოძებნა ჩავარდა."
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
 msgstr "პროგრამების არჩევანში კონფლიქტებია"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
 msgstr "დაყენებისთვის %s-ის '%s' არჩევა შეუძლებელია"
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1031
 msgid "Failed to register the system"
 msgstr "სისტემის რეგისტრაცია ჩავარდა"
 

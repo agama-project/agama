@@ -34,6 +34,7 @@ use serde::{Deserialize, Serialize};
     Hash,
     strum::EnumString,
     strum::Display,
+    strum::VariantArray,
     Deserialize,
     Serialize,
     JsonSchema,

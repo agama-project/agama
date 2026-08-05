@@ -1,4 +1,77 @@
 -------------------------------------------------------------------
+Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Improve the installer language and keyboard layout dialog,
+  rebuilt with the new form stack (gh#agama-project/agama#3770).
+
+-------------------------------------------------------------------
+Fri Jul 31 08:19:29 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- dependency updated on Jul 7 already, listing its references
+  for tracking:
+  - shell-quote 1.9.0, CVE-2026-13311 (bsc#1269359)
+
+-------------------------------------------------------------------
+Mon Jul 27 12:41:09 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Show a proper empty state, pointing to the network settings,
+  when the product to install is not found, and offer to read the
+  software information again once the connection is in place
+  (gh#agama-project/agama#3768).
+- Offer the same actions when the repositories cannot be read
+  (gh#agama-project/agama#3768).
+
+-------------------------------------------------------------------
+Mon Jul 27 11:39:41 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to use the "Probe" action of the API (gh#agama-project/agama#3341).
+
+-------------------------------------------------------------------
+Tue Jul 21 22:00:01 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Avoid a flash from Agama colors to a product's own palette
+  (gh#agama-project/agama#3749).
+
+-------------------------------------------------------------------
+Tue Jul 21 19:07:07 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Truncate long device names in the storage tables so they no
+  longer overflow the "Device" column
+  (gh#agama-project/agama#3745).
+
+-------------------------------------------------------------------
+Tue Jul 21 17:37:15 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add themeable roles for corner radius and product logo size and
+  alignment, plus a script for checking WCAG contrast when picking
+  role values (gh#agama-project/agama#3748).
+
+-------------------------------------------------------------------
+Mon Jul 20 11:12:34 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Version 23
+
+-------------------------------------------------------------------
+Fri Jul 17 08:42:50 UTC 2026 - Martin Vidner <mvidner@suse.com>
+
+- update runtime dependencies:
+  - react-router to 7.15.1, CVE-2026-53663 (bsc#1268993)
+- consequently, update call sites for stricter types of
+  generatePath, generateEncodedPath
+
+-------------------------------------------------------------------
+Thu Jul 16 15:10:34 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Do not display the type when reusing filesystems (bsc#1271008).
+
+-------------------------------------------------------------------
+Thu Jul 16  07:06:02 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Prevent the partition and logical volume forms from flickering
+  when changing the mount point or file system
+  (gh#agama-project/agama#3728, bsc#1271524).
+
+-------------------------------------------------------------------
 Tue Jul 14 16:59:31 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Require translated text in user-facing component props, ensuring

@@ -53,9 +53,12 @@ export default function ProductLogo({ product, width = "80px" }) {
       aria-hidden
       src={useDark ? darkSrc : lightSrc}
       alt={logoAltText}
-      width={width}
       onError={() => useDark && setUseDark(false)}
-      style={{ verticalAlign: "middle", width }}
+      style={{
+        verticalAlign: "var(--agm-t--logo--align, middle)",
+        maxInlineSize: "var(--agm-t--logo--max-size, none)",
+        width,
+      }}
     />
   );
 }

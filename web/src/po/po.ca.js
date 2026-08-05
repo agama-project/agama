@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Accions"
   ],
+  "Actions for %s": [
+    "Accions per a %s"
+  ],
   "Actions for %s at portal %s": [
     "Accions per a %s al portal %s"
   ],
@@ -842,9 +845,6 @@ export default {
   ],
   "Current": [
     "Actual"
-  ],
-  "Current %1$s at %2$s": [
-    "%1$s actual a %2$s"
   ],
   "Current %s": [
     "Actual: %s"
@@ -1654,6 +1654,9 @@ export default {
   "Loading data...": [
     "Carregant dades..."
   ],
+  "Loading the installation repositories...": [
+    "Carregant els repositoris d'instal·lació..."
+  ],
   "Localization": [
     "Localització"
   ],
@@ -1776,9 +1779,6 @@ export default {
   ],
   "More": [
     "Més"
-  ],
-  "More actions": [
-    "Més accions"
   ],
   "More devices": [
     "Més dispositius"
@@ -3067,6 +3067,9 @@ export default {
   "Transient": [
     "Transitori"
   ],
+  "Try again": [
+    "Torna-ho a provar"
+  ],
   "Try to activate again": [
     "Torna a provar l'activació"
   ],
@@ -3391,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] activat"

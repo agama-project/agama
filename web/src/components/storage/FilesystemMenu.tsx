@@ -92,7 +92,7 @@ export default function FilesystemMenu({
 }: FilesystemMenuProps): React.ReactNode {
   const navigate = useNavigate();
   const deviceModel = usePartitionable(collection, index);
-  const editFilesystemPath = generatePath(PATHS.formatDevice, { collection, index });
+  const editFilesystemPath = generatePath(PATHS.formatDevice, { collection, index: String(index) });
 
   return (
     <MenuButton

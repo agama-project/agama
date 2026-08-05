@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Åtgärder"
   ],
+  "Actions for %s": [
+    "Åtgärder för %s"
+  ],
   "Actions for %s at portal %s": [
     "Åtgärder för %s vid portal %s"
   ],
@@ -842,9 +845,6 @@ export default {
   ],
   "Current": [
     "Nuvarande"
-  ],
-  "Current %1$s at %2$s": [
-    "Nuvarande %1$s på %2$s"
   ],
   "Current %s": [
     "Nuvarande %s"
@@ -1654,6 +1654,9 @@ export default {
   "Loading data...": [
     "Laddar data..."
   ],
+  "Loading the installation repositories...": [
+    "Laddar installationsförråd..."
+  ],
   "Localization": [
     "Lokalisering"
   ],
@@ -1776,9 +1779,6 @@ export default {
   ],
   "More": [
     "Mer"
-  ],
-  "More actions": [
-    "Mer åtgärder"
   ],
   "More devices": [
     "Mer enheter"
@@ -3067,6 +3067,9 @@ export default {
   "Transient": [
     "Tillfälligt"
   ],
+  "Try again": [
+    "Försök igen"
+  ],
   "Try to activate again": [
     "Försök att aktivera igen"
   ],
@@ -3391,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Du kommer att ansluta till ett offentligt nätverk utan kryptering. Dina data kanske inte är säkra."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] är på"

@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Aktionen"
   ],
+  "Actions for %s": [
+    "Aktionen für %s"
+  ],
   "Actions for %s at portal %s": [
     "Aktionen für %s im Portal %s"
   ],
@@ -354,6 +357,9 @@ export default {
   ],
   "Allow growing": [
     "Wachstum erlauben"
+  ],
+  "Allow shrinking": [
+    "Verkleinern erlauben"
   ],
   "Already using all available devices": [
     "Alle verfügbaren Geräte werden bereits verwendet"
@@ -839,9 +845,6 @@ export default {
   ],
   "Current": [
     "Aktuell"
-  ],
-  "Current %1$s at %2$s": [
-    "Aktuell %1$s bei %2$s"
   ],
   "Current %s": [
     "Aktuell %s"
@@ -1651,6 +1654,9 @@ export default {
   "Loading data...": [
     "Daten werden gelesen ..."
   ],
+  "Loading the installation repositories...": [
+    "Installations-Repositorien werden geladen ..."
+  ],
   "Localization": [
     "Lokalisierung"
   ],
@@ -1703,7 +1709,7 @@ export default {
     "Anmeldeformular"
   ],
   "Loopback": [
-    ""
+    "Schleifenschaltung"
   ],
   "MAC address": [
     "MAC-Adresse"
@@ -1773,9 +1779,6 @@ export default {
   ],
   "More": [
     "Mehr"
-  ],
-  "More actions": [
-    "Weitere Aktionen"
   ],
   "More devices": [
     "Weitere Geräte"
@@ -3064,6 +3067,9 @@ export default {
   "Transient": [
     "Transient"
   ],
+  "Try again": [
+    "Erneut versuchen"
+  ],
   "Try to activate again": [
     "Aktivieren erneut versuchen"
   ],
@@ -3388,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Sie stellen eine Verbindung zu einem öffentlichen Netzwerk ohne Verschlüsselung her. Ihre Daten sind möglicherweise nicht sicher."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ist eingeschaltet"

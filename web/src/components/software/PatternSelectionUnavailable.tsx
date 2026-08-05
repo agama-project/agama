@@ -21,18 +21,12 @@
  */
 
 import React from "react";
-import {
-  Content,
-  EmptyState,
-  EmptyStateActions,
-  EmptyStateBody,
-  EmptyStateFooter,
-} from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
 import Link from "~/components/core/Link";
+import UnavailableState from "~/components/core/UnavailableState";
+import MissingProductState from "~/components/product/MissingProductState";
 import { useIssues } from "~/hooks/model/issue";
 import { useAvailablePatterns } from "~/hooks/model/system/software";
-import { REGISTRATION, NETWORK } from "~/routes/paths";
+import { REGISTRATION } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 /**
@@ -42,54 +36,6 @@ import { _ } from "~/i18n";
  * registration is required but missing, or because product detection failed.
  */
 export const PRODUCT_AVAILABILITY_ISSUES = ["missing_registration", "missing_product"];
-
-const EmptyStateIcon = () => <Icon name="apps_outage" />;
-
-type UnavailableStateProps = {
-  /** Optional title for the empty state. */
-  title?: React.ReactNode;
-  /** Main description text explaining why software selection is unavailable. */
-  description: React.ReactNode;
-  /** Optional additional hint text displayed below the description. */
-  hint?: string;
-  /** Optional action link with destination path and label. */
-  actionLink?: { to: string; label: string };
-};
-
-/**
- * Base empty state component for unavailable software selection scenarios.
- *
- * Renders a consistent empty state with an icon, title, description, optional
- * hint, and optional action link. Used to display different messages based on
- * why software selection is unavailable.
- */
-const UnavailableState = ({
-  // TRANSLATORS: empty state title when software cannot be selected
-  title = _("Software selection is not available"),
-  description,
-  hint,
-  actionLink,
-}: UnavailableStateProps) => {
-  return (
-    <EmptyState headingLevel="h2" titleText={title} variant="lg" icon={EmptyStateIcon}>
-      <EmptyStateBody>
-        <Content component="p" isEditorial>
-          {description}
-        </Content>
-        {hint && <Content component="small">{hint}</Content>}
-      </EmptyStateBody>
-      {actionLink && (
-        <EmptyStateFooter>
-          <EmptyStateActions>
-            <Link to={actionLink.to} variant="link" isInline>
-              {actionLink.label}
-            </Link>
-          </EmptyStateActions>
-        </EmptyStateFooter>
-      )}
-    </EmptyState>
-  );
-};
 
 /**
  * Empty state shown when software selection is unavailable.
@@ -109,41 +55,32 @@ export default function PatternSelectionUnavailable() {
   const missingRegistration = issues.find((i) => i.class === "missing_registration");
   const missingProduct = issues.find((i) => i.class === "missing_product");
 
+  // TRANSLATORS: empty state title when software cannot be selected
+  const title = _("Software selection is not available");
+
   if (missingRegistration) {
     return (
       <UnavailableState
+        title={title}
         description={missingRegistration.description}
-        actionLink={{
-          to: REGISTRATION.root,
-          label:
-            // TRANSLATORS: link to go to registration settings
-            _("Go to registration"),
-        }}
+        actions={
+          <Link to={REGISTRATION.root} variant="link" isInline>
+            {/* TRANSLATORS: link to go to registration settings */}
+            {_("Go to registration")}
+          </Link>
+        }
       />
     );
   }
 
   if (missingProduct) {
-    return (
-      <UnavailableState
-        description={missingProduct.description}
-        hint={
-          // TRANSLATORS: additional hint when base product is missing
-          _("This might be due to network connectivity.")
-        }
-        actionLink={{
-          to: NETWORK.root,
-          label:
-            // TRANSLATORS: link to go to network settings
-            _("Go to network settings"),
-        }}
-      />
-    );
+    return <MissingProductState title={title} description={missingProduct.description} />;
   }
 
   if (patterns.length === 0) {
     return (
       <UnavailableState
+        title={title}
         description={
           // TRANSLATORS: shown when the product provides zero patterns
           _(
@@ -156,6 +93,7 @@ export default function PatternSelectionUnavailable() {
 
   return (
     <UnavailableState
+      title={title}
       description={
         // TRANSLATORS: shown when software selection cannot be determined
         _("The software selection could not be loaded.")

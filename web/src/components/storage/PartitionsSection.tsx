@@ -67,7 +67,7 @@ const PartitionMenuItem = ({ device, mountPath, collection, index }: PartitionMe
   const partition = configModel.partitionable.findPartition(device, mountPath);
   const editPath = generateEncodedPath(PATHS.editPartition, {
     collection,
-    index,
+    index: String(index),
     partitionId: mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -139,7 +139,7 @@ type PartitionRowProps = {
 const PartitionRow = ({ partition, collection, index }: PartitionRowProps) => {
   const editPath = generateEncodedPath(PATHS.editPartition, {
     collection,
-    index,
+    index: String(index),
     partitionId: partition.mountPath,
   });
   const deletePartition = useDeletePartition();
@@ -227,7 +227,10 @@ export default function PartitionsSection({ collection, index }: PartitionsSecti
   const device = usePartitionable(collection, index);
   const uiIndex = `${collection[0]}${index}`;
   const isExpanded = isExpandedInState(uiState, uiIndex);
-  const newPartitionPath = generateEncodedPath(PATHS.addPartition, { collection, index });
+  const newPartitionPath = generateEncodedPath(PATHS.addPartition, {
+    collection,
+    index: String(index),
+  });
   const hasPartitions = device.partitions.some((p) => p.mountPath);
 
   const onToggle = () => {

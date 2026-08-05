@@ -61,6 +61,10 @@ translations:
     ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
       Enterprise Server for SAP applications では、 SAP
       プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
+    pl: Wiodący system operacyjny dla bezpiecznej i niezawodnej platformy SAP. „SUSE
+      Linux Enterprise Server for SAP Applications”, zatwierdzony do wdrożeń
+      SAP, zapewnia długoterminową stabilność projektu SAP, ciągłość działania
+      przedsiębiorstwa oraz minimalizuje ryzyko operacyjne i koszty.
     pt_BR: O principal sistema operacional para uma plataforma SAP segura e
       confiável. Endossado para implantações SAP, o SUSE Linux Enterprise Server
       for SAP Applications prepara o projeto SAP para o futuro, oferece
@@ -102,6 +106,7 @@ translations:
         ka: სტანდარტული
         kab: Tizeɣt
         nb_NO: Standard
+        pl: Standardowy
         pt_BR: Padrão
         ru: Стандартный
         sk: Štandardný
@@ -124,6 +129,7 @@ translations:
         ja: 標準システム
         ka: სტანდარტული სისტემა
         kab: Anagraw n tizeɣt
+        pl: Standardowy system
         pt_BR: Sistema padrão
         ru: Стандартная система
         sk: Štandardný systém
@@ -147,6 +153,7 @@ translations:
         ja: 不変型
         ka: უცვლადი
         nb_NO: Immutable
+        pl: Niezmienny
         pt_BR: Imutável
         ru: Неизменяемый
         sk: Nemenný
@@ -169,6 +176,7 @@ translations:
         ja: 不可分な更新機能を持つ不変型システム
         ka: უცვლელი სისტემა ატომური განახლებებით
         nb_NO: Et uforanderlig system med atomiske oppdateringer
+        pl: Niezmienny system z atomowymi aktualizacjami
         pt_BR: Sistema imutável com atualizações atômicas
         ru: Неизменяемая система с атомарными обновлениями
         sk: Nemenný systém s atomickými aktualizáciami
@@ -395,3 +403,17 @@ modes:
             required: false
             filesystems:
               - btrfs
+        - filesystem: xfs
+          size:
+            auto: false
+            min: 512 MiB
+          outline:
+            required: false
+            filesystems:
+              - btrfs
+              - ext2
+              - ext3
+              - ext4
+              - xfs
+              - vfat
+              - swap

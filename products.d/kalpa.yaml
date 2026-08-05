@@ -61,6 +61,10 @@ translations:
     nl: Een rollend, onveranderlijk desktop product. Maakt gebruik van de Plasma
       Desktop en door middel van Flatpak voor applicatie levering. Een alleen
       lezen basis en automatische en atomische updates van uw systeem
+    pl: Niezmienna dystrybucja ciągła dla komputerów osobistych, wykorzystująca
+      środowisko Plasma, technologię Flatpak do dostarczania aplikacji, z
+      bazowym systemem tylko do odczytu oraz automatycznymi i atomowymi
+      aktualizacjami systemu
     pt_BR: Um produto de desktop imutável com lançamento contínuo, usando o Plasma
       Desktop, aproveitando o Flatpak para Entrega de Aplicativos, uma base
       Somente Leitura e atualizações automáticas e atômicas do seu sistema

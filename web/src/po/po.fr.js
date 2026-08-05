@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Actions"
   ],
+  "Actions for %s": [
+    "Actions pour %s"
+  ],
   "Actions for %s at portal %s": [
     "Actions pour %s dans le portail %s"
   ],
@@ -354,6 +357,9 @@ export default {
   ],
   "Allow growing": [
     "Permettre l'agrandissement"
+  ],
+  "Allow shrinking": [
+    "Permettre le rétrécissement"
   ],
   "Already using all available devices": [
     "Tous les périphériques disponibles sont déjà utilisés"
@@ -840,9 +846,6 @@ export default {
   "Current": [
     "Actuel"
   ],
-  "Current %1$s at %2$s": [
-    "%1$s actuel sur %2$s"
-  ],
   "Current %s": [
     "%s actuel"
   ],
@@ -1163,6 +1166,9 @@ export default {
   ],
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Entrée ou Tab pour ajouter, Retour arrière ou Supprimer pour retirer, touches fléchées pour parcourir les entrées, Échap pour quitter"
+  ],
+  "Ethernet": [
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1648,6 +1654,9 @@ export default {
   "Loading data...": [
     "Chargement des données..."
   ],
+  "Loading the installation repositories...": [
+    "Chargement des dépôts d'installation..."
+  ],
   "Localization": [
     "Localisation"
   ],
@@ -1700,7 +1709,7 @@ export default {
     "Formulaire de connexion"
   ],
   "Loopback": [
-    ""
+    "Boucle"
   ],
   "MAC address": [
     "Adresse MAC"
@@ -1770,9 +1779,6 @@ export default {
   ],
   "More": [
     "Davantage"
-  ],
-  "More actions": [
-    "Autres actions"
   ],
   "More devices": [
     "Autres périphériques"
@@ -3061,6 +3067,9 @@ export default {
   "Transient": [
     "Transitoire"
   ],
+  "Try again": [
+    "Réessayer"
+  ],
   "Try to activate again": [
     "Réessayer l'activation"
   ],
@@ -3385,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Vous allez vous connecter à un réseau public non chiffré. Cela peut présenter un risque pour vos données."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "La fonction [VERR MAJ] est activée"

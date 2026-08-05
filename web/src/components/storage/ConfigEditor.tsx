@@ -71,7 +71,7 @@ export default function ConfigEditor() {
   return (
     <>
       {/* FIXME add arial label */}
-      <DataList aria-label="" isCompact className="storage-structure">
+      <DataList aria-label="" isCompact>
         {volumeGroups.map((_, i) => {
           return <VolumeGroupEditor key={`vg-${i}`} index={i} />;
         })}

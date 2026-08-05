@@ -39,7 +39,6 @@ import storageRoutes from "~/routes/storage";
 import softwareRoutes from "~/routes/software";
 import usersRoutes from "~/routes/users";
 import { SYSTEM, USER, ROOT as PATHS } from "./routes/paths";
-import { N_ } from "~/i18n";
 
 // Redirects for legacy routes that have been consolidated or renamed. These
 // help prevent 404s for bookmarked URLs or external links after route
@@ -77,7 +76,6 @@ const rootRoutes = () => [
   {
     path: SYSTEM.root,
     element: <SystemPage />,
-    handle: { name: N_("System"), icon: "server" },
   },
   registrationRoutes(),
   l10nRoutes(),
@@ -140,4 +138,4 @@ const router = () =>
     },
   ]);
 
-export { router, rootRoutes, PATHS };
+export { router, PATHS };

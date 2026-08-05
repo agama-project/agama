@@ -55,7 +55,9 @@ const PolicyItem = ({ policyId, collection, index }: PolicyItemProps) => {
 
   const changePolicy = () => {
     if (policyId === "custom") {
-      return navigate(generateEncodedPath(PATHS.editSpacePolicy, { collection, index }));
+      return navigate(
+        generateEncodedPath(PATHS.editSpacePolicy, { collection, index: String(index) }),
+      );
     } else {
       setSpacePolicy(collection, index, { type: policyId });
     }

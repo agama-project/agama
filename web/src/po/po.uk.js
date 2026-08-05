@@ -264,6 +264,9 @@ export default {
   "Actions": [
     "Дії"
   ],
+  "Actions for %s": [
+    "Дії для %s"
+  ],
   "Actions for %s at portal %s": [
     "Дії для %s на порталі %s"
   ],
@@ -863,9 +866,6 @@ export default {
   ],
   "Current": [
     "Поточне"
-  ],
-  "Current %1$s at %2$s": [
-    "Поточна %1$s на %2$s"
   ],
   "Current %s": [
     "Поточна %s"
@@ -1679,6 +1679,9 @@ export default {
   "Loading data...": [
     "Завантаження даних..."
   ],
+  "Loading the installation repositories...": [
+    "Завантаження інсталяційних репозиторіїв..."
+  ],
   "Localization": [
     "Локалізація"
   ],
@@ -1801,9 +1804,6 @@ export default {
   ],
   "More": [
     "Ще"
-  ],
-  "More actions": [
-    "Більше дій"
   ],
   "More devices": [
     "Інші пристрої"
@@ -3107,6 +3107,9 @@ export default {
   "Transient": [
     "Перехідний"
   ],
+  "Try again": [
+    "Спробуйте ще раз"
+  ],
   "Try to activate again": [
     "Спробуйте активувати ще раз"
   ],
@@ -3432,9 +3435,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"

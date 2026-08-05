@@ -31,6 +31,7 @@ require "agama/http/clients"
 module Agama
   # :nodoc:
   module Commands
+    class ProfileNotFound < StandardError; end
     class CouldNotFetchProfile < StandardError; end
     class CouldNotWriteAgamaConfig < StandardError; end
 
@@ -62,9 +63,16 @@ module Agama
       attr_reader :url, :directory, :logger
 
       # Fetch the AutoYaST profile from the given URL.
+      #
+      # @return [ProfileHash] an evaluated AutoYaST profile
+      # @raise CouldNotFetchProfile if there was an error processing the profile.
+      # @raise ProfileNotFound if the profile was not found
       def fetch_profile
-        Agama::AutoYaST::ProfileFetcher.new(url).fetch
-      rescue RuntimeError
+        profile = Agama::AutoYaST::ProfileFetcher.new(url).fetch
+        raise ProfileNotFound if profile.nil?
+
+        profile
+      rescue RuntimeError # Catch any underlying error when processing the profile
         raise CouldNotFetchProfile
       end
 
