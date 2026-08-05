@@ -114,15 +114,47 @@ span.in-quotes {
   }
 }
 
+// The masthead is the reference the trail measures itself against. It has to be
+// an element whose own width comes from the page rather than from its contents:
+// an inline-size container is sized independently of what it holds, so putting
+// this on the heading row instead collapses the row to its minimum.
+.pf-v6-c-masthead:has(.agm-header-heading) {
+  container-type: inline-size;
+}
+
 // The text column has to be allowed to shrink below the width of its longest
 // line, or a long trail pushes the header wider than the page.
 .agm-header-heading > *:last-child {
   min-width: 0;
 }
 
+nav.agm-breadcrumb {
+  // The trail carries the page title, so it takes the room it can get instead
+  // of a fixed step: it grows on a wide header and gives way on a narrow one,
+  // which is where a long trail starts wrapping onto a second line.
+  font-size: clamp(
+    var(--pf-t--global--font--size--200),
+    1.6cqi,
+    var(--pf-t--global--font--size--400)
+  );
+}
+
 nav.agm-breadcrumb h1 {
   // Allow heading in breadcrumb use fontSize from its parent
   font-size: inherit;
+}
+
+// The leading items read a step above the rest of the trail, relative to its
+// fluid size rather than against a fixed one.
+nav.agm-breadcrumb .agm-breadcrumb-editorial {
+  font-size: 1.15em;
+}
+
+// The trail is one sentence, but only its last item is a heading: the previous
+// ones are links. Without this they render in the body family, which shows as
+// soon as a product pairs two different families.
+nav.agm-breadcrumb > ol > li > a {
+  font-family: var(--pf-t--global--font--family--heading);
 }
 
 .agm-split-info-layout-container {
