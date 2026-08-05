@@ -8,6 +8,9 @@ This document is about designing and writing that file.
 [product_theming_packaging.md](product_theming_packaging.md) covers getting it
 onto a medium, which a product can do from its own package without contributing
 anything to Agama.
+[product_theming_examples.md](product_theming_examples.md) walks through two
+skins end to end, from the prompt each started with to the problems each ran
+into, as worked examples of the steps below.
 
 **The short version.** Copy `example.css`, set only the roles the brand needs,
 add a light and a dark logo. Measure every contrast pair the checklist lists, in
