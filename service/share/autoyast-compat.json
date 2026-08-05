@@ -415,7 +415,7 @@
   },
   {
     "key": "services-manager",
-    "notes": "Agama does not implement support to enable/disable services on demand, so this section is converted to a post-installation script which enable/disable the services.",
+    "notes": "Agama does not implement support to enable/disable services on demand, so this section is converted to a post-installation script which enables/disables the services.",
     "children": [
       {
         "key": "default_target",
