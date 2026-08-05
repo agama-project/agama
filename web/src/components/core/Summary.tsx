@@ -21,18 +21,17 @@
  */
 
 import React from "react";
-import { Content, Flex, Skeleton, Title } from "@patternfly/react-core";
+import { Content, Flex, FlexItem, Skeleton, Title } from "@patternfly/react-core";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
 import { _ } from "~/i18n";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import WarningIcon from "@patternfly/react-icons/dist/esm/icons/exclamation-triangle-icon";
 
 type SummaryProps = {
   /**
    * The name of the icon to display next to the title.
-   * Ignored when `hasIssues` is true (warning icon is shown instead).
+   * Ignored when `hasIssues` is true, which picks its own icon.
    */
   icon: IconProps["name"];
   /**
@@ -58,9 +57,9 @@ type SummaryProps = {
   /**
    * Whether a summary item has issues that require attention.
    * When true:
-   *   - Displays a warning icon instead of the regular icon
+   *   - Displays the icon signalling an issue instead of the regular one
    *   - Applies bold styling to value and description
-   *   - Adds warning color styling to the icon
+   *   - Colors the icon accordingly
    */
   hasIssues?: boolean;
 };
@@ -110,15 +109,24 @@ const Summary = ({
 }: SummaryProps) => {
   return (
     <div>
-      <Flex gap={{ default: "gapXs" }} alignItems={{ default: "alignItemsCenter" }}>
-        {hasIssues ? (
-          <WarningIcon
-            aria-hidden="true"
-            className={[textStyles.fontSizeMd, textStyles.textColorStatusWarning].join(" ")}
+      {/* The row must not wrap: a title too long for the space left beside the
+          icon has to wrap its own text instead of dropping to the line below,
+          which would leave the icon stranded on a line of its own. */}
+      <Flex
+        gap={{ default: "gapXs" }}
+        alignItems={{ default: "alignItemsFlexStart" }}
+        flexWrap={{ default: "nowrap" }}
+      >
+        <FlexItem flex={{ default: "flexNone" }}>
+          {/* Both icons come from the same component at the same size, so the
+              one signalling an issue sits exactly where the regular one would,
+              whatever the product's typography does to the line around it. */}
+          <Icon
+            name={hasIssues ? "warning" : icon}
+            size="md"
+            className={hasIssues ? textStyles.textColorStatusWarning : undefined}
           />
-        ) : (
-          <Icon name={icon} size="md" />
-        )}
+        </FlexItem>
         <Title headingLevel="h3">{title}</Title>
       </Flex>
       <NestedContent margin="mxLg">
