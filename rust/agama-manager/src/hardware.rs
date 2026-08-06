@@ -317,11 +317,28 @@ impl S390Info {
     }
 
     /// Maps a machine type number to a human-readable CPU name.
+    ///
+    /// TODO: add the remaining machine type numbers.
     fn cpu_name_for_type(type_number: &str) -> Option<&'static str> {
         match type_number {
-            "9175" | "9176" => Some("IBM z17"),
-            "3931" | "3932" => Some("IBM z16"),
+            "2064" => Some("IBM z900"),
+            "2066" => Some("IBM z800"),
+            "2084" => Some("IBM z990"),
+            "2086" => Some("IBM z890"),
+            "2094" => Some("IBM z9-EC"),
+            "2096" => Some("IBM z9-BC"),
+            "2097" => Some("IBM z10-EC"),
+            "2098" => Some("IBM z10-BC"),
+            "2817" => Some("IBM z196"),
+            "2818" => Some("IBM z114"),
+            "2827" => Some("IBM z12-EC"),
+            "2828" => Some("IBM z12-BC"),
+            "2964" => Some("IBM z13"),
+            "2965" => Some("IBM z13s"),
+            "3906" | "3907" => Some("IBM z14"),
             "8561" | "8562" => Some("IBM z15"),
+            "3931" | "3932" => Some("IBM z16"),
+            "9175" | "9176" => Some("IBM z17"),
             _ => None,
         }
     }
