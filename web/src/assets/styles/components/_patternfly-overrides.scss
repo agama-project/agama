@@ -293,11 +293,13 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   );
 
   a.pf-m-primary {
-    // Use the brand blue directly (not the focus role, which goes lighter in
-    // dark theme for ring contrast) and pin a light text color, so the link
-    // keeps the same readable look on the blue background in every theme.
-    background: var(--agm-t--color--waterhole--50);
-    color: var(--agm-t--color--fog--50);
+    // The first focusable element on the page, so it follows the product like
+    // everything else. It takes the same pair as a primary button rather than
+    // the focus role, which goes lighter in dark theme for ring contrast: that
+    // pair is already required to stay readable one against the other in both
+    // themes.
+    background: var(--agm-t--brand--color, var(--agm-t--color--waterhole--50));
+    color: var(--agm-t--brand--text--color, var(--agm-t--color--fog--50));
     font-size: var(--pf-t--global--font--size--md);
   }
 }
