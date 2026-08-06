@@ -25,7 +25,7 @@ it: that contract is the whole reason a skin survives an Agama upgrade.
 - [Contrast checklist](#contrast-checklist), plus
   [brand colors that cannot be a fill](#when-the-brand-color-cannot-be-a-fill)
   and [elevation in dark mode](#elevation-in-dark-mode-and-why-tooltips-differ)
-- [Accessibility rules](#accessibility-rules)
+- [Accessibility](#accessibility), where a palette does the most damage
 - [Using a font of your own](#using-a-font-of-your-own)
 - [Manual checks](#manual-checks), the half that no number reports
 - [Extending the role API](#extending-the-role-api), when the roles fall short
@@ -36,43 +36,49 @@ it: that contract is the whole reason a skin survives an Agama upgrade.
 
 - **Colors and roles**: a curated set of `--agm-t--*` CSS custom properties, see
   "The roles" below.
-- **Logo**: a light and a dark SVG with a transparent background. Match the
-  square-ish aspect ratio of Agama's own logos: each usage context (masthead,
-  next to the product name, ...) renders the logo at a small fixed width, so a
-  very wide or tall logo looks cramped or oversized. Center the drawing inside
-  the viewBox too, offsetting the viewBox when it helps: the UI aligns the image
-  box and not the ink, so artwork sitting low in an otherwise square box looks
-  dropped next to the product name while every other logo looks fine.
+- **Logo**: a light and a dark SVG with a transparent background. A roughly
+  square aspect ratio travels best, since each usage context (masthead, next to
+  the product name, ...) renders the logo at a small fixed width: a very wide
+  drawing shrinks to stay inside it, and a very tall one takes over the row it
+  sits in. Center the drawing within the viewBox too, offsetting the viewBox
+  when it helps, because the UI aligns the image box and not the ink: artwork
+  sitting low in an otherwise square box hangs below the product name beside it.
 
 ## What a skin cannot change
 
 Naming these upfront saves an afternoon of trying:
 
-- **Anything outside the `--agm-t--*` roles.** No raw PatternFly tokens, no
-  component-level variables, no selectors of your own. If the brand needs
-  something the roles don't cover, that is a gap in the shared token layer: see
-  "Extending the role API".
 - **The high contrast theme.** It is an accessibility mode, fully governed by
   PatternFly. A skin may brand the accent there and nothing else.
 - **The font family in some locales.** Cyrillic, Georgian, Chinese, Japanese and
   Korean get their family assigned per language for script coverage, and that
   takes precedence over the product roles. A skin's typeface does not apply to
   those languages.
-- **Line height.** Fixed in the shared layer, with no role. A large jump in the
-  font size scale tightens the text block with nothing to compensate with, so
-  keep the jump modest or propose a role.
+- **Line height.** No role exposes it, deliberately: it resolves from a single
+  value used everywhere, so a product that sets it badly costs every screen at
+  once. A large jump in the font size scale tightens the text block with nothing
+  to compensate with, so keep the jump modest, or make the case for a role.
 - **The JSON config editor.** It follows the light/dark theme only, so it keeps
   its own colors next to a skinned UI. Expected, not a bug to work around.
 
 ## The roles
 
-Two files in the Agama sources define the role set, and both stay current because
-the code reads them. `web/src/assets/styles/tokens/_semantic.scss` indexes every
-`--agm-t--*` role and maps it onto the PatternFly tokens it drives.
-`web/src/assets/products/example-advanced.css` sets every one of them against a
+Two files in the Agama sources carry the role set. Every `--agm-t--*` role is
+defined in `web/src/assets/styles/tokens/_semantic.scss` and mapped there onto
+the PatternFly tokens it drives, which makes it the one list that cannot fall
+behind. `web/src/assets/products/example-advanced.css` sets each role against a
 worked example, with `example.css` as the colors-only starting point that covers
-most products. Read one of them before writing a skin: a list repeated here would
-drift from both, and it is the drift that costs an afternoon.
+most products. Read one of them before writing a skin.
+
+**A skin sets these roles and nothing else.** Raw PatternFly tokens,
+component-level variables and selectors of your own are out of bounds:
+unsupported, and at risk of breaking silently the next time the mapping
+underneath them moves. The roles exist so that a product never has to know how
+many PatternFly tokens one decision touches, and that only holds while the skin
+stays inside them. Where the brand needs something no role covers, propose it and
+let it be weighed: one product's requirement is a case to consider, not by itself
+a reason to widen a surface every product depends on. See
+[Extending the role API](#extending-the-role-api).
 
 Between them they cover the brand and link colors, the three surfaces and the
 hover background, text and icon colors, borders and the focus ring, the disabled
@@ -86,15 +92,17 @@ be as long as the brand actually requires.
 
 ## Steps
 
-1. Start from `example.css`, or `example-advanced.css` for the full role set, and
-   add the logo files.
-2. Give each theme its own premise. A brand that is natively dark still needs a
+1. Copy `example.css` (or `example-advanced.css` for the full role set) to
+   `web/src/assets/products/<product-id>.css`. Set only the roles the brand
+   actually needs; anything left unset keeps Agama's default look.
+2. Add the logo files.
+3. Give each theme its own premise. A brand that is natively dark still needs a
    light theme designed as its own thing: an inverted dark palette rarely
    convinces.
-3. Measure the checklist below in both themes separately, since a value that
+4. Measure the checklist below in both themes separately, since a value that
    passes in one can fail in the other, and work through the rows rather than the
    pairs that come to mind.
-4. Walk the manual checks in a running installer.
+5. Walk the manual checks in a running installer.
 
 ## Contrast checklist
 
@@ -105,8 +113,14 @@ thresholds and, when a pair fails, suggests a same-hue, same-saturation shade
 that passes, which keeps a brand color recognizable instead of drifting to an
 unrelated one.
 
-Every row, in light and in dark. Report the measured numbers: they are what a
-reviewer can spot-check, and "verified" on its own is not reviewable.
+The table below is a strong recommendation rather than a gate: nothing checks a
+skin at build time, and a product ships what it decides to ship. The bar it aims
+at is WCAG AA, in both themes, and what a shortfall costs is paid by whoever
+cannot read the screen.
+
+Checking it by hand is one invocation per pair, so start where skins actually
+fail: borders against all three surfaces, statuses against raised and floating,
+the brand text color on its fill, and the focus ring with its separator.
 
 | Foreground | Background | Target |
 | --- | --- | --- |
@@ -117,18 +131,18 @@ reviewer can spot-check, and "verified" on its own is not reviewable.
 | brand text color | the brand fill **and** its hover shade | 4.5 |
 | tooltip text | tooltip background | 4.5 |
 | border color | page, raised, floating | 3 |
-| focus ring | the surface around it, **and** the ring plus its separator against the fill it sits on | 3 |
+| focus ring | the surface outside the control; **and** the separator against both the ring and the fill | 3 |
 | icon color | every surface the icons appear on | 3 |
 
-Two things a palette drawn from an image gets wrong most often: borders (the
-reference has no idea how faint its own lines are) and dark-theme elevation
-(next section).
+The focus ring row needs a picture to make sense. A focused control draws its
+ring just inside its own edge, and a hairline of
+`--agm-t--focus--separator--color` sits between that ring and the fill behind it.
 
-The focus ring row reads like a contradiction: a ring in the brand color on a
-brand-colored button cannot clear 3:1 against it, and no light ring clears a
-light fill. `--agm-t--focus--separator--color` is the way out. The hairline
-between ring and fill carries the separation, so what has to pass is the ring
-against the surrounding surface, and the separator against both.
+The hairline is there because a ring on its own is not always visible: a
+brand-colored ring on a brand-colored button has nothing to separate it from the
+fill, and a pale ring has nothing to separate it from a pale one. So the ring has
+to clear the surface outside the control, and the hairline has to clear what sits
+on either side of it, which is the ring and the fill.
 
 ### When the brand color cannot be a fill
 
@@ -163,7 +177,12 @@ still read as a single flat field, leaving borders and shadows to carry every
 edge. If dark looks flat next to light, the fix is more light, not a better
 ratio.
 
-## Accessibility rules
+## Accessibility
+
+These are where a palette does the most damage. They stand as the checklist
+does: nothing enforces them, and each is the product's call. Two are also WCAG
+AA criteria rather than house style, contrast and resizing, and those are the
+ones a user is most likely to notice.
 
 - **Color is never the only channel.** The five status roles have to stay
   distinguishable from each other, not just from their background. Check the
@@ -255,7 +274,9 @@ Where the roles actually surface:
 - a modal dialog, a menu, a popover, a tooltip (floating surfaces),
 - toast and inline alerts, all five statuses,
 - a progress screen (accent on large surfaces),
-- an empty state and a breadcrumb (subtle text).
+- an empty state and a breadcrumb (subtle text),
+- the skip link, by pressing Tab on a freshly loaded page: it takes the brand
+  fill and its text color, and it is the first thing a keyboard user meets.
 
 The quickest way to iterate is to write the skin straight into the served
 directory of a running installer, described in
@@ -267,8 +288,7 @@ up, with no rebuild in between.
 Every role is documented and resolved in one place:
 `web/src/assets/styles/tokens/_semantic.scss` maps each `--agm-t--*` role onto
 the PatternFly tokens it affects, with the current Agama value as the fallback
-default. A product file must only ever set `--agm-t--*` roles, never a raw
-PatternFly or component-level variable directly.
+default.
 
 Adding a role that's genuinely missing:
 
@@ -287,8 +307,14 @@ depends on.
 
 ## Prompting an AI to do this
 
-Fill in the placeholders and paste:
+The prompt names files to read, a script to run, and where the result goes, so it
+opens by making sure those exist. Fill in the placeholders and paste:
 
+> Work inside a checkout of the Agama sources. If you are not in one, clone
+> https://github.com/agama-project/agama and work there: the files named below
+> are how you find the current role set, and answering from memory instead
+> produces a stylesheet that looks plausible and sets roles that do not exist.
+>
 > Create a product skin for `<PRODUCT_ID>` using this brand: `<paste colors,
 > and/or a link to the brand's site or guidelines>`. Take the id from the `id:`
 > field of the matching file in `products.d/`, not from a logo file name: the two
@@ -313,11 +339,15 @@ Fill in the placeholders and paste:
 > get their family assigned per language, so a skin's typeface does not reach
 > them.
 >
-> Read `doc/product_theming.md` and follow its contrast checklist and
-> accessibility rules. In particular: compute WCAG contrast explicitly with
+> Every pair you set has to clear WCAG AA: 4.5:1 for text against the background
+> it sits on, 3:1 for borders, icons, focus indicators and anything else that is
+> not text. That is the bar whether or not you can open the files named here.
+>
+> Read `doc/product_theming.md` for which pairs to check, and compute each one
+> explicitly with
 > `web/scripts/check-contrast.js <foreground> <background> [--target=4.5]`
-> (run from the repo root; `--target=3` for UI elements, borders and focus
-> rings), in both light and dark theme separately, rather than eyeballing.
+> (run from the repo root; `--target=3` for the non-text ones), in both light
+> and dark theme separately, rather than eyeballing.
 > Measure every row of the checklist, especially the ones easy to skip: statuses
 > against the raised and the floating surface as well as the page, borders
 > against all three, and the focus ring against the surface around it, with
@@ -369,8 +399,8 @@ Fill in the placeholders and paste:
 > For the logo: a light and a dark SVG with a transparent background, named after
 > the product's `icon:` field rather than its id, the dark one with `-dark` before
 > the extension. Read `ProductLogo` and its callers first to find the actual
-> rendered size/aspect ratio each usage needs, match the square-ish shape of
-> existing logos in that folder, and center the drawing inside the viewBox, since
+> rendered size each usage needs, keep the aspect ratio roughly square so the
+> logo survives all of them, and center the drawing inside the viewBox, since
 > the UI aligns the image box and not the ink. Validate any hand-edited SVG with
 > `xmllint --noout` and a rendered preview at the real consuming size, in
 > both themes, before calling it done.
