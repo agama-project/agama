@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Aug  5 15:08:46 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Fix storage system and proposal schemas
+  (gh#agama-project/agama#3800):
+  - Rename "driver" to "drivers".
+  - Rename "dellBoss" to "boss".
+  - Remove unused property "active" from "block" section.
+  - Add "id" to "partition" section.
+
+-------------------------------------------------------------------
 Wed Aug  5 10:30:34 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Extend schema of storage search with logical operators and new

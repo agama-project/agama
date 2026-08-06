@@ -31,7 +31,7 @@ const vda: Storage.Device = {
   sid: 59,
   class: "drive",
   name: "/dev/vda",
-  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  drive: { type: "disk", info: { sdCard: false, boss: false } },
   block: {
     start: 1,
     size: 1e12,
@@ -44,7 +44,7 @@ const vdb: Storage.Device = {
   sid: 60,
   class: "drive",
   name: "/dev/vdb",
-  drive: { type: "disk", info: { sdCard: false, dellBoss: false } },
+  drive: { type: "disk", info: { sdCard: false, boss: false } },
   block: {
     start: 1,
     size: 1e6,
@@ -62,7 +62,6 @@ const md0: Storage.Device = {
   block: {
     start: 0,
     size: 2e12,
-    active: true,
     encrypted: false,
     systems: [],
     shrinking: { supported: false },

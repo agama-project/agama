@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  5 15:16:36 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt types to changes in the storage system and proposal schemas
+  (gh#agama-project/agama#3800).
+
+-------------------------------------------------------------------
 Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve the installer language and keyboard layout dialog,
