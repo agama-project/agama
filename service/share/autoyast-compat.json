@@ -247,13 +247,15 @@
           { "key": "description", "support": "no" },
           {
             "key": "bootproto",
-            "support": "no",
-            "notes": "Different set of values."
+            "support": "yes",
+            "agama": "network.connections[].method4, network.connections[].method6",
+            "notes": "Different set of values. 'ibft' and 'dhcp+autoip' fall back to 'auto'."
           },
           {
             "key": "startmode",
-            "support": "no",
-            "notes": "Do not set up network connections you won't use."
+            "support": "yes",
+            "agama": "network.connections[].autoconnect",
+            "notes": "'manual' and 'off' disable the auto-connection and keep the connection down; the rest enable it."
           },
           {
             "key": "lladdr",

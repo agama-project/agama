@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Aug  6 17:25:09 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Improve the AutoYaST network conversion:
+  - Convert the interface "startmode" to the "autoconnect" and
+    "status" settings.
+  - Convert the "autoip" boot protocol to the "link-local" method.
+  - Stop reporting "bootproto" as unsupported, as it is converted
+    to the "method4" and "method6" settings.
+
+-------------------------------------------------------------------
 Wed Aug  5 15:05:24 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt the exported information of the storage system and proposal
