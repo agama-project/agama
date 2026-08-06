@@ -112,12 +112,13 @@
     ]
   },
   { "key": "configuration_management", "support": "no" },
-  { "key": "dasd",
+  {
+    "key": "dasd",
     "children": [
-     { "key": "device", "support": "no" },
-     { "key": "dev_name", "support": "no" },
-     { "key": "channel", "support": "yes" },
-     { "key": "diag", "support": "yes" }
+      { "key": "device", "support": "no" },
+      { "key": "dev_name", "support": "no" },
+      { "key": "channel", "support": "yes" },
+      { "key": "diag", "support": "yes" }
     ]
   },
   { "key": "deploy_image", "support": "no" },
@@ -140,7 +141,11 @@
         "support": "yes",
         "notes": "In agama it is split to files[].user and files[].group"
       },
-      { "key": "file_permissions", "support": "yes", "agama": "files[].permissions" },
+      {
+        "key": "file_permissions",
+        "support": "yes",
+        "agama": "files[].permissions"
+      },
       { "key": "file_script", "support": "planned" }
     ]
   },
@@ -195,7 +200,7 @@
           {
             "key": "nameservers",
             "support": "yes",
-            "agama": "network.connections[].nameservers",
+            "agama": "network.connections[].nameservers[]",
             "notes": "Copied to each connection."
           },
           {
@@ -205,7 +210,7 @@
           {
             "key": "searchlist",
             "support": "yes",
-            "agama": "network.connections[].dnsSearchList",
+            "agama": "network.connections[].dnsSearchList[]",
             "notes": "Copied to each connection."
           }
         ]
@@ -229,8 +234,16 @@
         "agama": "connections",
         "notes": "It corresponds to Agama `connections`, but the format is not exactly the same.",
         "children": [
-          { "key": "device", "agama": "network.connections[].interface", "support": "yes" },
-          { "key": "name", "agama": "network.connections[].id", "support": "yes" },
+          {
+            "key": "device",
+            "agama": "network.connections[].interface",
+            "support": "yes"
+          },
+          {
+            "key": "name",
+            "agama": "network.connections[].id",
+            "support": "yes"
+          },
           { "key": "description", "support": "no" },
           {
             "key": "bootproto",
@@ -302,7 +315,11 @@
           { "key": "dhclient_set_default_route", "support": "no" },
           { "key": "zone", "support": "no" },
           { "key": "firewall", "support": "no" },
-          { "key": "bonding_master", "support": "planned" },
+          {
+            "key": "bonding_master",
+            "support": "yes",
+            "notes": "Implied by the presence of the `bonding_slaveN` elements."
+          },
           {
             "key": "bonding_module_opts",
             "support": "yes",
@@ -358,11 +375,42 @@
             "support": "yes",
             "agama": "network.connections[].bond.ports[]"
           },
-          { "key": "bridge", "support": "planned" },
-          { "key": "bridge_forwarddelay", "support": "planned" },
-          { "key": "bridge_ports", "support": "planned" },
-          { "key": "bridge_stp", "support": "planned" },
-          { "key": "vlan_id", "support": "planned" },
+          {
+            "key": "bridge",
+            "support": "yes",
+            "notes": "Implied by the presence of the `bridge_ports` element."
+          },
+          {
+            "key": "bridge_forward_delay",
+            "support": "yes",
+            "agama": "network.connections[].bridge.forwardDelay"
+          },
+          {
+            "key": "bridge_forwarddelay",
+            "support": "yes",
+            "agama": "network.connections[].bridge.forwardDelay",
+            "notes": "Deprecated spelling of `bridge_forward_delay`."
+          },
+          {
+            "key": "bridge_ports",
+            "support": "yes",
+            "agama": "network.connections[].bridge.ports[]"
+          },
+          {
+            "key": "bridge_stp",
+            "support": "yes",
+            "agama": "network.connections[].bridge.stp"
+          },
+          {
+            "key": "etherdevice",
+            "support": "yes",
+            "agama": "network.connections[].vlan.parent"
+          },
+          {
+            "key": "vlan_id",
+            "support": "yes",
+            "agama": "network.connections[].vlan.id"
+          },
           {
             "key": "wireless_auth_mode",
             "support": "yes",
@@ -602,12 +650,25 @@
     "key": "ntp-client",
     "children": [
       { "key": "ntp_policy", "support": "no" },
-      { "key": "ntp_servers[]",
+      {
+        "key": "ntp_servers[]",
         "notes": "All servers are considered of type \"pool\"",
         "children": [
-            { "key": "address", "support": "yes", "agama": "ntp.sources[].address" },
-            { "key": "iburst", "support": "yes", "agama": "ntp.sources[].iburst" },
-            { "key": "offline", "support": "yes", "agama": "ntp.sources[].offline" }
+          {
+            "key": "address",
+            "support": "yes",
+            "agama": "ntp.sources[].address"
+          },
+          {
+            "key": "iburst",
+            "support": "yes",
+            "agama": "ntp.sources[].iburst"
+          },
+          {
+            "key": "offline",
+            "support": "yes",
+            "agama": "ntp.sources[].offline"
+          }
         ]
       },
       { "key": "ntp_sync", "support": "no" }
@@ -659,7 +720,8 @@
         "support": "yes",
         "agama": "product.registrationCode"
       },
-      { "key": "reg_server",
+      {
+        "key": "reg_server",
         "support": "yes",
         "agama": "product.registrationUrl"
       },
@@ -708,9 +770,21 @@
             "agama": "iscsi.targets[].address",
             "notes": "Splitted into two values, iscsi.targets[].address and iscsi.targets[].port."
           },
-          { "key": "startup", "support": "yes", "agama": "iscsi.targets[].startup" },
-          { "key": "target", "support": "yes", "agama": "iscsi.targets[].name" },
-          { "key": "iface", "support": "yes", "agama": "iscsi.targets[].interface" }
+          {
+            "key": "startup",
+            "support": "yes",
+            "agama": "iscsi.targets[].startup"
+          },
+          {
+            "key": "target",
+            "support": "yes",
+            "agama": "iscsi.targets[].name"
+          },
+          {
+            "key": "iface",
+            "support": "yes",
+            "agama": "iscsi.targets[].interface"
+          }
         ]
       }
     ]
@@ -721,14 +795,22 @@
     "children": [
       { "key": "username", "support": "yes", "agama": "user.userName" },
       { "key": "fullName", "support": "yes", "agama": "user.fullName" },
-      { "key": "password", "support": "yes", "agama": "user.password or root.password" },
+      {
+        "key": "password",
+        "support": "yes",
+        "agama": "user.password or root.password"
+      },
       {
         "key": "encrypted",
         "support": "yes",
         "agama": "user.hashedPassword or root.hashedPassword",
         "notes": "If set to true, it uses \"hashedPassword\" instead of \"password\""
       },
-      { "key": "authorized_keys", "support": "yes", "agama": "user.sshPublicKeys" }
+      {
+        "key": "authorized_keys",
+        "support": "yes",
+        "agama": "user.sshPublicKeys"
+      }
     ]
   },
   {
