@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Thu Aug  6 17:25:09 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Improve the AutoYaST network conversion:
+- Improve the AutoYaST network conversion
+  (gh#agama-project/agama#3805):
   - Convert the interface "startmode" to the "autoconnect" and
     "status" settings.
   - Convert the "autoip" boot protocol to the "link-local" method.
