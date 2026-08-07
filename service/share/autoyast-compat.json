@@ -432,8 +432,7 @@
           {
             "key": "wireless_essid",
             "support": "yes",
-            "agama": "network.connections[].wireless.ssid",
-            "notes": "Map 'ad-hoc' to 'adhoc', 'master' to 'ap' and 'managed' to 'infrastructure'."
+            "agama": "network.connections[].wireless.ssid"
           },
           { "key": "wireless_frequency", "support": "no" },
           { "key": "wireless_key", "support": "no" },
@@ -442,7 +441,12 @@
           { "key": "wireless_key_2", "support": "no" },
           { "key": "wireless_key_3", "support": "no" },
           { "key": "wireless_key_length", "support": "no" },
-          { "key": "wireless_mode", "support": "yes", "agama": "mode" },
+          {
+            "key": "wireless_mode",
+            "support": "yes",
+            "agama": "network.connections[].wireless.mode",
+            "notes": "Map 'ad-hoc' to 'adhoc', 'master' to 'ap' and 'managed' to 'infrastructure'."
+          },
           { "key": "wireless_nick", "support": "no" },
           { "key": "wireless_nwid", "support": "no" },
           { "key": "wireless_peap_version", "support": "no" },
@@ -452,12 +456,14 @@
           {
             "key": "wireless_wpa_password",
             "support": "yes",
-            "agama": "network.connections[].wireless.password"
+            "agama": "network.connections[].wireless.password",
+            "notes": "Only used when 'wireless_auth_mode' is 'eap'."
           },
           {
             "key": "wireless_wpa_psk",
             "support": "yes",
-            "agama": "network.connections[].wireless.password"
+            "agama": "network.connections[].wireless.password",
+            "notes": "Only used when 'wireless_auth_mode' is 'psk'."
           }
         ]
       }
