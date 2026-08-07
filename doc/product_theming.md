@@ -57,11 +57,11 @@ How far that goes is easier to see than to describe. The three products below do
 not exist and ship with nothing; they were dressed to find the edges of the role
 set, and each one is the same installer screen.
 
-All three set a typeface, which flatters the pictures and misrepresents the
-common case: typography is entirely optional, and a product that sets colors and
-a logo alone gets a coherent installer. Leave the font roles alone and the text
-stays in the [SUSE typeface](https://brand.suse.com/typography), the family
-Agama bundles and sets its sizes against. When a brand does bring its own face,
+All three set a typeface, which is not the common case: typography is entirely
+optional, and a product that sets colors and a logo alone gets a coherent
+installer. Leave the font roles alone and the text stays in the
+[SUSE typeface](https://brand.suse.com/typography), the family Agama bundles and
+sets its sizes against. When a brand does bring its own face,
 [Using a font of your own](#using-a-font-of-your-own) covers what comes with
 that decision.
 
