@@ -2,7 +2,9 @@
 
 This document is a companion to [product_theming.md](product_theming.md). That
 one has the rules; this one tells how three skins were built, each from the
-prompt that started it to the problems it ran into.
+prompt that started it to the problems it ran into. That prompt is the brief the
+skin was drafted from, written for an AI on top of the
+[template in the guide](product_theming.md#prompting-an-ai-to-do-this).
 
 The stylesheets are not reproduced here, and none of them ships with Agama: they
 dress products that do not exist, and what is worth keeping is the reasoning
@@ -21,13 +23,12 @@ The three examples cover deliberately different situations:
 None of them was written in one pass. Each example reports what only became
 visible in the running installer, which is the part no checklist produces.
 
-**A note on the prompts.** The first two prompts sit on top of the template in
-[product_theming.md](product_theming.md#prompting-an-ai-to-do-this) and add only
-what their brief needs. Each repeats one rule from the template verbatim, the
-one about not working around the role set, because it is the rule that decides
-the outcome when a brief meets a limit. Everything else the template says
-applies to them too and is not repeated, so a change to the template does not
-leave them stale. The third prompt is printed whole: by then the template had
+**A note on the prompts.** The first two are quoted for what they add to the
+template rather than in full. Each repeats one rule from it verbatim, the one
+about not working around the role set, because it is the rule that decides the
+outcome when a brief meets a limit. Everything else the template says applies to
+them too and is not repeated, so a change to the template does not leave them
+stale. The third prompt is printed whole: by then the template had
 absorbed everything the first two had to be told mid-flight, and reading one
 filled prompt end to end shows what that adds up to.
 
