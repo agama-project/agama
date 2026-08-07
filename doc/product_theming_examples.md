@@ -8,8 +8,9 @@ ships with Agama: what is worth keeping is the account, not the color values.
 They are deliberately different cases. Blue Sombrero starts from a published
 brand with a palette and a typography pairing. Phosphor 86 starts from two
 pictures and a mood, which is the harder case and the one that fights more.
-Pixel Leap 26 starts from a single poster: a palette that exists but was drawn
-for the opposite job, and a typeface with metrics of its own.
+Pixel Leap 26 starts from a single poster, whose colors are all backgrounds
+sitting under dark text, where a skin needs them as text and icons sitting on a
+surface, and from a typeface with metrics of its own.
 
 None of them was written in one pass. Each section below ends with what came back from
 looking at the running installer, which is the part no checklist produces.
@@ -208,13 +209,20 @@ Worth knowing when writing a skin: if something looks wrong and no role explains
 it, the markup may be the reason. Report it rather than bending the skin around
 it.
 
-## Example 3: a palette drawn for the opposite job
+## Example 3: colors that were meant to be backgrounds
 
 **The brief.** Dress a fictional product in the artwork of the
-[State of Devs 2026](https://stateofdevs.com/) developer survey: pixel icons on
-charcoal, a pale cyan wordmark and a row of pastel category chips. Read the result as
-a retro terminal rather than as a poster, and set it in
-[Departure Mono](https://departuremono.com/), a monospaced pixel face.
+[State of Devs 2026](https://survey.devographics.com/es-ES/survey/state-of-devs/2026)
+developer survey: pixel icons on charcoal, a pale cyan wordmark and a row of
+pastel category chips. Read the result as a retro terminal rather than as a
+poster, and set it in [Departure Mono](https://departuremono.com/), a monospaced
+pixel face.
+
+![The State of Devs 2026 poster: pixel icons and a pixel wordmark on charcoal, above eight pastel category chips](images/theming/state-of-devs-2026-poster.png)
+
+The poster is the survey's own artwork
+([original](https://assets.devographics.com/surveys/devs2026.png)), reproduced
+here as the brief the skin was drawn from.
 
 **The prompt**, as it was run. It is longer than the two above because it is the
 template in [product_theming.md](product_theming.md#prompting-an-ai-to-do-this)
@@ -382,8 +390,8 @@ with everything those two skins had to be told mid-flight already folded in:
 
 ### What fought back
 
-**A palette that is the wrong way round.** Every chip on the poster is a colored
-background under charcoal text. Every status in Agama is colored text or a
+**Colors that sit under text, needed on top of it.** Every chip on the poster is
+a colored background under charcoal text. Every status in Agama is colored text or a
 colored icon on a surface. The pastels survive that inversion in the dark theme
 and none of them survive it on paper: the cyan measures 1.1:1 on white. The light
 theme is the same hues taken to ink strength (`#005f64` for the brand, `#0064b0`
@@ -423,17 +431,6 @@ translated UI stays in one face nearly everywhere; the CJK locales are assigned
 per language and never reach it. Its own advice, sizes in multiples of 11px, is
 not reachable from relative units and a size adjustment, so the pixel grid is
 resampled rather than exact.
-
-### What was Agama's fault, not the skin's
-
-The fluid breadcrumb size this skin was built against was measured with a
-container query, which meant making the masthead a container. From the xl
-breakpoint on, PatternFly lays the masthead out as a subgrid of the page, and an
-element carrying size containment cannot be a subgrid: it fell back to a single
-column and stacked the heading above the toolbar, at 1200px exactly and wider.
-The measure is the viewport now. As in the previous example: when something
-looks wrong and no role explains it, suspect the markup or the framework
-underneath rather than the color file.
 
 ## Verifying any of them
 
