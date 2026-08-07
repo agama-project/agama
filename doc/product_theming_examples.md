@@ -11,28 +11,20 @@ dress products that do not exist, and what is worth keeping is the reasoning
 rather than the color values.
 
 > [!WARNING]
-> The screenshots below were taken in August 2026 and show the Agama web UI of
-> that moment. What each skin does to the interface is the point; the interface
-> around it might have moved on since, so expect differences from the installer
-> you are looking at.
+> The screenshots in this document were taken in August 2026 and show the Agama
+> web UI of that moment. What each skin does to the interface is the point; the
+> interface around it might have moved on since, so expect differences from the
+> installer you are looking at.
 
 The three examples cover deliberately different situations:
 
 1. **Blue Sombrero** starts from a published brand with a palette and
    typography.
-
-   ![The installation overview in the Blue Sombrero skin: blue links and icons on white, two typefaces, PatternFly's own corners and sizes](images/theming/blue-sombrero.png)
-
 2. **Phosphor 86** starts from two pictures and a mood: the harder case, and the
    one that fights more.
-
-   ![The installation overview in the Phosphor 86 skin: phosphor green text and magenta links on deep indigo, everything monospace and square-cornered](images/theming/phosphor86.png)
-
 3. **Pixel Leap 26** starts from a single poster whose colors were designed as
    backgrounds under dark text, while a skin needs them as text and icons on a
    surface.
-
-   ![The installation overview in the Pixel Leap 26 skin: green text on charcoal, a pixel typeface, a pixel caret for a logo and a full-color primary button](images/theming/pixel-leap-26.png)
 
 None of them was written in one pass. Each example reports what only became
 visible in the running installer, which is the part no checklist produces.
@@ -85,6 +77,8 @@ invent brand colors.
 > set `--agm-t--*` roles" contract. Stop and present a plan for extending the
 > shared token API instead, and get that plan approved before writing any code.
 
+![The installation overview in the Blue Sombrero skin: blue links and icons on white, two typefaces, PatternFly's own corners and sizes](images/theming/blue-sombrero.png)
+
 ### What fought back
 
 - **The lighter blue is unreadable as text.** `#51a2da` measures 2.79:1 on
@@ -136,6 +130,8 @@ reference images rather than a brand guideline.
 > override from the product CSS file, and do not work around the "products only
 > set `--agm-t--*` roles" contract. Stop and present a plan for extending the
 > shared token API instead, and get that plan approved before writing any code.
+
+![The installation overview in the Phosphor 86 skin: phosphor green text and magenta links on deep indigo, everything monospace and square-cornered](images/theming/phosphor86.png)
 
 That last paragraph earned its place immediately. It turned "make the buttons
 bigger" into a plan for a new role, instead of a PatternFly token set behind the
@@ -389,6 +385,8 @@ folded in:
 > running installer. Be specific: "the product list with the pixel logo at its
 > real size", "a tooltip over a busy screen", "the overview at 1024x768", "the
 > Greek and Cyrillic translations mid-sentence", not "please review".
+
+![The installation overview in the Pixel Leap 26 skin: green text on charcoal, a pixel typeface, a pixel caret for a logo and a full-color primary button](images/theming/pixel-leap-26.png)
 
 ### The decisions the poster does not make
 
