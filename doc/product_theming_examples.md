@@ -1,11 +1,12 @@
 # Worked examples
 
 This document is a companion to [product_theming.md](product_theming.md). That
-one has the rules; this one has three complete skins, each shown from the prompt
-that started it to the problems it ran into.
+one has the rules; this one tells how three skins were built, each from the
+prompt that started it to the problems it ran into.
 
-All three skins dress products that do not exist, and none ships with Agama.
-What is worth keeping is the reasoning, not the color values.
+The stylesheets are not reproduced here, and none of them ships with Agama: they
+dress products that do not exist, and what is worth keeping is the reasoning
+rather than the color values.
 
 The three examples cover deliberately different situations:
 
