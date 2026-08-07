@@ -22,6 +22,8 @@
 require "y2network/boot_protocol"
 require "y2network/ip_address"
 require "agama/autoyast/bond_reader"
+require "agama/autoyast/bridge_reader"
+require "agama/autoyast/vlan_reader"
 require "agama/autoyast/wireless_reader"
 require "ipaddr"
 
@@ -29,6 +31,15 @@ module Agama
   module AutoYaST
     # Builds the Agama "network.connections" section from an AutoYaST profile.
     class ConnectionsReader
+      # Readers for the device type specific settings of a connection.
+      TYPE_READERS = [
+        Agama::AutoYaST::BondReader,
+        Agama::AutoYaST::BridgeReader,
+        Agama::AutoYaST::VlanReader,
+        Agama::AutoYaST::WirelessReader
+      ].freeze
+      private_constant :TYPE_READERS
+
       # @param section [Y2Network::AutoinstProfile::Interfaces] AutoYaST interfaces section.
       # @param ipv6 [boolean] Whether IPv6 is wanted or not.
       # @param dns [Hash] Agama DNS settings.
@@ -69,18 +80,26 @@ module Agama
         end
         conn["id"] = interface.name unless interface.name.to_s.empty?
 
-        addresses = read_addresses(interface)
         method4, method6 = read_methods(interface)
         conn["method4"] = method4
         conn["method6"] = method6
-        conn["addresses"] = addresses
-        wireless = Agama::AutoYaST::WirelessReader.new(interface).read
-        conn.merge!(wireless) unless wireless.empty?
-        bond = Agama::AutoYaST::BondReader.new(interface).read
-        conn["bond"] = bond unless bond.empty?
+        conn["addresses"] = read_addresses(interface)
+        conn["macAddress"] = interface.lladdr unless interface.lladdr.to_s.empty?
+        conn.merge!(read_type_settings(interface))
         conn.merge!(dns)
 
         conn
+      end
+
+      # Reads the device type specific settings (bond, bridge, VLAN and wireless).
+      #
+      # Each reader returns its settings wrapped in its own key (e.g., `{ "bond" => ... }`) or
+      # an empty hash when they do not apply to the given interface.
+      #
+      # @param interface [Y2Network::AutoinstProfile::InterfaceSection] Interface section.
+      # @return [Hash]
+      def read_type_settings(interface)
+        TYPE_READERS.reduce({}) { |all, reader| all.merge(reader.new(interface).read) }
       end
 
       # Reads the addresses from an AutoYaST interface section.
