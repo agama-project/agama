@@ -132,8 +132,7 @@ function MainBreadcrumbs({
   return (
     // The logo keeps the leading edge whatever the trail does: the row never
     // wraps, so a trail spilling onto a second line grows downwards next to the
-    // logo instead of pushing itself below it. The class carries the container
-    // the trail sizes itself against.
+    // logo instead of pushing itself below it.
     <Flex
       alignItems={{ default: "alignItemsFlexStart" }}
       gap={{ default: "gapSm" }}
