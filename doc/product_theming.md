@@ -35,14 +35,17 @@ survives an Agama upgrade.
 - [Using a font of your own](#using-a-font-of-your-own)
 - [Manual checks](#manual-checks), the half that no number reports
 - [Extending the role API](#extending-the-role-api), when the roles fall short
-- [Prompting an AI to do this](#prompting-an-ai-to-do-this), and why [the second
-  round is the real one](#the-second-round-is-the-real-one)
+- [Optional: starting from an AI draft](#optional-starting-from-an-ai-draft),
+  and why [the second round is the real
+  one](#the-second-round-is-the-real-one)
 
 ## What a product can change
 
 - **Colors and roles**: a curated set of `--agm-t--*` CSS custom properties, see
   "The roles" below.
-- **Logo**: a light and a dark SVG with a transparent background. A roughly
+- **Logo**: a light and a dark SVG with a transparent background, named after
+  the product's `icon:` field with `-dark` before the extension on the dark one
+  (`MyProduct.svg` and `MyProduct-dark.svg`). A roughly
   square aspect ratio travels best, since each usage context (masthead, next to
   the product name, ...) renders the logo at a small fixed width: a very wide
   drawing shrinks to stay inside it, and a very tall one takes over the row it
@@ -53,6 +56,14 @@ survives an Agama upgrade.
 How far that goes is easier to see than to describe. The three products below do
 not exist and ship with nothing; they were dressed to find the edges of the role
 set, and each one is the same installer screen.
+
+All three set a typeface, which flatters the pictures and misrepresents the
+common case: typography is entirely optional, and a product that sets colors and
+a logo alone gets a coherent installer. Leave the font roles alone and the text
+stays in the [SUSE typeface](https://brand.suse.com/typography), the family
+Agama bundles and sets its sizes against. When a brand does bring its own face,
+[Using a font of your own](#using-a-font-of-your-own) covers what comes with
+that decision.
 
 > [!NOTE]
 > The screenshots were taken in August 2026. What each product does to the
@@ -106,12 +117,18 @@ Naming these upfront saves an afternoon of trying:
 
 ## The roles
 
-Two files in the Agama sources carry the role set. Every `--agm-t--*` role is
-defined in `web/src/assets/styles/tokens/_semantic.scss` and mapped there onto
-the PatternFly tokens it drives, which makes it the one list that cannot fall
-behind. `web/src/assets/products/example-advanced.css` sets each role against a
-worked example, with `example.css` as the colors-only starting point that covers
-most products. Read one of them before writing your own.
+Three files in the Agama sources carry the role set:
+
+- [`_semantic.scss`](../web/src/assets/styles/tokens/_semantic.scss) defines
+  every `--agm-t--*` role and maps it onto the PatternFly tokens it drives. The
+  index comment at the top names each role and says what it paints: that is the
+  list to read.
+- [`example.css`](../web/src/assets/products/example.css) is the colors-only
+  starting point, and covers most products.
+- [`example-advanced.css`](../web/src/assets/products/example-advanced.css) sets
+  every role, each with a comment explaining it.
+
+Read one of the examples before writing your own.
 
 **A product stylesheet sets these roles and nothing else.** Raw PatternFly
 tokens, component-level variables and selectors of your own are out of bounds:
@@ -123,29 +140,67 @@ and let it be weighed: one product's requirement is a case to consider, not by
 itself a reason to widen a surface every product depends on. See [Extending the
 role API](#extending-the-role-api).
 
-Between them they cover the brand and link colors, the three surfaces and the
-hover background, text and icon colors, borders and the focus ring, the disabled
-and tooltip pairs, the five status colors, and then typography, font and icon
-sizes, corner radius, and the logo's size and alignment.
+Between them the roles cover the brand and link colors, the three surfaces and
+the hover background, text and icon colors, borders and the focus ring, the
+disabled and tooltip pairs, the five status colors, and then typography, font
+and icon sizes, corner radius, and the logo's size and alignment.
 
-Two rules those files demonstrate without stating. Color roles are scoped per
-color scheme, so each goes inside the matching block, while everything else goes
-in a plain `:root`. And an unset role keeps Agama's own value, so a product only
-needs to be as long as the brand actually requires.
+Color roles are scoped per color scheme, so each goes inside the matching block,
+while everything else goes in a plain `:root`.
+
+An unset role keeps Agama's own value, so a stylesheet is only as long as the
+brand requires. This one is complete, and enough for many products:
+
+```css
+/* Light scheme. */
+:root:where(:not(.pf-v6-theme-dark)) {
+  --agm-t--brand--color: #3c6eb4;
+  --agm-t--brand--text--color: #fff;
+  --agm-t--link--color: #294172;
+  --agm-t--surface--color--raised: #e8eff8;
+  --agm-t--status--danger--color: #c42366;
+}
+
+/* Dark scheme. */
+:root:where(.pf-v6-theme-dark) {
+  --agm-t--brand--color: #51a2da;
+  --agm-t--brand--text--color: #0b1521;
+  --agm-t--link--color: #aad0ee;
+  --agm-t--surface--color--raised: #16273d;
+  --agm-t--status--danger--color: #f0819f;
+}
+```
+
+The `:where()` selectors are what scopes a color to one scheme; they carry no
+specificity of their own, so a product keeps the same weight as Agama's own
+styles instead of starting an arms race with them.
 
 ## Steps
 
-1. Copy `example.css` (or `example-advanced.css` for the full role set) to
-   `web/src/assets/products/<product-id>.css`. Set only the roles the brand
-   actually needs; anything left unset keeps Agama's default look.
-2. Add the logo files.
-3. Give each scheme its own premise. A brand that is natively dark still needs a
-   light scheme designed as its own thing: an inverted dark palette rarely
-   convinces.
-4. Measure the checklist below in both schemes separately, since a value that
-   passes in one can fail in the other, and work through the rows rather than
+1. **Find the product id.** It is the `id:` field of the product's file in
+   `products.d/`, and it is what the stylesheet has to be named after
+   (`<id>.css`). A name that does not match loads nothing, and says nothing
+   about why. The logo files take the `icon:` field instead; the two often
+   differ.
+2. **Start from an example.** Copy `example.css` or `example-advanced.css`,
+   linked under [The roles](#the-roles) above.
+3. **Set only the roles the brand needs**, colors inside the scheme block that
+   matches, everything else in a plain `:root`.
+4. **Give each scheme its own premise.** A brand that is natively dark still
+   needs a light scheme designed as its own thing: an inverted dark palette
+   rarely convinces.
+5. **Draw the two logos**, light and dark, as described above.
+6. **Measure the checklist below**, in both schemes separately, since a value
+   that passes in one can fail in the other. Work through the rows rather than
    the pairs that come to mind.
-5. Walk the manual checks in a running installer.
+7. **Look at it in a running installer**, following the manual checks. The
+   quickest loop copies the file straight into the served directory of a
+   running installer, no rebuild in between; see
+   [product_theming_packaging.md](product_theming_packaging.md).
+
+None of this needs a build of Agama, or a change to it. If you would rather
+start from a draft than from a blank file, there is a prompt for an AI at the
+end of this document, but everything above is written to be followed by hand.
 
 ## Contrast checklist
 
@@ -155,7 +210,7 @@ the ratio against the 3:1, 4.5:1 and 7:1 thresholds and, when a pair fails,
 suggests a same-hue, same-saturation shade that passes, which keeps a brand
 color recognizable instead of drifting to an unrelated one.
 
-The table below is a strong recommendation rather than a gate: nothing checks a
+The table below is a strong recommendation rather than a gate: nothing checks an
 appearance at build time, and a product ships what it decides to ship. The bar
 it aims at is WCAG AA, in both schemes, and what a shortfall costs is paid by
 whoever cannot read the screen.
@@ -293,8 +348,9 @@ text in the UI, so reaching for it to rescue a single font also makes everything
 else hard to compare with any other.
 
 Always leave fallbacks after the new family, so a font that fails to load
-degrades to a bundled one rather than to the browser default. Agama bundles
-"SUSE Text", "SUSE Display", "SUSE Mono", "Roboto Mono" and the Noto Sans
+degrades to a bundled one rather than to the browser default. Agama bundles the
+[SUSE typeface](https://brand.suse.com/typography) it uses by default ("SUSE
+Text", "SUSE Display" and "SUSE Mono"), plus "Roboto Mono" and the Noto Sans
 families. A family installed on the machine running the browser also works while
 designing, but the official ISO ships only the curated set Agama's own defaults
 need, so a typeface of your own has to travel with the product.
@@ -304,9 +360,10 @@ concerns: see [product_theming_packaging.md](product_theming_packaging.md).
 
 ## Manual checks
 
-Contrast numbers are necessary and not sufficient: an appearance is done when
-someone has looked at it, in light, dark and high contrast. Drive the real
-installer rather than a single static page.
+Clearing the contrast checklist is worth the effort, and it still leaves half
+the job: the work is only done once a person has actually seen it running, in
+light, dark and high contrast. Drive the real installer rather than a single
+static page.
 
 Where the roles actually surface:
 
@@ -347,65 +404,69 @@ Adding a role that's genuinely missing:
 This one does go through Agama: it changes the shared layer that every product
 depends on.
 
-## Prompting an AI to do this
+## Optional: starting from an AI draft
 
-The prompt names files to read, a script to run, and where the result goes, so
-it opens by making sure those exist. Fill in the placeholders and paste:
+Everything above is written to be followed by hand, and a stylesheet written
+that way is the reference case, not the exception. This section is for speeding
+up the blank-file stage with whichever assistant you already use.
+
+Treat what comes back as a starting point rather than a result. It can read the
+role set, compute contrast and produce a plausible file; it cannot look at the
+installer, which is where the other half of the work is. The prompt therefore
+names the files to read, the script to run and where the result goes, and opens
+by making sure those exist. Fill in the placeholders and paste:
 
 > Work inside a checkout of the Agama sources. If you are not in one, clone
 > https://github.com/agama-project/agama and work there: the files named below
 > are how you find the current role set, and answering from memory instead
 > produces a stylesheet that looks plausible and sets roles that do not exist.
 >
-> Create a product stylesheet for `<PRODUCT_ID>` using this brand: `<paste colors,
-and/or a link to the brand's site or guidelines>`. Take the id from the `id:`
-> field of the matching file in `products.d/`, not from a logo file name: the two
-> often differ. The file is `<id>.css`, and a name that does not match loads
-> nothing and says nothing about why.
+> Create a product stylesheet for `<PRODUCT_ID>` using this brand: `<paste
+colors, and/or a link to the brand's site or guidelines>`. Take the id from
+> the `id:` field of the matching file in `products.d/`, not from a logo file
+> name: the two often differ. The file is `<id>.css`, and a name that does not
+> match loads nothing and says nothing about why.
 >
-> First read `web/src/assets/products/example.css`, `example-advanced.css`,
-> and the role-index comment at the top of
+> First read `web/src/assets/products/example.css`, `example-advanced.css`, and
+> the role-index comment at the top of
 > `web/src/assets/styles/tokens/_semantic.scss`, so you know the current
-> `--agm-t--*` role set rather than assuming it. A product file only ever
-> sets these roles; never a raw PatternFly or component-level variable
-> directly.
+> `--agm-t--*` role set rather than assuming it. A product file only ever sets
+> these roles; never a raw PatternFly or component-level variable directly.
 >
 > Set only the roles the brand actually needs. Every role left unset keeps
 > Agama's own value, so a file that sets colors, a logo and a font family is
-> finished. Reach for the size, radius and spacing roles only where the
-> brand genuinely differs, and say why when you do.
+> finished. Reach for the size, radius and spacing roles only where the brand
+> genuinely differs, and say why when you do.
 >
 > Some things a product cannot control, so do not spend effort there: the high
 > contrast mode belongs to PatternFly and a product may brand its accent and
-> nothing else,
-> line height has no role, and Cyrillic, Georgian, Chinese, Japanese and Korean
-> get their family assigned per language, so a product's typeface does not reach
-> them.
+> nothing else, line height has no role, and Cyrillic, Georgian, Chinese,
+> Japanese and Korean get their family assigned per language, so a product's
+> typeface does not reach them.
 >
 > Every pair you set has to clear WCAG AA: 4.5:1 for text against the background
 > it sits on, 3:1 for borders, icons, focus indicators and anything else that is
 > not text. That is the bar whether or not you can open the files named here.
 >
 > Read `doc/product_theming.md` for which pairs to check, and compute each one
-> explicitly with
-> `web/scripts/check-contrast.js <foreground> <background> [--target=4.5]`
-> (run from the repo root; `--target=3` for the non-text ones), in both light
-> and dark separately, rather than eyeballing.
-> Measure every row of the checklist, especially the ones easy to skip: statuses
-> against the raised and the floating surface as well as the page, borders
-> against all three, and the focus ring against the surface around it, with
+> explicitly with `web/scripts/check-contrast.js <foreground> <background>
+[--target=4.5]` (run from the repo root; `--target=3` for the non-text ones),
+> in both light and dark separately, rather than eyeballing. Measure every row
+> of the checklist, especially the ones easy to skip: statuses against the
+> raised and the floating surface as well as the page, borders against all
+> three, and the focus ring against the surface around it, with
 > `--agm-t--focus--separator--color` carrying the contrast against the fill
-> rather than the ring itself. Where a brand color fails, use the tool's suggested
-> same-hue/saturation shade rather than an unrelated substitute. Raised and
-> floating surfaces read lighter than the page in dark mode, not darker; the
-> tooltip roles are a separate call, see the elevation notes in the document.
-> Report the numbers you measured as a table.
+> rather than the ring itself. Where a brand color fails, use the tool's
+> suggested same-hue/saturation shade rather than an unrelated substitute.
+> Raised and floating surfaces read lighter than the page in dark mode, not
+> darker; the tooltip roles are a separate call, see the elevation notes in the
+> document. Report the numbers you measured as a table.
 >
 > Keep the five status colors distinguishable from each other, not only from
 > their background, and do not collapse them into the brand color: they carry
 > meaning that color alone must not be responsible for. Simulate protanopia and
-> deuteranopia over the five and report the closest pair. Also check them against
-> the brand, link and focus colors: a status that matches the link color
+> deuteranopia over the five and report the closest pair. Also check them
+> against the brand, link and focus colors: a status that matches the link color
 > disappears where the two meet, such as an issue icon beside a heading that is
 > a link. Where they collide, move the brand side, not the status.
 >
@@ -425,43 +486,43 @@ and/or a link to the brand's site or guidelines>`. Take the id from the `id:`
 > languages the UI is translated into (a Latin-only face switches faces
 > mid-sentence). Name a family only when it is reachable (bundled by Agama,
 > installed on the system running the browser, or shipped with the product),
-> always
-> with fallbacks after it, and never add font files to Agama itself as part of a
-> product.
+> always with fallbacks after it, and never add font files to Agama itself as
+> part of a product.
 >
-> Do not raise the size scale to compensate for a font that looks small or large.
-> Use `size-adjust` on its `@font-face`, computed from the ratio of cap heights
-> against a normal text face, and report both the cap heights and the advance
-> widths you measured. Advance width is the constraint that bites: a body face
-> scaled up widens every line by the same factor, so check the longest sentence
-> in the UI and the narrowest column before settling on a value. A single-weight
-> face means synthesized bold; say so rather than discovering it later.
+> Do not raise the size scale to compensate for a font that looks small or
+> large. Use `size-adjust` on its `@font-face`, computed from the ratio of cap
+> heights against a normal text face, and report both the cap heights and the
+> advance widths you measured. Advance width is the constraint that bites: a
+> body face scaled up widens every line by the same factor, so check the longest
+> sentence in the UI and the narrowest column before settling on a value. A
+> single-weight face means synthesized bold; say so rather than discovering it
+> later.
 >
-> An icon is not automatically the color of the text it labels. If you change the
-> icon color role, check it against both headings and status icons.
+> An icon is not automatically the color of the text it labels. If you change
+> the icon color role, check it against both headings and status icons.
 >
-> For the logo: a light and a dark SVG with a transparent background, named after
-> the product's `icon:` field rather than its id, the dark one with `-dark` before
-> the extension. Read `ProductLogo` and its callers first to find the actual
-> rendered size each usage needs, keep the aspect ratio roughly square so the
-> logo survives all of them, and center the drawing inside the viewBox, since
-> the UI aligns the image box and not the ink. Validate any hand-edited SVG with
-> `xmllint --noout` and a rendered preview at the real consuming size, in
-> both color schemes, before calling it done.
+> For the logo: a light and a dark SVG with a transparent background, named
+> after the product's `icon:` field rather than its id, the dark one with
+> `-dark` before the extension. Read `ProductLogo` and its callers first to find
+> the actual rendered size each usage needs, keep the aspect ratio roughly
+> square so the logo survives all of them, and center the drawing inside the
+> viewBox, since the UI aligns the image box and not the ink. Validate any
+> hand-edited SVG with `xmllint --noout` and a rendered preview at the real
+> consuming size, in both color schemes, before calling it done.
 >
-> **If something can't be done with the current `--agm-t--*` role set, don't
-> get creative.** Do not set a raw PatternFly token or component-variable
-> override from the product CSS file, and do not work around the "products
-> only set `--agm-t--*` roles" contract. Stop and present a plan for
-> extending the shared token API instead: the new role's name, where it gets
-> documented (a role-index comment in `_semantic.scss`) and resolved (a PF
-> global token in `_semantic.scss`, or a component-level override in
+> **If something can't be done with the current `--agm-t--*` role set, don't get
+> creative.** Do not set a raw PatternFly token or component-variable override
+> from the product CSS file, and do not work around the "products only set
+> `--agm-t--*` roles" contract. Stop and present a plan for extending the shared
+> token API instead: the new role's name, where it gets documented (a role-index
+> comment in `_semantic.scss`) and resolved (a PF global token in
+> `_semantic.scss`, or a component-level override in
 > `_patternfly-overrides.scss`, with the current Agama value as the fallback
 > default so leaving it unset changes nothing), a worked example added to
-> `example-advanced.css`, and whether PatternFly actually splits the
-> underlying concern into several independent tokens under the hood (check
-> before assuming one override reaches everywhere it should). Get that plan
-> approved before writing any code.
+> `example-advanced.css`, and whether PatternFly actually splits the underlying
+> concern into several independent tokens under the hood (check before assuming
+> one override reaches everywhere it should). Get that plan approved before
+> writing any code.
 >
 > Finally, list what you could not verify yourself, so it can be checked in the
 > running installer. Be specific: "a tooltip over a busy screen", "the overview
@@ -469,25 +530,28 @@ and/or a link to the brand's site or guidelines>`. Take the id from the `id:`
 
 ### The second round is the real one
 
-The prompt above gets a draft that measures well. What it cannot do is look at
-the result, and every appearance written this way has needed a human to come
-back with things no number reported: a tooltip that passed its own text contrast
-and was invisible on the page behind it, a trail rendered in two typefaces, an
-icon stranded on its own line, text that fit the checklist and not the column.
+The prompt above gets a draft that measures well. Every appearance written this
+way has still needed a person to come back with what no number reported: a
+tooltip that passed its own text contrast and was invisible on the page behind
+it, a trail rendered in two typefaces, an icon stranded on its own line, text
+that fit the checklist and not the column.
 
 So plan for a second pass, and make it concrete. Drive the screens in the manual
 checks list, in light, dark and high contrast, and send back what you saw rather
 than what you think it means: "the tooltip is unreadable in dark", "the caution
 icon disappears next to the heading". A good follow-up prompt is short:
 
-> Here is what the product looks like in the running installer: `<describe what you
-saw, or attach screenshots>`. Diagnose each one before changing anything: say
-> whether it is the stylesheet, the role set, or Agama's own markup, since
-> the fix
-> differs. Measure again after every color change, and do not raise the size
-> scale to fix a font.
+> Here is what the product looks like in the running installer: `<describe what
+you saw, or attach screenshots>`. Diagnose each one before changing anything:
+> say whether it is the stylesheet, the role set, or Agama's own markup, since
+> the fix differs. Measure again after every color change, and do not raise the
+> size scale to fix a font.
 
-That last sentence is there because the reflex is strong and wrong.
+That last instruction is worth spelling out, because the reflex is strong: when
+a face looks too small or too large, the temptation is to move the size scale,
+which resizes every text in the UI and widens every line with it. The correction
+belongs on the face, through `size-adjust`; see
+[Using a font of your own](#using-a-font-of-your-own).
 
 ### If you already know the API needs extending
 
@@ -495,15 +559,6 @@ When the brand needs something you already know isn't covered (not just an
 unexpected gap found mid-task), say so upfront in the same prompt so the AI
 plans for it from the start instead of discovering it partway through:
 
-> This brand also needs `<describe the missing capability, e.g. "square
-corners on every control, not just buttons">`, which the current
-> `--agm-t--*` role set doesn't cover. Present a plan for the new role before
-> touching any file.
-
-> [!IMPORTANT]
-> No matter whether an AI or a human wrote it, every line (color values,
-> contrast numbers, SVG content, any role-API change) must be reviewed and
-> manually tested in the running app, in both light and dark mode, before
-> asking for the appearance to be included in the project. A report of
-> "done" or "verified" is not a substitute for someone actually looking at
-> it.
+> This brand also needs `<describe the missing capability, e.g. "square corners
+on every control, not just buttons">`, which the current `--agm-t--*` role set
+> doesn't cover. Present a plan for the new role before touching any file.
