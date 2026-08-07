@@ -16,9 +16,6 @@ This document is about designing and writing that file.
 [product_theming_packaging.md](product_theming_packaging.md) covers getting it
 onto a medium, which a product ships from its own package: no change to Agama's
 source or style files is involved.
-[product_theming_examples.md](product_theming_examples.md) walks through three
-products end to end, from the brief each started with to the problems each ran
-into, as worked examples of the steps below.
 
 **The short version.** Copy `example.css`, set only the roles the brand needs,
 add a light and a dark logo. Measure every contrast pair the checklist lists, in
@@ -52,6 +49,43 @@ survives an Agama upgrade.
   sits in. Center the drawing within the viewBox too, offsetting the viewBox
   when it helps, because the UI aligns the image box and not the ink: artwork
   sitting low in an otherwise square box hangs below the product name beside it.
+
+How far that goes is easier to see than to describe. The three products below do
+not exist and ship with nothing; they were dressed to find the edges of the role
+set, and each one is the same installer screen.
+
+> [!NOTE]
+> The screenshots were taken in August 2026. What each product does to the
+> interface is the point; the interface around it might have moved on since.
+
+**Colors and a logo, everything else untouched.** A published brand used as
+published: its blue on white in light, the same hue taken down to page darkness
+in dark, and its two typefaces. Corner radius, sizes and spacing stay at
+Agama's values, which is all most products ever need. The brand is the
+[Fedora Project's](https://docs.fedoraproject.org/en-US/project/brand/),
+borrowed as a friendly nod to a neighbour: Agama's interface is built on
+PatternFly, the open source design system Red Hat publishes, and Red Hat
+sponsors Fedora. No Fedora logo, artwork or name appears in the result, and
+Fedora is a trademark of Red Hat, Inc.
+
+![The installation overview dressed as Blue Sombrero: blue links and icons on white, two typefaces, PatternFly's own corners and sizes](images/theming/blue-sombrero.png)
+
+**The same, plus typography, radius and logo sizing.** Phosphor green on deep
+indigo with a magenta accent, monospace everywhere, every corner square, and two
+typefaces carried by the product itself. The light scheme is its own design, ink
+on warm paper, rather than the dark one inverted.
+
+![The installation overview dressed as Phosphor 86: phosphor green text and magenta links on deep indigo, everything monospace and square-cornered](images/theming/phosphor86.png)
+
+**A palette borrowed from artwork.** Pale cyan on charcoal, a pixel typeface
+brought along and scaled with `size-adjust` so it sits on Agama's size scale,
+square corners, and a pixel drawing for a logo. The status colors keep their
+meanings instead of collapsing into the brand color. Its palette is read off the
+[State of Devs 2026](https://survey.devographics.com/survey/state-of-devs/2026)
+survey [poster](https://assets.devographics.com/surveys/devs2026.png) and its
+face is [Departure Mono](https://departuremono.com/), both used as published.
+
+![The installation overview dressed as Pixel Leap 26: pale cyan text on charcoal, a pixel typeface, a pixel caret for a logo and a cyan primary button](images/theming/pixel-leap-26.png)
 
 ## What a product cannot change
 
