@@ -6,10 +6,10 @@ per-product file, loaded at runtime after Agama's own styles.
 
 This document is about designing and writing that file.
 [product_theming_packaging.md](product_theming_packaging.md) covers getting it
-onto a medium, which a product can do from its own package without contributing
-anything to Agama.
-[product_theming_examples.md](product_theming_examples.md) walks through two
-skins end to end, from the prompt each started with to the problems each ran
+onto a medium, which a product ships from its own package: no change to Agama's
+source or style files is involved.
+[product_theming_examples.md](product_theming_examples.md) walks through three
+skins end to end, from the brief each started with to the problems each ran
 into, as worked examples of the steps below.
 
 **The short version.** Copy `example.css`, set only the roles the brand needs,
