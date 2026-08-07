@@ -1,22 +1,29 @@
 # Worked examples
 
 A companion to [product_theming.md](product_theming.md): that document has the
-rules, this one has two whole skins, each from the prompt that started it to the
-problems it ran into. Both dress products that do not exist, and neither ships
-with Agama: what is worth keeping is the account, not the color values.
+rules, this one has three whole skins, each from the prompt that started it to
+the problems it ran into. All of them dress products that do not exist, and none
+ships with Agama: what is worth keeping is the account, not the color values.
 
 They are deliberately different cases. Blue Sombrero starts from a published
 brand with a palette and a typography pairing. Phosphor 86 starts from two
 pictures and a mood, which is the harder case and the one that fights more.
+Pixel Leap 26 starts from a single poster: a palette that exists but was drawn
+for the opposite job, and a typeface with metrics of its own.
 
-Neither was written in one pass. Each section below ends with what came back from
+None of them was written in one pass. Each section below ends with what came back from
 looking at the running installer, which is the part no checklist produces.
 
-Both prompts sit on top of the template and add only what their brief needs, with
-one exception: each opens the rule about not working around the role set, quoted
-from the template rather than reworded, since it is what decides the outcome when
-a brief meets a limit. Anything else the template says applies to both and is not
-repeated here, so a change to the template does not leave this chapter stale.
+The first two prompts sit on top of the template and add only what their brief
+needs, with one exception: each opens the rule about not working around the role
+set, quoted from the template rather than reworded, since it is what decides the
+outcome when a brief meets a limit. Anything else the template says applies to
+them too and is not repeated there, so a change to the template does not leave
+those two stale.
+
+The third is printed whole, because by then the template had absorbed everything
+the first two had to be told mid-flight, and reading one filled prompt end to end
+shows what that adds up to.
 
 ## Example 1: a published brand
 
@@ -201,7 +208,234 @@ Worth knowing when writing a skin: if something looks wrong and no role explains
 it, the markup may be the reason. Report it rather than bending the skin around
 it.
 
-## Verifying either of them
+## Example 3: a palette drawn for the opposite job
+
+**The brief.** Dress a fictional product in the artwork of the
+[State of Devs 2026](https://stateofdevs.com/) developer survey: pixel icons on
+charcoal, a pale cyan wordmark and a row of pastel category chips. Read the result as
+a retro terminal rather than as a poster, and set it in
+[Departure Mono](https://departuremono.com/), a monospaced pixel face.
+
+**The prompt**, as it was run. It is longer than the two above because it is the
+template in [product_theming.md](product_theming.md#prompting-an-ai-to-do-this)
+with everything those two skins had to be told mid-flight already folded in:
+
+> Work inside a checkout of the Agama sources. If you are not in one, clone
+> https://github.com/agama-project/agama and work there: the files named below
+> are how you find the current role set, and answering from memory instead
+> produces a stylesheet that looks plausible and sets roles that do not exist.
+>
+> Create a product skin for `PixelLeap26` using this brand: the State of Devs
+> 2026 developer survey, <https://stateofdevs.com/>. Its poster is pixel art on
+> charcoal `#212424`, with a mint `#bdfdff` wordmark and eight pastel category
+> chips carrying charcoal text: lime `#c7ff8f`, pink `#f9a3ff`, coral
+> `#ff8396`, sky `#86cdff`, purple `#a678ff`, orange `#ffc086`, blue `#619df3`,
+> yellow `#fafc55`. Treat mint as the brand color and the chips as the source
+> for statuses, links and the focus ring. Read the brand as a retro terminal
+> rather than as a poster: monospace everywhere, square corners, mint text on a
+> dark casing, a prompt caret for a logo. The poster supplies the palette and
+> the pixel grid, the terminal supplies the layout attitude. The skin file is
+> `web/src/assets/products/PixelLeap26.css`; a name that does not match loads
+> nothing and says nothing about why.
+>
+> First read `web/src/assets/products/example.css`, `example-advanced.css`,
+> `Phosphor86.css` (the closest neighbour in spirit: monospace, square, dark),
+> and the role-index comment at the top of
+> `web/src/assets/styles/tokens/_semantic.scss`, so you know the current
+> `--agm-t--*` role set rather than assuming it. A product file only ever sets
+> these roles; never a raw PatternFly or component-level variable directly.
+>
+> Set only the roles the brand actually needs. Every role left unset keeps
+> Agama's own value, so a skin that sets colors, a logo and a font family is a
+> finished skin. Reach for the size, radius and spacing roles only where the
+> brand genuinely differs, and say why when you do. Here the brand does differ
+> on radius: the poster is pixel art with square chips and square icon strokes,
+> so a zero or near-zero radius is defensible, and pixel type wants generous
+> letter-spacing rather than a bigger size scale.
+>
+> Some things no skin controls, so do not spend effort there: the high contrast
+> theme belongs to PatternFly and a skin may brand its accent and nothing else,
+> line height has no role, and Cyrillic, Georgian, Chinese, Japanese and Korean
+> get their family assigned per language, so a skin's typeface does not reach
+> them.
+>
+> Every pair you set has to clear WCAG AA: 4.5:1 for text against the background
+> it sits on, 3:1 for borders, icons, focus indicators and anything else that is
+> not text. That is the bar whether or not you can open the files named here.
+>
+> Read `doc/product_theming.md` for which pairs to check, and compute each one
+> explicitly with
+> `web/scripts/check-contrast.js <foreground> <background> [--target=4.5]`
+> (run from the repo root; `--target=3` for the non-text ones), in both light
+> and dark theme separately, rather than eyeballing. Measure every row of the
+> checklist, especially the ones easy to skip: statuses against the raised and
+> the floating surface as well as the page, borders against all three, and the
+> focus ring against the surface around it, with
+> `--agm-t--focus--separator--color` carrying the contrast against the fill
+> rather than the ring itself. Where a brand color fails, use the tool's
+> suggested same-hue/saturation shade rather than an unrelated substitute.
+> Raised and floating surfaces read lighter than the page in dark mode, not
+> darker; the tooltip roles are a separate call, see the elevation notes in the
+> document. Report the numbers you measured as a table.
+>
+> The chip pastels are tuned for charcoal text on a colored chip, which is the
+> opposite of how Agama uses a status color (colored text and icons on a
+> surface). Expect several of them to fail in the light theme at their published
+> value and to need a darker shade of the same hue there.
+>
+> Keep the five status colors distinguishable from each other, not only from
+> their background, and do not collapse them into the brand color: they carry
+> meaning that color alone must not be responsible for. Simulate protanopia and
+> deuteranopia over the five and report the closest pair. Also check them
+> against the brand, link and focus colors: a status that matches the link color
+> disappears where the two meet, such as an issue icon beside a heading that is
+> a link. Where they collide, move the brand side, not the status. The mint
+> brand color and the sky chip sit close in hue, so watch the link/info pair in
+> particular.
+>
+> For surfaces, report the absolute relative luminance of page, raised and
+> floating, not only their ratios: near black the same ratio means far less
+> separation than near white, so a dark theme can clear "lighter than the page"
+> and still read as one flat field. `#212424` is a light-ish charcoal rather
+> than a true black, which leaves room above it; use it. Compare the separation
+> you get in dark against the one you get in light, and say whether elevation or
+> the border is carrying the edges.
+>
+> This brand is natively a dark look, so design the light theme as its own thing
+> rather than inverting the dark palette, and say what premise you gave each
+> theme.
+>
+> Typography: use Departure Mono (<https://departuremono.com/>, SIL OFL,
+> monospaced pixel font). Keep the roles in relative units, check the result at
+> 200% zoom and at 1024x768, and make sure the family covers the languages the
+> UI is translated into (a Latin-only face switches faces mid-sentence: state
+> which scripts Departure Mono actually ships, Greek included, rather than
+> assuming). Name a family only when it is reachable (bundled by Agama,
+> installed on the system running the browser, or shipped with the skin), always
+> with fallbacks after it, and never add font files to Agama itself as part of a
+> skin. Departure Mono is not bundled by Agama today, so say explicitly how the
+> skin reaches it and what the fallback stack renders when it does not.
+>
+> Do not raise the size scale to compensate for a font that looks small or
+> large. Use `size-adjust` on its `@font-face`, computed from the ratio of cap
+> heights against a normal text face, and report both the cap heights and the
+> advance widths you measured. Advance width is the constraint that bites: a
+> body face scaled up widens every line by the same factor, so check the longest
+> sentence in the UI and the narrowest column before settling on a value. A
+> single-weight face means synthesized bold; say so rather than discovering it
+> later. Also report what the site's "font sizes in multiples of 11px" advice
+> means for a skin that has to stay in relative units, and whether the pixel
+> grid survives at 200% zoom.
+>
+> An icon is not automatically the color of the text it labels. If you change
+> the icon color role, check it against both headings and status icons.
+>
+> For the logo: a light and a dark SVG with a transparent background, named
+> `PixelLeap26.svg` and `PixelLeap26-dark.svg` (after the product's `icon:`
+> field). Draw it as pixel art on the same grid as the poster icons, in mint on
+> transparent for the dark file and in a charcoal-safe shade for the light one.
+> Read `ProductLogo` and its callers first to find the actual rendered size each
+> usage needs, keep the aspect ratio roughly square so the logo survives all of
+> them, and center the drawing inside the viewBox, since the UI aligns the image
+> box and not the ink. A pixel grid does not scale to arbitrary sizes cleanly:
+> pick a cell count that divides the real consuming sizes, and say which one.
+> Validate the SVG with `xmllint --noout` and a rendered preview at the real
+> consuming size, in both themes, before calling it done.
+>
+> **If something can't be done with the current `--agm-t--*` role set, don't get
+> creative.** Do not set a raw PatternFly token or component-variable override
+> from the product CSS file, and do not work around the "products only set
+> `--agm-t--*` roles" contract. Stop and present a plan for extending the shared
+> token API instead: the new role's name, where it gets documented (a role-index
+> comment in `_semantic.scss`) and resolved (a PF global token in
+> `_semantic.scss`, or a component-level override in
+> `_patternfly-overrides.scss`, with the current Agama value as the fallback
+> default so leaving it unset changes nothing), a worked example added to
+> `example-advanced.css`, and whether PatternFly actually splits the underlying
+> concern into several independent tokens under the hood (check before assuming
+> one override reaches everywhere it should). Get that plan approved before
+> writing any code. Letter-spacing and `image-rendering` are the two likely
+> candidates for this brand: if no role covers them, ask, do not improvise.
+>
+> Finally, list what you could not verify yourself, so it can be checked in the
+> running installer. Be specific: "the product list with the pixel logo at its
+> real size", "a tooltip over a busy screen", "the overview at 1024x768",
+> "the Greek and Cyrillic translations mid-sentence", not "please review".
+
+### The decisions the poster does not make
+
+- **Premises.** Dark is the terminal: the poster's own charcoal, the chips as
+  statuses, the poster yellow as the focus ring. Light is that poster printed:
+  paper, dark teal ink, the chip hues taken down to printing inks.
+- **How much of the wordmark color.** `#bdfdff` is a pale cyan, and a whole
+  screen set in it is a glare rather than a terminal. Running text is that cyan
+  dimmed to `#b7ebed`, which reads as a cool near-white at paragraph length,
+  while the full value stays on the logo, links, icons and the fill of a primary
+  button. The poster works the same way: saturated color in small areas against
+  a large calm field.
+- **The logo.** An 8x8 pixel prompt caret, `>_`, drawn on the same grid as the
+  poster icons: cyan on transparent for dark, ink teal for light. It is the one
+  place the terminal reading beats the poster reading outright.
+- **What stayed unset.** The size scale, the icon sizes and the spacing roles.
+  Only radius (zero, because a pixel grid has no rounded corners), the families
+  and the logo sizes were touched beyond color.
+
+### What fought back
+
+**A palette that is the wrong way round.** Every chip on the poster is a colored
+background under charcoal text. Every status in Agama is colored text or a
+colored icon on a surface. The pastels survive that inversion in the dark theme
+and none of them survive it on paper: the cyan measures 1.1:1 on white. The light
+theme is the same hues taken to ink strength (`#005f64` for the brand, `#0064b0`
+`#8f4d00` `#c0223a` `#15683a` `#6a3ce0` for the statuses), which is a different
+palette wearing the same hues, not an inverted one.
+
+**Two status pairs that merged.** At its published value the sky chip landed
+0.083 from the purple under deuteranopia, close enough to read as one color;
+info moved to a lighter tint of it (`#a8dcff`), which took the pair to 0.189.
+The poster yellow and the lime green have all but identical simulated luminance
+under protanopia, so caution took the orange chip instead and yellow became the
+focus ring, where it sits 0.228 or more from every status. In light, the poster
+pink as a focus ring landed 0.045 from the info blue, so focus became the brand
+teal: the brand side moves, never the status.
+
+**A focus ring that vanished on its own button.** The yellow ring measures
+14.24:1 on the page and 1.02:1 against the cyan brand fill, which is what
+`--agm-t--focus--separator--color` exists for: the charcoal hairline reads
+13.90:1 against the fill and 14.24:1 against the ring.
+
+**A dark theme with room to spare.** The poster charcoal is a light-ish black,
+so the surfaces stack at 0.0171, 0.0297 and 0.0450 relative luminance, against
+0.9467, 0.8285 and 1.0000 in light. The dark steps are still an order of
+magnitude smaller in absolute light, so the border carries the edges there and
+elevation only supports it, while in light the page-to-raised step is visible on
+its own. Ratios alone would have called the two themes comparable.
+
+**A typeface that reads large, not small.** Departure Mono fills 0.727em with
+its capitals and 0.545em with its x-height, against 0.700em and 0.481em for the
+SUSE families it replaces. The instinct is to raise the size scale; the correct
+move is the opposite sign, `size-adjust: 96%` on the `@font-face`, which also
+brings the advance from 0.636em to 0.611em, under two percent wider than the
+0.600em of the bundled monospace, so the longest strings in the UI keep the room
+they have. It has a single weight, so bold is synthesized: headings stay at 400
+and lean on size instead. Its Latin, Greek and Cyrillic coverage means the
+translated UI stays in one face nearly everywhere; the CJK locales are assigned
+per language and never reach it. Its own advice, sizes in multiples of 11px, is
+not reachable from relative units and a size adjustment, so the pixel grid is
+resampled rather than exact.
+
+### What was Agama's fault, not the skin's
+
+The fluid breadcrumb size this skin was built against was measured with a
+container query, which meant making the masthead a container. From the xl
+breakpoint on, PatternFly lays the masthead out as a subgrid of the page, and an
+element carrying size containment cannot be a subgrid: it fell back to a single
+column and stacked the heading above the toolbar, at 1200px exactly and wider.
+The measure is the viewport now. As in the previous example: when something
+looks wrong and no role explains it, suspect the markup or the framework
+underneath rather than the color file.
+
+## Verifying any of them
 
 Contrast first, with the checker rather than the eye:
 
