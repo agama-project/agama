@@ -14,11 +14,25 @@ The three examples cover deliberately different situations:
 
 1. **Blue Sombrero** starts from a published brand with a palette and
    typography.
+
+   ![The installation overview in the Blue Sombrero skin: blue links and icons on white, two typefaces, PatternFly's own corners and sizes](images/theming/blue-sombrero.png)
+
 2. **Phosphor 86** starts from two pictures and a mood: the harder case, and the
    one that fights more.
+
+   ![The installation overview in the Phosphor 86 skin: phosphor green text and magenta links on deep indigo, everything monospace and square-cornered](images/theming/phosphor86.png)
+
 3. **Pixel Leap 26** starts from a single poster whose colors were designed as
    backgrounds under dark text, while a skin needs them as text and icons on a
    surface.
+
+   ![The installation overview in the Pixel Leap 26 skin: green text on charcoal, a pixel typeface, a pixel caret for a logo and a full-color primary button](images/theming/pixel-leap-26.png)
+
+> [!WARNING]
+> These screenshots were taken in August 2026 and show the Agama web UI of that
+> moment. What each skin does to the interface is the point; the interface
+> around it has moved on since, so expect differences from the installer you are
+> looking at.
 
 None of them was written in one pass. Each example reports what only became
 visible in the running installer, which is the part no checklist produces.
