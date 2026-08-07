@@ -310,7 +310,7 @@
           {
             "key": "wireless",
             "support": "yes",
-            "agama": "wireless",
+            "agama": "network.connections[].wireless",
             "notes": "It uses a different format."
           },
           { "key": "dhclient_set_down_link", "support": "no" },
@@ -325,7 +325,8 @@
           {
             "key": "bonding_module_opts",
             "support": "yes",
-            "agama": "network.connections[].bond.options"
+            "agama": "network.connections[].bond.options",
+            "notes": "The `mode` option is set in `network.connections[].bond.mode`. Numeric modes (e.g., `mode=1`) are supported too."
           },
           {
             "key": "bonding_slave0",
@@ -385,7 +386,8 @@
           {
             "key": "bridge_forward_delay",
             "support": "yes",
-            "agama": "network.connections[].bridge.forwardDelay"
+            "agama": "network.connections[].bridge.forwardDelay",
+            "notes": "Negative values are ignored."
           },
           {
             "key": "bridge_forwarddelay",
@@ -406,12 +408,14 @@
           {
             "key": "etherdevice",
             "support": "yes",
-            "agama": "network.connections[].vlan.parent"
+            "agama": "network.connections[].vlan.parent",
+            "notes": "Inferred from the device name (e.g., 'eth0' for 'eth0.10') when it is not set."
           },
           {
             "key": "vlan_id",
             "support": "yes",
-            "agama": "network.connections[].vlan.id"
+            "agama": "network.connections[].vlan.id",
+            "notes": "Inferred from the device name (e.g., 10 for 'eth0.10') when it is not set. It must be lower than 4095, which is reserved."
           },
           {
             "key": "wireless_auth_mode",

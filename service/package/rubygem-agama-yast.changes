@@ -1,9 +1,12 @@
 -------------------------------------------------------------------
 Fri Aug  7 12:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
-- Fix the AutoYaST compatibility report for the wireless elements
-  and ignore the reserved VLAN identifier 4095, which is rejected
-  by NetworkManager (gh#agama-project/agama#3805).
+- Improve the AutoYaST compatibility report for the network
+  section: fix the Agama counterparts and the notes of the
+  wireless elements and describe how the bonding, bridge and VLAN
+  ones are converted (gh#agama-project/agama#3805).
+- Ignore the reserved VLAN identifier 4095, which is rejected by
+  NetworkManager (gh#agama-project/agama#3805).
 
 -------------------------------------------------------------------
 Thu Aug  6 17:25:09 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
