@@ -67,18 +67,17 @@ and do not invent brand colors.
 
 **What fought back.**
 
-- **The lighter blue is unreadable as text.** `#51a2da` measures 2.79:1 on white.
-  It stays in the palette as a dark-theme status, while the light theme uses the
-  same hue taken down until it clears AA. Same treatment for the other statuses,
-  each darkened or lightened along its own hue, with the source brand color named
-  in a comment next to it.
+- **The lighter blue is unreadable as text.** `#51a2da` measures 2.79:1 on white,
+  so it stays a dark-theme status and the light theme takes the same hue down
+  until it clears AA. Every other status got the same treatment, with the source
+  brand color named in a comment beside it.
 - **The dark theme had to be invented.** The brand publishes tints and shades,
-  not dark-theme surfaces. Inverting the light theme turned the blues gray, so
-  the dark theme is a night-blue page (the Dark Fedora Blue hue taken down to
-  page darkness) with the published light tints as ink.
+  not dark surfaces, and inverting the light theme turned the blues gray. Dark is
+  a night-blue page, the Dark Fedora Blue hue taken down to page darkness, with
+  the published light tints as ink.
 - **The tooltip is inverted rather than elevated.** On a page that dark, a
-  slightly lighter tooltip leans on its shadow to be seen at all. It is near
-  white with dark text instead.
+  slightly lighter tooltip leans on its shadow to be seen. Near white with dark
+  text instead.
 
 **What it left alone**, which is the point of this example: corner radius, the
 size scale, spacing, icon sizes. A product that sets colors, a logo and a font
@@ -136,65 +135,58 @@ smaller than the text around them.
 
 ### What fought back
 
-**Borders taken from a photograph.** Two measured 1.69:1 and 1.51:1 against their
-backgrounds, which is roughly invisible: a picture has no idea how faint its own
-lines are. A third passed against the page (3.20:1) and failed against the raised
-surface behind the masthead (2.82:1), which is why the checklist measures a border
-against every surface it can land on.
+**Borders taken from a photograph.** Two measured 1.69:1 and 1.51:1, which is
+roughly invisible: a picture has no idea how faint its own lines are. A third
+passed on the page (3.20:1) and failed on the raised surface behind the masthead
+(2.82:1), which is why a border is measured against every surface it can land
+on.
 
 **A tooltip that passed and could not be seen.** Darker than the page, as a
-tooltip in a terminal wants to be, on a page already close to black: nothing but
-its shadow separated it from what it covered. It is inverted now, phosphor green
-with indigo text. No WCAG criterion covers surface-to-surface separation, so this
-is a design call a checklist cannot make.
+terminal tooltip wants to be, on a page already close to black: only its shadow
+separated it from what it covered. It is inverted now, phosphor green on indigo.
+No WCAG criterion covers surface-to-surface separation, so a checklist cannot
+make this call.
 
-**Two status pairs that merge for some readers.** Simulating deuteranopia put the
-neon pink danger on the phosphor green success; under protanopia the light
-theme's red and green collapsed onto the same hue with nearly the same lightness.
-Danger moved to vermilion (`#ff8f66`), light success went darker (`#07502c`). One
-weak pair is left on purpose: the info blue and the success green sit close under
-tritanopia, and every attempt to spread them pushed the info blue into the magenta
-accent under deuteranopia, which is commoner and more confusing.
+**Two status pairs that merge for some readers.** Deuteranopia put the neon pink
+danger on the phosphor green success; protanopia collapsed the light theme's red
+and green onto one hue at nearly one lightness. Danger moved to vermilion
+(`#ff8f66`), light success went darker (`#07502c`). One weak pair stays on
+purpose: spreading the info blue from the success green under tritanopia pushed
+it into the magenta accent under deuteranopia, which is commoner.
 
-**A status color that collided with the link color.** Links were the neon yellow
-of the reference, which is also the caution color, and headings in the overview
-are links: the icon signalling an issue rendered in exactly the color of the
-heading beside it and read as decoration. Links moved to the magenta accent, and
-the icon color role followed them, so an icon and the heading it labels read as
-one item while status icons keep their own color.
+**A status color that collided with the link color.** Links were the reference's
+neon yellow, which is also the caution color, and overview headings are links: an
+icon signalling an issue rendered in exactly the color of the heading beside it.
+Links moved to the magenta accent and the icon color role followed, so an icon
+and its heading read as one item while status icons keep their own color.
 
-**A dark theme that measured elevated and looked flat.** Raised and floating were
-lighter than the page and still read as one field. The ratios said the two themes
-were comparable (light 1.13 and 1.08, dark 1.10 and 1.18); absolute luminance
-said the light theme separated its surfaces by 0.113 and 0.078 against 0.006 and
-0.010 in dark. The dark steps went up to `#241b4d` and `#32285f`, which pushed the
-custom status onto a lighter magenta to keep 4.5:1 on a floating surface.
+**A dark theme that measured elevated and looked flat.** The ratios called the
+themes comparable (light 1.13 and 1.08, dark 1.10 and 1.18); absolute luminance
+separated the light surfaces by 0.113 and 0.078 against 0.006 and 0.010 in dark.
+The dark steps went up to `#241b4d` and `#32285f`, pushing the custom status onto
+a lighter magenta to keep 4.5:1 on a floating surface.
 
-**A pixel typeface that had to be talked down to headings.** An authentic CRT face
-everywhere is the temptation, and for running text in a translated installer it
-breaks down: one weight, so emphasis has nothing to render with; strokes that
-fall apart at fractional sizes; coverage that stops around Latin, so a screen
-switches faces mid-sentence. Headings are short, large and few, which is the
-budget such a face fits. So headings are
-[Sixtyfour](https://fonts.google.com/specimen/Sixtyfour) and running text is
-[Cutive Mono](https://fonts.google.com/specimen/CutiveMono), both shipped with
-the skin under the SIL Open Font License, with ordinary screen monospaces behind
-them in the fallback chain and for data such as device names and addresses.
+**A pixel typeface that had to be talked down to headings.** For running text in
+a translated installer it breaks down: one weight, so emphasis has nothing to
+render with; strokes that fall apart at fractional sizes; coverage stopping
+around Latin, so a screen switches faces mid-sentence. Headings are short, large
+and few, which is the budget it fits:
+[Sixtyfour](https://fonts.google.com/specimen/Sixtyfour) for those,
+[Cutive Mono](https://fonts.google.com/specimen/CutiveMono) for running text,
+both shipped with the skin under the SIL Open Font License, with ordinary screen
+monospaces behind them and for data such as device names.
 
-**Font sizes, which took the longest.** Two faces at the same nominal size are
-not the same size: the pixel face fills most of its em, the typewriter face has a
-small x-height. The skin first raised the whole size scale to compensate, which
-is wrong twice over. It moves every text in the UI to accommodate one font, and
-it brings width along: the typewriter face has the same advance as any monospace,
-so scaling it up 25% widens every line by 25%, and the summary columns run out
-before the text gets comfortable. The scale went back to Agama's values and each
-face carries its own `size-adjust`, set from cap heights and then checked against
-the longest sentence in the UI.
+**Font sizes, which took the longest.** Two faces at one nominal size are not the
+same size: the pixel face fills most of its em, the typewriter face has a small
+x-height. Raising the whole size scale is wrong twice over: it moves every text
+in the UI for one font, and it brings width along, since scaling a monospace up
+25% widens every line by 25% and the summary columns run out first. The scale
+went back to Agama's values and each face carries its own `size-adjust`, set from
+cap heights and checked against the longest sentence in the UI.
 
-Nothing in the prompt above warned about any of that, which is why it took so
-long. The template asks for `size-adjust`, for measured cap heights and for
-advance widths because this is where it learned to, and the prompt quoted here is
-left as it was sent rather than backfilled with the answer.
+Nothing in the prompt above warned about any of that. The template asks for
+`size-adjust`, cap heights and advance widths because this is where it learned
+to, and the prompt is left as it was sent rather than backfilled with the answer.
 
 ### What was Agama's fault, not the skin's
 
@@ -375,12 +367,11 @@ with everything those two skins had to be told mid-flight already folded in:
 - **Premises.** Dark is the terminal: the poster's own charcoal, the chips as
   statuses, the poster yellow as the focus ring. Light is that poster printed:
   paper, dark teal ink, the chip hues taken down to printing inks.
-- **How much of the wordmark color.** `#bdfdff` is a pale cyan, and a whole
-  screen set in it is a glare rather than a terminal. Running text is that cyan
-  dimmed to `#b7ebed`, which reads as a cool near-white at paragraph length,
-  while the full value stays on the logo, links, icons and the fill of a primary
-  button. The poster works the same way: saturated color in small areas against
-  a large calm field.
+- **How much of the wordmark color.** A whole screen set in `#bdfdff` is a glare
+  rather than a terminal. Running text is that cyan dimmed to `#b7ebed`, a cool
+  near-white at paragraph length, and the full value stays on the logo, links,
+  icons and primary fills. The poster does the same: saturated color in small
+  areas against a large calm field.
 - **The logo.** An 8x8 pixel prompt caret, `>_`, drawn on the same grid as the
   poster icons: cyan on transparent for dark, ink teal for light. It is the one
   place the terminal reading beats the poster reading outright.
@@ -391,46 +382,39 @@ with everything those two skins had to be told mid-flight already folded in:
 ### What fought back
 
 **Colors that sit under text, needed on top of it.** Every chip on the poster is
-a colored background under charcoal text. Every status in Agama is colored text or a
-colored icon on a surface. The pastels survive that inversion in the dark theme
-and none of them survive it on paper: the cyan measures 1.1:1 on white. The light
-theme is the same hues taken to ink strength (`#005f64` for the brand, `#0064b0`
-`#8f4d00` `#c0223a` `#15683a` `#6a3ce0` for the statuses), which is a different
-palette wearing the same hues, not an inverted one.
+a background under charcoal text, while a status is colored text or an icon on a
+surface. The pastels survive that inversion in dark and none survives it on
+paper, where the cyan measures 1.1:1 on white. Light is the same hues at ink
+strength (`#005f64` brand, `#0064b0` `#8f4d00` `#c0223a` `#15683a` `#6a3ce0`
+statuses): a different palette wearing the same hues, not an inverted one.
 
-**Two status pairs that merged.** At its published value the sky chip landed
-0.083 from the purple under deuteranopia, close enough to read as one color;
-info moved to a lighter tint of it (`#a8dcff`), which took the pair to 0.189.
-The poster yellow and the lime green have all but identical simulated luminance
-under protanopia, so caution took the orange chip instead and yellow became the
-focus ring, where it sits 0.228 or more from every status. In light, the poster
-pink as a focus ring landed 0.045 from the info blue, so focus became the brand
-teal: the brand side moves, never the status.
+**Two status pairs that merged.** The sky chip landed 0.083 from the purple under
+deuteranopia, so info moved to a lighter tint of it (`#a8dcff`), taking the pair
+to 0.189. The poster yellow and the lime green share a simulated luminance under
+protanopia, so caution took the orange chip and yellow became the focus ring,
+0.228 or more from every status. In light, the poster pink as a ring landed 0.045
+from the info blue, so focus became the brand teal: the brand side moves, never
+the status.
 
 **A focus ring that vanished on its own button.** The yellow ring measures
 14.24:1 on the page and 1.02:1 against the cyan brand fill, which is what
 `--agm-t--focus--separator--color` exists for: the charcoal hairline reads
 13.90:1 against the fill and 14.24:1 against the ring.
 
-**A dark theme with room to spare.** The poster charcoal is a light-ish black,
-so the surfaces stack at 0.0171, 0.0297 and 0.0450 relative luminance, against
-0.9467, 0.8285 and 1.0000 in light. The dark steps are still an order of
-magnitude smaller in absolute light, so the border carries the edges there and
-elevation only supports it, while in light the page-to-raised step is visible on
-its own. Ratios alone would have called the two themes comparable.
+**A dark theme with room to spare.** The poster charcoal is a light-ish black, so
+the surfaces stack at 0.0171, 0.0297 and 0.0450 relative luminance against
+0.9467, 0.8285 and 1.0000 in light: an order of magnitude less separation, so the
+border carries the edges in dark while elevation only supports it. Ratios alone
+would have called the two themes comparable.
 
-**A typeface that reads large, not small.** Departure Mono fills 0.727em with
-its capitals and 0.545em with its x-height, against 0.700em and 0.481em for the
-SUSE families it replaces. The instinct is to raise the size scale; the correct
-move is the opposite sign, `size-adjust: 96%` on the `@font-face`, which also
-brings the advance from 0.636em to 0.611em, under two percent wider than the
-0.600em of the bundled monospace, so the longest strings in the UI keep the room
-they have. It has a single weight, so bold is synthesized: headings stay at 400
-and lean on size instead. Its Latin, Greek and Cyrillic coverage means the
-translated UI stays in one face nearly everywhere; the CJK locales are assigned
-per language and never reach it. Its own advice, sizes in multiples of 11px, is
-not reachable from relative units and a size adjustment, so the pixel grid is
-resampled rather than exact.
+**A typeface that reads large, not small.** Departure Mono fills 0.727em with its
+capitals against 0.700em for the SUSE families it replaces, so `size-adjust` goes
+down rather than up: 96%, which also brings the advance from 0.636em to 0.611em,
+under two percent wider than the bundled monospace, so the longest strings keep
+the room they have. One weight, so bold is synthesized and headings stay at 400.
+Latin, Greek and Cyrillic keep the translated UI in one face; its own advice of
+11px multiples is unreachable from relative units, so the pixel grid is resampled
+rather than exact.
 
 ## Verifying any of them
 
