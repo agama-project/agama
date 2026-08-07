@@ -10,6 +10,12 @@ The stylesheets are not reproduced here, and none of them ships with Agama: they
 dress products that do not exist, and what is worth keeping is the reasoning
 rather than the color values.
 
+> [!WARNING]
+> The screenshots below were taken in August 2026 and show the Agama web UI of
+> that moment. What each skin does to the interface is the point; the interface
+> around it might have moved on since, so expect differences from the installer
+> you are looking at.
+
 The three examples cover deliberately different situations:
 
 1. **Blue Sombrero** starts from a published brand with a palette and
@@ -27,12 +33,6 @@ The three examples cover deliberately different situations:
    surface.
 
    ![The installation overview in the Pixel Leap 26 skin: green text on charcoal, a pixel typeface, a pixel caret for a logo and a full-color primary button](images/theming/pixel-leap-26.png)
-
-> [!WARNING]
-> These screenshots were taken in August 2026 and show the Agama web UI of that
-> moment. What each skin does to the interface is the point; the interface
-> around it has moved on since, so expect differences from the installer you are
-> looking at.
 
 None of them was written in one pass. Each example reports what only became
 visible in the running installer, which is the part no checklist produces.
