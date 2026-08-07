@@ -1,9 +1,11 @@
 # Worked examples
 
 This document is a companion to [product_theming.md](product_theming.md). That
-one has the rules; this one tells how three skins were built, each from the
-prompt that started it to the problems it ran into. That prompt is the brief the
-skin was drafted from, written for an AI on top of the
+one has the rules; this one tells how three of them were built, each from the
+prompt that started it to the problems it ran into. A product describes its
+colors in both color schemes, so each appearance here had to be designed twice:
+once for light and once for dark. That prompt is the brief the
+appearance was drafted from, written for an AI on top of the
 [template in the guide](product_theming.md#prompting-an-ai-to-do-this).
 
 The stylesheets are not reproduced here, and none of them ships with Agama: they
@@ -12,7 +14,8 @@ rather than the color values.
 
 > [!WARNING]
 > The screenshots in this document were taken in August 2026 and show the Agama
-> web UI of that moment. What each skin does to the interface is the point; the
+> web UI of that moment. What each product does to the interface is the point;
+> the
 > interface around it might have moved on since, so expect differences from the
 > installer you are looking at.
 
@@ -23,7 +26,7 @@ The three examples cover deliberately different situations:
 2. **Phosphor 86** starts from two pictures and a mood: the harder case, and the
    one that fights more.
 3. **Pixel Leap 26** starts from a single poster whose colors were designed as
-   backgrounds under dark text, while a skin needs them as text and icons on a
+   backgrounds under dark text, while a product needs them as text and icons on a
    surface.
 
 None of them was written in one pass. Each example reports what only became
@@ -49,7 +52,7 @@ invent brand colors.
 
 **The prompt**, on top of the template:
 
-> Create a product skin for `BlueSombrero` using the official Fedora brand
+> Create a product stylesheet for `BlueSombrero` using the official Fedora brand
 > palette and typography: main colors Dark Fedora Blue `#294172`, Fedora Blue
 > `#3c6eb4`, New Fedora Blue `#51a2da`, Freedom Purple `#a07cbc`, Friends
 > Magenta `#db3279`, Features Orange `#e59728`, First Green `#79db32`, plus the
@@ -64,11 +67,11 @@ invent brand colors.
 > Prefer the published color-blind safe values whenever two statuses would
 > converge under protanopia or deuteranopia.
 >
-> Montserrat is not bundled by Agama, so the skin carries it: declare an
+> Montserrat is not bundled by Agama, so the stylesheet carries it: declare an
 > `@font-face` pointing next to the stylesheet, and note in a comment that a
 > real product ships the file from its own package.
 >
-> Leave corner radius, sizes and spacing unset: this skin shows what a product
+> Leave corner radius, sizes and spacing unset: this one shows what a product
 > gets for free.
 >
 > **If something can't be done with the current `--agm-t--*` role set, don't
@@ -77,16 +80,16 @@ invent brand colors.
 > set `--agm-t--*` roles" contract. Stop and present a plan for extending the
 > shared token API instead, and get that plan approved before writing any code.
 
-![The installation overview in the Blue Sombrero skin: blue links and icons on white, two typefaces, PatternFly's own corners and sizes](images/theming/blue-sombrero.png)
+![The installation overview dressed as Blue Sombrero: blue links and icons on white, two typefaces, PatternFly's own corners and sizes](images/theming/blue-sombrero.png)
 
 ### What fought back
 
 - **The lighter blue is unreadable as text.** `#51a2da` measures 2.79:1 on
-  white. It stays a dark-theme status, and the light theme darkens the same hue
+  white. It stays a dark-scheme status, and light darkens the same hue
   until it clears AA. Every other status got the same treatment, with the
   original brand color named in a comment beside it.
-- **The dark theme had to be invented.** The brand publishes tints and shades,
-  not dark surfaces, and inverting the light theme turned the blues gray. The
+- **The dark scheme had to be invented.** The brand publishes tints and shades,
+  not dark surfaces, and inverting the light one turned the blues gray. The
   answer: a night-blue page (Dark Fedora Blue taken down to page darkness) with
   the published light tints as ink.
 - **The tooltip is inverted, not elevated.** On a page that dark, a slightly
@@ -108,7 +111,7 @@ reference images rather than a brand guideline.
 
 **The prompt**, again on top of the template:
 
-> Create a product skin for `Phosphor86` using this brand: a retro terminal
+> Create a product stylesheet for `Phosphor86` using this brand: a retro terminal
 > look, drawn from these two references:
 > `https://www.scummvm.org/data/screenshots/dreamweb/dreamweb/dreamweb_dos_en_1_10_full.png`
 > (a DOS-era phosphor-green terminal: green text and a thin green frame on a
@@ -122,7 +125,8 @@ reference images rather than a brand guideline.
 > inverting one into the other, and say what the premises are.
 >
 > The look is monospace and square-cornered, so it also touches the typography,
-> radius and logo roles. If it needs a typeface Agama does not bundle, the skin
+> radius and logo roles. If it needs a typeface Agama does not bundle, the
+> stylesheet
 > carries it.
 >
 > **If something can't be done with the current `--agm-t--*` role set, don't
@@ -131,11 +135,11 @@ reference images rather than a brand guideline.
 > set `--agm-t--*` roles" contract. Stop and present a plan for extending the
 > shared token API instead, and get that plan approved before writing any code.
 
-![The installation overview in the Phosphor 86 skin: phosphor green text and magenta links on deep indigo, everything monospace and square-cornered](images/theming/phosphor86.png)
+![The installation overview dressed as Phosphor 86: phosphor green text and magenta links on deep indigo, everything monospace and square-cornered](images/theming/phosphor86.png)
 
 That last paragraph earned its place immediately. It turned "make the buttons
 bigger" into a plan for a new role, instead of a PatternFly token set behind the
-contract's back. The plan is still pending, so control labels in this skin read
+contract's back. The plan is still pending, so control labels in this one read
 smaller than the text around them.
 
 ### The decisions the images do not make
@@ -166,7 +170,7 @@ smaller than the text around them.
   checklist cannot make this call.
 - **Two status pairs that merge for some readers.** Deuteranopia put the
   neon-pink danger on the phosphor-green success; protanopia collapsed the light
-  theme's red and green onto one hue at nearly one lightness. Danger moved to
+  light scheme's red and green onto one hue at nearly one lightness. Danger moved to
   vermilion (`#ff8f66`); light success went darker (`#07502c`). One weak pair
   stays on purpose: separating the info blue from the success green under
   tritanopia would have pushed it into the magenta accent under deuteranopia,
@@ -177,8 +181,9 @@ smaller than the text around them.
   the color of the heading beside it. Links moved to the magenta accent, and the
   icon color role followed, so an icon and its heading read as one item while
   status icons keep their own color.
-- **A dark theme that measured elevated and looked flat.** The contrast _ratios_
-  called the themes comparable (light 1.13 and 1.08, dark 1.10 and 1.18). The
+- **A dark scheme that measured elevated and looked flat.** The contrast
+  _ratios_ called the two comparable (light 1.13 and 1.08, dark 1.10 and 1.18).
+  The
   _absolute luminance_ told the truth: the light surfaces were separated by
   0.113 and 0.078, the dark ones by only 0.006 and 0.010. The dark steps went up
   to `#241b4d` and `#32285f`, which pushed the custom status onto a lighter
@@ -190,7 +195,7 @@ smaller than the text around them.
   large and few, which is the budget it fits:
   [Sixtyfour](https://fonts.google.com/specimen/Sixtyfour) for headings, [Cutive
   Mono](https://fonts.google.com/specimen/CutiveMono) for running text, both
-  shipped with the skin under the SIL Open Font License, with ordinary screen
+  shipped with the product under the SIL Open Font License, with ordinary screen
   monospaces behind them and for data such as device names.
 - **Font sizes, which took the longest.** Two faces at one nominal size are not
   the same size: the pixel face fills most of its em, the typewriter face has a
@@ -206,10 +211,11 @@ Nothing in the prompt warned about any of that. The template asks for
 to, and the prompt is left as it was sent rather than backfilled with the
 answer.
 
-### What was Agama's fault, not the skin's
+### What was Agama's fault, not the product's
 
-A skin that pairs two visibly different families, and moves the icon color off
-the body text color, makes assumptions visible that a default skin hides. This
+A product that pairs two visibly different families, and moves the icon color
+off the body text color, makes assumptions visible that Agama's own colors hide.
+This
 one turned up several, all fixed in Agama rather than worked around in the file:
 
 - a breadcrumb trail rendering in two typefaces, because only its last item is a
@@ -217,9 +223,9 @@ one turned up several, all fixed in Agama rather than worked around in the file:
 - a summary icon stranded on its own line when a long title wrapped,
 - two icons in the same row coming from different components at different sizes.
 
-Worth knowing when writing a skin: if something looks wrong and no role explains
-it, the markup may be the reason. Report it rather than bending the skin around
-it.
+Worth knowing when writing one: if something looks wrong and no role explains
+it, the markup may be the reason. Report it rather than bending the colors
+around it.
 
 ---
 
@@ -236,11 +242,11 @@ above eight pastel category chips](images/theming/state-of-devs-2026-poster.png)
 
 The poster is the survey's own artwork
 ([original](https://assets.devographics.com/surveys/devs2026.png)), reproduced
-here as the brief the skin was drawn from.
+here as the brief the appearance was drawn from.
 
-**The prompt**, as it was run. It is longer than the two above because it is the
-template with everything those two skins had to be told mid-flight already
-folded in:
+**The prompt**, printed whole and in the words this document now uses. It is
+longer than the two above because it is the template with everything the other
+two had to be told mid-flight already folded in:
 
 > Work inside a checkout of the Agama sources. If you are not in one, clone
 > https://github.com/agama-project/agama and work there: the files named
@@ -248,7 +254,8 @@ folded in:
 > instead produces a stylesheet that looks plausible and sets roles that do not
 > exist.
 >
-> Create a product skin for `PixelLeap26` using this brand: the State of Devs
+> Create a product stylesheet for `PixelLeap26` using this brand: the State of
+> Devs
 > 2026 developer survey, <https://stateofdevs.com/>. Its poster is pixel art on
 > charcoal `#212424`, with a mint `#bdfdff` wordmark and eight pastel category
 > chips carrying charcoal text: lime `#c7ff8f`, pink `#f9a3ff`, coral
@@ -257,7 +264,7 @@ folded in:
 > for statuses, links and the focus ring. Read the brand as a retro terminal
 > rather than as a poster: monospace everywhere, square corners, mint text on a
 > dark casing, a prompt caret for a logo. The poster supplies the palette and
-> the pixel grid, the terminal supplies the layout attitude. The skin file is
+> the pixel grid, the terminal supplies the layout attitude. The stylesheet is
 > `web/src/assets/products/PixelLeap26.css`; a name that does not match loads
 > nothing and says nothing about why.
 >
@@ -269,17 +276,19 @@ folded in:
 > these roles; never a raw PatternFly or component-level variable directly.
 >
 > Set only the roles the brand actually needs. Every role left unset keeps
-> Agama's own value, so a skin that sets colors, a logo and a font family is a
-> finished skin. Reach for the size, radius and spacing roles only where the
+> Agama's own value, so a stylesheet that sets colors, a logo and a font family
+> is finished. Reach for the size, radius and spacing roles only where the
 > brand genuinely differs, and say why when you do. Here the brand does differ
 > on radius: the poster is pixel art with square chips and square icon strokes,
 > so a zero or near-zero radius is defensible, and pixel type wants generous
 > letter-spacing rather than a bigger size scale.
 >
-> Some things no skin controls, so do not spend effort there: the high contrast
-> theme belongs to PatternFly and a skin may brand its accent and nothing else,
+> Some things a product cannot control, so do not spend effort there: the high
+> contrast mode belongs to PatternFly and a product may brand its accent and
+> nothing else,
 > line height has no role, and Cyrillic, Georgian, Chinese, Japanese and Korean
-> get their family assigned per language, so a skin's typeface does not reach
+> get their family assigned per language, so a product's typeface does not
+> reach
 > them.
 >
 > Every pair you set has to clear WCAG AA: 4.5:1 for text against the
@@ -334,10 +343,10 @@ folded in:
 > UI is translated into (a Latin-only face switches faces mid-sentence: state
 > which scripts Departure Mono actually ships, Greek included, rather than
 > assuming). Name a family only when it is reachable (bundled by Agama,
-> installed on the system running the browser, or shipped with the skin),
+> installed on the system running the browser, or shipped with the product),
 > always with fallbacks after it, and never add font files to Agama itself as
-> part of a skin. Departure Mono is not bundled by Agama today, so say
-> explicitly how the skin reaches it and what the fallback stack renders when
+> part of it. Departure Mono is not bundled by Agama today, so say explicitly
+> how the stylesheet reaches it and what the fallback stack renders when
 > it does not.
 >
 > Do not raise the size scale to compensate for a font that looks small or
@@ -348,7 +357,8 @@ folded in:
 > longest sentence in the UI and the narrowest column before settling on a
 > value. A single-weight face means synthesized bold; say so rather than
 > discovering it later. Also report what the site's "font sizes in multiples of
-> 11px" advice means for a skin that has to stay in relative units, and whether
+> 11px" advice means for a stylesheet that has to stay in relative units, and
+> whether
 > the pixel grid survives at 200% zoom.
 >
 > An icon is not automatically the color of the text it labels. If you change
@@ -386,7 +396,7 @@ folded in:
 > real size", "a tooltip over a busy screen", "the overview at 1024x768", "the
 > Greek and Cyrillic translations mid-sentence", not "please review".
 
-![The installation overview in the Pixel Leap 26 skin: pale cyan text on charcoal, a pixel typeface, a pixel caret for a logo and a cyan primary button](images/theming/pixel-leap-26.png)
+![The installation overview dressed as Pixel Leap 26: pale cyan text on charcoal, a pixel typeface, a pixel caret for a logo and a cyan primary button](images/theming/pixel-leap-26.png)
 
 ### The decisions the poster does not make
 
@@ -424,11 +434,11 @@ folded in:
   14.24:1 on the page and 1.02:1 against the cyan brand fill. This is what
   `--agm-t--focus--separator--color` exists for: the charcoal hairline reads
   13.90:1 against the fill and 14.24:1 against the ring.
-- **A dark theme with room to spare.** The poster charcoal is a light-ish black,
+- **A dark scheme with room to spare.** The poster charcoal is a light-ish black,
   so the surfaces stack at 0.0171, 0.0297 and 0.0450 relative luminance, against
   0.9467, 0.8285 and 1.0000 in light. That is an order of magnitude less
   separation, so the border carries the edges in dark while elevation only
-  supports it. Ratios alone would have called the two themes comparable.
+  supports it. Ratios alone would have called the two schemes comparable.
 - **A typeface that reads large, not small.** Departure Mono fills 0.727em with
   its capitals, against 0.700em for the SUSE families it replaces, so
   `size-adjust` goes _down_: 96%. That also brings the advance from 0.636em to
@@ -464,5 +474,5 @@ when possible. Look at each of them in light, dark and high contrast:
 - toast and inline alerts, for all five statuses next to each other,
 - a progress screen, for the accent on large surfaces.
 
-Passing every contrast check is required, but it is not the finish line. A skin
-is only done once a person has actually seen it running.
+Passing every contrast check is required, but it is not the finish line. An
+appearance is only done once a person has actually seen it running.
