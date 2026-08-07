@@ -386,7 +386,7 @@ folded in:
 > real size", "a tooltip over a busy screen", "the overview at 1024x768", "the
 > Greek and Cyrillic translations mid-sentence", not "please review".
 
-![The installation overview in the Pixel Leap 26 skin: green text on charcoal, a pixel typeface, a pixel caret for a logo and a full-color primary button](images/theming/pixel-leap-26.png)
+![The installation overview in the Pixel Leap 26 skin: pale cyan text on charcoal, a pixel typeface, a pixel caret for a logo and a cyan primary button](images/theming/pixel-leap-26.png)
 
 ### The decisions the poster does not make
 
