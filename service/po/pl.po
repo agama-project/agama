@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-02 08:45+0000\n"
+"POT-Creation-Date: 2026-08-05 13:18+0000\n"
 "PO-Revision-Date: 2026-07-30 00:12+0000\n"
 "Last-Translator: Jakub Wroński <kubawronski161@gmail.com>\n"
 "Language-Team: Polish <https://l10n.opensuse.org/projects/agama/agama-"
@@ -103,8 +103,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:95
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be formatted because it is used by other dev"
-"ice"
+"The device with alias '%s' cannot be formatted because it is used by other "
+"device"
 msgstr ""
 "Urządzenie o aliasie „%s” nie może być sformatowane, ponieważ jest używane "
 "przez inne urządzenie"
@@ -115,8 +115,8 @@ msgstr ""
 #: service/lib/agama/storage/config_checkers/alias.rb:118
 #, c-format
 msgid ""
-"The device with alias '%s' cannot be partitioned because it is used by other d"
-"evice"
+"The device with alias '%s' cannot be partitioned because it is used by other "
+"device"
 msgstr ""
 "Urządzenie o aliasie „%s” nie może być spartycjonowane, ponieważ jest "
 "używane przez inne urządzenie"
@@ -141,7 +141,8 @@ msgstr "Nie istnieje żadne urządzenie rozruchowe o aliasie „%s”"
 #. (e.g., 'luks1', 'random_swap').
 #: service/lib/agama/storage/config_checkers/encryption.rb:79
 #, perl-brace-format
-msgid "No passphrase provided (required for using the method '%{crypt_method}')."
+msgid ""
+"No passphrase provided (required for using the method '%{crypt_method}')."
 msgstr ""
 "Nie podano frazy hasła (wymaganej do zastosowania metody „%{crypt_method}”)."
 
@@ -221,13 +222,13 @@ msgstr ""
 "fizycznych."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
-#: service/lib/agama/storage/config_checkers/search.rb:76
+#: service/lib/agama/storage/config_checkers/search.rb:77
 #, c-format
 msgid "Mandatory device %s not found"
 msgstr "Nie znalaziono wymaganego urządzenia %s"
 
 #. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
-#: service/lib/agama/storage/config_checkers/search.rb:82
+#: service/lib/agama/storage/config_checkers/search.rb:83
 #, c-format
 msgid "Mandatory %s not found"
 msgstr "Nie znaleziono wymaganego %s"
@@ -236,22 +237,22 @@ msgstr "Nie znaleziono wymaganego %s"
 #.
 #. @param device [Y2Storage::BlkDevice] Parent of the member device.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:126
+#: service/lib/agama/storage/config_checkers/search.rb:127
 #, perl-brace-format
 msgid ""
-"The device '%{parent_name}' cannot be formatted because it is part of the reus"
-"ed MD RAID '%{reused_name}'"
+"The device '%{parent_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{parent_name}” nie może zostać sformatowane, ponieważ jest "
 "częścią ponownie używanego MD RAID „%{reused_name}”"
 
 #. TRANSLATORS: %{parent_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:136
+#: service/lib/agama/storage/config_checkers/search.rb:137
 #, perl-brace-format
 msgid ""
-"The device '%{parent_name}' cannot be formatted because it is a physical volum"
-"e of the reused LVM volume group '%{reused_name}'"
+"The device '%{parent_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{parent_name}” nie może zostać sformatowane, ponieważ jest "
 "woluminem fizycznym ponownie używanej grupy woluminów LVM „%{reused_name}”"
@@ -260,22 +261,22 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:166
+#: service/lib/agama/storage/config_checkers/search.rb:167
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be deleted because it is part of the reused"
-" MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be deleted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może zostać usunięte, ponieważ jest częścią "
 "ponownie używanego MD RAID „%{reused_name}”"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:176
+#: service/lib/agama/storage/config_checkers/search.rb:177
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be deleted because it is a physical volume "
-"of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be deleted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może zostać usunięte, ponieważ jest "
 "woluminem fizycznym ponownie używanej grupy woluminów LVM „%{reused_name}”"
@@ -284,22 +285,22 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:206
+#: service/lib/agama/storage/config_checkers/search.rb:207
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be resized because it is part of the reused"
-" MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be resized because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może mieć zmienionego rozmiaru, ponieważ "
 "jest częścią ponownie używanego MD RAID „%{reused_name}”"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:216
+#: service/lib/agama/storage/config_checkers/search.rb:217
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be resized because it is a physical volume "
-"of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be resized because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może mieć zmienionego rozmiaru, ponieważ "
 "jest woluminem fizycznym ponownie używanej grupy woluminów LVM „%"
@@ -309,22 +310,22 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:246
+#: service/lib/agama/storage/config_checkers/search.rb:247
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be formatted because it is part of the reus"
-"ed MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be formatted because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może zostać sformatowane, ponieważ jest "
 "częścią ponownie używanego MD RAID „%{reused_name}”"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:256
+#: service/lib/agama/storage/config_checkers/search.rb:257
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be formatted because it is a physical volum"
-"e of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be formatted because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może zostać sformatowane, ponieważ jest "
 "woluminem fizycznym ponownie używanej grupy woluminów LVM „%{reused_name}”"
@@ -333,22 +334,22 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:286
+#: service/lib/agama/storage/config_checkers/search.rb:287
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be partitioned because it is part of the re"
-"used MD RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be partitioned because it is part of the "
+"reused MD RAID '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może zostać spartycjonowane, ponieważ jest "
 "częścią ponownie używanego MD RAID „%{reused_name}”"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:296
+#: service/lib/agama/storage/config_checkers/search.rb:297
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be partitioned because it is a physical vol"
-"ume of the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be partitioned because it is a physical "
+"volume of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może zostać spartycjonowane, ponieważ jest "
 "woluminem fizycznym ponownie używanej grupy woluminów LVM „%{reused_name}”"
@@ -357,48 +358,48 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:325
+#: service/lib/agama/storage/config_checkers/search.rb:326
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be used because it is part of the reused MD"
-" RAID '%{reused_name}'"
+"The device '%{member_name}' cannot be used because it is part of the reused "
+"MD RAID '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może być użyte, ponieważ jest częścią "
 "ponownie używanego MD RAID „%{reused_name}”"
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:335
+#: service/lib/agama/storage/config_checkers/search.rb:336
 #, perl-brace-format
 msgid ""
-"The device '%{member_name}' cannot be used because it is a physical volume of "
-"the reused LVM volume group '%{reused_name}'"
+"The device '%{member_name}' cannot be used because it is a physical volume "
+"of the reused LVM volume group '%{reused_name}'"
 msgstr ""
 "Urządzenie „%{member_name}” nie może być użyte, ponieważ jest woluminem "
 "fizycznym ponownie używanej grupy woluminów LVM „%{reused_name}”"
 
 #. @return [String]
-#: service/lib/agama/storage/config_checkers/search.rb:383
+#: service/lib/agama/storage/config_checkers/search.rb:384
 msgid "drive"
 msgstr "dysk"
 
-#: service/lib/agama/storage/config_checkers/search.rb:385
+#: service/lib/agama/storage/config_checkers/search.rb:386
 msgid "MD RAID"
 msgstr "MD RAID"
 
-#: service/lib/agama/storage/config_checkers/search.rb:387
+#: service/lib/agama/storage/config_checkers/search.rb:388
 msgid "partition"
 msgstr "partycja"
 
-#: service/lib/agama/storage/config_checkers/search.rb:389
+#: service/lib/agama/storage/config_checkers/search.rb:390
 msgid "LVM logical volume"
 msgstr "Wolumin logiczny LVM"
 
-#: service/lib/agama/storage/config_checkers/search.rb:391
+#: service/lib/agama/storage/config_checkers/search.rb:392
 msgid "LVM volume group"
 msgstr "Grupa woluminów LVM"
 
-#: service/lib/agama/storage/config_checkers/search.rb:393
+#: service/lib/agama/storage/config_checkers/search.rb:394
 msgid "device"
 msgstr "urządzenie"
 
@@ -419,8 +420,8 @@ msgstr "Nie istnieje fizyczny wolumin LVM o aliasie „%s”"
 #: service/lib/agama/storage/config_checkers/volume_group.rb:144
 #, c-format
 msgid ""
-"The list of target devices for the volume group '%s' is mixing reused devices "
-"and new devices"
+"The list of target devices for the volume group '%s' is mixing reused "
+"devices and new devices"
 msgstr ""
 "Lista urządzeń docelowych dla grupy woluminów „%s” zawiera jednocześnie "
 "ponownie używane i nowe urządzenia"
@@ -435,7 +436,8 @@ msgstr ""
 #. TRANSLATORS: %s is the replaced by a device alias (e.g., "disk1").
 #: service/lib/agama/storage/config_checkers/volume_groups.rb:66
 #, c-format
-msgid "The device '%s' is used several times as target device for physical volumes"
+msgid ""
+"The device '%s' is used several times as target device for physical volumes"
 msgstr ""
 "Urządzenie „%s” jest wielokrotnie używane jako urządzenie docelowe dla "
 "woluminów fizycznych"
@@ -445,9 +447,9 @@ msgstr ""
 #. @return [String, nil] nil if there is content or there is any other reasons.
 #: service/lib/agama/storage/device_shrinking.rb:151
 msgid ""
-"Neither a file system nor a storage system was detected on the device. In case"
-" the device does contain a file system or a storage system that is not support"
-"ed, resizing will most likely cause data loss."
+"Neither a file system nor a storage system was detected on the device. In "
+"case the device does contain a file system or a storage system that is not "
+"supported, resizing will most likely cause data loss."
 msgstr ""
 "Na urządzeniu nie wykryto ani systemu plików, ani systemu przechowywania "
 "danych. Jeśli urządzenie zawiera nieobsługiwany system plików lub system "
