@@ -105,7 +105,10 @@
 // within the title's first line (its line box), so it stays aligned to the
 // first line even when the title wraps.
 .pf-v6-c-alert__icon {
-  --pf-v6-c-alert__icon--FontSize: var(--agm-t--icon--size--300);
+  --pf-v6-c-alert__icon--FontSize: var(
+    --agm-t--icon--size--300,
+    var(--pf-t--global--font--size--300)
+  );
 
   display: inline-flex;
   align-items: center;
