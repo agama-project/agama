@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Sep 28 08:50:52 UTC 2026 - Andreas Schwab <schwab@suse.de>
+
+- Add support for riscv64 (gh#agama-project/agama#3867)
+
+-------------------------------------------------------------------
 Thu Sep 24 14:03:15 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - bsc#1282603
