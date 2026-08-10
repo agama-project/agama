@@ -125,6 +125,12 @@ software:
       archs: s390
     - url: https://download.opensuse.org/ports/ppc/tumbleweed/repo/oss/
       archs: ppc
+    - url: https://download.opensuse.org/ports/riscv/tumbleweed/repo/oss/
+      archs: riscv64
+    - url: https://download.opensuse.org/ports/riscv/tumbleweed/repo/non-oss/
+      archs: riscv64
+    - url: https://download.opensuse.org/ports/riscv/update/tumbleweed/
+      archs: riscv64
   # device labels for offline installation media
   installation_labels:
     - label: openSUSE-Tumbleweed-DVD-x86_64
@@ -135,6 +141,8 @@ software:
       archs: s390
     - label: openSUSE-Tumbleweed-DVD-ppc64le
       archs: ppc
+    - label: openSUSE-Tumbleweed-DVD-riscv64
+      archs: riscv64
   mandatory_patterns:
     - enhanced_base # only pattern that is shared among all roles on TW
   optional_patterns: [] # no optional pattern shared
