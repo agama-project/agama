@@ -27,7 +27,6 @@ import Text from "~/components/core/Text";
 import Icon from "~/components/layout/Icon";
 import { TranslatedString, _ } from "~/i18n";
 
-import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import displayStyles from "@patternfly/react-styles/css/utilities/Display/display";
 
 export type BreadcrumbProps = {
@@ -92,7 +91,9 @@ const Breadcrumb = ({
   isEditorial = false,
 }: BreadcrumbProps) => {
   const content = (
-    <Text isBold={isEditorial} className={isEditorial && textStyles.fontSizeLg}>
+    // The editorial step is relative to the trail's own size, which is fluid, so
+    // it cannot come from a fixed font size utility.
+    <Text isBold={isEditorial} className={isEditorial && "agm-breadcrumb-editorial"}>
       {label}
     </Text>
   );
