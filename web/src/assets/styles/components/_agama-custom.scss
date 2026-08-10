@@ -98,6 +98,21 @@ svg[data-icon-name] {
   font-size: var(--agm-t--icon--size--800, var(--pf-t--global--font--size--800));
 }
 
+// Overview summary: the icon gets a column of its own, and the text under the
+// title starts where the title does. The indent then follows the icon size
+// instead of being a fixed spacer, so a product resizing the icons keeps the
+// block aligned.
+.agm-summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--pf-t--global--spacer--xs);
+  align-items: center;
+}
+
+.agm-summary__body {
+  grid-column: 2;
+}
+
 // Inline kebab ("three dots") action icon, sized to sit with adjacent text.
 .agm-three-dots-icon {
   font-size: 1.1rem;

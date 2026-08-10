@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Content, Flex, FlexItem, Skeleton, Title } from "@patternfly/react-core";
+import { Content, Flex, Skeleton, Title } from "@patternfly/react-core";
 import Icon, { IconProps } from "~/components/layout/Icon";
 import NestedContent from "~/components/core/NestedContent";
 import Text from "~/components/core/Text";
@@ -108,52 +108,43 @@ const Summary = ({
   hasIssues = false,
 }: SummaryProps) => {
   return (
-    <div>
-      {/* The row must not wrap: a title too long for the space left beside the
-          icon has to wrap its own text instead of dropping to the line below,
-          which would leave the icon stranded on a line of its own. */}
-      <Flex
-        gap={{ default: "gapXs" }}
-        alignItems={{ default: "alignItemsFlexStart" }}
-        flexWrap={{ default: "nowrap" }}
-      >
-        <FlexItem flex={{ default: "flexNone" }}>
-          {/* Both icons come from the same component at the same size, so the
-              one signalling an issue sits exactly where the regular one would,
-              whatever the product's typography does to the line around it. */}
-          <Icon
-            name={hasIssues ? "warning" : icon}
-            size="md"
-            className={hasIssues ? textStyles.textColorStatusWarning : undefined}
-          />
-        </FlexItem>
-        <Title headingLevel="h3">{title}</Title>
-      </Flex>
-      <NestedContent margin="mxLg">
-        <NestedContent margin="myXs">
-          <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
-            {isLoading ? (
-              <ValueSkeleton />
-            ) : (
-              <Content isEditorial>
-                <Text isBold={hasIssues}>{value}</Text>
-              </Content>
-            )}
-            {isLoading ? (
-              <DescriptionSkeletons />
-            ) : (
-              description && (
-                <Text
-                  component="small"
-                  isBold={hasIssues}
-                  className={[textStyles.textColorSubtle, "text-balance"].join(" ")}
-                >
-                  {description}
-                </Text>
-              )
-            )}
-          </Flex>
-        </NestedContent>
+    // The icon has a column of its own (see styles/components), so a title too
+    // long for the space beside it wraps its own text instead of dropping below
+    // it, and the value and the description start where the title does whatever
+    // size the icons are.
+    <div className="agm-summary">
+      {/* Both icons come from the same component at the same size, so the one
+          signalling an issue sits exactly where the regular one would, whatever
+          the product's typography does to the line around it. */}
+      <Icon
+        name={hasIssues ? "warning" : icon}
+        size="md"
+        className={hasIssues ? textStyles.textColorStatusWarning : undefined}
+      />
+      <Title headingLevel="h3">{title}</Title>
+      <NestedContent margin="myXs" className="agm-summary__body">
+        <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
+          {isLoading ? (
+            <ValueSkeleton />
+          ) : (
+            <Content isEditorial>
+              <Text isBold={hasIssues}>{value}</Text>
+            </Content>
+          )}
+          {isLoading ? (
+            <DescriptionSkeletons />
+          ) : (
+            description && (
+              <Text
+                component="small"
+                isBold={hasIssues}
+                className={[textStyles.textColorSubtle, "text-balance"].join(" ")}
+              >
+                {description}
+              </Text>
+            )
+          )}
+        </Flex>
       </NestedContent>
     </div>
   );
