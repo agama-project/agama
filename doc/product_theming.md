@@ -41,8 +41,11 @@ survives an Agama upgrade.
 
 ## What a product can change
 
-- **Colors and roles**: a curated set of `--agm-t--*` CSS custom properties, see
-  "The roles" below.
+Every product can redefine the following visual aspects.
+
+- **Styles**: using roles and a curated set of `--agm-t--*` CSS custom
+  properties, the product can define colors, radius of the boxes, typography,
+  etc. See the following sections for details.
 - **Logo**: a light and a dark SVG with a transparent background, named after
   the product's `icon:` field with `-dark` before the extension on the dark one
   (`MyProduct.svg` and `MyProduct-dark.svg`). A roughly
@@ -53,57 +56,45 @@ survives an Agama upgrade.
   when it helps, because the UI aligns the image box and not the ink: artwork
   sitting low in an otherwise square box hangs below the product name beside it.
 
-How far that goes is easier to see than to describe. The two products below do
-not exist and ship with nothing. They mark the two ends of the range: one sets
-the least a product can, the other everything the role set allows. Each is the
-same installer screen.
+How far that goes is easier to see than to describe. The following screenshots
+of two completely fictitious products. While one of them simply changes the
+logo and the base colors, the other one fully restyles the interface.
 
 > [!NOTE]
 > The screenshots were taken in August 2026. What each product does to the
 > interface is the point; the interface around it might have moved on since.
 
-**Colors and a logo, nothing else.** A published brand used as published: its
-blue on white in light, the same hue taken down to page darkness in dark. Every
-other role stays at Agama's value, typography included, so the text keeps the
-[SUSE typeface](https://brand.suse.com/typography) Agama bundles. This is what
-most products need, and it is the whole of the file behind it: the same roles
-[`example.css`](../web/src/assets/products/example.css) sets, and no more. The
-brand is the [Fedora Project's](https://docs.fedoraproject.org/en-US/project/brand/),
-borrowed as a friendly nod to a neighbour: Agama's interface is built on
-PatternFly, the open source design system Red Hat publishes, and Red Hat
-sponsors Fedora. No Fedora logo, artwork or name appears in the result, and
-Fedora is a trademark of Red Hat, Inc.
+**Colors and a logo, nothing else.** This example adjust the colors to a
+blue-on-white schema for the light mode. The dark mode simply adjusts some
+colors to make them readable on top of the dark background. Every other role
+stays at Agama's value, typography included, so the text keeps the [SUSE
+typeface](https://brand.suse.com/typography) Agama bundles. The file
+[`example.css`](../web/src/assets/products/example.css) showcases how to adjust
+the color palette to achieve a similar result, which should be enough for most
+products.
 
 | Light | Dark |
 | --- | --- |
 | ![The installation overview dressed as Blue Sombrero, light: blue links and icons on white, Agama's own typeface, corners and sizes](images/theming/blue-sombrero-light.png) | ![The same screen in dark: the same blue hue as pale ink on a night-blue page](images/theming/blue-sombrero-dark.png) |
 
-**Every role there is.** The other end of the range: an 80s terminal, phosphor
-green on charcoal, with a pixel drawing for a logo. It sets colors, its own
-typeface ([Departure Mono](https://departuremono.com/), see
-[Using a font of your own](#using-a-font-of-your-own)), the font and icon size
-scales, square corners and the logo sizes: every role
+**Adjusting every possible role.** This other example shows how a product could
+adapt all colors, use a typeface like [Departure
+Mono](https://departuremono.com/) (see the section [using a font of your
+own](#using-a-font-of-your-own)), set the scale of all elements (font, logo and
+icons) and define square corners. Moreover, it showcases how the light and dark
+schemes can follow different designs. The file
 [`example-advanced.css`](../web/src/assets/products/example-advanced.css)
-documents, given a value by a brand. Its light scheme is a different design, ink
-on paper, since phosphor green only works on a dark page.
+documents all the roles that can be adjusted to customize a product to that
+extent.
 
 | Light | Dark |
 | --- | --- |
 | ![The installation overview dressed as Pixel Leap, light: dark teal ink on paper, a pixel typeface and square corners](images/theming/pixel-leap-light.png) | ![The same screen in dark: phosphor green text on charcoal, with a pixel caret for a logo](images/theming/pixel-leap-dark.png) |
 
-Everything between the two is fair game, and that is where most products land:
-colors and a logo, plus the one or two roles the brand actually turns on, say
-square corners or a typeface. Nothing has to be set as a group, and every role
-left alone keeps Agama's value.
-
-> [!TIP]
-> However far you go, contrast is the part worth getting right. A palette that
-> looks fine on the screen you designed it on can be unreadable on a dim laptop
-> panel, in a sunlit room, or to someone with low vision, and an installer is a
-> bad place to lose a warning or a button label. It is measurable, so measure it:
-> the [contrast checklist](#contrast-checklist) says which pairs matter, and
-> `web/scripts/check-contrast.js <foreground> <background>` gives you the number
-> for one in a second, plus a shade of the same hue when it falls short.
+Everything between these two examples is fair game and every role left alone
+keeps Agama's value. However far you go, never forget how crucial contrast it to
+ensure the screen is readable in all devices and conditions. Check the
+[corresponding section](#contrast-checklist) for more information.
 
 ## What a product cannot change
 
@@ -212,6 +203,11 @@ start from a draft than from a blank file, there is a prompt for an AI at the
 end of this document, but everything above is written to be followed by hand.
 
 ## Contrast checklist
+
+A palette that looks fine on the screen you designed it on can be unreadable on
+a dim laptop panel, in a sunlit room, or to someone with low vision. And an
+installer is a bad place to lose a warning or a button label. Contrast is key
+for readability and contrast is measurable, so measure it.
 
 The Agama sources ship a helper for this, `web/scripts/check-contrast.js
 <foreground> <background> [--target=4.5]` (run from the repo root). It reports
