@@ -53,50 +53,57 @@ survives an Agama upgrade.
   when it helps, because the UI aligns the image box and not the ink: artwork
   sitting low in an otherwise square box hangs below the product name beside it.
 
-How far that goes is easier to see than to describe. The three products below do
-not exist and ship with nothing; they were dressed to find the edges of the role
-set, and each one is the same installer screen.
-
-All three set a typeface, which is not the common case: typography is entirely
-optional, and a product that sets colors and a logo alone gets a coherent
-installer. Leave the font roles alone and the text stays in the
-[SUSE typeface](https://brand.suse.com/typography), the family Agama bundles and
-sets its sizes against. When a brand does bring its own face,
-[Using a font of your own](#using-a-font-of-your-own) covers what comes with
-that decision.
+How far that goes is easier to see than to describe. The two products below do
+not exist and ship with nothing. They mark the two ends of the range: one sets
+the least a product can, the other everything the role set allows. Each is the
+same installer screen.
 
 > [!NOTE]
 > The screenshots were taken in August 2026. What each product does to the
 > interface is the point; the interface around it might have moved on since.
 
-**Colors and a logo, everything else untouched.** A published brand used as
-published: its blue on white in light, the same hue taken down to page darkness
-in dark, and its two typefaces. Corner radius, sizes and spacing stay at
-Agama's values, which is all most products ever need. The brand is the
-[Fedora Project's](https://docs.fedoraproject.org/en-US/project/brand/),
+**Colors and a logo, nothing else.** A published brand used as published: its
+blue on white in light, the same hue taken down to page darkness in dark. Every
+other role stays at Agama's value, typography included, so the text keeps the
+[SUSE typeface](https://brand.suse.com/typography) Agama bundles. This is what
+most products need, and it is the whole of the file behind it: the same roles
+[`example.css`](../web/src/assets/products/example.css) sets, and no more. The
+brand is the [Fedora Project's](https://docs.fedoraproject.org/en-US/project/brand/),
 borrowed as a friendly nod to a neighbour: Agama's interface is built on
 PatternFly, the open source design system Red Hat publishes, and Red Hat
 sponsors Fedora. No Fedora logo, artwork or name appears in the result, and
 Fedora is a trademark of Red Hat, Inc.
 
-![The installation overview dressed as Blue Sombrero: blue links and icons on white, two typefaces, PatternFly's own corners and sizes](images/theming/blue-sombrero.png)
+| Light | Dark |
+| --- | --- |
+| ![The installation overview dressed as Blue Sombrero, light: blue links and icons on white, Agama's own typeface, corners and sizes](images/theming/blue-sombrero-light.png) | ![The same screen in dark: the same blue hue as pale ink on a night-blue page](images/theming/blue-sombrero-dark.png) |
 
-**The same, plus typography, radius and logo sizing.** Phosphor green on deep
-indigo with a magenta accent, monospace everywhere, every corner square, and two
-typefaces carried by the product itself. The light scheme is its own design, ink
-on warm paper, rather than the dark one inverted.
+**Every role there is.** The other end of the range: an 80s terminal, phosphor
+green on charcoal, with a pixel drawing for a logo. It sets colors, its own
+typeface ([Departure Mono](https://departuremono.com/), see
+[Using a font of your own](#using-a-font-of-your-own)), the font and icon size
+scales, square corners and the logo sizes: every role
+[`example-advanced.css`](../web/src/assets/products/example-advanced.css)
+documents, given a value by a brand. Its light scheme is a different design, ink
+on paper, since phosphor green only works on a dark page.
 
-![The installation overview dressed as Phosphor 86: phosphor green text and magenta links on deep indigo, everything monospace and square-cornered](images/theming/phosphor86.png)
+| Light | Dark |
+| --- | --- |
+| ![The installation overview dressed as Pixel Leap, light: dark teal ink on paper, a pixel typeface and square corners](images/theming/pixel-leap-light.png) | ![The same screen in dark: phosphor green text on charcoal, with a pixel caret for a logo](images/theming/pixel-leap-dark.png) |
 
-**A palette borrowed from artwork.** Pale cyan on charcoal, a pixel typeface
-brought along and scaled with `size-adjust` so it sits on Agama's size scale,
-square corners, and a pixel drawing for a logo. The status colors keep their
-meanings instead of collapsing into the brand color. Its palette is read off the
-[State of Devs 2026](https://survey.devographics.com/survey/state-of-devs/2026)
-survey [poster](https://assets.devographics.com/surveys/devs2026.png) and its
-face is [Departure Mono](https://departuremono.com/), both used as published.
+Everything between the two is fair game, and that is where most products land:
+colors and a logo, plus the one or two roles the brand actually turns on, say
+square corners or a typeface. Nothing has to be set as a group, and every role
+left alone keeps Agama's value.
 
-![The installation overview dressed as Pixel Leap 26: pale cyan text on charcoal, a pixel typeface, a pixel caret for a logo and a cyan primary button](images/theming/pixel-leap-26.png)
+> [!TIP]
+> However far you go, contrast is the part worth getting right. A palette that
+> looks fine on the screen you designed it on can be unreadable on a dim laptop
+> panel, in a sunlit room, or to someone with low vision, and an installer is a
+> bad place to lose a warning or a button label. It is measurable, so measure it:
+> the [contrast checklist](#contrast-checklist) says which pairs matter, and
+> `web/scripts/check-contrast.js <foreground> <background>` gives you the number
+> for one in a second, plus a shade of the same hue when it falls short.
 
 ## What a product cannot change
 
@@ -186,9 +193,11 @@ styles instead of starting an arms race with them.
    linked under [The roles](#the-roles) above.
 3. **Set only the roles the brand needs**, colors inside the scheme block that
    matches, everything else in a plain `:root`.
-4. **Give each scheme its own premise.** A brand that is natively dark still
-   needs a light scheme designed as its own thing: an inverted dark palette
-   rarely convinces.
+4. **Give each scheme its own premise.** A dark scheme is not a light one with
+   the lights turned off: the same color that reads calm on white glares on
+   charcoal, and a brand color that carries a white label may be unreadable
+   there. So a brand that is natively dark still needs a light scheme designed
+   for paper, and the other way round.
 5. **Draw the two logos**, light and dark, as described above.
 6. **Measure the checklist below**, in both schemes separately, since a value
    that passes in one can fail in the other. Work through the rows rather than
