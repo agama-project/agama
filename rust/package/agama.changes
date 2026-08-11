@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 11 10:59:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the detection of model and CPU on the s390x machines
+  (bsc#1270639).
+
+-------------------------------------------------------------------
 Wed Aug  5 15:08:46 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix storage system and proposal schemas
