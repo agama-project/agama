@@ -39,6 +39,17 @@
   }
 }
 
+// Minimal-variant pages (see core/Page) mount an empty masthead, which
+// otherwise collapses to near-zero height. That leaves the main container's
+// block-start edge flush against the viewport, unlike its inline-start/
+// inline-end edges, which already get the page inset as margin (and its
+// block-end edge, which gets it via the default max-height). Give the empty
+// masthead that same inset as a real height, the same mechanism a populated
+// masthead already uses to create top space, so it stays even on every side.
+.agm-minimal-page .pf-v6-c-masthead {
+  min-block-size: var(--pf-v6-c-page--inset);
+}
+
 // Tooltip background and text. PatternFly sets these tokens on the component
 // itself, so the roles are mapped here (not at :root) to take effect. Both
 // default to PF's theme-aware inverse colors; override the roles to retune.
