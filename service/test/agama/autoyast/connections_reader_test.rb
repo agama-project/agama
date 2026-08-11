@@ -214,13 +214,57 @@ describe Agama::AutoYaST::ConnectionsReader do
 
     context "when there are bonding settings" do
       let(:eth0) do
-        { "name" => "eth0", "bonding_slave0" => "eth1" }
+        {
+          "name"                => "bond0",
+          "bonding_slave0"      => "eth1",
+          "bonding_module_opts" => "mode=active-backup miimon=100"
+        }
       end
 
       it "includes a 'bond' key containing those settings" do
         connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "bond0" }
+        expect(conn["bond"]).to eq(
+          "ports" => ["eth1"], "mode" => "active-backup", "options" => "miimon=100"
+        )
+      end
+
+      it "does not nest the 'bond' section into itself" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "bond0" }
+        expect(conn["bond"]).to_not have_key("bond")
+      end
+    end
+
+    context "when there are bridge settings" do
+      let(:eth0) do
+        { "name" => "br0", "bridge" => "yes", "bridge_ports" => "eth1 eth2" }
+      end
+
+      it "includes a 'bridge' key containing those settings" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "br0" }
+        expect(conn["bridge"]).to eq("ports" => ["eth1", "eth2"])
+      end
+    end
+
+    context "when there are VLAN settings" do
+      let(:eth0) do
+        { "name" => "eth1.10", "vlan_id" => "10", "etherdevice" => "eth1" }
+      end
+
+      it "includes a 'vlan' key containing those settings" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "eth1.10" }
+        expect(conn["vlan"]).to eq("id" => 10, "parent" => "eth1")
+      end
+    end
+
+    context "when it is a plain Ethernet connection" do
+      it "does not include any device type specific settings" do
+        connections = subject.read["connections"]
         conn = connections.find { |c| c["id"] == "eth0" }
-        expect(conn["bond"]).to be_a(Hash)
+        expect(conn.keys).to_not include("bond", "bridge", "vlan", "wireless")
       end
     end
 

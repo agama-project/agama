@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Wed Aug  5 15:05:24 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Adapt the exported information of the storage system and proposal
+  (gh#agama-project/agama#3800).
+
+-------------------------------------------------------------------
+Wed Aug  5 13:10:48 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Improve the AutoYaST network conversion
+  (gh#agama-project/agama#3799):
+  - Convert the bridge and VLAN devices.
+  - Fix the generated "bond" section, which was nested into itself
+    and therefore rejected by the Agama profile schema.
+  - Do not crash when "bonding_module_opts" does not include a
+    "mode" option and accept the numeric bonding modes.
+
+-------------------------------------------------------------------
+Wed Aug  5 08:57:51 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Extend storage search with logical operators and new search
+  conditions: filesystem, partitions, partition id, driver, boss
+  (related to bsc#1273493).
+
+-------------------------------------------------------------------
 Tue Aug  4 14:02:00 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix AutoYaST conversion (gh#agama-project/agama#3794):
