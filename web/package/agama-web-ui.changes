@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 11 10:57:37 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Add an application-wide live region for announcing status changes
+  to screen reader users (gh#agama-project/agama#3759).
+
+-------------------------------------------------------------------
 Mon Aug  3 10:25:04 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Improve the installer language and keyboard layout dialog,
