@@ -71,7 +71,7 @@ impl Registry {
             Source::System => {
                 self.read_from_system().await?;
                 // On s390x, enrich the system and processor nodes with info from
-                // /proc/sysinfo, as lshw does not report them properly.
+                // the "zname" command, as lshw does not report them properly.
                 if Arch::is_s390() {
                     self.read_s390_model().await.ok();
                 }
@@ -106,28 +106,49 @@ impl Registry {
         Ok(())
     }
 
-    /// Enriches the s390x system and processor nodes with info read from /proc/sysinfo.
+    /// Enriches the s390x system and processor nodes with info read from the "zname" command.
+    ///
+    /// The model is built as "IBM <cpuid>-<model>" (e.g., "IBM 8561-LT1"), and the CPU is
+    /// the model name reported by "zname -n" (e.g., "IBM LinuxONE III").
     async fn read_s390_model(&mut self) -> Result<(), Error> {
         let Some(ref mut root) = self.root else {
             return Ok(());
         };
 
-        let Some(info) = S390Info::read("/proc/sysinfo").await? else {
-            return Ok(());
-        };
+        let type_id = Self::read_zname("-i").await;
+        let model = Self::read_zname("-m").await;
+        let name = Self::read_zname("-n").await;
 
-        if let Some(system) = root.find_first_by_class_mut("system") {
-            system.vendor = Some("IBM".to_string());
-            system.version = Some(info.model);
+        if let (Some(type_id), Some(model)) = (type_id, model) {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some(format!("{type_id}-{model}"));
+            }
         }
 
-        if let Some(cpu) = info.cpu {
+        if let Some(name) = name {
             if let Some(processor) = root.find_first_by_class_mut("processor") {
-                processor.product = Some(cpu);
+                processor.product = Some(name);
             }
         }
 
         Ok(())
+    }
+
+    /// Runs "zname" with the given argument and returns its trimmed output.
+    async fn read_zname(arg: &str) -> Option<String> {
+        let output = tokio::process::Command::new("zname")
+            .arg(arg)
+            .output()
+            .await
+            .ok()?;
+
+        if !output.status.success() {
+            return None;
+        }
+
+        let value = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        (!value.is_empty()).then_some(value)
     }
 
     /// Converts the information to a HardwareInfo struct.
@@ -278,72 +299,6 @@ impl From<&HardwareNode> for HardwareInfo {
     }
 }
 
-/// Model and CPU derived from the s390x /proc/sysinfo file.
-#[derive(Debug, PartialEq)]
-struct S390Info {
-    model: String,
-    cpu: Option<String>,
-}
-
-impl S390Info {
-    /// Reads and parses the given /proc/sysinfo-like file.
-    async fn read<P: AsRef<Path>>(path: P) -> Result<Option<Self>, Error> {
-        let sysinfo = tokio::fs::read_to_string(path).await?;
-        Ok(Self::parse(&sysinfo))
-    }
-
-    /// Parses the model and CPU from the content of /proc/sysinfo.
-    ///
-    /// The model is built as "<type>-<model suffix>" (e.g., "8561-LT1" out of
-    /// "Type: 8561" and "Model: 400 LT1"), which is combined with the "IBM" vendor by
-    /// `to_hardware_info`, resulting in "IBM 8561-LT1".
-    fn parse(sysinfo: &str) -> Option<Self> {
-        let type_number = Self::sysinfo_value(sysinfo, "Type")?;
-        let model_line = Self::sysinfo_value(sysinfo, "Model")?;
-        let model_suffix = model_line.split_whitespace().nth(1)?;
-
-        Some(Self {
-            model: format!("{}-{}", type_number, model_suffix),
-            cpu: Self::cpu_name_for_type(&type_number).map(str::to_string),
-        })
-    }
-
-    /// Reads the value of a "key: value" line from /proc/sysinfo.
-    fn sysinfo_value(sysinfo: &str, key: &str) -> Option<String> {
-        sysinfo.lines().find_map(|line| {
-            let (name, value) = line.split_once(':')?;
-            (name.trim() == key).then(|| value.trim().to_string())
-        })
-    }
-
-    /// Maps a machine type number to a human-readable CPU name.
-    ///
-    /// TODO: add the remaining machine type numbers.
-    fn cpu_name_for_type(type_number: &str) -> Option<&'static str> {
-        match type_number {
-            "2064" => Some("IBM z900"),
-            "2066" => Some("IBM z800"),
-            "2084" => Some("IBM z990"),
-            "2086" => Some("IBM z890"),
-            "2094" => Some("IBM z9-EC"),
-            "2096" => Some("IBM z9-BC"),
-            "2097" => Some("IBM z10-EC"),
-            "2098" => Some("IBM z10-BC"),
-            "2817" => Some("IBM z196"),
-            "2818" => Some("IBM z114"),
-            "2827" => Some("IBM z12-EC"),
-            "2828" => Some("IBM z12-BC"),
-            "2964" => Some("IBM z13"),
-            "2965" => Some("IBM z13s"),
-            "3906" | "3907" => Some("IBM z14"),
-            "8561" | "8562" => Some("IBM z15"),
-            "3931" | "3932" => Some("IBM z16"),
-            "9175" | "9176" => Some("IBM z17"),
-            _ => None,
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::{error::Error, path::PathBuf};
@@ -444,31 +399,21 @@ mod tests {
         ));
     }
 
-    #[test]
-    fn test_parse_s390_sysinfo() {
-        let sysinfo = "\
-Manufacturer:         IBM
-Type:                 8561
-LIC Identifier:       307025ff6902229b
-Model:                400              LT1
-";
-        let info = S390Info::parse(sysinfo).unwrap();
-        assert_eq!(info.model, "8561-LT1");
-        assert_eq!(info.cpu, Some("IBM z15".to_string()));
-    }
+    #[tokio::test]
+    async fn test_read_s390_model() -> Result<(), Box<dyn Error>> {
+        let old_path = std::env::var("PATH").unwrap();
+        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
+        std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
 
-    #[test]
-    fn test_parse_s390_sysinfo_unknown_type() {
-        let sysinfo = "Type: 1234\nModel: 400 LT1\n";
-        let info = S390Info::parse(sysinfo).unwrap();
-        assert_eq!(info.model, "1234-LT1");
-        assert_eq!(info.cpu, None);
-    }
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        registry.read_s390_model().await?;
 
-    #[test]
-    fn test_parse_s390_sysinfo_missing_fields() {
-        assert_eq!(S390Info::parse("No relevant lines"), None);
-        assert_eq!(S390Info::parse("Type: 8561"), None);
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("IBM 8561-LT1".to_string()));
+        assert_eq!(info.cpu, Some("IBM LinuxONE III".to_string()));
+        Ok(())
     }
 
     #[tokio::test]
