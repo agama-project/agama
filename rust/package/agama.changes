@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 11 11:42:44 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove the following elements from the /api/system endpoint:
+  "proxy", "licenses", "repositories" and patterns "icon"
+  (gh#agama-project/agama#3775).
+
+-------------------------------------------------------------------
 Tue Aug 11 10:59:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix the detection of model and CPU on the s390x machines
