@@ -25,7 +25,7 @@ import { Flex, Stack } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
 import Text from "~/components/core/Text";
 import RebootButton from "~/components/core/RebootButton";
-import SplitInfoLayout from "../layout/SplitInfoLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 import DownloadLogsButton from "./DownloadLogsButton";
 
@@ -40,28 +40,21 @@ export default function InstallationFailed() {
   return (
     <Page variant="minimal">
       <Page.Content>
-        <SplitInfoLayout
+        <SideBySideLayout
           icon="report"
-          firstRowStart={_("Installation failed")}
-          secondRowStart={
+          title={_("Installation failed")}
+          description={
             <Stack hasGutter>
               <Text>{_("Download logs to troubleshoot or share with support.")}</Text>
               <Text component="small">{_("Reboot to try again.")}</Text>
             </Stack>
           }
-          firstRowEnd={
-            <Flex
-              gap={{ default: "gapSm" }}
-              direction={{ default: "row" }}
-              alignItems={{ default: "alignItemsCenter" }}
-              alignContent={{ sm: "alignContentCenter" }}
-              justifyContent={{ sm: "justifyContentCenter", md: "justifyContentFlexStart" }}
-            >
-              <RebootButton size="default" />
-              <DownloadLogsButton />
-            </Flex>
-          }
-        />
+        >
+          <Flex gap={{ default: "gapSm" }} alignItems={{ default: "alignItemsCenter" }}>
+            <RebootButton size="default" />
+            <DownloadLogsButton />
+          </Flex>
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );
