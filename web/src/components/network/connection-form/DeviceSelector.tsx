@@ -20,8 +20,9 @@
  * find current contact information at www.suse.com.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import Text from "~/components/core/Text";
+import DeviceSelectorModal from "./DeviceSelectorModal";
 import { defaultOptions, FormFields } from "./fields";
 import { withForm } from "~/hooks/form";
 import { useDevices } from "~/hooks/model/system/network";
@@ -89,6 +90,7 @@ const DeviceSelector = withForm({
     exclude = {},
     listeners: listenersProp,
   }) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const excludeDevices = exclude.devices || [];
     const excludeTypes = exclude.types || [];
 
@@ -144,7 +146,34 @@ const DeviceSelector = withForm({
 
     return (
       <form.AppField name={name} listeners={listeners}>
-        {(field) => <field.DropdownField label={label} options={options} />}
+        {(field) => (
+          <>
+            <field.DropdownField
+              label={label}
+              options={options}
+              footerEntry={{
+                // TRANSLATORS: entry at the end of the device dropdown, leading
+                // to a dialog listing the same devices with more information
+                // about each of them. The trailing ellipsis hints that more
+                // follows instead of a device being picked right away.
+                label: _("Browse with details..."),
+                onSelect: () => setIsModalOpen(true),
+                opensDialog: true,
+              }}
+            />
+            {isModalOpen && (
+              <DeviceSelectorModal
+                devices={devices}
+                selected={devices.find((d) => d[valueKey] === field.state.value)}
+                onConfirm={(device) => {
+                  field.handleChange(device[valueKey]);
+                  setIsModalOpen(false);
+                }}
+                onCancel={() => setIsModalOpen(false)}
+              />
+            )}
+          </>
+        )}
       </form.AppField>
     );
   },

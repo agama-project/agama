@@ -132,8 +132,9 @@ describe("VlanFields", () => {
 
     // enp1s0 should be filtered out
     expect(screen.queryByRole("option", { name: /enp1s0/ })).not.toBeInTheDocument();
-    // lo should be filtered out
-    expect(screen.queryByRole("option", { name: /lo/ })).not.toBeInTheDocument();
+    // lo should be filtered out. The pattern is anchored so it does not match
+    // any option whose text merely contains those letters.
+    expect(screen.queryByRole("option", { name: /^lo\b/ })).not.toBeInTheDocument();
     // enp2s0 should be present
     expect(screen.getByRole("option", { name: /enp2s0/ })).toBeInTheDocument();
   });

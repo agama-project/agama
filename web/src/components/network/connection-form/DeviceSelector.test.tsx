@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { useAppForm } from "~/hooks/form";
 import { DeviceState } from "~/types/network";
@@ -146,6 +146,47 @@ describe("DeviceSelector", () => {
         "aria-selected",
         "true",
       );
+    });
+  });
+
+  describe("when browsing devices with details", () => {
+    beforeEach(() => {
+      sync = { field: "ifaceMac", with: (d) => d.macAddress };
+    });
+
+    const openBrowser = async (user: ReturnType<typeof installerRender>["user"]) => {
+      await user.click(screen.getByLabelText("Device name"));
+      await user.click(
+        screen.getByRole("option", { name: "Browse with details... Opens a dialog" }),
+      );
+    };
+
+    it("opens a dialog listing the available devices", async () => {
+      const { user } = installerRender(<TestSelectors />);
+      await openBrowser(user);
+      const dialog = screen.getByRole("dialog", { name: "Select a network device" });
+      within(dialog).getByRole("row", { name: /enp2s0/ });
+    });
+
+    it("updates the selector and its synced counterpart on confirm", async () => {
+      const { user } = installerRender(<TestSelectors />);
+      await openBrowser(user);
+      const dialog = screen.getByRole("dialog", { name: "Select a network device" });
+      const row = within(dialog).getByRole("row", { name: /enp2s0/ });
+      await user.click(within(row).getByRole("radio"));
+      await user.click(within(dialog).getByRole("button", { name: "Use enp2s0" }));
+      expect(screen.getByLabelText("Device name")).toHaveTextContent("enp2s0");
+      expect(screen.getByLabelText("Device MAC address")).toHaveTextContent("AA:BB:CC:DD:EE:FF");
+    });
+
+    it("leaves the selector untouched on cancel", async () => {
+      const { user } = installerRender(<TestSelectors />);
+      await openBrowser(user);
+      const dialog = screen.getByRole("dialog", { name: "Select a network device" });
+      const row = within(dialog).getByRole("row", { name: /enp2s0/ });
+      await user.click(within(row).getByRole("radio"));
+      await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      expect(screen.getByLabelText("Device name")).toHaveTextContent("enp1s0");
     });
   });
 
