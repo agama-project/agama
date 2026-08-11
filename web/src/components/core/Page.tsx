@@ -364,10 +364,13 @@ type PageProps = (StandardPageProps | MinimalPageProps) & {
 
 /**
  * Minimal page layout with empty masthead.
+ *
+ * `agm-minimal-page` keeps the content area evenly spaced on all sides; see
+ * that class in `_patternfly-overrides.scss` for why it's needed.
  */
 const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
   return (
-    <PFPage isContentFilled masthead={<Masthead />}>
+    <PFPage isContentFilled masthead={<Masthead />} className="agm-minimal-page">
       <PageGroup tabIndex={-1} id="main-content">
         {children}
       </PageGroup>

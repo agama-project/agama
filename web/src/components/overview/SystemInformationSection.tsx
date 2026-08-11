@@ -35,6 +35,7 @@ import {
 import FormattedIPsList from "~/components/network/FormattedIpsList";
 import NestedContent from "~/components/core/NestedContent";
 import { useSystem } from "~/hooks/model/system";
+import { useIpAddresses } from "~/hooks/model/system/network";
 import { _ } from "~/i18n";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
@@ -65,10 +66,29 @@ const Item = ({ label, children }: ItemProps) => {
 };
 
 /**
+ * Addresses of the system, not rendered at all when there is none yet.
+ *
+ * Unlike the hardware fields, an address the system does not have is not
+ * "Unknown" information: there is simply nothing to tell about it.
+ */
+const IpsItem = () => {
+  const addresses = useIpAddresses();
+
+  if (isEmpty(addresses)) return;
+
+  return (
+    <Item label={_("IPs")}>
+      <FormattedIPsList />
+    </Item>
+  );
+};
+
+/**
  * Displays basic hardware information (model, CPU, memory, IPs) in a card.
  *
  * Fields with missing or undefined values fall back to "Unknown" rather than
- * rendering a blank space.
+ * rendering a blank space. The IPs field is an exception: it is not rendered
+ * when the system has no address yet, since "Unknown" would be misleading.
  *
  * @note A11y: `DescriptionList` renders a `<dl>/<dt>/<dd>` structure. Screen
  * reader support is generally good, with the exception of Safari/VoiceOver on
@@ -95,9 +115,7 @@ export default function SystemInformationSection() {
             <Item label={_("Memory")}>
               {hardware.memory ? xbytes(hardware.memory, { iec: true }) : undefined}
             </Item>
-            <Item label={_("IPs")}>
-              <FormattedIPsList />
-            </Item>
+            <IpsItem />
           </DescriptionList>
         </NestedContent>
       </CardBody>

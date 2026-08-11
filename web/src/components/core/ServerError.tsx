@@ -21,9 +21,9 @@
  */
 
 import React from "react";
-import { Button, HelperText, HelperTextItem } from "@patternfly/react-core";
+import { Button, Content, Flex } from "@patternfly/react-core";
 import Page from "~/components/core/Page";
-import SplitInfoLayout from "~/components/layout/SplitInfoLayout";
+import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { locationReload } from "~/utils";
 import { _ } from "~/i18n";
 
@@ -31,20 +31,18 @@ function ServerError() {
   return (
     <Page variant="minimal">
       <Page.Content>
-        <SplitInfoLayout
-          icon="error"
-          firstRowStart={_("Cannot connect")}
-          firstRowEnd={
-            <Button variant="primary" style={{ minInlineSize: "25dvw" }} onClick={locationReload}>
+        <SideBySideLayout icon="error" title={_("Cannot connect")}>
+          <Flex
+            direction={{ default: "column" }}
+            alignItems={{ default: "alignItemsFlexStart" }}
+            gap={{ default: "gapMd" }}
+          >
+            <Content>{_("Check whether Agama server is running.")}</Content>
+            <Button variant="primary" onClick={locationReload}>
               {_("Reload")}
             </Button>
-          }
-          secondRowStart={
-            <HelperText>
-              <HelperTextItem>{_("Check whether Agama server is running.")}</HelperTextItem>
-            </HelperText>
-          }
-        />
+          </Flex>
+        </SideBySideLayout>
       </Page.Content>
     </Page>
   );

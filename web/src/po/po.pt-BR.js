@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Ações"
   ],
+  "Actions for %s": [
+    "Ações para %s"
+  ],
   "Actions for %s at portal %s": [
     "Ações para %s no portal %s"
   ],
@@ -354,6 +357,9 @@ export default {
   ],
   "Allow growing": [
     "Permitir expansão"
+  ],
+  "Allow shrinking": [
+    "Permitir redução"
   ],
   "Already using all available devices": [
     "Todos os dispositivos disponíveis já estão em uso"
@@ -1161,6 +1167,9 @@ export default {
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "Enter ou Tab para adicionar, Backspace ou Delete para remover, teclas de setas para navegar pelas entradas, Escape para sair"
   ],
+  "Ethernet": [
+    "Ethernet"
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -1645,6 +1654,9 @@ export default {
   "Loading data...": [
     "Carregando dados..."
   ],
+  "Loading the installation repositories...": [
+    "Carregando repositórios de instalação..."
+  ],
   "Localization": [
     "Localização"
   ],
@@ -1697,7 +1709,7 @@ export default {
     "Formulário de login"
   ],
   "Loopback": [
-    ""
+    "Loopback"
   ],
   "MAC address": [
     "Endereço MAC"
@@ -3055,6 +3067,9 @@ export default {
   "Transient": [
     "Temporário"
   ],
+  "Try again": [
+    "Tentar novamente"
+  ],
   "Try to activate again": [
     "Tentar ativar novamente"
   ],
@@ -3379,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Você se conectará a uma rede pública sem criptografia. Seus dados talvez não fiquem seguros."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] ativado"

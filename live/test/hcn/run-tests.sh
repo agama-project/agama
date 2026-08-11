@@ -167,9 +167,9 @@ TEST_FILES=()
 if [ $INTEGRATION_ONLY -eq 1 ]; then
     TEST_FILES=("test_integration.bats")
 elif [ $UNIT_ONLY -eq 1 ]; then
-    TEST_FILES=("test_parse-hcn.bats")
+    TEST_FILES=("test_parse-hcn.bats" "test_hcn-cmdline.bats")
 else
-    TEST_FILES=("test_parse-hcn.bats" "test_integration.bats")
+    TEST_FILES=("test_parse-hcn.bats" "test_hcn-cmdline.bats" "test_integration.bats")
 fi
 
 # List tests if requested

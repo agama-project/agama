@@ -37,7 +37,7 @@ import type { CustomToggleProps } from "~/components/core/MenuButton";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
 
-const baseName = (device: Storage.Device): string => deviceBaseName(device, true);
+const baseName = (device: Storage.Device): string => deviceBaseName(device, { truncate: true });
 
 const targetDevices = (
   deviceConfig: ConfigModel.Drive | ConfigModel.MdRaid,

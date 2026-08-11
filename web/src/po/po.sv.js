@@ -1654,6 +1654,9 @@ export default {
   "Loading data...": [
     "Laddar data..."
   ],
+  "Loading the installation repositories...": [
+    "Laddar installationsförråd..."
+  ],
   "Localization": [
     "Lokalisering"
   ],
@@ -3064,6 +3067,9 @@ export default {
   "Transient": [
     "Tillfälligt"
   ],
+  "Try again": [
+    "Försök igen"
+  ],
   "Try to activate again": [
     "Försök att aktivera igen"
   ],
@@ -3388,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Du kommer att ansluta till ett offentligt nätverk utan kryptering. Dina data kanske inte är säkra."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] är på"

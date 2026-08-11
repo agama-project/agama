@@ -46,23 +46,15 @@ use crate::{
     model::{
         packages::ResolvableTypeExt,
         registration::RegistrationError,
-        state::{self, SoftwareState},
+        state::{self, SoftwareState, AGAMA_REPO_PREFIX},
         WriteIssues,
     },
+    service::DUD_REPO_ALIAS,
     state::{Addon, RegistrationState, RepoKey, ResolvableSelection, ResolvablesState},
     Registration, ResolvableType,
 };
 
 const GPG_KEYS: &str = "/usr/lib/rpm/gnupg/keys/gpg-*";
-
-/// Alias prefix reserved for the installation repositories created by Agama corresponding to the
-/// product definition (see `build_repo` in `model::state`). They are named `agama-0`, `agama-1`,
-/// etc. and must not be copied to the target system.
-const AGAMA_REPO_PREFIX: &str = "agama-";
-
-/// Alias of the repository holding the Driver Update Disk (DUD) packages. It is only relevant
-/// during the installation, so it must not reach the target.
-const DUD_REPO_ALIAS: &str = "AgamaDriverUpdate";
 
 /// Whether the repository with the given alias is an installer-only repository
 /// that must not end up in the target system.
@@ -462,21 +454,19 @@ impl ZyppServer {
 
         // all repos are added or removed as needed
         progress.cast(progress::message::Next::new(Scope::Software))?;
-        if !to_add.is_empty() || !to_remove.is_empty() {
-            let result = zypp.load_source(
-                |percent, alias| {
-                    tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
-                    true
-                },
-                security,
-            );
+        let result = zypp.load_source(
+            |percent, alias| {
+                tracing::info!("Refreshing repositories: {} ({}%)", alias, percent);
+                true
+            },
+            security,
+        );
 
-            if let Err(error) = result {
-                let message = gettext("Could not read the repositories");
-                issues.software.push(
-                    Issue::new("software.load_source", &message).with_details(&error.to_string()),
-                );
-            }
+        if let Err(error) = result {
+            let message = gettext("Could not read the repositories");
+            issues.software.push(
+                Issue::new("software.load_source", &message).with_details(&error.to_string()),
+            );
         }
 
         // repositories refresh finished

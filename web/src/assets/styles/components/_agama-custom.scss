@@ -129,43 +129,96 @@ nav.agm-breadcrumb h1 {
   font-size: inherit;
 }
 
-.agm-split-info-layout-container {
-  height: 100%;
-  place-content: center;
-}
-
-.agm-split-info-layout {
-  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
-  position: relative;
-}
-
-.agm-split-info-layout > .pf-v6-l-grid__item {
+// Standalone screens layout (see layout/SideBySideLayout): the DOM stays in
+// reading order and grid-template-areas decides the visual arrangement per
+// breakpoint. Only logical properties and values, so columns and alignment
+// follow the document's writing direction.
+.agm-side-by-side-layout {
+  display: grid;
+  block-size: 100%;
+  align-content: center;
+  justify-items: center;
   text-align: center;
-  justify-self: center;
-}
+  gap: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  grid-template-areas:
+    "icon"
+    "intro"
+    "body";
 
-@media (width >= 768px) {
-  .agm-split-info-layout::before {
-    content: "";
-    position: absolute;
-    top: -1em;
-    bottom: -1.5em;
-    left: 50%;
-    width: 1px;
-    background: var(--pf-t--global--border--color--default);
+  &__icon {
+    grid-area: icon;
   }
 
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 1"],
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 3"],
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 5"] {
-    justify-self: end;
-    text-align: end;
+  &__intro {
+    grid-area: intro;
+    display: flex;
+    flex-direction: column;
+    gap: var(--pf-t--global--spacer--sm);
+    align-items: center;
   }
 
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 4"],
-  .agm-split-info-layout > .pf-v6-l-grid__item[style*="Order-on-md: 6"] {
-    justify-self: start;
-    text-align: start;
+  &__body {
+    grid-area: body;
+  }
+
+  &__divider {
+    display: none;
+  }
+
+  @media (width >= 768px) {
+    // Title, description, and body share one grid row, so they stay level
+    // with each other no matter how tall the body is.
+    //
+    // The title is a heading, and the body typically opens with
+    // regular-sized text. Top-aligning the two as-is would leave a gap
+    // under the title before the body starts, since the heading's line box
+    // is taller. The body is pushed down by that height difference, so the
+    // title and the body's first line read as bottom-aligned instead of
+    // top-aligned with a gap.
+    //
+    // The icon row's end cell stays empty. Extra empty rows above and below
+    // the icon and intro rows let the divider stick out a bit past them,
+    // instead of stopping exactly at their edges.
+    --heading-line-box: calc(
+      var(--pf-t--global--font--size--3xl) * var(--pf-t--global--font--line-height--heading)
+    );
+    --body-line-box: calc(
+      var(--pf-t--global--font--size--md) * var(--pf-t--global--font--line-height--body)
+    );
+    --intro-body-offset: calc(var(--heading-line-box) - var(--body-line-box));
+
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: var(--pf-t--global--spacer--sm) auto auto var(--pf-t--global--spacer--sm);
+    grid-template-areas:
+      ".     divider ."
+      "icon  divider ."
+      "intro divider body"
+      ".     divider .";
+
+    &__icon {
+      justify-self: end;
+      text-align: end;
+    }
+
+    &__intro {
+      justify-self: end;
+      align-items: end;
+      text-align: end;
+    }
+
+    &__body {
+      justify-self: start;
+      text-align: start;
+      min-inline-size: 25dvw;
+      padding-block-start: var(--intro-body-offset);
+    }
+
+    &__divider {
+      display: block;
+      grid-area: divider;
+      inline-size: 1px;
+      background: var(--pf-t--global--border--color--default);
+    }
   }
 }
 

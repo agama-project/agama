@@ -32,7 +32,7 @@ import {
   InputGroupItem,
   TextInput,
 } from "@patternfly/react-core";
-import { Icon } from "~/components/layout";
+import Icon from "~/components/layout/Icon";
 import Interpolate from "~/components/core/Interpolate";
 import Text from "~/components/core/Text";
 import { useFieldLabel } from "~/hooks/use-field-label";

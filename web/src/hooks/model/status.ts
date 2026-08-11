@@ -23,7 +23,7 @@
 import { useEffect } from "react";
 import { isArrayEqual, remove, replaceOrAppend } from "radashi";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { useInstallerClient } from "~/context/installer";
+import { useInstallerClient } from "~/hooks/use-installer-client";
 import { getStatus } from "~/api";
 
 import type { Status, Progress, Task } from "~/model/status";

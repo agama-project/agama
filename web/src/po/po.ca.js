@@ -1654,6 +1654,9 @@ export default {
   "Loading data...": [
     "Carregant dades..."
   ],
+  "Loading the installation repositories...": [
+    "Carregant els repositoris d'instal·lació..."
+  ],
   "Localization": [
     "Localització"
   ],
@@ -3064,6 +3067,9 @@ export default {
   "Transient": [
     "Transitori"
   ],
+  "Try again": [
+    "Torna-ho a provar"
+  ],
   "Try to activate again": [
     "Torna a provar l'activació"
   ],
@@ -3388,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Us connectareu a una xarxa pública sense encriptació. És possible que les vostres dades no estiguin segures."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] activat"

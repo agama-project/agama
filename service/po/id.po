@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-07-02 08:45+0000\n"
-"PO-Revision-Date: 2026-04-15 07:04+0000\n"
+"PO-Revision-Date: 2026-08-02 14:12+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
 "service-master/id/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17\n"
+"X-Generator: Weblate 2026.7.1\n"
 
 #. Reports the problems and decide whether to continue or not.
 #.
@@ -66,7 +66,7 @@ msgstr "Menulis sysconfig bootloader"
 #. Implementation for the API method #Finish.
 #: service/lib/agama/dbus/storage/manager.rb:206
 msgid "Finishing installation"
-msgstr "Menyelesaikan instalasi"
+msgstr "Penyelesaian instalasi"
 
 #. Implementation for the API method #Umount.
 #: service/lib/agama/dbus/storage/manager.rb:213

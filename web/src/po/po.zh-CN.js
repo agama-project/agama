@@ -234,6 +234,9 @@ export default {
   "Actions": [
     "操作"
   ],
+  "Actions for %s": [
+    "可对 %s 执行的操作"
+  ],
   "Actions for %s at portal %s": [
     "可对 %s（门户 %s 上）执行的操作"
   ],
@@ -338,6 +341,9 @@ export default {
   ],
   "Allow growing": [
     "允许增长"
+  ],
+  "Allow shrinking": [
+    "允许缩小"
   ],
   "Already using all available devices": [
     "已在使用所有可用设备"
@@ -1140,6 +1146,9 @@ export default {
   "Enter or Tab to add, Backspace or Delete to remove, arrow keys to navigate entries, Escape to exit": [
     "按 Enter 或 Tab 键可添加条目，按 Backspace 或 Delete 键可去除条目，按方向键可切换条目，按 Escape 键可退出"
   ],
+  "Ethernet": [
+    "以太网"
+  ],
   "ExFAT": [
     "ExFAT"
   ],
@@ -1620,6 +1629,9 @@ export default {
   "Loading data...": [
     "正在读取数据……"
   ],
+  "Loading the installation repositories...": [
+    "正在加载安装储存库..."
+  ],
   "Localization": [
     "本地化"
   ],
@@ -1672,7 +1684,7 @@ export default {
     "登录表单"
   ],
   "Loopback": [
-    ""
+    "回环"
   ],
   "MAC address": [
     "MAC 地址"
@@ -3015,6 +3027,9 @@ export default {
   "Transient": [
     "临时"
   ],
+  "Try again": [
+    "重试"
+  ],
   "Try to activate again": [
     "重新尝试激活"
   ],
@@ -3338,9 +3353,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "您将连接到未加密的公共网络。数据可能存在安全风险。"
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "大写锁定已开启"
