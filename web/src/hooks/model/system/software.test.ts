@@ -37,7 +37,6 @@ const gnomePattern: Software.Pattern = {
   summary: "GNOME Desktop Environment",
   description: "The GNOME desktop environment",
   order: 1010,
-  icon: "./gnome",
   preselected: false,
   desktop: true,
 };
@@ -48,7 +47,6 @@ const basePattern: Software.Pattern = {
   summary: "YaST Base Utilities",
   description: "YaST tools for basic system administration.",
   order: 1220,
-  icon: "./yast",
   preselected: false,
   desktop: false,
 };
@@ -59,7 +57,6 @@ const kdePattern: Software.Pattern = {
   summary: "KDE Plasma Desktop",
   description: "The KDE desktop environment",
   order: 1020,
-  icon: "./kde",
   preselected: false,
   desktop: true,
 };
@@ -70,7 +67,6 @@ const lampPattern: Software.Pattern = {
   summary: "Web and LAMP Server",
   description: "Apache, MySQL, and PHP",
   order: 2010,
-  icon: "./lamp",
   preselected: false,
   desktop: false,
 };
