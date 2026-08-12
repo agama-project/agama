@@ -222,6 +222,9 @@ module Agama
 
         # Activates a device if it is not active yet.
         #
+        # @note This method receives channel, wwpn and lun instead of a device because in some cases
+        #   the devices are not discoverable (see bsc#1271376).
+        #
         # @param channel [String]
         # @param wwpn [String]
         # @param lun [String]
@@ -259,8 +262,9 @@ module Agama
 
         # Deactivates a device if it is active.
         #
-        # @note: If the disk is unknown or "allow_lun_scan" is active, then the disk deactivation
-        #   is not performed (noop).
+        # @note This method receives channel, wwpn and lun instead of a device because in some cases
+        #   the devices are not discoverable (see bsc#1271376). If the disk is unknown or
+        #   "allow_lun_scan" is active, then the disk deactivation is not performed (noop).
         #
         # @param channel [String]
         # @param wwpn [String]
