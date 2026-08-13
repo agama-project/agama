@@ -3,7 +3,7 @@ Wed Aug 12 13:55:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Wait for the software service when setting the configuration.
   It prevents the monitor to exit before the Agama is ready
-  (gh#agama-project/agama#3817).
+  (bsc#1275030, gh#agama-project/agama#3817).
 
 -------------------------------------------------------------------
 Tue Aug 11 11:42:44 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
