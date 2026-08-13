@@ -2,9 +2,9 @@
 Thu Aug 13 10:46:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not wait in the selection page after selecting a product
-  (gh#agama-project/agama#3820).
+  (related to bsc#1275030, gh#agama-project/agama#3820).
 - Fix an sporadic issue with "software" and "storage" skeletons
-  not disappearing (gh#agama-project/agama#3819).
+  not disappearing (bsc#1275027, gh#agama-project/agama#3819).
 
 -------------------------------------------------------------------
 Fri Aug  7 15:07:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
