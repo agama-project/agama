@@ -21,8 +21,13 @@ development project.
 ### Used tools
 
 The script requires the `git`, `gh`, `jq` and `osc` command line tools to be installed. The `osc`
-and `gh` tools need to be configured/authenticated against OBS respective GitHub. Do not worry the
+and `gh` tools need to be configured/authenticated against OBS and GitHub, respectively. Do not worry the
 script checks for that.
+
+Use the following commands if you don't want to remember your usernames:
+
+    GH_USER=$(gh auth status | sed -n 's/.*Logged in to github.com account \([^[:space:]]*\) .*/\1/;T;p;q')
+    OBS_USER=$(osc user | sed "s/^\([^:]*\):.*$/\\1/")
 
 ### GitHub configuration
 
@@ -33,29 +38,29 @@ to change anything.
 You need to create the `OBS_USER` action variable containing your OBS login name. You can do that
 from command line running command
 
-    gh -R <gh_user>/agama variable set OBS_USER --body <obs_user>
+    gh -R ${GH_USER?}/agama variable set OBS_USER --body ${OBS_USER?}
 
-where `gh_user` is your GitHub login name and `obs_user` your OBS login name.
+where `$GH_USER` is your GitHub login name and `$OBS_USER` your OBS login name.
 
 Alternatively you can create the variable manually by visiting URL
 
-    https://github.com/<gh_user>/agama/settings/variables/actions/new
+    xdg-open https://github.com/${GH_USER?}/agama/settings/variables/actions/new
 
-where `gh_user` is your GitHub login name. On that page create variable `OBS_USER` with your OBS
+where `$GH_USER` is your GitHub login name. On that page create variable `OBS_USER` with your OBS
 login name.
 
 Similarly we need to enter the OBS password, but as this is sensitive private value we use GitHub
 secret for that. From command line run this command
 
-    gh -R <gh_user>/agama secret set OBS_PASSWORD
+    gh -R ${GH_USER?}/agama secret set OBS_PASSWORD
 
-where `gh_user` is your GitHub login name. The command will interactively ask for the password.
+where `$GH_USER` is your GitHub login name. The command will interactively ask for the password.
 
 Or you can create the secret in browser going to this page
 
-    https://github.com/<gh_user>/agama/settings/secrets/actions/new`
+    xdg-open https://github.com/${GH_USER?}/agama/settings/secrets/actions/new`
 
-where `gh_user` is your GitHub login name. Create a new secret with name `OBS_PASSWORD` and
+where `$GH_USER` is your GitHub login name. Create a new secret with name `OBS_PASSWORD` and
 enter your OBS password as the value.
 
 ### Testing builds
@@ -83,7 +88,7 @@ project for submitting.
   - `git checkout master`
   - Update the ISO version in `live/src/agama-installer.kiwi`, use the `pre` suffix to distinguish
     between a development version and the final version. I.e. for Beta3 change the version from `12`
-    to `13pre`.
+    to `13.pre`.
   - Push the changes
     - `git commit -a`
     - `git push`
@@ -126,3 +131,33 @@ GitHub variable. It is in JSON format and maps the Git branch name to the OBS pr
 
 The GitHub submission actions check the mapping value for the current branch/tag and if no mapping
 is found the submission is skipped.
+
+## Detailed implementation
+
+- check if needed tools are installed, else terminate (git gh jq osc)
+- check if user is authenticated to gh and osc, else terminate
+
+- modes of operation:
+  - print obsolete projects (those where the branch no longer exists)
+  - cleanup obsolete projects
+  - setup a project for submission (described in the following)
+
+- if setting up a fork, check that OBS_USER and OBS_PASSWORDS are defined,
+  else terminate
+
+- if the OBS project does not exist yet, create it:
+  - branch a **set of packages** from systemsmanagement:Agama:Devel to the target project
+  - disable building for archs: aarch64, i586, ppc64le and s390x (unless `-a` is given)
+  - disable building for targets: Leap 16.x (unless `-t` is given)
+  - for package agama-installer-Leap, disable building for target: images(TW)
+  - enable publishing the packages and images (which is off by default in OBS)
+  - set the project url, title, description: to point to the git repo and branch
+
+- update gh variable OBS_PROJECTS for the repo to include this branch->project
+
+- for each of the set of **CI Workflows** (last major change: PR#2145)
+  - trigger the workflow
+    - if the remote branch already exists, do it
+    - otherwise print the command to do it
+
+- print the URL of the OBS project
