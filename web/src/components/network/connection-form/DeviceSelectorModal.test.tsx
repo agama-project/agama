@@ -84,64 +84,10 @@ describe("DeviceSelectorModal", () => {
     within(rowFor("wlan0")).getByText("Disconnected");
   });
 
-  it("keeps only the devices matching the filter", async () => {
-    const { user } = renderModal();
-    await user.type(screen.getByRole("textbox", { name: /Filter/ }), "wlan");
-    rowFor("wlan0");
-    expect(screen.queryByRole("row", { name: /enp1s0/ })).not.toBeInTheDocument();
-  });
-
-  it("filters by MAC address and by IP address too", async () => {
-    const { user } = renderModal();
-    const filter = screen.getByRole("textbox", { name: /Filter/ });
-    await user.type(filter, "AA:BB");
-    rowFor("wlan0");
-    await user.clear(filter);
-    await user.type(filter, "192.168.1.10");
-    rowFor("enp1s0");
-    expect(screen.queryByRole("row", { name: /wlan0/ })).not.toBeInTheDocument();
-  });
-
-  it("announces how many devices match the filter", async () => {
-    const { user } = renderModal();
-    await user.type(screen.getByRole("textbox", { name: /Filter/ }), "wlan");
-    screen.getByText("1 device found");
-  });
-
-  describe("when no device matches the filter", () => {
-    it("offers clearing the filter", async () => {
-      const { user } = renderModal();
-      await user.type(screen.getByRole("textbox", { name: /Filter/ }), "nothing");
-      screen.getByText("No devices match the filter");
-      await user.click(screen.getByRole("button", { name: "Clear filter" }));
-      rowFor("enp1s0");
-      rowFor("wlan0");
-    });
-  });
-
   describe("when no device is bound yet", () => {
     it("starts with the first one picked", () => {
       renderModal();
       expect(screen.getByRole("button", { name: "Use enp1s0" })).toBeEnabled();
-    });
-  });
-
-  describe("when the filter hides the selected device", () => {
-    it("does not allow confirming it", async () => {
-      const { user } = renderModal(ethernet);
-      expect(screen.getByRole("button", { name: "Use enp1s0" })).toBeEnabled();
-      await user.type(screen.getByRole("textbox", { name: /Filter/ }), "nothing");
-      expect(screen.getByRole("button", { name: "Select" })).toBeDisabled();
-      screen.getByText("Select a device");
-    });
-
-    it("offers it again once the filter stops hiding it", async () => {
-      const { user } = renderModal(ethernet);
-      const filter = screen.getByRole("textbox", { name: /Filter/ });
-      await user.type(filter, "nothing");
-      await user.clear(filter);
-      await user.click(screen.getByRole("button", { name: "Use enp1s0" }));
-      expect(onConfirm).toHaveBeenCalledWith(ethernet);
     });
   });
 

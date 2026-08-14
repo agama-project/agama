@@ -20,31 +20,16 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useEffect, useId, useState } from "react";
-import {
-  Button,
-  Divider,
-  EmptyState,
-  EmptyStateActions,
-  EmptyStateBody,
-  EmptyStateFooter,
-  Flex,
-  HelperText,
-  HelperTextItem,
-  SearchInput,
-  Stack,
-} from "@patternfly/react-core";
+import React, { useId, useState } from "react";
+import { Flex, HelperText, HelperTextItem, Stack } from "@patternfly/react-core";
 import { first } from "radashi";
 import { sprintf } from "sprintf-js";
-import formStyles from "@patternfly/react-styles/css/components/Form/form";
-import sizingStyles from "@patternfly/react-styles/css/utilities/Sizing/sizing";
 import Popup from "~/components/core/Popup";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import Text from "~/components/core/Text";
-import { useAnnounce } from "~/context/announcer";
 import { connectionTypeLabel, deviceStateLabel, formatIp } from "~/utils/network";
 import { sortCollection } from "~/utils";
-import { _, n_ } from "~/i18n";
+import { _ } from "~/i18n";
 
 import type { SortedBy } from "~/components/core/SelectableDataTable";
 import type { Device } from "~/types/network";
@@ -61,36 +46,16 @@ export type DeviceSelectorModalProps = {
   onCancel: () => void;
 };
 
-/**
- * Id of the filter input, tying it to its label.
- *
- * A fixed id is enough because only one of these dialogs is open at a time.
- */
-const FILTER_INPUT_ID = "network-device-filter";
-
 /** Addresses of a device, formatted for display. */
 const deviceAddresses = (device: Device): string =>
   (device.addresses || []).map((address) => formatIp(address)).join(", ");
-
-/** Text used to match a device against what the user typed in the filter. */
-const searchableText = (device: Device): string =>
-  [device.name, device.macAddress, connectionTypeLabel(device.type), deviceAddresses(device)]
-    .join(" ")
-    .toLowerCase();
-
-const filterDevices = (devices: Device[], search: string): Device[] => {
-  const term = search.trim().toLowerCase();
-  if (term === "") return devices;
-
-  return devices.filter((device) => searchableText(device).includes(term));
-};
 
 /**
  * Dialog for picking a network device from a table showing more details than a
  * dropdown can hold: name, MAC address, type, addresses, and state.
  *
- * The table can be filtered and sorted, and the pick is only reported to the
- * caller when the user confirms.
+ * The table can be sorted, and the pick is only reported to the caller when the
+ * user confirms.
  */
 export default function DeviceSelectorModal({
   devices,
@@ -99,7 +64,6 @@ export default function DeviceSelectorModal({
   onCancel,
 }: DeviceSelectorModalProps): React.ReactNode {
   const confirmHintId = useId();
-  const [search, setSearch] = useState("");
   // No column sorts the table at first, so the rows arrive in the same order as
   // the dropdown the user came from. Sorting starts when a header is clicked.
   const [sortedBy, setSortedBy] = useState<SortedBy>({});
@@ -107,7 +71,6 @@ export default function DeviceSelectorModal({
   // clicks a row, and would leave the initial focus with nowhere to land.
   const initialDevice = selected ?? first(devices);
   const [selection, setSelection] = useState<Device[]>(initialDevice ? [initialDevice] : []);
-  const announce = useAnnounce();
 
   const columns = [
     {
@@ -138,31 +101,12 @@ export default function DeviceSelectorModal({
     },
   ];
 
-  const isFiltering = search.trim() !== "";
-  const visibleDevices = filterDevices(devices, search);
   const sortingKey = sortedBy.index === undefined ? undefined : columns[sortedBy.index].sortingKey;
   const sortedDevices = sortingKey
-    ? sortCollection(visibleDevices, sortedBy.direction, sortingKey)
-    : visibleDevices;
+    ? sortCollection(devices, sortedBy.direction, sortingKey)
+    : devices;
 
-  // Only a device the user can see counts as picked. Confirming one hidden by
-  // the filter would apply a device with nothing on screen to show for it. The
-  // pick is derived rather than cleared, so widening the filter again brings it
-  // back instead of making the user find it a second time.
-  const pick = selection.find((device) => visibleDevices.some((d) => d.name === device.name));
-
-  // TRANSLATORS: screen reader announcement when filter results change.
-  // %d is the number of devices matching the current filter.
-  const filterAnnouncement = isFiltering
-    ? sprintf(
-        n_("%d device found", "%d devices found", visibleDevices.length),
-        visibleDevices.length,
-      )
-    : "";
-
-  useEffect(() => {
-    if (filterAnnouncement) announce(filterAnnouncement);
-  }, [filterAnnouncement, announce]);
+  const pick = selection[0];
 
   // Names what confirming will do, so the button reads as the action itself
   // rather than a bare "Confirm" whose effect has to be inferred.
@@ -175,24 +119,6 @@ export default function DeviceSelectorModal({
     return sprintf(_("Use %s"), pick.name);
   };
 
-  const noDevicesFound = (
-    <EmptyState
-      headingLevel="h4"
-      // TRANSLATORS: shown instead of the device table when the filter matches nothing
-      titleText={_("No devices match the filter")}
-      variant="sm"
-    >
-      <EmptyStateBody>{_("Try a different name, MAC address, type, or address.")}</EmptyStateBody>
-      <EmptyStateFooter>
-        <EmptyStateActions>
-          <Button variant="link" onClick={() => setSearch("")}>
-            {_("Clear filter")}
-          </Button>
-        </EmptyStateActions>
-      </EmptyStateFooter>
-    </EmptyState>
-  );
-
   return (
     <Popup
       isOpen
@@ -200,36 +126,11 @@ export default function DeviceSelectorModal({
       // TRANSLATORS: title of the dialog for picking a network device
       title={_("Select a network device")}
       // Focus starts on the picked device, so its row is what the user hears
-      // and sees first, and the arrow keys move from there. Filtering is a step
-      // back for the rare case of a long list.
+      // and sees first, and the arrow keys move from there.
       elementToFocus={initialDevice ? "input[type=radio]:checked" : undefined}
       onClose={onCancel}
     >
       <Stack hasGutter>
-        <Stack>
-          <label htmlFor={FILTER_INPUT_ID} className={formStyles.formLabel}>
-            {
-              // TRANSLATORS: label of the field filtering the list of network
-              // devices. It names what can be typed there.
-              _("Filter by name, MAC address, type or address")
-            }
-          </label>
-          <SearchInput
-            searchInputId={FILTER_INPUT_ID}
-            // Fills the dialog width instead of sitting at its intrinsic size,
-            // which leaves the field far narrower than the table below it.
-            className={sizingStyles.w_100}
-            // SearchInput labels its input "Search input" unless told otherwise,
-            // and that default would win over the label above. An empty value is
-            // ignored when the accessible name is computed, leaving the label to
-            // name the field.
-            aria-label=""
-            value={search}
-            onChange={(_event, value) => setSearch(value)}
-            onClear={() => setSearch("")}
-          />
-        </Stack>
-        <Divider />
         <SelectableDataTable
           columns={columns}
           items={sortedDevices}
@@ -239,7 +140,6 @@ export default function DeviceSelectorModal({
           selectionMode="single"
           sortedBy={sortedBy}
           updateSorting={setSortedBy}
-          emptyState={noDevicesFound}
         />
       </Stack>
       <Popup.Actions>
