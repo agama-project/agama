@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 14 15:49:58 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allow browsing the network devices with more details when binding
+  a connection (gh#agama-project/agama#3822).
+
+-------------------------------------------------------------------
 Fri Aug 14 07:16:16 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Do not bind new connections to the loopback device
