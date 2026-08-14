@@ -19,6 +19,7 @@ examples and refined patterns.
   - [4. Conditionally shown, optional when shown](#4-conditionally-shown-optional-when-shown)
   - [5. Choice selector (mode or behavior selection)](#5-choice-selector-mode-or-behavior-selection)
   - [6. Revealed by a checkbox](#6-revealed-by-a-checkbox)
+  - [7. Footer entry, help that stays out of the way](#7-footer-entry-help-that-stays-out-of-the-way)
 - [Read-only information](#read-only-information)
 - [Accessibility notes](#accessibility-notes)
 - [Validation](#validation)
@@ -261,6 +262,91 @@ of users: that just adds an unnecessary click.
 **Examples:** "Use custom DNS" checkbox reveals the DNS servers field. "Use
 custom DNS search domains" checkbox reveals the DNS search domains field.
 
+### 7. Footer entry, help that stays out of the way
+
+Unlike the patterns above, this one is not about whether a field appears. It is
+about what a control offers inside itself.
+
+The last entry of a selector offers something other than a value. What it does
+is open to the form: a dialog, another page, the start of creating something the
+list cannot offer yet. The list keeps working exactly as before for everyone who
+does not need it.
+
+Use it when the plain options serve most users most of the time, a harder setup
+needs more than the list can show, and that extra route does not deserve a
+permanent place on the form.
+
+**Example:** the device selector in `ConnectionForm`. A device name and its MAC
+address are enough to pick the right card on an ordinary machine. On a server
+with eight similar ports they are not, so the last entry of the dropdown,
+"Browse with details...", opens a dialog listing every device with its type,
+addresses and state.
+
+#### Why not a button next to the field
+
+The obvious alternative is a second control beside the field. It costs more than
+it appears to:
+
+- two controls doing one job, each needing a label that explains how it differs
+  from the other,
+- a tab stop in everyone's path, walked past by anyone who does not need it,
+- more on screen for a case that is uncommon by definition.
+
+The footer entry costs nothing to anyone who does not open the list, and it sits
+exactly where the user already is at the moment the list turns out not to be
+enough. Prefer it whenever the extra route serves a minority. A separate control
+is right only when most users are expected to take that route, at which point it
+is not a way out but a main path.
+
+#### Reaching it
+
+The entry is one keystroke away rather than a walk past every option: ArrowUp on
+the closed field opens the list with the entry focused, and ArrowUp from the
+first option wraps around to it.
+
+#### Saying where it leads
+
+The entry is an option, and ARIA does not allow an option to announce that it
+opens a dialog. The label has to carry that, for both kinds of user.
+
+Keep the visible text short, two or three words, ending in an ellipsis (`...`)
+as the usual sign that more follows rather than a value being set. An ellipsis
+is silent when read aloud, so hand the spoken half to the control instead of
+writing it at the call site:
+
+```tsx
+footerEntry={{
+  label: _("Browse with details..."),
+  onSelect: () => setIsDialogOpen(true),
+  opensDialog: true,
+}}
+```
+
+A screen reader then announces "Browse with details, Opens a dialog, option".
+Keeping
+that sentence inside the control means every selector says it the same way and
+translators see it once. The visible text stays part of the accessible name, so
+voice control still works by what is on screen.
+
+When the standard sentence does not fit, because the entry leads to a page
+rather than a dialog for instance, replace it with `hint`:
+
+```tsx
+footerEntry={{
+  label: _("Manage volume groups..."),
+  onSelect: () => navigate(STORAGE.volumeGroups),
+  hint: _("Opens the volume groups page"),
+}}
+```
+
+#### When not to use it
+
+- Most users need the route: give it a control of its own.
+- The route is the only way to reach a value: the list is the wrong control.
+
+Available today on `DropdownField` through its `footerEntry` prop. Other
+selectors can grow the same idea when a case for it turns up.
+
 ---
 
 ## Read-only information
@@ -403,6 +489,8 @@ Work through these questions in order:
 5. Does the user need to choose between different configuration behaviors or
    modes? Use pattern 5.
 6. Is the field an advanced option that most users will never need? Use pattern 6.
+7. Do the options serve most users, while a harder setup needs more help than
+   the list can give? Add a footer entry to the selector, pattern 7.
 
 ---
 
@@ -416,6 +504,7 @@ Work through these questions in order:
 | Conditionally optional            | On condition | `(optional)`                      | No                  |
 | Choice selector                   | Always       | No suffix                         | Depends on choice   |
 | Checkbox opt-in                   | On checkbox  | No suffix                         | Yes, when rendered  |
+| Footer entry                      | Inside the list | Short, ends in `...`           | Sets no value       |
 
 ---
 
