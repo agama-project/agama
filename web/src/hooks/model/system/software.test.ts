@@ -100,7 +100,7 @@ function mockScenario(product: Product, patterns: Software.Pattern[], selection:
     products: [product],
     software: { patterns, addons: [], repositories: [] },
   });
-  mockQuery(["extendedConfig"], { product: { id: product.id } });
+  mockQuery(["config"], { product: { id: product.id } });
   mockQuery(["proposal"], { software: { patterns: selection, usedSpace: 0 } });
 }
 
