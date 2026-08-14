@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug 14 07:16:16 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Do not bind new connections to the loopback device
+  (gh#agama-project/agama#3821).
+
+-------------------------------------------------------------------
 Tue Aug 11 10:57:37 UTC 2026 - David Diaz <dgonzalez@suse.com>
 
 - Add an application-wide live region for announcing status changes
