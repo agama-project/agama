@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2025] SUSE LLC
+ * Copyright (c) [2025-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -25,18 +25,15 @@ import {
   CodeBlock,
   Content,
   ExpandableSection,
-  Form,
   FormGroup,
   Stack,
   TextInput,
 } from "@patternfly/react-core";
-import { NestedContent, Popup } from "~/components/core";
+import { NestedContent } from "~/components/core";
 import Text from "~/components/core/Text";
-import QuestionActions, { primaryAction } from "~/components/questions/QuestionActions";
+import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
-
-const FORM_ID = "load-config-retry-question";
 
 /**
  * Component for rendering generic questions
@@ -53,35 +50,20 @@ export default function RetryLoadConfigQuestion({
 }): React.ReactNode {
   const [url, setUrl] = useState(question.data?.originalValue || "");
 
-  const actionCallback = (action: string) => {
-    question.answer = { action, value: url };
-    answerCallback(question);
-  };
-
-  const triggerDefaultAction = (e: React.FormEvent) => {
-    e.preventDefault();
-    actionCallback(primaryAction(question.actions, question.defaultAction).id);
-  };
-
   const error = question.data?.error;
 
   return (
-    <Popup
-      isOpen
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
+      value={url}
+      hasForm
       variant="medium"
       title={_("Cannot apply configuration")}
-      actions={
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-          formId={FORM_ID}
-        />
-      }
     >
       <Stack hasGutter>
         <Content isEditorial>{question.text}</Content>
-        <Form id={FORM_ID} isWidthLimited={false} onSubmit={triggerDefaultAction}>
+        <QuestionDialog.Form isWidthLimited={false}>
           {/* TRANSLATORS: field label for location of configuration file */}
           <FormGroup label={_("Location")} fieldId="location">
             <TextInput
@@ -91,7 +73,7 @@ export default function RetryLoadConfigQuestion({
               onChange={(_event, value) => setUrl(value)}
             />
           </FormGroup>
-        </Form>
+        </QuestionDialog.Form>
         <Content>
           <Text isBold>
             {/* TRANSLATORS: help text in popup to clarify what user should do */}
@@ -117,6 +99,6 @@ export default function RetryLoadConfigQuestion({
           </ExpandableSection>
         )}
       </Stack>
-    </Popup>
+    </QuestionDialog>
   );
 }

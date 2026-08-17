@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -21,12 +21,11 @@
  */
 
 import React, { useState } from "react";
-import { Alert as PFAlert, Content, Form, FormGroup, Stack } from "@patternfly/react-core";
-import { InstallerL10nOptions, PasswordInput, Popup } from "~/components/core";
-import QuestionActions, { primaryAction } from "~/components/questions/QuestionActions";
+import { Alert as PFAlert, Content, FormGroup, Stack } from "@patternfly/react-core";
+import { InstallerL10nOptions, PasswordInput } from "~/components/core";
+import QuestionDialog from "~/components/questions/QuestionDialog";
 import { _ } from "~/i18n";
-
-const FORM_ID = "luks-activation-question";
+import type { AnswerCallback, Question } from "~/model/question";
 
 /**
  * Internal component for rendering an alert if given password failed
@@ -46,44 +45,31 @@ const Alert = ({ attempt }: { attempt?: string }): React.ReactNode => {
  * @param question - the question to be answered
  * @param answerCallback - the callback to be triggered on answer
  */
-export default function LuksActivationQuestion({ question, answerCallback }) {
-  const [password, setPassword] = useState(question.password || "");
-  const conditions = { disable: { decrypt: password === "" } };
-  const { id: defaultAction } = primaryAction(question.actions, question.defaultAction);
-
-  const actionCallback = (action: string) => {
-    const answer = { action, value: password };
-    question.answer = answer;
-    answerCallback(question);
-  };
-
-  const triggerDefaultAction = (e) => {
-    e.preventDefault();
-    if (!conditions.disable?.[defaultAction]) {
-      actionCallback(defaultAction);
-    }
-  };
+export default function LuksActivationQuestion({
+  question,
+  answerCallback,
+}: {
+  question: Question;
+  answerCallback: AnswerCallback;
+}): React.ReactNode {
+  const [password, setPassword] = useState(question.answer?.value || "");
+  const disabledActions = password === "" ? ["decrypt"] : [];
 
   return (
-    <Popup
-      isOpen
+    <QuestionDialog
+      question={question}
+      answerCallback={answerCallback}
+      value={password}
+      disabledActions={disabledActions}
+      hasForm
       title={_("Encrypted Device")}
       elementToFocus="#luks-password"
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
-      actions={
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-          conditions={conditions}
-          formId={FORM_ID}
-        />
-      }
     >
       <Stack hasGutter>
-        <Alert attempt={question.data.attempt} />
+        <Alert attempt={question.data?.attempt} />
         <Content>{question.text}</Content>
-        <Form id={FORM_ID} onSubmit={triggerDefaultAction}>
+        <QuestionDialog.Form>
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Encryption Password")} fieldId="luks-password">
             <PasswordInput
@@ -92,8 +78,8 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
               onChange={(_, value) => setPassword(value)}
             />
           </FormGroup>
-        </Form>
+        </QuestionDialog.Form>
       </Stack>
-    </Popup>
+    </QuestionDialog>
   );
 }
