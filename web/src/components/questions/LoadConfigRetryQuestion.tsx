@@ -32,9 +32,11 @@ import {
 } from "@patternfly/react-core";
 import { NestedContent, Popup } from "~/components/core";
 import Text from "~/components/core/Text";
-import QuestionActions from "~/components/questions/QuestionActions";
+import QuestionActions, { primaryAction } from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
+
+const FORM_ID = "load-config-retry-question";
 
 /**
  * Component for rendering generic questions
@@ -56,6 +58,11 @@ export default function RetryLoadConfigQuestion({
     answerCallback(question);
   };
 
+  const triggerDefaultAction = (e: React.FormEvent) => {
+    e.preventDefault();
+    actionCallback(primaryAction(question.actions, question.defaultAction).id);
+  };
+
   const error = question.data?.error;
 
   return (
@@ -68,12 +75,13 @@ export default function RetryLoadConfigQuestion({
           actions={question.actions}
           defaultAction={question.defaultAction}
           actionCallback={actionCallback}
+          formId={FORM_ID}
         />
       }
     >
       <Stack hasGutter>
         <Content isEditorial>{question.text}</Content>
-        <Form isWidthLimited={false}>
+        <Form id={FORM_ID} isWidthLimited={false} onSubmit={triggerDefaultAction}>
           {/* TRANSLATORS: field label for location of configuration file */}
           <FormGroup label={_("Location")} fieldId="location">
             <TextInput

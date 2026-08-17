@@ -128,5 +128,19 @@ describe("QuestionWithPassword", () => {
       );
       expect(answerFn).toHaveBeenCalledWith(question);
     });
+
+    it("answers the default action once when pressing Enter", async () => {
+      const { user } = renderQuestion();
+
+      answerFn.mockClear();
+      const passwordInput = await screen.findByLabelText("Password");
+      await user.clear(passwordInput);
+      await user.type(passwordInput, "stillNotSecret{Enter}");
+
+      expect(question.answer).toEqual(
+        expect.objectContaining({ value: "stillNotSecret", action: "cancel" }),
+      );
+      expect(answerFn).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -24,9 +24,11 @@ import React, { useState } from "react";
 import { Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { Icon } from "~/components/layout";
 import { InstallerL10nOptions, PasswordInput, Popup } from "~/components/core";
-import QuestionActions from "~/components/questions/QuestionActions";
+import QuestionActions, { primaryAction } from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
 import type { AnswerCallback, Question } from "~/model/question";
+
+const FORM_ID = "password-question";
 
 /**
  * Component for rendering questions asking for password
@@ -49,6 +51,11 @@ export default function QuestionWithPassword({
     answerCallback(question);
   };
 
+  const triggerDefaultAction = (e: React.FormEvent) => {
+    e.preventDefault();
+    actionCallback(primaryAction(question.actions, question.defaultAction).id);
+  };
+
   return (
     <Popup
       isOpen
@@ -60,12 +67,13 @@ export default function QuestionWithPassword({
           actions={question.actions}
           defaultAction={question.defaultAction}
           actionCallback={actionCallback}
+          formId={FORM_ID}
         />
       }
     >
       <Stack hasGutter>
         <Content>{question.text}</Content>
-        <Form>
+        <Form id={FORM_ID} onSubmit={triggerDefaultAction}>
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Password")} fieldId="password">
             <PasswordInput

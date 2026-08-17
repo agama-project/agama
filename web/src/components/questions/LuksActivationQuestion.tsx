@@ -23,8 +23,10 @@
 import React, { useState } from "react";
 import { Alert as PFAlert, Content, Form, FormGroup, Stack } from "@patternfly/react-core";
 import { InstallerL10nOptions, PasswordInput, Popup } from "~/components/core";
-import QuestionActions from "~/components/questions/QuestionActions";
+import QuestionActions, { primaryAction } from "~/components/questions/QuestionActions";
 import { _ } from "~/i18n";
+
+const FORM_ID = "luks-activation-question";
 
 /**
  * Internal component for rendering an alert if given password failed
@@ -47,7 +49,7 @@ const Alert = ({ attempt }: { attempt?: string }): React.ReactNode => {
 export default function LuksActivationQuestion({ question, answerCallback }) {
   const [password, setPassword] = useState(question.password || "");
   const conditions = { disable: { decrypt: password === "" } };
-  const defaultAction = "decrypt";
+  const { id: defaultAction } = primaryAction(question.actions, question.defaultAction);
 
   const actionCallback = (action: string) => {
     const answer = { action, value: password };
@@ -74,13 +76,14 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
           defaultAction={question.defaultAction}
           actionCallback={actionCallback}
           conditions={conditions}
+          formId={FORM_ID}
         />
       }
     >
       <Stack hasGutter>
         <Alert attempt={question.data.attempt} />
         <Content>{question.text}</Content>
-        <Form onSubmit={triggerDefaultAction}>
+        <Form id={FORM_ID} onSubmit={triggerDefaultAction}>
           {/* TRANSLATORS: field label */}
           <FormGroup label={_("Encryption Password")} fieldId="luks-password">
             <PasswordInput
