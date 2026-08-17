@@ -20,8 +20,8 @@ SyslogIdentifier=hcn-init-initrd
 StandardInput=null
 StandardOutput=journal+console
 StandardError=journal+console
-# parse-hcn waits up to 3 minutes for the HCN devices to show up in sysfs,
-# which is longer than the default start timeout
+# parse-hcn waits up to 3 minutes in total for the HCN devices to show up in
+# sysfs, which is longer than the default start timeout
 TimeoutStartSec=300
 RemainAfterExit=yes
 

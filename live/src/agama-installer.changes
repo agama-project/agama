@@ -14,7 +14,12 @@ Mon Aug 17 09:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
   (DRACUT_SYSTEMD=1, StandardInput=null, Conflicts with
   shutdown.target and emergency.target) and raise
   TimeoutStartSec to 300s, the 3 minutes parse-hcn waits for the
-  devices exceed the default start timeout
+  devices exceed the default start timeout.
+- HCN: wait for all the devices to show up in sysfs with a single
+  3 minutes budget instead of restarting it for every device,
+  which exceeded the service start timeout with more than one
+  device, and do not take the name resolved by ofpathname for a
+  device that has no sysfs entry yet as a valid result
   (gh#agama-project/agama#3790).
 
 -------------------------------------------------------------------

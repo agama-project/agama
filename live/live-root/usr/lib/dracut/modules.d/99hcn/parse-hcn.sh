@@ -41,6 +41,15 @@ get_mac() {
   fi
 }
 
+# Number of 3 second waits left for the devices to show up in sysfs after a
+# migration, 3 minutes in total.
+#
+# The budget is global and not per device on purpose: the devices appear in
+# parallel, so waiting for them one by one would multiply the time spent here
+# by the number of devices and hcn-init-initrd.service, which allows 5 minutes
+# for the whole run, would kill the script in the middle of it.
+HCN_WAIT_RETRIES=60
+
 # Function to discover HCN mapping for a device-tree node
 #
 # On success it sets HCN_MAPPING to "bondname devname mac mode" and returns 0.
@@ -50,8 +59,6 @@ get_mac() {
 get_dev_hcn() {
   local dev=$1
   local hcnid devname mode mac ofpath
-  # Wait up to 3 minutes for device to appear after migration (12 * 15s)
-  local wait=12
 
   HCN_MAPPING=""
 
@@ -62,15 +69,27 @@ get_dev_hcn() {
   ofpath=${dev#/proc/device-tree}
 
   # Wait for device to appear in sysfs. This might take time after migration.
-  while [ $wait -gt 0 ]; do
-    if devname=$(ofpathname -l "$ofpath" 2>/dev/null) && [ -e "/sys/class/net/$devname" ]; then
+  # Every device is looked up at least once, even with the shared wait budget
+  # already spent by the previous ones. devname is reset on each try because
+  # ofpathname can resolve a name for a device that is not in sysfs yet, and
+  # such a name must not be taken as a valid result once the waiting is over.
+  while :; do
+    devname=$(ofpathname -l "$ofpath" 2>/dev/null)
+    if [ -n "$devname" ] && [ -e "/sys/class/net/$devname" ]; then
       info "parse-hcn: device $devname ready for $ofpath"
       mac=$(get_mac "$dev")
       break
     fi
-    info "parse-hcn: waiting for device for $ofpath (retry $wait)"
-    sleep 15
-    wait=$((wait - 1))
+    devname=""
+    [ "${HCN_WAIT_RETRIES:-0}" -gt 0 ] || break
+    # The tries are short so that a device that is already there is not waited
+    # for longer than needed, but only one out of five is logged, the messages
+    # also go to the console
+    if [ $((HCN_WAIT_RETRIES % 5)) -eq 0 ]; then
+      info "parse-hcn: waiting for device for $ofpath ($HCN_WAIT_RETRIES tries left)"
+    fi
+    sleep 3
+    HCN_WAIT_RETRIES=$((HCN_WAIT_RETRIES - 1))
   done
 
   if [ -z "$devname" ]; then

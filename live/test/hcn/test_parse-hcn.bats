@@ -286,6 +286,57 @@ EOSCRIPT
     [ "$HCN_MAPPING" = "bond333e80f5 lo 2e:7a:32:2d:3d:06 backup" ]
 }
 
+@test "get_dev_hcn: ignores a device name that is not in sysfs yet" {
+    source <(sed -n '/^xdump4()/,/^}/p; /^get_mac()/,/^}/p; /^get_dev_hcn()/,/^}/p' "$SCRIPT_PATH")
+
+    # ofpathname resolves a name for a device that udev did not create yet, so
+    # the name must not be taken as a valid result once the waiting is over
+    ofpathname() { echo "hcn-not-there"; }
+    sleep() { :; }
+
+    HCN_WAIT_RETRIES=2
+    run get_dev_hcn "$MOCK_PROC/device-tree/vdevice/vnic@30000006"
+    [ "$status" -ne 0 ]
+
+    HCN_WAIT_RETRIES=2
+    get_dev_hcn "$MOCK_PROC/device-tree/vdevice/vnic@30000006" 2>/dev/null || true
+    [ -z "$HCN_MAPPING" ]
+}
+
+@test "get_dev_hcn: shares the wait budget between devices" {
+    source <(sed -n '/^xdump4()/,/^}/p; /^get_mac()/,/^}/p; /^get_dev_hcn()/,/^}/p' "$SCRIPT_PATH")
+
+    # Neither device ever shows up in sysfs
+    ofpathname() { echo "hcn-not-there"; }
+    slept=0
+    sleep() { slept=$((slept + 1)); }
+
+    HCN_WAIT_RETRIES=4
+
+    get_dev_hcn "$MOCK_PROC/device-tree/vdevice/vnic@30000006" 2>/dev/null || true
+    get_dev_hcn "$MOCK_PROC/device-tree/pci@800000029008007/ethernet@0" 2>/dev/null || true
+
+    # The second device does not start the counter again, otherwise the service
+    # start timeout would be exceeded with enough devices
+    [ "$slept" -eq 4 ]
+    [ "$HCN_WAIT_RETRIES" -eq 0 ]
+}
+
+@test "get_dev_hcn: looks the device up with the wait budget already spent" {
+    source <(sed -n '/^xdump4()/,/^}/p; /^get_mac()/,/^}/p; /^get_dev_hcn()/,/^}/p' "$SCRIPT_PATH")
+
+    # get_dev_hcn checks /sys/class/net directly, and "lo" is always there
+    ofpathname() { echo "lo"; }
+
+    # A device that is already there is found even when the devices processed
+    # before used up all the waiting time
+    HCN_WAIT_RETRIES=0
+
+    get_dev_hcn "$MOCK_PROC/device-tree/vdevice/vnic@30000006" 2>/dev/null
+
+    [ "$HCN_MAPPING" = "bond333e80f5 lo 2e:7a:32:2d:3d:06 backup" ]
+}
+
 @test "get_dev_hcn: resets HCN_MAPPING when the device is unknown" {
     source <(sed -n '/^xdump4()/,/^}/p; /^get_mac()/,/^}/p; /^get_dev_hcn()/,/^}/p' "$SCRIPT_PATH")
 
