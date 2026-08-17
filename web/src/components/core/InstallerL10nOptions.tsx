@@ -437,7 +437,7 @@ const KeyboardOnlyDialog = withForm({
           variant="small"
           onClose={onCancel}
           title={_("Change keyboard")}
-          actions={<Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>}
+          actions={<Popup.Close>{_("Accept")}</Popup.Close>}
         >
           {_("Cannot be changed in remote installation")}
         </Popup>

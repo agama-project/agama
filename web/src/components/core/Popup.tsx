@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { useId } from "react";
+import React, { createContext, useContext, useId } from "react";
 import {
   Button,
   ButtonProps,
@@ -136,6 +136,40 @@ const SecondaryAction = ({ children, asLink, ...actionProps }: SecondaryActionPr
     {children}
   </Button>
 );
+
+/** Lets the closing action reuse the dialog's own `onClose` */
+const CloseContext = createContext<ModalProps["onClose"]>(undefined);
+
+/**
+ * A {@link PrimaryAction} whose only job is closing the dialog, labeled
+ * "Close" unless told otherwise.
+ *
+ * It triggers the `onClose` of the dialog it belongs to, so a dismissible
+ * dialog does not have to name its closing callback twice. Give it an
+ * `onClick` when closing must do something else, which is also the only way
+ * of using it in a dialog that offers no `onClose`.
+ *
+ * @example <caption>Closing the dialog</caption>
+ *   <Close />
+ *
+ * @example <caption>Using a custom text</caption>
+ *   <Close>Accept</Close>
+ */
+const Close = ({ children = _("Close"), onClick, ...actionProps }: ActionProps) => {
+  const closeDialog = useContext(CloseContext);
+
+  if (!onClick && !closeDialog) {
+    console.error(
+      "The Close action does nothing unless it gets an 'onClick' or its dialog an 'onClose'",
+    );
+  }
+
+  return (
+    <PrimaryAction {...actionProps} onClick={onClick || closeDialog}>
+      {children}
+    </PrimaryAction>
+  );
+};
 
 /**
  * A {@link SecondaryAction} labeled "Cancel" unless told otherwise.
@@ -270,6 +304,7 @@ const Popup = ({
   // TRANSLATORS: progress message
   loadingText = _("Loading data..."),
   children,
+  onClose,
   ...props
 }: PopupProps) => {
   const titleId = useId();
@@ -280,21 +315,26 @@ const Popup = ({
       {...props}
       width={props.variant ? undefined : "auto"}
       isOpen={isOpen}
+      onClose={onClose}
       aria-labelledby={title ? titleId : undefined}
       aria-describedby={contentId}
     >
-      <AnnouncerTarget />
-      {title && (
-        <ModalHeader
-          labelId={titleId}
-          title={title}
-          description={description}
-          titleIconVariant={titleIconVariant}
-          help={titleAddon}
-        />
-      )}
-      <ModalBody id={contentId}>{isLoading ? <Loading text={loadingText} /> : children}</ModalBody>
-      {actions && <ModalFooter>{actions}</ModalFooter>}
+      <CloseContext.Provider value={onClose}>
+        <AnnouncerTarget />
+        {title && (
+          <ModalHeader
+            labelId={titleId}
+            title={title}
+            description={description}
+            titleIconVariant={titleIconVariant}
+            help={titleAddon}
+          />
+        )}
+        <ModalBody id={contentId}>
+          {isLoading ? <Loading text={loadingText} /> : children}
+        </ModalBody>
+        {actions && <ModalFooter>{actions}</ModalFooter>}
+      </CloseContext.Provider>
     </Modal>
   );
 };
@@ -302,6 +342,7 @@ const Popup = ({
 Popup.PrimaryAction = PrimaryAction;
 Popup.DangerousAction = DangerousAction;
 Popup.Confirm = Confirm;
+Popup.Close = Close;
 Popup.SecondaryAction = SecondaryAction;
 Popup.Cancel = Cancel;
 Popup.AncillaryAction = AncillaryAction;
