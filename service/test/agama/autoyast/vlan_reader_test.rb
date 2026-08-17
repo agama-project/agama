@@ -101,6 +101,16 @@ describe Agama::AutoYaST::VlanReader do
       end
     end
 
+    context "when the VLAN identifier is reserved" do
+      let(:profile) do
+        { "device" => "eth0.4095", "vlan_id" => "4095", "etherdevice" => "eth0" }
+      end
+
+      it "returns an empty hash" do
+        expect(subject.read).to eq({})
+      end
+    end
+
     context "when there is no VLAN information" do
       let(:profile) do
         { "name" => "eth0" }

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 17 09:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not accept the reserved VLAN identifier 4095, which is
+  rejected by NetworkManager (gh#agama-project/agama#3805).
+
+-------------------------------------------------------------------
 Wed Aug 12 13:55:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Wait for the software service when setting the configuration.
