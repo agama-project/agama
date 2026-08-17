@@ -21,6 +21,7 @@
 
 require "y2network/boot_protocol"
 require "y2network/ip_address"
+require "y2network/startmode"
 require "agama/autoyast/bond_reader"
 require "agama/autoyast/bridge_reader"
 require "agama/autoyast/vlan_reader"
@@ -39,6 +40,23 @@ module Agama
         Agama::AutoYaST::WirelessReader
       ].freeze
       private_constant :TYPE_READERS
+
+      # Startmodes that do not bring the connection up on their own.
+      #
+      # The remaining ones ("auto", "hotplug", "ifplugd" and "nfsroot") are translated to an
+      # auto-connected connection, as NetworkManager has no equivalent for those distinctions.
+      MANUAL_STARTMODES = ["manual", "off"].freeze
+      private_constant :MANUAL_STARTMODES
+
+      # Agama methods (method4 and method6) for the boot protocols that do not depend on whether
+      # IPv6 is wanted or not.
+      BOOTPROTO_METHODS = {
+        Y2Network::BootProtocol::DHCP4  => ["auto", "disabled"].freeze,
+        Y2Network::BootProtocol::DHCP6  => ["disabled", "auto"].freeze,
+        Y2Network::BootProtocol::AUTOIP => ["link-local", "disabled"].freeze,
+        Y2Network::BootProtocol::NONE   => ["disabled", "disabled"].freeze
+      }.freeze
+      private_constant :BOOTPROTO_METHODS
 
       # @param section [Y2Network::AutoinstProfile::Interfaces] AutoYaST interfaces section.
       # @param ipv6 [boolean] Whether IPv6 is wanted or not.
@@ -85,10 +103,29 @@ module Agama
         conn["method6"] = method6
         conn["addresses"] = read_addresses(interface)
         conn["macAddress"] = interface.lladdr unless interface.lladdr.to_s.empty?
+        conn.merge!(read_startmode(interface))
         conn.merge!(read_type_settings(interface))
         conn.merge!(dns)
 
         conn
+      end
+
+      # Converts AutoYaST's startmode to the Agama "autoconnect" and "status" settings.
+      #
+      # Connections that are not started automatically are also left down during the installation.
+      #
+      # @param interface [Y2Network::AutoinstProfile::InterfaceSection] Interface section.
+      # @return [Hash]
+      def read_startmode(interface)
+        return {} if interface.startmode.to_s.empty?
+
+        # It takes care of the "boot", "on" and "onboot" aliases of "auto".
+        startmode = Y2Network::Startmode.create(interface.startmode)
+        return {} if startmode.nil?
+
+        return { "autoconnect" => true } unless MANUAL_STARTMODES.include?(startmode.name)
+
+        { "autoconnect" => false, "status" => "down" }
       end
 
       # Reads the device type specific settings (bond, bridge, VLAN and wireless).
@@ -123,18 +160,13 @@ module Agama
       # @return [String, String] method4 and method6 values
       def read_methods(interface)
         bootproto = Y2Network::BootProtocol.from_name(interface.bootproto)
-        case bootproto
-        when Y2Network::BootProtocol::DHCP4
-          ["auto", "disabled"]
-        when Y2Network::BootProtocol::DHCP6
-          ["disabled", "auto"]
-        when Y2Network::BootProtocol::STATIC
-          ["manual", ipv6? ? "manual" : "disabled"]
-        when Y2Network::BootProtocol::NONE
-          ["disabled", "disabled"]
-        else
-          ["auto", ipv6? ? "auto" : "disabled"]
-        end
+        methods = BOOTPROTO_METHODS[bootproto]
+        return methods if methods
+
+        # The static protocol and the remaining (DHCP based or unknown) ones also configure IPv6
+        # when it is wanted.
+        method = bootproto&.static? ? "manual" : "auto"
+        [method, ipv6? ? method : "disabled"]
       end
 
       # Builds an IPAddress

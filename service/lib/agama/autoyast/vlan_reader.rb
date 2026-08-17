@@ -23,8 +23,8 @@ module Agama
   module AutoYaST
     # Builds an Agama "vlan" section from an AutoYaST InterfaceSection.
     class VlanReader
-      # Maximum VLAN identifier (12 bits).
-      MAX_ID = 4095
+      # Maximum VLAN identifier (4095 is reserved, so NetworkManager does not accept it).
+      MAX_ID = 4094
       private_constant :MAX_ID
 
       # Matches the "parent.id" notation used to name VLAN devices (e.g., "eth0.10").

@@ -157,6 +157,77 @@ describe Agama::AutoYaST::ConnectionsReader do
       end
     end
 
+    context "when bootproto is set to AUTOIP" do
+      let(:eth0_bootproto) { "autoip" }
+
+      it "sets method4 to 'link-local'" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "eth0" }
+        expect(conn["method4"]).to eq("link-local")
+      end
+
+      it "sets method6 to 'disabled'" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "eth0" }
+        expect(conn["method6"]).to eq("disabled")
+      end
+    end
+
+    context "when no startmode is given" do
+      it "does not set the 'autoconnect' and 'status' settings" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "eth0" }
+        expect(conn.keys).to_not include("autoconnect", "status")
+      end
+    end
+
+    context "when startmode is set to a mode that starts the connection" do
+      # "boot", "on" and "onboot" are aliases of "auto"
+      ["auto", "boot", "on", "onboot", "hotplug", "ifplugd", "nfsroot"].each do |mode|
+        context "like #{mode.inspect}" do
+          let(:eth0) do
+            { "name" => "eth0", "startmode" => mode }
+          end
+
+          it "enables 'autoconnect' and does not force the connection status" do
+            connections = subject.read["connections"]
+            conn = connections.find { |c| c["id"] == "eth0" }
+            expect(conn["autoconnect"]).to eq(true)
+            expect(conn.keys).to_not include("status")
+          end
+        end
+      end
+    end
+
+    context "when startmode is set to a mode that does not start the connection" do
+      ["manual", "off"].each do |mode|
+        context "like #{mode.inspect}" do
+          let(:eth0) do
+            { "name" => "eth0", "startmode" => mode }
+          end
+
+          it "disables 'autoconnect' and keeps the connection down" do
+            connections = subject.read["connections"]
+            conn = connections.find { |c| c["id"] == "eth0" }
+            expect(conn["autoconnect"]).to eq(false)
+            expect(conn["status"]).to eq("down")
+          end
+        end
+      end
+    end
+
+    context "when startmode is set to an unknown value" do
+      let(:eth0) do
+        { "name" => "eth0", "startmode" => "whatever" }
+      end
+
+      it "does not set the 'autoconnect' and 'status' settings" do
+        connections = subject.read["connections"]
+        conn = connections.find { |c| c["id"] == "eth0" }
+        expect(conn.keys).to_not include("autoconnect", "status")
+      end
+    end
+
     context "when an IP and a prefix are given" do
       let(:eth0) do
         { name: "eth0", ipaddr: "192.168.122.2", prefixlen: "24" }
