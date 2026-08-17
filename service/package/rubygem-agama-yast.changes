@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 10 15:14:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow activating unknown zFCP LUNs (bsc#1271376).
+
+-------------------------------------------------------------------
 Wed Aug  5 15:05:24 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt the exported information of the storage system and proposal

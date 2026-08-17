@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-02 08:45+0000\n"
+"POT-Creation-Date: 2026-08-05 13:18+0000\n"
 "PO-Revision-Date: 2026-05-16 04:12+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -211,13 +211,13 @@ msgid "%{method} is not suitable to encrypt the physical volumes."
 msgstr "'%{method}' ფიზიკური ტომების დასაშიფრად გამოსადეგი არაა."
 
 #. TRANSLATORS: %s is replaced by a device name (e.g., "/dev/vda").
-#: service/lib/agama/storage/config_checkers/search.rb:76
+#: service/lib/agama/storage/config_checkers/search.rb:77
 #, c-format
 msgid "Mandatory device %s not found"
 msgstr "აუცილებელი მოწყობილობა %s აღმოჩენილი არაა"
 
 #. TRANSLATORS: %s is replaced by a device type (e.g., "drive").
-#: service/lib/agama/storage/config_checkers/search.rb:82
+#: service/lib/agama/storage/config_checkers/search.rb:83
 #, c-format
 msgid "Mandatory %s not found"
 msgstr "აუცილებელი %s აღმოჩენილი არაა"
@@ -226,7 +226,7 @@ msgstr "აუცილებელი %s აღმოჩენილი არ�
 #.
 #. @param device [Y2Storage::BlkDevice] Parent of the member device.
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:126
+#: service/lib/agama/storage/config_checkers/search.rb:127
 #, perl-brace-format
 msgid ""
 "The device '%{parent_name}' cannot be formatted because it is part of the "
@@ -235,7 +235,7 @@ msgstr ""
 
 #. TRANSLATORS: %{parent_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:136
+#: service/lib/agama/storage/config_checkers/search.rb:137
 #, perl-brace-format
 msgid ""
 "The device '%{parent_name}' cannot be formatted because it is a physical "
@@ -246,7 +246,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:166
+#: service/lib/agama/storage/config_checkers/search.rb:167
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be deleted because it is part of the "
@@ -255,7 +255,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:176
+#: service/lib/agama/storage/config_checkers/search.rb:177
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be deleted because it is a physical "
@@ -266,7 +266,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:206
+#: service/lib/agama/storage/config_checkers/search.rb:207
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be resized because it is part of the "
@@ -275,7 +275,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:216
+#: service/lib/agama/storage/config_checkers/search.rb:217
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be resized because it is a physical "
@@ -286,7 +286,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:246
+#: service/lib/agama/storage/config_checkers/search.rb:247
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be formatted because it is part of the "
@@ -295,7 +295,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:256
+#: service/lib/agama/storage/config_checkers/search.rb:257
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be formatted because it is a physical "
@@ -306,7 +306,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:286
+#: service/lib/agama/storage/config_checkers/search.rb:287
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be partitioned because it is part of the "
@@ -315,7 +315,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:296
+#: service/lib/agama/storage/config_checkers/search.rb:297
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be partitioned because it is a physical "
@@ -326,7 +326,7 @@ msgstr ""
 #.
 #. @param member_config [#search]
 #. @return [Issue, nil]
-#: service/lib/agama/storage/config_checkers/search.rb:325
+#: service/lib/agama/storage/config_checkers/search.rb:326
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be used because it is part of the reused "
@@ -335,7 +335,7 @@ msgstr ""
 
 #. TRANSLATORS: %{member_name} and %{reused_name} are replaced by device names (e.g.,
 #. "/dev/vda", "/dev/md0").
-#: service/lib/agama/storage/config_checkers/search.rb:335
+#: service/lib/agama/storage/config_checkers/search.rb:336
 #, perl-brace-format
 msgid ""
 "The device '%{member_name}' cannot be used because it is a physical volume "
@@ -343,27 +343,27 @@ msgid ""
 msgstr ""
 
 #. @return [String]
-#: service/lib/agama/storage/config_checkers/search.rb:383
+#: service/lib/agama/storage/config_checkers/search.rb:384
 msgid "drive"
 msgstr "ამძრავი"
 
-#: service/lib/agama/storage/config_checkers/search.rb:385
+#: service/lib/agama/storage/config_checkers/search.rb:386
 msgid "MD RAID"
 msgstr "MD RAID"
 
-#: service/lib/agama/storage/config_checkers/search.rb:387
+#: service/lib/agama/storage/config_checkers/search.rb:388
 msgid "partition"
 msgstr "დანაყოფი"
 
-#: service/lib/agama/storage/config_checkers/search.rb:389
+#: service/lib/agama/storage/config_checkers/search.rb:390
 msgid "LVM logical volume"
 msgstr "LVM ლოგიკური ტომი"
 
-#: service/lib/agama/storage/config_checkers/search.rb:391
+#: service/lib/agama/storage/config_checkers/search.rb:392
 msgid "LVM volume group"
 msgstr "LVM ტომების ჯგუფი"
 
-#: service/lib/agama/storage/config_checkers/search.rb:393
+#: service/lib/agama/storage/config_checkers/search.rb:394
 msgid "device"
 msgstr "მოწყობილობა"
 

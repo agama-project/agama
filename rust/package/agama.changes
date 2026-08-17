@@ -1,4 +1,24 @@
 -------------------------------------------------------------------
+Wed Aug 12 13:55:31 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Wait for the software service when setting the configuration.
+  It prevents the monitor to exit before the Agama is ready
+  (bsc#1275030, gh#agama-project/agama#3817).
+
+-------------------------------------------------------------------
+Tue Aug 11 11:42:44 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Remove the following elements from the /api/system endpoint:
+  "proxy", "licenses", "repositories" and patterns "icon"
+  (gh#agama-project/agama#3775).
+
+-------------------------------------------------------------------
+Tue Aug 11 10:59:37 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix the detection of model and CPU on the s390x machines
+  (bsc#1270639).
+
+-------------------------------------------------------------------
 Wed Aug  5 15:08:46 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Fix storage system and proposal schemas
