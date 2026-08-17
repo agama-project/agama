@@ -47,7 +47,7 @@ export type PopupProps = {
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
   loadingText?: TranslatedString;
-} & Omit<ModalProps, "title" | "size"> &
+} & Omit<ModalProps, "title" | "size" | "ref"> &
   Pick<ModalHeaderProps, "description" | "titleIconVariant">;
 
 /**
@@ -237,10 +237,9 @@ const Popup = ({
   const contentId = useId();
 
   return (
-    /** @ts-ignore */
     <Modal
       {...props}
-      width={!props.variant && "auto"}
+      width={props.variant ? undefined : "auto"}
       isOpen={isOpen}
       aria-labelledby={titleId}
       aria-describedby={contentId}
