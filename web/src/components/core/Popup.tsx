@@ -43,6 +43,8 @@ type SecondaryActionProps = ActionProps & {
   asLink?: boolean;
 };
 type PopupBaseProps = {
+  /** Whether the dialog is displayed */
+  isOpen: boolean;
   /** Extra content to be placed in the header after the title */
   titleAddon?: React.ReactNode;
   /** Buttons for the dialog footer. Without them, no footer is rendered. */
@@ -51,7 +53,7 @@ type PopupBaseProps = {
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
   loadingText?: TranslatedString;
-} & Omit<ModalProps, "title" | "size" | "ref" | "aria-label"> &
+} & Omit<ModalProps, "title" | "size" | "ref" | "aria-label" | "isOpen"> &
   Pick<ModalHeaderProps, "description" | "titleIconVariant">;
 
 /**
@@ -191,6 +193,11 @@ const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
  * Built on top of {@link https://www.patternfly.org/components/modal PF/Modal}.
  * Its children are the dialog body; footer buttons go in the `actions` prop.
  *
+ * Prefer mounting it only while the dialog is needed, with `isOpen` hardcoded
+ * to true, over keeping it mounted and toggling `isOpen`. That way the dialog
+ * content, and any effect it runs, exists exactly while the dialog is on
+ * screen.
+ *
  * @example <caption>Usage example</caption>
  *   <Popup
  *     title="Users"
@@ -228,7 +235,7 @@ const Popup = ({
   titleIconVariant,
   description,
   actions,
-  isOpen = false,
+  isOpen,
   isLoading = false,
   // TRANSLATORS: progress message
   loadingText = _("Loading data..."),

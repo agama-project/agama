@@ -90,7 +90,7 @@ export type NewDeviceLinkTexts = {
 /** Props for {@link DeviceSelectorModal}. */
 export type DeviceSelectorModalProps = DistributedOmit<
   PopupProps,
-  "children" | "selected" | "description"
+  "children" | "selected" | "description" | "isOpen"
 > & {
   /** General information shown at the top of the modal, above the tabs. */
   intro?: React.ReactNode;

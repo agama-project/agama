@@ -37,7 +37,7 @@ const cancelFn = jest.fn();
  * Props for {@link TestingPopup}, which always renders its own title and
  * content.
  */
-type TestingPopupProps = Omit<PopupProps, "title" | "aria-label" | "children">;
+type TestingPopupProps = Omit<PopupProps, "title" | "aria-label" | "children" | "isOpen">;
 
 const TestingPopup = (props: TestingPopupProps) => {
   const [isMounted, setIsMounted] = useState(true);
