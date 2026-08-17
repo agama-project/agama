@@ -279,18 +279,15 @@ describe Agama::Storage::ZFCP::Manager do
       context "if the controller is unknown" do
         let(:config_json) { { controllers: ["0.0.0000"] } }
 
-        it "does not activate the controller" do
-          expect(yast_zfcp).to_not receive(:activate_controller).with("0.0.0000")
+        it "activates the controller" do
+          expect(yast_zfcp)
+            .to receive(:activate_controller).with("0.0.0000").and_return({ "exit" => 0 })
           subject.configure(config_json)
         end
 
-        it "generates an issue" do
+        it "does not generate an issue" do
           subject.configure(config_json)
-          expect(subject.issues).to include(
-            an_object_having_attributes(
-              description: /Unknown zFCP controller 0.0.0000/
-            )
-          )
+          expect(subject.issues).to eq([])
         end
       end
     end
@@ -400,20 +397,17 @@ describe Agama::Storage::ZFCP::Manager do
           }
         end
 
-        it "does not activate the device" do
-          expect(yast_zfcp).to_not receive(:activate_disk)
+        it "activates the device" do
+          expect(yast_zfcp).to receive(:activate_disk)
             .with("0.0.fa00", "0x500507630708d3b3", "0x0000000000000000")
+            .and_return({ "exit" => 0 })
 
           subject.configure(config_json)
         end
 
-        it "generates an issue" do
+        it "does not generate an issue" do
           subject.configure(config_json)
-          expect(subject.issues).to include(
-            an_object_having_attributes(
-              description: /Unknown zFCP LUN 0.0.fa00 0x500507630708d3b3 0x0000000000000000/
-            )
-          )
+          expect(subject.issues).to eq([])
         end
       end
     end
@@ -504,7 +498,8 @@ describe Agama::Storage::ZFCP::Manager do
               {
                 channel: "0.0.fa00",
                 wwpn:    "0x500507630708d3b3",
-                lun:     "0x0000000000000000"
+                lun:     "0x0000000000000000",
+                active:  false
               }
             ]
           }
@@ -517,13 +512,9 @@ describe Agama::Storage::ZFCP::Manager do
           subject.configure(config_json)
         end
 
-        it "generates an issue" do
+        it "does not generate an issue" do
           subject.configure(config_json)
-          expect(subject.issues).to include(
-            an_object_having_attributes(
-              description: /Unknown zFCP LUN 0.0.fa00 0x500507630708d3b3 0x0000000000000000/
-            )
-          )
+          expect(subject.issues).to eq([])
         end
       end
     end

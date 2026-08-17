@@ -1,23 +1,24 @@
 -------------------------------------------------------------------
-Fri Aug  7 12:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
-
-- Improve the AutoYaST compatibility report for the network
-  section: fix the Agama counterparts and the notes of the
-  wireless elements and describe how the bonding, bridge and VLAN
-  ones are converted (gh#agama-project/agama#3805).
-- Ignore the reserved VLAN identifier 4095, which is rejected by
-  NetworkManager (gh#agama-project/agama#3805).
-
--------------------------------------------------------------------
-Thu Aug  6 17:25:09 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+Mon Aug 17 09:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Improve the AutoYaST network conversion
   (gh#agama-project/agama#3805):
+  - Ignore the reserved VLAN identifier 4095, which is rejected by
+    NetworkManager (gh#agama-project/agama#3805).
   - Convert the interface "startmode" to the "autoconnect" and
     "status" settings.
   - Convert the "autoip" boot protocol to the "link-local" method.
   - Stop reporting "bootproto" as unsupported, as it is converted
     to the "method4" and "method6" settings.
+  - Improve the AutoYaST compatibility report for the network
+    section: fix the Agama counterparts and the notes of the
+    wireless elements and describe how the bonding, bridge and VLAN
+    ones are converted.
+
+-------------------------------------------------------------------
+Mon Aug 10 15:14:00 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Allow activating unknown zFCP LUNs (bsc#1271376).
 
 -------------------------------------------------------------------
 Wed Aug  5 15:05:24 UTC 2026 - José Iván López González <jlopez@suse.com>
