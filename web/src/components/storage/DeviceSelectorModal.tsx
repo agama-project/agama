@@ -337,6 +337,7 @@ export default function DeviceSelectorModal({
       description={_("Use the tabs to browse disks, RAID devices and LVM volume groups.")}
       elementToFocus={deviceInInitialTab ? "input[type=radio]:checked" : undefined}
       actions={actions}
+      onClose={onCancel}
       {...popupProps}
       style={{ height: "70dvh" }}
     >

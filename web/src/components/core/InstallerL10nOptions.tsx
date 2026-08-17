@@ -379,6 +379,7 @@ const AllSettingsDialog = withForm({
       <Popup
         isOpen={isOpen}
         variant="small"
+        onClose={onCancel}
         title={_("Language and keyboard")}
         actions={<DialogButtons form={form} onCancel={onCancel} />}
       >
@@ -406,6 +407,7 @@ const LanguageOnlyDialog = withForm({
       <Popup
         isOpen={isOpen}
         variant="small"
+        onClose={onCancel}
         title={_("Change Language")}
         actions={<DialogButtons form={form} onCancel={onCancel} />}
       >
@@ -433,6 +435,7 @@ const KeyboardOnlyDialog = withForm({
         <Popup
           isOpen={isOpen}
           variant="small"
+          onClose={onCancel}
           title={_("Change keyboard")}
           actions={<Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>}
         >
@@ -445,6 +448,7 @@ const KeyboardOnlyDialog = withForm({
       <Popup
         isOpen={isOpen}
         variant="small"
+        onClose={onCancel}
         title={_("Change keyboard")}
         actions={<DialogButtons form={form} onCancel={onCancel} />}
       >
