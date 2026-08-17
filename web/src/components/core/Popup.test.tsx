@@ -24,10 +24,9 @@ import React, { useState } from "react";
 
 import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
-
-import { Popup } from "~/components/core";
-import { PopupProps } from "./Popup";
 import { _ } from "~/i18n";
+
+import Popup, { PopupProps } from "./Popup";
 
 let isOpen: boolean;
 let isLoading: boolean;
@@ -103,6 +102,67 @@ describe("Popup", () => {
       expect(screen.queryByRole("banner")).toBeNull();
     });
 
+    it("names the dialog after the given title", async () => {
+      installerRender(<TestingPopup title="Awesome Popup">Testing</TestingPopup>);
+
+      const dialog = await screen.findByRole("dialog");
+      expect(dialog).toHaveAccessibleName("Awesome Popup");
+    });
+
+    it("describes the dialog with its content", async () => {
+      installerRender(<TestingPopup>Testing</TestingPopup>);
+
+      const dialog = await screen.findByRole("dialog");
+      expect(dialog).toHaveAccessibleDescription(expect.stringContaining("The Popup Content"));
+    });
+
+    it("leaves the dialog unnamed when rendered without a title", async () => {
+      installerRender(<TestingPopup title={undefined}>Testing</TestingPopup>);
+
+      const dialog = await screen.findByRole("dialog");
+      expect(dialog).toHaveAccessibleName("");
+    });
+
+    it("names the dialog after aria-label when rendered without a title", async () => {
+      installerRender(
+        <TestingPopup title={undefined} aria-label="Bare popup">
+          Testing
+        </TestingPopup>,
+      );
+
+      const dialog = await screen.findByRole("dialog");
+      expect(dialog).toHaveAccessibleName("Bare popup");
+    });
+
+    describe("and no onClose callback is given", () => {
+      it("renders no close button and ignores the Escape key", async () => {
+        const { user } = installerRender(<TestingPopup>Testing</TestingPopup>);
+
+        const dialog = await screen.findByRole("dialog");
+        expect(within(dialog).queryByRole("button", { name: "Close" })).toBeNull();
+
+        await user.keyboard("{Escape}");
+        screen.getByRole("dialog");
+      });
+    });
+
+    describe("and an onClose callback is given", () => {
+      it("renders a close button and honors the Escape key", async () => {
+        const onClose = jest.fn();
+        const { user } = installerRender(<TestingPopup onClose={onClose}>Testing</TestingPopup>);
+
+        const dialog = await screen.findByRole("dialog");
+        const closeButton = within(dialog).getByRole("button", { name: "Close" });
+
+        await user.click(closeButton);
+        expect(onClose).toHaveBeenCalled();
+
+        onClose.mockClear();
+        await user.keyboard("{Escape}");
+        expect(onClose).toHaveBeenCalled();
+      });
+    });
+
     describe("and not loading", () => {
       beforeEach(() => {
         isLoading = false;
@@ -136,6 +196,40 @@ describe("Popup", () => {
 
         within(footer).getByText("Confirm");
         within(footer).getByText("Cancel");
+      });
+
+      it("renders a footer even when no actions are given", async () => {
+        installerRender(
+          <Popup isOpen title="No actions">
+            {/* PF focus trap needs at least one tabbable node inside the dialog */}
+            <button>Just content</button>
+          </Popup>,
+        );
+
+        const dialog = await screen.findByRole("dialog");
+        const footer = dialog.querySelector("footer");
+
+        expect(footer).not.toBeNull();
+        expect(within(footer).queryAllByRole("button")).toEqual([]);
+      });
+
+      it("places actions in the body when they are not a direct Popup.Actions child", async () => {
+        installerRender(
+          <Popup isOpen title="Wrapped actions">
+            <p>Just content</p>
+            <>
+              <Popup.Actions>
+                <Popup.Confirm onClick={confirmFn} />
+              </Popup.Actions>
+            </>
+          </Popup>,
+        );
+
+        const dialog = await screen.findByRole("dialog");
+        const footer = dialog.querySelector("footer");
+
+        expect(within(footer).queryByRole("button", { name: "Confirm" })).toBeNull();
+        within(dialog).getByRole("button", { name: "Confirm" });
       });
     });
 
