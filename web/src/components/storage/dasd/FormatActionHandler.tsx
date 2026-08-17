@@ -90,6 +90,7 @@ const DeviceOffline = ({ device, onClose }: Pick<CommonFormatDASDProps, "device"
     <Popup
       isOpen
       title={sprintf(_("Cannot format %s"), device.channel)}
+      onClose={onClose}
       actions={<Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>}
     >
       <Stack hasGutter>
@@ -114,6 +115,7 @@ const SomeDevicesOffline = ({
     <Popup
       isOpen
       title={_("Cannot format all the selected devices")}
+      onClose={onClose}
       actions={<Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>}
     >
       <Stack hasGutter>
@@ -139,6 +141,7 @@ const DeviceFormatConfirmation = ({
     <Popup
       isOpen
       title={sprintf(_("Format device %s"), device.channel)}
+      onClose={onClose}
       actions={
         <>
           <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>
@@ -168,6 +171,7 @@ const MultipleDevicesFormatConfirmation = ({
     <Popup
       isOpen
       title={_("Format selected devices?")}
+      onClose={onClose}
       actions={
         <>
           <Popup.DangerousAction onClick={onAccept}>{_("Format now")}</Popup.DangerousAction>

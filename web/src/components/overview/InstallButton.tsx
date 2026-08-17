@@ -71,6 +71,7 @@ const ConfirmationPopup = ({
     <Popup
       isOpen
       title={title}
+      onClose={onCancel}
       actions={
         <>
           {/* TRANSLATORS: Button to confirm and start the installation */}

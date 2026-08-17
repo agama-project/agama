@@ -67,6 +67,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
       isOpen
       title={product.name}
       width="auto"
+      onClose={onClose}
       actions={<Popup.Confirm onClick={onClose}>{_("Close")}</Popup.Confirm>}
     >
       <Stack hasGutter>
