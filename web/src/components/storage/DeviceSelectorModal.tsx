@@ -40,7 +40,7 @@ import {
 import Annotation from "~/components/core/Annotation";
 import Link from "~/components/core/Link";
 import NestedContent from "~/components/core/NestedContent";
-import Popup from "~/components/core/Popup";
+import { Popup } from "~/components/core/Popup";
 import SubtleContent from "~/components/core/SubtleContent";
 import DrivesTable from "~/components/storage/DrivesTable";
 import MdRaidsTable from "~/components/storage/MdRaidsTable";

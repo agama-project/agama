@@ -24,7 +24,7 @@ import React, { useId, useState } from "react";
 import { Flex, HelperText, HelperTextItem, Stack } from "@patternfly/react-core";
 import { first } from "radashi";
 import { sprintf } from "sprintf-js";
-import Popup from "~/components/core/Popup";
+import { Popup } from "~/components/core/Popup";
 import SelectableDataTable from "~/components/core/SelectableDataTable";
 import Text from "~/components/core/Text";
 import { connectionTypeLabel, deviceStateLabel, formatIp } from "~/utils/network";

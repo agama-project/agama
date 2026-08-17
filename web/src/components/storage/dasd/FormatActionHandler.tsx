@@ -23,7 +23,7 @@
 import React from "react";
 import { Content, List, ListItem, Stack } from "@patternfly/react-core";
 import Text from "~/components/core/Text";
-import Popup from "~/components/core/Popup";
+import { Popup } from "~/components/core/Popup";
 import { sprintf } from "sprintf-js";
 import { _ } from "~/i18n";
 import { isEmpty } from "radashi";

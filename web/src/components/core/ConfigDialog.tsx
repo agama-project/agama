@@ -22,7 +22,7 @@
 
 import React, { Suspense } from "react";
 import { Bullseye, Content, Flex, Spinner } from "@patternfly/react-core";
-import Popup from "~/components/core/Popup";
+import { Popup } from "~/components/core/Popup";
 import { _ } from "~/i18n";
 
 type ConfigDialogProps = {

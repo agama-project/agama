@@ -306,4 +306,4 @@ Popup.SecondaryAction = SecondaryAction;
 Popup.Cancel = Cancel;
 Popup.AncillaryAction = AncillaryAction;
 
-export default Popup;
+export { Popup };

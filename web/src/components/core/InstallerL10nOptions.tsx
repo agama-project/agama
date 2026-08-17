@@ -35,7 +35,7 @@ import React, { useReducer } from "react";
 import { useHref, useLocation } from "react-router";
 import { Button, ButtonProps, Flex, FlexProps, Form } from "@patternfly/react-core";
 import { formOptions } from "@tanstack/react-form";
-import Popup from "~/components/core/Popup";
+import { Popup } from "~/components/core/Popup";
 import Text from "~/components/core/Text";
 import VisualTooltip from "~/components/core/VisualTooltip";
 import Icon from "~/components/layout/Icon";

@@ -33,7 +33,7 @@ export { default as LoginPage } from "./LoginPage";
 export { default as RowActions } from "./RowActions";
 export { default as Page } from "./Page";
 export { default as PasswordAndConfirmationInput } from "./PasswordAndConfirmationInput";
-export { default as Popup } from "./Popup";
+export { Popup } from "./Popup";
 export { default as ProgressReport } from "./ProgressReport";
 export { default as ProgressText } from "./ProgressText";
 export { default as PasswordInput } from "./PasswordInput";

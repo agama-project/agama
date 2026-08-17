@@ -32,7 +32,7 @@ import {
   HelperTextItem,
   Stack,
 } from "@patternfly/react-core";
-import Popup from "~/components/core/Popup";
+import { Popup } from "~/components/core/Popup";
 import Text from "~/components/core/Text";
 import NoDesktopAlert from "~/components/software/NoDesktopAlert";
 import PotentialDataLossAlert from "~/components/storage/PotentialDataLossAlert";

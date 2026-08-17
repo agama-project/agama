@@ -26,7 +26,7 @@ import { screen, within } from "@testing-library/react";
 import { installerRender } from "~/test-utils";
 import { _ } from "~/i18n";
 
-import Popup, { PopupProps } from "./Popup";
+import { Popup, PopupProps } from "./Popup";
 
 let isOpen: boolean;
 let isLoading: boolean;
