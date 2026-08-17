@@ -164,7 +164,7 @@ The following diagram details the control and configuration flow from the initia
      - **If none of these parameters are present:** Service does not start (systemd conditions prevent execution).
      - **If any HCN parameter is present:**
        - `/usr/bin/parse-hcn` performs discovery in `/proc/device-tree` to pair adapters sharing an `ibm,hcn-id`.
-       - For each device, it waits up to 3 minutes for the interface to appear after potential migration events.
+       - For each device, it waits up to 3 minutes for the interface to appear after potential migration events. The unit sets `TimeoutStartSec=300` for that, the default start timeout is shorter than the wait.
        - It reads the HCN-specific kernel command line options `rd.hcn.ip` and `rd.hcn.route` and translates them to target the planned bond interface (e.g. `bond333e80f5`).
        - It carries over the remaining device independent network options of the real command line (`nameserver=`, `rd.peerdns=`, `rd.net.dhcp.*`), which the generator run of step 2.5 produced nothing for.
        - It calls the standard `nm-initrd-generator` **directly** with transformed parameters as command-line arguments and custom output directories `-c /run/hcn/system-connections` and `-r /run/hcn/conf.d`.
@@ -284,6 +284,17 @@ verbatim:
 | Group | Options | Handling |
 |-------|---------|----------|
 | Device independent | `nameserver`, `rd.peerdns`, `rd.net.timeout.dhcp`, `rd.net.dhcp.retry`, `rd.net.dhcp.vendor-class`, `rd.net.dhcp.dscp` | Copied verbatim |
+
+Two constraints of the dracut library shape how the function is written:
+
+- It appends to `NEW_ARGS` instead of printing the options. Under systemd (`DRACUT_SYSTEMD=1`,
+  which `hcn-init-initrd.service` sets like every other dracut service) `info()` writes to
+  stdout, so the output of a function that logs cannot be captured with a command
+  substitution. The same applies to `get_dev_hcn()`, which hands its result over in
+  `HCN_MAPPING`.
+- Only options taking a value can be carried over this way, because `getargs()` prints
+  nothing for an option given as a bare flag. All the options above do take one,
+  `rd.peerdns` is used as `rd.peerdns=0`. A boolean option would need `getargbool()`.
 
 Known gaps, all of them deliberate:
 

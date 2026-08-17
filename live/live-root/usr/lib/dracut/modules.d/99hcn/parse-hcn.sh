@@ -42,11 +42,18 @@ get_mac() {
 }
 
 # Function to discover HCN mapping for a device-tree node
+#
+# On success it sets HCN_MAPPING to "bondname devname mac mode" and returns 0.
+# The result is handed over in a variable instead of being printed because the
+# function logs its progress with info(), and under systemd info() writes to
+# stdout, which would end up mixed into the mapping (see carry_over_cmdline).
 get_dev_hcn() {
   local dev=$1
   local hcnid devname mode mac ofpath
   # Wait up to 3 minutes for device to appear after migration (12 * 15s)
   local wait=12
+
+  HCN_MAPPING=""
 
   hcnid=$(xdump4 "$dev/ibm,hcn-id")
   [ -z "$hcnid" ] && return 1
@@ -71,8 +78,8 @@ get_dev_hcn() {
     return 1
   fi
 
-  # Output the bond mapping: bondname devname mac mode
-  echo "bond$hcnid $devname ${mac:-none} ${mode:-none}"
+  # The bond mapping: bondname devname mac mode
+  HCN_MAPPING="bond$hcnid $devname ${mac:-none} ${mode:-none}"
   return 0
 }
 
@@ -208,6 +215,11 @@ EOF
   for con in "$conn_dir"/*.nmconnection; do
     [ -e "$con" ] || continue
 
+    # Start from scratch, otherwise a connection that is in no mapping and
+    # whose controller is no HCN bond would inherit the values of the previous
+    # iteration and be treated as HCN-related
+    found_master="" found_ifname=""
+
     # Extract connection details
     IFS='|' read -r id uuid ifname master controller mac <<EOF
 $(parse_nm_connection "$con")
@@ -308,8 +320,16 @@ EOF
 # and the generator creates a full connection for any device named in them,
 # which this module would then persist to /etc.
 #
-# Prints the arguments to append to the generated command line, each one
-# preceded by a space.
+# Appends the options to NEW_ARGS. The result is not printed on purpose: the
+# function logs what it copies with info(), and info() writes to stdout when
+# DRACUT_SYSTEMD is set, so the output of a function using it cannot be
+# captured with a command substitution without getting the log messages mixed
+# into the value.
+#
+# Only options taking a value can be carried over this way, because getargs()
+# prints nothing for an option given as a bare flag. All the ones below do take
+# one, rd.peerdns is used as rd.peerdns=0. Keep that in mind before adding a
+# boolean option here, it would need getargbool() instead.
 carry_over_cmdline() {
   local opt val
 
@@ -317,7 +337,7 @@ carry_over_cmdline() {
     rd.net.dhcp.vendor-class rd.net.dhcp.dscp; do
     for val in $(getargs "$opt"); do
       info "parse-hcn: keeping $opt=$val"
-      printf ' %s=%s' "$opt" "$val"
+      NEW_ARGS="$NEW_ARGS $opt=$val"
     done
   done
 }
@@ -332,8 +352,8 @@ if [ -d /proc/device-tree ]; then
   for dev in /proc/device-tree/pci*/ethernet*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
     info "parse-hcn: checking PCI device $dev"
-    if res=$(get_dev_hcn "$dev"); then
-      MAPPINGS="$MAPPINGS $res"
+    if get_dev_hcn "$dev"; then
+      MAPPINGS="$MAPPINGS $HCN_MAPPING"
     fi
   done
 
@@ -341,8 +361,8 @@ if [ -d /proc/device-tree ]; then
   for dev in /proc/device-tree/vdevice/vnic* /proc/device-tree/vdevice/l-lan*; do
     [ -e "$dev/ibm,hcn-id" ] || continue
     info "parse-hcn: checking vdevice $dev"
-    if res=$(get_dev_hcn "$dev"); then
-      MAPPINGS="$MAPPINGS $res"
+    if get_dev_hcn "$dev"; then
+      MAPPINGS="$MAPPINGS $HCN_MAPPING"
     fi
   done
 fi
@@ -579,7 +599,7 @@ EOF
   done
 done
 
-NEW_ARGS="$NEW_ARGS$(carry_over_cmdline)"
+carry_over_cmdline
 
 # Write new configuration and update NetworkManager
 if [ -n "$NEW_ARGS" ]; then

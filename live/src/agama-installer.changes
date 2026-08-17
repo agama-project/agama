@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Mon Aug 17 09:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: do not collect data from functions that log. dracut's
+  info() writes to stdout when DRACUT_SYSTEMD is set, so the
+  messages of carry_over_cmdline() and get_dev_hcn() would end up
+  in the generated command line and in the device mappings. Both
+  hand their result over in a variable now.
+- HCN: reset the master lookup in every iteration of
+  fixup_nm_connections, a connection that is in no mapping and
+  whose controller is no HCN bond inherited the values of the
+  previous iteration and was treated as HCN-related.
+- HCN: follow the dracut conventions in hcn-init-initrd.service
+  (DRACUT_SYSTEMD=1, StandardInput=null, Conflicts with
+  shutdown.target and emergency.target) and raise
+  TimeoutStartSec to 300s, the 3 minutes parse-hcn waits for the
+  devices exceed the default start timeout
+  (gh#agama-project/agama#3790).
+
+-------------------------------------------------------------------
 Mon Aug  3 12:45:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - HCN: write the nm-initrd-generator configuration files to
