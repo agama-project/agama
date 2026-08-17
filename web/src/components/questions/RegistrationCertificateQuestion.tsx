@@ -73,7 +73,17 @@ export default function RegistrationCertificateQuestion({
   };
 
   return (
-    <Popup isOpen title={_("Registration certificate")}>
+    <Popup
+      isOpen
+      title={_("Registration certificate")}
+      actions={
+        <QuestionActions
+          actions={question.actions}
+          defaultAction={question.defaultAction}
+          actionCallback={actionCallback}
+        />
+      }
+    >
       <Stack hasGutter>
         <StackItem>
           <Content component="p" isEditorial>
@@ -93,13 +103,6 @@ export default function RegistrationCertificateQuestion({
           </DescriptionList>
         </StackItem>
       </Stack>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
     </Popup>
   );
 }

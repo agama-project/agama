@@ -20,7 +20,7 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { isValidElement, useId } from "react";
+import React, { useId } from "react";
 import {
   Button,
   ButtonProps,
@@ -33,7 +33,6 @@ import {
 } from "@patternfly/react-core";
 import { Loading } from "~/components/layout";
 import { AnnouncerTarget } from "~/context/announcer";
-import { fork } from "radashi";
 import { _, TranslatedString } from "~/i18n";
 
 /** Props for an action, which always picks its own PF/Button variant */
@@ -46,6 +45,8 @@ type SecondaryActionProps = ActionProps & {
 type PopupBaseProps = {
   /** Extra content to be placed in the header after the title */
   titleAddon?: React.ReactNode;
+  /** Buttons for the dialog footer. Without them, no footer is rendered. */
+  actions?: React.ReactNode;
   /** Whether it should display a loading indicator instead of the requested content. */
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
@@ -76,16 +77,6 @@ type LabeledPopupProps = PopupBaseProps & {
  * name, or it provides an `aria-label`.
  */
 export type PopupProps = TitledPopupProps | LabeledPopupProps;
-
-/**
- * Wrapper component for holding Popup actions
- *
- * Useful and required for placing the components to be used as PF/Modal actions, usually a
- * Popup.Action or PF/Button
- *
- * @see Popup examples.
- */
-const Actions = ({ children }: React.PropsWithChildren) => <>{children}</>;
 
 /**
  * A Popup primary action
@@ -197,37 +188,38 @@ const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
 /**
  * Agama component for displaying a popup
  *
- * Built on top of {@link https://www.patternfly.org/components/modal PF/Modal}, it
- * manipulates the children object for extracting {Actions}.
+ * Built on top of {@link https://www.patternfly.org/components/modal PF/Modal}.
+ * Its children are the dialog body; footer buttons go in the `actions` prop.
  *
  * @example <caption>Usage example</caption>
  *   <Popup
  *     title="Users"
  *     isOpen={showUserSettings}
+ *     actions={
+ *       <>
+ *         <Popup.PrimaryAction onClick={updateUserSetting}>Confirm</Popup.PrimaryAction>
+ *         <Popup.SecondaryAction onClick={cancel}>Cancel</Popup.SecondaryAction>
+ *         <Popup.AncillaryAction onClick={turnUserSettingsOff}>
+ *           Do not set a user
+ *         </Popup.AncillaryAction>
+ *       </>
+ *     }
  *   >
  *     <UserSettingsForm />
- *     <Popup.Actions>
- *       <Popup.PrimaryAction key="confirm" onClick={updateUserSetting}>Confirm</Popup.PrimaryAction>
- *       <Popup.SecondaryAction key="cancel" onClick={cancel}>Cancel</Popup.SecondaryAction>
- *       <Popup.AncillaryAction key="unset" onClick={turnUserSettingsOff}>
- *         Do not set a user
- *       </Popup.AncillaryAction>
- *     </Popup.Actions>
  *   </Popup>
  *
  * @example <caption>Usage example using shortcuts actions</caption>
  *   <Popup
  *     title="Users"
  *     isOpen={showUserSettings}
+ *     actions={
+ *       <>
+ *         <Popup.Confirm onClick={updateUserSetting} />
+ *         <Popup.Cancel onClick={cancel} />
+ *       </>
+ *     }
  *   >
  *     <UserSettingsForm />
- *     <Popup.Actions>
- *       <Popup.Confirm onClick={updateUserSetting} />
- *       <Popup.Cancel onClick={cancel} />
- *       <Popup.AncillaryAction key="unset" onClick={turnUserSettingsOff}>
- *         Do not set a user
- *       </Popup.AncillaryAction>
- *     </Popup.Actions>
  *   </Popup>
  */
 const Popup = ({
@@ -235,6 +227,7 @@ const Popup = ({
   titleAddon,
   titleIconVariant,
   description,
+  actions,
   isOpen = false,
   isLoading = false,
   // TRANSLATORS: progress message
@@ -242,10 +235,6 @@ const Popup = ({
   children,
   ...props
 }: PopupProps) => {
-  const [actions, content] = fork(React.Children.toArray(children), (child) =>
-    isValidElement(child) ? child.type === Actions : false,
-  );
-
   const titleId = useId();
   const contentId = useId();
 
@@ -267,13 +256,12 @@ const Popup = ({
           help={titleAddon}
         />
       )}
-      <ModalBody id={contentId}>{isLoading ? <Loading text={loadingText} /> : content}</ModalBody>
-      <ModalFooter>{actions}</ModalFooter>
+      <ModalBody id={contentId}>{isLoading ? <Loading text={loadingText} /> : children}</ModalBody>
+      {actions && <ModalFooter>{actions}</ModalFooter>}
     </Modal>
   );
 };
 
-Popup.Actions = Actions;
 Popup.PrimaryAction = PrimaryAction;
 Popup.DangerousAction = DangerousAction;
 Popup.Confirm = Confirm;

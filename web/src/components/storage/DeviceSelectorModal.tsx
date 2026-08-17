@@ -303,12 +303,40 @@ export default function DeviceSelectorModal({
     return sprintf(_("Change to %s"), deviceLabel(currentDevice));
   };
 
+  const actions = (
+    <Stack hasGutter>
+      {!currentDevice && (
+        <HelperText id={confirmHintId} isLiveRegion>
+          <HelperTextItem variant="warning">{_("Select a device")}</HelperTextItem>
+        </HelperText>
+      )}
+      {currentDevice && currentDevice.sid !== previousDevice?.sid && deviceSideEffectsAlert && (
+        <HelperText id={confirmHintId} isLiveRegion>
+          <HelperTextItem>
+            <Annotation icon="notifications_ative">{deviceSideEffectsAlert}</Annotation>
+          </HelperTextItem>
+        </HelperText>
+      )}
+      <Flex>
+        <Popup.Confirm
+          onClick={() => onConfirm(selectedDevices)}
+          isDisabled={!currentDevice}
+          aria-describedby={confirmHintId}
+        >
+          {confirmLabel()}
+        </Popup.Confirm>
+        <Popup.Cancel onClick={onCancel} asLink />
+      </Flex>
+    </Stack>
+  );
+
   return (
     <Popup
       isOpen
       variant="medium"
       description={_("Use the tabs to browse disks, RAID devices and LVM volume groups.")}
       elementToFocus={deviceInInitialTab ? "input[type=radio]:checked" : undefined}
+      actions={actions}
       {...popupProps}
       style={{ height: "70dvh" }}
     >
@@ -393,32 +421,6 @@ export default function DeviceSelectorModal({
           </Tabs>
         </PageSection>
       </Stack>
-      <Popup.Actions>
-        <Stack hasGutter>
-          {!currentDevice && (
-            <HelperText id={confirmHintId} isLiveRegion>
-              <HelperTextItem variant="warning">{_("Select a device")}</HelperTextItem>
-            </HelperText>
-          )}
-          {currentDevice && currentDevice.sid !== previousDevice?.sid && deviceSideEffectsAlert && (
-            <HelperText id={confirmHintId} isLiveRegion>
-              <HelperTextItem>
-                <Annotation icon="notifications_ative">{deviceSideEffectsAlert}</Annotation>
-              </HelperTextItem>
-            </HelperText>
-          )}
-          <Flex>
-            <Popup.Confirm
-              onClick={() => onConfirm(selectedDevices)}
-              isDisabled={!currentDevice}
-              aria-describedby={confirmHintId}
-            >
-              {confirmLabel()}
-            </Popup.Confirm>
-            <Popup.Cancel onClick={onCancel} asLink />
-          </Flex>
-        </Stack>
-      </Popup.Actions>
     </Popup>
   );
 }

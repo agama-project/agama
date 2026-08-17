@@ -61,18 +61,18 @@ export default function PackageErrorQuestion({
       isOpen
       title={_("Package installation failed")}
       titleIconVariant={() => <Icon name="error" />}
-    >
-      <Stack hasGutter>
-        <Content>{question.text}</Content>
-        <Content>{warning}</Content>
-      </Stack>
-      <Popup.Actions>
+      actions={
         <QuestionActions
           actions={question.actions}
           defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
-      </Popup.Actions>
+      }
+    >
+      <Stack hasGutter>
+        <Content>{question.text}</Content>
+        <Content>{warning}</Content>
+      </Stack>
     </Popup>
   );
 }

@@ -29,9 +29,8 @@ import type { Action } from "~/model/question";
  * A component for building a Question actions, using the defaultAction
  * as the Popup.PrimaryAction
  *
- * NOTE: We use the Popup component for displaying a question, wrapping its actions inside a
- * Popup.Actions component, which must be an immediate child of Popup. That's why we use
- * React.Fragment (aka <>) here for wrapping the actions instead of directly using the Popup.Actions.
+ * Meant to be given to the `actions` prop of a Popup, which is what puts the
+ * buttons in the dialog footer.
  *
  * @param {object} props - component props
  * @param props.actions - the actions show

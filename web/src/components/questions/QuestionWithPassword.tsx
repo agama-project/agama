@@ -55,6 +55,13 @@ export default function QuestionWithPassword({
       title={_("Password Required")}
       titleIconVariant={() => <Icon name="lock" />}
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
+      actions={
+        <QuestionActions
+          actions={question.actions}
+          defaultAction={question.defaultAction}
+          actionCallback={actionCallback}
+        />
+      }
     >
       <Stack hasGutter>
         <Content>{question.text}</Content>
@@ -70,14 +77,6 @@ export default function QuestionWithPassword({
           </FormGroup>
         </Form>
       </Stack>
-
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
     </Popup>
   );
 }

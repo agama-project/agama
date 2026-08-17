@@ -48,16 +48,19 @@ export default function GenericQuestion({
   const details = question.data?.details;
 
   return (
-    <Popup isOpen aria-label={_("Question")}>
-      <Content component="p">{question.text}</Content>
-      {details && <Content>{details}</Content>}
-      <Popup.Actions>
+    <Popup
+      isOpen
+      aria-label={_("Question")}
+      actions={
         <QuestionActions
           actions={question.actions}
           defaultAction={question.defaultAction}
           actionCallback={actionCallback}
         />
-      </Popup.Actions>
+      }
+    >
+      <Content component="p">{question.text}</Content>
+      {details && <Content>{details}</Content>}
     </Popup>
   );
 }

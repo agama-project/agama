@@ -59,7 +59,18 @@ export default function RetryLoadConfigQuestion({
   const error = question.data?.error;
 
   return (
-    <Popup isOpen variant="medium" title={_("Cannot apply configuration")}>
+    <Popup
+      isOpen
+      variant="medium"
+      title={_("Cannot apply configuration")}
+      actions={
+        <QuestionActions
+          actions={question.actions}
+          defaultAction={question.defaultAction}
+          actionCallback={actionCallback}
+        />
+      }
+    >
       <Stack hasGutter>
         <Content isEditorial>{question.text}</Content>
         <Form isWidthLimited={false}>
@@ -98,13 +109,6 @@ export default function RetryLoadConfigQuestion({
           </ExpandableSection>
         )}
       </Stack>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
     </Popup>
   );
 }

@@ -80,7 +80,17 @@ export default function UnsupportedAutoYaST({
   const unsupported = question.data.unsupported ? question.data.unsupported.split(",") : [];
 
   return (
-    <Popup isOpen title={_("Unsupported AutoYaST elements")}>
+    <Popup
+      isOpen
+      title={_("Unsupported AutoYaST elements")}
+      actions={
+        <QuestionActions
+          actions={question.actions}
+          defaultAction={question.defaultAction}
+          actionCallback={actionCallback}
+        />
+      }
+    >
       <Stack hasGutter>
         <Content>{_("Some of the elements in your AutoYaST profile are not supported.")}</Content>
         <Grid hasGutter>
@@ -109,13 +119,6 @@ export default function UnsupportedAutoYaST({
           )}
         </Content>
       </Stack>
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-        />
-      </Popup.Actions>
     </Popup>
   );
 }

@@ -68,6 +68,14 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
       title={_("Encrypted Device")}
       elementToFocus="#luks-password"
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
+      actions={
+        <QuestionActions
+          actions={question.actions}
+          defaultAction={question.defaultAction}
+          actionCallback={actionCallback}
+          conditions={conditions}
+        />
+      }
     >
       <Stack hasGutter>
         <Alert attempt={question.data.attempt} />
@@ -83,15 +91,6 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
           </FormGroup>
         </Form>
       </Stack>
-
-      <Popup.Actions>
-        <QuestionActions
-          actions={question.actions}
-          defaultAction={question.defaultAction}
-          actionCallback={actionCallback}
-          conditions={conditions}
-        />
-      </Popup.Actions>
     </Popup>
   );
 }

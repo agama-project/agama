@@ -340,8 +340,8 @@ const ReuseSettingsField = withForm({
  * Renders the dialog buttons, keeping them unavailable while the settings are
  * being applied.
  *
- * Meant to be placed inside a `Popup.Actions`, which is what puts the buttons
- * in the dialog footer.
+ * Meant to be given to the `actions` prop of a Popup, which is what puts the
+ * buttons in the dialog footer.
  */
 const DialogButtons = withForm({
   ...defaultOptions,
@@ -376,7 +376,12 @@ const AllSettingsDialog = withForm({
   props: {} as DialogProps,
   render: function Render({ form, isOpen, allowReusingSettings, onCancel }) {
     return (
-      <Popup isOpen={isOpen} variant="small" title={_("Language and keyboard")}>
+      <Popup
+        isOpen={isOpen}
+        variant="small"
+        title={_("Language and keyboard")}
+        actions={<DialogButtons form={form} onCancel={onCancel} />}
+      >
         <Form id="installer-l10n" onSubmit={submitHandler(form)}>
           <LanguageField form={form} />
           <KeyboardField form={form} />
@@ -388,10 +393,6 @@ const AllSettingsDialog = withForm({
             />
           </ReusableSettings>
         </Form>
-
-        <Popup.Actions>
-          <DialogButtons form={form} onCancel={onCancel} />
-        </Popup.Actions>
       </Popup>
     );
   },
@@ -402,7 +403,12 @@ const LanguageOnlyDialog = withForm({
   props: {} as DialogProps,
   render: function Render({ form, isOpen, allowReusingSettings, onCancel }) {
     return (
-      <Popup isOpen={isOpen} variant="small" title={_("Change Language")}>
+      <Popup
+        isOpen={isOpen}
+        variant="small"
+        title={_("Change Language")}
+        actions={<DialogButtons form={form} onCancel={onCancel} />}
+      >
         <Form id="installer-l10n" onSubmit={submitHandler(form)}>
           <LanguageField form={form} />
           <ReusableSettings isReuseAllowed={allowReusingSettings}>
@@ -413,10 +419,6 @@ const LanguageOnlyDialog = withForm({
             />
           </ReusableSettings>
         </Form>
-
-        <Popup.Actions>
-          <DialogButtons form={form} onCancel={onCancel} />
-        </Popup.Actions>
       </Popup>
     );
   },
@@ -428,17 +430,24 @@ const KeyboardOnlyDialog = withForm({
   render: function Render({ form, isOpen, allowReusingSettings, onCancel }) {
     if (!localConnection()) {
       return (
-        <Popup isOpen={isOpen} variant="small" title={_("Change keyboard")}>
+        <Popup
+          isOpen={isOpen}
+          variant="small"
+          title={_("Change keyboard")}
+          actions={<Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>}
+        >
           {_("Cannot be changed in remote installation")}
-          <Popup.Actions>
-            <Popup.Confirm onClick={onCancel}>{_("Accept")}</Popup.Confirm>
-          </Popup.Actions>
         </Popup>
       );
     }
 
     return (
-      <Popup isOpen={isOpen} variant="small" title={_("Change keyboard")}>
+      <Popup
+        isOpen={isOpen}
+        variant="small"
+        title={_("Change keyboard")}
+        actions={<DialogButtons form={form} onCancel={onCancel} />}
+      >
         <Form id="installer-l10n" onSubmit={submitHandler(form)}>
           <KeyboardField form={form} />
           <ReusableSettings isReuseAllowed={allowReusingSettings}>
@@ -449,10 +458,6 @@ const KeyboardOnlyDialog = withForm({
             />
           </ReusableSettings>
         </Form>
-
-        <Popup.Actions>
-          <DialogButtons form={form} onCancel={onCancel} />
-        </Popup.Actions>
       </Popup>
     );
   },

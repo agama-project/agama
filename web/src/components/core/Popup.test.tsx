@@ -51,14 +51,16 @@ const TestingPopup = (props: TestingPopupProps) => {
       isOpen={isOpen}
       isLoading={isLoading}
       loadingText={loadingText}
+      actions={
+        <>
+          <Popup.Confirm onClick={confirmFn} isDisabled />
+          <Popup.Cancel onClick={cancelFn} />
+        </>
+      }
       {...props}
     >
       <p>The Popup Content</p>
       <button onClick={() => setIsMounted(false)}>Unmount Popup</button>
-      <Popup.Actions>
-        <Popup.Confirm onClick={confirmFn} isDisabled />
-        <Popup.Cancel onClick={cancelFn} />
-      </Popup.Actions>
     </Popup>
   );
 };
@@ -197,7 +199,7 @@ describe("Popup", () => {
         within(footer).getByText("Cancel");
       });
 
-      it("renders a footer even when no actions are given", async () => {
+      it("renders no footer when no actions are given", async () => {
         installerRender(
           <Popup isOpen title="No actions">
             {/* PF focus trap needs at least one tabbable node inside the dialog */}
@@ -206,29 +208,27 @@ describe("Popup", () => {
         );
 
         const dialog = await screen.findByRole("dialog");
-        const footer = dialog.querySelector("footer");
 
-        expect(footer).not.toBeNull();
-        expect(within(footer).queryAllByRole("button")).toEqual([]);
+        expect(dialog.querySelector("footer")).toBeNull();
       });
 
-      it("places actions in the body when they are not a direct Popup.Actions child", async () => {
+      it("puts actions in the footer no matter how they are nested", async () => {
+        const NestedActions = () => (
+          <>
+            <Popup.Confirm onClick={confirmFn} />
+          </>
+        );
+
         installerRender(
-          <Popup isOpen title="Wrapped actions">
+          <Popup isOpen title="Nested actions" actions={<NestedActions />}>
             <p>Just content</p>
-            <>
-              <Popup.Actions>
-                <Popup.Confirm onClick={confirmFn} />
-              </Popup.Actions>
-            </>
           </Popup>,
         );
 
         const dialog = await screen.findByRole("dialog");
         const footer = dialog.querySelector("footer");
 
-        expect(within(footer).queryByRole("button", { name: "Confirm" })).toBeNull();
-        within(dialog).getByRole("button", { name: "Confirm" });
+        within(footer).getByRole("button", { name: "Confirm" });
       });
     });
 
