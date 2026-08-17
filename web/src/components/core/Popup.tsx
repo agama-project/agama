@@ -1,5 +1,5 @@
 /*
- * Copyright (c) [2022-2025] SUSE LLC
+ * Copyright (c) [2022-2026] SUSE LLC
  *
  * All Rights Reserved.
  *
@@ -81,20 +81,22 @@ type LabeledPopupProps = PopupBaseProps & {
 export type PopupProps = TitledPopupProps | LabeledPopupProps;
 
 /**
- * A Popup primary action
+ * The action the dialog suggests, rendered as a "primary"
+ * {@link https://www.patternfly.org/components/button PF/Button}.
  *
- * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button}
- * prop to "primary", no matter what given in `props`.
+ * Use at most one per dialog.
  *
  * @example <caption>Simple usage</caption>
  *   <PrimaryAction onClick={doSomething}>Let's go</PrimaryAction>
  *
- * @example <caption>Advanced usage</caption>
+ * @example <caption>With an icon</caption>
  *   <PrimaryAction onClick={upload}>
  *     <UploadIcon />
  *     <Text>Upload</Text>
  *   </PrimaryAction>
  *
+ * @example <caption>Submitting a form rendered in the dialog body</caption>
+ *   <PrimaryAction type="submit" form="user-settings">Accept</PrimaryAction>
  */
 const PrimaryAction = ({ children, ...actionProps }: ActionProps) => (
   <Button {...actionProps} variant="primary">
@@ -103,30 +105,28 @@ const PrimaryAction = ({ children, ...actionProps }: ActionProps) => (
 );
 
 /**
- * Shortcut for the primary "Confirm" action
+ * A {@link PrimaryAction} labeled "Confirm" unless told otherwise.
  *
- * @example <caption>Using it with the default text</caption>
+ * @example <caption>Using the default text</caption>
  *   <Confirm onClick={confirm} />
  *
- * @example <caption>Using it with a custom text</caption>
+ * @example <caption>Using a custom text</caption>
  *   <Confirm onClick={accept}>Accept</Confirm>
- *
  */
 const Confirm = ({ children = _("Confirm"), ...actionProps }: ActionProps) => (
   <PrimaryAction {...actionProps}>{children}</PrimaryAction>
 );
 
 /**
- * A Popup secondary action
- *
- * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button}
- * prop to "secondary", no matter what given in `props`.
+ * An alternative to the primary action, rendered as a "secondary"
+ * {@link https://www.patternfly.org/components/button PF/Button} or, with
+ * `asLink`, as a plain link.
  *
  * @example <caption>Simple usage</caption>
  *   <SecondaryAction onClick={cancel}>Cancel</SecondaryAction>
  *
- * @example <caption>Advanced usage</caption>
- *   <SecondaryAction onClick={upload}>
+ * @example <caption>With an icon</caption>
+ *   <SecondaryAction onClick={dismiss}>
  *     <DismissIcon />
  *     <Text>Dismiss</Text>
  *   </SecondaryAction>
@@ -138,28 +138,27 @@ const SecondaryAction = ({ children, asLink, ...actionProps }: SecondaryActionPr
 );
 
 /**
- * Shortcut for the secondary "Cancel" action
+ * A {@link SecondaryAction} labeled "Cancel" unless told otherwise.
  *
- * @example <caption>Using it with the default text</caption>
+ * @example <caption>Using the default text</caption>
  *   <Cancel onClick={cancel} />
  *
- * @example <caption>Using it with a custom text</caption>
- *   <Cancel onClick={dismiss}>Dismiss</Confirm>
+ * @example <caption>Using a custom text</caption>
+ *   <Cancel onClick={dismiss}>Dismiss</Cancel>
  */
 const Cancel = ({ children = _("Cancel"), ...actionProps }: SecondaryActionProps) => (
   <SecondaryAction {...actionProps}>{children}</SecondaryAction>
 );
 
 /**
- * A Popup additional action, rendered as a link
- *
- * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button} prop
- * to "link", no matter what is given in `props`
+ * A side action that leaves the main choice aside, rendered as a "link"
+ * {@link https://www.patternfly.org/components/button PF/Button} to keep it
+ * visually apart from the primary and secondary ones.
  *
  * @example <caption>Simple usage</caption>
  *   <AncillaryAction onClick={turnUserSettingsOff}>Do not set this</AncillaryAction>
  *
- * @example <caption>Advanced usage</caption>
+ * @example <caption>With an icon</caption>
  *   <AncillaryAction onClick={turnUserSettingsOff}>
  *     <RemoveIcon />
  *     <Text>Do not set</Text>
@@ -172,14 +171,13 @@ const AncillaryAction = ({ children, ...actionsProps }: ActionProps) => (
 );
 
 /**
- * A Popup action with danger variant
+ * A destructive action, rendered as a "danger"
+ * {@link https://www.patternfly.org/components/button PF/Button}.
  *
- * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button}
- * prop to "danger", no matter what given in `props`.
+ * Use it instead of {@link PrimaryAction} when confirming means losing data.
  *
  * @example <caption>Simple usage</caption>
  *   <DangerousAction onClick={format}>Format</DangerousAction>
- *
  */
 const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
   <Button {...actionProps} variant="danger">
@@ -188,17 +186,34 @@ const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
 );
 
 /**
- * Agama component for displaying a popup
+ * Agama component for displaying a dialog, built on top of
+ * {@link https://www.patternfly.org/components/modal PF/Modal}.
  *
- * Built on top of {@link https://www.patternfly.org/components/modal PF/Modal}.
- * Its children are the dialog body; footer buttons go in the `actions` prop.
+ * Its children are the dialog body; the buttons closing it go in the `actions`
+ * prop, which renders them in the footer. Without actions, no footer renders.
+ *
+ * Every dialog must be named, either by the `title` it renders or, when it
+ * renders none, by an `aria-label`.
+ *
+ * Dialogs come in two flavors, told apart by the `onClose` callback:
+ *
+ *   - Dismissible: `onClose` given, so the dialog offers a close button and
+ *     reacts to the Escape key. Use it when walking away leaves the user where
+ *     they were, like a settings or a selection dialog.
+ *   - Must-answer: no `onClose`, so the only way out is one of the actions.
+ *     Use it when the flow cannot continue until the user decides, like an
+ *     installer question.
  *
  * Prefer mounting it only while the dialog is needed, with `isOpen` hardcoded
  * to true, over keeping it mounted and toggling `isOpen`. That way the dialog
  * content, and any effect it runs, exists exactly while the dialog is on
  * screen.
  *
- * @example <caption>Usage example</caption>
+ * Set `isLoading` while the dialog is waiting for the data its body needs. The
+ * dialog then shows a progress message in place of the content, which allows
+ * opening it right away instead of blocking the interaction that requested it.
+ *
+ * @example <caption>A must-answer dialog</caption>
  *   <Popup
  *     title="Users"
  *     isOpen={showUserSettings}
@@ -215,10 +230,11 @@ const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
  *     <UserSettingsForm />
  *   </Popup>
  *
- * @example <caption>Usage example using shortcuts actions</caption>
+ * @example <caption>A dismissible dialog using the action shortcuts</caption>
  *   <Popup
  *     title="Users"
  *     isOpen={showUserSettings}
+ *     onClose={cancel}
  *     actions={
  *       <>
  *         <Popup.Confirm onClick={updateUserSetting} />
@@ -227,6 +243,20 @@ const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
  *     }
  *   >
  *     <UserSettingsForm />
+ *   </Popup>
+ *
+ * @example <caption>A dialog holding a form, submitted by its primary action</caption>
+ *   <Popup
+ *     title="Users"
+ *     isOpen={showUserSettings}
+ *     actions={
+ *       <>
+ *         <Popup.Confirm type="submit" form="user-settings" />
+ *         <Popup.Cancel onClick={cancel} />
+ *       </>
+ *     }
+ *   >
+ *     <UserSettingsForm id="user-settings" onSubmit={updateUserSetting} />
  *   </Popup>
  */
 const Popup = ({
