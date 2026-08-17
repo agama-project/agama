@@ -36,8 +36,13 @@ import { AnnouncerTarget } from "~/context/announcer";
 import { fork } from "radashi";
 import { _, TranslatedString } from "~/i18n";
 
-type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
-type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps & { asLink?: boolean }>;
+/** Props for an action, which always picks its own PF/Button variant */
+type ActionProps = React.PropsWithChildren<Omit<ButtonProps, "variant">>;
+/** Props for an action that can also be rendered as a link */
+type SecondaryActionProps = ActionProps & {
+  /** Whether to render the action as a link instead of an outlined button */
+  asLink?: boolean;
+};
 type PopupBaseProps = {
   /** Extra content to be placed in the header after the title */
   titleAddon?: React.ReactNode;
@@ -83,16 +88,6 @@ export type PopupProps = TitledPopupProps | LabeledPopupProps;
 const Actions = ({ children }: React.PropsWithChildren) => <>{children}</>;
 
 /**
- * A convenient component representing a Popup action
- *
- * Built on top of {@link https://www.patternfly.org/components/button PF/Button}
- *
- */
-const Action = ({ children, ...buttonProps }: React.PropsWithChildren<ButtonProps>) => (
-  <Button {...buttonProps}>{children}</Button>
-);
-
-/**
  * A Popup primary action
  *
  * It always set `variant` {@link https://www.patternfly.org/components/button PF/Button}
@@ -108,10 +103,10 @@ const Action = ({ children, ...buttonProps }: React.PropsWithChildren<ButtonProp
  *   </PrimaryAction>
  *
  */
-const PrimaryAction = ({ children, ...actionProps }: PredefinedAction) => (
-  <Action {...actionProps} variant="primary">
+const PrimaryAction = ({ children, ...actionProps }: ActionProps) => (
+  <Button {...actionProps} variant="primary">
     {children}
-  </Action>
+  </Button>
 );
 
 /**
@@ -124,10 +119,8 @@ const PrimaryAction = ({ children, ...actionProps }: PredefinedAction) => (
  *   <Confirm onClick={accept}>Accept</Confirm>
  *
  */
-const Confirm = ({ children = _("Confirm"), ...actionProps }: PredefinedAction) => (
-  <PrimaryAction key="confirm" {...actionProps}>
-    {children}
-  </PrimaryAction>
+const Confirm = ({ children = _("Confirm"), ...actionProps }: ActionProps) => (
+  <PrimaryAction {...actionProps}>{children}</PrimaryAction>
 );
 
 /**
@@ -145,10 +138,10 @@ const Confirm = ({ children = _("Confirm"), ...actionProps }: PredefinedAction) 
  *     <Text>Dismiss</Text>
  *   </SecondaryAction>
  */
-const SecondaryAction = ({ children, asLink, ...actionProps }: PredefinedAction) => (
-  <Action {...actionProps} variant={asLink ? "link" : "secondary"}>
+const SecondaryAction = ({ children, asLink, ...actionProps }: SecondaryActionProps) => (
+  <Button {...actionProps} variant={asLink ? "link" : "secondary"}>
     {children}
-  </Action>
+  </Button>
 );
 
 /**
@@ -160,10 +153,8 @@ const SecondaryAction = ({ children, asLink, ...actionProps }: PredefinedAction)
  * @example <caption>Using it with a custom text</caption>
  *   <Cancel onClick={dismiss}>Dismiss</Confirm>
  */
-const Cancel = ({ children = _("Cancel"), ...actionProps }: PredefinedAction) => (
-  <SecondaryAction key="cancel" {...actionProps}>
-    {children}
-  </SecondaryAction>
+const Cancel = ({ children = _("Cancel"), ...actionProps }: SecondaryActionProps) => (
+  <SecondaryAction {...actionProps}>{children}</SecondaryAction>
 );
 
 /**
@@ -181,10 +172,10 @@ const Cancel = ({ children = _("Cancel"), ...actionProps }: PredefinedAction) =>
  *     <Text>Do not set</Text>
  *   </AncillaryAction>
  */
-const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
-  <Action {...actionsProps} variant="link">
+const AncillaryAction = ({ children, ...actionsProps }: ActionProps) => (
+  <Button {...actionsProps} variant="link">
     {children}
-  </Action>
+  </Button>
 );
 
 /**
@@ -197,10 +188,10 @@ const AncillaryAction = ({ children, ...actionsProps }: PredefinedAction) => (
  *   <DangerousAction onClick={format}>Format</DangerousAction>
  *
  */
-const DangerousAction = ({ children, ...actionProps }: PredefinedAction) => (
-  <Action {...actionProps} variant="danger">
+const DangerousAction = ({ children, ...actionProps }: ActionProps) => (
+  <Button {...actionProps} variant="danger">
     {children}
-  </Action>
+  </Button>
 );
 
 /**
