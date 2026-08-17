@@ -37,6 +37,7 @@ import { useAvailableDevices } from "~/hooks/model/system/storage";
 import { formattedPath } from "~/components/storage/utils";
 import { _, n_, formatList } from "~/i18n";
 
+import type { DistributedOmit } from "type-fest";
 import type { CustomToggleProps } from "~/components/core/MenuButton";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
@@ -189,7 +190,7 @@ const RemoveVolumeGroupMenuItem = ({
   );
 };
 
-type SearchedDeviceSelectorProps = Omit<
+type SearchedDeviceSelectorProps = DistributedOmit<
   DeviceSelectorModalProps,
   "disks" | "mdRaids" | "volumeGroups" | "selected"
 > & {

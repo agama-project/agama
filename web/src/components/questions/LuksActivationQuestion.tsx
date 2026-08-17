@@ -66,7 +66,6 @@ export default function LuksActivationQuestion({ question, answerCallback }) {
     <Popup
       isOpen
       title={_("Encrypted Device")}
-      aria-label={_("Question")}
       elementToFocus="#luks-password"
       titleAddon={<InstallerL10nOptions variant="keyboard" />}
     >

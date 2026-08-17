@@ -38,17 +38,39 @@ import { _, TranslatedString } from "~/i18n";
 
 type ButtonWithoutVariantProps = Omit<ButtonProps, "variant">;
 type PredefinedAction = React.PropsWithChildren<ButtonWithoutVariantProps & { asLink?: boolean }>;
-export type PopupProps = {
-  /** The dialog title */
-  title?: ModalHeaderProps["title"];
+type PopupBaseProps = {
   /** Extra content to be placed in the header after the title */
   titleAddon?: React.ReactNode;
   /** Whether it should display a loading indicator instead of the requested content. */
   isLoading?: boolean;
   /** Text displayed when `isLoading` is set to `true` */
   loadingText?: TranslatedString;
-} & Omit<ModalProps, "title" | "size" | "ref"> &
+} & Omit<ModalProps, "title" | "size" | "ref" | "aria-label"> &
   Pick<ModalHeaderProps, "description" | "titleIconVariant">;
+
+/**
+ * A dialog named by its visible title.
+ */
+type TitledPopupProps = PopupBaseProps & {
+  /** The dialog title, rendered in the header and used as the dialog name */
+  title: ModalHeaderProps["title"];
+  "aria-label"?: never;
+};
+
+/**
+ * A dialog with no visible title, named by an invisible label instead.
+ */
+type LabeledPopupProps = PopupBaseProps & {
+  title?: never;
+  /** The dialog name, for dialogs rendering no title */
+  "aria-label": string;
+};
+
+/**
+ * Every dialog must be named. Either it renders a `title`, which becomes its
+ * name, or it provides an `aria-label`.
+ */
+export type PopupProps = TitledPopupProps | LabeledPopupProps;
 
 /**
  * Wrapper component for holding Popup actions
@@ -241,7 +263,7 @@ const Popup = ({
       {...props}
       width={props.variant ? undefined : "auto"}
       isOpen={isOpen}
-      aria-labelledby={titleId}
+      aria-labelledby={title ? titleId : undefined}
       aria-describedby={contentId}
     >
       <AnnouncerTarget />

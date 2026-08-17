@@ -33,7 +33,13 @@ let isLoading: boolean;
 const confirmFn = jest.fn();
 const cancelFn = jest.fn();
 
-const TestingPopup = (props: PopupProps) => {
+/**
+ * Props for {@link TestingPopup}, which always renders its own title and
+ * content.
+ */
+type TestingPopupProps = Omit<PopupProps, "title" | "aria-label" | "children">;
+
+const TestingPopup = (props: TestingPopupProps) => {
   const [isMounted, setIsMounted] = useState(true);
   const loadingText = _("Loading text");
 
@@ -66,7 +72,7 @@ describe("Popup", () => {
     });
 
     it("renders nothing", async () => {
-      installerRender(<TestingPopup>Testing</TestingPopup>);
+      installerRender(<TestingPopup />);
 
       const dialog = screen.queryByRole("dialog");
       expect(dialog).toBeNull();
@@ -80,9 +86,9 @@ describe("Popup", () => {
 
     it("renders given title and titleAddon inside PF/ModalHeader", async () => {
       installerRender(
-        <TestingPopup title="Awesome Popup" titleAddon={<button>With action at title</button>}>
-          Testing
-        </TestingPopup>,
+        <Popup isOpen title="Awesome Popup" titleAddon={<button>With action at title</button>}>
+          <p>Testing</p>
+        </Popup>,
       );
 
       const dialog = await screen.findByRole("dialog");
@@ -91,11 +97,11 @@ describe("Popup", () => {
       within(header).getByRole("button", { name: "With action at title" });
     });
 
-    it("does not render header when none, title nor titleAddon, are giving", async () => {
+    it("does not render a header when no title is given", async () => {
       installerRender(
-        <TestingPopup title={undefined} titleAddon={undefined}>
-          Testing
-        </TestingPopup>,
+        <Popup isOpen aria-label="Bare popup" titleAddon={<button>Addon</button>}>
+          <button>Testing</button>
+        </Popup>,
       );
 
       await screen.findByRole("dialog");
@@ -103,31 +109,24 @@ describe("Popup", () => {
     });
 
     it("names the dialog after the given title", async () => {
-      installerRender(<TestingPopup title="Awesome Popup">Testing</TestingPopup>);
+      installerRender(<TestingPopup />);
 
       const dialog = await screen.findByRole("dialog");
-      expect(dialog).toHaveAccessibleName("Awesome Popup");
+      expect(dialog).toHaveAccessibleName("Testing Popup Title");
     });
 
     it("describes the dialog with its content", async () => {
-      installerRender(<TestingPopup>Testing</TestingPopup>);
+      installerRender(<TestingPopup />);
 
       const dialog = await screen.findByRole("dialog");
       expect(dialog).toHaveAccessibleDescription(expect.stringContaining("The Popup Content"));
     });
 
-    it("leaves the dialog unnamed when rendered without a title", async () => {
-      installerRender(<TestingPopup title={undefined}>Testing</TestingPopup>);
-
-      const dialog = await screen.findByRole("dialog");
-      expect(dialog).toHaveAccessibleName("");
-    });
-
     it("names the dialog after aria-label when rendered without a title", async () => {
       installerRender(
-        <TestingPopup title={undefined} aria-label="Bare popup">
-          Testing
-        </TestingPopup>,
+        <Popup isOpen aria-label="Bare popup">
+          <button>Testing</button>
+        </Popup>,
       );
 
       const dialog = await screen.findByRole("dialog");
@@ -136,7 +135,7 @@ describe("Popup", () => {
 
     describe("and no onClose callback is given", () => {
       it("renders no close button and ignores the Escape key", async () => {
-        const { user } = installerRender(<TestingPopup>Testing</TestingPopup>);
+        const { user } = installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
         expect(within(dialog).queryByRole("button", { name: "Close" })).toBeNull();
@@ -149,7 +148,7 @@ describe("Popup", () => {
     describe("and an onClose callback is given", () => {
       it("renders a close button and honors the Escape key", async () => {
         const onClose = jest.fn();
-        const { user } = installerRender(<TestingPopup onClose={onClose}>Testing</TestingPopup>);
+        const { user } = installerRender(<TestingPopup onClose={onClose} />);
 
         const dialog = await screen.findByRole("dialog");
         const closeButton = within(dialog).getByRole("button", { name: "Close" });
@@ -169,7 +168,7 @@ describe("Popup", () => {
       });
 
       it("renders the popup content inside a PF/Modal", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
         expect(dialog.classList.contains("pf-v6-c-modal-box")).toBe(true);
@@ -178,7 +177,7 @@ describe("Popup", () => {
       });
 
       it("does not display a progress message", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
 
@@ -186,7 +185,7 @@ describe("Popup", () => {
       });
 
       it("renders the popup actions inside a PF/Modal footer", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
         // NOTE: Sadly, PF Modal/ModalFooter does not have a footer or navigation role.
@@ -239,7 +238,7 @@ describe("Popup", () => {
       });
 
       it("displays progress message instead of the content", async () => {
-        installerRender(<TestingPopup>Testing</TestingPopup>);
+        installerRender(<TestingPopup />);
 
         const dialog = await screen.findByRole("dialog");
 

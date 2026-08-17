@@ -49,6 +49,7 @@ import { STORAGE } from "~/routes/paths";
 import { deviceLabel } from "~/components/storage/utils";
 import { _ } from "~/i18n";
 
+import type { DistributedOmit } from "type-fest";
 import type { PopupProps } from "~/components/core/Popup";
 import type { Storage } from "~/model/system";
 
@@ -87,7 +88,10 @@ export type NewDeviceLinkTexts = {
 };
 
 /** Props for {@link DeviceSelectorModal}. */
-export type DeviceSelectorModalProps = Omit<PopupProps, "children" | "selected" | "description"> & {
+export type DeviceSelectorModalProps = DistributedOmit<
+  PopupProps,
+  "children" | "selected" | "description"
+> & {
   /** General information shown at the top of the modal, above the tabs. */
   intro?: React.ReactNode;
   /** Tab to open initially. Takes precedence over the tab derived from {@link selected}. */
