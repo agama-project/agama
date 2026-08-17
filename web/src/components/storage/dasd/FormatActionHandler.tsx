@@ -91,7 +91,7 @@ const DeviceOffline = ({ device, onClose }: Pick<CommonFormatDASDProps, "device"
       isOpen
       title={sprintf(_("Cannot format %s"), device.channel)}
       onClose={onClose}
-      actions={<Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>}
+      actions={<Popup.Close>{_("Accept")}</Popup.Close>}
     >
       <Stack hasGutter>
         <Content>{_("It is offline and must be activated before formatting it.")}</Content>
@@ -116,7 +116,7 @@ const SomeDevicesOffline = ({
       isOpen
       title={_("Cannot format all the selected devices")}
       onClose={onClose}
-      actions={<Popup.Confirm onClick={onClose}>{_("Accept")}</Popup.Confirm>}
+      actions={<Popup.Close>{_("Accept")}</Popup.Close>}
     >
       <Stack hasGutter>
         <Content>

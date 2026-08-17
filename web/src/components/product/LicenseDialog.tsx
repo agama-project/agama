@@ -63,12 +63,7 @@ function LicenseDialog({ onClose, product }: { onClose: ModalProps["onClose"]; p
   }, [language, product.license]);
 
   return (
-    <Popup
-      isOpen
-      title={product.name}
-      onClose={onClose}
-      actions={<Popup.Confirm onClick={onClose}>{_("Close")}</Popup.Confirm>}
-    >
+    <Popup isOpen title={product.name} onClose={onClose} actions={<Popup.Close />}>
       <Stack hasGutter>
         {licenseLanguage && !languagesMatches(uiLanguage, licenseLanguage) && (
           <MissingTranslation missing={uiLanguage} />

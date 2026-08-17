@@ -314,6 +314,55 @@ describe("Popup.Confirm", () => {
   });
 });
 
+describe("Popup.Close", () => {
+  it("closes the dialog it belongs to", async () => {
+    const onClose = jest.fn();
+    const { user } = installerRender(
+      <Popup isOpen title="Closable" onClose={onClose} actions={<Popup.Close />}>
+        <p>Content</p>
+      </Popup>,
+    );
+
+    const footer = screen.getByRole("dialog").querySelector("footer");
+    await user.click(within(footer).getByRole("button", { name: "Close" }));
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("runs its own onClick when given one, using children as content", async () => {
+    const onClose = jest.fn();
+    const onClick = jest.fn();
+    const { user } = installerRender(
+      <Popup
+        isOpen
+        title="Closable"
+        onClose={onClose}
+        actions={<Popup.Close onClick={onClick}>Accept</Popup.Close>}
+      >
+        <p>Content</p>
+      </Popup>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Accept" }));
+
+    expect(onClick).toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("reports a dialog leaving it with nothing to do", async () => {
+    const consoleError = jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    installerRender(
+      <Popup isOpen title="Not closable" actions={<Popup.Close />}>
+        <p>Content</p>
+      </Popup>,
+    );
+
+    expect(consoleError).toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+});
+
 describe("Popup.Cancel", () => {
   describe("when holding no children", () => {
     it("renders a 'secondary' button using 'Cancel' text as content", async () => {
