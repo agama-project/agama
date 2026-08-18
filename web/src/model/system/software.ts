@@ -23,7 +23,6 @@
 type System = {
   addons: AddonInfo[];
   patterns: Pattern[];
-  repositories: Repository[];
   registration?: RegistrationInfo;
 };
 
@@ -38,8 +37,6 @@ type Pattern = {
   description: string;
   /** {number} order - Display order (string!) */
   order: number;
-  /** Icon name (not path or file name!) */
-  icon: string;
   /** Whether the pattern is selected by default */
   preselected: boolean;
   /**
@@ -47,16 +44,6 @@ type Pattern = {
    * desktops from other patterns
    * */
   desktop: boolean;
-};
-
-type Repository = {
-  repo_id: number;
-  alias: string;
-  name: string;
-  raw_url: string;
-  product_dir: string;
-  enabled: boolean;
-  loaded: boolean;
 };
 
 type RegistrationInfo = {
@@ -88,4 +75,4 @@ type AddonUnregistered = {
   status: "notRegistered";
 };
 
-export type { System, Pattern, AddonInfo, RegistrationInfo, Repository };
+export type { System, Pattern, AddonInfo, RegistrationInfo };

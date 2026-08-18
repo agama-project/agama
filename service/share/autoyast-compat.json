@@ -247,13 +247,15 @@
           { "key": "description", "support": "no" },
           {
             "key": "bootproto",
-            "support": "no",
-            "notes": "Different set of values."
+            "support": "yes",
+            "agama": "network.connections[].method4, network.connections[].method6",
+            "notes": "Different set of values. 'ibft' and 'dhcp+autoip' fall back to 'auto'."
           },
           {
             "key": "startmode",
-            "support": "no",
-            "notes": "Do not set up network connections you won't use."
+            "support": "yes",
+            "agama": "network.connections[].autoconnect",
+            "notes": "'manual' and 'off' disable the auto-connection and keep the connection down; the rest enable it."
           },
           {
             "key": "lladdr",
@@ -308,7 +310,7 @@
           {
             "key": "wireless",
             "support": "yes",
-            "agama": "wireless",
+            "agama": "network.connections[].wireless",
             "notes": "It uses a different format."
           },
           { "key": "dhclient_set_down_link", "support": "no" },
@@ -323,7 +325,8 @@
           {
             "key": "bonding_module_opts",
             "support": "yes",
-            "agama": "network.connections[].bond.options"
+            "agama": "network.connections[].bond.options",
+            "notes": "The `mode` option is set in `network.connections[].bond.mode`. Numeric modes (e.g., `mode=1`) are supported too."
           },
           {
             "key": "bonding_slave0",
@@ -383,7 +386,8 @@
           {
             "key": "bridge_forward_delay",
             "support": "yes",
-            "agama": "network.connections[].bridge.forwardDelay"
+            "agama": "network.connections[].bridge.forwardDelay",
+            "notes": "Negative values are ignored."
           },
           {
             "key": "bridge_forwarddelay",
@@ -404,12 +408,14 @@
           {
             "key": "etherdevice",
             "support": "yes",
-            "agama": "network.connections[].vlan.parent"
+            "agama": "network.connections[].vlan.parent",
+            "notes": "Inferred from the device name (e.g., 'eth0' for 'eth0.10') when it is not set."
           },
           {
             "key": "vlan_id",
             "support": "yes",
-            "agama": "network.connections[].vlan.id"
+            "agama": "network.connections[].vlan.id",
+            "notes": "Inferred from the device name (e.g., 10 for 'eth0.10') when it is not set. It must be lower than 4095, which is reserved."
           },
           {
             "key": "wireless_auth_mode",
@@ -430,8 +436,7 @@
           {
             "key": "wireless_essid",
             "support": "yes",
-            "agama": "network.connections[].wireless.ssid",
-            "notes": "Map 'ad-hoc' to 'adhoc', 'master' to 'ap' and 'managed' to 'infrastructure'."
+            "agama": "network.connections[].wireless.ssid"
           },
           { "key": "wireless_frequency", "support": "no" },
           { "key": "wireless_key", "support": "no" },
@@ -440,7 +445,12 @@
           { "key": "wireless_key_2", "support": "no" },
           { "key": "wireless_key_3", "support": "no" },
           { "key": "wireless_key_length", "support": "no" },
-          { "key": "wireless_mode", "support": "yes", "agama": "mode" },
+          {
+            "key": "wireless_mode",
+            "support": "yes",
+            "agama": "network.connections[].wireless.mode",
+            "notes": "Map 'ad-hoc' to 'adhoc', 'master' to 'ap' and 'managed' to 'infrastructure'."
+          },
           { "key": "wireless_nick", "support": "no" },
           { "key": "wireless_nwid", "support": "no" },
           { "key": "wireless_peap_version", "support": "no" },
@@ -450,12 +460,14 @@
           {
             "key": "wireless_wpa_password",
             "support": "yes",
-            "agama": "network.connections[].wireless.password"
+            "agama": "network.connections[].wireless.password",
+            "notes": "Only used when 'wireless_auth_mode' is 'eap'."
           },
           {
             "key": "wireless_wpa_psk",
             "support": "yes",
-            "agama": "network.connections[].wireless.password"
+            "agama": "network.connections[].wireless.password",
+            "notes": "Only used when 'wireless_auth_mode' is 'psk'."
           }
         ]
       }

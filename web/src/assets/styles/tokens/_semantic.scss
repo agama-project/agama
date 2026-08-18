@@ -60,7 +60,8 @@
 //   --agm-t--font--family--{body,heading,mono}    font families
 //   --agm-t--font--weight--{body,heading,bold}    font weights
 //   --agm-t--font--size--100 .. --800             font size scale (--200 is body)
-//   --agm-t--icon--size--100 .. --800             icon size scale
+//   --agm-t--icon--size--100 .. --800             icon size scale (Agama's own
+//                                                 icons and PatternFly's alike)
 //
 // High contrast is intentionally excluded from every block here: it is an
 // accessibility mode, so PatternFly's high-contrast theme governs it fully and
@@ -161,18 +162,20 @@
     var(--pf-t--global--border--radius--small)
   );
 
-  // Icon size scale (theme-independent), consumed by the Icon `size` prop via
-  // its CSS classes. Each step defaults to the matching font size, so icons stay
-  // in sync with font-size overrides from a product / color scheme; override the
-  // --agm-t--icon--size--* tokens for icon-only fine-tuning.
-  --agm-t--icon--size--100: var(--pf-t--global--font--size--100);
-  --agm-t--icon--size--200: var(--pf-t--global--font--size--200);
-  --agm-t--icon--size--300: var(--pf-t--global--font--size--300);
-  --agm-t--icon--size--400: var(--pf-t--global--font--size--400);
-  --agm-t--icon--size--500: var(--pf-t--global--font--size--500);
-  --agm-t--icon--size--600: var(--pf-t--global--font--size--600);
-  --agm-t--icon--size--700: var(--pf-t--global--font--size--700);
-  --agm-t--icon--size--800: var(--pf-t--global--font--size--800);
+  // Icon size scale (theme-independent). Unset by default: every consumption
+  // point falls back to the size it would have had anyway, so setting a step
+  // resizes icons and leaving it alone changes nothing. Agama's own icons read
+  // these through the .agm-icon-* classes (components/_agama-custom), and the
+  // block below carries the same steps into PatternFly's icon tokens, so an
+  // icon PatternFly renders itself resizes along with them.
+  //
+  // The two scales do not have the same steps, so each PF size is mapped onto
+  // the closest one of ours. The two largest PF steps (3.5rem and 6rem) are
+  // empty-state illustrations rather than icons, and are left alone.
+  --pf-t--global--icon--size--100: var(--agm-t--icon--size--100, 0.75rem);
+  --pf-t--global--icon--size--200: var(--agm-t--icon--size--200, 0.875rem);
+  --pf-t--global--icon--size--250: var(--agm-t--icon--size--300, 1rem);
+  --pf-t--global--icon--size--300: var(--agm-t--icon--size--500, 1.5rem);
 
   // PF 6.5 switched link underlines to dashed; keep them solid and matching text.
   --pf-t--global--text-decoration--link--style--default: var(

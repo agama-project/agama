@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Thu Aug 13 10:46:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not wait in the selection page after selecting a product
+  (related to bsc#1275030, gh#agama-project/agama#3820).
+- Fix an sporadic issue with "software" and "storage" skeletons
+  not disappearing (bsc#1275027, gh#agama-project/agama#3819).
+
+-------------------------------------------------------------------
+Fri Aug  7 15:07:47 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Fix typography and layout details that a product skin makes
+  visible: the breadcrumb trail, plain headings, the summary icon
+  and the header logo (gh#agama-project/agama#3797).
+- Document how to design, verify and ship a product skin
+  (gh#agama-project/agama#3797).
+
+-------------------------------------------------------------------
 Wed Aug  5 15:16:36 UTC 2026 - José Iván López González <jlopez@suse.com>
 
 - Adapt types to changes in the storage system and proposal schemas
