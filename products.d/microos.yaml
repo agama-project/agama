@@ -156,7 +156,7 @@ software:
     - microos_base
     - microos_base_zypper
     - microos_defaults
-    - microos_hardware
+    - hardware
     - microos_selinux
   optional_patterns: []
   user_patterns:
