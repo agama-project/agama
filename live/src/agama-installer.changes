@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Aug 18 12:58:28 UTC 2026 - Steffen Winterfeldt <snwint@suse.com>
+
+- remove ppc64 hacks from boot config scripts (gh#agama-project/agama#3826)
+
+-------------------------------------------------------------------
 Mon Aug 17 09:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - HCN: do not collect data from functions that log. dracut's
