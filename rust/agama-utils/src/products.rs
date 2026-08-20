@@ -424,9 +424,16 @@ pub struct SoftwareSpec {
     pub optional_packages: Vec<String>,
     #[merge(strategy = merge::option::overwrite_none)]
     pub base_product: Option<String>,
+    #[serde(default)]
+    #[merge(strategy = merge::option::overwrite_none)]
+    pub kernel: Option<String>,
 }
 
 impl SoftwareSpec {
+    pub fn kernel(&self) -> &str {
+        self.kernel.as_deref().unwrap_or("kernel-default")
+    }
+
     // NOTE: perhaps implementing our own iterator would be more efficient.
     pub fn repositories(&self) -> Vec<&RepositorySpec> {
         let Ok(arch) = Arch::current() else {

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 20 07:32:07 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
+
+- Add ability for products to define own kernel flavor
+  (jsc#PED-16833) 
+
+-------------------------------------------------------------------
 Mon Aug 17 09:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
 
 - Do not accept the reserved VLAN identifier 4095, which is

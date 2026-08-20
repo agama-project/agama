@@ -398,7 +398,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         // containers, but for agama usage, it does not make sense to skip kernel
         // If needs arise, we can always add more smarter kernel selection later.
         resolvables.add_or_replace(
-            "kernel-default",
+            software.kernel(),
             ResolvableType::Package,
             ResolvableSelection::AutoSelected {
                 skip_if_missing: false,
@@ -1167,7 +1167,7 @@ mod tests {
     }
 
     #[test]
-    fn test_system_adds_kernel() {
+    fn test_system_adds_default_kernel() {
         let product = build_product_spec("tumbleweed", None);
 
         let state = SoftwareStateBuilder::for_product(&product).build();
@@ -1184,6 +1184,31 @@ mod tests {
             kernel,
             Some((
                 "kernel-default".to_string(),
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_system_adds_custom_kernel() {
+        let mut product = build_product_spec("tumbleweed", None);
+        product.software.kernel = Some("kernel-rt".to_string());
+
+        let state = SoftwareStateBuilder::for_product(&product).build();
+
+        let kernel = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .find(|(name, r#type, _)| name == "kernel-rt" && *r#type == ResolvableType::Package);
+
+        assert_eq!(
+            kernel,
+            Some((
+                "kernel-rt".to_string(),
                 ResolvableType::Package,
                 ResolvableSelection::AutoSelected {
                     skip_if_missing: false
