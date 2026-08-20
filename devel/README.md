@@ -107,7 +107,7 @@ project for submitting.
   GitHub variable. Just to avoid accidentally updating the packages with the old
   code when a commit is added to the old branch.
 
-## Cleanup
+### Cleanup
 
 After deleting a branch in Git (either explicitly or automatically after merging a pull request) the
 respective OBS project should be deleted.
@@ -118,7 +118,7 @@ OBS_PROJECTS GitHub Action variable.
 
 To just print the obsolete projects without deleting them run command `branch2obs.sh -o`.
 
-## Implementation details
+### Implementation details
 
 The mapping between the Git branch and the target OBS project is stored in the
 [OBS_PROJECTS](https://github.com/agama-project/agama/settings/variables/actions/OBS_PROJECTS)
@@ -126,3 +126,49 @@ GitHub variable. It is in JSON format and maps the Git branch name to the OBS pr
 
 The GitHub submission actions check the mapping value for the current branch/tag and if no mapping
 is found the submission is skipped.
+
+## Creating a maintenance branch
+
+The [create_maintenance_branch.sh](./create_maintenance_branch.sh) script automates the creation of
+a new maintenance branch across Git, OBS, IBS, and Weblate.
+
+### Usage
+
+To run the script, pass the desired branch name (which should end with the version suffix, e.g.,
+`SLE-16.1`):
+
+```bash
+WEBLATE_API_KEY="your_weblate_api_key" ./create_maintenance_branch.sh <branch_name>
+```
+
+### Requirements
+
+- **Command-line tools**: `git`, `gh`, `jq`, `osc`, and `curl` must be installed.
+- **Authentication**: 
+  - `gh` must be authenticated against your GitHub account.
+  - `osc` must be configured for both OBS (`build.opensuse.org`) and IBS (`api.suse.de`).
+- **Weblate API key**: You must provide a valid API token via the `WEBLATE_API_KEY` environment
+  variable. You can retrieve this token from [your Weblate
+  profile](https://l10n.opensuse.org/accounts/profile/#api).
+- **Context**: The script must be run inside the original `agama-project/agama` repository checkout
+  it does not work in forks.
+
+### Automated Steps
+
+1. **Git Branching**: Fetches `master`, creates the local maintenance branch, and pushes it to
+   GitHub
+2. **OBS Project Setup**: Creates the `systemsmanagement:Agama:Maintenance:<branch_name>` project in
+   OBS and copies the packages from `systemsmanagement:Agama:Devel` to have the initial content.
+3. **IBS Project Setup**: Creates the `Devel:YaST:Agama:Maintenance:<branch_name>` project in IBS
+   and links the packages to their respective OBS counterparts in the
+   `systemsmanagement:Agama:Maintenance:<branch_name>` project.
+4. **GitHub Autosubmission**: Updates the `OBS_PROJECTS` GitHub repository variable to map the new
+   branch to the OBS maintenance project, and triggers the initial package submission workflows
+   (this overwrites the initial packages in OBS with the packages from the new Git branch).
+5. **Translation Workflows**: Copies the existing `sle16` GitHub Action workflows, adjusts their
+   branches, versions, and container references for the new branch, commits them, pushes to a
+   temporary branch, and opens a Pull Request on GitHub.
+6. **Weblate Repository Branch**: Creates the corresponding maintenance branch in the
+   `agama-project/agama-weblate` repository using the GitHub API.
+7. **Weblate Components**: Automatically creates new translation components (`products`, `service`,
+   and `web`) on Weblate based on the configurations of the existing `sle-16` components.
