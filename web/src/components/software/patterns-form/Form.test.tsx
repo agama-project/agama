@@ -88,9 +88,9 @@ describe("SoftwarePatternsSelection", () => {
     });
   });
 
-  it("renders one h3 per category, in order", async () => {
+  it("renders one heading per category, in order", async () => {
     installerRender(<SoftwarePatternsSelection />);
-    const headings = await screen.findAllByRole("heading", { level: 3 });
+    const headings = await screen.findAllByRole("heading", { level: 2 });
     const headingsText = headings.map((node) => node.textContent);
     expect(headingsText[0]).toMatch(/^Graphical Environments/);
     expect(headingsText[1]).toMatch(/^Base Technologies/);
@@ -308,14 +308,14 @@ describe("SoftwarePatternsSelection", () => {
       const searchFilter = await screen.findByRole("textbox", { name: /Filter/ });
       await user.type(searchFilter, "multimedia");
 
-      const headings = screen.getAllByRole("heading", { level: 3 });
+      const headings = screen.getAllByRole("heading", { level: 2 });
       expect(headings).toHaveLength(3);
 
       screen.getByRole("checkbox", { name: /Multimedia/ });
       expect(screen.queryByRole("checkbox", { name: /Office/ })).toBeNull();
 
-      screen.getByRole("heading", { name: /Base Technologies/, level: 3 });
-      screen.getByRole("heading", { name: /Graphical Environments/, level: 3 });
+      screen.getByRole("heading", { name: /Base Technologies/, level: 2 });
+      screen.getByRole("heading", { name: /Graphical Environments/, level: 2 });
 
       const placeholders = screen.getAllByText(/No patterns match the filter/i);
       expect(placeholders).toHaveLength(2);

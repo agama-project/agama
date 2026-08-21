@@ -28,7 +28,8 @@ import {
   EmptyStateBody,
   EmptyStateFooter,
 } from "@patternfly/react-core";
-import { Link, Page } from "~/components/core";
+import { Link } from "~/components/core";
+import Page from "~/components/layout/Page";
 import { useConnections } from "~/hooks/model/proposal/network";
 import { _ } from "~/i18n";
 import { SYSTEM_QUERY_KEY } from "~/hooks/model/system";
@@ -44,7 +45,7 @@ const ConnectionNotFound = ({ id }) => {
 
   return (
     <EmptyState
-      headingLevel="h3"
+      headingLevel="h2"
       titleText={_("Connection not found or lost")}
       icon={() => <Icon name="error" />}
     >

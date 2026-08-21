@@ -422,11 +422,10 @@ const installerRenderHook: typeof renderHook = (hook, options) => {
  *
  * @see #installerRender for using installer providers
  *
- * @note Please, be aware that it's needed to mock the core/Sidebar component
- * when testing a Page with #plainRender helper in order to avoid the test crashing
- * because mounted without provides unless you take care of mocking core/sidebar
- * content. The reason for this is that core/Page is always rendering
- * core/Sidebar as part of the layout.
+ * @note Rendering a page brings its whole shell along, and the header includes
+ * elements that read installer data and navigate, like the localization
+ * selector or the installer options. Render a page with #installerRender, or
+ * mock those parts away.
  */
 const plainRender = (ui, options = {}) => {
   const queryClient = new QueryClient({});

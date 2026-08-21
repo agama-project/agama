@@ -35,7 +35,7 @@ import { group, sort } from "radashi";
 import { sprintf } from "sprintf-js";
 import { Navigate, useNavigate } from "react-router";
 import NestedContent from "~/components/core/NestedContent";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SubtleContent from "~/components/core/SubtleContent";
 import Text from "~/components/core/Text";
 import AutoSelectedLabel from "~/components/software/AutoSelectedLabel";
@@ -429,7 +429,7 @@ function SoftwarePatternsSelection({ scope = "all" }: { scope?: Scope }) {
                             spaceItems={{ default: "spaceItemsSm" }}
                             alignItems={{ default: "alignItemsBaseline" }}
                           >
-                            <Title headingLevel="h3" id={headingId}>
+                            <Title headingLevel="h2" id={headingId}>
                               {groupName}
                             </Title>
                             <CategoryCounter

@@ -33,14 +33,13 @@ import {
   EmptyStateFooter,
   List,
   ListItem,
-  Flex,
-  FlexItem,
   Tab,
   Tabs,
   TabTitleText,
 } from "@patternfly/react-core";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
-import { Page, Link, NestedContent } from "~/components/core/";
+import { Link, NestedContent } from "~/components/core/";
+import Page from "~/components/layout/Page";
 import Icon from "~/components/layout/Icon";
 import MenuButton from "~/components/core/MenuButton";
 import ConfigEditor from "./ConfigEditor";
@@ -76,6 +75,7 @@ function InvalidConfigEmptyState({ issues }: InvalidConfigEmptyStateProps): Reac
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("Invalid storage settings")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -113,6 +113,7 @@ function UnknownConfigEmptyState(): React.ReactNode {
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("Unable to modify the settings")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -146,6 +147,7 @@ function UnavailableDevicesEmptyState(): React.ReactNode {
 
   return (
     <EmptyState
+      headingLevel="h2"
       titleText={_("No devices found")}
       icon={() => <Icon name="error" />}
       status="warning"
@@ -202,33 +204,31 @@ function ModelSection(): React.ReactNode {
 
   return (
     <Page.Section
+      isFullHeight
       title={_("Settings")}
       titleActions={
-        <Flex>
-          <FlexItem grow={{ default: "grow" }} />
-          <MenuButton
-            menuProps={{
-              popperProps: {
-                position: "end",
-              },
-            }}
-            toggleProps={{
-              variant: "plain",
-              className: spacingStyles.p_0,
-            }}
-            items={[
-              <MenuButton.Item
-                key="reset-link"
-                onClick={onReset}
-                description={_("Start from scratch with the default configuration")}
-              >
-                {_("Reset to defaults")}
-              </MenuButton.Item>,
-            ]}
-          >
-            <Icon name="more_horiz" className="agm-three-dots-icon" />
-          </MenuButton>
-        </Flex>
+        <MenuButton
+          menuProps={{
+            popperProps: {
+              position: "end",
+            },
+          }}
+          toggleProps={{
+            variant: "plain",
+            className: spacingStyles.p_0,
+          }}
+          items={[
+            <MenuButton.Item
+              key="reset-link"
+              onClick={onReset}
+              description={_("Start from scratch with the default configuration")}
+            >
+              {_("Reset to defaults")}
+            </MenuButton.Item>,
+          ]}
+        >
+          <Icon name="more_horiz" className="agm-three-dots-icon" />
+        </MenuButton>
       }
       description={_(
         "Changes in these settings will immediately update the 'Result' section below.",
