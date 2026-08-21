@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 08:45+0000\n"
-"PO-Revision-Date: 2026-07-19 15:12+0000\n"
+"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"PO-Revision-Date: 2026-07-26 17:12+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sk/>\n"
@@ -714,7 +714,7 @@ msgstr "Nastaviť režim odpovedania na otázky"
 #: agama-cli/src/questions.rs:61
 msgid ""
 "Prints the list of questions that are waiting for an answer in JSON format"
-msgstr ""
+msgstr "Vypíše zoznam otázok, ktoré čakajú na odpoveď, vo formáte JSON"
 
 #. TRANSLATORS: CLI help for: agama questions ask
 #: agama-cli/src/questions.rs:66
@@ -722,11 +722,13 @@ msgid ""
 "Reads a question definition in JSON from stdin and prints the response when "
 "it is answered"
 msgstr ""
+"Prečíta definíciu otázky v JSON zo stdin a po zodpovedaní otázky vypíše "
+"odpoveď"
 
 #. TRANSLATORS: CLI help for: agama questions answers
 #: agama-cli/src/questions.rs:72
 msgid "Load predefined answers"
-msgstr ""
+msgstr "Načítať preddefinované odpovede"
 
 #. TRANSLATORS: CLI help for: agama questions answers (details)
 #: agama-cli/src/questions.rs:77
@@ -737,17 +739,25 @@ msgid ""
 "Please check Agama documentation for more details and examples: https://"
 "github.com/openSUSE/agama/blob/master/doc/questions."
 msgstr ""
+"Umožňuje vopred nastaviť odpovede na konkrétne otázky, aby sa v "
+"interaktívnom režime preskočili alebo aby sa v automatickom režime zmenila "
+"odpoveď.\n"
+"\n"
+"Ďalšie podrobnosti a príklady nájdete v dokumentácii pre Agama: https://"
+"github.com/openSUSE/agama/blob/master/doc/questions."
 
 #. TRANSLATORS: CLI help for: agama questions answers <PATH>
 #: agama-cli/src/questions.rs:94
 msgid "Path to a file containing the answers in JSON format"
-msgstr ""
+msgstr "Cesta k súboru obsahujúcemu odpovede vo formáte JSON"
 
 #: agama-cli/src/status.rs:77
 msgid ""
 "The installation failed. Use the \"agama logs store\" command to get the "
 "logs to troubleshoot or share with support."
 msgstr ""
+"Inštalácia zlyhala. Použite príkaz \"agama logs store\", aby ste získali "
+"záznamy potrebné na riešenie problémov alebo na zdieľanie s podporou."
 
 #: agama-cli/src/status.rs:80
 msgid "The installation finished successfully."
@@ -759,7 +769,7 @@ msgstr "Prebieha inštalácia."
 
 #: agama-cli/src/status.rs:83
 msgid "The installer is preparing an installation proposal."
-msgstr ""
+msgstr "Inštalátor pripravuje návrh inštalácie."
 
 #: agama-cli/src/status.rs:85
 msgid ""
@@ -772,16 +782,16 @@ msgstr ""
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:184
 msgid "Failed to retrieve the script %s. Do you want to try again?"
-msgstr ""
+msgstr "Nepodarilo sa získavať skript %s. Chcete to skúsiť znova?"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:208
 msgid "Failed to write the file %s. Do you want to try again?"
-msgstr ""
+msgstr "Nepodarilo sa zapísať súbor %s. Chcete to skúsiť znova?"
 
 #: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
-msgstr ""
+msgstr "Pripraviť systém"
 
 #: agama-manager/src/actions.rs:79
 msgid "Install software"
@@ -793,11 +803,11 @@ msgstr "Nakonfigurovať systém"
 
 #: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
-msgstr ""
+msgstr "Príprava úložiska"
 
 #: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
-msgstr ""
+msgstr "Spustenie skriptov po rozdelení disku"
 
 #: agama-manager/src/actions.rs:137
 msgid "Installing software"
@@ -817,15 +827,15 @@ msgstr "Dokončiť inštaláciu"
 
 #: agama-manager/src/actions.rs:346
 msgid "Storing questions settings"
-msgstr ""
+msgstr "Ukladanie nastavení otázok"
 
 #: agama-manager/src/actions.rs:357
 msgid "Importing user files and scripts"
-msgstr ""
+msgstr "Importovanie používateľských súborov a skriptov"
 
 #: agama-manager/src/actions.rs:371
 msgid "Running user pre-installation scripts"
-msgstr ""
+msgstr "Spustenie predinštalačných skriptov používateľa"
 
 #: agama-manager/src/actions.rs:386
 msgid "Storing security settings"
@@ -968,65 +978,65 @@ msgstr ""
 msgid "Skip"
 msgstr "Preskočiť"
 
-#: agama-software/src/service.rs:303
+#: agama-software/src/service.rs:304
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "Kalkulácia softvérového návrhu"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
 msgstr ""
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
 msgstr ""
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
 msgstr ""
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1031
 msgid "Failed to register the system"
 msgstr ""
 

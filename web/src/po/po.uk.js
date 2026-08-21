@@ -264,6 +264,9 @@ export default {
   "Actions": [
     "Дії"
   ],
+  "Actions for %s": [
+    "Дії для %s"
+  ],
   "Actions for %s at portal %s": [
     "Дії для %s на порталі %s"
   ],
@@ -1675,6 +1678,9 @@ export default {
   ],
   "Loading data...": [
     "Завантаження даних..."
+  ],
+  "Loading the installation repositories...": [
+    "Завантаження інсталяційних репозиторіїв..."
   ],
   "Localization": [
     "Локалізація"
@@ -3101,6 +3107,9 @@ export default {
   "Transient": [
     "Перехідний"
   ],
+  "Try again": [
+    "Спробуйте ще раз"
+  ],
   "Try to activate again": [
     "Спробуйте активувати ще раз"
   ],
@@ -3426,9 +3435,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Ви підключитеся до публічної мережі без шифрування. Дані, передані через неї можуть бути незахищеними."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] увімкнений"

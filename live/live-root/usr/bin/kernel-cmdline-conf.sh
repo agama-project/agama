@@ -32,6 +32,11 @@ write_kernel_args() {
     rd.peerdns=* | rd.neednet=* | vlan=* | bond=* | team=* | bridge=* | ifname=*)
       _found=1
       ;;
+    # remove the HCN (Hybrid Cloud Network) options, they are only meaningful
+    # for the installation media, see the 99hcn dracut module
+    rd.hcn | rd.hcn=* | rd.hcn.*)
+      _found=1
+      ;;
     esac
 
     if [ -z "$_found" ]; then

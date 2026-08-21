@@ -25,7 +25,7 @@ import { installerRenderHook, createCallbackMock } from "~/test-utils";
 
 const [mockOnEvent, eventCallbacks] = createCallbackMock();
 
-jest.mock("~/context/installer", () => ({
+jest.mock("~/hooks/use-installer-client", () => ({
   useInstallerClient: () => ({ onEvent: mockOnEvent }),
 }));
 

@@ -208,11 +208,12 @@ impl Service {
         Ok(())
     }
 
-    async fn update_system(&mut self) -> Result<(), Error> {
-        // TODO: add system information (repositories, patterns, etc.).
-        self.events.send(Event::SystemChanged {
-            scope: Scope::Software,
-        })?;
+    async fn apply_config(&mut self) -> Result<(), Error> {
+        // calculate the wanted state
+        self.calculate_wanted_state().await?;
+
+        // and then update the proposal (in a separate task).
+        self.update_proposal().await?;
 
         Ok(())
     }
@@ -437,13 +438,7 @@ impl MessageHandler<message::SetConfig<Config>> for Service {
             scope: Scope::Software,
         })?;
 
-        // calculate the wanted state
-        self.calculate_wanted_state().await?;
-
-        // and then update the proposal (in a separate task).
-        self.update_proposal().await?;
-
-        Ok(())
+        self.apply_config().await
     }
 }
 
@@ -456,11 +451,9 @@ impl MessageHandler<message::GetProposal> for Service {
 }
 
 #[async_trait]
-impl MessageHandler<message::Refresh> for Service {
-    async fn handle(&mut self, _message: message::Refresh) -> Result<(), Error> {
-        self.model.lock().await.refresh().await?;
-        self.update_system().await?;
-        Ok(())
+impl MessageHandler<message::Probe> for Service {
+    async fn handle(&mut self, _message: message::Probe) -> Result<(), Error> {
+        self.apply_config().await
     }
 }
 
@@ -522,6 +515,12 @@ impl MessageHandler<message::IsPatternSelected> for Service {
 const LIVE_REPO_DIR: &str = "run/initramfs/live/install";
 const DUD_REPO_DIR: &str = "var/lib/agama/dud/repo";
 
+/// Alias used for the predefined repository pointing to the local (off-line) installation media.
+pub(crate) const INSTALLATION_REPO_ALIAS: &str = "Installation";
+
+/// Alias of the repository holding the Driver Update Disk (DUD) packages.
+pub(crate) const DUD_REPO_ALIAS: &str = "AgamaDriverUpdate";
+
 /// Returns the local repositories that will be used during installation.
 ///
 /// By now it considers:
@@ -533,7 +532,7 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     let mut repos = vec![];
 
     let live_repo_dir = base.join(LIVE_REPO_DIR);
-    if let Some(mut install) = find_repository(&live_repo_dir, "Installation") {
+    if let Some(mut install) = find_repository(&live_repo_dir, INSTALLATION_REPO_ALIAS) {
         let mount_point = live_repo_dir.display().to_string();
         if let Some(normalized_url) = normalize_repository_url(&mount_point, "/install") {
             install.url = normalized_url;
@@ -542,7 +541,7 @@ fn find_mandatory_repositories<P: Into<PathBuf>>(root: P) -> Vec<Repository> {
     }
 
     let dud_repo_dir = base.join(DUD_REPO_DIR);
-    if let Some(dud) = find_repository(&dud_repo_dir, "AgamaDriverUpdate") {
+    if let Some(dud) = find_repository(&dud_repo_dir, DUD_REPO_ALIAS) {
         repos.push(dud)
     }
 

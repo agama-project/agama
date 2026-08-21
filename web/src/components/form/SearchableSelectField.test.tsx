@@ -126,12 +126,6 @@ function RequiredForm() {
 
 const combobox = () => screen.getByRole("combobox", { name: "Language" });
 
-beforeAll(() => {
-  // jsdom does not implement scrollIntoView; the field calls it when opening.
-  // https://github.com/jsdom/jsdom/issues/1695
-  window.HTMLElement.prototype.scrollIntoView = jest.fn();
-});
-
 describe("SearchableSelectField", () => {
   it("renders an accessible combobox labelled by the field label", () => {
     installerRender(<TestForm />);

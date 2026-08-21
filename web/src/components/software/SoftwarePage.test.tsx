@@ -282,5 +282,43 @@ describe("SoftwarePage", () => {
       installerRender(<SoftwarePage />);
       screen.getByText("Dependency conflict detected");
     });
+
+    it("does not offer to reload for issues a reload cannot fix", () => {
+      mockUseIssues.mockReturnValue([
+        {
+          scope: "software",
+          class: "dependency_issue",
+          description: "Dependency conflict detected",
+        },
+      ]);
+
+      installerRender(<SoftwarePage />);
+      expect(screen.queryByRole("button", { name: /Try again/ })).toBeNull();
+      expect(screen.queryByRole("link", { name: "Go to network settings" })).toBeNull();
+    });
+
+    describe("when the repositories could not be read", () => {
+      beforeEach(() => {
+        mockUseIssues.mockReturnValue([
+          {
+            scope: "software",
+            class: "software.load_source",
+            description: "Could not read the repositories",
+          },
+        ]);
+      });
+
+      it("reports the issue", () => {
+        installerRender(<SoftwarePage />);
+        screen.getByText("Could not read the repositories");
+      });
+
+      it("offers to read them again and to review the network settings", () => {
+        installerRender(<SoftwarePage />);
+        screen.getByRole("button", { name: /Try again/ });
+        const link = screen.getByRole("link", { name: "Go to network settings" });
+        expect(link).toHaveAttribute("href", "/network");
+      });
+    });
   });
 });

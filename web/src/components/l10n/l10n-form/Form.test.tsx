@@ -70,11 +70,6 @@ const PROPOSAL = {
 const combobox = (name: string) => screen.getByRole("combobox", { name });
 const accept = () => screen.getByRole("button", { name: "Accept" });
 
-beforeAll(() => {
-  // jsdom does not implement scrollIntoView; the field calls it when opening.
-  window.HTMLElement.prototype.scrollIntoView = jest.fn();
-});
-
 beforeEach(() => {
   mockSystem.mockReturnValue(SYSTEM);
   mockProposal.mockReturnValue(PROPOSAL);

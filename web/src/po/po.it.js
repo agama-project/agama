@@ -249,6 +249,9 @@ export default {
   "Actions": [
     "Azioni"
   ],
+  "Actions for %s": [
+    "Azioni per %s"
+  ],
   "Actions for %s at portal %s": [
     "Azioni per %s nel portale %s"
   ],
@@ -354,6 +357,9 @@ export default {
   ],
   "Allow growing": [
     "Consenti crescita"
+  ],
+  "Allow shrinking": [
+    "Consenti riduzione"
   ],
   "Already using all available devices": [
     "I dispositivi disponibili sono già interamente utilizzati"
@@ -1026,6 +1032,9 @@ export default {
   "Do not format %s and keep data": [
     "Non formattare %s e mantieni i dati"
   ],
+  "Do not modify": [
+    "Non modificare"
+  ],
   "Do not register": [
     "Non registrare"
   ],
@@ -1159,7 +1168,7 @@ export default {
     "Invio o Tab per aggiungere, Backspace o Canc per rimuovere, tasti di direzione per spostarsi tra le voci, Esc per uscire"
   ],
   "Ethernet": [
-    ""
+    "Ethernet"
   ],
   "ExFAT": [
     "ExFAT"
@@ -1645,6 +1654,9 @@ export default {
   "Loading data...": [
     "Caricamento dati..."
   ],
+  "Loading the installation repositories...": [
+    "Caricamento in corso dei repository di installazione..."
+  ],
   "Localization": [
     "Localizzazione"
   ],
@@ -1695,6 +1707,9 @@ export default {
   ],
   "Login form": [
     "Modulo di login"
+  ],
+  "Loopback": [
+    "Loopback"
   ],
   "MAC address": [
     "Indirizzo MAC"
@@ -3052,6 +3067,9 @@ export default {
   "Transient": [
     "Temporaneo"
   ],
+  "Try again": [
+    "Riprova"
+  ],
   "Try to activate again": [
     "Riprova ad attivare"
   ],
@@ -3376,9 +3394,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "L'utente si connetterà a una rete pubblica senza cifratura. I dati potrebbero non essere al sicuro."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[BLOC MAIUSC] attivo"

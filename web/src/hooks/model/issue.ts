@@ -23,11 +23,13 @@
 import React, { useCallback } from "react";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getIssues } from "~/api";
-import { useInstallerClient } from "~/context/installer";
+import { useInstallerClient } from "~/hooks/use-installer-client";
 import type { Issue, Scope } from "~/model/issue";
 
+const ISSUES_QUERY_KEY = "issues" as const;
+
 const issuesQuery = {
-  queryKey: ["issues"],
+  queryKey: [ISSUES_QUERY_KEY],
   queryFn: getIssues,
   /* FIXME: disable refetch. */
   refetchOnMount: true,
@@ -53,10 +55,10 @@ const useIssuesChanges = () => {
 
     return client.onEvent((event) => {
       if (event.type === "IssuesChanged") {
-        queryClient.invalidateQueries({ queryKey: ["issues"] });
+        queryClient.invalidateQueries({ queryKey: [ISSUES_QUERY_KEY] });
       }
     });
   }, [client, queryClient]);
 };
 
-export { issuesQuery, useIssues, useIssuesChanges };
+export { ISSUES_QUERY_KEY, issuesQuery, useIssues, useIssuesChanges };
