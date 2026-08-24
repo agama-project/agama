@@ -1,33 +1,39 @@
-# Creating a product appearance
+# Creating a product or brand appearance
 
-The Agama web UI can be restyled for a product without touching application
-code: colors, logo, and a handful of other roles are set in a single per-product
-file, loaded at runtime after Agama's own styles.
+The Agama web UI can be restyled without touching application code: colors,
+logo, and a handful of other roles are set in a single CSS file, loaded after
+Agama's own styles. The same roles and the same file format restyle a single
+product or a whole medium; see [The two kinds of
+appearance](#the-two-kinds-of-appearance).
 
-Two things meet in that file, and this document keeps them apart. The **product
-appearance** is what a product writes: the palette, the logo and a few related
-roles that make the installer read as that product. The **color scheme** is
-light or dark, and it belongs to whoever is installing, who picks it in the
-appearance menu or inherits it from their system, alongside a separate contrast
-setting. A product writes the stylesheet and never picks the scheme, so that
-stylesheet has to say how its colors behave in both.
+Two things meet in that file, and this document keeps them apart. The
+**appearance** is what a product or a brand writes: the palette, the logo and a
+few related roles that make the installer read as that product or that vendor.
+The **color scheme** is light or dark, and it belongs to whoever is installing,
+who picks it in the appearance menu or inherits it from their system, alongside
+a separate contrast setting. The stylesheet never picks the scheme, so it has to
+say how its colors behave in both.
 
 This document is about designing and writing that file.
-[product_theming_packaging.md](product_theming_packaging.md) covers getting it
-onto a medium, which a product ships from its own package: no change to Agama's
-source or style files is involved.
+[theming_packaging.md](theming_packaging.md) covers getting it onto a medium,
+which both kinds ship from their own package: no change to Agama's source or
+style files is involved.
 
 **The short version.** Copy `example.css`, set only the roles the brand needs,
 add a light and a dark logo. Measure every contrast pair the checklist lists, in
 both color schemes, with the script rather than the eye. Then look at the result
 in a running installer, because half of what goes wrong has no number attached.
 If the brand needs something no role covers, propose the role instead of
-reaching past it: that contract is the whole reason a product stylesheet
-survives an Agama upgrade.
+reaching past it: that contract is the whole reason either kind of stylesheet
+survives an Agama upgrade. A brand appearance skips the logo and is otherwise
+written exactly the same way.
 
+- [The two kinds of appearance](#the-two-kinds-of-appearance), for one product
+  or for a whole medium, and how they combine
 - [What a product can change](#what-a-product-can-change) and [what it
   cannot](#what-a-product-cannot-change)
 - [The roles](#the-roles), and [the steps](#steps) in order
+- [Brand appearances](#brand-appearances), the one that covers a whole medium
 - [Contrast checklist](#contrast-checklist), plus [brand colors that cannot be a
   fill](#when-the-brand-color-cannot-be-a-fill) and [elevation in dark
   mode](#elevation-in-dark-mode-and-why-tooltips-differ)
@@ -38,6 +44,62 @@ survives an Agama upgrade.
 - [Optional: starting from an AI draft](#optional-starting-from-an-ai-draft),
   and why [the second round is the real
   one](#the-second-round-is-the-real-one)
+
+## The two kinds of appearance
+
+Both kinds set the same roles, in the same file format. What differs is how far
+they reach:
+
+- A **product appearance** restyles Agama for one product, and applies once that
+  product is selected. It is named after the product id, and it is the only one
+  that can change the logo.
+- A **brand appearance** restyles Agama for a whole medium: whatever product is
+  selected, and before any product is selected at all. It is a single
+  `brand.css`, and it covers two cases a product appearance cannot. A vendor, an
+  OEM or an institution whose medium offers several products would otherwise
+  copy the same file once per product id and keep the copies in sync forever.
+  And the product selection screen, the first screen anyone sees, comes before
+  any product is picked, so no product appearance is loaded there yet.
+
+They are not alternatives: a medium can carry both, and they combine.
+
+### Precedence
+
+Three layers, resolved **role by role**, not file by file:
+
+```
+product appearance  >  brand appearance  >  Agama default
+```
+
+Every role carries its own default in `_semantic.scss`, so a role nobody sets
+keeps Agama's value. A role the brand sets and the product does not is the
+brand's. A role the product sets is the product's, whatever the brand said.
+
+The consequence worth planning for: a product appearance that sets only its
+accent color inherits the brand's surfaces, borders and radii, not Agama's. That
+is usually what a medium wants. When it is not, the product file has to set
+those roles too. A partial file does not replace the file below it; only the
+roles it sets do.
+
+The same resolution happens independently in each color scheme, so a product may
+override the dark palette and inherit the brand's light one.
+
+### Keep the selectors at zero specificity
+
+Precedence works because both files declare their roles at the same specificity,
+which leaves the load order to decide. The examples get this right by wrapping
+the scheme condition in `:where()`:
+
+```css
+:root:where(.pf-v6-theme-dark) {
+  /* ... */
+}
+```
+
+`:where()` contributes no specificity, so the block competes on equal terms with
+a plain `:root`. Writing `:root.pf-v6-theme-dark` instead raises the specificity
+and lets a brand appearance beat a product one, which breaks the order above.
+Copy the selectors from the examples rather than writing your own.
 
 ## What a product can change
 
@@ -128,7 +190,7 @@ Three files in the Agama sources carry the role set:
 
 Read one of the examples before writing your own.
 
-**A product stylesheet sets these roles and nothing else.** Raw PatternFly
+**Either kind of stylesheet sets these roles and nothing else.** Raw PatternFly
 tokens, component-level variables and selectors of your own are out of bounds:
 unsupported, and at risk of breaking silently the next time the mapping
 underneath them moves. The roles exist so that a product never has to know how
@@ -196,11 +258,42 @@ styles instead of starting an arms race with them.
 7. **Look at it in a running installer**, following the manual checks. The
    quickest loop copies the file straight into the served directory of a
    running installer, no rebuild in between; see
-   [product_theming_packaging.md](product_theming_packaging.md).
+   [theming_packaging.md](theming_packaging.md).
 
 None of this needs a build of Agama, or a change to it. If you would rather
 start from a draft than from a blank file, there is a prompt for an AI at the
 end of this document, but everything above is written to be followed by hand.
+
+The same steps write a brand appearance, except for the file name and the logo;
+see below.
+
+## Brand appearances
+
+A medium carries at most one brand appearance, so the file needs no id:
+
+```
+assets/appearance/brand.css
+```
+
+Agama ships none. The file is a slot that is empty by design, linked statically
+from the page rather than loaded once a product is known, which has two
+effects:
+
+- It is in effect **at first paint**, the product selection screen included.
+- It is loaded **before** the product appearance, so where both set the same
+  role, the product still wins. See [Precedence](#precedence).
+
+Writing one is the [Steps](#steps) list with two changes. The name is fixed, so
+there is no product id to look up. And the logo step does not apply: logos
+belong to products, since Agama renders the `icon:` declared in the product
+definition. There is no brand-level logo.
+
+The verification is the same, plus two checks a product appearance has no reason
+to make: the product selection screen with nothing selected, and a product that
+ships its own appearance, to confirm that the two combine as the brand expects.
+
+Shipping one, and trying one on a running installer, are covered in
+[theming_packaging.md](theming_packaging.md).
 
 ## Contrast checklist
 
@@ -361,7 +454,7 @@ designing, but the official ISO ships only the curated set Agama's own defaults
 need, so a typeface of your own has to travel with the product.
 
 Where the font file itself lives, its license, and its size are packaging
-concerns: see [product_theming_packaging.md](product_theming_packaging.md).
+concerns: see [theming_packaging.md](theming_packaging.md).
 
 ## Manual checks
 
@@ -382,10 +475,14 @@ Where the roles actually surface:
 - the skip link, by pressing Tab on a freshly loaded page: it takes the brand
   fill and its text color, and it is the first thing a keyboard user meets.
 
+A brand appearance adds two more: the product selection screen with no product
+selected, and a product that ships its own file next to it, since the two
+combine role by role.
+
 The quickest way to iterate is to write the file straight into the served
 directory of a running installer, described in
-[product_theming_packaging.md](product_theming_packaging.md): the reload picks
-it up, with no rebuild in between.
+[theming_packaging.md](theming_packaging.md): the reload picks it up, with no
+rebuild in between.
 
 ## Extending the role API
 
@@ -426,17 +523,26 @@ by making sure those exist. Fill in the placeholders and paste:
 > are how you find the current role set, and answering from memory instead
 > produces a stylesheet that looks plausible and sets roles that do not exist.
 >
-> Create a product stylesheet for `<PRODUCT_ID>` using this brand: `<paste
-colors, and/or a link to the brand's site or guidelines>`. Take the id from
-> the `id:` field of the matching file in `products.d/`, not from a logo file
-> name: the two often differ. The file is `<id>.css`, and a name that does not
-> match loads nothing and says nothing about why.
+> Create a stylesheet for Agama using this brand: `<paste colors, and/or a link
+to the brand's site or guidelines>`. Scope: `<one of: "a product appearance
+for <PRODUCT_ID>, written as <id>.css, restyling that product only" | "a brand
+appearance, a single brand.css meant to be installed at
+assets/appearance/brand.css on the medium, restyling every product and the
+product selection screen, and which cannot change the logo">`.
+>
+> For a product, take the id from the `id:` field of the matching file in
+> `products.d/`, not from a logo file name: the two often differ. The file is
+> `<id>.css`, and a name that does not match loads nothing and says nothing
+> about why.
 >
 > First read `web/src/assets/products/example.css`, `example-advanced.css`, and
 > the role-index comment at the top of
 > `web/src/assets/styles/tokens/_semantic.scss`, so you know the current
-> `--agm-t--*` role set rather than assuming it. A product file only ever sets
-> these roles; never a raw PatternFly or component-level variable directly.
+> `--agm-t--*` role set rather than assuming it. The file only ever sets these
+> roles; never a raw PatternFly or component-level variable directly. Copy the
+> `:where()` selectors from the examples rather than writing your own: raising
+> their specificity breaks the precedence between a brand and a product
+> appearance.
 >
 > Set only the roles the brand actually needs. Every role left unset keeps
 > Agama's own value, so a file that sets colors, a logo and a font family is
@@ -453,7 +559,7 @@ colors, and/or a link to the brand's site or guidelines>`. Take the id from
 > it sits on, 3:1 for borders, icons, focus indicators and anything else that is
 > not text. That is the bar whether or not you can open the files named here.
 >
-> Read `doc/product_theming.md` for which pairs to check, and compute each one
+> Read `doc/theming.md` for which pairs to check, and compute each one
 > explicitly with `web/scripts/check-contrast.js <foreground> <background>
 [--target=4.5]` (run from the repo root; `--target=3` for the non-text ones),
 > in both light and dark separately, rather than eyeballing. Measure every row
@@ -506,18 +612,9 @@ colors, and/or a link to the brand's site or guidelines>`. Take the id from
 > An icon is not automatically the color of the text it labels. If you change
 > the icon color role, check it against both headings and status icons.
 >
-> For the logo: a light and a dark SVG with a transparent background, named
-> after the product's `icon:` field rather than its id, the dark one with
-> `-dark` before the extension. Read `ProductLogo` and its callers first to find
-> the actual rendered size each usage needs, keep the aspect ratio roughly
-> square so the logo survives all of them, and center the drawing inside the
-> viewBox, since the UI aligns the image box and not the ink. Validate any
-> hand-edited SVG with `xmllint --noout` and a rendered preview at the real
-> consuming size, in both color schemes, before calling it done.
->
 > **If something can't be done with the current `--agm-t--*` role set, don't get
 > creative.** Do not set a raw PatternFly token or component-variable override
-> from the product CSS file, and do not work around the "products only set
+> from the CSS file, and do not work around the "appearances only set
 > `--agm-t--*` roles" contract. Stop and present a plan for extending the shared
 > token API instead: the new role's name, where it gets documented (a role-index
 > comment in `_semantic.scss`) and resolved (a PF global token in
@@ -532,6 +629,18 @@ colors, and/or a link to the brand's site or guidelines>`. Take the id from
 > Finally, list what you could not verify yourself, so it can be checked in the
 > running installer. Be specific: "a tooltip over a busy screen", "the overview
 > at 1024x768", not "please review".
+
+A product appearance also needs a logo, so paste this paragraph too. Skip it for
+a brand appearance, which cannot change the logo.
+
+> For the logo: a light and a dark SVG with a transparent background, named
+> after the product's `icon:` field rather than its id, the dark one with
+> `-dark` before the extension. Read `ProductLogo` and its callers first to find
+> the actual rendered size each usage needs, keep the aspect ratio roughly
+> square so the logo survives all of them, and center the drawing inside the
+> viewBox, since the UI aligns the image box and not the ink. Validate any
+> hand-edited SVG with `xmllint --noout` and a rendered preview at the real
+> consuming size, in both color schemes, before calling it done.
 
 ### The second round is the real one
 
