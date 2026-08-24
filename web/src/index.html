@@ -33,6 +33,16 @@
       })();
     </script>
     <!--
+      Optional brand-level appearance stylesheet, shipped by a branding package
+      and absent from Agama itself. Static so it is already in effect at first
+      paint, including on the product selection screen, where no product is
+      selected yet. Must stay above the product appearance script below: the
+      product link is appended to the head at runtime and therefore always
+      lands after this one, which is what makes a product skin win role by
+      role. A missing/404 stylesheet is harmless (see doc/theming.md).
+    -->
+    <link rel="stylesheet" href="assets/appearance/brand.css" />
+    <!--
       Apply the last known product's appearance stylesheet before first paint,
       to avoid a flash from the stock Agama colors to the product's own
       palette. Runs before React boots, so it reads localStorage directly;
