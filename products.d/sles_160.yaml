@@ -67,6 +67,12 @@ translations:
       per il business in locale, nel cloud e a livello di edge.
     ja: オープンで信頼性が高く、各種の標準にも準拠し、将来性とビジネスの継続性を支援する Linux
       サーバです。長期のサポートが提供されていることから、安全性と順応性に優れ、オンプレミスからクラウド、エッジ環境に至るまで、様々な場所で重要なビジネス処理をこなすことのできる革新性の高いインフラストラクチャです。
+    lo: ທາງເລືອກ Linux Server ທີ່ເປີດກວ້າງ, ເຊື່ອຖືໄດ້, ສອດຄ່ອງກັບມາດຕະຖານ ແລະ
+      ຮອງຮັບອະນາຄົດ ເພື່ອຮັບປະກັນຄວາມຕໍ່ເນື່ອງຂອງທຸລະກິດໃນລະດັບວິສາຫະກິດ.
+      ເປັນລະບົບປະຕິບັດການທີ່ປອດໄພ ແລະ ປັບຕົວໄດ້
+      ເໝາະສຳລັບໂຄງລ່າງພື້ນຖານທີ່ຮອງຮັບໄລຍະຍາວ ແລະ ພ້ອມສຳລັບນະວັດຕະກຳ
+      ເພື່ອລັນວຽກງານທີ່ສຳຄັນຂອງທຸລະກິດ ທັງໃນສະຖານທີ່, ໃນຄລາວ ແລະ ຢູ່ປາຍເຄືອຂ່າຍ
+      (edge).
     nl: Een open, betrouwbare, compliant en toekomstbestendige Linux Server keuze
       die ervoor zorgt voor continuïteit in de enterprise business. Het is een
       veilig en aanpasbaar besturingssysteem met langdurige ondersteuning,

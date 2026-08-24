@@ -70,6 +70,11 @@ translations:
     ja: 高速で小型のディストリビューションで、管理やパッチ適用の自動化のようなコンテナ処理を賄うのに最適な仕組みです。 openSUSE MicroOS
       はトランザクション型の (不可分の) 更新機構が提供されており、 btrfs
       のルートファイルシステムを読み込み専用にすることができます。こちらもローリングリリース型のディストリビューションであるため、常に最新を維持することができます。
+    lo: ລະບົບປະຕິບັດການທີ່ວ່ອງໄວ ແລະ ມີຂະໜາດນ້ອຍ ຖືກອອກແບບມາເພື່ອຮອງຮັບວຽກງານ
+      container ພ້ອມກັບການບໍລິຫານຈັດການ ແລະ ການຕິດຕັ້ງ patch ແບບອັດຕະໂນມັດ.
+      openSUSE MicroOS ໃຫ້ການອັບເດດແບບ transactional (atomic) ຢູ່ເທິງລະບົບໄຟລ໌
+      root btrfs ແບບອ່ານຢ່າງດຽວ (read-only). ໃນຖານະທີ່ເປັນລະບົບແບບ rolling
+      release, ຊອບແວຈຶ່ງມີຄວາມທັນສະໄໝຢູ່ສະເໝີ.
     nb_NO: En rask, liten distribusjon laget for å være vert til container
       arbeidsoppgaver med automatisk administrasjon & lapping. openSUSE MicroOS
       gir transaksjonelle (atomisk) oppdateringer oppå en skrivebeskyttet btrfs
