@@ -61,6 +61,11 @@ translations:
     ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
       Enterprise Server for SAP applications では、 SAP
       プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
+    lo: ລະບົບປະຕິບັດການຊັ້ນນຳສຳລັບແພລັດຟອມ SAP ທີ່ປອດໄພ ແລະ ເຊື່ອຖືໄດ້.
+      ໄດ້ຮັບການຮັບຮອງ ສຳລັບການນຳໃຊ້ SAP, SUSE Linux Enterprise Server
+      ສຳລັບແອັບພລິເຄຊັນ SAP ຊ່ວຍຮອງຮັບ ອະນາຄົດຂອງໂຄງການ SAP,
+      ຊ່ວຍໃຫ້ທຸລະກິດດຳເນີນໄປໄດ້ຢ່າງບໍ່ຂາດສາຍ, ແລະ ຫຼຸດຜ່ອນຄວາມສ່ຽງ
+      ລວມທັງຕົ້ນທຶນໃນການດຳເນີນງານ.
     pl: Wiodący system operacyjny dla bezpiecznej i niezawodnej platformy SAP. „SUSE
       Linux Enterprise Server for SAP Applications”, zatwierdzony do wdrożeń
       SAP, zapewnia długoterminową stabilność projektu SAP, ciągłość działania
