@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-14 04:33+0000\n"
-"PO-Revision-Date: 2026-08-12 03:43+0000\n"
+"PO-Revision-Date: 2026-08-22 15:13+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sk/>\n"
@@ -996,11 +996,11 @@ msgstr "Zlyhalo stiahnutie a inštalácia balíkov. Chcete to skúsiť znova?"
 
 #: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
-msgstr ""
+msgstr "Aktualizovanie zoznamu repozitárov"
 
 #: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
-msgstr ""
+msgstr "Obnovovanie metadát z repozitárov"
 
 #: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
@@ -1008,40 +1008,42 @@ msgstr "Kalkulácia softvérového návrhu"
 
 #: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
-msgstr ""
+msgstr "Registrovanie systému"
 
 #. TRANSLATORS: %s is the alias of the repository.
 #: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
-msgstr ""
+msgstr "Nepodarilo sa odstrániť repozitár %s"
 
 #: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
-msgstr ""
+msgstr "Nepodarilo sa prečítať repozitáre"
 
 #: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
+"Zlyhalo vyhľadanie produktu v repozitároch. Možno bude potrebné "
+"zaregistrovať systém."
 
 #: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
-msgstr ""
+msgstr "Zlyhalo vyhľadanie produktu v repozitároch."
 
 #: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
-msgstr ""
+msgstr "Pri výbere softvéru dochádza ku konfliktom"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
 #: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
-msgstr ""
+msgstr "Nepodarilo sa vybrať %s '%s' pre inštaláciu"
 
 #: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
-msgstr ""
+msgstr "Zlyhala registrácia systému"
 
 #: agama-users/src/service.rs:178
 msgid ""
@@ -1052,7 +1054,7 @@ msgstr ""
 
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
-msgstr ""
+msgstr "Informácie o prvom používateľovi sú neúplné"
 
 #: agama-utils/src/api/problem_details.rs:113
 msgid "Schema validation failed"
@@ -1060,27 +1062,27 @@ msgstr "Overenie schémy zlyhalo"
 
 #: agama-utils/src/api/problem_details.rs:115
 msgid "The provided configuration does not match the required schema"
-msgstr ""
+msgstr "Poskytnutá konfigurácia nezodpovedá požadovanej schéme"
 
 #: agama-utils/src/api/problem_details.rs:124
 msgid "Invalid JSON"
-msgstr ""
+msgstr "Neplatné JSON"
 
 #: agama-utils/src/api/problem_details.rs:132
 msgid "Internal server error"
-msgstr ""
+msgstr "Interná chyba servera"
 
 #: agama-utils/src/api/problem_details.rs:140
 msgid "Unauthorized"
-msgstr ""
+msgstr "Neoprávnené"
 
 #: agama-utils/src/api/problem_details.rs:189
 msgid "Error:"
-msgstr ""
+msgstr "Chyba:"
 
 #: agama-utils/src/api/problem_details.rs:192
 msgid "Details:"
-msgstr ""
+msgstr "Podrobnosti:"
 
 #: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
 msgid "No"
@@ -1092,15 +1094,15 @@ msgstr "Áno"
 
 #: agama-utils/src/resolvable.rs:65
 msgid "package"
-msgstr ""
+msgstr "balík"
 
 #: agama-utils/src/resolvable.rs:66
 msgid "pattern"
-msgstr ""
+msgstr "šablóna"
 
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
-msgstr ""
+msgstr "produkt"
 
 #~ msgid "Waiting for these to be resolved."
 #~ msgstr "Čakanie na vyriešenie týchto nedostatkov."
