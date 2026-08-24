@@ -61,6 +61,11 @@ translations:
     ja: 安全で信頼性のある SAP プラットフォームを構築するためのリーディング OS です。 SAP 承認も取得済みの SUSE Linux
       Enterprise Server for SAP applications では、 SAP
       プロジェクトに将来性をもたらすほか、途切れることのないビジネス環境を提供し、運用で発生しうるリスクやコストを最小限に抑えます。
+    lo: ລະບົບປະຕິບັດການຊັ້ນນຳສຳລັບແພລັດຟອມ SAP ທີ່ປອດໄພ ແລະ ເຊື່ອຖືໄດ້.
+      ໄດ້ຮັບການຮັບຮອງ ສຳລັບການນຳໃຊ້ SAP, SUSE Linux Enterprise Server
+      ສຳລັບແອັບພລິເຄຊັນ SAP ຊ່ວຍຮອງຮັບ ອະນາຄົດຂອງໂຄງການ SAP,
+      ຊ່ວຍໃຫ້ທຸລະກິດດຳເນີນໄປໄດ້ຢ່າງບໍ່ຂາດສາຍ, ແລະ ຫຼຸດຜ່ອນຄວາມສ່ຽງ
+      ລວມທັງຕົ້ນທຶນໃນການດຳເນີນງານ.
     pl: Wiodący system operacyjny dla bezpiecznej i niezawodnej platformy SAP. „SUSE
       Linux Enterprise Server for SAP Applications”, zatwierdzony do wdrożeń
       SAP, zapewnia długoterminową stabilność projektu SAP, ciągłość działania
@@ -105,6 +110,7 @@ translations:
         ja: 標準
         ka: სტანდარტული
         kab: Tizeɣt
+        lo: ມາດຕະຖານ
         nb_NO: Standard
         pl: Standardowy
         pt_BR: Padrão
@@ -129,6 +135,7 @@ translations:
         ja: 標準システム
         ka: სტანდარტული სისტემა
         kab: Anagraw n tizeɣt
+        lo: ລະບົບມາດຕະຖານ
         pl: Standardowy system
         pt_BR: Sistema padrão
         ru: Стандартная система
@@ -152,6 +159,7 @@ translations:
         it: Immutabile
         ja: 不変型
         ka: უცვლადი
+        lo: ປ່ຽນແປງບໍ່ໄດ້ (Immutable)
         nb_NO: Immutable
         pl: Niezmienny
         pt_BR: Imutável
@@ -175,6 +183,7 @@ translations:
         it: Sistema immutabile con aggiornamenti atomici
         ja: 不可分な更新機能を持つ不変型システム
         ka: უცვლელი სისტემა ატომური განახლებებით
+        lo: ລະບົບທີ່ປ່ຽນແປງບໍ່ໄດ້ ພ້ອມກັບການອັບເດດແບບ atomic
         nb_NO: Et uforanderlig system med atomiske oppdateringer
         pl: Niezmienny system z atomowymi aktualizacjami
         pt_BR: Sistema imutável com atualizações atômicas
