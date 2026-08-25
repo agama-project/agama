@@ -2993,7 +2993,7 @@ const PanelTabs = ({
 }: {
   deviceName: string;
   /** The tabs to show, in the order they are read. */
-  tabs: { key: PanelTab; content: React.ReactNode }[];
+  tabs: { key: PanelTab; content: React.ReactNode; count?: number }[];
   active: PanelTab;
   onSelect: (tab: PanelTab) => void;
   /** Lets a link elsewhere in the panel move focus onto the tab it opens. */
@@ -3039,12 +3039,23 @@ const PanelTabs = ({
            adds a landmark inside the panel, which is a region already. */
         tabListAriaLabel={t(`Storage content of ${deviceName}`)}
       >
-        {tabs.map(({ key, content }, at) => (
+        {tabs.map(({ key, content, count }, at) => (
           <Tab
             key={key}
             eventKey={at}
             tabIndex={active === key ? 0 : -1}
-            title={<TabTitleText>{t(SECTION_TITLES[key])}</TabTitleText>}
+            /* The count says how much is behind the tab before it is opened.
+               Only where one rule reads it: how many entries the configuration
+               asks for here, and how many the device holds today. What the
+               result comes to is not counted, since a row there can be a
+               partition nothing asked for. */
+            title={
+              <TabTitleText>
+                {count === undefined
+                  ? t(SECTION_TITLES[key])
+                  : t(`${SECTION_TITLES[key]} (${count})`)}
+              </TabTitleText>
+            }
           >
             {content}
           </Tab>
@@ -3155,6 +3166,12 @@ const PartitionableDetail = ({
     },
   ]);
 
+  /* What the configuration asks for here, which is a partition each for a
+     partitioned device and one for a device formatted as a whole, and what the
+     device holds today. */
+  const plannedCount = device.filesystem ? 1 : layoutEntries(device).length;
+  const currentCount = (systemDevice?.partitions || []).length;
+
   const key = `${collection}:${index}`;
   const result = (
     <DeviceResultSection key={key} deviceName={device.name} explanation={notes?.result} />
@@ -3189,8 +3206,8 @@ const PartitionableDetail = ({
         deviceName={baseName(device.name)}
         tabs={[
           { key: "result", content: result },
-          { key: "planned", content: first },
-          { key: "current", content: second },
+          { key: "planned", content: first, count: plannedCount },
+          { key: "current", content: second, count: currentCount },
         ]}
         active={tab}
         onSelect={setTab}
@@ -3605,11 +3622,18 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
     }
 
     const panels = { result, planned, current };
+    /* The logical volumes the configuration asks for, and the ones the group
+       holds today. The result is not counted: it can hold rows nothing asked
+       for. */
+    const counts: Partial<Record<PanelTab, number>> = {
+      planned: (group.logicalVolumes || []).length,
+      current: existing.length,
+    };
 
     return (
       <PanelTabs
         deviceName={group.vgName}
-        tabs={tabOrder.map((key) => ({ key, content: panels[key] }))}
+        tabs={tabOrder.map((key) => ({ key, content: panels[key], count: counts[key] }))}
         active={tab}
         onSelect={setTab}
         stripRef={tabsRef}
