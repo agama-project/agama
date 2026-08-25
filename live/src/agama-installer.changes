@@ -5,7 +5,7 @@ Tue Aug 25 10:12:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
   freeze during the boot process. In 16.0 it was omitted
   automatically by Kiwi, but that hardcoded omit list has been
   removed and now we need to omit the dracut module explicitly
-  here. (bsc#1274053)
+  here. (bsc#1274053, bsc#1271407)
 
 -------------------------------------------------------------------
 Tue Aug 18 12:58:28 UTC 2026 - Steffen Winterfeldt <snwint@suse.com>
