@@ -36,6 +36,11 @@ jest.mock("~/hooks/model/system/storage", () => ({
   useFlattenDevices: () => mockFlattenDevices(),
 }));
 
+jest.mock("~/hooks/model/storage/config-model", () => ({
+  ...jest.requireActual("~/hooks/model/storage/config-model"),
+  useConfigModel: () => undefined,
+}));
+
 const mockActions = jest.fn();
 
 jest.mock("~/hooks/model/proposal/storage", () => ({

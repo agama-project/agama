@@ -36,6 +36,7 @@ import {
 import { sprintf } from "sprintf-js";
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 import { useStorageUiState } from "~/context/storage-ui-state";
+import { useConfigModel } from "~/hooks/model/storage/config-model";
 
 /**
  * @todo Create a component for rendering a customized skeleton
@@ -115,6 +116,8 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
   const staging = useProposalFlattenDevices();
   const actions = useActions();
   const devicesManager = new DevicesManager(system, staging, actions);
+  const model = useConfigModel();
+  const usedDevices = devicesManager.usedDevices(model?.drives?.map((d) => d.name) || []);
   const handleTabClick = (
     event: React.MouseEvent | React.KeyboardEvent | MouseEvent,
     tabIndex: number,
@@ -151,7 +154,7 @@ export default function ProposalResultSection({ isLoading = false }: ProposalRes
               <div className={textStyles.textColorPlaceholder}>
                 {_("Final structure of the system after installation.")}
               </div>
-              <ProposalResultTable devicesManager={devicesManager} />
+              <ProposalResultTable devicesManager={devicesManager} devices={usedDevices} />
             </Stack>
           </NestedContent>
         </Tab>

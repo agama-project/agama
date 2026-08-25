@@ -4758,10 +4758,12 @@ const EncryptionDetail = () => {
  * length of the list under them.
  */
 const ResultDetail = ({ actions }: { actions: Proposal.Action[] }) => {
+  const config = useConfigModel();
   const system = useFlattenDevices();
   const staging = useStagingDevices();
   const [tab, setTab] = useState("actions");
   const devices = new DevicesManager(system, staging, actions);
+  const usedDevices = devices.usedDevices(config?.drives?.map((drive) => drive.name) || []);
 
   return (
     <Tabs
@@ -4776,7 +4778,7 @@ const ResultDetail = ({ actions }: { actions: Proposal.Action[] }) => {
       </Tab>
       <Tab eventKey="layout" title={<TabTitleText>{t("Final layout")}</TabTitleText>}>
         <div className="agm-plan-section-body">
-          <ProposalResultTable devicesManager={devices} />
+          <ProposalResultTable devicesManager={devices} devices={usedDevices} />
         </div>
       </Tab>
     </Tabs>

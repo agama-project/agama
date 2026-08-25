@@ -303,11 +303,6 @@ const actions: Proposal.Action[] = [
   },
 ];
 
-jest.mock("~/hooks/model/storage/config-model", () => ({
-  ...jest.requireActual("~/hooks/model/storage/config-model"),
-  useConfigModel: () => {},
-}));
-
 type Device = System.Device | Proposal.Device;
 
 function flatDevices(devices: Device[]): Device[] {
@@ -322,7 +317,12 @@ describe("ProposalResultTable", () => {
       flatDevices(proposalDevices),
       actions,
     );
-    render(<ProposalResultTable devicesManager={devicesManager} />);
+    render(
+      <ProposalResultTable
+        devicesManager={devicesManager}
+        devices={devicesManager.usedDevices()}
+      />,
+    );
     const treegrid = screen.getByRole("treegrid");
     /**
      * Expected rows for full-result-example

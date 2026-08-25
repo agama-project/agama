@@ -35,7 +35,6 @@ import { _ } from "~/i18n";
 import { sprintf } from "sprintf-js";
 import { deviceChildren, deviceSize } from "~/components/storage/utils";
 import { TreeTableColumn } from "~/components/core/TreeTable";
-import { useConfigModel } from "~/hooks/model/storage/config-model";
 import type { Storage as Proposal } from "~/model/proposal";
 
 type TableItem = Proposal.Device | Proposal.UnusedSlot;
@@ -140,16 +139,19 @@ const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesM
 
 type ProposalResultTableProps = {
   devicesManager: DevicesManager;
+  /** Devices to render, each with its own children. */
+  devices: Proposal.Device[];
 };
 
 /**
- * Renders the proposal result.
+ * Renders the final layout of the given devices.
+ *
+ * The devices come from the caller so that the same table can show the whole
+ * machine or a single device.
+ *
  * @component
  */
-export default function ProposalResultTable({ devicesManager }: ProposalResultTableProps) {
-  const model = useConfigModel();
-  const devices = devicesManager.usedDevices(model?.drives?.map((d) => d.name) || []);
-
+export default function ProposalResultTable({ devicesManager, devices }: ProposalResultTableProps) {
   return (
     <TreeTable
       columns={columns(devicesManager)}
