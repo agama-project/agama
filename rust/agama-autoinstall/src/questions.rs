@@ -20,7 +20,10 @@
 
 //! This module offers a mechanism to ask questions to users.
 
-use agama_lib::{http::BaseHTTPClient, questions::http_client::HTTPClient as QuestionsHTTPClient};
+use agama_lib::{
+    http::BaseHTTPClient, profile::ConversionProblem,
+    questions::http_client::HTTPClient as QuestionsHTTPClient,
+};
 use agama_utils::api::question::QuestionSpec;
 
 pub struct UserQuestions {
@@ -59,5 +62,48 @@ impl UserQuestions {
         } else {
             Ok(Some(answer.value.unwrap_or(url.to_string())))
         }
+    }
+
+    /// Asks the user whether to continue despite AutoYaST conversion problems.
+    ///
+    /// Returns `true` if the user chose to continue.
+    pub async fn ask_autoyast_problems(
+        &self,
+        problems: &[ConversionProblem],
+    ) -> anyhow::Result<bool> {
+        let keys: Vec<&str> = problems.iter().map(|p| p.key.as_str()).collect();
+        let text = format!(
+            "{} {}.",
+            gettextrs::gettext("Found unsupported elements in the AutoYaST profile:"),
+            keys.join(", ")
+        );
+
+        let unsupported: Vec<&str> = problems
+            .iter()
+            .filter(|p| p.support == "no")
+            .map(|p| p.key.as_str())
+            .collect();
+        let planned: Vec<&str> = problems
+            .iter()
+            .filter(|p| p.support == "planned")
+            .map(|p| p.key.as_str())
+            .collect();
+
+        let localized_continue = gettextrs::gettext("Continue");
+        let localized_abort = gettextrs::gettext("Abort");
+        let question = QuestionSpec::new(&text, "autoyast.unsupported")
+            .with_actions(&[
+                ("Continue", localized_continue.as_str()),
+                ("Abort", localized_abort.as_str()),
+            ])
+            .with_default_action("Continue")
+            .with_data(&[
+                ("planned", planned.join(",").as_str()),
+                ("unsupported", unsupported.join(",").as_str()),
+            ]);
+
+        let question = self.questions.create_question(&question).await?;
+        let answer = self.questions.get_answer(question.id).await?;
+        Ok(answer.action == "Continue")
     }
 }

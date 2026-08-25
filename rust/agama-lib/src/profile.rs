@@ -71,6 +71,11 @@ pub struct AutoyastConversionResult {
     pub problems: Vec<ConversionProblem>,
 }
 
+/// Whether the given path looks like an AutoYaST profile source (XML, ERB, or a directory).
+pub fn is_autoyast_path(path: &str) -> bool {
+    path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
+}
+
 /// Downloads and converts autoyast profile.
 pub struct AutoyastProfileImporter {
     pub content: String,
@@ -79,8 +84,7 @@ pub struct AutoyastProfileImporter {
 
 impl AutoyastProfileImporter {
     pub async fn read(url: &Url) -> Result<Self, AutoyastError> {
-        let path = url.path();
-        if !path.ends_with(".xml") && !path.ends_with(".erb") && !path.ends_with('/') {
+        if !is_autoyast_path(url.path()) {
             return Err(AutoyastError::UnsupportedFormat(url.clone()));
         }
 

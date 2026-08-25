@@ -298,7 +298,7 @@ fn is_autoyast(url_or_path: &CliInput) -> bool {
         }
     };
 
-    path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
+    agama_lib::profile::is_autoyast_path(&path)
 }
 
 async fn generate(

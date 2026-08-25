@@ -20,22 +20,48 @@
 
 use std::{io::Write, process::Stdio};
 
+use agama_lib::{
+    http::BaseHTTPClient,
+    profile::{is_autoyast_path, AutoyastConversionResult, ProfileHTTPClient},
+};
 use anyhow::anyhow;
+use fluent_uri::Uri;
 
 /// It loads the an Agama configuration.
 ///
 /// This struct is responsible for reading the configuration from a given URL.
 ///
-/// It relies on Agama's command-line to generate and load the new
-/// configuration. In the future, it could rely directly on Agama libraries
-/// instead of the command-line.
+/// For AutoYaST sources, it talks to Agama's HTTP API directly so that any
+/// conversion problem can be surfaced to the caller. For everything else, it
+/// relies on Agama's command-line to generate and load the new configuration.
 pub struct ConfigLoader {
+    http: BaseHTTPClient,
     insecure: bool,
 }
 
 impl ConfigLoader {
-    pub fn new(insecure: bool) -> Self {
-        Self { insecure }
+    pub fn new(http: BaseHTTPClient, insecure: bool) -> Self {
+        Self { http, insecure }
+    }
+
+    /// Whether the given URL looks like an AutoYaST profile source.
+    pub fn is_autoyast(&self, url: &str) -> bool {
+        let path = Uri::parse(url)
+            .map(|u| u.path().to_string())
+            .unwrap_or_default();
+        is_autoyast_path(&path)
+    }
+
+    /// Fetches and converts an AutoYaST profile, without loading it.
+    ///
+    /// The caller is responsible for deciding what to do with the conversion
+    /// problems (if any) before calling [Self::load_json] with the result.
+    pub async fn fetch_autoyast(&self, url: &str) -> anyhow::Result<AutoyastConversionResult> {
+        let uri = Uri::parse(url.to_string()).map_err(|(e, _)| e)?;
+        let result = ProfileHTTPClient::new(self.http.clone())
+            .from_autoyast(&uri)
+            .await?;
+        Ok(result)
     }
 
     /// Loads the configuration from the given URL.
@@ -56,6 +82,15 @@ impl ConfigLoader {
             return Err(anyhow!("Could not generate the configuration: {}", message));
         }
 
+        self.load_json_bytes(&generate_cmd.stdout)
+    }
+
+    /// Loads an already fetched JSON configuration (e.g., from [Self::fetch_autoyast]).
+    pub fn load_json(&self, json: &str) -> anyhow::Result<()> {
+        self.load_json_bytes(json.as_bytes())
+    }
+
+    fn load_json_bytes(&self, json: &[u8]) -> anyhow::Result<()> {
         let mut load_args = vec!["config", "load"];
         if self.insecure {
             load_args.insert(0, "--insecure");
@@ -72,7 +107,7 @@ impl ConfigLoader {
             .stdin
             .take()
             .ok_or(anyhow!("Could not write to \"config load\" stdin"))?;
-        stdin.write_all(&generate_cmd.stdout)?;
+        stdin.write_all(json)?;
         drop(stdin);
 
         let config_cmd = child.wait_with_output()?;

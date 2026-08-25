@@ -45,6 +45,7 @@ const PREDEFINED_LOCATIONS: [&str; 9] = [
 ///
 /// Check the [Self::load] description for further information.
 pub struct ConfigAutoLoader {
+    http: BaseHTTPClient,
     questions: UserQuestions,
     insecure: bool,
 }
@@ -56,7 +57,8 @@ impl ConfigAutoLoader {
     /// * `insecure`: whether to skip SSL cert checks.
     pub fn new(http: BaseHTTPClient, insecure: bool) -> anyhow::Result<Self> {
         Ok(Self {
-            questions: UserQuestions::new(http),
+            questions: UserQuestions::new(http.clone()),
+            http,
             insecure,
         })
     }
@@ -70,7 +72,7 @@ impl ConfigAutoLoader {
     ///
     /// See [Self::load] for further information.
     pub async fn load(&self, urls: &[String]) -> anyhow::Result<()> {
-        let loader = ConfigLoader::new(self.insecure);
+        let loader = ConfigLoader::new(self.http.clone(), self.insecure);
         if urls.is_empty() {
             self.load_predefined_config(loader).await
         } else {
@@ -83,7 +85,7 @@ impl ConfigAutoLoader {
         for url_ref in urls {
             let mut url = url_ref.to_string();
             tracing::info!("Loading configuration from {url}");
-            while let Err(error) = loader.load(&url).await {
+            while let Err(error) = self.load_one(&loader, &url).await {
                 tracing::error!("Could not load configuration from {url}: {error}");
                 if let Some(new_url) = self.should_retry(&url, &error.to_string()).await? {
                     url = new_url;
@@ -94,6 +96,31 @@ impl ConfigAutoLoader {
             tracing::info!("Configuration loaded from {url}");
         }
         Ok(())
+    }
+
+    /// Loads a single, user-specified configuration URL.
+    ///
+    /// AutoYaST sources are fetched directly so that, if the conversion found
+    /// any unsupported elements, the user can be asked whether to continue.
+    async fn load_one(&self, loader: &ConfigLoader, url: &str) -> anyhow::Result<()> {
+        if !loader.is_autoyast(url) {
+            return loader.load(url).await;
+        }
+
+        let result = loader.fetch_autoyast(url).await?;
+        if !result.problems.is_empty()
+            && !self
+                .questions
+                .ask_autoyast_problems(&result.problems)
+                .await?
+        {
+            return Err(anyhow!(
+                "Aborted because of AutoYaST conversion problems in {url}"
+            ));
+        }
+
+        let profile_json = serde_json::to_string(&result.profile)?;
+        loader.load_json(&profile_json)
     }
 
     /// Loads configuration files from pre-defined locations.
