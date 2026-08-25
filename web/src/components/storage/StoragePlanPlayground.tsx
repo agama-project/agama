@@ -210,8 +210,6 @@ type Variants = {
   explanations: Explanations;
   settings: SettingsPlacement;
   bootHome: BootHome;
-  /** Whether a boot partition with no mount path can be asked for explicitly. */
-  bootTakeover: boolean;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -237,11 +235,6 @@ const DEFAULT_VARIANTS: Variants = {
      boot scope is what this round is for, so the page opens on it and the flip
      goes back to the per device setting. */
   bootHome: "entry",
-  /* Off, and it stays off until the backend changes. Asking for a partition
-     with no mount path makes the whole configuration unsupported by the config
-     model, so the backend stops reporting a model at all and the page has
-     nothing left to read. The switch reproduces that on demand. */
-  bootTakeover: false,
 };
 
 type PlanApi = {
@@ -264,7 +257,6 @@ type PlanApi = {
   explanations: (mode: Explanations) => void;
   settings: (mode: SettingsPlacement) => void;
   boot: (home: BootHome) => void;
-  bootTakeover: (on: boolean) => void;
   bootDebug: () => void;
 };
 
@@ -618,170 +610,6 @@ const BOOTLOADER_LABELS: Record<Bootloader.BootloaderType, string> = {
 };
 
 /**
- * One partition the boot decision costs, wherever it lands.
- *
- * Gathered across every device in the proposal rather than per device, because
- * the panel showing them is about the decision and not about a disk.
- */
-type BootPartition = {
-  key: string;
-  deviceName: string;
-  /** The device as the configuration names it, which is not how it is shown. */
-  devicePath: string;
-  name: string;
-  /** What the backend calls it, which is where the partition id reaches us. */
-  description?: string;
-  size?: number;
-  isNew: boolean;
-  why: string;
-  /** Where the configuration can ask for it: a mount path, or a partition id. */
-  mountPath?: string;
-  id?: ConfigModel.PartitionId;
-  filesystemType?: ConfigModel.FilesystemType;
-  /** Whether the configuration already asks for it, rather than the solver. */
-  isExplicit: boolean;
-};
-
-/*
- * Which partition id the backend is describing.
- *
- * The proposal carries no id of its own, and the description is the partition
- * id in words for a partition with nothing mounted on it. Matching on those
- * words is what lets the configuration ask for the same partition afterwards.
- */
-const partitionIdOf = (description?: string): ConfigModel.PartitionId | undefined => {
-  if (!description) return undefined;
-  if (/efi/i.test(description)) return "esp";
-  if (/prep/i.test(description)) return "prep";
-  if (/bios boot/i.test(description)) return "bios_boot";
-  return undefined;
-};
-
-/** Whether the configuration already asks for this partition on this device. */
-const isExplicitBootPartition = (
-  config: ConfigModel.Config,
-  deviceName: string,
-  mountPath?: string,
-  id?: ConfigModel.PartitionId,
-): boolean => {
-  const drive = (config.drives || []).find((entry) => baseName(entry.name) === deviceName);
-  if (!drive) return false;
-
-  return (drive.partitions || []).some((partition) => {
-    if (mountPath) return partition.mountPath === mountPath;
-    return Boolean(id) && partition.id === id;
-  });
-};
-
-/*
- * Why a partition is part of booting, worked out here.
- *
- * The proposal reports no reason and no mark saying the solver added a device
- * for booting, so this reads an EFI flag, a mount path and the absence of a
- * file system and describes what it can. Anything it does not recognise gets
- * the general sentence rather than a guess about firmware nothing here can see.
- * Asked of the backend team in the boot questions note.
- */
-const bootReason = (partition: Storage.Device): string => {
-  const description = partition.description || "";
-
-  /* What the partition is decides what it is for, and the backend already says
-     what it is. Reading the same partition two ways depending on whether the
-     solver just created it left two rows describing the same kind of partition
-     differently. */
-  if (partition.partition?.efi || /efi/i.test(description))
-    return "The firmware reads the boot loader from it.";
-  if (/bios boot/i.test(description))
-    return "Where the boot loader goes on a disk started in legacy mode.";
-  if (/prep/i.test(description)) return "Where this platform's firmware reads the boot loader.";
-
-  const path = partition.filesystem?.mountPath;
-  if (path === "/boot") return "Holds the kernel and the files read while starting.";
-  if (path === "/boot/zipl") return "Where this platform expects its boot loader.";
-
-  return "Part of how this machine starts.";
-};
-
-/**
- * Every partition the boot decision costs, read from the proposal.
- *
- * Nothing in the configuration asks for these, so neither content tab shows
- * them and the size columns are short by exactly this much. Comparing the
- * proposal against the system is what says which are new and which the device
- * already had.
- */
-const useBootPlan = (): BootPartition[] => {
-  const config = useConfigModel();
-  const staging = useStagingTree();
-  const systemDevices = useFlattenDevices();
-  const known = new Set(systemDevices.map((device) => device.sid));
-
-  return staging.flatMap((device) =>
-    (device.partitions || [])
-      .map((partition) => ({ partition, isNew: !known.has(partition.sid) }))
-      .filter(
-        ({ partition, isNew }) =>
-          isBootPartition(partition) ||
-          /* A partition the configuration never asked for and that holds
-           * nothing to mount is the solver making room for a boot loader. */
-          (isNew && !partition.filesystem),
-      )
-      .map(({ partition, isNew }) => {
-        const mountPath = partition.filesystem?.mountPath;
-        const id = partitionIdOf(partition.description);
-
-        return {
-          key: String(partition.sid),
-          deviceName: baseName(device.name),
-          devicePath: device.name,
-          name: baseName(partition.name),
-          description: partition.description,
-          size: partition.block?.size,
-          isNew,
-          why: bootReason(partition),
-          mountPath,
-          id,
-          filesystemType: partition.filesystem?.type as ConfigModel.FilesystemType | undefined,
-          isExplicit: isExplicitBootPartition(config, baseName(device.name), mountPath, id),
-        };
-      }),
-  );
-};
-
-/** What the scan found, and what it looked at to find it. */
-type BootScan = {
-  plan: BootPartition[];
-  devices: number;
-  partitions: number;
-  /** Whether the backend has a proposal at all. It reports none when the
-      configuration does not solve, and then there is nothing to read. */
-  hasProposal: boolean;
-  actions: number;
-};
-
-/**
- * The boot table, with the size of the haystack beside it.
- *
- * An empty table has two very different causes: this proposal genuinely needs
- * no partition to boot, or the scan read nothing. The counts tell them apart
- * without opening the console.
- */
-const useBootScan = (): BootScan => {
-  const staging = useStagingTree();
-  const proposal = useStorageProposal();
-  const actions = useActions();
-  const plan = useBootPlan();
-
-  return {
-    plan,
-    devices: staging.length,
-    partitions: staging.reduce((total, device) => total + (device.partitions || []).length, 0),
-    hasProposal: proposal !== null && proposal !== undefined,
-    actions: actions.length,
-  };
-};
-
-/**
  * Everything the proposal says about every partition, in the console.
  *
  * The boot table is assembled by comparing two devicegraphs and matching on
@@ -811,83 +639,6 @@ const useBootDebug = () => {
 
     console.table(rows);
     console.info("staging devices", staging.length, "system devices", systemDevices.length);
-  };
-};
-
-type PartitionableLocation = { collection: PartitionableCollection; index: number };
-
-/**
- * Takes a partition the solver invented and writes it into the configuration.
- *
- * The point is to let a reader disagree with it. A partition that only exists
- * in the proposal can be read and nothing else; the same partition written into
- * the configuration, with the size the proposal gave it, is a planned partition
- * like any other: it appears in its disk's planned content, it can be resized,
- * and dropping it hands the decision back to the installer.
- *
- * Written as one model, not two: adding the disk and then the partition would
- * be two round trips, and the second would be built on a configuration the
- * first had already replaced.
- */
-const useAdoptBootPartition = () => {
-  const config = useConfigModel();
-
-  return (partition: BootPartition, size: number): PartitionableLocation | null => {
-    const next = configModel.clone(config);
-    next.drives = next.drives || [];
-
-    let index = next.drives.findIndex((drive) => baseName(drive.name) === partition.deviceName);
-    if (index === -1) {
-      next.drives.push({ name: partition.devicePath, partitions: [] });
-      index = next.drives.length - 1;
-    }
-
-    const drive = next.drives[index];
-    drive.partitions = drive.partitions || [];
-
-    const entry: ConfigModel.Partition = {
-      mountPath: partition.mountPath,
-      id: partition.id,
-      filesystem: partition.filesystemType
-        ? { default: false, type: partition.filesystemType }
-        : undefined,
-      /* Exactly what was asked for. A range would leave the solver the same
-         freedom the reader is overriding. */
-      size: { default: false, min: size, max: size },
-    };
-
-    const at = drive.partitions.findIndex((candidate) =>
-      partition.mountPath
-        ? candidate.mountPath === partition.mountPath
-        : Boolean(partition.id) && candidate.id === partition.id,
-    );
-
-    if (at === -1) drive.partitions.push(entry);
-    else drive.partitions[at] = { ...drive.partitions[at], ...entry };
-
-    putStorageModel(next);
-    return { collection: "drives", index };
-  };
-};
-
-/** Drops the configuration's copy, so the installer decides again. */
-const useForgetBootPartition = () => {
-  const config = useConfigModel();
-
-  return (partition: BootPartition) => {
-    const next = configModel.clone(config);
-    const drive = (next.drives || []).find(
-      (candidate) => baseName(candidate.name) === partition.deviceName,
-    );
-    if (!drive) return;
-
-    drive.partitions = (drive.partitions || []).filter((candidate) =>
-      partition.mountPath
-        ? candidate.mountPath !== partition.mountPath
-        : candidate.id !== partition.id,
-    );
-
-    putStorageModel(next);
   };
 };
 
@@ -5332,163 +5083,6 @@ const BootLoaderMenu = ({
 };
 
 /**
- * What the boot decision costs, gathered from every device in the proposal.
- *
- * The table is the reason this panel exists: these partitions are the solver's
- * doing, they appear in no content tab, and read beside the settings they come
- * from they answer "what does booting take from my disks" in one place.
- */
-/**
- * One row of the boot table, and the two things a reader can do to it.
- *
- * A size the reader typed is written into the configuration, which turns the
- * solver's partition into a planned one: it shows up in its disk's planned
- * content beside everything else planned there, and the installer stops
- * deciding its size. Dropping it hands the decision back.
- */
-const BootPartitionRow = ({ partition }: { partition: BootPartition }) => {
-  const navigate = useNavigate();
-  const adopt = useAdoptBootPartition();
-  const forget = useForgetBootPartition();
-  const { bootTakeover } = useVariants();
-
-  const size = partition.size ? deviceSize(partition.size) : t("decided by the installer");
-
-  const openForm = () => {
-    /* The form edits what the configuration holds, so the partition has to be
-       in it before the form can open on it. Written with the size the proposal
-       gave it, which is what makes the form read as the proposal prefilled. */
-    const location = adopt(partition, partition.size || 0);
-    if (!location || !partition.mountPath) return;
-
-    navigate(
-      generateEncodedPath(PATHS.editPartition, {
-        collection: location.collection,
-        index: String(location.index),
-        partitionId: partition.mountPath,
-      }),
-    );
-  };
-
-  /* Everything editable is edited in the partition form. A size field in the
-     table would be a second way to say the same thing, and a poorer one: size
-     can be automatic, exact or a range, and the form is where those live.
-     A partition with nothing mounted on it (BIOS boot, PReP) has no way in yet:
-     the form addresses a partition by its mount path. */
-  /* Everything editable is edited in the partition form, which addresses a
-     partition by its mount path, so a partition with nothing mounted on it
-     (BIOS boot, PReP) has no way in and its row is read only.
-     Writing one into the configuration by its id is not a way around that: a
-     partition to be created with no mount path makes the whole configuration
-     unsupported by the config model, and the backend then reports no model at
-     all. The switch is kept to reproduce it. */
-  const actions: ActionItem[] = [];
-  if (partition.mountPath) {
-    actions.push({ title: t("Edit"), onClick: openForm });
-  } else if (bootTakeover && !partition.isExplicit) {
-    actions.push({
-      title: t("Ask for it explicitly"),
-      onClick: () => adopt(partition, partition.size || 0),
-    });
-  }
-  if (partition.isExplicit) {
-    actions.push({ title: t("Let the installer decide"), onClick: () => forget(partition) });
-  }
-
-  return (
-    <tr>
-      <th scope="row">
-        <Text isBold>{partition.deviceName}</Text>
-      </th>
-      <td>
-        {partition.name}
-        <div className="agm-plan-muted">
-          {partition.description || (partition.isNew ? t("new") : t("reused"))}
-        </div>
-      </td>
-      <td className="agm-plan-size">
-        <div>{size}</div>
-        <div className="agm-plan-muted">
-          {partition.isExplicit ? t("asked for by you") : t("decided by the installer")}
-        </div>
-      </td>
-      <td>{partition.why}</td>
-      <td className="agm-plan-row-control">
-        {actions.length > 0 && (
-          <ActionsMenu label={t(`Actions for ${partition.name}`)} items={actions} />
-        )}
-      </td>
-    </tr>
-  );
-};
-
-const BootNeedsSection = ({ scan }: { scan: BootScan }) => {
-  const { scroll } = useVariants();
-  const plan = scan.plan;
-
-  const empty = () => {
-    if (scan.devices === 0)
-      return t(
-        `The proposal reports ${scan.actions} actions and no devices, so what booting takes cannot be read from it.`,
-      );
-
-    if (scan.partitions === 0)
-      return t(`The proposal reports ${scan.devices} devices and no partitions on any of them.`);
-
-    return t(
-      `No partitions to boot. The proposal reports ${scan.partitions} partitions on ${scan.devices} devices, and none of them is set aside for booting.`,
-    );
-  };
-
-  return (
-    <div className={`agm-plan-section agm-plan-section-scroll-${scroll}`}>
-      <div className="agm-plan-section-body">
-        {/* The page carries the same notice, and this one says what it costs
-            here: with no layout worked out, what booting takes is unknown
-            rather than nothing. */}
-        {!scan.hasProposal && (
-          <Alert
-            variant="danger"
-            isInline
-            title={t("What booting takes is unknown")}
-            className="agm-plan-boot-notice"
-          >
-            {t(
-              "The installer could not work out a layout for this configuration, so it has not decided any partition to boot yet.",
-            )}
-          </Alert>
-        )}
-        {scan.hasProposal && plan.length === 0 && <div className="agm-plan-muted">{empty()}</div>}
-        {/* The table is named for a screen reader without a line of prose for
-            everyone else: the columns already say what it holds. */}
-        {scan.hasProposal && plan.length > 0 && (
-          <table className="agm-plan-table" aria-label={t("Partitions to boot")}>
-            <thead>
-              <tr>
-                <th scope="col">{t("Device")}</th>
-                <th scope="col">{t("Partition")}</th>
-                <th scope="col" className="agm-plan-size">
-                  {t("Size")}
-                </th>
-                <th scope="col">{t("Purpose")}</th>
-                <th scope="col">
-                  <Text srOnly>{t("Actions")}</Text>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {plan.map((partition) => (
-                <BootPartitionRow key={partition.key} partition={partition} />
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
-  );
-};
-
-/**
  * Boot, as a scope of its own.
  *
  * The decision is machine wide: two of its three states say nothing about any
@@ -5504,7 +5098,7 @@ const BootDetail = () => {
   const setDefaultBootDevice = useSetDefaultBootDevice();
   const disableBoot = useDisableBoot();
   const setBootloader = useSetBootloader();
-  const scan = useBootScan();
+  const proposal = useStorageProposal();
   const { settings: settingsPlacement } = useVariants();
   const { goToDevice } = React.useContext(PanelNavContext);
 
@@ -5619,7 +5213,7 @@ const BootDetail = () => {
   return (
     <div className={`agm-plan-split agm-plan-split-${settingsPlacement}`}>
       <SettingsList settings={settings} layout="stacked" />
-      {mode === "off" ? (
+      {mode === "off" && (
         <Alert
           variant="danger"
           isInline
@@ -5630,8 +5224,21 @@ const BootDetail = () => {
             "Nothing is set up for booting. Choose this only when you install a boot loader yourself.",
           )}
         </Alert>
-      ) : (
-        <BootNeedsSection scan={scan} />
+      )}
+      {/* The page carries the same notice, and this one says what it costs
+          here: with no layout worked out, what booting takes is unknown rather
+          than nothing. */}
+      {mode !== "off" && !proposal && (
+        <Alert
+          variant="danger"
+          isInline
+          title={t("What booting takes is unknown")}
+          className="agm-plan-boot-notice"
+        >
+          {t(
+            "The installer could not work out a layout for this configuration, so it has not decided any partition to boot yet.",
+          )}
+        </Alert>
       )}
     </div>
   );
@@ -5897,7 +5504,6 @@ function StoragePlan(): React.ReactNode {
             '  explanations("always" | "sparse")  a line under every setting, or only where it adds',
             '  settings("beside" | "above")       the settings in their own column, or over the content',
             '  boot("entry" | "device")           a device panel points at the boot panel, or sets boot itself',
-            "  bootTakeover(true | false)         let a boot partition with no mount path be asked for",
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -5926,7 +5532,6 @@ function StoragePlan(): React.ReactNode {
       explanations: (explanations) => patch({ explanations }),
       settings: (settings) => patch({ settings }),
       boot: (bootHome) => patch({ bootHome }),
-      bootTakeover: (bootTakeover) => patch({ bootTakeover }),
       bootDebug: () => bootDebugRef.current(),
     };
 
