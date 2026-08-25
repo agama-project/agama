@@ -34,7 +34,6 @@
  *     storagePlan.structure("blocks" | "flat")
  *     storagePlan.spacePlacement("settings" | "content")
  *     storagePlan.explanations("always" | "sparse")
- *     storagePlan.boot("entry" | "device")
  *
  * The panel is three blocks: identity and actions, what is decided about the
  * device, and what it holds. `structure` switches back to the flat stack the
@@ -190,9 +189,6 @@ type SpacePlacement = "settings" | "content";
 type Explanations = "always" | "sparse";
 /** Whether the settings take a column of their own, or sit above the content. */
 type SettingsPlacement = "beside" | "above";
-/** What a device panel says about booting: a control, or a fact and a way in. */
-type BootHome = "device" | "entry";
-
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -209,7 +205,6 @@ type Variants = {
   spacePlacement: SpacePlacement;
   explanations: Explanations;
   settings: SettingsPlacement;
-  bootHome: BootHome;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -231,10 +226,6 @@ const DEFAULT_VARIANTS: Variants = {
      block gets is the reason the other setting exists. */
   explanations: "always",
   settings: "beside",
-  /* The exception to "every switch defaults to what the page does today": the
-     boot scope is what this round is for, so the page opens on it and the flip
-     goes back to the per device setting. */
-  bootHome: "entry",
 };
 
 type PlanApi = {
@@ -256,7 +247,6 @@ type PlanApi = {
   spacePlacement: (mode: SpacePlacement) => void;
   explanations: (mode: Explanations) => void;
   settings: (mode: SettingsPlacement) => void;
-  boot: (home: BootHome) => void;
   bootDebug: () => void;
 };
 
@@ -555,9 +545,6 @@ const useBootCost = (deviceName: string, systemDevice: Storage.Device | null) =>
     }))
     .filter((partition) => partition.isBoot);
 };
-
-/** What the boot loader takes from a device, as the proposal reports it. */
-type BootCost = ReturnType<typeof useBootCost>;
 
 /* ------------------------------------------------------------------ *
  * Boot as a scope of its own
@@ -2471,75 +2458,6 @@ const spaceSetting = ({
     explanation: explanation || undefined,
   };
 };
-
-/**
- * Where the boot loader goes, read from this device.
- *
- * The model holds one boot setting for the whole machine, so a device is either
- * the one it names or it is not: "automatic" and "do not configure" are
- * statements about the installation rather than about this disk, and they
- * belong to the scope that owns them.
- */
-const bootSetting = (
-  role: BootRole,
-  cost: BootCost,
-  home: BootHome,
-  goToBoot: () => void,
-): Setting | null => {
-  if (role === "none") return null;
-
-  /* With boot in an entry of its own, the device says the one thing that is
-     true of the device, and the decision behind it stays where it is made.
-     Everything else about booting is machine wide, and a copy of it here is a
-     second place to read it and a second place for it to go stale. */
-  if (home === "entry") {
-    return {
-      key: "boot",
-      icon: "restart_alt",
-      term: t("Used for booting"),
-      value: t("The boot loader is written here"),
-      explanation: (
-        <Button variant="link" isInline onClick={goToBoot}>
-          {t("See how the system boots")}
-        </Button>
-      ),
-    };
-  }
-
-  /* Where the value came from, which is the one thing the value cannot say
-     about itself, and then what the boot loader takes from the device. Boot
-     partitions are the solver's doing, so they appear in neither tab and the
-     device otherwise looks like it hosts the boot loader for free. */
-  const why =
-    role === "default"
-      ? t("Chosen automatically, because the new system lives here.")
-      : t("Chosen for this installation.");
-
-  const parts = cost.map((partition) =>
-    partition.isNew
-      ? t(`a new partition (${deviceSize(partition.size)})`)
-      : t(`${partition.name}, reused`),
-  );
-
-  const what = parts.length
-    ? t(`Partitions to boot: ${formatList(parts)}.`)
-    : t("No partition to boot needed.");
-
-  return {
-    key: "boot",
-    icon: "restart_alt",
-    /* The whole statement, rather than a name for the setting: the row is
-       about what this device does, and "Boot loader" left the reader to work
-       out whether it holds one, wants one or is one. */
-    term: t("Boot from this device"),
-    explanation: (
-      <>
-        {why} {what}
-      </>
-    ),
-  };
-};
-
 const PTABLE_NAMES: Record<string, string> = {
   gpt: "GPT",
   msdos: "MS-DOS",
@@ -2610,6 +2528,7 @@ const NewSystemSection = ({
   device,
   systemDevice,
   explanation,
+  statements,
 }: {
   collection: PartitionableCollection;
   index: number;
@@ -2617,6 +2536,10 @@ const NewSystemSection = ({
   systemDevice: Storage.Device | null;
   /** What this tab holds, and which tab changes it. */
   explanation?: React.ReactNode;
+  /* Statements about the device as a whole. They read here because several of
+     them have no row to live in: what the device is used by, and that the
+     installer adds partitions to it for booting. */
+  statements?: Setting[];
 }) => {
   const navigate = useNavigate();
   const deletePartition = useDeletePartition();
@@ -2647,6 +2570,7 @@ const NewSystemSection = ({
       before={explanation && <TabNote>{explanation}</TabNote>}
       headingId={headingId}
     >
+      {statements && statements.length > 0 && <SettingsList settings={statements} />}
       {volumes.length === 0 ? (
         /* The state first, the invitation second. A device reaches this panel
            by being part of the plan, so what is empty is its content, not its
@@ -3073,7 +2997,6 @@ const PartitionableDetail = ({
     spacePlacement,
     explanations,
     settings: settingsPlacement,
-    bootHome,
   } = useVariants();
   const { goToBoot } = React.useContext(PanelNavContext);
   /* Which tab is open lives here rather than in the tab strip, so the summary
@@ -3084,7 +3007,6 @@ const PartitionableDetail = ({
   const tabsRef = useRef<HTMLDivElement>(null);
   const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
   const bootRole = bootRoleOf(config, device?.name || "");
-  const bootCost = useBootCost(device?.name || "", systemDevice);
 
   if (!device) return null;
 
@@ -3130,6 +3052,35 @@ const PartitionableDetail = ({
     </>
   );
 
+  /* What the device is used by, and that the installer adds partitions to it
+     for booting. Both are statements about what is planned for the device, and
+     neither has a row in the table, so they read above it.
+
+     The boot line names neither a count nor a reason. Both are result data: a
+     count needs the proposal compared against the system, and the reason a
+     boot partition exists is never reported. What is true of the device
+     whatever the installer decides is said here, and the tabs holding the rest
+     are one click away. */
+  const plannedStatements = settingsOf([
+    ...relationshipSettings([
+      { label: t("Used by"), items: usersOf(config, allDevices, device.name) },
+    ]),
+    bootRole !== "none" && {
+      key: "boot",
+      icon: "restart_alt" as const,
+      term: t("Boot device"),
+      value: t("Partitions needed to start the new system are added here."),
+      explanation: (
+        <>
+          {t("See them in")} <TabLink tab="result" onGoTo={goToTab} />, {t("or adjust the")}{" "}
+          <Button variant="link" isInline onClick={goToBoot}>
+            {t("Boot options")}
+          </Button>
+        </>
+      ),
+    },
+  ]);
+
   const key = `${collection}:${index}`;
   const result = (
     <DeviceResultSection key={key} deviceName={device.name} explanation={notes?.result} />
@@ -3142,6 +3093,7 @@ const PartitionableDetail = ({
       device={device}
       systemDevice={systemDevice}
       explanation={notes?.planned}
+      statements={structure === "blocks" ? plannedStatements : undefined}
     />
   );
   const second = (
@@ -3185,7 +3137,6 @@ const PartitionableDetail = ({
        looked for. */
     const settings = settingsOf([
       ...relationshipSettings([
-        { label: t("Used by"), items: usersOf(config, allDevices, device.name) },
         { label: t("Uses"), items: membersOf(systemDevice, allDevices, config) },
       ]),
       spacePlacement === "settings" &&
@@ -3195,7 +3146,6 @@ const PartitionableDetail = ({
           entryName: "partition",
           onGoToCurrent: goToCurrent,
         }),
-      bootSetting(bootRole, bootCost, bootHome, goToBoot),
       ptableSetting(device),
     ]);
 
@@ -5712,7 +5662,6 @@ function StoragePlan(): React.ReactNode {
             '  spacePlacement("settings"|"content")  where the space decision is offered',
             '  explanations("always" | "sparse")  a line under every setting, or only where it adds',
             '  settings("beside" | "above")       the settings in their own column, or over the content',
-            '  boot("entry" | "device")           a device panel points at the boot panel, or sets boot itself',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -5740,7 +5689,6 @@ function StoragePlan(): React.ReactNode {
       spacePlacement: (spacePlacement) => patch({ spacePlacement }),
       explanations: (explanations) => patch({ explanations }),
       settings: (settings) => patch({ settings }),
-      boot: (bootHome) => patch({ bootHome }),
       bootDebug: () => bootDebugRef.current(),
     };
 
