@@ -2163,7 +2163,11 @@ const PanelSection = ({
         {/* Empty when there is nothing to lead with, which is what keeps a lone
             action against the trailing edge. */}
         <FlexItem>
-          <span className="agm-plan-lead">
+          <Flex
+            display={{ default: "inlineFlex" }}
+            alignItems={{ default: "alignItemsCenter" }}
+            gap={{ default: "gapSm" }}
+          >
             {/* A mark the eye can aim at without a box being drawn around
                 anything, and only where there is something for it to mark.
                 Decorative: what the section is, the words beside it say. */}
@@ -2173,7 +2177,7 @@ const PanelSection = ({
               </span>
             )}
             {leading}
-          </span>
+          </Flex>
         </FlexItem>
         {action && <FlexItem>{action}</FlexItem>}
       </Flex>
@@ -4099,7 +4103,11 @@ const DeviceOffer = ({ device, mountPaths }: { device: Storage.Device; mountPath
             .join("  ·  ")}
         </span>
       </div>
-      <div className="agm-plan-offer-actions">
+      <Flex
+        flexWrap={{ default: "wrap" }}
+        gap={{ default: "gapLg" }}
+        className="agm-plan-offer-actions"
+      >
         {offers.map((offer) => (
           <div key={offer.key} className="agm-plan-offer-action">
             <Button
@@ -4114,7 +4122,7 @@ const DeviceOffer = ({ device, mountPaths }: { device: Storage.Device; mountPath
             </div>
           </div>
         ))}
-      </div>
+      </Flex>
     </li>
   );
 };
@@ -4398,9 +4406,6 @@ const PLAN_CSS = `
 
 /* The add actions belong next to what they add to. */
 .agm-plan-add {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pf-t--global--spacer--sm);
   padding: var(--pf-t--global--spacer--lg);
 }
 
@@ -4414,9 +4419,6 @@ const PLAN_CSS = `
 }
 
 .agm-plan-offer-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pf-t--global--spacer--lg);
   margin-block-start: var(--pf-t--global--spacer--md);
 }
 
@@ -4732,45 +4734,7 @@ const PLAN_CSS = `
   }
 }
 
-/* A quiet rule rather than a coloured one: the row is a form the reader opened,
-   not a problem the page is reporting. */
-.agm-plan-shrink {
-  border-inline-start: 2px solid var(--pf-t--global--border--color--subtle);
-  padding: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
-  margin-block-end: var(--pf-t--global--spacer--sm);
-  max-width: 34rem;
-}
-
-/* Label, size, unit and outcome on one line, so the sentence reads across
-   rather than down. */
-.agm-plan-shrink-line {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--pf-t--global--spacer--sm);
-}
-
-.agm-plan-shrink-qty { inline-size: 6rem; }
-
-.agm-plan-shrink-unit { inline-size: 6rem; }
-
-.agm-plan-shrink-freed { color: var(--pf-t--global--text--color--subtle); }
-
-.agm-plan-shrink-note {
-  margin-block: var(--pf-t--global--spacer--xs) var(--pf-t--global--spacer--sm);
-  font-size: var(--pf-t--global--font--size--body--sm);
-}
-
 /* Volumes */
-
-/* The leading half of a section head: a mark, then whatever names the section.
-   Baseline aligned rather than centred, so the mark sits with the text instead
-   of with the control on the other side of the row. */
-.agm-plan-lead {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--pf-t--global--spacer--sm);
-}
 
 /* A gutter rather than an icon glued to a word: the marks line up down the
    panel at one width, which is what gives a reader something to aim at without
@@ -5316,7 +5280,7 @@ const AddDeviceActions = () => {
   };
 
   return (
-    <div className="agm-plan-add">
+    <Flex flexWrap={{ default: "wrap" }} gap={{ default: "gapSm" }} className="agm-plan-add">
       <Button
         variant="secondary"
         icon={<Icon name="add" size="xs" />}
@@ -5351,7 +5315,7 @@ const AddDeviceActions = () => {
           }}
         />
       )}
-    </div>
+    </Flex>
   );
 };
 
