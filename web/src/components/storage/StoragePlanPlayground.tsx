@@ -2200,16 +2200,32 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
  * Helper text rather than a paragraph of body copy: the sentence is guidance
  * about the tab, and the indent and the mark say so before a word is read.
  */
-const TabNote = ({ children }: React.PropsWithChildren) => (
+/** What a tab holds, and where what it holds is decided. */
+type TabExplanation = { lead: React.ReactNode; where?: React.ReactNode };
+
+/**
+ * A block set on a dimmed ground.
+ *
+ * For content that belongs to what surrounds it without being part of it. The
+ * tint does what a border would, without drawing a line the eye has to cross.
+ */
+const Dimmed = ({ children }: React.PropsWithChildren) => (
+  <div className="agm-plan-dimmed">{children}</div>
+);
+
+const TabNote = ({ lead, where }: TabExplanation) => (
   <NestedContent margin={["mxXs", "mtSm", "mbXs"]}>
-    <HelperText>
-      <HelperTextItem
-        className="agm-plan-tab-note"
-        icon={<Icon name="info_i" size="xs" aria-hidden />}
-      >
-        {children}
-      </HelperTextItem>
-    </HelperText>
+    <Dimmed>
+      <HelperText>
+        <HelperTextItem
+          className="agm-plan-tab-note"
+          icon={<Icon name="info_i" size="xs" aria-hidden />}
+        >
+          <div>{lead}</div>
+          {where && <div>{where}</div>}
+        </HelperTextItem>
+      </HelperText>
+    </Dimmed>
   </NestedContent>
 );
 
@@ -2241,14 +2257,14 @@ const tabExplanations = (
   const link = (tab: PanelTab) => <TabLink tab={tab} onGoTo={onGoTo} />;
   const hasCurrent = tabs.includes("current");
 
-  /* Two lines, not one paragraph: what the tab holds, and then where what it
-     holds is decided. The second line is the one a reader acts on, and it is
-     lost at the end of a wrapped sentence. */
-  return {
-    result: (
-      <>
-        <div>{t(`How ${subject} looks once the installer is done.`)}</div>
-        <div>
+  /* Two parts, not one paragraph: what the tab holds, and then where what it
+     holds is decided. The second is the one a reader acts on, and it is lost at
+     the end of a wrapped sentence. */
+  const explanations: Record<PanelTab, TabExplanation> = {
+    result: {
+      lead: t(`How ${subject} looks once the installer is done.`),
+      where: (
+        <>
           {t("It follows from the")} {link("planned")}
           {hasCurrent && (
             <>
@@ -2259,31 +2275,35 @@ const tabExplanations = (
           {hasCurrent
             ? t("tabs, which is where it changes.")
             : t("tab, which is where it changes.")}
-        </div>
-      </>
-    ),
-    planned: (
-      <>
-        <div>{t(`What ${subject} will hold for the new system.`)}</div>
-        {hasCurrent && (
-          <div>
-            {t(
-              "Making room for it may mean deleting or shrinking what is there today, decided in the",
-            )}{" "}
-            {link("current")} {t("tab.")}
-          </div>
-        )}
-      </>
-    ),
-    current: (
-      <>
-        <div>{t(`What is on ${subject} now, and what becomes of it.`)}</div>
-        <div>
+        </>
+      ),
+    },
+    planned: {
+      lead: t(`What ${subject} will hold for the new system.`),
+      where: hasCurrent ? (
+        <>
+          {t(
+            "Making room for it may mean deleting or shrinking what is there today, decided in the",
+          )}{" "}
+          {link("current")} {t("tab.")}
+        </>
+      ) : undefined,
+    },
+    current: {
+      lead: t(`What is on ${subject} now, and what becomes of it.`),
+      where: (
+        <>
           {t("The rule below makes room for what the")} {link("planned")} {t("tab holds, and the")}{" "}
           {link("result")} {t("tab shows where both end up.")}
-        </div>
-      </>
-    ),
+        </>
+      ),
+    },
+  };
+
+  return {
+    result: <TabNote {...explanations.result} />,
+    planned: <TabNote {...explanations.planned} />,
+    current: <TabNote {...explanations.current} />,
   };
 };
 
@@ -2682,7 +2702,7 @@ const NewSystemSection = ({
       title={t(SECTION_TITLES.planned)}
       action={formatted ? edit : add}
       icon="list_alt"
-      before={explanation && <TabNote>{explanation}</TabNote>}
+      before={explanation}
       headingId={headingId}
     >
       {statements && statements.length > 0 && <SettingsList settings={statements} />}
@@ -2854,7 +2874,7 @@ const CurrentContentSection = ({
     <PanelSection
       title={t(SECTION_TITLES.current)}
       icon="hard_drive"
-      before={explanation && <TabNote>{explanation}</TabNote>}
+      before={explanation}
       intro={inSettings ? following : undefined}
       headingId={headingId}
     >
@@ -2966,7 +2986,7 @@ const DeviceResultSection = ({
     <PanelSection
       title={t(SECTION_TITLES.result)}
       icon="list_alt_check"
-      before={explanation && <TabNote>{explanation}</TabNote>}
+      before={explanation}
       headingId={headingId}
     >
       {!proposal && (
@@ -2980,7 +3000,9 @@ const DeviceResultSection = ({
         </div>
       )}
       {proposal && devices.length > 0 && (
-        <ProposalResultTable devicesManager={manager} devices={devices} deviceLink={deviceLink} />
+        <div className="agm-plan-device-layout">
+          <ProposalResultTable devicesManager={manager} devices={devices} deviceLink={deviceLink} />
+        </div>
       )}
     </PanelSection>
   );
@@ -3471,7 +3493,7 @@ const VolumeGroupCurrentSection = ({
     <PanelSection
       title={t(SECTION_TITLES.current)}
       icon="hard_drive"
-      before={explanation && <TabNote>{explanation}</TabNote>}
+      before={explanation}
       intro={inSettings ? following : undefined}
       headingId="agm-plan-group-current"
     >
@@ -3529,7 +3551,7 @@ const VolumeGroupPlannedSection = ({
       headingId="agm-plan-logical-volumes"
       icon="list_alt"
       standalone={standalone}
-      before={explanation && <TabNote>{explanation}</TabNote>}
+      before={explanation}
       action={
         <Button
           variant="link"
@@ -4360,18 +4382,6 @@ const PLAN_CSS = `
 /* The tab strip keeps its own height; only the panel under it takes the rest. */
 .agm-plan-tabs > .pf-v6-c-tabs { flex: 0 0 auto; }
 
-/* Down the side, the strip keeps its width and the panel beside it takes the
-   rest, which is the deal the horizontal strip makes with height. */
-.agm-plan-tabs-vertical {
-  flex-direction: row;
-  gap: var(--pf-t--global--spacer--md);
-}
-
-.agm-plan-tabs-vertical > .pf-v6-c-tab-content:not([hidden]) {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
 .agm-plan-tabs > .pf-v6-c-tabs .pf-v6-c-tabs__list { margin-block-start: 0; }
 
 .agm-plan-tabs > .pf-v6-c-tab-content:not([hidden]) {
@@ -5058,6 +5068,41 @@ const PLAN_CSS = `
   margin-block-start: var(--pf-t--global--spacer--md);
 }
 
+
+/* Down the side, the strip keeps its width and the panel beside it takes the
+   rest, which is the deal the horizontal strip makes with height.
+ *
+ * Two classes rather than one, and last in the sheet: this file declares
+ * .agm-plan-tabs more than once, and a single class here loses to whichever
+ * copy comes after it. */
+.agm-plan-tabs.agm-plan-tabs-vertical {
+  flex-direction: row;
+  gap: var(--pf-t--global--spacer--md);
+}
+
+.agm-plan-tabs.agm-plan-tabs-vertical > .pf-v6-c-tabs {
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+
+.agm-plan-tabs.agm-plan-tabs-vertical > .pf-v6-c-tab-content:not([hidden]) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* One device to a table, so nothing there is worth collapsing: the toggle only
+   offers to hide the rows the tab exists to show. What is nested in what is
+   still said by the tree itself. */
+.agm-plan-device-layout .pf-v6-c-table__toggle {
+  display: none;
+}
+
+.agm-plan-dimmed {
+  background: var(--pf-t--global--background--color--secondary--default);
+  border-radius: var(--pf-t--global--border--radius--small);
+  padding-block: var(--pf-t--global--spacer--sm);
+  padding-inline: var(--pf-t--global--spacer--md);
+}
 `;
 
 const PlanStyles = () => <style>{PLAN_CSS}</style>;
