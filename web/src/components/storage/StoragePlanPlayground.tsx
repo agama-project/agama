@@ -879,17 +879,19 @@ const useSolver = (): Solver => {
  * The extra state is the one the configuration cannot express: a partition the
  * installer was allowed to take and did not need.
  */
-type ReportedOutcome = Outcome | { kind: "keptUntouched" };
+type ReportedOutcome = Outcome | { kind: "keptUntouched"; allowed: "delete" | "shrink" };
 
 const reportedOutcome = (outcome: Outcome, sid: number, solver: Solver): ReportedOutcome => {
   if (outcome.kind === "deleteIfNeeded")
-    return solver.deletes(sid) ? { kind: "delete" } : { kind: "keptUntouched" };
+    return solver.deletes(sid) ? { kind: "delete" } : { kind: "keptUntouched", allowed: "delete" };
 
   if (outcome.kind === "shrinkIfNeeded") {
     /* The size comes from staging rather than from the configuration, which
      * only ever said "smaller if that helps". */
     const size = solver.shrinksTo(sid);
-    return size === undefined ? { kind: "keptUntouched" } : { kind: "shrinkTo", size };
+    return size === undefined
+      ? { kind: "keptUntouched", allowed: "shrink" }
+      : { kind: "shrinkTo", size };
   }
 
   return outcome;
@@ -927,8 +929,16 @@ const outcomeReport = (outcome: ReportedOutcome): Cost => {
       /* Configured as expendable and not spent yet. Saying only "kept" would
        * hide that the installer has permission to take it, and saying the space
        * was not needed reads as a promise about a plan that is still being
-       * written: another volume asked for later spends exactly this. */
-      return { kind: "keeps", text: t("Kept unless room runs short") };
+       * written: another volume asked for later spends exactly this. Which way
+       * it may be taken is the difference between losing the partition and
+       * losing room inside it. */
+      return {
+        kind: "keeps",
+        text:
+          outcome.allowed === "delete"
+            ? t("Kept, deleted if room runs short")
+            : t("Kept, shrunk if room runs short"),
+      };
     default:
       /* The one entry that is not a change, so it does not take the future
        * form the others share. */
@@ -1672,7 +1682,7 @@ const RowSpaceControl = ({
  * contradict it.
  *
  * A line under the control only where the solver said something the control did
- * not: "Delete if needed" answered by "Kept unless room runs short" is worth
+ * not: "Delete if needed" answered by "Kept, deleted if room runs short" is worth
  * reading, and the same permission echoed back as "To be deleted if needed" is
  * the control's own text a second time.
  */
@@ -2683,14 +2693,14 @@ const tabExplanations = (
       ) : undefined,
     },
     current: {
-      lead: t(`What is on ${subject} now, and what becomes of it.`),
+      lead: t("What to do with the existing partitions"),
       /* About this tab, not about the control under it: a sentence that points
          at whatever happens to be rendered next breaks the moment anything
          moves, and reads as a caption for it in the meantime. */
       where: (
         <>
-          {t("This tab decides how much of it the new system may take. The")} {link("result")}{" "}
-          {t("tab shows where everything ends up.")}
+          {t("Choose how the installer should use the existing partitions. The")} {link("result")}{" "}
+          {t("tab shows the resulting disk layout.")}
         </>
       ),
     },
