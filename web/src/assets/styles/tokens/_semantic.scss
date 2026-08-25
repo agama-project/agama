@@ -51,6 +51,13 @@
 //                                                 buttons, text inputs/textareas
 //                                                 and selects/dropdowns, layered
 //                                                 on top of the small tier
+//   --agm-t--button--border-radius                narrower still: only buttons and
+//                                                 the toggles that read as buttons
+//                                                 (split-button children, primary
+//                                                 and secondary menu toggles), so a
+//                                                 brand can round its buttons
+//                                                 without rounding text inputs.
+//                                                 Falls back to the control role
 //   --agm-t--logo--size--header                   product logo width in the masthead
 //                                                 (see layout/Header)
 //   --agm-t--logo--size--inline                   product logo width next to the
@@ -172,6 +179,18 @@
   --pf-t--global--border--radius--control--form-element: var(
     --agm-t--control--border-radius,
     var(--pf-t--global--border--radius--small)
+  );
+  // Buttons sit one step narrower than the controls role, so a brand can round
+  // its buttons without rounding the text fields (Material is the usual case).
+  // PatternFly keeps a separate radius for the things that read as buttons
+  // without being one: split-button children, and primary and secondary menu
+  // toggles. It defaults to the pill token, which the line above pins to the
+  // small tier, and that is the fallback kept here: deliberately not the
+  // control role, so a skin that sets only --agm-t--control--border-radius
+  // keeps rendering these exactly as it does today.
+  --pf-t--global--border--radius--action--default: var(
+    --agm-t--button--border-radius,
+    var(--pf-t--global--border--radius--pill)
   );
 
   // Icon size scale (theme-independent). Unset by default: every consumption

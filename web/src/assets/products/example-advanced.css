@@ -89,13 +89,18 @@
      3. --agm-t--control--border-radius layers on top of the small tier for
         just the interactive controls (buttons, text inputs/textareas,
         selects/dropdowns), leaving tables, tooltips and menus behind.
+     4. --agm-t--button--border-radius is narrower again: buttons only, plus
+        the toggles that read as buttons (split-button children, primary and
+        secondary menu toggles). Reach for it when the brand rounds its buttons
+        more than its text fields; a fully rounded button is 999px.
 
      Anything left unset falls through to the layer above it and, in the end,
      to PatternFly's stock radius. Below: 6px everywhere, except roomier modal
-     dialogs and squarer controls. */
+     dialogs, squarer text fields and fully rounded buttons. */
   --agm-t--border-radius: 6px;
   --agm-t--border-radius--large: 12px;
   --agm-t--control--border-radius: 2px;
+  --agm-t--button--border-radius: 999px;
 
   /* Product logo (see components/product/ProductLogo). Two size roles per
      usage context (each unset keeps that usage's own current default), plus

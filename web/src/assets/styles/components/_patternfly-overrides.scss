@@ -138,10 +138,12 @@
 .pf-v6-c-button {
   // Buttons follow the same controls role as text inputs and selects (see
   // tokens/_semantic.scss), so a product retunes --agm-t--control--border-radius
-  // once for all three instead of each separately.
+  // once for all three instead of each separately. --agm-t--button--border-radius
+  // wins over it for a product that needs buttons to differ from the fields,
+  // and with both unset the small tier applies exactly as before.
   --pf-v6-c-button--BorderRadius: var(
-    --agm-t--control--border-radius,
-    var(--pf-t--global--border--radius--small)
+    --agm-t--button--border-radius,
+    var(--agm-t--control--border-radius, var(--pf-t--global--border--radius--small))
   );
 
   &:disabled {
