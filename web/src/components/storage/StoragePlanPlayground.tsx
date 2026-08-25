@@ -2542,12 +2542,18 @@ const NewSystemSection = ({
   statements?: Setting[];
 }) => {
   const navigate = useNavigate();
+  const config = useConfigModel();
+  const allDevices = useFlattenDevices();
   const deletePartition = useDeletePartition();
   /* Reused partitions belong here. A device whose only plan is to mount an
    * existing partition was being told nothing was planned for it, because the
    * list only counted partitions the installer creates. */
   const volumes = layoutEntries(device);
   const headingId = "agm-plan-new-system";
+  /* A device formatted as a whole has nowhere to put a partition, so the tab
+     drops the table and the invitation with it. */
+  const formatted = device.filesystem;
+  const users = usersOf(config, allDevices, device.name);
 
   const add = (
     <Button
@@ -2562,16 +2568,55 @@ const NewSystemSection = ({
     </Button>
   );
 
+  const edit = (
+    <Button
+      variant="link"
+      isInline
+      onClick={() =>
+        navigate(generateEncodedPath(PATHS.formatDevice, { collection, index: String(index) }))
+      }
+    >
+      {t("Edit")}
+    </Button>
+  );
+
+  const asWhole = () => {
+    const type = filesystemType(formatted) || t("its default file system");
+
+    if (device.mountPath) {
+      return t(`This device is formatted as ${type} and mounted at ${device.mountPath}.`);
+    }
+
+    return t(`This device is formatted as ${type} and is not mounted.`);
+  };
+
   return (
     <PanelSection
       title={t(SECTION_TITLES.planned)}
-      action={add}
+      action={formatted ? edit : add}
       icon="list_alt"
       before={explanation && <TabNote>{explanation}</TabNote>}
       headingId={headingId}
     >
       {statements && statements.length > 0 && <SettingsList settings={statements} />}
-      {volumes.length === 0 ? (
+      {formatted && (
+        <div className="agm-plan-muted">
+          <div>{asWhole()}</div>
+          <div>{t("Nothing is partitioned here, so there is nothing else to plan.")}</div>
+        </div>
+      )}
+      {!formatted && volumes.length === 0 && users.length > 0 && (
+        /* Everything planned for this device is planned somewhere else: it is
+           a member, and what it holds is decided in the panel of whatever it
+           is a member of. */
+        <div className="agm-plan-muted">
+          <div>{t("No partitions are planned here.")}</div>
+          <div>
+            {t("The whole device goes to")} <RelatedNames items={users} />
+          </div>
+        </div>
+      )}
+      {!formatted && volumes.length === 0 && users.length === 0 && (
         /* The state first, the invitation second. A device reaches this panel
            by being part of the plan, so what is empty is its content, not its
            membership: an untouched device is absent from the list entirely. */
@@ -2579,7 +2624,8 @@ const NewSystemSection = ({
           <div>{t("Nothing planned for this device yet.")}</div>
           <div>{t("Add a volume, or reuse one of the partitions already on it.")}</div>
         </div>
-      ) : (
+      )}
+      {!formatted && volumes.length > 0 && (
         <table className="agm-plan-table" aria-label={t(SECTION_TITLES.planned)}>
           <thead>
             <tr>
