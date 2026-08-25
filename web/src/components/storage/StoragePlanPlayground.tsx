@@ -226,7 +226,7 @@ const DEFAULT_VARIANTS: Variants = {
   cost: "text",
   sections: "tabs",
   tabLayout: "horizontal",
-  tabNote: "dimmed",
+  tabNote: "statement",
   tabBox: false,
   tabFill: false,
   scroll: "sections",
@@ -2201,9 +2201,8 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
   current: "hard_drive",
 };
 
-/* The first sentence of each explanation, cut to a phrase. Read down the side
-   the three of them say what the panel is for before any of them is opened,
-   which is room a strip across the top does not have. */
+/* The first sentence of each explanation, cut to a phrase. Read together the
+   three say what the panel is for before any of them is opened. */
 const TAB_SUMMARIES: Record<PanelTab, string> = {
   result: "How it ends up",
   planned: "What it will hold",
@@ -3264,9 +3263,7 @@ const PanelTabs = ({
                   {count === undefined
                     ? t(SECTION_TITLES[key])
                     : t(`${SECTION_TITLES[key]} (${count})`)}
-                  {isVertical && (
-                    <span className="agm-plan-tab-summary">{t(TAB_SUMMARIES[key])}</span>
-                  )}
+                  <span className="agm-plan-tab-summary">{t(TAB_SUMMARIES[key])}</span>
                 </TabTitleText>
               </>
             }
@@ -4536,13 +4533,11 @@ const PLAN_CSS = `
 
 /* The mark and the words sit on the same baseline row: PatternFly lays the two
    out inline, and an icon taller than the text rides above it otherwise. */
-.agm-plan-tabs .pf-v6-c-tabs__item-text,
 .agm-plan-tabs .pf-v6-c-tabs__item-icon {
   display: inline-flex;
   align-items: center;
+  height: 1lh;
 }
-
-.agm-plan-tabs .pf-v6-c-tabs__link { align-items: center; }
 
 /*
  * The two answers to "can the heading keep the decision reachable".
@@ -5235,20 +5230,21 @@ const PLAN_CSS = `
   min-height: 0;
 }
 
-/* A line under the name of a vertical tab, at the size the rest of the panel
-   gives its second lines. The name keeps its own line: the two read as a pair,
-   not as a sentence that wrapped. */
-.agm-plan-tabs-vertical .agm-plan-tab-summary {
+/* A line under the name of a tab, at the size the rest of the panel gives its
+   second lines. The name keeps its own line: the two read as a pair, not as a
+   sentence that wrapped. */
+.agm-plan-tabs .agm-plan-tab-summary {
   display: block;
   font-size: var(--pf-t--global--font--size--xs);
+  font-weight: var(--pf-t--global--font--weight--body--default);
   color: var(--pf-t--global--text--color--subtle);
 }
 
-.agm-plan-tabs-vertical .pf-v6-c-tabs__item-text {
+.agm-plan-tabs .pf-v6-c-tabs__item-text {
   display: block;
 }
 
-.agm-plan-tabs-vertical .pf-v6-c-tabs__link {
+.agm-plan-tabs .pf-v6-c-tabs__link {
   align-items: flex-start;
 }
 `;
