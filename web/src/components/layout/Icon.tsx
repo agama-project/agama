@@ -61,6 +61,7 @@ import Globe from "@icons/globe.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Info from "@icons/info.svg?component";
 import InfoI from "@icons/info_i.svg?component";
+import ChatInfo from "@icons/chat_info.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
 import ListAlt from "@icons/list_alt.svg?component";
@@ -129,6 +130,7 @@ const icons = {
   hard_drive: HardDrive,
   info: Info,
   info_i: InfoI,
+  chat_info: ChatInfo,
   keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
   language: Language,

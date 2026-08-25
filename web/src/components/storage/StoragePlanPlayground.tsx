@@ -2219,7 +2219,7 @@ const TabNote = ({ lead, where }: TabExplanation) => (
       <HelperText>
         <HelperTextItem
           className="agm-plan-tab-note"
-          icon={<Icon name="info_i" size="xs" aria-hidden />}
+          icon={<Icon name="chat_info" size="sm" aria-hidden />}
         >
           <div>{lead}</div>
           {where && <div>{where}</div>}
@@ -4417,9 +4417,17 @@ const PLAN_CSS = `
 }
 
 /* The mark reads as part of the sentence, not as a status: the note is
-   guidance about the tab, and nothing about it is a state to colour. */
+   guidance about the tab, and nothing about it is a state to colour.
+ *
+ * It sits on the first line rather than in the middle of the block: a note of
+ * two lines otherwise leaves the mark hanging between them, pointing at
+ * neither. One line box tall, with the mark centred inside it. */
 .agm-plan-tab-note .pf-v6-c-helper-text__item-icon {
   color: inherit;
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
+  height: 1lh;
 }
 
 /* The decision and its label read as one line, with what the value means under
