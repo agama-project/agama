@@ -2137,6 +2137,83 @@ const SECTION_TITLES = {
 };
 
 /**
+ * A tab named in a sentence, and the way there.
+ *
+ * Naming a place is offering the way to it: every tab a sentence mentions is
+ * the tab that changes what the sentence describes, so the name is the link.
+ * The word "tab" stays outside it, since the name alone is a phrase the
+ * sentence happens to share with the strip above.
+ */
+const TabNote = ({ children }: React.PropsWithChildren) => (
+  <div className="agm-plan-section-intro">{children}</div>
+);
+
+const TabLink = ({ tab, onGoTo }: { tab: PanelTab; onGoTo: (tab: PanelTab) => void }) => (
+  <Button variant="link" isInline onClick={() => onGoTo(tab)}>
+    {t(SECTION_TITLES[tab])}
+  </Button>
+);
+
+/**
+ * The sentence each tab opens with: what it holds, and where what it holds is
+ * decided.
+ *
+ * None of them addresses the reader or calls the planned content something the
+ * reader asked for: the plan starts as the installer's own proposal, and an
+ * entry lands on a device for reasons never stated about that device. The
+ * subject is the device and the new system, which the word "planned" and the
+ * tab titles already carry.
+ *
+ * @param subject - the device as the sentences name it, such as "this disk".
+ * @param tabs - the tabs this panel shows, since a volume group being defined
+ *   here has no current content to point at.
+ */
+const tabExplanations = (
+  subject: string,
+  tabs: PanelTab[],
+  onGoTo: (tab: PanelTab) => void,
+): Record<PanelTab, React.ReactNode> => {
+  const link = (tab: PanelTab) => <TabLink tab={tab} onGoTo={onGoTo} />;
+  const hasCurrent = tabs.includes("current");
+
+  return {
+    result: (
+      <>
+        {t(`How ${subject} looks once the installer is done.`)} {t("It follows from the")}{" "}
+        {link("planned")}
+        {hasCurrent && (
+          <>
+            {" "}
+            {t("and")} {link("current")}
+          </>
+        )}{" "}
+        {hasCurrent ? t("tabs, which is where it changes.") : t("tab, which is where it changes.")}
+      </>
+    ),
+    planned: (
+      <>
+        {t(`What ${subject} will hold for the new system.`)}{" "}
+        {hasCurrent && (
+          <>
+            {t(
+              "Making room for it may mean deleting or shrinking what is there today, decided in the",
+            )}{" "}
+            {link("current")} {t("tab.")}
+          </>
+        )}
+      </>
+    ),
+    current: (
+      <>
+        {t(`What is on ${subject} now, and what becomes of it.`)}{" "}
+        {t("The rule below makes room for what the")} {link("planned")} {t("tab holds, and the")}{" "}
+        {link("result")} {t("tab shows where both end up.")}
+      </>
+    ),
+  };
+};
+
+/**
  * Where the panel can send the reader.
  *
  * The relationship line names objects that live elsewhere in the same list.
@@ -2532,11 +2609,14 @@ const NewSystemSection = ({
   index,
   device,
   systemDevice,
+  explanation,
 }: {
   collection: PartitionableCollection;
   index: number;
   device: Partitionable;
   systemDevice: Storage.Device | null;
+  /** What this tab holds, and which tab changes it. */
+  explanation?: React.ReactNode;
 }) => {
   const navigate = useNavigate();
   const deletePartition = useDeletePartition();
@@ -2564,6 +2644,7 @@ const NewSystemSection = ({
       title={t(SECTION_TITLES.planned)}
       action={add}
       icon="list_alt"
+      before={explanation && <TabNote>{explanation}</TabNote>}
       headingId={headingId}
     >
       {volumes.length === 0 ? (
@@ -2676,11 +2757,14 @@ const CurrentContentSection = ({
   systemDevice,
   space,
   onGoToSettings,
+  explanation,
 }: {
   collection: PartitionableCollection;
   index: number;
   device: Partitionable;
   systemDevice: Storage.Device | null;
+  /** What this tab holds, and which tab changes it. */
+  explanation?: React.ReactNode;
   /* Held by the panel rather than here, because the same decision is offered
      in two places and the request to decide per partition is remembered
      in front of a model that cannot record it. */
@@ -2725,6 +2809,7 @@ const CurrentContentSection = ({
       }
       icon="hard_drive"
       action={inSettings ? undefined : control}
+      before={explanation && <TabNote>{explanation}</TabNote>}
       intro={inSettings ? following : t(SPACE_MEANINGS[policy])}
       headingId={headingId}
     >
@@ -2776,7 +2861,14 @@ const CurrentContentSection = ({
  * The proposal is all or nothing, so the tab is empty exactly when the page is
  * already saying why. It says so in a line rather than showing nothing.
  */
-const DeviceResultSection = ({ deviceName }: { deviceName: string }) => {
+const DeviceResultSection = ({
+  deviceName,
+  explanation,
+}: {
+  deviceName: string;
+  /** What this tab holds, and which tabs change it. */
+  explanation?: React.ReactNode;
+}) => {
   const config = useConfigModel();
   const proposal = useStorageProposal();
   const system = useFlattenDevices();
@@ -2791,7 +2883,12 @@ const DeviceResultSection = ({ deviceName }: { deviceName: string }) => {
   const headingId = "agm-plan-device-result";
 
   return (
-    <PanelSection title={t(SECTION_TITLES.result)} icon="list_alt_check" headingId={headingId}>
+    <PanelSection
+      title={t(SECTION_TITLES.result)}
+      icon="list_alt_check"
+      before={explanation && <TabNote>{explanation}</TabNote>}
+      headingId={headingId}
+    >
       {!proposal && (
         <div className="agm-plan-muted">
           {t("No layout was worked out for this configuration, so there is nothing to show yet.")}
@@ -3005,6 +3102,17 @@ const PartitionableDetail = ({
 
   const goToCurrent = () => goToTab("current");
 
+  /* Under tabs only: each sentence names the tab that changes what it
+     describes, and a stacked panel has no tabs to name. */
+  const notes =
+    sections === "tabs"
+      ? tabExplanations(
+          collection === "drives" ? "this disk" : "this RAID device",
+          tabOrder,
+          goToTab,
+        )
+      : undefined;
+
   const goToSettings = () => document.getElementById(SPACE_SETTING_TOGGLE_ID)?.focus();
 
   /* Keyed by device, so selecting another one starts its sections fresh. The
@@ -3023,7 +3131,9 @@ const PartitionableDetail = ({
   );
 
   const key = `${collection}:${index}`;
-  const result = <DeviceResultSection key={key} deviceName={device.name} />;
+  const result = (
+    <DeviceResultSection key={key} deviceName={device.name} explanation={notes?.result} />
+  );
   const first = (
     <NewSystemSection
       key={key}
@@ -3031,6 +3141,7 @@ const PartitionableDetail = ({
       index={index}
       device={device}
       systemDevice={systemDevice}
+      explanation={notes?.planned}
     />
   );
   const second = (
@@ -3042,6 +3153,7 @@ const PartitionableDetail = ({
       systemDevice={systemDevice}
       space={space}
       onGoToSettings={goToSettings}
+      explanation={notes?.current}
     />
   );
 
@@ -3182,11 +3294,14 @@ const VolumeGroupCurrentSection = ({
   systemDevice,
   space,
   onGoToSettings,
+  explanation,
 }: {
   index: number;
   systemDevice: Storage.Device;
   space: SpaceDecision;
   onGoToSettings: () => void;
+  /** What this tab holds, and which tabs change it. */
+  explanation?: React.ReactNode;
 }) => {
   const config = useConfigModel();
   const { spaceLabel, structure, spacePlacement } = useVariants();
@@ -3218,6 +3333,7 @@ const VolumeGroupCurrentSection = ({
       }
       icon="hard_drive"
       action={inSettings ? undefined : <SpacePolicyControl current={policy} onChoose={choose} />}
+      before={explanation && <TabNote>{explanation}</TabNote>}
       intro={inSettings ? following : t(SPACE_MEANINGS[policy])}
       headingId="agm-plan-group-current"
     >
@@ -3252,9 +3368,12 @@ const VolumeGroupCurrentSection = ({
 const VolumeGroupPlannedSection = ({
   index,
   standalone,
+  explanation,
 }: {
   index: number;
   standalone: boolean;
+  /** What this tab holds, and which tab changes it. */
+  explanation?: React.ReactNode;
 }) => {
   const config = useConfigModel();
   const navigate = useNavigate();
@@ -3271,6 +3390,7 @@ const VolumeGroupPlannedSection = ({
       headingId="agm-plan-logical-volumes"
       icon="list_alt"
       standalone={standalone}
+      before={explanation && <TabNote>{explanation}</TabNote>}
       action={
         <Button
           variant="link"
@@ -3396,12 +3516,17 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
 
   const tabOrder: PanelTab[] = isNew ? ["result", "planned"] : ["result", "planned", "current"];
 
-  const goToCurrent = () => {
-    setTab("current");
+  const goToTab = (target: PanelTab) => {
+    setTab(target);
     tabsRef.current
       ?.querySelectorAll<HTMLElement>('[role="tab"]')
-      [tabOrder.indexOf("current")]?.focus();
+      [tabOrder.indexOf(target)]?.focus();
   };
+
+  const goToCurrent = () => goToTab("current");
+
+  const notes =
+    sections === "tabs" ? tabExplanations("this volume group", tabOrder, goToTab) : undefined;
 
   const settings = settingsOf([
     ...relationshipSettings(targets),
@@ -3419,6 +3544,7 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
     <DeviceResultSection
       key={group.vgName}
       deviceName={systemDevice?.name || `/dev/${group.vgName}`}
+      explanation={notes?.result}
     />
   );
 
@@ -3427,6 +3553,7 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
       key={group.vgName}
       index={index}
       standalone={isNew && sections === "stacked"}
+      explanation={notes?.planned}
     />
   );
 
@@ -3437,6 +3564,7 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
       systemDevice={systemDevice}
       space={space}
       onGoToSettings={goToSettings}
+      explanation={notes?.current}
     />
   );
 
@@ -5197,17 +5325,33 @@ const BootDetail = () => {
     if (target) setBootDevice(target);
   };
 
+  const bootDeviceSelection = bootDeviceName
+    ? selectionForDevice(config, bootDeviceName)
+    : undefined;
+  const bootDeviceLink = bootDeviceSelection ? (
+    <Button variant="link" isInline onClick={() => goToDevice(bootDeviceSelection)}>
+      {t(`See the final layout of ${baseName(bootDeviceName)}`)}
+    </Button>
+  ) : null;
+
   /* Only where the value leaves something open. Which disk was picked is the
-     row below, and what turning boot off costs is the notice beside it. */
+     row below, and what turning boot off costs is the notice beside it. What
+     the decision costs is read on the disk that pays it, so the sentence sends
+     the reader there rather than describing it here. */
   const modeExplanation = () => {
     if (mode === "auto") {
-      return bootDeviceName
-        ? t(
+      return bootDeviceName ? (
+        <>
+          {t(
             `Partitions to boot are set up if needed at the installation disk. Currently ${baseName(bootDeviceName)}, based on the location of the / file system.`,
-          )
-        : t(
-            "Partitions to boot are set up if needed at the installation disk, based on the location of the / file system.",
-          );
+          )}{" "}
+          {bootDeviceLink}
+        </>
+      ) : (
+        t(
+          "Partitions to boot are set up if needed at the installation disk, based on the location of the / file system.",
+        )
+      );
     }
 
     return undefined;
@@ -5238,15 +5382,6 @@ const BootDetail = () => {
       ),
     explanation: bootloaderExplanation(),
   };
-
-  const bootDeviceSelection = bootDeviceName
-    ? selectionForDevice(config, bootDeviceName)
-    : undefined;
-  const bootDeviceLink = bootDeviceSelection ? (
-    <Button variant="link" isInline onClick={() => goToDevice(bootDeviceSelection)}>
-      {t(`See what else happens to ${baseName(bootDeviceName)}`)}
-    </Button>
-  ) : null;
 
   const settings: Setting[] = settingsOf([
     {
