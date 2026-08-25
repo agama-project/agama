@@ -79,7 +79,9 @@ import {
   DropdownItem,
   DropdownList,
   EmptyState,
+  EmptyStateActions,
   EmptyStateBody,
+  EmptyStateFooter,
   Flex,
   FlexItem,
   HelperText,
@@ -2418,6 +2420,9 @@ type Setting = {
   value?: React.ReactNode;
   /** Only where it says something the value does not. */
   explanation?: React.ReactNode;
+  /** Overrides how the list reads this one: a value that is a name sits beside
+      its term, a value that is a sentence sits under it. */
+  layout?: "inline" | "stacked";
 };
 
 /**
@@ -2438,9 +2443,12 @@ const SettingsList = ({
       way a form does, which suits a list that is mostly controls. */
   layout?: "inline" | "stacked";
 }) => (
-  <dl className={`agm-plan-settings agm-plan-settings-${layout}`}>
+  <dl className="agm-plan-settings">
     {settings.map((setting) => (
-      <div className="agm-plan-setting" key={setting.key}>
+      <div
+        className={`agm-plan-setting agm-plan-settings-${setting.layout || layout}`}
+        key={setting.key}
+      >
         <dt>
           {/* Decorative: what the row is about, the term beside it says. The
               mark is there to give the eye a rail without a box being drawn. */}
@@ -2704,37 +2712,63 @@ const NewSystemSection = ({
   return (
     <PanelSection
       title={t(SECTION_TITLES.planned)}
-      action={formatted ? edit : add}
       icon="list_alt"
       before={explanation}
       headingId={headingId}
     >
-      {statements && statements.length > 0 && <SettingsList settings={statements} />}
+      {/* Every explanation in the tab sits at the same inset, so the ones about
+          the device as a whole line up with the one about the tab.
+
+          Stacked, not inline: these statements carry a sentence rather than a
+          value, and a sentence set beside its term runs on from it. */}
+      {statements && statements.length > 0 && (
+        <NestedContent margin="mxXs" className="agm-plan-statements">
+          <SettingsList settings={statements} layout="stacked" />
+        </NestedContent>
+      )}
       {formatted && (
-        <div className="agm-plan-muted">
+        <NestedContent margin="mxXs" className="agm-plan-muted">
           <div>{asWhole()}</div>
           <div>{t("Nothing is partitioned here, so there is nothing else to plan.")}</div>
-        </div>
+        </NestedContent>
       )}
+      {/* With nothing planned, the invitation belongs to the state that says so:
+          an empty state and a lone button underneath it are the same offer made
+          twice. */}
       {!formatted && volumes.length === 0 && users.length > 0 && (
         /* Everything planned for this device is planned somewhere else: it is
            a member, and what it holds is decided in the panel of whatever it
            is a member of. */
-        <div className="agm-plan-muted">
-          <div>{t("No partitions are planned here.")}</div>
-          <div>
+        <EmptyState titleText={t("No partitions are planned here")} headingLevel="h4" variant="sm">
+          <EmptyStateBody>
             {t("The whole device goes to")} <RelatedNames items={users} />
-          </div>
-        </div>
+          </EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateActions>{add}</EmptyStateActions>
+          </EmptyStateFooter>
+        </EmptyState>
       )}
       {!formatted && volumes.length === 0 && users.length === 0 && (
         /* The state first, the invitation second. A device reaches this panel
            by being part of the plan, so what is empty is its content, not its
            membership: an untouched device is absent from the list entirely. */
-        <div className="agm-plan-muted">
-          <div>{t("Nothing planned for this device yet.")}</div>
-          <div>{t("Add a volume, or reuse one of the partitions already on it.")}</div>
-        </div>
+        <EmptyState
+          titleText={t("Nothing planned for this device yet")}
+          headingLevel="h4"
+          variant="sm"
+        >
+          <EmptyStateBody>
+            {t("Add a volume, or reuse one of the partitions already on it.")}
+          </EmptyStateBody>
+          <EmptyStateFooter>
+            <EmptyStateActions>{add}</EmptyStateActions>
+          </EmptyStateFooter>
+        </EmptyState>
+      )}
+      {/* After everything the tab has to say, and before the table it acts on:
+          in the head it read as an action on the explanations under it. */}
+      {(formatted || volumes.length > 0) && (
+        <div className="agm-plan-section-action">{formatted ? edit : add}</div>
       )}
       {!formatted && volumes.length > 0 && (
         <table className="agm-plan-table" aria-label={t(SECTION_TITLES.planned)}>
@@ -3109,6 +3143,10 @@ const PanelTabs = ({
 }) => {
   const keys = tabs.map((tab) => tab.key);
   const { tabLayout } = useVariants();
+  /* PatternFly styles the strip and leaves the two halves to their container:
+     the strip is an inline-flex column and the panel is a plain sibling after
+     it, so a container that does not put them in a row gets the panel under the
+     strip, which is what the PatternFly demo shows. The wrapper does it. */
   const isVertical = tabLayout === "vertical";
   const own = useRef<HTMLDivElement>(null);
   const strip = stripRef || own;
@@ -3258,6 +3296,12 @@ const PartitionableDetail = ({
     </>
   );
 
+  /* What the configuration asks for here, which is a partition each for a
+     partitioned device and one for a device formatted as a whole, and what the
+     device holds today. */
+  const plannedCount = device.filesystem ? 1 : layoutEntries(device).length;
+  const currentCount = (systemDevice?.partitions || []).length;
+
   /* What the device is used by, and that the installer adds partitions to it
      for booting. Both are statements about what is planned for the device, and
      neither has a row in the table, so they read above it.
@@ -3270,33 +3314,30 @@ const PartitionableDetail = ({
   const plannedStatements = settingsOf([
     ...relationshipSettings([
       { label: t("Used by"), items: usersOf(config, allDevices, device.name) },
-    ]),
+    ]).map((setting) => ({ ...setting, layout: "inline" as const })),
     bootRole !== "none" && {
       key: "boot",
       icon: "restart_alt" as const,
       term: t("Boot device"),
-      /* The value ties itself to the table under it. Without the connective the
-         term and the sentence read as one run-on line, and the statement claims
-         the whole tab rather than adding to what the table already lists. */
-      value: t(
-        "Besides the content below, the installer adds the partitions needed to start the new system here.",
-      ),
+      /* The statement adds to what the tab lists, so it says so, but only where
+         the tab lists anything: on a device whose whole space goes to a volume
+         group there is no content below to be beside. */
+      value: plannedCount
+        ? t(
+            "Besides the content below, the partitions needed to start the new system will be added here.",
+          )
+        : t("The partitions needed to start the new system will be added here."),
       explanation: (
         <>
-          {t("See them in")} <TabLink tab="result" onGoTo={goToTab} />, {t("or adjust the")}{" "}
+          {t("See them in the")} <TabLink tab="result" onGoTo={goToTab} /> {t("tab, or adjust the")}{" "}
           <Button variant="link" isInline onClick={goToBoot}>
             {t("Boot options")}
           </Button>
+          {t(".")}
         </>
       ),
     },
   ]);
-
-  /* What the configuration asks for here, which is a partition each for a
-     partitioned device and one for a device formatted as a whole, and what the
-     device holds today. */
-  const plannedCount = device.filesystem ? 1 : layoutEntries(device).length;
-  const currentCount = (systemDevice?.partitions || []).length;
 
   const key = `${collection}:${index}`;
   const result = (
@@ -4664,7 +4705,7 @@ const PLAN_CSS = `
   margin: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--pf-t--global--spacer--sm);
+  gap: var(--pf-t--global--spacer--md);
   align-content: start;
 }
 
@@ -5032,17 +5073,16 @@ const PLAN_CSS = `
 
 /* A label with its control under it, the way a form reads. One field per line:
    two to a line saves height and costs the reader a straight column of labels
-   to run down. */
-.agm-plan-settings-stacked {
-  gap: var(--pf-t--global--spacer--md);
-}
+   to run down.
 
-.agm-plan-settings-stacked .agm-plan-setting > dt,
-.agm-plan-settings-stacked .agm-plan-setting > dd {
+   Per entry rather than per list: a name reads beside its term and a sentence
+   reads under it, and one list can hold both. */
+.agm-plan-setting.agm-plan-settings-stacked > dt,
+.agm-plan-setting.agm-plan-settings-stacked > dd {
   display: block;
 }
 
-.agm-plan-settings-stacked .agm-plan-setting > dd {
+.agm-plan-setting.agm-plan-settings-stacked > dd {
   margin-block-start: var(--pf-t--global--spacer--xs);
 }
 
@@ -5071,7 +5111,9 @@ const PLAN_CSS = `
  * .agm-plan-tabs more than once, and a single class here loses to whichever
  * copy comes after it. */
 .agm-plan-tabs.agm-plan-tabs-vertical {
+  display: flex;
   flex-direction: row;
+  align-items: stretch;
   gap: var(--pf-t--global--spacer--md);
 }
 
@@ -5105,6 +5147,20 @@ const PLAN_CSS = `
   border-radius: var(--pf-t--global--border--radius--small);
   padding-block: var(--pf-t--global--spacer--sm);
   padding-inline: var(--pf-t--global--spacer--md);
+}
+
+/* The invitation sits against the trailing edge, the way it did in the head of
+   the section, with room between it and the table it adds to. */
+.agm-plan-section-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-block: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--sm);
+}
+
+/* What a statement is about, at the weight of a term: the sentence under it is
+   long enough that the name has to be findable at a glance. */
+.agm-plan-statements .agm-plan-setting > dt {
+  font-weight: var(--pf-t--global--font--weight--body--bold);
 }
 `;
 
