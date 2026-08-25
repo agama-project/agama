@@ -76,6 +76,10 @@ import {
   DrawerPanelBody,
   DrawerPanelContent,
   Dropdown,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   DropdownItem,
   DropdownList,
   EmptyState,
@@ -2037,21 +2041,29 @@ const SpaceDecisionRow = ({
   const { spaceLabel, spaceControl } = useVariants();
 
   return (
-    <div className="agm-plan-space-row">
+    <Flex
+      alignItems={{ default: "alignItemsCenter" }}
+      gap={{ default: "gapSm" }}
+      className="agm-plan-space-row"
+    >
       {spaceControl === "menu" && (
         <span id={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-row-term">
           {t(SPACE_HEADINGS[spaceLabel])}
         </span>
       )}
-      <SpacePolicyControl current={policy} onChoose={onChoose} />
+      <FlexItem grow={{ default: "grow" }}>
+        <SpacePolicyControl current={policy} onChoose={onChoose} />
+      </FlexItem>
       {/* What the four options mean is read on the options themselves: each
           segment carries its own as a tooltip, on hover and on focus. The menu
           shows three of the four only while it is open, so the value it holds
           keeps its line. */}
       {spaceControl === "menu" && (
-        <div className="agm-plan-muted agm-plan-space-row-meaning">{t(SPACE_MEANINGS[policy])}</div>
+        <FlexItem fullWidth={{ default: "fullWidth" }} className="agm-plan-muted">
+          {t(SPACE_MEANINGS[policy])}
+        </FlexItem>
       )}
-    </div>
+    </Flex>
   );
 };
 
@@ -2375,35 +2387,54 @@ const SettingsList = ({
   /** Inline reads as a sentence; stacked puts the control under its label, the
       way a form does, which suits a list that is mostly controls. */
   layout?: "inline" | "stacked";
-}) => (
-  <dl className="agm-plan-settings">
-    {settings.map((setting) => (
-      <div
-        className={`agm-plan-setting agm-plan-settings-${setting.layout || layout}`}
-        key={setting.key}
-      >
-        <dt>
-          {/* Decorative: what the row is about, the term beside it says. The
-              mark is there to give the eye a rail without a box being drawn. */}
-          <span className="agm-plan-setting-mark" aria-hidden="true">
-            <Icon name={setting.icon} size="xs" />
-          </span>
-          {setting.term}
-        </dt>{" "}
-        <dd>
-          {setting.value}
-          {setting.explanation && (
-            <div>
-              <Text component="small" textStyle="textColorSubtle">
-                {setting.explanation}
-              </Text>
-            </div>
-          )}
-        </dd>
-      </div>
-    ))}
-  </dl>
-);
+}) => {
+  /* PatternFly sets the orientation on the list rather than on the entry, and
+     one list here holds both: a name reads beside its term, a sentence reads
+     under it. Consecutive entries of a kind share a list, which keeps the order
+     the caller wrote. */
+  const runs: { layout: "inline" | "stacked"; items: Setting[] }[] = [];
+  settings.forEach((setting) => {
+    const kind = setting.layout || layout;
+    const last = runs[runs.length - 1];
+    if (last?.layout === kind) last.items.push(setting);
+    else runs.push({ layout: kind, items: [setting] });
+  });
+
+  return (
+    <Stack hasGutter>
+      {runs.map((run) => (
+        <StackItem key={run.items[0].key}>
+          <DescriptionList
+            isCompact
+            isHorizontal={run.layout === "inline"}
+            isFluid={run.layout === "inline"}
+          >
+            {run.items.map((setting) => (
+              <DescriptionListGroup key={setting.key}>
+                {/* The mark is decorative: what the row is about, the term
+                    beside it says. It is there to give the eye a rail without a
+                    box being drawn. */}
+                <DescriptionListTerm icon={<Icon name={setting.icon} size="xs" aria-hidden />}>
+                  {setting.term}
+                </DescriptionListTerm>
+                <DescriptionListDescription>
+                  {setting.value}
+                  {setting.explanation && (
+                    <div>
+                      <Text component="small" textStyle="textColorSubtle">
+                        {setting.explanation}
+                      </Text>
+                    </div>
+                  )}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            ))}
+          </DescriptionList>
+        </StackItem>
+      ))}
+    </Stack>
+  );
+};
 
 /**
  * The space decision, as the value of its row.
@@ -2854,7 +2885,12 @@ const NewSystemSection = ({
       {/* After everything the tab has to say, and before the table it acts on:
           in the head it read as an action on the explanations under it. */}
       {(formatted || volumes.length > 0) && (
-        <div className="agm-plan-section-action">{formatted ? edit : add}</div>
+        <Flex
+          justifyContent={{ default: "justifyContentFlexEnd" }}
+          className="agm-plan-section-action"
+        >
+          {formatted ? edit : add}
+        </Flex>
       )}
       {!formatted && volumes.length > 0 && (
         <table className="agm-plan-table" aria-label={t(SECTION_TITLES.planned)}>
@@ -4559,18 +4595,10 @@ const PLAN_CSS = `
 }
 
 .agm-plan-space-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--pf-t--global--spacer--sm);
   margin-block-end: var(--pf-t--global--spacer--md);
 }
 
 .agm-plan-space-row-term { font-weight: var(--pf-t--global--font--weight--body--bold); }
-
-.agm-plan-space-row .agm-plan-space-segments { flex: 1 1 auto; }
-
-.agm-plan-space-row-meaning { flex-basis: 100%; }
 
 /* The mark and the words sit on the same baseline row: PatternFly lays the two
    out inline, and an icon taller than the text rides above it otherwise. */
@@ -4702,32 +4730,6 @@ const PLAN_CSS = `
   .agm-plan-split-beside {
     grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr);
   }
-}
-
-.agm-plan-settings {
-  margin: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--pf-t--global--spacer--md);
-  align-content: start;
-}
-
-.agm-plan-setting {
-  position: relative;
-  padding-inline-start: var(--pf-t--global--spacer--xl);
-}
-
-.agm-plan-setting-mark {
-  position: absolute;
-  inset-inline-start: 0;
-  top: 0.2em;
-  color: var(--pf-t--global--icon--color--subtle);
-}
-
-.agm-plan-setting > dt,
-.agm-plan-setting > dd {
-  display: inline;
-  margin: 0;
 }
 
 /* A quiet rule rather than a coloured one: the row is a form the reader opened,
@@ -4914,29 +4916,12 @@ const PLAN_CSS = `
   overflow-y: auto;
 }
 
-/* A control and the link belonging to it, on one line. */
-.agm-plan-inline-value {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--pf-t--global--spacer--sm);
-}
-
 /* A label with its control under it, the way a form reads. One field per line:
    two to a line saves height and costs the reader a straight column of labels
    to run down.
 
    Per entry rather than per list: a name reads beside its term and a sentence
    reads under it, and one list can hold both. */
-.agm-plan-setting.agm-plan-settings-stacked > dt,
-.agm-plan-setting.agm-plan-settings-stacked > dd {
-  display: block;
-}
-
-.agm-plan-setting.agm-plan-settings-stacked > dd {
-  margin-block-start: var(--pf-t--global--spacer--xs);
-}
-
 /* A sentence about what the panel names, under the name rather than beside it. */
 .agm-plan-panel-subtitle {
   margin-block-start: var(--pf-t--global--spacer--xs);
@@ -5003,17 +4988,14 @@ const PLAN_CSS = `
   padding-inline: var(--pf-t--global--spacer--md);
 }
 
-/* The invitation sits against the trailing edge, the way it did in the head of
-   the section, with room between it and the table it adds to. */
+/* Room between the invitation and the table it adds to. */
 .agm-plan-section-action {
-  display: flex;
-  justify-content: flex-end;
   margin-block: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--sm);
 }
 
 /* What a statement is about, at the weight of a term: the sentence under it is
    long enough that the name has to be findable at a glance. */
-.agm-plan-statements .agm-plan-setting > dt {
+.agm-plan-statements .pf-v6-c-description-list__term {
   font-weight: var(--pf-t--global--font--weight--body--bold);
 }
 
@@ -5072,10 +5054,6 @@ const PLAN_CSS = `
 }
 
 .agm-plan-switches-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--pf-t--global--spacer--md);
   padding: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
   border-block-end: 1px solid var(--pf-t--global--border--color--subtle);
 }
@@ -5088,10 +5066,6 @@ const PLAN_CSS = `
 }
 
 .agm-plan-switch {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--pf-t--global--spacer--md);
   font-size: var(--pf-t--global--font--size--body--sm);
 }
 
@@ -5161,7 +5135,11 @@ const EncryptionDetail = () => {
       icon: "lock",
       term: t("Encryption"),
       value: (
-        <span className="agm-plan-inline-value">
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapSm" }}
+          display={{ default: "inlineFlex" }}
+        >
           {t(installationEncryption(config))}
           <Button
             variant="link"
@@ -5170,7 +5148,7 @@ const EncryptionDetail = () => {
           >
             {t("Change")}
           </Button>
-        </span>
+        </Flex>
       ),
       explanation: encrypted
         ? t("The password is asked for once, and again on every start unless the TPM holds it.")
@@ -5668,14 +5646,18 @@ const BootDetail = () => {
          own: it is the same object the menu names, and a link under a control
          reads as something the control did. */
       value: (
-        <span className="agm-plan-inline-value">
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapSm" }}
+          display={{ default: "inlineFlex" }}
+        >
           <BootDiskMenu
             current={bootDeviceName}
             devices={candidates}
             onChoose={(name) => setBootDevice(name)}
           />
           {bootDeviceLink}
-        </span>
+        </Flex>
       ),
       explanation: bootDeviceName
         ? undefined
@@ -5996,7 +5978,12 @@ const PlanSettingsPanel = ({
 
   return (
     <div className="agm-plan-switches" role="group" aria-label={t("Playground variants")}>
-      <div className="agm-plan-switches-head">
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        gap={{ default: "gapMd" }}
+        className="agm-plan-switches-head"
+      >
         <Text isBold>{t("Variants")}</Text>
         <Button
           variant="plain"
@@ -6004,10 +5991,16 @@ const PlanSettingsPanel = ({
           icon={<Icon name="close" size="xs" />}
           onClick={() => setIsOpen(false)}
         />
-      </div>
+      </Flex>
       <div className="agm-plan-switches-body">
         {VARIANT_CONTROLS.map(({ key, label, options }) => (
-          <div className="agm-plan-switch" key={key}>
+          <Flex
+            alignItems={{ default: "alignItemsCenter" }}
+            justifyContent={{ default: "justifyContentSpaceBetween" }}
+            gap={{ default: "gapMd" }}
+            className="agm-plan-switch"
+            key={key}
+          >
             <span id={`agm-plan-switch-${key}`}>{t(label)}</span>
             <ToggleGroup aria-labelledby={`agm-plan-switch-${key}`}>
               {options.map((option) => (
@@ -6019,7 +6012,7 @@ const PlanSettingsPanel = ({
                 />
               ))}
             </ToggleGroup>
-          </div>
+          </Flex>
         ))}
       </div>
     </div>
