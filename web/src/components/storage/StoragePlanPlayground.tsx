@@ -3233,7 +3233,13 @@ const PanelTabs = ({
     /* The wrapper is not decoration: PatternFly's Tabs renders a fragment, so a
        className on it lands on the tab strip. Giving the strip a flex height
        stretched it to fill the panel and pushed the content to the bottom. */
-    <div className={`agm-plan-tabs agm-plan-tabs-${tabLayout}`} ref={strip} onKeyDown={move}>
+    <div
+      className={`agm-plan-tabs agm-plan-tabs-${tabLayout}${
+        tabSummary ? " agm-plan-tabs-described" : ""
+      }`}
+      ref={strip}
+      onKeyDown={move}
+    >
       <Tabs
         activeKey={keys.indexOf(active)}
         onSelect={(_event, key) => onSelect(keys[Number(key)])}
@@ -5301,6 +5307,15 @@ const PLAN_CSS = `
   justify-content: space-between;
   gap: var(--pf-t--global--spacer--md);
   font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+/* With a phrase under it, the name takes a size of its own: the two lines are
+   a name and a gloss, and at one size apart they read as one wrapped sentence
+   instead. Only where the phrase is shown, since a lone name has nothing to be
+   told apart from. */
+.agm-plan-tabs-described .pf-v6-c-tabs__item-text {
+  font-size: var(--pf-t--global--font--size--body--lg);
+  line-height: var(--pf-t--global--font--line-height--heading);
 }
 `;
 
