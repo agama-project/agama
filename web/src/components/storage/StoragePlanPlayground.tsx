@@ -2149,7 +2149,7 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
  * about the tab, and the indent and the mark say so before a word is read.
  */
 const TabNote = ({ children }: React.PropsWithChildren) => (
-  <NestedContent margin={["mxMd", "mtSm", "mbMd"]}>
+  <NestedContent margin="mXs">
     <HelperText>
       <HelperTextItem
         className="agm-plan-tab-note"
@@ -4327,7 +4327,8 @@ const PLAN_CSS = `
    of the helper text on the page uses and its mark takes the informative
    colour rather than the text colour around it. */
 .agm-plan-tab-note {
-  font-size: var(--pf-t--global--font--size--body--sm);
+  font-size: var(--pf-t--global--font--size--xs);
+  color: var(--pf-t--global--text--color--subtle);
 }
 
 .agm-plan-tab-note .pf-v6-c-helper-text__item-icon {
