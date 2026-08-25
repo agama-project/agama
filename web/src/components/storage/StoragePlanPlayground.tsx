@@ -169,7 +169,7 @@ type Selection = { collection: Collection; index: number };
 
 type CostStyle = "text" | "chips";
 type PanelSections = "stacked" | "tabs";
-type PanelTab = "layout" | "content";
+type PanelTab = "result" | "planned" | "current";
 type PanelScroll = "body" | "sections";
 type Density = "comfortable" | "compact";
 /** How much weight the panel's own type carries, next to its tables. */
@@ -2120,15 +2120,20 @@ const PanelSection = ({
   );
 };
 
-/* "Planned" rather than "New": new is relative, and the reader has to work out
- * relative to what. Both halves keep the word content, which is what makes the
+/* Read left to right, the three titles read time forwards: what the device
+ * becomes, what the configuration asks of it, what is on it now.
+ *
+ * "Planned" rather than "New": new is relative, and the reader has to work out
+ * relative to what. Two of them keep the word content, which is what makes that
  * pair symmetrical (what should be there, what is there now) and what lets the
  * current half say "the device is empty" honestly: under a heading about
- * content, empty claims no content rather than no bytes. It also leaves the
- * result section's machine-wide "Final layout" in vocabulary of its own. */
+ * content, empty claims no content rather than no bytes. The first borrows the
+ * name the result section already uses, since it is the same table narrowed to
+ * one device. */
 const SECTION_TITLES = {
-  layout: "Planned content",
-  content: "Current content",
+  result: "Final layout",
+  planned: "Planned content",
+  current: "Current content",
 };
 
 /**
@@ -2556,7 +2561,7 @@ const NewSystemSection = ({
 
   return (
     <PanelSection
-      title={t(SECTION_TITLES.layout)}
+      title={t(SECTION_TITLES.planned)}
       action={add}
       icon="list_alt"
       headingId={headingId}
@@ -2570,7 +2575,7 @@ const NewSystemSection = ({
           <div>{t("Add a volume, or reuse one of the partitions already on it.")}</div>
         </div>
       ) : (
-        <table className="agm-plan-table" aria-label={t(SECTION_TITLES.layout)}>
+        <table className="agm-plan-table" aria-label={t(SECTION_TITLES.planned)}>
           <thead>
             <tr>
               <th scope="col">{t("Mount point")}</th>
@@ -2708,7 +2713,7 @@ const CurrentContentSection = ({
    * header a screen reader can announce, which a list of divs never does. */
   return (
     <PanelSection
-      title={t(SECTION_TITLES.content)}
+      title={t(SECTION_TITLES.current)}
       /* A space policy is a permission, not an instruction: it says what the
          installer may do, and the solver decides what it actually does. That is
          the only reading under which "shrink if needed" and "delete if needed"
@@ -2726,7 +2731,7 @@ const CurrentContentSection = ({
       {children.length === 0 ? (
         <div className="agm-plan-muted">{t("The device is empty.")}</div>
       ) : (
-        <table className="agm-plan-table" aria-label={t(SECTION_TITLES.content)}>
+        <table className="agm-plan-table" aria-label={t(SECTION_TITLES.current)}>
           <thead>
             <tr>
               <th scope="col">{t("Partition")}</th>
@@ -2755,6 +2760,50 @@ const CurrentContentSection = ({
             ))}
           </tbody>
         </table>
+      )}
+    </PanelSection>
+  );
+};
+
+/**
+ * This device's slice of the result.
+ *
+ * The same table the result section shows for the whole machine, narrowed to
+ * one device, so the reader who came to check a disk gets the answer without
+ * leaving the panel. It is also the only place the partitions the solver adds
+ * for booting appear, which is what makes the sizes here add up.
+ *
+ * The proposal is all or nothing, so the tab is empty exactly when the page is
+ * already saying why. It says so in a line rather than showing nothing.
+ */
+const DeviceResultSection = ({ deviceName }: { deviceName: string }) => {
+  const config = useConfigModel();
+  const proposal = useStorageProposal();
+  const system = useFlattenDevices();
+  const staging = useStagingDevices();
+  const actions = useActions();
+
+  const manager = new DevicesManager(system, staging, actions);
+  const devices = manager
+    .usedDevices(config?.drives?.map((drive) => drive.name) || [])
+    .filter((device) => device.name === deviceName);
+
+  const headingId = "agm-plan-device-result";
+
+  return (
+    <PanelSection title={t(SECTION_TITLES.result)} icon="list_alt_check" headingId={headingId}>
+      {!proposal && (
+        <div className="agm-plan-muted">
+          {t("No layout was worked out for this configuration, so there is nothing to show yet.")}
+        </div>
+      )}
+      {proposal && devices.length === 0 && (
+        <div className="agm-plan-muted">
+          {t("This device is left as it is, so the installer changes nothing on it.")}
+        </div>
+      )}
+      {proposal && devices.length > 0 && (
+        <ProposalResultTable devicesManager={manager} devices={devices} />
       )}
     </PanelSection>
   );
@@ -2842,21 +2891,20 @@ const PanelHeader = ({
  */
 const PanelTabs = ({
   deviceName,
+  tabs,
   active,
   onSelect,
-  first,
-  second,
   stripRef,
 }: {
   deviceName: string;
+  /** The tabs to show, in the order they are read. */
+  tabs: { key: PanelTab; content: React.ReactNode }[];
   active: PanelTab;
   onSelect: (tab: PanelTab) => void;
-  first: React.ReactNode;
-  second: React.ReactNode;
   /** Lets a link elsewhere in the panel move focus onto the tab it opens. */
   stripRef?: React.RefObject<HTMLDivElement>;
 }) => {
-  const keys: PanelTab[] = ["layout", "content"];
+  const keys = tabs.map((tab) => tab.key);
   const own = useRef<HTMLDivElement>(null);
   const strip = stripRef || own;
 
@@ -2896,20 +2944,16 @@ const PanelTabs = ({
            adds a landmark inside the panel, which is a region already. */
         tabListAriaLabel={t(`Storage content of ${deviceName}`)}
       >
-        <Tab
-          eventKey={0}
-          tabIndex={active === "layout" ? 0 : -1}
-          title={<TabTitleText>{t(SECTION_TITLES.layout)}</TabTitleText>}
-        >
-          {first}
-        </Tab>
-        <Tab
-          eventKey={1}
-          tabIndex={active === "content" ? 0 : -1}
-          title={<TabTitleText>{t(SECTION_TITLES.content)}</TabTitleText>}
-        >
-          {second}
-        </Tab>
+        {tabs.map(({ key, content }, at) => (
+          <Tab
+            key={key}
+            eventKey={at}
+            tabIndex={active === key ? 0 : -1}
+            title={<TabTitleText>{t(SECTION_TITLES[key])}</TabTitleText>}
+          >
+            {content}
+          </Tab>
+        ))}
       </Tabs>
     </div>
   );
@@ -2939,7 +2983,7 @@ const PartitionableDetail = ({
    * above it can send the reader to the half it is talking about. It outlives
    * the selection on purpose: comparing what two disks hold today should not
    * send the reader back to the other tab between them. */
-  const [tab, setTab] = useState<PanelTab>("layout");
+  const [tab, setTab] = useState<PanelTab>("result");
   const tabsRef = useRef<HTMLDivElement>(null);
   const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
   const bootRole = bootRoleOf(config, device?.name || "");
@@ -2947,13 +2991,19 @@ const PartitionableDetail = ({
 
   if (!device) return null;
 
+  const tabOrder: PanelTab[] = ["result", "planned", "current"];
+
   /* A link that opens a tab has to put the reader on it. Without the focus
    * move a keyboard reader is left wherever the link was, several blocks above
    * the table the link just opened. */
-  const goToCurrent = () => {
-    setTab("content");
-    tabsRef.current?.querySelectorAll<HTMLElement>('[role="tab"]')[1]?.focus();
+  const goToTab = (target: PanelTab) => {
+    setTab(target);
+    tabsRef.current
+      ?.querySelectorAll<HTMLElement>('[role="tab"]')
+      [tabOrder.indexOf(target)]?.focus();
   };
+
+  const goToCurrent = () => goToTab("current");
 
   const goToSettings = () => document.getElementById(SPACE_SETTING_TOGGLE_ID)?.focus();
 
@@ -2973,6 +3023,7 @@ const PartitionableDetail = ({
   );
 
   const key = `${collection}:${index}`;
+  const result = <DeviceResultSection key={key} deviceName={device.name} />;
   const first = (
     <NewSystemSection
       key={key}
@@ -2998,10 +3049,13 @@ const PartitionableDetail = ({
     sections === "tabs" ? (
       <PanelTabs
         deviceName={baseName(device.name)}
+        tabs={[
+          { key: "result", content: result },
+          { key: "planned", content: first },
+          { key: "current", content: second },
+        ]}
         active={tab}
         onSelect={setTab}
-        first={first}
-        second={second}
         stripRef={tabsRef}
       />
     ) : (
@@ -3156,7 +3210,7 @@ const VolumeGroupCurrentSection = ({
 
   return (
     <PanelSection
-      title={t(SECTION_TITLES.content)}
+      title={t(SECTION_TITLES.current)}
       lead={
         inSettings ? undefined : (
           <span id={SPACE_CONTROL_LABEL_ID}>{t(SPACE_HEADINGS[spaceLabel])}</span>
@@ -3167,7 +3221,7 @@ const VolumeGroupCurrentSection = ({
       intro={inSettings ? following : t(SPACE_MEANINGS[policy])}
       headingId="agm-plan-group-current"
     >
-      <table className="agm-plan-table" aria-label={t(SECTION_TITLES.content)}>
+      <table className="agm-plan-table" aria-label={t(SECTION_TITLES.current)}>
         <thead>
           <tr>
             <th scope="col">{t("Logical volume")}</th>
@@ -3213,7 +3267,7 @@ const VolumeGroupPlannedSection = ({
 
   return (
     <PanelSection
-      title={t(SECTION_TITLES.layout)}
+      title={t(SECTION_TITLES.planned)}
       headingId="agm-plan-logical-volumes"
       icon="list_alt"
       standalone={standalone}
@@ -3300,8 +3354,8 @@ const VolumeGroupPlannedSection = ({
  * The panel for a volume group.
  *
  * A group that exists on the system holds logical volumes already, so it gets
- * the same two tabs a disk does. One being defined here holds nothing yet, so
- * it keeps the single section: a tab named Current content that opens on
+ * the same three tabs a disk does. One being defined here holds nothing yet, so
+ * it drops the current content: a tab named Current content that opens on
  * nothing is worse than no tab at all.
  */
 const VolumeGroupDetail = ({ index }: { index: number }) => {
@@ -3315,7 +3369,7 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
     explanations,
     settings: settingsPlacement,
   } = useVariants();
-  const [tab, setTab] = useState<PanelTab>("layout");
+  const [tab, setTab] = useState<PanelTab>("result");
   const tabsRef = useRef<HTMLDivElement>(null);
   const space = useSpacePolicy("volumeGroups", index, group?.spacePolicy || "keep");
 
@@ -3333,17 +3387,21 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
 
   const relationships = <Relationships groups={targets} />;
 
-  const goToCurrent = () => {
-    setTab("content");
-    tabsRef.current?.querySelectorAll<HTMLElement>('[role="tab"]')[1]?.focus();
-  };
-
   const goToSettings = () => document.getElementById(SPACE_SETTING_TOGGLE_ID)?.focus();
 
   const existing = systemDevice?.logicalVolumes || [];
   /* A group being defined here holds nothing yet, so there is no rule about
-     existing content to offer and no second tab to name. */
+     existing content to offer and no tab to name for it. */
   const isNew = existing.length === 0;
+
+  const tabOrder: PanelTab[] = isNew ? ["result", "planned"] : ["result", "planned", "current"];
+
+  const goToCurrent = () => {
+    setTab("current");
+    tabsRef.current
+      ?.querySelectorAll<HTMLElement>('[role="tab"]')
+      [tabOrder.indexOf("current")]?.focus();
+  };
 
   const settings = settingsOf([
     ...relationshipSettings(targets),
@@ -3357,7 +3415,20 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
       }),
   ]);
 
-  const planned = <VolumeGroupPlannedSection key={group.vgName} index={index} standalone={isNew} />;
+  const result = (
+    <DeviceResultSection
+      key={group.vgName}
+      deviceName={systemDevice?.name || `/dev/${group.vgName}`}
+    />
+  );
+
+  const planned = (
+    <VolumeGroupPlannedSection
+      key={group.vgName}
+      index={index}
+      standalone={isNew && sections === "stacked"}
+    />
+  );
 
   const current = isNew ? null : (
     <VolumeGroupCurrentSection
@@ -3370,9 +3441,9 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
   );
 
   const content = (() => {
-    if (isNew) return planned;
-
     if (sections === "stacked") {
+      if (isNew) return planned;
+
       return (
         <Stack className="agm-plan-sections">
           <StackItem isFilled>{planned}</StackItem>
@@ -3381,13 +3452,14 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
       );
     }
 
+    const panels = { result, planned, current };
+
     return (
       <PanelTabs
         deviceName={group.vgName}
+        tabs={tabOrder.map((key) => ({ key, content: panels[key] }))}
         active={tab}
         onSelect={setTab}
-        first={planned}
-        second={current}
         stripRef={tabsRef}
       />
     );
