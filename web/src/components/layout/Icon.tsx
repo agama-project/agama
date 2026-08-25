@@ -90,6 +90,8 @@ import MoreTime from "@icons/more_time.svg?component";
 import TaskAlt from "@icons/task_alt.svg?component";
 import HourglassDisabled from "@icons/hourglass_disabled.svg?component";
 import Pending from "@icons/pending.svg?component";
+import PendingActions from "@icons/pending_actions.svg?component";
+import Schema from "@icons/schema.svg?component";
 
 const icons = {
   add: Add,
@@ -157,6 +159,8 @@ const icons = {
   task_alt: TaskAlt,
   hourglass_disabled: HourglassDisabled,
   pending: Pending,
+  pending_actions: PendingActions,
+  schema: Schema,
 };
 
 /**

@@ -91,12 +91,14 @@ import {
   StackItem,
   Tab,
   Tabs,
+  TabTitleIcon,
   ToggleGroup,
   ToggleGroupItem,
   TabTitleText,
   Title,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
 import ProposalActions from "~/components/storage/ProposalActions";
@@ -218,9 +220,9 @@ const DEFAULT_VARIANTS: Variants = {
   typeScale: "current",
   mountPaths: "plain",
   spaceLabel: "terse",
-  spaceControl: "segmented",
+  spaceControl: "menu",
   structure: "blocks",
-  spacePlacement: "settings",
+  spacePlacement: "content",
   /* The version that teaches comes first: a reader meeting this page is being
      asked to understand what an installer may do to their disks. How tall the
      block gets is the reason the other setting exists. */
@@ -2123,6 +2125,15 @@ const SECTION_TITLES = {
   current: "Current content",
 };
 
+/* One mark each, chosen for what the tab is about rather than for storage:
+   the shape the device ends up in, work still to be carried out, and the
+   hardware as it stands. */
+const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
+  result: "schema",
+  planned: "pending_actions",
+  current: "hard_drive",
+};
+
 /**
  * A tab named in a sentence, and the way there.
  *
@@ -2131,8 +2142,23 @@ const SECTION_TITLES = {
  * The word "tab" stays outside it, since the name alone is a phrase the
  * sentence happens to share with the strip above.
  */
+/**
+ * The sentence a tab opens with, set apart from what it describes.
+ *
+ * Helper text rather than a paragraph of body copy: the sentence is guidance
+ * about the tab, and the indent and the mark say so before a word is read.
+ */
 const TabNote = ({ children }: React.PropsWithChildren) => (
-  <div className="agm-plan-section-intro">{children}</div>
+  <NestedContent margin={["mxMd", "mtSm", "mbMd"]}>
+    <HelperText>
+      <HelperTextItem
+        className="agm-plan-tab-note"
+        icon={<Icon name="info" size="xs" aria-hidden />}
+      >
+        {children}
+      </HelperTextItem>
+    </HelperText>
+  </NestedContent>
 );
 
 const TabLink = ({ tab, onGoTo }: { tab: PanelTab; onGoTo: (tab: PanelTab) => void }) => (
@@ -2768,21 +2794,28 @@ const CurrentContentSection = ({
   return (
     <PanelSection
       title={t(SECTION_TITLES.current)}
-      /* A space policy is a permission, not an instruction: it says what the
-         installer may do, and the solver decides what it actually does. That is
-         the only reading under which "shrink if needed" and "delete if needed"
-         make sense, so the label says it. */
-      lead={
-        inSettings ? undefined : (
-          <span id={SPACE_CONTROL_LABEL_ID}>{t(SPACE_HEADINGS[spaceLabel])}</span>
-        )
-      }
       icon="hard_drive"
-      action={inSettings ? undefined : control}
       before={explanation && <TabNote>{explanation}</TabNote>}
-      intro={inSettings ? following : t(SPACE_MEANINGS[policy])}
+      intro={inSettings ? following : undefined}
       headingId={headingId}
     >
+      {/* The decision reads with the table it governs rather than in the head
+          of the section: it is about the rows below it, and the head is about
+          the tab. A space policy is a permission, not an instruction: it says
+          what the installer may do, and the solver decides what it actually
+          does. That is the only reading under which "shrink if needed" and
+          "delete if needed" make sense, so the label says it. */}
+      {!inSettings && (
+        <div className="agm-plan-space-row">
+          <span id={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-row-term">
+            {t(SPACE_HEADINGS[spaceLabel])}
+          </span>
+          {control}
+          <div className="agm-plan-muted agm-plan-space-row-meaning">
+            {t(SPACE_MEANINGS[policy])}
+          </div>
+        </div>
+      )}
       {children.length === 0 ? (
         <div className="agm-plan-muted">{t("The device is empty.")}</div>
       ) : (
@@ -3050,11 +3083,19 @@ const PanelTabs = ({
                result comes to is not counted, since a row there can be a
                partition nothing asked for. */
             title={
-              <TabTitleText>
-                {count === undefined
-                  ? t(SECTION_TITLES[key])
-                  : t(`${SECTION_TITLES[key]} (${count})`)}
-              </TabTitleText>
+              <>
+                {/* Decorative: the words beside it say what the tab holds. The
+                    mark is there to tell the three apart at a glance, the way
+                    the reader tells one row of the device list from another. */}
+                <TabTitleIcon>
+                  <Icon name={TAB_ICONS[key]} size="sm" />
+                </TabTitleIcon>
+                <TabTitleText>
+                  {count === undefined
+                    ? t(SECTION_TITLES[key])
+                    : t(`${SECTION_TITLES[key]} (${count})`)}
+                </TabTitleText>
+              </>
             }
           >
             {content}
@@ -3367,17 +3408,22 @@ const VolumeGroupCurrentSection = ({
   return (
     <PanelSection
       title={t(SECTION_TITLES.current)}
-      lead={
-        inSettings ? undefined : (
-          <span id={SPACE_CONTROL_LABEL_ID}>{t(SPACE_HEADINGS[spaceLabel])}</span>
-        )
-      }
       icon="hard_drive"
-      action={inSettings ? undefined : <SpacePolicyControl current={policy} onChoose={choose} />}
       before={explanation && <TabNote>{explanation}</TabNote>}
-      intro={inSettings ? following : t(SPACE_MEANINGS[policy])}
+      intro={inSettings ? following : undefined}
       headingId="agm-plan-group-current"
     >
+      {!inSettings && (
+        <div className="agm-plan-space-row">
+          <span id={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-row-term">
+            {t(SPACE_HEADINGS[spaceLabel])}
+          </span>
+          <SpacePolicyControl current={policy} onChoose={choose} />
+          <div className="agm-plan-muted agm-plan-space-row-meaning">
+            {t(SPACE_MEANINGS[policy])}
+          </div>
+        </div>
+      )}
       <table className="agm-plan-table" aria-label={t(SECTION_TITLES.current)}>
         <thead>
           <tr>
@@ -4276,6 +4322,44 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
 }
+
+/* The note reads as guidance about the tab, so it is set at the size the rest
+   of the helper text on the page uses and its mark takes the informative
+   colour rather than the text colour around it. */
+.agm-plan-tab-note {
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+.agm-plan-tab-note .pf-v6-c-helper-text__item-icon {
+  color: var(--pf-t--global--icon--color--status--info--default);
+}
+
+/* The decision and its label read as one line, with what the value means under
+   both: the meaning is a sentence, and a sentence beside a control makes the
+   control move as the value changes. */
+.agm-plan-space-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--sm);
+  margin-block-end: var(--pf-t--global--spacer--md);
+}
+
+.agm-plan-space-row-term { font-weight: var(--pf-t--global--font--weight--body--bold); }
+
+.agm-plan-space-row .agm-plan-space-segments { flex: 1 1 auto; }
+
+.agm-plan-space-row-meaning { flex-basis: 100%; }
+
+/* The mark and the words sit on the same baseline row: PatternFly lays the two
+   out inline, and an icon taller than the text rides above it otherwise. */
+.agm-plan-tabs .pf-v6-c-tabs__item-text,
+.agm-plan-tabs .pf-v6-c-tabs__item-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.agm-plan-tabs .pf-v6-c-tabs__link { align-items: center; }
 
 /*
  * The two answers to "can the heading keep the decision reachable".
@@ -5755,9 +5839,9 @@ function StoragePlan(): React.ReactNode {
             '  typeScale("current" | "quiet")     how much weight the panel type carries',
             '  mountPaths("plain" | "italic")     mount paths set apart, or not',
             '  spaceLabel("terse" | "plain")      "Allowed changes" or the longer phrase',
-            '  spaceControl("menu" | "segmented") one menu, or four buttons',
+            '  spaceControl("menu" | "segmented") the space decision as one menu, or as four buttons',
             '  structure("blocks" | "flat")       the named blocks, or round ten\'s stack',
-            '  spacePlacement("settings"|"content")  where the space decision is offered',
+            '  spacePlacement("settings"|"content")  the space decision above its table, or in the settings',
             '  explanations("always" | "sparse")  a line under every setting, or only where it adds',
             '  settings("beside" | "above")       the settings in their own column, or over the content',
             "  bootDebug()                        what the proposal reports about every partition",
