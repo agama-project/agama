@@ -2223,16 +2223,14 @@ const Dimmed = ({ children }: React.PropsWithChildren) => (
  * already says the block is not part of what the tab holds.
  */
 const TabNote = ({ lead, where }: TabExplanation) => (
-  <NestedContent margin={["mxXs", "mtSm", "mbXs"]}>
-    <Dimmed>
-      <HelperText>
-        <HelperTextItem className="agm-plan-tab-note">
-          <div>{lead}</div>
-          {where && <div>{where}</div>}
-        </HelperTextItem>
-      </HelperText>
-    </Dimmed>
-  </NestedContent>
+  <Dimmed>
+    <HelperText>
+      <HelperTextItem className="agm-plan-tab-note">
+        <div>{lead}</div>
+        {where && <div>{where}</div>}
+      </HelperTextItem>
+    </HelperText>
+  </Dimmed>
 );
 
 const TabLink = ({ tab, onGoTo }: { tab: PanelTab; onGoTo: (tab: PanelTab) => void }) => (
@@ -2674,16 +2672,26 @@ const NewSystemSection = ({
   const formatted = device.filesystem;
   const users = usersOf(config, allDevices, device.name);
 
+  const startAdding = () =>
+    navigate(generateEncodedPath(PATHS.addPartition, { collection, index: String(index) }));
+
+  /* "Partition" rather than "volume": what this adds to a disk or a RAID is a
+     partition, and volume is the word the logical ones own. */
+  const addLabel = t("Add partition");
+
+  /* The only thing to do on a device with nothing planned, so it reads as one:
+     a button, not a line of text with an underline. */
+  const addPrimary = (
+    <Button variant="primary" icon={<Icon name="add" size="xs" />} onClick={startAdding}>
+      {addLabel}
+    </Button>
+  );
+
+  /* Beside a table that already lists what is planned, the same offer is one
+     option among the row actions rather than the point of the tab. */
   const add = (
-    <Button
-      variant="link"
-      isInline
-      icon={<Icon name="add" size="xs" />}
-      onClick={() =>
-        navigate(generateEncodedPath(PATHS.addPartition, { collection, index: String(index) }))
-      }
-    >
-      {t("Add volume")}
+    <Button variant="secondary" icon={<Icon name="add" size="xs" />} onClick={startAdding}>
+      {addLabel}
     </Button>
   );
 
@@ -2722,15 +2730,15 @@ const NewSystemSection = ({
           Stacked, not inline: these statements carry a sentence rather than a
           value, and a sentence set beside its term runs on from it. */}
       {statements && statements.length > 0 && (
-        <NestedContent margin="mxXs" className="agm-plan-statements">
+        <div className="agm-plan-statements">
           <SettingsList settings={statements} layout="stacked" />
-        </NestedContent>
+        </div>
       )}
       {formatted && (
-        <NestedContent margin="mxXs" className="agm-plan-muted">
+        <div className="agm-plan-muted">
           <div>{asWhole()}</div>
           <div>{t("Nothing is partitioned here, so there is nothing else to plan.")}</div>
-        </NestedContent>
+        </div>
       )}
       {/* With nothing planned, the invitation belongs to the state that says so:
           an empty state and a lone button underneath it are the same offer made
@@ -2744,7 +2752,7 @@ const NewSystemSection = ({
             {t("The whole device goes to")} <RelatedNames items={users} />
           </EmptyStateBody>
           <EmptyStateFooter>
-            <EmptyStateActions>{add}</EmptyStateActions>
+            <EmptyStateActions>{addPrimary}</EmptyStateActions>
           </EmptyStateFooter>
         </EmptyState>
       )}
@@ -2761,7 +2769,7 @@ const NewSystemSection = ({
             {t("Add a volume, or reuse one of the partitions already on it.")}
           </EmptyStateBody>
           <EmptyStateFooter>
-            <EmptyStateActions>{add}</EmptyStateActions>
+            <EmptyStateActions>{addPrimary}</EmptyStateActions>
           </EmptyStateFooter>
         </EmptyState>
       )}
@@ -3216,7 +3224,11 @@ const PanelTabs = ({
               </>
             }
           >
-            {content}
+            {/* Everything the tab holds reads inside the strip above it, the
+                sentence it opens with included. */}
+            <NestedContent margin={["mxXs", "mtSm"]} className="agm-plan-tab-body">
+              {content}
+            </NestedContent>
           </Tab>
         ))}
       </Tabs>
@@ -5117,7 +5129,11 @@ const PLAN_CSS = `
   gap: var(--pf-t--global--spacer--md);
 }
 
+/* PatternFly gives a vertical strip width 100%, which in a row leaves the panel
+   beside it a sliver. Told to take the width of its own labels instead, capped
+   by the max-width PatternFly already sets on the list. */
 .agm-plan-tabs.agm-plan-tabs-vertical > .pf-v6-c-tabs {
+  --pf-v6-c-tabs--m-vertical--Width: auto;
   flex: 0 0 auto;
   align-self: stretch;
 }
@@ -5161,6 +5177,15 @@ const PLAN_CSS = `
    long enough that the name has to be findable at a glance. */
 .agm-plan-statements .agm-plan-setting > dt {
   font-weight: var(--pf-t--global--font--weight--body--bold);
+}
+
+/* The inset does not cost the panel its own layout: what is inside a tab still
+   stretches and scrolls the way it did as a direct child. */
+.agm-plan-tab-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 `;
 
