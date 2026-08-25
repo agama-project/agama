@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 25 12:10:18 UTC 2026 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Remove beta tag from the SLES and SLES for SAP product names
+  (gh#agama-project/agama#3836).
+
+-------------------------------------------------------------------
 Tue Aug 18 06:28:54 UTC 2026 - Dominique Leuenberger <dimstar@opensuse.org>
 
 - Microos/Kalpa: No longer reference deprecated microos_hardware
