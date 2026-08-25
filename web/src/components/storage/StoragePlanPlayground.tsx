@@ -2088,10 +2088,15 @@ const PanelSection = ({
   const body = <div className="agm-plan-section-body">{children}</div>;
 
   if (isTabbed) {
+    /* A tab whose head holds nothing renders none: the head reserves the height
+       of a heading it is not drawing, which under tabs pushes the content down
+       for no reason a reader can see. */
+    const hasHead = Boolean(leading || action || intro);
+
     return (
       <div className={`agm-plan-section agm-plan-section-scroll-${scroll}`}>
         {before}
-        {head}
+        {hasHead && head}
         {body}
       </div>
     );
@@ -2149,7 +2154,7 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
  * about the tab, and the indent and the mark say so before a word is read.
  */
 const TabNote = ({ children }: React.PropsWithChildren) => (
-  <NestedContent margin="mXs">
+  <NestedContent margin={["mxXs", "mtSm", "mbXs"]}>
     <HelperText>
       <HelperTextItem
         className="agm-plan-tab-note"
@@ -2189,38 +2194,47 @@ const tabExplanations = (
   const link = (tab: PanelTab) => <TabLink tab={tab} onGoTo={onGoTo} />;
   const hasCurrent = tabs.includes("current");
 
+  /* Two lines, not one paragraph: what the tab holds, and then where what it
+     holds is decided. The second line is the one a reader acts on, and it is
+     lost at the end of a wrapped sentence. */
   return {
     result: (
       <>
-        {t(`How ${subject} looks once the installer is done.`)} {t("It follows from the")}{" "}
-        {link("planned")}
-        {hasCurrent && (
-          <>
-            {" "}
-            {t("and")} {link("current")}
-          </>
-        )}{" "}
-        {hasCurrent ? t("tabs, which is where it changes.") : t("tab, which is where it changes.")}
+        <div>{t(`How ${subject} looks once the installer is done.`)}</div>
+        <div>
+          {t("It follows from the")} {link("planned")}
+          {hasCurrent && (
+            <>
+              {" "}
+              {t("and")} {link("current")}
+            </>
+          )}{" "}
+          {hasCurrent
+            ? t("tabs, which is where it changes.")
+            : t("tab, which is where it changes.")}
+        </div>
       </>
     ),
     planned: (
       <>
-        {t(`What ${subject} will hold for the new system.`)}{" "}
+        <div>{t(`What ${subject} will hold for the new system.`)}</div>
         {hasCurrent && (
-          <>
+          <div>
             {t(
               "Making room for it may mean deleting or shrinking what is there today, decided in the",
             )}{" "}
             {link("current")} {t("tab.")}
-          </>
+          </div>
         )}
       </>
     ),
     current: (
       <>
-        {t(`What is on ${subject} now, and what becomes of it.`)}{" "}
-        {t("The rule below makes room for what the")} {link("planned")} {t("tab holds, and the")}{" "}
-        {link("result")} {t("tab shows where both end up.")}
+        <div>{t(`What is on ${subject} now, and what becomes of it.`)}</div>
+        <div>
+          {t("The rule below makes room for what the")} {link("planned")} {t("tab holds, and the")}{" "}
+          {link("result")} {t("tab shows where both end up.")}
+        </div>
       </>
     ),
   };
@@ -3195,7 +3209,12 @@ const PartitionableDetail = ({
       key: "boot",
       icon: "restart_alt" as const,
       term: t("Boot device"),
-      value: t("Partitions needed to start the new system are added here."),
+      /* The value ties itself to the table under it. Without the connective the
+         term and the sentence read as one run-on line, and the statement claims
+         the whole tab rather than adding to what the table already lists. */
+      value: t(
+        "Besides the content below, the installer adds the partitions needed to start the new system here.",
+      ),
       explanation: (
         <>
           {t("See them in")} <TabLink tab="result" onGoTo={goToTab} />, {t("or adjust the")}{" "}
@@ -3283,7 +3302,10 @@ const PartitionableDetail = ({
 
     return (
       <div className={`agm-plan-split agm-plan-split-${settingsPlacement}`}>
-        <SettingsList settings={settings} />
+        {/* With the statements read in the tabs that hold them, a device can
+            have nothing left to say up here. An empty list still takes a row of
+            the grid, and the gap above the tabs is that row. */}
+        {settings.length > 0 && <SettingsList settings={settings} />}
         {content}
       </div>
     );
@@ -3690,7 +3712,10 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
   if (structure === "blocks") {
     return (
       <div className={`agm-plan-split agm-plan-split-${settingsPlacement}`}>
-        <SettingsList settings={settings} />
+        {/* With the statements read in the tabs that hold them, a device can
+            have nothing left to say up here. An empty list still takes a row of
+            the grid, and the gap above the tabs is that row. */}
+        {settings.length > 0 && <SettingsList settings={settings} />}
         {content}
       </div>
     );
