@@ -29,8 +29,6 @@ describe Agama::Commands::AgamaAutoYaST do
 
   let(:fetcher) { instance_double(Agama::AutoYaST::ProfileFetcher) }
   let(:checker) { Agama::AutoYaST::ProfileChecker.new }
-  let(:reporter) { instance_double(Agama::AutoYaST::ProfileReporter, report: true) }
-  let(:questions) { instance_double(Agama::HTTP::Clients::Questions) }
   let(:profile) do
     Yast::ProfileHash.new({ "software" => { "products" => ["openSUSE"] } })
   end
@@ -41,8 +39,6 @@ describe Agama::Commands::AgamaAutoYaST do
   before do
     allow(Agama::AutoYaST::ProfileFetcher).to receive(:new).with(url).and_return(fetcher)
     allow(Agama::AutoYaST::ProfileChecker).to receive(:new).and_return(checker)
-    allow(Agama::AutoYaST::ProfileReporter).to receive(:new).and_return(reporter)
-    allow(Agama::HTTP::Clients::Questions).to receive(:new).and_return(questions)
     allow(Agama::CmdlineArgs).to receive(:read_from).and_return(cmdline_args)
     allow(fetcher).to receive(:fetch).and_return(profile)
   end
@@ -69,17 +65,23 @@ describe Agama::Commands::AgamaAutoYaST do
         Yast::ProfileHash.new({ "networking" => { "backend" => "wicked" } })
       end
 
-      it "reports them to the user" do
-        expect(reporter).to receive(:report).and_return(true)
+      it "writes the conversion problems to the given directory" do
         subject.run
+        problems = JSON.parse(File.read(File.join(tmpdir, "problems.json")))
+        expect(problems).to include(a_hash_including("key" => "networking/backend"))
       end
 
-      context "but the error reporting is disabled" do
+      it "still writes the Agama equivalent" do
+        subject.run
+        expect(File.exist?(File.join(tmpdir, "autoinst.json"))).to eq(true)
+      end
+
+      context "but checking is disabled" do
         let(:cmdline_args) { Agama::CmdlineArgs.new({ "ay_check" => "0" }) }
 
-        it "does not report the errors" do
-          expect(reporter).to_not receive(:report)
+        it "does not write the problems" do
           subject.run
+          expect(File.exist?(File.join(tmpdir, "problems.json"))).to eq(false)
         end
       end
     end
