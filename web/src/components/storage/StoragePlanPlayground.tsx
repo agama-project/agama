@@ -2213,14 +2213,18 @@ const Dimmed = ({ children }: React.PropsWithChildren) => (
   <div className="agm-plan-dimmed">{children}</div>
 );
 
+/**
+ * The sentence a tab opens with, set apart from what it follows.
+ *
+ * No mark beside it. Every candidate said something the sentence does not: a
+ * status to attend to, an aside to come back to, a warning. The dimmed ground
+ * already says the block is not part of what the tab holds.
+ */
 const TabNote = ({ lead, where }: TabExplanation) => (
   <NestedContent margin={["mxXs", "mtSm", "mbXs"]}>
     <Dimmed>
       <HelperText>
-        <HelperTextItem
-          className="agm-plan-tab-note"
-          icon={<Icon name="chat_info" size="sm" aria-hidden />}
-        >
+        <HelperTextItem className="agm-plan-tab-note">
           <div>{lead}</div>
           {where && <div>{where}</div>}
         </HelperTextItem>
@@ -4416,23 +4420,6 @@ const PLAN_CSS = `
   color: var(--pf-t--global--text--color--subtle);
 }
 
-/* The mark reads as part of the sentence, not as a status: the note is
-   guidance about the tab, and nothing about it is a state to colour.
- *
- * It sits on the first line rather than in the middle of the block: a note of
- * two lines otherwise leaves the mark hanging between them, pointing at
- * neither. One line box tall, with the mark centred inside it. */
-.agm-plan-tab-note .pf-v6-c-helper-text__item-icon {
-  color: inherit;
-  align-self: start;
-  display: inline-flex;
-  align-items: center;
-  height: 1lh;
-}
-
-/* The decision and its label read as one line, with what the value means under
-   both: the meaning is a sentence, and a sentence beside a control makes the
-   control move as the value changes. */
 .agm-plan-space-row {
   display: flex;
   align-items: center;
@@ -5105,8 +5092,16 @@ const PLAN_CSS = `
   display: none;
 }
 
+/* Half a step of grey rather than a whole one. The lightest ground PatternFly
+   names is still a shade the eye reads as a box; mixing it back into the
+   panel's own background sets the block apart without boxing it, and both
+   halves of the mix are tokens, so the tint follows the theme. */
 .agm-plan-dimmed {
-  background: var(--pf-t--global--background--color--secondary--default);
+  background: color-mix(
+    in oklab,
+    var(--pf-t--global--background--color--secondary--default) 50%,
+    var(--pf-t--global--background--color--primary--default)
+  );
   border-radius: var(--pf-t--global--border--radius--small);
   padding-block: var(--pf-t--global--spacer--sm);
   padding-inline: var(--pf-t--global--spacer--md);
