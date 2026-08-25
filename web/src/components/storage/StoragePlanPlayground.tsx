@@ -94,6 +94,7 @@ import {
   TabTitleIcon,
   ToggleGroup,
   ToggleGroupItem,
+  Tooltip,
   TabTitleText,
   Title,
 } from "@patternfly/react-core";
@@ -171,6 +172,8 @@ type Selection = { collection: Collection; index: number };
 type CostStyle = "text" | "chips";
 type PanelSections = "stacked" | "tabs";
 type PanelTab = "result" | "planned" | "current";
+/** Whether the tab strip runs across the top of the panel or down its side. */
+type TabLayout = "horizontal" | "vertical";
 type PanelScroll = "body" | "sections";
 type Density = "comfortable" | "compact";
 /** How much weight the panel's own type carries, next to its tables. */
@@ -194,6 +197,7 @@ type SettingsPlacement = "beside" | "above";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
+  tabLayout: TabLayout;
   scroll: PanelScroll;
   offers: boolean;
   density: Density;
@@ -212,6 +216,7 @@ type Variants = {
 const DEFAULT_VARIANTS: Variants = {
   cost: "text",
   sections: "tabs",
+  tabLayout: "horizontal",
   scroll: "sections",
   offers: true,
   density: "comfortable",
@@ -236,6 +241,7 @@ type PlanApi = {
   panel: (open: boolean) => void;
   cost: (style: CostStyle) => void;
   sections: (mode: PanelSections) => void;
+  tabLayout: (mode: TabLayout) => void;
   scroll: (mode: PanelScroll) => void;
   offers: (on: boolean) => void;
   density: (mode: Density) => void;
@@ -1838,10 +1844,11 @@ const BULK_LABELS: Record<ConfigModel.SpacePolicy, string> = {
  * Per row controls appear only under "Per partition", so a device following one
  * rule carries one control instead of one per partition.
  *
- * The explanation goes in each button's own label rather than a tooltip:
- * PatternFly puts a tooltip wrapper between the group and its buttons, which
- * breaks the segmented look, and extra props on a toggle item land on the
- * wrapper, so a described-by never reaches the button that needs it.
+ * What each option means is a tooltip, so it can be read before the option is
+ * taken. The tooltip is addressed to the button by id rather than wrapped
+ * around it: a wrapper lands between the group and its buttons and breaks the
+ * segmented look, and props on a toggle item reach that wrapper rather than the
+ * button.
  */
 const SPACE_MEANINGS: Record<ConfigModel.SpacePolicy, string> = {
   delete: "Every existing partition is removed and its data lost.",
@@ -1849,11 +1856,6 @@ const SPACE_MEANINGS: Record<ConfigModel.SpacePolicy, string> = {
   keep: "Only free space and partitions you reuse are used.",
   custom: "Choose what happens to each partition below.",
 };
-
-/* The accessible name is the visible label plus what it means, in that order,
- * so voice control still reaches the button by what is written on it. */
-const spaceHint = (policy: ConfigModel.SpacePolicy): string =>
-  `${BULK_LABELS[policy]}. ${SPACE_MEANINGS[policy]}`;
 
 const SPACE_CONTROL_LABEL_ID = "agm-plan-space-control-label";
 const SPACE_SETTING_TOGGLE_ID = "agm-plan-space-setting-toggle";
@@ -1884,6 +1886,8 @@ const SPACE_HEADINGS: Record<SpaceLabel, string> = {
   plain: "What the installer may change",
 };
 
+const policyButtonId = (policy: ConfigModel.SpacePolicy) => `agm-plan-policy-${policy}`;
+
 const SpacePolicySegments = ({
   current,
   onChoose,
@@ -1891,18 +1895,32 @@ const SpacePolicySegments = ({
   current: ConfigModel.SpacePolicy;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
 }) => (
-  <ToggleGroup isFill aria-labelledby={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-segments">
+  <>
+    {/* The group carries the name the row no longer prints: four buttons whose
+        text says what each does need saying what they are four of, and a label
+        beside them repeats the tab they already sit in. */}
+    <ToggleGroup isFill aria-label={t(SPACE_HEADINGS.terse)} className="agm-plan-space-segments">
+      {BULK_POLICIES.map((policy) => (
+        <ToggleGroupItem
+          key={policy}
+          text={t(BULK_LABELS[policy])}
+          buttonId={policyButtonId(policy)}
+          isSelected={policy === current}
+          onChange={() => onChoose(policy)}
+        />
+      ))}
+    </ToggleGroup>
+    {/* Each button keeps what is written on it as its name, which is what voice
+        control reaches it by, and takes what it means as a description while
+        the tooltip is open. */}
     {BULK_POLICIES.map((policy) => (
-      <ToggleGroupItem
+      <Tooltip
         key={policy}
-        text={t(BULK_LABELS[policy])}
-        buttonId={`agm-plan-policy-${policy}`}
-        isSelected={policy === current}
-        aria-label={t(spaceHint(policy))}
-        onChange={() => onChoose(policy)}
+        content={t(SPACE_MEANINGS[policy])}
+        triggerRef={() => document.getElementById(policyButtonId(policy))}
       />
     ))}
-  </ToggleGroup>
+  </>
 );
 
 /**
@@ -1969,6 +1987,35 @@ const SpacePolicyControl = (props: {
   if (spaceControl === "menu") return <SpacePolicyMenu {...props} />;
 
   return <SpacePolicySegments {...props} />;
+};
+
+/**
+ * The rule the table under it follows, and what the value it holds means.
+ *
+ * The label prints beside the menu only. A menu shows one phrase and needs a
+ * subject for it; four buttons each say what they do, and the group names
+ * itself for a screen reader, so a label beside them says the same thing twice.
+ */
+const SpaceDecisionRow = ({
+  policy,
+  onChoose,
+}: {
+  policy: ConfigModel.SpacePolicy;
+  onChoose: (policy: ConfigModel.SpacePolicy) => void;
+}) => {
+  const { spaceLabel, spaceControl } = useVariants();
+
+  return (
+    <div className="agm-plan-space-row">
+      {spaceControl === "menu" && (
+        <span id={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-row-term">
+          {t(SPACE_HEADINGS[spaceLabel])}
+        </span>
+      )}
+      <SpacePolicyControl current={policy} onChoose={onChoose} />
+      <div className="agm-plan-muted agm-plan-space-row-meaning">{t(SPACE_MEANINGS[policy])}</div>
+    </div>
+  );
 };
 
 /**
@@ -2158,7 +2205,7 @@ const TabNote = ({ children }: React.PropsWithChildren) => (
     <HelperText>
       <HelperTextItem
         className="agm-plan-tab-note"
-        icon={<Icon name="info" size="xs" aria-hidden />}
+        icon={<Icon name="info_i" size="xs" aria-hidden />}
       >
         {children}
       </HelperTextItem>
@@ -2782,13 +2829,11 @@ const CurrentContentSection = ({
   onGoToSettings: () => void;
 }) => {
   const headingId = "agm-plan-current-content";
-  const { spaceLabel, structure, spacePlacement } = useVariants();
+  const { structure, spacePlacement } = useVariants();
   const children = (systemDevice ? deviceChildren(systemDevice as never) : []) as ContentItem[];
   const entries = device.partitions || [];
   const { policy, choose } = space;
   const inSettings = structure === "blocks" && spacePlacement === "settings";
-
-  const control = <SpacePolicyControl current={policy} onChoose={choose} />;
 
   /* The route back up. The decision governs this table and no longer sits on
      it, so the table says which rule it is following and how to reach it. */
@@ -2819,17 +2864,7 @@ const CurrentContentSection = ({
           what the installer may do, and the solver decides what it actually
           does. That is the only reading under which "shrink if needed" and
           "delete if needed" make sense, so the label says it. */}
-      {!inSettings && (
-        <div className="agm-plan-space-row">
-          <span id={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-row-term">
-            {t(SPACE_HEADINGS[spaceLabel])}
-          </span>
-          {control}
-          <div className="agm-plan-muted agm-plan-space-row-meaning">
-            {t(SPACE_MEANINGS[policy])}
-          </div>
-        </div>
-      )}
+      {!inSettings && <SpaceDecisionRow policy={policy} onChoose={choose} />}
       {children.length === 0 ? (
         <div className="agm-plan-muted">{t("The device is empty.")}</div>
       ) : (
@@ -3047,6 +3082,8 @@ const PanelTabs = ({
   stripRef?: React.RefObject<HTMLDivElement>;
 }) => {
   const keys = tabs.map((tab) => tab.key);
+  const { tabLayout } = useVariants();
+  const isVertical = tabLayout === "vertical";
   const own = useRef<HTMLDivElement>(null);
   const strip = stripRef || own;
 
@@ -3058,12 +3095,14 @@ const PanelTabs = ({
    * https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */
   const move = (event: React.KeyboardEvent) => {
     const at = keys.indexOf(active);
-    const to = {
-      ArrowLeft: (at - 1 + keys.length) % keys.length,
-      ArrowRight: (at + 1) % keys.length,
-      Home: 0,
-      End: keys.length - 1,
-    }[event.key];
+    /* The arrows that move along the strip are the ones pointing along it,
+       which is what the tabs pattern asks of a vertical tablist. */
+    const back = (at - 1 + keys.length) % keys.length;
+    const on = (at + 1) % keys.length;
+    const along: Record<string, number> = isVertical
+      ? { ArrowUp: back, ArrowDown: on }
+      : { ArrowLeft: back, ArrowRight: on };
+    const to = { ...along, Home: 0, End: keys.length - 1 }[event.key];
 
     if (to === undefined) return;
 
@@ -3076,11 +3115,12 @@ const PanelTabs = ({
     /* The wrapper is not decoration: PatternFly's Tabs renders a fragment, so a
        className on it lands on the tab strip. Giving the strip a flex height
        stretched it to fill the panel and pushed the content to the bottom. */
-    <div className="agm-plan-tabs" ref={strip} onKeyDown={move}>
+    <div className={`agm-plan-tabs agm-plan-tabs-${tabLayout}`} ref={strip} onKeyDown={move}>
       <Tabs
         activeKey={keys.indexOf(active)}
         onSelect={(_event, key) => onSelect(keys[Number(key)])}
         isBox={false}
+        isVertical={isVertical}
         /* Names the tablist itself. The plain aria-label prop names the wrapper
            PatternFly puts around it, which leaves the list of tabs unnamed and
            adds a landmark inside the panel, which is a region already. */
@@ -3408,7 +3448,7 @@ const VolumeGroupCurrentSection = ({
   explanation?: React.ReactNode;
 }) => {
   const config = useConfigModel();
-  const { spaceLabel, structure, spacePlacement } = useVariants();
+  const { structure, spacePlacement } = useVariants();
   const group = config.volumeGroups?.[index];
   const { policy, choose } = space;
   const inSettings = structure === "blocks" && spacePlacement === "settings";
@@ -3435,17 +3475,7 @@ const VolumeGroupCurrentSection = ({
       intro={inSettings ? following : undefined}
       headingId="agm-plan-group-current"
     >
-      {!inSettings && (
-        <div className="agm-plan-space-row">
-          <span id={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-row-term">
-            {t(SPACE_HEADINGS[spaceLabel])}
-          </span>
-          <SpacePolicyControl current={policy} onChoose={choose} />
-          <div className="agm-plan-muted agm-plan-space-row-meaning">
-            {t(SPACE_MEANINGS[policy])}
-          </div>
-        </div>
-      )}
+      {!inSettings && <SpaceDecisionRow policy={policy} onChoose={choose} />}
       <table className="agm-plan-table" aria-label={t(SECTION_TITLES.current)}>
         <thead>
           <tr>
@@ -4330,6 +4360,18 @@ const PLAN_CSS = `
 /* The tab strip keeps its own height; only the panel under it takes the rest. */
 .agm-plan-tabs > .pf-v6-c-tabs { flex: 0 0 auto; }
 
+/* Down the side, the strip keeps its width and the panel beside it takes the
+   rest, which is the deal the horizontal strip makes with height. */
+.agm-plan-tabs-vertical {
+  flex-direction: row;
+  gap: var(--pf-t--global--spacer--md);
+}
+
+.agm-plan-tabs-vertical > .pf-v6-c-tab-content:not([hidden]) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .agm-plan-tabs > .pf-v6-c-tabs .pf-v6-c-tabs__list { margin-block-start: 0; }
 
 .agm-plan-tabs > .pf-v6-c-tab-content:not([hidden]) {
@@ -4351,13 +4393,23 @@ const PLAN_CSS = `
 /* The note reads as guidance about the tab, so it is set at the size the rest
    of the helper text on the page uses and its mark takes the informative
    colour rather than the text colour around it. */
+/* What the tab holds reads at the size of the page's own guidance; where what
+   it holds is decided reads under it, quieter, since it is the follow-up rather
+   than the answer. */
 .agm-plan-tab-note {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+.agm-plan-tab-note div + div {
   font-size: var(--pf-t--global--font--size--xs);
   color: var(--pf-t--global--text--color--subtle);
 }
 
+/* The mark reads as part of the sentence, not as a status: the note is
+   guidance about the tab, and nothing about it is a state to colour. */
 .agm-plan-tab-note .pf-v6-c-helper-text__item-icon {
-  color: var(--pf-t--global--icon--color--status--info--default);
+  color: inherit;
 }
 
 /* The decision and its label read as one line, with what the value means under
@@ -5856,7 +5908,8 @@ function StoragePlan(): React.ReactNode {
             '  select("drives:0"|"boot"|"encryption"|null)  what the panel holds',
             "  panel(true | false)                open or close the panel",
             '  cost("text" | "chips")             text with a mark, or the old chips',
-            '  sections("stacked" | "tabs")       how the panel arranges its two halves',
+            '  sections("stacked" | "tabs")       how the panel arranges its halves',
+            '  tabLayout("horizontal"|"vertical") the tab strip across the top, or down the side',
             '  scroll("body" | "sections")        one scroll container, or one per section',
             "  offers(true | false)               offers on a first visit",
             '  density("comfortable" | "compact") row height',
@@ -5884,6 +5937,7 @@ function StoragePlan(): React.ReactNode {
       panel: (open) => setIsPanelOpen(open),
       cost: (cost) => patch({ cost }),
       sections: (sections) => patch({ sections }),
+      tabLayout: (tabLayout) => patch({ tabLayout }),
       scroll: (scroll) => patch({ scroll }),
       offers: (offers) => patch({ offers }),
       density: (density) => patch({ density }),
