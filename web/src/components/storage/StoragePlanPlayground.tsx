@@ -924,9 +924,11 @@ const outcomeReport = (outcome: ReportedOutcome): Cost => {
     case "format":
       return { kind: "destroys", text: t(`To be formatted as ${outcome.mountPath}`) };
     case "keptUntouched":
-      /* Configured as expendable and not spent. Saying only "kept" would hide
-       * that the installer had permission to take it. */
-      return { kind: "keeps", text: t("Kept, space was not needed") };
+      /* Configured as expendable and not spent yet. Saying only "kept" would
+       * hide that the installer has permission to take it, and saying the space
+       * was not needed reads as a promise about a plan that is still being
+       * written: another volume asked for later spends exactly this. */
+      return { kind: "keeps", text: t("Kept unless room runs short") };
     default:
       /* The one entry that is not a change, so it does not take the future
        * form the others share. */
@@ -1670,7 +1672,7 @@ const RowSpaceControl = ({
  * contradict it.
  *
  * A line under the control only where the solver said something the control did
- * not: "Delete if needed" answered by "Kept, space was not needed" is worth
+ * not: "Delete if needed" answered by "Kept unless room runs short" is worth
  * reading, and the same permission echoed back as "To be deleted if needed" is
  * the control's own text a second time.
  */
@@ -2032,7 +2034,13 @@ const SpaceDecisionRow = ({
         </span>
       )}
       <SpacePolicyControl current={policy} onChoose={onChoose} />
-      <div className="agm-plan-muted agm-plan-space-row-meaning">{t(SPACE_MEANINGS[policy])}</div>
+      {/* What the four options mean is read on the options themselves: each
+          segment carries its own as a tooltip, on hover and on focus. The menu
+          shows three of the four only while it is open, so the value it holds
+          keeps its line. */}
+      {spaceControl === "menu" && (
+        <div className="agm-plan-muted agm-plan-space-row-meaning">{t(SPACE_MEANINGS[policy])}</div>
+      )}
     </div>
   );
 };
@@ -2575,7 +2583,7 @@ const Dimmed = ({ children }: React.PropsWithChildren) => (
  * status to attend to, an aside to come back to, a warning. The dimmed ground
  * already says the block is not part of what the tab holds.
  */
-const TabNote = ({ lead, where }: TabExplanation) => {
+const TabNote = ({ tab, lead, where }: TabExplanation & { tab: PanelTab }) => {
   const { tabNote } = useVariants();
 
   /* Read as one more statement about the device, which puts its mark in the
@@ -2587,7 +2595,15 @@ const TabNote = ({ lead, where }: TabExplanation) => {
       <div className="agm-plan-statements">
         <SettingsList
           settings={[
-            { key: "note", icon: "info", term: lead, explanation: where, layout: "stacked" },
+            {
+              key: "note",
+              /* The tab's own mark: the sentence is about this tab, and the
+                 statements under it are marked by what each is about. */
+              icon: TAB_ICONS[tab],
+              term: lead,
+              explanation: where,
+              layout: "stacked",
+            },
           ]}
         />
       </div>
@@ -2668,19 +2684,22 @@ const tabExplanations = (
     },
     current: {
       lead: t(`What is on ${subject} now, and what becomes of it.`),
+      /* About this tab, not about the control under it: a sentence that points
+         at whatever happens to be rendered next breaks the moment anything
+         moves, and reads as a caption for it in the meantime. */
       where: (
         <>
-          {t("The rule below makes room for what the")} {link("planned")} {t("tab holds, and the")}{" "}
-          {link("result")} {t("tab shows where both end up.")}
+          {t("This tab decides how much of it the new system may take. The")} {link("result")}{" "}
+          {t("tab shows where everything ends up.")}
         </>
       ),
     },
   };
 
   return {
-    result: <TabNote {...explanations.result} />,
-    planned: <TabNote {...explanations.planned} />,
-    current: <TabNote {...explanations.current} />,
+    result: <TabNote tab="result" {...explanations.result} />,
+    planned: <TabNote tab="planned" {...explanations.planned} />,
+    current: <TabNote tab="current" {...explanations.current} />,
   };
 };
 
@@ -5316,6 +5335,18 @@ const PLAN_CSS = `
 .agm-plan-tabs-described .pf-v6-c-tabs__item-text {
   font-size: var(--pf-t--global--font--size--body--lg);
   line-height: var(--pf-t--global--font--line-height--heading);
+}
+
+/* The strip gives way rather than scrolling. PatternFly measures the tabs and
+   offers arrows once they no longer fit, which in a panel that is already a
+   share of the window hides two thirds of the strip behind a button. Wrapping
+   costs a line and keeps every tab in view. */
+.agm-plan-tabs .pf-v6-c-tabs__list {
+  flex-wrap: wrap;
+}
+
+.agm-plan-tabs .pf-v6-c-tabs__scroll-button {
+  display: none;
 }
 `;
 
