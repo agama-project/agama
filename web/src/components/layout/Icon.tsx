@@ -58,8 +58,8 @@ import FileJson from "@icons/file_json.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
+import Asterisk from "@icons/asterisk.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
-import Help from "@icons/help.svg?component";
 import Info from "@icons/info.svg?component";
 import Keyboard from "@icons/keyboard.svg?component";
 import Language from "@icons/language.svg?component";
@@ -126,8 +126,8 @@ const icons = {
   file_json: FileJson,
   fingerprint: Fingerprint,
   globe: Globe,
+  asterisk: Asterisk,
   hard_drive: HardDrive,
-  help: Help,
   info: Info,
   keyboard: Keyboard,
   keyboard_arrow_down: KeyboardArrowDown,
