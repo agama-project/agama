@@ -200,6 +200,10 @@ type Variants = {
   cost: CostStyle;
   sections: PanelSections;
   tabLayout: TabLayout;
+  /** PatternFly's box styling: each tab drawn as a box rather than as a label. */
+  tabBox: boolean;
+  /** PatternFly's filled layout: the tabs share the width of the strip. */
+  tabFill: boolean;
   scroll: PanelScroll;
   offers: boolean;
   density: Density;
@@ -219,6 +223,8 @@ const DEFAULT_VARIANTS: Variants = {
   cost: "text",
   sections: "tabs",
   tabLayout: "horizontal",
+  tabBox: false,
+  tabFill: false,
   scroll: "sections",
   offers: true,
   density: "comfortable",
@@ -244,6 +250,8 @@ type PlanApi = {
   cost: (style: CostStyle) => void;
   sections: (mode: PanelSections) => void;
   tabLayout: (mode: TabLayout) => void;
+  tabBox: (on: boolean) => void;
+  tabFill: (on: boolean) => void;
   scroll: (mode: PanelScroll) => void;
   offers: (on: boolean) => void;
   density: (mode: Density) => void;
@@ -3150,7 +3158,7 @@ const PanelTabs = ({
   stripRef?: React.RefObject<HTMLDivElement>;
 }) => {
   const keys = tabs.map((tab) => tab.key);
-  const { tabLayout } = useVariants();
+  const { tabLayout, tabBox, tabFill } = useVariants();
   /* PatternFly styles the strip and leaves the two halves to their container:
      the strip is an inline-flex column and the panel is a plain sibling after
      it, so a container that does not put them in a row gets the panel under the
@@ -3191,7 +3199,8 @@ const PanelTabs = ({
       <Tabs
         activeKey={keys.indexOf(active)}
         onSelect={(_event, key) => onSelect(keys[Number(key)])}
-        isBox={false}
+        isBox={tabBox}
+        isFilled={tabFill && !isVertical}
         isVertical={isVertical}
         /* Names the tablist itself. The plain aria-label prop names the wrapper
            PatternFly puts around it, which leaves the list of tabs unnamed and
@@ -6039,6 +6048,8 @@ function StoragePlan(): React.ReactNode {
             '  cost("text" | "chips")             text with a mark, or the old chips',
             '  sections("stacked" | "tabs")       how the panel arranges its halves',
             '  tabLayout("horizontal"|"vertical") the tab strip across the top, or down the side',
+            "  tabBox(true | false)               each tab drawn as a box rather than as a label",
+            "  tabFill(true | false)              the tabs share the width of the strip",
             '  scroll("body" | "sections")        one scroll container, or one per section',
             "  offers(true | false)               offers on a first visit",
             '  density("comfortable" | "compact") row height',
@@ -6067,6 +6078,8 @@ function StoragePlan(): React.ReactNode {
       cost: (cost) => patch({ cost }),
       sections: (sections) => patch({ sections }),
       tabLayout: (tabLayout) => patch({ tabLayout }),
+      tabBox: (tabBox) => patch({ tabBox }),
+      tabFill: (tabFill) => patch({ tabFill }),
       scroll: (scroll) => patch({ scroll }),
       offers: (offers) => patch({ offers }),
       density: (density) => patch({ density }),
