@@ -4200,7 +4200,6 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--body--sm);
 }
 
-
 .agm-plan-cost-destroys {
   color: var(--pf-t--global--text--color--status--danger--default);
 }
@@ -4682,98 +4681,6 @@ const PLAN_CSS = `
 .agm-plan-free th,
 .agm-plan-free td { font-style: italic; }
 
-.agm-plan-space-segments .pf-v6-c-toggle-group__button {
-  text-align: center;
-}
-
-/* What became of a conditional allowance, under the control that granted it. */
-.agm-plan-choice-note {
-  margin-block-start: var(--pf-t--global--spacer--xs);
-  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
-  color: var(--pf-t--global--text--color--subtle);
-}
-
-.agm-plan-panel-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  gap: var(--pf-t--global--spacer--xl);
-}
-
-.agm-plan-panel:focus-visible {
-  outline: 2px solid var(--pf-t--global--border--color--brand--default);
-  outline-offset: -2px;
-}
-
-/* One line of relationships, between the identity above it and the tabs below.
-   It orients rather than explains: the names are links, and the panel each one
-   opens is what says what it is. */
-.agm-plan-related {
-  margin-block-end: var(--pf-t--global--spacer--xs);
-  font-size: var(--pf-t--global--font--size--body--sm);
-}
-
-.agm-plan-related p {
-  margin: 0;
-}
-
-.agm-plan-related p + p {
-  margin-block-start: var(--pf-t--global--spacer--xs);
-}
-
-.agm-plan-related-label {
-  color: var(--pf-t--global--text--color--subtle);
-}
-
-/* A line with a mark, not a block: it reads with the relationship lines above
-   it, and the mark is what separates a fact about the device from the links.
-   No trailing margin, since the tabs under it bring their own. */
-.agm-plan-boot {
-  margin-block: var(--pf-t--global--spacer--xs) 0;
-}
-
-.agm-plan-boot .pf-v6-c-helper-text__item-text {
-  font-size: var(--pf-t--global--font--size--body--sm);
-}
-
-.agm-plan-panel-head {
-  padding-block-end: var(--pf-t--global--spacer--sm);
-  border-block-end: 1px solid var(--pf-t--global--border--color--default);
-  margin-block-end: var(--pf-t--global--spacer--sm);
-}
-
-/* Two lines, the same two the list's first column carries: the name with the
-   identifier that survives a rename beside it, then what the device is. */
-.agm-plan-panel-title {
-  margin: 0;
-  font-size: var(--pf-t--global--font--size--body--lg);
-  font-weight: var(--pf-t--global--font--weight--body--default);
-  line-height: var(--pf-t--global--font--line-height--heading);
-}
-
-.agm-plan-panel-facts {
-  font-size: var(--pf-t--global--font--size--body--sm);
-  color: var(--pf-t--global--text--color--subtle);
-  font-weight: var(--pf-t--global--font--weight--body--default);
-}
-
-.agm-plan-path {
-  margin-block-start: var(--pf-t--global--spacer--xs);
-  font-family: var(--pf-t--global--font--family--mono);
-  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
-  line-height: 1.4;
-  color: var(--pf-t--global--text--color--subtle);
-  overflow-wrap: anywhere;
-}
-
-.agm-plan-sections {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  gap: var(--pf-t--global--spacer--xl);
-}
-
 /* One format per row: a mark in a fixed gutter, the term, the value beside it,
    and where it earns the line, one small line under both. Colour and size come
    from PatternFly's text utilities, so what is left here is the arrangement. */
@@ -4823,155 +4730,6 @@ const PLAN_CSS = `
   margin: 0;
 }
 
-
-.agm-plan-section { min-height: 0; }
-
-.agm-plan-section-head {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: var(--pf-t--global--background--color--primary--default);
-  padding-block: var(--pf-t--global--spacer--md);
-  font-weight: var(--pf-t--global--font--weight--body--bold);
-}
-
-.agm-plan-section-head .pf-v6-c-button { font-weight: var(--pf-t--global--font--weight--body--default); }
-
-/* The tab list is the panel's own boundary, so the section under it does not
-   draw a second one right below. */
-.agm-plan-sections .agm-plan-section-head {
-  border-block-end: 1px solid var(--pf-t--global--border--color--subtle);
-}
-
-.agm-plan-tabs {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-/* The tab strip keeps its own height; only the panel under it takes the rest. */
-.agm-plan-tabs > .pf-v6-c-tabs { flex: 0 0 auto; }
-
-.agm-plan-tabs > .pf-v6-c-tabs .pf-v6-c-tabs__list { margin-block-start: 0; }
-
-.agm-plan-tabs > .pf-v6-c-tab-content:not([hidden]) {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-}
-
-.agm-plan-section-body { padding-block-start: var(--pf-t--global--spacer--sm); }
-
-.agm-plan-section-intro {
-  margin-block-start: var(--pf-t--global--spacer--xs);
-  font-size: var(--pf-t--global--font--size--body--sm);
-  color: var(--pf-t--global--text--color--subtle);
-}
-
-/*
- * The two answers to "can the heading keep the decision reachable".
- *
- * With one scroll container for the whole panel body, a sticky heading only
- * sticks once its own section is on screen. A long enough first section pushes
- * the second heading out of view before it has anything to stick to, which is
- * the objection worth testing rather than asserting away.
- *
- * With one container per section, each heading stays put while its own list
- * scrolls under it, and both sections keep a share of the panel.
- */
-.agm-plan-panel-scroll-body { overflow-y: auto; }
-
-.agm-plan-panel-scroll-sections { overflow: hidden; }
-
-.agm-plan-panel-scroll-sections .agm-plan-sections .agm-plan-section-scroll-sections {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 0;
-  min-height: 8rem;
-  overflow: hidden;
-}
-
-.agm-plan-panel-scroll-sections
-  .agm-plan-sections
-  .agm-plan-section-scroll-sections
-  .agm-plan-section-body {
-  overflow-y: auto;
-  min-height: 0;
-}
-
-/* Existing content */
-
-/* One table, so the columns line up.
- *
- * Each row being its own grid is why the size column moved with the length of
- * the text beside it: columns can only align when one element owns them. A
- * table also gives every cell a column header a screen reader announces, and a
- * row header naming the partition, which a list of divs never does. */
-.agm-plan-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.agm-plan-table th,
-.agm-plan-table td {
-  text-align: start;
-  vertical-align: baseline;
-  padding-block: var(--pf-t--global--spacer--sm);
-  padding-inline-end: var(--pf-t--global--spacer--md);
-  font-weight: var(--pf-t--global--font--weight--body--default);
-}
-
-.agm-plan-table thead th {
-  font-size: var(--pf-t--global--font--size--body--sm);
-  color: var(--pf-t--global--text--color--subtle);
-  font-weight: var(--pf-t--global--font--weight--body--default);
-  border-block-end: 1px solid var(--pf-t--global--border--color--default);
-  white-space: nowrap;
-}
-
-.agm-plan-table tbody tr { border-block-end: 1px solid var(--pf-t--global--border--color--subtle); }
-
-/* The same answer to the pointer the device list gives. The row is not a link
-   here, so this is feedback about where the pointer is rather than a promise
-   that the row can be activated. */
-.agm-plan-table tbody tr:hover > * {
-  background: var(--pf-t--global--background--color--action--plain--hover);
-}
-
-.agm-plan-table td,
-.agm-plan-table tbody th { font-size: var(--pf-t--global--font--size--body--sm); }
-
-/* Always the same column, and always aligned on the same edge, so sizes can be
-   compared by looking down rather than by reading. */
-.agm-plan-size {
-  text-align: end;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.agm-plan-row-control {
-  text-align: end;
-  padding-inline-end: 0;
-  white-space: nowrap;
-}
-
-/* A menu wide enough to read and no wider: a long description would otherwise
-   stretch it past the panel it opens in. */
-.agm-plan-table .pf-v6-c-menu,
-.agm-plan-table .pf-v6-c-dropdown__menu {
-  max-width: 22rem;
-}
-
-.agm-plan-table .pf-v6-c-menu__item-description {
-  white-space: normal;
-}
-
-.agm-plan-free th,
-.agm-plan-free td { font-style: italic; }
-
 /* A quiet rule rather than a coloured one: the row is a form the reader opened,
    not a problem the page is reporting. */
 .agm-plan-shrink {
@@ -5001,10 +4759,7 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--body--sm);
 }
 
-
 /* Volumes */
-
-
 
 /* The leading half of a section head: a mark, then whatever names the section.
    Baseline aligned rather than centred, so the mark sits with the text instead
@@ -5198,7 +4953,6 @@ const PLAN_CSS = `
 .agm-plan-boot-notice {
   margin-block-start: var(--pf-t--global--spacer--md);
 }
-
 
 /* Down the side, the strip keeps its width and the panel beside it takes the
    rest, which is the deal the horizontal strip makes with height.
