@@ -53,7 +53,7 @@ module Agama
         FileUtils.mkdir_p(directory)
         if check?
           unsupported = check_profile(profile)
-          write_problems(unsupported) unless unsupported.empty?
+          write_unsupported(unsupported) unless unsupported.empty?
         end
 
         write_agama_config(profile)
@@ -85,16 +85,16 @@ module Agama
         elements
       end
 
-      # Writes the list of conversion problems found in the profile.
+      # Writes the list of unsupported elements found in the profile.
       #
       # @param elements [Array<Agama::AutoYaST::ProfileElement>] List of unsupported elements.
-      def write_problems(elements)
-        problems = elements.map do |e|
+      def write_unsupported(elements)
+        unsupported = elements.map do |e|
           { "key" => e.key, "support" => e.support.to_s, "notes" => e.notes }
         end
         File.write(
-          File.join(directory, "problems.json"),
-          JSON.pretty_generate(problems)
+          File.join(directory, "unsupported.json"),
+          JSON.pretty_generate(unsupported)
         )
       end
 

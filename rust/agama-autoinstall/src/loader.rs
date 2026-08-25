@@ -32,7 +32,7 @@ use fluent_uri::Uri;
 /// This struct is responsible for reading the configuration from a given URL.
 ///
 /// For AutoYaST sources, it talks to Agama's HTTP API directly so that any
-/// conversion problem can be surfaced to the caller. For everything else, it
+/// unsupported element can be surfaced to the caller. For everything else, it
 /// relies on Agama's command-line to generate and load the new configuration.
 pub struct ConfigLoader {
     http: BaseHTTPClient,
@@ -54,8 +54,8 @@ impl ConfigLoader {
 
     /// Fetches and converts an AutoYaST profile, without loading it.
     ///
-    /// The caller is responsible for deciding what to do with the conversion
-    /// problems (if any) before calling [Self::load_json] with the result.
+    /// The caller is responsible for deciding what to do with the unsupported
+    /// elements (if any) before calling [Self::load_json] with the result.
     pub async fn fetch_autoyast(&self, url: &str) -> anyhow::Result<AutoyastConversionResult> {
         let uri = Uri::parse(url.to_string()).map_err(|(e, _)| e)?;
         let result = ProfileHTTPClient::new(self.http.clone())

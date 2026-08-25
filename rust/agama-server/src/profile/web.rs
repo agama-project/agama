@@ -209,6 +209,6 @@ async fn autoyast(body: String) -> Result<Json<AutoyastConversionResult>, Profil
     let profile: serde_json::Value = serde_json::from_str(&importer.content)?;
     Ok(Json(AutoyastConversionResult {
         profile,
-        problems: importer.problems,
+        unsupported: importer.unsupported,
     }))
 }

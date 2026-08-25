@@ -55,7 +55,7 @@ impl ProfileHTTPClient {
     /// Process AutoYaST profile (*url* ending with .xml, .erb, or dir/) by doing a HTTP client request.
     /// Note that this client does not act on this *url*, it passes it as a parameter
     /// to our web backend.
-    /// Returns the converted Agama configuration along with any conversion problems found.
+    /// Returns the converted Agama configuration along with any unsupported elements found.
     pub async fn from_autoyast(
         &self,
         url: &Uri<String>,

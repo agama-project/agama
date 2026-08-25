@@ -22,7 +22,7 @@ use std::{io::Write, path::PathBuf, process, time::Duration};
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    profile::{ConversionProblem, ProfileHTTPClient, ProfileValidator, ValidationOutcome},
+    profile::{ProfileHTTPClient, ProfileValidator, UnsupportedElement, ValidationOutcome},
     utils::FileFormat,
 };
 use agama_utils::api::{self, ProblemDetails};
@@ -336,7 +336,7 @@ async fn generate(
             }
             _ => panic!("is_autoyast returned true on unnamed input"),
         };
-        report_conversion_problems(&result.problems);
+        report_unsupported_elements(&result.unsupported);
         serde_json::to_string_pretty(&result.profile)?
     } else {
         from_json_or_jsonnet(client, url_or_path, insecure).await?
@@ -355,25 +355,25 @@ async fn generate(
     Ok(())
 }
 
-/// Prints the AutoYaST conversion problems (if any) to stderr.
-fn report_conversion_problems(problems: &[ConversionProblem]) {
-    if problems.is_empty() {
+/// Prints the AutoYaST unsupported elements (if any) to stderr.
+fn report_unsupported_elements(elements: &[UnsupportedElement]) {
+    if elements.is_empty() {
         return;
     }
 
-    let keys = problems
+    let keys = elements
         .iter()
-        .map(|p| p.key.as_str())
+        .map(|e| e.key.as_str())
         .collect::<Vec<_>>()
         .join(", ");
     eprintln!(
         "{} {keys}.",
         gettext("Found unsupported elements in the AutoYaST profile:")
     );
-    for problem in problems {
-        match &problem.notes {
-            Some(notes) => eprintln!("  - {} ({}): {notes}", problem.key, problem.support),
-            None => eprintln!("  - {} ({})", problem.key, problem.support),
+    for element in elements {
+        match &element.notes {
+            Some(notes) => eprintln!("  - {} ({}): {notes}", element.key, element.support),
+            None => eprintln!("  - {} ({})", element.key, element.support),
         }
     }
 }

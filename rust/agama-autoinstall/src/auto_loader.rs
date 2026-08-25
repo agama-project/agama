@@ -108,14 +108,14 @@ impl ConfigAutoLoader {
         }
 
         let result = loader.fetch_autoyast(url).await?;
-        if !result.problems.is_empty()
+        if !result.unsupported.is_empty()
             && !self
                 .questions
-                .ask_autoyast_problems(&result.problems)
+                .ask_unsupported_elements(&result.unsupported)
                 .await?
         {
             return Err(anyhow!(
-                "Aborted because of AutoYaST conversion problems in {url}"
+                "Aborted because of unsupported AutoYaST elements in {url}"
             ));
         }
 

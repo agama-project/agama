@@ -21,7 +21,7 @@
 //! This module offers a mechanism to ask questions to users.
 
 use agama_lib::{
-    http::BaseHTTPClient, profile::ConversionProblem,
+    http::BaseHTTPClient, profile::UnsupportedElement,
     questions::http_client::HTTPClient as QuestionsHTTPClient,
 };
 use agama_utils::api::question::QuestionSpec;
@@ -64,29 +64,29 @@ impl UserQuestions {
         }
     }
 
-    /// Asks the user whether to continue despite AutoYaST conversion problems.
+    /// Asks the user whether to continue despite unsupported AutoYaST elements.
     ///
     /// Returns `true` if the user chose to continue.
-    pub async fn ask_autoyast_problems(
+    pub async fn ask_unsupported_elements(
         &self,
-        problems: &[ConversionProblem],
+        elements: &[UnsupportedElement],
     ) -> anyhow::Result<bool> {
-        let keys: Vec<&str> = problems.iter().map(|p| p.key.as_str()).collect();
+        let keys: Vec<&str> = elements.iter().map(|e| e.key.as_str()).collect();
         let text = format!(
             "{} {}.",
             gettextrs::gettext("Found unsupported elements in the AutoYaST profile:"),
             keys.join(", ")
         );
 
-        let unsupported: Vec<&str> = problems
+        let unsupported: Vec<&str> = elements
             .iter()
-            .filter(|p| p.support == "no")
-            .map(|p| p.key.as_str())
+            .filter(|e| e.support == "no")
+            .map(|e| e.key.as_str())
             .collect();
-        let planned: Vec<&str> = problems
+        let planned: Vec<&str> = elements
             .iter()
-            .filter(|p| p.support == "planned")
-            .map(|p| p.key.as_str())
+            .filter(|e| e.support == "planned")
+            .map(|e| e.key.as_str())
             .collect();
 
         let localized_continue = gettextrs::gettext("Continue");

@@ -65,10 +65,10 @@ describe Agama::Commands::AgamaAutoYaST do
         Yast::ProfileHash.new({ "networking" => { "backend" => "wicked" } })
       end
 
-      it "writes the conversion problems to the given directory" do
+      it "writes the unsupported elements to the given directory" do
         subject.run
-        problems = JSON.parse(File.read(File.join(tmpdir, "problems.json")))
-        expect(problems).to include(a_hash_including("key" => "networking/backend"))
+        unsupported = JSON.parse(File.read(File.join(tmpdir, "unsupported.json")))
+        expect(unsupported).to include(a_hash_including("key" => "networking/backend"))
       end
 
       it "still writes the Agama equivalent" do
@@ -79,9 +79,9 @@ describe Agama::Commands::AgamaAutoYaST do
       context "but checking is disabled" do
         let(:cmdline_args) { Agama::CmdlineArgs.new({ "ay_check" => "0" }) }
 
-        it "does not write the problems" do
+        it "does not write the unsupported elements" do
           subject.run
-          expect(File.exist?(File.join(tmpdir, "problems.json"))).to eq(false)
+          expect(File.exist?(File.join(tmpdir, "unsupported.json"))).to eq(false)
         end
       end
     end
