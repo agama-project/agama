@@ -67,8 +67,9 @@ They are not alternatives: a medium can carry both, and they combine.
 
 Three layers, resolved **role by role**, not file by file:
 
-```
-product appearance  >  brand appearance  >  Agama default
+```mermaid
+flowchart LR
+  b1(Product appearance) --> b2(Brand appearance) --> b3(Agama default)
 ```
 
 Every role carries its own default in `_semantic.scss`, so a role nobody sets

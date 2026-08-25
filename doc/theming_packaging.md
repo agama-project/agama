@@ -105,7 +105,7 @@ Once the values settle, the files travel onto a medium the way everything else
 does: as an RPM. It needs no scriptlets and no dependencies beyond the web UI,
 since it only adds files to a directory that is already served:
 
-```
+```rpm-spec
 %install
 install -Dm644 MyProduct.css %{buildroot}%{_datadir}/agama/web_ui/assets/appearance/MyProduct.css
 install -Dm644 MyProduct.svg %{buildroot}%{_datadir}/agama/web_ui/assets/logos/MyProduct.svg
@@ -114,7 +114,7 @@ install -Dm644 MyProduct-dark.svg %{buildroot}%{_datadir}/agama/web_ui/assets/lo
 
 A branding package ships the one file instead:
 
-```
+```rpm-spec
 %install
 install -Dm644 brand.css %{buildroot}%{_datadir}/agama/web_ui/assets/appearance/brand.css
 ```
@@ -123,7 +123,7 @@ Since a medium has room for exactly one brand appearance, branding packages
 should declare a virtual provide and conflict on it, so two of them fail at
 install time instead of racing for the same path:
 
-```
+```rpm-spec
 Provides:  agama-branding
 Conflicts: agama-branding
 ```
@@ -162,7 +162,7 @@ that side of the line.
 - **A stale precompressed sibling wins.** The server prefers a `.gz` next to a
   file when the browser accepts gzip, so a leftover `<product-id>.css.gz` (or
   `brand.css.gz`) from an earlier build keeps being served after the plain file
-  is updated. Ship both or neither.
+  is updated. Ship both or none.
 - **A name mismatch is silent.** A file named after the product _name_ instead of
   its `id:`, or a logo not matching `icon:`, simply never loads.
 
