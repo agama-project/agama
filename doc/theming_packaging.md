@@ -1,20 +1,21 @@
-# Shipping a product appearance on a medium
+# Shipping an appearance on a medium
 
-Companion to [product_theming.md](product_theming.md), which is about designing
-and writing that stylesheet. This one is only about getting it onto a medium.
+Companion to [theming.md](theming.md), which is about designing and writing that
+stylesheet, whether it is a product appearance, named after a product id, or a
+brand appearance, a single `brand.css` reaching every screen of the medium. This
+one is only about getting either of them onto a medium.
 
-A product does not have to contribute its branding to Agama. The web server
-serves a plain static directory, so the package that builds the medium can drop
-the files into it and own them end to end: no pull request, no waiting for an
-Agama
-release, and the branding stays in the product's own repository, versioned with
-the rest of the product.
+Nobody has to contribute their branding to Agama. The web server serves a plain
+static directory, so the package that builds the medium can drop the files into
+it and own them end to end: no pull request, no waiting for an Agama release,
+and the branding stays in its own repository, versioned with the rest of the
+product.
 
-Agama itself ships no product appearance. The `example.css` and
-`example-advanced.css`
-files in its sources are documentation, and the web UI package installs only its
-own assets, so a product package adding files under the served directory is not
-overriding anything: it is filling in a slot that is empty by design.
+Agama itself ships neither kind of appearance. The `example.css` and
+`example-advanced.css` files in its sources are documentation, and the web UI
+package installs only its own assets, so a package adding files under the served
+directory is not overriding anything: it is filling in a slot that is empty by
+design.
 
 ## Where the files go
 
@@ -24,7 +25,8 @@ to it:
 
 | What                                  | Path                                               |
 | ------------------------------------- | -------------------------------------------------- |
-| the stylesheet                        | `assets/appearance/<product-id>.css`               |
+| the product stylesheet                | `assets/appearance/<product-id>.css`               |
+| the brand stylesheet                  | `assets/appearance/brand.css`                      |
 | logo                                  | `assets/logos/<icon>`                              |
 | dark logo                             | same name with `-dark` before the extension        |
 | fonts and anything else it references | wherever it points at, relative to the file itself |
@@ -41,6 +43,11 @@ icon: MyProduct.svg
 is served `assets/appearance/MyProduct.css` and `assets/logos/MyProduct.svg`,
 with `MyProduct-dark.svg` used on the dark scheme when present. The names have to
 match exactly, and a product without a dark logo falls back to the light one.
+
+The brand stylesheet takes no id, since a medium carries at most one, and it
+brings no logo: logos are named after a product's `icon:`. Everything else it
+references, fonts included, resolves relative to the file itself, exactly as for
+a product.
 
 Keeping a product's own files next to its stylesheet, for instance
 `assets/appearance/fonts/MyProductMono.woff2` referenced as
@@ -78,6 +85,16 @@ scp MyLogo.svg  root@installer:/usr/share/agama/web_ui/assets/logos/Tumbleweed.s
 Reload the browser and select that product. Everything lives in RAM, so a reboot
 wipes the experiment, which is the property to want while trying values out.
 
+A brand stylesheet goes in the same way, under its fixed name and with no
+product to pick:
+
+```console
+scp brand.css root@installer:/usr/share/agama/web_ui/assets/appearance/brand.css
+```
+
+Reload the browser and it is already in effect on the product selection screen,
+before anything is selected, which is the fastest look at it.
+
 From the Agama sources, `setup-web.sh` points the served directory at the
 development build, so everything the build emits (the examples included) is
 served straight away.
@@ -88,11 +105,27 @@ Once the values settle, the files travel onto a medium the way everything else
 does: as an RPM. It needs no scriptlets and no dependencies beyond the web UI,
 since it only adds files to a directory that is already served:
 
-```
+```rpm-spec
 %install
 install -Dm644 MyProduct.css %{buildroot}%{_datadir}/agama/web_ui/assets/appearance/MyProduct.css
 install -Dm644 MyProduct.svg %{buildroot}%{_datadir}/agama/web_ui/assets/logos/MyProduct.svg
 install -Dm644 MyProduct-dark.svg %{buildroot}%{_datadir}/agama/web_ui/assets/logos/MyProduct-dark.svg
+```
+
+A branding package ships the one file instead:
+
+```rpm-spec
+%install
+install -Dm644 brand.css %{buildroot}%{_datadir}/agama/web_ui/assets/appearance/brand.css
+```
+
+Since a medium has room for exactly one brand appearance, branding packages
+should declare a virtual provide and conflict on it, so two of them fail at
+install time instead of racing for the same path:
+
+```rpm-spec
+Provides:  agama-branding
+Conflicts: agama-branding
 ```
 
 Then it has to reach the image build. The Agama live image is built with KIWI,
@@ -127,9 +160,9 @@ that side of the line.
   load and the UI keeps the Agama defaults, which is what makes this safe to
   add late in a medium's build.
 - **A stale precompressed sibling wins.** The server prefers a `.gz` next to a
-  file when the browser accepts gzip, so a leftover `<product-id>.css.gz` from an
-  earlier build keeps being served after the plain file is updated. Ship both or
-  neither.
+  file when the browser accepts gzip, so a leftover `<product-id>.css.gz` (or
+  `brand.css.gz`) from an earlier build keeps being served after the plain file
+  is updated. Ship both or none.
 - **A name mismatch is silent.** A file named after the product _name_ instead of
   its `id:`, or a logo not matching `icon:`, simply never loads.
 
@@ -173,5 +206,6 @@ the Agama version that lands on the medium rather than against a newer one.
 
 ## Before shipping
 
-Walk the manual checks from [product_theming.md](product_theming.md): light, dark
-and high contrast, on the screens listed there.
+Walk the manual checks from [theming.md](theming.md): light, dark and high
+contrast, on the screens listed there. A brand appearance adds the product
+selection screen, and a product that ships its own file next to it.
