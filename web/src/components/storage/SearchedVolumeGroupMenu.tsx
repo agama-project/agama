@@ -38,7 +38,7 @@ import { formattedPath } from "~/components/storage/utils";
 import { _, n_, formatList } from "~/i18n";
 
 import type { DistributedOmit } from "type-fest";
-import type { CustomToggleProps } from "~/components/core/MenuButton";
+import type { CustomToggleProps, MenuButtonProps } from "~/components/core/MenuButton";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
 import type { DeviceSelectorModalProps } from "~/components/storage/DeviceSelectorModal";
@@ -223,6 +223,8 @@ export type SearchedVolumeGroupMenuProps = {
   deviceConfig: ConfigModel.VolumeGroup;
   device: Storage.Device;
   toggle?: React.ReactElement<CustomToggleProps>;
+  /** Where the menu opens, for callers whose toggle sits against an edge. */
+  popperProps?: MenuButtonProps["menuProps"]["popperProps"];
 };
 
 /**
@@ -233,6 +235,7 @@ export default function SearchedVolumeGroupMenu({
   deviceConfig,
   device,
   toggle,
+  popperProps,
 }: SearchedVolumeGroupMenuProps): React.ReactNode {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const convertDevice = useConvertDevice();
@@ -251,6 +254,7 @@ export default function SearchedVolumeGroupMenu({
       <MenuButton
         menuProps={{
           "aria-label": sprintf(_("Volume group %s menu"), deviceConfig.name),
+          popperProps,
         }}
         customToggle={toggle}
         items={[

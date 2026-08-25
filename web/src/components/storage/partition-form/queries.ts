@@ -92,3 +92,21 @@ export function useUnusedPartitions(): System.Device[] {
 
   return allPartitions.filter((p) => !configuredPartitionConfigs.includes(p.name));
 }
+
+/**
+ * The existing partition the form should start out reusing, when the route asks
+ * for one.
+ *
+ * Lets a caller send the user straight to "use this partition" instead of
+ * making them find it again in the partition selector. Returns null when the
+ * route carries no such request, or when the named partition is not among the
+ * ones still available to reuse.
+ */
+export function useRequestedReusedPartition(): System.Device | null {
+  const { deviceName } = useParams();
+  const availablePartitions = useUnusedPartitions();
+
+  if (!deviceName) return null;
+
+  return availablePartitions.find((p) => p.name === deviceName) || null;
+}

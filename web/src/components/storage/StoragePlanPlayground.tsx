@@ -1,0 +1,6197 @@
+/*
+ * TEMPORARY: the storage configuration redesigned as a plan.
+ *
+ * Built from `agama-notes/web/storage-configuration-redesign.md`. It keeps the
+ * primary/detail layout settled by the earlier exploration and changes what
+ * fills it:
+ *
+ *   - A row is a four slot grid (glyph, identity, purpose, cost) instead of
+ *     three stacked lines of prose, so a list of disks reads down a column.
+ *   - Consequences are text with one leading mark, not chips. A bordered pill
+ *     is a button silhouette whatever is written in it.
+ *   - The panel stacks two sections instead of splitting the disk into tabs,
+ *     and the space decision sits in the second section's heading.
+ *   - The per row menu offers the whole config model vocabulary, including the
+ *     two entries nothing in the real interface can write today: shrinking to a
+ *     chosen size, and deleting only if the installer runs short of space.
+ *   - Existing content lists free space, names the operating systems a plan
+ *     removes, and bounds the shrink control by what the device reports.
+ *
+ * Nothing is mocked. It reads the real config model, the real system and the
+ * real proposal, writes through the real endpoint, and navigates to the real
+ * forms, so it needs a running backend.
+ *
+ * Console driven, so the page stays screenshot clean:
+ *
+ *     storagePlan.help()
+ *     storagePlan.select("drives:0")     // or null
+ *     storagePlan.panel(true | false)
+ *     storagePlan.cost("text" | "chips")
+ *     storagePlan.sections("stacked" | "tabs")
+ *     storagePlan.scroll("body" | "sections")
+ *     storagePlan.offers(true | false)
+ *     storagePlan.density("comfortable" | "compact")
+ *     storagePlan.structure("blocks" | "flat")
+ *     storagePlan.spacePlacement("settings" | "content")
+ *     storagePlan.explanations("always" | "sparse")
+ *     storagePlan.boot("entry" | "device")
+ *
+ * The panel is three blocks: identity and actions, what is decided about the
+ * device, and what it holds. `structure` switches back to the flat stack the
+ * earlier rounds had, `spacePlacement` moves the space decision between the
+ * settings block and the head of the table it governs, and `explanations` is
+ * the height question: a line under every setting, or only under the ones
+ * whose value leaves something unsaid.
+ *
+ * Boot and encryption are the two decisions about no device in particular, so
+ * they are read in the bar above the list, as values with a way in, and each
+ * opens a panel of its own: the machine wide choices, and under them what those
+ * choices reach. Boot's panel puts the partitions the boot loader costs, read
+ * from the proposal, under the three settings that cause them.
+ *
+ * `boot` decides what a device panel says about booting: a line pointing at the
+ * boot panel, or the setting row of the earlier rounds, which is the
+ * arrangement the team turned down. Boot partitions are the solver's doing
+ * rather than anything the configuration asks for, and a boot loader type is
+ * not a statement about a disk at all.
+ *
+ * The `scroll` switch exists because "the heading keeps the decision reachable"
+ * is only true while the heading can stick. With the whole panel body as one
+ * scroll container, a long enough first section pushes the second heading off
+ * screen before it ever sticks. "sections" gives each section its own scroll
+ * container, which is the arrangement that actually holds the claim up. Compare
+ * them on a small viewport with a disk carrying many partitions.
+ *
+ * NOT meant to be committed. Reach it at `#/storage-plan-playground` while the
+ * temporary route in router.tsx is in place.
+ */
+
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import {
+  Alert,
+  Button,
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
+  DrawerPanelBody,
+  DrawerPanelContent,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  EmptyState,
+  EmptyStateBody,
+  Flex,
+  FlexItem,
+  HelperText,
+  HelperTextItem,
+  Label,
+  LabelGroup,
+  MenuToggle,
+  Stack,
+  StackItem,
+  Tab,
+  Tabs,
+  ToggleGroup,
+  ToggleGroupItem,
+  TabTitleText,
+  Title,
+} from "@patternfly/react-core";
+import Icon from "~/components/layout/Icon";
+import Page from "~/components/core/Page";
+import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
+import ProposalActions from "~/components/storage/ProposalActions";
+import ProposalResultTable from "~/components/storage/ProposalResultTable";
+import DevicesManager from "~/model/storage/devices-manager";
+import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
+import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
+import Text from "~/components/core/Text";
+import configModel from "~/model/storage/config-model";
+import { putStorageModel, solveStorageModel } from "~/api";
+import {
+  baseName,
+  deviceChildren,
+  deviceSize,
+  filesystemType,
+  sizeDescription,
+} from "~/components/storage/utils";
+import { deviceSystems, supportShrink } from "~/model/storage/device";
+import { formatList } from "~/i18n";
+import { generateEncodedPath } from "~/utils";
+import { typeDescription } from "~/components/storage/utils/device";
+import {
+  useActions,
+  useProposal as useStorageProposal,
+  useDevices as useStagingTree,
+  useFlattenDevices as useStagingDevices,
+} from "~/hooks/model/proposal/storage";
+import { useAnnounce } from "~/context/announcer";
+import { useIssues } from "~/hooks/model/issue";
+import { useReset } from "~/hooks/model/config/storage";
+import { useSystem as useBootloaderSystem } from "~/hooks/model/system/bootloader";
+import { useAvailableDevices, useDevice, useFlattenDevices } from "~/hooks/model/system/storage";
+import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
+import {
+  useAddDrive,
+  useAddMdRaid,
+  useAddVolumeGroup,
+  useConfigModel,
+  useDeleteDrive,
+  useDeleteMdRaid,
+  useDeleteLogicalVolume,
+  useDeletePartition,
+  useDeleteVolumeGroup,
+  useSetSpacePolicy,
+  useSetBootDevice,
+  useSetDefaultBootDevice,
+  useDisableBoot,
+  STORAGE_MODEL_QUERY_KEY,
+} from "~/hooks/model/storage/config-model";
+import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
+import { STORAGE as PATHS } from "~/routes/paths";
+
+import type { ConfigModel } from "~/model/storage/config-model";
+import type { Bootloader, Storage } from "~/model/system";
+import type { Storage as Proposal } from "~/model/proposal";
+import type { TranslatedString } from "~/i18n";
+
+/** Marks a literal as translated. Playground text never reaches the catalogs. */
+const t = (text: string): TranslatedString => text as TranslatedString;
+
+/* ------------------------------------------------------------------ *
+ * Playground plumbing
+ * ------------------------------------------------------------------ */
+
+type Collection = "drives" | "mdRaids" | "volumeGroups";
+/** The collections whose entries carry partitions. */
+type PartitionableCollection = "drives" | "mdRaids";
+type Selection = { collection: Collection; index: number };
+
+type CostStyle = "text" | "chips";
+type PanelSections = "stacked" | "tabs";
+type PanelTab = "layout" | "content";
+type PanelScroll = "body" | "sections";
+type Density = "comfortable" | "compact";
+/** How much weight the panel's own type carries, next to its tables. */
+type TypeScale = "current" | "quiet";
+/** Whether a mount path is set apart from the text around it. */
+type MountPaths = "plain" | "italic";
+/** The two candidate labels for the space decision. */
+type SpaceLabel = "terse" | "plain";
+/** How the space decision is offered: four buttons, or one menu. */
+type SpaceControl = "menu" | "segmented";
+/** Where the device actions live: the panel alone, the panel plus narrow rows, or both. */
+type RowActions = "panel" | "narrow" | "always";
+/** How the panel body is arranged: three named blocks, or the flat stack of round ten. */
+type PanelStructure = "blocks" | "flat";
+/** Where the space decision is offered: with the other settings, or over the table it governs. */
+type SpacePlacement = "settings" | "content";
+/** Whether every setting explains itself, or only the ones whose value leaves a question. */
+type Explanations = "always" | "sparse";
+/** Whether the settings take a column of their own, or sit above the content. */
+type SettingsPlacement = "beside" | "above";
+/** What a device panel says about booting: a control, or a fact and a way in. */
+type BootHome = "device" | "entry";
+
+type Variants = {
+  cost: CostStyle;
+  sections: PanelSections;
+  scroll: PanelScroll;
+  offers: boolean;
+  density: Density;
+  rowActions: RowActions;
+  gutter: boolean;
+  typeScale: TypeScale;
+  mountPaths: MountPaths;
+  spaceLabel: SpaceLabel;
+  spaceControl: SpaceControl;
+  structure: PanelStructure;
+  spacePlacement: SpacePlacement;
+  explanations: Explanations;
+  settings: SettingsPlacement;
+  bootHome: BootHome;
+  /** Whether a boot partition with no mount path can be asked for explicitly. */
+  bootTakeover: boolean;
+};
+
+const DEFAULT_VARIANTS: Variants = {
+  cost: "text",
+  sections: "tabs",
+  scroll: "sections",
+  offers: true,
+  density: "comfortable",
+  rowActions: "narrow",
+  gutter: false,
+  typeScale: "current",
+  mountPaths: "plain",
+  spaceLabel: "terse",
+  spaceControl: "segmented",
+  structure: "blocks",
+  spacePlacement: "settings",
+  /* The version that teaches comes first: a reader meeting this page is being
+     asked to understand what an installer may do to their disks. How tall the
+     block gets is the reason the other setting exists. */
+  explanations: "always",
+  settings: "beside",
+  /* The exception to "every switch defaults to what the page does today": the
+     boot scope is what this round is for, so the page opens on it and the flip
+     goes back to the per device setting. */
+  bootHome: "entry",
+  /* Off, and it stays off until the backend changes. Asking for a partition
+     with no mount path makes the whole configuration unsupported by the config
+     model, so the backend stops reporting a model at all and the page has
+     nothing left to read. The switch reproduces that on demand. */
+  bootTakeover: false,
+};
+
+type PlanApi = {
+  help: () => void;
+  select: (id: string | null) => void;
+  panel: (open: boolean) => void;
+  cost: (style: CostStyle) => void;
+  sections: (mode: PanelSections) => void;
+  scroll: (mode: PanelScroll) => void;
+  offers: (on: boolean) => void;
+  density: (mode: Density) => void;
+  rowActions: (mode: RowActions) => void;
+  gutter: (on: boolean) => void;
+  typeScale: (mode: TypeScale) => void;
+  mountPaths: (mode: MountPaths) => void;
+  spaceLabel: (mode: SpaceLabel) => void;
+  spaceControl: (mode: SpaceControl) => void;
+  structure: (mode: PanelStructure) => void;
+  spacePlacement: (mode: SpacePlacement) => void;
+  explanations: (mode: Explanations) => void;
+  settings: (mode: SettingsPlacement) => void;
+  boot: (home: BootHome) => void;
+  bootTakeover: (on: boolean) => void;
+  bootDebug: () => void;
+};
+
+declare global {
+  interface Window {
+    storagePlan?: PlanApi;
+  }
+}
+
+const VariantsContext = React.createContext<Variants>(DEFAULT_VARIANTS);
+const useVariants = (): Variants => React.useContext(VariantsContext);
+
+const idOf = ({ collection, index }: Selection): string => `${collection}:${index}`;
+
+/** Where a device sits in the configured list, so the panel can point at it. */
+const selectionForDevice = (
+  config: ConfigModel.Config,
+  deviceName: string,
+): Selection | undefined => {
+  const collections: Collection[] = ["drives", "mdRaids", "volumeGroups"];
+  for (const collection of collections) {
+    const index = (config[collection] || []).findIndex(
+      (entry: { name?: string }) => entry.name === deviceName,
+    );
+    if (index !== -1) return { collection, index };
+  }
+  return undefined;
+};
+
+const parseId = (id: string): Selection | null => {
+  const [collection, index] = id.split(":");
+  if (!["drives", "mdRaids", "volumeGroups"].includes(collection)) return null;
+  return { collection: collection as Collection, index: Number(index) };
+};
+
+const PANEL_ID = "storage-plan-panel";
+const LIST_ID = "storage-plan-list";
+const XL = "(min-width: 1200px)";
+/* Wide enough for the list to stay readable with a panel over part of it, and
+   not wide enough for the two to sit side by side. */
+const LG = "(min-width: 992px)";
+
+/** Tracks a media query without a resize listener per component. */
+const useMedia = (query: string): boolean => {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    const update = () => setMatches(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, [query]);
+
+  return matches;
+};
+
+/* ------------------------------------------------------------------ *
+ * The cost vocabulary
+ *
+ * Three marks, always in this order, each with a glyph and a word. The control
+ * that sets one of these says "Delete"; the line reporting it says "deleted".
+ * Same terms, different grammar, which is what keeps a report from reading as
+ * a button.
+ * ------------------------------------------------------------------ */
+
+type CostKind = "destroys" | "shrinks" | "keeps";
+
+type Cost = { kind: CostKind; text: string };
+
+const COST_ORDER: Record<CostKind, number> = { destroys: 0, shrinks: 1, keeps: 2 };
+
+const COST_ICON: Record<CostKind, React.ComponentProps<typeof Icon>["name"]> = {
+  destroys: "error_fill",
+  shrinks: "unfold_less",
+  keeps: "check_circle",
+};
+
+/**
+ * Colour lands on the mark, and on the text only where data is lost. Nothing
+ * here relies on colour alone: every mark carries a word next to it.
+ */
+const COST_CLASS: Record<CostKind, string> = {
+  destroys: "agm-plan-cost-destroys",
+  shrinks: "agm-plan-cost-shrinks",
+  keeps: "agm-plan-cost-keeps",
+};
+
+/**
+ * A consequence, as a mark and a word.
+ *
+ * `showIcon` is off where every row in a column would otherwise carry one. A
+ * mark on the row that loses data means something next to rows without one; a
+ * mark on all of them is a column of decoration, and the one row that matters
+ * stops standing out.
+ */
+const CostLine = ({ cost, showIcon = true }: { cost: Cost; showIcon?: boolean }) => (
+  <Flex
+    gap={{ default: "gapXs" }}
+    alignItems={{ default: "alignItemsFlexStart" }}
+    flexWrap={{ default: "nowrap" }}
+    className={COST_CLASS[cost.kind]}
+  >
+    {showIcon && (
+      <FlexItem>
+        <Icon name={COST_ICON[cost.kind]} size="xs" />
+      </FlexItem>
+    )}
+    <FlexItem>{cost.text}</FlexItem>
+  </Flex>
+);
+
+/**
+ * The shape the first pass landed on and then diagnosed as wrong, kept behind
+ * `storagePlan.cost("chips")` so the two can be looked at side by side rather
+ * than argued about from memory.
+ */
+const CostChips = ({ costs }: { costs: Cost[] }) => (
+  <LabelGroup numLabels={4}>
+    {costs.map((cost, i) => (
+      <Label key={i} isCompact status={cost.kind === "destroys" ? "danger" : undefined}>
+        {cost.text}
+      </Label>
+    ))}
+  </LabelGroup>
+);
+
+const CostSlot = ({ costs }: { costs: Cost[] }) => {
+  const { cost: style } = useVariants();
+
+  /* An empty cost slot is empty. "Nothing planned" belongs to the purpose slot,
+   * and reusing it here made a device that destroys nothing look like a device
+   * nobody has configured. */
+  if (costs.length === 0) return null;
+
+  const sorted = [...costs].sort((a, b) => COST_ORDER[a.kind] - COST_ORDER[b.kind]);
+
+  if (style === "chips") return <CostChips costs={sorted} />;
+
+  return (
+    <Stack>
+      {sorted.map((cost, i) => (
+        <StackItem key={i}>
+          <CostLine cost={cost} />
+        </StackItem>
+      ))}
+    </Stack>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * Reading the plan
+ *
+ * All pure. None of these calls a hook, which is the trap the earlier pass hit
+ * four times: two of the storage prose helpers call `useConfigModel` inside
+ * what looks like a util.
+ * ------------------------------------------------------------------ */
+
+type Partitionable = ConfigModel.Drive | ConfigModel.MdRaid;
+
+const existingEntries = (device: Partitionable): ConfigModel.Partition[] =>
+  (device.partitions || []).filter((p) => p.name !== undefined);
+
+/* A partition asked for by id and nothing else (a BIOS boot or PReP partition
+   taken over from the installer) is planned content too: it takes room on the
+   device and the configuration asks for it. */
+const newEntries = (device: Partitionable): ConfigModel.Partition[] =>
+  (device.partitions || []).filter((p) => p.name === undefined && (p.mountPath || p.id));
+
+/** What a partition id is called, for a partition with no mount path to show. */
+const PARTITION_ID_LABELS: Partial<Record<ConfigModel.PartitionId, string>> = {
+  esp: "EFI system partition",
+  prep: "PReP boot partition",
+  bios_boot: "BIOS boot partition",
+  swap: "Swap partition",
+  lvm: "LVM physical volume",
+  raid: "RAID member",
+  linux: "Linux partition",
+};
+
+/** How a planned partition is named in a list: its mount path, or what it is for. */
+const entryLabel = (entry: ConfigModel.Partition): string =>
+  entry.mountPath || t(PARTITION_ID_LABELS[entry.id] || "Partition");
+
+/** Existing partitions the new system mounts, whether it formats them or not. */
+const reusedEntries = (device: Partitionable): ConfigModel.Partition[] =>
+  existingEntries(device).filter((p) => p.mountPath);
+
+/** Everything the new system will have here, created or adopted. */
+const layoutEntries = (device: Partitionable): ConfigModel.Partition[] => [
+  ...newEntries(device),
+  ...reusedEntries(device),
+];
+
+/**
+ * Everything that claims this device: volume groups built on it, RAID devices
+ * it is a member of.
+ *
+ * Deliberately one list of names rather than one list per kind. The reader is
+ * asking what else is involved, not what taxonomy it belongs to, and the panel
+ * each name opens says what it is.
+ */
+const usersOf = (
+  config: ConfigModel.Config,
+  systemDevices: Storage.Device[],
+  deviceName: string,
+): Related[] => {
+  const sid = systemDevices.find((d) => d.name === deviceName)?.sid;
+
+  const groups = (config.volumeGroups || [])
+    .map((vg, index) => ({
+      name: vg.vgName,
+      selection: { collection: "volumeGroups" as const, index },
+      targets: vg.targetDevices || [],
+    }))
+    .filter((vg) => vg.targets.includes(deviceName))
+    .map(({ name, selection }) => ({ name, selection }));
+
+  const raids = (config.mdRaids || [])
+    .map((raid, index) => ({
+      name: baseName(raid.name),
+      selection: { collection: "mdRaids" as const, index },
+      members: systemDevices.find((d) => d.name === raid.name)?.md?.devices || [],
+    }))
+    .filter((raid) => sid !== undefined && raid.members.includes(sid))
+    .map(({ name, selection }) => ({ name, selection }));
+
+  return [...groups, ...raids];
+};
+
+/** The devices a RAID is built from, which the system reports and nothing shows. */
+const membersOf = (
+  device: Storage.Device | null,
+  systemDevices: Storage.Device[],
+  config: ConfigModel.Config,
+): Related[] =>
+  (device?.md?.devices || [])
+    .map((sid) => systemDevices.find((d) => d.sid === sid)?.name)
+    .filter(Boolean)
+    .map((name) => ({ name: baseName(name), selection: selectionForDevice(config, name) }));
+
+/**
+ * Which device starts the machine, and on whose decision.
+ *
+ * "default" is the installer following the root file system, which is a device
+ * the reader may never have picked; "chosen" is a device named on purpose.
+ */
+type BootRole = "none" | "chosen" | "default";
+
+const bootRoleOf = (config: ConfigModel.Config, deviceName: string): BootRole => {
+  if (!configModel.boot.hasDevice(config, deviceName)) return "none";
+
+  return configModel.boot.isFollowingRoot(config) ? "default" : "chosen";
+};
+
+/* Where a boot loader lands. The EFI flag is the device's own; the paths cover
+ * the platforms that boot from a mounted file system instead. */
+const BOOT_PATHS = ["/boot", "/boot/efi", "/boot/zipl"];
+
+/* What the backend calls a partition set aside for booting. Every device in the
+ * proposal carries a description, and for a partition with no file system it is
+ * the partition id in words: "BIOS Boot Partition", "PReP Boot Partition", "EFI
+ * System Partition". It is the only place the id reaches the frontend, since
+ * the proposal reports no partition id of its own. */
+const BOOT_DESCRIPTIONS = /boot|efi|prep|zipl/i;
+
+const isBootPartition = (device: Storage.Device): boolean =>
+  device.partition?.efi === true ||
+  BOOT_PATHS.includes(device.filesystem?.mountPath || "") ||
+  BOOT_DESCRIPTIONS.test(device.description || "");
+
+/**
+ * What booting costs this device, read from the proposal rather than from the
+ * configuration.
+ *
+ * Boot partitions are the solver's doing: nothing in the configuration asks for
+ * them, so they appear in neither tab and the device looks like it is hosting
+ * the boot loader for free. Comparing the proposal against the system says
+ * which of them are new and which are partitions the device already had.
+ */
+const useBootCost = (deviceName: string, systemDevice: Storage.Device | null) => {
+  const staging = useStagingDevices();
+  const planned = staging.find((device) => device.name === deviceName);
+  const known = new Set((systemDevice?.partitions || []).map((p) => p.sid));
+
+  return (planned?.partitions || [])
+    .map((partition) => ({
+      name: baseName(partition.name),
+      size: partition.block?.size,
+      isNew: !known.has(partition.sid),
+      isBoot:
+        isBootPartition(partition) ||
+        /* A BIOS boot or PReP partition carries no file system and nothing to
+         * mount, so nothing about it says "boot" except that the solver added
+         * it and the configuration never asked for it. */
+        (!known.has(partition.sid) && !partition.filesystem),
+    }))
+    .filter((partition) => partition.isBoot);
+};
+
+/** What the boot loader takes from a device, as the proposal reports it. */
+type BootCost = ReturnType<typeof useBootCost>;
+
+/* ------------------------------------------------------------------ *
+ * Boot as a scope of its own
+ * ------------------------------------------------------------------ */
+
+/**
+ * The three states the model can hold, named for what the reader chooses.
+ *
+ * They are machine states, not device states: only "chosen" says anything about
+ * a particular disk. That is the reason the decision is offered here rather
+ * than on a device, where two of the three have nothing to attach to.
+ */
+type BootMode = "auto" | "chosen" | "off";
+
+const bootModeOf = (config: ConfigModel.Config): BootMode => {
+  if (!config.boot?.configure) return "off";
+  if (configModel.boot.isDefault(config)) return "auto";
+  return "chosen";
+};
+
+/* The three words the boot options page already uses, kept as they are: the
+   reader meets them in the installer's own documentation and in every earlier
+   version of this screen. */
+/* Named so the row reads as a sentence: "Boot from the installation disk". The
+   automatic state was called "Automatic", which said how the disk is picked
+   rather than which disk it is, and left the value of the row unreadable on its
+   own. */
+const BOOT_MODE_LABELS: Record<BootMode, string> = {
+  auto: "The installation disk",
+  chosen: "A selected disk",
+  /* Every value of this row completes "Boot from", and "do not configure" does
+     not. The phrase stays in the description under it, where it is the one the
+     boot options page uses. */
+  off: "Nowhere",
+};
+
+/* A phrase each, not a sentence: these are read inside a menu, where a line
+   that wraps three times makes the menu wider than the panel it opens in. The
+   full sentence goes under the closed control, where there is room. */
+const BOOT_MODE_MEANINGS: Record<BootMode, string> = {
+  auto: "Wherever the / file system ends up",
+  chosen: "One disk, whatever the plan does",
+  off: "Do not configure anything for booting",
+};
+
+const BOOTLOADER_LABELS: Record<Bootloader.BootloaderType, string> = {
+  grub2: "GRUB 2",
+  "grub2-bls": "GRUB 2, boot loader spec layout",
+  "systemd-boot": "systemd-boot",
+};
+
+/**
+ * One partition the boot decision costs, wherever it lands.
+ *
+ * Gathered across every device in the proposal rather than per device, because
+ * the panel showing them is about the decision and not about a disk.
+ */
+type BootPartition = {
+  key: string;
+  deviceName: string;
+  /** The device as the configuration names it, which is not how it is shown. */
+  devicePath: string;
+  name: string;
+  /** What the backend calls it, which is where the partition id reaches us. */
+  description?: string;
+  size?: number;
+  isNew: boolean;
+  why: string;
+  /** Where the configuration can ask for it: a mount path, or a partition id. */
+  mountPath?: string;
+  id?: ConfigModel.PartitionId;
+  filesystemType?: ConfigModel.FilesystemType;
+  /** Whether the configuration already asks for it, rather than the solver. */
+  isExplicit: boolean;
+};
+
+/*
+ * Which partition id the backend is describing.
+ *
+ * The proposal carries no id of its own, and the description is the partition
+ * id in words for a partition with nothing mounted on it. Matching on those
+ * words is what lets the configuration ask for the same partition afterwards.
+ */
+const partitionIdOf = (description?: string): ConfigModel.PartitionId | undefined => {
+  if (!description) return undefined;
+  if (/efi/i.test(description)) return "esp";
+  if (/prep/i.test(description)) return "prep";
+  if (/bios boot/i.test(description)) return "bios_boot";
+  return undefined;
+};
+
+/** Whether the configuration already asks for this partition on this device. */
+const isExplicitBootPartition = (
+  config: ConfigModel.Config,
+  deviceName: string,
+  mountPath?: string,
+  id?: ConfigModel.PartitionId,
+): boolean => {
+  const drive = (config.drives || []).find((entry) => baseName(entry.name) === deviceName);
+  if (!drive) return false;
+
+  return (drive.partitions || []).some((partition) => {
+    if (mountPath) return partition.mountPath === mountPath;
+    return Boolean(id) && partition.id === id;
+  });
+};
+
+/*
+ * Why a partition is part of booting, worked out here.
+ *
+ * The proposal reports no reason and no mark saying the solver added a device
+ * for booting, so this reads an EFI flag, a mount path and the absence of a
+ * file system and describes what it can. Anything it does not recognise gets
+ * the general sentence rather than a guess about firmware nothing here can see.
+ * Asked of the backend team in the boot questions note.
+ */
+const bootReason = (partition: Storage.Device): string => {
+  const description = partition.description || "";
+
+  /* What the partition is decides what it is for, and the backend already says
+     what it is. Reading the same partition two ways depending on whether the
+     solver just created it left two rows describing the same kind of partition
+     differently. */
+  if (partition.partition?.efi || /efi/i.test(description))
+    return "The firmware reads the boot loader from it.";
+  if (/bios boot/i.test(description))
+    return "Where the boot loader goes on a disk started in legacy mode.";
+  if (/prep/i.test(description)) return "Where this platform's firmware reads the boot loader.";
+
+  const path = partition.filesystem?.mountPath;
+  if (path === "/boot") return "Holds the kernel and the files read while starting.";
+  if (path === "/boot/zipl") return "Where this platform expects its boot loader.";
+
+  return "Part of how this machine starts.";
+};
+
+/**
+ * Every partition the boot decision costs, read from the proposal.
+ *
+ * Nothing in the configuration asks for these, so neither content tab shows
+ * them and the size columns are short by exactly this much. Comparing the
+ * proposal against the system is what says which are new and which the device
+ * already had.
+ */
+const useBootPlan = (): BootPartition[] => {
+  const config = useConfigModel();
+  const staging = useStagingTree();
+  const systemDevices = useFlattenDevices();
+  const known = new Set(systemDevices.map((device) => device.sid));
+
+  return staging.flatMap((device) =>
+    (device.partitions || [])
+      .map((partition) => ({ partition, isNew: !known.has(partition.sid) }))
+      .filter(
+        ({ partition, isNew }) =>
+          isBootPartition(partition) ||
+          /* A partition the configuration never asked for and that holds
+           * nothing to mount is the solver making room for a boot loader. */
+          (isNew && !partition.filesystem),
+      )
+      .map(({ partition, isNew }) => {
+        const mountPath = partition.filesystem?.mountPath;
+        const id = partitionIdOf(partition.description);
+
+        return {
+          key: String(partition.sid),
+          deviceName: baseName(device.name),
+          devicePath: device.name,
+          name: baseName(partition.name),
+          description: partition.description,
+          size: partition.block?.size,
+          isNew,
+          why: bootReason(partition),
+          mountPath,
+          id,
+          filesystemType: partition.filesystem?.type as ConfigModel.FilesystemType | undefined,
+          isExplicit: isExplicitBootPartition(config, baseName(device.name), mountPath, id),
+        };
+      }),
+  );
+};
+
+/** What the scan found, and what it looked at to find it. */
+type BootScan = {
+  plan: BootPartition[];
+  devices: number;
+  partitions: number;
+  /** Whether the backend has a proposal at all. It reports none when the
+      configuration does not solve, and then there is nothing to read. */
+  hasProposal: boolean;
+  actions: number;
+};
+
+/**
+ * The boot table, with the size of the haystack beside it.
+ *
+ * An empty table has two very different causes: this proposal genuinely needs
+ * no partition to boot, or the scan read nothing. The counts tell them apart
+ * without opening the console.
+ */
+const useBootScan = (): BootScan => {
+  const staging = useStagingTree();
+  const proposal = useStorageProposal();
+  const actions = useActions();
+  const plan = useBootPlan();
+
+  return {
+    plan,
+    devices: staging.length,
+    partitions: staging.reduce((total, device) => total + (device.partitions || []).length, 0),
+    hasProposal: proposal !== null && proposal !== undefined,
+    actions: actions.length,
+  };
+};
+
+/**
+ * Everything the proposal says about every partition, in the console.
+ *
+ * The boot table is assembled by comparing two devicegraphs and matching on
+ * what the backend happens to report, so when it comes out empty the question
+ * is what the backend said, not what this file did with it.
+ */
+const useBootDebug = () => {
+  const staging = useStagingTree();
+  const systemDevices = useFlattenDevices();
+
+  return () => {
+    const known = new Set(systemDevices.map((device) => device.sid));
+    const rows = staging.flatMap((device) =>
+      (device.partitions || []).map((partition) => ({
+        device: baseName(device.name),
+        partition: baseName(partition.name),
+        sid: partition.sid,
+        new: !known.has(partition.sid),
+        description: partition.description,
+        efi: partition.partition?.efi,
+        filesystem: partition.filesystem?.type,
+        mountPath: partition.filesystem?.mountPath,
+        takenAsBoot:
+          isBootPartition(partition) || (!known.has(partition.sid) && !partition.filesystem),
+      })),
+    );
+
+    console.table(rows);
+    console.info("staging devices", staging.length, "system devices", systemDevices.length);
+  };
+};
+
+type PartitionableLocation = { collection: PartitionableCollection; index: number };
+
+/**
+ * Takes a partition the solver invented and writes it into the configuration.
+ *
+ * The point is to let a reader disagree with it. A partition that only exists
+ * in the proposal can be read and nothing else; the same partition written into
+ * the configuration, with the size the proposal gave it, is a planned partition
+ * like any other: it appears in its disk's planned content, it can be resized,
+ * and dropping it hands the decision back to the installer.
+ *
+ * Written as one model, not two: adding the disk and then the partition would
+ * be two round trips, and the second would be built on a configuration the
+ * first had already replaced.
+ */
+const useAdoptBootPartition = () => {
+  const config = useConfigModel();
+
+  return (partition: BootPartition, size: number): PartitionableLocation | null => {
+    const next = configModel.clone(config);
+    next.drives = next.drives || [];
+
+    let index = next.drives.findIndex((drive) => baseName(drive.name) === partition.deviceName);
+    if (index === -1) {
+      next.drives.push({ name: partition.devicePath, partitions: [] });
+      index = next.drives.length - 1;
+    }
+
+    const drive = next.drives[index];
+    drive.partitions = drive.partitions || [];
+
+    const entry: ConfigModel.Partition = {
+      mountPath: partition.mountPath,
+      id: partition.id,
+      filesystem: partition.filesystemType
+        ? { default: false, type: partition.filesystemType }
+        : undefined,
+      /* Exactly what was asked for. A range would leave the solver the same
+         freedom the reader is overriding. */
+      size: { default: false, min: size, max: size },
+    };
+
+    const at = drive.partitions.findIndex((candidate) =>
+      partition.mountPath
+        ? candidate.mountPath === partition.mountPath
+        : Boolean(partition.id) && candidate.id === partition.id,
+    );
+
+    if (at === -1) drive.partitions.push(entry);
+    else drive.partitions[at] = { ...drive.partitions[at], ...entry };
+
+    putStorageModel(next);
+    return { collection: "drives", index };
+  };
+};
+
+/** Drops the configuration's copy, so the installer decides again. */
+const useForgetBootPartition = () => {
+  const config = useConfigModel();
+
+  return (partition: BootPartition) => {
+    const next = configModel.clone(config);
+    const drive = (next.drives || []).find(
+      (candidate) => baseName(candidate.name) === partition.deviceName,
+    );
+    if (!drive) return;
+
+    drive.partitions = (drive.partitions || []).filter((candidate) =>
+      partition.mountPath
+        ? candidate.mountPath !== partition.mountPath
+        : candidate.id !== partition.id,
+    );
+
+    putStorageModel(next);
+  };
+};
+
+/**
+ * Writes the boot loader type.
+ *
+ * The model carries it and nothing in the interface sets it yet, so there is no
+ * hook to borrow. Written on its own, leaving the device and the mode where
+ * they are: the three are independent fields of the same setting.
+ */
+const useSetBootloader = () => {
+  const config = useConfigModel();
+
+  return (bootloader: Bootloader.BootloaderType) => {
+    const next = configModel.clone(config);
+    next.boot = { ...(next.boot || { configure: true }), bootloader };
+    putStorageModel(next);
+  };
+};
+
+/**
+ * That this device boots the machine, and the two things the fact alone leaves
+ * open: whether anyone chose it, and what the boot loader takes from it.
+ *
+ * It carries its own title, so the identity above is left to say what the
+ * device is rather than what it has been signed up for.
+ */
+const BootNote = ({
+  deviceName,
+  systemDevice,
+}: {
+  deviceName: string;
+  systemDevice: Storage.Device | null;
+}) => {
+  const config = useConfigModel();
+  const role = bootRoleOf(config, deviceName);
+  const cost = useBootCost(deviceName, systemDevice);
+
+  if (role === "none") return null;
+
+  /* Two clauses, because the line sits above the tabs and every line it takes
+   * pushes them down. Why the installer picked this device, and what the
+   * boot loader costs it, are the two answers the panel could not give; how the
+   * automatic device is worked out is a longer story, and Boot options is where
+   * that story is already told. */
+  const why = role === "default" ? t("Boot device, chosen automatically.") : t("Boot device.");
+
+  const parts = cost.map((partition) =>
+    partition.isNew
+      ? t(`a new partition (${deviceSize(partition.size)})`)
+      : t(`${partition.name}, reused`),
+  );
+
+  const what = parts.length
+    ? t(`Partitions to boot: ${formatList(parts)}.`)
+    : t("No partition to boot needed.");
+
+  return (
+    <HelperText className="agm-plan-boot">
+      <HelperTextItem icon={<Icon name="info" size="xs" />}>
+        {why} {what}
+      </HelperTextItem>
+    </HelperText>
+  );
+};
+
+/**
+ * What the installer will do with a device, as counts.
+ *
+ * One statement per line and never a name: the list exists to be compared
+ * across many devices at a glance, and the panel is where the names are. A row
+ * that spells out six mount paths is taller than the entry it points at.
+ */
+const purposeOf = (
+  device: ConfigModel.Drive | ConfigModel.MdRaid,
+  groupCount: number,
+  raidCount: number,
+): string[] => {
+  const lines: string[] = [];
+
+  if (device.filesystem) {
+    lines.push(device.mountPath ? t(`Format for ${device.mountPath}`) : t("Format as a whole"));
+  }
+
+  const created = newEntries(device).length;
+  const reused = reusedEntries(device).length;
+  if (created) lines.push(t(`Create ${created} ${created === 1 ? "partition" : "partitions"}`));
+  if (reused) lines.push(t(`Reuse ${reused} ${reused === 1 ? "partition" : "partitions"}`));
+
+  /* Every line names something the installer does, so the ones about hosted
+   * objects take a verb like the rest rather than sitting there as a bare
+   * count. */
+  if (groupCount) {
+    lines.push(t(`Host ${groupCount} LVM volume ${groupCount === 1 ? "group" : "groups"}`));
+  }
+  if (raidCount) {
+    lines.push(t(`Host ${raidCount} RAID ${raidCount === 1 ? "device" : "devices"}`));
+  }
+
+  return lines;
+};
+
+/**
+ * Names the systems a plan removes when the device reports any, and counts
+ * partitions when it reports none. "Windows 11 will be removed" is worth more
+ * than "1 partition will be deleted", and the page has never said it per device.
+ */
+const namedOrCounted = (systems: string[], count: number, tail: string): string => {
+  if (systems.length) return t(`${formatList(systems)} ${tail}`);
+  return t(`${count} ${count === 1 ? "partition" : "partitions"} ${tail}`);
+};
+
+/* ------------------------------------------------------------------ *
+ * What happens to one existing partition
+ *
+ * The device's policy sets the rule, and an entry naming that partition
+ * overrides it. Reading only the policy claims a wipe on a device whose
+ * partitions are individually reused, which is how the row cost and the plan
+ * bar ended up contradicting each other.
+ * ------------------------------------------------------------------ */
+
+type Outcome =
+  | { kind: "keep" }
+  | { kind: "reuse"; mountPath: string }
+  | { kind: "format"; mountPath: string }
+  | { kind: "shrinkIfNeeded" }
+  | { kind: "shrinkTo"; size: number }
+  | { kind: "deleteIfNeeded" }
+  | { kind: "delete" };
+
+/* A partition and a logical volume carry the same space vocabulary, so what
+ * becomes of one is worked out the same way as the other. */
+type SpaceEntry = ConfigModel.Partition | ConfigModel.LogicalVolume;
+
+const outcomeFor = (
+  policy: ConfigModel.SpacePolicy,
+  entry: SpaceEntry | undefined,
+  currentSize?: number,
+): Outcome => {
+  if (entry) {
+    if (entry.delete) return { kind: "delete" };
+    if (entry.deleteIfNeeded) return { kind: "deleteIfNeeded" };
+    /* A partition the new system mounts survives whatever the device policy says
+     * about the rest. Whether its data does depends on the file system: keeping
+     * the existing one keeps the files, and formatting the partition is as
+     * destructive as deleting it, so the two are not reported alike. */
+    if (entry.mountPath) {
+      const keepsData = entry.filesystem?.reuse === true;
+      return { kind: keepsData ? "reuse" : "format", mountPath: entry.mountPath };
+    }
+    /* Only a target that is actually smaller is a shrink. The forms write a
+     * size range onto entries they touch, and reading any range as a shrink
+     * produced "shrink to 17.99 GiB" on a partition already that size. */
+    const target = entry.size?.max;
+    if (entry.resize && target !== undefined && currentSize !== undefined && target < currentSize)
+      return { kind: "shrinkTo", size: target };
+    if (entry.resizeIfNeeded || entry.resize) return { kind: "shrinkIfNeeded" };
+    return { kind: "keep" };
+  }
+
+  switch (policy) {
+    case "delete":
+      return { kind: "delete" };
+    case "resize":
+      return { kind: "shrinkIfNeeded" };
+    default:
+      return { kind: "keep" };
+  }
+};
+
+const SPACE_LABELS: Record<Outcome["kind"], string> = {
+  keep: "Keep",
+  reuse: "Reuse",
+  format: "Reuse and format",
+  shrinkIfNeeded: "Shrink if needed",
+  shrinkTo: "Shrink to a size",
+  deleteIfNeeded: "Delete if needed",
+  delete: "Delete",
+};
+
+/* ------------------------------------------------------------------ *
+ * What the solver decided about a conditional outcome
+ *
+ * "Delete if needed" and "shrink if needed" are configured intents, and whether
+ * either one fired is a question only the solver answers. It does answer it:
+ * every planned action names the sid of the device it touches, and an existing
+ * partition keeps its sid, so an action naming that sid says definitively what
+ * became of it. Reporting the intent alone leaves the reader to guess, and lets
+ * the plan bar, which counts actions, disagree with the rows, which count
+ * intents.
+ *
+ * Only devices that already exist can be matched this way. One being created
+ * has no sid yet, which is what makes its actions unattributable.
+ * ------------------------------------------------------------------ */
+
+type Solver = {
+  /** Whether the solver decided to delete the device with this sid. */
+  deletes: (sid: number) => boolean;
+  /** The size the solver left the device at, where it decided to shrink it. */
+  shrinksTo: (sid: number) => number | undefined;
+};
+
+const useSolver = (): Solver => {
+  const actions = useActions();
+  const staging = useStagingDevices();
+
+  return useMemo(() => {
+    /* A subvolume action names the file system it belongs to, so counting it
+     * would report a device as resized because something inside it moved. */
+    const touched = (sid: number, kind: "delete" | "resize") =>
+      actions.some((action) => action.device === sid && action[kind] && !action.subvol);
+
+    return {
+      deletes: (sid) => touched(sid, "delete"),
+      shrinksTo: (sid) =>
+        touched(sid, "resize") ? staging.find((d) => d.sid === sid)?.block?.size : undefined,
+    };
+  }, [actions, staging]);
+};
+
+/**
+ * An outcome as reported, once the solver has answered the conditionals.
+ *
+ * The extra state is the one the configuration cannot express: a partition the
+ * installer was allowed to take and did not need.
+ */
+type ReportedOutcome = Outcome | { kind: "keptUntouched" };
+
+const reportedOutcome = (outcome: Outcome, sid: number, solver: Solver): ReportedOutcome => {
+  if (outcome.kind === "deleteIfNeeded")
+    return solver.deletes(sid) ? { kind: "delete" } : { kind: "keptUntouched" };
+
+  if (outcome.kind === "shrinkIfNeeded") {
+    /* The size comes from staging rather than from the configuration, which
+     * only ever said "smaller if that helps". */
+    const size = solver.shrinksTo(sid);
+    return size === undefined ? { kind: "keptUntouched" } : { kind: "shrinkTo", size };
+  }
+
+  return outcome;
+};
+
+/**
+ * The reported form of the same decision.
+ *
+ * Nothing has happened yet, so nothing is written as though it had: a partition
+ * is to be deleted, not deleted. The control that sets this says "Delete"; the
+ * report says what is going to happen to the partition. Same terms, different
+ * grammar, which is what keeps a report from reading as a button.
+ *
+ * Each phrase stands alone in its column and is capitalised accordingly. The
+ * two conditionals keep a form of their own for the moment between a click and
+ * the solver's answer, and are replaced by that answer once it arrives.
+ */
+const outcomeReport = (outcome: ReportedOutcome): Cost => {
+  switch (outcome.kind) {
+    case "delete":
+      return { kind: "destroys", text: t("To be deleted") };
+    case "deleteIfNeeded":
+      return { kind: "destroys", text: t("To be deleted if needed") };
+    case "shrinkIfNeeded":
+      return { kind: "shrinks", text: t("To be shrunk if needed") };
+    case "shrinkTo":
+      /* The size the shrink leaves behind is reported in the size column, next
+       * to the size it replaces, rather than spelled out again here. */
+      return { kind: "shrinks", text: t("To be shrunk") };
+    case "reuse":
+      return { kind: "keeps", text: t(`To be reused as ${outcome.mountPath}`) };
+    case "format":
+      return { kind: "destroys", text: t(`To be formatted as ${outcome.mountPath}`) };
+    case "keptUntouched":
+      /* Configured as expendable and not spent. Saying only "kept" would hide
+       * that the installer had permission to take it. */
+      return { kind: "keeps", text: t("Kept, space was not needed") };
+    default:
+      /* The one entry that is not a change, so it does not take the future
+       * form the others share. */
+      return { kind: "keeps", text: t("Kept") };
+  }
+};
+
+/**
+ * The size a row ends at, where that is not the size it has now.
+ *
+ * Showing both in one cell puts the change next to the value it changes, which
+ * is a comparison the reader would otherwise make across two columns.
+ */
+const plannedSize = (outcome: ReportedOutcome): number | undefined =>
+  outcome.kind === "shrinkTo" ? outcome.size : undefined;
+
+/**
+ * The size column of a content row.
+ *
+ * One size most of the time. Where a shrink is planned, the size the row ends
+ * at, with the size it leaves behind under it.
+ */
+const SizeCell = ({ size, planned }: { size?: number; planned?: number }) => (
+  <td className="agm-plan-size">
+    {planned === undefined ? (
+      size === undefined ? null : (
+        deviceSize(size)
+      )
+    ) : (
+      <>
+        <div>{deviceSize(planned)}</div>
+        {size !== undefined && (
+          <div className="agm-plan-before">{t(`Before ${deviceSize(size)}`)}</div>
+        )}
+      </>
+    )}
+  </td>
+);
+
+/**
+ * What a device costs, summarised from what happens to each of its partitions
+ * rather than from the policy alone.
+ */
+const costsFor = (
+  device: Partitionable,
+  systemDevice: Storage.Device | null,
+  solver: Solver,
+): Cost[] => {
+  const policy = device.spacePolicy || "keep";
+  const partitions = systemDevice?.partitions || [];
+  if (partitions.length === 0) return [];
+
+  const entries = device.partitions || [];
+  const decided = partitions.map((partition) => ({
+    partition,
+    /* The solver's answer rather than the configured intent, so a device
+     * allowed to lose partitions it did not have to lose reports nothing
+     * lost. */
+    outcome: reportedOutcome(
+      outcomeFor(
+        policy,
+        entries.find((e) => e.name === partition.name),
+        partition.block?.size,
+      ),
+      partition.sid,
+      solver,
+    ),
+  }));
+
+  const of = (...kinds: ReportedOutcome["kind"][]) =>
+    decided.filter(({ outcome }) => kinds.includes(outcome.kind));
+  const systemsOf = (group: typeof decided) =>
+    group.flatMap(({ partition }) => partition.block?.systems || []);
+
+  const deleted = of("delete");
+  const formatted = of("format");
+  const shrunk = of("shrinkTo");
+
+  const costs: Cost[] = [];
+
+  if (shrunk.length) {
+    costs.push({
+      kind: "shrinks",
+      text: t(`${shrunk.length} ${shrunk.length === 1 ? "partition" : "partitions"} will shrink`),
+    });
+  }
+
+  /* Deleting and formatting both lose data and are not the same act, so each
+   * keeps its own verb rather than being merged into one vague line. */
+  if (formatted.length) {
+    costs.push({
+      kind: "destroys",
+      text: namedOrCounted(systemsOf(formatted), formatted.length, t("will be formatted")),
+    });
+  }
+
+  if (deleted.length) {
+    costs.push({
+      kind: "destroys",
+      text: namedOrCounted(systemsOf(deleted), deleted.length, t("will be deleted")),
+    });
+  }
+
+  return costs;
+};
+
+/**
+ * What happens to one logical volume the group already holds, with the
+ * conditionals settled the same way a partition's are.
+ */
+const logicalVolumeOutcome = (
+  lv: ConfigModel.LogicalVolume,
+  sid: number | undefined,
+  solver: Solver,
+): "deleted" | "shrunk" | "kept" => {
+  if (lv.delete) return "deleted";
+  if (lv.resize) return "shrunk";
+  /* A volume the system does not report has no sid to match an action against,
+   * so its conditional stays unanswered and it is not claimed as a loss. */
+  if (sid === undefined) return "kept";
+  if (lv.deleteIfNeeded) return solver.deletes(sid) ? "deleted" : "kept";
+  if (lv.resizeIfNeeded) return solver.shrinksTo(sid) === undefined ? "kept" : "shrunk";
+  return "kept";
+};
+
+const volumeGroupCosts = (
+  group: ConfigModel.VolumeGroup,
+  systemGroup: Storage.Device | null,
+  solver: Solver,
+): Cost[] => {
+  const existing = (group.logicalVolumes || []).filter((lv) => lv.lvName !== undefined);
+  const sidOf = (lvName: string) =>
+    (systemGroup?.logicalVolumes || []).find((lv) => baseName(lv.name) === lvName)?.sid;
+  const decided = existing.map((lv) => logicalVolumeOutcome(lv, sidOf(lv.lvName), solver));
+  const removed = decided.filter((outcome) => outcome === "deleted").length;
+  const shrunk = decided.filter((outcome) => outcome === "shrunk").length;
+  const costs: Cost[] = [];
+
+  if (group.spacePolicy === "delete" && existing.length) {
+    return [
+      {
+        kind: "destroys",
+        text: t(`${existing.length} existing logical volumes will be deleted`),
+      },
+    ];
+  }
+
+  if (shrunk) costs.push({ kind: "shrinks", text: t(`${shrunk} logical volumes will shrink`) });
+  if (removed)
+    costs.push({ kind: "destroys", text: t(`${removed} logical volumes will be deleted`) });
+
+  return costs;
+};
+
+/* ------------------------------------------------------------------ *
+ * Writing the plan
+ *
+ * The space policy hook can only express two of the five per row decisions the
+ * config model supports, so the row control writes the model directly. That is
+ * the point of the exercise: `deleteIfNeeded` and an explicit shrink target are
+ * reachable nowhere in the real interface.
+ * ------------------------------------------------------------------ */
+
+const withRowSpace = (
+  config: ConfigModel.Config,
+  collection: PartitionableCollection,
+  index: number,
+  deviceName: string,
+  outcome: Outcome,
+): ConfigModel.Config => {
+  const next = configModel.clone(config);
+  const device = next[collection]?.[index] as Partitionable | undefined;
+  if (!device) return next;
+
+  const partitions = (device.partitions ||= []);
+  let entry = partitions.find((p) => p.name === deviceName);
+  if (!entry) {
+    entry = { name: deviceName };
+    partitions.push(entry);
+  }
+
+  entry.delete = false;
+  entry.deleteIfNeeded = false;
+  entry.resize = false;
+  entry.resizeIfNeeded = false;
+  entry.size = undefined;
+
+  switch (outcome.kind) {
+    case "delete":
+      entry.delete = true;
+      break;
+    case "deleteIfNeeded":
+      entry.deleteIfNeeded = true;
+      break;
+    case "shrinkIfNeeded":
+      entry.resizeIfNeeded = true;
+      break;
+    case "shrinkTo":
+      entry.resize = true;
+      entry.size = { default: false, min: outcome.size, max: outcome.size };
+      break;
+    default:
+      break;
+  }
+
+  return next;
+};
+
+/**
+ * The same write for a logical volume the group already holds.
+ *
+ * Separate from the partition version rather than generalised over both: the
+ * two are reached through different collections, and one function carrying a
+ * rule about which list to walk reads worse than two that each walk one.
+ */
+const withLogicalVolumeSpace = (
+  config: ConfigModel.Config,
+  index: number,
+  lvName: string,
+  outcome: Outcome,
+): ConfigModel.Config => {
+  const next = configModel.clone(config);
+  const group = next.volumeGroups?.[index];
+  if (!group) return next;
+
+  const volumes = (group.logicalVolumes ||= []);
+  let entry = volumes.find((lv) => lv.lvName === lvName);
+  if (!entry) {
+    entry = { lvName };
+    volumes.push(entry);
+  }
+
+  entry.delete = false;
+  entry.deleteIfNeeded = false;
+  entry.resize = false;
+  entry.resizeIfNeeded = false;
+  entry.size = undefined;
+
+  switch (outcome.kind) {
+    case "delete":
+      entry.delete = true;
+      break;
+    case "deleteIfNeeded":
+      entry.deleteIfNeeded = true;
+      break;
+    case "shrinkIfNeeded":
+      entry.resizeIfNeeded = true;
+      break;
+    case "shrinkTo":
+      entry.resize = true;
+      entry.size = { default: false, min: outcome.size, max: outcome.size };
+      break;
+    default:
+      break;
+  }
+
+  return next;
+};
+
+/* ------------------------------------------------------------------ *
+ * The row
+ * ------------------------------------------------------------------ */
+
+/**
+ * A plain kebab that a MenuButton can drive.
+ *
+ * MenuButton clones a custom toggle with its ref, click handler and expanded
+ * state, so this has to forward a ref to the button it renders.
+ */
+type ActionItem = { title: string; onClick: () => void; isDanger?: boolean };
+
+/**
+ * The one row menu this playground uses, everywhere.
+ *
+ * It exists because the two menus in core disagree about which three dots a
+ * menu wears: `SimpleDropdown` uses the horizontal glyph and `RowActions` the
+ * vertical one. Mixing them, which is what happens when both are reached for,
+ * makes rows in the same table look like they do different things. The
+ * horizontal glyph is the one this interface uses where it has the choice.
+ *
+ * The label names the toggle and nothing else. Heading the open menu with it
+ * spent a line and a rule on a title the reader had just clicked, in a menu of
+ * two or three items; the row the menu belongs to is the row it opened from.
+ */
+const ActionsMenu = ({
+  label,
+  items,
+  position = "right",
+}: {
+  label: string;
+  items: ActionItem[];
+  position?: "right" | "end";
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onSelect={() => setIsOpen(false)}
+      onOpenChange={setIsOpen}
+      popperProps={{ position }}
+      toggle={(toggleRef) => (
+        <MenuToggle
+          ref={toggleRef}
+          onClick={() => setIsOpen(!isOpen)}
+          variant="plain"
+          aria-label={label}
+          isExpanded={isOpen}
+        >
+          <Icon name="more_horiz" />
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        {items.map(({ title, onClick, isDanger }, i) => (
+          <DropdownItem key={i} onClick={onClick} isDanger={isDanger}>
+            {title}
+          </DropdownItem>
+        ))}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+const KebabToggle = React.forwardRef<HTMLButtonElement, { label: string }>(
+  ({ label, ...props }, ref) => (
+    <MenuToggle ref={ref} variant="plain" aria-label={label} {...props}>
+      <Icon name="more_horiz" />
+    </MenuToggle>
+  ),
+);
+KebabToggle.displayName = "KebabToggle";
+
+/**
+ * The device actions, taken from the interface being redesigned rather than
+ * invented here. Changing the device, creating a volume group on it and
+ * dropping it from the configuration are what those menus already do, including
+ * the device selector dialog and every explanation attached to it.
+ */
+const PartitionableActions = ({
+  collection,
+  index,
+}: {
+  collection: PartitionableCollection;
+  index: number;
+}) => {
+  const config = useConfigModel();
+  const deleteDrive = useDeleteDrive();
+  const deleteMdRaid = useDeleteMdRaid();
+  const device = config[collection]?.[index] as Partitionable | undefined;
+  const systemDevice = useDevice(device?.name || "");
+
+  if (!device || !systemDevice) return null;
+
+  return (
+    <SearchedDeviceMenu
+      modelDevice={device}
+      selected={systemDevice}
+      toggle={<KebabToggle label={t(`Actions for ${baseName(device.name)}`)} />}
+      popperProps={{ position: "end" }}
+      deleteFn={() => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index))}
+    />
+  );
+};
+
+const VolumeGroupActions = ({ index }: { index: number }) => {
+  const config = useConfigModel();
+  const navigate = useNavigate();
+  const deleteVolumeGroup = useDeleteVolumeGroup();
+  const group = config.volumeGroups?.[index];
+  const systemDevice = useDevice(group?.name || "");
+
+  if (!group) return null;
+
+  /* A volume group found on the system can be swapped for another one; a group
+   * this configuration defines cannot, so it gets edit and delete instead. */
+  if (group.name) {
+    return (
+      <SearchedVolumeGroupMenu
+        deviceConfig={group}
+        device={systemDevice}
+        toggle={<KebabToggle label={t(`Actions for ${group.vgName}`)} />}
+        popperProps={{ position: "end" }}
+      />
+    );
+  }
+
+  return (
+    <ActionsMenu
+      label={t(`Actions for ${group.vgName}`)}
+      items={[
+        {
+          title: t("Edit the volume group"),
+          onClick: () =>
+            navigate(generateEncodedPath(PATHS.volumeGroup.edit, { id: group.vgName })),
+        },
+        {
+          title: t("Do not use"),
+          isDanger: true,
+          onClick: () => deleteVolumeGroup(group.vgName, false),
+        },
+      ]}
+    />
+  );
+};
+
+const DeviceActions = ({ selection }: { selection: Selection }) =>
+  selection.collection === "volumeGroups" ? (
+    <VolumeGroupActions index={selection.index} />
+  ) : (
+    <PartitionableActions collection={selection.collection} index={selection.index} />
+  );
+
+type RowProps = {
+  selection: Selection;
+  isSelected: boolean;
+  onSelect: (selection: Selection) => void;
+  registerRef: (index: number, node: HTMLAnchorElement | null) => void;
+  position: number;
+  showsMenu: boolean;
+};
+
+type RowContent = {
+  name: string;
+  description: string;
+  /** Roles the device carries, read beside its name as the panel reads them. */
+  marks?: string[];
+  /** What the new system will have here, one statement per line. */
+  content: string[];
+  costs: Cost[];
+  isPlanned: boolean;
+};
+
+const COLUMN_LABELS = {
+  device: "Device",
+  content: "Content",
+  changes: "Changes",
+};
+
+/**
+ * What a device is, in one phrase: its size, its kind, and what it sits on.
+ *
+ * Shared by the row and by the panel header. A device described one way in the
+ * list and another way in the panel is two devices as far as the reader is
+ * concerned, and the phrase also absorbs the column that used to hold "over
+ * vdd" and printed a dash for every disk.
+ */
+const partitionableDescription = (device: Storage.Device | null): string =>
+  [
+    device?.block?.size ? deviceSize(device.block.size) : undefined,
+    typeDescription(device),
+    device?.partitionTable?.type?.toUpperCase(),
+  ]
+    .filter(Boolean)
+    .join("  ·  ");
+
+/* Where a group sits is a relationship, so it belongs on the relationship line
+ * rather than inside the phrase saying what the group is. */
+const volumeGroupDescription = (): string => t("LVM volume group");
+
+/**
+ * One row per configured entry.
+ *
+ * A table rather than a list of grids, for the reason the panel's content list
+ * became one: columns only line up when a single element owns them, and the
+ * whole point of the list is comparing devices down a column. It also gives
+ * every cell a column header a screen reader announces, and names each row after
+ * its device.
+ */
+const RowShell = ({
+  content,
+  selection,
+  isSelected,
+  onSelect,
+  registerRef,
+  position,
+  showsMenu,
+}: RowProps & { content: RowContent }) => {
+  const { density } = useVariants();
+  const labelId = useId();
+
+  /* The device cell is the link. Selection is navigation in the real thing,
+   * which buys aria-current, a pasteable URL and a phase that adds forms to the
+   * panel without rewriting this. Here it stays local state so the playground
+   * needs no route of its own. */
+  const link = (
+    <a
+      id={labelId}
+      href="#"
+      ref={(node) => registerRef(position, node)}
+      aria-current={isSelected ? "true" : undefined}
+      className="agm-plan-row-link"
+      onClick={(event) => {
+        event.preventDefault();
+        onSelect(selection);
+      }}
+    >
+      <Text isBold>{content.name}</Text>
+      {content.description && (
+        <span className="agm-plan-row-description"> {content.description}</span>
+      )}
+      {content.marks?.map((mark) => (
+        <React.Fragment key={mark}>
+          {" "}
+          <Label isCompact>{mark}</Label>
+        </React.Fragment>
+      ))}
+    </a>
+  );
+
+  const classes = [
+    "agm-plan-row",
+    `agm-plan-row-${density}`,
+    isSelected && "agm-plan-row-selected",
+    !content.isPlanned && "agm-plan-row-idle",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <tr
+      className={classes}
+      /* A click anywhere activates the link. A mouse convenience with no
+       * keyboard equivalent, which is only acceptable because the link is the
+       * dominant element in the row and the row shows a hover rail. */
+      onClick={() => onSelect(selection)}
+    >
+      <th scope="row" data-label={t(COLUMN_LABELS.device)}>
+        {link}
+      </th>
+      <td data-label={t(COLUMN_LABELS.content)}>
+        {content.content.length === 0 ? (
+          <span className="agm-plan-muted">{t("Nothing planned")}</span>
+        ) : (
+          content.content.map((line) => <div key={line}>{line}</div>)
+        )}
+      </td>
+      <td data-label={t(COLUMN_LABELS.changes)}>
+        <CostSlot costs={content.costs} />
+      </td>
+      {showsMenu && (
+        <td className="agm-plan-row-control" onClick={(event) => event.stopPropagation()}>
+          <DeviceActions selection={selection} />
+        </td>
+      )}
+    </tr>
+  );
+};
+
+/**
+ * Split from the volume group row on purpose. Both call hooks, and a single
+ * component switching between a drive and a volume group renders a different
+ * number of hooks depending on what is selected.
+ */
+const PartitionableRow = (props: RowProps) => {
+  const config = useConfigModel();
+  const { collection, index } = props.selection;
+  const device = config[collection]?.[index] as Partitionable;
+  const systemDevice = useDevice(device?.name || "");
+  const allDevices = useFlattenDevices();
+  const solver = useSolver();
+
+  if (!device) return null;
+
+  const users = usersOf(config, allDevices, device.name);
+  const content = purposeOf(
+    device,
+    users.filter((u) => u.selection?.collection === "volumeGroups").length,
+    users.filter((u) => u.selection?.collection === "mdRaids").length,
+  );
+  const boots = bootRoleOf(config, device.name) !== "none";
+
+  return (
+    <RowShell
+      {...props}
+      content={{
+        name: baseName(device.name),
+        description: partitionableDescription(systemDevice),
+        /* The same mark the panel puts beside the same name. Booting is
+           something the device is, and the content column is a list of things
+           the installer does, so the fact reads beside the identity in both
+           places rather than as a line of its own in one of them. */
+        marks: boots ? [t("Boot device")] : [],
+        content,
+        costs: costsFor(device, systemDevice, solver),
+        isPlanned: content.length > 0 || boots,
+      }}
+    />
+  );
+};
+
+const VolumeGroupRow = (props: RowProps) => {
+  const config = useConfigModel();
+  const { index } = props.selection;
+  const group = config.volumeGroups?.[index];
+  const systemDevice = useDevice(group?.name || "");
+  const solver = useSolver();
+
+  if (!group) return null;
+
+  /* A count, not a list. Six logical volumes named after long mount paths turn
+   * a row into four lines of text, which is the content the panel exists to
+   * hold. */
+  const count = (group.logicalVolumes || []).length;
+
+  return (
+    <RowShell
+      {...props}
+      content={{
+        name: group.vgName,
+        /* No second line: the group heading above already says these are
+         * volume groups, and where each one sits is a relationship the panel
+         * carries. */
+        description: "",
+        content: count ? [t(`Define ${count} logical ${count === 1 ? "volume" : "volumes"}`)] : [],
+        costs: volumeGroupCosts(group, systemDevice, solver),
+        isPlanned: count > 0,
+      }}
+    />
+  );
+};
+
+const DeviceRow = (props: RowProps) =>
+  props.selection.collection === "volumeGroups" ? (
+    <VolumeGroupRow {...props} />
+  ) : (
+    <PartitionableRow {...props} />
+  );
+
+/* ------------------------------------------------------------------ *
+ * The panel: what is on the disk now
+ * ------------------------------------------------------------------ */
+
+type ContentItem = Storage.Device | Storage.UnusedSlot;
+
+const isSlot = (item: ContentItem): item is Storage.UnusedSlot =>
+  (item as Storage.Device).sid === undefined;
+
+/**
+ * One short line each, the length the menus in the interface being redesigned
+ * already use. A menu item is a choice, not a paragraph: anything that needs
+ * two sentences needs somewhere other than a menu.
+ */
+const SPACE_DESCRIPTIONS: Partial<Record<Outcome["kind"], string>> = {
+  keep: "Left as it is.",
+  shrinkIfNeeded: "Resized only if space runs short.",
+  deleteIfNeeded: "Removed only if space runs short.",
+  delete: "Removed, and its data lost.",
+};
+
+/* The three the interface already offers per partition. An explicit shrink
+ * target and a conditional delete are states the model can hold and the solver
+ * can report, so both are still read; neither is offered as a choice here,
+ * because neither is a choice the reader can make anywhere else. */
+const SPACE_OUTCOMES: Outcome["kind"][] = ["keep", "shrinkIfNeeded", "delete"];
+
+/**
+ * What happens to one partition, under the per partition policy.
+ *
+ * An option that cannot apply stays in the list, disabled, carrying the
+ * reported reason as its own text. A tooltip is not an option here: PatternFly
+ * does not make a tooltip trigger focusable, so a keyboard never reaches one on
+ * static text, and making it focusable adds a tab stop leading nowhere.
+ */
+const RowSpaceControl = ({
+  device: partition,
+  current,
+  onChoose,
+}: {
+  device: Storage.Device;
+  current: Outcome;
+  onChoose: (kind: Outcome["kind"]) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const canShrink = supportShrink(partition);
+  /* The device reports why it cannot shrink in two sentences of prose, which is
+   * more than a menu item can hold without pushing the menu past the panel. The
+   * item says that it cannot; where the full reason should be read is an open
+   * question, and a menu is not the answer. */
+  const reason = t("This device cannot be made smaller.");
+
+  const isDisabled = (kind: Outcome["kind"]) => !canShrink && kind === "shrinkIfNeeded";
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      popperProps={{ position: "right" }}
+      toggle={(ref) => (
+        <MenuToggle
+          ref={ref}
+          size="sm"
+          isExpanded={isOpen}
+          onClick={() => setIsOpen((open) => !open)}
+          aria-label={t(`Changes allowed for ${baseName(partition.name)}`)}
+        >
+          {t(SPACE_LABELS[current.kind])}
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        {SPACE_OUTCOMES.map((kind) => (
+          <DropdownItem
+            key={kind}
+            isSelected={kind === current.kind}
+            isDanger={kind === "delete"}
+            isDisabled={isDisabled(kind)}
+            description={isDisabled(kind) ? reason : SPACE_DESCRIPTIONS[kind]}
+            onClick={() => {
+              setIsOpen(false);
+              onChoose(kind);
+            }}
+          >
+            {t(SPACE_LABELS[kind])}
+          </DropdownItem>
+        ))}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+/**
+ * One existing partition, or one gap between two of them.
+ *
+ * Reuse is not a space decision, so it does not hide behind the per partition
+ * policy: adopting a partition is about what the new system mounts, and it stays
+ * reachable under every policy. That distinction is why it lives in the row menu
+ * rather than in the control next to it.
+ */
+/**
+ * The Planned action cell.
+ *
+ * Reading and deciding are the same column. Under any policy but Custom there
+ * is nothing to decide, so the cell reports. Under Custom the row carries a
+ * decision, and putting its control in the column that reports the result keeps
+ * the two together instead of leaving the reader to pair a value on the left
+ * with a control at the far right of the row.
+ *
+ * A row with no decision to make keeps reporting: a partition the new system
+ * mounts is settled by the reuse, and offering to delete it beside that would
+ * contradict it.
+ *
+ * A line under the control only where the solver said something the control did
+ * not: "Delete if needed" answered by "Kept, space was not needed" is worth
+ * reading, and the same permission echoed back as "To be deleted if needed" is
+ * the control's own text a second time.
+ */
+const PlannedActionCell = ({
+  reported,
+  device,
+  current,
+  onChoose,
+}: {
+  reported: ReportedOutcome | null;
+  /** Set only where the row can be decided here. */
+  device?: Storage.Device;
+  current?: Outcome | null;
+  onChoose?: (kind: Outcome["kind"]) => void;
+}) => {
+  const report = reported ? outcomeReport(reported) : null;
+
+  if (!device || !current || !onChoose)
+    return <td>{report && <CostLine cost={report} showIcon={report.kind !== "keeps"} />}</td>;
+
+  return (
+    <td>
+      <RowSpaceControl device={device} current={current} onChoose={onChoose} />
+      {report && reported.kind !== current.kind && (
+        <div className="agm-plan-choice-note">{report.text}</div>
+      )}
+    </td>
+  );
+};
+
+const ContentRow = ({
+  item,
+  collection,
+  index,
+  entry,
+  policy,
+}: {
+  item: ContentItem;
+  collection: PartitionableCollection;
+  index: number;
+  entry: ConfigModel.Partition | undefined;
+  policy: ConfigModel.SpacePolicy;
+}) => {
+  const config = useConfigModel();
+  const navigate = useNavigate();
+  const deletePartition = useDeletePartition();
+  const solver = useSolver();
+  const [pending, setPending] = useState<Outcome | null>(null);
+
+  const size = isSlot(item) ? item.size : item.block.size;
+  const stored = isSlot(item) ? null : outcomeFor(policy, entry, size);
+  /* Every edit is a round trip. Showing the chosen value immediately keeps a
+   * control from sitting on its old value long enough to invite a second
+   * click. */
+  const current = pending || stored;
+  /* The control shows what is configured; this column shows what the solver
+   * made of it. While a write is in flight the solver has not seen the new
+   * configuration yet, so the choice just made is reported as an intent rather
+   * than resolved against a stale answer. */
+  const reported: ReportedOutcome | null =
+    pending || (stored && !isSlot(item) ? reportedOutcome(stored, item.sid, solver) : stored);
+
+  useEffect(() => {
+    if (pending && stored && stored.kind === pending.kind) setPending(null);
+  }, [pending, stored]);
+
+  if (isSlot(item)) {
+    /* Free space is a row, because "keep everything" is a choice with no
+     * visible evidence behind it otherwise. */
+    return (
+      <tr className="agm-plan-free">
+        <th scope="row" className="agm-plan-muted">
+          {t("Free space")}
+        </th>
+        <td />
+        <td className="agm-plan-size">{deviceSize(size)}</td>
+        <td />
+        <td />
+      </tr>
+    );
+  }
+
+  const systems = item.block?.systems || [];
+  const what = item.filesystem?.type || item.description || t("unrecognised");
+  const isSpokenFor = current?.kind === "reuse" || current?.kind === "format";
+  const isGoverned = !isSpokenFor;
+  const reusedAs = isSpokenFor ? (current as { mountPath: string }).mountPath : undefined;
+
+  const commit = (outcome: Outcome) => {
+    setPending(outcome);
+    putStorageModel(withRowSpace(config, collection, index, item.name, outcome));
+  };
+
+  const choose = (kind: Outcome["kind"]) => commit({ kind } as Outcome);
+
+  const reuseItems = reusedAs
+    ? [
+        {
+          title: t("Edit the reused partition"),
+          onClick: () =>
+            navigate(
+              generateEncodedPath(PATHS.editPartition, {
+                collection,
+                index: String(index),
+                partitionId: reusedAs,
+              }),
+            ),
+        },
+        {
+          title: t("Stop reusing"),
+          onClick: () => deletePartition(collection, index, reusedAs),
+        },
+      ]
+    : [
+        {
+          title: t("Reuse for the new system…"),
+          onClick: () =>
+            navigate(
+              generateEncodedPath(PATHS.reusePartition, {
+                collection,
+                index: String(index),
+                deviceName: item.name,
+              }),
+            ),
+        },
+      ];
+
+  return (
+    <>
+      <tr>
+        <th scope="row">
+          <Text isBold>{baseName(item.name)}</Text>
+          {item.block?.encrypted && (
+            <>
+              {" "}
+              <Icon name="lock" size="xs" aria-label={t("encrypted")} />
+            </>
+          )}
+        </th>
+        {/* What is on the partition. What becomes of it is the next column but
+            one, so it is not repeated here. The file system stays in the text
+            and a system the device reports sits beside it as a mark: naming
+            Windows is what makes a deletion mean something, and dropping the
+            file system to make room for it lost the reader the other half. */}
+        <td>
+          <Flex
+            gap={{ default: "gapXs" }}
+            alignItems={{ default: "alignItemsCenter" }}
+            flexWrap={{ default: "wrap" }}
+          >
+            <FlexItem>{what}</FlexItem>
+            {systems.map((system) => (
+              <FlexItem key={system}>
+                <Label isCompact>{system}</Label>
+              </FlexItem>
+            ))}
+          </Flex>
+        </td>
+        {/* Always this column, whatever else the row carries. A size that moves
+            with the length of its neighbour cannot be compared down the list. */}
+        <SizeCell size={size} planned={reported ? plannedSize(reported) : undefined} />
+        <PlannedActionCell
+          reported={reported}
+          device={policy === "custom" && isGoverned ? item : undefined}
+          current={policy === "custom" && isGoverned ? current : undefined}
+          onChoose={policy === "custom" && isGoverned ? choose : undefined}
+        />
+        <td className="agm-plan-row-control">
+          <ActionsMenu label={t(`Actions for ${baseName(item.name)}`)} items={reuseItems} />
+        </td>
+      </tr>
+    </>
+  );
+};
+
+const BULK_POLICIES: ConfigModel.SpacePolicy[] = ["delete", "resize", "keep", "custom"];
+
+const BULK_LABELS: Record<ConfigModel.SpacePolicy, string> = {
+  delete: "Delete everything",
+  resize: "Shrink if needed",
+  keep: "Keep everything",
+  custom: "Custom",
+};
+
+/**
+ * Four segmented options rather than a dropdown. A dropdown hides three of the
+ * four behind a click and gives no sense that a choice exists at all, while the
+ * segmented control shows the whole decision and which part of it is taken.
+ *
+ * Per row controls appear only under "Per partition", so a device following one
+ * rule carries one control instead of one per partition.
+ *
+ * The explanation goes in each button's own label rather than a tooltip:
+ * PatternFly puts a tooltip wrapper between the group and its buttons, which
+ * breaks the segmented look, and extra props on a toggle item land on the
+ * wrapper, so a described-by never reaches the button that needs it.
+ */
+const SPACE_MEANINGS: Record<ConfigModel.SpacePolicy, string> = {
+  delete: "Every existing partition is removed and its data lost.",
+  resize: "Existing partitions are made smaller where the installer runs short of room.",
+  keep: "Only free space and partitions you reuse are used.",
+  custom: "Choose what happens to each partition below.",
+};
+
+/* The accessible name is the visible label plus what it means, in that order,
+ * so voice control still reaches the button by what is written on it. */
+const spaceHint = (policy: ConfigModel.SpacePolicy): string =>
+  `${BULK_LABELS[policy]}. ${SPACE_MEANINGS[policy]}`;
+
+const SPACE_CONTROL_LABEL_ID = "agm-plan-space-control-label";
+const SPACE_SETTING_TOGGLE_ID = "agm-plan-space-setting-toggle";
+const SPACE_SETTING_VALUE_ID = "agm-plan-space-setting-value";
+
+/* The same decision written as a sentence about the content rather than as the
+ * name of a setting. The term is the subject and the value is what happens to
+ * it, which is what lets the row read on its own once it sits above the table
+ * it governs rather than on it.
+ *
+ * "Content" rather than "partitions" because the same row has to work on a
+ * volume group, where the things kept or removed are logical volumes. */
+const SPACE_SETTING_TERM = "Existing content";
+
+const SPACE_SETTING_VALUES: Record<ConfigModel.SpacePolicy, string> = {
+  delete: "removed to make room",
+  resize: "made smaller to make room",
+  keep: "left as it is",
+  custom: "decided item by item",
+};
+
+/* Both name a permission rather than an outcome, which is the reading the whole
+ * column beside it depends on. The terse one has been on the page since round
+ * three; the longer one spells out who is being permitted, at the cost of a
+ * label long enough to wrap beside the control. */
+const SPACE_HEADINGS: Record<SpaceLabel, string> = {
+  terse: "Allowed changes",
+  plain: "What the installer may change",
+};
+
+const SpacePolicySegments = ({
+  current,
+  onChoose,
+}: {
+  current: ConfigModel.SpacePolicy;
+  onChoose: (policy: ConfigModel.SpacePolicy) => void;
+}) => (
+  <ToggleGroup isFill aria-labelledby={SPACE_CONTROL_LABEL_ID} className="agm-plan-space-segments">
+    {BULK_POLICIES.map((policy) => (
+      <ToggleGroupItem
+        key={policy}
+        text={t(BULK_LABELS[policy])}
+        buttonId={`agm-plan-policy-${policy}`}
+        isSelected={policy === current}
+        aria-label={t(spaceHint(policy))}
+        onChange={() => onChoose(policy)}
+      />
+    ))}
+  </ToggleGroup>
+);
+
+/**
+ * The same decision as one menu.
+ *
+ * Four buttons spend the whole width of the panel head on a choice that is
+ * made once and then read, and they set the four options at the weight of the
+ * table's own headings. The menu keeps the chosen value visible, which is what
+ * a reader coming back to the panel is looking for, and carries what each
+ * option means as its description rather than as a line under the strip.
+ */
+const SpacePolicyMenu = ({
+  current,
+  onChoose,
+}: {
+  current: ConfigModel.SpacePolicy;
+  onChoose: (policy: ConfigModel.SpacePolicy) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      popperProps={{ position: "right" }}
+      toggle={(ref) => (
+        <MenuToggle
+          ref={ref}
+          size="sm"
+          isExpanded={isOpen}
+          aria-labelledby={`${SPACE_CONTROL_LABEL_ID} agm-plan-policy-value`}
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          <span id="agm-plan-policy-value">{t(BULK_LABELS[current])}</span>
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        {BULK_POLICIES.map((policy) => (
+          <DropdownItem
+            key={policy}
+            isSelected={policy === current}
+            isDanger={policy === "delete"}
+            description={t(SPACE_MEANINGS[policy])}
+            onClick={() => {
+              setIsOpen(false);
+              onChoose(policy);
+            }}
+          >
+            {t(BULK_LABELS[policy])}
+          </DropdownItem>
+        ))}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+const SpacePolicyControl = (props: {
+  current: ConfigModel.SpacePolicy;
+  onChoose: (policy: ConfigModel.SpacePolicy) => void;
+}) => {
+  const { spaceControl } = useVariants();
+
+  if (spaceControl === "menu") return <SpacePolicyMenu {...props} />;
+
+  return <SpacePolicySegments {...props} />;
+};
+
+/**
+ * Which policy the device follows, from the configuration where it can say so
+ * and from here where it cannot.
+ *
+ * "Custom" with no exceptions on any partition is the same configuration as
+ * "keep": nothing is deleted and nothing is shrunk. The model has no way to
+ * record that the user asked to decide per partition and has not decided
+ * anything yet, so it comes back as "keep", and the per row controls that asking
+ * was meant to reveal never appear.
+ *
+ * The request is therefore remembered here. Every other policy follows the
+ * configuration, because every other policy is written into it.
+ */
+const useSpacePolicy = (collection: Collection, index: number, stored: ConfigModel.SpacePolicy) => {
+  const setSpacePolicy = useSetSpacePolicy();
+  const [asked, setAsked] = useState<ConfigModel.SpacePolicy>(stored);
+
+  useEffect(() => {
+    /* Follow the configuration, except where it is reporting the value custom
+     * collapses to. */
+    if (stored === asked) return;
+    if (asked === "custom" && stored === "keep") return;
+    setAsked(stored);
+  }, [stored, asked]);
+
+  const choose = (policy: ConfigModel.SpacePolicy) => {
+    setAsked(policy);
+    setSpacePolicy(collection, index, { type: policy });
+  };
+
+  return { policy: asked, choose };
+};
+
+/* ------------------------------------------------------------------ *
+ * The panel: sections
+ * ------------------------------------------------------------------ */
+
+type SectionProps = React.PropsWithChildren<{
+  title: string;
+  intro?: React.ReactNode;
+  action?: React.ReactNode;
+  /** Reads before the control row: what the situation is, before changing it. */
+  before?: React.ReactNode;
+  /** Shown at the leading edge under tabs, where the heading is not rendered. */
+  lead?: React.ReactNode;
+  /** Marks the section in the gutter, where the gutter is drawn. */
+  icon?: React.ComponentProps<typeof Icon>["name"];
+  headingId: string;
+  /** A section that is not one of a pair of tabs, so nothing else names it. */
+  standalone?: boolean;
+}>;
+
+/**
+ * One half of the panel.
+ *
+ * Under tabs the tab already names this region and PatternFly wires the panel
+ * to it, so repeating the name as a heading says the same thing twice. Only the
+ * action stays, and the tables carry their own accessible name either way.
+ */
+const PanelSection = ({
+  title,
+  intro,
+  action,
+  before,
+  lead,
+  icon,
+  headingId,
+  standalone = false,
+  children,
+}: SectionProps) => {
+  const { scroll, sections, gutter } = useVariants();
+  const isTabbed = sections === "tabs" && !standalone;
+
+  const heading = (
+    <Title headingLevel="h3" size="md" id={headingId}>
+      {title}
+    </Title>
+  );
+
+  /* The heading takes the leading slot only when nothing else wants it. A
+   * control with its own label keeps that label beside it, and the heading
+   * moves above, so the label never ends up naming the section instead. */
+  const leading = lead || (isTabbed ? null : heading);
+
+  const head = (
+    <div className="agm-plan-section-head">
+      {!isTabbed && lead && heading}
+      <Flex
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapMd" }}
+        flexWrap={{ default: "wrap" }}
+      >
+        {/* Empty when there is nothing to lead with, which is what keeps a lone
+            action against the trailing edge. */}
+        <FlexItem>
+          <span className="agm-plan-lead">
+            {/* A mark the eye can aim at without a box being drawn around
+                anything, and only where there is something for it to mark.
+                Decorative: what the section is, the words beside it say. */}
+            {gutter && icon && leading && (
+              <span className="agm-plan-gutter-mark" aria-hidden="true">
+                <Icon name={icon} size="xs" />
+              </span>
+            )}
+            {leading}
+          </span>
+        </FlexItem>
+        {action && <FlexItem>{action}</FlexItem>}
+      </Flex>
+      {intro && <div className="agm-plan-section-intro">{intro}</div>}
+    </div>
+  );
+
+  const body = <div className="agm-plan-section-body">{children}</div>;
+
+  if (isTabbed) {
+    return (
+      <div className={`agm-plan-section agm-plan-section-scroll-${scroll}`}>
+        {before}
+        {head}
+        {body}
+      </div>
+    );
+  }
+
+  return (
+    <section
+      aria-labelledby={headingId}
+      className={`agm-plan-section agm-plan-section-scroll-${scroll}`}
+    >
+      {before}
+      {head}
+      {body}
+    </section>
+  );
+};
+
+/* "Planned" rather than "New": new is relative, and the reader has to work out
+ * relative to what. Both halves keep the word content, which is what makes the
+ * pair symmetrical (what should be there, what is there now) and what lets the
+ * current half say "the device is empty" honestly: under a heading about
+ * content, empty claims no content rather than no bytes. It also leaves the
+ * result section's machine-wide "Final layout" in vocabulary of its own. */
+const SECTION_TITLES = {
+  layout: "Planned content",
+  content: "Current content",
+};
+
+/**
+ * Where the panel can send the reader.
+ *
+ * The relationship line names objects that live elsewhere in the same list.
+ * Naming one without being able to reach it leaves the reader to find it by
+ * hand.
+ */
+const PanelNavContext = React.createContext<{
+  goToDevice: (selection: Selection) => void;
+  goToBoot: () => void;
+}>({
+  goToDevice: () => undefined,
+  goToBoot: () => undefined,
+});
+
+type Related = { name: string; selection?: Selection };
+
+type Relationship = { label: string; items: Related[] };
+
+const RelatedName = ({ item }: { item: Related }) => {
+  const { goToDevice } = React.useContext(PanelNavContext);
+
+  if (!item.selection) return <>{item.name}</>;
+
+  return (
+    <Button variant="link" isInline onClick={() => goToDevice(item.selection)}>
+      {item.name}
+    </Button>
+  );
+};
+
+/**
+ * What this device is tied to, above the tabs.
+ *
+ * One line per relationship, the label reading into the names as a sentence
+ * would. A description list was the first arrangement and cost more than it
+ * returned: a term column wide enough for the longest label leaves a gap beside
+ * every shorter one, and the pairs get row spacing meant for a list of facts
+ * rather than for a line of links.
+ *
+ * Deliberately generic labels. A disk may be claimed by a volume group, by a
+ * software RAID, and by whatever this interface grows support for next;
+ * spelling out which kind each name is would both date the wording and repeat
+ * what the destination panel says about itself. A link identifies, and the
+ * panel it opens explains.
+ *
+ * There is no prose summary next to it. The tabs below already say which state
+ * can be inspected and the tables in them already name every mount point, so a
+ * paragraph restating either is the same information a third time. A summary
+ * earns its place by serving a different task, not by being possible.
+ */
+const RelatedNames = ({ items }: { items: Related[] }) => (
+  <>
+    {items.map((item, i) => (
+      <React.Fragment key={item.name}>
+        {i > 0 && (i === items.length - 1 ? t(" and ") : t(", "))}
+        <RelatedName item={item} />
+      </React.Fragment>
+    ))}
+  </>
+);
+
+const Relationships = ({ groups }: { groups: Relationship[] }) => {
+  const shown = groups.filter((group) => group.items.length > 0);
+
+  if (shown.length === 0) return null;
+
+  return (
+    <div className="agm-plan-related">
+      {shown.map((group) => (
+        <p key={group.label}>
+          <span className="agm-plan-related-label">{t(group.label)}</span>{" "}
+          <RelatedNames items={group.items} />
+        </p>
+      ))}
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * The panel: the settings block
+ *
+ * What is decided about the device, and by whom, in one format per row:
+ *
+ *     [mark]  Term  value
+ *             One line saying what it means, or where to go next.
+ *
+ * The term is the control wherever the decision can be made here, so the word
+ * the reader clicks is the word naming the decision and the value reads beside
+ * it as plain text. A fact takes the same shape without a control, which is
+ * what keeps the block reading as a list of decisions rather than as a form
+ * with labels in it.
+ *
+ * The same three blocks carry every scope: a volume group has no partition
+ * table, a volume has no content, and nothing else about the arrangement
+ * changes between them.
+ * ------------------------------------------------------------------ */
+
+type Setting = {
+  key: string;
+  /** Marks the row in PatternFly's term gutter, so the marks line up down the list. */
+  icon: React.ComponentProps<typeof Icon>["name"];
+  term: React.ReactNode;
+  /** The value, or the control that sets it. */
+  value?: React.ReactNode;
+  /** Only where it says something the value does not. */
+  explanation?: React.ReactNode;
+};
+
+/**
+ * A description list, because every row is a term and a value.
+ *
+ * Laid out by hand rather than with the horizontal modifier: that one sets the
+ * term column to a share of the panel and leaves a gap beside every short term,
+ * which is what got an earlier description list removed. Here the gutter is
+ * padding, so the term reads into its value as a sentence would and the
+ * explanation starts under the term rather than under the value.
+ */
+const SettingsList = ({
+  settings,
+  layout = "inline",
+}: {
+  settings: Setting[];
+  /** Inline reads as a sentence; stacked puts the control under its label, the
+      way a form does, which suits a list that is mostly controls. */
+  layout?: "inline" | "stacked";
+}) => (
+  <dl className={`agm-plan-settings agm-plan-settings-${layout}`}>
+    {settings.map((setting) => (
+      <div className="agm-plan-setting" key={setting.key}>
+        <dt>
+          {/* Decorative: what the row is about, the term beside it says. The
+              mark is there to give the eye a rail without a box being drawn. */}
+          <span className="agm-plan-setting-mark" aria-hidden="true">
+            <Icon name={setting.icon} size="xs" />
+          </span>
+          {setting.term}
+        </dt>{" "}
+        <dd>
+          {setting.value}
+          {setting.explanation && (
+            <div>
+              <Text component="small" textStyle="textColorSubtle">
+                {setting.explanation}
+              </Text>
+            </div>
+          )}
+        </dd>
+      </div>
+    ))}
+  </dl>
+);
+
+/**
+ * The space decision, as the value of its row.
+ *
+ * The term stays a label and the control says what is happening to the content
+ * now, which is what a reader coming back to the panel is looking for. The menu
+ * items keep the imperative wording: "Delete everything" is what the reader is
+ * asking for, and "removed to make room" is what the row reports afterwards.
+ */
+const SpaceSettingMenu = ({
+  current,
+  onChoose,
+}: {
+  current: ConfigModel.SpacePolicy;
+  onChoose: (policy: ConfigModel.SpacePolicy) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      toggle={(ref) => (
+        <MenuToggle
+          ref={ref}
+          id={SPACE_SETTING_TOGGLE_ID}
+          variant="plainText"
+          size="sm"
+          isExpanded={isOpen}
+          /* Named by the term beside it plus the value written on it, in that
+             order, so the row still reads as a pair. */
+          aria-labelledby={`${SPACE_CONTROL_LABEL_ID} ${SPACE_SETTING_VALUE_ID}`}
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          <span id={SPACE_SETTING_VALUE_ID}>{t(SPACE_SETTING_VALUES[current])}</span>
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        {BULK_POLICIES.map((policy) => (
+          <DropdownItem
+            key={policy}
+            isSelected={policy === current}
+            isDanger={policy === "delete"}
+            description={t(SPACE_MEANINGS[policy])}
+            onClick={() => {
+              setIsOpen(false);
+              onChoose(policy);
+            }}
+          >
+            {t(BULK_LABELS[policy])}
+          </DropdownItem>
+        ))}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+type SpaceDecision = {
+  policy: ConfigModel.SpacePolicy;
+  choose: (p: ConfigModel.SpacePolicy) => void;
+};
+
+/**
+ * The rule for what is already on the device.
+ *
+ * Moving it here takes the decision away from the table it governs, and the
+ * explanation line is what replaces the proximity: under "decided item by item"
+ * it says where the decisions are made and the words naming the place are the
+ * route to it.
+ */
+const spaceSetting = ({
+  space,
+  explanations,
+  entryName,
+  onGoToCurrent,
+}: {
+  space: SpaceDecision;
+  explanations: Explanations;
+  /** What the reader decides one by one: a partition, or a logical volume. */
+  entryName: string;
+  onGoToCurrent: () => void;
+}): Setting => {
+  const { policy, choose } = space;
+  const perEntry = policy === "custom";
+
+  const explanation = perEntry ? (
+    <>
+      {t(`Set each ${entryName}'s own rule under `)}
+      <Button variant="link" isInline onClick={onGoToCurrent}>
+        {t("Content, Current")}
+      </Button>
+      {t(".")}
+    </>
+  ) : (
+    explanations === "always" && t(SPACE_MEANINGS[policy])
+  );
+
+  return {
+    key: "space",
+    icon: "hard_drive",
+    term: <span id={SPACE_CONTROL_LABEL_ID}>{t(SPACE_SETTING_TERM)}</span>,
+    value: <SpaceSettingMenu current={policy} onChoose={choose} />,
+    explanation: explanation || undefined,
+  };
+};
+
+/**
+ * Where the boot loader goes, read from this device.
+ *
+ * The model holds one boot setting for the whole machine, so a device is either
+ * the one it names or it is not: "automatic" and "do not configure" are
+ * statements about the installation rather than about this disk, and they
+ * belong to the scope that owns them.
+ */
+const bootSetting = (
+  role: BootRole,
+  cost: BootCost,
+  home: BootHome,
+  goToBoot: () => void,
+): Setting | null => {
+  if (role === "none") return null;
+
+  /* With boot in an entry of its own, the device says the one thing that is
+     true of the device, and the decision behind it stays where it is made.
+     Everything else about booting is machine wide, and a copy of it here is a
+     second place to read it and a second place for it to go stale. */
+  if (home === "entry") {
+    return {
+      key: "boot",
+      icon: "restart_alt",
+      term: t("Used for booting"),
+      value: t("The boot loader is written here"),
+      explanation: (
+        <Button variant="link" isInline onClick={goToBoot}>
+          {t("See how the system boots")}
+        </Button>
+      ),
+    };
+  }
+
+  /* Where the value came from, which is the one thing the value cannot say
+     about itself, and then what the boot loader takes from the device. Boot
+     partitions are the solver's doing, so they appear in neither tab and the
+     device otherwise looks like it hosts the boot loader for free. */
+  const why =
+    role === "default"
+      ? t("Chosen automatically, because the new system lives here.")
+      : t("Chosen for this installation.");
+
+  const parts = cost.map((partition) =>
+    partition.isNew
+      ? t(`a new partition (${deviceSize(partition.size)})`)
+      : t(`${partition.name}, reused`),
+  );
+
+  const what = parts.length
+    ? t(`Partitions to boot: ${formatList(parts)}.`)
+    : t("No partition to boot needed.");
+
+  return {
+    key: "boot",
+    icon: "restart_alt",
+    /* The whole statement, rather than a name for the setting: the row is
+       about what this device does, and "Boot loader" left the reader to work
+       out whether it holds one, wants one or is one. */
+    term: t("Boot from this device"),
+    explanation: (
+      <>
+        {why} {what}
+      </>
+    ),
+  };
+};
+
+const PTABLE_NAMES: Record<string, string> = {
+  gpt: "GPT",
+  msdos: "MS-DOS",
+  dasd: "DASD",
+};
+
+const ptableSetting = (device: Partitionable): Setting | null => {
+  if (!device.ptableType) return null;
+
+  return {
+    key: "ptable",
+    icon: "list_alt",
+    term: t("Partition table"),
+    value: t(PTABLE_NAMES[device.ptableType] || device.ptableType),
+  };
+};
+
+/** What the installation settings say, which is what every scope inherits. */
+const installationEncryption = (config: ConfigModel.Config): string => {
+  const encryption = config.encryption;
+
+  if (!encryption) return "Not encrypted";
+
+  return encryption.tpm ? "LUKS2 with TPM" : "LUKS2";
+};
+
+/**
+ * Encryption as one planned volume reports it.
+ *
+ * Encryption is a property of what is created, not of the disk it is created
+ * on, so it is read row by row beside the file system rather than as a setting
+ * over the whole panel. The value a volume does not set for itself is the
+ * installation's, and where it came from is written next to it: a volume that
+ * sets its own reads the same way, minus the appendix.
+ */
+const EncryptionCell = () => {
+  const config = useConfigModel();
+  const encrypted = Boolean(config.encryption);
+
+  return (
+    <>
+      {encrypted ? t(installationEncryption(config)) : t("None")}{" "}
+      <Text component="small" textStyle="textColorSubtle">
+        {t("(following system)")}
+      </Text>
+    </>
+  );
+};
+
+/** Relationships in the same list, since a value that is a link already reads as one. */
+const relationshipSettings = (groups: Relationship[]): Setting[] =>
+  groups
+    .filter((group) => group.items.length > 0)
+    .map((group) => ({
+      key: group.label,
+      icon: "apps" as const,
+      term: t(group.label),
+      value: <RelatedNames items={group.items} />,
+    }));
+
+const settingsOf = (candidates: (Setting | null | false)[]): Setting[] =>
+  candidates.filter((setting): setting is Setting => Boolean(setting));
+
+/** What the new system gets on this device. */
+const NewSystemSection = ({
+  collection,
+  index,
+  device,
+  systemDevice,
+}: {
+  collection: PartitionableCollection;
+  index: number;
+  device: Partitionable;
+  systemDevice: Storage.Device | null;
+}) => {
+  const navigate = useNavigate();
+  const deletePartition = useDeletePartition();
+  /* Reused partitions belong here. A device whose only plan is to mount an
+   * existing partition was being told nothing was planned for it, because the
+   * list only counted partitions the installer creates. */
+  const volumes = layoutEntries(device);
+  const headingId = "agm-plan-new-system";
+
+  const add = (
+    <Button
+      variant="link"
+      isInline
+      icon={<Icon name="add" size="xs" />}
+      onClick={() =>
+        navigate(generateEncodedPath(PATHS.addPartition, { collection, index: String(index) }))
+      }
+    >
+      {t("Add volume")}
+    </Button>
+  );
+
+  return (
+    <PanelSection
+      title={t(SECTION_TITLES.layout)}
+      action={add}
+      icon="list_alt"
+      headingId={headingId}
+    >
+      {volumes.length === 0 ? (
+        /* The state first, the invitation second. A device reaches this panel
+           by being part of the plan, so what is empty is its content, not its
+           membership: an untouched device is absent from the list entirely. */
+        <div className="agm-plan-muted">
+          <div>{t("Nothing planned for this device yet.")}</div>
+          <div>{t("Add a volume, or reuse one of the partitions already on it.")}</div>
+        </div>
+      ) : (
+        <table className="agm-plan-table" aria-label={t(SECTION_TITLES.layout)}>
+          <thead>
+            <tr>
+              <th scope="col">{t("Mount point")}</th>
+              <th scope="col">{t("File system")}</th>
+              <th scope="col">{t("Encryption")}</th>
+              <th scope="col" className="agm-plan-size">
+                {t("Size")}
+              </th>
+              <th scope="col">
+                <Text srOnly>{t("Actions")}</Text>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {volumes.map((volume) => {
+              /* An existing partition brings its own file system and size, so
+               * they are read from the device rather than from a request the
+               * installer never has to satisfy. */
+              const source = volume.name
+                ? systemDevice?.partitions?.find((p) => p.name === volume.name)
+                : undefined;
+              const keepsData = volume.name !== undefined && volume.filesystem?.reuse === true;
+
+              return (
+                <tr key={entryLabel(volume)}>
+                  <th scope="row">
+                    <Text isBold className="agm-plan-mount">
+                      {entryLabel(volume)}
+                    </Text>
+                    {source && (
+                      <div className="agm-plan-muted">
+                        {keepsData
+                          ? t(`reusing ${baseName(source.name)}`)
+                          : t(`on ${baseName(source.name)}, formatted`)}
+                      </div>
+                    )}
+                  </th>
+                  <td>
+                    {(keepsData ? source?.filesystem?.type : filesystemType(volume.filesystem)) ||
+                      t("default")}
+                  </td>
+                  <td>
+                    <EncryptionCell />
+                  </td>
+                  <td className="agm-plan-size">
+                    {source
+                      ? deviceSize(source.block.size)
+                      : volume.size
+                        ? sizeDescription(volume.size)
+                        : t("decided by the installer")}
+                  </td>
+                  <td className="agm-plan-row-control">
+                    {/* Both actions name the partition by its mount path, so a
+                        partition asked for by id alone has neither until the
+                        form and the model calls learn to take an id. */}
+                    {volume.mountPath && (
+                      <ActionsMenu
+                        label={t(`Actions for ${volume.mountPath}`)}
+                        items={[
+                          {
+                            title: t("Edit"),
+                            onClick: () =>
+                              navigate(
+                                generateEncodedPath(PATHS.editPartition, {
+                                  collection,
+                                  index: String(index),
+                                  partitionId: volume.mountPath,
+                                }),
+                              ),
+                          },
+                          {
+                            /* Dropping a reused partition removes the plan for
+                               it, not the partition, so it does not promise a
+                               deletion that never happens. */
+                            title: source ? t("Stop reusing") : t("Delete"),
+                            isDanger: !source,
+                            onClick: () => deletePartition(collection, index, volume.mountPath),
+                          },
+                        ]}
+                      />
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </PanelSection>
+  );
+};
+
+/** What is on the device now, and what becomes of it. */
+const CurrentContentSection = ({
+  collection,
+  index,
+  device,
+  systemDevice,
+  space,
+  onGoToSettings,
+}: {
+  collection: PartitionableCollection;
+  index: number;
+  device: Partitionable;
+  systemDevice: Storage.Device | null;
+  /* Held by the panel rather than here, because the same decision is offered
+     in two places and the request to decide per partition is remembered
+     in front of a model that cannot record it. */
+  space: SpaceDecision;
+  onGoToSettings: () => void;
+}) => {
+  const headingId = "agm-plan-current-content";
+  const { spaceLabel, structure, spacePlacement } = useVariants();
+  const children = (systemDevice ? deviceChildren(systemDevice as never) : []) as ContentItem[];
+  const entries = device.partitions || [];
+  const { policy, choose } = space;
+  const inSettings = structure === "blocks" && spacePlacement === "settings";
+
+  const control = <SpacePolicyControl current={policy} onChoose={choose} />;
+
+  /* The route back up. The decision governs this table and no longer sits on
+     it, so the table says which rule it is following and how to reach it. */
+  const following = (
+    <>
+      {t(`${SPACE_SETTING_TERM} ${SPACE_SETTING_VALUES[policy]}.`)}{" "}
+      <Button variant="link" isInline onClick={onGoToSettings}>
+        {t("Change it in Settings")}
+      </Button>
+    </>
+  );
+
+  /* A table rather than a list of grids. Each row being its own grid is why the
+   * size column moved with the length of the text beside it: columns can only
+   * line up when one element owns them. It also gives every cell a column
+   * header a screen reader can announce, which a list of divs never does. */
+  return (
+    <PanelSection
+      title={t(SECTION_TITLES.content)}
+      /* A space policy is a permission, not an instruction: it says what the
+         installer may do, and the solver decides what it actually does. That is
+         the only reading under which "shrink if needed" and "delete if needed"
+         make sense, so the label says it. */
+      lead={
+        inSettings ? undefined : (
+          <span id={SPACE_CONTROL_LABEL_ID}>{t(SPACE_HEADINGS[spaceLabel])}</span>
+        )
+      }
+      icon="hard_drive"
+      action={inSettings ? undefined : control}
+      intro={inSettings ? following : t(SPACE_MEANINGS[policy])}
+      headingId={headingId}
+    >
+      {children.length === 0 ? (
+        <div className="agm-plan-muted">{t("The device is empty.")}</div>
+      ) : (
+        <table className="agm-plan-table" aria-label={t(SECTION_TITLES.content)}>
+          <thead>
+            <tr>
+              <th scope="col">{t("Partition")}</th>
+              <th scope="col">{t("Content")}</th>
+              <th scope="col" className="agm-plan-size">
+                {t("Size")}
+              </th>
+              {/* "Planned action" rather than "What happens": nothing has happened, and
+                  the column heading is the last place to imply otherwise. */}
+              <th scope="col">{t("Planned action")}</th>
+              <th scope="col">
+                <Text srOnly>{t("Actions")}</Text>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {children.map((item, i) => (
+              <ContentRow
+                key={isSlot(item) ? `slot-${i}` : item.sid}
+                item={item}
+                collection={collection}
+                index={index}
+                policy={policy}
+                entry={isSlot(item) ? undefined : entries.find((e) => e.name === item.name)}
+              />
+            ))}
+          </tbody>
+        </table>
+      )}
+    </PanelSection>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * The panel: header and body
+ * ------------------------------------------------------------------ */
+
+/**
+ * Three lines, packed rather than stacked.
+ *
+ *   vdd   20 GiB · Disk · GPT
+ *   Define 1 partition, host 'system' and 't12'
+ *   pci-0000:0a:00.0
+ *
+ * The name and the facts share a line, because a name on a line of its own
+ * spends a whole line saying one word. The purpose comes next, since it is what
+ * the panel is about. The stable identifier comes last and smallest: it is a
+ * reference to copy, not a line to read.
+ */
+/**
+ * The header says which device this is, and nothing else.
+ *
+ * The same lines the list's first column carries, so the entry a reader clicked
+ * and the panel that opens are visibly the same thing:
+ *
+ *   vdd  20 GiB · Disk · GPT    <- name and kind, as the list shows them
+ *   pci-0000:0a:00.0            <- the identifier that survives a rename
+ *
+ * Identity only. What the device is tied to points away from it rather than
+ * describing it, so it reads in the body instead.
+ */
+const PanelHeader = ({
+  title,
+  description,
+  subtitle,
+  path,
+  onClose,
+  actions,
+}: {
+  title: string;
+  /** Facts about the thing named, read on the title line beside the name. */
+  description?: string;
+  /** A sentence about it, which needs a line of its own to stay readable. */
+  subtitle?: string;
+  path?: string;
+  onClose: () => void;
+  actions?: React.ReactNode;
+}) => (
+  <div className="agm-plan-panel-head">
+    <Flex
+      justifyContent={{ default: "justifyContentSpaceBetween" }}
+      alignItems={{ default: "alignItemsFlexStart" }}
+      flexWrap={{ default: "nowrap" }}
+      gap={{ default: "gapMd" }}
+    >
+      <FlexItem>
+        <h2 className="agm-plan-panel-title" id="agm-plan-panel-title">
+          <Text isBold>{title}</Text> <span className="agm-plan-panel-facts">{description}</span>
+        </h2>
+        {subtitle && <div className="agm-plan-panel-subtitle">{subtitle}</div>}
+        {/* The one identifier that survives a reboot renaming vdd to vde, and
+            the page has never shown it. */}
+        {path && <div className="agm-plan-path">{path}</div>}
+      </FlexItem>
+      <FlexItem>
+        <Flex gap={{ default: "gapXs" }} flexWrap={{ default: "nowrap" }}>
+          {actions && <FlexItem>{actions}</FlexItem>}
+          <FlexItem>
+            <Button variant="plain" aria-label={t("Close the panel")} onClick={onClose}>
+              <Icon name="close" />
+            </Button>
+          </FlexItem>
+        </Flex>
+      </FlexItem>
+    </Flex>
+  </div>
+);
+
+/**
+ * The arrangement the first pass settled on, kept switchable. Tabs keep both
+ * headings visible at any list length, and hide half the answer while the user
+ * is deciding whether they can afford the other half.
+ */
+const PanelTabs = ({
+  deviceName,
+  active,
+  onSelect,
+  first,
+  second,
+  stripRef,
+}: {
+  deviceName: string;
+  active: PanelTab;
+  onSelect: (tab: PanelTab) => void;
+  first: React.ReactNode;
+  second: React.ReactNode;
+  /** Lets a link elsewhere in the panel move focus onto the tab it opens. */
+  stripRef?: React.RefObject<HTMLDivElement>;
+}) => {
+  const keys: PanelTab[] = ["layout", "content"];
+  const own = useRef<HTMLDivElement>(null);
+  const strip = stripRef || own;
+
+  /* PatternFly leaves every tab a tab stop and handles no arrow keys, so the
+   * strip carries the tablist keyboard model itself: one tab stop, arrows
+   * between the tabs, Home and End to the ends, and the panel following the
+   * focused tab. Switching is instant, which is the case for activating on
+   * arrow rather than asking for a second key.
+   * https://www.w3.org/WAI/ARIA/apg/patterns/tabs/ */
+  const move = (event: React.KeyboardEvent) => {
+    const at = keys.indexOf(active);
+    const to = {
+      ArrowLeft: (at - 1 + keys.length) % keys.length,
+      ArrowRight: (at + 1) % keys.length,
+      Home: 0,
+      End: keys.length - 1,
+    }[event.key];
+
+    if (to === undefined) return;
+
+    event.preventDefault();
+    onSelect(keys[to]);
+    strip.current?.querySelectorAll<HTMLElement>('[role="tab"]')[to]?.focus();
+  };
+
+  return (
+    /* The wrapper is not decoration: PatternFly's Tabs renders a fragment, so a
+       className on it lands on the tab strip. Giving the strip a flex height
+       stretched it to fill the panel and pushed the content to the bottom. */
+    <div className="agm-plan-tabs" ref={strip} onKeyDown={move}>
+      <Tabs
+        activeKey={keys.indexOf(active)}
+        onSelect={(_event, key) => onSelect(keys[Number(key)])}
+        isBox={false}
+        /* Names the tablist itself. The plain aria-label prop names the wrapper
+           PatternFly puts around it, which leaves the list of tabs unnamed and
+           adds a landmark inside the panel, which is a region already. */
+        tabListAriaLabel={t(`Storage content of ${deviceName}`)}
+      >
+        <Tab
+          eventKey={0}
+          tabIndex={active === "layout" ? 0 : -1}
+          title={<TabTitleText>{t(SECTION_TITLES.layout)}</TabTitleText>}
+        >
+          {first}
+        </Tab>
+        <Tab
+          eventKey={1}
+          tabIndex={active === "content" ? 0 : -1}
+          title={<TabTitleText>{t(SECTION_TITLES.content)}</TabTitleText>}
+        >
+          {second}
+        </Tab>
+      </Tabs>
+    </div>
+  );
+};
+
+const PartitionableDetail = ({
+  collection,
+  index,
+}: {
+  collection: PartitionableCollection;
+  index: number;
+}) => {
+  const config = useConfigModel();
+  const device = config[collection]?.[index] as Partitionable;
+  const systemDevice = useDevice(device?.name || "");
+  const allDevices = useFlattenDevices();
+  const {
+    sections,
+    structure,
+    spacePlacement,
+    explanations,
+    settings: settingsPlacement,
+    bootHome,
+  } = useVariants();
+  const { goToBoot } = React.useContext(PanelNavContext);
+  /* Which tab is open lives here rather than in the tab strip, so the summary
+   * above it can send the reader to the half it is talking about. It outlives
+   * the selection on purpose: comparing what two disks hold today should not
+   * send the reader back to the other tab between them. */
+  const [tab, setTab] = useState<PanelTab>("layout");
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
+  const bootRole = bootRoleOf(config, device?.name || "");
+  const bootCost = useBootCost(device?.name || "", systemDevice);
+
+  if (!device) return null;
+
+  /* A link that opens a tab has to put the reader on it. Without the focus
+   * move a keyboard reader is left wherever the link was, several blocks above
+   * the table the link just opened. */
+  const goToCurrent = () => {
+    setTab("content");
+    tabsRef.current?.querySelectorAll<HTMLElement>('[role="tab"]')[1]?.focus();
+  };
+
+  const goToSettings = () => document.getElementById(SPACE_SETTING_TOGGLE_ID)?.focus();
+
+  /* Keyed by device, so selecting another one starts its sections fresh. The
+   * tabs sit above this and keep their selection, which is what lets two
+   * devices be compared on the same tab. */
+  const relationships = (
+    <>
+      <Relationships
+        groups={[
+          { label: t("Uses"), items: membersOf(systemDevice, allDevices, config) },
+          { label: t("Used by"), items: usersOf(config, allDevices, device.name) },
+        ]}
+      />
+      <BootNote deviceName={device.name} systemDevice={systemDevice} />
+    </>
+  );
+
+  const key = `${collection}:${index}`;
+  const first = (
+    <NewSystemSection
+      key={key}
+      collection={collection}
+      index={index}
+      device={device}
+      systemDevice={systemDevice}
+    />
+  );
+  const second = (
+    <CurrentContentSection
+      key={key}
+      collection={collection}
+      index={index}
+      device={device}
+      systemDevice={systemDevice}
+      space={space}
+      onGoToSettings={goToSettings}
+    />
+  );
+
+  const content =
+    sections === "tabs" ? (
+      <PanelTabs
+        deviceName={baseName(device.name)}
+        active={tab}
+        onSelect={setTab}
+        first={first}
+        second={second}
+        stripRef={tabsRef}
+      />
+    ) : (
+      <Stack className="agm-plan-sections">
+        <StackItem isFilled>{first}</StackItem>
+        <StackItem isFilled>{second}</StackItem>
+      </Stack>
+    );
+
+  if (structure === "blocks") {
+    /* What the device is to the rest of the plan comes first, because a reader
+       opening a panel to check a disk starts by placing it. Then the rule about
+       what is already on it, then what it does for booting. Its own facts, like
+       the partition table, come last: they are read on purpose rather than
+       looked for. */
+    const settings = settingsOf([
+      ...relationshipSettings([
+        { label: t("Used by"), items: usersOf(config, allDevices, device.name) },
+        { label: t("Uses"), items: membersOf(systemDevice, allDevices, config) },
+      ]),
+      spacePlacement === "settings" &&
+        spaceSetting({
+          space,
+          explanations,
+          entryName: "partition",
+          onGoToCurrent: goToCurrent,
+        }),
+      bootSetting(bootRole, bootCost, bootHome, goToBoot),
+      ptableSetting(device),
+    ]);
+
+    return (
+      <div className={`agm-plan-split agm-plan-split-${settingsPlacement}`}>
+        <SettingsList settings={settings} />
+        {content}
+      </div>
+    );
+  }
+
+  if (sections === "tabs") {
+    return (
+      <>
+        {relationships}
+        {content}
+      </>
+    );
+  }
+
+  return (
+    <Stack className="agm-plan-sections">
+      <StackItem>{relationships}</StackItem>
+      <StackItem isFilled>{first}</StackItem>
+      <StackItem isFilled>{second}</StackItem>
+    </Stack>
+  );
+};
+
+/**
+ * One logical volume the group already holds.
+ *
+ * A sibling of the partition row rather than a shared component: the two read
+ * different collections and render a different number of hooks, which is the
+ * kind of pair React reuses an instance for and then breaks.
+ *
+ * No reuse entry yet. The model expresses reuse of an existing logical volume
+ * the same way it expresses reuse of a partition, but nothing in the interface
+ * opens a form for one, so the row offers only the decisions it can carry out.
+ */
+const LogicalVolumeContentRow = ({
+  item,
+  index,
+  entry,
+  policy,
+}: {
+  item: Storage.Device;
+  index: number;
+  entry: ConfigModel.LogicalVolume | undefined;
+  policy: ConfigModel.SpacePolicy;
+}) => {
+  const config = useConfigModel();
+  const solver = useSolver();
+  const [pending, setPending] = useState<Outcome | null>(null);
+
+  const size = item.block?.size;
+  const stored = outcomeFor(policy, entry, size);
+  const current = pending || stored;
+  const reported: ReportedOutcome = pending || reportedOutcome(stored, item.sid, solver);
+
+  useEffect(() => {
+    if (pending && stored.kind === pending.kind) setPending(null);
+  }, [pending, stored]);
+
+  const choose = (kind: Outcome["kind"]) => {
+    const outcome = { kind } as Outcome;
+    setPending(outcome);
+    putStorageModel(withLogicalVolumeSpace(config, index, baseName(item.name), outcome));
+  };
+
+  return (
+    <tr>
+      <th scope="row">
+        <Text isBold>{baseName(item.name)}</Text>
+      </th>
+      <td>{item.filesystem?.type || item.description || t("unrecognised")}</td>
+      <SizeCell size={size} planned={plannedSize(reported)} />
+      <PlannedActionCell
+        reported={reported}
+        device={policy === "custom" ? item : undefined}
+        current={policy === "custom" ? current : undefined}
+        onChoose={policy === "custom" ? choose : undefined}
+      />
+    </tr>
+  );
+};
+
+/**
+ * What the group holds today.
+ *
+ * Only reached for a group that exists on the system: one being defined has no
+ * current content, and a tab promising some would open on an empty table.
+ */
+const VolumeGroupCurrentSection = ({
+  index,
+  systemDevice,
+  space,
+  onGoToSettings,
+}: {
+  index: number;
+  systemDevice: Storage.Device;
+  space: SpaceDecision;
+  onGoToSettings: () => void;
+}) => {
+  const config = useConfigModel();
+  const { spaceLabel, structure, spacePlacement } = useVariants();
+  const group = config.volumeGroups?.[index];
+  const { policy, choose } = space;
+  const inSettings = structure === "blocks" && spacePlacement === "settings";
+
+  if (!group) return null;
+
+  const following = (
+    <>
+      {t(`${SPACE_SETTING_TERM} ${SPACE_SETTING_VALUES[policy]}.`)}{" "}
+      <Button variant="link" isInline onClick={onGoToSettings}>
+        {t("Change it in Settings")}
+      </Button>
+    </>
+  );
+
+  const existing = systemDevice.logicalVolumes || [];
+  const entries = group.logicalVolumes || [];
+
+  return (
+    <PanelSection
+      title={t(SECTION_TITLES.content)}
+      lead={
+        inSettings ? undefined : (
+          <span id={SPACE_CONTROL_LABEL_ID}>{t(SPACE_HEADINGS[spaceLabel])}</span>
+        )
+      }
+      icon="hard_drive"
+      action={inSettings ? undefined : <SpacePolicyControl current={policy} onChoose={choose} />}
+      intro={inSettings ? following : t(SPACE_MEANINGS[policy])}
+      headingId="agm-plan-group-current"
+    >
+      <table className="agm-plan-table" aria-label={t(SECTION_TITLES.content)}>
+        <thead>
+          <tr>
+            <th scope="col">{t("Logical volume")}</th>
+            <th scope="col">{t("Content")}</th>
+            <th scope="col" className="agm-plan-size">
+              {t("Size")}
+            </th>
+            <th scope="col">{t("Planned action")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {existing.map((item) => (
+            <LogicalVolumeContentRow
+              key={item.sid}
+              item={item}
+              index={index}
+              policy={policy}
+              entry={entries.find((lv) => lv.lvName === baseName(item.name))}
+            />
+          ))}
+        </tbody>
+      </table>
+    </PanelSection>
+  );
+};
+
+/** The logical volumes the new system gets. */
+const VolumeGroupPlannedSection = ({
+  index,
+  standalone,
+}: {
+  index: number;
+  standalone: boolean;
+}) => {
+  const config = useConfigModel();
+  const navigate = useNavigate();
+  const deleteLogicalVolume = useDeleteLogicalVolume();
+  const group = config.volumeGroups?.[index];
+
+  if (!group) return null;
+
+  const volumes = group.logicalVolumes || [];
+
+  return (
+    <PanelSection
+      title={t(SECTION_TITLES.layout)}
+      headingId="agm-plan-logical-volumes"
+      icon="list_alt"
+      standalone={standalone}
+      action={
+        <Button
+          variant="link"
+          isInline
+          icon={<Icon name="add" size="xs" />}
+          onClick={() =>
+            navigate(generateEncodedPath(PATHS.volumeGroup.logicalVolume.add, { id: group.vgName }))
+          }
+        >
+          {t("Add logical volume")}
+        </Button>
+      }
+    >
+      {volumes.length === 0 ? (
+        <div className="agm-plan-muted">
+          <div>{t("Nothing planned for this volume group yet.")}</div>
+          <div>{t("Add a logical volume to say what it should hold.")}</div>
+        </div>
+      ) : (
+        <table className="agm-plan-table" aria-label={t("Logical volumes")}>
+          <thead>
+            <tr>
+              <th scope="col">{t("Mount point")}</th>
+              <th scope="col">{t("File system")}</th>
+              <th scope="col">{t("Encryption")}</th>
+              <th scope="col" className="agm-plan-size">
+                {t("Size")}
+              </th>
+              <th scope="col">
+                <Text srOnly>{t("Actions")}</Text>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {volumes.map((volume) => (
+              <tr key={volume.mountPath || volume.lvName}>
+                <th scope="row">
+                  <Text isBold className="agm-plan-mount">
+                    {volume.mountPath || volume.lvName}
+                  </Text>
+                </th>
+                <td>{filesystemType(volume.filesystem) || t("default")}</td>
+                <td>
+                  <EncryptionCell />
+                </td>
+                <td className="agm-plan-size">
+                  {volume.size ? sizeDescription(volume.size) : t("decided by the installer")}
+                </td>
+                <td className="agm-plan-row-control">
+                  <ActionsMenu
+                    label={t(`Actions for ${volume.mountPath || volume.lvName}`)}
+                    items={[
+                      {
+                        title: t("Edit"),
+                        onClick: () =>
+                          navigate(
+                            generateEncodedPath(PATHS.volumeGroup.logicalVolume.edit, {
+                              id: group.vgName,
+                              logicalVolumeId: volume.mountPath,
+                            }),
+                          ),
+                      },
+                      {
+                        title: t("Delete"),
+                        isDanger: true,
+                        onClick: () => deleteLogicalVolume(group.vgName, volume.mountPath),
+                      },
+                    ]}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </PanelSection>
+  );
+};
+
+/**
+ * The panel for a volume group.
+ *
+ * A group that exists on the system holds logical volumes already, so it gets
+ * the same two tabs a disk does. One being defined here holds nothing yet, so
+ * it keeps the single section: a tab named Current content that opens on
+ * nothing is worse than no tab at all.
+ */
+const VolumeGroupDetail = ({ index }: { index: number }) => {
+  const config = useConfigModel();
+  const group = config.volumeGroups?.[index];
+  const systemDevice = useDevice(group?.name || "");
+  const {
+    sections,
+    structure,
+    spacePlacement,
+    explanations,
+    settings: settingsPlacement,
+  } = useVariants();
+  const [tab, setTab] = useState<PanelTab>("layout");
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const space = useSpacePolicy("volumeGroups", index, group?.spacePolicy || "keep");
+
+  if (!group) return null;
+
+  const targets: Relationship[] = [
+    {
+      label: t("Uses"),
+      items: (group.targetDevices || []).map((target) => ({
+        name: baseName(target),
+        selection: selectionForDevice(config, target),
+      })),
+    },
+  ];
+
+  const relationships = <Relationships groups={targets} />;
+
+  const goToCurrent = () => {
+    setTab("content");
+    tabsRef.current?.querySelectorAll<HTMLElement>('[role="tab"]')[1]?.focus();
+  };
+
+  const goToSettings = () => document.getElementById(SPACE_SETTING_TOGGLE_ID)?.focus();
+
+  const existing = systemDevice?.logicalVolumes || [];
+  /* A group being defined here holds nothing yet, so there is no rule about
+     existing content to offer and no second tab to name. */
+  const isNew = existing.length === 0;
+
+  const settings = settingsOf([
+    ...relationshipSettings(targets),
+    !isNew &&
+      spacePlacement === "settings" &&
+      spaceSetting({
+        space,
+        explanations,
+        entryName: "logical volume",
+        onGoToCurrent: goToCurrent,
+      }),
+  ]);
+
+  const planned = <VolumeGroupPlannedSection key={group.vgName} index={index} standalone={isNew} />;
+
+  const current = isNew ? null : (
+    <VolumeGroupCurrentSection
+      key={group.vgName}
+      index={index}
+      systemDevice={systemDevice}
+      space={space}
+      onGoToSettings={goToSettings}
+    />
+  );
+
+  const content = (() => {
+    if (isNew) return planned;
+
+    if (sections === "stacked") {
+      return (
+        <Stack className="agm-plan-sections">
+          <StackItem isFilled>{planned}</StackItem>
+          <StackItem isFilled>{current}</StackItem>
+        </Stack>
+      );
+    }
+
+    return (
+      <PanelTabs
+        deviceName={group.vgName}
+        active={tab}
+        onSelect={setTab}
+        first={planned}
+        second={current}
+        stripRef={tabsRef}
+      />
+    );
+  })();
+
+  if (structure === "blocks") {
+    return (
+      <div className={`agm-plan-split agm-plan-split-${settingsPlacement}`}>
+        <SettingsList settings={settings} />
+        {content}
+      </div>
+    );
+  }
+
+  if (sections === "stacked" && !isNew) {
+    return (
+      <Stack className="agm-plan-sections">
+        <StackItem>{relationships}</StackItem>
+        <StackItem isFilled>{planned}</StackItem>
+        <StackItem isFilled>{current}</StackItem>
+      </Stack>
+    );
+  }
+
+  return (
+    <>
+      {relationships}
+      {content}
+    </>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * Offers for devices nothing is planned for
+ *
+ * An empty list asks the user to already know what a good layout looks like.
+ * The installer knows two or three, and this is the moment to say so. Each
+ * offer is solved before it is shown, so its outcome is real rather than
+ * estimated, and an offer that cannot be honoured is not made.
+ * ------------------------------------------------------------------ */
+
+type Offer = {
+  key: string;
+  label: string;
+  note: string;
+  isDestructive: boolean;
+  build: (config: ConfigModel.Config) => ConfigModel.Config;
+};
+
+const withPreset = (
+  config: ConfigModel.Config,
+  deviceName: string,
+  spacePolicy: ConfigModel.SpacePolicy,
+  mountPaths: string[],
+): ConfigModel.Config => {
+  let next = configModel.drive.add(config, { name: deviceName, spacePolicy });
+  const index = (next.drives || []).length - 1;
+  mountPaths.forEach((mountPath) => {
+    next = configModel.partition.add(next, "drives", index, { mountPath });
+  });
+  return next;
+};
+
+const offersFor = (device: Storage.Device, mountPaths: string[]): Offer[] => {
+  const systems = deviceSystems(device);
+  const canShrink = (device.partitions || []).some((p) => supportShrink(p));
+  const offers: Offer[] = [
+    {
+      key: "install",
+      label: t("Install here"),
+      note: systems.length ? t(`removes ${formatList(systems)}`) : t("uses the whole device"),
+      isDestructive: systems.length > 0 || (device.partitions || []).length > 0,
+      build: (config) => withPreset(config, device.name, "delete", mountPaths),
+    },
+  ];
+
+  /* Only offered where something on the device can actually be made smaller.
+     Offering it otherwise is a promise the solver will break. */
+  if (canShrink) {
+    offers.push({
+      key: "alongside",
+      label: t("Install alongside"),
+      note: systems.length ? t(`keeps ${formatList(systems)}`) : t("keeps what is there"),
+      isDestructive: false,
+      build: (config) => withPreset(config, device.name, "resize", mountPaths),
+    });
+  }
+
+  offers.push({
+    key: "manual",
+    label: t("Set it up myself"),
+    note: t("nothing is decided yet"),
+    isDestructive: false,
+    build: (config) => configModel.drive.add(config, { name: device.name, spacePolicy: "keep" }),
+  });
+
+  return offers;
+};
+
+/** Resolves each offer through the solver, so the note under it is not a guess. */
+const useOfferOutcomes = (
+  config: ConfigModel.Config | null,
+  device: Storage.Device,
+  offers: Offer[],
+): Record<string, string | undefined> => {
+  const [outcomes, setOutcomes] = useState<Record<string, string | undefined>>({});
+  const signature = `${device.sid}:${offers.map((o) => o.key).join(",")}`;
+
+  useEffect(() => {
+    if (!config) return;
+    let cancelled = false;
+
+    /* Sequential on purpose: the solver is a single backend, and a burst of
+       requests on first paint is exactly the thing worth not shipping. */
+    (async () => {
+      const found: Record<string, string | undefined> = {};
+      for (const offer of offers) {
+        if (offer.key === "manual") continue;
+        try {
+          const solved = await solveStorageModel(offer.build(config));
+          const drive = (solved?.drives || []).find((d) => d.name === device.name);
+          const total = (drive?.partitions || [])
+            .filter((p) => p.name === undefined)
+            .reduce((sum, p) => sum + (p.size?.min || 0), 0);
+          found[offer.key] = total > 0 ? t(`about ${deviceSize(total)}`) : undefined;
+        } catch {
+          found[offer.key] = undefined;
+        }
+      }
+      if (!cancelled) setOutcomes(found);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature, config]);
+
+  return outcomes;
+};
+
+const DeviceOffer = ({ device, mountPaths }: { device: Storage.Device; mountPaths: string[] }) => {
+  const config = useConfigModel();
+  const offers = useMemo(() => offersFor(device, mountPaths), [device, mountPaths]);
+  const outcomes = useOfferOutcomes(config, device, offers);
+  const systems = deviceSystems(device);
+
+  return (
+    <li className="agm-plan-offer">
+      <div className="agm-plan-offer-head">
+        <Text isBold>{baseName(device.name)}</Text>{" "}
+        <span className="agm-plan-muted">
+          {[
+            deviceSize(device.block?.size || 0),
+            device.drive?.model || device.description,
+            systems.length ? formatList(systems) : t("empty"),
+          ]
+            .filter(Boolean)
+            .join("  ·  ")}
+        </span>
+      </div>
+      <div className="agm-plan-offer-actions">
+        {offers.map((offer) => (
+          <div key={offer.key} className="agm-plan-offer-action">
+            <Button
+              variant={offer.key === "manual" ? "secondary" : "primary"}
+              onClick={() => putStorageModel(offer.build(config))}
+            >
+              {offer.label}
+            </Button>
+            <div className={offer.isDestructive ? COST_CLASS.destroys : "agm-plan-muted"}>
+              {offer.isDestructive && <Icon name={COST_ICON.destroys} size="xs" />}{" "}
+              {[offer.note, outcomes[offer.key]].filter(Boolean).join(", ")}
+            </div>
+          </div>
+        ))}
+      </div>
+    </li>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * The plan bar
+ * ------------------------------------------------------------------ */
+
+/**
+ * What the plan costs, what the whole installation has been told, and the way
+ * into each of them.
+ *
+ * The two machine-wide decisions live here rather than in the list. Neither is
+ * a device, and a reader scanning a list of disks for what happens to their
+ * disks should not have to step over them. Read as values with a way in, they
+ * also answer the two questions the list cannot: how this machine will start,
+ * and whether what is written is readable by anyone holding the disk.
+ */
+const PlanBar = ({
+  destructive,
+  onShowResult,
+  onShowBoot,
+  onShowEncryption,
+}: {
+  destructive: number;
+  onShowResult: () => void;
+  onShowBoot: () => void;
+  onShowEncryption: () => void;
+}) => {
+  const config = useConfigModel();
+  const reset = useReset();
+  const mode = bootModeOf(config);
+  const bootDevice = configModel.boot.findDevice(config);
+
+  const boot = () => {
+    if (mode === "off") return t("Not configured");
+    if (mode === "auto") return t("Automatic");
+    return bootDevice?.name ? baseName(bootDevice.name) : t("No disk selected");
+  };
+
+  return (
+    <div className="agm-plan-bar">
+      <Flex
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapMd" }}
+        flexWrap={{ default: "wrap" }}
+      >
+        <FlexItem>
+          {/* The cost is the reason anyone opens the result, so the cost is the
+              button: a reader worried by "4 changes destroy data" presses the
+              sentence that worries them. */}
+          <Button
+            variant={destructive > 0 ? "danger" : "secondary"}
+            size="sm"
+            aria-controls={PANEL_ID}
+            icon={<Icon name={destructive > 0 ? COST_ICON.destroys : "info"} size="xs" />}
+            onClick={onShowResult}
+          >
+            {destructive > 0
+              ? t(`${destructive} ${destructive === 1 ? "change" : "changes"} destroy data`)
+              : t("Nothing on this machine is destroyed")}
+          </Button>
+        </FlexItem>
+        <FlexItem>
+          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+            <FlexItem>
+              <span className="agm-plan-muted">{t("Boot")}</span>{" "}
+              <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
+                {boot()}
+              </Button>
+            </FlexItem>
+            <FlexItem>
+              <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
+              <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
+                {t(installationEncryption(config))}
+              </Button>
+            </FlexItem>
+            <FlexItem>
+              <ActionsMenu
+                label={t("More actions for this installation")}
+                items={[{ title: t("Reset to defaults"), onClick: () => reset() }]}
+              />
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      </Flex>
+    </div>
+  );
+};
+
+const PLAN_CSS = `
+.agm-plan-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--lg);
+  background: var(--pf-t--global--background--color--primary--default);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+}
+
+/* The size a shrink leaves behind, under the size it ends at. Small and quiet:
+   it is the value being replaced, not the one being reported. */
+.agm-plan-before {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--status--warning--default);
+}
+
+/* A rule and an indent rather than a filled box. The count is serious without
+   being an interruption, and a box around it in a sticky bar reads as an alert
+   that never goes away. */
+.agm-plan-bar-danger {
+  border-inline-start: 3px solid var(--pf-t--global--border--color--status--danger--default);
+  padding-inline-start: var(--pf-t--global--spacer--sm);
+}
+
+.agm-plan-muted {
+  color: var(--pf-t--global--text--color--subtle);
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+
+.agm-plan-cost-destroys {
+  color: var(--pf-t--global--text--color--status--danger--default);
+}
+
+.agm-plan-cost-shrinks {
+  color: var(--pf-t--global--text--color--status--warning--default);
+}
+
+.agm-plan-cost-keeps {
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+/* The mark carries the colour even where the text does not, so the three
+   states stay apart for a reader who cannot see either. */
+.agm-plan-cost-destroys svg { color: var(--pf-t--global--icon--color--status--danger--default); }
+.agm-plan-cost-shrinks svg { color: var(--pf-t--global--icon--color--status--warning--default); }
+.agm-plan-cost-keeps svg { color: var(--pf-t--global--icon--color--subtle); }
+
+.agm-plan-list {
+  padding: var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--md);
+}
+
+.agm-plan-devices { table-layout: auto; }
+
+/* Present for a screen reader, absent from the page: a header strip sitting
+   once at the top labels columns that have scrolled away from it. */
+.agm-plan-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.agm-plan-offers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.agm-plan-offers-title {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--subtle);
+  padding: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--lg)
+    var(--pf-t--global--spacer--sm);
+}
+
+/* Four columns need a screen. Below one, each row becomes a block and every
+   cell says which column it came from, since the header row is no longer above
+   it to say so. */
+@media (max-width: 47.9375em) {
+  .agm-plan-devices thead { display: none; }
+
+  .agm-plan-devices tbody tr.agm-plan-row {
+    display: block;
+    padding-block: var(--pf-t--global--spacer--sm);
+    border-block-end: 1px solid var(--pf-t--global--border--color--subtle);
+  }
+
+  .agm-plan-devices tbody tr.agm-plan-row > * {
+    display: block;
+    border-block-end: 0;
+    padding-block: var(--pf-t--global--spacer--xs);
+  }
+
+  .agm-plan-devices tbody tr.agm-plan-row td[data-label]::before {
+    content: attr(data-label) ": ";
+    color: var(--pf-t--global--text--color--subtle);
+  }
+
+  .agm-plan-devices .agm-plan-group-row th { display: block; }
+}
+
+/* One hairline between rows, and none around them. */
+.agm-plan-devices tbody tr.agm-plan-row {
+  cursor: pointer;
+}
+
+.agm-plan-devices tbody tr.agm-plan-row > * {
+  border-block-end: 1px solid var(--pf-t--global--border--color--subtle);
+}
+
+/* Rows sit under their group name rather than beside it, so the grouping reads
+   without the uppercase heading having to be re-read at every row. */
+.agm-plan-devices th[scope="row"] {
+  border-inline-start: 3px solid transparent;
+  padding-inline-start: var(--pf-t--global--spacer--lg);
+}
+
+.agm-plan-row:hover > * {
+  background: var(--pf-t--global--background--color--action--plain--hover);
+}
+
+.agm-plan-row:hover th[scope="row"] {
+  border-inline-start-color: var(--pf-t--global--border--color--default);
+}
+
+/* What makes a current tab read as current is the accent line, and a row can
+   carry the same. The faint background alone is not enough in either theme. */
+.agm-plan-row-selected > *,
+.agm-plan-row-selected:hover > * {
+  background: var(--pf-t--global--background--color--secondary--default);
+}
+
+.agm-plan-row-selected th[scope="row"],
+.agm-plan-row-selected:hover th[scope="row"] {
+  border-inline-start-color: var(--pf-t--global--border--color--brand--default);
+}
+
+.agm-plan-row-idle td { color: var(--pf-t--global--text--color--subtle); }
+
+.agm-plan-row-compact > * { padding-block: var(--pf-t--global--spacer--xs); }
+
+.agm-plan-row-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.agm-plan-row-link:hover { text-decoration: underline; }
+
+/* Name and kind read on one line, the same line the panel header shows. */
+.agm-plan-devices th[scope="row"] { min-width: 16rem; }
+
+/* The ring is drawn on the row, so focus reads as "this row" rather than as a
+   box around two words. On the row itself and not on its cells: a ring per cell
+   is four boxes where the reader is looking for one. */
+.agm-plan-row:has(.agm-plan-row-link:focus-visible) {
+  outline: 2px solid var(--pf-t--global--border--color--brand--default);
+  outline-offset: -2px;
+}
+
+.agm-plan-row-link:focus-visible { outline: none; }
+
+/* The name carries the row; what the device is sits under it, quieter and
+   smaller, because the panel is where that detail is read rather than scanned. */
+.agm-plan-row-description {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+  line-height: var(--pf-t--global--font--line-height--body);
+}
+
+/* The group name is a row of the table rather than a heading outside it, so the
+   rows under it are tied to it for a screen reader too. */
+.agm-plan-group-row th {
+  padding-inline-start: 0;
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-block: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xs);
+}
+
+.agm-plan-devices tbody:first-of-type .agm-plan-group-row th {
+  padding-block-start: var(--pf-t--global--spacer--sm);
+}
+
+/* The add actions belong next to what they add to. */
+.agm-plan-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--sm);
+  padding: var(--pf-t--global--spacer--lg);
+}
+
+/* Offers */
+
+.agm-plan-offer {
+  border: 1px solid var(--pf-t--global--border--color--default);
+  border-radius: var(--pf-t--global--border--radius--medium);
+  padding: var(--pf-t--global--spacer--md);
+  margin: 0 var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--md);
+}
+
+.agm-plan-offer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--lg);
+  margin-block-start: var(--pf-t--global--spacer--md);
+}
+
+.agm-plan-offer-action { max-width: 18rem; }
+
+.agm-plan-offer-action > div {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+/* The panel: a background step and a leading border, never an outline. */
+
+.agm-plan-panel {
+  display: flex;
+  flex-direction: column;
+  padding: var(--pf-t--global--spacer--lg) var(--pf-t--global--spacer--xl);
+  background: var(--pf-t--global--background--color--primary--default);
+  border-inline-start: 1px solid var(--pf-t--global--border--color--default);
+}
+
+/* Centred text under fill, which lays the labels out in equal columns: a label
+   wrapping to two lines reads ragged against a one-line neighbour otherwise. */
+.agm-plan-space-segments .pf-v6-c-toggle-group__button {
+  text-align: center;
+}
+
+/* What became of a conditional allowance, under the control that granted it. */
+.agm-plan-choice-note {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.agm-plan-panel-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: var(--pf-t--global--spacer--xl);
+}
+
+.agm-plan-panel:focus-visible {
+  outline: 2px solid var(--pf-t--global--border--color--brand--default);
+  outline-offset: -2px;
+}
+
+/* One line of relationships, between the identity above it and the tabs below.
+   It orients rather than explains: the names are links, and the panel each one
+   opens is what says what it is. */
+.agm-plan-related {
+  margin-block-end: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+.agm-plan-related p {
+  margin: 0;
+}
+
+.agm-plan-related p + p {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+}
+
+.agm-plan-related-label {
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+/* A line with a mark, not a block: it reads with the relationship lines above
+   it, and the mark is what separates a fact about the device from the links.
+   No trailing margin, since the tabs under it bring their own. */
+.agm-plan-boot {
+  margin-block: var(--pf-t--global--spacer--xs) 0;
+}
+
+.agm-plan-boot .pf-v6-c-helper-text__item-text {
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+.agm-plan-panel-head {
+  padding-block-end: var(--pf-t--global--spacer--sm);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+  margin-block-end: var(--pf-t--global--spacer--sm);
+}
+
+/* Two lines, the same two the list's first column carries: the name with the
+   identifier that survives a rename beside it, then what the device is. */
+.agm-plan-panel-title {
+  margin: 0;
+  font-size: var(--pf-t--global--font--size--body--lg);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  line-height: var(--pf-t--global--font--line-height--heading);
+}
+
+.agm-plan-panel-facts {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+}
+
+.agm-plan-path {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
+  line-height: 1.4;
+  color: var(--pf-t--global--text--color--subtle);
+  overflow-wrap: anywhere;
+}
+
+.agm-plan-sections {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: var(--pf-t--global--spacer--xl);
+}
+
+.agm-plan-section { min-height: 0; }
+
+.agm-plan-section-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--pf-t--global--background--color--primary--default);
+  padding-block: var(--pf-t--global--spacer--md);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+}
+
+.agm-plan-section-head .pf-v6-c-button { font-weight: var(--pf-t--global--font--weight--body--default); }
+
+/* The tab list is the panel's own boundary, so the section under it does not
+   draw a second one right below. */
+.agm-plan-sections .agm-plan-section-head {
+  border-block-end: 1px solid var(--pf-t--global--border--color--subtle);
+}
+
+.agm-plan-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* The tab strip keeps its own height; only the panel under it takes the rest. */
+.agm-plan-tabs > .pf-v6-c-tabs { flex: 0 0 auto; }
+
+.agm-plan-tabs > .pf-v6-c-tabs .pf-v6-c-tabs__list { margin-block-start: 0; }
+
+.agm-plan-tabs > .pf-v6-c-tab-content:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.agm-plan-section-body { padding-block-start: var(--pf-t--global--spacer--sm); }
+
+.agm-plan-section-intro {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+/*
+ * The two answers to "can the heading keep the decision reachable".
+ *
+ * With one scroll container for the whole panel body, a sticky heading only
+ * sticks once its own section is on screen. A long enough first section pushes
+ * the second heading out of view before it has anything to stick to, which is
+ * the objection worth testing rather than asserting away.
+ *
+ * With one container per section, each heading stays put while its own list
+ * scrolls under it, and both sections keep a share of the panel.
+ */
+.agm-plan-panel-scroll-body { overflow-y: auto; }
+
+.agm-plan-panel-scroll-sections { overflow: hidden; }
+
+.agm-plan-panel-scroll-sections .agm-plan-sections .agm-plan-section-scroll-sections {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 8rem;
+  overflow: hidden;
+}
+
+.agm-plan-panel-scroll-sections
+  .agm-plan-sections
+  .agm-plan-section-scroll-sections
+  .agm-plan-section-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Existing content */
+
+/* One table, so the columns line up.
+ *
+ * Each row being its own grid is why the size column moved with the length of
+ * the text beside it: columns can only align when one element owns them. A
+ * table also gives every cell a column header a screen reader announces, and a
+ * row header naming the partition, which a list of divs never does. */
+.agm-plan-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.agm-plan-table th,
+.agm-plan-table td {
+  text-align: start;
+  vertical-align: baseline;
+  padding-block: var(--pf-t--global--spacer--sm);
+  padding-inline-end: var(--pf-t--global--spacer--md);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+}
+
+.agm-plan-table thead th {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+  white-space: nowrap;
+}
+
+.agm-plan-table tbody tr { border-block-end: 1px solid var(--pf-t--global--border--color--subtle); }
+
+/* The same answer to the pointer the device list gives. The row is not a link
+   here, so this is feedback about where the pointer is rather than a promise
+   that the row can be activated. */
+.agm-plan-table tbody tr:hover > * {
+  background: var(--pf-t--global--background--color--action--plain--hover);
+}
+
+.agm-plan-table td,
+.agm-plan-table tbody th { font-size: var(--pf-t--global--font--size--body--sm); }
+
+/* Always the same column, and always aligned on the same edge, so sizes can be
+   compared by looking down rather than by reading. */
+.agm-plan-size {
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.agm-plan-row-control {
+  text-align: end;
+  padding-inline-end: 0;
+  white-space: nowrap;
+}
+
+/* A menu wide enough to read and no wider: a long description would otherwise
+   stretch it past the panel it opens in. */
+.agm-plan-table .pf-v6-c-menu,
+.agm-plan-table .pf-v6-c-dropdown__menu {
+  max-width: 22rem;
+}
+
+.agm-plan-table .pf-v6-c-menu__item-description {
+  white-space: normal;
+}
+
+.agm-plan-free th,
+.agm-plan-free td { font-style: italic; }
+
+.agm-plan-space-segments .pf-v6-c-toggle-group__button {
+  text-align: center;
+}
+
+/* What became of a conditional allowance, under the control that granted it. */
+.agm-plan-choice-note {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.agm-plan-panel-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: var(--pf-t--global--spacer--xl);
+}
+
+.agm-plan-panel:focus-visible {
+  outline: 2px solid var(--pf-t--global--border--color--brand--default);
+  outline-offset: -2px;
+}
+
+/* One line of relationships, between the identity above it and the tabs below.
+   It orients rather than explains: the names are links, and the panel each one
+   opens is what says what it is. */
+.agm-plan-related {
+  margin-block-end: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+.agm-plan-related p {
+  margin: 0;
+}
+
+.agm-plan-related p + p {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+}
+
+.agm-plan-related-label {
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+/* A line with a mark, not a block: it reads with the relationship lines above
+   it, and the mark is what separates a fact about the device from the links.
+   No trailing margin, since the tabs under it bring their own. */
+.agm-plan-boot {
+  margin-block: var(--pf-t--global--spacer--xs) 0;
+}
+
+.agm-plan-boot .pf-v6-c-helper-text__item-text {
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+.agm-plan-panel-head {
+  padding-block-end: var(--pf-t--global--spacer--sm);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+  margin-block-end: var(--pf-t--global--spacer--sm);
+}
+
+/* Two lines, the same two the list's first column carries: the name with the
+   identifier that survives a rename beside it, then what the device is. */
+.agm-plan-panel-title {
+  margin: 0;
+  font-size: var(--pf-t--global--font--size--body--lg);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  line-height: var(--pf-t--global--font--line-height--heading);
+}
+
+.agm-plan-panel-facts {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+}
+
+.agm-plan-path {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
+  line-height: 1.4;
+  color: var(--pf-t--global--text--color--subtle);
+  overflow-wrap: anywhere;
+}
+
+.agm-plan-sections {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: var(--pf-t--global--spacer--xl);
+}
+
+/* One format per row: a mark in a fixed gutter, the term, the value beside it,
+   and where it earns the line, one small line under both. Colour and size come
+   from PatternFly's text utilities, so what is left here is the arrangement. */
+/* The settings in a column of their own, where the panel is wide enough for
+   both to be read side by side, and above the content where it is not. The
+   width is the viewport's rather than the panel's, since the panel is a fixed
+   share of it. */
+.agm-plan-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--pf-t--global--spacer--xl);
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.agm-plan-split > * { min-height: 0; }
+
+@media (min-width: 87.5rem) {
+  .agm-plan-split-beside {
+    grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr);
+  }
+}
+
+.agm-plan-settings {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--pf-t--global--spacer--sm);
+  align-content: start;
+}
+
+.agm-plan-setting {
+  position: relative;
+  padding-inline-start: var(--pf-t--global--spacer--xl);
+}
+
+.agm-plan-setting-mark {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.2em;
+  color: var(--pf-t--global--icon--color--subtle);
+}
+
+.agm-plan-setting > dt,
+.agm-plan-setting > dd {
+  display: inline;
+  margin: 0;
+}
+
+
+.agm-plan-section { min-height: 0; }
+
+.agm-plan-section-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--pf-t--global--background--color--primary--default);
+  padding-block: var(--pf-t--global--spacer--md);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+}
+
+.agm-plan-section-head .pf-v6-c-button { font-weight: var(--pf-t--global--font--weight--body--default); }
+
+/* The tab list is the panel's own boundary, so the section under it does not
+   draw a second one right below. */
+.agm-plan-sections .agm-plan-section-head {
+  border-block-end: 1px solid var(--pf-t--global--border--color--subtle);
+}
+
+.agm-plan-tabs {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* The tab strip keeps its own height; only the panel under it takes the rest. */
+.agm-plan-tabs > .pf-v6-c-tabs { flex: 0 0 auto; }
+
+.agm-plan-tabs > .pf-v6-c-tabs .pf-v6-c-tabs__list { margin-block-start: 0; }
+
+.agm-plan-tabs > .pf-v6-c-tab-content:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.agm-plan-section-body { padding-block-start: var(--pf-t--global--spacer--sm); }
+
+.agm-plan-section-intro {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+/*
+ * The two answers to "can the heading keep the decision reachable".
+ *
+ * With one scroll container for the whole panel body, a sticky heading only
+ * sticks once its own section is on screen. A long enough first section pushes
+ * the second heading out of view before it has anything to stick to, which is
+ * the objection worth testing rather than asserting away.
+ *
+ * With one container per section, each heading stays put while its own list
+ * scrolls under it, and both sections keep a share of the panel.
+ */
+.agm-plan-panel-scroll-body { overflow-y: auto; }
+
+.agm-plan-panel-scroll-sections { overflow: hidden; }
+
+.agm-plan-panel-scroll-sections .agm-plan-sections .agm-plan-section-scroll-sections {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 8rem;
+  overflow: hidden;
+}
+
+.agm-plan-panel-scroll-sections
+  .agm-plan-sections
+  .agm-plan-section-scroll-sections
+  .agm-plan-section-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Existing content */
+
+/* One table, so the columns line up.
+ *
+ * Each row being its own grid is why the size column moved with the length of
+ * the text beside it: columns can only align when one element owns them. A
+ * table also gives every cell a column header a screen reader announces, and a
+ * row header naming the partition, which a list of divs never does. */
+.agm-plan-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.agm-plan-table th,
+.agm-plan-table td {
+  text-align: start;
+  vertical-align: baseline;
+  padding-block: var(--pf-t--global--spacer--sm);
+  padding-inline-end: var(--pf-t--global--spacer--md);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+}
+
+.agm-plan-table thead th {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  border-block-end: 1px solid var(--pf-t--global--border--color--default);
+  white-space: nowrap;
+}
+
+.agm-plan-table tbody tr { border-block-end: 1px solid var(--pf-t--global--border--color--subtle); }
+
+/* The same answer to the pointer the device list gives. The row is not a link
+   here, so this is feedback about where the pointer is rather than a promise
+   that the row can be activated. */
+.agm-plan-table tbody tr:hover > * {
+  background: var(--pf-t--global--background--color--action--plain--hover);
+}
+
+.agm-plan-table td,
+.agm-plan-table tbody th { font-size: var(--pf-t--global--font--size--body--sm); }
+
+/* Always the same column, and always aligned on the same edge, so sizes can be
+   compared by looking down rather than by reading. */
+.agm-plan-size {
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.agm-plan-row-control {
+  text-align: end;
+  padding-inline-end: 0;
+  white-space: nowrap;
+}
+
+/* A menu wide enough to read and no wider: a long description would otherwise
+   stretch it past the panel it opens in. */
+.agm-plan-table .pf-v6-c-menu,
+.agm-plan-table .pf-v6-c-dropdown__menu {
+  max-width: 22rem;
+}
+
+.agm-plan-table .pf-v6-c-menu__item-description {
+  white-space: normal;
+}
+
+.agm-plan-free th,
+.agm-plan-free td { font-style: italic; }
+
+/* A quiet rule rather than a coloured one: the row is a form the reader opened,
+   not a problem the page is reporting. */
+.agm-plan-shrink {
+  border-inline-start: 2px solid var(--pf-t--global--border--color--subtle);
+  padding: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  margin-block-end: var(--pf-t--global--spacer--sm);
+  max-width: 34rem;
+}
+
+/* Label, size, unit and outcome on one line, so the sentence reads across
+   rather than down. */
+.agm-plan-shrink-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+.agm-plan-shrink-qty { inline-size: 6rem; }
+
+.agm-plan-shrink-unit { inline-size: 6rem; }
+
+.agm-plan-shrink-freed { color: var(--pf-t--global--text--color--subtle); }
+
+.agm-plan-shrink-note {
+  margin-block: var(--pf-t--global--spacer--xs) var(--pf-t--global--spacer--sm);
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
+
+
+/* Volumes */
+
+
+
+/* The leading half of a section head: a mark, then whatever names the section.
+   Baseline aligned rather than centred, so the mark sits with the text instead
+   of with the control on the other side of the row. */
+.agm-plan-lead {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+/* A gutter rather than an icon glued to a word: the marks line up down the
+   panel at one width, which is what gives a reader something to aim at without
+   any container being drawn. */
+.agm-plan-gutter-mark {
+  display: inline-flex;
+  justify-content: center;
+  inline-size: 1.25rem;
+  flex: 0 0 1.25rem;
+  color: var(--pf-t--global--icon--color--subtle);
+}
+
+/* A mount path is a value, not prose, and the panel names it in a column of
+   bold names beside file systems and sizes. Italics give it a texture of its
+   own without spending a column on it. */
+.agm-plan-mounts-italic .agm-plan-mount {
+  font-style: italic;
+}
+
+/*
+ * The quieter type scale.
+ *
+ * Same information, less furniture: the identity is the only thing set large,
+ * the section heads stop competing with it, and the tables carry their column
+ * headers as small subtle labels rather than as a second level of heading.
+ * Weight is spent on the names inside the rows, which is what a reader scans.
+ */
+.agm-plan-type-quiet .agm-plan-panel-title {
+  font-size: var(--pf-t--global--font--size--heading--h4);
+}
+
+.agm-plan-type-quiet .agm-plan-section-head {
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.agm-plan-type-quiet .agm-plan-section-head .pf-v6-c-title {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--regular);
+}
+
+/* No rule under the column headers either: with the head rule and the first
+   row rule two pixels apart, the header reads as a box. */
+.agm-plan-type-quiet .agm-plan-table thead th {
+  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  color: var(--pf-t--global--text--color--subtle);
+  border-block-end: none;
+}
+
+/* ------------------------------------------------------------------
+ * The scroll lives inside the panel, never on the page.
+ *
+ * A page that scrolls means the panel can open half way down itself:
+ * the reader picks a device and the panel appears at whatever offset
+ * the page was left at, with its identity header above the fold.
+ * Opening a panel should always land on its first line.
+ *
+ * PatternFly does most of this already: page__main and the group under
+ * it are flex columns that grow, and the drawer bounds and scrolls its
+ * own panel. What it has no prop for is letting them shrink. The group
+ * and the section are flex-shrink: 0 with the default
+ * min-height: auto, so both stay as tall as their content, page__main
+ * overflows, and its overflow: auto becomes the page's scrollbar.
+ *
+ * So: let those two shrink to the height they are given, and move the
+ * panel's scroll one level in so the identity can stay behind. The list
+ * beside the panel needs nothing, since the drawer already makes its
+ * content side a flex column that scrolls.
+ * ------------------------------------------------------------------ */
+
+.pf-v6-c-page__main-group:has(> .agm-plan-page),
+.agm-plan-page {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.agm-plan-page > .pf-v6-c-drawer,
+.agm-plan-page > .agm-plan-narrow {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* The bar sticks to the top of whichever column it sits in, so the
+   destructive count never depends on how far the list has scrolled. */
+.agm-plan-bar { flex: 0 0 auto; }
+
+/* Which device the panel is about stays on screen while its content
+   moves, so a reader at the bottom of a long partition list still knows
+   whose partitions these are.
+ *
+ * The drawer scrolls the whole panel, header included, and its body is a
+ * plain block. Take the scroll off the panel, make the body a column,
+ * and let each thing under it fill rather than measure, so the scroll
+ * lands on the content beneath the header. */
+.agm-plan-page .pf-v6-c-drawer__panel { overflow: hidden; }
+
+.agm-plan-page .pf-v6-c-drawer__panel > .pf-v6-c-drawer__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.agm-plan-page .agm-plan-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.agm-plan-panel-head { flex: 0 0 auto; }
+
+.agm-plan-panel > .agm-plan-panel-content { overflow-y: auto; }
+
+/* Only the identity is pinned. Everything under it, the settings and
+   the tabs alike, is content and travels with the scroll: a setting
+   that stays put while the table moves reads as part of the header,
+   which is a promise about what it belongs to that is not true.
+ *
+ * So the inner scrollers give up. Each of these takes its natural
+ * height instead of a share of the panel, which leaves exactly one
+ * scroll between the header and the bottom of the tables. */
+.agm-plan-page .agm-plan-split,
+.agm-plan-page .agm-plan-tabs,
+.agm-plan-page .agm-plan-tabs > .pf-v6-c-tab-content:not([hidden]) {
+  flex: 0 0 auto;
+  min-height: auto;
+}
+
+.agm-plan-page .agm-plan-tabs > .pf-v6-c-tab-content:not([hidden]) {
+  overflow: visible;
+}
+
+/* Below lg the list and the panel take turns in the same frame. The list
+   scrolls here, under a bar that sticks to the top of it. The panel does
+   not: it fills the frame and keeps its own scroll under its identity,
+   the same as it does inside the drawer, so nothing above changes. */
+.agm-plan-narrow {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* A control and the link belonging to it, on one line. */
+.agm-plan-inline-value {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+/* A label with its control under it, the way a form reads. One field per line:
+   two to a line saves height and costs the reader a straight column of labels
+   to run down. */
+.agm-plan-settings-stacked {
+  gap: var(--pf-t--global--spacer--md);
+}
+
+.agm-plan-settings-stacked .agm-plan-setting > dt,
+.agm-plan-settings-stacked .agm-plan-setting > dd {
+  display: block;
+}
+
+.agm-plan-settings-stacked .agm-plan-setting > dd {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+}
+
+/* A sentence about what the panel names, under the name rather than beside it. */
+.agm-plan-panel-subtitle {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-size: var(--pf-t--global--font--size--body--sm);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+/* Above the list, where it is read before anything the list says about costs. */
+.agm-plan-no-proposal {
+  margin-block: var(--pf-t--global--spacer--sm);
+}
+
+/* The notice takes the place of the table, so it starts where the table would. */
+.agm-plan-boot-notice {
+  margin-block-start: var(--pf-t--global--spacer--md);
+}
+
+`;
+
+const PlanStyles = () => <style>{PLAN_CSS}</style>;
+
+/**
+ * Encryption, as a scope of its own.
+ *
+ * The same shape as boot: the one machine-wide decision, and under it what that
+ * decision reaches. The model holds a single encryption setting, so what it
+ * reaches is everything the installation creates, which is worth showing rather
+ * than asserting.
+ */
+const EncryptionDetail = () => {
+  const config = useConfigModel();
+  const navigate = useNavigate();
+  const { settings: settingsPlacement, scroll } = useVariants();
+
+  const encrypted = Boolean(config.encryption);
+
+  const volumes = [
+    ...(config.drives || []).flatMap((drive) =>
+      (drive.partitions || [])
+        .filter((partition) => partition.mountPath && !partition.name)
+        .map((partition) => ({
+          key: `${drive.name}:${partition.mountPath}`,
+          where: baseName(drive.name),
+          what: partition.mountPath,
+        })),
+    ),
+    ...(config.volumeGroups || []).flatMap((group) =>
+      (group.logicalVolumes || [])
+        .filter((volume) => volume.mountPath)
+        .map((volume) => ({
+          key: `${group.vgName}:${volume.mountPath}`,
+          where: group.vgName,
+          what: volume.mountPath,
+        })),
+    ),
+  ];
+
+  const settings: Setting[] = [
+    {
+      key: "encryption",
+      icon: "lock",
+      term: t("Encryption"),
+      value: (
+        <span className="agm-plan-inline-value">
+          {t(installationEncryption(config))}
+          <Button
+            variant="link"
+            isInline
+            onClick={() => navigate(generateEncodedPath(PATHS.editEncryption, {}))}
+          >
+            {t("Change")}
+          </Button>
+        </span>
+      ),
+      explanation: encrypted
+        ? t("The password is asked for once, and again on every start unless the TPM holds it.")
+        : t("Everything the installation writes is readable by anyone holding the disk."),
+    },
+  ];
+
+  return (
+    <div className={`agm-plan-split agm-plan-split-${settingsPlacement}`}>
+      <SettingsList settings={settings} layout="stacked" />
+      <div className={`agm-plan-section agm-plan-section-scroll-${scroll}`}>
+        <div className="agm-plan-section-body">
+          {volumes.length === 0 && (
+            <div className="agm-plan-muted">
+              {t("Nothing is planned yet, so there is nothing for this setting to reach.")}
+            </div>
+          )}
+          {volumes.length > 0 && (
+            <table className="agm-plan-table" aria-label={t("What this setting reaches")}>
+              <thead>
+                <tr>
+                  <th scope="col">{t("Device")}</th>
+                  <th scope="col">{t("Volume")}</th>
+                  <th scope="col">{t("Encryption")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {volumes.map((volume) => (
+                  <tr key={volume.key}>
+                    <th scope="row">
+                      <Text isBold>{volume.where}</Text>
+                    </th>
+                    <td className="agm-plan-mount">{volume.what}</td>
+                    <td>{encrypted ? t(installationEncryption(config)) : t("None")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * The result, in the panel the devices use.
+ *
+ * Two halves of the same answer: the changes the installer carries out, and
+ * what the machine looks like once it has. Tabs rather than a stack, for the
+ * reason the device panel uses them: both headings stay visible whatever the
+ * length of the list under them.
+ */
+const ResultDetail = ({ actions }: { actions: Proposal.Action[] }) => {
+  const system = useFlattenDevices();
+  const staging = useStagingDevices();
+  const [tab, setTab] = useState("actions");
+  const devices = new DevicesManager(system, staging, actions);
+
+  return (
+    <Tabs
+      activeKey={tab}
+      onSelect={(_event, key) => setTab(String(key))}
+      aria-label={t("What will happen")}
+    >
+      <Tab eventKey="actions" title={<TabTitleText>{t("Changes")}</TabTitleText>}>
+        <div className="agm-plan-section-body">
+          <ProposalActions actions={actions} />
+        </div>
+      </Tab>
+      <Tab eventKey="layout" title={<TabTitleText>{t("Final layout")}</TabTitleText>}>
+        <div className="agm-plan-section-body">
+          <ProposalResultTable devicesManager={devices} />
+        </div>
+      </Tab>
+    </Tabs>
+  );
+};
+
+/**
+ * What the page is reading, when what it is reading is incomplete.
+ *
+ * Two states the page cannot show anything useful in, and used to show nothing
+ * about: the configuration has issues the backend can name, and the backend has
+ * no proposal at all, which is what it reports when the configuration does not
+ * solve. Without these, every table quietly reports nothing and the page looks
+ * like it is working.
+ *
+ * The same two states have their own notices on the real storage page.
+ */
+const PlanNotices = () => {
+  const proposal = useStorageProposal();
+  const issues = useIssues("storage");
+  /* The proposal class is the failure itself, which the notice below is about.
+     Everything else is something in the configuration to put right. */
+  const configIssues = issues.filter((issue) => issue.class !== "proposal");
+
+  return (
+    <>
+      {configIssues.length > 0 && (
+        <Alert
+          variant="danger"
+          isInline
+          className="agm-plan-no-proposal"
+          title={
+            configIssues.length === 1
+              ? t("The configuration has to be adapted to address this issue")
+              : t("The configuration has to be adapted to address these issues")
+          }
+        >
+          <ul>
+            {configIssues.map((issue) => (
+              <li key={issue.description}>
+                {issue.description}
+                {issue.details && <div className="agm-plan-muted">{issue.details}</div>}
+              </li>
+            ))}
+          </ul>
+        </Alert>
+      )}
+      {!proposal && configIssues.length === 0 && (
+        <Alert
+          variant="danger"
+          isInline
+          className="agm-plan-no-proposal"
+          title={t("The installer could not work out a layout for this configuration")}
+        >
+          {t(
+            "Nothing on this page can say what the installation costs until it can: no changes, no sizes, no partitions to boot.",
+          )}
+        </Alert>
+      )}
+    </>
+  );
+};
+
+/**
+ * The two add actions, as buttons at the foot of the list they add to.
+ *
+ * "Add device" opens the same device selector dialog the interface already
+ * uses, with the same tabs, intros and side effects. The redesign is about
+ * where the action sits, not about replacing what it does.
+ */
+const AddDeviceActions = () => {
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const navigate = useNavigate();
+  const config = useConfigModel();
+  const addDrive = useAddDrive();
+  const addMdRaid = useAddMdRaid();
+  const addVolumeGroup = useAddVolumeGroup();
+  const allDevices = useAvailableDevices();
+
+  const usedNames = configModel.devices(config).map((d) => d.name);
+  const available = allDevices.filter((d) => !usedNames.includes(d.name));
+  const disks = available.filter(isDrive);
+  const mdRaids = available.filter(isMd);
+  const volumeGroups = available.filter(isVolumeGroup);
+
+  const addDevice = (device: Storage.Device) => {
+    if (isDrive(device)) addDrive({ name: device.name, spacePolicy: "keep" });
+    if (isMd(device)) addMdRaid({ name: device.name, spacePolicy: "keep" });
+    if (isVolumeGroup(device)) addVolumeGroup({ name: device.name, spacePolicy: "keep" }, false);
+  };
+
+  return (
+    <div className="agm-plan-add">
+      <Button
+        variant="secondary"
+        icon={<Icon name="add" size="xs" />}
+        isDisabled={available.length === 0}
+        onClick={() => setIsSelectorOpen(true)}
+      >
+        {t("Add device")}
+      </Button>
+      <Button
+        variant="secondary"
+        icon={<Icon name="add" size="xs" />}
+        onClick={() => navigate(PATHS.volumeGroup.add)}
+      >
+        {t("Add LVM volume group")}
+      </Button>
+      {isSelectorOpen && (
+        <DeviceSelectorModal
+          disks={disks}
+          mdRaids={mdRaids}
+          volumeGroups={volumeGroups}
+          title={t("Add a device")}
+          intro={t("Pick a device to define partitions on, to mount, or to hold logical volumes.")}
+          tabIntros={{
+            disks: t("Choose a disk to define partitions or to mount"),
+            mdRaids: t("Choose a RAID device to define partitions or to mount"),
+            volumeGroups: t("Choose a volume group to define logical volumes"),
+          }}
+          onCancel={() => setIsSelectorOpen(false)}
+          onConfirm={([device]) => {
+            addDevice(device);
+            setIsSelectorOpen(false);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * The list
+ * ------------------------------------------------------------------ */
+
+/* ------------------------------------------------------------------ *
+ * The boot entry
+ * ------------------------------------------------------------------ */
+
+const BOOT_MODES: BootMode[] = ["auto", "chosen", "off"];
+
+const BOOT_MODE_LABEL_ID = "agm-plan-boot-mode-label";
+const BOOT_MODE_VALUE_ID = "agm-plan-boot-mode-value";
+const BOOT_DISK_LABEL_ID = "agm-plan-boot-disk-label";
+const BOOT_DISK_VALUE_ID = "agm-plan-boot-disk-value";
+const BOOT_LOADER_LABEL_ID = "agm-plan-boot-loader-label";
+const BOOT_LOADER_VALUE_ID = "agm-plan-boot-loader-value";
+
+/** Where the boot loader goes, as the value of its row. */
+const BootModeMenu = ({
+  current,
+  canChoose,
+  onChoose,
+}: {
+  current: BootMode;
+  canChoose: boolean;
+  onChoose: (mode: BootMode) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      popperProps={{ preventOverflow: true }}
+      toggle={(ref) => (
+        <MenuToggle
+          ref={ref}
+          size="sm"
+          isExpanded={isOpen}
+          aria-labelledby={`${BOOT_MODE_LABEL_ID} ${BOOT_MODE_VALUE_ID}`}
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          <span id={BOOT_MODE_VALUE_ID}>{t(BOOT_MODE_LABELS[current])}</span>
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        {BOOT_MODES.map((mode) => (
+          <DropdownItem
+            key={mode}
+            isSelected={mode === current}
+            /* Nothing to boot from is the one choice that can leave the machine
+               unable to start, so it reads as the risk it is. */
+            isDanger={mode === "off"}
+            isDisabled={mode === "chosen" && !canChoose}
+            description={t(BOOT_MODE_MEANINGS[mode])}
+            onClick={() => {
+              setIsOpen(false);
+              /* Picking what is already picked is not a change. Every write
+                 here is a round trip that recalculates the proposal, so a
+                 no-op write costs a rebuild of the whole page. */
+              if (mode !== current) onChoose(mode);
+            }}
+          >
+            {t(BOOT_MODE_LABELS[mode])}
+          </DropdownItem>
+        ))}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+/** Which disk the boot loader is written to, once a disk is being chosen. */
+const BootDiskMenu = ({
+  current,
+  devices,
+  onChoose,
+}: {
+  current: string | null;
+  devices: Storage.Device[];
+  onChoose: (name: string) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      popperProps={{ preventOverflow: true }}
+      toggle={(ref) => (
+        <MenuToggle
+          ref={ref}
+          size="sm"
+          isExpanded={isOpen}
+          aria-labelledby={`${BOOT_DISK_LABEL_ID} ${BOOT_DISK_VALUE_ID}`}
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          <span id={BOOT_DISK_VALUE_ID}>{current ? baseName(current) : t("Pick a disk")}</span>
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        {devices.map((device) => (
+          <DropdownItem
+            key={device.sid}
+            isSelected={device.name === current}
+            description={partitionableDescription(device)}
+            onClick={() => {
+              setIsOpen(false);
+              if (device.name !== current) onChoose(device.name);
+            }}
+          >
+            {baseName(device.name)}
+          </DropdownItem>
+        ))}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+/** Which boot loader is installed, out of the ones this machine can run. */
+const BootLoaderMenu = ({
+  current,
+  available,
+  onChoose,
+}: {
+  current: Bootloader.BootloaderType | null;
+  available: Bootloader.Bootloader[];
+  onChoose: (type: Bootloader.BootloaderType) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onOpenChange={setIsOpen}
+      popperProps={{ preventOverflow: true }}
+      toggle={(ref) => (
+        <MenuToggle
+          ref={ref}
+          size="sm"
+          isExpanded={isOpen}
+          aria-labelledby={`${BOOT_LOADER_LABEL_ID} ${BOOT_LOADER_VALUE_ID}`}
+          onClick={() => setIsOpen((open) => !open)}
+        >
+          <span id={BOOT_LOADER_VALUE_ID}>
+            {current ? t(BOOTLOADER_LABELS[current]) : t("Decided by the installer")}
+          </span>
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        {available.map((bootloader) => (
+          <DropdownItem
+            key={bootloader.type}
+            isSelected={bootloader.type === current}
+            description={
+              bootloader.encryptionAuth.includes("tpm")
+                ? t("Can unlock with the TPM")
+                : t("Asks for the password while starting")
+            }
+            onClick={() => {
+              setIsOpen(false);
+              if (bootloader.type !== current) onChoose(bootloader.type);
+            }}
+          >
+            {t(BOOTLOADER_LABELS[bootloader.type])}
+          </DropdownItem>
+        ))}
+      </DropdownList>
+    </Dropdown>
+  );
+};
+
+/**
+ * What the boot decision costs, gathered from every device in the proposal.
+ *
+ * The table is the reason this panel exists: these partitions are the solver's
+ * doing, they appear in no content tab, and read beside the settings they come
+ * from they answer "what does booting take from my disks" in one place.
+ */
+/**
+ * One row of the boot table, and the two things a reader can do to it.
+ *
+ * A size the reader typed is written into the configuration, which turns the
+ * solver's partition into a planned one: it shows up in its disk's planned
+ * content beside everything else planned there, and the installer stops
+ * deciding its size. Dropping it hands the decision back.
+ */
+const BootPartitionRow = ({ partition }: { partition: BootPartition }) => {
+  const navigate = useNavigate();
+  const adopt = useAdoptBootPartition();
+  const forget = useForgetBootPartition();
+  const { bootTakeover } = useVariants();
+
+  const size = partition.size ? deviceSize(partition.size) : t("decided by the installer");
+
+  const openForm = () => {
+    /* The form edits what the configuration holds, so the partition has to be
+       in it before the form can open on it. Written with the size the proposal
+       gave it, which is what makes the form read as the proposal prefilled. */
+    const location = adopt(partition, partition.size || 0);
+    if (!location || !partition.mountPath) return;
+
+    navigate(
+      generateEncodedPath(PATHS.editPartition, {
+        collection: location.collection,
+        index: String(location.index),
+        partitionId: partition.mountPath,
+      }),
+    );
+  };
+
+  /* Everything editable is edited in the partition form. A size field in the
+     table would be a second way to say the same thing, and a poorer one: size
+     can be automatic, exact or a range, and the form is where those live.
+     A partition with nothing mounted on it (BIOS boot, PReP) has no way in yet:
+     the form addresses a partition by its mount path. */
+  /* Everything editable is edited in the partition form, which addresses a
+     partition by its mount path, so a partition with nothing mounted on it
+     (BIOS boot, PReP) has no way in and its row is read only.
+     Writing one into the configuration by its id is not a way around that: a
+     partition to be created with no mount path makes the whole configuration
+     unsupported by the config model, and the backend then reports no model at
+     all. The switch is kept to reproduce it. */
+  const actions: ActionItem[] = [];
+  if (partition.mountPath) {
+    actions.push({ title: t("Edit"), onClick: openForm });
+  } else if (bootTakeover && !partition.isExplicit) {
+    actions.push({
+      title: t("Ask for it explicitly"),
+      onClick: () => adopt(partition, partition.size || 0),
+    });
+  }
+  if (partition.isExplicit) {
+    actions.push({ title: t("Let the installer decide"), onClick: () => forget(partition) });
+  }
+
+  return (
+    <tr>
+      <th scope="row">
+        <Text isBold>{partition.deviceName}</Text>
+      </th>
+      <td>
+        {partition.name}
+        <div className="agm-plan-muted">
+          {partition.description || (partition.isNew ? t("new") : t("reused"))}
+        </div>
+      </td>
+      <td className="agm-plan-size">
+        <div>{size}</div>
+        <div className="agm-plan-muted">
+          {partition.isExplicit ? t("asked for by you") : t("decided by the installer")}
+        </div>
+      </td>
+      <td>{partition.why}</td>
+      <td className="agm-plan-row-control">
+        {actions.length > 0 && (
+          <ActionsMenu label={t(`Actions for ${partition.name}`)} items={actions} />
+        )}
+      </td>
+    </tr>
+  );
+};
+
+const BootNeedsSection = ({ scan }: { scan: BootScan }) => {
+  const { scroll } = useVariants();
+  const plan = scan.plan;
+
+  const empty = () => {
+    if (scan.devices === 0)
+      return t(
+        `The proposal reports ${scan.actions} actions and no devices, so what booting takes cannot be read from it.`,
+      );
+
+    if (scan.partitions === 0)
+      return t(`The proposal reports ${scan.devices} devices and no partitions on any of them.`);
+
+    return t(
+      `No partitions to boot. The proposal reports ${scan.partitions} partitions on ${scan.devices} devices, and none of them is set aside for booting.`,
+    );
+  };
+
+  return (
+    <div className={`agm-plan-section agm-plan-section-scroll-${scroll}`}>
+      <div className="agm-plan-section-body">
+        {/* The page carries the same notice, and this one says what it costs
+            here: with no layout worked out, what booting takes is unknown
+            rather than nothing. */}
+        {!scan.hasProposal && (
+          <Alert
+            variant="danger"
+            isInline
+            title={t("What booting takes is unknown")}
+            className="agm-plan-boot-notice"
+          >
+            {t(
+              "The installer could not work out a layout for this configuration, so it has not decided any partition to boot yet.",
+            )}
+          </Alert>
+        )}
+        {scan.hasProposal && plan.length === 0 && <div className="agm-plan-muted">{empty()}</div>}
+        {/* The table is named for a screen reader without a line of prose for
+            everyone else: the columns already say what it holds. */}
+        {scan.hasProposal && plan.length > 0 && (
+          <table className="agm-plan-table" aria-label={t("Partitions to boot")}>
+            <thead>
+              <tr>
+                <th scope="col">{t("Device")}</th>
+                <th scope="col">{t("Partition")}</th>
+                <th scope="col" className="agm-plan-size">
+                  {t("Size")}
+                </th>
+                <th scope="col">{t("Purpose")}</th>
+                <th scope="col">
+                  <Text srOnly>{t("Actions")}</Text>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {plan.map((partition) => (
+                <BootPartitionRow key={partition.key} partition={partition} />
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Boot, as a scope of its own.
+ *
+ * The decision is machine wide: two of its three states say nothing about any
+ * particular disk, and which boot loader is installed says nothing about
+ * storage at all. Gathering them here puts every one of them beside the
+ * partitions they cost, which is the only place those partitions are visible.
+ */
+const BootDetail = () => {
+  const config = useConfigModel();
+  const availableDevices = useAvailableDevices();
+  const bootloaderSystem = useBootloaderSystem();
+  const setBootDevice = useSetBootDevice();
+  const setDefaultBootDevice = useSetDefaultBootDevice();
+  const disableBoot = useDisableBoot();
+  const setBootloader = useSetBootloader();
+  const scan = useBootScan();
+  const { settings: settingsPlacement } = useVariants();
+  const { goToDevice } = React.useContext(PanelNavContext);
+
+  const mode = bootModeOf(config);
+  const bootDevice = configModel.boot.findDevice(config);
+  const bootDeviceName = bootDevice?.name || null;
+
+  /* A disk formatted as a whole has no room for a boot partition, so it is not
+     somewhere the boot loader can be sent. */
+  const candidates = availableDevices.filter((device) => {
+    const drive = (config.drives || []).find((entry) => entry.name === device.name);
+    return !drive?.filesystem;
+  });
+
+  const chooseMode = (next: BootMode) => {
+    if (next === "auto") return setDefaultBootDevice();
+    if (next === "off") return disableBoot();
+
+    /* Choosing a disk needs a disk. The current one where there is one, so
+       switching away from automatic and back does not move the boot loader. */
+    const target = bootDeviceName || candidates[0]?.name;
+    if (target) setBootDevice(target);
+  };
+
+  /* Only where the value leaves something open. Which disk was picked is the
+     row below, and what turning boot off costs is the notice beside it. */
+  const modeExplanation = () => {
+    if (mode === "auto") {
+      return bootDeviceName
+        ? t(
+            `Partitions to boot are set up if needed at the installation disk. Currently ${baseName(bootDeviceName)}, based on the location of the / file system.`,
+          )
+        : t(
+            "Partitions to boot are set up if needed at the installation disk, based on the location of the / file system.",
+          );
+    }
+
+    return undefined;
+  };
+
+  const available = bootloaderSystem?.availableBootloaders || [];
+  const bootloader = configModel.getBootloader(config);
+
+  const bootloaderExplanation = (): string => {
+    if (available.length === 0) return t("This machine reports no boot loader to choose between.");
+
+    const entry = available.find((candidate) => candidate.type === bootloader);
+    if (entry?.encryptionAuth.includes("tpm"))
+      return t("This one can unlock an encrypted system with the TPM.");
+
+    return t("An encrypted system asks for its password while starting.");
+  };
+
+  const bootloaderRow: Setting = {
+    key: "bootloader",
+    icon: "deployed_code_update",
+    term: <span id={BOOT_LOADER_LABEL_ID}>{t("Boot loader")}</span>,
+    value:
+      available.length > 0 ? (
+        <BootLoaderMenu current={bootloader} available={available} onChoose={setBootloader} />
+      ) : (
+        t("Decided by the installer")
+      ),
+    explanation: bootloaderExplanation(),
+  };
+
+  const bootDeviceSelection = bootDeviceName
+    ? selectionForDevice(config, bootDeviceName)
+    : undefined;
+  const bootDeviceLink = bootDeviceSelection ? (
+    <Button variant="link" isInline onClick={() => goToDevice(bootDeviceSelection)}>
+      {t(`See what else happens to ${baseName(bootDeviceName)}`)}
+    </Button>
+  ) : null;
+
+  const settings: Setting[] = settingsOf([
+    {
+      key: "mode",
+      icon: "restart_alt",
+      term: <span id={BOOT_MODE_LABEL_ID}>{t("Boot from")}</span>,
+      value: (
+        <BootModeMenu current={mode} canChoose={candidates.length > 0} onChoose={chooseMode} />
+      ),
+      explanation: modeExplanation(),
+    },
+    mode === "chosen" && {
+      key: "disk",
+      icon: "hard_drive",
+      term: <span id={BOOT_DISK_LABEL_ID}>{t("Disk")}</span>,
+      /* The way to the disk reads as part of the value, not as a line of its
+         own: it is the same object the menu names, and a link under a control
+         reads as something the control did. */
+      value: (
+        <span className="agm-plan-inline-value">
+          <BootDiskMenu
+            current={bootDeviceName}
+            devices={candidates}
+            onChoose={(name) => setBootDevice(name)}
+          />
+          {bootDeviceLink}
+        </span>
+      ),
+      explanation: bootDeviceName
+        ? undefined
+        : t("No disk is selected, so nothing is set up for booting."),
+    },
+    /* With nothing set up to boot, which boot loader would have been installed
+       is a choice about something that does not happen. */
+    mode !== "off" && bootloaderRow,
+  ]);
+
+  return (
+    <div className={`agm-plan-split agm-plan-split-${settingsPlacement}`}>
+      <SettingsList settings={settings} layout="stacked" />
+      {mode === "off" ? (
+        <Alert
+          variant="danger"
+          isInline
+          title={t("The new system may not start")}
+          className="agm-plan-boot-notice"
+        >
+          {t(
+            "Nothing is set up for booting. Choose this only when you install a boot loader yourself.",
+          )}
+        </Alert>
+      ) : (
+        <BootNeedsSection scan={scan} />
+      )}
+    </div>
+  );
+};
+
+const GROUP_TITLES: Record<Collection, string> = {
+  volumeGroups: "Volume groups",
+  mdRaids: "RAID devices",
+  drives: "Disks",
+};
+
+const DeviceList = ({
+  rows,
+  selectedId,
+  onSelect,
+  onCrossToPanel,
+  unconfigured,
+  mountPaths,
+}: {
+  rows: Selection[];
+  selectedId: string | null;
+  onSelect: (selection: Selection) => void;
+  onCrossToPanel: () => void;
+  unconfigured: Storage.Device[];
+  mountPaths: string[];
+}) => {
+  const { offers, rowActions } = useVariants();
+  const isWide = useMedia(XL);
+  const refs = useRef<(HTMLAnchorElement | null)[]>([]);
+  /* Above xl the panel is on screen and holds the device actions, so a copy of
+   * them on every row is a second route to the same place and a column that is
+   * empty of anything worth a header. */
+  const showsMenu = rowActions === "always" || (rowActions === "narrow" && !isWide);
+
+  const registerRef = useCallback((index: number, node: HTMLAnchorElement | null) => {
+    refs.current[index] = node;
+  }, []);
+
+  /* Arrow keys move between rows without moving focus into the panel: arrowing
+   * down a list of five disks while focus jumps away five times makes the list
+   * unusable. Crossing into the panel is its own key. */
+  const onKeyDown = (event: React.KeyboardEvent) => {
+    const nodes = refs.current.filter(Boolean);
+    const at = nodes.indexOf(document.activeElement as HTMLAnchorElement);
+    if (at === -1) return;
+
+    const focusAt = (next: number) => {
+      event.preventDefault();
+      nodes[Math.max(0, Math.min(next, nodes.length - 1))]?.focus();
+    };
+
+    switch (event.key) {
+      case "ArrowDown":
+        return focusAt(at + 1);
+      case "ArrowUp":
+        return focusAt(at - 1);
+      case "Home":
+        return focusAt(0);
+      case "End":
+        return focusAt(nodes.length - 1);
+      case "ArrowRight":
+        event.preventDefault();
+        return onCrossToPanel();
+      default:
+        return undefined;
+    }
+  };
+
+  const groups = (["volumeGroups", "mdRaids", "drives"] as Collection[])
+    .map((collection) => ({
+      collection,
+      members: rows.filter((row) => row.collection === collection),
+    }))
+    .filter((group) => group.members.length > 0);
+
+  let position = -1;
+
+  return (
+    <div className="agm-plan-list" id={LIST_ID} onKeyDown={onKeyDown}>
+      {groups.length > 0 && (
+        <table className="agm-plan-table agm-plan-devices" aria-label={t("Configured devices")}>
+          <thead className="agm-plan-sr-only">
+            <tr>
+              <th scope="col">{t(COLUMN_LABELS.device)}</th>
+              <th scope="col">{t(COLUMN_LABELS.content)}</th>
+              <th scope="col">{t(COLUMN_LABELS.changes)}</th>
+              {showsMenu && (
+                <th scope="col">
+                  <Text srOnly>{t("Actions")}</Text>
+                </th>
+              )}
+            </tr>
+          </thead>
+          {/* One body per kind, each headed by a row that names the group.
+              `rowgroup` scope is what ties the rows under it to that name for a
+              screen reader, which a styled heading outside the table cannot. */}
+          {groups.map((group) => (
+            <tbody key={group.collection}>
+              <tr className="agm-plan-group-row">
+                <th scope="rowgroup" colSpan={showsMenu ? 4 : 3}>
+                  {t(GROUP_TITLES[group.collection])}
+                </th>
+              </tr>
+              {group.members.map((selection) => {
+                position += 1;
+                return (
+                  <DeviceRow
+                    key={idOf(selection)}
+                    selection={selection}
+                    isSelected={selectedId === idOf(selection)}
+                    onSelect={onSelect}
+                    registerRef={registerRef}
+                    position={position}
+                    showsMenu={showsMenu}
+                  />
+                );
+              })}
+            </tbody>
+          ))}
+        </table>
+      )}
+
+      {/* Offers answer "I have nothing and do not know what good looks like".
+          Once anything is configured that question is answered, and a card per
+          spare device outweighs the list it is appended to. */}
+      {offers && rows.length === 0 && unconfigured.length > 0 && (
+        <section aria-labelledby="agm-plan-offers">
+          <h2 className="agm-plan-offers-title" id="agm-plan-offers">
+            {t("Nothing is configured yet. These devices can hold the new system.")}
+          </h2>
+          <ul className="agm-plan-offers">
+            {unconfigured.map((device) => (
+              <DeviceOffer key={device.sid} device={device} mountPaths={mountPaths} />
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <AddDeviceActions />
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * The panel header for whatever is selected
+ * ------------------------------------------------------------------ */
+
+const PartitionableHeader = ({
+  collection,
+  index,
+  onClose,
+}: {
+  collection: PartitionableCollection;
+  index: number;
+  onClose: () => void;
+}) => {
+  const config = useConfigModel();
+  const device = config[collection]?.[index] as Partitionable | undefined;
+  const systemDevice = useDevice(device?.name || "");
+
+  if (!device) return null;
+
+  return (
+    <PanelHeader
+      title={baseName(device.name)}
+      description={partitionableDescription(systemDevice)}
+      path={systemDevice?.block?.udevPaths?.[0]}
+      onClose={onClose}
+      actions={<PartitionableActions collection={collection} index={index} />}
+    />
+  );
+};
+
+const VolumeGroupHeader = ({ index, onClose }: { index: number; onClose: () => void }) => {
+  const config = useConfigModel();
+  const group = config.volumeGroups?.[index];
+  const systemDevice = useDevice(group?.name || "");
+
+  if (!group) return null;
+
+  return (
+    <PanelHeader
+      title={group.vgName}
+      description={volumeGroupDescription()}
+      path={systemDevice?.block?.udevPaths?.[0]}
+      onClose={onClose}
+      actions={<VolumeGroupActions index={index} />}
+    />
+  );
+};
+
+/**
+ * Split by device class on purpose. Both branches call hooks, and one component
+ * switching between them renders a different number of hooks depending on what
+ * is selected, which is the crash the earlier pass hit repeatedly.
+ */
+const SelectionHeader = ({ selection, onClose }: { selection: Selection; onClose: () => void }) =>
+  selection.collection === "volumeGroups" ? (
+    <VolumeGroupHeader index={selection.index} onClose={onClose} />
+  ) : (
+    <PartitionableHeader
+      collection={selection.collection}
+      index={selection.index}
+      onClose={onClose}
+    />
+  );
+
+/* ------------------------------------------------------------------ *
+ * The page
+ * ------------------------------------------------------------------ */
+
+function StoragePlan(): React.ReactNode {
+  const config = useConfigModel();
+  const actions = useActions();
+  const availableDevices = useAvailableDevices();
+  const announce = useAnnounce();
+  /* The panel comes over the list rather than sharing the width with it. At
+     four fifths there is no share left to give: a list squeezed into the last
+     fifth is neither readable nor worth keeping on screen, and the reader still
+     has the row they picked behind the panel. */
+  const isFloating = useMedia(LG);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showsResult, setShowsResult] = useState(false);
+  const [showsBoot, setShowsBoot] = useState(false);
+  const [showsEncryption, setShowsEncryption] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const [variants, setVariants] = useState<Variants>(DEFAULT_VARIANTS);
+  /* Through a ref, so the console keeps working after a rerender without the
+     whole api being rebuilt on every one of them. */
+  const bootDebug = useBootDebug();
+  const bootDebugRef = useRef(bootDebug);
+  bootDebugRef.current = bootDebug;
+
+  const patch = useCallback(
+    (next: Partial<Variants>) => setVariants((current) => ({ ...current, ...next })),
+    [],
+  );
+
+  /* Console driven, so the page itself stays screenshot clean. */
+  useEffect(() => {
+    const api: PlanApi = {
+      help: () => {
+        console.info(
+          [
+            "storagePlan",
+            '  select("drives:0"|"boot"|"encryption"|null)  what the panel holds',
+            "  panel(true | false)                open or close the panel",
+            '  cost("text" | "chips")             text with a mark, or the old chips',
+            '  sections("stacked" | "tabs")       how the panel arranges its two halves',
+            '  scroll("body" | "sections")        one scroll container, or one per section',
+            "  offers(true | false)               offers on a first visit",
+            '  density("comfortable" | "compact") row height',
+            '  rowActions("panel"|"narrow"|"always")  where the device menu lives',
+            "  gutter(true | false)               small icons marking each setting",
+            '  typeScale("current" | "quiet")     how much weight the panel type carries',
+            '  mountPaths("plain" | "italic")     mount paths set apart, or not',
+            '  spaceLabel("terse" | "plain")      "Allowed changes" or the longer phrase',
+            '  spaceControl("menu" | "segmented") one menu, or four buttons',
+            '  structure("blocks" | "flat")       the named blocks, or round ten\'s stack',
+            '  spacePlacement("settings"|"content")  where the space decision is offered',
+            '  explanations("always" | "sparse")  a line under every setting, or only where it adds',
+            '  settings("beside" | "above")       the settings in their own column, or over the content',
+            '  boot("entry" | "device")           a device panel points at the boot panel, or sets boot itself',
+            "  bootTakeover(true | false)         let a boot partition with no mount path be asked for",
+            "  bootDebug()                        what the proposal reports about every partition",
+          ].join("\n"),
+        );
+      },
+      select: (id) => {
+        setShowsResult(false);
+        setShowsBoot(id === "boot");
+        setShowsEncryption(id === "encryption");
+        setSelectedId(id === "boot" || id === "encryption" ? null : id);
+        if (id) setIsPanelOpen(true);
+      },
+      panel: (open) => setIsPanelOpen(open),
+      cost: (cost) => patch({ cost }),
+      sections: (sections) => patch({ sections }),
+      scroll: (scroll) => patch({ scroll }),
+      offers: (offers) => patch({ offers }),
+      density: (density) => patch({ density }),
+      rowActions: (rowActions) => patch({ rowActions }),
+      gutter: (gutter) => patch({ gutter }),
+      typeScale: (typeScale) => patch({ typeScale }),
+      mountPaths: (mountPaths) => patch({ mountPaths }),
+      spaceLabel: (spaceLabel) => patch({ spaceLabel }),
+      spaceControl: (spaceControl) => patch({ spaceControl }),
+      structure: (structure) => patch({ structure }),
+      spacePlacement: (spacePlacement) => patch({ spacePlacement }),
+      explanations: (explanations) => patch({ explanations }),
+      settings: (settings) => patch({ settings }),
+      boot: (bootHome) => patch({ bootHome }),
+      bootTakeover: (bootTakeover) => patch({ bootTakeover }),
+      bootDebug: () => bootDebugRef.current(),
+    };
+
+    window.storagePlan = api;
+    api.help();
+
+    return () => {
+      delete window.storagePlan;
+    };
+  }, [patch]);
+
+  const destructive = actions.filter((a) => a.delete && !a.subvol).length;
+
+  /* Summarised, debounced, announced once. The result changing is the best
+   * property this page has and it is silent today. Never a replay of the list. */
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      announce(
+        destructive > 0
+          ? t(`Plan updated. ${destructive} changes destroy data.`)
+          : t("Plan updated. Nothing is destroyed."),
+      );
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [destructive, announce]);
+
+  if (!config) {
+    return (
+      <EmptyState titleText={t("No configuration model")} headingLevel="h3">
+        <EmptyStateBody>
+          {t("This layout needs the storage model, which the backend is not offering.")}
+        </EmptyStateBody>
+      </EmptyState>
+    );
+  }
+
+  const rows: Selection[] = [
+    ...(config.volumeGroups || []).map((_v, index) => ({
+      collection: "volumeGroups" as const,
+      index,
+    })),
+    ...(config.mdRaids || []).map((_m, index) => ({ collection: "mdRaids" as const, index })),
+    ...(config.drives || []).map((_d, index) => ({ collection: "drives" as const, index })),
+  ];
+
+  const configuredNames = configModel.devices(config).map((device) => device.name);
+  const unconfigured = availableDevices.filter((device) => !configuredNames.includes(device.name));
+
+  const selection = selectedId ? parseId(selectedId) : null;
+  const hasPanelContent = showsResult || showsBoot || showsEncryption || selection !== null;
+
+  const detail = () => {
+    if (showsResult) return <ResultDetail actions={actions} />;
+    if (showsBoot) return <BootDetail />;
+    if (showsEncryption) return <EncryptionDetail />;
+    if (!selection) return null;
+    if (selection.collection === "volumeGroups")
+      return <VolumeGroupDetail index={selection.index} />;
+    return <PartitionableDetail collection={selection.collection} index={selection.index} />;
+  };
+
+  const header = () => {
+    if (showsResult) {
+      return (
+        <PanelHeader
+          title={t("Result")}
+          subtitle={t("The changes the installer makes, and the machine they leave behind")}
+          onClose={() => setShowsResult(false)}
+        />
+      );
+    }
+    if (showsBoot) {
+      return (
+        <PanelHeader
+          title={t("Boot options")}
+          subtitle={t("How the new system starts")}
+          onClose={() => setShowsBoot(false)}
+        />
+      );
+    }
+    if (showsEncryption) {
+      return (
+        <PanelHeader
+          title={t("Encryption")}
+          subtitle={t("What protects the data the installation writes")}
+          onClose={() => setShowsEncryption(false)}
+        />
+      );
+    }
+    if (!selection) return null;
+    return <SelectionHeader selection={selection} onClose={() => setSelectedId(null)} />;
+  };
+
+  /* One panel body, used on its own below xl and inside the drawer above it, so
+   * there is a single arrangement to look at and a single one to test. */
+  const panelBody = (
+    <div
+      ref={panelRef}
+      tabIndex={-1}
+      role="region"
+      aria-labelledby={hasPanelContent ? "agm-plan-panel-title" : undefined}
+      aria-label={hasPanelContent ? undefined : t("Details")}
+      className={[
+        "agm-plan-panel",
+        `agm-plan-panel-scroll-${variants.scroll}`,
+        `agm-plan-type-${variants.typeScale}`,
+        `agm-plan-mounts-${variants.mountPaths}`,
+      ].join(" ")}
+    >
+      {hasPanelContent ? (
+        <>
+          {header()}
+          <div className="agm-plan-panel-content">{detail()}</div>
+        </>
+      ) : (
+        <EmptyState titleText={t("Nothing selected")} headingLevel="h2" variant="sm">
+          <EmptyStateBody>
+            {t("Pick a device in the list to see and change what happens to it.")}
+          </EmptyStateBody>
+        </EmptyState>
+      )}
+    </div>
+  );
+
+  const list = (
+    <DeviceList
+      rows={rows}
+      selectedId={selectedId}
+      onSelect={(next) => {
+        setShowsResult(false);
+        setShowsBoot(false);
+        setShowsEncryption(false);
+        setSelectedId(idOf(next));
+        setIsPanelOpen(true);
+      }}
+      onCrossToPanel={() => panelRef.current?.focus()}
+      unconfigured={unconfigured}
+      mountPaths={["/"]}
+    />
+  );
+
+  const goToDevice = (next: Selection) => {
+    setShowsResult(false);
+    setShowsBoot(false);
+    setShowsEncryption(false);
+    setSelectedId(idOf(next));
+    setIsPanelOpen(true);
+  };
+
+  const goToBoot = () => {
+    setShowsResult(false);
+    setShowsEncryption(false);
+    setSelectedId(null);
+    setShowsBoot(true);
+    setIsPanelOpen(true);
+  };
+
+  const goToEncryption = () => {
+    setShowsResult(false);
+    setShowsBoot(false);
+    setSelectedId(null);
+    setShowsEncryption(true);
+    setIsPanelOpen(true);
+  };
+
+  const bar = (
+    <PlanBar
+      destructive={destructive}
+      onShowBoot={goToBoot}
+      onShowEncryption={goToEncryption}
+      onShowResult={() => {
+        setShowsResult(true);
+        setShowsBoot(false);
+        setShowsEncryption(false);
+        setSelectedId(null);
+        setIsPanelOpen(true);
+      }}
+    />
+  );
+
+  const drawer = (isStatic: boolean) => (
+    <Drawer
+      isExpanded={isStatic ? isPanelOpen : isPanelOpen && hasPanelContent}
+      isStatic={isStatic}
+      position="end"
+    >
+      <DrawerContent
+        panelContent={
+          <DrawerPanelContent
+            id={PANEL_ID}
+            /* The panel is where the work happens and the list beside it is
+               being scanned rather than read. Set as a size rather than through
+               the widths prop, whose steps jump from three quarters to the
+               whole width. */
+            defaultSize="80%"
+            className={isStatic ? undefined : "agm-plan-panel-floating"}
+          >
+            <DrawerPanelBody hasNoPadding>{panelBody}</DrawerPanelBody>
+          </DrawerPanelContent>
+        }
+      >
+        {/* The bar belongs to the list, not above the pair, so the panel
+            covers it the way it covers everything else on that side. It
+            stays pinned by sticking to the top of the list's own scroll. */}
+        <DrawerContentBody>
+          {bar}
+          <PlanNotices />
+          {list}
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
+  );
+
+  /* Two arrangements, one panel.
+   *
+   * From lg up the panel floats over the list, which stays behind it. Below lg
+   * the two take turns in the same frame, because a panel over a list that
+   * narrow covers all of it anyway.
+   *
+   * The bar belongs to the list in both, so the panel replaces the pair rather
+   * than appearing under a bar that reports on what it is covering. */
+  const inside = isFloating ? (
+    drawer(false)
+  ) : (
+    <div id={PANEL_ID} className="agm-plan-narrow">
+      {hasPanelContent ? (
+        panelBody
+      ) : (
+        <>
+          {bar}
+          <PlanNotices />
+          {list}
+        </>
+      )}
+    </div>
+  );
+
+  return (
+    <VariantsContext.Provider value={variants}>
+      <PanelNavContext.Provider value={{ goToDevice, goToBoot }}>
+        <PlanStyles />
+        {inside}
+      </PanelNavContext.Provider>
+    </VariantsContext.Provider>
+  );
+}
+
+export default function StoragePlanPlayground(): React.ReactNode {
+  return (
+    <Page
+      breadcrumbs={[{ label: t("Storage") }]}
+      /* What the real storage page does: every edit rewrites the whole model,
+       * and this shields the interface until the proposal has caught up. */
+      progress={{
+        scope: "storage",
+        awaitQueriesRefetch: [
+          PROPOSAL_QUERY_KEY,
+          EXTENDED_CONFIG_QUERY_KEY,
+          STORAGE_MODEL_QUERY_KEY,
+        ],
+      }}
+    >
+      <Page.Content className="agm-plan-page">
+        <StoragePlan />
+      </Page.Content>
+    </Page>
+  );
+}

@@ -48,6 +48,7 @@ import FilesystemFields from "./FilesystemFields";
 import {
   useDeviceModelFromParams,
   useInitialPartitionConfig,
+  useRequestedReusedPartition,
   useUnusedMountPoints,
   useUnusedPartitions,
 } from "./queries";
@@ -72,6 +73,8 @@ type PartitionFormContentQuery = {
   systemDevice: System.Device | undefined;
   availablePartitions: System.Device[];
   initialPartition: ConfigModelType.Partition | null;
+  /** Partition the route asks the form to start out reusing, if any. */
+  requestedReusedPartition: System.Device | null;
   unusedMountPoints: string[];
   config: ReturnType<typeof useConfigModel>;
 };
@@ -86,6 +89,7 @@ function usePartitionFormContentQuery(): PartitionFormContentQuery {
     systemDevice: useDevice(deviceModel?.name),
     availablePartitions: useUnusedPartitions(),
     initialPartition: useInitialPartitionConfig(),
+    requestedReusedPartition: useRequestedReusedPartition(),
     unusedMountPoints: useUnusedMountPoints(),
     config: useConfigModel(),
   };
@@ -125,6 +129,7 @@ function PartitionFormContent({
   systemDevice,
   availablePartitions,
   initialPartition,
+  requestedReusedPartition,
   unusedMountPoints,
   config,
 }: PartitionFormContentQuery) {
@@ -177,8 +182,14 @@ function PartitionFormContent({
     },
   });
 
+  // A request to reuse a partition only seeds the selection. Everything else,
+  // including keeping its current file system, comes from the usual defaults.
+  const initialValues = initialPartition
+    ? toFormValues(initialPartition)
+    : { ...toFormValues(null), name: requestedReusedPartition?.name || "" };
+
   const form = useAppForm({
-    ...mergeFormDefaults(defaultOptions, toFormValues(initialPartition)),
+    ...mergeFormDefaults(defaultOptions, initialValues),
     validators: {
       onSubmitAsync: async (ctx) => {
         // Field validation runs first. If it fails, TanStack Form surfaces

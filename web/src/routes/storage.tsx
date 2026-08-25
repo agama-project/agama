@@ -72,6 +72,10 @@ const routes = (): Route => ({
       element: <PartitionForm />,
     },
     {
+      path: PATHS.reusePartition,
+      element: <PartitionForm />,
+    },
+    {
       path: PATHS.editPartition,
       element: <PartitionForm />,
     },

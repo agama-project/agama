@@ -33,7 +33,7 @@ import { deviceBaseName, formattedPath } from "~/components/storage/utils";
 import { _, n_, formatList, TranslatedString } from "~/i18n";
 
 import type { MenuItemProps } from "@patternfly/react-core";
-import type { CustomToggleProps } from "~/components/core/MenuButton";
+import type { CustomToggleProps, MenuButtonProps } from "~/components/core/MenuButton";
 import type { Storage } from "~/model/system";
 import type { ConfigModel } from "~/model/storage/config-model";
 
@@ -321,6 +321,8 @@ export type SearchedDeviceMenuProps = {
   selected: Storage.Device;
   modelDevice: ConfigModel.Drive | ConfigModel.MdRaid;
   toggle?: React.ReactElement<CustomToggleProps>;
+  /** Where the menu opens, for callers whose toggle sits against an edge. */
+  popperProps?: MenuButtonProps["menuProps"]["popperProps"];
   deleteFn: (device: ConfigModel.Drive | ConfigModel.MdRaid) => void;
 };
 
@@ -333,6 +335,7 @@ export default function SearchedDeviceMenu({
   modelDevice,
   selected,
   toggle,
+  popperProps,
   deleteFn,
 }: SearchedDeviceMenuProps): React.ReactNode {
   const config = useConfigModel();
@@ -362,6 +365,7 @@ export default function SearchedDeviceMenu({
       <MenuButton
         menuProps={{
           "aria-label": sprintf(_("Device %s menu"), modelDevice.name),
+          popperProps,
         }}
         customToggle={toggle}
         items={[
