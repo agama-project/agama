@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Aug 25 12:05:19 UTC 2026 - David Diaz <dgonzalez@suse.com>
+
+- Allow restyling the whole medium with an optional brand appearance
+  (gh#agama-project/agama#3834).
+- Add appearance roles to set the corner radius per shape size and
+  for buttons alone (gh#agama-project/agama#3834).
+
+-------------------------------------------------------------------
 Thu Aug 13 10:46:43 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not wait in the selection page after selecting a product
