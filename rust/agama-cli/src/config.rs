@@ -22,7 +22,7 @@ use std::{io::Write, path::PathBuf, process, time::Duration};
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    profile::{ProfileHTTPClient, ProfileValidator, ValidationOutcome},
+    profile::{ConversionProblem, ProfileHTTPClient, ProfileValidator, ValidationOutcome},
     utils::FileFormat,
 };
 use agama_utils::api::{self, ProblemDetails};
@@ -317,7 +317,7 @@ async fn generate(
     // we can ignore the insecure option value in that case
     let profile_json = if is_autoyast(&url_or_path) {
         // AutoYaST specific download and convert to JSON
-        let config_string = match url_or_path {
+        let result = match url_or_path {
             CliInput::Url(url_string) => {
                 let url = Uri::parse(url_string).map_err(|(e, _)| e)?;
 
@@ -336,7 +336,8 @@ async fn generate(
             }
             _ => panic!("is_autoyast returned true on unnamed input"),
         };
-        config_string
+        report_conversion_problems(&result.problems);
+        serde_json::to_string_pretty(&result.profile)?
     } else {
         from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
@@ -352,6 +353,29 @@ async fn generate(
     println!("{}", config_json);
 
     Ok(())
+}
+
+/// Prints the AutoYaST conversion problems (if any) to stderr.
+fn report_conversion_problems(problems: &[ConversionProblem]) {
+    if problems.is_empty() {
+        return;
+    }
+
+    let keys = problems
+        .iter()
+        .map(|p| p.key.as_str())
+        .collect::<Vec<_>>()
+        .join(", ");
+    eprintln!(
+        "{} {keys}.",
+        gettext("Found unsupported elements in the AutoYaST profile:")
+    );
+    for problem in problems {
+        match &problem.notes {
+            Some(notes) => eprintln!("  - {} ({}): {notes}", problem.key, problem.support),
+            None => eprintln!("  - {} ({})", problem.key, problem.support),
+        }
+    }
 }
 
 /// Retrieve and preprocess the profile.
