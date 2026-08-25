@@ -56,9 +56,11 @@ const MountPoint = ({ item }: { item: TableItem }) => {
 const DeviceCustomDetails = ({
   item,
   devicesManager,
+  link,
 }: {
   item: TableItem;
   devicesManager: DevicesManager;
+  link?: (device: Proposal.Device) => React.ReactNode;
 }) => {
   const isNew = () => {
     const device = toDevice(item);
@@ -68,9 +70,12 @@ const DeviceCustomDetails = ({
     return !devicesManager.existInSystem(device) || devicesManager.hasNewFilesystem(device);
   };
 
+  const device = toDevice(item);
+
   return (
     <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
       <DeviceDetails item={item} />
+      {device && link?.(device)}
       {isNew() && (
         <Label color="green" isCompact>
           {_("New")}
@@ -112,7 +117,10 @@ const DeviceCustomSize = ({
   );
 };
 
-const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesManager) => {
+const columns: (
+  devicesManager: DevicesManager,
+  link?: (device: Proposal.Device) => React.ReactNode,
+) => TreeTableColumn[] = (devicesManager, link) => {
   const renderDevice: (item: TableItem) => React.ReactNode = (item): React.ReactNode => (
     <DeviceName item={item} />
   );
@@ -122,7 +130,7 @@ const columns: (devicesManager: DevicesManager) => TreeTableColumn[] = (devicesM
   );
 
   const renderDetails: (item: TableItem) => React.ReactNode = (item) => (
-    <DeviceCustomDetails item={item} devicesManager={devicesManager} />
+    <DeviceCustomDetails item={item} devicesManager={devicesManager} link={link} />
   );
 
   const renderSize: (item: TableItem) => React.ReactNode = (item) => (
@@ -141,6 +149,8 @@ type ProposalResultTableProps = {
   devicesManager: DevicesManager;
   /** Devices to render, each with its own children. */
   devices: Proposal.Device[];
+  /** Reads beside a row's details: where the device the row describes is used. */
+  deviceLink?: (device: Proposal.Device) => React.ReactNode;
 };
 
 /**
@@ -151,10 +161,14 @@ type ProposalResultTableProps = {
  *
  * @component
  */
-export default function ProposalResultTable({ devicesManager, devices }: ProposalResultTableProps) {
+export default function ProposalResultTable({
+  devicesManager,
+  devices,
+  deviceLink,
+}: ProposalResultTableProps) {
   return (
     <TreeTable
-      columns={columns(devicesManager)}
+      columns={columns(devicesManager, deviceLink)}
       items={devices}
       expandedItems={devices}
       itemChildren={deviceChildren}

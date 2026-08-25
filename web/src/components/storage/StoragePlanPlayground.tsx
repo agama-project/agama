@@ -2845,12 +2845,40 @@ const DeviceResultSection = ({
   const staging = useStagingDevices();
   const actions = useActions();
 
+  const { goToDevice } = React.useContext(PanelNavContext);
+
   const manager = new DevicesManager(system, staging, actions);
   const devices = manager
     .usedDevices(config?.drives?.map((drive) => drive.name) || [])
     .filter((device) => device.name === deviceName);
 
   const headingId = "agm-plan-device-result";
+
+  /* Which group a physical volume belongs to is derived rather than read out of
+     words meant for people: the proposal reports a group's physical volumes as
+     sids, so a row that is one finds its group by sid. */
+  const groupOf = (device: Proposal.Device) =>
+    staging.find((candidate) => candidate.volumeGroup?.physicalVolumes.includes(device.sid));
+
+  const deviceLink = (device: Proposal.Device) => {
+    const group = groupOf(device);
+    if (!group) return null;
+
+    const at = (config.volumeGroups || []).findIndex(
+      (entry) => entry.vgName === baseName(group.name),
+    );
+    if (at === -1) return null;
+
+    return (
+      <Button
+        variant="link"
+        isInline
+        onClick={() => goToDevice({ collection: "volumeGroups", index: at })}
+      >
+        {t(baseName(group.name))}
+      </Button>
+    );
+  };
 
   return (
     <PanelSection
@@ -2870,7 +2898,7 @@ const DeviceResultSection = ({
         </div>
       )}
       {proposal && devices.length > 0 && (
-        <ProposalResultTable devicesManager={manager} devices={devices} />
+        <ProposalResultTable devicesManager={manager} devices={devices} deviceLink={deviceLink} />
       )}
     </PanelSection>
   );
