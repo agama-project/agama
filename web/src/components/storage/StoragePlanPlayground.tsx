@@ -176,6 +176,8 @@ type PanelSections = "stacked" | "tabs";
 type PanelTab = "result" | "planned" | "current";
 /** Whether the tab strip runs across the top of the panel or down its side. */
 type TabLayout = "horizontal" | "vertical";
+/** How the sentence a tab opens with is set out. */
+type TabNoteStyle = "dimmed" | "statement";
 type PanelScroll = "body" | "sections";
 type Density = "comfortable" | "compact";
 /** How much weight the panel's own type carries, next to its tables. */
@@ -200,6 +202,7 @@ type Variants = {
   cost: CostStyle;
   sections: PanelSections;
   tabLayout: TabLayout;
+  tabNote: TabNoteStyle;
   /** PatternFly's box styling: each tab drawn as a box rather than as a label. */
   tabBox: boolean;
   /** PatternFly's filled layout: the tabs share the width of the strip. */
@@ -223,6 +226,7 @@ const DEFAULT_VARIANTS: Variants = {
   cost: "text",
   sections: "tabs",
   tabLayout: "horizontal",
+  tabNote: "dimmed",
   tabBox: false,
   tabFill: false,
   scroll: "sections",
@@ -250,6 +254,7 @@ type PlanApi = {
   cost: (style: CostStyle) => void;
   sections: (mode: PanelSections) => void;
   tabLayout: (mode: TabLayout) => void;
+  tabNote: (style: TabNoteStyle) => void;
   tabBox: (on: boolean) => void;
   tabFill: (on: boolean) => void;
   scroll: (mode: PanelScroll) => void;
@@ -2196,6 +2201,15 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
   current: "hard_drive",
 };
 
+/* The first sentence of each explanation, cut to a phrase. Read down the side
+   the three of them say what the panel is for before any of them is opened,
+   which is room a strip across the top does not have. */
+const TAB_SUMMARIES: Record<PanelTab, string> = {
+  result: "How it ends up",
+  planned: "What it will hold",
+  current: "What is on it now",
+};
+
 /**
  * A tab named in a sentence, and the way there.
  *
@@ -2210,114 +2224,6 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
  * Helper text rather than a paragraph of body copy: the sentence is guidance
  * about the tab, and the indent and the mark say so before a word is read.
  */
-/** What a tab holds, and where what it holds is decided. */
-type TabExplanation = { lead: React.ReactNode; where?: React.ReactNode };
-
-/**
- * A block set on a dimmed ground.
- *
- * For content that belongs to what surrounds it without being part of it. The
- * tint does what a border would, without drawing a line the eye has to cross.
- */
-const Dimmed = ({ children }: React.PropsWithChildren) => (
-  <div className="agm-plan-dimmed">{children}</div>
-);
-
-/**
- * The sentence a tab opens with, set apart from what it follows.
- *
- * No mark beside it. Every candidate said something the sentence does not: a
- * status to attend to, an aside to come back to, a warning. The dimmed ground
- * already says the block is not part of what the tab holds.
- */
-const TabNote = ({ lead, where }: TabExplanation) => (
-  <Dimmed>
-    <HelperText>
-      <HelperTextItem className="agm-plan-tab-note">
-        <div>{lead}</div>
-        {where && <div>{where}</div>}
-      </HelperTextItem>
-    </HelperText>
-  </Dimmed>
-);
-
-const TabLink = ({ tab, onGoTo }: { tab: PanelTab; onGoTo: (tab: PanelTab) => void }) => (
-  <Button variant="link" isInline onClick={() => onGoTo(tab)}>
-    {t(SECTION_TITLES[tab])}
-  </Button>
-);
-
-/**
- * The sentence each tab opens with: what it holds, and where what it holds is
- * decided.
- *
- * None of them addresses the reader or calls the planned content something the
- * reader asked for: the plan starts as the installer's own proposal, and an
- * entry lands on a device for reasons never stated about that device. The
- * subject is the device and the new system, which the word "planned" and the
- * tab titles already carry.
- *
- * @param subject - the device as the sentences name it, such as "this disk".
- * @param tabs - the tabs this panel shows, since a volume group being defined
- *   here has no current content to point at.
- */
-const tabExplanations = (
-  subject: string,
-  tabs: PanelTab[],
-  onGoTo: (tab: PanelTab) => void,
-): Record<PanelTab, React.ReactNode> => {
-  const link = (tab: PanelTab) => <TabLink tab={tab} onGoTo={onGoTo} />;
-  const hasCurrent = tabs.includes("current");
-
-  /* Two parts, not one paragraph: what the tab holds, and then where what it
-     holds is decided. The second is the one a reader acts on, and it is lost at
-     the end of a wrapped sentence. */
-  const explanations: Record<PanelTab, TabExplanation> = {
-    result: {
-      lead: t(`How ${subject} looks once the installer is done.`),
-      where: (
-        <>
-          {t("It follows from the")} {link("planned")}
-          {hasCurrent && (
-            <>
-              {" "}
-              {t("and")} {link("current")}
-            </>
-          )}{" "}
-          {hasCurrent
-            ? t("tabs, which is where it changes.")
-            : t("tab, which is where it changes.")}
-        </>
-      ),
-    },
-    planned: {
-      lead: t(`What ${subject} will hold for the new system.`),
-      where: hasCurrent ? (
-        <>
-          {t(
-            "Making room for it may mean deleting or shrinking what is there today, decided in the",
-          )}{" "}
-          {link("current")} {t("tab.")}
-        </>
-      ) : undefined,
-    },
-    current: {
-      lead: t(`What is on ${subject} now, and what becomes of it.`),
-      where: (
-        <>
-          {t("The rule below makes room for what the")} {link("planned")} {t("tab holds, and the")}{" "}
-          {link("result")} {t("tab shows where both end up.")}
-        </>
-      ),
-    },
-  };
-
-  return {
-    result: <TabNote {...explanations.result} />,
-    planned: <TabNote {...explanations.planned} />,
-    current: <TabNote {...explanations.current} />,
-  };
-};
 
 /**
  * Where the panel can send the reader.
@@ -2645,6 +2551,135 @@ const relationshipSettings = (groups: Relationship[]): Setting[] =>
 
 const settingsOf = (candidates: (Setting | null | false)[]): Setting[] =>
   candidates.filter((setting): setting is Setting => Boolean(setting));
+
+/** What a tab holds, and where what it holds is decided. */
+type TabExplanation = { lead: React.ReactNode; where?: React.ReactNode };
+
+/**
+ * A block set on a dimmed ground.
+ *
+ * For content that belongs to what surrounds it without being part of it. The
+ * tint does what a border would, without drawing a line the eye has to cross.
+ */
+const Dimmed = ({ children }: React.PropsWithChildren) => (
+  <div className="agm-plan-dimmed">{children}</div>
+);
+
+/**
+ * The sentence a tab opens with, set apart from what it follows.
+ *
+ * No mark beside it. Every candidate said something the sentence does not: a
+ * status to attend to, an aside to come back to, a warning. The dimmed ground
+ * already says the block is not part of what the tab holds.
+ */
+const TabNote = ({ lead, where }: TabExplanation) => {
+  const { tabNote } = useVariants();
+
+  /* Read as one more statement about the device, which puts its mark in the
+     same gutter and its lines on the same column as the statements under it.
+     What it costs is the tint that said the sentence is about the tab rather
+     than about the disk. */
+  if (tabNote === "statement") {
+    return (
+      <div className="agm-plan-statements">
+        <SettingsList
+          settings={[
+            { key: "note", icon: "info", term: lead, explanation: where, layout: "stacked" },
+          ]}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <Dimmed>
+      <HelperText>
+        <HelperTextItem className="agm-plan-tab-note">
+          <div>{lead}</div>
+          {where && <div>{where}</div>}
+        </HelperTextItem>
+      </HelperText>
+    </Dimmed>
+  );
+};
+
+const TabLink = ({ tab, onGoTo }: { tab: PanelTab; onGoTo: (tab: PanelTab) => void }) => (
+  <Button variant="link" isInline onClick={() => onGoTo(tab)}>
+    {t(SECTION_TITLES[tab])}
+  </Button>
+);
+
+/**
+ * The sentence each tab opens with: what it holds, and where what it holds is
+ * decided.
+ *
+ * None of them addresses the reader or calls the planned content something the
+ * reader asked for: the plan starts as the installer's own proposal, and an
+ * entry lands on a device for reasons never stated about that device. The
+ * subject is the device and the new system, which the word "planned" and the
+ * tab titles already carry.
+ *
+ * @param subject - the device as the sentences name it, such as "this disk".
+ * @param tabs - the tabs this panel shows, since a volume group being defined
+ *   here has no current content to point at.
+ */
+const tabExplanations = (
+  subject: string,
+  tabs: PanelTab[],
+  onGoTo: (tab: PanelTab) => void,
+): Record<PanelTab, React.ReactNode> => {
+  const link = (tab: PanelTab) => <TabLink tab={tab} onGoTo={onGoTo} />;
+  const hasCurrent = tabs.includes("current");
+
+  /* Two parts, not one paragraph: what the tab holds, and then where what it
+     holds is decided. The second is the one a reader acts on, and it is lost at
+     the end of a wrapped sentence. */
+  const explanations: Record<PanelTab, TabExplanation> = {
+    result: {
+      lead: t(`How ${subject} looks once the installer is done.`),
+      where: (
+        <>
+          {t("It follows from the")} {link("planned")}
+          {hasCurrent && (
+            <>
+              {" "}
+              {t("and")} {link("current")}
+            </>
+          )}{" "}
+          {hasCurrent
+            ? t("tabs, which is where it changes.")
+            : t("tab, which is where it changes.")}
+        </>
+      ),
+    },
+    planned: {
+      lead: t(`What ${subject} will hold for the new system.`),
+      where: hasCurrent ? (
+        <>
+          {t(
+            "Making room for it may mean deleting or shrinking what is there today, decided in the",
+          )}{" "}
+          {link("current")} {t("tab.")}
+        </>
+      ) : undefined,
+    },
+    current: {
+      lead: t(`What is on ${subject} now, and what becomes of it.`),
+      where: (
+        <>
+          {t("The rule below makes room for what the")} {link("planned")} {t("tab holds, and the")}{" "}
+          {link("result")} {t("tab shows where both end up.")}
+        </>
+      ),
+    },
+  };
+
+  return {
+    result: <TabNote {...explanations.result} />,
+    planned: <TabNote {...explanations.planned} />,
+    current: <TabNote {...explanations.current} />,
+  };
+};
 
 /** What the new system gets on this device. */
 const NewSystemSection = ({
@@ -3229,6 +3264,9 @@ const PanelTabs = ({
                   {count === undefined
                     ? t(SECTION_TITLES[key])
                     : t(`${SECTION_TITLES[key]} (${count})`)}
+                  {isVertical && (
+                    <span className="agm-plan-tab-summary">{t(TAB_SUMMARIES[key])}</span>
+                  )}
                 </TabTitleText>
               </>
             }
@@ -5196,6 +5234,23 @@ const PLAN_CSS = `
   flex: 1 1 auto;
   min-height: 0;
 }
+
+/* A line under the name of a vertical tab, at the size the rest of the panel
+   gives its second lines. The name keeps its own line: the two read as a pair,
+   not as a sentence that wrapped. */
+.agm-plan-tabs-vertical .agm-plan-tab-summary {
+  display: block;
+  font-size: var(--pf-t--global--font--size--xs);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.agm-plan-tabs-vertical .pf-v6-c-tabs__item-text {
+  display: block;
+}
+
+.agm-plan-tabs-vertical .pf-v6-c-tabs__link {
+  align-items: flex-start;
+}
 `;
 
 const PlanStyles = () => <style>{PLAN_CSS}</style>;
@@ -6048,6 +6103,7 @@ function StoragePlan(): React.ReactNode {
             '  cost("text" | "chips")             text with a mark, or the old chips',
             '  sections("stacked" | "tabs")       how the panel arranges its halves',
             '  tabLayout("horizontal"|"vertical") the tab strip across the top, or down the side',
+            '  tabNote("dimmed" | "statement")    the tab explanation on a tinted ground, or as one more statement',
             "  tabBox(true | false)               each tab drawn as a box rather than as a label",
             "  tabFill(true | false)              the tabs share the width of the strip",
             '  scroll("body" | "sections")        one scroll container, or one per section',
@@ -6078,6 +6134,7 @@ function StoragePlan(): React.ReactNode {
       cost: (cost) => patch({ cost }),
       sections: (sections) => patch({ sections }),
       tabLayout: (tabLayout) => patch({ tabLayout }),
+      tabNote: (tabNote) => patch({ tabNote }),
       tabBox: (tabBox) => patch({ tabBox }),
       tabFill: (tabFill) => patch({ tabFill }),
       scroll: (scroll) => patch({ scroll }),
