@@ -5242,10 +5242,15 @@ const PLAN_CSS = `
 
 .agm-plan-tabs .pf-v6-c-tabs__item-text {
   display: block;
+  text-align: start;
 }
 
+/* Both lines start where the name starts, whatever the width of the tab. The
+   filled layout centres a tab's contents, which under a two line tab puts the
+   phrase in the middle of a name it belongs to the front of. */
 .agm-plan-tabs .pf-v6-c-tabs__link {
   align-items: flex-start;
+  justify-content: flex-start;
 }
 `;
 
