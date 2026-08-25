@@ -203,6 +203,8 @@ type Variants = {
   sections: PanelSections;
   tabLayout: TabLayout;
   tabNote: TabNoteStyle;
+  /** Whether a tab carries a phrase under its name, or only the name. */
+  tabSummary: boolean;
   /** PatternFly's box styling: each tab drawn as a box rather than as a label. */
   tabBox: boolean;
   /** PatternFly's filled layout: the tabs share the width of the strip. */
@@ -227,6 +229,7 @@ const DEFAULT_VARIANTS: Variants = {
   sections: "tabs",
   tabLayout: "horizontal",
   tabNote: "statement",
+  tabSummary: true,
   tabBox: false,
   tabFill: false,
   scroll: "sections",
@@ -255,6 +258,7 @@ type PlanApi = {
   sections: (mode: PanelSections) => void;
   tabLayout: (mode: TabLayout) => void;
   tabNote: (style: TabNoteStyle) => void;
+  tabSummary: (on: boolean) => void;
   tabBox: (on: boolean) => void;
   tabFill: (on: boolean) => void;
   scroll: (mode: PanelScroll) => void;
@@ -3192,7 +3196,7 @@ const PanelTabs = ({
   stripRef?: React.RefObject<HTMLDivElement>;
 }) => {
   const keys = tabs.map((tab) => tab.key);
-  const { tabLayout, tabBox, tabFill } = useVariants();
+  const { tabLayout, tabSummary, tabBox, tabFill } = useVariants();
   /* PatternFly styles the strip and leaves the two halves to their container:
      the strip is an inline-flex column and the panel is a plain sibling after
      it, so a container that does not put them in a row gets the panel under the
@@ -3260,10 +3264,10 @@ const PanelTabs = ({
                   <Icon name={TAB_ICONS[key]} size="sm" />
                 </TabTitleIcon>
                 <TabTitleText>
-                  {count === undefined
-                    ? t(SECTION_TITLES[key])
-                    : t(`${SECTION_TITLES[key]} (${count})`)}
-                  <span className="agm-plan-tab-summary">{t(TAB_SUMMARIES[key])}</span>
+                  {count ? t(`${SECTION_TITLES[key]} (${count})`) : t(SECTION_TITLES[key])}
+                  {tabSummary && (
+                    <span className="agm-plan-tab-summary">{t(TAB_SUMMARIES[key])}</span>
+                  )}
                 </TabTitleText>
               </>
             }
@@ -5252,6 +5256,52 @@ const PLAN_CSS = `
   align-items: flex-start;
   justify-content: flex-start;
 }
+
+/* The switches, over the page rather than beside it: what they change is under
+   them, and a reader comparing two settings wants the page to stay put between
+   clicks. Minimised to a button, since the page is also what gets screenshot. */
+.agm-plan-switches-toggle,
+.agm-plan-switches {
+  position: fixed;
+  inset-block-end: var(--pf-t--global--spacer--md);
+  inset-inline-end: var(--pf-t--global--spacer--md);
+  z-index: 400;
+}
+
+.agm-plan-switches {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  max-width: 26rem;
+  background: var(--pf-t--global--background--color--primary--default);
+  border: 1px solid var(--pf-t--global--border--color--default);
+  border-radius: var(--pf-t--global--border--radius--small);
+  box-shadow: var(--pf-t--global--box-shadow--lg);
+}
+
+.agm-plan-switches-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pf-t--global--spacer--md);
+  padding: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
+  border-block-end: 1px solid var(--pf-t--global--border--color--subtle);
+}
+
+.agm-plan-switches-body {
+  overflow-y: auto;
+  padding: var(--pf-t--global--spacer--md);
+  display: grid;
+  gap: var(--pf-t--global--spacer--sm);
+}
+
+.agm-plan-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pf-t--global--spacer--md);
+  font-size: var(--pf-t--global--font--size--body--sm);
+}
 `;
 
 const PlanStyles = () => <style>{PLAN_CSS}</style>;
@@ -6060,6 +6110,110 @@ const SelectionHeader = ({ selection, onClose }: { selection: Selection; onClose
   );
 
 /* ------------------------------------------------------------------ *
+ * The switches, on screen
+ *
+ * Every variant this file offers, in one place, so a round can be walked
+ * through without the console. The console keeps working: both write the same
+ * state, and the panel shows what the console last set.
+ * ------------------------------------------------------------------ */
+
+type VariantControl<K extends keyof Variants = keyof Variants> = {
+  key: K;
+  label: string;
+  options: Variants[K][];
+};
+
+const VARIANT_CONTROLS: VariantControl[] = [
+  { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
+  { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
+  { key: "settings", label: "Settings", options: ["beside", "above"] },
+  { key: "tabLayout", label: "Tab strip", options: ["horizontal", "vertical"] },
+  { key: "tabNote", label: "Tab explanation", options: ["statement", "dimmed"] },
+  { key: "tabSummary", label: "Phrase under tab", options: [true, false] },
+  { key: "tabBox", label: "Boxed tabs", options: [false, true] },
+  { key: "tabFill", label: "Filled tabs", options: [false, true] },
+  { key: "spacePlacement", label: "Space decision", options: ["content", "settings"] },
+  { key: "spaceControl", label: "Space control", options: ["menu", "segmented"] },
+  { key: "spaceLabel", label: "Space label", options: ["terse", "plain"] },
+  { key: "explanations", label: "Explanations", options: ["always", "sparse"] },
+  { key: "cost", label: "Cost", options: ["text", "chips"] },
+  { key: "density", label: "Rows", options: ["comfortable", "compact"] },
+  { key: "rowActions", label: "Row actions", options: ["narrow", "panel", "always"] },
+  { key: "mountPaths", label: "Mount paths", options: ["plain", "italic"] },
+  { key: "typeScale", label: "Panel type", options: ["current", "quiet"] },
+  { key: "gutter", label: "Gutter marks", options: [false, true] },
+  { key: "offers", label: "Offers", options: [true, false] },
+  { key: "scroll", label: "Scroll", options: ["sections", "body"] },
+];
+
+const optionLabel = (option: Variants[keyof Variants]): string => {
+  if (option === true) return "on";
+  if (option === false) return "off";
+  return String(option);
+};
+
+/**
+ * The switches as a panel of the page, minimised until it is wanted.
+ *
+ * It floats rather than taking a column: every variant it sets is about the
+ * page under it, and a reader comparing two of them wants the page to stay
+ * where it was between clicks.
+ */
+const PlanSettingsPanel = ({
+  variants,
+  onChange,
+}: {
+  variants: Variants;
+  onChange: (next: Partial<Variants>) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!isOpen) {
+    return (
+      <Button
+        variant="secondary"
+        className="agm-plan-switches-toggle"
+        icon={<Icon name="settings_ethernet" size="xs" />}
+        onClick={() => setIsOpen(true)}
+      >
+        {t("Variants")}
+      </Button>
+    );
+  }
+
+  return (
+    <div className="agm-plan-switches" role="group" aria-label={t("Playground variants")}>
+      <div className="agm-plan-switches-head">
+        <Text isBold>{t("Variants")}</Text>
+        <Button
+          variant="plain"
+          aria-label={t("Hide the variants")}
+          icon={<Icon name="close" size="xs" />}
+          onClick={() => setIsOpen(false)}
+        />
+      </div>
+      <div className="agm-plan-switches-body">
+        {VARIANT_CONTROLS.map(({ key, label, options }) => (
+          <div className="agm-plan-switch" key={key}>
+            <span id={`agm-plan-switch-${key}`}>{t(label)}</span>
+            <ToggleGroup aria-labelledby={`agm-plan-switch-${key}`}>
+              {options.map((option) => (
+                <ToggleGroupItem
+                  key={optionLabel(option)}
+                  text={t(optionLabel(option))}
+                  isSelected={variants[key] === option}
+                  onChange={() => onChange({ [key]: option } as Partial<Variants>)}
+                />
+              ))}
+            </ToggleGroup>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ *
  * The page
  * ------------------------------------------------------------------ */
 
@@ -6105,6 +6259,7 @@ function StoragePlan(): React.ReactNode {
             '  sections("stacked" | "tabs")       how the panel arranges its halves',
             '  tabLayout("horizontal"|"vertical") the tab strip across the top, or down the side',
             '  tabNote("dimmed" | "statement")    the tab explanation on a tinted ground, or as one more statement',
+            "  tabSummary(true | false)           a phrase under each tab name, or the name alone",
             "  tabBox(true | false)               each tab drawn as a box rather than as a label",
             "  tabFill(true | false)              the tabs share the width of the strip",
             '  scroll("body" | "sections")        one scroll container, or one per section',
@@ -6136,6 +6291,7 @@ function StoragePlan(): React.ReactNode {
       sections: (sections) => patch({ sections }),
       tabLayout: (tabLayout) => patch({ tabLayout }),
       tabNote: (tabNote) => patch({ tabNote }),
+      tabSummary: (tabSummary) => patch({ tabSummary }),
       tabBox: (tabBox) => patch({ tabBox }),
       tabFill: (tabFill) => patch({ tabFill }),
       scroll: (scroll) => patch({ scroll }),
@@ -6393,6 +6549,7 @@ function StoragePlan(): React.ReactNode {
       <PanelNavContext.Provider value={{ goToDevice, goToBoot }}>
         <PlanStyles />
         {inside}
+        <PlanSettingsPanel variants={variants} onChange={patch} />
       </PanelNavContext.Provider>
     </VariantsContext.Provider>
   );
