@@ -2593,7 +2593,7 @@ const Dimmed = ({ children }: React.PropsWithChildren) => (
  * status to attend to, an aside to come back to, a warning. The dimmed ground
  * already says the block is not part of what the tab holds.
  */
-const TabNote = ({ tab, lead, where }: TabExplanation & { tab: PanelTab }) => {
+const TabNote = ({ lead, where }: TabExplanation) => {
   const { tabNote } = useVariants();
 
   /* Read as one more statement about the device, which puts its mark in the
@@ -2607,9 +2607,12 @@ const TabNote = ({ tab, lead, where }: TabExplanation & { tab: PanelTab }) => {
           settings={[
             {
               key: "note",
-              /* The tab's own mark: the sentence is about this tab, and the
-                 statements under it are marked by what each is about. */
-              icon: TAB_ICONS[tab],
+              /* The one mark on the panel that is about reading rather than
+                 about the disk. The tab's own mark was tried and repeats the
+                 strip two lines above; what each statement under it carries
+                 says what that statement is about, and this one is about
+                 finding your way. */
+              icon: "help",
               term: lead,
               explanation: where,
               layout: "stacked",
@@ -2707,9 +2710,9 @@ const tabExplanations = (
   };
 
   return {
-    result: <TabNote tab="result" {...explanations.result} />,
-    planned: <TabNote tab="planned" {...explanations.planned} />,
-    current: <TabNote tab="current" {...explanations.current} />,
+    result: <TabNote {...explanations.result} />,
+    planned: <TabNote {...explanations.planned} />,
+    current: <TabNote {...explanations.current} />,
   };
 };
 
