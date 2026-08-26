@@ -110,6 +110,7 @@ import Icon from "~/components/layout/Icon";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
+import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import DevicesManager from "~/model/storage/devices-manager";
@@ -218,8 +219,6 @@ type DeviceRow = "hidden" | "shown";
 type StatementRule = "between" | "all" | "none";
 /** Which shape the page in front of the sheet takes. */
 type PageShape = "summary" | "list";
-/** How a consequence is worded: as a term and its detail, or as one phrase. */
-type CostPhrase = "term" | "sentence";
 /** Where the facts about the device read: on the sentence, or under it. */
 type TitleFacts = "under" | "inline";
 type Variants = {
@@ -252,7 +251,6 @@ type Variants = {
   rowNote: RowNote;
   noteColor: NoteColor;
   page: PageShape;
-  costPhrase: CostPhrase;
   titleFacts: TitleFacts;
 };
 
@@ -298,13 +296,9 @@ const DEFAULT_VARIANTS: Variants = {
      memory. The summary only fits a plan of one entry; anything longer reads
      as the list until the index exists. */
   page: "summary",
-  /* The term first, since the three of them line up and the page is read by
-     comparing them. The phrase leads with the subject and is one switch
-     away, because which reads better is a question about the words. */
-  costPhrase: "term",
-  /* Under the sentence. On it, the facts take the heading's size and read as
-     a second title, which is not what they are. */
-  titleFacts: "under",
+  /* On the sentence, the way the sheet's header sets them. The phrase keeps
+     its own size there, so it does not read as a second name. */
+  titleFacts: "inline",
 };
 
 type PlanApi = {
@@ -337,7 +331,6 @@ type PlanApi = {
   rowNote: (mode: RowNote) => void;
   noteColor: (mode: NoteColor) => void;
   page: (shape: PageShape) => void;
-  costPhrase: (mode: CostPhrase) => void;
   titleFacts: (mode: TitleFacts) => void;
   bootDebug: () => void;
 };
@@ -5656,9 +5649,8 @@ const PlanNotices = () => {
  * uses, with the same tabs, intros and side effects. The redesign is about
  * where the action sits, not about replacing what it does.
  */
-const AddDeviceActions = ({ folded = false }: { folded?: boolean }) => {
+const AddDeviceActions = () => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const config = useConfigModel();
   const addDrive = useAddDrive();
@@ -5678,60 +5670,23 @@ const AddDeviceActions = ({ folded = false }: { folded?: boolean }) => {
     if (isVolumeGroup(device)) addVolumeGroup({ name: device.name, spacePolicy: "keep" }, false);
   };
 
-  /* One control rather than two, where the page has room for one: what the
-     reader wants is another device, and which kind is the answer the menu
-     asks for. The list keeps both buttons, since it has a foot to put them on. */
-  const menu = (
-    <Dropdown
-      isOpen={isMenuOpen}
-      onSelect={() => setIsMenuOpen(false)}
-      onOpenChange={setIsMenuOpen}
-      popperProps={{ position: "center" }}
-      toggle={(toggleRef) => (
-        <MenuToggle
-          ref={toggleRef}
-          variant="secondary"
-          isExpanded={isMenuOpen}
-          icon={<Icon name="add" size="xs" />}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {t("More devices")}
-        </MenuToggle>
-      )}
-    >
-      <DropdownList>
-        <DropdownItem isDisabled={available.length === 0} onClick={() => setIsSelectorOpen(true)}>
-          {t("Add device")}
-        </DropdownItem>
-        <DropdownItem onClick={() => navigate(PATHS.volumeGroup.add)}>
-          {t("Add LVM volume group")}
-        </DropdownItem>
-      </DropdownList>
-    </Dropdown>
-  );
-
   return (
     <Flex flexWrap={{ default: "wrap" }} gap={{ default: "gapSm" }} className="agm-plan-add">
-      {folded && menu}
-      {!folded && (
-        <>
-          <Button
-            variant="secondary"
-            icon={<Icon name="add" size="xs" />}
-            isDisabled={available.length === 0}
-            onClick={() => setIsSelectorOpen(true)}
-          >
-            {t("Add device")}
-          </Button>
-          <Button
-            variant="secondary"
-            icon={<Icon name="add" size="xs" />}
-            onClick={() => navigate(PATHS.volumeGroup.add)}
-          >
-            {t("Add LVM volume group")}
-          </Button>
-        </>
-      )}
+      <Button
+        variant="secondary"
+        icon={<Icon name="add" size="xs" />}
+        isDisabled={available.length === 0}
+        onClick={() => setIsSelectorOpen(true)}
+      >
+        {t("Add device")}
+      </Button>
+      <Button
+        variant="secondary"
+        icon={<Icon name="add" size="xs" />}
+        onClick={() => navigate(PATHS.volumeGroup.add)}
+      >
+        {t("Add LVM volume group")}
+      </Button>
       {isSelectorOpen && (
         <DeviceSelectorModal
           disks={disks}
@@ -6267,11 +6222,10 @@ const DeviceList = ({
 const RetargetButton = ({
   device,
   label,
-  variant = "link",
+  variant = "secondary",
 }: {
   device: Partitionable;
   label: string;
-  /** A link where it sits under a primary action, a button where it stands alone. */
   variant?: "link" | "secondary";
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -6348,7 +6302,7 @@ const PartitionableHeader = ({
           flexWrap={{ default: "nowrap" }}
         >
           <FlexItem>
-            <RetargetButton device={device} label={t("Use another device")} variant="secondary" />
+            <RetargetButton device={device} label={t("Use another device")} />
           </FlexItem>
           <FlexItem>
             <PartitionableActions collection={collection} index={index} />
@@ -6425,7 +6379,9 @@ const PlanFooter = ({
       gap={{ default: "gapSm" }}
     >
       <FlexItem>
-        <AddDeviceActions folded />
+        {/* The control the interface already has for this, drilldown, device
+            selector and all. */}
+        <ConfigureDeviceMenu />
       </FlexItem>
       <FlexItem>
         <Flex
@@ -6501,12 +6457,10 @@ const systemsOn = (decided: Decided[]): string[] =>
  */
 type SummaryLine = {
   kind: CostKind;
-  /** The consequence, as the term the sheet uses for it. */
-  word: string;
-  /** What the term is about, read beside it. */
-  detail: string;
-  /** The same fact as one phrase, for the reading that leads with the subject. */
-  sentence: string;
+  /** What the line is about, and the way into the half of the sheet that holds it. */
+  subject: string;
+  /** What becomes of it, in the sheet's own terms, read after the subject. */
+  tail: string;
   /** The half of the sheet that answers this line, where one does. */
   tab?: PanelTab;
 };
@@ -6579,36 +6533,25 @@ const summaryLines = (
   created: Proposal.Device[],
   solver: Solver,
 ): SummaryLine[] => {
-  const name = baseName(device.name);
-  const partitions = systemDevice?.partitions || [];
   const decided = decidedOn(device, systemDevice, solver);
   const deleted = ending(decided, "delete");
   const formatted = ending(decided, "format");
   const shrunk = ending(decided, "shrinkTo");
   const lines: SummaryLine[] = [];
 
-  if (deleted.length) {
-    lines.push({
-      kind: "destroys",
-      word: t("To be deleted"),
-      detail: lostNames(deleted),
-      sentence: t(`${lostNames(deleted)} to be deleted`),
-      tab: "current",
-    });
-  } else {
-    lines.push({
-      kind: "keeps",
-      word: t("Nothing to delete"),
-      detail: partitions.length ? t(`nothing on ${name} is deleted`) : t(`${name} is empty`),
-      sentence: partitions.length
-        ? t(`Nothing on ${name} is deleted`)
-        : t(`${name} is empty, so there is nothing to delete`),
-      tab: partitions.length ? "current" : undefined,
-    });
-  }
+  lines.push(
+    deleted.length
+      ? {
+          kind: "destroys",
+          subject: lostNames(deleted),
+          tail: t("to be deleted"),
+          tab: "current",
+        }
+      : { kind: "keeps", subject: t("Nothing"), tail: t("to be deleted") },
+  );
 
   /* Formatting a partition the new system adopts loses what is on it as surely
-     as deleting it, and is not the same act, so it keeps its own word. */
+     as deleting it, and is not the same act, so it keeps its own term. */
   if (formatted.length) {
     const paths = formatList(
       formatted
@@ -6617,9 +6560,8 @@ const summaryLines = (
     );
     lines.push({
       kind: "destroys",
-      word: t("To be formatted"),
-      detail: t(`${lostNames(formatted)}, reused for ${paths}`),
-      sentence: t(`${lostNames(formatted)} to be formatted, reused for ${paths}`),
+      subject: lostNames(formatted),
+      tail: t(`to be formatted for ${paths}`),
       tab: "current",
     });
   }
@@ -6627,16 +6569,13 @@ const summaryLines = (
   if (shrunk.length) {
     const before = sum(shrunk, ({ partition }) => partition.block?.size || 0);
     const after = sum(shrunk, ({ outcome }) => (outcome.kind === "shrinkTo" ? outcome.size : 0));
-    const what =
-      shrunk.length === 1
-        ? systemsOn(shrunk)[0] || baseName(shrunk[0].partition.name)
-        : t(`${shrunk.length} partitions`);
-    const sizes = t(`from ${deviceSize(before)} down to ${deviceSize(after)}`);
     lines.push({
       kind: "shrinks",
-      word: t("To be shrunk"),
-      detail: t(`${what}, ${sizes}`),
-      sentence: t(`${what} to be shrunk, ${sizes}`),
+      subject:
+        shrunk.length === 1
+          ? systemsOn(shrunk)[0] || baseName(shrunk[0].partition.name)
+          : t(`${shrunk.length} partitions`),
+      tail: t(`to be shrunk, from ${deviceSize(before)} down to ${deviceSize(after)}`),
       tab: "current",
     });
   }
@@ -6644,24 +6583,23 @@ const summaryLines = (
   /* What the device is formatted as, where the plan takes it whole: there are
      no partitions to count, and the file system is the thing created. */
   if (device.filesystem) {
-    const where = device.mountPath
-      ? t(`${filesystemType(device.filesystem)} at ${device.mountPath}`)
-      : t(`${filesystemType(device.filesystem)}`);
     lines.push({
       kind: "keeps",
-      word: t("To be created"),
-      detail: t(`${where}, over the whole device`),
-      sentence: t(`${where} to be created, over the whole device`),
+      subject: device.mountPath
+        ? t(`${filesystemType(device.filesystem)} at ${device.mountPath}, over the whole device`)
+        : t(`${filesystemType(device.filesystem)}, over the whole device`),
+      tail: t("to be created"),
       tab: "planned",
     });
   } else if (created.length) {
+    /* Named as well as counted: "5 partitions" says how much work and nothing
+       about what the reader gets, and the mount paths are what they asked for. */
+    const paths = created.map((partition) => partition.filesystem?.mountPath).filter(Boolean);
     const what = t(`${created.length} ${created.length === 1 ? "partition" : "partitions"}`);
-    const size = t(`${deviceSize(sum(created, (partition) => partition.block?.size || 0))} in all`);
     lines.push({
       kind: "keeps",
-      word: t("To be created"),
-      detail: t(`${what} for the new system, ${size}`),
-      sentence: t(`${what} to be created for the new system, ${size}`),
+      subject: paths.length ? t(`${what} including ${namedOrMore(paths)}`) : what,
+      tail: t("to be created"),
       tab: "planned",
     });
   }
@@ -6670,11 +6608,11 @@ const summaryLines = (
 };
 
 /**
- * A consequence, as its own line of the summary.
+ * What becomes of the subject, and the way to see it.
  *
- * Where the line has a half of the sheet that answers it, the text is the way
- * there: a reader who reads "3 partitions to be deleted" and wants to know
- * which presses the words that worried them.
+ * The term is the control rather than the subject: "to be deleted" names the
+ * act, and the half of the sheet behind it is that act spelled out. The
+ * subject is what the line is about and has nowhere of its own to go.
  */
 const SummaryDetail = ({
   line,
@@ -6732,7 +6670,7 @@ const PlanHeadline = ({
   /** Everything else, which PatternFly sets as links under the primary one. */
   secondary?: React.ReactNode;
 }) => {
-  const { costPhrase, titleFacts } = useVariants();
+  const { titleFacts } = useVariants();
   const costsId = useId();
   const inline = titleFacts === "inline" && facts;
 
@@ -6772,69 +6710,44 @@ const PlanHeadline = ({
         <h3 className="pf-v6-u-screen-reader" id={costsId}>
           {costsLabel}
         </h3>
-        {costPhrase === "term" ? (
-          /* A term and what it says, which is what a description list is. It
-             lines the words up and starts every detail at the same place
-             without a rule of our own; the text goes back to reading left to
-             right, since a ragged left edge costs the reader the comparison
-             the lines exist for. */
-          <DescriptionList
-            isCompact
-            isHorizontal
-            isFluid
-            aria-labelledby={costsId}
-            className="pf-v6-u-text-align-start"
-          >
-            {lines.map((line) => (
-              <DescriptionListGroup key={line.word}>
-                <DescriptionListTerm
-                  className={COST_CLASS[line.kind]}
-                  icon={<Icon name={COST_ICON[line.kind]} size="xs" />}
-                >
-                  {line.word}
-                </DescriptionListTerm>
-                <DescriptionListDescription>
-                  <SummaryDetail line={line} text={line.detail} onGoTo={onGoTo} />
-                </DescriptionListDescription>
-              </DescriptionListGroup>
-            ))}
-          </DescriptionList>
-        ) : (
-          /* The same facts read as phrases, subject first. Kept switchable
-             because which of the two reads better is a question about the
-             words rather than about the markup. */
-          <Flex
-            direction={{ default: "column" }}
-            gap={{ default: "gapXs" }}
-            className="pf-v6-u-text-align-start"
-            aria-labelledby={costsId}
-          >
-            {lines.map((line) => (
-              <FlexItem key={line.word}>
-                <Flex
-                  gap={{ default: "gapSm" }}
-                  alignItems={{ default: "alignItemsFlexStart" }}
-                  flexWrap={{ default: "nowrap" }}
-                  className={COST_CLASS[line.kind]}
-                >
-                  <FlexItem>
-                    <Icon name={COST_ICON[line.kind]} size="xs" />
-                  </FlexItem>
-                  <FlexItem>
-                    <SummaryDetail line={line} text={line.sentence} onGoTo={onGoTo} />
-                  </FlexItem>
-                </Flex>
-              </FlexItem>
-            ))}
-          </Flex>
-        )}
+        {/* The subject leads and the term follows it, the way the sheet's own
+            second lines read: what the reader is looking for is which
+            partitions, not which verb. The subject is the way into the half of
+            the sheet that holds them. */}
+        <Flex
+          direction={{ default: "column" }}
+          gap={{ default: "gapXs" }}
+          className="pf-v6-u-text-align-start"
+          aria-labelledby={costsId}
+        >
+          {lines.map((line) => (
+            <FlexItem key={line.tail}>
+              <Flex
+                gap={{ default: "gapSm" }}
+                alignItems={{ default: "alignItemsFlexStart" }}
+                flexWrap={{ default: "nowrap" }}
+                className={COST_CLASS[line.kind]}
+              >
+                <FlexItem>
+                  <Icon name={COST_ICON[line.kind]} size="xs" />
+                </FlexItem>
+                <FlexItem>
+                  {line.subject} <SummaryDetail line={line} text={line.tail} onGoTo={onGoTo} />
+                </FlexItem>
+              </Flex>
+            </FlexItem>
+          ))}
+        </Flex>
       </EmptyStateBody>
       {(primary || secondary) && (
         <EmptyStateFooter>
-          {primary && <EmptyStateActions>{primary}</EmptyStateActions>}
-          {/* PatternFly sets the second group as links under the button, which
-              is what keeps one action reading as the action. */}
-          {secondary && <EmptyStateActions>{secondary}</EmptyStateActions>}
+          {/* One group, so the two read as a pair on one line. PatternFly's
+              second group sets its actions as links on a row of their own,
+              which spends a line on one link and reads as a second offer. */}
+          <EmptyStateActions>
+            {primary}
+            {secondary}
+          </EmptyStateActions>
         </EmptyStateFooter>
       )}
     </EmptyState>
@@ -6888,7 +6801,13 @@ const PlanSummary = ({
           {t("See details")}
         </Button>
       }
-      secondary={<RetargetButton device={device} label={t("Install on another device")} />}
+      secondary={
+        <RetargetButton
+          device={device}
+          label={t("Change installation device")}
+          variant="secondary"
+        />
+      }
     />
   );
 };
@@ -6953,28 +6872,13 @@ const planLines = (
         deletedVolumes ? counted(deletedVolumes, "logical volume", "logical volumes") : undefined,
       ].filter(Boolean),
     );
-    lines.push({
-      kind: "destroys",
-      word: t("To be deleted"),
-      detail,
-      sentence: t(`${detail} to be deleted`),
-    });
+    lines.push({ kind: "destroys", subject: detail, tail: t("to be deleted") });
   } else {
-    lines.push({
-      kind: "keeps",
-      word: t("Nothing to delete"),
-      detail: t("nothing this machine holds today is deleted"),
-      sentence: t("Nothing this machine holds today is deleted"),
-    });
+    lines.push({ kind: "keeps", subject: t("Nothing"), tail: t("to be deleted") });
   }
 
   if (formatted.length) {
-    lines.push({
-      kind: "destroys",
-      word: t("To be formatted"),
-      detail: lostNames(formatted),
-      sentence: t(`${lostNames(formatted)} to be formatted`),
-    });
+    lines.push({ kind: "destroys", subject: lostNames(formatted), tail: t("to be formatted") });
   }
 
   if (shrunk.length || shrunkVolumes) {
@@ -6984,12 +6888,7 @@ const planLines = (
         shrunkVolumes ? counted(shrunkVolumes, "logical volume", "logical volumes") : undefined,
       ].filter(Boolean),
     );
-    lines.push({
-      kind: "shrinks",
-      word: t("To be shrunk"),
-      detail,
-      sentence: t(`${detail} to be shrunk`),
-    });
+    lines.push({ kind: "shrinks", subject: detail, tail: t("to be shrunk") });
   }
 
   /* What the plan builds, counted by kind rather than named: the names are one
@@ -7010,12 +6909,7 @@ const planLines = (
   ].filter(Boolean);
 
   if (built.length) {
-    lines.push({
-      kind: "keeps",
-      word: t("To be created"),
-      detail: formatList(built),
-      sentence: t(`${formatList(built)} to be created`),
-    });
+    lines.push({ kind: "keeps", subject: formatList(built), tail: t("to be created") });
   }
 
   return lines;
@@ -7110,8 +7004,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 
 const VARIANT_CONTROLS: VariantControl[] = [
   { key: "page", label: "Page", options: ["summary", "list"] },
-  { key: "costPhrase", label: "Cost wording", options: ["term", "sentence"] },
-  { key: "titleFacts", label: "Device facts", options: ["under", "inline"] },
+  { key: "titleFacts", label: "Device facts", options: ["inline", "under"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -7294,7 +7187,6 @@ function StoragePlan(): React.ReactNode {
             '  rowNote("plain" | "outlined")      the second line under a value as plain text, or boxed',
             '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
-            '  costPhrase("term" | "sentence")    "To be deleted  3 partitions", or "3 partitions to be deleted"',
             '  titleFacts("under" | "inline")     the device facts under the sentence, or on it',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
@@ -7334,7 +7226,6 @@ function StoragePlan(): React.ReactNode {
       rowNote: (rowNote) => patch({ rowNote }),
       noteColor: (noteColor) => patch({ noteColor }),
       page: (page) => patch({ page }),
-      costPhrase: (costPhrase) => patch({ costPhrase }),
       titleFacts: (titleFacts) => patch({ titleFacts }),
       bootDebug: () => bootDebugRef.current(),
     };
