@@ -7294,14 +7294,13 @@ const PlanOverview = ({
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
              paragraph over the list explaining what a list of devices is. */
-          body={
-            <>
-              {t(
-                "The list below shows how the new system is structured. Explore and set up each entry, or add ",
-              )}
-              <ConfigureDeviceMenu />
-            </>
-          }
+          /* Whole sentences, and the control after them rather than inside
+             them: a phrase split around a button cannot be translated, since
+             the order of its halves belongs to the language. */
+          body={t(
+            "The list below shows how the new system is structured. Explore and set up each entry, or add more devices to the plan.",
+          )}
+          secondary={<ConfigureDeviceMenu />}
           lines={
             overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
           }
