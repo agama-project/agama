@@ -370,12 +370,6 @@ fn report_unsupported_elements(elements: &[UnsupportedElement]) {
         "{} {keys}.",
         gettext("Found unsupported elements in the AutoYaST profile:")
     );
-    for element in elements {
-        match &element.notes {
-            Some(notes) => eprintln!("  - {} ({}): {notes}", element.key, element.support),
-            None => eprintln!("  - {} ({})", element.key, element.support),
-        }
-    }
 }
 
 /// Retrieve and preprocess the profile.
