@@ -164,6 +164,11 @@ impl ProfileBody {
     }
 }
 
+#[allow(
+    clippy::result_large_err,
+    reason = "Response is used to short-circuit with a pre-built HTTP response; the extra \
+              bytes are negligible per-request cost (see tokio-rs/axum#3824)"
+)]
 async fn validate(body: String) -> Result<(), Response> {
     let profile = ProfileBody::from_string(body);
     let profile_content = profile
