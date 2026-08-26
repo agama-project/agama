@@ -7265,9 +7265,6 @@ const PlanOverview = ({
   const solver = useSolver();
   const { overviewCosts } = useVariants();
   const manager = new DevicesManager(system, staging, actions);
-  const names = [...(config.drives || []), ...(config.mdRaids || [])].map((device) =>
-    baseName(device.name),
-  );
 
   /* A flex column rather than a stack: PatternFly's Stack is full height, and
      a full height block in a scrolling page leaves the footer under a screen of
@@ -7276,7 +7273,13 @@ const PlanOverview = ({
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       <FlexItem>
         <PlanHeadline
-          title={t(`Use ${namedOrMore(names)} to install the new system`)}
+          /* Not the disks by name: the list under it names them, and a sentence
+             is not a list. What the summary says is that the plan takes more
+             than one device, which is the thing the list cannot say in a row. */
+          title={t("Use multiple devices to set up the new system")}
+          /* A structure rather than a disk, since no single disk is what this
+             page is about. */
+          icon="schema"
           isTight
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
