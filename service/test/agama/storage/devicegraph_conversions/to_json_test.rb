@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2025] SUSE LLC
+# Copyright (c) [2025-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -60,6 +60,18 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
         expect(json.map { |e| e[:block][:size] }).to all eq(50 * (1024**3))
       end
 
+      it "exports drivers of drive devices" do
+        json = subject.convert
+        expect(json.map { |e| e[:drive][:drivers] }).to all(be_an(Array))
+      end
+
+      it "exports boss in drive info" do
+        json = subject.convert
+        json.each do |entry|
+          expect(entry[:drive][:info].keys).to include(:boss)
+        end
+      end
+
       it "generates the :partitions and :partitionTable entries only for partitioned disks" do
         json = subject.convert
 
@@ -78,6 +90,15 @@ describe Agama::Storage::DevicegraphConversions::ToJSON do
         vdc = json.find { |d| d[:name] == "/dev/vdc" }
         expect(vdc.keys).to_not include :partitions
         expect(vdc.keys).to_not include :partitionTable
+      end
+
+      it "exports the id of each partition" do
+        json = subject.convert
+        vda = json.find { |d| d[:name] == "/dev/vda" }
+        vda1 = vda[:partitions].find { |p| p[:name] == "/dev/vda1" }
+        vda2 = vda[:partitions].find { |p| p[:name] == "/dev/vda2" }
+        expect(vda1[:partition][:id]).to eq "bios_boot"
+        expect(vda2[:partition][:id]).to eq "linux"
       end
 
       it "generates the :filesystem entry only for formatted disks" do

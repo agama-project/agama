@@ -70,7 +70,8 @@ impl Registry {
         match &self.source {
             Source::System => {
                 self.read_from_system().await?;
-                // On s390x, enrich the system node with model info from read_values if needed
+                // On s390x, enrich the system and processor nodes with info from
+                // the "zname" command, as lshw does not report them properly.
                 if Arch::is_s390() {
                     self.read_s390_model().await.ok();
                 }
@@ -105,48 +106,49 @@ impl Registry {
         Ok(())
     }
 
-    /// Enriches the s390x system node with model info from read_values command.
+    /// Enriches the s390x system and processor nodes with info read from the "zname" command.
+    ///
+    /// The model is built as "IBM <cpuid>-<model>" (e.g., "IBM 8561-LT1"), and the CPU is
+    /// the model name reported by "zname -n" (e.g., "IBM LinuxONE III").
     async fn read_s390_model(&mut self) -> Result<(), Error> {
         let Some(ref mut root) = self.root else {
             return Ok(());
         };
 
-        let Some(system) = root.find_first_by_class_mut("system") else {
-            return Ok(());
-        };
+        let type_id = Self::read_zname("-i").await;
+        let model = Self::read_zname("-m").await;
+        let name = Self::read_zname("-n").await;
 
-        let output = tokio::process::Command::new("read_values")
-            .arg("-c")
-            .output()
-            .await?;
-
-        if !output.status.success() {
-            return Ok(());
+        if let (Some(type_id), Some(model)) = (type_id, model) {
+            if let Some(system) = root.find_first_by_class_mut("system") {
+                system.vendor = Some("IBM".to_string());
+                system.version = Some(format!("{type_id}-{model}"));
+            }
         }
 
-        let model = String::from_utf8_lossy(&output.stdout);
-        system.vendor = Some("IBM".to_string());
-        system.version = Self::parse_s390_version(&model);
+        if let Some(name) = name {
+            if let Some(processor) = root.find_first_by_class_mut("processor") {
+                processor.product = Some(name);
+            }
+        }
 
         Ok(())
     }
 
-    /// Parses the s390x model from read_values output.
-    ///
-    /// Extracts "eServer zSeries 900" from "z900    IBM eServer zSeries 900".
-    /// or "LinuxONE III LT1" from "IBM LinuxONE III LT1".
-    ///
-    /// Expected format: "8561 = IBM LinuxONE III LT1"
-    fn parse_s390_version(output: &str) -> Option<String> {
-        let line = output
-            .lines()
-            .find_map(|l| l.split_once('=').map(|(_id, model)| model.to_string()))?;
+    /// Runs "zname" with the given argument and returns its trimmed output.
+    async fn read_zname(arg: &str) -> Option<String> {
+        let output = tokio::process::Command::new("zname")
+            .arg(arg)
+            .output()
+            .await
+            .ok()?;
 
-        if let Some((_, version)) = line.split_once("IBM") {
-            Some(version.trim().to_string())
-        } else {
-            None
+        if !output.status.success() {
+            return None;
         }
+
+        let value = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        (!value.is_empty()).then_some(value)
     }
 
     /// Converts the information to a HardwareInfo struct.
@@ -397,32 +399,21 @@ mod tests {
         ));
     }
 
-    #[test]
-    fn test_parse_s390_version() {
-        let output = "8561 = IBM LinuxONE III LT1";
-        let model = Registry::parse_s390_version(output);
-        assert_eq!(model, Some("LinuxONE III LT1".to_string()));
+    #[tokio::test]
+    async fn test_read_s390_model() -> Result<(), Box<dyn Error>> {
+        let old_path = std::env::var("PATH").unwrap();
+        let bin_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../share/bin");
+        std::env::set_var("PATH", format!("{}:{}", &bin_dir.display(), &old_path));
 
-        let output_with_extra_spaces = "8561   =   IBM LinuxONE III LT1  ";
-        let model = Registry::parse_s390_version(output_with_extra_spaces);
-        assert_eq!(model, Some("LinuxONE III LT1".to_string()));
+        let fixtures = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../test/share");
+        let mut registry = Registry::new_from_file(fixtures.join("lshw-s390x.json"));
+        registry.read().await?;
+        registry.read_s390_model().await?;
 
-        let multiline_output = "SomeOtherLine\n8561 = IBM LinuxONE III LT1\nAnotherLine";
-        let model = Registry::parse_s390_version(multiline_output);
-        assert_eq!(model, Some("LinuxONE III LT1".to_string()));
-
-        // Test format with machine type prefix before IBM
-        let output_with_prefix = "2064 = z900    IBM eServer zSeries 900";
-        let model = Registry::parse_s390_version(output_with_prefix);
-        assert_eq!(model, Some("eServer zSeries 900".to_string()));
-
-        let invalid_output = "No equals sign here";
-        let model = Registry::parse_s390_version(invalid_output);
-        assert_eq!(model, None);
-
-        let empty_output = "";
-        let model = Registry::parse_s390_version(empty_output);
-        assert_eq!(model, None);
+        let info = registry.to_hardware_info();
+        assert_eq!(info.model, Some("IBM 8561-LT1".to_string()));
+        assert_eq!(info.cpu, Some("IBM LinuxONE III".to_string()));
+        Ok(())
     }
 
     #[tokio::test]

@@ -56,16 +56,36 @@ pub struct Registry {
 }
 
 impl Registry {
-    pub fn new<P: AsRef<Path>>(path: P) -> Self {
-        Self {
+    /// Builds a registry, reading the licenses from the given path.
+    pub fn new<P: AsRef<Path>>(path: P) -> Result<Self, Error> {
+        let mut registry = Self {
             path: path.as_ref().to_owned(),
             licenses: vec![],
             fallback: HashMap::new(),
+        };
+        registry.read()?;
+        Ok(registry)
+    }
+
+    /// Builds a registry, reading the licenses from the default path.
+    pub fn from_default_path() -> Result<Self, Error> {
+        Self::new(Self::default_path())
+    }
+
+    /// Default location: a local test override, or `$AGAMA_SHARE_DIR/eula`.
+    pub fn default_path() -> PathBuf {
+        let relative_path = PathBuf::from("test/share/eula");
+        if relative_path.exists() {
+            relative_path
+        } else {
+            let share_dir =
+                std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
+            PathBuf::from(share_dir).join("eula")
         }
     }
 
     /// Reads the licenses from the repository.
-    pub fn read(&mut self) -> Result<(), Error> {
+    fn read(&mut self) -> Result<(), Error> {
         let entries = read_dir(self.path.as_path())?;
 
         for entry in entries {
@@ -199,29 +219,13 @@ impl Registry {
     }
 }
 
-impl Default for Registry {
-    fn default() -> Self {
-        let relative_path = PathBuf::from("test/share/eula");
-        let path = if relative_path.exists() {
-            relative_path
-        } else {
-            let share_dir =
-                std::env::var("AGAMA_SHARE_DIR").unwrap_or("/usr/share/agama".to_string());
-            PathBuf::from(share_dir).join("eula")
-        };
-        Self::new(path)
-    }
-}
-
 #[cfg(test)]
 mod test {
     use super::{LanguageTag, Registry};
     use std::path::Path;
 
     fn build_registry() -> Registry {
-        let mut repo = Registry::new(Path::new("../test/share/eula"));
-        repo.read().unwrap();
-        repo
+        Registry::new(Path::new("../test/share/eula")).unwrap()
     }
 
     #[test]

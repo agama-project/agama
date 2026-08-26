@@ -56,7 +56,7 @@ import { SOFTWARE as PATHS } from "~/routes/paths";
 import { _, n_ } from "~/i18n";
 
 import type { TranslatedString } from "~/i18n";
-import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
+import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 
 import type { Pattern } from "~/model/system/software";
 import type { PatternsSelection } from "~/model/proposal/software";
@@ -395,7 +395,7 @@ function SoftwarePage() {
       breadcrumbs={[{ label: _("Software") }]}
       progress={{
         scope: "software",
-        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY],
+        awaitQueriesRefetch: [PROPOSAL_QUERY_KEY],
       }}
     >
       <Page.Content>

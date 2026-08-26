@@ -168,28 +168,8 @@ impl ModelAdapter for Model {
         let (tx, rx) = oneshot::channel();
         self.zypp_sender
             .send(SoftwareAction::GetSystemInfo(product_spec, tx))?;
-        let mut system_info = rx.await??;
+        let system_info = rx.await??;
 
-        // Set "predefined" field as this struct holds the information to determine
-        // which repositories are "predefined".
-        let predefined_urls: Vec<_> = self
-            .predefined_repositories
-            .iter()
-            .map(|r| r.url.as_str())
-            .collect();
-        let mut missing_predefined_repos = self.predefined_repositories.clone();
-
-        for repo in system_info.repositories.iter_mut() {
-            repo.predefined = predefined_urls.contains(&repo.url.as_str());
-            if repo.predefined {
-                missing_predefined_repos.retain(|r| r.url != repo.url);
-            }
-        }
-
-        // Add all predefined repositories that are missing in libzypp.
-        // As a result, they will be added to libzypp when writing the new
-        // software state.
-        system_info.repositories.extend(missing_predefined_repos);
         tracing::info!("System info: {:?}", system_info);
 
         Ok(system_info)
