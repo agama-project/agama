@@ -1,8 +1,16 @@
 -------------------------------------------------------------------
+Wed Aug 26 09:57:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- "agama config generate" prints unsupported AutoYaST elements
+  in the stderr instead of registering a question (bsc#1276796).
+  The question is shown only when using the inst.auto argument
+  or when using a predefined location.
+
+-------------------------------------------------------------------
 Thu Aug 20 07:32:07 UTC 2026 - Josef Reidinger <jreidinger@suse.com>
 
 - Add ability for products to define own kernel flavor
-  (jsc#PED-16833) 
+  (jsc#PED-16833)
 
 -------------------------------------------------------------------
 Mon Aug 17 09:07:56 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
