@@ -70,6 +70,7 @@ import { useNavigate } from "react-router";
 import {
   Alert,
   Button,
+  Content,
   Drawer,
   DrawerContent,
   DrawerContentBody,
@@ -126,6 +127,7 @@ import {
 } from "~/components/storage/utils";
 import { deviceSystems, supportShrink } from "~/model/storage/device";
 import { formatList } from "~/i18n";
+import { sum, unique } from "radashi";
 import { generateEncodedPath } from "~/utils";
 import { typeDescription } from "~/components/storage/utils/device";
 import {
@@ -145,6 +147,7 @@ import {
   useAddMdRaid,
   useAddVolumeGroup,
   useConfigModel,
+  useConvertDevice,
   useDeleteDrive,
   useDeleteMdRaid,
   useDeleteLogicalVolume,
@@ -213,6 +216,8 @@ type NoteColor = "status" | "none";
 type DeviceRow = "hidden" | "shown";
 /** Whether a dashed rule separates the statements above a tab's content. */
 type StatementRule = "between" | "all" | "none";
+/** Which shape the page in front of the sheet takes. */
+type PageShape = "summary" | "list";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -242,6 +247,7 @@ type Variants = {
   deviceRow: DeviceRow;
   rowNote: RowNote;
   noteColor: NoteColor;
+  page: PageShape;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -281,6 +287,11 @@ const DEFAULT_VARIANTS: Variants = {
      switchable, since what they say is worth telling apart. */
   rowNote: "plain",
   noteColor: "none",
+  /* The shape being designed comes first, and the list it replaces stays one
+     switch away, so the two are compared on real disks rather than from
+     memory. The summary only fits a plan of one entry; anything longer reads
+     as the list until the index exists. */
+  page: "summary",
 };
 
 type PlanApi = {
@@ -312,6 +323,7 @@ type PlanApi = {
   deviceRow: (mode: DeviceRow) => void;
   rowNote: (mode: RowNote) => void;
   noteColor: (mode: NoteColor) => void;
+  page: (shape: PageShape) => void;
   bootDebug: () => void;
 };
 
@@ -4300,11 +4312,20 @@ const PlanBar = ({
   onShowResult,
   onShowBoot,
   onShowEncryption,
+  showsCost = true,
+  isSticky = true,
+  actions,
 }: {
   destructive: number;
   onShowResult: () => void;
   onShowBoot: () => void;
   onShowEncryption: () => void;
+  /** Off where the page above the bar already reports what the plan costs. */
+  showsCost?: boolean;
+  /** Off where the bar closes the page rather than heading a list. */
+  isSticky?: boolean;
+  /** What the reader can add to the plan, beside the two settings. */
+  actions?: React.ReactNode;
 }) => {
   const config = useConfigModel();
   const reset = useReset();
@@ -4318,7 +4339,7 @@ const PlanBar = ({
   };
 
   return (
-    <div className="agm-plan-bar">
+    <div className={isSticky ? "agm-plan-bar" : "agm-plan-bar agm-plan-bar-still"}>
       <Flex
         justifyContent={{ default: "justifyContentSpaceBetween" }}
         alignItems={{ default: "alignItemsCenter" }}
@@ -4329,17 +4350,19 @@ const PlanBar = ({
           {/* The cost is the reason anyone opens the result, so the cost is the
               button: a reader worried by "4 changes destroy data" presses the
               sentence that worries them. */}
-          <Button
-            variant={destructive > 0 ? "danger" : "secondary"}
-            size="sm"
-            aria-controls={PANEL_ID}
-            icon={<Icon name={destructive > 0 ? COST_ICON.destroys : "info"} size="xs" />}
-            onClick={onShowResult}
-          >
-            {destructive > 0
-              ? t(`${destructive} ${destructive === 1 ? "change" : "changes"} destroy data`)
-              : t("Nothing on this machine is destroyed")}
-          </Button>
+          {showsCost && (
+            <Button
+              variant={destructive > 0 ? "danger" : "secondary"}
+              size="sm"
+              aria-controls={PANEL_ID}
+              icon={<Icon name={destructive > 0 ? COST_ICON.destroys : "info"} size="xs" />}
+              onClick={onShowResult}
+            >
+              {destructive > 0
+                ? t(`${destructive} ${destructive === 1 ? "change" : "changes"} destroy data`)
+                : t("Nothing on this machine is destroyed")}
+            </Button>
+          )}
         </FlexItem>
         <FlexItem>
           <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
@@ -4355,6 +4378,7 @@ const PlanBar = ({
                 {t(installationEncryption(config))}
               </Button>
             </FlexItem>
+            {actions && <FlexItem>{actions}</FlexItem>}
             <FlexItem>
               <ActionsMenu
                 label={t("More actions for this installation")}
@@ -5346,6 +5370,13 @@ const PLAN_CSS = `
 .agm-plan-panel-mark {
   font-size: var(--pf-t--global--font--size--xs);
 }
+
+/* The bar heads a list and closes a summary, and only the first of those is
+   worth pinning: a bar that follows the page it reports on has nothing above
+   it to stay in front of. */
+.agm-plan-bar-still {
+  position: static;
+}
 `;
 
 /* The outline a label draws, on the second lines under a value: the same words
@@ -6220,6 +6251,328 @@ const SelectionHeader = ({ selection, onClose }: { selection: Selection; onClose
   );
 
 /* ------------------------------------------------------------------ *
+ * The page, when the plan is one entry
+ *
+ * State A of the main page: what is being installed and where, read as a
+ * sentence, with what it costs under it and two ways on. The device sheet does
+ * the work; this reports and routes.
+ *
+ * A plan of more than one entry falls back to the device list until the index
+ * exists, so nothing about the list changes while this is being looked at.
+ * ------------------------------------------------------------------ */
+
+/** How many things a phrase names before it starts counting the rest. */
+const NAMED_AT_MOST = 3;
+
+/**
+ * Names up to three things, then counts the rest: "/, swap, /home and 2 more".
+ *
+ * One threshold for every list the page prints, rather than a decision per
+ * place. The three named are the first three in the order the data already has:
+ * sorting by importance invents an importance nothing reports.
+ *
+ * Written as a translated phrase rather than assembled from pieces, so that the
+ * comma, the conjunction and the plural belong to the language.
+ */
+const namedOrMore = (names: string[]): string => {
+  const named = names.slice(0, NAMED_AT_MOST);
+  const rest = names.length - named.length;
+
+  return rest > 0 ? t(`${formatList(named)} and ${rest} more`) : formatList(named);
+};
+
+/** Which existing partitions a summary line is about, and what becomes of them. */
+type Decided = { partition: Storage.Device; outcome: ReportedOutcome };
+
+/** What the systems on these partitions are called, in the order reported. */
+const systemsOn = (decided: Decided[]): string[] =>
+  unique(decided.flatMap(({ partition }) => partition.block?.systems || []));
+
+/**
+ * One consequence of the plan, as the words for it and the detail beside them.
+ *
+ * The words lead so that the colour and the mark are reinforcement rather than
+ * the only carrier, and so that a reader who stops after the first line has
+ * stopped at the worst one. Nothing has happened yet, so nothing is written as
+ * though it had: a partition is to be deleted, not deleted, which is the
+ * grammar the sheet's own reports use.
+ */
+type SummaryLine = { kind: CostKind; word: string; detail: string };
+
+/**
+ * What the plan does to one device, worst first.
+ *
+ * Deleting comes before formatting, formatting before shrinking, and creating
+ * last, since a reader who reads no further has read what cannot be undone.
+ * The line about deletion is written whether anything is deleted or not: "vdd
+ * has no partitions" is an answer, and a missing line is not.
+ *
+ * Read from the solver's answers rather than from the configured intent, the
+ * way the sheet reads them, so the page and the panel it opens cannot disagree
+ * about what happens to the same disk.
+ */
+const summaryLines = (
+  device: Partitionable,
+  systemDevice: Storage.Device | null,
+  created: Proposal.Device[],
+  solver: Solver,
+): SummaryLine[] => {
+  const name = baseName(device.name);
+  const partitions = systemDevice?.partitions || [];
+  const entries = device.partitions || [];
+  const policy = device.spacePolicy || "keep";
+  const decided: Decided[] = partitions.map((partition) => ({
+    partition,
+    outcome: reportedOutcome(
+      outcomeFor(
+        policy,
+        entries.find((entry) => entry.name === partition.name),
+        partition.block?.size,
+      ),
+      partition.sid,
+      solver,
+    ),
+  }));
+
+  const of = (...kinds: ReportedOutcome["kind"][]) =>
+    decided.filter(({ outcome }) => kinds.includes(outcome.kind));
+  const deleted = of("delete");
+  const formatted = of("format");
+  const shrunk = of("shrinkTo");
+  const lines: SummaryLine[] = [];
+
+  /* Names first and counts second: a reader recognises "Windows 11" and has to
+     work out what "2 partitions" holds. Where systems are named, whatever is
+     deleted beside them is counted rather than left out. */
+  const lost = (group: Decided[]): string => {
+    const systems = systemsOn(group);
+    if (!systems.length) {
+      return t(`${group.length} ${group.length === 1 ? "partition" : "partitions"}`);
+    }
+
+    const named = systems.slice(0, NAMED_AT_MOST);
+    const rest = group.filter(
+      ({ partition }) => !(partition.block?.systems || []).some((s) => named.includes(s)),
+    ).length;
+
+    if (rest === 0) return namedOrMore(systems);
+
+    return t(`${formatList(named)}, and ${rest} ${rest === 1 ? "partition" : "partitions"} more`);
+  };
+
+  if (deleted.length) {
+    lines.push({ kind: "destroys", word: t("To be deleted"), detail: lost(deleted) });
+  } else {
+    lines.push({
+      kind: "keeps",
+      word: t("Nothing to delete"),
+      detail: partitions.length ? t(`nothing on ${name} is deleted`) : t(`${name} is empty`),
+    });
+  }
+
+  /* Formatting a partition the new system adopts loses what is on it as surely
+     as deleting it, and is not the same act, so it keeps its own word. */
+  if (formatted.length) {
+    const paths = formatted.map(({ outcome }) =>
+      outcome.kind === "format" ? outcome.mountPath : "",
+    );
+    lines.push({
+      kind: "destroys",
+      word: t("To be formatted"),
+      detail: t(`${lost(formatted)}, reused for ${formatList(paths.filter(Boolean))}`),
+    });
+  }
+
+  if (shrunk.length) {
+    const before = sum(shrunk, ({ partition }) => partition.block?.size || 0);
+    const after = sum(shrunk, ({ outcome }) => (outcome.kind === "shrinkTo" ? outcome.size : 0));
+    const what =
+      shrunk.length === 1
+        ? systemsOn(shrunk)[0] || baseName(shrunk[0].partition.name)
+        : t(`${shrunk.length} partitions`);
+    lines.push({
+      kind: "shrinks",
+      word: t("To be shrunk"),
+      detail: t(`${what}, from ${deviceSize(before)} down to ${deviceSize(after)}`),
+    });
+  }
+
+  /* What the device is formatted as, where the plan takes it whole: there are
+     no partitions to count, and the file system is the thing created. */
+  if (device.filesystem) {
+    lines.push({
+      kind: "keeps",
+      word: t("To be created"),
+      detail: device.mountPath
+        ? t(`${filesystemType(device.filesystem)} at ${device.mountPath}, over the whole device`)
+        : t(`${filesystemType(device.filesystem)}, over the whole device`),
+    });
+  } else if (created.length) {
+    const size = sum(created, (partition) => partition.block?.size || 0);
+    lines.push({
+      kind: "keeps",
+      word: t("To be created"),
+      detail: t(
+        `${created.length} ${created.length === 1 ? "partition" : "partitions"} for the new system, ${deviceSize(size)} in all`,
+      ),
+    });
+  }
+
+  return lines;
+};
+
+/**
+ * The button that swaps the target without touching the plan.
+ *
+ * The same dialog the device menu opens and the same write behind it. What
+ * changes is where it is: the reader who thinks "wrong disk" is looking at the
+ * sentence saying which disk, so the way out is under that sentence rather than
+ * inside a menu.
+ */
+const RetargetButton = ({ device }: { device: Partitionable }) => {
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const config = useConfigModel();
+  const convertDevice = useConvertDevice();
+  const systemDevice = useDevice(device.name);
+  const available = useAvailableDevices();
+  const name = baseName(device.name);
+
+  /* Every device the plan does not already hold, plus the one it is on, which
+     is how the dialog shows what is selected. */
+  const usedNames = configModel
+    .devices(config)
+    .map((entry) => entry.name)
+    .filter((used) => used !== device.name);
+  const targets = available.filter((candidate) => !usedNames.includes(candidate.name));
+
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setIsSelectorOpen(true)}>
+        {t("Install on another device")}
+      </Button>
+      {isSelectorOpen && (
+        <DeviceSelectorModal
+          title={t("Install on another device")}
+          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
+          selected={systemDevice}
+          disks={targets.filter(isDrive)}
+          mdRaids={targets.filter(isMd)}
+          volumeGroups={targets.filter(isVolumeGroup)}
+          onCancel={() => setIsSelectorOpen(false)}
+          onConfirm={([target]) => {
+            setIsSelectorOpen(false);
+            convertDevice(device.name, target.name);
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+/**
+ * The one entry page.
+ *
+ * A sentence, what it costs, and two ways on: into the sheet, or onto another
+ * device. Everything else about the plan is read in the bar under it.
+ *
+ * Laid out with PatternFly's `EmptyState`, which is its arrangement of a mark,
+ * a title, a body and the ways on: centred, bounded to a readable measure, and
+ * sized by the framework rather than by rules of ours. It says nothing about
+ * emptiness to a screen reader, so a page with content loses nothing by being
+ * built with it.
+ */
+const PlanSummary = ({
+  collection,
+  index,
+  onOpenSheet,
+}: {
+  collection: PartitionableCollection;
+  index: number;
+  onOpenSheet: () => void;
+}) => {
+  const config = useConfigModel();
+  const device = config[collection]?.[index] as Partitionable | undefined;
+  const systemDevice = useDevice(device?.name || "");
+  const system = useFlattenDevices();
+  const staging = useStagingDevices();
+  const actions = useActions();
+  const solver = useSolver();
+  const costsId = "agm-plan-summary-costs";
+
+  if (!device) return null;
+
+  const name = baseName(device.name);
+  const manager = new DevicesManager(system, staging, actions);
+  const stagingDevice = staging.find((candidate) => candidate.name === device.name);
+  const created = (stagingDevice?.partitions || []).filter(
+    (partition) => !manager.existInSystem(partition),
+  );
+  const lines = summaryLines(device, systemDevice, created, solver);
+
+  return (
+    <EmptyState
+      variant="lg"
+      headingLevel="h2"
+      titleText={t(`Installing on ${name}`)}
+      icon={() => <Icon name="hard_drive" />}
+    >
+      <EmptyStateBody>
+        <Content component="p">
+          {partitionableDescription(systemDevice)}
+          {systemDevice?.block?.udevPaths?.[0] && (
+            <>
+              <br />
+              <Text component="small" textStyle="textColorSubtle">
+                {systemDevice.block.udevPaths[0]}
+              </Text>
+            </>
+          )}
+        </Content>
+        {/* The lines are a group with a name of its own, so a reader moving by
+            heading reaches them as one thing rather than as loose text under
+            the sentence. Nothing here is worth a visible heading: each line
+            says what it is. */}
+        <h3 className="pf-v6-u-screen-reader" id={costsId}>
+          {t(`What happens to ${name}`)}
+        </h3>
+        {/* A term and what it says about the device, which is what a
+            description list is. It lines the three words up and starts every
+            detail at the same place without a rule of our own; the text goes
+            back to reading left to right, since a ragged left edge costs the
+            reader the comparison the lines exist for. */}
+        <DescriptionList
+          isCompact
+          isHorizontal
+          isFluid
+          aria-labelledby={costsId}
+          className="pf-v6-u-text-align-start"
+        >
+          {lines.map((line) => (
+            <DescriptionListGroup key={line.word}>
+              <DescriptionListTerm
+                className={COST_CLASS[line.kind]}
+                icon={<Icon name={COST_ICON[line.kind]} size="xs" />}
+              >
+                {line.word}
+              </DescriptionListTerm>
+              <DescriptionListDescription>{line.detail}</DescriptionListDescription>
+            </DescriptionListGroup>
+          ))}
+        </DescriptionList>
+      </EmptyStateBody>
+      <EmptyStateFooter>
+        <EmptyStateActions>
+          <Button variant="primary" aria-controls={PANEL_ID} onClick={onOpenSheet}>
+            {t(`See what ${name} will hold`)}
+          </Button>
+          <RetargetButton device={device} />
+        </EmptyStateActions>
+      </EmptyStateFooter>
+    </EmptyState>
+  );
+};
+
+/* ------------------------------------------------------------------ *
  * The switches, on screen
  *
  * Every variant this file offers, in one place, so a round can be walked
@@ -6234,6 +6587,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
+  { key: "page", label: "Page", options: ["summary", "list"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -6410,6 +6764,7 @@ function StoragePlan(): React.ReactNode {
             '  deviceRow("hidden" | "shown")      a row for the device itself at the top of the final layout',
             '  rowNote("plain" | "outlined")      the second line under a value as plain text, or boxed',
             '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
+            '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -6447,6 +6802,7 @@ function StoragePlan(): React.ReactNode {
       deviceRow: (deviceRow) => patch({ deviceRow }),
       rowNote: (rowNote) => patch({ rowNote }),
       noteColor: (noteColor) => patch({ noteColor }),
+      page: (page) => patch({ page }),
       bootDebug: () => bootDebugRef.current(),
     };
 
@@ -6612,9 +6968,19 @@ function StoragePlan(): React.ReactNode {
     setIsPanelOpen(true);
   };
 
+  /* The summary speaks for a plan of one entry, and only for one it can read
+     as a device: a lone volume group is a plan about disks it does not name.
+     Anything longer keeps the list until the index is built. */
+  const single =
+    rows.length === 1 && rows[0].collection !== "volumeGroups" ? (rows[0] as Selection) : null;
+  const showsSummary = variants.page === "summary" && single !== null;
+
   const bar = (
     <PlanBar
       destructive={destructive}
+      showsCost={!showsSummary}
+      isSticky={!showsSummary}
+      actions={showsSummary ? <AddDeviceActions /> : undefined}
       onShowBoot={goToBoot}
       onShowEncryption={goToEncryption}
       onShowResult={() => {
@@ -6626,6 +6992,28 @@ function StoragePlan(): React.ReactNode {
       }}
     />
   );
+
+  /* What the reader sees before opening anything: the summary of the plan, or
+     the list of what it is made of. The bar closes the summary and heads the
+     list, since one is read to the end and the other is scanned. */
+  const page =
+    showsSummary && single ? (
+      <>
+        <PlanNotices />
+        <PlanSummary
+          collection={single.collection as PartitionableCollection}
+          index={single.index}
+          onOpenSheet={() => goToDevice(single)}
+        />
+        {bar}
+      </>
+    ) : (
+      <>
+        {bar}
+        <PlanNotices />
+        {list}
+      </>
+    );
 
   const drawer = (isStatic: boolean) => (
     <Drawer
@@ -6651,11 +7039,7 @@ function StoragePlan(): React.ReactNode {
         {/* The bar belongs to the list, not above the pair, so the panel
             covers it the way it covers everything else on that side. It
             stays pinned by sticking to the top of the list's own scroll. */}
-        <DrawerContentBody>
-          {bar}
-          <PlanNotices />
-          {list}
-        </DrawerContentBody>
+        <DrawerContentBody>{page}</DrawerContentBody>
       </DrawerContent>
     </Drawer>
   );
@@ -6672,15 +7056,7 @@ function StoragePlan(): React.ReactNode {
     drawer(false)
   ) : (
     <div id={PANEL_ID} className="agm-plan-narrow">
-      {hasPanelContent ? (
-        panelBody
-      ) : (
-        <>
-          {bar}
-          <PlanNotices />
-          {list}
-        </>
-      )}
+      {hasPanelContent ? panelBody : page}
     </div>
   );
 
