@@ -7285,7 +7285,7 @@ const PlanOverview = ({
           /* Not the disks by name: the list under it names them, and a sentence
              is not a list. What the summary says is that the plan takes more
              than one device, which is the thing the list cannot say in a row. */
-          title={t("Use multiple devices to set up the new system")}
+          title={t("Set up the new system across multiple devices")}
           /* Not a disk: no single disk is what this page is about. Which mark
              says "more than one device" best is a question for the eye, so the
              candidates are one switch apart. */
@@ -7298,7 +7298,7 @@ const PlanOverview = ({
              them: a phrase split around a button cannot be translated, since
              the order of its halves belongs to the language. */
           body={t(
-            "The list below shows how the new system is structured. Explore and set up each entry, or add more devices to the plan.",
+            "Review and configure the entries below. You can change, remove, or add entries as needed.",
           )}
           secondary={<ConfigureDeviceMenu />}
           lines={
