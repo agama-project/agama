@@ -2416,7 +2416,7 @@ const SettingsList = ({
   });
 
   return (
-    <Stack hasGutter>
+    <Stack className="agm-plan-settings-runs">
       {runs.map((run) => (
         <StackItem key={run.items[0].key}>
           <DescriptionList
@@ -3214,6 +3214,7 @@ const DeviceResultSection = ({
 const PanelHeader = ({
   title,
   description,
+  marks,
   subtitle,
   path,
   onClose,
@@ -3222,6 +3223,8 @@ const PanelHeader = ({
   title: string;
   /** Facts about the thing named, read on the title line beside the name. */
   description?: string;
+  /** What the thing is, in the words the list marks it with. */
+  marks?: string[];
   /** A sentence about it, which needs a line of its own to stay readable. */
   subtitle?: string;
   path?: string;
@@ -3238,6 +3241,14 @@ const PanelHeader = ({
       <FlexItem>
         <h2 className="agm-plan-panel-title" id="agm-plan-panel-title">
           <Text isBold>{title}</Text> <span className="agm-plan-panel-facts">{description}</span>
+          {/* The same mark the list puts beside the same name, so the entry a
+              reader clicked and the panel that opens carry the same words. */}
+          {marks?.map((mark) => (
+            <React.Fragment key={mark}>
+              {" "}
+              <Label isCompact>{mark}</Label>
+            </React.Fragment>
+          ))}
         </h2>
         {subtitle && <div className="agm-plan-panel-subtitle">{subtitle}</div>}
         {/* The one identifier that survives a reboot renaming vdd to vde, and
@@ -4598,7 +4609,7 @@ const PLAN_CSS = `
   overflow-y: auto;
 }
 
-.agm-plan-section-body { padding-block-start: var(--pf-t--global--spacer--sm); }
+.agm-plan-section-body { padding-block-start: var(--pf-t--global--spacer--xs); }
 
 .agm-plan-section-intro {
   margin-block-start: var(--pf-t--global--spacer--xs);
@@ -5110,7 +5121,15 @@ const PLAN_CSS = `
 /* Room on both sides of it, so the rule reads as a break rather than as an
    underline for the line above. */
 .agm-plan-note-rule {
-  margin-block: var(--pf-t--global--spacer--md);
+  margin-block: var(--pf-t--global--spacer--sm);
+}
+
+/* One list of statements split into runs by how each reads, so the gap between
+   two runs is the gap between two statements, not the gap between two lists. */
+.agm-plan-settings-runs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pf-t--global--spacer--sm);
 }
 `;
 
@@ -5879,6 +5898,7 @@ const PartitionableHeader = ({
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
   const systemDevice = useDevice(device?.name || "");
+  const boots = bootRoleOf(config, device?.name || "") !== "none";
 
   if (!device) return null;
 
@@ -5886,6 +5906,7 @@ const PartitionableHeader = ({
     <PanelHeader
       title={baseName(device.name)}
       description={partitionableDescription(systemDevice)}
+      marks={boots ? [t("Boot device")] : []}
       path={systemDevice?.block?.udevPaths?.[0]}
       onClose={onClose}
       actions={<PartitionableActions collection={collection} index={index} />}
