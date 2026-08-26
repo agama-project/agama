@@ -109,7 +109,9 @@ const machine = (disks: DiskSpec[]): System.Device[] => {
       name: disk.name,
       description: disk.model || "Disk",
       class: "drive",
-      drive: { type: "disk", model: disk.model },
+      /* The whole shape the system endpoint serves, `info` included: what
+         reads a device does not guard against a half filled one. */
+      drive: { type: "disk", model: disk.model, info: { sdCard: false, dellBoss: false } },
       block: {
         active: true,
         encrypted: false,
@@ -126,11 +128,28 @@ const machine = (disks: DiskSpec[]): System.Device[] => {
         },
       }),
       partitions,
+      logicalVolumes: [],
     });
   }
 
   return devices;
 };
+
+/** What a file system is called on a row, rather than the model's own spelling. */
+const FS_LABELS: Partial<Record<ConfigModel.FilesystemType, string>> = {
+  btrfs: "Btrfs",
+  btrfsSnapshots: "Btrfs",
+  btrfsImmutable: "Btrfs",
+  swap: "Swap",
+  xfs: "XFS",
+  ext2: "Ext2",
+  ext3: "Ext3",
+  ext4: "Ext4",
+  vfat: "FAT",
+  ntfs: "NTFS",
+};
+
+const fsLabel = (type?: ConfigModel.FilesystemType): string => (type && FS_LABELS[type]) || "Ext4";
 
 /** The file system a volume is created with, as the model writes one. */
 const fs = (type: ConfigModel.FilesystemType): ConfigModel.Filesystem => ({
@@ -295,7 +314,9 @@ const lvmOverThreeDisks: Scenario = {
         partitions: [{ name: "/dev/sda2", mountPath: "/data", filesystem: fs("xfs") }],
       },
       { name: "/dev/sdb", spacePolicy: "delete", partitions: [] },
-      { name: "/dev/sdc", mountPath: "/saca", filesystem: fs("xfs") },
+      /* Every drive carries a partitions list, empty or not: the model the
+         backend serves always has one, and what reads it does not guard. */
+      { name: "/dev/sdc", mountPath: "/saca", filesystem: fs("xfs"), partitions: [] },
     ],
     volumeGroups: [
       {
@@ -416,10 +437,12 @@ const decideExisting = (
   const decisions = new Map<number, Decision>();
   const conditional: System.Device[] = [];
 
-  let free = (system.partitionTable?.unusedSlots || []).reduce(
-    (total, slot) => total + slot.size,
-    0,
-  );
+  /* What the disk has over what its partitions take, rather than what the
+     partition table reports: a disk with no table at all reports no slots and
+     is entirely free. */
+  let free =
+    (system.block?.size ?? 0) -
+    partitions.reduce((total, partition) => total + (partition.block?.size ?? 0), 0);
 
   for (const partition of partitions) {
     const entry = partitionEntry(device, partition.name);
@@ -511,10 +534,9 @@ export const simulate = (system: System.Device[], config: ConfigModel.Config): B
     const wanted = spaceWanted(entry, config, entry.name === bootDevice);
     const decisions = decideExisting(entry, source, wanted);
     const kept: System.Device[] = [];
-    let free = (source.partitionTable?.unusedSlots || []).reduce(
-      (total, slot) => total + slot.size,
-      0,
-    );
+    let free =
+      (source.block?.size ?? 0) -
+      (source.partitions || []).reduce((total, one) => total + (one.block?.size ?? 0), 0);
 
     for (const partition of source.partitions || []) {
       const decision = decisions.get(partition.sid) || { kind: "keep" };
@@ -561,14 +583,21 @@ export const simulate = (system: System.Device[], config: ConfigModel.Config): B
     }
 
     const created: System.Device[] = [];
-    let index = (source.partitions || []).length + 1;
+    /* The numbers a disk has left, continued: a partition table does not skip
+       a number because the partition that had it was deleted. */
+    const taken = new Set(kept.map((partition) => Number(partition.name.replace(/^\D+/, "")) || 0));
+    let index = 1;
+    const nextNumber = () => {
+      while (taken.has(index)) index += 1;
+      taken.add(index);
+      return index;
+    };
     const add = (spec: {
       size: number;
       description: string;
       filesystem?: { type: System.FilesystemType; mountPath?: string };
     }) => {
-      const name = `${entry.name}${index}`;
-      index += 1;
+      const name = `${entry.name}${nextNumber()}`;
       const device: System.Device = {
         sid: nextSid(),
         name,
@@ -616,15 +645,27 @@ export const simulate = (system: System.Device[], config: ConfigModel.Config): B
       free -= BOOT_SIZE;
     }
 
-    for (const partition of (entry.partitions || []).filter((one) => !one.name)) {
-      const size = Math.min(
-        Math.max(partition.size?.min || DEFAULT_VOLUME_SIZE, 0),
-        Math.max(free, 0),
-      );
+    const volumes = (entry.partitions || []).filter((one) => !one.name);
+    /* Room left once every volume has its minimum goes to the one that asked
+       for the most, which is the crudest reading of a proposal filling a disk
+       rather than leaving it half empty. */
+    const asked = volumes.reduce((total, one) => total + (one.size?.min || DEFAULT_VOLUME_SIZE), 0);
+    const groupsHere = (config.volumeGroups || []).filter((group) =>
+      (group.targetDevices || []).includes(entry.name),
+    );
+    const biggest = volumes.reduce(
+      (best, one) => ((one.size?.min || DEFAULT_VOLUME_SIZE) > (best?.size?.min || 0) ? one : best),
+      volumes[0],
+    );
+    const spare = groupsHere.length ? 0 : Math.max(free - asked, 0);
+
+    for (const partition of volumes) {
+      const min = partition.size?.min || DEFAULT_VOLUME_SIZE;
+      const size = Math.min(min + (partition === biggest ? spare : 0), Math.max(free, 0));
       free -= size;
       add({
         size,
-        description: `${(partition.filesystem?.type || "ext4").toUpperCase()} Partition`,
+        description: `${fsLabel(partition.filesystem?.type)} Partition`,
         filesystem: {
           type: (partition.filesystem?.type as System.FilesystemType) || "ext4",
           mountPath: partition.mountPath,
@@ -634,9 +675,7 @@ export const simulate = (system: System.Device[], config: ConfigModel.Config): B
 
     /* Whatever is left goes to the groups this disk feeds, split between them
        in the proportion they asked for. */
-    const groups = (config.volumeGroups || []).filter((group) =>
-      (group.targetDevices || []).includes(entry.name),
-    );
+    const groups = groupsHere;
     if (groups.length && free > 0) {
       const shares = groups.map((group) =>
         (group.logicalVolumes || [])
@@ -679,7 +718,7 @@ export const simulate = (system: System.Device[], config: ConfigModel.Config): B
       const device: System.Device = {
         sid: nextSid(),
         name: `/dev/${group.vgName}/${name}`,
-        description: `${(lv.filesystem?.type || "ext4").toUpperCase()} LV`,
+        description: `${fsLabel(lv.filesystem?.type)} LV`,
         class: "logicalVolume",
         block: {
           active: true,

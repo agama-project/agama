@@ -222,8 +222,8 @@ type CostLayout = "stacked" | "inline";
 type SettingsPlace = "top" | "bottom";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
-/** How the sheet is shown: over the page, or in it. */
-type PanelMode = "drawer" | "inline";
+/** How the drawer holding the sheet opens. */
+type PanelMode = "slide" | "over" | "inline";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -322,10 +322,11 @@ const DEFAULT_VARIANTS: Variants = {
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
-  /* Over the page, which keeps one mental model: the summary stays behind
-     the sheet and closing it returns the reader where they were. Inline
-     gives the sheet the whole frame and is the shape to compare it against. */
-  panelMode: "drawer",
+  /* The sheet comes over the page, and the page takes the width the sheet
+     leaves it rather than staying centred behind it. What is too wide for
+     what is left is cut off, which is the trade this makes on purpose:
+     a strip of blank page beside an open sheet is worse. */
+  panelMode: "slide",
 };
 
 type PlanApi = {
@@ -631,6 +632,8 @@ const parseId = (id: string): Selection | null => {
 };
 
 const PANEL_ID = "storage-plan-panel";
+/** How much of the window the sheet takes when it comes over the page. */
+const PANEL_WIDTH = "80%";
 const LIST_ID = "storage-plan-list";
 const XL = "(min-width: 1200px)";
 /* Wide enough for the list to stay readable with a panel over part of it, and
@@ -5651,6 +5654,19 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
+/* The page under an open sheet takes the width the sheet leaves it, so a
+   summary centred in the window is not read from behind the panel while the
+   strip beside it sits blank. Nothing about the page is rearranged for it:
+   what does not fit the strip is cut off, which is the trade.
+
+   On our own wrapper rather than on the drawer's content box: the panel is
+   positioned against that box, so narrowing it takes the panel with it. */
+.agm-plan-drawer-slide.pf-m-expanded .agm-plan-summary-page {
+  max-width: calc(100% - ${PANEL_WIDTH});
+  overflow-x: hidden;
+  transition: max-width var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out;
+}
+
 /* A list for what it tells a screen reader, and not for its markers: these
    lines carry a mark of their own. */
 .agm-plan-costs {
@@ -7068,18 +7084,16 @@ const PlanSummary = ({
       facts={partitionableDescription(systemDevice)}
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
+      onOpen={() => onOpenTab("result")}
       onGoTo={onOpenTab}
-      primary={
-        <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
-          {t("See details")}
-        </Button>
-      }
       secondary={
-        <RetargetButton
-          device={device}
-          label={t("Change installation device")}
-          variant="secondary"
-        />
+        <>
+          <RetargetButton device={device} label={t("Change installation device")} />
+          {/* Beside it rather than under the page: changing the device and
+              adding another are the two things a reader does about the device
+              the sentence names. */}
+          <ConfigureDeviceMenu />
+        </>
       }
     />
   );
@@ -7279,7 +7293,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
-  { key: "panelMode", label: "Sheet", options: ["drawer", "inline"] },
+  { key: "panelMode", label: "Drawer", options: ["slide", "over", "inline"] },
   {
     key: "data",
     label: "Machine",
@@ -7425,8 +7439,7 @@ function StoragePlan({
      four fifths there is no share left to give: a list squeezed into the last
      fifth is neither readable nor worth keeping on screen, and the reader still
      has the row they picked behind the panel. */
-  const isWideEnough = useMedia(LG);
-  const isFloating = isWideEnough && variants.panelMode === "drawer";
+  const isFloating = useMedia(LG);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -7484,7 +7497,7 @@ function StoragePlan({
             '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
-            '  panelMode("drawer" | "inline")     the sheet over the page, or taking its place in it',
+            '  panelMode("slide"|"over"|"inline") the page moves over, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -7803,10 +7816,17 @@ function StoragePlan({
     </>
   );
 
+  /* Inline, the panel takes its width out of the page and the two share the
+     window. Otherwise it comes over the page, which either keeps its width
+     and is covered, or gives way to the sheet and uses what is left. */
+  const isInlineDrawer = variants.panelMode === "inline";
+
   const drawer = (isStatic: boolean) => (
     <Drawer
       isExpanded={isStatic ? isPanelOpen : isPanelOpen && hasPanelContent}
       isStatic={isStatic}
+      isInline={isInlineDrawer}
+      className={variants.panelMode === "slide" ? "agm-plan-drawer-slide" : undefined}
       position="end"
     >
       <DrawerContent
@@ -7817,8 +7837,8 @@ function StoragePlan({
                being scanned rather than read. Set as a size rather than through
                the widths prop, whose steps jump from three quarters to the
                whole width. */
-            defaultSize="80%"
-            className={isStatic ? undefined : "agm-plan-panel-floating"}
+            defaultSize={isInlineDrawer ? "60%" : PANEL_WIDTH}
+            className={isStatic || isInlineDrawer ? undefined : "agm-plan-panel-floating"}
           >
             <DrawerPanelBody hasNoPadding>{panelBody}</DrawerPanelBody>
           </DrawerPanelContent>
