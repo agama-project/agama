@@ -333,8 +333,8 @@ describe("ProposalResultTable", () => {
      * "Unused space 3.49 GiB"
      * "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB"
      * "Unused space 1 GiB"
-     * "vdc4 Linux Before 2 GiB 1.5 GiB"
-     * "vdc5 / New Btrfs Partition 17.5 GiB"
+     * "vdc4 Linux 1.5 GiB Shrunk from 2 GiB"
+     * "vdc5 / Btrfs Partition Newly created 17.5 GiB"
      *
      * Device      Mount point      Details                                 Size
      * -------------------------------------------------------------------------
@@ -349,12 +349,12 @@ describe("ProposalResultTable", () => {
      * -------------------------------------------------------------------------
      */
     within(treegrid).getByRole("row", { name: "/dev/vdc Disk GPT 30 GiB" });
-    within(treegrid).getByRole("row", { name: "vdc1 BIOS Boot Partition New 8 MiB" });
-    within(treegrid).getByRole("row", { name: "vdc3 swap Swap Partition New 1.5 GiB" });
+    within(treegrid).getByRole("row", { name: "vdc1 BIOS Boot Partition Newly created 8 MiB" });
+    within(treegrid).getByRole("row", { name: "vdc3 swap Swap Partition Newly created 1.5 GiB" });
     within(treegrid).getByRole("row", { name: "Unused space 3.49 GiB" });
     within(treegrid).getByRole("row", { name: "vdc2 openSUSE Leap 15.2, Fedora 10.30 5 GiB" });
     within(treegrid).getByRole("row", { name: "Unused space 1 GiB" });
-    within(treegrid).getByRole("row", { name: "vdc4 Linux 1.5 GiB Before 2 GiB" });
-    within(treegrid).getByRole("row", { name: "vdc5 / Btrfs Partition New 17.5 GiB" });
+    within(treegrid).getByRole("row", { name: "vdc4 Linux 1.5 GiB Shrunk from 2 GiB" });
+    within(treegrid).getByRole("row", { name: "vdc5 / Btrfs Partition Newly created 17.5 GiB" });
   });
 });

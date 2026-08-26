@@ -21,7 +21,7 @@
  */
 
 import React from "react";
-import { Label, Flex } from "@patternfly/react-core";
+import { Flex } from "@patternfly/react-core";
 import {
   DeviceName,
   DeviceDetails,
@@ -62,26 +62,36 @@ const DeviceCustomDetails = ({
   devicesManager: DevicesManager;
   link?: (device: Proposal.Device) => React.ReactNode;
 }) => {
-  const isNew = () => {
-    const device = toDevice(item);
-    if (!device) return false;
-
-    // FIXME New PVs over a disk is not detected as new.
-    return !devicesManager.existInSystem(device) || devicesManager.hasNewFilesystem(device);
-  };
-
   const device = toDevice(item);
 
+  /* What the installer does to the device, where it does anything: the device
+     is not there yet, or it is there and gets a new file system. Said in words
+     under the details rather than marked, so the reader is not left to work out
+     what a mark on a row means. */
+  // FIXME New PVs over a disk is not detected as new.
+  const change = () => {
+    if (!device) return null;
+    // TRANSLATORS: reads under the details of a device that does not exist yet and
+    // that the installer creates.
+    if (!devicesManager.existInSystem(device)) return { kind: "created", text: _("Newly created") };
+    // TRANSLATORS: reads under the details of a device that already exists and that
+    // the installer formats, which destroys what is on it.
+    if (devicesManager.hasNewFilesystem(device))
+      return { kind: "reformatted", text: _("Reformatted") };
+
+    return null;
+  };
+
+  const note = change();
+
   return (
-    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
-      <DeviceDetails item={item} />
-      {device && link?.(device)}
-      {isNew() && (
-        <Label color="green" isCompact>
-          {_("New")}
-        </Label>
-      )}
-    </Flex>
+    <>
+      <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
+        <DeviceDetails item={item} />
+        {device && link?.(device)}
+      </Flex>
+      {note && <div className={`agm-row-note agm-row-note-${note.kind}`}>{note.text}</div>}
+    </>
   );
 };
 
@@ -102,18 +112,18 @@ const DeviceCustomSize = ({
     : toPartitionSlot(item)?.size;
 
   return (
-    <Flex direction={{ default: "row" }} gap={{ default: "gapXs" }}>
+    <>
       <DeviceSize item={item} />
       {isResized && (
-        <Label color="orange" isCompact>
+        <div className="agm-row-note agm-row-note-shrunk">
           {
-            // TRANSLATORS: Label to indicate the device size before resizing, where %s is
-            // replaced by the original size (e.g., 3.00 GiB).
-            sprintf(_("Before %s"), deviceSize(sizeBefore))
+            // TRANSLATORS: reads under the size a device ends up with, where %s is the
+            // size it has today (e.g., 3.00 GiB).
+            sprintf(_("Shrunk from %s"), deviceSize(sizeBefore))
           }
-        </Label>
+        </div>
       )}
-    </Flex>
+    </>
   );
 };
 
@@ -139,7 +149,7 @@ const columns: (
 
   return [
     { name: _("Device"), value: renderDevice },
-    { name: _("Mount Point"), value: renderMountPoint },
+    { name: _("Mount point"), value: renderMountPoint },
     { name: _("Details"), value: renderDetails },
     { name: _("Size"), value: renderSize, classNames: "sizes-column" },
   ];
@@ -147,8 +157,8 @@ const columns: (
 
 type ProposalResultTableProps = {
   devicesManager: DevicesManager;
-  /** Devices to render, each with its own children. */
-  devices: Proposal.Device[];
+  /** Rows to render, each with its own children. */
+  devices: TableItem[];
   /** Reads beside a row's details: where the device the row describes is used. */
   deviceLink?: (device: Proposal.Device) => React.ReactNode;
 };

@@ -324,3 +324,22 @@ nav.agm-breadcrumb h1 {
   white-space: pre;
   overflow: auto;
 }
+
+// What qualifies the value above it: the size a device had before it was
+// shrunk, what the installer does to it. Small and monospaced, since it is not
+// another value in a column read from top to bottom.
+.agm-row-note {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
+  line-height: 1.4;
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+// Sizes are compared by looking down the column rather than by reading, which
+// asks for one edge to line them up on and figures of an even width.
+.sizes-column {
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
