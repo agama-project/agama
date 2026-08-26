@@ -632,11 +632,11 @@ impl SetConfigAction {
                 )
                 .depends_on(dependencies)
                 .run(|| async move {
-                    handler
-                        .update_config(network_config)
-                        .await
-                        .map_err(TaskError::from_error)?;
-                    handler.apply().await.map_err(TaskError::from_error)?;
+                    if let Err(error) = handler.update_config(network_config).await {
+                        tracing::error!("Failed to update the network configuration: {error}");
+                    } else if let Err(error) = handler.apply().await {
+                        tracing::error!("Failed to apply the network configuration: {error}");
+                    }
                     Ok(())
                 })
                 .await,

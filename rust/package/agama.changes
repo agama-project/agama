@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 26 12:06:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not cancel remaining tasks if some part of the network
+  configuration cannot be applied (bsc#1276875).
+
+-------------------------------------------------------------------
 Wed Aug 26 09:57:09 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - "agama config generate" prints unsupported AutoYaST elements
