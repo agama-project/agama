@@ -318,10 +318,9 @@ const DEFAULT_VARIANTS: Variants = {
      who stops after the first line has stopped at the worst one. The run
      costs less height and asks the reader to find the middot. */
   costLayout: "stacked",
-  /* Storage, since the page is about what the installation is spread over
-     rather than about any one disk. The other three are in the switch to be
-     looked at against it. */
-  planIcon: "storage",
+  /* Stacks: things of the same kind, one behind the other, which is what a
+     plan of several devices looks like. The other three are one switch away. */
+  planIcon: "stacks",
   /* Beside the installation menu, since boot and encryption are decisions
      about the installation rather than about anything the page reports.
      Under the summary they read as a footnote to the device. */
@@ -7344,7 +7343,7 @@ const VARIANT_CONTROLS: VariantControl[] = [
   {
     key: "planIcon",
     label: "Plan mark",
-    options: ["storage", "stacks", "web_stories", "workspaces"],
+    options: ["stacks", "storage", "web_stories", "workspaces"],
   },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
