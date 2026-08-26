@@ -6914,7 +6914,6 @@ const SummaryDetail = ({
  */
 const PlanHeadline = ({
   title,
-  onOpen,
   icon = "hard_drive",
   facts,
   costsLabel,
@@ -6923,10 +6922,8 @@ const PlanHeadline = ({
   primary,
   secondary,
 }: {
-  /** The sentence the page opens with. */
-  title: string;
-  /** Where the sentence leads, where the thing it names has a sheet of its own. */
-  onOpen?: () => void;
+  /** The sentence the page opens with, and whatever in it is a control. */
+  title: React.ReactNode;
   /** The mark over the sentence. */
   icon?: React.ComponentProps<typeof Icon>["name"];
   /** What the device is, in one phrase. */
@@ -6952,17 +6949,7 @@ const PlanHeadline = ({
       headingLevel="h2"
       titleText={
         <>
-          {/* The name of the thing is the way to it, so the page spends no
-              button on saying so. What the control does is not in the sentence,
-              so a screen reader is told. */}
-          {onOpen ? (
-            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onOpen}>
-              {title}
-              <span className="pf-v6-u-screen-reader">{t(", see what it holds")}</span>
-            </Button>
-          ) : (
-            title
-          )}
+          {title}
           {inline && <span className="agm-plan-panel-facts"> {facts}</span>}
         </>
       }
@@ -7076,15 +7063,28 @@ const PlanSummary = ({
 
   return (
     <PlanHeadline
+      /* The name of the disk is the way to it, and only the name: the sentence
+         around it is what the disk is for, not somewhere to go. Written as one
+         phrase with the name in it rather than as three pieces glued together,
+         which is what `Interpolate` is for once this leaves the playground. */
       title={
-        boots
-          ? t(`Using ${name} as installation and boot device`)
-          : t(`Using ${name} as installation device`)
+        <>
+          {t("Use ")}
+          <Button
+            variant="link"
+            isInline
+            aria-controls={PANEL_ID}
+            onClick={() => onOpenTab("result")}
+          >
+            {name}
+            <span className="pf-v6-u-screen-reader">{t(", see what it holds")}</span>
+          </Button>
+          {boots ? t(" as installation and boot device") : t(" as installation device")}
+        </>
       }
       facts={partitionableDescription(systemDevice)}
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
-      onOpen={() => onOpenTab("result")}
       onGoTo={onOpenTab}
       secondary={
         <>
