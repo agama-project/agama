@@ -80,6 +80,7 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  Divider,
   DropdownItem,
   DropdownList,
   EmptyState,
@@ -2187,6 +2188,11 @@ const PanelSection = ({
 
   const body = <div className="agm-plan-section-body">{children}</div>;
 
+  /* A rule between what the tab says about itself and what it holds. The two
+     are different kinds of thing at the same size, and reading down the panel
+     there was nothing to say where one ended. */
+  const rule = <Divider className="agm-plan-note-rule" />;
+
   if (isTabbed) {
     /* A tab whose head holds nothing renders none: the head reserves the height
        of a heading it is not drawing, which under tabs pushes the content down
@@ -2196,6 +2202,7 @@ const PanelSection = ({
     return (
       <div className={`agm-plan-section agm-plan-section-scroll-${scroll}`}>
         {before}
+        {before && rule}
         {hasHead && head}
         {body}
       </div>
@@ -2239,12 +2246,16 @@ const TAB_ICONS: Record<PanelTab, React.ComponentProps<typeof Icon>["name"]> = {
   current: "hard_drive",
 };
 
-/* The first sentence of each explanation, cut to a phrase. Read together the
-   three say what the panel is for before any of them is opened. */
+/* Three phrases of one shape, so the strip reads as one question answered three
+   ways: when. Naming the moment each tab is about beats describing it, which is
+   what left the middle two saying almost the same thing.
+
+   None of them names partitions or volumes: the same strip serves a disk, a
+   RAID and a volume group, and what each holds goes by a different word. */
 const TAB_SUMMARIES: Record<PanelTab, string> = {
-  result: "How it ends up",
-  planned: "What it will hold",
-  current: "What is on it now",
+  result: "After installing",
+  planned: "For the new system",
+  current: "Already here",
 };
 
 /**
@@ -2834,19 +2845,25 @@ const NewSystemSection = ({
     <PanelSection
       title={t(SECTION_TITLES.planned)}
       icon="list_alt"
-      before={explanation}
+      /* What the tab says about itself and what it says about the device read
+         as one block above the rule: both are statements, neither is content.
+
+         Stacked, not inline: these statements carry a sentence rather than a
+         value, and a sentence set beside its term runs on from it. */
+      before={
+        explanation || statements?.length ? (
+          <>
+            {explanation}
+            {statements && statements.length > 0 && (
+              <div className="agm-plan-statements">
+                <SettingsList settings={statements} layout="stacked" />
+              </div>
+            )}
+          </>
+        ) : undefined
+      }
       headingId={headingId}
     >
-      {/* Every explanation in the tab sits at the same inset, so the ones about
-          the device as a whole line up with the one about the tab.
-
-          Stacked, not inline: these statements carry a sentence rather than a
-          value, and a sentence set beside its term runs on from it. */}
-      {statements && statements.length > 0 && (
-        <div className="agm-plan-statements">
-          <SettingsList settings={statements} layout="stacked" />
-        </div>
-      )}
       {formatted && (
         <div className="agm-plan-muted">
           <div>{asWhole()}</div>
@@ -2885,16 +2902,6 @@ const NewSystemSection = ({
             <EmptyStateActions>{addPrimary}</EmptyStateActions>
           </EmptyStateFooter>
         </EmptyState>
-      )}
-      {/* After everything the tab has to say, and before the table it acts on:
-          in the head it read as an action on the explanations under it. */}
-      {(formatted || volumes.length > 0) && (
-        <Flex
-          justifyContent={{ default: "justifyContentFlexEnd" }}
-          className="agm-plan-section-action"
-        >
-          {formatted ? edit : add}
-        </Flex>
       )}
       {!formatted && volumes.length > 0 && (
         <table className="agm-plan-table" aria-label={t(SECTION_TITLES.planned)}>
@@ -2985,6 +2992,11 @@ const NewSystemSection = ({
             })}
           </tbody>
         </table>
+      )}
+      {/* Under what it adds to and against the leading edge, which is where the
+          device list offers the same thing. */}
+      {(formatted || volumes.length > 0) && (
+        <Flex className="agm-plan-section-action">{formatted ? edit : add}</Flex>
       )}
     </PanelSection>
   );
@@ -4981,6 +4993,17 @@ const PLAN_CSS = `
   font-weight: var(--pf-t--global--font--weight--body--bold);
 }
 
+/* The mark keeps a gutter of its own, so what a statement says lines up with
+   the name of the statement rather than with the mark beside it. Built from the
+   two measurements PatternFly gives the mark, so the column stays true if
+   either changes. */
+.agm-plan-statements .pf-v6-c-description-list__description {
+  padding-inline-start: calc(
+    var(--pf-v6-c-description-list__term-icon--MinWidth) +
+      var(--pf-v6-c-description-list__term-icon--MarginInlineEnd)
+  );
+}
+
 /* The inset does not cost the panel its own layout: what is inside a tab still
    stretches and scrolls the way it did as a direct child. */
 .agm-plan-tab-body {
@@ -5070,6 +5093,12 @@ const PLAN_CSS = `
 
 .agm-plan-tabs .pf-v6-c-tabs__scroll-button {
   display: none;
+}
+
+/* Room on both sides of it, so the rule reads as a break rather than as an
+   underline for the line above. */
+.agm-plan-note-rule {
+  margin-block: var(--pf-t--global--spacer--md);
 }
 `;
 
