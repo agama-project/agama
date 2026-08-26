@@ -6916,6 +6916,7 @@ const PlanHeadline = ({
   title,
   icon = "hard_drive",
   facts,
+  body,
   costsLabel,
   lines,
   onGoTo,
@@ -6928,6 +6929,8 @@ const PlanHeadline = ({
   icon?: React.ComponentProps<typeof Icon>["name"];
   /** What the device is, in one phrase. */
   facts?: string;
+  /** A line about what the reader does next, where the page has more to it. */
+  body?: string;
   /** Names the block of cost lines, for a reader moving by heading. */
   costsLabel: string;
   /** Empty where what the plan costs is read under the summary rather than in it. */
@@ -6959,6 +6962,7 @@ const PlanHeadline = ({
         {/* Under the sentence and set the way the sheet sets a fact about a
             device: small, subtle and monospaced, so a name reads as a name. */}
         {facts && !inline && <div className="agm-row-note">{facts}</div>}
+        {body && <Content component="p">{body}</Content>}
         {/* The lines are a group with a name of its own, so a reader moving by
             heading reaches them as one thing rather than as loose text under
             the sentence. Nothing here is worth a visible heading: each line
@@ -7248,21 +7252,13 @@ const PlanOverview = ({
         <PlanHeadline
           title={t(`Installing on ${namedOrMore(names)}`)}
           costsLabel={t("What happens to this machine")}
+          /* What to do next, said where the reader is looking, rather than as a
+             paragraph over the list explaining what a list of devices is. */
+          body={t("Explore and set up how they are structured in the list below.")}
           lines={
             overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
           }
         />
-      </FlexItem>
-      <FlexItem>
-        {/* A sentence rather than a heading: the list under it is the page's
-            subject, and a title over it would announce what the reader can
-            already see. It says what the list holds, which the names alone do
-            not. */}
-        <Content component="p" className="agm-plan-muted">
-          {t(
-            "What the new system is built on: the devices to use, and the volume groups and RAIDs defined over them.",
-          )}
-        </Content>
       </FlexItem>
       <FlexItem>
         <DeviceList
