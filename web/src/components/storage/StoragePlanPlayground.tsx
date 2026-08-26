@@ -128,36 +128,28 @@ import {
 } from "~/components/storage/utils";
 import { deviceSystems, supportShrink } from "~/model/storage/device";
 import { formatList } from "~/i18n";
+import { SCENARIOS, simulate } from "~/components/storage/StoragePlanScenarios";
 import { sum, unique } from "radashi";
 import { generateEncodedPath } from "~/utils";
 import { typeDescription } from "~/components/storage/utils/device";
 import {
-  useActions,
-  useProposal as useStorageProposal,
-  useDevices as useStagingTree,
-  useFlattenDevices as useStagingDevices,
+  useActions as useRealActions,
+  useProposal as useRealStorageProposal,
+  useDevices as useRealStagingTree,
+  useFlattenDevices as useRealStagingDevices,
 } from "~/hooks/model/proposal/storage";
 import { useAnnounce } from "~/context/announcer";
-import { useIssues } from "~/hooks/model/issue";
-import { useReset } from "~/hooks/model/config/storage";
+import { useIssues as useRealIssues } from "~/hooks/model/issue";
+import { useReset as useRealReset } from "~/hooks/model/config/storage";
 import { useSystem as useBootloaderSystem } from "~/hooks/model/system/bootloader";
-import { useAvailableDevices, useDevice, useFlattenDevices } from "~/hooks/model/system/storage";
+import {
+  useAvailableDevices as useRealAvailableDevices,
+  useDevice as useRealDevice,
+  useFlattenDevices as useRealFlattenDevices,
+} from "~/hooks/model/system/storage";
 import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import {
-  useAddDrive,
-  useAddMdRaid,
-  useAddVolumeGroup,
-  useConfigModel,
-  useConvertDevice,
-  useDeleteDrive,
-  useDeleteMdRaid,
-  useDeleteLogicalVolume,
-  useDeletePartition,
-  useDeleteVolumeGroup,
-  useSetSpacePolicy,
-  useSetBootDevice,
-  useSetDefaultBootDevice,
-  useDisableBoot,
+  useConfigModel as useRealConfigModel,
   STORAGE_MODEL_QUERY_KEY,
 } from "~/hooks/model/storage/config-model";
 import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
@@ -167,6 +159,7 @@ import type { ConfigModel } from "~/model/storage/config-model";
 import type { Bootloader, Storage } from "~/model/system";
 import type { Storage as Proposal } from "~/model/proposal";
 import type { TranslatedString } from "~/i18n";
+import type { ScenarioKey } from "~/components/storage/StoragePlanScenarios";
 
 /** Marks a literal as translated. Playground text never reaches the catalogs. */
 const t = (text: string): TranslatedString => text as TranslatedString;
@@ -227,6 +220,8 @@ type OverviewCosts = "hidden" | "shown";
 type CostLayout = "stacked" | "inline";
 /** Where the two machine wide decisions are read. */
 type SettingsPlace = "top" | "bottom";
+/** Which machine the page reads: this one, or one of the scenarios. */
+type DataSource = "real" | ScenarioKey;
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -261,6 +256,7 @@ type Variants = {
   overviewCosts: OverviewCosts;
   costLayout: CostLayout;
   settingsPlace: SettingsPlace;
+  data: DataSource;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -320,6 +316,9 @@ const DEFAULT_VARIANTS: Variants = {
      about the installation rather than about anything the page reports.
      Under the summary they read as a footnote to the device. */
   settingsPlace: "top",
+  /* The machine the playground runs on, which is the only data that is
+     true. The scenarios are for the states it does not have. */
+  data: "real",
 };
 
 type PlanApi = {
@@ -356,6 +355,7 @@ type PlanApi = {
   overviewCosts: (mode: OverviewCosts) => void;
   costLayout: (mode: CostLayout) => void;
   settingsPlace: (mode: SettingsPlace) => void;
+  data: (source: DataSource) => void;
   bootDebug: () => void;
 };
 
@@ -367,6 +367,237 @@ declare global {
 
 const VariantsContext = React.createContext<Variants>(DEFAULT_VARIANTS);
 const useVariants = (): Variants => React.useContext(VariantsContext);
+
+/* ------------------------------------------------------------------ *
+ * Reading a machine that is not this one
+ *
+ * The playground reads the real backend, which is the right default and a poor
+ * way to see a design: the states worth arguing about are the ones nobody has
+ * to hand. A scenario puts a machine and a configuration in front of the page
+ * instead, and `storagePlan.data("real")` gives the backend back.
+ *
+ * The interception is one layer thick. Every read below is the app's own hook
+ * where no scenario is chosen, and the scenario's answer where one is; every
+ * write goes through the same pure transformations the app's mutation hooks
+ * use, applied to the scenario's configuration rather than sent to the server.
+ * What the installer would make of the result is worked out by the simulator,
+ * which is an approximation and says so where it lives.
+ *
+ * Nothing under a scenario touches the backend, so a machine being installed
+ * is safe to look at scenarios on.
+ * ------------------------------------------------------------------ */
+
+/** A tree of devices as one list, which is what the app's flat hooks serve. */
+const flatten = <T extends { partitions?: T[]; logicalVolumes?: T[] }>(devices: T[]): T[] =>
+  devices.flatMap((device) => [
+    device,
+    ...(device.partitions || []),
+    ...(device.logicalVolumes || []),
+  ]);
+
+type ScenarioState = {
+  /** The configuration as the scenario has it, rewritten by every edit. */
+  config: ConfigModel.Config;
+  system: Storage.Device[];
+  proposal: { devices: Storage.Device[]; actions: Proposal.Action[] };
+  write: (config: ConfigModel.Config) => void;
+};
+
+const ScenarioContext = React.createContext<ScenarioState | null>(null);
+const useScenario = (): ScenarioState | null => React.useContext(ScenarioContext);
+
+/** Holds the chosen scenario, and every edit made to it since it was chosen. */
+const useScenarioState = (key: DataSource): ScenarioState | null => {
+  const [config, setConfig] = useState<ConfigModel.Config | null>(null);
+
+  /* A scenario starts again from its own configuration each time it is picked,
+     so a round of edits does not follow the reader into the next one. */
+  useEffect(() => {
+    setConfig(key === "real" ? null : structuredClone(SCENARIOS[key].config));
+  }, [key]);
+
+  return useMemo(() => {
+    if (key === "real" || !config) return null;
+
+    const { system } = SCENARIOS[key];
+    return { config, system, proposal: simulate(system, config), write: setConfig };
+  }, [key, config]);
+};
+
+/* Reads. Each one answers from the scenario where there is one, and from the
+   app's own hook where there is not. Both are called either way: a hook that
+   runs only sometimes is not a hook. */
+
+const useConfigModel = (): ConfigModel.Config => {
+  const scenario = useScenario();
+  const real = useRealConfigModel();
+  return scenario ? scenario.config : real;
+};
+
+const useFlattenDevices = (): Storage.Device[] => {
+  const scenario = useScenario();
+  const real = useRealFlattenDevices();
+  return scenario ? flatten(scenario.system) : real;
+};
+
+const useDevice = (name: string): Storage.Device | null => {
+  const scenario = useScenario();
+  const real = useRealDevice(name);
+  if (!scenario) return real;
+  return flatten(scenario.system).find((device) => device.name === name) || null;
+};
+
+const useAvailableDevices = (): Storage.Device[] => {
+  const scenario = useScenario();
+  const real = useRealAvailableDevices();
+  return scenario ? scenario.system : real;
+};
+
+const useStagingTree = (): Proposal.Device[] => {
+  const scenario = useScenario();
+  const real = useRealStagingTree();
+  return scenario ? scenario.proposal.devices : real;
+};
+
+const useStagingDevices = (): Proposal.Device[] => {
+  const scenario = useScenario();
+  const real = useRealStagingDevices();
+  return scenario ? flatten(scenario.proposal.devices) : real;
+};
+
+const useActions = (): Proposal.Action[] => {
+  const scenario = useScenario();
+  const real = useRealActions();
+  return scenario ? scenario.proposal.actions : real;
+};
+
+const useStorageProposal = () => {
+  const scenario = useScenario();
+  const real = useRealStorageProposal();
+  return scenario
+    ? { devices: scenario.proposal.devices, actions: scenario.proposal.actions }
+    : real;
+};
+
+const useIssues = (scope: "storage") => {
+  const scenario = useScenario();
+  const real = useRealIssues(scope);
+  /* A scenario solves by construction: the simulator cannot fail, so there is
+     nothing for it to report. */
+  return scenario ? [] : real;
+};
+
+/* Writes. The app's mutation hooks read the real configuration to build the
+   next one, so under a scenario they would rewrite the wrong model and send it
+   to a backend the page is not reading. Each one below is the same pure
+   transformation the hook uses, over the model the page is actually showing. */
+
+/** Where a rewritten model goes: to the server, or into the scenario. */
+const useWriteModel = (): ((config: ConfigModel.Config) => void) => {
+  const scenario = useScenario();
+  return scenario ? scenario.write : putStorageModel;
+};
+
+const useSetSpacePolicy = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (collection: Collection, index: number, data: { type: ConfigModel.SpacePolicy }) =>
+    write(configModel.device.setSpacePolicy(config, collection, index, data));
+};
+
+const useConvertDevice = () => {
+  const config = useConfigModel();
+  const system = useFlattenDevices();
+  const write = useWriteModel();
+
+  return (deviceName: string, targetName: string) => {
+    const device = system.find((one) => one.name === deviceName);
+    const target = system.find((one) => one.name === targetName);
+    if (device && target) write(configModel.device.convert(config, device, target));
+  };
+};
+
+const useAddDrive = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (data: Parameters<typeof configModel.drive.add>[1]) =>
+    write(configModel.drive.add(config, data));
+};
+
+const useDeleteDrive = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (index: number) => write(configModel.drive.remove(config, index));
+};
+
+const useAddMdRaid = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (data: Parameters<typeof configModel.mdRaid.add>[1]) =>
+    write(configModel.mdRaid.add(config, data));
+};
+
+const useDeleteMdRaid = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (index: number) => write(configModel.mdRaid.remove(config, index));
+};
+
+const useAddVolumeGroup = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (data: Parameters<typeof configModel.volumeGroup.add>[1], moveContent: boolean) =>
+    write(configModel.volumeGroup.add(config, data, moveContent));
+};
+
+const useDeleteVolumeGroup = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (vgName: string, moveToDrive: boolean) =>
+    write(
+      moveToDrive
+        ? configModel.volumeGroup.convertToPartitionable(config, vgName)
+        : configModel.volumeGroup.remove(config, vgName),
+    );
+};
+
+const useDeleteLogicalVolume = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (vgName: string, mountPath: string) =>
+    write(configModel.logicalVolume.remove(config, vgName, mountPath));
+};
+
+const useDeletePartition = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (collection: PartitionableCollection, index: number, mountPath: string) =>
+    write(configModel.partition.remove(config, collection, index, mountPath));
+};
+
+const useSetBootDevice = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return (name: string) => write(configModel.boot.setDevice(config, name));
+};
+
+const useSetDefaultBootDevice = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return () => write(configModel.boot.setDefault(config));
+};
+
+const useDisableBoot = () => {
+  const config = useConfigModel();
+  const write = useWriteModel();
+  return () => write(configModel.boot.disable(config));
+};
+
+const useReset = () => {
+  const scenario = useScenario();
+  const real = useRealReset();
+  return scenario ? () => scenario.write(structuredClone(scenario.config)) : real;
+};
 
 const idOf = ({ collection, index }: Selection): string => `${collection}:${index}`;
 
@@ -6677,7 +6908,9 @@ const PlanHeadline = ({
   icon?: React.ComponentProps<typeof Icon>["name"];
   /** What the device is, in one phrase. */
   facts?: string;
-  /** How the system names the device: the identifier that survives a rename. */
+  /** How the system names the device: the identifier that survives a rename.
+      Not read on this page: it answers a question nobody has yet, and the
+      sheet is where the reader who does have it goes. */
   path?: string;
   /** Names the block of cost lines, for a reader moving by heading. */
   costsLabel: string;
@@ -6832,7 +7065,6 @@ const PlanSummary = ({
     <PlanHeadline
       title={t(`Installing on ${name}`)}
       facts={partitionableDescription(systemDevice)}
-      path={systemDevice?.block?.udevPaths?.[0]}
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
       onGoTo={onOpenTab}
@@ -7046,6 +7278,11 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
+  {
+    key: "data",
+    label: "Machine",
+    options: ["real", "one-disk-in-use", "empty-disk", "lvm-over-three-disks"],
+  },
   { key: "page", label: "Page", options: ["summary", "list"] },
   { key: "titleFacts", label: "Device facts", options: ["inline", "under"] },
   { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
@@ -7164,7 +7401,19 @@ const PlanSettingsPanel = ({
  * The page
  * ------------------------------------------------------------------ */
 
-function StoragePlan(): React.ReactNode {
+/**
+ * The page, reading whatever machine it has been pointed at.
+ *
+ * Split from the component that chooses one, since every read below has to run
+ * inside the scenario rather than beside it.
+ */
+function StoragePlan({
+  variants,
+  patch,
+}: {
+  variants: Variants;
+  patch: (next: Partial<Variants>) => void;
+}): React.ReactNode {
   const config = useConfigModel();
   const actions = useActions();
   const availableDevices = useAvailableDevices();
@@ -7186,17 +7435,11 @@ function StoragePlan(): React.ReactNode {
      the reader to the half it is talking about, and so that comparing two
      disks does not send them back to the other tab between them. */
   const [panelTab, setPanelTab] = useState<PanelTab>("result");
-  const [variants, setVariants] = useState<Variants>(DEFAULT_VARIANTS);
   /* Through a ref, so the console keeps working after a rerender without the
      whole api being rebuilt on every one of them. */
   const bootDebug = useBootDebug();
   const bootDebugRef = useRef(bootDebug);
   bootDebugRef.current = bootDebug;
-
-  const patch = useCallback(
-    (next: Partial<Variants>) => setVariants((current) => ({ ...current, ...next })),
-    [],
-  );
 
   /* Console driven, so the page itself stays screenshot clean. */
   useEffect(() => {
@@ -7237,6 +7480,7 @@ function StoragePlan(): React.ReactNode {
             '  overviewCosts("hidden" | "shown")  what a many entry plan costs, over the list that says it per device',
             '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
+            '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -7279,6 +7523,7 @@ function StoragePlan(): React.ReactNode {
       overviewCosts: (overviewCosts) => patch({ overviewCosts }),
       costLayout: (costLayout) => patch({ costLayout }),
       settingsPlace: (settingsPlace) => patch({ settingsPlace }),
+      data: (data) => patch({ data }),
       bootDebug: () => bootDebugRef.current(),
     };
 
@@ -7506,15 +7751,15 @@ function StoragePlan(): React.ReactNode {
           on one row above what the page reports: neither is about any device
           the page names. */}
       <Flex
-        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        justifyContent={{ default: "justifyContentFlexEnd" }}
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
       >
-        <FlexItem>
-          {variants.settingsPlace === "top" && (
+        {variants.settingsPlace === "top" && (
+          <FlexItem>
             <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
-          )}
-        </FlexItem>
+          </FlexItem>
+        )}
         <FlexItem>
           <ActionsMenu
             label={t("More actions for this installation")}
@@ -7599,12 +7844,33 @@ function StoragePlan(): React.ReactNode {
   );
 
   return (
+    <PanelNavContext.Provider value={{ goToDevice, goToBoot }}>
+      <PlanStyles />
+      {inside}
+    </PanelNavContext.Provider>
+  );
+}
+
+/**
+ * What the page is looked at with: the switches, and the machine behind them.
+ *
+ * Above the page rather than inside it, since choosing a scenario has to be
+ * settled before anything reads a device.
+ */
+function StoragePlanShell(): React.ReactNode {
+  const [variants, setVariants] = useState<Variants>(DEFAULT_VARIANTS);
+  const patch = useCallback(
+    (next: Partial<Variants>) => setVariants((current) => ({ ...current, ...next })),
+    [],
+  );
+  const scenario = useScenarioState(variants.data);
+
+  return (
     <VariantsContext.Provider value={variants}>
-      <PanelNavContext.Provider value={{ goToDevice, goToBoot }}>
-        <PlanStyles />
-        {inside}
+      <ScenarioContext.Provider value={scenario}>
+        <StoragePlan variants={variants} patch={patch} />
         <PlanSettingsPanel variants={variants} onChange={patch} />
-      </PanelNavContext.Provider>
+      </ScenarioContext.Provider>
     </VariantsContext.Provider>
   );
 }
@@ -7625,7 +7891,7 @@ export default function StoragePlanPlayground(): React.ReactNode {
       }}
     >
       <Page.Content className="agm-plan-page">
-        <StoragePlan />
+        <StoragePlanShell />
       </Page.Content>
     </Page>
   );
