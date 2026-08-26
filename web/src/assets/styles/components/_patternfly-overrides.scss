@@ -116,7 +116,10 @@
 // within the title's first line (its line box), so it stays aligned to the
 // first line even when the title wraps.
 .pf-v6-c-alert__icon {
-  --pf-v6-c-alert__icon--FontSize: var(--agm-t--icon--size--300);
+  --pf-v6-c-alert__icon--FontSize: var(
+    --agm-t--icon--size--300,
+    var(--pf-t--global--font--size--300)
+  );
 
   display: inline-flex;
   align-items: center;
@@ -146,10 +149,12 @@
 .pf-v6-c-button {
   // Buttons follow the same controls role as text inputs and selects (see
   // tokens/_semantic.scss), so a product retunes --agm-t--control--border-radius
-  // once for all three instead of each separately.
+  // once for all three instead of each separately. --agm-t--button--border-radius
+  // wins over it for a product that needs buttons to differ from the fields,
+  // and with both unset the small tier applies exactly as before.
   --pf-v6-c-button--BorderRadius: var(
-    --agm-t--control--border-radius,
-    var(--pf-t--global--border--radius--small)
+    --agm-t--button--border-radius,
+    var(--agm-t--control--border-radius, var(--pf-t--global--border--radius--small))
   );
 
   &:disabled {
@@ -304,11 +309,13 @@ label.pf-m-disabled + .pf-v6-c-check__description {
   );
 
   a.pf-m-primary {
-    // Use the brand blue directly (not the focus role, which goes lighter in
-    // dark theme for ring contrast) and pin a light text color, so the link
-    // keeps the same readable look on the blue background in every theme.
-    background: var(--agm-t--color--waterhole--50);
-    color: var(--agm-t--color--fog--50);
+    // The first focusable element on the page, so it follows the product like
+    // everything else. It takes the same pair as a primary button rather than
+    // the focus role, which goes lighter in dark theme for ring contrast: that
+    // pair is already required to stay readable one against the other in both
+    // themes.
+    background: var(--agm-t--brand--color, var(--agm-t--color--waterhole--50));
+    color: var(--agm-t--brand--text--color, var(--agm-t--color--fog--50));
     font-size: var(--pf-t--global--font--size--md);
   }
 }

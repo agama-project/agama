@@ -69,9 +69,9 @@ module Agama
       # @return [String, nil] Name of Agama's security protocol
       def security_from(auth_mode)
         case auth_mode
-        when Y2Network::WirelessAuthMode::WPA_PSK
+        when Y2Network::WirelessAuthMode::WPA_PSK.short_name
           "wpa-psk"
-        when Y2Network::WirelessAuthMode::WPA_EAP
+        when Y2Network::WirelessAuthMode::WPA_EAP.short_name
           "wpa-eap"
         else
           "none"
@@ -84,11 +84,11 @@ module Agama
       # @return [String, nil] Name of Agama's wireless mode
       def mode_from(mode)
         case mode
-        when Y2Network::WirelessMode::AD_HOC
+        when Y2Network::WirelessMode::AD_HOC.short_name
           "adhoc"
-        when Y2Network::WirelessMode::MASTER
+        when Y2Network::WirelessMode::MASTER.short_name
           "ap"
-        when Y2Network::WirelessMode::MANAGED
+        when Y2Network::WirelessMode::MANAGED.short_name
           "infrastructure"
         end
       end

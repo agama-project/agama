@@ -21,7 +21,6 @@
  */
 
 import React from "react";
-import { Navigate } from "react-router";
 import { Content, Divider, Flex, Grid, GridItem, Stack } from "@patternfly/react-core";
 import Interpolate from "~/components/core/Interpolate";
 import ProgressBackdrop from "~/components/core/ProgressBackdrop";
@@ -33,7 +32,6 @@ import InstallationSettings from "~/components/overview/InstallationSettings";
 import SystemInformationSection from "~/components/overview/SystemInformationSection";
 import { useProductInfo } from "~/hooks/model/config/product";
 import { useIssues } from "~/hooks/model/issue";
-import { PRODUCT } from "~/routes/paths";
 import { _ } from "~/i18n";
 
 import type { Product } from "~/model/system";
@@ -112,8 +110,9 @@ const ProductNotFound = () => (
   </>
 );
 
-const OverviewPageContent = ({ product }: { product: Product }) => {
+export default function OverviewPage() {
   const issues = useIssues();
+  const product = useProductInfo();
   const missingProduct = issues.some((i) => i.class === "missing_product");
 
   return (
@@ -139,14 +138,4 @@ const OverviewPageContent = ({ product }: { product: Product }) => {
       </Page.Content>
     </Page>
   );
-};
-
-export default function OverviewPage() {
-  const product = useProductInfo();
-
-  if (!product) {
-    return <Navigate to={PRODUCT.root} />;
-  }
-
-  return <OverviewPageContent product={product} />;
 }

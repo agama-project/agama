@@ -22,7 +22,7 @@ use std::{io::Write, path::PathBuf, process, time::Duration};
 
 use agama_lib::{
     http::{BaseHTTPClient, WebSocketClient},
-    profile::{ProfileHTTPClient, ProfileValidator, ValidationOutcome},
+    profile::{ProfileHTTPClient, ProfileValidator, UnsupportedElement, ValidationOutcome},
     utils::FileFormat,
 };
 use agama_utils::api::{self, ProblemDetails};
@@ -298,7 +298,7 @@ fn is_autoyast(url_or_path: &CliInput) -> bool {
         }
     };
 
-    path.ends_with(".xml") || path.ends_with(".erb") || path.ends_with('/')
+    agama_lib::profile::is_autoyast_path(&path)
 }
 
 async fn generate(
@@ -317,7 +317,7 @@ async fn generate(
     // we can ignore the insecure option value in that case
     let profile_json = if is_autoyast(&url_or_path) {
         // AutoYaST specific download and convert to JSON
-        let config_string = match url_or_path {
+        let result = match url_or_path {
             CliInput::Url(url_string) => {
                 let url = Uri::parse(url_string).map_err(|(e, _)| e)?;
 
@@ -336,7 +336,8 @@ async fn generate(
             }
             _ => panic!("is_autoyast returned true on unnamed input"),
         };
-        config_string
+        report_unsupported_elements(&result.unsupported);
+        serde_json::to_string_pretty(&result.profile)?
     } else {
         from_json_or_jsonnet(client, url_or_path, insecure).await?
     };
@@ -352,6 +353,23 @@ async fn generate(
     println!("{}", config_json);
 
     Ok(())
+}
+
+/// Prints the AutoYaST unsupported elements (if any) to stderr.
+fn report_unsupported_elements(elements: &[UnsupportedElement]) {
+    if elements.is_empty() {
+        return;
+    }
+
+    let keys = elements
+        .iter()
+        .map(|e| e.key.as_str())
+        .collect::<Vec<_>>()
+        .join(", ");
+    eprintln!(
+        "{} {keys}.",
+        gettext("Found unsupported elements in the AutoYaST profile:")
+    );
 }
 
 /// Retrieve and preprocess the profile.

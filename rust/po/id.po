@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 12:57+0000\n"
+"POT-Creation-Date: 2026-08-14 04:33+0000\n"
 "PO-Revision-Date: 2026-08-02 14:12+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://l10n.opensuse.org/projects/agama/agama-"
@@ -996,7 +996,7 @@ msgstr ""
 msgid "Skip"
 msgstr "Lewati"
 
-#: agama-software/src/service.rs:304
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
@@ -1057,7 +1057,7 @@ msgstr "Terdapat konflik dalam pemilihan perangkat lunak"
 msgid "Could not select %s '%s' for installation"
 msgstr "Tidak dapat memilih %s '%s' untuk instalasi"
 
-#: agama-software/src/zypp_server.rs:1031
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "Gagal mendaftarkan sistem"
 
