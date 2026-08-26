@@ -634,9 +634,7 @@ impl SetConfigAction {
                 .run(|| async move {
                     if let Err(error) = handler.update_config(network_config).await {
                         tracing::error!("Failed to update the network configuration: {error}");
-                    }
-
-                    if let Err(error) = handler.apply().await {
+                    } else if let Err(error) = handler.apply().await {
                         tracing::error!("Failed to apply the network configuration: {error}");
                     }
                     Ok(())
