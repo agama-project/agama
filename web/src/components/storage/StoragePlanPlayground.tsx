@@ -220,6 +220,8 @@ type StatementRule = "between" | "all" | "none";
 type PageShape = "summary" | "list";
 /** How a consequence is worded: as a term and its detail, or as one phrase. */
 type CostPhrase = "term" | "sentence";
+/** Where the facts about the device read: on the sentence, or under it. */
+type TitleFacts = "under" | "inline";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -251,6 +253,7 @@ type Variants = {
   noteColor: NoteColor;
   page: PageShape;
   costPhrase: CostPhrase;
+  titleFacts: TitleFacts;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -299,6 +302,9 @@ const DEFAULT_VARIANTS: Variants = {
      comparing them. The phrase leads with the subject and is one switch
      away, because which reads better is a question about the words. */
   costPhrase: "term",
+  /* Under the sentence. On it, the facts take the heading's size and read as
+     a second title, which is not what they are. */
+  titleFacts: "under",
 };
 
 type PlanApi = {
@@ -332,6 +338,7 @@ type PlanApi = {
   noteColor: (mode: NoteColor) => void;
   page: (shape: PageShape) => void;
   costPhrase: (mode: CostPhrase) => void;
+  titleFacts: (mode: TitleFacts) => void;
   bootDebug: () => void;
 };
 
@@ -4703,6 +4710,9 @@ const PLAN_CSS = `
   line-height: var(--pf-t--global--font--line-height--heading);
 }
 
+/* Also inside the summary's title, where the heading's own size would make a
+   phrase about the device read as a second name. */
+.pf-v6-c-empty-state__title-text .agm-plan-panel-facts,
 .agm-plan-panel-facts {
   font-size: var(--pf-t--global--font--size--body--sm);
   color: var(--pf-t--global--text--color--subtle);
@@ -6696,6 +6706,7 @@ const SummaryDetail = ({
 const PlanHeadline = ({
   title,
   icon = "hard_drive",
+  facts,
   path,
   costsLabel,
   lines,
@@ -6703,10 +6714,12 @@ const PlanHeadline = ({
   primary,
   secondary,
 }: {
-  /** The sentence the page opens with, name and facts on one line. */
-  title: React.ReactNode;
+  /** The sentence the page opens with. */
+  title: string;
   /** The mark over the sentence. */
   icon?: React.ComponentProps<typeof Icon>["name"];
+  /** What the device is, in one phrase. */
+  facts?: string;
   /** How the system names the device: the identifier that survives a rename. */
   path?: string;
   /** Names the block of cost lines, for a reader moving by heading. */
@@ -6719,17 +6732,37 @@ const PlanHeadline = ({
   /** Everything else, which PatternFly sets as links under the primary one. */
   secondary?: React.ReactNode;
 }) => {
-  const { costPhrase } = useVariants();
+  const { costPhrase, titleFacts } = useVariants();
   const costsId = useId();
+  const inline = titleFacts === "inline" && facts;
 
   return (
-    <EmptyState variant="lg" headingLevel="h2" titleText={title} icon={() => <Icon name={icon} />}>
+    <EmptyState
+      variant="lg"
+      headingLevel="h2"
+      titleText={
+        inline ? (
+          <>
+            {title} <span className="agm-plan-panel-facts">{facts}</span>
+          </>
+        ) : (
+          title
+        )
+      }
+      icon={() => <Icon name={icon} />}
+    >
       <EmptyStateBody>
-        {path && (
+        {(facts || path) && (
           <Content component="p">
-            <Text component="small" textStyle="textColorSubtle">
-              {path}
-            </Text>
+            {!inline && facts}
+            {path && (
+              <>
+                {!inline && <br />}
+                <Text component="small" textStyle="textColorSubtle">
+                  {path}
+                </Text>
+              </>
+            )}
           </Content>
         )}
         {/* The lines are a group with a name of its own, so a reader moving by
@@ -6844,14 +6877,8 @@ const PlanSummary = ({
 
   return (
     <PlanHeadline
-      /* Name and facts on one line, the way the sheet's own header sets them,
-         so the page and the panel it opens name the same device the same way. */
-      title={
-        <>
-          {t(`Installing on ${name}`)}{" "}
-          <span className="agm-plan-panel-facts">{partitionableDescription(systemDevice)}</span>
-        </>
-      }
+      title={t(`Installing on ${name}`)}
+      facts={partitionableDescription(systemDevice)}
       path={systemDevice?.block?.udevPaths?.[0]}
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
@@ -7084,6 +7111,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 const VARIANT_CONTROLS: VariantControl[] = [
   { key: "page", label: "Page", options: ["summary", "list"] },
   { key: "costPhrase", label: "Cost wording", options: ["term", "sentence"] },
+  { key: "titleFacts", label: "Device facts", options: ["under", "inline"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -7267,6 +7295,7 @@ function StoragePlan(): React.ReactNode {
             '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
             '  costPhrase("term" | "sentence")    "To be deleted  3 partitions", or "3 partitions to be deleted"',
+            '  titleFacts("under" | "inline")     the device facts under the sentence, or on it',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -7306,6 +7335,7 @@ function StoragePlan(): React.ReactNode {
       noteColor: (noteColor) => patch({ noteColor }),
       page: (page) => patch({ page }),
       costPhrase: (costPhrase) => patch({ costPhrase }),
+      titleFacts: (titleFacts) => patch({ titleFacts }),
       bootDebug: () => bootDebugRef.current(),
     };
 
