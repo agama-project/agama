@@ -5964,7 +5964,7 @@ const PlanNotices = () => {
  * uses, with the same tabs, intros and side effects. The redesign is about
  * where the action sits, not about replacing what it does.
  */
-const AddDeviceActions = () => {
+const AddDeviceActions = ({ label }: { label?: string }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const navigate = useNavigate();
   const config = useConfigModel();
@@ -5985,6 +5985,45 @@ const AddDeviceActions = () => {
     if (isVolumeGroup(device)) addVolumeGroup({ name: device.name, spacePolicy: "keep" }, false);
   };
 
+  const selector = isSelectorOpen && (
+    <DeviceSelectorModal
+      disks={disks}
+      mdRaids={mdRaids}
+      volumeGroups={volumeGroups}
+      title={t("Add a device")}
+      intro={t("Pick a device to define partitions on, to mount, or to hold logical volumes.")}
+      tabIntros={{
+        disks: t("Choose a disk to define partitions or to mount"),
+        mdRaids: t("Choose a RAID device to define partitions or to mount"),
+        volumeGroups: t("Choose a volume group to define logical volumes"),
+      }}
+      onCancel={() => setIsSelectorOpen(false)}
+      onConfirm={([device]) => {
+        addDevice(device);
+        setIsSelectorOpen(false);
+      }}
+    />
+  );
+
+  /* Read inside a sentence rather than standing on its own: the words around
+     it say when a reader would want it, so the control says only what it does
+     and takes no room of its own. */
+  if (label) {
+    return (
+      <>
+        <Button
+          variant="link"
+          isInline
+          isDisabled={available.length === 0}
+          onClick={() => setIsSelectorOpen(true)}
+        >
+          {label}
+        </Button>
+        {selector}
+      </>
+    );
+  }
+
   return (
     <Flex flexWrap={{ default: "wrap" }} gap={{ default: "gapSm" }} className="agm-plan-add">
       <Button
@@ -6002,25 +6041,7 @@ const AddDeviceActions = () => {
       >
         {t("Add LVM volume group")}
       </Button>
-      {isSelectorOpen && (
-        <DeviceSelectorModal
-          disks={disks}
-          mdRaids={mdRaids}
-          volumeGroups={volumeGroups}
-          title={t("Add a device")}
-          intro={t("Pick a device to define partitions on, to mount, or to hold logical volumes.")}
-          tabIntros={{
-            disks: t("Choose a disk to define partitions or to mount"),
-            mdRaids: t("Choose a RAID device to define partitions or to mount"),
-            volumeGroups: t("Choose a volume group to define logical volumes"),
-          }}
-          onCancel={() => setIsSelectorOpen(false)}
-          onConfirm={([device]) => {
-            addDevice(device);
-            setIsSelectorOpen(false);
-          }}
-        />
-      )}
+      {selector}
     </Flex>
   );
 };
@@ -6960,7 +6981,7 @@ const PlanHeadline = ({
   /** What the device is, in one phrase. */
   facts?: string;
   /** A line about what the reader does next, where the page has more to it. */
-  body?: string;
+  body?: React.ReactNode;
   /** Closes against what follows it, where the page continues under it. */
   isTight?: boolean;
   /** Names the block of cost lines, for a reader moving by heading. */
@@ -7292,7 +7313,13 @@ const PlanOverview = ({
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
              paragraph over the list explaining what a list of devices is. */
-          body={t("Explore and set up how they are structured in the list below.")}
+          body={
+            <>
+              {t("Explore and set up how they are structured in the list below or keep ")}
+              <AddDeviceActions label={t("adding more devices")} />
+              {t(".")}
+            </>
+          }
           lines={
             overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
           }
