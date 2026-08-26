@@ -5964,7 +5964,7 @@ const PlanNotices = () => {
  * uses, with the same tabs, intros and side effects. The redesign is about
  * where the action sits, not about replacing what it does.
  */
-const AddDeviceActions = ({ label }: { label?: string }) => {
+const AddDeviceActions = () => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const navigate = useNavigate();
   const config = useConfigModel();
@@ -6004,25 +6004,6 @@ const AddDeviceActions = ({ label }: { label?: string }) => {
       }}
     />
   );
-
-  /* Read inside a sentence rather than standing on its own: the words around
-     it say when a reader would want it, so the control says only what it does
-     and takes no room of its own. */
-  if (label) {
-    return (
-      <>
-        <Button
-          variant="link"
-          isInline
-          isDisabled={available.length === 0}
-          onClick={() => setIsSelectorOpen(true)}
-        >
-          {label}
-        </Button>
-        {selector}
-      </>
-    );
-  }
 
   return (
     <Flex flexWrap={{ default: "wrap" }} gap={{ default: "gapSm" }} className="agm-plan-add">
@@ -7315,9 +7296,10 @@ const PlanOverview = ({
              paragraph over the list explaining what a list of devices is. */
           body={
             <>
-              {t("Explore and set up how they are structured in the list below or keep ")}
-              <AddDeviceActions label={t("adding more devices")} />
-              {t(".")}
+              {t(
+                "The list below shows how the new system is structured. Explore and set up each entry, or add ",
+              )}
+              <ConfigureDeviceMenu />
             </>
           }
           lines={
@@ -7863,14 +7845,6 @@ function StoragePlan({
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapSm" }}
       >
-        {/* The control the interface already has for this, drilldown, device
-            selector and all. Beside the summary's own actions where the plan is
-            one device, and at the foot where the list is what grows. */}
-        {!single && (
-          <FlexItem>
-            <ConfigureDeviceMenu />
-          </FlexItem>
-        )}
         {variants.settingsPlace === "bottom" && (
           <FlexItem>
             <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
