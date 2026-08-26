@@ -5667,6 +5667,14 @@ const PLAN_CSS = `
   transition: max-width var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out;
 }
 
+/* The room a summary keeps under it is the room before whatever it introduces,
+   and a list that starts a screen away from the sentence about it reads as a
+   second page. Set through PatternFly's own property rather than over its
+   padding rule. */
+.agm-plan-headline-tight {
+  --pf-v6-c-empty-state--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+}
+
 /* A list for what it tells a screen reader, and not for its markers: these
    lines carry a mark of their own. */
 .agm-plan-costs {
@@ -6917,6 +6925,7 @@ const PlanHeadline = ({
   icon = "hard_drive",
   facts,
   body,
+  isTight = false,
   costsLabel,
   lines,
   onGoTo,
@@ -6931,6 +6940,8 @@ const PlanHeadline = ({
   facts?: string;
   /** A line about what the reader does next, where the page has more to it. */
   body?: string;
+  /** Closes against what follows it, where the page continues under it. */
+  isTight?: boolean;
   /** Names the block of cost lines, for a reader moving by heading. */
   costsLabel: string;
   /** Empty where what the plan costs is read under the summary rather than in it. */
@@ -6950,6 +6961,7 @@ const PlanHeadline = ({
     <EmptyState
       variant="lg"
       headingLevel="h2"
+      className={isTight ? "agm-plan-headline-tight" : undefined}
       titleText={
         <>
           {title}
@@ -7247,10 +7259,11 @@ const PlanOverview = ({
      a full height block in a scrolling page leaves the footer under a screen of
      nothing. */
   return (
-    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       <FlexItem>
         <PlanHeadline
-          title={t(`Installing on ${namedOrMore(names)}`)}
+          title={t(`Use ${namedOrMore(names)} to install the new system`)}
+          isTight
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
              paragraph over the list explaining what a list of devices is. */
