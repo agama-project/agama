@@ -6980,16 +6980,18 @@ const PlanHeadline = ({
         <Flex
           component="ul"
           direction={{ default: costLayout === "inline" ? "row" : "column" }}
+          justifyContent={{ default: "justifyContentCenter" }}
           gap={{ default: costLayout === "inline" ? "gapSm" : "gapXs" }}
           flexWrap={{ default: "wrap" }}
-          className="pf-v6-u-text-align-start agm-plan-costs"
+          className="agm-plan-costs"
           aria-labelledby={costsId}
         >
           {lines.map((line, at) => (
             <FlexItem component="li" key={line.tail}>
               <Flex
                 gap={{ default: "gapSm" }}
-                alignItems={{ default: "alignItemsFlexStart" }}
+                alignItems={{ default: "alignItemsCenter" }}
+                justifyContent={{ default: "justifyContentCenter" }}
                 flexWrap={{ default: "nowrap" }}
               >
                 {costLayout === "inline" && at > 0 && (
