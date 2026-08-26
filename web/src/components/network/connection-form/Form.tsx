@@ -23,7 +23,7 @@
 import React from "react";
 import { generatePath, useNavigate, useParams } from "react-router";
 import { Alert, ActionGroup, Flex, Form } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import NestedContent from "~/components/core/NestedContent";
 import ResourceNotFound from "~/components/core/ResourceNotFound";
 import { withFrozenQuery } from "~/components/form/with-frozen-query";

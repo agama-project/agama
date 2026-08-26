@@ -23,7 +23,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { ActionGroup, Alert, Checkbox, Form } from "@patternfly/react-core";
-import { NestedContent, Page, PasswordAndConfirmationInput } from "~/components/core";
+import { NestedContent, PasswordAndConfirmationInput } from "~/components/core";
+import Page from "~/components/layout/Page";
 import PasswordCheck from "~/components/users/PasswordCheck";
 import {
   useConfigModel,

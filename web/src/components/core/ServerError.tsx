@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Button, Content, Flex } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { locationReload } from "~/utils";
 import { _ } from "~/i18n";

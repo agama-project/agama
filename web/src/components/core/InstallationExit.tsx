@@ -22,7 +22,7 @@
 
 import React from "react";
 import { Content, HelperText, HelperTextItem } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import SideBySideLayout from "~/components/layout/SideBySideLayout";
 import { _ } from "~/i18n";
 

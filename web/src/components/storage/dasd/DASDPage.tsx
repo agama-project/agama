@@ -23,7 +23,7 @@
 import React from "react";
 import { isEmpty } from "radashi";
 import { EmptyState, EmptyStateBody } from "@patternfly/react-core";
-import Page from "~/components/core/Page";
+import Page from "~/components/layout/Page";
 import DASDTable from "~/components/storage/dasd/DASDTable";
 import DASDFormatProgress from "~/components/storage/dasd/DASDFormatProgress";
 import { useSystem } from "~/hooks/model/system/dasd";
