@@ -7277,9 +7277,9 @@ const PlanOverview = ({
              is not a list. What the summary says is that the plan takes more
              than one device, which is the thing the list cannot say in a row. */
           title={t("Use multiple devices to set up the new system")}
-          /* A structure rather than a disk, since no single disk is what this
-             page is about. */
-          icon="schema"
+          /* Storage rather than a disk, since no single disk is what this page
+             is about. */
+          icon="storage"
           isTight
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
