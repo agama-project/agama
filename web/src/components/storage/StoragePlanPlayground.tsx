@@ -3246,7 +3246,9 @@ const PanelHeader = ({
           {marks?.map((mark) => (
             <React.Fragment key={mark}>
               {" "}
-              <Label isCompact>{mark}</Label>
+              <Label isCompact className="agm-plan-panel-mark">
+                {mark}
+              </Label>
             </React.Fragment>
           ))}
         </h2>
@@ -5130,6 +5132,12 @@ const PLAN_CSS = `
   display: flex;
   flex-direction: column;
   gap: var(--pf-t--global--spacer--sm);
+}
+
+/* The mark sits on the title line and is not part of the title: at the title's
+   size it reads as a second name, so it takes the smallest size the page uses. */
+.agm-plan-panel-mark {
+  font-size: var(--pf-t--global--font--size--xs);
 }
 `;
 
