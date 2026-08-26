@@ -6,6 +6,7 @@ Wed Aug 26 11:30:21 UTC 2026 - Martin Vidner <mvidner@suse.com>
   - js-yaml 3.15.1 and 4.3.1, CVE-2026-53550 (bsc#1268851)
   - brace-expansion 5.0.9, CVE-2026-13149 (bsc#1269927)
 - updated previously, listing its references for tracking:
+  - launch-editor 2.14.1, CVE-2026-53632 (bsc#1272319)
   - http-proxy-middleware 2.0.10, CVE-2026-55602 (bsc#1272318)
   - @babel/core 7.29.7, CVE-2026-49356 (bsc#1272317)
   - websocket-driver 0.7.5, CVE-2026-54466 CVE-2026-54490 (bsc#1272312 bsc#1272313)
