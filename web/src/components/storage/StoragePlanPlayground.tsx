@@ -221,6 +221,12 @@ type StatementRule = "between" | "all" | "none";
 type PageShape = "summary" | "list";
 /** Where the facts about the device read: on the sentence, or under it. */
 type TitleFacts = "under" | "inline";
+/** Whether the summary of a many entry plan repeats what the list under it says. */
+type OverviewCosts = "hidden" | "shown";
+/** Whether the consequences read one per line, or as one run of phrases. */
+type CostLayout = "stacked" | "inline";
+/** Where the two machine wide decisions are read. */
+type SettingsPlace = "top" | "bottom";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -252,6 +258,9 @@ type Variants = {
   noteColor: NoteColor;
   page: PageShape;
   titleFacts: TitleFacts;
+  overviewCosts: OverviewCosts;
+  costLayout: CostLayout;
+  settingsPlace: SettingsPlace;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -299,6 +308,18 @@ const DEFAULT_VARIANTS: Variants = {
   /* On the sentence, the way the sheet's header sets them. The phrase keeps
      its own size there, so it does not read as a second name. */
   titleFacts: "inline",
+  /* Hidden while the list is under it, since the list has a column for the
+     same fact and reads it per device. Worth looking at both ways: the count
+     over the whole plan is the one thing the list cannot say. */
+  overviewCosts: "hidden",
+  /* One per line, which is the reading the severity order is for: a reader
+     who stops after the first line has stopped at the worst one. The run
+     costs less height and asks the reader to find the middot. */
+  costLayout: "stacked",
+  /* Beside the installation menu, since boot and encryption are decisions
+     about the installation rather than about anything the page reports.
+     Under the summary they read as a footnote to the device. */
+  settingsPlace: "top",
 };
 
 type PlanApi = {
@@ -332,6 +353,9 @@ type PlanApi = {
   noteColor: (mode: NoteColor) => void;
   page: (shape: PageShape) => void;
   titleFacts: (mode: TitleFacts) => void;
+  overviewCosts: (mode: OverviewCosts) => void;
+  costLayout: (mode: CostLayout) => void;
+  settingsPlace: (mode: SettingsPlace) => void;
   bootDebug: () => void;
 };
 
@@ -5388,6 +5412,13 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
+/* A list for what it tells a screen reader, and not for its markers: these
+   lines carry a mark of their own. */
+.agm-plan-costs {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
 `;
 
 /* The outline a label draws, on the second lines under a value: the same words
@@ -6348,14 +6379,13 @@ const SelectionHeader = ({ selection, onClose }: { selection: Selection; onClose
   );
 
 /**
- * What closes a summary: the way to add to the plan, and the two decisions
- * about no device in particular.
+ * The two decisions about no device in particular.
  *
  * Read as values with a way in, the way the sheet reads a setting: the label
  * is the term and the control is the value, so "Boot Automatic" says what is
  * true and is itself the way to change it.
  */
-const PlanFooter = ({
+const PlanSettings = ({
   onShowBoot,
   onShowEncryption,
 }: {
@@ -6374,35 +6404,21 @@ const PlanFooter = ({
 
   return (
     <Flex
-      direction={{ default: "column" }}
       alignItems={{ default: "alignItemsCenter" }}
-      gap={{ default: "gapSm" }}
+      gap={{ default: "gapMd" }}
+      flexWrap={{ default: "wrap" }}
     >
       <FlexItem>
-        {/* The control the interface already has for this, drilldown, device
-            selector and all. */}
-        <ConfigureDeviceMenu />
+        <span className="agm-plan-muted">{t("Boot")}</span>{" "}
+        <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
+          {boot()}
+        </Button>
       </FlexItem>
       <FlexItem>
-        <Flex
-          justifyContent={{ default: "justifyContentCenter" }}
-          alignItems={{ default: "alignItemsCenter" }}
-          gap={{ default: "gapMd" }}
-          flexWrap={{ default: "wrap" }}
-        >
-          <FlexItem>
-            <span className="agm-plan-muted">{t("Boot")}</span>{" "}
-            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
-              {boot()}
-            </Button>
-          </FlexItem>
-          <FlexItem>
-            <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
-            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
-              {t(installationEncryption(config))}
-            </Button>
-          </FlexItem>
-        </Flex>
+        <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
+        <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
+          {t(installationEncryption(config))}
+        </Button>
       </FlexItem>
     </Flex>
   );
@@ -6662,6 +6678,7 @@ const PlanHeadline = ({
   path?: string;
   /** Names the block of cost lines, for a reader moving by heading. */
   costsLabel: string;
+  /** Empty where what the plan costs is read under the summary rather than in it. */
   lines: SummaryLine[];
   /** Opens the half of the sheet a line is about, where the page has one entry. */
   onGoTo?: (tab: PanelTab) => void;
@@ -6670,7 +6687,7 @@ const PlanHeadline = ({
   /** Everything else, which PatternFly sets as links under the primary one. */
   secondary?: React.ReactNode;
 }) => {
-  const { titleFacts } = useVariants();
+  const { titleFacts, costLayout } = useVariants();
   const costsId = useId();
   const inline = titleFacts === "inline" && facts;
 
@@ -6707,31 +6724,44 @@ const PlanHeadline = ({
             heading reaches them as one thing rather than as loose text under
             the sentence. Nothing here is worth a visible heading: each line
             says what it is. */}
-        <h3 className="pf-v6-u-screen-reader" id={costsId}>
-          {costsLabel}
-        </h3>
+        {lines.length > 0 && (
+          <h3 className="pf-v6-u-screen-reader" id={costsId}>
+            {costsLabel}
+          </h3>
+        )}
         {/* The subject leads and the term follows it, the way the sheet's own
             second lines read: what the reader is looking for is which
-            partitions, not which verb. The subject is the way into the half of
-            the sheet that holds them. */}
+            partitions, not which verb. The term is the control, since the half
+            of the sheet behind it is that act spelled out.
+
+            A list either way, so a screen reader announces how many
+            consequences there are before reading them. The run separates them
+            with a mark that is hidden from it, since "middot" is not a word
+            anybody needs. */}
         <Flex
-          direction={{ default: "column" }}
-          gap={{ default: "gapXs" }}
-          className="pf-v6-u-text-align-start"
+          component="ul"
+          direction={{ default: costLayout === "inline" ? "row" : "column" }}
+          gap={{ default: costLayout === "inline" ? "gapSm" : "gapXs" }}
+          flexWrap={{ default: "wrap" }}
+          className="pf-v6-u-text-align-start agm-plan-costs"
           aria-labelledby={costsId}
         >
-          {lines.map((line) => (
-            <FlexItem key={line.tail}>
+          {lines.map((line, at) => (
+            <FlexItem component="li" key={line.tail}>
               <Flex
                 gap={{ default: "gapSm" }}
                 alignItems={{ default: "alignItemsFlexStart" }}
                 flexWrap={{ default: "nowrap" }}
-                className={COST_CLASS[line.kind]}
               >
-                <FlexItem>
+                {costLayout === "inline" && at > 0 && (
+                  <FlexItem aria-hidden className="agm-plan-muted">
+                    ·
+                  </FlexItem>
+                )}
+                <FlexItem className={COST_CLASS[line.kind]}>
                   <Icon name={COST_ICON[line.kind]} size="xs" />
                 </FlexItem>
-                <FlexItem>
+                <FlexItem className={COST_CLASS[line.kind]}>
                   {line.subject} <SummaryDetail line={line} text={line.tail} onGoTo={onGoTo} />
                 </FlexItem>
               </Flex>
@@ -6944,6 +6974,7 @@ const PlanOverview = ({
   const staging = useStagingDevices();
   const actions = useActions();
   const solver = useSolver();
+  const { overviewCosts } = useVariants();
   const manager = new DevicesManager(system, staging, actions);
   const names = [...(config.drives || []), ...(config.mdRaids || [])].map((device) =>
     baseName(device.name),
@@ -6958,7 +6989,9 @@ const PlanOverview = ({
         <PlanHeadline
           title={t(`Installing on ${namedOrMore(names)}`)}
           costsLabel={t("What happens to this machine")}
-          lines={planLines(config, system, staging, manager, solver)}
+          lines={
+            overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
+          }
         />
       </FlexItem>
       <FlexItem>
@@ -7005,6 +7038,9 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 const VARIANT_CONTROLS: VariantControl[] = [
   { key: "page", label: "Page", options: ["summary", "list"] },
   { key: "titleFacts", label: "Device facts", options: ["inline", "under"] },
+  { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
+  { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
+  { key: "settingsPlace", label: "Settings", options: ["top", "bottom"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -7188,6 +7224,9 @@ function StoragePlan(): React.ReactNode {
             '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
             '  titleFacts("under" | "inline")     the device facts under the sentence, or on it',
+            '  overviewCosts("hidden" | "shown")  what a many entry plan costs, over the list that says it per device',
+            '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
+            '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -7227,6 +7266,9 @@ function StoragePlan(): React.ReactNode {
       noteColor: (noteColor) => patch({ noteColor }),
       page: (page) => patch({ page }),
       titleFacts: (titleFacts) => patch({ titleFacts }),
+      overviewCosts: (overviewCosts) => patch({ overviewCosts }),
+      costLayout: (costLayout) => patch({ costLayout }),
+      settingsPlace: (settingsPlace) => patch({ settingsPlace }),
       bootDebug: () => bootDebugRef.current(),
     };
 
@@ -7450,10 +7492,19 @@ function StoragePlan(): React.ReactNode {
 
   const page = showsSummary ? (
     <div className="agm-plan-summary-page">
-      {/* What is done to the whole installation rather than to anything on the
-          page, so it sits at the top corner where a page keeps its own menu
-          rather than in the middle of what the page reports. */}
-      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+      {/* What the installation is told, and what is done to the whole of it,
+          on one row above what the page reports: neither is about any device
+          the page names. */}
+      <Flex
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapMd" }}
+      >
+        <FlexItem>
+          {variants.settingsPlace === "top" && (
+            <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
+          )}
+        </FlexItem>
         <FlexItem>
           <ActionsMenu
             label={t("More actions for this installation")}
@@ -7464,7 +7515,22 @@ function StoragePlan(): React.ReactNode {
       </Flex>
       <PlanNotices />
       {summary()}
-      <PlanFooter onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
+      <Flex
+        direction={{ default: "column" }}
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapSm" }}
+      >
+        <FlexItem>
+          {/* The control the interface already has for this, drilldown, device
+              selector and all. */}
+          <ConfigureDeviceMenu />
+        </FlexItem>
+        {variants.settingsPlace === "bottom" && (
+          <FlexItem>
+            <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
+          </FlexItem>
+        )}
+      </Flex>
     </div>
   ) : (
     <>
