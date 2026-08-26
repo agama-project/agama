@@ -47,6 +47,7 @@ import Monitor from "@icons/monitor.svg?component";
 import Delete from "@icons/delete.svg?component";
 import DoneAll from "@icons/done_all.svg?component";
 import DeployedCodeUpdate from "@icons/deployed_code_update.svg?component";
+import DeviceHub from "@icons/device_hub.svg?component";
 import DeployedCodeAlert from "@icons/deployed_code_alert.svg?component";
 import Download from "@icons/download.svg?component";
 import EditSquare from "@icons/edit_square.svg?component";
@@ -58,6 +59,8 @@ import FileJson from "@icons/file_json.svg?component";
 import Fingerprint from "@icons/fingerprint.svg?component";
 import KeyboardArrowDown from "@icons/keyboard_arrow_down.svg?component";
 import Globe from "@icons/globe.svg?component";
+import Graph3 from "@icons/graph_3.svg?component";
+import Graph4 from "@icons/graph_4.svg?component";
 import LastPage from "@icons/last_page.svg?component";
 import HardDrive from "@icons/hard_drive.svg?component";
 import Info from "@icons/info.svg?component";
@@ -70,6 +73,7 @@ import ManageAccounts from "@icons/manage_accounts.svg?component";
 import Menu from "@icons/menu.svg?component";
 import MoreHoriz from "@bolderIcons/more_horiz.svg?component";
 import MoreVert from "@bolderIcons/more_vert.svg?component";
+import NetworkNode from "@icons/network_node.svg?component";
 import NetworkWifi from "@icons/network_wifi.svg?component";
 import NetworkWifi1Bar from "@icons/network_wifi_1_bar.svg?component";
 import NetworkWifi3Bar from "@icons/network_wifi_3_bar.svg?component";
@@ -117,6 +121,7 @@ const icons = {
   done_all: DoneAll,
   deployed_code_update: DeployedCodeUpdate,
   deployed_code_alert: DeployedCodeAlert,
+  device_hub: DeviceHub,
   download: Download,
   edit_square: EditSquare,
   emergency: Emergency,
@@ -126,6 +131,8 @@ const icons = {
   file_json: FileJson,
   fingerprint: Fingerprint,
   globe: Globe,
+  graph_3: Graph3,
+  graph_4: Graph4,
   last_page: LastPage,
   hard_drive: HardDrive,
   info: Info,
@@ -140,6 +147,7 @@ const icons = {
   monitor: Monitor,
   more_horiz: MoreHoriz,
   more_vert: MoreVert,
+  network_node: NetworkNode,
   network_wifi: NetworkWifi,
   network_wifi_1_bar: NetworkWifi1Bar,
   network_wifi_3_bar: NetworkWifi3Bar,

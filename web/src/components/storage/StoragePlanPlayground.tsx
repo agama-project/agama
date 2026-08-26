@@ -203,6 +203,16 @@ type SpacePlacement = "settings" | "content";
 type Explanations = "always" | "sparse";
 /** Whether the settings take a column of their own, or sit above the content. */
 type SettingsPlacement = "beside" | "above";
+/** The mark on a row naming what a device is made of, or what it belongs to. */
+type RelationIcon = "device_hub" | "network_node" | "graph_3" | "graph_4" | "apps";
+/** How the second line under a value in a table is set: as text, or boxed. */
+type RowNote = "outlined" | "plain";
+/** Whether those lines take a colour from what they report. */
+type NoteColor = "status" | "none";
+/** Whether the final layout opens with a row for the device the panel is about. */
+type DeviceRow = "hidden" | "shown";
+/** Whether a dashed rule separates the statements above a tab's content. */
+type StatementRule = "between" | "all" | "none";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -227,6 +237,11 @@ type Variants = {
   spacePlacement: SpacePlacement;
   explanations: Explanations;
   settings: SettingsPlacement;
+  relationIcon: RelationIcon;
+  statementRule: StatementRule;
+  deviceRow: DeviceRow;
+  rowNote: RowNote;
+  noteColor: NoteColor;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -234,7 +249,7 @@ const DEFAULT_VARIANTS: Variants = {
   sections: "tabs",
   tabLayout: "horizontal",
   tabNote: "statement",
-  tabSummary: true,
+  tabSummary: false,
   tabBox: false,
   tabFill: false,
   scroll: "sections",
@@ -245,7 +260,7 @@ const DEFAULT_VARIANTS: Variants = {
   typeScale: "current",
   mountPaths: "plain",
   spaceLabel: "terse",
-  spaceControl: "menu",
+  spaceControl: "segmented",
   structure: "blocks",
   spacePlacement: "content",
   /* The version that teaches comes first: a reader meeting this page is being
@@ -253,6 +268,19 @@ const DEFAULT_VARIANTS: Variants = {
      block gets is the reason the other setting exists. */
   explanations: "always",
   settings: "beside",
+  relationIcon: "network_node",
+  /* Between every statement above a tab's content, the sentence about the tab
+     included. Each of them is about something else, and reading down the block
+     there was nothing to say where one ended. */
+  statementRule: "all",
+  /* The panel is about one device and says which in its title, so a row naming
+     it again buys nothing and indents everything under it by a level. */
+  deviceRow: "hidden",
+  /* Plain text, uncoloured: these lines qualify a value rather than report a
+     status of their own, and a page of boxes reads as a page of marks. Both are
+     switchable, since what they say is worth telling apart. */
+  rowNote: "plain",
+  noteColor: "none",
 };
 
 type PlanApi = {
@@ -279,6 +307,11 @@ type PlanApi = {
   spacePlacement: (mode: SpacePlacement) => void;
   explanations: (mode: Explanations) => void;
   settings: (mode: SettingsPlacement) => void;
+  relationIcon: (name: RelationIcon) => void;
+  statementRule: (mode: StatementRule) => void;
+  deviceRow: (mode: DeviceRow) => void;
+  rowNote: (mode: RowNote) => void;
+  noteColor: (mode: NoteColor) => void;
   bootDebug: () => void;
 };
 
@@ -2420,6 +2453,7 @@ const SettingsList = ({
       {runs.map((run) => (
         <StackItem key={run.items[0].key}>
           <DescriptionList
+            className={`agm-plan-settings-${run.layout}`}
             isCompact
             isHorizontal={run.layout === "inline"}
             isFluid={run.layout === "inline"}
@@ -2587,9 +2621,8 @@ const installationEncryption = (config: ConfigModel.Config): string => {
  *
  * Encryption is a property of what is created, not of the disk it is created
  * on, so it is read row by row beside the file system rather than as a setting
- * over the whole panel. The value a volume does not set for itself is the
- * installation's, and where it came from is written next to it: a volume that
- * sets its own reads the same way, minus the appendix.
+ * over the whole panel. Where the value came from is a second line under it: a
+ * volume that sets its own reads the same way, minus that line.
  */
 const EncryptionCell = () => {
   const config = useConfigModel();
@@ -2597,21 +2630,76 @@ const EncryptionCell = () => {
 
   return (
     <>
-      {encrypted ? t(installationEncryption(config)) : t("None")}{" "}
-      <Text component="small" textStyle="textColorSubtle">
-        {t("(following system)")}
-      </Text>
+      <div>{encrypted ? t(installationEncryption(config)) : t("None")}</div>
+      <div className="agm-plan-row-note">{t("Following system")}</div>
     </>
   );
 };
 
-/** Relationships in the same list, since a value that is a link already reads as one. */
-const relationshipSettings = (groups: Relationship[]): Setting[] =>
+/**
+ * The mount point of a planned entry, and the partition it lands on where that
+ * partition is already there.
+ *
+ * A new entry says nothing about a source: the installer creates it, and there
+ * is no name to give. An entry that reuses one names it, and says whether what
+ * is on it survives, which is the difference a reader is looking for.
+ */
+const PlannedMount = ({
+  label,
+  source,
+  onGoToCurrent,
+}: {
+  label: string;
+  /** The partition already on the device, where the entry takes one. */
+  source?: Storage.Device;
+  /** Opens the tab where that partition is listed as it stands today. */
+  onGoToCurrent?: () => void;
+}) => {
+  const mount = (
+    <Text isBold className="agm-plan-mount">
+      {label}
+    </Text>
+  );
+
+  if (!source) return mount;
+
+  const name = baseName(source.name);
+  /* The name opens the tab that holds the partition, where what is on it today
+     and what becomes of it are both listed. Nothing else is said here: which
+     file system it gets has a column of its own, and whether its data survives
+     is what the other tab is about. */
+  const link = onGoToCurrent ? (
+    <Button variant="link" isInline onClick={onGoToCurrent}>
+      {name}
+    </Button>
+  ) : (
+    name
+  );
+
+  return (
+    <>
+      {mount}
+      <div className="agm-plan-row-note">
+        {t("Reusing")} {link}
+      </div>
+    </>
+  );
+};
+
+/**
+ * Relationships in the same list, since a value that is a link already reads as
+ * one.
+ *
+ * @param groups - the relationships worth a row; an empty one gets none.
+ * @param icon - the mark for every row, so what a device is made of and what it
+ *   belongs to carry the same one.
+ */
+const relationshipSettings = (groups: Relationship[], icon: RelationIcon = "apps"): Setting[] =>
   groups
     .filter((group) => group.items.length > 0)
     .map((group) => ({
       key: group.label,
-      icon: "apps" as const,
+      icon,
       term: t(group.label),
       value: <RelatedNames items={group.items} />,
     }));
@@ -2633,6 +2721,19 @@ const Dimmed = ({ children }: React.PropsWithChildren) => (
 );
 
 /**
+ * One block of statements above a tab's content.
+ *
+ * A block of its own per kind of statement, rather than one list of all of
+ * them: what the tab is about and what the device is are written in different
+ * places, and the rule between two blocks is what tells them apart.
+ */
+const Statements = ({ children }: React.PropsWithChildren) => {
+  const { statementRule } = useVariants();
+
+  return <div className={`agm-plan-statements agm-plan-rule-${statementRule}`}>{children}</div>;
+};
+
+/**
  * The sentence a tab opens with, set apart from what it follows.
  *
  * No mark beside it. Every candidate said something the sentence does not: a
@@ -2648,7 +2749,7 @@ const TabNote = ({ lead, where }: TabExplanation) => {
      than about the disk. */
   if (tabNote === "statement") {
     return (
-      <div className="agm-plan-statements">
+      <Statements>
         <SettingsList
           settings={[
             {
@@ -2664,7 +2765,7 @@ const TabNote = ({ lead, where }: TabExplanation) => {
             },
           ]}
         />
-      </div>
+      </Statements>
     );
   }
 
@@ -2769,11 +2870,14 @@ const NewSystemSection = ({
   systemDevice,
   explanation,
   statements,
+  onGoToCurrent,
 }: {
   collection: PartitionableCollection;
   index: number;
   device: Partitionable;
   systemDevice: Storage.Device | null;
+  /** Opens the tab holding the partitions the device carries today. */
+  onGoToCurrent?: () => void;
   /** What this tab holds, and which tab changes it. */
   explanation?: React.ReactNode;
   /* Statements about the device as a whole. They read here because several of
@@ -2854,9 +2958,9 @@ const NewSystemSection = ({
           <>
             {explanation}
             {statements && statements.length > 0 && (
-              <div className="agm-plan-statements">
+              <Statements>
                 <SettingsList settings={statements} layout="stacked" />
-              </div>
+              </Statements>
             )}
           </>
         ) : undefined
@@ -2930,16 +3034,11 @@ const NewSystemSection = ({
               return (
                 <tr key={entryLabel(volume)}>
                   <th scope="row">
-                    <Text isBold className="agm-plan-mount">
-                      {entryLabel(volume)}
-                    </Text>
-                    {source && (
-                      <div className="agm-plan-muted">
-                        {keepsData
-                          ? t(`reusing ${baseName(source.name)}`)
-                          : t(`on ${baseName(source.name)}, formatted`)}
-                      </div>
-                    )}
+                    <PlannedMount
+                      label={entryLabel(volume)}
+                      source={source}
+                      onGoToCurrent={onGoToCurrent}
+                    />
                   </th>
                   <td>
                     {(keepsData ? source?.filesystem?.type : filesystemType(volume.filesystem)) ||
@@ -3121,6 +3220,7 @@ const DeviceResultSection = ({
   const system = useFlattenDevices();
   const staging = useStagingDevices();
   const actions = useActions();
+  const { deviceRow } = useVariants();
 
   const { goToDevice } = React.useContext(PanelNavContext);
 
@@ -3130,6 +3230,13 @@ const DeviceResultSection = ({
     .filter((device) => device.name === deviceName);
 
   const headingId = "agm-plan-device-result";
+
+  /* What the device ends up holding, one row each. The device itself is a row
+     only where it is asked for: the panel names it already. A device holding
+     nothing of its own keeps its row whatever the setting says, since dropping
+     it would leave the tab with no rows at all. */
+  const children = devices.flatMap((device) => deviceChildren(device));
+  const rows = deviceRow === "shown" || children.length === 0 ? devices : children;
 
   /* Which group a physical volume belongs to is derived rather than read out of
      words meant for people: the proposal reports a group's physical volumes as
@@ -3176,7 +3283,7 @@ const DeviceResultSection = ({
       )}
       {proposal && devices.length > 0 && (
         <div className="agm-plan-device-layout">
-          <ProposalResultTable devicesManager={manager} devices={devices} deviceLink={deviceLink} />
+          <ProposalResultTable devicesManager={manager} devices={rows} deviceLink={deviceLink} />
         </div>
       )}
     </PanelSection>
@@ -3227,6 +3334,8 @@ const PanelHeader = ({
   marks?: string[];
   /** A sentence about it, which needs a line of its own to stay readable. */
   subtitle?: string;
+  /** How the system names the device: the identifier that survives a rename
+      where the device has one, its kernel name otherwise. */
   path?: string;
   onClose: () => void;
   actions?: React.ReactNode;
@@ -3253,8 +3362,10 @@ const PanelHeader = ({
           ))}
         </h2>
         {subtitle && <div className="agm-plan-panel-subtitle">{subtitle}</div>}
-        {/* The one identifier that survives a reboot renaming vdd to vde, and
-            the page has never shown it. */}
+        {/* Where the system keeps the device. For a disk that is the one
+            identifier a reboot renaming vdd to vde does not change, which the
+            page has never shown; for a volume group it is the name the group
+            answers to once it exists. */}
         {path && <div className="agm-plan-path">{path}</div>}
       </FlexItem>
       <FlexItem>
@@ -3285,7 +3396,7 @@ const PanelTabs = ({
 }: {
   deviceName: string;
   /** The tabs to show, in the order they are read. */
-  tabs: { key: PanelTab; content: React.ReactNode; count?: number }[];
+  tabs: { key: PanelTab; content: React.ReactNode }[];
   active: PanelTab;
   onSelect: (tab: PanelTab) => void;
   /** Lets a link elsewhere in the panel move focus onto the tab it opens. */
@@ -3347,16 +3458,11 @@ const PanelTabs = ({
            adds a landmark inside the panel, which is a region already. */
         tabListAriaLabel={t(`Storage content of ${deviceName}`)}
       >
-        {tabs.map(({ key, content, count }, at) => (
+        {tabs.map(({ key, content }, at) => (
           <Tab
             key={key}
             eventKey={at}
             tabIndex={active === key ? 0 : -1}
-            /* The count says how much is behind the tab before it is opened.
-               Only where one rule reads it: how many entries the configuration
-               asks for here, and how many the device holds today. What the
-               result comes to is not counted, since a row there can be a
-               partition nothing asked for. */
             title={
               <>
                 {/* Decorative: the words beside it say what the tab holds. The
@@ -3366,7 +3472,7 @@ const PanelTabs = ({
                   <Icon name={TAB_ICONS[key]} size="sm" />
                 </TabTitleIcon>
                 <TabTitleText>
-                  {count ? t(`${SECTION_TITLES[key]} (${count})`) : t(SECTION_TITLES[key])}
+                  {t(SECTION_TITLES[key])}
                   {tabSummary && (
                     <span className="agm-plan-tab-summary">{t(TAB_SUMMARIES[key])}</span>
                   )}
@@ -3402,6 +3508,7 @@ const PartitionableDetail = ({
     structure,
     spacePlacement,
     explanations,
+    relationIcon,
     settings: settingsPlacement,
   } = useVariants();
   const { goToBoot } = React.useContext(PanelNavContext);
@@ -3459,10 +3566,10 @@ const PartitionableDetail = ({
   );
 
   /* What the configuration asks for here, which is a partition each for a
-     partitioned device and one for a device formatted as a whole, and what the
-     device holds today. */
+     partitioned device and one for a device formatted as a whole. Read by the
+     boot statement, which says "besides the content below" only where there is
+     content below. */
   const plannedCount = device.filesystem ? 1 : layoutEntries(device).length;
-  const currentCount = (systemDevice?.partitions || []).length;
 
   /* What the device is used by, and that the installer adds partitions to it
      for booting. Both are statements about what is planned for the device, and
@@ -3474,9 +3581,10 @@ const PartitionableDetail = ({
      whatever the installer decides is said here, and the tabs holding the rest
      are one click away. */
   const plannedStatements = settingsOf([
-    ...relationshipSettings([
-      { label: t("Used by"), items: usersOf(config, allDevices, device.name) },
-    ]).map((setting) => ({ ...setting, layout: "inline" as const })),
+    ...relationshipSettings(
+      [{ label: t("Used by"), items: usersOf(config, allDevices, device.name) }],
+      relationIcon,
+    ).map((setting) => ({ ...setting, layout: "inline" as const })),
     bootRole !== "none" && {
       key: "boot",
       icon: "restart_alt" as const,
@@ -3514,6 +3622,7 @@ const PartitionableDetail = ({
       systemDevice={systemDevice}
       explanation={notes?.planned}
       statements={structure === "blocks" ? plannedStatements : undefined}
+      onGoToCurrent={sections === "tabs" ? goToCurrent : undefined}
     />
   );
   const second = (
@@ -3535,8 +3644,8 @@ const PartitionableDetail = ({
         deviceName={baseName(device.name)}
         tabs={[
           { key: "result", content: result },
-          { key: "planned", content: first, count: plannedCount },
-          { key: "current", content: second, count: currentCount },
+          { key: "planned", content: first },
+          { key: "current", content: second },
         ]}
         active={tab}
         onSelect={setTab}
@@ -3556,9 +3665,10 @@ const PartitionableDetail = ({
        the partition table, come last: they are read on purpose rather than
        looked for. */
     const settings = settingsOf([
-      ...relationshipSettings([
-        { label: t("Uses"), items: membersOf(systemDevice, allDevices, config) },
-      ]),
+      ...relationshipSettings(
+        [{ label: t("Uses"), items: membersOf(systemDevice, allDevices, config) }],
+        relationIcon,
+      ),
       spacePlacement === "settings" &&
         spaceSetting({
           space,
@@ -3737,11 +3847,14 @@ const VolumeGroupPlannedSection = ({
   index,
   standalone,
   explanation,
+  statements,
 }: {
   index: number;
   standalone: boolean;
   /** What this tab holds, and which tab changes it. */
   explanation?: React.ReactNode;
+  /** What is planned for the group that has no row in the table. */
+  statements?: Setting[];
 }) => {
   const config = useConfigModel();
   const navigate = useNavigate();
@@ -3758,7 +3871,18 @@ const VolumeGroupPlannedSection = ({
       headingId="agm-plan-logical-volumes"
       icon="list_alt"
       standalone={standalone}
-      before={explanation}
+      before={
+        explanation || statements?.length ? (
+          <>
+            {explanation}
+            {statements && statements.length > 0 && (
+              <Statements>
+                <SettingsList settings={statements} />
+              </Statements>
+            )}
+          </>
+        ) : undefined
+      }
       action={
         <Button
           variant="link"
@@ -3855,6 +3979,7 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
     structure,
     spacePlacement,
     explanations,
+    relationIcon,
     settings: settingsPlacement,
   } = useVariants();
   const [tab, setTab] = useState<PanelTab>("result");
@@ -3896,8 +4021,19 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
   const notes =
     sections === "tabs" ? tabExplanations("this volume group", tabOrder, goToTab) : undefined;
 
+  /* Which devices the group is built from is a decision, not a property of the
+     group: it is asked for in the configuration and it is what the group will
+     be made of once the installer runs. It reads with the rest of what is
+     planned rather than above the tabs, where it read as a fact already true.
+
+     Inline, since the value is a name: read as a sentence, "Uses vdd" says the
+     whole thing. */
+  const plannedStatements = relationshipSettings(targets, relationIcon).map((setting) => ({
+    ...setting,
+    layout: "inline" as const,
+  }));
+
   const settings = settingsOf([
-    ...relationshipSettings(targets),
     !isNew &&
       spacePlacement === "settings" &&
       spaceSetting({
@@ -3922,6 +4058,7 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
       index={index}
       standalone={isNew && sections === "stacked"}
       explanation={notes?.planned}
+      statements={structure === "blocks" ? plannedStatements : undefined}
     />
   );
 
@@ -3949,18 +4086,11 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
     }
 
     const panels = { result, planned, current };
-    /* The logical volumes the configuration asks for, and the ones the group
-       holds today. The result is not counted: it can hold rows nothing asked
-       for. */
-    const counts: Partial<Record<PanelTab, number>> = {
-      planned: (group.logicalVolumes || []).length,
-      current: existing.length,
-    };
 
     return (
       <PanelTabs
         deviceName={group.vgName}
-        tabs={tabOrder.map((key) => ({ key, content: panels[key], count: counts[key] }))}
+        tabs={tabOrder.map((key) => ({ key, content: panels[key] }))}
         active={tab}
         onSelect={setTab}
         stripRef={tabsRef}
@@ -4972,11 +5102,41 @@ const PLAN_CSS = `
   min-width: 0;
 }
 
+/* The same head as the tables in the tabs beside it: a column name is a label
+   for what is under it, not a heading of its own, and two tables in one panel
+   disagreeing about that is read as two designs. */
+.agm-plan-device-layout .pf-v6-c-table thead th {
+  font-size: var(--pf-t--global--font--size--body--sm);
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+/* The name of what a row is about carries the weight, as it does in the tables
+   in the tabs beside this one, where the mount point is the row's own heading.
+   Here the first cell is that name. */
+.agm-plan-device-layout .pf-v6-c-table tbody tr > *:first-child {
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+}
+
 /* One device to a table, so nothing there is worth collapsing: the toggle only
    offers to hide the rows the tab exists to show. What is nested in what is
    still said by the tree itself. */
 .agm-plan-device-layout .pf-v6-c-table__toggle {
   display: none;
+}
+
+/* With no toggle to draw, the room PatternFly reserves for one is a first
+   column that starts short of its own heading. The top rows take the edge the
+   heading takes, and what is nested under them keeps a step of its own.
+
+   Set on the table rather than on anything around it: PatternFly declares these
+   on the table itself, and a value declared on the element beats one inherited
+   from an ancestor however specific that ancestor is. The negative margin goes
+   with them, since it exists to pull the cell back out of that reserved room. */
+.agm-plan-device-layout .pf-v6-c-table {
+  --pf-v6-c-table__tree-view-main--indent--base: 0;
+  --pf-v6-c-table__tree-view-main--nested-indent--base: var(--pf-t--global--spacer--md);
+  --pf-v6-c-table__tree-view-main--MarginInlineStart: 0;
 }
 
 /* Half a step of grey rather than a whole one. The lightest ground PatternFly
@@ -4992,6 +5152,19 @@ const PLAN_CSS = `
   border-radius: var(--pf-t--global--border--radius--small);
   padding-block: var(--pf-t--global--spacer--sm);
   padding-inline: var(--pf-t--global--spacer--md);
+}
+
+/* A second line under a value in a table: what the value is qualified by, at a
+   size and a face that keep it out of the column it sits in. Monospaced,
+   because most of what it says is a device name, and because it tells the eye
+   scanning the column that the line is not another value. */
+.agm-plan-row-note {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: var(--pf-t--global--font--size--xs, 0.75rem);
+  line-height: 1.4;
+  color: var(--pf-t--global--text--color--subtle);
+  overflow-wrap: anywhere;
 }
 
 /* Room between the invitation and the table it adds to. */
@@ -5021,12 +5194,46 @@ const PLAN_CSS = `
 /* The mark keeps a gutter of its own, so what a statement says lines up with
    the name of the statement rather than with the mark beside it. Built from the
    two measurements PatternFly gives the mark, so the column stays true if
-   either changes. */
-.agm-plan-statements .pf-v6-c-description-list__description {
+   either changes.
+
+   Stacked runs only: there the value starts a line of its own under the term,
+   and a value indented to the mark reads as a second column. A value beside its
+   term is already past the mark, and the same padding there is a hole. */
+.agm-plan-statements .agm-plan-settings-stacked .pf-v6-c-description-list__description {
   padding-inline-start: calc(
     var(--pf-v6-c-description-list__term-icon--MinWidth) +
       var(--pf-v6-c-description-list__term-icon--MarginInlineEnd)
   );
+}
+
+/* A term and the name beside it read as a sentence, which asks for a word space
+   between them rather than a column. PatternFly sizes the term column for a
+   list of many rows, where the values line up under each other; these rows are
+   one or two, and what they gain from a column is a gap the eye has to cross.
+   The term takes the width of its own words and the gap is one step. */
+.agm-plan-settings-inline {
+  --pf-v6-c-description-list--m-horizontal__term--width: max-content;
+  --pf-v6-c-description-list__group--ColumnGap: var(--pf-t--global--spacer--sm);
+  --pf-v6-c-description-list--m-horizontal__description--width: auto;
+}
+
+/* Between two blocks of statements, and between two statements where every one
+   of them is asked for. Dashed rather than solid: a solid rule at this size
+   reads as the edge of a box, and what is being separated are two sentences
+   about the same device. */
+.agm-plan-rule-between + .agm-plan-rule-between,
+.agm-plan-rule-all + .agm-plan-rule-all,
+.agm-plan-rule-all .pf-v6-c-description-list__group + .pf-v6-c-description-list__group,
+.agm-plan-rule-all .agm-plan-settings-runs > * + * {
+  padding-block-start: var(--pf-t--global--spacer--sm);
+  border-block-start: 1px dashed var(--pf-t--global--border--color--subtle);
+}
+
+/* The rule takes the room the gap was giving, so a block with one above it does
+   not get both. */
+.agm-plan-rule-between + .agm-plan-rule-between,
+.agm-plan-rule-all + .agm-plan-rule-all {
+  margin-block-start: var(--pf-t--global--spacer--sm);
 }
 
 /* The inset does not cost the panel its own layout: what is inside a tab still
@@ -5141,7 +5348,61 @@ const PLAN_CSS = `
 }
 `;
 
-const PlanStyles = () => <style>{PLAN_CSS}</style>;
+/* The outline a label draws, on the second lines under a value: the same words
+   and the same face, boxed. Written here rather than in the sheet because it is
+   the one rule a switch turns on, and both the tables of this page and the
+   final layout table carry these lines. */
+const OUTLINED_NOTES_CSS = `
+.agm-plan-page .agm-plan-row-note,
+.agm-plan-page .agm-row-note {
+  display: inline-block;
+  padding-block: 0;
+  padding-inline: var(--pf-t--global--spacer--sm);
+  border: 1px solid currentColor;
+  border-radius: var(--pf-t--global--border--radius--pill, 999px);
+}
+
+/* A box in a cell of figures takes the line under them rather than the space
+   beside them: the column is read down its trailing edge, and a box on the same
+   line as the size pushes the size off that edge. */
+.agm-plan-page .sizes-column .agm-row-note {
+  display: block;
+  width: fit-content;
+  margin-inline-start: auto;
+}
+`;
+
+/* A colour per kind of change, so a table can be scanned for what the installer
+   does before any of it is read: nothing is lost where a device is created, a
+   partition survives smaller where it is shrunk, and what is on a device is
+   gone where it is formatted. The outline follows the words, since it is drawn
+   in the current colour. */
+const STATUS_NOTES_CSS = `
+.agm-plan-page .agm-row-note-created {
+  color: var(--pf-t--global--icon--color--status--success--default);
+}
+
+.agm-plan-page .agm-row-note-shrunk {
+  color: var(--pf-t--global--text--color--status--info--default);
+}
+
+.agm-plan-page .agm-row-note-reformatted {
+  color: var(--pf-t--global--text--color--status--warning--default);
+}
+`;
+
+const PlanStyles = () => {
+  const { rowNote, noteColor } = useVariants();
+  const sheet = [
+    PLAN_CSS,
+    rowNote === "outlined" && OUTLINED_NOTES_CSS,
+    noteColor === "status" && STATUS_NOTES_CSS,
+  ]
+    .filter(Boolean)
+    .join("");
+
+  return <style>{sheet}</style>;
+};
 
 /**
  * Encryption, as a scope of its own.
@@ -5222,6 +5483,8 @@ const EncryptionDetail = () => {
                 <tr>
                   <th scope="col">{t("Device")}</th>
                   <th scope="col">{t("Volume")}</th>
+                  {/* No note about where the value comes from: this panel is
+                      that setting, and the column is what it reaches. */}
                   <th scope="col">{t("Encryption")}</th>
                 </tr>
               </thead>
@@ -5933,7 +6196,7 @@ const VolumeGroupHeader = ({ index, onClose }: { index: number; onClose: () => v
     <PanelHeader
       title={group.vgName}
       description={volumeGroupDescription()}
-      path={systemDevice?.block?.udevPaths?.[0]}
+      path={systemDevice?.name || `/dev/${group.vgName}`}
       onClose={onClose}
       actions={<VolumeGroupActions index={index} />}
     />
@@ -5976,13 +6239,22 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "settings", label: "Settings", options: ["beside", "above"] },
   { key: "tabLayout", label: "Tab strip", options: ["horizontal", "vertical"] },
   { key: "tabNote", label: "Tab explanation", options: ["statement", "dimmed"] },
-  { key: "tabSummary", label: "Phrase under tab", options: [true, false] },
+  { key: "tabSummary", label: "Phrase under tab", options: [false, true] },
   { key: "tabBox", label: "Boxed tabs", options: [false, true] },
   { key: "tabFill", label: "Filled tabs", options: [false, true] },
   { key: "spacePlacement", label: "Space decision", options: ["content", "settings"] },
-  { key: "spaceControl", label: "Space control", options: ["menu", "segmented"] },
+  { key: "spaceControl", label: "Space control", options: ["segmented", "menu"] },
   { key: "spaceLabel", label: "Space label", options: ["terse", "plain"] },
   { key: "explanations", label: "Explanations", options: ["always", "sparse"] },
+  {
+    key: "relationIcon",
+    label: "Relationship mark",
+    options: ["network_node", "device_hub", "graph_3", "graph_4", "apps"],
+  },
+  { key: "statementRule", label: "Statement rules", options: ["all", "between", "none"] },
+  { key: "deviceRow", label: "Device row", options: ["hidden", "shown"] },
+  { key: "rowNote", label: "Second lines", options: ["plain", "outlined"] },
+  { key: "noteColor", label: "Second line colour", options: ["none", "status"] },
   { key: "cost", label: "Cost", options: ["text", "chips"] },
   { key: "density", label: "Rows", options: ["comfortable", "compact"] },
   { key: "rowActions", label: "Row actions", options: ["narrow", "panel", "always"] },
@@ -6133,6 +6405,11 @@ function StoragePlan(): React.ReactNode {
             '  spacePlacement("settings"|"content")  the space decision above its table, or in the settings',
             '  explanations("always" | "sparse")  a line under every setting, or only where it adds',
             '  settings("beside" | "above")       the settings in their own column, or over the content',
+            '  relationIcon("network_node"|"device_hub"|"graph_3"|"graph_4"|"apps")  the mark on Uses and Used by',
+            '  statementRule("between"|"all"|"none")  dashed rules between the statements above a tab',
+            '  deviceRow("hidden" | "shown")      a row for the device itself at the top of the final layout',
+            '  rowNote("plain" | "outlined")      the second line under a value as plain text, or boxed',
+            '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -6165,6 +6442,11 @@ function StoragePlan(): React.ReactNode {
       spacePlacement: (spacePlacement) => patch({ spacePlacement }),
       explanations: (explanations) => patch({ explanations }),
       settings: (settings) => patch({ settings }),
+      relationIcon: (relationIcon) => patch({ relationIcon }),
+      statementRule: (statementRule) => patch({ statementRule }),
+      deviceRow: (deviceRow) => patch({ deviceRow }),
+      rowNote: (rowNote) => patch({ rowNote }),
+      noteColor: (noteColor) => patch({ noteColor }),
       bootDebug: () => bootDebugRef.current(),
     };
 
