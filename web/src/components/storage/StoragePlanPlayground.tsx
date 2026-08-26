@@ -2653,12 +2653,11 @@ const TabNote = ({ lead, where }: TabExplanation) => {
           settings={[
             {
               key: "note",
-              /* A footnote marker: the one line on the panel that is about
-                 reading rather than about the disk, and the only mark that says
-                 so without offering anything. The tab's own mark repeats the
-                 strip two lines above, and a help circle reads as a control to
-                 press for more. */
-              icon: "asterisk",
+              /* The line is about the tab it opens, so its mark points into
+                 the tab rather than describing anything on the disk. A help
+                 circle was tried and reads as a control to press for more; the
+                 tab's own mark repeats the strip two lines above. */
+              icon: "last_page",
               term: lead,
               explanation: where,
               layout: "stacked",
