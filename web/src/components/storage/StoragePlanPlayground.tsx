@@ -222,6 +222,8 @@ type CostLayout = "stacked" | "inline";
 type SettingsPlace = "top" | "bottom";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
+/** How the sheet is shown: over the page, or in it. */
+type PanelMode = "drawer" | "inline";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -257,6 +259,7 @@ type Variants = {
   costLayout: CostLayout;
   settingsPlace: SettingsPlace;
   data: DataSource;
+  panelMode: PanelMode;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -301,9 +304,9 @@ const DEFAULT_VARIANTS: Variants = {
      memory. The summary only fits a plan of one entry; anything longer reads
      as the list until the index exists. */
   page: "summary",
-  /* On the sentence, the way the sheet's header sets them. The phrase keeps
-     its own size there, so it does not read as a second name. */
-  titleFacts: "inline",
+  /* Under the sentence, which now says what the device is for rather than
+     naming it alone. */
+  titleFacts: "under",
   /* Hidden while the list is under it, since the list has a column for the
      same fact and reads it per device. Worth looking at both ways: the count
      over the whole plan is the one thing the list cannot say. */
@@ -319,6 +322,10 @@ const DEFAULT_VARIANTS: Variants = {
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
+  /* Over the page, which keeps one mental model: the summary stays behind
+     the sheet and closing it returns the reader where they were. Inline
+     gives the sheet the whole frame and is the shape to compare it against. */
+  panelMode: "drawer",
 };
 
 type PlanApi = {
@@ -356,6 +363,7 @@ type PlanApi = {
   costLayout: (mode: CostLayout) => void;
   settingsPlace: (mode: SettingsPlace) => void;
   data: (source: DataSource) => void;
+  panelMode: (mode: PanelMode) => void;
   bootDebug: () => void;
 };
 
@@ -6893,7 +6901,6 @@ const PlanHeadline = ({
   onOpen,
   icon = "hard_drive",
   facts,
-  path,
   costsLabel,
   lines,
   onGoTo,
@@ -6908,10 +6915,6 @@ const PlanHeadline = ({
   icon?: React.ComponentProps<typeof Icon>["name"];
   /** What the device is, in one phrase. */
   facts?: string;
-  /** How the system names the device: the identifier that survives a rename.
-      Not read on this page: it answers a question nobody has yet, and the
-      sheet is where the reader who does have it goes. */
-  path?: string;
   /** Names the block of cost lines, for a reader moving by heading. */
   costsLabel: string;
   /** Empty where what the plan costs is read under the summary rather than in it. */
@@ -6950,19 +6953,9 @@ const PlanHeadline = ({
       icon={() => <Icon name={icon} />}
     >
       <EmptyStateBody>
-        {(facts || path) && (
-          <Content component="p">
-            {!inline && facts}
-            {path && (
-              <>
-                {!inline && <br />}
-                <Text component="small" textStyle="textColorSubtle">
-                  {path}
-                </Text>
-              </>
-            )}
-          </Content>
-        )}
+        {/* Under the sentence and set the way the sheet sets a fact about a
+            device: small, subtle and monospaced, so a name reads as a name. */}
+        {facts && !inline && <div className="agm-row-note">{facts}</div>}
         {/* The lines are a group with a name of its own, so a reader moving by
             heading reaches them as one thing rather than as loose text under
             the sentence. Nothing here is worth a visible heading: each line
@@ -7060,10 +7053,18 @@ const PlanSummary = ({
     (partition) => !manager.existInSystem(partition),
   );
   const lines = summaryLines(device, systemDevice, created, solver);
+  /* What the device is for, rather than what is being done to it: a disk that
+     also starts the machine is carrying two jobs, and which disk boots is a
+     fact the reader would otherwise have to open the sheet to learn. */
+  const boots = bootRoleOf(config, device.name) !== "none";
 
   return (
     <PlanHeadline
-      title={t(`Installing on ${name}`)}
+      title={
+        boots
+          ? t(`Using ${name} as installation and boot device`)
+          : t(`Using ${name} as installation device`)
+      }
       facts={partitionableDescription(systemDevice)}
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
@@ -7278,13 +7279,14 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
+  { key: "panelMode", label: "Sheet", options: ["drawer", "inline"] },
   {
     key: "data",
     label: "Machine",
     options: ["real", "one-disk-in-use", "empty-disk", "lvm-over-three-disks"],
   },
   { key: "page", label: "Page", options: ["summary", "list"] },
-  { key: "titleFacts", label: "Device facts", options: ["inline", "under"] },
+  { key: "titleFacts", label: "Device facts", options: ["under", "inline"] },
   { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
   { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
   { key: "settingsPlace", label: "Settings", options: ["top", "bottom"] },
@@ -7423,7 +7425,8 @@ function StoragePlan({
      four fifths there is no share left to give: a list squeezed into the last
      fifth is neither readable nor worth keeping on screen, and the reader still
      has the row they picked behind the panel. */
-  const isFloating = useMedia(LG);
+  const isWideEnough = useMedia(LG);
+  const isFloating = isWideEnough && variants.panelMode === "drawer";
   const panelRef = useRef<HTMLDivElement>(null);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -7481,6 +7484,7 @@ function StoragePlan({
             '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
+            '  panelMode("drawer" | "inline")     the sheet over the page, or taking its place in it',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -7524,6 +7528,7 @@ function StoragePlan({
       costLayout: (costLayout) => patch({ costLayout }),
       settingsPlace: (settingsPlace) => patch({ settingsPlace }),
       data: (data) => patch({ data }),
+      panelMode: (panelMode) => patch({ panelMode }),
       bootDebug: () => bootDebugRef.current(),
     };
 
