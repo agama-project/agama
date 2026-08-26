@@ -6188,6 +6188,58 @@ const DeviceList = ({
  * The panel header for whatever is selected
  * ------------------------------------------------------------------ */
 
+/**
+ * The button that swaps the target without touching the plan.
+ *
+ * The same dialog the device menu opens and the same write behind it. What
+ * changes is where it is: the reader who thinks "wrong disk" is looking at the
+ * sentence or the header naming that disk, so the way out is beside the name
+ * rather than the fourth item of a menu.
+ *
+ * The label belongs to the place it is read: a page says what the reader gets
+ * out of pressing it, and a header inside the sheet says what happens to the
+ * plan they are looking at.
+ */
+const RetargetButton = ({ device, label }: { device: Partitionable; label: string }) => {
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const config = useConfigModel();
+  const convertDevice = useConvertDevice();
+  const systemDevice = useDevice(device.name);
+  const available = useAvailableDevices();
+  const name = baseName(device.name);
+
+  /* Every device the plan does not already hold, plus the one it is on, which
+     is how the dialog shows what is selected. */
+  const usedNames = configModel
+    .devices(config)
+    .map((entry) => entry.name)
+    .filter((used) => used !== device.name);
+  const targets = available.filter((candidate) => !usedNames.includes(candidate.name));
+
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setIsSelectorOpen(true)}>
+        {label}
+      </Button>
+      {isSelectorOpen && (
+        <DeviceSelectorModal
+          title={label}
+          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
+          selected={systemDevice}
+          disks={targets.filter(isDrive)}
+          mdRaids={targets.filter(isMd)}
+          volumeGroups={targets.filter(isVolumeGroup)}
+          onCancel={() => setIsSelectorOpen(false)}
+          onConfirm={([target]) => {
+            setIsSelectorOpen(false);
+            convertDevice(device.name, target.name);
+          }}
+        />
+      )}
+    </>
+  );
+};
+
 const PartitionableHeader = ({
   collection,
   index,
@@ -6211,7 +6263,25 @@ const PartitionableHeader = ({
       marks={boots ? [t("Boot device")] : []}
       path={systemDevice?.block?.udevPaths?.[0]}
       onClose={onClose}
-      actions={<PartitionableActions collection={collection} index={index} />}
+      /* Swapping the target is the second thing in the header rather than an
+         item of the menu at the end of it. A reader who clicked the disk they
+         wanted and landed on a plan about another one is looking here, and a
+         kebab is the one place they will not open to find the way out. The
+         menu keeps everything else. */
+      actions={
+        <Flex
+          gap={{ default: "gapXs" }}
+          alignItems={{ default: "alignItemsCenter" }}
+          flexWrap={{ default: "nowrap" }}
+        >
+          <FlexItem>
+            <RetargetButton device={device} label={t("Use another device")} />
+          </FlexItem>
+          <FlexItem>
+            <PartitionableActions collection={collection} index={index} />
+          </FlexItem>
+        </Flex>
+      }
     />
   );
 };
@@ -6422,54 +6492,6 @@ const summaryLines = (
 };
 
 /**
- * The button that swaps the target without touching the plan.
- *
- * The same dialog the device menu opens and the same write behind it. What
- * changes is where it is: the reader who thinks "wrong disk" is looking at the
- * sentence saying which disk, so the way out is under that sentence rather than
- * inside a menu.
- */
-const RetargetButton = ({ device }: { device: Partitionable }) => {
-  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-  const config = useConfigModel();
-  const convertDevice = useConvertDevice();
-  const systemDevice = useDevice(device.name);
-  const available = useAvailableDevices();
-  const name = baseName(device.name);
-
-  /* Every device the plan does not already hold, plus the one it is on, which
-     is how the dialog shows what is selected. */
-  const usedNames = configModel
-    .devices(config)
-    .map((entry) => entry.name)
-    .filter((used) => used !== device.name);
-  const targets = available.filter((candidate) => !usedNames.includes(candidate.name));
-
-  return (
-    <>
-      <Button variant="secondary" onClick={() => setIsSelectorOpen(true)}>
-        {t("Install on another device")}
-      </Button>
-      {isSelectorOpen && (
-        <DeviceSelectorModal
-          title={t("Install on another device")}
-          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
-          selected={systemDevice}
-          disks={targets.filter(isDrive)}
-          mdRaids={targets.filter(isMd)}
-          volumeGroups={targets.filter(isVolumeGroup)}
-          onCancel={() => setIsSelectorOpen(false)}
-          onConfirm={([target]) => {
-            setIsSelectorOpen(false);
-            convertDevice(device.name, target.name);
-          }}
-        />
-      )}
-    </>
-  );
-};
-
-/**
  * The one entry page.
  *
  * A sentence, what it costs, and two ways on: into the sheet, or onto another
@@ -6565,7 +6587,7 @@ const PlanSummary = ({
           <Button variant="primary" aria-controls={PANEL_ID} onClick={onOpenSheet}>
             {t(`See what ${name} will hold`)}
           </Button>
-          <RetargetButton device={device} />
+          <RetargetButton device={device} label={t("Install on another device")} />
         </EmptyStateActions>
       </EmptyStateFooter>
     </EmptyState>
