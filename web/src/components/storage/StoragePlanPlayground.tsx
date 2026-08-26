@@ -4992,6 +4992,19 @@ const PLAN_CSS = `
   font-weight: var(--pf-t--global--font--weight--body--bold);
 }
 
+/* The term is a flex row, so the mark is stretched to the height of the line
+   and its glyph sits wherever the box leaves it. One line box tall, centred
+   inside, puts it on the text beside it. */
+.agm-plan-statements .pf-v6-c-description-list__term {
+  align-items: center;
+}
+
+.agm-plan-statements .pf-v6-c-description-list__term-icon {
+  display: inline-flex;
+  align-items: center;
+  height: 1lh;
+}
+
 /* The mark keeps a gutter of its own, so what a statement says lines up with
    the name of the statement rather than with the mark beside it. Built from the
    two measurements PatternFly gives the mark, so the column stays true if
