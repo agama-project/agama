@@ -4560,7 +4560,22 @@ const PLAN_CSS = `
 }
 
 /* The tab strip keeps its own height; only the panel under it takes the rest. */
-.agm-plan-tabs > .pf-v6-c-tabs { flex: 0 0 auto; }
+/* The strip stays where the reader left it. Whichever scroll model is on, the
+   strip is the panel's own boundary and the way between the three tabs, so
+   scrolling a long table should not cost the way back. */
+.agm-plan-tabs > .pf-v6-c-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  flex: 0 0 auto;
+  background: var(--pf-t--global--background--color--primary--default);
+}
+
+/* Under the strip nothing else pins itself: two sticky bars at the same offset
+   land on top of each other, and the tab name is already the heading. */
+.agm-plan-tabs .agm-plan-section-head {
+  position: static;
+}
 
 .agm-plan-tabs > .pf-v6-c-tabs .pf-v6-c-tabs__list { margin-block-start: 0; }
 
@@ -4919,10 +4934,13 @@ const PLAN_CSS = `
 /* PatternFly gives a vertical strip width 100%, which in a row leaves the panel
    beside it a sliver. Told to take the width of its own labels instead, capped
    by the max-width PatternFly already sets on the list. */
+/* Down the side the strip sticks the same way, which needs it to stop being
+   stretched to the height of the panel: a box as tall as what scrolls past it
+   has nowhere to stick to. */
 .agm-plan-tabs.agm-plan-tabs-vertical > .pf-v6-c-tabs {
   --pf-v6-c-tabs--m-vertical--Width: auto;
   flex: 0 0 auto;
-  align-self: stretch;
+  align-self: flex-start;
 }
 
 .agm-plan-tabs.agm-plan-tabs-vertical > .pf-v6-c-tab-content:not([hidden]) {
