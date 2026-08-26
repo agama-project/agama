@@ -6659,6 +6659,7 @@ const SummaryDetail = ({
  */
 const PlanHeadline = ({
   title,
+  onOpen,
   icon = "hard_drive",
   facts,
   path,
@@ -6670,6 +6671,8 @@ const PlanHeadline = ({
 }: {
   /** The sentence the page opens with. */
   title: string;
+  /** Where the sentence leads, where the thing it names has a sheet of its own. */
+  onOpen?: () => void;
   /** The mark over the sentence. */
   icon?: React.ComponentProps<typeof Icon>["name"];
   /** What the device is, in one phrase. */
@@ -6696,13 +6699,20 @@ const PlanHeadline = ({
       variant="lg"
       headingLevel="h2"
       titleText={
-        inline ? (
-          <>
-            {title} <span className="agm-plan-panel-facts">{facts}</span>
-          </>
-        ) : (
-          title
-        )
+        <>
+          {/* The name of the thing is the way to it, so the page spends no
+              button on saying so. What the control does is not in the sentence,
+              so a screen reader is told. */}
+          {onOpen ? (
+            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onOpen}>
+              {title}
+              <span className="pf-v6-u-screen-reader">{t(", see what it holds")}</span>
+            </Button>
+          ) : (
+            title
+          )}
+          {inline && <span className="agm-plan-panel-facts"> {facts}</span>}
+        </>
       }
       icon={() => <Icon name={icon} />}
     >
@@ -7520,11 +7530,14 @@ function StoragePlan(): React.ReactNode {
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapSm" }}
       >
-        <FlexItem>
-          {/* The control the interface already has for this, drilldown, device
-              selector and all. */}
-          <ConfigureDeviceMenu />
-        </FlexItem>
+        {/* The control the interface already has for this, drilldown, device
+            selector and all. Beside the summary's own actions where the plan is
+            one device, and at the foot where the list is what grows. */}
+        {!single && (
+          <FlexItem>
+            <ConfigureDeviceMenu />
+          </FlexItem>
+        )}
         {variants.settingsPlace === "bottom" && (
           <FlexItem>
             <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
