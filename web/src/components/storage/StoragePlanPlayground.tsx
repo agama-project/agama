@@ -415,22 +415,34 @@ type ScenarioState = {
 const ScenarioContext = React.createContext<ScenarioState | null>(null);
 const useScenario = (): ScenarioState | null => React.useContext(ScenarioContext);
 
-/** Holds the chosen scenario, and every edit made to it since it was chosen. */
+/**
+ * Holds the chosen scenario, and every edit made to it since it was chosen.
+ *
+ * The edits are stamped with the scenario they belong to, so picking another
+ * machine starts again from its own configuration rather than carrying the
+ * previous one's edits into it. Stamped rather than cleared on a change: a
+ * cleared state leaves one render where the configuration is the old scenario's
+ * and the machine is the new one, and every device the page looks up in that
+ * render is missing.
+ */
 const useScenarioState = (key: DataSource): ScenarioState | null => {
-  const [config, setConfig] = useState<ConfigModel.Config | null>(null);
-
-  /* A scenario starts again from its own configuration each time it is picked,
-     so a round of edits does not follow the reader into the next one. */
-  useEffect(() => {
-    setConfig(key === "real" ? null : structuredClone(SCENARIOS[key].config));
-  }, [key]);
+  const [edited, setEdited] = useState<{ key: DataSource; config: ConfigModel.Config } | null>(
+    null,
+  );
 
   return useMemo(() => {
-    if (key === "real" || !config) return null;
+    if (key === "real") return null;
 
-    const { system } = SCENARIOS[key];
-    return { config, system, proposal: simulate(system, config), write: setConfig };
-  }, [key, config]);
+    const { system, config: pristine } = SCENARIOS[key];
+    const config = edited?.key === key ? edited.config : structuredClone(pristine);
+
+    return {
+      config,
+      system,
+      proposal: simulate(system, config),
+      write: (next: ConfigModel.Config) => setEdited({ key, config: next }),
+    };
+  }, [key, edited]);
 };
 
 /* Reads. Each one answers from the scenario where there is one, and from the
@@ -1713,7 +1725,9 @@ const COLUMN_LABELS = {
 const partitionableDescription = (device: Storage.Device | null): string =>
   [
     device?.block?.size ? deviceSize(device.block.size) : undefined,
-    typeDescription(device),
+    /* A configuration can name a device the machine does not have: a profile
+       written for another machine, or a disk that has been unplugged. */
+    device ? typeDescription(device) : undefined,
     device?.partitionTable?.type?.toUpperCase(),
   ]
     .filter(Boolean)
