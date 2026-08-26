@@ -71,11 +71,6 @@ import {
   Alert,
   Button,
   Content,
-  DataList,
-  DataListCell,
-  DataListItem,
-  DataListItemCells,
-  DataListItemRow,
   Drawer,
   DrawerContent,
   DrawerContentBody,
@@ -223,6 +218,8 @@ type DeviceRow = "hidden" | "shown";
 type StatementRule = "between" | "all" | "none";
 /** Which shape the page in front of the sheet takes. */
 type PageShape = "summary" | "list";
+/** How a consequence is worded: as a term and its detail, or as one phrase. */
+type CostPhrase = "term" | "sentence";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -253,6 +250,7 @@ type Variants = {
   rowNote: RowNote;
   noteColor: NoteColor;
   page: PageShape;
+  costPhrase: CostPhrase;
 };
 
 const DEFAULT_VARIANTS: Variants = {
@@ -297,6 +295,10 @@ const DEFAULT_VARIANTS: Variants = {
      memory. The summary only fits a plan of one entry; anything longer reads
      as the list until the index exists. */
   page: "summary",
+  /* The term first, since the three of them line up and the page is read by
+     comparing them. The phrase leads with the subject and is one switch
+     away, because which reads better is a question about the words. */
+  costPhrase: "term",
 };
 
 type PlanApi = {
@@ -329,6 +331,7 @@ type PlanApi = {
   rowNote: (mode: RowNote) => void;
   noteColor: (mode: NoteColor) => void;
   page: (shape: PageShape) => void;
+  costPhrase: (mode: CostPhrase) => void;
   bootDebug: () => void;
 };
 
@@ -2331,7 +2334,8 @@ const TAB_SUMMARIES: Record<PanelTab, string> = {
  * hand.
  */
 const PanelNavContext = React.createContext<{
-  goToDevice: (selection: Selection) => void;
+  /** Opens an entry's sheet, on a named tab where the caller has one in mind. */
+  goToDevice: (selection: Selection, tab?: PanelTab) => void;
   goToBoot: () => void;
 }>({
   goToDevice: () => undefined,
@@ -3512,9 +3516,16 @@ const PanelTabs = ({
 const PartitionableDetail = ({
   collection,
   index,
+  tab,
+  onTab,
 }: {
   collection: PartitionableCollection;
   index: number;
+  /** Which half is open. Held above the panel so a link on the page can open
+      the sheet on the half it is talking about, and so that comparing two
+      disks does not send the reader back to the other tab between them. */
+  tab: PanelTab;
+  onTab: (tab: PanelTab) => void;
 }) => {
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable;
@@ -3533,7 +3544,6 @@ const PartitionableDetail = ({
    * above it can send the reader to the half it is talking about. It outlives
    * the selection on purpose: comparing what two disks hold today should not
    * send the reader back to the other tab between them. */
-  const [tab, setTab] = useState<PanelTab>("result");
   const tabsRef = useRef<HTMLDivElement>(null);
   const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
   const bootRole = bootRoleOf(config, device?.name || "");
@@ -3546,7 +3556,7 @@ const PartitionableDetail = ({
    * move a keyboard reader is left wherever the link was, several blocks above
    * the table the link just opened. */
   const goToTab = (target: PanelTab) => {
-    setTab(target);
+    onTab(target);
     tabsRef.current
       ?.querySelectorAll<HTMLElement>('[role="tab"]')
       [tabOrder.indexOf(target)]?.focus();
@@ -3665,7 +3675,7 @@ const PartitionableDetail = ({
           { key: "current", content: second },
         ]}
         active={tab}
-        onSelect={setTab}
+        onSelect={onTab}
         stripRef={tabsRef}
       />
     ) : (
@@ -3987,7 +3997,16 @@ const VolumeGroupPlannedSection = ({
  * it drops the current content: a tab named Current content that opens on
  * nothing is worse than no tab at all.
  */
-const VolumeGroupDetail = ({ index }: { index: number }) => {
+const VolumeGroupDetail = ({
+  index,
+  tab,
+  onTab,
+}: {
+  index: number;
+  /** Which half is open, held above the panel. See {@link PartitionableDetail}. */
+  tab: PanelTab;
+  onTab: (tab: PanelTab) => void;
+}) => {
   const config = useConfigModel();
   const group = config.volumeGroups?.[index];
   const systemDevice = useDevice(group?.name || "");
@@ -3999,7 +4018,6 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
     relationIcon,
     settings: settingsPlacement,
   } = useVariants();
-  const [tab, setTab] = useState<PanelTab>("result");
   const tabsRef = useRef<HTMLDivElement>(null);
   const space = useSpacePolicy("volumeGroups", index, group?.spacePolicy || "keep");
 
@@ -4025,9 +4043,12 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
   const isNew = existing.length === 0;
 
   const tabOrder: PanelTab[] = isNew ? ["result", "planned"] : ["result", "planned", "current"];
+  /* A group being defined has no content of its own yet, so a request to open
+     the tab about it lands on the one tab every entry has. */
+  const active = tabOrder.includes(tab) ? tab : "result";
 
   const goToTab = (target: PanelTab) => {
-    setTab(target);
+    onTab(target);
     tabsRef.current
       ?.querySelectorAll<HTMLElement>('[role="tab"]')
       [tabOrder.indexOf(target)]?.focus();
@@ -4108,8 +4129,8 @@ const VolumeGroupDetail = ({ index }: { index: number }) => {
       <PanelTabs
         deviceName={group.vgName}
         tabs={tabOrder.map((key) => ({ key, content: panels[key] }))}
-        active={tab}
-        onSelect={setTab}
+        active={active}
+        onSelect={onTab}
         stripRef={tabsRef}
       />
     );
@@ -4317,20 +4338,11 @@ const PlanBar = ({
   onShowResult,
   onShowBoot,
   onShowEncryption,
-  showsCost = true,
-  isSticky = true,
-  actions,
 }: {
   destructive: number;
   onShowResult: () => void;
   onShowBoot: () => void;
   onShowEncryption: () => void;
-  /** Off where the page above the bar already reports what the plan costs. */
-  showsCost?: boolean;
-  /** Off where the bar closes the page rather than heading a list. */
-  isSticky?: boolean;
-  /** What the reader can add to the plan, beside the two settings. */
-  actions?: React.ReactNode;
 }) => {
   const config = useConfigModel();
   const reset = useReset();
@@ -4344,7 +4356,7 @@ const PlanBar = ({
   };
 
   return (
-    <div className={isSticky ? "agm-plan-bar" : "agm-plan-bar agm-plan-bar-still"}>
+    <div className="agm-plan-bar">
       <Flex
         justifyContent={{ default: "justifyContentSpaceBetween" }}
         alignItems={{ default: "alignItemsCenter" }}
@@ -4355,19 +4367,17 @@ const PlanBar = ({
           {/* The cost is the reason anyone opens the result, so the cost is the
               button: a reader worried by "4 changes destroy data" presses the
               sentence that worries them. */}
-          {showsCost && (
-            <Button
-              variant={destructive > 0 ? "danger" : "secondary"}
-              size="sm"
-              aria-controls={PANEL_ID}
-              icon={<Icon name={destructive > 0 ? COST_ICON.destroys : "info"} size="xs" />}
-              onClick={onShowResult}
-            >
-              {destructive > 0
-                ? t(`${destructive} ${destructive === 1 ? "change" : "changes"} destroy data`)
-                : t("Nothing on this machine is destroyed")}
-            </Button>
-          )}
+          <Button
+            variant={destructive > 0 ? "danger" : "secondary"}
+            size="sm"
+            aria-controls={PANEL_ID}
+            icon={<Icon name={destructive > 0 ? COST_ICON.destroys : "info"} size="xs" />}
+            onClick={onShowResult}
+          >
+            {destructive > 0
+              ? t(`${destructive} ${destructive === 1 ? "change" : "changes"} destroy data`)
+              : t("Nothing on this machine is destroyed")}
+          </Button>
         </FlexItem>
         <FlexItem>
           <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
@@ -4383,7 +4393,6 @@ const PlanBar = ({
                 {t(installationEncryption(config))}
               </Button>
             </FlexItem>
-            {actions && <FlexItem>{actions}</FlexItem>}
             <FlexItem>
               <ActionsMenu
                 label={t("More actions for this installation")}
@@ -5376,12 +5385,6 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
-/* The bar heads a list and closes a summary, and only the first of those is
-   worth pinning: a bar that follows the page it reports on has nothing above
-   it to stay in front of. */
-.agm-plan-bar-still {
-  position: static;
-}
 `;
 
 /* The outline a label draws, on the second lines under a value: the same words
@@ -5643,8 +5646,9 @@ const PlanNotices = () => {
  * uses, with the same tabs, intros and side effects. The redesign is about
  * where the action sits, not about replacing what it does.
  */
-const AddDeviceActions = () => {
+const AddDeviceActions = ({ folded = false }: { folded?: boolean }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const config = useConfigModel();
   const addDrive = useAddDrive();
@@ -5664,23 +5668,60 @@ const AddDeviceActions = () => {
     if (isVolumeGroup(device)) addVolumeGroup({ name: device.name, spacePolicy: "keep" }, false);
   };
 
+  /* One control rather than two, where the page has room for one: what the
+     reader wants is another device, and which kind is the answer the menu
+     asks for. The list keeps both buttons, since it has a foot to put them on. */
+  const menu = (
+    <Dropdown
+      isOpen={isMenuOpen}
+      onSelect={() => setIsMenuOpen(false)}
+      onOpenChange={setIsMenuOpen}
+      popperProps={{ position: "center" }}
+      toggle={(toggleRef) => (
+        <MenuToggle
+          ref={toggleRef}
+          variant="secondary"
+          isExpanded={isMenuOpen}
+          icon={<Icon name="add" size="xs" />}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          {t("More devices")}
+        </MenuToggle>
+      )}
+    >
+      <DropdownList>
+        <DropdownItem isDisabled={available.length === 0} onClick={() => setIsSelectorOpen(true)}>
+          {t("Add device")}
+        </DropdownItem>
+        <DropdownItem onClick={() => navigate(PATHS.volumeGroup.add)}>
+          {t("Add LVM volume group")}
+        </DropdownItem>
+      </DropdownList>
+    </Dropdown>
+  );
+
   return (
     <Flex flexWrap={{ default: "wrap" }} gap={{ default: "gapSm" }} className="agm-plan-add">
-      <Button
-        variant="secondary"
-        icon={<Icon name="add" size="xs" />}
-        isDisabled={available.length === 0}
-        onClick={() => setIsSelectorOpen(true)}
-      >
-        {t("Add device")}
-      </Button>
-      <Button
-        variant="secondary"
-        icon={<Icon name="add" size="xs" />}
-        onClick={() => navigate(PATHS.volumeGroup.add)}
-      >
-        {t("Add LVM volume group")}
-      </Button>
+      {folded && menu}
+      {!folded && (
+        <>
+          <Button
+            variant="secondary"
+            icon={<Icon name="add" size="xs" />}
+            isDisabled={available.length === 0}
+            onClick={() => setIsSelectorOpen(true)}
+          >
+            {t("Add device")}
+          </Button>
+          <Button
+            variant="secondary"
+            icon={<Icon name="add" size="xs" />}
+            onClick={() => navigate(PATHS.volumeGroup.add)}
+          >
+            {t("Add LVM volume group")}
+          </Button>
+        </>
+      )}
       {isSelectorOpen && (
         <DeviceSelectorModal
           disks={disks}
@@ -6064,6 +6105,8 @@ const DeviceList = ({
   onCrossToPanel,
   unconfigured,
   mountPaths,
+  showsAdd = true,
+  withMenus = false,
 }: {
   rows: Selection[];
   selectedId: string | null;
@@ -6071,14 +6114,20 @@ const DeviceList = ({
   onCrossToPanel: () => void;
   unconfigured: Storage.Device[];
   mountPaths: string[];
+  /** Off where the page closes with an add control of its own. */
+  showsAdd?: boolean;
+  /** On where the list is the page rather than a column beside the panel. */
+  withMenus?: boolean;
 }) => {
   const { offers, rowActions } = useVariants();
   const isWide = useMedia(XL);
   const refs = useRef<(HTMLAnchorElement | null)[]>([]);
   /* Above xl the panel is on screen and holds the device actions, so a copy of
    * them on every row is a second route to the same place and a column that is
-   * empty of anything worth a header. */
-  const showsMenu = rowActions === "always" || (rowActions === "narrow" && !isWide);
+   * empty of anything worth a header. Where the list is the page itself there
+   * is no panel to hold them, and acting on a device without opening it first
+   * is the reason the menu exists. */
+  const showsMenu = withMenus || rowActions === "always" || (rowActions === "narrow" && !isWide);
 
   const registerRef = useCallback((index: number, node: HTMLAnchorElement | null) => {
     refs.current[index] = node;
@@ -6184,7 +6233,7 @@ const DeviceList = ({
         </section>
       )}
 
-      <AddDeviceActions />
+      {showsAdd && <AddDeviceActions />}
     </div>
   );
 };
@@ -6205,7 +6254,16 @@ const DeviceList = ({
  * out of pressing it, and a header inside the sheet says what happens to the
  * plan they are looking at.
  */
-const RetargetButton = ({ device, label }: { device: Partitionable; label: string }) => {
+const RetargetButton = ({
+  device,
+  label,
+  variant = "link",
+}: {
+  device: Partitionable;
+  label: string;
+  /** A link where it sits under a primary action, a button where it stands alone. */
+  variant?: "link" | "secondary";
+}) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const config = useConfigModel();
   const convertDevice = useConvertDevice();
@@ -6223,7 +6281,7 @@ const RetargetButton = ({ device, label }: { device: Partitionable; label: strin
 
   return (
     <>
-      <Button variant="secondary" onClick={() => setIsSelectorOpen(true)}>
+      <Button variant={variant} onClick={() => setIsSelectorOpen(true)}>
         {label}
       </Button>
       {isSelectorOpen && (
@@ -6280,7 +6338,7 @@ const PartitionableHeader = ({
           flexWrap={{ default: "nowrap" }}
         >
           <FlexItem>
-            <RetargetButton device={device} label={t("Use another device")} />
+            <RetargetButton device={device} label={t("Use another device")} variant="secondary" />
           </FlexItem>
           <FlexItem>
             <PartitionableActions collection={collection} index={index} />
@@ -6324,6 +6382,65 @@ const SelectionHeader = ({ selection, onClose }: { selection: Selection; onClose
       onClose={onClose}
     />
   );
+
+/**
+ * What closes a summary: the way to add to the plan, and the two decisions
+ * about no device in particular.
+ *
+ * Read as values with a way in, the way the sheet reads a setting: the label
+ * is the term and the control is the value, so "Boot Automatic" says what is
+ * true and is itself the way to change it.
+ */
+const PlanFooter = ({
+  onShowBoot,
+  onShowEncryption,
+}: {
+  onShowBoot: () => void;
+  onShowEncryption: () => void;
+}) => {
+  const config = useConfigModel();
+  const mode = bootModeOf(config);
+  const bootDevice = configModel.boot.findDevice(config);
+
+  const boot = () => {
+    if (mode === "off") return t("Not configured");
+    if (mode === "auto") return t("Automatic");
+    return bootDevice?.name ? baseName(bootDevice.name) : t("No disk selected");
+  };
+
+  return (
+    <Flex
+      direction={{ default: "column" }}
+      alignItems={{ default: "alignItemsCenter" }}
+      gap={{ default: "gapSm" }}
+    >
+      <FlexItem>
+        <AddDeviceActions folded />
+      </FlexItem>
+      <FlexItem>
+        <Flex
+          justifyContent={{ default: "justifyContentCenter" }}
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapMd" }}
+          flexWrap={{ default: "wrap" }}
+        >
+          <FlexItem>
+            <span className="agm-plan-muted">{t("Boot")}</span>{" "}
+            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
+              {boot()}
+            </Button>
+          </FlexItem>
+          <FlexItem>
+            <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
+            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
+              {t(installationEncryption(config))}
+            </Button>
+          </FlexItem>
+        </Flex>
+      </FlexItem>
+    </Flex>
+  );
+};
 
 /* ------------------------------------------------------------------ *
  * The page, when the plan is one entry
@@ -6372,7 +6489,17 @@ const systemsOn = (decided: Decided[]): string[] =>
  * though it had: a partition is to be deleted, not deleted, which is the
  * grammar the sheet's own reports use.
  */
-type SummaryLine = { kind: CostKind; word: string; detail: string };
+type SummaryLine = {
+  kind: CostKind;
+  /** The consequence, as the term the sheet uses for it. */
+  word: string;
+  /** What the term is about, read beside it. */
+  detail: string;
+  /** The same fact as one phrase, for the reading that leads with the subject. */
+  sentence: string;
+  /** The half of the sheet that answers this line, where one does. */
+  tab?: PanelTab;
+};
 
 /** What becomes of every partition a device already has. */
 const decidedOn = (
@@ -6451,25 +6578,39 @@ const summaryLines = (
   const lines: SummaryLine[] = [];
 
   if (deleted.length) {
-    lines.push({ kind: "destroys", word: t("To be deleted"), detail: lostNames(deleted) });
+    lines.push({
+      kind: "destroys",
+      word: t("To be deleted"),
+      detail: lostNames(deleted),
+      sentence: t(`${lostNames(deleted)} to be deleted`),
+      tab: "current",
+    });
   } else {
     lines.push({
       kind: "keeps",
       word: t("Nothing to delete"),
       detail: partitions.length ? t(`nothing on ${name} is deleted`) : t(`${name} is empty`),
+      sentence: partitions.length
+        ? t(`Nothing on ${name} is deleted`)
+        : t(`${name} is empty, so there is nothing to delete`),
+      tab: partitions.length ? "current" : undefined,
     });
   }
 
   /* Formatting a partition the new system adopts loses what is on it as surely
      as deleting it, and is not the same act, so it keeps its own word. */
   if (formatted.length) {
-    const paths = formatted.map(({ outcome }) =>
-      outcome.kind === "format" ? outcome.mountPath : "",
+    const paths = formatList(
+      formatted
+        .map(({ outcome }) => (outcome.kind === "format" ? outcome.mountPath : ""))
+        .filter(Boolean),
     );
     lines.push({
       kind: "destroys",
       word: t("To be formatted"),
-      detail: t(`${lostNames(formatted)}, reused for ${formatList(paths.filter(Boolean))}`),
+      detail: t(`${lostNames(formatted)}, reused for ${paths}`),
+      sentence: t(`${lostNames(formatted)} to be formatted, reused for ${paths}`),
+      tab: "current",
     });
   }
 
@@ -6480,35 +6621,67 @@ const summaryLines = (
       shrunk.length === 1
         ? systemsOn(shrunk)[0] || baseName(shrunk[0].partition.name)
         : t(`${shrunk.length} partitions`);
+    const sizes = t(`from ${deviceSize(before)} down to ${deviceSize(after)}`);
     lines.push({
       kind: "shrinks",
       word: t("To be shrunk"),
-      detail: t(`${what}, from ${deviceSize(before)} down to ${deviceSize(after)}`),
+      detail: t(`${what}, ${sizes}`),
+      sentence: t(`${what} to be shrunk, ${sizes}`),
+      tab: "current",
     });
   }
 
   /* What the device is formatted as, where the plan takes it whole: there are
      no partitions to count, and the file system is the thing created. */
   if (device.filesystem) {
+    const where = device.mountPath
+      ? t(`${filesystemType(device.filesystem)} at ${device.mountPath}`)
+      : t(`${filesystemType(device.filesystem)}`);
     lines.push({
       kind: "keeps",
       word: t("To be created"),
-      detail: device.mountPath
-        ? t(`${filesystemType(device.filesystem)} at ${device.mountPath}, over the whole device`)
-        : t(`${filesystemType(device.filesystem)}, over the whole device`),
+      detail: t(`${where}, over the whole device`),
+      sentence: t(`${where} to be created, over the whole device`),
+      tab: "planned",
     });
   } else if (created.length) {
-    const size = sum(created, (partition) => partition.block?.size || 0);
+    const what = t(`${created.length} ${created.length === 1 ? "partition" : "partitions"}`);
+    const size = t(`${deviceSize(sum(created, (partition) => partition.block?.size || 0))} in all`);
     lines.push({
       kind: "keeps",
       word: t("To be created"),
-      detail: t(
-        `${created.length} ${created.length === 1 ? "partition" : "partitions"} for the new system, ${deviceSize(size)} in all`,
-      ),
+      detail: t(`${what} for the new system, ${size}`),
+      sentence: t(`${what} to be created for the new system, ${size}`),
+      tab: "planned",
     });
   }
 
   return lines;
+};
+
+/**
+ * A consequence, as its own line of the summary.
+ *
+ * Where the line has a half of the sheet that answers it, the text is the way
+ * there: a reader who reads "3 partitions to be deleted" and wants to know
+ * which presses the words that worried them.
+ */
+const SummaryDetail = ({
+  line,
+  text,
+  onGoTo,
+}: {
+  line: SummaryLine;
+  text: string;
+  onGoTo?: (tab: PanelTab) => void;
+}) => {
+  if (!onGoTo || !line.tab) return <>{text}</>;
+
+  return (
+    <Button variant="link" isInline aria-controls={PANEL_ID} onClick={() => onGoTo(line.tab)}>
+      {text}
+    </Button>
+  );
 };
 
 /**
@@ -6522,46 +6695,41 @@ const summaryLines = (
  */
 const PlanHeadline = ({
   title,
-  icon,
-  facts,
+  icon = "hard_drive",
   path,
   costsLabel,
   lines,
-  actions,
+  onGoTo,
+  primary,
+  secondary,
 }: {
-  title: string;
-  /** The mark over the sentence, where the page has one thing to picture. */
+  /** The sentence the page opens with, name and facts on one line. */
+  title: React.ReactNode;
+  /** The mark over the sentence. */
   icon?: React.ComponentProps<typeof Icon>["name"];
-  /** What the thing named is, in one phrase. */
-  facts?: string;
-  /** How the system names it: the identifier that survives a rename. */
+  /** How the system names the device: the identifier that survives a rename. */
   path?: string;
   /** Names the block of cost lines, for a reader moving by heading. */
   costsLabel: string;
   lines: SummaryLine[];
-  actions?: React.ReactNode;
+  /** Opens the half of the sheet a line is about, where the page has one entry. */
+  onGoTo?: (tab: PanelTab) => void;
+  /** The one action the page is for. */
+  primary?: React.ReactNode;
+  /** Everything else, which PatternFly sets as links under the primary one. */
+  secondary?: React.ReactNode;
 }) => {
+  const { costPhrase } = useVariants();
   const costsId = useId();
 
   return (
-    <EmptyState
-      variant="lg"
-      headingLevel="h2"
-      titleText={title}
-      icon={icon ? () => <Icon name={icon} /> : undefined}
-    >
+    <EmptyState variant="lg" headingLevel="h2" titleText={title} icon={() => <Icon name={icon} />}>
       <EmptyStateBody>
-        {facts && (
+        {path && (
           <Content component="p">
-            {facts}
-            {path && (
-              <>
-                <br />
-                <Text component="small" textStyle="textColorSubtle">
-                  {path}
-                </Text>
-              </>
-            )}
+            <Text component="small" textStyle="textColorSubtle">
+              {path}
+            </Text>
           </Content>
         )}
         {/* The lines are a group with a name of its own, so a reader moving by
@@ -6571,34 +6739,69 @@ const PlanHeadline = ({
         <h3 className="pf-v6-u-screen-reader" id={costsId}>
           {costsLabel}
         </h3>
-        {/* A term and what it says, which is what a description list is. It
-            lines the words up and starts every detail at the same place
-            without a rule of our own; the text goes back to reading left to
-            right, since a ragged left edge costs the reader the comparison the
-            lines exist for. */}
-        <DescriptionList
-          isCompact
-          isHorizontal
-          isFluid
-          aria-labelledby={costsId}
-          className="pf-v6-u-text-align-start"
-        >
-          {lines.map((line) => (
-            <DescriptionListGroup key={line.word}>
-              <DescriptionListTerm
-                className={COST_CLASS[line.kind]}
-                icon={<Icon name={COST_ICON[line.kind]} size="xs" />}
-              >
-                {line.word}
-              </DescriptionListTerm>
-              <DescriptionListDescription>{line.detail}</DescriptionListDescription>
-            </DescriptionListGroup>
-          ))}
-        </DescriptionList>
+        {costPhrase === "term" ? (
+          /* A term and what it says, which is what a description list is. It
+             lines the words up and starts every detail at the same place
+             without a rule of our own; the text goes back to reading left to
+             right, since a ragged left edge costs the reader the comparison
+             the lines exist for. */
+          <DescriptionList
+            isCompact
+            isHorizontal
+            isFluid
+            aria-labelledby={costsId}
+            className="pf-v6-u-text-align-start"
+          >
+            {lines.map((line) => (
+              <DescriptionListGroup key={line.word}>
+                <DescriptionListTerm
+                  className={COST_CLASS[line.kind]}
+                  icon={<Icon name={COST_ICON[line.kind]} size="xs" />}
+                >
+                  {line.word}
+                </DescriptionListTerm>
+                <DescriptionListDescription>
+                  <SummaryDetail line={line} text={line.detail} onGoTo={onGoTo} />
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            ))}
+          </DescriptionList>
+        ) : (
+          /* The same facts read as phrases, subject first. Kept switchable
+             because which of the two reads better is a question about the
+             words rather than about the markup. */
+          <Flex
+            direction={{ default: "column" }}
+            gap={{ default: "gapXs" }}
+            className="pf-v6-u-text-align-start"
+            aria-labelledby={costsId}
+          >
+            {lines.map((line) => (
+              <FlexItem key={line.word}>
+                <Flex
+                  gap={{ default: "gapSm" }}
+                  alignItems={{ default: "alignItemsFlexStart" }}
+                  flexWrap={{ default: "nowrap" }}
+                  className={COST_CLASS[line.kind]}
+                >
+                  <FlexItem>
+                    <Icon name={COST_ICON[line.kind]} size="xs" />
+                  </FlexItem>
+                  <FlexItem>
+                    <SummaryDetail line={line} text={line.sentence} onGoTo={onGoTo} />
+                  </FlexItem>
+                </Flex>
+              </FlexItem>
+            ))}
+          </Flex>
+        )}
       </EmptyStateBody>
-      {actions && (
+      {(primary || secondary) && (
         <EmptyStateFooter>
-          <EmptyStateActions>{actions}</EmptyStateActions>
+          {primary && <EmptyStateActions>{primary}</EmptyStateActions>}
+          {/* PatternFly sets the second group as links under the button, which
+              is what keeps one action reading as the action. */}
+          {secondary && <EmptyStateActions>{secondary}</EmptyStateActions>}
         </EmptyStateFooter>
       )}
     </EmptyState>
@@ -6614,11 +6817,12 @@ const PlanHeadline = ({
 const PlanSummary = ({
   collection,
   index,
-  onOpenSheet,
+  onOpenTab,
 }: {
   collection: PartitionableCollection;
   index: number;
-  onOpenSheet: () => void;
+  /** Opens the sheet, on the half the reader asked about. */
+  onOpenTab: (tab: PanelTab) => void;
 }) => {
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
@@ -6640,20 +6844,24 @@ const PlanSummary = ({
 
   return (
     <PlanHeadline
-      title={t(`Installing on ${name}`)}
-      icon="hard_drive"
-      facts={partitionableDescription(systemDevice)}
+      /* Name and facts on one line, the way the sheet's own header sets them,
+         so the page and the panel it opens name the same device the same way. */
+      title={
+        <>
+          {t(`Installing on ${name}`)}{" "}
+          <span className="agm-plan-panel-facts">{partitionableDescription(systemDevice)}</span>
+        </>
+      }
       path={systemDevice?.block?.udevPaths?.[0]}
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
-      actions={
-        <>
-          <Button variant="primary" aria-controls={PANEL_ID} onClick={onOpenSheet}>
-            {t(`See what ${name} will hold`)}
-          </Button>
-          <RetargetButton device={device} label={t("Install on another device")} />
-        </>
+      onGoTo={onOpenTab}
+      primary={
+        <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
+          {t("See details")}
+        </Button>
       }
+      secondary={<RetargetButton device={device} label={t("Install on another device")} />}
     />
   );
 };
@@ -6712,21 +6920,24 @@ const planLines = (
   const lines: SummaryLine[] = [];
 
   if (deleted.length || deletedVolumes) {
+    const detail = formatList(
+      [
+        deleted.length ? lostNames(deleted) : undefined,
+        deletedVolumes ? counted(deletedVolumes, "logical volume", "logical volumes") : undefined,
+      ].filter(Boolean),
+    );
     lines.push({
       kind: "destroys",
       word: t("To be deleted"),
-      detail: formatList(
-        [
-          deleted.length ? lostNames(deleted) : undefined,
-          deletedVolumes ? counted(deletedVolumes, "logical volume", "logical volumes") : undefined,
-        ].filter(Boolean),
-      ),
+      detail,
+      sentence: t(`${detail} to be deleted`),
     });
   } else {
     lines.push({
       kind: "keeps",
       word: t("Nothing to delete"),
       detail: t("nothing this machine holds today is deleted"),
+      sentence: t("Nothing this machine holds today is deleted"),
     });
   }
 
@@ -6735,19 +6946,22 @@ const planLines = (
       kind: "destroys",
       word: t("To be formatted"),
       detail: lostNames(formatted),
+      sentence: t(`${lostNames(formatted)} to be formatted`),
     });
   }
 
   if (shrunk.length || shrunkVolumes) {
+    const detail = formatList(
+      [
+        shrunk.length ? counted(shrunk.length, "partition", "partitions") : undefined,
+        shrunkVolumes ? counted(shrunkVolumes, "logical volume", "logical volumes") : undefined,
+      ].filter(Boolean),
+    );
     lines.push({
       kind: "shrinks",
       word: t("To be shrunk"),
-      detail: formatList(
-        [
-          shrunk.length ? counted(shrunk.length, "partition", "partitions") : undefined,
-          shrunkVolumes ? counted(shrunkVolumes, "logical volume", "logical volumes") : undefined,
-        ].filter(Boolean),
-      ),
+      detail,
+      sentence: t(`${detail} to be shrunk`),
     });
   }
 
@@ -6769,179 +6983,40 @@ const planLines = (
   ].filter(Boolean);
 
   if (built.length) {
-    lines.push({ kind: "keeps", word: t("To be created"), detail: formatList(built) });
+    lines.push({
+      kind: "keeps",
+      word: t("To be created"),
+      detail: formatList(built),
+      sentence: t(`${formatList(built)} to be created`),
+    });
   }
 
   return lines;
 };
 
-/** One entry of the plan, as the index reads it. */
-type PlanEntry = {
-  selection: Selection;
-  name: string;
-  /** What the entry is, read as part of the control that opens it. */
-  description: string;
-  /** What the new system gets here, one statement per line. */
-  content: string[];
-  costs: Cost[];
-};
-
-/**
- * Every entry of the plan at once.
- *
- * One pass over the configuration rather than a component per row reading its
- * own device: the index is a list of facts about a plan, and a row that fetches
- * its own is a row that cannot be summarised with the others.
- */
-const usePlanEntries = (rows: Selection[]): PlanEntry[] => {
-  const config = useConfigModel();
-  const allDevices = useFlattenDevices();
-  const solver = useSolver();
-  const systemOf = (name: string) => allDevices.find((device) => device.name === name) || null;
-
-  return rows.map((selection) => {
-    if (selection.collection === "volumeGroups") {
-      const group = config.volumeGroups[selection.index];
-      const volumes = group.logicalVolumes || [];
-      const paths = volumes.map((lv) => lv.mountPath).filter(Boolean);
-      const over = configModel.volumeGroup
-        .filterTargetDevices(config, group)
-        .map((device) => baseName(device.name));
-
-      return {
-        selection,
-        name: group.vgName,
-        description: volumeGroupDescription(),
-        content: [
-          paths.length ? namedOrMore(paths) : t("No logical volumes"),
-          over.length ? t(`over ${namedOrMore(over)}`) : "",
-        ].filter(Boolean),
-        costs: volumeGroupCosts(group, systemOf(group.name || ""), solver),
-      };
-    }
-
-    const device = config[selection.collection]?.[selection.index] as Partitionable;
-    const systemDevice = systemOf(device.name);
-    const users = usersOf(config, allDevices, device.name);
-
-    return {
-      selection,
-      name: baseName(device.name),
-      description: partitionableDescription(systemDevice),
-      content: purposeOf(
-        device,
-        users.filter((user) => user.selection?.collection === "volumeGroups").length,
-        users.filter((user) => user.selection?.collection === "mdRaids").length,
-      ),
-      costs: costsFor(device, systemDevice, solver),
-    };
-  });
-};
-
-/**
- * One entry, as a name that opens it and two facts beside it.
- *
- * The name is the control and carries what the entry is, so a screen reader
- * hears "system, LVM volume group" rather than a bare word; everything else in
- * the row describes that control instead of becoming a paragraph to wade
- * through. No row activates, no row has a menu, and ten entries cost ten tab
- * stops.
- */
-const PlanEntryRow = ({ entry, onOpen }: { entry: PlanEntry; onOpen: () => void }) => {
-  const factsId = useId();
-
-  return (
-    <DataListItem>
-      <DataListItemRow>
-        <DataListItemCells
-          dataListCells={[
-            <DataListCell key="name" width={2}>
-              <Button
-                variant="link"
-                isInline
-                aria-controls={PANEL_ID}
-                aria-describedby={factsId}
-                onClick={onOpen}
-              >
-                <Text isBold>{entry.name}</Text>
-                {entry.description && (
-                  <span className="agm-plan-row-description"> {entry.description}</span>
-                )}
-              </Button>
-            </DataListCell>,
-            <DataListCell key="content" width={2} id={factsId}>
-              {entry.content.length === 0 ? (
-                <span className="agm-plan-muted">{t("Nothing planned")}</span>
-              ) : (
-                entry.content.map((line) => <div key={line}>{line}</div>)
-              )}
-            </DataListCell>,
-            <DataListCell key="cost">
-              {entry.costs.length === 0 ? (
-                <span className="agm-plan-muted">{t("Nothing deleted")}</span>
-              ) : (
-                <CostSlot costs={entry.costs} />
-              )}
-            </DataListCell>,
-          ]}
-        />
-      </DataListItemRow>
-    </DataListItem>
-  );
-};
-
-/**
- * The index: what the plan is made of, one line each.
- *
- * A list rather than a table, because nothing here is sorted, filtered or
- * selected, and the only control is the name. It holds two entries or twelve
- * without changing shape.
- */
-const PlanIndex = ({
-  rows,
-  onOpen,
-}: {
-  rows: Selection[];
-  onOpen: (selection: Selection) => void;
-}) => {
-  const entries = usePlanEntries(rows);
-  const title = t("What the plan is made of");
-
-  return (
-    <Stack hasGutter>
-      <StackItem>
-        <Content component="h3">{title}</Content>
-      </StackItem>
-      <StackItem>
-        {/* Named after the heading it sits under: PatternFly asks a list for a
-            label of its own, and the heading is what the reader was given. */}
-        <DataList aria-label={title} isCompact>
-          {entries.map((entry) => (
-            <PlanEntryRow
-              key={idOf(entry.selection)}
-              entry={entry}
-              onOpen={() => onOpen(entry.selection)}
-            />
-          ))}
-        </DataList>
-      </StackItem>
-    </Stack>
-  );
-};
-
 /**
  * The page a plan of more than one entry gets.
  *
- * The summary stays where it was and the index appears under it. What changes
- * with the second entry is what the summary is about: the plan rather than the
+ * The summary stays where it was and the list appears under it. What changes
+ * with the second entry is what the summary is about: the plan rather than a
  * device, since no single device speaks for it any more.
+ *
+ * The list is the one the page already had, menus and all: a reader with five
+ * devices wants to act on one of them without opening it first, and that list
+ * is where those actions live.
  */
 const PlanOverview = ({
   rows,
+  selectedId,
   onOpen,
+  onCrossToPanel,
+  unconfigured,
 }: {
   rows: Selection[];
+  selectedId: string | null;
   onOpen: (selection: Selection) => void;
+  onCrossToPanel: () => void;
+  unconfigured: Storage.Device[];
 }) => {
   const config = useConfigModel();
   const system = useFlattenDevices();
@@ -6953,19 +7028,42 @@ const PlanOverview = ({
     baseName(device.name),
   );
 
+  /* A flex column rather than a stack: PatternFly's Stack is full height, and
+     a full height block in a scrolling page leaves the footer under a screen of
+     nothing. */
   return (
-    <Stack hasGutter>
-      <StackItem>
+    <Flex direction={{ default: "column" }} gap={{ default: "gapMd" }}>
+      <FlexItem>
         <PlanHeadline
           title={t(`Installing on ${namedOrMore(names)}`)}
           costsLabel={t("What happens to this machine")}
           lines={planLines(config, system, staging, manager, solver)}
         />
-      </StackItem>
-      <StackItem>
-        <PlanIndex rows={rows} onOpen={onOpen} />
-      </StackItem>
-    </Stack>
+      </FlexItem>
+      <FlexItem>
+        {/* A sentence rather than a heading: the list under it is the page's
+            subject, and a title over it would announce what the reader can
+            already see. It says what the list holds, which the names alone do
+            not. */}
+        <Content component="p" className="agm-plan-muted">
+          {t(
+            "What the new system is built on: the devices to use, and the volume groups and RAIDs defined over them.",
+          )}
+        </Content>
+      </FlexItem>
+      <FlexItem>
+        <DeviceList
+          rows={rows}
+          selectedId={selectedId}
+          onSelect={onOpen}
+          onCrossToPanel={onCrossToPanel}
+          unconfigured={unconfigured}
+          mountPaths={["/"]}
+          showsAdd={false}
+          withMenus
+        />
+      </FlexItem>
+    </Flex>
   );
 };
 
@@ -6985,6 +7083,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 
 const VARIANT_CONTROLS: VariantControl[] = [
   { key: "page", label: "Page", options: ["summary", "list"] },
+  { key: "costPhrase", label: "Cost wording", options: ["term", "sentence"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -7103,6 +7202,7 @@ function StoragePlan(): React.ReactNode {
   const actions = useActions();
   const availableDevices = useAvailableDevices();
   const announce = useAnnounce();
+  const reset = useReset();
   /* The panel comes over the list rather than sharing the width with it. At
      four fifths there is no share left to give: a list squeezed into the last
      fifth is neither readable nor worth keeping on screen, and the reader still
@@ -7115,6 +7215,10 @@ function StoragePlan(): React.ReactNode {
   const [showsBoot, setShowsBoot] = useState(false);
   const [showsEncryption, setShowsEncryption] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(true);
+  /* Which half of the sheet is open, held here so a line on the page can send
+     the reader to the half it is talking about, and so that comparing two
+     disks does not send them back to the other tab between them. */
+  const [panelTab, setPanelTab] = useState<PanelTab>("result");
   const [variants, setVariants] = useState<Variants>(DEFAULT_VARIANTS);
   /* Through a ref, so the console keeps working after a rerender without the
      whole api being rebuilt on every one of them. */
@@ -7162,6 +7266,7 @@ function StoragePlan(): React.ReactNode {
             '  rowNote("plain" | "outlined")      the second line under a value as plain text, or boxed',
             '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
+            '  costPhrase("term" | "sentence")    "To be deleted  3 partitions", or "3 partitions to be deleted"',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -7200,6 +7305,7 @@ function StoragePlan(): React.ReactNode {
       rowNote: (rowNote) => patch({ rowNote }),
       noteColor: (noteColor) => patch({ noteColor }),
       page: (page) => patch({ page }),
+      costPhrase: (costPhrase) => patch({ costPhrase }),
       bootDebug: () => bootDebugRef.current(),
     };
 
@@ -7257,8 +7363,15 @@ function StoragePlan(): React.ReactNode {
     if (showsEncryption) return <EncryptionDetail />;
     if (!selection) return null;
     if (selection.collection === "volumeGroups")
-      return <VolumeGroupDetail index={selection.index} />;
-    return <PartitionableDetail collection={selection.collection} index={selection.index} />;
+      return <VolumeGroupDetail index={selection.index} tab={panelTab} onTab={setPanelTab} />;
+    return (
+      <PartitionableDetail
+        collection={selection.collection}
+        index={selection.index}
+        tab={panelTab}
+        onTab={setPanelTab}
+      />
+    );
   };
 
   const header = () => {
@@ -7341,11 +7454,12 @@ function StoragePlan(): React.ReactNode {
     />
   );
 
-  const goToDevice = (next: Selection) => {
+  const goToDevice = (next: Selection, tab?: PanelTab) => {
     setShowsResult(false);
     setShowsBoot(false);
     setShowsEncryption(false);
     setSelectedId(idOf(next));
+    if (tab) setPanelTab(tab);
     setIsPanelOpen(true);
   };
 
@@ -7376,9 +7490,6 @@ function StoragePlan(): React.ReactNode {
   const bar = (
     <PlanBar
       destructive={destructive}
-      showsCost={!showsSummary}
-      isSticky={!showsSummary}
-      actions={showsSummary ? <AddDeviceActions /> : undefined}
       onShowBoot={goToBoot}
       onShowEncryption={goToEncryption}
       onShowResult={() => {
@@ -7400,20 +7511,40 @@ function StoragePlan(): React.ReactNode {
         <PlanSummary
           collection={single.collection as PartitionableCollection}
           index={single.index}
-          onOpenSheet={() => goToDevice(single)}
+          onOpenTab={(tab) => goToDevice(single, tab)}
         />
       );
     }
 
-    return <PlanOverview rows={rows} onOpen={goToDevice} />;
+    return (
+      <PlanOverview
+        rows={rows}
+        selectedId={selectedId}
+        onOpen={goToDevice}
+        onCrossToPanel={() => panelRef.current?.focus()}
+        unconfigured={unconfigured}
+      />
+    );
   };
 
   const page = showsSummary ? (
-    <>
+    <div className="agm-plan-summary-page">
+      {/* What is done to the whole installation rather than to anything on the
+          page, so it sits at the top corner where a page keeps its own menu
+          rather than in the middle of what the page reports. */}
+      <Flex justifyContent={{ default: "justifyContentFlexEnd" }}>
+        <FlexItem>
+          <ActionsMenu
+            label={t("More actions for this installation")}
+            position="end"
+            items={[{ title: t("Reset to defaults"), onClick: () => reset() }]}
+          />
+        </FlexItem>
+      </Flex>
       <PlanNotices />
       {summary()}
-      {bar}
-    </>
+      <PlanFooter onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
+    </div>
   ) : (
     <>
       {bar}
