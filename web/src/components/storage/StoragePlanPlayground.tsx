@@ -218,6 +218,8 @@ type TitleFacts = "under" | "inline";
 type OverviewCosts = "hidden" | "shown";
 /** Whether the consequences read one per line, or as one run of phrases. */
 type CostLayout = "stacked" | "inline";
+/** The mark over a plan of more than one device. */
+type PlanIcon = "storage" | "stacks" | "web_stories" | "workspaces";
 /** Where the two machine wide decisions are read. */
 type SettingsPlace = "top" | "bottom";
 /** Which machine the page reads: this one, or one of the scenarios. */
@@ -257,6 +259,7 @@ type Variants = {
   titleFacts: TitleFacts;
   overviewCosts: OverviewCosts;
   costLayout: CostLayout;
+  planIcon: PlanIcon;
   settingsPlace: SettingsPlace;
   data: DataSource;
   panelMode: PanelMode;
@@ -315,6 +318,10 @@ const DEFAULT_VARIANTS: Variants = {
      who stops after the first line has stopped at the worst one. The run
      costs less height and asks the reader to find the middot. */
   costLayout: "stacked",
+  /* Storage, since the page is about what the installation is spread over
+     rather than about any one disk. The other three are in the switch to be
+     looked at against it. */
+  planIcon: "storage",
   /* Beside the installation menu, since boot and encryption are decisions
      about the installation rather than about anything the page reports.
      Under the summary they read as a footnote to the device. */
@@ -362,6 +369,7 @@ type PlanApi = {
   titleFacts: (mode: TitleFacts) => void;
   overviewCosts: (mode: OverviewCosts) => void;
   costLayout: (mode: CostLayout) => void;
+  planIcon: (name: PlanIcon) => void;
   settingsPlace: (mode: SettingsPlace) => void;
   data: (source: DataSource) => void;
   panelMode: (mode: PanelMode) => void;
@@ -7263,7 +7271,7 @@ const PlanOverview = ({
   const staging = useStagingDevices();
   const actions = useActions();
   const solver = useSolver();
-  const { overviewCosts } = useVariants();
+  const { overviewCosts, planIcon } = useVariants();
   const manager = new DevicesManager(system, staging, actions);
 
   /* A flex column rather than a stack: PatternFly's Stack is full height, and
@@ -7277,9 +7285,10 @@ const PlanOverview = ({
              is not a list. What the summary says is that the plan takes more
              than one device, which is the thing the list cannot say in a row. */
           title={t("Use multiple devices to set up the new system")}
-          /* Storage rather than a disk, since no single disk is what this page
-             is about. */
-          icon="storage"
+          /* Not a disk: no single disk is what this page is about. Which mark
+             says "more than one device" best is a question for the eye, so the
+             candidates are one switch apart. */
+          icon={planIcon}
           isTight
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
@@ -7332,6 +7341,11 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
   { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
   { key: "settingsPlace", label: "Settings", options: ["top", "bottom"] },
+  {
+    key: "planIcon",
+    label: "Plan mark",
+    options: ["storage", "stacks", "web_stories", "workspaces"],
+  },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -7524,6 +7538,7 @@ function StoragePlan({
             '  overviewCosts("hidden" | "shown")  what a many entry plan costs, over the list that says it per device',
             '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
+            '  planIcon("storage"|"stacks"|"web_stories"|"workspaces")  the mark over a many device plan',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
             '  panelMode("slide"|"over"|"inline") the page moves over, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
@@ -7568,6 +7583,7 @@ function StoragePlan({
       overviewCosts: (overviewCosts) => patch({ overviewCosts }),
       costLayout: (costLayout) => patch({ costLayout }),
       settingsPlace: (settingsPlace) => patch({ settingsPlace }),
+      planIcon: (planIcon) => patch({ planIcon }),
       data: (data) => patch({ data }),
       panelMode: (panelMode) => patch({ panelMode }),
       bootDebug: () => bootDebugRef.current(),

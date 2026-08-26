@@ -39,6 +39,9 @@ import Close from "@icons/close.svg?component";
 import DragIndicator from "@icons/drag_indicator.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import Storage from "@icons/storage.svg?component";
+import Stacks from "@icons/stacks.svg?component";
+import WebStories from "@icons/web_stories.svg?component";
+import Workspaces from "@icons/workspaces.svg?component";
 import TextDecrease from "@icons/text_decrease.svg?component";
 import TextIncrease from "@icons/text_increase.svg?component";
 import CheckCircle from "@icons/check_circle.svg?component";
@@ -158,7 +161,10 @@ const icons = {
   routine: Routine,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
+  stacks: Stacks,
   storage: Storage,
+  web_stories: WebStories,
+  workspaces: Workspaces,
   translate: Translate,
   unfold_less: UnfoldLess,
   unfold_more: UnfoldMore,
