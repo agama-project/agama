@@ -667,7 +667,9 @@ const parseId = (id: string): Selection | null => {
 
 const PANEL_ID = "storage-plan-panel";
 /** How much of the window the sheet takes when it comes over the page. */
-const PANEL_WIDTH = "80%";
+const PANEL_WIDTH = "70%";
+/** How far the page moves out from under it: the width it is left with. */
+const PAGE_SHIFT = "-30%";
 const LIST_ID = "storage-plan-list";
 const XL = "(min-width: 1200px)";
 /* Wide enough for the list to stay readable with a panel over part of it, and
@@ -5690,17 +5692,20 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
-/* The page under an open sheet takes the width the sheet leaves it, so a
-   summary centred in the window is not read from behind the panel while the
-   strip beside it sits blank. Nothing about the page is rearranged for it:
-   what does not fit the strip is cut off, which is the trade.
+/* The page moves out from under an open sheet rather than being read from
+   behind it, so the strip the sheet leaves holds the summary instead of
+   nothing. It moves rather than reflows: nothing is rearranged, and what no
+   longer fits is cut off, which is the trade.
 
-   On our own wrapper rather than on the drawer's content box: the panel is
-   positioned against that box, so narrowing it takes the panel with it. */
+   On our own wrapper rather than on the drawer's content box, since the panel
+   is positioned against that box and would travel with it. */
+.agm-plan-summary-page {
+  transition: transform var(--pf-t--global--motion--duration--fade--default, 200ms)
+    var(--pf-t--global--motion--timing-function--default, ease-in-out);
+}
+
 .agm-plan-drawer-slide.pf-m-expanded .agm-plan-summary-page {
-  max-width: calc(100% - ${PANEL_WIDTH});
-  overflow-x: hidden;
-  transition: max-width var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out;
+  transform: translateX(${PAGE_SHIFT});
 }
 
 /* The room a summary keeps under it is the room before whatever it introduces,
