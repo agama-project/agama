@@ -7187,36 +7187,29 @@ const PlanSummary = ({
 
   return (
     <PlanHeadline
-      /* The name of the disk is the way to it, and only the name: the sentence
-         around it is what the disk is for, not somewhere to go. Written as one
-         phrase with the name in it rather than as three pieces glued together,
-         which is what `Interpolate` is for once this leaves the playground. */
+      /* The sentence is read, not pressed: what a reader does about this device
+         is offered under it, where the page keeps its actions. */
       title={
-        <>
-          {t("Use ")}
-          <Button
-            variant="link"
-            isInline
-            aria-controls={PANEL_ID}
-            onClick={() => onOpenTab("result")}
-          >
-            {name}
-            <span className="pf-v6-u-screen-reader">{t(", see what it holds")}</span>
-          </Button>
-          {boots ? t(" as installation and boot device") : t(" as installation device")}
-        </>
+        boots
+          ? t(`Use ${name} as installation and boot device`)
+          : t(`Use ${name} as installation device`)
       }
       facts={partitionableDescription(systemDevice)}
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
       onGoTo={onOpenTab}
+      primary={
+        <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
+          {t("View details")}
+        </Button>
+      }
       secondary={
         <>
           <RetargetButton device={device} label={t("Change installation device")} />
           {/* Beside it rather than under the page: changing the device and
               adding another are the two things a reader does about the device
               the sentence names. */}
-          <ConfigureDeviceMenu />
+          <ConfigureDeviceMenu label={t("Add more devices")} />
         </>
       }
     />
