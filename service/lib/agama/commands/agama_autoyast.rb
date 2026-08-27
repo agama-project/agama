@@ -23,10 +23,8 @@
 require "json"
 require "agama/autoyast/converter"
 require "agama/autoyast/profile_fetcher"
-require "agama/autoyast/profile_reporter"
 require "agama/autoyast/profile_checker"
 require "agama/cmdline_args"
-require "agama/http/clients"
 
 module Agama
   # :nodoc:
@@ -52,8 +50,11 @@ module Agama
       # Run the command fetching, checking, converting and writing the Agama configuration.
       def run
         profile = fetch_profile
-        unsupported = check_profile(profile)
-        return false unless report_unsupported(unsupported)
+        FileUtils.mkdir_p(directory)
+        if check?
+          unsupported = check_profile(profile)
+          write_unsupported(unsupported) unless unsupported.empty?
+        end
 
         write_agama_config(profile)
       end
@@ -84,17 +85,22 @@ module Agama
         elements
       end
 
-      def report_unsupported(elements)
-        return true if elements.empty? || !report?
-
-        reporter = Agama::AutoYaST::ProfileReporter.new(questions_client, logger)
-        reporter.report(elements)
+      # Writes the list of unsupported elements found in the profile.
+      #
+      # @param elements [Array<Agama::AutoYaST::ProfileElement>] List of unsupported elements.
+      def write_unsupported(elements)
+        unsupported = elements.map do |e|
+          { "key" => e.key, "support" => e.support.to_s, "notes" => e.notes }
+        end
+        File.write(
+          File.join(directory, "unsupported.json"),
+          JSON.pretty_generate(unsupported)
+        )
       end
 
       def write_agama_config(profile)
         converter = Agama::AutoYaST::Converter.new
         agama_config = converter.to_agama(profile)
-        FileUtils.mkdir_p(directory)
         File.write(
           File.join(directory, "autoinst.json"),
           JSON.pretty_generate(agama_config)
@@ -103,12 +109,8 @@ module Agama
         raise CouldNotWriteAgamaConfig
       end
 
-      def questions_client
-        @questions_client ||= Agama::HTTP::Clients::Questions.new(logger)
-      end
-
-      # Whether the report is enabled or not.
-      def report?
+      # Whether checking for unsupported elements is enabled or not.
+      def check?
         cmdline = CmdlineArgs.read_from("/proc/cmdline")
         cmdline.data.fetch("ay_check", "1") != "0"
       end

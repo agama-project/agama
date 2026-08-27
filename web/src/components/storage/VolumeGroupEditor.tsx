@@ -209,7 +209,7 @@ const VgHeader = ({ deviceConfig, device }: VgHeaderProps) => {
       : _("Empty LVM volume group %s");
   }
 
-  return <Title headingLevel="h4">{sprintf(title, deviceConfig.vgName)}</Title>;
+  return <Title headingLevel="h3">{sprintf(title, deviceConfig.vgName)}</Title>;
 };
 
 type VgMenuToggleProps = CustomToggleProps & {

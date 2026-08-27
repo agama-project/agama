@@ -55,6 +55,10 @@ translations:
       una base del sistema in sola lettura e aggiornamenti automatici e atomici
     ja: ローリングリリース型でかつ不変のデスクトップ製品です。デスクトップ環境には Plasma Desktop を使用し、 Flatpak
       を利用してアプリケーションを配信します。システムの基礎部分は読み込み専用で、自動かつ不可分なシステム更新機能を提供します
+    lo: ຜະລິດຕະພັນເດັສທັອບແບບ rolling release ທີ່ປ່ຽນແປງບໍ່ໄດ້ (immutable), ນຳໃຊ້
+      Plasma Desktop, ນຳໃຊ້ Flatpak ໃນການຕິດຕັ້ງແອັບພລິເຄຊັນ,
+      ມີພື້ນຖານລະບົບແບບອ່ານຢ່າງດຽວ (Read-Only),
+      ພ້ອມທັງມີການອັບເດດລະບົບແບບອັດຕະໂນມັດ ແລະ atomic
     nb_NO: En uforanderlig, rullende utgivelse skrivebordsprodukt som bruker
       skrivebordet Plasma, Flatpak for distribuering av applikasjoner, en
       skrivebeskyttet kjerne, og automatiske, atomiske systemoppdateringer
@@ -100,7 +104,7 @@ software:
     - microos_base
     - microos_base_zypper
     - microos_defaults
-    - microos_hardware
+    - hardware
     - microos_kde_desktop
     - microos_selinux
   optional_patterns: []

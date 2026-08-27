@@ -29,7 +29,7 @@ import Link from "~/components/core/Link";
 import Text from "~/components/core/Text";
 import { useProgressTracking } from "~/hooks/use-progress-tracking";
 import { useConfigModel, STORAGE_MODEL_QUERY_KEY } from "~/hooks/model/storage/config-model";
-import { PROPOSAL_QUERY_KEY, EXTENDED_CONFIG_QUERY_KEY } from "~/hooks/model/proposal";
+import { PROPOSAL_QUERY_KEY } from "~/hooks/model/proposal";
 import {
   useFlattenDevices as useSystemFlattenDevices,
   useAvailableDevices,
@@ -176,11 +176,7 @@ const Description = () => {
  *  - Hidden when configuration issues exist
  */
 export default function StorageSummary() {
-  const { loading } = useProgressTracking("storage", [
-    PROPOSAL_QUERY_KEY,
-    EXTENDED_CONFIG_QUERY_KEY,
-    STORAGE_MODEL_QUERY_KEY,
-  ]);
+  const { loading } = useProgressTracking("storage", [PROPOSAL_QUERY_KEY, STORAGE_MODEL_QUERY_KEY]);
   const issues = useIssues("storage");
   const zfcpIssues = useIssues("zfcp");
 

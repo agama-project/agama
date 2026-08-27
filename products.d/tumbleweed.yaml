@@ -57,6 +57,9 @@ translations:
       che desiderano il software stabile più aggiornato.
     ja: openSUSE の純粋なローリングリリース版で、特定のリリースサイクルによることなく全てのソフトウエアを最新の "安定"
       バージョンに維持し続ける取り組みです。このプロジェクトは特に、最新の安定バージョンを使いたいユーザにお勧めです。
+    lo: ລຸ້ນ rolling release ແທ້ຂອງ openSUSE ທີ່ລວມເອົາຊອບແວລຸ້ນ "ໝັ້ນຄົງ"
+      ຫຼ້າສຸດທຸກຢ່າງ ໂດຍບໍ່ໄດ້ອີງໃສ່ຮອບວຽນການປ່ອຍຕົວຕາມກຳນົດເວລາທີ່ຕາຍຕົວ.
+      ໂຄງການນີ້ເຮັດຂຶ້ນເພື່ອຜູ້ໃຊ້ ທີ່ຕ້ອງການຊອບແວທີ່ໝັ້ນຄົງ ແລະ ໃໝ່ທີ່ສຸດ.
     nb_NO: Tumbleweed distribusjonen er en ren rullerende utgivelsesversjon av
       openSUSE som inneholder de siste "stabile" versjonene av all programvare i
       stedet for å stole på et rigid periodisk utgivelsessykluser. Prosjektet

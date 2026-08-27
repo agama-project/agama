@@ -694,7 +694,7 @@
                     "title": "VLAN Identifier",
                     "type": "integer",
                     "minimum": 0,
-                    "maximum": 4095
+                    "maximum": 4094
                   },
                   "parent": {
                     "title": "Parent interface",

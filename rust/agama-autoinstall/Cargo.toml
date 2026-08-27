@@ -10,8 +10,10 @@ agama-lib = { workspace = true }
 agama-transfer = { workspace = true }
 agama-utils = { workspace = true }
 anyhow = { workspace = true }
+fluent-uri = { workspace = true }
 gettext-rs = { workspace = true }
 i18n-format = { workspace = true }
+serde_json = { workspace = true }
 tempfile = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }

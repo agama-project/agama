@@ -37,9 +37,10 @@ return `{ user, ...renderResult }`. They differ in how much of the app they
 stand up:
 
 - **`plainRender`**: minimal providers (query client, appearance, terminal). Use
-  it for components tested in isolation. Note: a `core/Page` renders
-  `core/Sidebar`, so testing a Page with `plainRender` requires mocking the
-  sidebar, or the render crashes for lack of providers.
+  it for components tested in isolation. Note: rendering a page brings its whole
+  shell along, and the header includes elements that read installer data and
+  navigate, like the localization selector or the installer options, so a page
+  needs `installerRender` or mocks for those parts.
 - **`installerRender`**: adds the installer client `Providers` and a
   `MemoryRouter`. Use it for components that need routing, navigation, or the
   installer client.

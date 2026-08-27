@@ -349,6 +349,9 @@ if [ "$(arch)" == "aarch64" ]; then
   echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >>/etc/dracut.conf.d/x13s_modules.conf
 fi
 
+# do not activate multipath in dracut, leave that for Agama
+echo 'omit_dracutmodules+=" multipath "' >> /etc/dracut.conf.d/omit-multipath.conf
+
 # Decompress kernel modules, better for squashfs (boo#1192457)
 find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +
 find /lib/modules/*/kernel -name '*.ko.zst' -exec zstd --rm -d {} +

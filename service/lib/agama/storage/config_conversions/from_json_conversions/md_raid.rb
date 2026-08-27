@@ -20,10 +20,12 @@
 # find current contact information at www.suse.com.
 
 require "agama/storage/config_conversions/from_json_conversions/base"
+require "agama/storage/config_conversions/from_json_conversions/md_raid_search"
 require "agama/storage/config_conversions/from_json_conversions/with_encryption"
 require "agama/storage/config_conversions/from_json_conversions/with_filesystem"
 require "agama/storage/config_conversions/from_json_conversions/with_partitions"
 require "agama/storage/config_conversions/from_json_conversions/with_ptable_type"
+require "agama/storage/config_conversions/from_json_conversions/with_search"
 require "agama/storage/configs/md_raid"
 require "y2storage/disk_size"
 require "y2storage/md_level"
@@ -59,6 +61,12 @@ module Agama
           # @return [Configs::MdRaid]
           def default_config
             Configs::MdRaid.new
+          end
+
+          # @see WithSearch
+          # @return [Class]
+          def search_converter_class
+            FromJSONConversions::MdRaidSearch
           end
 
           # @see Base#conversions

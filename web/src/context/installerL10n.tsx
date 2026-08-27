@@ -25,6 +25,7 @@ import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import agama from "~/agama";
 import supportedLanguages from "~/languages.json";
 import { useSystem } from "~/hooks/model/system";
+import { languageFromLocale, languageToLocale } from "~/utils/l10n";
 import { configureL10nAction } from "~/api";
 
 const L10nContext = React.createContext(null);
@@ -52,39 +53,6 @@ function useInstallerL10n(): L10nContext {
   }
 
   return context;
-}
-
-/**
- * Generates a RFC 5646 (or BCP 78) language tag from a locale.
- *
- * @param locale
- * @return RFC 5646 language tag (e.g., "en-US")
- *
- * @private
- * @see https://datatracker.ietf.org/doc/html/rfc5646
- * @see https://www.rfc-editor.org/info/bcp78
- */
-function languageFromLocale(locale: string): string {
-  const [language] = locale.split(".");
-  return language.replace("_", "-");
-}
-
-/**
- * Converts a RFC 5646 language tag to a locale.
- *
- * It forces the encoding to "UTF-8".
- *
- * @param language as a RFC 5646 language tag (e.g., "en-US")
- * @return locale (e.g., "en_US.UTF-8")
- *
- * @private
- * @see https://datatracker.ietf.org/doc/html/rfc5646
- * @see https://www.rfc-editor.org/info/bcp78
- */
-function languageToLocale(language: string): string {
-  const [lang, country] = language.split("-");
-  const locale = country ? `${lang}_${country.toUpperCase()}` : lang;
-  return `${locale}.UTF-8`;
 }
 
 /**
