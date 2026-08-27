@@ -16,6 +16,7 @@
         <profile name="openSUSE" description="openSUSE multiproduct image" import="true" />
         <!-- TODO: add SPx in the future -->
         <profile name="SUSE_SLE_16.1" description="SLE-based image" import="true" />
+        <profile name="SUSE_SLE_NV_16.1" description="SLE-based image for NVIDIA" import="true" />
     </profiles>
     <preferences>
         <version>23.0.0</version>
@@ -33,7 +34,7 @@
     <preferences profiles="openSUSE,Leap_16.1">
         <bootloader-theme>openSUSE</bootloader-theme>
     </preferences>
-    <preferences profiles="SUSE_SLE_16.1">
+    <preferences profiles="SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
         <bootloader-theme>SLE</bootloader-theme>
     </preferences>
     <!-- the ISO Volume ID is set by the fix_bootconfig script -->
@@ -42,7 +43,9 @@
             <bootloader name="grub2" console="serial" timeout="10"/>
         </type>
     </preferences>
-    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
+    <!-- SLES for NVIDIA is aarch64 only, but to simplify the kiwi config share the definition
+    with the x86_64 products -->
+    <preferences arch="aarch64,x86_64" profiles="openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1,Leap_16.1">
         <type image="iso" flags="dmsquash" firmware="uefi" mediacheck="true" publisher="SUSE LLC" editbootconfig="fix_bootconfig">
             <bootloader name="grub2" timeout="10"/>
         </type>
@@ -83,7 +86,6 @@
         <package name="bash-completion"/>
         <package name="dhcp-client"/>
         <package name="which"/>
-        <package name="kernel-default"/>
         <!-- the firmware files not referenced by any kernel driver are removed from the image -->
         <package name="kernel-firmware"/>
         <package name="adaptec-firmware"/>
@@ -136,8 +138,21 @@
 
     </packages>
 
+    <!-- the kernel packages -->
+    <packages type="image" profiles="openSUSE,SUSE_SLE_16.1,Leap_16.1">
+        <package name="kernel-default"/>
+    </packages>
+    <packages type="image" profiles="SUSE_SLE_NV_16.1">
+        <package name="kernel-nvidia"/>
+        <package name="kernel-firmware-nvidia"/>
+    </packages>
+    <packages type="image" profiles="Leap_16.1">
+        <package name="kernel-default-extra"/>
+        <package name="kernel-default-optional"/>
+    </packages>
+
     <!-- packages for local installation (desktop, browser, etc.) -->
-    <packages type="image" profiles="Leap_16.1,openSUSE,SUSE_SLE_16.1">
+    <packages type="image" profiles="Leap_16.1,openSUSE,SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
         <package name="bluez-firmware"/>
         <package name="agama-integration-tests"/>
         <package name="fontconfig"/>
@@ -164,22 +179,26 @@
     <!-- additional packages for the Leap distributions -->
     <packages type="image" profiles="Leap_16.1">
         <package name="openSUSE-repos-Leap"/>
-        <package name="kernel-default-extra"/>
-        <package name="kernel-default-optional"/>
     </packages>
     <!-- additional packages for the openSUSE Tumbleweed distribution -->
     <packages type="image" profiles="openSUSE">
         <package name="openSUSE-repos-Tumbleweed"/>
     </packages>
-    <!-- additional packages for the SLE distributions -->
-    <packages type="image" profiles="SUSE_SLE_16.1">
-        <package name="agama-products-sle"/>
+    <!-- common packages for all SLE distributions -->
+    <packages type="image" profiles="SUSE_SLE_16.1,SUSE_SLE_NV_16.1">
         <package name="grub2-branding-SLE" arch="aarch64,x86_64"/>
         <package name="patterns-base-base"/>
         <package name="suse-build-key"/>
-    </packages>
-    <packages type="image" profiles="SUSE_SLE_16.1">
         <package name="MozillaFirefox-branding-SLE"/>
+    </packages>
+    <!-- SLES specific packages -->
+    <packages type="image" profiles="SUSE_SLE_16.1">
+        <package name="agama-products-sle"/>
+    </packages>
+    <!-- SLES for NVIDIA specific packages -->
+    <packages type="image" profiles="SUSE_SLE_NV_16.1">
+        <package name="agama-products-sles-nvidia"/>
+        <!-- TODO: add CSS branding package -->
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
@@ -197,5 +216,8 @@
     </packages>
     <packages type="bootstrap" profiles="SUSE_SLE_16.1">
         <package name="SLES-release"/>
+    </packages>
+    <packages type="bootstrap" profiles="SUSE_SLE_NV_16.1">
+        <package name="SLES_NVIDIA-release"/>
     </packages>
 </image>
