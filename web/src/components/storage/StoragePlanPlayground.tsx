@@ -334,10 +334,11 @@ const DEFAULT_VARIANTS: Variants = {
   /* Stacks: things of the same kind, one behind the other, which is what a
      plan of several devices looks like. The other three are one switch away. */
   planIcon: "stacks",
-  /* Beside the installation menu, since boot and encryption are decisions
-     about the installation rather than about anything the page reports.
-     Under the summary they read as a footnote to the device. */
-  settingsPlace: "top",
+  /* After the actions, at the foot of the page: they are read once and then
+     left alone, and putting them first spends the top of the page on what the
+     reader is least likely to change. Beside the installation menu is one
+     switch away. */
+  settingsPlace: "bottom",
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
@@ -676,6 +677,31 @@ const XL = "(min-width: 1200px)";
 /* Wide enough for the list to stay readable with a panel over part of it, and
    not wide enough for the two to sit side by side. */
 const LG = "(min-width: 992px)";
+
+/**
+ * How wide something actually is.
+ *
+ * The page beside an open sheet is narrow while the window is wide, so what it
+ * can afford is a question about the element rather than about the viewport. A
+ * media query cannot answer that.
+ */
+const useWidth = (ref: React.RefObject<HTMLElement>): number => {
+  const [width, setWidth] = useState(Number.POSITIVE_INFINITY);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return width;
+};
+
+/** Under this, the page stops printing what it can put in a menu. */
+const TIGHT = 640;
 
 /** Tracks a media query without a resize listener per component. */
 const useMedia = (query: string): boolean => {
@@ -7103,6 +7129,7 @@ const SummaryDetail = ({
 const PlanHeadline = ({
   title,
   icon = "hard_drive",
+  isNarrow = false,
   facts,
   body,
   control,
@@ -7118,6 +7145,8 @@ const PlanHeadline = ({
   title: React.ReactNode;
   /** The mark over the sentence. */
   icon?: React.ComponentProps<typeof Icon>["name"];
+  /** Read in a strip beside the sheet rather than across the page. */
+  isNarrow?: boolean;
   /** What the device is, in one phrase. */
   facts?: string;
   /** A line about what the reader does next, where the page has more to it. */
@@ -7196,7 +7225,7 @@ const PlanHeadline = ({
 
   return (
     <EmptyState
-      variant="lg"
+      variant={isNarrow ? "sm" : "lg"}
       headingLevel="h2"
       className={isTight ? "agm-plan-headline-tight" : undefined}
       titleText={
@@ -7305,10 +7334,13 @@ const DeviceNotice = ({
 const PlanSummary = ({
   collection,
   index,
+  isNarrow,
   onOpenTab,
 }: {
   collection: PartitionableCollection;
   index: number;
+  /** Read in a strip beside the sheet rather than across the page. */
+  isNarrow: boolean;
   /** Opens the sheet, on the half the reader asked about. */
   onOpenTab: (tab: PanelTab) => void;
 }) => {
@@ -7342,6 +7374,7 @@ const PlanSummary = ({
 
   return (
     <PlanHeadline
+      isNarrow={isNarrow}
       /* The sentence is read, not pressed: what a reader does about this device
          is offered under it, where the page keeps its actions. */
       title={
@@ -7509,12 +7542,15 @@ const planLines = (
  */
 const PlanOverview = ({
   rows,
+  isNarrow,
   selectedId,
   onOpen,
   onCrossToPanel,
   unconfigured,
 }: {
   rows: Selection[];
+  /** Read in a strip beside the sheet rather than across the page. */
+  isNarrow: boolean;
   selectedId: string | null;
   onOpen: (selection: Selection) => void;
   onCrossToPanel: () => void;
@@ -7536,6 +7572,7 @@ const PlanOverview = ({
     <Flex direction={{ default: "column" }} gap={{ default: "gapSm" }}>
       <FlexItem>
         <PlanHeadline
+          isNarrow={isNarrow}
           /* Not the disks by name: the list under it names them, and a sentence
              is not a list. What the summary says is that the plan takes more
              than one device, which is the thing the list cannot say in a row. */
@@ -7616,7 +7653,7 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
   { key: "summaryStyle", label: "Cost summary", options: ["sentence", "lines"] },
   { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
-  { key: "settingsPlace", label: "Settings", options: ["top", "bottom"] },
+  { key: "settingsPlace", label: "Settings", options: ["bottom", "top"] },
   {
     key: "planIcon",
     label: "Plan mark",
@@ -7759,6 +7796,10 @@ function StoragePlan({
      has the row they picked behind the panel. */
   const isFloating = useMedia(LG);
   const panelRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
+  /* What the page can afford is a question about the page rather than about the
+     window: beside an open sheet it is a strip, however wide the screen is. */
+  const isNarrow = useWidth(pageRef) < TIGHT;
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showsResult, setShowsResult] = useState(false);
@@ -8071,6 +8112,7 @@ function StoragePlan({
         <PlanSummary
           collection={single.collection as PartitionableCollection}
           index={single.index}
+          isNarrow={isNarrow}
           onOpenTab={(tab) => goToDevice(single, tab)}
         />
       );
@@ -8079,6 +8121,7 @@ function StoragePlan({
     return (
       <PlanOverview
         rows={rows}
+        isNarrow={isNarrow}
         selectedId={selectedId}
         onOpen={goToDevice}
         onCrossToPanel={() => panelRef.current?.focus()}
@@ -8088,7 +8131,7 @@ function StoragePlan({
   };
 
   const page = showsSummary ? (
-    <div className="agm-plan-summary-page">
+    <div className="agm-plan-summary-page" ref={pageRef}>
       {/* What the installation is told, and what is done to the whole of it,
           on one row above what the page reports: neither is about any device
           the page names. */}
@@ -8097,16 +8140,27 @@ function StoragePlan({
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
       >
-        {variants.settingsPlace === "top" && (
+        {variants.settingsPlace === "top" && !isNarrow && (
           <FlexItem>
             <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
           </FlexItem>
         )}
         <FlexItem>
+          {/* In a strip, the two decisions fold into the menu that is here
+              anyway: their values are worth a line of a page and not worth two
+              lines of a column. */}
           <ActionsMenu
             label={t("More actions for this installation")}
             position="end"
-            items={[{ title: t("Reset to defaults"), onClick: () => reset() }]}
+            items={[
+              ...(isNarrow
+                ? [
+                    { title: t("Boot options"), onClick: goToBoot },
+                    { title: t("Encryption"), onClick: goToEncryption },
+                  ]
+                : []),
+              { title: t("Reset to defaults"), onClick: () => reset() },
+            ]}
           />
         </FlexItem>
       </Flex>
@@ -8116,7 +8170,7 @@ function StoragePlan({
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapSm" }}
       >
-        {variants.settingsPlace === "bottom" && (
+        {variants.settingsPlace === "bottom" && !isNarrow && (
           <FlexItem>
             <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
           </FlexItem>
