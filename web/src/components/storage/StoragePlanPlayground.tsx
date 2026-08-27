@@ -220,6 +220,8 @@ type OverviewCosts = "hidden" | "shown";
 type CostLayout = "stacked" | "inline";
 /** Whether the one device page offers the space decision itself. */
 type SummarySpace = "shown" | "hidden";
+/** Which shape that decision takes on the page: all four answers, or the one it has. */
+type SpaceShape = "toggles" | "value";
 /** How the one device page reports what the plan costs. */
 type SummaryStyle = "sentence" | "lines";
 /** Where the two machine wide decisions are read. */
@@ -262,6 +264,7 @@ type Variants = {
   costLayout: CostLayout;
   summaryStyle: SummaryStyle;
   summarySpace: SummarySpace;
+  spaceShape: SpaceShape;
   settingsPlace: SettingsPlace;
   data: DataSource;
   panelMode: PanelMode;
@@ -324,6 +327,10 @@ const DEFAULT_VARIANTS: Variants = {
      read. An experiment: it is the one setting a single disk reader is likely
      to want, and the sheet is a click away for everything else. */
   summarySpace: "shown",
+  /* The value line, which is the arrangement the rest of the page already
+     uses for a setting and the one that stops the decision competing with the
+     actions under it. The toggles are one switch away. */
+  spaceShape: "value",
   /* After the actions, at the foot of the page: they are read once and then
      left alone, and putting them first spends the top of the page on what the
      reader is least likely to change. Beside the installation menu is one
@@ -373,6 +380,7 @@ type PlanApi = {
   costLayout: (mode: CostLayout) => void;
   summaryStyle: (mode: SummaryStyle) => void;
   summarySpace: (mode: SummarySpace) => void;
+  spaceShape: (mode: SpaceShape) => void;
   settingsPlace: (mode: SettingsPlace) => void;
   data: (source: DataSource) => void;
   panelMode: (mode: PanelMode) => void;
@@ -2361,11 +2369,17 @@ const SpacePolicySegments = ({
 const SpacePolicyMenu = ({
   current,
   onChoose,
+  labelId = SPACE_CONTROL_LABEL_ID,
 }: {
   current: ConfigModel.SpacePolicy;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
+  /** The term this menu is the value of, which is what names it. */
+  labelId?: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  /* The page and the sheet can both be on screen at once, and two toggles
+     sharing one id name each other. */
+  const valueId = useId();
 
   return (
     <Dropdown
@@ -2377,10 +2391,10 @@ const SpacePolicyMenu = ({
           ref={ref}
           size="sm"
           isExpanded={isOpen}
-          aria-labelledby={`${SPACE_CONTROL_LABEL_ID} agm-plan-policy-value`}
+          aria-labelledby={`${labelId} ${valueId}`}
           onClick={() => setIsOpen((open) => !open)}
         >
-          <span id="agm-plan-policy-value">{t(BULK_LABELS[current])}</span>
+          <span id={valueId}>{t(BULK_LABELS[current])}</span>
         </MenuToggle>
       )}
     >
@@ -2420,6 +2434,54 @@ const SpacePolicyControl = ({
   if (isNarrow || spaceControl === "menu") return <SpacePolicyMenu {...props} />;
 
   return <SpacePolicySegments {...props} />;
+};
+
+/**
+ * The same decision on the page, in the two shapes the review asked to compare.
+ *
+ * The toggles show all four answers at once, which is what makes them quick for
+ * a reader who came here to change this. The value line shows the answer the
+ * plan currently has, which is what makes it quiet for the reader who did not,
+ * and reads the way the sheet already reads a setting: the term is the label
+ * and the control is the value.
+ *
+ * Four toggles at button weight, directly above a row of buttons, is the
+ * fatigue the review named. Which of the two costs less is worth judging on a
+ * machine with plenty to read rather than on a calm one.
+ */
+const SummarySpaceDecision = ({
+  current,
+  onChoose,
+  isNarrow,
+}: {
+  current: ConfigModel.SpacePolicy;
+  onChoose: (policy: ConfigModel.SpacePolicy) => void;
+  /* Four buttons do not fit a strip and do not wrap into anything worth
+     reading, so there the decision is always the value line. */
+  isNarrow: boolean;
+}) => {
+  const { spaceShape } = useVariants();
+  const termId = useId();
+
+  if (!isNarrow && spaceShape === "toggles") {
+    return <SpacePolicySegments current={current} onChoose={onChoose} />;
+  }
+
+  return (
+    <Flex
+      alignItems={{ default: "alignItemsCenter" }}
+      justifyContent={{ default: "justifyContentCenter" }}
+      gap={{ default: "gapSm" }}
+      flexWrap={{ default: "wrap" }}
+    >
+      <FlexItem id={termId} className="agm-plan-muted">
+        {t(SPACE_SETTING_TERM)}
+      </FlexItem>
+      <FlexItem>
+        <SpacePolicyMenu current={current} onChoose={onChoose} labelId={termId} />
+      </FlexItem>
+    </Flex>
+  );
 };
 
 /**
@@ -7603,7 +7665,7 @@ const PlanSummary = ({
       }
       control={
         summarySpace === "shown" && (systemDevice?.partitions || []).length > 0 ? (
-          <SpacePolicyControl
+          <SummarySpaceDecision
             isNarrow={isNarrow}
             current={space.policy}
             onChoose={(policy) => {
@@ -7886,6 +7948,7 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
   { key: "summaryStyle", label: "Cost summary", options: ["sentence", "lines"] },
   { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
+  { key: "spaceShape", label: "Space shape", options: ["value", "toggles"] },
   { key: "settingsPlace", label: "Settings", options: ["bottom", "top"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
@@ -8120,6 +8183,7 @@ function StoragePlan({
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
             '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
+            '  spaceShape("value" | "toggles")    that decision as a term and its value, or as four buttons',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
             '  panelMode("reflow"|"over"|"inline")  the page relays out, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
@@ -8165,6 +8229,7 @@ function StoragePlan({
       settingsPlace: (settingsPlace) => patch({ settingsPlace }),
       summaryStyle: (summaryStyle) => patch({ summaryStyle }),
       summarySpace: (summarySpace) => patch({ summarySpace }),
+      spaceShape: (spaceShape) => patch({ spaceShape }),
       data: (data) => patch({ data }),
       panelMode: (panelMode) => patch({ panelMode }),
       bootDebug: () => bootDebugRef.current(),
