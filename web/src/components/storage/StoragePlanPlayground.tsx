@@ -6955,9 +6955,13 @@ const SelectionHeader = ({ selection, onClose }: { selection: Selection; onClose
 const PlanSettings = ({
   onShowBoot,
   onShowEncryption,
+  isCompact = false,
 }: {
   onShowBoot: () => void;
   onShowEncryption: () => void;
+  /* A strip has no room for two terms and two values, and folding them into the
+     menu beside them buries a value the reader is meant to be able to read. */
+  isCompact?: boolean;
 }) => {
   const config = useConfigModel();
   const mode = bootModeOf(config);
@@ -6980,6 +6984,41 @@ const PlanSettings = ({
     return "settings_backup_restore";
   })();
   const isEncrypted = config.encryption !== undefined;
+  const encryption = t(installationEncryption(config));
+
+  if (isCompact) {
+    /* The mark alone, with the term and its value as the button's name. The
+       tooltip shows the pair to a reader who hovers or tabs to it, and the same
+       words are what a screen reader announces, so nothing is carried by the
+       picture on its own. */
+    const compact = (
+      label: string,
+      icon: React.ComponentProps<typeof Icon>["name"],
+      onClick: () => void,
+    ) => (
+      <Tooltip content={label}>
+        <Button
+          variant="plain"
+          aria-label={label}
+          icon={<Icon name={icon} size="sm" />}
+          onClick={onClick}
+        />
+      </Tooltip>
+    );
+
+    return (
+      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
+        <FlexItem>{compact(t(`Boot: ${boot()}`), bootIcon, onShowBoot)}</FlexItem>
+        <FlexItem>
+          {compact(
+            t(`Encryption: ${encryption}`),
+            isEncrypted ? "lock" : "lock_open",
+            onShowEncryption,
+          )}
+        </FlexItem>
+      </Flex>
+    );
+  }
 
   return (
     <Flex
@@ -7018,7 +7057,7 @@ const PlanSettings = ({
           <FlexItem>
             <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
             <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
-              {t(installationEncryption(config))}
+              {encryption}
             </Button>
           </FlexItem>
         </Flex>
@@ -7133,7 +7172,6 @@ const PlanHeadline = ({
   count,
   primary,
   secondary,
-  settings,
 }: {
   /** The sentence the page opens with, and whatever in it is a control. */
   title: React.ReactNode;
@@ -7155,8 +7193,6 @@ const PlanHeadline = ({
   primary?: React.ReactNode;
   /** Everything else, read after it on the same row. */
   secondary?: React.ReactNode;
-  /** The two decisions about no device in particular, as values with a way in. */
-  settings?: React.ReactNode;
 }) => {
   return (
     <Flex
@@ -7186,11 +7222,6 @@ const PlanHeadline = ({
         <FlexItem className="agm-plan-summary-notice agm-plan-headline-measure">{notice}</FlexItem>
       )}
       {!notice && count && <FlexItem className="agm-plan-headline-measure">{count}</FlexItem>}
-      {/* Directly under what the page reports, and in the same place whatever
-          shape the page takes: they are about the installation rather than
-          about anything the page names, and a reader who learned where they
-          are on one disk finds them on eight. */}
-      {settings && <FlexItem>{settings}</FlexItem>}
       {(primary || secondary) && (
         <>
           {/* A short rule, centred: what is above it is the page reporting,
@@ -7287,7 +7318,6 @@ const PlanSummary = ({
   isNarrow,
   onOpenTab,
   onShowResult,
-  settings,
 }: {
   collection: PartitionableCollection;
   index: number;
@@ -7297,9 +7327,6 @@ const PlanSummary = ({
   onOpenTab: (tab: PanelTab) => void;
   /** Opens the whole picture: what the installer does, and what it leaves. */
   onShowResult: () => void;
-  /** The two decisions about no device in particular, read where a plan of
-      several entries reads them. */
-  settings?: React.ReactNode;
 }) => {
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
@@ -7371,7 +7398,6 @@ const PlanSummary = ({
           {t("View details")}
         </Button>
       }
-      settings={settings}
       secondary={
         <>
           <RetargetButton
@@ -7517,7 +7543,6 @@ const PlanOverview = ({
   onOpen,
   onCrossToPanel,
   unconfigured,
-  settings,
   onShowResult,
 }: {
   rows: Selection[];
@@ -7529,9 +7554,6 @@ const PlanOverview = ({
   unconfigured: Storage.Device[];
   /** Opens the whole picture: what the installer does, and what it leaves. */
   onShowResult: () => void;
-  /** The two installation decisions, read before the list rather than after
-      it: they are about the whole plan, and the list is about its parts. */
-  settings?: React.ReactNode;
 }) => {
   const actions = useActions();
   const notice = usePlanNotice();
@@ -7562,7 +7584,6 @@ const PlanOverview = ({
              disk and hides it on a plan of eight is a page with two shapes. */
           count={<PlanCount actions={actions} onShowResult={onShowResult} />}
           notice={notice}
-          settings={settings}
         />
       </FlexItem>
       <FlexItem>
@@ -8091,10 +8112,6 @@ function StoragePlan({
   /* What the reader sees before opening anything: the summary of the plan, or
      the list of what it is made of. The bar closes the summary and heads the
      list, since one is read to the end and the other is scanned. */
-  const settings = isNarrow ? null : (
-    <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
-  );
-
   const summary = () => {
     if (single) {
       return (
@@ -8104,7 +8121,6 @@ function StoragePlan({
           isNarrow={isNarrow}
           onOpenTab={(tab) => goToDevice(single, tab)}
           onShowResult={goToResult}
-          settings={settings}
         />
       );
     }
@@ -8117,7 +8133,6 @@ function StoragePlan({
         onOpen={goToDevice}
         onCrossToPanel={() => panelRef.current?.focus()}
         unconfigured={unconfigured}
-        settings={settings}
         onShowResult={goToResult}
       />
     );
@@ -8128,42 +8143,52 @@ function StoragePlan({
       className={isNarrow ? "agm-plan-summary-page agm-plan-page-narrow" : "agm-plan-summary-page"}
       ref={pageRef}
     >
-      {/* What the installation is told, and what is done to the whole of it,
-          on one row above what the page reports: neither is about any device
-          the page names. */}
+      {/* One line above the page: what it is on the left, and on the right the
+          two decisions about no device in particular and the one destructive
+          thing this page can do. None of the three is about anything the
+          summary names, so none of them belongs inside it. */}
       <Flex
-        justifyContent={{ default: "justifyContentFlexEnd" }}
+        justifyContent={{ default: "justifyContentSpaceBetween" }}
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
+        flexWrap={{ default: "wrap" }}
       >
         <FlexItem>
-          {/* In a strip, the two decisions fold into the menu that is here
-              anyway: their values are worth a line of a page and not worth two
-              lines of a column. */}
-          <ActionsMenu
-            label={t("More actions for this installation")}
-            position="end"
-            items={[
-              ...(isNarrow
-                ? [
-                    { title: t("Boot options"), onClick: goToBoot },
-                    { title: t("Encryption"), onClick: goToEncryption },
-                  ]
-                : []),
-              /* Alone, and about this configuration rather than about the
-                 machine: everything that manages what the machine has is in
-                 the page header, where management belongs. */
-              {
-                title: t("Reset to defaults"),
-                description: t(
-                  "Throw away every change and start from what the installer proposed",
-                ),
-                onClick: () => reset(),
-                isDanger: true,
-                hasDividerBefore: isNarrow,
-              },
-            ]}
-          />
+          <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+            {t(
+              "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
+            )}
+          </Text>
+        </FlexItem>
+        <FlexItem>
+          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+            <FlexItem>
+              <PlanSettings
+                isCompact={isNarrow}
+                onShowBoot={goToBoot}
+                onShowEncryption={goToEncryption}
+              />
+            </FlexItem>
+            <FlexItem>
+              <ActionsMenu
+                label={t("More actions for this installation")}
+                position="end"
+                items={[
+                  /* Alone, and about this configuration rather than about the
+                     machine: everything that manages what the machine has is
+                     in the page header, where management belongs. */
+                  {
+                    title: t("Reset to defaults"),
+                    description: t(
+                      "Throw away every change and start from what the installer proposed",
+                    ),
+                    onClick: () => reset(),
+                    isDanger: true,
+                  },
+                ]}
+              />
+            </FlexItem>
+          </Flex>
         </FlexItem>
       </Flex>
       {summary()}
