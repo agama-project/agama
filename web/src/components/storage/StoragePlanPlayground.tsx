@@ -706,6 +706,9 @@ type Cost = { kind: CostKind; text: string };
 
 const COST_ORDER: Record<CostKind, number> = { destroys: 0, shrinks: 1, keeps: 2 };
 
+/** Marks whose meaning travels with their direction, turned to say it. */
+const COST_ICON_CLASS: Partial<Record<CostKind, string>> = { shrinks: "agm-u-rotate-90" };
+
 const COST_ICON: Record<CostKind, React.ComponentProps<typeof Icon>["name"]> = {
   destroys: "error_fill",
   /* What happens to the thing itself: it is squeezed into less room, which is
@@ -741,7 +744,7 @@ const CostLine = ({ cost, showIcon = true }: { cost: Cost; showIcon?: boolean })
   >
     {showIcon && (
       <FlexItem>
-        <Icon name={COST_ICON[cost.kind]} size="xs" />
+        <Icon name={COST_ICON[cost.kind]} className={COST_ICON_CLASS[cost.kind]} size="xs" />
       </FlexItem>
     )}
     <FlexItem>{cost.text}</FlexItem>
@@ -4767,8 +4770,11 @@ const PLAN_CSS = `
   color: var(--pf-t--global--text--color--status--danger--default);
 }
 
+/* A shrink loses no data: a partition survives, smaller. Colouring the whole
+   sentence for it puts it beside deletion, which is a different kind of news,
+   so only the mark is coloured. */
 .agm-plan-cost-shrinks {
-  color: var(--pf-t--global--text--color--status--warning--default);
+  color: inherit;
 }
 
 .agm-plan-cost-keeps {
@@ -7171,7 +7177,7 @@ const PlanHeadline = ({
               </FlexItem>
             )}
             <FlexItem className={COST_CLASS[line.kind]}>
-              <Icon name={COST_ICON[line.kind]} size="xs" />
+              <Icon name={COST_ICON[line.kind]} className={COST_ICON_CLASS[line.kind]} size="xs" />
             </FlexItem>
             <FlexItem className={COST_CLASS[line.kind]}>
               {line.subject}

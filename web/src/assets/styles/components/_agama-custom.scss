@@ -343,3 +343,18 @@ nav.agm-breadcrumb h1 {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
+
+// A quarter turn for a mark whose meaning travels with its direction: arrows
+// that squeeze something say it about a width when they point across, and
+// about a height when they point down.
+.agm-u-rotate-90 {
+  rotate: 90deg;
+}
+
+.agm-u-rotate-180 {
+  rotate: 180deg;
+}
+
+.agm-u-rotate-270 {
+  rotate: -90deg;
+}
