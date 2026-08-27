@@ -7547,6 +7547,7 @@ const PlanOverview = ({
   onOpen,
   onCrossToPanel,
   unconfigured,
+  settings,
 }: {
   rows: Selection[];
   /** Read in a strip beside the sheet rather than across the page. */
@@ -7555,6 +7556,9 @@ const PlanOverview = ({
   onOpen: (selection: Selection) => void;
   onCrossToPanel: () => void;
   unconfigured: Storage.Device[];
+  /** The two installation decisions, read before the list rather than after
+      it: they are about the whole plan, and the list is about its parts. */
+  settings?: React.ReactNode;
 }) => {
   const config = useConfigModel();
   const system = useFlattenDevices();
@@ -7598,6 +7602,7 @@ const PlanOverview = ({
           notice={notice}
         />
       </FlexItem>
+      {settings && <FlexItem>{settings}</FlexItem>}
       <FlexItem>
         <DeviceList
           rows={rows}
@@ -8106,6 +8111,10 @@ function StoragePlan({
   /* What the reader sees before opening anything: the summary of the plan, or
      the list of what it is made of. The bar closes the summary and heads the
      list, since one is read to the end and the other is scanned. */
+  const settings = isNarrow ? null : (
+    <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
+  );
+
   const summary = () => {
     if (single) {
       return (
@@ -8126,6 +8135,7 @@ function StoragePlan({
         onOpen={goToDevice}
         onCrossToPanel={() => panelRef.current?.focus()}
         unconfigured={unconfigured}
+        settings={settings}
       />
     );
   };
@@ -8140,7 +8150,7 @@ function StoragePlan({
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
       >
-        {variants.settingsPlace === "top" && !isNarrow && (
+        {variants.settingsPlace === "top" && single && !isNarrow && (
           <FlexItem>
             <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
           </FlexItem>
@@ -8170,7 +8180,10 @@ function StoragePlan({
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapSm" }}
       >
-        {variants.settingsPlace === "bottom" && !isNarrow && (
+        {/* One device reads them last, after what it does about that device.
+            A plan of several reads them before its list, where the summary
+            they belong to ends. */}
+        {variants.settingsPlace === "bottom" && single && !isNarrow && (
           <FlexItem>
             <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
           </FlexItem>
