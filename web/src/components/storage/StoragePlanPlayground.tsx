@@ -6994,10 +6994,9 @@ const PlanSettings = ({
   const isEncrypted = config.encryption !== undefined;
   const encryption = t(installationEncryption(config));
 
-  /* Each pair is one control rather than a mark, a term and a link inside a
-     row: three elements to hit and no edge saying where the thing to press
-     begins. As a control it reads as what it is, a setting with a value in it,
-     and it sits at the weight of the menu beside it rather than under it. */
+  /* Each pair is one button rather than a mark, a term and a link sitting loose
+     in a row: three things to hit, and no edge saying where the thing to press
+     begins. */
   const setting = (
     term: string,
     value: string,
@@ -7006,7 +7005,11 @@ const PlanSettings = ({
   ) => {
     const button = (
       <Button
-        variant="control"
+        /* Plain and small, at the weight of the menu beside it: these two are
+           read far more often than they are changed, and a bordered control
+           gives a setting nobody touches the presence of an action. */
+        variant="plain"
+        size="sm"
         icon={<Icon name={icon} size="sm" />}
         aria-label={isCompact ? t(`${term}: ${value}`) : undefined}
         onClick={onClick}
@@ -8125,7 +8128,11 @@ function StoragePlan({
           second: the sentence is read once, and the controls are what a reader
           coming back to the page is looking for. */}
       <Flex
-        justifyContent={{ default: "justifyContentSpaceBetween" }}
+        /* Ended rather than spaced apart, so the controls sit against the right
+           edge whether they share the line with the sentence or take one of
+           their own. Spacing them apart puts a lone wrapped line at the start
+           of the row, which is the wrong end for a control. */
+        justifyContent={{ default: "justifyContentFlexEnd" }}
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
         flexWrap={{ default: "wrapReverse" }}
