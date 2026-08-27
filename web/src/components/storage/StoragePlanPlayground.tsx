@@ -6219,7 +6219,11 @@ const ResultDetail = ({ actions }: { actions: Proposal.Action[] }) => {
       onSelect={(_event, key) => setTab(String(key))}
       aria-label={t("What will happen")}
     >
-      <Tab eventKey="actions" title={<TabTitleText>{t("Changes")}</TabTitleText>}>
+      {/* The same word the count on the page uses, since the count is what
+          opens this. Whether both should say "changes" instead is the one
+          piece of wording still open: "action" is what the backend calls them,
+          "change" is what a reader would say. */}
+      <Tab eventKey="actions" title={<TabTitleText>{t("Actions")}</TabTitleText>}>
         <div className="agm-plan-section-body">
           <ProposalActions actions={actions} />
         </div>
@@ -8304,7 +8308,7 @@ function StoragePlan({
       return (
         <PanelHeader
           title={t("Result")}
-          subtitle={t("The changes the installer makes, and the machine they leave behind")}
+          subtitle={t("What the installer will do, and what the machine will look like")}
           onClose={() => setShowsResult(false)}
         />
       );
