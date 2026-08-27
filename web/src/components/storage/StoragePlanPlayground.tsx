@@ -4864,7 +4864,7 @@ const PlanBar = ({
           <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
             <FlexItem>
               <span className="agm-plan-muted">{t("Boot")}</span>{" "}
-              <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
+              <Button variant="link" isInline onClick={onShowBoot}>
                 {boot()}
               </Button>
             </FlexItem>
@@ -6888,7 +6888,7 @@ const PlanSettings = ({
           </FlexItem>
           <FlexItem>
             <span className="agm-plan-muted">{t("Boot")}</span>{" "}
-            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
+            <Button variant="link" isInline onClick={onShowBoot}>
               {boot()}
             </Button>
           </FlexItem>
@@ -8199,13 +8199,13 @@ function StoragePlan({
     setIsPanelOpen(true);
   };
 
-  const goToBoot = () => {
-    setShowsResult(false);
-    setShowsEncryption(false);
-    setSelectedId(null);
-    setShowsBoot(true);
-    setIsPanelOpen(true);
-  };
+  /* A page rather than a sheet. The form behind it is due a rewrite onto the
+     current form conventions, and a sheet holding a form nobody has rewritten
+     is a form that gets rewritten twice.
+
+     The sheet the earlier rounds built is still there, on `select("boot")`, so
+     the two arrangements can be put side by side. */
+  const goToBoot = () => navigate(PATHS.editBootDevice);
 
   const goToEncryption = () => {
     setShowsResult(false);
