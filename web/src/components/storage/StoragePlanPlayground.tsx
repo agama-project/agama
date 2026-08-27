@@ -118,7 +118,7 @@ import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
 import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
 import Text from "~/components/core/Text";
 import configModel from "~/model/storage/config-model";
-import { putStorageModel, solveStorageModel } from "~/api";
+import { activateStorageAction, putStorageModel, solveStorageModel } from "~/api";
 import {
   baseName,
   deviceChildren,
@@ -1600,7 +1600,15 @@ const withLogicalVolumeSpace = (
  * MenuButton clones a custom toggle with its ref, click handler and expanded
  * state, so this has to forward a ref to the button it renders.
  */
-type ActionItem = { title: string; onClick: () => void; isDanger?: boolean };
+type ActionItem = {
+  title: string;
+  onClick: () => void;
+  isDanger?: boolean;
+  /** What the item does, where the title alone leaves the reader guessing. */
+  description?: string;
+  /** Opens a run of items about something else. */
+  hasDividerBefore?: boolean;
+};
 
 /**
  * The one row menu this playground uses, everywhere.
@@ -1645,10 +1653,13 @@ const ActionsMenu = ({
       )}
     >
       <DropdownList>
-        {items.map(({ title, onClick, isDanger }, i) => (
-          <DropdownItem key={i} onClick={onClick} isDanger={isDanger}>
-            {title}
-          </DropdownItem>
+        {items.map(({ title, onClick, isDanger, description, hasDividerBefore }, i) => (
+          <React.Fragment key={i}>
+            {hasDividerBefore && <Divider />}
+            <DropdownItem onClick={onClick} isDanger={isDanger} description={description}>
+              {title}
+            </DropdownItem>
+          </React.Fragment>
         ))}
       </DropdownList>
     </Dropdown>
@@ -7602,7 +7613,13 @@ const PlanOverview = ({
           notice={notice}
         />
       </FlexItem>
-      {settings && <FlexItem>{settings}</FlexItem>}
+      {settings && (
+        <FlexItem>
+          <Flex justifyContent={{ default: "justifyContentCenter" }}>
+            <FlexItem>{settings}</FlexItem>
+          </Flex>
+        </FlexItem>
+      )}
       <FlexItem>
         <DeviceList
           rows={rows}
@@ -8169,7 +8186,21 @@ function StoragePlan({
                     { title: t("Encryption"), onClick: goToEncryption },
                   ]
                 : []),
-              { title: t("Reset to defaults"), onClick: () => reset() },
+              {
+                title: t("Rescan devices"),
+                description: t("Update available disks and activate crypt devices"),
+                onClick: () => activateStorageAction(),
+                hasDividerBefore: isNarrow,
+              },
+              {
+                title: t("Reset to defaults"),
+                description: t(
+                  "Throw away every change and start from what the installer proposed",
+                ),
+                onClick: () => reset(),
+                isDanger: true,
+                hasDividerBefore: true,
+              },
             ]}
           />
         </FlexItem>
