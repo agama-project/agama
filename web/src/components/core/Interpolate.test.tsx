@@ -253,6 +253,51 @@ describe("Interpolate", () => {
     });
   });
 
+  describe("with numbered placeholders", () => {
+    const sentence = (text: string) => (
+      <Interpolate sentence={text}>
+        {[() => <strong>system</strong>, () => <em>vdd</em>]}
+      </Interpolate>
+    );
+
+    it("fills each placeholder from the render function its number names", () => {
+      const { container } = plainRender(sentence("Create %1$s on top of %2$s"));
+
+      expect(container.textContent).toBe("Create system on top of vdd");
+      expect(container.querySelector("strong")).toHaveTextContent("system");
+      expect(container.querySelector("em")).toHaveTextContent("vdd");
+    });
+
+    it("keeps each value wrapped in its own content when the order is reversed", () => {
+      const { container } = plainRender(sentence("%2$s holds %1$s"));
+
+      expect(container.textContent).toBe("vdd holds system");
+      expect(container.querySelector("em")).toHaveTextContent("vdd");
+      expect(container.querySelector("strong")).toHaveTextContent("system");
+    });
+
+    it("fills a repeated number from the same render function", () => {
+      const { container } = plainRender(
+        <Interpolate sentence="%1$s and %1$s again">{() => <strong>system</strong>}</Interpolate>,
+      );
+
+      expect(container.textContent).toBe("system and system again");
+      expect(container.querySelectorAll("strong")).toHaveLength(2);
+    });
+
+    it("complains about a number with no render function behind it", () => {
+      expect(() => plainRender(sentence("Create %3$s on top of %1$s"))).toThrow(
+        /no render function/,
+      );
+    });
+
+    it("complains when only some of the placeholders are numbered", () => {
+      expect(() => plainRender(sentence("Create %1$s on top of %s"))).toThrow(
+        "Interpolate: number all printf placeholders or none of them.",
+      );
+    });
+  });
+
   describe("when children returns null", () => {
     it("renders the surrounding text without the injected node", () => {
       const { container } = plainRender(
@@ -277,6 +322,20 @@ describe("Interpolate", () => {
       );
 
       expect(second.container.textContent).toBe("two");
+    });
+
+    it("renders printf placeholders correctly across renders", () => {
+      const first = plainRender(
+        <Interpolate sentence="first %s">{() => <strong>one</strong>}</Interpolate>,
+      );
+
+      expect(first.container.textContent).toBe("first one");
+
+      const second = plainRender(
+        <Interpolate sentence="second %1$s">{() => <strong>two</strong>}</Interpolate>,
+      );
+
+      expect(second.container.textContent).toBe("second two");
     });
   });
 });
