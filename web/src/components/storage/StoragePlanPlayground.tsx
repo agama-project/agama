@@ -5899,6 +5899,13 @@ const PLAN_CSS = `
    the accessibility tree, and nothing about that reaches a reader who is
    looking at it. Dimmed and softened, it reads as what it is, the page behind
    the thing they are in. */
+/* A table has columns to compare, and a strip narrower than they need turns
+   them into a stack of wrapped words. It keeps the width it reads at and the
+   page scrolls to the rest. */
+.agm-plan-page-narrow .agm-plan-table {
+  min-width: 32rem;
+}
+
 /* Centring on the cross axis has no way to overflow politely: content wider
    than the strip loses its start, which is where a heading begins. Stretched,
    it wraps and stays whole, and the text is centred by the component anyway. */
@@ -6878,7 +6885,7 @@ const PlanSettings = ({
           flexWrap={{ default: "nowrap" }}
         >
           <FlexItem>
-            <Icon name={bootIcon} size="xs" />
+            <Icon name={bootIcon} size="sm" verticalAlign="middle" />
           </FlexItem>
           <FlexItem>
             <span className="agm-plan-muted">{t("Boot")}</span>{" "}
@@ -6895,7 +6902,7 @@ const PlanSettings = ({
           flexWrap={{ default: "nowrap" }}
         >
           <FlexItem>
-            <Icon name={isEncrypted ? "lock" : "lock_open"} size="xs" />
+            <Icon name={isEncrypted ? "lock" : "lock_open"} size="sm" verticalAlign="middle" />
           </FlexItem>
           <FlexItem>
             <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
@@ -7894,6 +7901,10 @@ function StoragePlan({
   const isFloating = useMedia(LG);
   const panelRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
+  /* Where the reader was before the sheet opened. Laying the page out again in
+     a narrower box changes how tall everything is, and the scroll that was
+     showing the fifth device ends up showing the first. */
+  const scrolledTo = useRef(0);
   /* What the page can afford is a question about the page rather than about the
      window: beside an open sheet it is a strip, however wide the screen is. */
   const isNarrow = useWidth(pageRef) < TIGHT;
@@ -7912,6 +7923,37 @@ function StoragePlan({
   const bootDebug = useBootDebug();
   const bootDebugRef = useRef(bootDebug);
   bootDebugRef.current = bootDebug;
+
+  const hasPanelContent = showsResult || showsBoot || showsEncryption || selectedId !== null;
+  /* Whatever is left of the page beside an open sheet is there to be read and
+     not to be used: the sheet is what the reader is in. */
+  const isCovered = variants.panelMode !== "inline" && isPanelOpen && hasPanelContent;
+
+  /* The page keeps its place when the sheet takes half of it: laying it out
+     again in a narrower box changes how tall everything is, and the scroll that
+     was showing the fifth device ends up showing the first. */
+  useEffect(() => {
+    const scroller = pageRef.current?.closest<HTMLElement>(
+      ".pf-v6-c-drawer__content, .agm-plan-narrow",
+    );
+    if (!scroller) return;
+
+    const remember = () => {
+      if (!isCovered) scrolledTo.current = scroller.scrollTop;
+    };
+
+    scroller.addEventListener("scroll", remember, { passive: true });
+    /* Once the browser has laid the narrower page out, so the value is put back
+       against the height the page ends up with rather than the one it had. */
+    const frame = window.requestAnimationFrame(() => {
+      scroller.scrollTop = scrolledTo.current;
+    });
+
+    return () => {
+      scroller.removeEventListener("scroll", remember);
+      window.cancelAnimationFrame(frame);
+    };
+  }, [isCovered]);
 
   /* Console driven, so the page itself stays screenshot clean. */
   useEffect(() => {
@@ -8053,7 +8095,6 @@ function StoragePlan({
   const unconfigured = availableDevices.filter((device) => !configuredNames.includes(device.name));
 
   const selection = selectedId ? parseId(selectedId) : null;
-  const hasPanelContent = showsResult || showsBoot || showsEncryption || selection !== null;
 
   const detail = () => {
     if (showsResult) return <ResultDetail actions={actions} />;
@@ -8338,9 +8379,6 @@ function StoragePlan({
      window. Otherwise it comes over the page, which either keeps its width
      and is covered, or gives way to the sheet and uses what is left. */
   const isInlineDrawer = variants.panelMode === "inline";
-  /* Whatever is left of the page beside an open sheet is there to be read and
-     not to be used: the sheet is what the reader is in. */
-  const isCovered = !isInlineDrawer && isPanelOpen && hasPanelContent;
 
   const drawer = (isStatic: boolean) => (
     <Drawer
