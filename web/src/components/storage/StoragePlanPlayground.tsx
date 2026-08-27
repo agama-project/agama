@@ -2418,13 +2418,20 @@ const SpacePolicyMenu = ({
   );
 };
 
-const SpacePolicyControl = (props: {
+const SpacePolicyControl = ({
+  isNarrow = false,
+  ...props
+}: {
   current: ConfigModel.SpacePolicy;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
+  /* Four buttons do not fit a strip and do not wrap into anything worth
+     reading, so there the decision is the menu: one line, and the value it
+     holds stays visible. */
+  isNarrow?: boolean;
 }) => {
   const { spaceControl } = useVariants();
 
-  if (spaceControl === "menu") return <SpacePolicyMenu {...props} />;
+  if (isNarrow || spaceControl === "menu") return <SpacePolicyMenu {...props} />;
 
   return <SpacePolicySegments {...props} />;
 };
@@ -7461,6 +7468,7 @@ const PlanSummary = ({
       control={
         summarySpace === "shown" && (systemDevice?.partitions || []).length > 0 ? (
           <SpacePolicyControl
+            isNarrow={isNarrow}
             current={space.policy}
             onChoose={(policy) => {
               space.choose(policy);
