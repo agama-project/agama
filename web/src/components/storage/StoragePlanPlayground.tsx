@@ -5727,6 +5727,25 @@ const PLAN_CSS = `
   --pf-v6-c-empty-state--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
 }
 
+/* Out of reach, and visibly so: inert takes the page out of the tab order and
+   the accessibility tree, and nothing about that reaches a reader who is
+   looking at it. Dimmed and softened, it reads as what it is, the page behind
+   the thing they are in. */
+.agm-plan-covered {
+  opacity: 0.55;
+  filter: blur(2px);
+  transition:
+    opacity var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out,
+    filter var(--pf-t--global--motion--duration--fade--default, 200ms) ease-in-out;
+}
+
+/* What is wrong reads as prose, not as a centred banner: an alert is a heading
+   and a paragraph, and both are read from their own left edge. */
+.agm-plan-summary-notice {
+  margin-block: var(--pf-t--global--spacer--md);
+  text-align: start;
+}
+
 /* The decision sits between what the device is and what the plan does to it,
    which is the pair it belongs to. */
 .agm-plan-summary-control {
@@ -5948,12 +5967,16 @@ const ResultDetail = ({ actions }: { actions: Proposal.Action[] }) => {
  *
  * The same two states have their own notices on the real storage page.
  */
-const PlanNotices = () => {
+const usePlanNotice = (): React.ReactNode | null => {
   const proposal = useStorageProposal();
   const issues = useIssues("storage");
   /* The proposal class is the failure itself, which the notice below is about.
      Everything else is something in the configuration to put right. */
   const configIssues = issues.filter((issue) => issue.class !== "proposal");
+
+  /* Null rather than an empty fragment, so a caller can ask whether there is
+     anything to say before deciding where to say it. */
+  if (proposal && configIssues.length === 0) return null;
 
   return (
     <>
@@ -5993,6 +6016,9 @@ const PlanNotices = () => {
     </>
   );
 };
+
+/** The same notices, where the page has nowhere better to put them. */
+const PlanNotices = () => <>{usePlanNotice()}</>;
 
 /**
  * The two add actions, as buttons at the foot of the list they add to.
@@ -7052,6 +7078,7 @@ const PlanHeadline = ({
   facts,
   body,
   control,
+  notice,
   isTight = false,
   costsLabel,
   lines,
@@ -7069,6 +7096,10 @@ const PlanHeadline = ({
   body?: React.ReactNode;
   /** A decision offered where its consequence is read. */
   control?: React.ReactNode;
+  /** What is wrong, where something is: it replaces what the page would have
+      reported, since a page that cannot work out a layout has no cost to
+      report and should not print one. */
+  notice?: React.ReactNode;
   /** Closes against what follows it, where the page continues under it. */
   isTight?: boolean;
   /** Names the block of cost lines, for a reader moving by heading. */
@@ -7085,6 +7116,55 @@ const PlanHeadline = ({
   const { titleFacts, costLayout } = useVariants();
   const costsId = useId();
   const inline = titleFacts === "inline" && facts;
+
+  const lineList = (
+    /* The subject leads and the term follows it, the way the sheet's own second
+       lines read: what the reader is looking for is which partitions, not which
+       verb. The term is the control, since the half of the sheet behind it is
+       that act spelled out.
+
+       A list either way, so a screen reader announces how many consequences
+       there are before reading them. The run separates them with a mark that is
+       hidden from it, since "middot" is not a word anybody needs. */
+    <Flex
+      component="ul"
+      direction={{ default: costLayout === "inline" ? "row" : "column" }}
+      justifyContent={{ default: "justifyContentCenter" }}
+      gap={{ default: costLayout === "inline" ? "gapSm" : "gapXs" }}
+      flexWrap={{ default: "wrap" }}
+      className="agm-plan-costs"
+      aria-labelledby={costsId}
+    >
+      {lines.map((line, at) => (
+        <FlexItem component="li" key={line.tail}>
+          <Flex
+            gap={{ default: "gapSm" }}
+            alignItems={{ default: "alignItemsCenter" }}
+            justifyContent={{ default: "justifyContentCenter" }}
+            flexWrap={{ default: "nowrap" }}
+          >
+            {costLayout === "inline" && at > 0 && (
+              <FlexItem aria-hidden className="agm-plan-muted">
+                ·
+              </FlexItem>
+            )}
+            <FlexItem className={COST_CLASS[line.kind]}>
+              <Icon name={COST_ICON[line.kind]} size="xs" />
+            </FlexItem>
+            <FlexItem className={COST_CLASS[line.kind]}>
+              {line.subject}
+              {line.tail && (
+                <>
+                  {" "}
+                  <SummaryDetail line={line} text={line.tail} onGoTo={onGoTo} />
+                </>
+              )}
+            </FlexItem>
+          </Flex>
+        </FlexItem>
+      ))}
+    </Flex>
+  );
 
   return (
     <EmptyState
@@ -7106,62 +7186,17 @@ const PlanHeadline = ({
         {body && <Content component="p">{body}</Content>}
         {/* Above the sentence it changes, so the reader sees what it did. */}
         {control && <div className="agm-plan-summary-control">{control}</div>}
+        {notice && <div className="agm-plan-summary-notice">{notice}</div>}
         {/* The lines are a group with a name of its own, so a reader moving by
             heading reaches them as one thing rather than as loose text under
             the sentence. Nothing here is worth a visible heading: each line
             says what it is. */}
-        {lines.length > 0 && (
+        {!notice && lines.length > 0 && (
           <h3 className="pf-v6-u-screen-reader" id={costsId}>
             {costsLabel}
           </h3>
         )}
-        {/* The subject leads and the term follows it, the way the sheet's own
-            second lines read: what the reader is looking for is which
-            partitions, not which verb. The term is the control, since the half
-            of the sheet behind it is that act spelled out.
-
-            A list either way, so a screen reader announces how many
-            consequences there are before reading them. The run separates them
-            with a mark that is hidden from it, since "middot" is not a word
-            anybody needs. */}
-        <Flex
-          component="ul"
-          direction={{ default: costLayout === "inline" ? "row" : "column" }}
-          justifyContent={{ default: "justifyContentCenter" }}
-          gap={{ default: costLayout === "inline" ? "gapSm" : "gapXs" }}
-          flexWrap={{ default: "wrap" }}
-          className="agm-plan-costs"
-          aria-labelledby={costsId}
-        >
-          {lines.map((line, at) => (
-            <FlexItem component="li" key={line.tail}>
-              <Flex
-                gap={{ default: "gapSm" }}
-                alignItems={{ default: "alignItemsCenter" }}
-                justifyContent={{ default: "justifyContentCenter" }}
-                flexWrap={{ default: "nowrap" }}
-              >
-                {costLayout === "inline" && at > 0 && (
-                  <FlexItem aria-hidden className="agm-plan-muted">
-                    ·
-                  </FlexItem>
-                )}
-                <FlexItem className={COST_CLASS[line.kind]}>
-                  <Icon name={COST_ICON[line.kind]} size="xs" />
-                </FlexItem>
-                <FlexItem className={COST_CLASS[line.kind]}>
-                  {line.subject}
-                  {line.tail && (
-                    <>
-                      {" "}
-                      <SummaryDetail line={line} text={line.tail} onGoTo={onGoTo} />
-                    </>
-                  )}
-                </FlexItem>
-              </Flex>
-            </FlexItem>
-          ))}
-        </Flex>
+        {!notice && lineList}
       </EmptyStateBody>
       {(primary || secondary) && (
         <EmptyStateFooter>
@@ -7176,6 +7211,61 @@ const PlanHeadline = ({
       )}
     </EmptyState>
   );
+};
+
+/**
+ * Why there is no plan, said about this device.
+ *
+ * The backend reports that it could not work one out and not why, so the page
+ * says what it can see for itself: what the disk is, what the decision about
+ * its content is, and which decision would change the answer. "No valid
+ * layout" tells a reader nothing they can act on; "everything on vdd is being
+ * kept, so there is nowhere to put the new system" tells them what to press.
+ *
+ * Anything it cannot explain falls back to what the page reports elsewhere.
+ */
+const DeviceNotice = ({
+  device,
+  systemDevice,
+  fallback,
+}: {
+  device: Partitionable;
+  systemDevice: Storage.Device | null;
+  fallback: React.ReactNode;
+}) => {
+  const name = baseName(device.name);
+  const policy = device.spacePolicy || "keep";
+  const partitions = systemDevice?.partitions || [];
+  const free = (systemDevice?.partitionTable?.unusedSlots || []).reduce(
+    (total, slot) => total + slot.size,
+    0,
+  );
+
+  /* The case the reader lands in most: a disk with something on it, and a plan
+     that is not allowed to touch any of it. */
+  if (policy === "keep" && partitions.length > 0) {
+    return (
+      <Alert
+        variant="danger"
+        isInline
+        title={t(`There is not enough room on ${name} for the new system`)}
+      >
+        {t(
+          `Everything on ${name} is being kept, and what is left over is not enough. Allow the installer to shrink or delete what is there, or install on another device.`,
+        )}
+      </Alert>
+    );
+  }
+
+  if (partitions.length === 0 && free === 0) {
+    return (
+      <Alert variant="danger" isInline title={t(`${name} is too small for the new system`)}>
+        {t("Install on another device, or add one to the plan.")}
+      </Alert>
+    );
+  }
+
+  return <>{fallback}</>;
 };
 
 /**
@@ -7203,6 +7293,7 @@ const PlanSummary = ({
   const solver = useSolver();
   const { summaryStyle, summarySpace } = useVariants();
   const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
+  const notice = usePlanNotice();
 
   if (!device) return null;
 
@@ -7247,6 +7338,9 @@ const PlanSummary = ({
       }
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
+      notice={
+        notice && <DeviceNotice device={device} systemDevice={systemDevice} fallback={notice} />
+      }
       onGoTo={onOpenTab}
       primary={
         <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
@@ -7404,6 +7498,7 @@ const PlanOverview = ({
   const actions = useActions();
   const solver = useSolver();
   const { overviewCosts, planIcon } = useVariants();
+  const notice = usePlanNotice();
   const manager = new DevicesManager(system, staging, actions);
 
   /* A flex column rather than a stack: PatternFly's Stack is full height, and
@@ -7435,6 +7530,7 @@ const PlanOverview = ({
           lines={
             overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
           }
+          notice={notice}
         />
       </FlexItem>
       <FlexItem>
@@ -7633,12 +7729,7 @@ function StoragePlan({
      four fifths there is no share left to give: a list squeezed into the last
      fifth is neither readable nor worth keeping on screen, and the reader still
      has the row they picked behind the panel. */
-  const isWide = useMedia(XL);
-  const isRoomy = useMedia(LG);
-  /* Over the page, the page keeps its width behind the sheet and needs only
-     room for the sheet. Beside it, the page has to be readable in what is
-     left, which under xl it is not: the two take turns instead. */
-  const isFloating = variants.panelMode === "over" ? isRoomy : isWide;
+  const isFloating = useMedia(LG);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -7991,7 +8082,6 @@ function StoragePlan({
           />
         </FlexItem>
       </Flex>
-      <PlanNotices />
       {summary()}
       <Flex
         direction={{ default: "column" }}
@@ -8059,7 +8149,12 @@ function StoragePlan({
 
             As an empty string rather than as a boolean, which is what React 18
             passes through as the bare attribute the browser wants. */}
-        <DrawerContentBody {...(isCovered ? { inert: "" } : {})}>{page}</DrawerContentBody>
+        <DrawerContentBody
+          className={isCovered ? "agm-plan-covered" : undefined}
+          {...(isCovered ? { inert: "" } : {})}
+        >
+          {page}
+        </DrawerContentBody>
       </DrawerContent>
     </Drawer>
   );
