@@ -53,5 +53,49 @@ describe Agama::AutoYaST::BondReader do
       bond = subject.read["bond"]
       expect(bond["mode"]).to eq("active-backup")
     end
+
+    context "when the mode is given as a number" do
+      let(:profile) do
+        {
+          "id"                  => "bond0",
+          "bonding_slave0"      => "eth0",
+          "bonding_module_opts" => "mode=1 miimon=100"
+        }
+      end
+
+      it "sets the corresponding mode name" do
+        bond = subject.read["bond"]
+        expect(bond["mode"]).to eq("active-backup")
+      end
+    end
+
+    context "when the module options do not include a mode" do
+      let(:profile) do
+        {
+          "id"                  => "bond0",
+          "bonding_slave0"      => "eth0",
+          "bonding_module_opts" => "miimon=100"
+        }
+      end
+
+      it "does not set the mode" do
+        expect(subject.read["bond"]).to_not have_key("mode")
+      end
+
+      it "keeps the rest of the options" do
+        bond = subject.read["bond"]
+        expect(bond["options"]).to eq("miimon=100")
+      end
+    end
+
+    context "when there is no bonding information" do
+      let(:profile) do
+        { "name" => "eth0" }
+      end
+
+      it "returns an empty hash" do
+        expect(subject.read).to eq({})
+      end
+    end
   end
 end

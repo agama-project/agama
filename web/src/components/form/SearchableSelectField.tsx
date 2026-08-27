@@ -69,6 +69,10 @@ type Option = {
   // code or territory not present in the label). When omitted, the visible
   // `label` is used. The `description` node is never part of the match.
   filterText?: string;
+  // BCP 47 tag for the option's own text, when it is not written in the
+  // interface language (e.g. a language picker listing "日本語"). Screen readers
+  // use it to pronounce the option with the right voice.
+  lang?: string;
 };
 
 type SearchableSelectFieldProps = FieldLabelOptions & {
@@ -490,10 +494,13 @@ export default function SearchableSelectField({
           placeholder={inputPlaceholder}
           autoComplete="off"
           // PF spreads unknown props onto the wrapper, not the input; invalid
-          // state must reach the input itself, so it goes through inputProps.
-          inputProps={
-            error ? { "aria-invalid": true, "aria-describedby": `${idPrefix}-error` } : undefined
-          }
+          // state and the selection's language must reach the input itself, so
+          // they go through inputProps. While filtering the text is whatever the
+          // user typed, so the option's `lang` no longer describes it.
+          inputProps={{
+            ...(error && { "aria-invalid": true, "aria-describedby": `${idPrefix}-error` }),
+            lang: isFiltering ? undefined : selectedOption?.lang,
+          }}
         />
       </TextInputGroup>
     </MenuToggle>
@@ -538,6 +545,7 @@ export default function SearchableSelectField({
                 id={optionId(index)}
                 value={option.value}
                 description={option.description}
+                lang={option.lang}
                 // isFocused applies PF's own highlight class, giving sighted
                 // users the same visual cue AT users get via aria-activedescendant.
                 // Hover does not drive this highlight: while filtering the list

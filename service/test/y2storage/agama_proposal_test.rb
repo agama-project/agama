@@ -31,7 +31,7 @@ using Y2Storage::Refinements::SizeCasts
 def block_device_config(config, name: nil, filesystem: nil)
   if name
     config.search = Agama::Storage::Configs::Search.new.tap do |search_config|
-      search_config.name = name
+      search_config.condition = Agama::Storage::Configs::SearchConditions::Name.new(name)
     end
   end
 
@@ -585,7 +585,7 @@ describe Y2Storage::AgamaProposal do
       let(:config) { default_config }
 
       before do
-        drive0.search.name = "/dev/vdb"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vdb")
       end
 
       it "uses the drive" do
@@ -703,7 +703,7 @@ describe Y2Storage::AgamaProposal do
 
       before do
         home_partition.search = Agama::Storage::Configs::Search.new.tap do |search|
-          search.name = "/dev/vda3"
+          search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda3")
         end
       end
 
@@ -768,7 +768,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       before do
-        drive0.search.name = "/dev/vda"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda")
       end
 
       it "deletes the partitions" do
@@ -799,7 +799,7 @@ describe Y2Storage::AgamaProposal do
 
       before do
         # vda has 18 GiB of free space.
-        drive0.search.name = "/dev/vda"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda")
       end
 
       context "if deleting the partition is not needed" do
@@ -850,7 +850,7 @@ describe Y2Storage::AgamaProposal do
       end
 
       before do
-        drive0.search.name = "/dev/vda"
+        drive0.search.condition = Agama::Storage::Configs::SearchConditions::Name.new("/dev/vda")
       end
 
       it "deletes the partition" do

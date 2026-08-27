@@ -21,11 +21,12 @@ The 99hcn dracut module provides automatic network configuration for IBM PowerVM
 **Core Responsibilities:**
 
 1. Parse HCN-specific kernel parameters (`rd.hcn.ip`, `rd.hcn.route`)
-2. Discover HCN device pairs via `/proc/device-tree` properties
-3. Transform HCN parameters into bond-targeted standard dracut parameters
-4. Generate NetworkManager connection profiles via `nm-initrd-generator`
-5. Adapt profiles for `hcnmgr` daemon compatibility
-6. Persist profiles across initramfs and into the installed system
+2. Reserve the network configuration for HCN by writing an `ip=hcn` marker to `/etc/cmdline.d/`
+3. Discover HCN device pairs via `/proc/device-tree` properties
+4. Transform HCN parameters into bond-targeted standard dracut parameters
+5. Generate NetworkManager connection profiles via `nm-initrd-generator`
+6. Adapt profiles for `hcnmgr` daemon compatibility
+7. Persist profiles across initramfs and into the installed system
 
 ## Key Architecture Principles
 
@@ -43,7 +44,9 @@ The 99hcn dracut module provides automatic network configuration for IBM PowerVM
 
 4. **No Cmdline Pollution**: Transformed parameters are passed directly to `nm-initrd-generator` as command-line arguments, never written to `/etc/cmdline.d/`, preventing other dracut modules from reading them and regenerating incompatible profiles.
 
-5. **Timing-Aware Orchestration**: Two-phase execution (cmdline hook + systemd service) handles the fact that HCN devices may not be available when kernel command line parsing runs.
+5. **Early Claim of the Network**: The `hcn-cmdline.sh` hook writes a single `ip=hcn` marker to `/etc/cmdline.d/20-hcn.conf` while the command line is being parsed. It announces that HCN takes care of the network so that neither NetworkManager nor the other Agama modules configure the bond ports on their own. This requires NetworkManager with `ip=hcn` support (jsc#PED-14534). The marker is **internal**: it is written by the module, never by the user, and it does not enable HCN by itself (`hcn-init-initrd.service` only reacts to `rd.hcn*`).
+
+6. **Timing-Aware Orchestration**: Two-phase execution (cmdline hook + systemd service) handles the fact that HCN devices may not be available when kernel command line parsing runs. The hook only reserves the network, the actual configuration happens in the service once udev has discovered the devices.
 
 ## Boot-Time Integration & Component Diagram
 
@@ -71,11 +74,18 @@ The following diagram details the control and configuration flow from the initia
                                                 v
 +-------------------------------------------------------------------------------------------------+
 |  1. EARLY CMDLINE & LOGGING PHASE (`dracut-cmdline.service`)                                    |
+|     - Runs the HCN cmdline hook: `/lib/dracut/hooks/cmdline/20-hcn-cmdline.sh`                  |
+|       * If HCN is requested (rd.hcn=1, rd.hcn.ip or rd.hcn.route) AND the device tree           |
+|         contains `ibm,hcn-id` devices: writes `ip=hcn` to `/etc/cmdline.d/20-hcn.conf`.            |
+|       * Otherwise: no-op, the boot continues as a standard one.                                 |
+|     - Runs the other Agama cmdline hooks (priority 99: agama-dud, live-self-update,             |
+|       initrd-nmtui). They add `ip=dhcp` only when no `ip=` is set, so the marker above          |
+|       keeps them away from the HCN bond ports.                                                  |
 |     - Runs early cmdline hook: `/lib/dracut/hooks/cmdline/99-nm-config.sh`                      |
-|     - Standard NetworkManager connection generation proceeds normally.                          |
 |                                                                                                 |
 |     SLES 16.1 (NM < 1.54):                                                                      |
-|     - `nm-config.sh` executes `nm_generate_connections` normally.                               |
+|     - `nm-config.sh` executes `nm_generate_connections` normally. With `ip=hcn` it              |
+|       generates nothing, not even the `rd.neednet=1` default connection.                        |
 |                                                                                                 |
 |     Tumbleweed (NM >= 1.54):                                                                    |
 |     - No generation in cmdline hook (delegated to systemd service).                             |
@@ -85,7 +95,9 @@ The following diagram details the control and configuration flow from the initia
 +-------------------------------------------------------------------------------------------------+
 |  1.5 NETWORK GENERATION SERVICE PHASE (Tumbleweed Only)                                         |
 |     Runs `NetworkManager-config-initrd.service` (Before `systemd-udevd.service`):               |
-|     - RUNS standard `nm-initrd-generator` normally.                                             |
+|     - RUNS standard `nm-initrd-generator` normally, reading the dracut command line             |
+|       (`getcmdline`, see the dracut drop-in) and therefore seeing the `ip=hcn` marker.          |
+|     - With `ip=hcn` it generates nothing and leaves the network to the HCN module.              |
 +-------------------------------------------------------------------------------------------------+
                                                 |
                                                 v
@@ -129,15 +141,18 @@ The following diagram details the control and configuration flow from the initia
    The kernel mounts the initramfs. Systemd starts as PID 1 (`/usr/lib/systemd/systemd`).
 
 2. **Early Cmdline & Discovery Phase (`dracut-cmdline.service`)**:
-   - `dracut-cmdline` processes all command line hooks, including `/lib/dracut/hooks/cmdline/99-nm-config.sh`.
+   - `dracut-cmdline` processes all command line hooks in priority order.
+   - `20-hcn-cmdline.sh` (this module) writes `ip=hcn` to `/etc/cmdline.d/20-hcn.conf` when HCN is requested and HCN devices exist in `/proc/device-tree`. Nothing else is written: the transformation of `rd.hcn.*` still happens much later, in `hcn-init-initrd.service`.
+   - The priority 99 hooks of the other Agama modules (`99agama-dud`, `99live-self-update`, `99initrd-nmtui`) run afterwards and skip their `ip=dhcp` fallback because an `ip=` is already present.
    - Standard NetworkManager connection generation proceeds normally:
      - **SLES 16.1 (NetworkManager < 1.54):** `99-nm-config.sh` calls `nm_generate_connections` to generate standard connection profiles.
      - **Tumbleweed (NetworkManager >= 1.54):** `99-nm-config.sh` does not call `nm_generate_connections` (which is delegated to a systemd service).
 
 2.5. **Network Generation Service Phase (Tumbleweed with NetworkManager >= 1.54 Only)**:
 
-- **`NetworkManager-config-initrd.service`** runs (ordered `Before=systemd-udevd.service` and `systemd-udev-trigger.service`).
-- It runs standard `nm-initrd-generator` normally to generate connection profiles based on kernel arguments.
+- **`NetworkManager-config-initrd.service`** runs (ordered `After=dracut-cmdline.service` and `Before=systemd-udevd.service` / `systemd-udev-trigger.service`).
+- It runs standard `nm-initrd-generator` normally to generate connection profiles based on kernel arguments. The dracut drop-in (`NetworkManager-config-initrd-dracut.conf`, from the `35network-manager` module) makes it use `getcmdline` instead of `cat /proc/cmdline`, so the `ip=hcn` marker written above is taken into account.
+- On an HCN boot the generator therefore produces no profiles at all, in particular not the default DHCP connection it would otherwise fabricate for `rd.neednet=1`. That default would activate the bond ports individually and break the bond (bsc#1272445).
 
 1. **Udev Device Discovery**:
    - `systemd-udevd.service` starts and triggers hardware udev events via `systemd-udev-trigger.service`.
@@ -149,9 +164,10 @@ The following diagram details the control and configuration flow from the initia
      - **If none of these parameters are present:** Service does not start (systemd conditions prevent execution).
      - **If any HCN parameter is present:**
        - `/usr/bin/parse-hcn` performs discovery in `/proc/device-tree` to pair adapters sharing an `ibm,hcn-id`.
-       - For each device, it waits up to 3 minutes for the interface to appear after potential migration events.
+       - For each device, it waits up to 3 minutes for the interface to appear after potential migration events. The unit sets `TimeoutStartSec=300` for that, the default start timeout is shorter than the wait.
        - It reads the HCN-specific kernel command line options `rd.hcn.ip` and `rd.hcn.route` and translates them to target the planned bond interface (e.g. `bond333e80f5`).
-       - It calls the standard `nm-initrd-generator` **directly** with transformed parameters as command-line arguments and custom output directory `-c /run/hcn/system-connections`.
+       - It carries over the remaining device independent network options of the real command line (`nameserver=`, `rd.peerdns=`, `rd.net.dhcp.*`), which the generator run of step 2.5 produced nothing for.
+       - It calls the standard `nm-initrd-generator` **directly** with transformed parameters as command-line arguments and custom output directories `-c /run/hcn/system-connections` and `-r /run/hcn/conf.d`.
        - It adapts the generated NetworkManager profiles for compatibility with `hcnmgr` daemon (bond naming, controller references, UUIDs).
        - The adapted profiles are copied to `/etc/NetworkManager/system-connections/` for persistence across reboots.
 
@@ -255,10 +271,58 @@ Where:
   - `miimon=100`: Monitor link status every 100ms
   - `primary=enP32775p1s0`: Prefer the SR-IOV interface as primary
 
+### Carrying over the rest of the network command line
+
+The command line above is built from scratch, so it is also the only network command line
+`nm-initrd-generator` gets to see for HCN. The generator run NetworkManager performs on its
+own with the real command line is not a substitute: the `ip=hcn` marker keeps that run from
+producing any connection, so every per-connection setting it parses there is dropped.
+
+`carry_over_cmdline()` therefore appends the network options that name no device, copied
+verbatim:
+
+| Group | Options | Handling |
+|-------|---------|----------|
+| Device independent | `nameserver`, `rd.peerdns`, `rd.net.timeout.dhcp`, `rd.net.dhcp.retry`, `rd.net.dhcp.vendor-class`, `rd.net.dhcp.dscp` | Copied verbatim |
+
+Two constraints of the dracut library shape how the function is written:
+
+- It appends to `NEW_ARGS` instead of printing the options. Under systemd (`DRACUT_SYSTEMD=1`,
+  which `hcn-init-initrd.service` sets like every other dracut service) `info()` writes to
+  stdout, so the output of a function that logs cannot be captured with a command
+  substitution. The same applies to `get_dev_hcn()`, which hands its result over in
+  `HCN_MAPPING`.
+- Only options taking a value can be carried over this way, because `getargs()` prints
+  nothing for an option given as a bare flag. All the options above do take one,
+  `rd.peerdns` is used as `rd.peerdns=0`. A boolean option would need `getargbool()`.
+
+Known gaps, all of them deliberate:
+
+- `rd.net.dhcp.client-id`, `bootdev`, `rd.ethtool`, and the `vlan=` / `bridge=` / `team=`
+  stacked devices name a device. The user names a bond port, so the reference would have to
+  be rewritten to its bond first. On top of that, `nm-initrd-generator` creates a full
+  connection for every device it sees named in any of these, and the copy step below would
+  then persist that stray connection to `/etc/NetworkManager/system-connections`. The
+  stacked devices additionally need a way to be addressed from `rd.hcn.ip`, which the
+  current syntax does not offer.
+- `rd.net.dns`, `rd.net.dns-backend`, `rd.net.dns-resolve-mode` and `rd.net.timeout.carrier`
+  produce a global configuration file rather than a connection. They do not depend on the
+  bonds having been resolved and NetworkManager's own run already wrote them to
+  `/run/NetworkManager/conf.d`. That is also why `--run-config-dir` points at
+  `/run/hcn/conf.d`: the generator unconditionally writes `15-carrier-timeout.conf`, so
+  with the default directory the HCN run would overwrite NetworkManager's copy of it and
+  reset a `rd.net.timeout.carrier` supplied by the user.
+
+The host name field of `rd.hcn.ip` needs no carry-over: the generator writes it to its
+`--initrd-data-dir` (`/run/NetworkManager/initrd`, which it creates itself) while parsing
+the `ip=` argument built from `rd.hcn.ip`. `nm-run.sh`, the `initqueue/settled` hook of
+`35network-manager`, then applies it to `/proc/sys/kernel/hostname`. The ordering holds
+because `hcn-init-initrd.service` runs `Before=dracut-initqueue.service`.
+
 **These transformed parameters are:**
 
 1. Passed **directly** to `nm-initrd-generator` as command-line arguments (NOT written to `/etc/cmdline.d/`)
-2. Output directed to isolated directory: `-c /run/hcn/system-connections`
+2. Output directed to isolated directories: `-c /run/hcn/system-connections` and `-r /run/hcn/conf.d`
 3. Used by `nm-initrd-generator` to create initial NetworkManager connection profiles
 4. Adapted by `fixup_nm_connections()` to ensure `hcnmgr` daemon compatibility
 5. Copied to `/etc/NetworkManager/system-connections/` for persistence across reboots
@@ -273,6 +337,9 @@ The HCN module employs a comprehensive protection strategy to ensure `hcnmgr`-co
    - Transformed parameters are **never written to `/etc/cmdline.d/`**
    - Passed directly to `nm-initrd-generator` as command-line arguments only
    - Other modules have no transformed parameters to misinterpret
+   - The only thing written to `/etc/cmdline.d/` is the `ip=hcn` marker, which makes both
+     NetworkManager and the other Agama modules keep their hands off the network instead of
+     falling back to DHCP on the bond ports
 
 2. **Layer 2 - Isolated Generation:**
    - Uses custom output directory: `-c /run/hcn/system-connections`
@@ -366,6 +433,7 @@ mac-address=<discovered-mac>
 - `/etc` persists across dracut module execution (unlike `/run` which modules may clear)
 - Other dracut modules don't know about `/run/hcn/system-connections/` (isolated generation)
 - No transformed parameters in `/etc/cmdline.d/` prevents other modules from regenerating
+- The `ip=hcn` marker in `/etc/cmdline.d/` prevents them from generating anything of their own
 
 ### Stage 2: Installed System Persistence (Agama Module)
 
@@ -401,14 +469,18 @@ mac-address=<discovered-mac>
    - Requires validation against `hcnmgr` expectations
 
 3. **DNS Configuration:**
-   - Current `ip=` format supports nameserver (8th field)
+   - The `ip=` format supports nameservers (8th and 9th field)
    - Example: `rd.hcn.ip=192.168.1.10::192.168.1.1:255.255.255.0:::none:8.8.8.8`
+   - A plain `nameserver=` is carried over as well, see [Carrying over the rest of the network command line](#carrying-over-the-rest-of-the-network-command-line)
    - Needs testing and documentation
 
 4. **VLAN Support:**
    - HCN bonds may carry VLAN-tagged traffic
    - Requires additional parameter: `rd.hcn.vlan=<vlan-id>`
    - Profile generation for VLAN interfaces on top of bond
+   - Rewriting a plain `vlan=<name>:<port>` to the bond is the easy half. The hard half is
+     addressing the VLAN interface from `rd.hcn.ip`, which currently only understands
+     ports, MACs and bond names, so `vlan=`, `bridge=` and `team=` are not carried over
 
 5. **Configurable Timeout:**
    - Current 180-second timeout may be insufficient on slow hardware or during complex LPM
@@ -433,6 +505,12 @@ mac-address=<discovered-mac>
 4. **Single-Bond Assumption in Simple Cases:**
    - When no MAC address is specified, first discovered HCN ID is used
    - May be unexpected on multi-bond systems
+
+5. **NetworkManager with `ip=hcn` Support Required:**
+   - The module relies on `nm-initrd-generator` understanding `ip=hcn` (jsc#PED-14534)
+   - Older versions treat `hcn` as an unknown method and generate their own wired DHCP
+     connection, which activates the bond ports individually and breaks the bond
+   - There is no fallback: the marker is written whenever HCN devices are present
 
 ### Maintenance Considerations
 

@@ -145,11 +145,11 @@ mkdir /etc/cmdline.d
 echo "root=live:LABEL=$label" >/etc/cmdline.d/10-liveroot.conf
 echo "root_disk=live:LABEL=$label" >>/etc/cmdline.d/10-liveroot.conf
 echo 'install_items+=" /etc/cmdline.d/10-liveroot.conf "' >/etc/dracut.conf.d/10-liveroot-file.conf
-echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony"' >>/etc/dracut.conf.d/10-liveroot-file.conf
+echo 'add_dracutmodules+=" dracut-menu agama-cmdline agama-dud live-self-update initrd-nmtui chrony "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 
 if [ "${arch}" = "ppc64le" ]; then
   # Added support for configuring HCN in dracut (jsc#PED-14533) only in ppc64le.
-  echo 'add_dracutmodules+=" hcn"' >>/etc/dracut.conf.d/10-liveroot-file.conf
+  echo 'add_dracutmodules+=" hcn "' >>/etc/dracut.conf.d/10-liveroot-file.conf
 fi
 
 
@@ -348,6 +348,9 @@ if [ "$(arch)" == "aarch64" ]; then
   echo 'add_drivers+=" nvme phy_qcom_qmp_pcie pcie-qcom-ep i2c_hid_of i2c_qcom_geni leds-qcom-lpg pwm_bl qrtr pmic_glink_altmode gpio_sbu_mux phy_qcom_qmp_combo panel-edp msm phy_qcom_edp "' >>/etc/dracut.conf.d/x13s_modules.conf
   echo 'install_items+=" /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qcadsp8280.mbn.xz /lib/firmware/qcom/sc8280xp/LENOVO/21BX/qccdsp8280.mbn.xz "' >>/etc/dracut.conf.d/x13s_modules.conf
 fi
+
+# do not activate multipath in dracut, leave that for Agama
+echo 'omit_dracutmodules+=" multipath "' >> /etc/dracut.conf.d/omit-multipath.conf
 
 # Decompress kernel modules, better for squashfs (boo#1192457)
 find /lib/modules/*/kernel -name '*.ko.xz' -exec xz -d {} +

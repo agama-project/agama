@@ -38,7 +38,6 @@ export { default as ProgressText } from "./ProgressText";
 export { default as PasswordInput } from "./PasswordInput";
 export { default as TreeTable } from "./TreeTable";
 export { default as Link } from "./Link";
-export { default as EmptyState } from "./EmptyState";
 export { default as SelectWrapper } from "./SelectWrapper";
 export { default as NestedContent } from "./NestedContent";
 export { default as SubtleContent } from "./SubtleContent";

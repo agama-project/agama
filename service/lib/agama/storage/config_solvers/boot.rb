@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Copyright (c) [2024-2025] SUSE LLC
+# Copyright (c) [2024-2026] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -301,7 +301,6 @@ module Agama
         # @return [Configs::Drive]
         def create_drive_entry(device)
           config.drives << Configs::Drive.new.tap do |drive|
-            drive.search.name = device.name
             drive.search.solve(device)
           end
           config.drives.last
@@ -314,7 +313,6 @@ module Agama
         def create_raid_entry(device)
           config.md_raids << Configs::MdRaid.new.tap do |md|
             md.search = Configs::Search.new
-            md.search.name = device.name
             md.search.solve(device)
           end
           config.md_raids.last

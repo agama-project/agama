@@ -18,7 +18,8 @@ fetch_updates() {
     if grep -q -s -E -e "https?://" -e "ftps?://" -e "smbs?://" -e "scp://" /tmp/agamadud.info; then
       echo "rd.neednet=1" > /etc/cmdline.d/agama-generated.conf
       # use DHCP if there is no network configuration provided by user
-      if ! getarg "ip=" >/dev/null && ! getarg "rd.hcn.ip=" >/dev/null; then
+      # (the HCN module writes "ip=hcn" when it configures the network itself)
+      if ! getarg "ip=" >/dev/null; then
         echo "ip=dhcp" >> /etc/cmdline.d/agama-generated.conf
       fi
     fi

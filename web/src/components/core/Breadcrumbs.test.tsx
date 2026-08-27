@@ -112,14 +112,14 @@ describe("Breadcrumbs.Item", () => {
     installerRender(<Breadcrumbs.Item label="Software" path="/software" isEditorial />);
 
     const label = screen.getByText("Software");
-    expect(label).toHaveClass(textStyles.fontSizeLg);
+    expect(label).toHaveClass("agm-breadcrumb-editorial");
     expect(label).toHaveClass(textStyles.fontWeightBold);
   });
 
   it("does not apply editorial styles when isEditorial is false", () => {
     installerRender(<Breadcrumbs.Item label="Software" path="/software" isEditorial={false} />);
     const label = screen.getByText("Software");
-    expect(label).not.toHaveClass(textStyles.fontSizeLg);
+    expect(label).not.toHaveClass("agm-breadcrumb-editorial");
     expect(label).not.toHaveClass(textStyles.fontWeightBold);
   });
 

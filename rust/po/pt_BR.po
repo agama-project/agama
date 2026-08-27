@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 08:45+0000\n"
-"PO-Revision-Date: 2026-06-22 17:12+0000\n"
+"POT-Creation-Date: 2026-08-14 04:33+0000\n"
+"PO-Revision-Date: 2026-07-24 18:12+0000\n"
 "Last-Translator: Samanta Magalhaes <samanta_texttrans@outlook.com>\n"
 "Language-Team: Portuguese (Brazil) <https://l10n.opensuse.org/projects/agama/"
 "agama-rust-master/pt_BR/>\n"
@@ -17,14 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.6.1\n"
+"X-Generator: Weblate 2026.7.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
 "Configuration cannot be applied because it is invalid or could not be "
 "reached."
 msgstr ""
-"Não é possível aplicar a configuração porque ele é inválida ou inacessível."
+"Não é possível aplicar a configuração porque ela é inválida ou está "
+"inacessível."
 
 #: agama-autoinstall/src/questions.rs:44
 msgid "Reload configuration"
@@ -64,7 +65,7 @@ msgstr ""
 "A menos que você esteja executando este programa como root, é necessário "
 "autenticar com o servidor do Agama para a maioria das operações. Você pode "
 "efetuar login especificando a senha de root por meio do comando \"auth "
-"login\". Após a autenticação bem-sucedida, o servidor retorna um Token Web "
+"login\". Após a autenticação bem-sucedida, o servidor retornará um Token Web "
 "JSON (JWT), que é armazenado para autenticar as solicitações seguintes.\n"
 "\n"
 "Se você executa este programa como root localmente, pode ignorar a etapa de "
@@ -830,9 +831,8 @@ msgid "Finishing installation"
 msgstr "Finalizando instalação"
 
 #: agama-manager/src/actions.rs:271
-#, fuzzy
 msgid "Finalize installation"
-msgstr "Finalizar a instalação"
+msgstr "Finalizar instalação"
 
 #: agama-manager/src/actions.rs:346
 msgid "Storing questions settings"
@@ -991,46 +991,46 @@ msgstr ""
 msgid "Skip"
 msgstr "Ignorar"
 
-#: agama-software/src/service.rs:303
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
 msgstr ""
 "Devido a um erro interno, não foi possível criar um proposta de software."
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
 msgstr "Iniciando instalação dos pacotes"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
 msgstr "Falha no download e na instalação dos pacotes. Deseja repetir?"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
 msgstr "Atualizando a lista de repositórios"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
 msgstr "Atualizando metadados dos repositórios"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "Calculando a proposta de software"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
 msgstr "Registrando o sistema"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
 msgstr "Não foi possível remover o repositório %s"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
 msgstr "Não foi possível ler os repositórios"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
@@ -1038,21 +1038,21 @@ msgstr ""
 "Falha ao localizar o produto nos repositórios. Talvez seja necessário "
 "registrar o sistema."
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
 msgstr "Falha ao localizar o produto nos repositórios."
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
 msgstr "Há conflitos na seleção de software"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
 msgstr "Não foi possível selecionar %s '%s' para instalação"
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
 msgstr "Falha ao registrar o sistema"
 

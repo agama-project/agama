@@ -1,4 +1,91 @@
 -------------------------------------------------------------------
+Tue Aug 25 10:12:59 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Omit the "multipath" dracut module from the initrd, it might
+  freeze during the boot process. In 16.0 it was omitted
+  automatically by Kiwi, but that hardcoded omit list has been
+  removed and now we need to omit the dracut module explicitly
+  here. (bsc#1274053, bsc#1271407)
+
+-------------------------------------------------------------------
+Tue Aug 18 12:58:28 UTC 2026 - Steffen Winterfeldt <snwint@suse.com>
+
+- remove ppc64 hacks from boot config scripts (gh#agama-project/agama#3826)
+
+-------------------------------------------------------------------
+Mon Aug 17 09:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: do not collect data from functions that log. dracut's
+  info() writes to stdout when DRACUT_SYSTEMD is set, so the
+  messages of carry_over_cmdline() and get_dev_hcn() would end up
+  in the generated command line and in the device mappings. Both
+  hand their result over in a variable now.
+- HCN: reset the master lookup in every iteration of
+  fixup_nm_connections, a connection that is in no mapping and
+  whose controller is no HCN bond inherited the values of the
+  previous iteration and was treated as HCN-related.
+- HCN: follow the dracut conventions in hcn-init-initrd.service
+  (DRACUT_SYSTEMD=1, StandardInput=null, Conflicts with
+  shutdown.target and emergency.target) and raise
+  TimeoutStartSec to 300s, the 3 minutes parse-hcn waits for the
+  devices exceed the default start timeout.
+- HCN: wait for all the devices to show up in sysfs with a single
+  3 minutes budget instead of restarting it for every device,
+  which exceeded the service start timeout with more than one
+  device, and do not take the name resolved by ofpathname for a
+  device that has no sysfs entry yet as a valid result
+  (gh#agama-project/agama#3790).
+
+-------------------------------------------------------------------
+Mon Aug  3 12:45:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: write the nm-initrd-generator configuration files to
+  /run/hcn/conf.d. The generator always emits
+  15-carrier-timeout.conf, so with the default directory the HCN
+  run overwrote the one NetworkManager had generated from the real
+  command line, resetting a user supplied rd.net.timeout.carrier.
+- HCN: fix the bond lookup in fixup_nm_connections, which matched
+  a space delimited name against the newline separated bond list
+  and therefore never matched at all as soon as there was more
+  than one bond.
+- Related to bsc#1272445 (gh#agama-project/agama#3790).
+
+-------------------------------------------------------------------
+Mon Aug  3 12:30:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- HCN: carry the device independent network options of the kernel
+  command line over to the nm-initrd-generator call, which so far
+  only received the bond=, ip= and rd.route= arguments built from
+  rd.hcn.*. nameserver=, rd.peerdns=, rd.net.timeout.dhcp=,
+  rd.net.dhcp.retry=, rd.net.dhcp.vendor-class= and
+  rd.net.dhcp.dscp= had no effect on an HCN boot so far, since the
+  ip=hcn marker keeps NetworkManager's own generator run from
+  producing any connection (bsc#1273219, related to bsc#1272445,
+  gh#agama-project/agama#3790).
+
+-------------------------------------------------------------------
+Mon Aug  3 10:50:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+Fixes related to bsc#1272445 ISO building and testing
+(gh#agama-project/agama#3782).
+- Fix ppc64le and s390x ISO build issues in fix_bootconfig by
+  ensuring the xorriso wrapper acts as a transparent pass-through
+  for read-only reporting and probing commands.
+- Clean up redundant ppc64le bootloader options, relying on KIWI-NG's
+  native support for making OFW ISOs bootable.
+
+-------------------------------------------------------------------
+Thu Jul 23 19:40:00 UTC 2026 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix multiple IP/route assignments in multi-bond setups with
+  HCN/HVN inside the initrd (bsc#1272445, related to jsc#PED-14533).
+- Announce the HCN network configuration with an "ip=hcn" marker in
+  /etc/cmdline.d, preventing NetworkManager and the other Agama
+  dracut modules from configuring the bond ports on their own, which
+  could break HCN bonds. It requires NetworkManager with "ip=hcn"
+  support (bsc#1272445, related to jsc#PED-14533 and jsc#PED-14534).
+
+-------------------------------------------------------------------
 Mon Jul 20 11:12:36 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Version 23

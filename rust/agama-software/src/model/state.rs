@@ -78,6 +78,11 @@ impl SoftwareState {
     }
 }
 
+/// Alias prefix reserved for the installation repositories created by Agama corresponding to the
+/// product definition (see [`SoftwareStateBuilder::build_repo`]). They are named `agama-0`,
+/// `agama-1`, etc. and must not be copied to the target system.
+pub(crate) const AGAMA_REPO_PREFIX: &str = "agama-";
+
 /// Builder to create a [SoftwareState] struct from different sources.
 ///
 /// At this point it uses the following sources:
@@ -280,7 +285,7 @@ impl<'a> SoftwareStateBuilder<'a> {
     }
 
     fn build_repo(i: usize, url: String) -> Repository {
-        let alias = format!("agama-{}", i);
+        let alias = format!("{AGAMA_REPO_PREFIX}{i}");
         Repository {
             name: alias.clone(),
             alias,
@@ -288,6 +293,13 @@ impl<'a> SoftwareStateBuilder<'a> {
             enabled: true,
             priority: None,
         }
+    }
+
+    /// Whether a predefined repository for the local (off-line) installation media is present.
+    fn has_local_install_media(&self) -> bool {
+        self.predefined_repositories
+            .iter()
+            .any(|repo| repo.alias == crate::service::INSTALLATION_REPO_ALIAS)
     }
 
     fn build_repositories(&self) -> Vec<Repository> {
@@ -299,6 +311,11 @@ impl<'a> SoftwareStateBuilder<'a> {
                 .enumerate()
                 .map(|(i, url)| Self::build_repo(i, url.to_string()))
                 .collect()
+        } else if self.has_local_install_media() {
+            tracing::info!(
+                "Local installation media found; skipping the product's remote repositories"
+            );
+            vec![]
         } else {
             software
                 .repositories()
@@ -381,7 +398,7 @@ impl<'a> SoftwareStateBuilder<'a> {
         // containers, but for agama usage, it does not make sense to skip kernel
         // If needs arise, we can always add more smarter kernel selection later.
         resolvables.add_or_replace(
-            "kernel-default",
+            software.kernel(),
             ResolvableType::Package,
             ResolvableSelection::AutoSelected {
                 skip_if_missing: false,
@@ -1017,6 +1034,89 @@ mod tests {
     }
 
     #[test]
+    fn test_skips_product_repositories_when_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![install_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![crate::service::INSTALLATION_REPO_ALIAS.to_string()]
+        );
+    }
+
+    #[test]
+    fn test_keeps_product_repositories_without_installation_media() {
+        let product = build_product_spec("tumbleweed", None);
+        let config = Config::default();
+
+        let dud_repo = Repository {
+            alias: "AgamaDriverUpdate".to_string(),
+            name: "AgamaDriverUpdate".to_string(),
+            url: "hd:/dud".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_config(&config)
+            .with_predefined_repositories(vec![dud_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                "agama-1".to_string(),
+                "agama-2".to_string(),
+                "AgamaDriverUpdate".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_keeps_kernel_cmdline_repositories_with_installation_media_present() {
+        let product = build_product_spec("tumbleweed", None);
+        let kernel_cmdline = KernelCmdline::parse_str("inst.install_url=http://example.com/repo1");
+
+        let install_repo = Repository {
+            alias: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            name: crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            url: "hd:/install".to_string(),
+            enabled: true,
+            predefined: true,
+        };
+
+        let state = SoftwareStateBuilder::for_product(&product)
+            .with_kernel_cmdline(kernel_cmdline)
+            .with_predefined_repositories(vec![install_repo])
+            .build();
+
+        let aliases: Vec<_> = state.repositories.iter().map(|r| r.alias.clone()).collect();
+        assert_eq!(
+            aliases,
+            vec![
+                "agama-0".to_string(),
+                crate::service::INSTALLATION_REPO_ALIAS.to_string(),
+            ]
+        );
+    }
+
+    #[test]
     fn test_mandatory_packages() {
         let product = build_product_spec("tumbleweed", None);
         let config = Config::default();
@@ -1067,7 +1167,7 @@ mod tests {
     }
 
     #[test]
-    fn test_system_adds_kernel() {
+    fn test_system_adds_default_kernel() {
         let product = build_product_spec("tumbleweed", None);
 
         let state = SoftwareStateBuilder::for_product(&product).build();
@@ -1084,6 +1184,31 @@ mod tests {
             kernel,
             Some((
                 "kernel-default".to_string(),
+                ResolvableType::Package,
+                ResolvableSelection::AutoSelected {
+                    skip_if_missing: false
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_system_adds_custom_kernel() {
+        let mut product = build_product_spec("tumbleweed", None);
+        product.software.kernel = Some("kernel-rt".to_string());
+
+        let state = SoftwareStateBuilder::for_product(&product).build();
+
+        let kernel = state
+            .resolvables
+            .to_vec()
+            .into_iter()
+            .find(|(name, r#type, _)| name == "kernel-rt" && *r#type == ResolvableType::Package);
+
+        assert_eq!(
+            kernel,
+            Some((
+                "kernel-rt".to_string(),
                 ResolvableType::Package,
                 ResolvableSelection::AutoSelected {
                     skip_if_missing: false

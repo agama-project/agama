@@ -99,5 +99,5 @@ const Text = (drive: ConfigModel.Drive): string => {
 };
 
 export default function DriveHeader({ drive, device }: DriveHeaderProps) {
-  return sprintf(Text(drive), deviceLabel(device, true));
+  return sprintf(Text(drive), deviceLabel(device, { truncate: true }));
 }

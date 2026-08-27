@@ -32,10 +32,13 @@ export type MinimalLayoutProps = React.PropsWithChildren;
  * Login, error and installation exit pages have nowhere to navigate to and
  * nothing to configure, so they show none of the shared page tools. The
  * masthead stays in place, empty, to keep the content where users expect it.
+ *
+ * `agm-minimal-page` keeps the content area evenly spaced on all sides; see
+ * that class in `_patternfly-overrides.scss` for why it's needed.
  */
 export default function MinimalLayout({ children }: MinimalLayoutProps) {
   return (
-    <PFPage isContentFilled masthead={<Masthead />}>
+    <PFPage isContentFilled masthead={<Masthead />} className="agm-minimal-page">
       <PageGroup tabIndex={-1} id={MAIN_CONTENT_ID}>
         {children}
       </PageGroup>

@@ -60,21 +60,21 @@ describe Agama::Storage::ConfigConversions::FromModel do
       expect(drives.size).to eq(1)
 
       drive = drives.first
-      expect(drive.search.name).to eq("/dev/vda")
+      expect(drive.search.condition_name).to eq("/dev/vda")
       expect(drive.partitions).to be_empty
 
       md_raids = config.md_raids
       expect(md_raids.size).to eq(1)
 
       md_raid = md_raids.first
-      expect(md_raid.search.name).to eq("/dev/md0")
+      expect(md_raid.search.condition_name).to eq("/dev/md0")
       expect(md_raid.partitions).to be_empty
 
       volume_groups = config.volume_groups
       expect(volume_groups.size).to eq(1)
 
       volume_group = volume_groups.first
-      expect(volume_group.search.name).to eq("/dev/vg0")
+      expect(volume_group.search.condition_name).to eq("/dev/vg0")
       expect(volume_group.logical_volumes).to be_empty
     end
   end

@@ -44,6 +44,7 @@ use merge::Merge;
 use network::NetworkSystemClient;
 use serde_json::Value;
 use std::{collections::HashMap, sync::Arc};
+use strum::VariantArray;
 use tokio::sync::{broadcast, RwLock};
 
 #[derive(Debug, thiserror::Error)]
@@ -404,7 +405,7 @@ impl Starter {
             software,
             storage,
             products: products::Registry::default(),
-            licenses: licenses::Registry::default(),
+            licenses: licenses::Registry::from_default_path()?,
             hardware,
             config: Config::default(),
             system: manager::SystemInfo::default(),
@@ -480,13 +481,11 @@ impl Service {
     }
 
     async fn read_system_info(&mut self) -> Result<(), Error> {
-        self.licenses.read()?;
         self.products.read()?;
         if let Err(error) = self.hardware.read().await {
             tracing::warn!("Failed to read hardware information: {error}");
         }
 
-        self.system.licenses = self.licenses.licenses().into_iter().cloned().collect();
         self.system.products = self.products.products();
         self.system.hardware = self.hardware.to_hardware_info();
 
@@ -566,14 +565,17 @@ impl Service {
         Ok(())
     }
 
-    async fn probe_storage(&self) -> Result<(), Error> {
-        self.storage.call(storage::message::Probe).await?;
-        Ok(())
-    }
-
-    async fn probe_dasd(&self) -> Result<(), Error> {
-        if let Some(s390) = &self.s390 {
-            s390.call(s390::message::ProbeDASD).await?;
+    async fn probe(&self, only: &[Scope]) -> Result<(), Error> {
+        if only.contains(&Scope::Storage) {
+            self.storage.call(storage::message::Probe).await?;
+        }
+        if only.contains(&Scope::DASD) {
+            if let Some(s390) = &self.s390 {
+                s390.call(s390::message::ProbeDASD).await?;
+            }
+        }
+        if only.contains(&Scope::Software) {
+            self.software.call(software::message::Probe).await?;
         }
         Ok(())
     }
@@ -668,7 +670,6 @@ impl MessageHandler<message::GetSystem> for Service {
     /// It returns the information of the underlying system.
     async fn handle(&mut self, _message: message::GetSystem) -> Result<SystemInfo, Error> {
         let hostname = self.hostname.call(hostname::message::GetSystem).await?;
-        let proxy = self.proxy.call(proxy::message::GetSystem).await?;
         let l10n = self.l10n.call(l10n::message::GetSystem).await?;
 
         let lang = &l10n.locale.language;
@@ -699,7 +700,6 @@ impl MessageHandler<message::GetSystem> for Service {
 
         Ok(SystemInfo {
             hostname,
-            proxy,
             l10n,
             manager,
             network,
@@ -864,13 +864,10 @@ impl MessageHandler<message::RunAction> for Service {
                 checks::check_stage(&self.progress, Stage::Configuring).await?;
                 self.activate_storage().await?;
             }
-            Action::ProbeStorage => {
+            Action::Probe { only } => {
                 checks::check_stage(&self.progress, Stage::Configuring).await?;
-                self.probe_storage().await?;
-            }
-            Action::ProbeDASD => {
-                checks::check_stage(&self.progress, Stage::Configuring).await?;
-                self.probe_dasd().await?;
+                let only = only.unwrap_or_else(|| Scope::VARIANTS.to_vec());
+                self.probe(&only).await?;
             }
             Action::Install => {
                 let ipmi = ipmi::Ipmi::default();

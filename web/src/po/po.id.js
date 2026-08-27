@@ -1620,6 +1620,9 @@ export default {
   "Loading data...": [
     "Memuat data..."
   ],
+  "Loading the installation repositories...": [
+    "Memuat repositori instalasi..."
+  ],
   "Localization": [
     "Pelokalan"
   ],
@@ -3015,6 +3018,9 @@ export default {
   "Transient": [
     "Sementara"
   ],
+  "Try again": [
+    "Coba lagi"
+  ],
   "Try to activate again": [
     "Coba aktifkan lagi"
   ],
@@ -3338,9 +3344,6 @@ export default {
   ],
   "You will connect to a public network without encryption. Your data may not be secure.": [
     "Anda akan terhubung ke jaringan publik tanpa enkripsi. Data Anda mungkin tidak aman."
-  ],
-  "ZFCP": [
-    "ZFCP"
   ],
   "[CAPS LOCK] is on": [
     "[CAPS LOCK] aktif"

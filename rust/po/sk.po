@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 08:45+0000\n"
-"PO-Revision-Date: 2026-07-19 15:12+0000\n"
+"POT-Creation-Date: 2026-08-14 04:33+0000\n"
+"PO-Revision-Date: 2026-08-22 15:13+0000\n"
 "Last-Translator: Ferdinand Galko <galko.ferdinand@gmail.com>\n"
 "Language-Team: Slovak <https://l10n.opensuse.org/projects/agama/agama-rust-"
 "master/sk/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 2026.7.1\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #: agama-autoinstall/src/auto_loader.rs:115
 msgid ""
@@ -714,7 +714,7 @@ msgstr "Nastaviť režim odpovedania na otázky"
 #: agama-cli/src/questions.rs:61
 msgid ""
 "Prints the list of questions that are waiting for an answer in JSON format"
-msgstr ""
+msgstr "Vypíše zoznam otázok, ktoré čakajú na odpoveď, vo formáte JSON"
 
 #. TRANSLATORS: CLI help for: agama questions ask
 #: agama-cli/src/questions.rs:66
@@ -722,11 +722,13 @@ msgid ""
 "Reads a question definition in JSON from stdin and prints the response when "
 "it is answered"
 msgstr ""
+"Prečíta definíciu otázky v JSON zo stdin a po zodpovedaní otázky vypíše "
+"odpoveď"
 
 #. TRANSLATORS: CLI help for: agama questions answers
 #: agama-cli/src/questions.rs:72
 msgid "Load predefined answers"
-msgstr ""
+msgstr "Načítať preddefinované odpovede"
 
 #. TRANSLATORS: CLI help for: agama questions answers (details)
 #: agama-cli/src/questions.rs:77
@@ -737,17 +739,25 @@ msgid ""
 "Please check Agama documentation for more details and examples: https://"
 "github.com/openSUSE/agama/blob/master/doc/questions."
 msgstr ""
+"Umožňuje vopred nastaviť odpovede na konkrétne otázky, aby sa v "
+"interaktívnom režime preskočili alebo aby sa v automatickom režime zmenila "
+"odpoveď.\n"
+"\n"
+"Ďalšie podrobnosti a príklady nájdete v dokumentácii pre Agama: https://"
+"github.com/openSUSE/agama/blob/master/doc/questions."
 
 #. TRANSLATORS: CLI help for: agama questions answers <PATH>
 #: agama-cli/src/questions.rs:94
 msgid "Path to a file containing the answers in JSON format"
-msgstr ""
+msgstr "Cesta k súboru obsahujúcemu odpovede vo formáte JSON"
 
 #: agama-cli/src/status.rs:77
 msgid ""
 "The installation failed. Use the \"agama logs store\" command to get the "
 "logs to troubleshoot or share with support."
 msgstr ""
+"Inštalácia zlyhala. Použite príkaz \"agama logs store\", aby ste získali "
+"záznamy potrebné na riešenie problémov alebo na zdieľanie s podporou."
 
 #: agama-cli/src/status.rs:80
 msgid "The installation finished successfully."
@@ -759,7 +769,7 @@ msgstr "Prebieha inštalácia."
 
 #: agama-cli/src/status.rs:83
 msgid "The installer is preparing an installation proposal."
-msgstr ""
+msgstr "Inštalátor pripravuje návrh inštalácie."
 
 #: agama-cli/src/status.rs:85
 msgid ""
@@ -772,16 +782,16 @@ msgstr ""
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:184
 msgid "Failed to retrieve the script %s. Do you want to try again?"
-msgstr ""
+msgstr "Nepodarilo sa získavať skript %s. Chcete to skúsiť znova?"
 
 #. TRANSLATORS: %s is replaced by the script name.
 #: agama-files/src/service.rs:208
 msgid "Failed to write the file %s. Do you want to try again?"
-msgstr ""
+msgstr "Nepodarilo sa zapísať súbor %s. Chcete to skúsiť znova?"
 
 #: agama-manager/src/actions.rs:78
 msgid "Prepare the system"
-msgstr ""
+msgstr "Pripraviť systém"
 
 #: agama-manager/src/actions.rs:79
 msgid "Install software"
@@ -793,11 +803,11 @@ msgstr "Nakonfigurovať systém"
 
 #: agama-manager/src/actions.rs:94
 msgid "Preparing storage"
-msgstr ""
+msgstr "Príprava úložiska"
 
 #: agama-manager/src/actions.rs:112
 msgid "Running post-partitioning scripts"
-msgstr ""
+msgstr "Spustenie skriptov po rozdelení disku"
 
 #: agama-manager/src/actions.rs:137
 msgid "Installing software"
@@ -817,19 +827,19 @@ msgstr "Dokončiť inštaláciu"
 
 #: agama-manager/src/actions.rs:346
 msgid "Storing questions settings"
-msgstr ""
+msgstr "Ukladanie nastavení otázok"
 
 #: agama-manager/src/actions.rs:357
 msgid "Importing user files and scripts"
-msgstr ""
+msgstr "Importovanie používateľských súborov a skriptov"
 
 #: agama-manager/src/actions.rs:371
 msgid "Running user pre-installation scripts"
-msgstr ""
+msgstr "Spustenie predinštalačných skriptov používateľa"
 
 #: agama-manager/src/actions.rs:386
 msgid "Storing security settings"
-msgstr ""
+msgstr "Ukladanie nastavení zabezpečenia"
 
 #: agama-manager/src/actions.rs:396
 msgid "Configuring remote access"
@@ -837,27 +847,27 @@ msgstr "Konfigurácia vzdialeného prístupu"
 
 #: agama-manager/src/actions.rs:406
 msgid "Setting up the hostname"
-msgstr ""
+msgstr "Nastavenie názvu hostiteľa"
 
 #: agama-manager/src/actions.rs:416
 msgid "Setting up the network proxy"
-msgstr ""
+msgstr "Nastavenie sieťového proxy"
 
 #: agama-manager/src/actions.rs:427
 msgid "Setting up NTP"
-msgstr ""
+msgstr "Nastavenie NTP"
 
 #: agama-manager/src/actions.rs:437
 msgid "Storing localization settings"
-msgstr ""
+msgstr "Ukladanie nastavení lokalizácie"
 
 #: agama-manager/src/actions.rs:447
 msgid "Storing users settings"
-msgstr ""
+msgstr "Ukladanie nastavení používateľov"
 
 #: agama-manager/src/actions.rs:557
 msgid "Configuring iSCSI devices"
-msgstr ""
+msgstr "Konfigurácia zariadení iSCSI"
 
 #: agama-manager/src/actions.rs:581
 msgid "Configuring zFCP devices"
@@ -865,39 +875,39 @@ msgstr "Konfigurácia zariadení zFCP"
 
 #: agama-manager/src/actions.rs:606
 msgid "Configuring DASD devices"
-msgstr ""
+msgstr "Konfigurácia zariadení DASD"
 
 #: agama-manager/src/actions.rs:631
 msgid "Setting up the network"
-msgstr ""
+msgstr "Nastavenie siete"
 
 #: agama-manager/src/actions.rs:661
 msgid "Preparing the storage proposal"
-msgstr ""
+msgstr "Príprava návrhu úložiska"
 
 #: agama-manager/src/actions.rs:690
 msgid "Storing bootloader settings"
-msgstr ""
+msgstr "Ukladanie nastavení správcu štartu"
 
 #: agama-manager/src/actions.rs:723
 msgid "Preparing the software proposal"
-msgstr ""
+msgstr "Príprava softvérového návrhu"
 
 #: agama-manager/src/actions.rs:753
 msgid "Configuring SELinux"
-msgstr ""
+msgstr "Konfigurácia SELinux"
 
 #: agama-network/src/service.rs:511
 msgid "Writing network configuration"
-msgstr ""
+msgstr "Zapisovanie konfigurácie siete"
 
 #: agama-network/src/service.rs:512
 msgid "Syncing the network service state"
-msgstr ""
+msgstr "Synchronizácia stavu sieťovej služby"
 
 #: agama-security/src/service.rs:226
 msgid "Reject"
-msgstr ""
+msgstr "Zamietnuť"
 
 #: agama-security/src/service.rs:226
 #: agama-software/src/callbacks/security.rs:111
@@ -909,6 +919,8 @@ msgid ""
 "Trying to import a self-signed certificate. Do you want to trust it and "
 "register the product?"
 msgstr ""
+"Snaha o import certifikátu s vlastným podpisom. Chcete mu dôverovať a "
+"zaregistrovať produkt?"
 
 #: agama-server/src/profile/web.rs:82
 msgid "Profile validation failed"
@@ -916,38 +928,38 @@ msgstr "Overenie profilu zlyhalo"
 
 #: agama-server/src/profile/web.rs:85
 msgid "Could not retrieve profile"
-msgstr ""
+msgstr "Profil sa nepodarilo načítať"
 
 #: agama-server/src/profile/web.rs:88
 msgid "Invalid profile encoding"
-msgstr ""
+msgstr "Neplatné kódovanie profilu"
 
 #: agama-server/src/profile/web.rs:91
 msgid "Invalid profile request"
-msgstr ""
+msgstr "Neplatná žiadosť profilu"
 
 #: agama-server/src/profile/web.rs:94
 msgid "AutoYaST conversion failed"
-msgstr ""
+msgstr "Konverzia AutoYaST zlyhala"
 
 #: agama-server/src/server/web.rs:86
 msgid "Missing Language Tag"
-msgstr ""
+msgstr "Chýbajúca značka jazyka"
 
 #: agama-server/src/server/web.rs:89
 msgid "Profile error"
-msgstr ""
+msgstr "Chyba profilu"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorovať"
 
 #: agama-software/src/callbacks/commit_download.rs:48
 #: agama-software/src/callbacks/install.rs:56
 #: agama-software/src/callbacks/install.rs:81
 msgid "Retry"
-msgstr ""
+msgstr "Znovu"
 
 #: agama-software/src/callbacks/install.rs:78
 msgid "There was a problem running a package script."
@@ -955,7 +967,7 @@ msgstr "Pri spúšťaní skriptu balíka nastal problém."
 
 #: agama-software/src/callbacks/install.rs:81
 msgid "Continue"
-msgstr ""
+msgstr "Pokračovať"
 
 #. TRANSLATORS: substituting: key ID, (key name), fingerprint
 #: agama-software/src/callbacks/security.rs:104
@@ -963,72 +975,75 @@ msgid ""
 "The key {0} ({1}) with fingerprint {2} is unknown. Do you want to trust this "
 "key?"
 msgstr ""
+"Kľúč {0} ({1}) s odtlačkom {2} nie je známy. Chcete tomuto kľúču dôverovať?"
 
 #: agama-software/src/callbacks/security.rs:111
 msgid "Skip"
 msgstr "Preskočiť"
 
-#: agama-software/src/service.rs:303
+#: agama-software/src/service.rs:296
 msgid ""
 "Due to an internal error, it was not possible to create a software proposal."
-msgstr ""
+msgstr "Z dôvodu internej chyby nebolo možné vytvoriť návrh softvéru."
 
-#: agama-software/src/zypp_server.rs:293
+#: agama-software/src/zypp_server.rs:300
 msgid "Starting packages installation"
-msgstr ""
+msgstr "Spustenie inštalácie balíkov"
 
-#: agama-software/src/zypp_server.rs:306
+#: agama-software/src/zypp_server.rs:313
 msgid "Packages download and installation failed. Would you like to retry?"
-msgstr ""
+msgstr "Zlyhalo stiahnutie a inštalácia balíkov. Chcete to skúsiť znova?"
 
-#: agama-software/src/zypp_server.rs:361
+#: agama-software/src/zypp_server.rs:368
 msgid "Updating the list of repositories"
-msgstr ""
+msgstr "Aktualizovanie zoznamu repozitárov"
 
-#: agama-software/src/zypp_server.rs:362
+#: agama-software/src/zypp_server.rs:369
 msgid "Refreshing metadata from the repositories"
-msgstr ""
+msgstr "Obnovovanie metadát z repozitárov"
 
-#: agama-software/src/zypp_server.rs:363
+#: agama-software/src/zypp_server.rs:370
 msgid "Calculating the software proposal"
 msgstr "Kalkulácia softvérového návrhu"
 
-#: agama-software/src/zypp_server.rs:366
+#: agama-software/src/zypp_server.rs:373
 msgid "Registering the system"
-msgstr ""
+msgstr "Registrovanie systému"
 
 #. TRANSLATORS: %s is the alias of the repository.
-#: agama-software/src/zypp_server.rs:439
+#: agama-software/src/zypp_server.rs:446
 msgid "Could not remove the repository %s"
-msgstr ""
+msgstr "Nepodarilo sa odstrániť repozitár %s"
 
-#: agama-software/src/zypp_server.rs:460
+#: agama-software/src/zypp_server.rs:466
 msgid "Could not read the repositories"
-msgstr ""
+msgstr "Nepodarilo sa prečítať repozitáre"
 
-#: agama-software/src/zypp_server.rs:497
+#: agama-software/src/zypp_server.rs:502
 msgid ""
 "Failed to find the product in the repositories. You might need to register "
 "the system."
 msgstr ""
+"Zlyhalo vyhľadanie produktu v repozitároch. Možno bude potrebné "
+"zaregistrovať systém."
 
-#: agama-software/src/zypp_server.rs:500
+#: agama-software/src/zypp_server.rs:505
 msgid "Failed to find the product in the repositories."
-msgstr ""
+msgstr "Zlyhalo vyhľadanie produktu v repozitároch."
 
-#: agama-software/src/zypp_server.rs:563
+#: agama-software/src/zypp_server.rs:568
 msgid "There are conflicts in the software selection"
-msgstr ""
+msgstr "Pri výbere softvéru dochádza ku konfliktom"
 
 #. TRANSLATORS: the first %s is the kind of resolvable (e.g., "package")
 #. and the second %s is the name of the resolvable.
-#: agama-software/src/zypp_server.rs:592
+#: agama-software/src/zypp_server.rs:597
 msgid "Could not select %s '%s' for installation"
-msgstr ""
+msgstr "Nepodarilo sa vybrať %s '%s' pre inštaláciu"
 
-#: agama-software/src/zypp_server.rs:1012
+#: agama-software/src/zypp_server.rs:1010
 msgid "Failed to register the system"
-msgstr ""
+msgstr "Zlyhala registrácia systému"
 
 #: agama-users/src/service.rs:178
 msgid ""
@@ -1039,7 +1054,7 @@ msgstr ""
 
 #: agama-users/src/service.rs:191
 msgid "First user information is incomplete"
-msgstr ""
+msgstr "Informácie o prvom používateľovi sú neúplné"
 
 #: agama-utils/src/api/problem_details.rs:113
 msgid "Schema validation failed"
@@ -1047,27 +1062,27 @@ msgstr "Overenie schémy zlyhalo"
 
 #: agama-utils/src/api/problem_details.rs:115
 msgid "The provided configuration does not match the required schema"
-msgstr ""
+msgstr "Poskytnutá konfigurácia nezodpovedá požadovanej schéme"
 
 #: agama-utils/src/api/problem_details.rs:124
 msgid "Invalid JSON"
-msgstr ""
+msgstr "Neplatné JSON"
 
 #: agama-utils/src/api/problem_details.rs:132
 msgid "Internal server error"
-msgstr ""
+msgstr "Interná chyba servera"
 
 #: agama-utils/src/api/problem_details.rs:140
 msgid "Unauthorized"
-msgstr ""
+msgstr "Neoprávnené"
 
 #: agama-utils/src/api/problem_details.rs:189
 msgid "Error:"
-msgstr ""
+msgstr "Chyba:"
 
 #: agama-utils/src/api/problem_details.rs:192
 msgid "Details:"
-msgstr ""
+msgstr "Podrobnosti:"
 
 #: agama-utils/src/api/question.rs:293 agama-utils/src/question/start.rs:48
 msgid "No"
@@ -1079,15 +1094,15 @@ msgstr "Áno"
 
 #: agama-utils/src/resolvable.rs:65
 msgid "package"
-msgstr ""
+msgstr "balík"
 
 #: agama-utils/src/resolvable.rs:66
 msgid "pattern"
-msgstr ""
+msgstr "šablóna"
 
 #: agama-utils/src/resolvable.rs:67
 msgid "product"
-msgstr ""
+msgstr "produkt"
 
 #~ msgid "Waiting for these to be resolved."
 #~ msgstr "Čakanie na vyriešenie týchto nedostatkov."

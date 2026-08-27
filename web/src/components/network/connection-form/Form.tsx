@@ -81,6 +81,13 @@ type FormValues = typeof defaultOptions.defaultValues;
  * Stays in useAppForm's validators.onSubmitAsync where TanStack Form expects
  * it. useFormSubmit's onSubmit is only called after field validation passes.
  */
+/**
+ * Devices a connection is never bound to. The loopback device is local to the
+ * machine, so binding a connection to it would produce a profile that cannot
+ * reach anything.
+ */
+const UNBINDABLE_DEVICES = ["lo"];
+
 function ConnectionFormContent({
   initialConnection,
   devices,
@@ -89,6 +96,7 @@ function ConnectionFormContent({
   const navigate = useNavigate();
   const { mutateAsync: updateConnection } = useConnectionMutation();
   const isEditing = initialConnection !== null;
+  const bindableDevices = devices.filter((d) => !UNBINDABLE_DEVICES.includes(d.name));
 
   // Generates and writes the auto-computed name when the binding changes, as
   // long as the user has not manually edited it. `isDirty` is used instead of
@@ -126,8 +134,8 @@ function ConnectionFormContent({
 
   const form = useAppForm({
     ...mergeFormDefaults(defaultOptions, {
-      iface: devices[0]?.name ?? "",
-      ifaceMac: devices[0]?.macAddress ?? "",
+      iface: bindableDevices[0]?.name ?? "",
+      ifaceMac: bindableDevices[0]?.macAddress ?? "",
       ...toFormValues(initialConnection),
     }),
     validators: {
@@ -219,7 +227,7 @@ function ConnectionFormContent({
                           by="iface"
                           label={_("Device name")}
                           sync={{ field: "ifaceMac", with: (d) => d.macAddress }}
-                          exclude={{ devices: ["lo"] }}
+                          exclude={{ devices: UNBINDABLE_DEVICES }}
                         />
                       )}
                       {bindingMode === "mac" && (
@@ -228,7 +236,7 @@ function ConnectionFormContent({
                           by="mac"
                           label={_("Device MAC address")}
                           sync={{ field: "iface", with: (d) => d.name }}
-                          exclude={{ devices: ["lo"] }}
+                          exclude={{ devices: UNBINDABLE_DEVICES }}
                         />
                       )}
                     </>

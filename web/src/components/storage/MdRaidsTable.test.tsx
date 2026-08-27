@@ -37,13 +37,12 @@ const sda: Storage.Device = {
     bus: "SATA",
     busId: "",
     transport: "",
-    driver: [],
-    info: { dellBoss: false, sdCard: false },
+    drivers: [],
+    info: { boss: false, sdCard: false },
   },
   block: {
     start: 0,
     size: 10240,
-    active: true,
     encrypted: false,
     systems: [],
     shrinking: { supported: false },
@@ -69,7 +68,6 @@ const md0: Storage.Device = {
   block: {
     start: 0,
     size: 10240,
-    active: true,
     encrypted: false,
     systems: [],
     shrinking: { supported: false },
@@ -85,7 +83,6 @@ const md1: Storage.Device = {
   block: {
     start: 0,
     size: 20480,
-    active: true,
     encrypted: false,
     systems: [],
     shrinking: { supported: false },
