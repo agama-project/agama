@@ -131,7 +131,6 @@ import {
 import { deviceSystems, supportShrink } from "~/model/storage/device";
 import { formatList } from "~/i18n";
 import { SCENARIOS, simulate } from "~/components/storage/StoragePlanScenarios";
-import { sum, unique } from "radashi";
 import { generateEncodedPath } from "~/utils";
 import { typeDescription } from "~/components/storage/utils/device";
 import {
@@ -214,16 +213,10 @@ type DeviceRow = "hidden" | "shown";
 type StatementRule = "between" | "all" | "none";
 /** Which shape the page in front of the sheet takes. */
 type PageShape = "summary" | "list";
-/** Whether the summary of a many entry plan repeats what the list under it says. */
-type OverviewCosts = "hidden" | "shown";
-/** Whether the consequences read one per line, or as one run of phrases. */
-type CostLayout = "stacked" | "inline";
 /** Whether the one device page offers the space decision itself. */
 type SummarySpace = "shown" | "hidden";
 /** Which shape that decision takes on the page: all four answers, or the one it has. */
 type SpaceShape = "toggles" | "value";
-/** How the one device page reports what the plan costs. */
-type SummaryStyle = "sentence" | "lines";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
 /** How the drawer holding the sheet opens. */
@@ -258,9 +251,6 @@ type Variants = {
   rowNote: RowNote;
   noteColor: NoteColor;
   page: PageShape;
-  overviewCosts: OverviewCosts;
-  costLayout: CostLayout;
-  summaryStyle: SummaryStyle;
   summarySpace: SummarySpace;
   spaceShape: SpaceShape;
   data: DataSource;
@@ -309,22 +299,6 @@ const DEFAULT_VARIANTS: Variants = {
      memory. The summary only fits a plan of one entry; anything longer reads
      as the list until the index exists. */
   page: "summary",
-  /* Hidden. The list under it reads the same consequences per device, in a
-     column, and the summary repeating them over five entries turns the top of
-     the page into a paragraph nobody asked for. What survives is the count,
-     which says how much of it there is and goes red when any of it destroys
-     something. Showing them is one switch away. */
-  overviewCosts: "hidden",
-  /* One per line, which is the reading the severity order is for: a reader
-     who stops after the first line has stopped at the worst one. The run
-     costs less height and asks the reader to find the middot. */
-  costLayout: "stacked",
-  /* One line per consequence, worst first, which is what a plan of several
-     entries already reads above its list. The same shape on one disk means a
-     reader who learned the page with one disk recognises it with eight, and a
-     line each is what lets the mark and the colour tell a deletion from a
-     shrink. The one sentence version is one switch away. */
-  summaryStyle: "lines",
   /* The decision that changes that sentence, offered where the sentence is
      read. An experiment: it is the one setting a single disk reader is likely
      to want, and the sheet is a click away for everything else. */
@@ -373,9 +347,6 @@ type PlanApi = {
   rowNote: (mode: RowNote) => void;
   noteColor: (mode: NoteColor) => void;
   page: (shape: PageShape) => void;
-  overviewCosts: (mode: OverviewCosts) => void;
-  costLayout: (mode: CostLayout) => void;
-  summaryStyle: (mode: SummaryStyle) => void;
   summarySpace: (mode: SummarySpace) => void;
   spaceShape: (mode: SpaceShape) => void;
   data: (source: DataSource) => void;
@@ -6023,12 +5994,6 @@ const PLAN_CSS = `
   white-space: nowrap;
 }
 
-/* Under the consequence rather than beside it: the sentence says what happens
-   and the count says how much of it, and a reader takes them in that order. */
-.agm-plan-headline-count {
-  margin-block-start: var(--pf-t--global--spacer--xs);
-}
-
 /* Short and centred. A rule the width of the text above it divides the page
    in two; this one closes a paragraph of it and lets the actions under it read
    as the answer to what was just reported. */
@@ -6081,13 +6046,6 @@ const PLAN_CSS = `
    which is the pair it belongs to. */
 .agm-plan-summary-control {
   margin-block: var(--pf-t--global--spacer--md);
-}
-
-/* A list for what it tells a screen reader, and not for its markers: these
-   lines carry a mark of their own. */
-.agm-plan-costs {
-  list-style: none;
-  padding-inline-start: 0;
 }
 
 `;
@@ -7080,272 +7038,6 @@ const PlanSettings = ({
  * exists, so nothing about the list changes while this is being looked at.
  * ------------------------------------------------------------------ */
 
-/** How many things a phrase names before it starts counting the rest. */
-const NAMED_AT_MOST = 3;
-
-/**
- * Names up to three things, then counts the rest: "/, swap, /home and 2 more".
- *
- * One threshold for every list the page prints, rather than a decision per
- * place. The three named are the first three in the order the data already has:
- * sorting by importance invents an importance nothing reports.
- *
- * Written as a translated phrase rather than assembled from pieces, so that the
- * comma, the conjunction and the plural belong to the language.
- */
-const namedOrMore = (names: string[]): string => {
-  const named = names.slice(0, NAMED_AT_MOST);
-  const rest = names.length - named.length;
-
-  return rest > 0 ? t(`${formatList(named)} and ${rest} more`) : formatList(named);
-};
-
-/** Which existing partitions a summary line is about, and what becomes of them. */
-type Decided = { partition: Storage.Device; outcome: ReportedOutcome };
-
-/** What the systems on these partitions are called, in the order reported. */
-const systemsOn = (decided: Decided[]): string[] =>
-  unique(decided.flatMap(({ partition }) => partition.block?.systems || []));
-
-/**
- * One consequence of the plan, as the words for it and the detail beside them.
- *
- * The words lead so that the colour and the mark are reinforcement rather than
- * the only carrier, and so that a reader who stops after the first line has
- * stopped at the worst one. Nothing has happened yet, so nothing is written as
- * though it had: a partition is to be deleted, not deleted, which is the
- * grammar the sheet's own reports use.
- */
-type SummaryLine = {
-  kind: CostKind;
-  /** What the line destroys, set in bold ahead of the rest of it. */
-  destroys?: string;
-  /** What the line is about, and the way into the half of the sheet that holds it. */
-  subject: string;
-  /** What becomes of it, in the sheet's own terms, read after the subject. */
-  tail: string;
-  /** The half of the sheet that answers this line, where one does. */
-  tab?: PanelTab;
-};
-
-/** What becomes of every partition a device already has. */
-const decidedOn = (
-  device: Partitionable,
-  systemDevice: Storage.Device | null,
-  solver: Solver,
-): Decided[] => {
-  const entries = device.partitions || [];
-  const policy = device.spacePolicy || "keep";
-
-  return (systemDevice?.partitions || []).map((partition) => ({
-    partition,
-    outcome: reportedOutcome(
-      outcomeFor(
-        policy,
-        entries.find((entry) => entry.name === partition.name),
-        partition.block?.size,
-      ),
-      partition.sid,
-      solver,
-    ),
-  }));
-};
-
-/** The partitions of a group that meet one of these ends. */
-const ending = (decided: Decided[], ...kinds: ReportedOutcome["kind"][]): Decided[] =>
-  decided.filter(({ outcome }) => kinds.includes(outcome.kind));
-
-/**
- * What a group of partitions holds, named first and counted second.
- *
- * A reader recognises "Windows 11" and has to work out what "2 partitions"
- * holds. Where systems are named, whatever else is in the group is counted
- * beside them rather than left out.
- */
-const lostNames = (group: Decided[]): string => {
-  const systems = systemsOn(group);
-  if (!systems.length) {
-    return t(`${group.length} ${group.length === 1 ? "partition" : "partitions"}`);
-  }
-
-  const named = systems.slice(0, NAMED_AT_MOST);
-  const rest = group.filter(
-    ({ partition }) => !(partition.block?.systems || []).some((s) => named.includes(s)),
-  ).length;
-
-  if (rest === 0) return namedOrMore(systems);
-
-  return t(`${formatList(named)}, and ${rest} ${rest === 1 ? "partition" : "partitions"} more`);
-};
-
-/**
- * What the plan does to one device, worst first.
- *
- * Deleting comes before formatting, formatting before shrinking, and creating
- * last, since a reader who reads no further has read what cannot be undone.
- * The line about deletion is written whether anything is deleted or not: "vdd
- * is empty" is an answer, and a missing line is not.
- *
- * Read from the solver's answers rather than from the configured intent, the
- * way the sheet reads them, so the page and the panel it opens cannot disagree
- * about what happens to the same disk.
- */
-/**
- * What the plan does to one device, as one sentence.
- *
- * The verbs the installer uses, in the order the reader cares about: what is
- * lost first, what is built last. Systems are named while naming them is
- * short, and counted once a list would run: one is named, a second is a system
- * more, and three or more are a count, since past two names nobody is reading
- * them.
- *
- * Written as clauses joined by the language rather than as one string per
- * case, which would be a case per count per verb.
- */
-const summarySentence = (
-  device: Partitionable,
-  systemDevice: Storage.Device | null,
-  created: Proposal.Device[],
-  solver: Solver,
-): SummaryLine => {
-  const decided = decidedOn(device, systemDevice, solver);
-  const deleted = ending(decided, "delete");
-  const formatted = ending(decided, "format");
-  const shrunk = ending(decided, "shrinkTo");
-  /* Kept apart from the rest of the sentence so it can be set in bold: what is
-     destroyed is the half a reader has to see, and bold is what says so now
-     that the line has no colour and no mark. */
-  const destructive: string[] = [];
-  const rest: string[] = [];
-
-  /* What is about to be lost, named while a name is worth more than a count. */
-  const lost = (group: Decided[]): string => {
-    const systems = systemsOn(group);
-    if (systems.length === 1) return systems[0];
-    if (systems.length === 2) return t(`${systems[0]} and 1 other system`);
-    if (systems.length > 2) return t(`${systems.length} existing systems`);
-
-    return t(`${group.length} ${group.length === 1 ? "partition" : "partitions"}`);
-  };
-
-  if (deleted.length) destructive.push(t(`delete ${lost(deleted)}`));
-  if (formatted.length) destructive.push(t(`reformat ${lost(formatted)}`));
-  if (shrunk.length) rest.push(t(`shrink ${lost(shrunk)}`));
-
-  if (device.filesystem) {
-    rest.push(
-      device.mountPath
-        ? t(
-            `format the whole device as ${filesystemType(device.filesystem)} for ${device.mountPath}`,
-          )
-        : t(`format the whole device as ${filesystemType(device.filesystem)}`),
-    );
-  } else if (created.length) {
-    rest.push(t(`create ${created.length} new ${created.length === 1 ? "volume" : "volumes"}`));
-  }
-
-  const kind: CostKind = (() => {
-    if (destructive.length) return "destroys";
-    if (shrunk.length) return "shrinks";
-    return "keeps";
-  })();
-
-  const capitalised = (text: string): string => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
-
-  /* Nothing to report is itself a report: a device the plan leaves alone. */
-  if (!destructive.length) {
-    const sentence = rest.length ? formatList(rest) : t("leave this device as it is");
-    return { kind, subject: t(`${capitalised(sentence)}.`), tail: "" };
-  }
-
-  return {
-    kind,
-    destroys: t(capitalised(formatList(destructive))),
-    subject: rest.length ? t(`, ${formatList(rest)}.`) : t("."),
-    tail: "",
-  };
-};
-
-const summaryLines = (
-  device: Partitionable,
-  systemDevice: Storage.Device | null,
-  created: Proposal.Device[],
-  solver: Solver,
-): SummaryLine[] => {
-  const decided = decidedOn(device, systemDevice, solver);
-  const deleted = ending(decided, "delete");
-  const formatted = ending(decided, "format");
-  const shrunk = ending(decided, "shrinkTo");
-  const lines: SummaryLine[] = [];
-
-  lines.push(
-    deleted.length
-      ? {
-          kind: "destroys",
-          subject: lostNames(deleted),
-          tail: t("to be deleted"),
-          tab: "current",
-        }
-      : { kind: "keeps", subject: t("Nothing"), tail: t("to be deleted") },
-  );
-
-  /* Formatting a partition the new system adopts loses what is on it as surely
-     as deleting it, and is not the same act, so it keeps its own term. */
-  if (formatted.length) {
-    const paths = formatList(
-      formatted
-        .map(({ outcome }) => (outcome.kind === "format" ? outcome.mountPath : ""))
-        .filter(Boolean),
-    );
-    lines.push({
-      kind: "destroys",
-      subject: lostNames(formatted),
-      tail: t(`to be formatted for ${paths}`),
-      tab: "current",
-    });
-  }
-
-  if (shrunk.length) {
-    const before = sum(shrunk, ({ partition }) => partition.block?.size || 0);
-    const after = sum(shrunk, ({ outcome }) => (outcome.kind === "shrinkTo" ? outcome.size : 0));
-    lines.push({
-      kind: "shrinks",
-      subject:
-        shrunk.length === 1
-          ? systemsOn(shrunk)[0] || baseName(shrunk[0].partition.name)
-          : t(`${shrunk.length} partitions`),
-      tail: t(`to be shrunk, from ${deviceSize(before)} down to ${deviceSize(after)}`),
-      tab: "current",
-    });
-  }
-
-  /* What the device is formatted as, where the plan takes it whole: there are
-     no partitions to count, and the file system is the thing created. */
-  if (device.filesystem) {
-    lines.push({
-      kind: "keeps",
-      subject: device.mountPath
-        ? t(`${filesystemType(device.filesystem)} at ${device.mountPath}, over the whole device`)
-        : t(`${filesystemType(device.filesystem)}, over the whole device`),
-      tail: t("to be created"),
-      tab: "planned",
-    });
-  } else if (created.length) {
-    /* Named as well as counted: "5 partitions" says how much work and nothing
-       about what the reader gets, and the mount paths are what they asked for. */
-    const paths = created.map((partition) => partition.filesystem?.mountPath).filter(Boolean);
-    const what = t(`${created.length} ${created.length === 1 ? "partition" : "partitions"}`);
-    lines.push({
-      kind: "keeps",
-      subject: paths.length ? t(`${what} including ${namedOrMore(paths)}`) : what,
-      tail: t("to be created"),
-      tab: "planned",
-    });
-  }
-
-  return lines;
-};
-
 /**
  * A device named inside a sentence: what it is called, and how big it is.
  *
@@ -7418,32 +7110,8 @@ const PlanCount = ({
 };
 
 /**
- * What becomes of the subject, and the way to see it.
- *
- * The term is the control rather than the subject: "to be deleted" names the
- * act, and the half of the sheet behind it is that act spelled out. The
- * subject is what the line is about and has nowhere of its own to go.
- */
-const SummaryDetail = ({
-  line,
-  text,
-  onGoTo,
-}: {
-  line: SummaryLine;
-  text: string;
-  onGoTo?: (tab: PanelTab) => void;
-}) => {
-  if (!onGoTo || !line.tab) return <>{text}</>;
-
-  return (
-    <Button variant="link" isInline aria-controls={PANEL_ID} onClick={() => onGoTo(line.tab)}>
-      {text}
-    </Button>
-  );
-};
-
-/**
- * How every state of this page opens: a sentence, what it costs, and the way on.
+ * How every state of this page opens: a sentence, how much it costs, and the
+ * way on.
  *
  * A plain centred column rather than PatternFly's `EmptyState`. The empty state
  * is an arrangement for a page with nothing on it, and it says so with
@@ -7462,10 +7130,7 @@ const PlanHeadline = ({
   control,
   notice,
   isTight = false,
-  costsLabel,
-  lines,
   count,
-  onGoTo,
   primary,
   secondary,
   settings,
@@ -7484,14 +7149,8 @@ const PlanHeadline = ({
   notice?: React.ReactNode;
   /** Closes against what follows it, where the page continues under it. */
   isTight?: boolean;
-  /** Names the block of cost lines, for a reader moving by heading. */
-  costsLabel: string;
-  /** Empty where what the plan costs is read under the summary rather than in it. */
-  lines: SummaryLine[];
   /** How much the installer will do, and the way into the whole picture. */
   count?: React.ReactNode;
-  /** Opens the half of the sheet a line is about, where the page has one entry. */
-  onGoTo?: (tab: PanelTab) => void;
   /** The one action the page is for. */
   primary?: React.ReactNode;
   /** Everything else, read after it on the same row. */
@@ -7499,70 +7158,6 @@ const PlanHeadline = ({
   /** The two decisions about no device in particular, as values with a way in. */
   settings?: React.ReactNode;
 }) => {
-  const { costLayout } = useVariants();
-  const costsId = useId();
-
-  const lineList = (
-    /* The subject leads and the term follows it, the way the sheet's own second
-       lines read: what the reader is looking for is which partitions, not which
-       verb. The term is the control, since the half of the sheet behind it is
-       that act spelled out.
-
-       A list either way, so a screen reader announces how many consequences
-       there are before reading them. The run separates them with a mark that is
-       hidden from it, since "middot" is not a word anybody needs. */
-    <Flex
-      component="ul"
-      direction={{ default: costLayout === "inline" ? "row" : "column" }}
-      justifyContent={{ default: "justifyContentCenter" }}
-      gap={{ default: costLayout === "inline" ? "gapSm" : "gapXs" }}
-      flexWrap={{ default: "wrap" }}
-      className="agm-plan-costs"
-      aria-labelledby={costsId}
-    >
-      {lines.map((line, at) => (
-        <FlexItem component="li" key={line.tail || line.subject}>
-          <Flex
-            gap={{ default: "gapSm" }}
-            alignItems={{ default: "alignItemsCenter" }}
-            justifyContent={{ default: "justifyContentCenter" }}
-            flexWrap={{ default: "nowrap" }}
-          >
-            {costLayout === "inline" && at > 0 && (
-              <FlexItem aria-hidden className="agm-plan-muted">
-                ·
-              </FlexItem>
-            )}
-            {/* The consequence sentence carries what it destroys in its own
-                words, in bold. A mark and a colour over the whole line put a
-                shrink beside a deletion and made every state of this page look
-                like an alert. The per consequence lines keep both: they are one
-                subject each, and the mark is what tells them apart. */}
-            {line.tail && (
-              <FlexItem className={COST_CLASS[line.kind]}>
-                <Icon
-                  name={COST_ICON[line.kind]}
-                  className={COST_ICON_CLASS[line.kind]}
-                  size="xs"
-                />
-              </FlexItem>
-            )}
-            <FlexItem className={line.tail ? COST_CLASS[line.kind] : undefined}>
-              {line.destroys && <Text isBold>{line.destroys}</Text>}
-              {line.subject}
-              {line.tail && (
-                <>
-                  {" "}
-                  <SummaryDetail line={line} text={line.tail} onGoTo={onGoTo} />
-                </>
-              )}
-            </FlexItem>
-          </Flex>
-        </FlexItem>
-      ))}
-    </Flex>
-  );
-
   return (
     <Flex
       direction={{ default: "column" }}
@@ -7590,23 +7185,7 @@ const PlanHeadline = ({
       {notice && (
         <FlexItem className="agm-plan-summary-notice agm-plan-headline-measure">{notice}</FlexItem>
       )}
-      {/* The lines are a group with a name of its own, so a reader moving by
-          heading reaches them as one thing rather than as loose text under
-          the sentence. Nothing here is worth a visible heading: each line
-          says what it is. */}
-      {!notice && (lines.length > 0 || count) && (
-        <FlexItem className="agm-plan-headline-measure">
-          {lines.length > 0 && (
-            <h3 className="pf-v6-u-screen-reader" id={costsId}>
-              {costsLabel}
-            </h3>
-          )}
-          {lines.length > 0 && lineList}
-          {/* A count is a fact and a link at once: a reader wondering whether
-              fourteen is a lot presses the number that worries them. */}
-          {count && <div className="agm-plan-headline-count">{count}</div>}
-        </FlexItem>
-      )}
+      {!notice && count && <FlexItem className="agm-plan-headline-measure">{count}</FlexItem>}
       {/* Directly under what the page reports, and in the same place whatever
           shape the page takes: they are about the installation rather than
           about anything the page names, and a reader who learned where they
@@ -7725,26 +7304,14 @@ const PlanSummary = ({
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
   const systemDevice = useDevice(device?.name || "");
-  const system = useFlattenDevices();
-  const staging = useStagingDevices();
   const actions = useActions();
-  const solver = useSolver();
-  const { summaryStyle, summarySpace } = useVariants();
+  const { summarySpace } = useVariants();
   const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
   const notice = usePlanNotice();
 
   if (!device) return null;
 
   const name = baseName(device.name);
-  const manager = new DevicesManager(system, staging, actions);
-  const stagingDevice = staging.find((candidate) => candidate.name === device.name);
-  const created = (stagingDevice?.partitions || []).filter(
-    (partition) => !manager.existInSystem(partition),
-  );
-  const lines =
-    summaryStyle === "sentence"
-      ? [summarySentence(device, systemDevice, created, solver)]
-      : summaryLines(device, systemDevice, created, solver);
   /* What the device is for, rather than what is being done to it: a disk that
      also starts the machine is carrying two jobs, and which disk boots is a
      fact the reader would otherwise have to open the sheet to learn. */
@@ -7795,13 +7362,10 @@ const PlanSummary = ({
           />
         ) : undefined
       }
-      costsLabel={t(`What happens to ${name}`)}
-      lines={lines}
       count={<PlanCount actions={actions} onShowResult={onShowResult} />}
       notice={
         notice && <DeviceNotice device={device} systemDevice={systemDevice} fallback={notice} />
       }
-      onGoTo={onOpenTab}
       primary={
         <Button variant="primary" aria-controls={PANEL_ID} onClick={() => onOpenTab("result")}>
           {t("View details")}
@@ -7837,101 +7401,6 @@ const PlanSummary = ({
  * of. The shape is added rather than swapped, so a reader who learned the page
  * with one disk recognises it with eight.
  * ------------------------------------------------------------------ */
-
-/**
- * What the whole plan costs, read across every entry it holds.
- *
- * The same words as one device gets, over the sum of them, since a reader
- * arriving at a plan of five entries is asking the question they would ask of
- * one: what does this destroy, and what does it build.
- */
-const planLines = (
-  config: ConfigModel.Config,
-  systemDevices: Storage.Device[],
-  stagingDevices: Proposal.Device[],
-  manager: DevicesManager,
-  solver: Solver,
-): SummaryLine[] => {
-  const partitionables = [...(config.drives || []), ...(config.mdRaids || [])] as Partitionable[];
-  const systemOf = (name: string) => systemDevices.find((device) => device.name === name) || null;
-  const decided = partitionables.flatMap((device) =>
-    decidedOn(device, systemOf(device.name), solver),
-  );
-  const deleted = ending(decided, "delete");
-  const formatted = ending(decided, "format");
-  const shrunk = ending(decided, "shrinkTo");
-
-  /* The volume groups the plan already found on the system, whose volumes are
-     lost or shrunk the way a disk's partitions are. */
-  const groups = config.volumeGroups || [];
-  const volumes = groups.flatMap((group) => {
-    const systemGroup = systemOf(group.name || `/dev/${group.vgName}`);
-    return (group.logicalVolumes || [])
-      .filter((lv) => lv.lvName !== undefined)
-      .map((lv) =>
-        logicalVolumeOutcome(
-          lv,
-          (systemGroup?.logicalVolumes || []).find((one) => baseName(one.name) === lv.lvName)?.sid,
-          solver,
-        ),
-      );
-  });
-  const deletedVolumes = volumes.filter((outcome) => outcome === "deleted").length;
-  const shrunkVolumes = volumes.filter((outcome) => outcome === "shrunk").length;
-
-  const counted = (count: number, one: string, many: string) =>
-    t(`${count} ${count === 1 ? one : many}`);
-  const lines: SummaryLine[] = [];
-
-  if (deleted.length || deletedVolumes) {
-    const detail = formatList(
-      [
-        deleted.length ? lostNames(deleted) : undefined,
-        deletedVolumes ? counted(deletedVolumes, "logical volume", "logical volumes") : undefined,
-      ].filter(Boolean),
-    );
-    lines.push({ kind: "destroys", subject: detail, tail: t("to be deleted") });
-  } else {
-    lines.push({ kind: "keeps", subject: t("Nothing"), tail: t("to be deleted") });
-  }
-
-  if (formatted.length) {
-    lines.push({ kind: "destroys", subject: lostNames(formatted), tail: t("to be formatted") });
-  }
-
-  if (shrunk.length || shrunkVolumes) {
-    const detail = formatList(
-      [
-        shrunk.length ? counted(shrunk.length, "partition", "partitions") : undefined,
-        shrunkVolumes ? counted(shrunkVolumes, "logical volume", "logical volumes") : undefined,
-      ].filter(Boolean),
-    );
-    lines.push({ kind: "shrinks", subject: detail, tail: t("to be shrunk") });
-  }
-
-  /* What the plan builds, counted by kind rather than named: the names are one
-     click away in each entry, and a page that lists eight mount paths in its
-     second line has stopped being a summary. */
-  const createdGroups = groups.filter((group) => !group.name).length;
-  const createdVolumes = groups.flatMap((group) =>
-    (group.logicalVolumes || []).filter((lv) => lv.lvName === undefined),
-  ).length;
-  const createdPartitions = partitionables.flatMap((device) => {
-    const staging = stagingDevices.find((candidate) => candidate.name === device.name);
-    return (staging?.partitions || []).filter((partition) => !manager.existInSystem(partition));
-  }).length;
-  const built = [
-    createdGroups ? counted(createdGroups, "volume group", "volume groups") : undefined,
-    createdPartitions ? counted(createdPartitions, "partition", "partitions") : undefined,
-    createdVolumes ? counted(createdVolumes, "logical volume", "logical volumes") : undefined,
-  ].filter(Boolean);
-
-  if (built.length) {
-    lines.push({ kind: "keeps", subject: formatList(built), tail: t("to be created") });
-  }
-
-  return lines;
-};
 
 /**
  * The simplest true thing the page can say about a whole plan.
@@ -8064,14 +7533,8 @@ const PlanOverview = ({
       it: they are about the whole plan, and the list is about its parts. */
   settings?: React.ReactNode;
 }) => {
-  const config = useConfigModel();
-  const system = useFlattenDevices();
-  const staging = useStagingDevices();
   const actions = useActions();
-  const solver = useSolver();
-  const { overviewCosts } = useVariants();
   const notice = usePlanNotice();
-  const manager = new DevicesManager(system, staging, actions);
 
   /* A flex column rather than a stack: PatternFly's Stack is full height, and
      a full height block in a scrolling page leaves the footer under a screen of
@@ -8085,7 +7548,6 @@ const PlanOverview = ({
              names every entry, and a sentence is not a list. */
           title={<PlanTitle />}
           isTight
-          costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
              paragraph over the list explaining what a list of devices is. */
           /* Whole sentences, and the control after them rather than inside
@@ -8095,9 +7557,6 @@ const PlanOverview = ({
             "Review and configure the entries below. You can change, remove, or add entries as needed.",
           )}
 
-          lines={
-            overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
-          }
           /* The same way in as the one device page offers, in the same place
              and the same words: a page that shows the big picture on a full
              disk and hides it on a plan of eight is a page with two shapes. */
@@ -8156,9 +7615,6 @@ const VARIANT_CONTROLS: VariantControl[] = [
     options: ["real", "one-disk-in-use", "empty-disk", "lvm-over-three-disks"],
   },
   { key: "page", label: "Page", options: ["summary", "list"] },
-  { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
-  { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
-  { key: "summaryStyle", label: "Cost summary", options: ["sentence", "lines"] },
   { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
   { key: "spaceShape", label: "Space shape", options: ["value", "toggles"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
@@ -8389,9 +7845,6 @@ function StoragePlan({
             '  rowNote("plain" | "outlined")      the second line under a value as plain text, or boxed',
             '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
-            '  overviewCosts("hidden" | "shown")  what a many entry plan costs, over the list that says it per device',
-            '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
-            '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  spaceShape("value" | "toggles")    that decision as a term and its value, or as four buttons',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
@@ -8434,9 +7887,6 @@ function StoragePlan({
       rowNote: (rowNote) => patch({ rowNote }),
       noteColor: (noteColor) => patch({ noteColor }),
       page: (page) => patch({ page }),
-      overviewCosts: (overviewCosts) => patch({ overviewCosts }),
-      costLayout: (costLayout) => patch({ costLayout }),
-      summaryStyle: (summaryStyle) => patch({ summaryStyle }),
       summarySpace: (summarySpace) => patch({ summarySpace }),
       spaceShape: (spaceShape) => patch({ spaceShape }),
       data: (data) => patch({ data }),
