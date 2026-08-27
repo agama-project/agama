@@ -224,8 +224,6 @@ type SummarySpace = "shown" | "hidden";
 type SpaceShape = "toggles" | "value";
 /** How the one device page reports what the plan costs. */
 type SummaryStyle = "sentence" | "lines";
-/** Where the two machine wide decisions are read. */
-type SettingsPlace = "top" | "bottom";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
 /** How the drawer holding the sheet opens. */
@@ -265,7 +263,6 @@ type Variants = {
   summaryStyle: SummaryStyle;
   summarySpace: SummarySpace;
   spaceShape: SpaceShape;
-  settingsPlace: SettingsPlace;
   data: DataSource;
   panelMode: PanelMode;
 };
@@ -312,30 +309,29 @@ const DEFAULT_VARIANTS: Variants = {
      memory. The summary only fits a plan of one entry; anything longer reads
      as the list until the index exists. */
   page: "summary",
-  /* Hidden while the list is under it, since the list has a column for the
-     same fact and reads it per device. Worth looking at both ways: the count
-     over the whole plan is the one thing the list cannot say. */
-  overviewCosts: "hidden",
+  /* The one thing the list under it cannot say: what the plan costs taken
+     together. Per device the list already reads it in a column, and a reader
+     arriving at five entries is asking the question they would ask of one.
+     Hiding it is one switch away. */
+  overviewCosts: "shown",
   /* One per line, which is the reading the severity order is for: a reader
      who stops after the first line has stopped at the worst one. The run
      costs less height and asks the reader to find the middot. */
   costLayout: "stacked",
-  /* One sentence, in the installer's own verbs: what is lost and what is
-     built, read in that order. The lines are one switch away. */
-  summaryStyle: "sentence",
+  /* One line per consequence, worst first, which is what a plan of several
+     entries already reads above its list. The same shape on one disk means a
+     reader who learned the page with one disk recognises it with eight, and a
+     line each is what lets the mark and the colour tell a deletion from a
+     shrink. The one sentence version is one switch away. */
+  summaryStyle: "lines",
   /* The decision that changes that sentence, offered where the sentence is
      read. An experiment: it is the one setting a single disk reader is likely
      to want, and the sheet is a click away for everything else. */
   summarySpace: "shown",
-  /* The value line, which is the arrangement the rest of the page already
-     uses for a setting and the one that stops the decision competing with the
-     actions under it. The toggles are one switch away. */
-  spaceShape: "value",
-  /* After the actions, at the foot of the page: they are read once and then
-     left alone, and putting them first spends the top of the page on what the
-     reader is least likely to change. Beside the installation menu is one
-     switch away. */
-  settingsPlace: "bottom",
+  /* All four answers at once, which is what makes the decision quick for the
+     reader who came to change it. The value line, quieter and shaped like
+     every other setting on the page, is one switch away. */
+  spaceShape: "toggles",
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
@@ -381,7 +377,6 @@ type PlanApi = {
   summaryStyle: (mode: SummaryStyle) => void;
   summarySpace: (mode: SummarySpace) => void;
   spaceShape: (mode: SpaceShape) => void;
-  settingsPlace: (mode: SettingsPlace) => void;
   data: (source: DataSource) => void;
   panelMode: (mode: PanelMode) => void;
   bootDebug: () => void;
@@ -2265,6 +2260,17 @@ const BULK_LABELS: Record<ConfigModel.SpacePolicy, string> = {
   custom: "Custom",
 };
 
+/* The same four on the page, where the control is not a command but a report of
+ * what the plan is doing: the sentence under it reads "Deleting everything" and
+ * then says what that costs. In the sheet the reader is acting on a table and
+ * the imperative is right; here they are reading. */
+const SUMMARY_BULK_LABELS: Record<ConfigModel.SpacePolicy, string> = {
+  delete: "Deleting everything",
+  resize: "Shrinking if needed",
+  keep: "Keeping everything",
+  custom: "Custom",
+};
+
 /**
  * Four segmented options rather than a dropdown. A dropdown hides three of the
  * four behind a click and gives no sense that a choice exists at all, while the
@@ -2320,9 +2326,12 @@ const policyButtonId = (policy: ConfigModel.SpacePolicy) => `agm-plan-policy-${p
 const SpacePolicySegments = ({
   current,
   onChoose,
+  labels = BULK_LABELS,
 }: {
   current: ConfigModel.SpacePolicy;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
+  /** What each option is called, which differs between reading and acting. */
+  labels?: Record<ConfigModel.SpacePolicy, string>;
 }) => (
   <>
     {/* The group carries the name the row no longer prints: four buttons whose
@@ -2337,7 +2346,7 @@ const SpacePolicySegments = ({
       {BULK_POLICIES.map((policy) => (
         <ToggleGroupItem
           key={policy}
-          text={t(BULK_LABELS[policy])}
+          text={t(labels[policy])}
           buttonId={policyButtonId(policy)}
           isSelected={policy === current}
           onChange={() => onChoose(policy)}
@@ -2370,11 +2379,14 @@ const SpacePolicyMenu = ({
   current,
   onChoose,
   labelId = SPACE_CONTROL_LABEL_ID,
+  labels = BULK_LABELS,
 }: {
   current: ConfigModel.SpacePolicy;
   onChoose: (policy: ConfigModel.SpacePolicy) => void;
   /** The term this menu is the value of, which is what names it. */
   labelId?: string;
+  /** What each option is called, which differs between reading and acting. */
+  labels?: Record<ConfigModel.SpacePolicy, string>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   /* The page and the sheet can both be on screen at once, and two toggles
@@ -2394,7 +2406,7 @@ const SpacePolicyMenu = ({
           aria-labelledby={`${labelId} ${valueId}`}
           onClick={() => setIsOpen((open) => !open)}
         >
-          <span id={valueId}>{t(BULK_LABELS[current])}</span>
+          <span id={valueId}>{t(labels[current])}</span>
         </MenuToggle>
       )}
     >
@@ -2410,7 +2422,7 @@ const SpacePolicyMenu = ({
               onChoose(policy);
             }}
           >
-            {t(BULK_LABELS[policy])}
+            {t(labels[policy])}
           </DropdownItem>
         ))}
       </DropdownList>
@@ -2464,7 +2476,9 @@ const SummarySpaceDecision = ({
   const termId = useId();
 
   if (!isNarrow && spaceShape === "toggles") {
-    return <SpacePolicySegments current={current} onChoose={onChoose} />;
+    return (
+      <SpacePolicySegments current={current} onChoose={onChoose} labels={SUMMARY_BULK_LABELS} />
+    );
   }
 
   return (
@@ -2478,7 +2492,12 @@ const SummarySpaceDecision = ({
         {t(SPACE_SETTING_TERM)}
       </FlexItem>
       <FlexItem>
-        <SpacePolicyMenu current={current} onChoose={onChoose} labelId={termId} />
+        <SpacePolicyMenu
+          current={current}
+          onChoose={onChoose}
+          labelId={termId}
+          labels={SUMMARY_BULK_LABELS}
+        />
       </FlexItem>
     </Flex>
   );
@@ -3323,7 +3342,7 @@ const RetargetButton = ({
 }: {
   device: Partitionable;
   label: string;
-  variant?: "link" | "secondary";
+  variant?: "link" | "secondary" | "control";
 }) => {
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const config = useConfigModel();
@@ -5983,6 +6002,16 @@ const PLAN_CSS = `
   margin-block-start: var(--pf-t--global--spacer--xs);
 }
 
+/* The rule runs the width of the measure the sentence is read at, not the
+   width of the window: it closes the report, and a line across a monitor
+   divides the page instead. */
+.agm-plan-headline-rule {
+  align-self: stretch;
+  max-width: 44rem;
+  width: 100%;
+  margin-inline: auto;
+}
+
 /* The room a summary keeps under it is the room before whatever it introduces,
    and a list that starts a screen away from the sentence about it reads as a
    second page. */
@@ -7293,6 +7322,31 @@ const summaryLines = (
 };
 
 /**
+ * A device named inside a sentence: what it is called, and how big it is.
+ *
+ * The name is set as a value and the size follows it in brackets, both smaller
+ * and lighter than the sentence around them. At the heading's own weight a
+ * monospaced name reads as something to press; smaller and at body weight it
+ * reads as what it is, a value quoted inside the words about it, without a
+ * border or a colour doing the work.
+ *
+ * One node rather than two placeholders, since the brackets are punctuation
+ * around a value rather than part of the sentence, and a translator has no
+ * decision to make about them.
+ */
+const DeviceValue = ({ name, size }: { name: string; size?: number }) => (
+  <>
+    <code className="agm-plan-headline-device">{name}</code>
+    {size !== undefined && <span className="agm-plan-headline-size"> ({deviceSize(size)})</span>}
+  </>
+);
+
+/** A name the page sets apart without a size beside it: a volume group's, say. */
+const NameValue = ({ children }: React.PropsWithChildren) => (
+  <code className="agm-plan-headline-device">{children}</code>
+);
+
+/**
  * How much the installer will do, and the way to the whole picture.
  *
  * A count is a fact and a link at once: a reader wondering whether fourteen is
@@ -7373,6 +7427,7 @@ const PlanHeadline = ({
   onGoTo,
   primary,
   secondary,
+  settings,
 }: {
   /** The sentence the page opens with, and whatever in it is a control. */
   title: React.ReactNode;
@@ -7400,6 +7455,8 @@ const PlanHeadline = ({
   primary?: React.ReactNode;
   /** Everything else, read after it on the same row. */
   secondary?: React.ReactNode;
+  /** The two decisions about no device in particular, as values with a way in. */
+  settings?: React.ReactNode;
 }) => {
   const { costLayout } = useVariants();
   const costsId = useId();
@@ -7478,7 +7535,14 @@ const PlanHeadline = ({
         <Title headingLevel="h2" size={isNarrow ? "lg" : "xl"} className="agm-plan-headline-title">
           {title}
         </Title>
-        {body && <Content component="p">{body}</Content>}
+        {/* A line about what to do with what follows, not a second heading:
+            smaller and lighter than the sentence it sits under, so the two are
+            read in the order they matter. */}
+        {body && (
+          <Content component="p">
+            <Text textStyle={["fontSizeXs", "textColorSubtle"]}>{body}</Text>
+          </Content>
+        )}
       </FlexItem>
       {/* Above the consequence it changes, so the reader sees what it did. */}
       {control && <FlexItem className="agm-plan-summary-control">{control}</FlexItem>}
@@ -7504,8 +7568,12 @@ const PlanHeadline = ({
       )}
       {(primary || secondary) && (
         <FlexItem>
+          {/* Centred on the line rather than at its top: the three are buttons
+              of different heights, and a menu toggle sitting a few pixels above
+              the buttons beside it reads as a fourth row. */}
           <Flex
             gap={{ default: "gapSm" }}
+            alignItems={{ default: "alignItemsCenter" }}
             justifyContent={{ default: "justifyContentCenter" }}
             flexWrap={{ default: "wrap" }}
           >
@@ -7513,6 +7581,20 @@ const PlanHeadline = ({
             {secondary}
           </Flex>
         </FlexItem>
+      )}
+      {/* Last, and in the same place whatever shape the page takes: they are
+          about the installation rather than about anything the page names, and
+          a reader who learned where they are on one disk finds them on eight.
+
+          Ruled off from what the page reports, since these two are settings
+          about the installation rather than another line of the report. */}
+      {settings && (
+        <>
+          <FlexItem className="agm-plan-headline-rule">
+            <Divider />
+          </FlexItem>
+          <FlexItem>{settings}</FlexItem>
+        </>
       )}
     </Flex>
   );
@@ -7585,6 +7667,7 @@ const PlanSummary = ({
   isNarrow,
   onOpenTab,
   onShowResult,
+  settings,
 }: {
   collection: PartitionableCollection;
   index: number;
@@ -7594,6 +7677,9 @@ const PlanSummary = ({
   onOpenTab: (tab: PanelTab) => void;
   /** Opens the whole picture: what the installer does, and what it leaves. */
   onShowResult: () => void;
+  /** The two decisions about no device in particular, read where a plan of
+      several entries reads them. */
+  settings?: React.ReactNode;
 }) => {
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
@@ -7628,30 +7714,19 @@ const PlanSummary = ({
      by-path name and the partition table, is in the sheet's header, one click
      away and where a reader who wants it goes.
 
-     Two placeholders rather than one value made of both: the name is a name and
-     the size is a fact about it, they are set differently, and a translation is
-     free to put them in whichever order the language wants. The numbers are
-     what keep each one wrapped as itself when it does. */
-  const size = systemDevice?.block?.size ? deviceSize(systemDevice.block.size) : null;
+     What kind of device it is stays in the sentence rather than becoming a
+     placeholder of its own: an article and a noun agree in most languages, and
+     a slot that takes either "disk" or "RAID" leaves a translator with no way
+     to make them. */
   const sentence = (() => {
     if (collection === "mdRaids") {
-      if (!size) {
-        return boots
-          ? t("Use RAID %s as installation and boot device")
-          : t("Use RAID %s as installation device");
-      }
       return boots
-        ? t("Use RAID %1$s (%2$s) as installation and boot device")
-        : t("Use RAID %1$s (%2$s) as installation device");
-    }
-    if (!size) {
-      return boots
-        ? t("Use disk %s as installation and boot device")
-        : t("Use disk %s as installation device");
+        ? t("Use RAID %s as installation and boot device")
+        : t("Use RAID %s as installation device");
     }
     return boots
-      ? t("Use disk %1$s (%2$s) as installation and boot device")
-      : t("Use disk %1$s (%2$s) as installation device");
+      ? t("Use disk %s as installation and boot device")
+      : t("Use disk %s as installation device");
   })();
 
   return (
@@ -7661,10 +7736,7 @@ const PlanSummary = ({
          is offered under it, where the page keeps its actions. */
       title={
         <Interpolate sentence={sentence}>
-          {[
-            () => <code className="agm-plan-headline-device">{name}</code>,
-            () => <span className="agm-plan-headline-size">{size}</span>,
-          ].slice(0, size ? 2 : 1)}
+          {() => <DeviceValue name={name} size={systemDevice?.block?.size} />}
         </Interpolate>
       }
       control={
@@ -7694,9 +7766,14 @@ const PlanSummary = ({
           {t("View details")}
         </Button>
       }
+      settings={settings}
       secondary={
         <>
-          <RetargetButton device={device} label={t("Change installation device")} />
+          <RetargetButton
+            device={device}
+            label={t("Change installation device")}
+            variant="control"
+          />
           {/* Beside it rather than under the page: changing the device and
               adding another are the two things a reader does about the device
               the sentence names. */}
@@ -7816,6 +7893,103 @@ const planLines = (
 };
 
 /**
+ * The simplest true thing the page can say about a whole plan.
+ *
+ * "Across multiple devices" is what the page said about every plan of more than
+ * one entry, and it was wrong about the most common non-trivial installation
+ * there is: one disk, one volume group on it. The machine holds one device, and
+ * a sentence claiming several is a sentence the reader can see is false.
+ *
+ * Two rules decide how far it goes. A name is worth more than a count until
+ * there are three of them, which is the threshold the rest of the page already
+ * uses. And the sentence never lists two kinds of thing at once: the moment
+ * groups sit over more than one disk, naming both halves produces a sentence
+ * with two lists in it, and the list under it is a better list than any
+ * sentence can be.
+ *
+ * Past what it can say in one line it stops trying and says what is being done
+ * instead, leaving the naming to the entries below.
+ */
+const PlanTitle = () => {
+  const config = useConfigModel();
+  const system = useFlattenDevices();
+  const drives = config.drives || [];
+  const mdRaids = config.mdRaids || [];
+  const groups = config.volumeGroups || [];
+  const hosts = [...drives, ...mdRaids] as Partitionable[];
+
+  const host = (device: Partitionable) => (
+    <DeviceValue
+      name={baseName(device.name)}
+      size={system.find((candidate) => candidate.name === device.name)?.block?.size}
+    />
+  );
+
+  /* One disk with groups over it: the shape the page was worst at, and the one
+     most readers arrive with. */
+  if (hosts.length === 1 && groups.length > 0) {
+    const onDisk = drives.length === 1;
+    const named = groups.map((group) => group.vgName).filter(Boolean);
+
+    if (groups.length === 1 && named.length === 1) {
+      return (
+        <Interpolate
+          sentence={
+            onDisk
+              ? t("Create LVM volume group %1$s on top of disk %2$s")
+              : t("Create LVM volume group %1$s on top of RAID %2$s")
+          }
+        >
+          {[() => <NameValue>{named[0]}</NameValue>, () => host(hosts[0])]}
+        </Interpolate>
+      );
+    }
+
+    if (groups.length === 2 && named.length === 2) {
+      return (
+        <Interpolate
+          sentence={
+            onDisk
+              ? t("Create LVM volume groups %1$s and %2$s on top of disk %3$s")
+              : t("Create LVM volume groups %1$s and %2$s on top of RAID %3$s")
+          }
+        >
+          {[
+            () => <NameValue>{named[0]}</NameValue>,
+            () => <NameValue>{named[1]}</NameValue>,
+            () => host(hosts[0]),
+          ]}
+        </Interpolate>
+      );
+    }
+
+    return (
+      <Interpolate
+        sentence={
+          onDisk
+            ? t("Create %1$s LVM volume groups on top of disk %2$s")
+            : t("Create %1$s LVM volume groups on top of RAID %2$s")
+        }
+      >
+        {[() => <>{groups.length}</>, () => host(hosts[0])]}
+      </Interpolate>
+    );
+  }
+
+  /* Several disks, whatever is over them. Counting the disks is the one thing
+     the sentence can add that the list below does not already say per row. */
+  if (hosts.length > 1 && mdRaids.length === 0) {
+    return (
+      <Interpolate sentence={t("Set up the new system across %s disks")}>
+        {() => <>{hosts.length}</>}
+      </Interpolate>
+    );
+  }
+
+  return <>{t("Set up the new system across multiple devices")}</>;
+};
+
+/**
  * The page a plan of more than one entry gets.
  *
  * The summary stays where it was and the list appears under it. What changes
@@ -7866,10 +8040,9 @@ const PlanOverview = ({
       <FlexItem>
         <PlanHeadline
           isNarrow={isNarrow}
-          /* Not the disks by name: the list under it names them, and a sentence
-             is not a list. What the summary says is that the plan takes more
-             than one device, which is the thing the list cannot say in a row. */
-          title={t("Set up the new system across multiple devices")}
+          /* Names what naming helps and counts the rest: the list under it
+             names every entry, and a sentence is not a list. */
+          title={<PlanTitle />}
           isTight
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
@@ -7889,15 +8062,9 @@ const PlanOverview = ({
              disk and hides it on a plan of eight is a page with two shapes. */
           count={<PlanCount actions={actions} onShowResult={onShowResult} />}
           notice={notice}
+          settings={settings}
         />
       </FlexItem>
-      {settings && (
-        <FlexItem>
-          <Flex justifyContent={{ default: "justifyContentCenter" }}>
-            <FlexItem>{settings}</FlexItem>
-          </Flex>
-        </FlexItem>
-      )}
       <FlexItem>
         <DeviceList
           rows={rows}
@@ -7953,7 +8120,6 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "summaryStyle", label: "Cost summary", options: ["sentence", "lines"] },
   { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
   { key: "spaceShape", label: "Space shape", options: ["value", "toggles"] },
-  { key: "settingsPlace", label: "Settings", options: ["bottom", "top"] },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -8184,7 +8350,6 @@ function StoragePlan({
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
             '  overviewCosts("hidden" | "shown")  what a many entry plan costs, over the list that says it per device',
             '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
-            '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
             '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  spaceShape("value" | "toggles")    that decision as a term and its value, or as four buttons',
@@ -8230,7 +8395,6 @@ function StoragePlan({
       page: (page) => patch({ page }),
       overviewCosts: (overviewCosts) => patch({ overviewCosts }),
       costLayout: (costLayout) => patch({ costLayout }),
-      settingsPlace: (settingsPlace) => patch({ settingsPlace }),
       summaryStyle: (summaryStyle) => patch({ summaryStyle }),
       summarySpace: (summarySpace) => patch({ summarySpace }),
       spaceShape: (spaceShape) => patch({ spaceShape }),
@@ -8449,6 +8613,7 @@ function StoragePlan({
           isNarrow={isNarrow}
           onOpenTab={(tab) => goToDevice(single, tab)}
           onShowResult={goToResult}
+          settings={settings}
         />
       );
     }
@@ -8480,11 +8645,6 @@ function StoragePlan({
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
       >
-        {variants.settingsPlace === "top" && single && !isNarrow && (
-          <FlexItem>
-            <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
-          </FlexItem>
-        )}
         <FlexItem>
           {/* In a strip, the two decisions fold into the menu that is here
               anyway: their values are worth a line of a page and not worth two
@@ -8516,20 +8676,6 @@ function StoragePlan({
         </FlexItem>
       </Flex>
       {summary()}
-      <Flex
-        direction={{ default: "column" }}
-        alignItems={{ default: "alignItemsCenter" }}
-        gap={{ default: "gapSm" }}
-      >
-        {/* One device reads them last, after what it does about that device.
-            A plan of several reads them before its list, where the summary
-            they belong to ends. */}
-        {variants.settingsPlace === "bottom" && single && !isNarrow && (
-          <FlexItem>
-            <PlanSettings onShowBoot={goToBoot} onShowEncryption={goToEncryption} />
-          </FlexItem>
-        )}
-      </Flex>
     </div>
   ) : (
     <>
