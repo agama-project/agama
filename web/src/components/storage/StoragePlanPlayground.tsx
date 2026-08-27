@@ -1110,6 +1110,7 @@ const purposeOf = (
   device: ConfigModel.Drive | ConfigModel.MdRaid,
   groupCount: number,
   raidCount: number,
+  boots: boolean,
 ): string[] => {
   const lines: string[] = [];
 
@@ -1124,13 +1125,26 @@ const purposeOf = (
 
   /* Every line names something the installer does, so the ones about hosted
    * objects take a verb like the rest rather than sitting there as a bare
-   * count. */
-  if (groupCount) {
-    lines.push(t(`Host ${groupCount} LVM volume ${groupCount === 1 ? "group" : "groups"}`));
+   * count.
+   *
+   * Booting joins the hosting line rather than taking one of its own: a disk
+   * carrying a volume group and starting the machine is doing two jobs, and
+   * the reader takes them in as one answer to "what is this disk for". */
+  if (groupCount === 1) {
+    lines.push(boots ? t("Host LVM and boot") : t("Host LVM"));
+  } else if (groupCount > 1) {
+    lines.push(
+      boots
+        ? t(`Host ${groupCount} LVM volume groups and boot`)
+        : t(`Host ${groupCount} LVM volume groups`),
+    );
   }
   if (raidCount) {
     lines.push(t(`Host ${raidCount} RAID ${raidCount === 1 ? "device" : "devices"}`));
   }
+
+  /* Nothing else to hang it on, so it is a line of its own. */
+  if (boots && !groupCount) lines.push(t("Start the new system"));
 
   return lines;
 };
@@ -1897,12 +1911,13 @@ const PartitionableRow = (props: RowProps) => {
   if (!device) return null;
 
   const users = usersOf(config, allDevices, device.name);
+  const boots = bootRoleOf(config, device.name) !== "none";
   const content = purposeOf(
     device,
     users.filter((u) => u.selection?.collection === "volumeGroups").length,
     users.filter((u) => u.selection?.collection === "mdRaids").length,
+    boots,
   );
-  const boots = bootRoleOf(config, device.name) !== "none";
 
   return (
     <RowShell
@@ -1910,14 +1925,12 @@ const PartitionableRow = (props: RowProps) => {
       content={{
         name: baseName(device.name),
         description: partitionableDescription(systemDevice),
-        /* The same mark the panel puts beside the same name. Booting is
-           something the device is, and the content column is a list of things
-           the installer does, so the fact reads beside the identity in both
-           places rather than as a line of its own in one of them. */
-        marks: boots ? [t("Boot device")] : [],
+        /* No mark: booting is one of the things the row now says this disk is
+           for, written into the line about what it carries. The sheet keeps
+           the mark, where the name has no column of purposes beside it. */
         content,
         costs: costsFor(device, systemDevice, solver),
-        isPlanned: content.length > 0 || boots,
+        isPlanned: content.length > 0,
       }}
     />
   );
@@ -1936,6 +1949,17 @@ const VolumeGroupRow = (props: RowProps) => {
    * a row into four lines of text, which is the content the panel exists to
    * hold. */
   const count = (group.logicalVolumes || []).length;
+  /* Where the group sits, which is what its row lacked: a group's row without
+     its disks is a row about something floating, and a reader scanning two rows
+     should learn the group lives on the disk from either end. One disk is
+     named, several are counted, which is the threshold the rest of the page
+     uses. */
+  const hosts = (group.targetDevices || []).map((name) => baseName(name));
+  const on = (() => {
+    if (!hosts.length) return t("Create LVM volume group");
+    if (hosts.length === 1) return t(`Create LVM volume group on top of ${hosts[0]}`);
+    return t(`Create LVM volume group on top of ${hosts.length} disks`);
+  })();
 
   return (
     <RowShell
@@ -1943,12 +1967,14 @@ const VolumeGroupRow = (props: RowProps) => {
       content={{
         name: group.vgName,
         /* No second line: the group heading above already says these are
-         * volume groups, and where each one sits is a relationship the panel
-         * carries. */
+         * volume groups, and what it sits on is one of the lines below. */
         description: "",
-        content: count ? [t(`Define ${count} logical ${count === 1 ? "volume" : "volumes"}`)] : [],
+        content: [
+          on,
+          ...(count ? [t(`Define ${count} logical ${count === 1 ? "volume" : "volumes"}`)] : []),
+        ],
         costs: volumeGroupCosts(group, systemDevice, solver),
-        isPlanned: count > 0,
+        isPlanned: true,
       }}
     />
   );
