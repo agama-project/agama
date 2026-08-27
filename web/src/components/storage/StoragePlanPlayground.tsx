@@ -5994,6 +5994,14 @@ const PLAN_CSS = `
   white-space: nowrap;
 }
 
+/* A flex item will not shrink below the width of its longest word unless it is
+   told it may, which is what turns a row that could hold both halves into two
+   rows. Told it may, the sentence wraps inside its own column and the controls
+   keep their line. */
+.agm-plan-topline-intro {
+  min-width: 0;
+}
+
 /* Short and centred. A rule the width of the text above it divides the page
    in two; this one closes a paragraph of it and lets the actions under it read
    as the answer to what was just reported. */
@@ -6986,81 +6994,46 @@ const PlanSettings = ({
   const isEncrypted = config.encryption !== undefined;
   const encryption = t(installationEncryption(config));
 
-  if (isCompact) {
-    /* The mark alone, with the term and its value as the button's name. The
-       tooltip shows the pair to a reader who hovers or tabs to it, and the same
-       words are what a screen reader announces, so nothing is carried by the
-       picture on its own. */
-    const compact = (
-      label: string,
-      icon: React.ComponentProps<typeof Icon>["name"],
-      onClick: () => void,
-    ) => (
-      <Tooltip content={label}>
-        <Button
-          variant="plain"
-          aria-label={label}
-          icon={<Icon name={icon} size="sm" />}
-          onClick={onClick}
-        />
-      </Tooltip>
+  /* Each pair is one control rather than a mark, a term and a link inside a
+     row: three elements to hit and no edge saying where the thing to press
+     begins. As a control it reads as what it is, a setting with a value in it,
+     and it sits at the weight of the menu beside it rather than under it. */
+  const setting = (
+    term: string,
+    value: string,
+    icon: React.ComponentProps<typeof Icon>["name"],
+    onClick: () => void,
+  ) => {
+    const button = (
+      <Button
+        variant="control"
+        icon={<Icon name={icon} size="sm" />}
+        aria-label={isCompact ? t(`${term}: ${value}`) : undefined}
+        onClick={onClick}
+      >
+        {!isCompact && (
+          <>
+            <span className="agm-plan-muted">{term}</span> {value}
+          </>
+        )}
+      </Button>
     );
 
-    return (
-      <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapXs" }}>
-        <FlexItem>{compact(t(`Boot: ${boot()}`), bootIcon, onShowBoot)}</FlexItem>
-        <FlexItem>
-          {compact(
-            t(`Encryption: ${encryption}`),
-            isEncrypted ? "lock" : "lock_open",
-            onShowEncryption,
-          )}
-        </FlexItem>
-      </Flex>
-    );
-  }
+    /* In a strip the mark is all there is room for, so the pair it stands for
+       is the button's name and its tooltip both: nothing is carried by the
+       picture alone. */
+    return isCompact ? <Tooltip content={t(`${term}: ${value}`)}>{button}</Tooltip> : button;
+  };
 
   return (
     <Flex
       alignItems={{ default: "alignItemsCenter" }}
-      gap={{ default: "gapMd" }}
-      flexWrap={{ default: "wrap" }}
+      gap={{ default: "gapXs" }}
+      flexWrap={{ default: "nowrap" }}
     >
-      {/* The mark sits on the middle of the line rather than on its baseline:
-          beside a word it is a picture of that word, not a letter of it. */}
+      <FlexItem>{setting(t("Boot"), boot(), bootIcon, onShowBoot)}</FlexItem>
       <FlexItem>
-        <Flex
-          alignItems={{ default: "alignItemsCenter" }}
-          gap={{ default: "gapXs" }}
-          flexWrap={{ default: "nowrap" }}
-        >
-          <FlexItem>
-            <Icon name={bootIcon} size="sm" verticalAlign="middle" />
-          </FlexItem>
-          <FlexItem>
-            <span className="agm-plan-muted">{t("Boot")}</span>{" "}
-            <Button variant="link" isInline onClick={onShowBoot}>
-              {boot()}
-            </Button>
-          </FlexItem>
-        </Flex>
-      </FlexItem>
-      <FlexItem>
-        <Flex
-          alignItems={{ default: "alignItemsCenter" }}
-          gap={{ default: "gapXs" }}
-          flexWrap={{ default: "nowrap" }}
-        >
-          <FlexItem>
-            <Icon name={isEncrypted ? "lock" : "lock_open"} size="sm" verticalAlign="middle" />
-          </FlexItem>
-          <FlexItem>
-            <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
-            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
-              {encryption}
-            </Button>
-          </FlexItem>
-        </Flex>
+        {setting(t("Encryption"), encryption, isEncrypted ? "lock" : "lock_open", onShowEncryption)}
       </FlexItem>
     </Flex>
   );
@@ -8147,13 +8120,21 @@ function StoragePlan({
           two decisions about no device in particular and the one destructive
           thing this page can do. None of the three is about anything the
           summary names, so none of them belongs inside it. */}
+      {/* Wrap reverse, so that where the two halves cannot share a line at all
+          the controls take the first one and the sentence about the page the
+          second: the sentence is read once, and the controls are what a reader
+          coming back to the page is looking for. */}
       <Flex
         justifyContent={{ default: "justifyContentSpaceBetween" }}
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
-        flexWrap={{ default: "wrap" }}
+        flexWrap={{ default: "wrapReverse" }}
+        className="agm-plan-topline"
       >
-        <FlexItem>
+        {/* The half that gives way. Prose wraps to a second line inside its own
+            column, which keeps the row one row; the controls beside it have a
+            width they cannot give up without becoming unreadable. */}
+        <FlexItem grow={{ default: "grow" }} className="agm-plan-topline-intro">
           <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
             {t(
               "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
@@ -8161,7 +8142,11 @@ function StoragePlan({
           </Text>
         </FlexItem>
         <FlexItem>
-          <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
+          <Flex
+            alignItems={{ default: "alignItemsCenter" }}
+            gap={{ default: "gapSm" }}
+            flexWrap={{ default: "nowrap" }}
+          >
             <FlexItem>
               <PlanSettings
                 isCompact={isNarrow}
