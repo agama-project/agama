@@ -645,17 +645,21 @@ const LG = "(min-width: 992px)";
  * can afford is a question about the element rather than about the viewport. A
  * media query cannot answer that.
  */
-const useWidth = (ref: React.RefObject<HTMLElement>): number => {
+const useWidth = (node: HTMLElement | null): number => {
   const [width, setWidth] = useState(Number.POSITIVE_INFINITY);
 
   useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
+    /* Nothing to measure is not "as narrow as it last was": the page that was
+       being watched has gone, and whatever replaces it starts unconstrained. */
+    if (!node) {
+      setWidth(Number.POSITIVE_INFINITY);
+      return;
+    }
 
     const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
     observer.observe(node);
     return () => observer.disconnect();
-  }, [ref]);
+  }, [node]);
 
   return width;
 };
@@ -7791,14 +7795,27 @@ function StoragePlan({
      has the row they picked behind the panel. */
   const isFloating = useMedia(LG);
   const panelRef = useRef<HTMLDivElement>(null);
-  const pageRef = useRef<HTMLDivElement>(null);
+  /* The page is measured through a callback ref rather than a plain one.
+     Crossing the lg breakpoint moves the page between two parents, which builds
+     it a new element; a ref object does not change when that happens, so the
+     observer went on watching a node no longer in the document and reported the
+     width it had when it left. Everything the page sizes by that width stayed
+     small however wide the window went afterwards.
+
+     The node is state, so the observer follows the element that exists. */
+  const pageRef = useRef<HTMLDivElement | null>(null);
+  const [pageNode, setPageNode] = useState<HTMLDivElement | null>(null);
+  const takePage = useCallback((node: HTMLDivElement | null) => {
+    pageRef.current = node;
+    setPageNode(node);
+  }, []);
   /* Where the reader was before the sheet opened. Laying the page out again in
      a narrower box changes how tall everything is, and the scroll that was
      showing the fifth device ends up showing the first. */
   const scrolledTo = useRef(0);
   /* What the page can afford is a question about the page rather than about the
      window: beside an open sheet it is a strip, however wide the screen is. */
-  const isNarrow = useWidth(pageRef) < TIGHT;
+  const isNarrow = useWidth(pageNode) < TIGHT;
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showsResult, setShowsResult] = useState(false);
@@ -8156,7 +8173,7 @@ function StoragePlan({
   const page = showsSummary ? (
     <div
       className={isNarrow ? "agm-plan-summary-page agm-plan-page-narrow" : "agm-plan-summary-page"}
-      ref={pageRef}
+      ref={takePage}
     >
       {/* One line above the page: what it is on the left, and on the right the
           two decisions about no device in particular and the one destructive
