@@ -2439,24 +2439,39 @@ const SpaceDecisionRow = ({
  * The request is therefore remembered here. Every other policy follows the
  * configuration, because every other policy is written into it.
  */
+/**
+ * What was last asked for, per entry.
+ *
+ * Custom is the one choice the configuration cannot report back: it means the
+ * partitions decide for themselves, and a model with no rule over them reads
+ * as "keep". Remembering the answer beside the model is what keeps the control
+ * on custom after it has been chosen.
+ *
+ * Above every control rather than inside each one: the page and the sheet both
+ * offer this decision, and two memories of it disagree the moment one is used.
+ * That is exactly what happened: choosing custom on the page opened a sheet
+ * that had never heard of it and showed keep.
+ */
+const AskedPolicyContext = React.createContext<{
+  asked: Record<string, ConfigModel.SpacePolicy>;
+  remember: (key: string, policy: ConfigModel.SpacePolicy) => void;
+}>({ asked: {}, remember: () => undefined });
+
 const useSpacePolicy = (collection: Collection, index: number, stored: ConfigModel.SpacePolicy) => {
   const setSpacePolicy = useSetSpacePolicy();
-  const [asked, setAsked] = useState<ConfigModel.SpacePolicy>(stored);
+  const { asked, remember } = React.useContext(AskedPolicyContext);
+  const key = `${collection}:${index}`;
 
-  useEffect(() => {
-    /* Follow the configuration, except where it is reporting the value custom
-     * collapses to. */
-    if (stored === asked) return;
-    if (asked === "custom" && stored === "keep") return;
-    setAsked(stored);
-  }, [stored, asked]);
+  /* The configuration is the truth, except where it is reporting the value
+     custom collapses to and custom is what was asked for. */
+  const policy = asked[key] === "custom" && stored === "keep" ? "custom" : stored;
 
-  const choose = (policy: ConfigModel.SpacePolicy) => {
-    setAsked(policy);
-    setSpacePolicy(collection, index, { type: policy });
+  const choose = (next: ConfigModel.SpacePolicy) => {
+    remember(key, next);
+    setSpacePolicy(collection, index, { type: next });
   };
 
-  return { policy: asked, choose };
+  return { policy, choose };
 };
 
 /* ------------------------------------------------------------------ *
@@ -8196,12 +8211,23 @@ function StoragePlanShell(): React.ReactNode {
     [],
   );
   const scenario = useScenarioState(variants.data);
+  const [asked, setAsked] = useState<Record<string, ConfigModel.SpacePolicy>>({});
+  const policies = useMemo(
+    () => ({
+      asked,
+      remember: (key: string, policy: ConfigModel.SpacePolicy) =>
+        setAsked((current) => ({ ...current, [key]: policy })),
+    }),
+    [asked],
+  );
 
   return (
     <VariantsContext.Provider value={variants}>
       <ScenarioContext.Provider value={scenario}>
-        <StoragePlan variants={variants} patch={patch} />
-        <PlanSettingsPanel variants={variants} onChange={patch} />
+        <AskedPolicyContext.Provider value={policies}>
+          <StoragePlan variants={variants} patch={patch} />
+          <PlanSettingsPanel variants={variants} onChange={patch} />
+        </AskedPolicyContext.Provider>
       </ScenarioContext.Provider>
     </VariantsContext.Provider>
   );
