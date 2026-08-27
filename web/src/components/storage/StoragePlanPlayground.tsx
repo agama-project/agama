@@ -218,6 +218,8 @@ type TitleFacts = "under" | "inline";
 type OverviewCosts = "hidden" | "shown";
 /** Whether the consequences read one per line, or as one run of phrases. */
 type CostLayout = "stacked" | "inline";
+/** How the one device page reports what the plan costs. */
+type SummaryStyle = "sentence" | "lines";
 /** The mark over a plan of more than one device. */
 type PlanIcon = "storage" | "stacks" | "web_stories" | "workspaces";
 /** Where the two machine wide decisions are read. */
@@ -259,6 +261,7 @@ type Variants = {
   titleFacts: TitleFacts;
   overviewCosts: OverviewCosts;
   costLayout: CostLayout;
+  summaryStyle: SummaryStyle;
   planIcon: PlanIcon;
   settingsPlace: SettingsPlace;
   data: DataSource;
@@ -318,6 +321,9 @@ const DEFAULT_VARIANTS: Variants = {
      who stops after the first line has stopped at the worst one. The run
      costs less height and asks the reader to find the middot. */
   costLayout: "stacked",
+  /* One sentence, in the installer's own verbs: what is lost and what is
+     built, read in that order. The lines are one switch away. */
+  summaryStyle: "sentence",
   /* Stacks: things of the same kind, one behind the other, which is what a
      plan of several devices looks like. The other three are one switch away. */
   planIcon: "stacks",
@@ -368,6 +374,7 @@ type PlanApi = {
   titleFacts: (mode: TitleFacts) => void;
   overviewCosts: (mode: OverviewCosts) => void;
   costLayout: (mode: CostLayout) => void;
+  summaryStyle: (mode: SummaryStyle) => void;
   planIcon: (name: PlanIcon) => void;
   settingsPlace: (mode: SettingsPlace) => void;
   data: (source: DataSource) => void;
@@ -6829,6 +6836,72 @@ const lostNames = (group: Decided[]): string => {
  * way the sheet reads them, so the page and the panel it opens cannot disagree
  * about what happens to the same disk.
  */
+/**
+ * What the plan does to one device, as one sentence.
+ *
+ * The verbs the installer uses, in the order the reader cares about: what is
+ * lost first, what is built last. Systems are named while naming them is
+ * short, and counted once a list would run: one is named, a second is a system
+ * more, and three or more are a count, since past two names nobody is reading
+ * them.
+ *
+ * Written as clauses joined by the language rather than as one string per
+ * case, which would be a case per count per verb.
+ */
+const summarySentence = (
+  device: Partitionable,
+  systemDevice: Storage.Device | null,
+  created: Proposal.Device[],
+  solver: Solver,
+): SummaryLine => {
+  const decided = decidedOn(device, systemDevice, solver);
+  const deleted = ending(decided, "delete");
+  const formatted = ending(decided, "format");
+  const shrunk = ending(decided, "shrinkTo");
+  const clauses: string[] = [];
+
+  /* What is about to be lost, named while a name is worth more than a count. */
+  const lost = (group: Decided[]): string => {
+    const systems = systemsOn(group);
+    if (systems.length === 1) return systems[0];
+    if (systems.length === 2) return t(`${systems[0]} and 1 other system`);
+    if (systems.length > 2) return t(`${systems.length} existing systems`);
+
+    return t(`${group.length} ${group.length === 1 ? "partition" : "partitions"}`);
+  };
+
+  if (deleted.length) clauses.push(t(`delete ${lost(deleted)}`));
+  if (formatted.length) clauses.push(t(`reformat ${lost(formatted)}`));
+  if (shrunk.length) clauses.push(t(`shrink ${lost(shrunk)}`));
+
+  if (device.filesystem) {
+    clauses.push(
+      device.mountPath
+        ? t(
+            `format the whole device as ${filesystemType(device.filesystem)} for ${device.mountPath}`,
+          )
+        : t(`format the whole device as ${filesystemType(device.filesystem)}`),
+    );
+  } else if (created.length) {
+    clauses.push(t(`create ${created.length} new ${created.length === 1 ? "volume" : "volumes"}`));
+  }
+
+  const kind: CostKind = (() => {
+    if (deleted.length || formatted.length) return "destroys";
+    if (shrunk.length) return "shrinks";
+    return "keeps";
+  })();
+
+  /* Nothing to report is itself a report: a device the plan leaves alone. */
+  const sentence = clauses.length ? formatList(clauses) : t("leave this device as it is");
+
+  return {
+    kind,
+    subject: t(`${sentence.charAt(0).toUpperCase()}${sentence.slice(1)}.`),
+    tail: "",
+  };
+};
+
 const summaryLines = (
   device: Partitionable,
   systemDevice: Storage.Device | null,
@@ -7042,7 +7115,13 @@ const PlanHeadline = ({
                   <Icon name={COST_ICON[line.kind]} size="xs" />
                 </FlexItem>
                 <FlexItem className={COST_CLASS[line.kind]}>
-                  {line.subject} <SummaryDetail line={line} text={line.tail} onGoTo={onGoTo} />
+                  {line.subject}
+                  {line.tail && (
+                    <>
+                      {" "}
+                      <SummaryDetail line={line} text={line.tail} onGoTo={onGoTo} />
+                    </>
+                  )}
                 </FlexItem>
               </Flex>
             </FlexItem>
@@ -7087,6 +7166,7 @@ const PlanSummary = ({
   const staging = useStagingDevices();
   const actions = useActions();
   const solver = useSolver();
+  const { summaryStyle } = useVariants();
 
   if (!device) return null;
 
@@ -7096,7 +7176,10 @@ const PlanSummary = ({
   const created = (stagingDevice?.partitions || []).filter(
     (partition) => !manager.existInSystem(partition),
   );
-  const lines = summaryLines(device, systemDevice, created, solver);
+  const lines =
+    summaryStyle === "sentence"
+      ? [summarySentence(device, systemDevice, created, solver)]
+      : summaryLines(device, systemDevice, created, solver);
   /* What the device is for, rather than what is being done to it: a disk that
      also starts the machine is carrying two jobs, and which disk boots is a
      fact the reader would otherwise have to open the sheet to learn. */
@@ -7359,6 +7442,7 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "titleFacts", label: "Device facts", options: ["under", "inline"] },
   { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
   { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
+  { key: "summaryStyle", label: "Cost summary", options: ["sentence", "lines"] },
   { key: "settingsPlace", label: "Settings", options: ["top", "bottom"] },
   {
     key: "planIcon",
@@ -7558,6 +7642,7 @@ function StoragePlan({
             '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
             '  planIcon("storage"|"stacks"|"web_stories"|"workspaces")  the mark over a many device plan',
+            '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
             '  panelMode("slide"|"over"|"inline") the page moves over, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
@@ -7603,6 +7688,7 @@ function StoragePlan({
       costLayout: (costLayout) => patch({ costLayout }),
       settingsPlace: (settingsPlace) => patch({ settingsPlace }),
       planIcon: (planIcon) => patch({ planIcon }),
+      summaryStyle: (summaryStyle) => patch({ summaryStyle }),
       data: (data) => patch({ data }),
       panelMode: (panelMode) => patch({ panelMode }),
       bootDebug: () => bootDebugRef.current(),
