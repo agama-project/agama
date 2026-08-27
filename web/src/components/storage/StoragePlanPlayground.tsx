@@ -231,7 +231,7 @@ type SettingsPlace = "top" | "bottom";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
 /** How the drawer holding the sheet opens. */
-type PanelMode = "reflow" | "slide" | "over" | "inline";
+type PanelMode = "reflow" | "over" | "inline";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -345,10 +345,9 @@ const DEFAULT_VARIANTS: Variants = {
      true. The scenarios are for the states it does not have. */
   data: "real",
   /* The sheet comes over the page, and the page lays itself out again in the
-     width it is left with. A translate was tried first and is one switch away:
-     it moves the summary without rearranging it, so what lands beside the
-     sheet is a slice through the middle of the page rather than a narrow view
-     of it. */
+     width it is left with. A translate was tried first and dropped: it moved
+     the summary without rearranging it, so what landed beside the sheet was a
+     slice through the middle of the page rather than a narrow view of it. */
   panelMode: "reflow",
 };
 
@@ -672,8 +671,6 @@ const parseId = (id: string): Selection | null => {
 const PANEL_ID = "storage-plan-panel";
 /** How much of the window the sheet takes when it comes over the page. */
 const PANEL_WIDTH = "70%";
-/** How far the page moves out from under it: the width it is left with. */
-const PAGE_SHIFT = "-30%";
 const LIST_ID = "storage-plan-list";
 const XL = "(min-width: 1200px)";
 /* Wide enough for the list to stay readable with a panel over part of it, and
@@ -5869,25 +5866,13 @@ const PLAN_CSS = `
   font-size: var(--pf-t--global--font--size--xs);
 }
 
-/* The page moves out from under an open sheet rather than being read from
-   behind it, so the strip the sheet leaves holds the summary instead of
-   nothing. It moves rather than reflows: nothing is rearranged, and what no
-   longer fits is cut off, which is the trade.
+/* The page takes the width an open sheet leaves it and lays itself out in it,
+   rather than being read from behind the panel while the strip beside it sits
+   blank. The summary is fluid and re-centres; anything with a width of its own,
+   a table above all, scrolls inside the strip rather than pushing it wider.
 
    On our own wrapper rather than on the drawer's content box, since the panel
-   is positioned against that box and would travel with it. */
-.agm-plan-summary-page {
-  transition: transform var(--pf-t--global--motion--duration--fade--default, 200ms)
-    var(--pf-t--global--motion--timing-function--default, ease-in-out);
-}
-
-.agm-plan-drawer-slide.pf-m-expanded .agm-plan-summary-page {
-  transform: translateX(${PAGE_SHIFT});
-}
-
-/* Or the page takes the width it is left with and lays itself out in it. The
-   summary is fluid and re-centres; anything with a width of its own, a table
-   above all, scrolls inside the strip rather than pushing it wider. */
+   is positioned against that box and would narrow with it. */
 .agm-plan-drawer-reflow.pf-m-expanded .agm-plan-summary-page {
   max-width: calc(100% - ${PANEL_WIDTH});
   overflow-x: auto;
@@ -5907,6 +5892,13 @@ const PLAN_CSS = `
    the accessibility tree, and nothing about that reaches a reader who is
    looking at it. Dimmed and softened, it reads as what it is, the page behind
    the thing they are in. */
+/* Centring on the cross axis has no way to overflow politely: content wider
+   than the strip loses its start, which is where a heading begins. Stretched,
+   it wraps and stays whole, and the text is centred by the component anyway. */
+.agm-plan-page-narrow .pf-v6-c-empty-state {
+  align-items: stretch;
+}
+
 .agm-plan-covered {
   opacity: 0.55;
   filter: blur(2px);
@@ -6870,18 +6862,41 @@ const PlanSettings = ({
       gap={{ default: "gapMd" }}
       flexWrap={{ default: "wrap" }}
     >
+      {/* The mark sits on the middle of the line rather than on its baseline:
+          beside a word it is a picture of that word, not a letter of it. */}
       <FlexItem>
-        <Icon name={bootIcon} size="xs" /> <span className="agm-plan-muted">{t("Boot")}</span>{" "}
-        <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
-          {boot()}
-        </Button>
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapXs" }}
+          flexWrap={{ default: "nowrap" }}
+        >
+          <FlexItem>
+            <Icon name={bootIcon} size="xs" />
+          </FlexItem>
+          <FlexItem>
+            <span className="agm-plan-muted">{t("Boot")}</span>{" "}
+            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
+              {boot()}
+            </Button>
+          </FlexItem>
+        </Flex>
       </FlexItem>
       <FlexItem>
-        <Icon name={isEncrypted ? "lock" : "lock_open"} size="xs" />{" "}
-        <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
-        <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
-          {t(installationEncryption(config))}
-        </Button>
+        <Flex
+          alignItems={{ default: "alignItemsCenter" }}
+          gap={{ default: "gapXs" }}
+          flexWrap={{ default: "nowrap" }}
+        >
+          <FlexItem>
+            <Icon name={isEncrypted ? "lock" : "lock_open"} size="xs" />
+          </FlexItem>
+          <FlexItem>
+            <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
+            <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
+              {t(installationEncryption(config))}
+            </Button>
+          </FlexItem>
+        </Flex>
       </FlexItem>
     </Flex>
   );
@@ -7712,7 +7727,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
-  { key: "panelMode", label: "Drawer", options: ["reflow", "slide", "over", "inline"] },
+  { key: "panelMode", label: "Drawer", options: ["reflow", "over", "inline"] },
   {
     key: "data",
     label: "Machine",
@@ -7933,7 +7948,7 @@ function StoragePlan({
             '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
-            '  panelMode("reflow"|"slide"|"over"|"inline")  the page relays out, moves over, stays put, or is pushed aside',
+            '  panelMode("reflow"|"over"|"inline")  the page relays out, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -8210,7 +8225,10 @@ function StoragePlan({
   };
 
   const page = showsSummary ? (
-    <div className="agm-plan-summary-page" ref={pageRef}>
+    <div
+      className={isNarrow ? "agm-plan-summary-page agm-plan-page-narrow" : "agm-plan-summary-page"}
+      ref={pageRef}
+    >
       {/* What the installation is told, and what is done to the whole of it,
           on one row above what the page reports: neither is about any device
           the page names. */}
@@ -8321,11 +8339,7 @@ function StoragePlan({
       isExpanded={isStatic ? isPanelOpen : isPanelOpen && hasPanelContent}
       isStatic={isStatic}
       isInline={isInlineDrawer}
-      className={
-        variants.panelMode === "slide" || variants.panelMode === "reflow"
-          ? `agm-plan-drawer-${variants.panelMode}`
-          : undefined
-      }
+      className={variants.panelMode === "reflow" ? "agm-plan-drawer-reflow" : undefined}
       position="end"
     >
       <DrawerContent
