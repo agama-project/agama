@@ -218,6 +218,8 @@ type TitleFacts = "under" | "inline";
 type OverviewCosts = "hidden" | "shown";
 /** Whether the consequences read one per line, or as one run of phrases. */
 type CostLayout = "stacked" | "inline";
+/** Whether the one device page offers the space decision itself. */
+type SummarySpace = "shown" | "hidden";
 /** How the one device page reports what the plan costs. */
 type SummaryStyle = "sentence" | "lines";
 /** The mark over a plan of more than one device. */
@@ -262,6 +264,7 @@ type Variants = {
   overviewCosts: OverviewCosts;
   costLayout: CostLayout;
   summaryStyle: SummaryStyle;
+  summarySpace: SummarySpace;
   planIcon: PlanIcon;
   settingsPlace: SettingsPlace;
   data: DataSource;
@@ -324,6 +327,10 @@ const DEFAULT_VARIANTS: Variants = {
   /* One sentence, in the installer's own verbs: what is lost and what is
      built, read in that order. The lines are one switch away. */
   summaryStyle: "sentence",
+  /* The decision that changes that sentence, offered where the sentence is
+     read. An experiment: it is the one setting a single disk reader is likely
+     to want, and the sheet is a click away for everything else. */
+  summarySpace: "shown",
   /* Stacks: things of the same kind, one behind the other, which is what a
      plan of several devices looks like. The other three are one switch away. */
   planIcon: "stacks",
@@ -375,6 +382,7 @@ type PlanApi = {
   overviewCosts: (mode: OverviewCosts) => void;
   costLayout: (mode: CostLayout) => void;
   summaryStyle: (mode: SummaryStyle) => void;
+  summarySpace: (mode: SummarySpace) => void;
   planIcon: (name: PlanIcon) => void;
   settingsPlace: (mode: SettingsPlace) => void;
   data: (source: DataSource) => void;
@@ -5703,6 +5711,12 @@ const PLAN_CSS = `
   --pf-v6-c-empty-state--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
 }
 
+/* The decision sits between what the device is and what the plan does to it,
+   which is the pair it belongs to. */
+.agm-plan-summary-control {
+  margin-block: var(--pf-t--global--spacer--md);
+}
+
 /* A list for what it tells a screen reader, and not for its markers: these
    lines carry a mark of their own. */
 .agm-plan-costs {
@@ -7021,6 +7035,7 @@ const PlanHeadline = ({
   icon = "hard_drive",
   facts,
   body,
+  control,
   isTight = false,
   costsLabel,
   lines,
@@ -7036,6 +7051,8 @@ const PlanHeadline = ({
   facts?: string;
   /** A line about what the reader does next, where the page has more to it. */
   body?: React.ReactNode;
+  /** A decision offered where its consequence is read. */
+  control?: React.ReactNode;
   /** Closes against what follows it, where the page continues under it. */
   isTight?: boolean;
   /** Names the block of cost lines, for a reader moving by heading. */
@@ -7071,6 +7088,8 @@ const PlanHeadline = ({
             device: small, subtle and monospaced, so a name reads as a name. */}
         {facts && !inline && <div className="agm-row-note">{facts}</div>}
         {body && <Content component="p">{body}</Content>}
+        {/* Above the sentence it changes, so the reader sees what it did. */}
+        {control && <div className="agm-plan-summary-control">{control}</div>}
         {/* The lines are a group with a name of its own, so a reader moving by
             heading reaches them as one thing rather than as loose text under
             the sentence. Nothing here is worth a visible heading: each line
@@ -7166,7 +7185,8 @@ const PlanSummary = ({
   const staging = useStagingDevices();
   const actions = useActions();
   const solver = useSolver();
-  const { summaryStyle } = useVariants();
+  const { summaryStyle, summarySpace } = useVariants();
+  const space = useSpacePolicy(collection, index, device?.spacePolicy || "keep");
 
   if (!device) return null;
 
@@ -7195,6 +7215,20 @@ const PlanSummary = ({
           : t(`Use ${name} as installation device`)
       }
       facts={partitionableDescription(systemDevice)}
+      control={
+        summarySpace === "shown" && (systemDevice?.partitions || []).length > 0 ? (
+          <SpacePolicyControl
+            current={space.policy}
+            onChoose={(policy) => {
+              space.choose(policy);
+              /* Custom is not a value, it is the rest of the decision: it says
+                 that what happens to each partition is settled one by one, and
+                 the place that is settled is the sheet. */
+              if (policy === "custom") onOpenTab("current");
+            }}
+          />
+        ) : undefined
+      }
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
       onGoTo={onOpenTab}
@@ -7441,6 +7475,7 @@ const VARIANT_CONTROLS: VariantControl[] = [
   { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
   { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
   { key: "summaryStyle", label: "Cost summary", options: ["sentence", "lines"] },
+  { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
   { key: "settingsPlace", label: "Settings", options: ["top", "bottom"] },
   {
     key: "planIcon",
@@ -7641,6 +7676,7 @@ function StoragePlan({
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
             '  planIcon("storage"|"stacks"|"web_stories"|"workspaces")  the mark over a many device plan',
             '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
+            '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
             '  panelMode("slide"|"over"|"inline") the page moves over, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
@@ -7687,6 +7723,7 @@ function StoragePlan({
       settingsPlace: (settingsPlace) => patch({ settingsPlace }),
       planIcon: (planIcon) => patch({ planIcon }),
       summaryStyle: (summaryStyle) => patch({ summaryStyle }),
+      summarySpace: (summarySpace) => patch({ summarySpace }),
       data: (data) => patch({ data }),
       panelMode: (panelMode) => patch({ panelMode }),
       bootDebug: () => bootDebugRef.current(),
