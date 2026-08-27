@@ -6000,6 +6000,14 @@ const PLAN_CSS = `
    keep their line. */
 .agm-plan-topline-intro {
   min-width: 0;
+  text-wrap: pretty;
+}
+
+/* The half that never gives way. Squeezed, these three lose their words one
+   letter at a time, and a value read at a glance is the whole reason they are
+   printed rather than hidden in the menu. */
+.agm-plan-topline-controls {
+  flex-shrink: 0;
 }
 
 /* Short and centred. A rule the width of the text above it divides the page
@@ -6994,44 +7002,63 @@ const PlanSettings = ({
   const isEncrypted = config.encryption !== undefined;
   const encryption = t(installationEncryption(config));
 
-  /* Each pair is one button rather than a mark, a term and a link sitting loose
-     in a row: three things to hit, and no edge saying where the thing to press
-     begins. */
+  /* A mark, the term, and the value as the way in. Read far more often than
+     they are changed, so they are set as values rather than as controls: a
+     button's edge round each gives two settings nobody touches the presence of
+     an action, which is what the row of buttons under the summary is for.
+
+     At xs, since they sit on the page's own line rather than in what it
+     reports, and that line is furniture. */
   const setting = (
     term: string,
     value: string,
     icon: React.ComponentProps<typeof Icon>["name"],
     onClick: () => void,
   ) => {
-    const button = (
-      <Button
-        /* Plain and small, at the weight of the menu beside it: these two are
-           read far more often than they are changed, and a bordered control
-           gives a setting nobody touches the presence of an action. */
-        variant="plain"
-        size="sm"
-        icon={<Icon name={icon} size="sm" />}
-        aria-label={isCompact ? t(`${term}: ${value}`) : undefined}
-        onClick={onClick}
-      >
-        {!isCompact && (
-          <>
-            <span className="agm-plan-muted">{term}</span> {value}
-          </>
-        )}
-      </Button>
-    );
+    if (isCompact) {
+      /* In a strip the mark is all there is room for, so the pair it stands for
+         is the button's name and its tooltip both: nothing is carried by the
+         picture alone. */
+      return (
+        <Tooltip content={t(`${term}: ${value}`)}>
+          <Button
+            variant="plain"
+            size="sm"
+            aria-label={t(`${term}: ${value}`)}
+            icon={<Icon name={icon} size="sm" />}
+            onClick={onClick}
+          />
+        </Tooltip>
+      );
+    }
 
-    /* In a strip the mark is all there is room for, so the pair it stands for
-       is the button's name and its tooltip both: nothing is carried by the
-       picture alone. */
-    return isCompact ? <Tooltip content={t(`${term}: ${value}`)}>{button}</Tooltip> : button;
+    return (
+      <Flex
+        alignItems={{ default: "alignItemsCenter" }}
+        gap={{ default: "gapXs" }}
+        flexWrap={{ default: "nowrap" }}
+      >
+        {/* The mark sits on the middle of the line rather than on its baseline:
+            beside a word it is a picture of that word, not a letter of it. */}
+        <FlexItem>
+          <Icon name={icon} size="xs" verticalAlign="middle" />
+        </FlexItem>
+        <FlexItem>
+          <Text textStyle="fontSizeXs">
+            <span className="agm-plan-muted">{term}</span>{" "}
+            <Button variant="link" isInline onClick={onClick}>
+              {value}
+            </Button>
+          </Text>
+        </FlexItem>
+      </Flex>
+    );
   };
 
   return (
     <Flex
       alignItems={{ default: "alignItemsCenter" }}
-      gap={{ default: "gapXs" }}
+      gap={{ default: "gapMd" }}
       flexWrap={{ default: "nowrap" }}
     >
       <FlexItem>{setting(t("Boot"), boot(), bootIcon, onShowBoot)}</FlexItem>
@@ -8123,32 +8150,28 @@ function StoragePlan({
           two decisions about no device in particular and the one destructive
           thing this page can do. None of the three is about anything the
           summary names, so none of them belongs inside it. */}
-      {/* Wrap reverse, so that where the two halves cannot share a line at all
-          the controls take the first one and the sentence about the page the
-          second: the sentence is read once, and the controls are what a reader
-          coming back to the page is looking for. */}
+      {/* One line, always. The sentence is the half that gives way: it shrinks
+          and wraps inside its own column, while the three controls beside it
+          keep theirs. Letting the row wrap instead puts them on a line of their
+          own, which is a second row of furniture over a page whose first line
+          is already furniture. */}
       <Flex
-        /* Ended rather than spaced apart, so the controls sit against the right
-           edge whether they share the line with the sentence or take one of
-           their own. Spacing them apart puts a lone wrapped line at the start
-           of the row, which is the wrong end for a control. */
         justifyContent={{ default: "justifyContentFlexEnd" }}
         alignItems={{ default: "alignItemsCenter" }}
         gap={{ default: "gapMd" }}
-        flexWrap={{ default: "wrapReverse" }}
+        flexWrap={{ default: "nowrap" }}
         className="agm-plan-topline"
       >
-        {/* The half that gives way. Prose wraps to a second line inside its own
-            column, which keeps the row one row; the controls beside it have a
-            width they cannot give up without becoming unreadable. */}
+        {/* Short enough to sit beside three controls at the width the page is
+            usually read at, and free to wrap where it is not: a translation
+            that runs half again as long stays on the same line and takes two
+            of them. */}
         <FlexItem grow={{ default: "grow" }} className="agm-plan-topline-intro">
           <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
-            {t(
-              "Structure of the new system, including disks to use and additional devices like LVM volume groups.",
-            )}
+            {t("Which disks to use, and additional devices like LVM volume groups.")}
           </Text>
         </FlexItem>
-        <FlexItem>
+        <FlexItem className="agm-plan-topline-controls">
           <Flex
             alignItems={{ default: "alignItemsCenter" }}
             gap={{ default: "gapSm" }}
