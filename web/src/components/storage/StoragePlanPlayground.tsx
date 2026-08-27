@@ -6002,13 +6002,11 @@ const PLAN_CSS = `
   margin-block-start: var(--pf-t--global--spacer--xs);
 }
 
-/* The rule runs the width of the measure the sentence is read at, not the
-   width of the window: it closes the report, and a line across a monitor
-   divides the page instead. */
+/* Short and centred. A rule the width of the text above it divides the page
+   in two; this one closes a paragraph of it and lets the actions under it read
+   as the answer to what was just reported. */
 .agm-plan-headline-rule {
-  align-self: stretch;
-  max-width: 44rem;
-  width: 100%;
+  width: 8rem;
   margin-inline: auto;
 }
 
@@ -7566,34 +7564,34 @@ const PlanHeadline = ({
           {count && <div className="agm-plan-headline-count">{count}</div>}
         </FlexItem>
       )}
+      {/* Directly under what the page reports, and in the same place whatever
+          shape the page takes: they are about the installation rather than
+          about anything the page names, and a reader who learned where they
+          are on one disk finds them on eight. */}
+      {settings && <FlexItem>{settings}</FlexItem>}
       {(primary || secondary) && (
-        <FlexItem>
-          {/* Centred on the line rather than at its top: the three are buttons
-              of different heights, and a menu toggle sitting a few pixels above
-              the buttons beside it reads as a fourth row. */}
-          <Flex
-            gap={{ default: "gapSm" }}
-            alignItems={{ default: "alignItemsCenter" }}
-            justifyContent={{ default: "justifyContentCenter" }}
-            flexWrap={{ default: "wrap" }}
-          >
-            {primary}
-            {secondary}
-          </Flex>
-        </FlexItem>
-      )}
-      {/* Last, and in the same place whatever shape the page takes: they are
-          about the installation rather than about anything the page names, and
-          a reader who learned where they are on one disk finds them on eight.
-
-          Ruled off from what the page reports, since these two are settings
-          about the installation rather than another line of the report. */}
-      {settings && (
         <>
+          {/* A short rule, centred: what is above it is the page reporting,
+              what is below it is what the reader can do about it. Run the
+              width of the text it follows, it would divide the page rather
+              than close a paragraph of it. */}
           <FlexItem className="agm-plan-headline-rule">
             <Divider />
           </FlexItem>
-          <FlexItem>{settings}</FlexItem>
+          <FlexItem>
+            {/* Centred on the line rather than at its top: the three are
+                buttons of different heights, and a menu toggle sitting a few
+                pixels above the buttons beside it reads as a fourth row. */}
+            <Flex
+              gap={{ default: "gapSm" }}
+              alignItems={{ default: "alignItemsCenter" }}
+              justifyContent={{ default: "justifyContentCenter" }}
+              flexWrap={{ default: "wrap" }}
+            >
+              {primary}
+              {secondary}
+            </Flex>
+          </FlexItem>
         </>
       )}
     </Flex>
