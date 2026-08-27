@@ -111,6 +111,7 @@ import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
 import ConfigureDeviceMenu from "~/components/storage/ConfigureDeviceMenu";
+import ConnectedDevicesMenu from "~/components/storage/ConnectedDevicesMenu";
 import ProposalActions from "~/components/storage/ProposalActions";
 import ProposalResultTable from "~/components/storage/ProposalResultTable";
 import DevicesManager from "~/model/storage/devices-manager";
@@ -118,7 +119,7 @@ import SearchedDeviceMenu from "~/components/storage/SearchedDeviceMenu";
 import SearchedVolumeGroupMenu from "~/components/storage/SearchedVolumeGroupMenu";
 import Text from "~/components/core/Text";
 import configModel from "~/model/storage/config-model";
-import { activateStorageAction, putStorageModel, solveStorageModel } from "~/api";
+import { putStorageModel, solveStorageModel } from "~/api";
 import {
   baseName,
   deviceChildren,
@@ -142,8 +143,6 @@ import { useAnnounce } from "~/context/announcer";
 import { useIssues as useRealIssues } from "~/hooks/model/issue";
 import { useReset as useRealReset } from "~/hooks/model/config/storage";
 import { useSystem as useBootloaderSystem } from "~/hooks/model/system/bootloader";
-import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
-import { useSystem as useZFCPSystem } from "~/hooks/model/system/zfcp";
 import {
   useAvailableDevices as useRealAvailableDevices,
   useDevice as useRealDevice,
@@ -7892,8 +7891,6 @@ function StoragePlan({
   const announce = useAnnounce();
   const reset = useReset();
   const navigate = useNavigate();
-  const dasdSystem = useDASDSystem();
-  const zfcpSystem = useZFCPSystem();
   /* The panel comes over the list rather than sharing the width with it. At
      four fifths there is no share left to give: a list squeezed into the last
      fifth is neither readable nor worth keeping on screen, and the reader still
@@ -8305,39 +8302,9 @@ function StoragePlan({
                     { title: t("Encryption"), onClick: goToEncryption },
                   ]
                 : []),
-              {
-                title: t("Rescan devices"),
-                description: t("Update available disks and activate crypt devices"),
-                onClick: () => activateStorageAction(),
-                hasDividerBefore: isNarrow,
-              },
-              /* The technologies live here rather than under "Add more
-                 devices": they do not add anything to the plan, they make
-                 devices exist for it to use, which is what rescanning does
-                 too. Each appears only where the machine has it. */
-              {
-                title: t("Configure iSCSI"),
-                description: t("Discover and connect to iSCSI targets"),
-                onClick: () => navigate(PATHS.iscsi.root),
-              },
-              ...(zfcpSystem
-                ? [
-                    {
-                      title: t("Configure zFCP"),
-                      description: t("Activate zFCP disks"),
-                      onClick: () => navigate(PATHS.zfcp.root),
-                    },
-                  ]
-                : []),
-              ...(dasdSystem
-                ? [
-                    {
-                      title: t("Configure DASD"),
-                      description: t("Activate and format DASD devices"),
-                      onClick: () => navigate(PATHS.dasd),
-                    },
-                  ]
-                : []),
+              /* Alone, and about this configuration rather than about the
+                 machine: everything that manages what the machine has is in
+                 the page header, where management belongs. */
               {
                 title: t("Reset to defaults"),
                 description: t(
@@ -8345,7 +8312,7 @@ function StoragePlan({
                 ),
                 onClick: () => reset(),
                 isDanger: true,
-                hasDividerBefore: true,
+                hasDividerBefore: isNarrow,
               },
             ]}
           />
@@ -8487,6 +8454,11 @@ export default function StoragePlanPlayground(): React.ReactNode {
   return (
     <Page
       breadcrumbs={[{ label: t("Storage") }]}
+      /* Management, not settings: rescanning and the technologies do not change
+         the plan, they change what the machine has for a plan to use. That
+         belongs to the page rather than to the configuration under it, which is
+         where the proposal page has always kept it. */
+      additionalContent={<ConnectedDevicesMenu />}
       /* What the real storage page does: every edit rewrites the whole model,
        * and this shields the interface until the proposal has caught up. */
       progress={{
