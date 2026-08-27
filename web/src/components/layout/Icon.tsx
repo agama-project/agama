@@ -39,6 +39,10 @@ import Close from "@icons/close.svg?component";
 import DragIndicator from "@icons/drag_indicator.svg?component";
 import Terminal from "@icons/terminal.svg?component";
 import Compress from "@icons/compress.svg?component";
+import Block from "@icons/block.svg?component";
+import Bolt from "@icons/bolt.svg?component";
+import LockOpen from "@icons/lock_open.svg?component";
+import Tune from "@icons/tune.svg?component";
 import Storage from "@icons/storage.svg?component";
 import Stacks from "@icons/stacks.svg?component";
 import WebStories from "@icons/web_stories.svg?component";
@@ -162,7 +166,11 @@ const icons = {
   routine: Routine,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
+  block: Block,
+  bolt: Bolt,
   compress: Compress,
+  lock_open: LockOpen,
+  tune: Tune,
   stacks: Stacks,
   storage: Storage,
   web_stories: WebStories,

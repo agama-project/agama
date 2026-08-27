@@ -142,6 +142,8 @@ import { useAnnounce } from "~/context/announcer";
 import { useIssues as useRealIssues } from "~/hooks/model/issue";
 import { useReset as useRealReset } from "~/hooks/model/config/storage";
 import { useSystem as useBootloaderSystem } from "~/hooks/model/system/bootloader";
+import { useSystem as useDASDSystem } from "~/hooks/model/system/dasd";
+import { useSystem as useZFCPSystem } from "~/hooks/model/system/zfcp";
 import {
   useAvailableDevices as useRealAvailableDevices,
   useDevice as useRealDevice,
@@ -6816,6 +6818,16 @@ const PlanSettings = ({
     return bootDevice?.name ? baseName(bootDevice.name) : t("No disk selected");
   };
 
+  /* The mark says what the value says, so the pair can be recognised before it
+     is read: a lock that is open is not encrypted, and a decision the reader
+     made by hand is not the automatic one. */
+  const bootIcon: React.ComponentProps<typeof Icon>["name"] = (() => {
+    if (mode === "off") return "block";
+    if (mode === "auto") return "bolt";
+    return "tune";
+  })();
+  const isEncrypted = config.encryption !== undefined;
+
   return (
     <Flex
       alignItems={{ default: "alignItemsCenter" }}
@@ -6823,12 +6835,13 @@ const PlanSettings = ({
       flexWrap={{ default: "wrap" }}
     >
       <FlexItem>
-        <span className="agm-plan-muted">{t("Boot")}</span>{" "}
+        <Icon name={bootIcon} size="xs" /> <span className="agm-plan-muted">{t("Boot")}</span>{" "}
         <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowBoot}>
           {boot()}
         </Button>
       </FlexItem>
       <FlexItem>
+        <Icon name={isEncrypted ? "lock" : "lock_open"} size="xs" />{" "}
         <span className="agm-plan-muted">{t("Encryption")}</span>{" "}
         <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowEncryption}>
           {t(installationEncryption(config))}
@@ -7812,6 +7825,9 @@ function StoragePlan({
   const availableDevices = useAvailableDevices();
   const announce = useAnnounce();
   const reset = useReset();
+  const navigate = useNavigate();
+  const dasdSystem = useDASDSystem();
+  const zfcpSystem = useZFCPSystem();
   /* The panel comes over the list rather than sharing the width with it. At
      four fifths there is no share left to give: a list squeezed into the last
      fifth is neither readable nor worth keeping on screen, and the reader still
@@ -8192,6 +8208,33 @@ function StoragePlan({
                 onClick: () => activateStorageAction(),
                 hasDividerBefore: isNarrow,
               },
+              /* The technologies live here rather than under "Add more
+                 devices": they do not add anything to the plan, they make
+                 devices exist for it to use, which is what rescanning does
+                 too. Each appears only where the machine has it. */
+              {
+                title: t("Configure iSCSI"),
+                description: t("Discover and connect to iSCSI targets"),
+                onClick: () => navigate(PATHS.iscsi.root),
+              },
+              ...(zfcpSystem
+                ? [
+                    {
+                      title: t("Configure zFCP"),
+                      description: t("Activate zFCP disks"),
+                      onClick: () => navigate(PATHS.zfcp.root),
+                    },
+                  ]
+                : []),
+              ...(dasdSystem
+                ? [
+                    {
+                      title: t("Configure DASD"),
+                      description: t("Activate and format DASD devices"),
+                      onClick: () => navigate(PATHS.dasd),
+                    },
+                  ]
+                : []),
               {
                 title: t("Reset to defaults"),
                 description: t(
