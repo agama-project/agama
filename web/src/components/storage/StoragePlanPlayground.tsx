@@ -7320,9 +7320,15 @@ const PlanOverview = ({
       </FlexItem>
       {/* After the list, because it adds to the list: a control that appends
           belongs at the end of what it appends to, and above it the control
-          stands between the sentence and the entries that sentence is about. */}
+          stands between the sentence and the entries that sentence is about.
+
+          At the foot of the page it opens upwards, since what is under it is
+          the edge of the window. */}
       <FlexItem>
-        <ConfigureDeviceMenu />
+        <ConfigureDeviceMenu
+          label={t("Add more devices")}
+          popperProps={{ position: "left", direction: "up" }}
+        />
       </FlexItem>
     </Flex>
   );

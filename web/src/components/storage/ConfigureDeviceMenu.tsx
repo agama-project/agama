@@ -39,6 +39,8 @@ import { isDrive, isMd, isVolumeGroup } from "~/model/storage/device";
 import configModel from "~/model/storage/config-model";
 import { Icon } from "../layout";
 import type { Storage } from "~/model/system";
+import type { MenuButtonProps } from "~/components/core/MenuButton";
+import type { TranslatedString } from "~/i18n";
 
 type AddDeviceMenuItemProps = {
   /** Whether some of the available devices is an MD RAID */
@@ -127,7 +129,17 @@ const AddDeviceMenuItem = ({
  * Menu that provides options for users to configure storage drives
  *
  */
-export default function ConfigureDeviceMenu(): React.ReactNode {
+export type ConfigureDeviceMenuProps = {
+  /** What the toggle says. Defaults to the wording the storage page uses. */
+  label?: TranslatedString;
+  /** Where the menu opens, for callers whose toggle sits against an edge. */
+  popperProps?: MenuButtonProps["menuProps"]["popperProps"];
+};
+
+export default function ConfigureDeviceMenu({
+  label,
+  popperProps = { position: "left" },
+}: ConfigureDeviceMenuProps = {}): React.ReactNode {
   const [deviceSelectorOpen, setDeviceSelectorOpen] = useState(false);
   const openDeviceSelector = () => setDeviceSelectorOpen(true);
   const closeDeviceSelector = () => setDeviceSelectorOpen(false);
@@ -166,9 +178,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
       <MenuButton
         menuProps={{
           "aria-label": _("Configure device menu"),
-          popperProps: {
-            position: "left",
-          },
+          popperProps,
         }}
         toggleProps={{ variant: "plain" }}
         items={[
@@ -191,7 +201,7 @@ export default function ConfigureDeviceMenu(): React.ReactNode {
         ]}
       >
         <Flex alignItems={{ default: "alignItemsCenter" }} gap={{ default: "gapSm" }}>
-          <Icon name="add_circle" /> {_("More devices")}
+          <Icon name="add_circle" /> {label || _("More devices")}
         </Flex>
       </MenuButton>
       {deviceSelectorOpen && (
