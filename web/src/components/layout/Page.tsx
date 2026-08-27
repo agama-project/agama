@@ -20,8 +20,8 @@
  * find current contact information at www.suse.com.
  */
 
-import React, { Suspense, useId } from "react";
-import { Outlet, useNavigate } from "react-router";
+import React, { useId } from "react";
+import { useNavigate } from "react-router";
 import Link, { LinkProps } from "~/components/core/Link";
 import {
   Button,
@@ -34,9 +34,6 @@ import {
   Divider,
   Flex,
   FlexItem,
-  Masthead,
-  Page as PFPage,
-  PageGroup,
   PageSection,
   PageSectionProps,
   Split,
@@ -44,16 +41,12 @@ import {
   TitleProps,
 } from "@patternfly/react-core";
 import { isEmpty } from "radashi";
-import type { ProgressBackdropProps } from "~/components/core/ProgressBackdrop";
-import ProgressBackdrop from "~/components/core/ProgressBackdrop";
-import Header, { HeaderProps } from "~/components/layout/Header";
-import Loading from "~/components/layout/Loading";
-import InstallerL10nOptions from "~/components/core/InstallerL10nOptions";
-import InstallerOptionsMenu from "~/components/core/InstallerOptionsMenu";
-import ProgressStatusMonitor from "~/components/core/ProgressStatusMonitor";
-import AppearanceSettings from "~/components/core/AppearanceSettings";
-import Questions from "~/components/questions/Questions";
+import MinimalLayout from "~/components/layout/MinimalLayout";
+import StandardLayout from "~/components/layout/StandardLayout";
 import { _, TranslatedString } from "~/i18n";
+
+import type { MinimalLayoutProps } from "~/components/layout/MinimalLayout";
+import type { StandardLayoutProps } from "~/components/layout/StandardLayout";
 
 import textStyles from "@patternfly/react-styles/css/utilities/Text/text";
 
@@ -297,110 +290,19 @@ const Content = ({ children, ...pageSectionProps }: PageSectionProps) => {
 };
 
 /**
- * Props for standard page variant.
- */
-type StandardPageProps = React.PropsWithChildren<
-  HeaderProps & {
-    /** Layout variant to use */
-    variant?: "standard";
-    /** Optional progress tracking configuration */
-    progress?: ProgressBackdropProps;
-
-    /**
-     * Whether the header shows the installation progress status.
-     *
-     * Default: `true`. Turn it off on the pages that report the progress
-     * themselves.
-     */
-    showProgressMonitor?: boolean;
-
-    /**
-     * Whether the localization selector in the header shows its current values
-     * (language and keyboard) next to the icons.
-     *
-     * Default: `false` (icon-only, to save space in the header)
-     */
-    showL10nValues?: boolean;
-  }
->;
-
-/**
- * Props for minimal page variant.
- *
- * The minimal layout renders an empty masthead and nothing but the given
- * content, so it takes no header, progress or questions props.
- */
-type MinimalPageProps = React.PropsWithChildren<{
-  /** Layout variant - minimal layout with empty masthead (e.g., for login pages) */
-  variant: "minimal";
-}>;
-
-/**
  * Props for the `Page` component, one set per layout variant.
- */
-type PageProps = StandardPageProps | MinimalPageProps;
-
-/**
- * Minimal page layout with empty masthead.
  *
- * `agm-minimal-page` keeps the content area evenly spaced on all sides; see
- * that class in `_patternfly-overrides.scss` for why it's needed.
+ * Each variant takes what its layout renders, plus the variant itself.
  */
-const MinimalLayout = ({ children }: Omit<MinimalPageProps, "variant">) => {
-  return (
-    <PFPage isContentFilled masthead={<Masthead />} className="agm-minimal-page">
-      <PageGroup tabIndex={-1} id="main-content">
-        {children}
-      </PageGroup>
-    </PFPage>
-  );
-};
-
-/**
- * Standard page layout with header, questions and optional progress tracking.
- *
- * It also composes the header's trailing content shared by every standard
- * page: any page-specific content first, followed by the default tools (the
- * localization selector, the progress status monitor, the appearance settings,
- * and the installer options menu).
- */
-const StandardLayout = ({
-  progress,
-  children,
-  additionalContent,
-  showProgressMonitor = true,
-  showL10nValues = false,
-  ...headerProps
-}: Omit<StandardPageProps, "variant">) => {
-  const headerContent = (
-    <>
-      {additionalContent}
-      {showProgressMonitor && <ProgressStatusMonitor />}
-      <InstallerL10nOptions showValues={showL10nValues} />
-      <AppearanceSettings />
-      <InstallerOptionsMenu hideLabel />
-    </>
-  );
-
-  return (
-    <PFPage
-      isContentFilled
-      masthead={<Header {...headerProps} additionalContent={headerContent} />}
-    >
-      <Suspense fallback={<Loading />}>
-        {/* The container is the target of the "Skip to content" link, hence it
-            must be focusable. */}
-        <PageGroup tabIndex={-1} id="main-content">
-          {/* Own content when used as a page, the active route when used as a
-              layout. */}
-          {children || <Outlet />}
-          {progress && <ProgressBackdrop {...progress} />}
-        </PageGroup>
-      </Suspense>
-      <Questions />
-    </PFPage>
-  );
-};
+type PageProps =
+  | (StandardLayoutProps & {
+      /** Layout variant to use */
+      variant?: "standard";
+    })
+  | (MinimalLayoutProps & {
+      /** Layout variant - minimal layout with empty masthead (e.g., for login pages) */
+      variant: "minimal";
+    });
 
 /**
  * Root container for Agama pages.
