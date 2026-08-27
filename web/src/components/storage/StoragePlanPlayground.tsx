@@ -708,7 +708,9 @@ const COST_ORDER: Record<CostKind, number> = { destroys: 0, shrinks: 1, keeps: 2
 
 const COST_ICON: Record<CostKind, React.ComponentProps<typeof Icon>["name"]> = {
   destroys: "error_fill",
-  shrinks: "unfold_less",
+  /* What happens to the thing itself: it is squeezed into less room, which is
+     what the mark shows. Folding is what a list does, not a partition. */
+  shrinks: "compress",
   keeps: "check_circle",
 };
 
@@ -2293,7 +2295,12 @@ const SpacePolicySegments = ({
     {/* The group carries the name the row no longer prints: four buttons whose
         text says what each does need saying what they are four of, and a label
         beside them repeats the tab they already sit in. */}
-    <ToggleGroup isFill aria-label={t(SPACE_HEADINGS.terse)} className="agm-plan-space-segments">
+    <ToggleGroup
+      isFill
+      isCompact
+      aria-label={t(SPACE_HEADINGS.terse)}
+      className="agm-plan-space-segments"
+    >
       {BULK_POLICIES.map((policy) => (
         <ToggleGroupItem
           key={policy}

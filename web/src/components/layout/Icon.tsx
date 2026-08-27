@@ -38,6 +38,7 @@ import ClearAll from "@icons/clear_all.svg?component";
 import Close from "@icons/close.svg?component";
 import DragIndicator from "@icons/drag_indicator.svg?component";
 import Terminal from "@icons/terminal.svg?component";
+import Compress from "@icons/compress.svg?component";
 import Storage from "@icons/storage.svg?component";
 import Stacks from "@icons/stacks.svg?component";
 import WebStories from "@icons/web_stories.svg?component";
@@ -161,6 +162,7 @@ const icons = {
   routine: Routine,
   search_off: SearchOff,
   settings_ethernet: SettingsEthernet,
+  compress: Compress,
   stacks: Stacks,
   storage: Storage,
   web_stories: WebStories,
