@@ -107,6 +107,7 @@ import {
   Title,
 } from "@patternfly/react-core";
 import Icon from "~/components/layout/Icon";
+import Interpolate from "~/components/core/Interpolate";
 import NestedContent from "~/components/core/NestedContent";
 import Page from "~/components/core/Page";
 import DeviceSelectorModal from "~/components/storage/DeviceSelectorModal";
@@ -213,8 +214,6 @@ type DeviceRow = "hidden" | "shown";
 type StatementRule = "between" | "all" | "none";
 /** Which shape the page in front of the sheet takes. */
 type PageShape = "summary" | "list";
-/** Where the facts about the device read: on the sentence, or under it. */
-type TitleFacts = "under" | "inline";
 /** Whether the summary of a many entry plan repeats what the list under it says. */
 type OverviewCosts = "hidden" | "shown";
 /** Whether the consequences read one per line, or as one run of phrases. */
@@ -223,8 +222,6 @@ type CostLayout = "stacked" | "inline";
 type SummarySpace = "shown" | "hidden";
 /** How the one device page reports what the plan costs. */
 type SummaryStyle = "sentence" | "lines";
-/** The mark over a plan of more than one device. */
-type PlanIcon = "storage" | "stacks" | "web_stories" | "workspaces";
 /** Where the two machine wide decisions are read. */
 type SettingsPlace = "top" | "bottom";
 /** Which machine the page reads: this one, or one of the scenarios. */
@@ -261,12 +258,10 @@ type Variants = {
   rowNote: RowNote;
   noteColor: NoteColor;
   page: PageShape;
-  titleFacts: TitleFacts;
   overviewCosts: OverviewCosts;
   costLayout: CostLayout;
   summaryStyle: SummaryStyle;
   summarySpace: SummarySpace;
-  planIcon: PlanIcon;
   settingsPlace: SettingsPlace;
   data: DataSource;
   panelMode: PanelMode;
@@ -314,9 +309,6 @@ const DEFAULT_VARIANTS: Variants = {
      memory. The summary only fits a plan of one entry; anything longer reads
      as the list until the index exists. */
   page: "summary",
-  /* Under the sentence, which now says what the device is for rather than
-     naming it alone. */
-  titleFacts: "under",
   /* Hidden while the list is under it, since the list has a column for the
      same fact and reads it per device. Worth looking at both ways: the count
      over the whole plan is the one thing the list cannot say. */
@@ -332,9 +324,6 @@ const DEFAULT_VARIANTS: Variants = {
      read. An experiment: it is the one setting a single disk reader is likely
      to want, and the sheet is a click away for everything else. */
   summarySpace: "shown",
-  /* Stacks: things of the same kind, one behind the other, which is what a
-     plan of several devices looks like. The other three are one switch away. */
-  planIcon: "stacks",
   /* After the actions, at the foot of the page: they are read once and then
      left alone, and putting them first spends the top of the page on what the
      reader is least likely to change. Beside the installation menu is one
@@ -380,12 +369,10 @@ type PlanApi = {
   rowNote: (mode: RowNote) => void;
   noteColor: (mode: NoteColor) => void;
   page: (shape: PageShape) => void;
-  titleFacts: (mode: TitleFacts) => void;
   overviewCosts: (mode: OverviewCosts) => void;
   costLayout: (mode: CostLayout) => void;
   summaryStyle: (mode: SummaryStyle) => void;
   summarySpace: (mode: SummarySpace) => void;
-  planIcon: (name: PlanIcon) => void;
   settingsPlace: (mode: SettingsPlace) => void;
   data: (source: DataSource) => void;
   panelMode: (mode: PanelMode) => void;
@@ -5886,12 +5873,59 @@ const PLAN_CSS = `
     var(--pf-t--global--motion--timing-function--default, ease-in-out);
 }
 
+/* The column every state of the page opens with. What the empty state used to
+   give it and it still needs: room above, and a measure narrow enough that a
+   sentence is read in one sweep rather than scanned across a monitor. */
+.agm-plan-headline {
+  padding-block: var(--pf-t--global--spacer--xl);
+  text-align: center;
+}
+
+.agm-plan-headline-measure {
+  max-width: 44rem;
+}
+
+/* The sentence is the page's own heading and reads as one. Its weight is the
+   framework's, not a size of ours. */
+.agm-plan-headline-title {
+  text-wrap: balance;
+}
+
+/* A name and a size are a value set into a sentence, and the sentence is a
+   heading: at the heading's own size and weight the monospace reads as
+   something to press. Smaller and at body weight it reads as what it is, a
+   value quoted inside the words about it, and the face is what tells it apart
+   rather than a border or a colour.
+
+   Kept whole, since a name and its size are one value and a line break between
+   them makes two. */
+.agm-plan-headline-device {
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: 0.85em;
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  white-space: nowrap;
+}
+
+/* The size is a fact about the name rather than part of it, so it is not set
+   as a name: the parentheses hold it apart, and the weight of the heading
+   around it is not what the reader needs on a number. */
+.agm-plan-headline-size {
+  font-size: 0.85em;
+  font-weight: var(--pf-t--global--font--weight--body--default);
+  white-space: nowrap;
+}
+
+/* Under the consequence rather than beside it: the sentence says what happens
+   and the count says how much of it, and a reader takes them in that order. */
+.agm-plan-headline-count {
+  margin-block-start: var(--pf-t--global--spacer--xs);
+}
+
 /* The room a summary keeps under it is the room before whatever it introduces,
    and a list that starts a screen away from the sentence about it reads as a
-   second page. Set through PatternFly's own property rather than over its
-   padding rule. */
+   second page. */
 .agm-plan-headline-tight {
-  --pf-v6-c-empty-state--PaddingBlockEnd: var(--pf-t--global--spacer--sm);
+  padding-block-end: var(--pf-t--global--spacer--sm);
 }
 
 /* Out of reach, and visibly so: inert takes the page out of the tab order and
@@ -5907,9 +5941,9 @@ const PLAN_CSS = `
 
 /* Centring on the cross axis has no way to overflow politely: content wider
    than the strip loses its start, which is where a heading begins. Stretched,
-   it wraps and stays whole, and the text is centred by the component anyway. */
-.agm-plan-page-narrow .pf-v6-c-empty-state {
-  align-items: stretch;
+   it wraps and stays whole, and the text stays centred by the rule above. */
+.agm-plan-page-narrow .agm-plan-headline-measure {
+  max-width: 100%;
 }
 
 .agm-plan-covered {
@@ -6964,6 +6998,8 @@ const systemsOn = (decided: Decided[]): string[] =>
  */
 type SummaryLine = {
   kind: CostKind;
+  /** What the line destroys, set in bold ahead of the rest of it. */
+  destroys?: string;
   /** What the line is about, and the way into the half of the sheet that holds it. */
   subject: string;
   /** What becomes of it, in the sheet's own terms, read after the subject. */
@@ -7056,7 +7092,11 @@ const summarySentence = (
   const deleted = ending(decided, "delete");
   const formatted = ending(decided, "format");
   const shrunk = ending(decided, "shrinkTo");
-  const clauses: string[] = [];
+  /* Kept apart from the rest of the sentence so it can be set in bold: what is
+     destroyed is the half a reader has to see, and bold is what says so now
+     that the line has no colour and no mark. */
+  const destructive: string[] = [];
+  const rest: string[] = [];
 
   /* What is about to be lost, named while a name is worth more than a count. */
   const lost = (group: Decided[]): string => {
@@ -7068,12 +7108,12 @@ const summarySentence = (
     return t(`${group.length} ${group.length === 1 ? "partition" : "partitions"}`);
   };
 
-  if (deleted.length) clauses.push(t(`delete ${lost(deleted)}`));
-  if (formatted.length) clauses.push(t(`reformat ${lost(formatted)}`));
-  if (shrunk.length) clauses.push(t(`shrink ${lost(shrunk)}`));
+  if (deleted.length) destructive.push(t(`delete ${lost(deleted)}`));
+  if (formatted.length) destructive.push(t(`reformat ${lost(formatted)}`));
+  if (shrunk.length) rest.push(t(`shrink ${lost(shrunk)}`));
 
   if (device.filesystem) {
-    clauses.push(
+    rest.push(
       device.mountPath
         ? t(
             `format the whole device as ${filesystemType(device.filesystem)} for ${device.mountPath}`,
@@ -7081,21 +7121,27 @@ const summarySentence = (
         : t(`format the whole device as ${filesystemType(device.filesystem)}`),
     );
   } else if (created.length) {
-    clauses.push(t(`create ${created.length} new ${created.length === 1 ? "volume" : "volumes"}`));
+    rest.push(t(`create ${created.length} new ${created.length === 1 ? "volume" : "volumes"}`));
   }
 
   const kind: CostKind = (() => {
-    if (deleted.length || formatted.length) return "destroys";
+    if (destructive.length) return "destroys";
     if (shrunk.length) return "shrinks";
     return "keeps";
   })();
 
+  const capitalised = (text: string): string => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+
   /* Nothing to report is itself a report: a device the plan leaves alone. */
-  const sentence = clauses.length ? formatList(clauses) : t("leave this device as it is");
+  if (!destructive.length) {
+    const sentence = rest.length ? formatList(rest) : t("leave this device as it is");
+    return { kind, subject: t(`${capitalised(sentence)}.`), tail: "" };
+  }
 
   return {
     kind,
-    subject: t(`${sentence.charAt(0).toUpperCase()}${sentence.slice(1)}.`),
+    destroys: t(capitalised(formatList(destructive))),
+    subject: rest.length ? t(`, ${formatList(rest)}.`) : t("."),
     tail: "",
   };
 };
@@ -7181,6 +7227,36 @@ const summaryLines = (
 };
 
 /**
+ * How much the installer will do, and the way to the whole picture.
+ *
+ * A count is a fact and a link at once: a reader wondering whether fourteen is
+ * a lot presses the number that worries them, and lands on the list of what
+ * those fourteen are. "See all actions" would be a label for a button, and a
+ * button here is what the page is trying not to have.
+ *
+ * Subvolume actions are left out, the way the list itself folds them away: they
+ * are the file system's business rather than the machine's, and counting them
+ * turns fourteen into ninety.
+ */
+const PlanCount = ({
+  actions,
+  onShowResult,
+}: {
+  actions: Proposal.Action[];
+  onShowResult: () => void;
+}) => {
+  const total = actions.filter((action) => !action.subvol).length;
+
+  if (!total) return null;
+
+  return (
+    <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowResult}>
+      {t(`${total} ${total === 1 ? "action" : "actions"} in total`)}
+    </Button>
+  );
+};
+
+/**
  * What becomes of the subject, and the way to see it.
  *
  * The term is the control rather than the subject: "to be deleted" names the
@@ -7206,37 +7282,36 @@ const SummaryDetail = ({
 };
 
 /**
- * How every state of this page opens: a mark, a sentence, and what it costs.
+ * How every state of this page opens: a sentence, what it costs, and the way on.
  *
- * Laid out with PatternFly's `EmptyState`, which is its arrangement of exactly
- * those parts: centred, bounded to a readable measure, and sized by the
- * framework rather than by rules of ours. The component says nothing about
- * emptiness to a screen reader, so a page with content loses nothing by being
- * built with it.
+ * A plain centred column rather than PatternFly's `EmptyState`. The empty state
+ * is an arrangement for a page with nothing on it, and it says so with
+ * everything it does: a mark over the heading, the measure it bounds the body
+ * to, the room it keeps around a page that has nothing to fill it. This page
+ * has content, and borrowing that arrangement made it read as though it did
+ * not.
+ *
+ * What is kept is what the arrangement was for: one column, centred, bounded to
+ * a readable measure, with the sentence first and the actions last.
  */
 const PlanHeadline = ({
   title,
-  icon = "hard_drive",
   isNarrow = false,
-  facts,
   body,
   control,
   notice,
   isTight = false,
   costsLabel,
   lines,
+  count,
   onGoTo,
   primary,
   secondary,
 }: {
   /** The sentence the page opens with, and whatever in it is a control. */
   title: React.ReactNode;
-  /** The mark over the sentence. */
-  icon?: React.ComponentProps<typeof Icon>["name"];
   /** Read in a strip beside the sheet rather than across the page. */
   isNarrow?: boolean;
-  /** What the device is, in one phrase. */
-  facts?: string;
   /** A line about what the reader does next, where the page has more to it. */
   body?: React.ReactNode;
   /** A decision offered where its consequence is read. */
@@ -7251,16 +7326,17 @@ const PlanHeadline = ({
   costsLabel: string;
   /** Empty where what the plan costs is read under the summary rather than in it. */
   lines: SummaryLine[];
+  /** How much the installer will do, and the way into the whole picture. */
+  count?: React.ReactNode;
   /** Opens the half of the sheet a line is about, where the page has one entry. */
   onGoTo?: (tab: PanelTab) => void;
   /** The one action the page is for. */
   primary?: React.ReactNode;
-  /** Everything else, which PatternFly sets as links under the primary one. */
+  /** Everything else, read after it on the same row. */
   secondary?: React.ReactNode;
 }) => {
-  const { titleFacts, costLayout } = useVariants();
+  const { costLayout } = useVariants();
   const costsId = useId();
-  const inline = titleFacts === "inline" && facts;
 
   const lineList = (
     /* The subject leads and the term follows it, the way the sheet's own second
@@ -7281,7 +7357,7 @@ const PlanHeadline = ({
       aria-labelledby={costsId}
     >
       {lines.map((line, at) => (
-        <FlexItem component="li" key={line.tail}>
+        <FlexItem component="li" key={line.tail || line.subject}>
           <Flex
             gap={{ default: "gapSm" }}
             alignItems={{ default: "alignItemsCenter" }}
@@ -7293,10 +7369,22 @@ const PlanHeadline = ({
                 ·
               </FlexItem>
             )}
-            <FlexItem className={COST_CLASS[line.kind]}>
-              <Icon name={COST_ICON[line.kind]} className={COST_ICON_CLASS[line.kind]} size="xs" />
-            </FlexItem>
-            <FlexItem className={COST_CLASS[line.kind]}>
+            {/* The consequence sentence carries what it destroys in its own
+                words, in bold. A mark and a colour over the whole line put a
+                shrink beside a deletion and made every state of this page look
+                like an alert. The per consequence lines keep both: they are one
+                subject each, and the mark is what tells them apart. */}
+            {line.tail && (
+              <FlexItem className={COST_CLASS[line.kind]}>
+                <Icon
+                  name={COST_ICON[line.kind]}
+                  className={COST_ICON_CLASS[line.kind]}
+                  size="xs"
+                />
+              </FlexItem>
+            )}
+            <FlexItem className={line.tail ? COST_CLASS[line.kind] : undefined}>
+              {line.destroys && <Text isBold>{line.destroys}</Text>}
               {line.subject}
               {line.tail && (
                 <>
@@ -7312,49 +7400,55 @@ const PlanHeadline = ({
   );
 
   return (
-    <EmptyState
-      variant={isNarrow ? "sm" : "lg"}
-      headingLevel="h2"
-      className={isTight ? "agm-plan-headline-tight" : undefined}
-      titleText={
-        <>
-          {title}
-          {inline && <span className="agm-plan-panel-facts"> {facts}</span>}
-        </>
-      }
-      icon={() => <Icon name={icon} />}
+    <Flex
+      direction={{ default: "column" }}
+      alignItems={{ default: isNarrow ? "alignItemsStretch" : "alignItemsCenter" }}
+      gap={{ default: "gapMd" }}
+      className={["agm-plan-headline", isTight ? "agm-plan-headline-tight" : ""]
+        .filter(Boolean)
+        .join(" ")}
     >
-      <EmptyStateBody>
-        {/* Under the sentence and set the way the sheet sets a fact about a
-            device: small, subtle and monospaced, so a name reads as a name. */}
-        {facts && !inline && <div className="agm-row-note">{facts}</div>}
+      <FlexItem className="agm-plan-headline-measure">
+        <Title headingLevel="h2" size={isNarrow ? "lg" : "xl"} className="agm-plan-headline-title">
+          {title}
+        </Title>
         {body && <Content component="p">{body}</Content>}
-        {/* Above the sentence it changes, so the reader sees what it did. */}
-        {control && <div className="agm-plan-summary-control">{control}</div>}
-        {notice && <div className="agm-plan-summary-notice">{notice}</div>}
-        {/* The lines are a group with a name of its own, so a reader moving by
-            heading reaches them as one thing rather than as loose text under
-            the sentence. Nothing here is worth a visible heading: each line
-            says what it is. */}
-        {!notice && lines.length > 0 && (
-          <h3 className="pf-v6-u-screen-reader" id={costsId}>
-            {costsLabel}
-          </h3>
-        )}
-        {!notice && lineList}
-      </EmptyStateBody>
+      </FlexItem>
+      {/* Above the consequence it changes, so the reader sees what it did. */}
+      {control && <FlexItem className="agm-plan-summary-control">{control}</FlexItem>}
+      {notice && (
+        <FlexItem className="agm-plan-summary-notice agm-plan-headline-measure">{notice}</FlexItem>
+      )}
+      {/* The lines are a group with a name of its own, so a reader moving by
+          heading reaches them as one thing rather than as loose text under
+          the sentence. Nothing here is worth a visible heading: each line
+          says what it is. */}
+      {!notice && (lines.length > 0 || count) && (
+        <FlexItem className="agm-plan-headline-measure">
+          {lines.length > 0 && (
+            <h3 className="pf-v6-u-screen-reader" id={costsId}>
+              {costsLabel}
+            </h3>
+          )}
+          {lines.length > 0 && lineList}
+          {/* A count is a fact and a link at once: a reader wondering whether
+              fourteen is a lot presses the number that worries them. */}
+          {count && <div className="agm-plan-headline-count">{count}</div>}
+        </FlexItem>
+      )}
       {(primary || secondary) && (
-        <EmptyStateFooter>
-          {/* One group, so the two read as a pair on one line. PatternFly's
-              second group sets its actions as links on a row of their own,
-              which spends a line on one link and reads as a second offer. */}
-          <EmptyStateActions>
+        <FlexItem>
+          <Flex
+            gap={{ default: "gapSm" }}
+            justifyContent={{ default: "justifyContentCenter" }}
+            flexWrap={{ default: "wrap" }}
+          >
             {primary}
             {secondary}
-          </EmptyStateActions>
-        </EmptyStateFooter>
+          </Flex>
+        </FlexItem>
       )}
-    </EmptyState>
+    </Flex>
   );
 };
 
@@ -7424,6 +7518,7 @@ const PlanSummary = ({
   index,
   isNarrow,
   onOpenTab,
+  onShowResult,
 }: {
   collection: PartitionableCollection;
   index: number;
@@ -7431,6 +7526,8 @@ const PlanSummary = ({
   isNarrow: boolean;
   /** Opens the sheet, on the half the reader asked about. */
   onOpenTab: (tab: PanelTab) => void;
+  /** Opens the whole picture: what the installer does, and what it leaves. */
+  onShowResult: () => void;
 }) => {
   const config = useConfigModel();
   const device = config[collection]?.[index] as Partitionable | undefined;
@@ -7460,17 +7557,50 @@ const PlanSummary = ({
      fact the reader would otherwise have to open the sheet to learn. */
   const boots = bootRoleOf(config, device.name) !== "none";
 
+  /* What the device is and how big it is belong in the sentence about it, not
+     on a second line under it. Everything else the reader might want, the
+     by-path name and the partition table, is in the sheet's header, one click
+     away and where a reader who wants it goes.
+
+     Two placeholders rather than one value made of both: the name is a name and
+     the size is a fact about it, they are set differently, and a translation is
+     free to put them in whichever order the language wants. The numbers are
+     what keep each one wrapped as itself when it does. */
+  const size = systemDevice?.block?.size ? deviceSize(systemDevice.block.size) : null;
+  const sentence = (() => {
+    if (collection === "mdRaids") {
+      if (!size) {
+        return boots
+          ? t("Use RAID %s as installation and boot device")
+          : t("Use RAID %s as installation device");
+      }
+      return boots
+        ? t("Use RAID %1$s (%2$s) as installation and boot device")
+        : t("Use RAID %1$s (%2$s) as installation device");
+    }
+    if (!size) {
+      return boots
+        ? t("Use disk %s as installation and boot device")
+        : t("Use disk %s as installation device");
+    }
+    return boots
+      ? t("Use disk %1$s (%2$s) as installation and boot device")
+      : t("Use disk %1$s (%2$s) as installation device");
+  })();
+
   return (
     <PlanHeadline
       isNarrow={isNarrow}
       /* The sentence is read, not pressed: what a reader does about this device
          is offered under it, where the page keeps its actions. */
       title={
-        boots
-          ? t(`Use ${name} as installation and boot device`)
-          : t(`Use ${name} as installation device`)
+        <Interpolate sentence={sentence}>
+          {[
+            () => <code className="agm-plan-headline-device">{name}</code>,
+            () => <span className="agm-plan-headline-size">{size}</span>,
+          ].slice(0, size ? 2 : 1)}
+        </Interpolate>
       }
-      facts={partitionableDescription(systemDevice)}
       control={
         summarySpace === "shown" && (systemDevice?.partitions || []).length > 0 ? (
           <SpacePolicyControl
@@ -7488,6 +7618,7 @@ const PlanSummary = ({
       }
       costsLabel={t(`What happens to ${name}`)}
       lines={lines}
+      count={<PlanCount actions={actions} onShowResult={onShowResult} />}
       notice={
         notice && <DeviceNotice device={device} systemDevice={systemDevice} fallback={notice} />
       }
@@ -7637,6 +7768,7 @@ const PlanOverview = ({
   onCrossToPanel,
   unconfigured,
   settings,
+  onShowResult,
 }: {
   rows: Selection[];
   /** Read in a strip beside the sheet rather than across the page. */
@@ -7645,6 +7777,8 @@ const PlanOverview = ({
   onOpen: (selection: Selection) => void;
   onCrossToPanel: () => void;
   unconfigured: Storage.Device[];
+  /** Opens the whole picture: what the installer does, and what it leaves. */
+  onShowResult: () => void;
   /** The two installation decisions, read before the list rather than after
       it: they are about the whole plan, and the list is about its parts. */
   settings?: React.ReactNode;
@@ -7654,7 +7788,7 @@ const PlanOverview = ({
   const staging = useStagingDevices();
   const actions = useActions();
   const solver = useSolver();
-  const { overviewCosts, planIcon } = useVariants();
+  const { overviewCosts } = useVariants();
   const notice = usePlanNotice();
   const manager = new DevicesManager(system, staging, actions);
 
@@ -7670,10 +7804,6 @@ const PlanOverview = ({
              is not a list. What the summary says is that the plan takes more
              than one device, which is the thing the list cannot say in a row. */
           title={t("Set up the new system across multiple devices")}
-          /* Not a disk: no single disk is what this page is about. Which mark
-             says "more than one device" best is a question for the eye, so the
-             candidates are one switch apart. */
-          icon={planIcon}
           isTight
           costsLabel={t("What happens to this machine")}
           /* What to do next, said where the reader is looking, rather than as a
@@ -7688,6 +7818,10 @@ const PlanOverview = ({
           lines={
             overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
           }
+          /* The same way in as the one device page offers, in the same place
+             and the same words: a page that shows the big picture on a full
+             disk and hides it on a plan of eight is a page with two shapes. */
+          count={<PlanCount actions={actions} onShowResult={onShowResult} />}
           notice={notice}
         />
       </FlexItem>
@@ -7748,17 +7882,11 @@ const VARIANT_CONTROLS: VariantControl[] = [
     options: ["real", "one-disk-in-use", "empty-disk", "lvm-over-three-disks"],
   },
   { key: "page", label: "Page", options: ["summary", "list"] },
-  { key: "titleFacts", label: "Device facts", options: ["under", "inline"] },
   { key: "overviewCosts", label: "Plan costs", options: ["hidden", "shown"] },
   { key: "costLayout", label: "Cost layout", options: ["stacked", "inline"] },
   { key: "summaryStyle", label: "Cost summary", options: ["sentence", "lines"] },
   { key: "summarySpace", label: "Space on summary", options: ["shown", "hidden"] },
   { key: "settingsPlace", label: "Settings", options: ["bottom", "top"] },
-  {
-    key: "planIcon",
-    label: "Plan mark",
-    options: ["stacks", "storage", "web_stories", "workspaces"],
-  },
   { key: "structure", label: "Panel structure", options: ["blocks", "flat"] },
   { key: "sections", label: "Panel halves", options: ["tabs", "stacked"] },
   { key: "settings", label: "Settings", options: ["beside", "above"] },
@@ -7987,11 +8115,9 @@ function StoragePlan({
             '  rowNote("plain" | "outlined")      the second line under a value as plain text, or boxed',
             '  noteColor("none" | "status")       those lines all subtle, or coloured by what they report',
             '  page("summary" | "list")           a one entry plan as a summary, or as the device list',
-            '  titleFacts("under" | "inline")     the device facts under the sentence, or on it',
             '  overviewCosts("hidden" | "shown")  what a many entry plan costs, over the list that says it per device',
             '  costLayout("stacked" | "inline")   the consequences one per line, or as one run',
             '  settingsPlace("top" | "bottom")    boot and encryption beside the menu, or under the summary',
-            '  planIcon("storage"|"stacks"|"web_stories"|"workspaces")  the mark over a many device plan',
             '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
@@ -8034,11 +8160,9 @@ function StoragePlan({
       rowNote: (rowNote) => patch({ rowNote }),
       noteColor: (noteColor) => patch({ noteColor }),
       page: (page) => patch({ page }),
-      titleFacts: (titleFacts) => patch({ titleFacts }),
       overviewCosts: (overviewCosts) => patch({ overviewCosts }),
       costLayout: (costLayout) => patch({ costLayout }),
       settingsPlace: (settingsPlace) => patch({ settingsPlace }),
-      planIcon: (planIcon) => patch({ planIcon }),
       summaryStyle: (summaryStyle) => patch({ summaryStyle }),
       summarySpace: (summarySpace) => patch({ summarySpace }),
       data: (data) => patch({ data }),
@@ -8207,6 +8331,14 @@ function StoragePlan({
      the two arrangements can be put side by side. */
   const goToBoot = () => navigate(PATHS.editBootDevice);
 
+  const goToResult = () => {
+    setShowsBoot(false);
+    setShowsEncryption(false);
+    setSelectedId(null);
+    setShowsResult(true);
+    setIsPanelOpen(true);
+  };
+
   const goToEncryption = () => {
     setShowsResult(false);
     setShowsBoot(false);
@@ -8228,13 +8360,7 @@ function StoragePlan({
       destructive={destructive}
       onShowBoot={goToBoot}
       onShowEncryption={goToEncryption}
-      onShowResult={() => {
-        setShowsResult(true);
-        setShowsBoot(false);
-        setShowsEncryption(false);
-        setSelectedId(null);
-        setIsPanelOpen(true);
-      }}
+      onShowResult={goToResult}
     />
   );
 
@@ -8253,6 +8379,7 @@ function StoragePlan({
           index={single.index}
           isNarrow={isNarrow}
           onOpenTab={(tab) => goToDevice(single, tab)}
+          onShowResult={goToResult}
         />
       );
     }
@@ -8266,6 +8393,7 @@ function StoragePlan({
         onCrossToPanel={() => panelRef.current?.focus()}
         unconfigured={unconfigured}
         settings={settings}
+        onShowResult={goToResult}
       />
     );
   };
