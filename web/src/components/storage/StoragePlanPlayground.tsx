@@ -7300,7 +7300,7 @@ const PlanOverview = ({
           body={t(
             "Review and configure the entries below. You can change, remove, or add entries as needed.",
           )}
-          secondary={<ConfigureDeviceMenu />}
+
           lines={
             overviewCosts === "shown" ? planLines(config, system, staging, manager, solver) : []
           }
@@ -7317,6 +7317,12 @@ const PlanOverview = ({
           showsAdd={false}
           withMenus
         />
+      </FlexItem>
+      {/* After the list, because it adds to the list: a control that appends
+          belongs at the end of what it appends to, and above it the control
+          stands between the sentence and the entries that sentence is about. */}
+      <FlexItem>
+        <ConfigureDeviceMenu />
       </FlexItem>
     </Flex>
   );
