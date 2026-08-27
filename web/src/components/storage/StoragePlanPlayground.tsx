@@ -7209,7 +7209,12 @@ const PlanSummary = ({
           {/* Beside it rather than under the page: changing the device and
               adding another are the two things a reader does about the device
               the sentence names. */}
-          <ConfigureDeviceMenu label={t("Add more devices")} />
+          <ConfigureDeviceMenu
+            label={t("Add more devices")}
+            /* Aligned on the toggle's trailing edge, so the menu opens back
+               over the page rather than off it. */
+            popperProps={{ position: "right" }}
+          />
         </>
       }
     />
@@ -7403,7 +7408,7 @@ const PlanOverview = ({
       <FlexItem>
         <ConfigureDeviceMenu
           label={t("Add more devices")}
-          popperProps={{ position: "left", direction: "up" }}
+          popperProps={{ position: "right", direction: "up" }}
         />
       </FlexItem>
     </Flex>
