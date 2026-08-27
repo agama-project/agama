@@ -309,11 +309,12 @@ const DEFAULT_VARIANTS: Variants = {
      memory. The summary only fits a plan of one entry; anything longer reads
      as the list until the index exists. */
   page: "summary",
-  /* The one thing the list under it cannot say: what the plan costs taken
-     together. Per device the list already reads it in a column, and a reader
-     arriving at five entries is asking the question they would ask of one.
-     Hiding it is one switch away. */
-  overviewCosts: "shown",
+  /* Hidden. The list under it reads the same consequences per device, in a
+     column, and the summary repeating them over five entries turns the top of
+     the page into a paragraph nobody asked for. What survives is the count,
+     which says how much of it there is and goes red when any of it destroys
+     something. Showing them is one switch away. */
+  overviewCosts: "hidden",
   /* One per line, which is the reading the severity order is for: a reader
      who stops after the first line has stopped at the worst one. The run
      costs less height and asks the reader to find the middot. */
@@ -7378,6 +7379,11 @@ const NameValue = ({ children }: React.PropsWithChildren) => (
  * those fourteen are. "See all actions" would be a label for a button, and a
  * button here is what the page is trying not to have.
  *
+ * It goes red where any of those actions deletes something, which is the one
+ * thing a reader has to know before they read anything else and the reason this
+ * line can replace a paragraph of consequences. The colour is reinforcement:
+ * what it means is said in words a screen reader gets.
+ *
  * Subvolume actions are left out, the way the list itself folds them away: they
  * are the file system's business rather than the machine's, and counting them
  * turns fourteen into ninety.
@@ -7389,13 +7395,24 @@ const PlanCount = ({
   actions: Proposal.Action[];
   onShowResult: () => void;
 }) => {
-  const total = actions.filter((action) => !action.subvol).length;
+  const counted = actions.filter((action) => !action.subvol);
+  const destroys = counted.some((action) => action.delete);
 
-  if (!total) return null;
+  if (!counted.length) return null;
 
   return (
-    <Button variant="link" isInline aria-controls={PANEL_ID} onClick={onShowResult}>
-      {t(`${total} ${total === 1 ? "action" : "actions"} in total`)}
+    <Button
+      variant="link"
+      isInline
+      isDanger={destroys}
+      aria-controls={PANEL_ID}
+      onClick={onShowResult}
+    >
+      {t(`${counted.length} ${counted.length === 1 ? "action" : "actions"} in total`)}
+      {/* What the colour says, for a reader who cannot see it. The visible
+          count stays a count: spelling the caution out beside it is the
+          paragraph this line replaced. */}
+      {destroys && <Text srOnly>{t(", some of which destroy data")}</Text>}
     </Button>
   );
 };
