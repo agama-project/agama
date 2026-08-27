@@ -253,6 +253,36 @@ describe("Interpolate", () => {
     });
   });
 
+  describe("with numbered placeholders", () => {
+    const sentence = (text: string) => (
+      <Interpolate sentence={text}>
+        {[() => <strong>system</strong>, () => <em>vdd</em>]}
+      </Interpolate>
+    );
+
+    it("fills each placeholder from the render function its number names", () => {
+      const { container } = plainRender(sentence("Create %1$s on top of %2$s"));
+
+      expect(container.textContent).toBe("Create system on top of vdd");
+      expect(container.querySelector("strong").textContent).toBe("system");
+      expect(container.querySelector("em").textContent).toBe("vdd");
+    });
+
+    it("keeps each value wrapped in its own content when the order is reversed", () => {
+      const { container } = plainRender(sentence("%2$s holds %1$s"));
+
+      expect(container.textContent).toBe("vdd holds system");
+      expect(container.querySelector("em").textContent).toBe("vdd");
+      expect(container.querySelector("strong").textContent).toBe("system");
+    });
+
+    it("complains about a number with no render function behind it", () => {
+      expect(() => plainRender(sentence("Create %3$s on top of %1$s"))).toThrow(
+        /no render function/,
+      );
+    });
+  });
+
   describe("when children returns null", () => {
     it("renders the surrounding text without the injected node", () => {
       const { container } = plainRender(

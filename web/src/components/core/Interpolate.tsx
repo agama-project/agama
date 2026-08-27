@@ -60,6 +60,11 @@ export type InterpolateProps = {
  *    positional placeholders where the caller supplies the full rendered
  *    content. The render function always receives an empty string.
  *
+ *    They can be numbered, `%1$s` and `%2$s`, and then the number says which
+ *    render function fills them. This is what a sentence with two values of
+ *    different kinds needs: a translation is free to put the device before the
+ *    volume group, and each value still arrives wrapped in what it is.
+ *
  *  - `[marker]`: bracket placeholders. The text inside the brackets is
  *    extracted and passed to the render function.
  *
@@ -103,7 +108,9 @@ export type InterpolateProps = {
 export default function Interpolate({ sentence, children }: InterpolateProps) {
   const renderers = Array.isArray(children) ? children : [children];
 
-  const printfRegex = /%[sdfi]/g;
+  /* Positional specifiers included: a translation is free to put the second
+     value first, and says so by numbering the placeholders. */
+  const printfRegex = /%(?:(\d+)\$)?[sdfi]/g;
   const markerRegex = /\[([^[\]]*)\]/g;
 
   const hasPrintf = printfRegex.test(sentence);
@@ -114,7 +121,7 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
   }
 
   const matches = hasPrintf
-    ? [...sentence.matchAll(/%[sdfi]/g)]
+    ? [...sentence.matchAll(/%(?:(\d+)\$)?[sdfi]/g)]
     : [...sentence.matchAll(/\[([^[\]]*)\]/g)];
 
   if (matches.length === 0) {
@@ -141,7 +148,17 @@ export default function Interpolate({ sentence, children }: InterpolateProps) {
     // Marker text for [text], empty string for printf
     const content = hasMarkers ? (match[1] ?? "") : "";
 
-    result.push(<React.Fragment key={index}>{renderers[index](content)}</React.Fragment>);
+    /* Which render function fills this placeholder. A numbered one says so
+       itself, which is what lets a translation reorder the values without
+       swapping what they are: "%2$s on %1$s" still puts the device where the
+       device belongs. Everything else is filled in the order it appears. */
+    const at = hasPrintf && match[1] ? Number(match[1]) - 1 : index;
+
+    if (at < 0 || at >= renderers.length) {
+      throw new Error(`Interpolate: placeholder ${matchText} has no render function to fill it.`);
+    }
+
+    result.push(<React.Fragment key={index}>{renderers[at](content)}</React.Fragment>);
 
     lastIndex = matchIndex + matchText.length;
   });
