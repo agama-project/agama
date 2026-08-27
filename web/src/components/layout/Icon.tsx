@@ -41,6 +41,8 @@ import Terminal from "@icons/terminal.svg?component";
 import Compress from "@icons/compress.svg?component";
 import Block from "@icons/block.svg?component";
 import Bolt from "@icons/bolt.svg?component";
+import RotateAuto from "@icons/rotate_auto.svg?component";
+import SettingsBackupRestore from "@icons/settings_backup_restore.svg?component";
 import LockOpen from "@icons/lock_open.svg?component";
 import Tune from "@icons/tune.svg?component";
 import Storage from "@icons/storage.svg?component";
@@ -168,6 +170,8 @@ const icons = {
   settings_ethernet: SettingsEthernet,
   block: Block,
   bolt: Bolt,
+  rotate_auto: RotateAuto,
+  settings_backup_restore: SettingsBackupRestore,
   compress: Compress,
   lock_open: LockOpen,
   tune: Tune,

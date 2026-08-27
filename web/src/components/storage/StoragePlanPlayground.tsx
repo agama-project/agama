@@ -3252,6 +3252,106 @@ const tabExplanations = (
   };
 };
 
+/**
+ * The button that swaps the target without touching the plan.
+ *
+ * The same dialog the device menu opens and the same write behind it. What
+ * changes is where it is: the reader who thinks "wrong disk" is looking at the
+ * sentence or the header naming that disk, so the way out is beside the name
+ * rather than the fourth item of a menu.
+ *
+ * The label belongs to the place it is read: a page says what the reader gets
+ * out of pressing it, and a header inside the sheet says what happens to the
+ * plan they are looking at.
+ */
+const RetargetButton = ({
+  device,
+  label,
+  variant = "secondary",
+}: {
+  device: Partitionable;
+  label: string;
+  variant?: "link" | "secondary";
+}) => {
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const config = useConfigModel();
+  const convertDevice = useConvertDevice();
+  const systemDevice = useDevice(device.name);
+  const available = useAvailableDevices();
+  const name = baseName(device.name);
+
+  /* Every device the plan does not already hold, plus the one it is on, which
+     is how the dialog shows what is selected. */
+  const usedNames = configModel
+    .devices(config)
+    .map((entry) => entry.name)
+    .filter((used) => used !== device.name);
+  const targets = available.filter((candidate) => !usedNames.includes(candidate.name));
+
+  return (
+    <>
+      <Button variant={variant} onClick={() => setIsSelectorOpen(true)}>
+        {label}
+      </Button>
+      {isSelectorOpen && (
+        <DeviceSelectorModal
+          title={label}
+          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
+          selected={systemDevice}
+          disks={targets.filter(isDrive)}
+          mdRaids={targets.filter(isMd)}
+          volumeGroups={targets.filter(isVolumeGroup)}
+          onCancel={() => setIsSelectorOpen(false)}
+          onConfirm={([target]) => {
+            setIsSelectorOpen(false);
+            convertDevice(device.name, target.name);
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+/**
+ * What the reader does about the device, rather than about its content.
+ *
+ * Plain buttons after the table they belong under: swapping the target and
+ * dropping the device from the plan are both about this entry as a whole, and
+ * neither is worth the weight of a control in the header, which reads as
+ * something to do before anything else on the panel.
+ */
+const DeviceActionButtons = ({
+  collection,
+  index,
+  device,
+}: {
+  collection: PartitionableCollection;
+  index: number;
+  device: Partitionable;
+}) => {
+  const config = useConfigModel();
+  const deleteDrive = useDeleteDrive();
+  const deleteMdRaid = useDeleteMdRaid();
+  /* Dropping the only device leaves a plan with nowhere to go, so the offer is
+     made where there is somewhere else for the installation to live. */
+  const canDrop = configModel.hasAdditionalDevices(config);
+
+  return (
+    <>
+      <RetargetButton device={device} label={t("Use another device")} variant="link" />
+      {canDrop && (
+        <Button
+          variant="link"
+          isDanger
+          onClick={() => (collection === "drives" ? deleteDrive(index) : deleteMdRaid(index))}
+        >
+          {t("Do not use this device")}
+        </Button>
+      )}
+    </>
+  );
+};
+
 /** What the new system gets on this device. */
 const NewSystemSection = ({
   collection,
@@ -3260,6 +3360,7 @@ const NewSystemSection = ({
   systemDevice,
   explanation,
   statements,
+  deviceActions,
   onGoToCurrent,
 }: {
   collection: PartitionableCollection;
@@ -3274,6 +3375,10 @@ const NewSystemSection = ({
      them have no row to live in: what the device is used by, and that the
      installer adds partitions to it for booting. */
   statements?: Setting[];
+  /* What the reader does about the device rather than about its content: they
+     read after the table, beside what adds to it, since they are the same kind
+     of thing and none of them is urgent enough for the header. */
+  deviceActions?: React.ReactNode;
 }) => {
   const navigate = useNavigate();
   const config = useConfigModel();
@@ -3483,8 +3588,11 @@ const NewSystemSection = ({
       )}
       {/* Under what it adds to and against the leading edge, which is where the
           device list offers the same thing. */}
-      {(formatted || volumes.length > 0) && (
-        <Flex className="agm-plan-section-action">{formatted ? edit : add}</Flex>
+      {(formatted || volumes.length > 0 || deviceActions) && (
+        <Flex className="agm-plan-section-action" gap={{ default: "gapSm" }}>
+          {(formatted || volumes.length > 0) && (formatted ? edit : add)}
+          {deviceActions}
+        </Flex>
       )}
     </PanelSection>
   );
@@ -4018,6 +4126,7 @@ const PartitionableDetail = ({
       systemDevice={systemDevice}
       explanation={notes?.planned}
       statements={structure === "blocks" ? plannedStatements : undefined}
+      deviceActions={<DeviceActionButtons collection={collection} index={index} device={device} />}
       onGoToCurrent={sections === "tabs" ? goToCurrent : undefined}
     />
   );
@@ -6654,66 +6763,6 @@ const DeviceList = ({
  * The panel header for whatever is selected
  * ------------------------------------------------------------------ */
 
-/**
- * The button that swaps the target without touching the plan.
- *
- * The same dialog the device menu opens and the same write behind it. What
- * changes is where it is: the reader who thinks "wrong disk" is looking at the
- * sentence or the header naming that disk, so the way out is beside the name
- * rather than the fourth item of a menu.
- *
- * The label belongs to the place it is read: a page says what the reader gets
- * out of pressing it, and a header inside the sheet says what happens to the
- * plan they are looking at.
- */
-const RetargetButton = ({
-  device,
-  label,
-  variant = "secondary",
-}: {
-  device: Partitionable;
-  label: string;
-  variant?: "link" | "secondary";
-}) => {
-  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-  const config = useConfigModel();
-  const convertDevice = useConvertDevice();
-  const systemDevice = useDevice(device.name);
-  const available = useAvailableDevices();
-  const name = baseName(device.name);
-
-  /* Every device the plan does not already hold, plus the one it is on, which
-     is how the dialog shows what is selected. */
-  const usedNames = configModel
-    .devices(config)
-    .map((entry) => entry.name)
-    .filter((used) => used !== device.name);
-  const targets = available.filter((candidate) => !usedNames.includes(candidate.name));
-
-  return (
-    <>
-      <Button variant={variant} onClick={() => setIsSelectorOpen(true)}>
-        {label}
-      </Button>
-      {isSelectorOpen && (
-        <DeviceSelectorModal
-          title={label}
-          intro={t(`The plan stays as it is. Everything ${name} was going to hold moves.`)}
-          selected={systemDevice}
-          disks={targets.filter(isDrive)}
-          mdRaids={targets.filter(isMd)}
-          volumeGroups={targets.filter(isVolumeGroup)}
-          onCancel={() => setIsSelectorOpen(false)}
-          onConfirm={([target]) => {
-            setIsSelectorOpen(false);
-            convertDevice(device.name, target.name);
-          }}
-        />
-      )}
-    </>
-  );
-};
-
 const PartitionableHeader = ({
   collection,
   index,
@@ -6737,25 +6786,10 @@ const PartitionableHeader = ({
       marks={boots ? [t("Boot device")] : []}
       path={systemDevice?.block?.udevPaths?.[0]}
       onClose={onClose}
-      /* Swapping the target is the second thing in the header rather than an
-         item of the menu at the end of it. A reader who clicked the disk they
-         wanted and landed on a plan about another one is looking here, and a
-         kebab is the one place they will not open to find the way out. The
-         menu keeps everything else. */
-      actions={
-        <Flex
-          gap={{ default: "gapXs" }}
-          alignItems={{ default: "alignItemsCenter" }}
-          flexWrap={{ default: "nowrap" }}
-        >
-          <FlexItem>
-            <RetargetButton device={device} label={t("Use another device")} />
-          </FlexItem>
-          <FlexItem>
-            <PartitionableActions collection={collection} index={index} />
-          </FlexItem>
-        </Flex>
-      }
+      /* Identity and its menu. Swapping the target used to sit here as a
+         button, which reads as the first thing to do on a panel opened to read
+         something else; it is offered under the table it changes instead. */
+      actions={<PartitionableActions collection={collection} index={index} />}
     />
   );
 };
@@ -6823,8 +6857,10 @@ const PlanSettings = ({
      made by hand is not the automatic one. */
   const bootIcon: React.ComponentProps<typeof Icon>["name"] = (() => {
     if (mode === "off") return "block";
-    if (mode === "auto") return "bolt";
-    return "tune";
+    if (mode === "auto") return "rotate_auto";
+    /* The same turning arrow without the A: a decision of the same kind, made
+       by hand rather than by the installer. */
+    return "settings_backup_restore";
   })();
   const isEncrypted = config.encryption !== undefined;
 
