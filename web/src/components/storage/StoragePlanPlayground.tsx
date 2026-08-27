@@ -229,7 +229,7 @@ type SettingsPlace = "top" | "bottom";
 /** Which machine the page reads: this one, or one of the scenarios. */
 type DataSource = "real" | ScenarioKey;
 /** How the drawer holding the sheet opens. */
-type PanelMode = "slide" | "over" | "inline";
+type PanelMode = "reflow" | "slide" | "over" | "inline";
 type Variants = {
   cost: CostStyle;
   sections: PanelSections;
@@ -341,11 +341,12 @@ const DEFAULT_VARIANTS: Variants = {
   /* The machine the playground runs on, which is the only data that is
      true. The scenarios are for the states it does not have. */
   data: "real",
-  /* The sheet comes over the page, and the page takes the width the sheet
-     leaves it rather than staying centred behind it. What is too wide for
-     what is left is cut off, which is the trade this makes on purpose:
-     a strip of blank page beside an open sheet is worse. */
-  panelMode: "slide",
+  /* The sheet comes over the page, and the page lays itself out again in the
+     width it is left with. A translate was tried first and is one switch away:
+     it moves the summary without rearranging it, so what lands beside the
+     sheet is a slice through the middle of the page rather than a narrow view
+     of it. */
+  panelMode: "reflow",
 };
 
 type PlanApi = {
@@ -5708,6 +5709,16 @@ const PLAN_CSS = `
   transform: translateX(${PAGE_SHIFT});
 }
 
+/* Or the page takes the width it is left with and lays itself out in it. The
+   summary is fluid and re-centres; anything with a width of its own, a table
+   above all, scrolls inside the strip rather than pushing it wider. */
+.agm-plan-drawer-reflow.pf-m-expanded .agm-plan-summary-page {
+  max-width: calc(100% - ${PANEL_WIDTH});
+  overflow-x: auto;
+  transition: max-width var(--pf-t--global--motion--duration--fade--default, 200ms)
+    var(--pf-t--global--motion--timing-function--default, ease-in-out);
+}
+
 /* The room a summary keeps under it is the room before whatever it introduces,
    and a list that starts a screen away from the sentence about it reads as a
    second page. Set through PatternFly's own property rather than over its
@@ -7469,7 +7480,7 @@ type VariantControl<K extends keyof Variants = keyof Variants> = {
 };
 
 const VARIANT_CONTROLS: VariantControl[] = [
-  { key: "panelMode", label: "Drawer", options: ["slide", "over", "inline"] },
+  { key: "panelMode", label: "Drawer", options: ["reflow", "slide", "over", "inline"] },
   {
     key: "data",
     label: "Machine",
@@ -7622,7 +7633,12 @@ function StoragePlan({
      four fifths there is no share left to give: a list squeezed into the last
      fifth is neither readable nor worth keeping on screen, and the reader still
      has the row they picked behind the panel. */
-  const isFloating = useMedia(LG);
+  const isWide = useMedia(XL);
+  const isRoomy = useMedia(LG);
+  /* Over the page, the page keeps its width behind the sheet and needs only
+     room for the sheet. Beside it, the page has to be readable in what is
+     left, which under xl it is not: the two take turns instead. */
+  const isFloating = variants.panelMode === "over" ? isRoomy : isWide;
   const panelRef = useRef<HTMLDivElement>(null);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -7683,7 +7699,7 @@ function StoragePlan({
             '  summaryStyle("sentence" | "lines")  what one device costs, as a sentence or as a line per consequence',
             '  summarySpace("shown" | "hidden")   the space decision on the one device page',
             '  data("real"|"one-disk-in-use"|"empty-disk"|"lvm-over-three-disks")  the machine the page reads',
-            '  panelMode("slide"|"over"|"inline") the page moves over, stays put, or is pushed aside',
+            '  panelMode("reflow"|"slide"|"over"|"inline")  the page relays out, moves over, stays put, or is pushed aside',
             "  bootDebug()                        what the proposal reports about every partition",
           ].join("\n"),
         );
@@ -8001,13 +8017,20 @@ function StoragePlan({
      window. Otherwise it comes over the page, which either keeps its width
      and is covered, or gives way to the sheet and uses what is left. */
   const isInlineDrawer = variants.panelMode === "inline";
+  /* Whatever is left of the page beside an open sheet is there to be read and
+     not to be used: the sheet is what the reader is in. */
+  const isCovered = !isInlineDrawer && isPanelOpen && hasPanelContent;
 
   const drawer = (isStatic: boolean) => (
     <Drawer
       isExpanded={isStatic ? isPanelOpen : isPanelOpen && hasPanelContent}
       isStatic={isStatic}
       isInline={isInlineDrawer}
-      className={variants.panelMode === "slide" ? "agm-plan-drawer-slide" : undefined}
+      className={
+        variants.panelMode === "slide" || variants.panelMode === "reflow"
+          ? `agm-plan-drawer-${variants.panelMode}`
+          : undefined
+      }
       position="end"
     >
       <DrawerContent
@@ -8027,8 +8050,16 @@ function StoragePlan({
       >
         {/* The bar belongs to the list, not above the pair, so the panel
             covers it the way it covers everything else on that side. It
-            stays pinned by sticking to the top of the list's own scroll. */}
-        <DrawerContentBody>{page}</DrawerContentBody>
+            stays pinned by sticking to the top of the list's own scroll.
+
+            While the sheet is over it, the page is inert: whatever is still on
+            screen beside the panel, a clipped button included, is out of the
+            tab order, out of the accessibility tree and not clickable. A
+            drawer that covers the page does not do that on its own.
+
+            As an empty string rather than as a boolean, which is what React 18
+            passes through as the bare attribute the browser wants. */}
+        <DrawerContentBody {...(isCovered ? { inert: "" } : {})}>{page}</DrawerContentBody>
       </DrawerContent>
     </Drawer>
   );
