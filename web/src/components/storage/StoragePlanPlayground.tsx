@@ -2474,8 +2474,13 @@ const SummarySpaceDecision = ({
   const termId = useId();
 
   if (!isNarrow && spaceShape === "toggles") {
+    /* Set smaller than the sentence above it. Four buttons at the size of the
+       page's own text read as four things to do; at xs they read as the four
+       answers to one question, which is what they are. */
     return (
-      <SpacePolicySegments current={current} onChoose={onChoose} labels={SUMMARY_BULK_LABELS} />
+      <div className="agm-plan-space-quiet">
+        <SpacePolicySegments current={current} onChoose={onChoose} labels={SUMMARY_BULK_LABELS} />
+      </div>
     );
   }
 
@@ -5992,6 +5997,13 @@ const PLAN_CSS = `
   font-size: 0.85em;
   font-weight: var(--pf-t--global--font--weight--body--default);
   white-space: nowrap;
+}
+
+/* The space decision on the page, quieter than the same control in the sheet:
+   there the reader is acting on the table under it, here they are reading a
+   summary and the decision is one line of it. */
+.agm-plan-space-quiet .pf-v6-c-toggle-group__button {
+  font-size: var(--pf-t--global--font--size--xs);
 }
 
 /* A flex item will not shrink below the width of its longest word unless it is
