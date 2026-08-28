@@ -429,7 +429,7 @@ impl ZyppServer {
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
                 issues.software.push(
-                    Issue::new("software.add_repo", &message).with_details(&error.to_string()),
+                    Issue::new("addRepo", &message).with_details(&error.to_string()),
                 );
             }
         }
@@ -446,7 +446,7 @@ impl ZyppServer {
                     .as_str()
                     .replace("%s", &repo.alias);
                 issues.software.push(
-                    Issue::new("software.remove_repo", &message).with_details(&error.to_string()),
+                    Issue::new("removeRepo", &message).with_details(&error.to_string()),
                 );
             }
         }
@@ -464,7 +464,7 @@ impl ZyppServer {
         if let Err(error) = result {
             let message = gettext("Could not read the repositories");
             issues.software.push(
-                Issue::new("software.load_source", &message).with_details(&error.to_string()),
+                Issue::new("loadSource", &message).with_details(&error.to_string()),
             );
         }
 
@@ -499,10 +499,10 @@ impl ZyppServer {
 
             let issue = if state.allow_registration && !self.is_registered() {
                 let message = gettext("Failed to find the product in the repositories. You might need to register the system.");
-                Issue::new("missing_registration", &message).with_details(&error.to_string())
+                Issue::new("missingRegistration", &message).with_details(&error.to_string())
             } else {
                 let message = gettext("Failed to find the product in the repositories.");
-                Issue::new("missing_product", &message).with_details(&error.to_string())
+                Issue::new("missingProduct", &message).with_details(&error.to_string())
             };
 
             issues.software.push(issue);
@@ -567,7 +567,7 @@ impl ZyppServer {
             let message = gettext("There are conflicts in the software selection");
             issues
                 .software
-                .push(Issue::new("software.conflict", &message));
+                .push(Issue::new("conflict", &message));
         }
 
         Self::send_issues_and_finish(issues, tx, progress)
@@ -598,7 +598,7 @@ impl ZyppServer {
                     .replacen("%s", &r#type.to_string(), 1)
                     .replace("%s", name);
                 issues.push(
-                    Issue::new("software.select_resolvable", &message)
+                    Issue::new("selectResolvable", &message)
                         .with_details(&error.to_string()),
                 );
             }
@@ -1005,7 +1005,7 @@ impl ZyppServer {
             Err(error) => {
                 issues.product.push(
                     Issue::new(
-                        "system_registration_failed",
+                        "systemRegistrationFailed",
                         &gettext("Failed to register the system"),
                     )
                     .with_details(&error.to_string()),
@@ -1034,7 +1034,7 @@ impl ZyppServer {
             }
             if let Err(error) = registration.register_addon(zypp, security, addon) {
                 let message = format!("Failed to register the add-on {}", addon.id);
-                let issue_id = format!("addon_registration_failed[{}]", addon.id);
+                let issue_id = format!("addonRegistrationFailed[{}]", addon.id);
                 let issue = Issue::new(&issue_id, &message).with_details(&error.to_string());
                 issues.product.push(issue);
             }
