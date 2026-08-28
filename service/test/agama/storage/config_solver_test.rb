@@ -35,10 +35,6 @@ describe Agama::Storage::ConfigSolver do
       "storage" => {
         "lvm"              => false,
         "space_policy"     => "delete",
-        "encryption"       => {
-          "method"        => "luks2",
-          "pbkd_function" => "argon2i"
-        },
         "volumes"          => ["/", "swap"],
         "volume_templates" => [
           {
@@ -90,6 +86,10 @@ describe Agama::Storage::ConfigSolver do
 
   let(:storage_system) { Agama::Storage::System.new }
 
+  let(:grub2) { Y2Storage::BootloaderType::GRUB2 }
+
+  let(:systemd_boot) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
+
   subject { described_class.new(product_config, bootloader_config, storage_system) }
 
   describe "#solve" do
@@ -126,13 +126,32 @@ describe Agama::Storage::ConfigSolver do
           }
         end
 
-        it "completes the encryption config according to the product info" do
-          subject.solve(config)
+        before { allow(bootloader_config).to receive(:type).and_return bootloader }
 
-          encryption = encryption_proc.call(config)
-          expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
-          expect(encryption.password).to eq("12345")
-          expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::ARGON2I)
+        context "and a BLS bootloader will be used" do
+          let(:bootloader) { systemd_boot }
+
+          it "does not enforce any special encryption configuration" do
+            subject.solve(config)
+
+            encryption = encryption_proc.call(config)
+            expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
+            expect(encryption.password).to eq("12345")
+            expect(encryption.pbkd_function).to be_nil
+          end
+        end
+
+        context "and grub2 is used as bootloader" do
+          let(:bootloader) { grub2 }
+
+          it "enforces a conservative encryption configuration with PBKDF2" do
+            subject.solve(config)
+
+            encryption = encryption_proc.call(config)
+            expect(encryption.method).to eq(Y2Storage::EncryptionMethod::LUKS2)
+            expect(encryption.password).to eq("12345")
+            expect(encryption.pbkd_function).to eq(Y2Storage::PbkdFunction::PBKDF2)
+          end
         end
       end
     end
@@ -641,9 +660,6 @@ describe Agama::Storage::ConfigSolver do
       let(:product_data) do
         { "storage" => { "volume_templates" => [root_vol] } }
       end
-
-      let(:grub2) { Y2Storage::BootloaderType::GRUB2 }
-      let(:systemd_boot) { Y2Storage::BootloaderType::SYSTEMD_BOOT }
 
       before { allow(bootloader_config).to receive(:type).and_return bootloader }
 
