@@ -8,6 +8,7 @@ Fri Aug 28 05:51:20 UTC 2026 - mvidner@suse.com
   - nanoid 3.3.18, CVE-2026-73086 (bsc#1276069)
   - postcss 8.5.26, CVE-2026-69153 (bsc#1276202), CVE-2026-73646 (bsc#1275903)
 - updated previously, listing its references for tracking:
+  - react-router 7.15.1, CVE-2026-33245 (bsc#1267499)
 
 -------------------------------------------------------------------
 Wed Aug 26 11:30:21 UTC 2026 - Martin Vidner <mvidner@suse.com>
