@@ -4,7 +4,7 @@ Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 - Rename the question classes to use a consistent naming scheme
   and make the answer matching backward compatible with the
   previous class names and tolerant to the data keys naming
-  convention (gh#agama-project/agama#3841).
+  convention (bsc#1277393).
 
 -------------------------------------------------------------------
 Wed Aug 26 12:06:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>

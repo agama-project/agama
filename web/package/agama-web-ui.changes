@@ -2,7 +2,7 @@
 Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Rename the question classes to use a consistent naming scheme
-  (gh#agama-project/agama#3841).
+  (bsc#1277393).
 
 -------------------------------------------------------------------
 Wed Aug 26 11:30:21 UTC 2026 - Martin Vidner <mvidner@suse.com>
