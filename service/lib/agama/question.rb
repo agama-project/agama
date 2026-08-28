@@ -40,15 +40,6 @@ module Agama
     # @return [String]
     attr_reader :qclass
 
-    # Previous class of the question, kept for backward compatibility
-    #
-    # When a question class is renamed, the old name can be set here so that
-    # answer rules written against the previous name (e.g., in an existing
-    # AutoYaST-like profile) still match the question.
-    #
-    # @return [String, nil]
-    attr_reader :deprecated_class
-
     # Text of the question
     #
     # @return [String]
@@ -84,14 +75,13 @@ module Agama
       def from_api(hash)
         answer = Answer.from_api(hash["answer"]) if hash["answer"]
         question = new(
-          qclass:           hash["class"],
-          deprecated_class: hash["deprecatedClass"],
-          text:             hash["text"],
-          options:          hash["actions"].map { |a| a["id"].to_sym },
-          default_option:   hash["defaultAction"]&.to_sym,
-          data:             hash["data"] || {},
-          answer:           answer,
-          field:            hash["field"]
+          qclass:         hash["class"],
+          text:           hash["text"],
+          options:        hash["actions"].map { |a| a["id"].to_sym },
+          default_option: hash["defaultAction"]&.to_sym,
+          data:           hash["data"] || {},
+          answer:         answer,
+          field:          hash["field"]
         )
         question.send(:id=, hash["id"])
         question
@@ -99,11 +89,9 @@ module Agama
     end
 
     # rubocop:disable Metrics/ParameterLists
-    def initialize(qclass:, text:, options:, default_option: nil, data: {}, answer: nil, field: nil,
-      deprecated_class: nil)
+    def initialize(qclass:, text:, options:, default_option: nil, data: {}, answer: nil, field: nil)
       @id = nil
       @qclass = qclass
-      @deprecated_class = deprecated_class
       @text = text
       @options = options
       @default_option = default_option
@@ -131,7 +119,6 @@ module Agama
         "data"          => @data
       }
 
-      question["deprecatedClass"] = @deprecated_class if @deprecated_class
       question["field"] = { "type" => @field } if @field
       question
     end

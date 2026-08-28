@@ -74,12 +74,11 @@ module Agama
                  "Do you want to continue with the rest of storage actions?"
 
           Question.new(
-            qclass:           "storage_commit_error",
-            deprecated_class: "storage.commit_error",
-            text:             text,
-            options:          [:yes, :no],
-            default_option:   :no,
-            data:             { "details" => details }
+            qclass:         "storage_commit_error",
+            text:           text,
+            options:        [:yes, :no],
+            default_option: :no,
+            data:           { "details" => details }
           )
         end
       end

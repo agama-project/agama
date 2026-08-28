@@ -75,15 +75,49 @@ pub struct AnswerRule {
     pub answer: Answer,
 }
 
+/// Resolves a (possibly deprecated) question class into its current name.
+///
+/// Some question classes were renamed to use a more consistent naming
+/// scheme. This maps the old names to the new ones so that existing answer
+/// rules (e.g., in an AutoYaST-like profile or an answers file) keep
+/// matching the corresponding question after the renaming.
+///
+/// If a class is renamed again in the future, update the entry below to
+/// point directly to the latest name (do not chain deprecated classes).
+fn resolve_class(class: &str) -> &str {
+    match class {
+        "autoyast.password" => "autoyast_password",
+        "autoyast.popup" => "autoyast_popup",
+        "autoyast.unsupported" => "autoyast_unsupported",
+        "load.retry" => "load_config_error",
+        "registration.certificate" => "self_signed_regcert",
+        "scripts.retry" => "retry_script",
+        "software.digest.no_digest" => "no_digest",
+        "software.digest.unknown_digest" => "unknown_digest",
+        "software.import_gpg" => "import_gpg",
+        "software.installation_retry" => "retry_installation",
+        "software.package_error.install_error" => "package_install_error",
+        "software.package_error.provide_error" => "package_provide_error",
+        "software.script_problem" => "package_script_problem",
+        "software.unknown_gpg" => "unknown_gpg",
+        "software.unsigned_file" => "unsigned_file",
+        "software.verification_failed" => "gpg_verification_error",
+        "storage.activate_multipath" => "activate_multipath",
+        "storage.commit_error" => "storage_commit_error",
+        "storage.luks_activation" => "luks_activation",
+        "write_file_failed" => "write_file_error",
+        "write_script_failed" => "write_script_error",
+        other => other,
+    }
+}
+
 impl AnswerRule {
     /// Determines whether the answer responds to the given question.
     ///
     /// * `spec`: question spec to compare with.
     pub fn answers_to(&self, spec: &QuestionSpec) -> bool {
         if let Some(class) = &self.class {
-            let matches_class =
-                spec.class == *class || spec.deprecated_class.as_deref() == Some(class.as_str());
-            if !matches_class {
+            if spec.class != resolve_class(class) {
                 return false;
             }
         }
@@ -178,14 +212,6 @@ pub struct QuestionSpec {
     /// by Agama's UI are documented [in the Questions
     /// page](https://agama-project.github.io/docs/user/reference/profile/answers).
     pub class: String,
-    /// Previous class name, kept for backward compatibility.
-    ///
-    /// When a question class is renamed, the old name can be set here so
-    /// that [AnswerRule]s written against the previous name (e.g., in an
-    /// existing AutoYaST-like profile) still match the question (see
-    /// [AnswerRule::answers_to]).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub deprecated_class: Option<String>,
     /// Optionally, a question might define an additional field (e.g., a
     /// password, a selector, etc.).
     #[serde(default)]
@@ -210,20 +236,11 @@ impl QuestionSpec {
         Self {
             text: text.to_string(),
             class: class.to_string(),
-            deprecated_class: None,
             field: QuestionField::None,
             actions: vec![],
             default_action: None,
             data: HashMap::new(),
         }
-    }
-
-    /// Sets the deprecated class name.
-    ///
-    /// * `class`: previous class name.
-    pub fn with_deprecated_class(mut self, class: &str) -> Self {
-        self.deprecated_class = Some(class.to_string());
-        self
     }
 
     /// Sets the question field to be a string.
@@ -530,9 +547,10 @@ mod tests {
             value: None,
         };
 
-        let q = QuestionSpec::new("Activate the LUKS device?", "luks_activation")
-            .with_deprecated_class("storage.luks_activation")
-            .with_yes_no_actions();
+        // The question is created with its current class name only, the
+        // mapping to the deprecated one is resolved internally.
+        let q =
+            QuestionSpec::new("Activate the LUKS device?", "luks_activation").with_yes_no_actions();
 
         // A rule using the old (deprecated) class still matches.
         let rule_by_deprecated_class = AnswerRule {
@@ -560,6 +578,14 @@ mod tests {
             answer: answer.clone(),
         };
         assert!(!rule_by_unrelated_class.answers_to(&q));
+    }
+
+    #[test]
+    fn test_resolve_class() {
+        assert_eq!(resolve_class("storage.luks_activation"), "luks_activation");
+        // A class that was never renamed is returned as-is.
+        assert_eq!(resolve_class("luks_activation"), "luks_activation");
+        assert_eq!(resolve_class("some_unknown_class"), "some_unknown_class");
     }
 
     #[test]

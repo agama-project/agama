@@ -67,11 +67,10 @@ module Agama
                  "Do you want to activate multipath?"
 
           Question.new(
-            qclass:           "activate_multipath",
-            deprecated_class: "storage.activate_multipath",
-            text:             text,
-            options:          [:yes, :no],
-            default_option:   :yes
+            qclass:         "activate_multipath",
+            text:           text,
+            options:        [:yes, :no],
+            default_option: :yes
           )
         end
       end

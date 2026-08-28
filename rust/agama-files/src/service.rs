@@ -184,7 +184,6 @@ impl Service {
             let text = &gettext("Failed to retrieve the script %s. Do you want to try again?")
                 .replace("%s", script.name());
             let question = QuestionSpec::new(text, "write_script_error")
-                .with_deprecated_class("write_script_failed")
                 .with_yes_no_actions()
                 .with_data(&[
                     ("attempt", &attempt.to_string()),
@@ -209,7 +208,6 @@ impl Service {
             let text = &gettext("Failed to write the file %s. Do you want to try again?")
                 .replace("%s", &file.destination);
             let question = QuestionSpec::new(text, "write_file_error")
-                .with_deprecated_class("write_file_failed")
                 .with_yes_no_actions()
                 .with_data(&[
                     ("attempt", &attempt.to_string()),
