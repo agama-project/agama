@@ -8195,20 +8195,22 @@ function StoragePlan({
         flexWrap={{ default: "nowrap" }}
         className="agm-plan-topline"
       >
-        {/* Short enough to sit beside three controls at the width the page is
-            usually read at, and free to wrap where it is not: a translation
-            that runs half again as long stays on the same line and takes two
-            of them. */}
+        {/* Free to wrap where a translation runs longer: it stays on the same
+            line and takes two of them, rather than pushing the controls off. */}
         <FlexItem
           grow={{ default: "grow" }}
           alignSelf={{ default: "alignSelfStretch" }}
           className="agm-plan-topline-intro"
         >
-          {/* Smaller again in a strip, where it is competing with the sentence
-              the page opens with for the top of a screen that has little of
-              it. */}
+          {/* Short enough to sit beside three controls, and short enough to
+              take one line of a strip. It names no technology: LVM is one of
+              the things a reader may structure their devices into and not the
+              point of the page, and the list below names it where it is there.
+
+              Smaller again in a strip, where it competes with the sentence the
+              page opens with for the top of a screen that has little of it. */}
           <Text textStyle={[isNarrow ? "fontSizeXs" : "fontSizeSm", "textColorSubtle"]}>
-            {t("Which disks to use, and additional devices like LVM volume groups.")}
+            {t("Choose devices to use and how to structure them")}
           </Text>
         </FlexItem>
         <FlexItem className="agm-plan-topline-controls">
