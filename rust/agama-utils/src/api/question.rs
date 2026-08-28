@@ -20,6 +20,7 @@
 
 use crate::gettext_noop;
 use gettextrs::gettext;
+use heck::{ToLowerCamelCase, ToSnakeCase};
 use merge::Merge;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -111,6 +112,23 @@ fn resolve_class(class: &str) -> &str {
     }
 }
 
+/// Checks whether the given key/value pair is present in the question's
+/// data, regardless of whether the key uses snake_case or camelCase.
+///
+/// Answer rules and the actual question data are not consistent about the
+/// naming convention used for the data keys (e.g., "error_code" vs.
+/// "errorCode"). To avoid relying on users guessing the right one, both
+/// forms of the given key are checked against the question's data.
+fn data_matches(data: &HashMap<String, String>, key: &str, value: &str) -> bool {
+    let camel = key.to_lower_camel_case();
+    let snake = key.to_snake_case();
+
+    [key, camel.as_str(), snake.as_str()]
+        .iter()
+        .filter_map(|k| data.get(*k))
+        .any(|v| v == value)
+}
+
 impl AnswerRule {
     /// Determines whether the answer responds to the given question.
     ///
@@ -129,13 +147,9 @@ impl AnswerRule {
         }
 
         if let Some(data) = &self.data {
-            return data.iter().all(|(key, value)| {
-                let Some(e_val) = spec.data.get(key) else {
-                    return false;
-                };
-
-                e_val == value
-            });
+            return data
+                .iter()
+                .all(|(key, value)| data_matches(&spec.data, key, value));
         }
 
         true
@@ -586,6 +600,87 @@ mod tests {
         // A class that was never renamed is returned as-is.
         assert_eq!(resolve_class("luks_activation"), "luks_activation");
         assert_eq!(resolve_class("some_unknown_class"), "some_unknown_class");
+    }
+
+    #[test]
+    fn test_answers_to_data_snake_case_rule_matches_camel_case_data() {
+        let answer = Answer {
+            action: "Retry".to_string(),
+            value: None,
+        };
+
+        // The question data uses camelCase, as some producers do.
+        let q = QuestionSpec::new("Failed to install the package", "package_provide_error")
+            .with_data(&[("errorCode", "INVALID")]);
+
+        let rule = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "error_code".to_string(),
+                "INVALID".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(rule.answers_to(&q));
+    }
+
+    #[test]
+    fn test_answers_to_data_camel_case_rule_matches_snake_case_data() {
+        let answer = Answer {
+            action: "Manual".to_string(),
+            value: None,
+        };
+
+        // The question data uses snake_case, as some producers do.
+        let q = QuestionSpec::new("Failed to load the configuration", "load_config_error")
+            .with_data(&[("original_value", "http://example.com/profile.json")]);
+
+        let rule = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "originalValue".to_string(),
+                "http://example.com/profile.json".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(rule.answers_to(&q));
+    }
+
+    #[test]
+    fn test_answers_to_data_not_matching() {
+        let answer = Answer {
+            action: "Retry".to_string(),
+            value: None,
+        };
+
+        let q = QuestionSpec::new("Failed to install the package", "package_provide_error")
+            .with_data(&[("errorCode", "INVALID")]);
+
+        // Same key (in both forms), but a different value.
+        let rule_with_wrong_value = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "error_code".to_string(),
+                "OTHER".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(!rule_with_wrong_value.answers_to(&q));
+
+        // A key that is not present under any naming variant.
+        let rule_with_unknown_key = AnswerRule {
+            text: Default::default(),
+            class: Default::default(),
+            data: Some(HashMap::from([(
+                "unknown_key".to_string(),
+                "INVALID".to_string(),
+            )])),
+            answer: answer.clone(),
+        };
+        assert!(!rule_with_unknown_key.answers_to(&q));
     }
 
     #[test]
