@@ -5,6 +5,8 @@ Fri Aug 28 15:32:30 UTC 2026 - Martin Vidner <mvidner@suse.com>
   - serde_with 3.22.0, GHSA-7gcf-g7xr-8hxj (bsc#1271854)
 - updated on Mar 3, listing for tracking:
   - bytes 1.11.1, CVE-2026-25541 (bsc#1274203)
+- updated on Dec 11, listing for tracking:
+  - tracing-subscriber 0.3.20 (now 0.3.22), CVE-2025-58160 (bsc#1249014)
 
 -------------------------------------------------------------------
 Fri Aug 28 13:08:30 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
