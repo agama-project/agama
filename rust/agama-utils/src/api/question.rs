@@ -76,12 +76,11 @@ pub struct AnswerRule {
     pub answer: Answer,
 }
 
-/// Resolves a (possibly deprecated) question class into its current name.
+/// Resolves a question class into its current name.
 ///
 /// Some question classes were renamed to use a more consistent naming
 /// scheme. This maps the old names to the new ones so that existing answer
-/// rules (e.g., in an AutoYaST-like profile or an answers file) keep
-/// matching the corresponding question after the renaming.
+/// rules keep matching the corresponding question after the renaming.
 ///
 /// If a class is renamed again in the future, update the entry below to
 /// point directly to the latest name (do not chain deprecated classes).
