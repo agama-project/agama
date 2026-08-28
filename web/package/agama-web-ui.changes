@@ -3,6 +3,7 @@ Fri Aug 28 05:51:20 UTC 2026 - mvidner@suse.com
 
 - update runtime dependencies to:
 - update development dependencies to:
+  - svgo 3.3.5 and 4.1.0, CVE-2026-73650 (bsc#1275347)
   - browserslist 4.28.8, CVE-2026-73089 (bsc#1275438), CVE-2026-73088 (bsc#1275424)
   - nanoid 3.3.18, CVE-2026-73086 (bsc#1276069)
   - postcss 8.5.26, CVE-2026-69153 (bsc#1276202), CVE-2026-73646 (bsc#1275903)
