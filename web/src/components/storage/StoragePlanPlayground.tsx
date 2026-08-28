@@ -8199,7 +8199,11 @@ function StoragePlan({
             line and takes two of them, rather than pushing the controls off. */}
         <FlexItem
           grow={{ default: "grow" }}
-          alignSelf={{ default: "alignSelfStretch" }}
+          /* Stretched only where the two are stacked, so the sentence takes
+             the width of the strip. On one row stretching it makes a box as
+             tall as the controls and sets the text at the top of it, which is
+             the misalignment this fixes. */
+          alignSelf={{ default: isNarrow ? "alignSelfStretch" : "alignSelfCenter" }}
           className="agm-plan-topline-intro"
         >
           {/* Short enough to sit beside three controls, and short enough to
