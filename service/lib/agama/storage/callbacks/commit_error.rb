@@ -74,7 +74,7 @@ module Agama
                  "Do you want to continue with the rest of storage actions?"
 
           Question.new(
-            qclass:         "storage_commit_error",
+            qclass:         "storageCommitError",
             text:           text,
             options:        [:yes, :no],
             default_option: :no,

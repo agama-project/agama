@@ -86,27 +86,27 @@ pub struct AnswerRule {
 /// point directly to the latest name (do not chain deprecated classes).
 fn resolve_class(class: &str) -> &str {
     match class {
-        "autoyast.password" => "autoyast_password",
-        "autoyast.popup" => "autoyast_popup",
-        "autoyast.unsupported" => "autoyast_unsupported",
-        "load.retry" => "load_config_error",
-        "registration.certificate" => "self_signed_regcert",
-        "scripts.retry" => "retry_script",
-        "software.digest.no_digest" => "no_digest",
-        "software.digest.unknown_digest" => "unknown_digest",
-        "software.import_gpg" => "import_gpg",
-        "software.installation_retry" => "retry_installation",
-        "software.package_error.install_error" => "package_install_error",
-        "software.package_error.provide_error" => "package_provide_error",
-        "software.script_problem" => "package_script_problem",
-        "software.unknown_gpg" => "unknown_gpg",
-        "software.unsigned_file" => "unsigned_file",
-        "software.verification_failed" => "gpg_verification_error",
-        "storage.activate_multipath" => "activate_multipath",
-        "storage.commit_error" => "storage_commit_error",
-        "storage.luks_activation" => "luks_activation",
-        "write_file_failed" => "write_file_error",
-        "write_script_failed" => "write_script_error",
+        "autoyast.password" => "autoyastPassword",
+        "autoyast.popup" => "autoyastPopup",
+        "autoyast.unsupported" => "autoyastUnsupported",
+        "load.retry" => "loadConfigError",
+        "registration.certificate" => "selfSignedRegcert",
+        "scripts.retry" => "retryScript",
+        "software.digest.no_digest" => "noDigest",
+        "software.digest.unknown_digest" => "unknownDigest",
+        "software.import_gpg" => "importGpg",
+        "software.installation_retry" => "retryInstallation",
+        "software.package_error.install_error" => "packageInstallError",
+        "software.package_error.provide_error" => "packageProvideError",
+        "software.script_problem" => "packageScriptProblem",
+        "software.unknown_gpg" => "unknownGpg",
+        "software.unsigned_file" => "unsignedFile",
+        "software.verification_failed" => "gpgVerificationError",
+        "storage.activate_multipath" => "activateMultipath",
+        "storage.commit_error" => "storageCommitError",
+        "storage.luks_activation" => "luksActivation",
+        "write_file_failed" => "writeFileError",
+        "write_script_failed" => "writeScriptError",
         other => other,
     }
 }
@@ -220,7 +220,7 @@ impl Question {
 pub struct QuestionSpec {
     /// Question text.
     pub text: String,
-    /// Question class (e.g., "autoyast_unsupported"). It works as a hint for
+    /// Question class (e.g., "autoyastUnsupported"). It works as a hint for
     /// the UI or to match pre-defined answers. The values that are understood
     /// by Agama's UI are documented [in the Questions
     /// page](https://agama-project.github.io/docs/user/reference/profile/answers).
@@ -563,7 +563,7 @@ mod tests {
         // The question is created with its current class name only, the
         // mapping to the deprecated one is resolved internally.
         let q =
-            QuestionSpec::new("Activate the LUKS device?", "luks_activation").with_yes_no_actions();
+            QuestionSpec::new("Activate the LUKS device?", "luksActivation").with_yes_no_actions();
 
         // A rule using the old (deprecated) class still matches.
         let rule_by_deprecated_class = AnswerRule {
@@ -577,7 +577,7 @@ mod tests {
         // A rule using the current class still matches.
         let rule_by_current_class = AnswerRule {
             text: Default::default(),
-            class: Some("luks_activation".to_string()),
+            class: Some("luksActivation".to_string()),
             data: Default::default(),
             answer: answer.clone(),
         };
@@ -595,9 +595,9 @@ mod tests {
 
     #[test]
     fn test_resolve_class() {
-        assert_eq!(resolve_class("storage.luks_activation"), "luks_activation");
+        assert_eq!(resolve_class("storage.luks_activation"), "luksActivation");
         // A class that was never renamed is returned as-is.
-        assert_eq!(resolve_class("luks_activation"), "luks_activation");
+        assert_eq!(resolve_class("luksActivation"), "luksActivation");
         assert_eq!(resolve_class("some_unknown_class"), "some_unknown_class");
     }
 
@@ -609,7 +609,7 @@ mod tests {
         };
 
         // The question data uses camelCase, as some producers do.
-        let q = QuestionSpec::new("Failed to install the package", "package_provide_error")
+        let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
             .with_data(&[("errorCode", "INVALID")]);
 
         let rule = AnswerRule {
@@ -632,7 +632,7 @@ mod tests {
         };
 
         // The question data uses snake_case, as some producers do.
-        let q = QuestionSpec::new("Failed to load the configuration", "load_config_error")
+        let q = QuestionSpec::new("Failed to load the configuration", "loadConfigError")
             .with_data(&[("original_value", "http://example.com/profile.json")]);
 
         let rule = AnswerRule {
@@ -654,7 +654,7 @@ mod tests {
             value: None,
         };
 
-        let q = QuestionSpec::new("Failed to install the package", "package_provide_error")
+        let q = QuestionSpec::new("Failed to install the package", "packageProvideError")
             .with_data(&[("errorCode", "INVALID")]);
 
         // Same key (in both forms), but a different value.

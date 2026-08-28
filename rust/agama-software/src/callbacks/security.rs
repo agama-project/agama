@@ -56,7 +56,7 @@ impl security::Callback for Security {
                 and integrity of the file cannot be verified. Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "unsigned_file")
+        let question = QuestionSpec::new(&text, "unsignedFile")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -107,7 +107,7 @@ impl security::Callback for Security {
             &key_name,
             &human_fingerprint
         );
-        let question = QuestionSpec::new(&text, "import_gpg")
+        let question = QuestionSpec::new(&text, "importGpg")
             .with_action_ids(&[gettext_noop("Trust"), gettext_noop("Skip")])
             .with_data(&[
                 ("id", key_id.as_str()),
@@ -148,7 +148,7 @@ impl security::Callback for Security {
                 the following unknown GnuPG key: {key_id}. Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "unknown_gpg")
+        let question = QuestionSpec::new(&text, "unknownGpg")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str()), ("id", key_id.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -190,7 +190,7 @@ impl security::Callback for Security {
                 Use it anyway?"
             )
         };
-        let question = QuestionSpec::new(&text, "gpg_verification_error")
+        let question = QuestionSpec::new(&text, "gpgVerificationError")
             .with_yes_no_actions()
             .with_data(&[("filename", file.as_str())]);
         let result = ask_software_question(&self.questions, question);
@@ -210,7 +210,7 @@ impl security::Callback for Security {
               although the file is part of the signed repository, the list of checksums \
               does not mention this file. Use it anyway?"
         );
-        let question = QuestionSpec::new(&text, "no_digest").with_yes_no_actions();
+        let question = QuestionSpec::new(&text, "noDigest").with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -231,7 +231,7 @@ impl security::Callback for Security {
               unknown. This means that the origin and integrity of the file cannot be verified. \
               Use it anyway?"
         );
-        let question = QuestionSpec::new(&text, "unknown_digest").with_yes_no_actions();
+        let question = QuestionSpec::new(&text, "unknownDigest").with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);
@@ -254,7 +254,7 @@ impl security::Callback for Security {
               creater signed it. Use it anyway?"
         );
 
-        let question = QuestionSpec::new(&text, "unknown_digest").with_yes_no_actions();
+        let question = QuestionSpec::new(&text, "unknownDigest").with_yes_no_actions();
         let result = ask_software_question(&self.questions, question);
         let Ok(answer) = result else {
             tracing::warn!("Failed to ask question {:?}", result);

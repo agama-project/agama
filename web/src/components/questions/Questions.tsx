@@ -57,26 +57,26 @@ export default function Questions(): React.ReactNode {
 
   // show specialized popup for luks activation question
   // more can follow as it will be needed
-  if (questionClass === "luks_activation") {
+  if (questionClass === "luksActivation") {
     QuestionComponent = LuksActivationQuestion;
   }
 
-  if (questionClass === "autoyast_unsupported") {
+  if (questionClass === "autoyastUnsupported") {
     QuestionComponent = UnsupportedAutoYaST;
   }
 
   // special popup for package errors (libzypp callbacks)
-  if (questionClass === "package_install_error" || questionClass === "package_provide_error") {
+  if (questionClass === "packageInstallError" || questionClass === "packageProvideError") {
     QuestionComponent = PackageErrorQuestion;
   }
 
   // special popup for self signed registration certificate
-  if (questionClass === "self_signed_regcert") {
+  if (questionClass === "selfSignedRegcert") {
     QuestionComponent = RegistrationCertificateQuestion;
   }
 
   // special popup for self signed registration certificate
-  if (questionClass === "load_config_error") {
+  if (questionClass === "loadConfigError") {
     QuestionComponent = LoadConfigRetryQuestion;
   }
 

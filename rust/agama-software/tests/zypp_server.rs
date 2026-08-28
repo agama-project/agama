@@ -97,7 +97,7 @@ async fn test_start_zypp_server() {
         value: None,
     };
     let rule = AnswerRule {
-        class: Some("import_gpg".to_string()),
+        class: Some("importGpg".to_string()),
         text: None,
         data: None,
         answer,

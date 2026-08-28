@@ -311,8 +311,7 @@ impl ZyppServer {
 
             let text =
                 gettext("Packages download and installation failed. Would you like to retry?");
-            let question_spec =
-                QuestionSpec::new(&text, "retry_installation").with_yes_no_actions();
+            let question_spec = QuestionSpec::new(&text, "retryInstallation").with_yes_no_actions();
             // TODO: it would be nice if we can in backend split between auto selected option and focused option
             // TODO: if needed we would need to extend C API to get more details about failure
             let answer = ask_software_question(&question, question_spec);

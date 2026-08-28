@@ -34,7 +34,7 @@ import { Product } from "~/model/system";
 let question: Question;
 const questionMock: Question = {
   id: 1,
-  class: "luks_activation",
+  class: "luksActivation",
   text: "A Luks device found. Do you want to open it?",
   field: { type: FieldType.String },
   actions: [

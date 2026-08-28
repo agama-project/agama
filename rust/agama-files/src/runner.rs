@@ -142,7 +142,7 @@ impl ScriptsRunner {
             "Running the script '{}' failed. Do you want to try again?",
             script.name()
         );
-        let mut question = QuestionSpec::new(&text, "retry_script").with_yes_no_actions();
+        let mut question = QuestionSpec::new(&text, "retryScript").with_yes_no_actions();
 
         if let Error::Script { status, stderr } = error {
             let exit_status = status

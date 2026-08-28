@@ -2,7 +2,7 @@
     "answers": [
         {
             "answer": "decrypt",
-            "class": "luks_activation",
+            "class": "luksActivation",
             "password": "my_password"
         }
     ]

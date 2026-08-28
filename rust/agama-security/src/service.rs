@@ -226,7 +226,7 @@ impl Service {
         let labels = [gettext("Trust"), gettext("Reject")];
         let msg = gettext("Trying to import a self-signed certificate. Do you want to trust it and register the product?");
 
-        let question = QuestionSpec::new(&msg, "self_signed_regcert")
+        let question = QuestionSpec::new(&msg, "selfSignedRegcert")
             .with_owned_data(certificate.to_data())
             .with_actions(&[
                 ("Trust", labels[0].as_str()),

@@ -162,10 +162,7 @@ mod tests {
             loop {
                 // Poll for the question
                 let pending = questions.call(question::message::Get).await.unwrap();
-                if let Some(q) = pending
-                    .iter()
-                    .find(|q| q.spec.class == "self_signed_regcert")
-                {
+                if let Some(q) = pending.iter().find(|q| q.spec.class == "selfSignedRegcert") {
                     questions
                         .call(question::message::Answer {
                             id: q.id,
@@ -208,10 +205,7 @@ mod tests {
             loop {
                 // Poll for the question
                 let pending = questions.call(question::message::Get).await.unwrap();
-                if let Some(q) = pending
-                    .iter()
-                    .find(|q| q.spec.class == "self_signed_regcert")
-                {
+                if let Some(q) = pending.iter().find(|q| q.spec.class == "selfSignedRegcert") {
                     questions
                         .call(question::message::Answer {
                             id: q.id,
@@ -254,10 +248,7 @@ mod tests {
             loop {
                 // Poll for the question
                 let pending = questions.call(question::message::Get).await.unwrap();
-                if let Some(q) = pending
-                    .iter()
-                    .find(|q| q.spec.class == "self_signed_regcert")
-                {
+                if let Some(q) = pending.iter().find(|q| q.spec.class == "selfSignedRegcert") {
                     questions
                         .call(question::message::Answer {
                             id: q.id,

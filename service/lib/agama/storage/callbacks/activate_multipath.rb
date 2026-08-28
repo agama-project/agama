@@ -67,7 +67,7 @@ module Agama
                  "Do you want to activate multipath?"
 
           Question.new(
-            qclass:         "activate_multipath",
+            qclass:         "activateMultipath",
             text:           text,
             options:        [:yes, :no],
             default_option: :yes
