@@ -28,7 +28,7 @@ import { plainRender } from "~/test-utils";
 
 const question: Question = {
   id: 1,
-  class: "autoyast.unsupported",
+  class: "autoyast_unsupported",
   text: "Some elements from the AutoYaST profile are not supported.",
   field: { type: FieldType.String },
   actions: [

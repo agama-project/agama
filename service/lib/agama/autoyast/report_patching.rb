@@ -52,7 +52,7 @@ module Yast2
         questions_client = Agama::HTTP::Clients::Questions.new(Logger.new($stdout))
 
         question = Agama::Question.new(
-          qclass:         "autoyast.popup",
+          qclass:         "autoyast_popup",
           text:           text,
           options:        generate_options(buttons),
           default_option: focus || options.first,
@@ -96,7 +96,7 @@ module UI
 
     def run
       question = Agama::QuestionWithPassword.new(
-        qclass:         "autoyast.password",
+        qclass:         "autoyast_password",
         text:           @label,
         options:        [:ok, :cancel],
         default_option: :cancel,

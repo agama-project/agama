@@ -164,7 +164,7 @@ mod tests {
                 let pending = questions.call(question::message::Get).await.unwrap();
                 if let Some(q) = pending
                     .iter()
-                    .find(|q| q.spec.class == "registration.certificate")
+                    .find(|q| q.spec.class == "self_signed_regcert")
                 {
                     questions
                         .call(question::message::Answer {
@@ -210,7 +210,7 @@ mod tests {
                 let pending = questions.call(question::message::Get).await.unwrap();
                 if let Some(q) = pending
                     .iter()
-                    .find(|q| q.spec.class == "registration.certificate")
+                    .find(|q| q.spec.class == "self_signed_regcert")
                 {
                     questions
                         .call(question::message::Answer {
@@ -256,7 +256,7 @@ mod tests {
                 let pending = questions.call(question::message::Get).await.unwrap();
                 if let Some(q) = pending
                     .iter()
-                    .find(|q| q.spec.class == "registration.certificate")
+                    .find(|q| q.spec.class == "self_signed_regcert")
                 {
                     questions
                         .call(question::message::Answer {

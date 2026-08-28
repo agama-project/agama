@@ -28,7 +28,7 @@ import RegistrationCertificateQuestion from "~/components/questions/Registration
 
 const question: Question = {
   id: 1,
-  class: "registration.certificate",
+  class: "self_signed_regcert",
   text: "Trust certificate?",
   field: { type: FieldType.None },
   actions: [

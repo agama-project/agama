@@ -73,7 +73,7 @@ const passwordQuestion: Question = {
 
 const luksActivationQuestion: Question = {
   id: 3,
-  class: "storage.luks_activation",
+  class: "luks_activation",
   text: "Password to decrypt the device",
   field: { type: FieldType.Password },
   actions: [
@@ -85,7 +85,7 @@ const luksActivationQuestion: Question = {
 
 const loadConfigurationQuestion: Question = {
   id: 4,
-  class: "load.retry",
+  class: "load_config_error",
   text: "Do you want to retry loading the configuration?",
   field: { type: FieldType.None },
   actions: [

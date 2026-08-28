@@ -352,7 +352,7 @@ impl<'a> QuestionWidget<'a> {
 
     fn render_field_input(&self, lines: &mut Vec<Line<'a>>) {
         let is_field_active = self.state.app_mode == AppMode::FieldInput;
-        let is_load_retry = self.question.spec.class == "load.retry";
+        let is_load_retry = self.question.spec.class == "load_config_error";
 
         let cursor = if is_field_active {
             Span::styled("_", Style::default().add_modifier(Modifier::SLOW_BLINK))

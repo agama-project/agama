@@ -42,7 +42,7 @@ impl Callback for CommitDownload {
     ) -> zypp_agama::callbacks::ProblemResponse {
         let error_str = error.to_string();
         let question =
-            QuestionSpec::new(description.as_str(), "software.package_error.provide_error")
+            QuestionSpec::new(description.as_str(), "package_provide_error")
                 // TODO: make it generic for any problemResponse questions
                 // TODO: we need support for abort and make it default action
                 .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])

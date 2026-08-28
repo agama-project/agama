@@ -171,7 +171,7 @@ impl Question {
 pub struct QuestionSpec {
     /// Question text.
     pub text: String,
-    /// Question class (e.g., "autoyast.unsupported"). It works as a hint for
+    /// Question class (e.g., "autoyast_unsupported"). It works as a hint for
     /// the UI or to match pre-defined answers. The values that are understood
     /// by Agama's UI are documented [in the Questions
     /// page](https://agama-project.github.io/docs/user/reference/profile/answers).
