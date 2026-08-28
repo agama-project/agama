@@ -8179,15 +8179,19 @@ function StoragePlan({
           two decisions about no device in particular and the one destructive
           thing this page can do. None of the three is about anything the
           summary names, so none of them belongs inside it. */}
-      {/* One line, always. The sentence is the half that gives way: it shrinks
-          and wraps inside its own column, while the three controls beside it
-          keep theirs. Letting the row wrap instead puts them on a line of their
-          own, which is a second row of furniture over a page whose first line
-          is already furniture. */}
+      {/* One row where there is room for one. The sentence is the half that
+          gives way: it shrinks and wraps inside its own column, while the three
+          controls beside it keep theirs.
+
+          In a strip there is no room to share, so the two stack: the sentence
+          takes the width, and the controls take a line under it, still at the
+          right where a control belongs. Wrapping them into the same row instead
+          leaves the sentence with three or four words a line. */}
       <Flex
+        direction={{ default: isNarrow ? "column" : "row" }}
         justifyContent={{ default: "justifyContentFlexEnd" }}
-        alignItems={{ default: "alignItemsCenter" }}
-        gap={{ default: "gapMd" }}
+        alignItems={{ default: isNarrow ? "alignItemsFlexEnd" : "alignItemsCenter" }}
+        gap={{ default: isNarrow ? "gapSm" : "gapMd" }}
         flexWrap={{ default: "nowrap" }}
         className="agm-plan-topline"
       >
@@ -8195,8 +8199,15 @@ function StoragePlan({
             usually read at, and free to wrap where it is not: a translation
             that runs half again as long stays on the same line and takes two
             of them. */}
-        <FlexItem grow={{ default: "grow" }} className="agm-plan-topline-intro">
-          <Text textStyle={["fontSizeSm", "textColorSubtle"]}>
+        <FlexItem
+          grow={{ default: "grow" }}
+          alignSelf={{ default: "alignSelfStretch" }}
+          className="agm-plan-topline-intro"
+        >
+          {/* Smaller again in a strip, where it is competing with the sentence
+              the page opens with for the top of a screen that has little of
+              it. */}
+          <Text textStyle={[isNarrow ? "fontSizeXs" : "fontSizeSm", "textColorSubtle"]}>
             {t("Which disks to use, and additional devices like LVM volume groups.")}
           </Text>
         </FlexItem>
