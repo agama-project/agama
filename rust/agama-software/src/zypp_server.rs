@@ -428,9 +428,9 @@ impl ZyppServer {
 
             if let Err(error) = result {
                 let message = format!("Could not add the repository {}", repo.alias);
-                issues.software.push(
-                    Issue::new("addRepo", &message).with_details(&error.to_string()),
-                );
+                issues
+                    .software
+                    .push(Issue::new("addRepo", &message).with_details(&error.to_string()));
             }
         }
 
@@ -445,9 +445,9 @@ impl ZyppServer {
                 let message = gettext("Could not remove the repository %s")
                     .as_str()
                     .replace("%s", &repo.alias);
-                issues.software.push(
-                    Issue::new("removeRepo", &message).with_details(&error.to_string()),
-                );
+                issues
+                    .software
+                    .push(Issue::new("removeRepo", &message).with_details(&error.to_string()));
             }
         }
 
@@ -463,9 +463,9 @@ impl ZyppServer {
 
         if let Err(error) = result {
             let message = gettext("Could not read the repositories");
-            issues.software.push(
-                Issue::new("loadSource", &message).with_details(&error.to_string()),
-            );
+            issues
+                .software
+                .push(Issue::new("loadSource", &message).with_details(&error.to_string()));
         }
 
         // repositories refresh finished
@@ -565,9 +565,7 @@ impl ZyppServer {
 
         if let Ok(false) = zypp.run_solver(self.only_required, self.save_solver_testcase) {
             let message = gettext("There are conflicts in the software selection");
-            issues
-                .software
-                .push(Issue::new("conflict", &message));
+            issues.software.push(Issue::new("conflict", &message));
         }
 
         Self::send_issues_and_finish(issues, tx, progress)
@@ -598,8 +596,7 @@ impl ZyppServer {
                     .replacen("%s", &r#type.to_string(), 1)
                     .replace("%s", name);
                 issues.push(
-                    Issue::new("selectResolvable", &message)
-                        .with_details(&error.to_string()),
+                    Issue::new("selectResolvable", &message).with_details(&error.to_string()),
                 );
             }
         }
