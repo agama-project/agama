@@ -197,8 +197,8 @@
     </packages>
     <!-- SLES for NVIDIA specific packages -->
     <packages type="image" profiles="SUSE_SLE_NV_16.1">
-        <package name="agama-products-sles-nvidia"/>
-        <!-- TODO: add CSS branding package -->
+        <package name="agama-sles-nvidia-product"/>
+        <package name="agama-sles-nvidia-branding"/>
     </packages>
     <packages type="bootstrap">
         <package name="udev"/>
