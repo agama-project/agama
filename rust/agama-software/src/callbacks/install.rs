@@ -52,6 +52,7 @@ impl install::Callback for Install {
         );
 
         let question = QuestionSpec::new(&description, "package_install_error")
+            .with_deprecated_class("software.package_error.install_error")
             // TODO: add abort when it is properly handled in UI/backend
             .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])
             .with_data(&[("package", package_name.as_str())]);
@@ -78,6 +79,7 @@ impl install::Callback for Install {
         let message = gettext("There was a problem running a package script.");
         let full_message = message + "\n\n" + &description;
         let question = QuestionSpec::new(&full_message, "package_script_problem")
+            .with_deprecated_class("software.script_problem")
             .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Continue")])
             .with_data(&[("details", &description)]);
 

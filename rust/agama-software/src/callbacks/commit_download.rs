@@ -43,6 +43,7 @@ impl Callback for CommitDownload {
         let error_str = error.to_string();
         let question =
             QuestionSpec::new(description.as_str(), "package_provide_error")
+                .with_deprecated_class("software.package_error.provide_error")
                 // TODO: make it generic for any problemResponse questions
                 // TODO: we need support for abort and make it default action
                 .with_action_ids(&[gettext_noop("Retry"), gettext_noop("Ignore")])

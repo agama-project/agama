@@ -76,11 +76,12 @@ module Agama
             "attempt" => attempt.to_s
           }
           QuestionWithPassword.new(
-            qclass:         "luks_activation",
-            text:           generate_text(data),
-            options:        [:skip, :decrypt],
-            default_option: :decrypt,
-            data:           data
+            qclass:           "luks_activation",
+            deprecated_class: "storage.luks_activation",
+            text:             generate_text(data),
+            options:          [:skip, :decrypt],
+            default_option:   :decrypt,
+            data:             data
           )
         end
 

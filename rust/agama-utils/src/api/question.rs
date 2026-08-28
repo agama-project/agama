@@ -81,7 +81,9 @@ impl AnswerRule {
     /// * `spec`: question spec to compare with.
     pub fn answers_to(&self, spec: &QuestionSpec) -> bool {
         if let Some(class) = &self.class {
-            if spec.class != *class {
+            let matches_class =
+                spec.class == *class || spec.deprecated_class.as_deref() == Some(class.as_str());
+            if !matches_class {
                 return false;
             }
         }
@@ -176,6 +178,14 @@ pub struct QuestionSpec {
     /// by Agama's UI are documented [in the Questions
     /// page](https://agama-project.github.io/docs/user/reference/profile/answers).
     pub class: String,
+    /// Previous class name, kept for backward compatibility.
+    ///
+    /// When a question class is renamed, the old name can be set here so
+    /// that [AnswerRule]s written against the previous name (e.g., in an
+    /// existing AutoYaST-like profile) still match the question (see
+    /// [AnswerRule::answers_to]).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deprecated_class: Option<String>,
     /// Optionally, a question might define an additional field (e.g., a
     /// password, a selector, etc.).
     #[serde(default)]
@@ -200,11 +210,20 @@ impl QuestionSpec {
         Self {
             text: text.to_string(),
             class: class.to_string(),
+            deprecated_class: None,
             field: QuestionField::None,
             actions: vec![],
             default_action: None,
             data: HashMap::new(),
         }
+    }
+
+    /// Sets the deprecated class name.
+    ///
+    /// * `class`: previous class name.
+    pub fn with_deprecated_class(mut self, class: &str) -> Self {
+        self.deprecated_class = Some(class.to_string());
+        self
     }
 
     /// Sets the question field to be a string.
@@ -502,6 +521,45 @@ mod tests {
             answer: answer.clone(),
         };
         assert!(!not_matching_rule.answers_to(&q));
+    }
+
+    #[test]
+    fn test_answers_to_deprecated_class() {
+        let answer = Answer {
+            action: "Yes".to_string(),
+            value: None,
+        };
+
+        let q = QuestionSpec::new("Activate the LUKS device?", "luks_activation")
+            .with_deprecated_class("storage.luks_activation")
+            .with_yes_no_actions();
+
+        // A rule using the old (deprecated) class still matches.
+        let rule_by_deprecated_class = AnswerRule {
+            text: Default::default(),
+            class: Some("storage.luks_activation".to_string()),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(rule_by_deprecated_class.answers_to(&q));
+
+        // A rule using the current class still matches.
+        let rule_by_current_class = AnswerRule {
+            text: Default::default(),
+            class: Some("luks_activation".to_string()),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(rule_by_current_class.answers_to(&q));
+
+        // A rule using an unrelated class does not match.
+        let rule_by_unrelated_class = AnswerRule {
+            text: Default::default(),
+            class: Some("storage.commit_error".to_string()),
+            data: Default::default(),
+            answer: answer.clone(),
+        };
+        assert!(!rule_by_unrelated_class.answers_to(&q));
     }
 
     #[test]
