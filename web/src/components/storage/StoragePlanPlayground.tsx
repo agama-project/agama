@@ -6092,12 +6092,6 @@ const PLAN_CSS = `
   text-align: start;
 }
 
-/* The decision sits between what the device is and what the plan does to it,
-   which is the pair it belongs to. */
-.agm-plan-summary-control {
-  margin-block: var(--pf-t--global--spacer--md);
-}
-
 `;
 
 /* The outline a label draws, on the second lines under a value: the same words
@@ -7288,15 +7282,19 @@ const PlanHeadline = ({
         .filter(Boolean)
         .join(" ")}
     >
-      {/* What the page reports, as one block. The lines of it are set close
-          enough to be read as consecutive sentences rather than as three
-          separate announcements; the room is kept for what comes after them,
-          which is a different kind of thing. */}
+      {/* What the page reports, as one block, with the room kept for what
+          follows it rather than spent inside it.
+
+          How much room depends on what the block holds. Consecutive sentences
+          about one plan are set close, or they read as three separate
+          announcements. A control among them is not a sentence: at the spacing
+          of prose it reads as a line of the prose, and the things above and
+          below it crowd against its edges. */}
       <FlexItem>
         <Flex
           direction={{ default: "column" }}
           alignItems={{ default: isNarrow ? "alignItemsStretch" : "alignItemsCenter" }}
-          gap={{ default: "gapXs" }}
+          gap={{ default: control ? "gapMd" : "gapXs" }}
         >
           <FlexItem className="agm-plan-headline-measure">
             <Title
@@ -7307,10 +7305,8 @@ const PlanHeadline = ({
               {title}
             </Title>
           </FlexItem>
-          {/* Above the consequence it changes, so the reader sees what it did.
-              It keeps room of its own: a control read at the spacing of prose
-              reads as a line of the prose. */}
-          {control && <FlexItem className="agm-plan-summary-control">{control}</FlexItem>}
+          {/* Above the consequence it changes, so the reader sees what it did. */}
+          {control && <FlexItem>{control}</FlexItem>}
           {notice && (
             <FlexItem className="agm-plan-summary-notice agm-plan-headline-measure">
               {notice}
